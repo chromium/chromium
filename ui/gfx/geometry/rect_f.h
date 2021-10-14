@@ -146,15 +146,25 @@ class GEOMETRY_EXPORT RectF {
   // An empty rectangle doesn't intersect any rectangle.
   bool Intersects(const RectF& rect) const;
 
-  // Computes the intersection of this rectangle with the given rectangle.
+  // Sets this rect to be the intersection of this rectangle with the given
+  // rectangle.
   void Intersect(const RectF& rect);
 
-  // Computes the union of this rectangle with the given rectangle.  The union
-  // is the smallest rectangle containing both rectangles.
+  // Sets this rect to be the intersection of itself and |rect| using
+  // edge-inclusive geometry.  If the two rectangles overlap but the overlap
+  // region is zero-area (either because one of the two rectangles is zero-area,
+  // or because the rectangles overlap at an edge or a corner), the result is
+  // the zero-area intersection.  The return value indicates whether the two
+  // rectangle actually have an intersection, since checking the result for
+  // isEmpty() is not conclusive.
+  bool InclusiveIntersect(const RectF& rect);
+
+  // Sets this rect to be the union of this rectangle with the given rectangle.
+  // The union is the smallest rectangle containing both rectangles.
   void Union(const RectF& rect);
 
-  // Computes the rectangle resulting from subtracting |rect| from |*this|,
-  // i.e. the bounding rect of |Region(*this) - Region(rect)|.
+  // Sets this rect to be the rectangle resulting from subtracting |rect| from
+  // |*this|, i.e. the bounding rect of |Region(*this) - Region(rect)|.
   void Subtract(const RectF& rect);
 
   // Fits as much of the receiving rectangle into the supplied rectangle as
@@ -256,6 +266,9 @@ inline RectF ScaleRect(const RectF& r, float scale) {
 // rect to be outside the rect.  So technically one or both points will not be
 // contained within the rect, because they will appear on one of these edges.
 GEOMETRY_EXPORT RectF BoundingRect(const PointF& p1, const PointF& p2);
+
+// Return a maximum rectangle in which any point is covered by either a or b.
+GEOMETRY_EXPORT RectF MaximumCoveredRect(const RectF& a, const RectF& b);
 
 // This is declared here for use in gtest-based unit tests but is defined in
 // the //ui/gfx:test_support target. Depend on that to use this in your unit

@@ -49,6 +49,7 @@ class GEOMETRY_EXPORT SizeF {
   void SetToMax(const SizeF& other);
 
   bool IsEmpty() const { return !width() || !height(); }
+  bool IsZero() const { return !width() && !height(); }
 
   void Scale(float scale) {
     Scale(scale, scale);

@@ -114,6 +114,22 @@ void RectF::Intersect(const RectF& rect) {
   SetRect(rx, ry, rr - rx, rb - ry);
 }
 
+bool RectF::InclusiveIntersect(const RectF& rect) {
+  float rx = std::max(x(), rect.x());
+  float ry = std::max(y(), rect.y());
+  float rr = std::min(right(), rect.right());
+  float rb = std::min(bottom(), rect.bottom());
+
+  // Return a clean empty rectangle for non-intersecting cases.
+  if (rx > rr || ry > rb) {
+    SetRect(0, 0, 0, 0);
+    return false;
+  }
+
+  SetRect(rx, ry, rr - rx, rb - ry);
+  return true;
+}
+
 void RectF::Union(const RectF& rect) {
   if (IsEmpty()) {
     *this = rect;
@@ -231,12 +247,6 @@ bool RectF::IsExpressibleAsRect() const {
          base::IsValueInRangeForNumericType<int>(bottom());
 }
 
-std::string RectF::ToString() const {
-  return base::StringPrintf("%s %s",
-                            origin().ToString().c_str(),
-                            size().ToString().c_str());
-}
-
 RectF IntersectRects(const RectF& a, const RectF& b) {
   RectF result = a;
   result.Intersect(b);
@@ -261,6 +271,46 @@ RectF BoundingRect(const PointF& p1, const PointF& p2) {
   float rr = std::max(p1.x(), p2.x());
   float rb = std::max(p1.y(), p2.y());
   return RectF(rx, ry, rr - rx, rb - ry);
+}
+
+RectF MaximumCoveredRect(const RectF& a, const RectF& b) {
+  // Check a or b by itself.
+  RectF maximum = a;
+  float maximum_area = a.size().GetArea();
+  if (b.size().GetArea() > maximum_area) {
+    maximum = b;
+    maximum_area = b.size().GetArea();
+  }
+  // Check the regions that include the intersection of a and b. This can be
+  // done by taking the intersection and expanding it vertically and
+  // horizontally. These expanded intersections will both still be covered by
+  // a or b.
+  RectF intersection = a;
+  intersection.InclusiveIntersect(b);
+  if (!intersection.size().IsZero()) {
+    RectF vert_expanded_intersection = intersection;
+    vert_expanded_intersection.set_y(std::min(a.y(), b.y()));
+    vert_expanded_intersection.set_height(std::max(a.bottom(), b.bottom()) -
+                                          vert_expanded_intersection.y());
+    if (vert_expanded_intersection.size().GetArea() > maximum_area) {
+      maximum = vert_expanded_intersection;
+      maximum_area = vert_expanded_intersection.size().GetArea();
+    }
+    RectF horiz_expanded_intersection(intersection);
+    horiz_expanded_intersection.set_x(std::min(a.x(), b.x()));
+    horiz_expanded_intersection.set_width(std::max(a.right(), b.right()) -
+                                          horiz_expanded_intersection.x());
+    if (horiz_expanded_intersection.size().GetArea() > maximum_area) {
+      maximum = horiz_expanded_intersection;
+      maximum_area = horiz_expanded_intersection.size().GetArea();
+    }
+  }
+  return maximum;
+}
+
+std::string RectF::ToString() const {
+  return base::StringPrintf("%s %s", origin().ToString().c_str(),
+                            size().ToString().c_str());
 }
 
 }  // namespace gfx

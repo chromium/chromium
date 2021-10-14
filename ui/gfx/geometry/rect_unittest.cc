@@ -124,6 +124,24 @@ TEST(RectTest, Intersect) {
   }
 }
 
+TEST(RectTest, InclusiveIntersect) {
+  Rect rect(11, 12, 0, 0);
+  EXPECT_TRUE(rect.InclusiveIntersect(Rect(11, 12, 13, 14)));
+  EXPECT_EQ(Rect(11, 12, 0, 0), rect);
+
+  rect = Rect(11, 12, 13, 14);
+  EXPECT_TRUE(rect.InclusiveIntersect(Rect(24, 8, 0, 7)));
+  EXPECT_EQ(Rect(24, 12, 0, 3), rect);
+
+  rect = Rect(11, 12, 13, 14);
+  EXPECT_TRUE(rect.InclusiveIntersect(Rect(9, 15, 4, 0)));
+  EXPECT_EQ(Rect(11, 15, 2, 0), rect);
+
+  rect = Rect(11, 12, 0, 14);
+  EXPECT_FALSE(rect.InclusiveIntersect(Rect(12, 13, 15, 16)));
+  EXPECT_EQ(Rect(), rect);
+}
+
 TEST(RectTest, Union) {
   static const struct Test {
     int x1;  // rect 1
@@ -875,6 +893,39 @@ TEST(RectTest, SetByBounds) {
   EXPECT_EQ(Rect(kMinInt, kMinInt, kMaxInt, kMaxInt), r);
   r.SetByBounds(kMinInt, kMinInt, kMaxInt, kMaxInt);
   EXPECT_EQ(Rect(kMinInt / 2 - 1, kMinInt / 2 - 1, kMaxInt, kMaxInt), r);
+}
+
+TEST(RectTest, MaximumCoveredRect) {
+  // X aligned and intersect: unite.
+  EXPECT_EQ(Rect(10, 20, 30, 60),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(10, 30, 30, 50)));
+  // X aligned and adjacent: unite.
+  EXPECT_EQ(Rect(10, 20, 30, 90),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(10, 60, 30, 50)));
+  // X aligned and separate: choose the bigger one.
+  EXPECT_EQ(Rect(10, 61, 30, 50),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(10, 61, 30, 50)));
+  // Y aligned and intersect: unite.
+  EXPECT_EQ(Rect(10, 20, 60, 40),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(30, 20, 40, 40)));
+  // Y aligned and adjacent: unite.
+  EXPECT_EQ(Rect(10, 20, 70, 40),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(40, 20, 40, 40)));
+  // Y aligned and separate: choose the bigger one.
+  EXPECT_EQ(Rect(41, 20, 40, 40),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(41, 20, 40, 40)));
+  // Get the biggest expanded intersection.
+  EXPECT_EQ(Rect(0, 0, 9, 19),
+            MaximumCoveredRect(Rect(0, 0, 10, 10), Rect(0, 9, 9, 10)));
+  EXPECT_EQ(Rect(0, 0, 19, 9),
+            MaximumCoveredRect(Rect(0, 0, 10, 10), Rect(9, 0, 10, 9)));
+  // Otherwise choose the bigger one.
+  EXPECT_EQ(Rect(20, 30, 40, 50),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(20, 30, 40, 50)));
+  EXPECT_EQ(Rect(10, 20, 40, 50),
+            MaximumCoveredRect(Rect(10, 20, 40, 50), Rect(20, 30, 30, 40)));
+  EXPECT_EQ(Rect(10, 20, 40, 50),
+            MaximumCoveredRect(Rect(10, 20, 40, 50), Rect(20, 30, 40, 50)));
 }
 
 }  // namespace gfx

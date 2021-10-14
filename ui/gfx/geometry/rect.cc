@@ -99,13 +99,18 @@ CGRect Rect::ToCGRect() const {
 
 #endif
 
-void Rect::SetByBounds(int left, int top, int right, int bottom) {
-  int x, y;
-  int width, height;
-  SaturatedClampRange(left, right, &x, &width);
-  SaturatedClampRange(top, bottom, &y, &height);
-  origin_.SetPoint(x, y);
-  size_.SetSize(width, height);
+void Rect::AdjustForSaturatedRight(int right) {
+  int new_x, width;
+  SaturatedClampRange(x(), right, &new_x, &width);
+  set_x(new_x);
+  size_.set_width(width);
+}
+
+void Rect::AdjustForSaturatedBottom(int bottom) {
+  int new_y, height;
+  SaturatedClampRange(y(), bottom, &new_y, &height);
+  set_y(new_y);
+  size_.set_height(height);
 }
 
 void Rect::Inset(const Insets& insets) {
@@ -178,6 +183,22 @@ void Rect::Intersect(const Rect& rect) {
   }
 
   SetByBounds(left, top, new_right, new_bottom);
+}
+
+bool Rect::InclusiveIntersect(const Rect& rect) {
+  int left = std::max(x(), rect.x());
+  int top = std::max(y(), rect.y());
+  int new_right = std::min(right(), rect.right());
+  int new_bottom = std::min(bottom(), rect.bottom());
+
+  // Return a clean empty rectangle for non-intersecting cases.
+  if (left > new_right || top > new_bottom) {
+    SetRect(0, 0, 0, 0);
+    return false;
+  }
+
+  SetByBounds(left, top, new_right, new_bottom);
+  return true;
 }
 
 void Rect::Union(const Rect& rect) {
@@ -332,6 +353,39 @@ Rect BoundingRect(const Point& p1, const Point& p2) {
   result.SetByBounds(std::min(p1.x(), p2.x()), std::min(p1.y(), p2.y()),
                      std::max(p1.x(), p2.x()), std::max(p1.y(), p2.y()));
   return result;
+}
+
+Rect MaximumCoveredRect(const Rect& a, const Rect& b) {
+  // Check a or b by itself.
+  Rect maximum = a;
+  uint64_t maximum_area = a.size().Area64();
+  if (b.size().Area64() > maximum_area) {
+    maximum = b;
+    maximum_area = b.size().Area64();
+  }
+  // Check the regions that include the intersection of a and b. This can be
+  // done by taking the intersection and expanding it vertically and
+  // horizontally. These expanded intersections will both still be covered by
+  // a or b.
+  Rect intersection = a;
+  intersection.InclusiveIntersect(b);
+  if (!intersection.size().IsZero()) {
+    Rect vert_expanded_intersection = intersection;
+    vert_expanded_intersection.SetVerticalBounds(
+        std::min(a.y(), b.y()), std::max(a.bottom(), b.bottom()));
+    if (vert_expanded_intersection.size().Area64() > maximum_area) {
+      maximum = vert_expanded_intersection;
+      maximum_area = vert_expanded_intersection.size().Area64();
+    }
+    Rect horiz_expanded_intersection = intersection;
+    horiz_expanded_intersection.SetHorizontalBounds(
+        std::min(a.x(), b.x()), std::max(a.right(), b.right()));
+    if (horiz_expanded_intersection.size().Area64() > maximum_area) {
+      maximum = horiz_expanded_intersection;
+      maximum_area = horiz_expanded_intersection.size().Area64();
+    }
+  }
+  return maximum;
 }
 
 }  // namespace gfx
