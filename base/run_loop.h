@@ -352,9 +352,6 @@ class BASE_EXPORT RunLoop {
 
   const scoped_refptr<SingleThreadTaskRunner> origin_task_runner_;
 
-  // Globally-unique id identifying this RunLoop for tracing purposes.
-  const uint64_t trace_id_;
-
   // WeakPtrFactory for QuitClosure safety.
   WeakPtrFactory<RunLoop> weak_factory_{this};
 };

@@ -63,13 +63,8 @@ def _CheckNoTraceEventInclude(input_api, output_api):
   base_tracing.h header instead of specific trace event implementation headers
   to maintain compatibility with the gn flag "enable_base_tracing = false".
   """
-  allowed_headers = [
-    r'base_tracing\.h',
-    r'base_tracing_forward\.h',
-    r'trace_id_helper\.h',
-  ]
   discouraged_includes = [
-    r'^#include "base/trace_event/(?!%s)' % ('|'.join(allowed_headers), ),
+    r'^#include "base/trace_event/(?!base_tracing\.h|base_tracing_forward\.h)',
     r'^#include "third_party/perfetto/include/',
   ]
 

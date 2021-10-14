@@ -13,7 +13,6 @@
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"
-#include "base/trace_event/trace_id_helper.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -71,8 +70,8 @@ RunLoop::Delegate::~Delegate() {
 bool RunLoop::Delegate::ShouldQuitWhenIdle() {
   const auto* top_loop = active_run_loops_.top();
   if (top_loop->quit_when_idle_) {
-    TRACE_EVENT("toplevel.flow", "RunLoop_ExitedOnIdle",
-                perfetto::Flow(top_loop->trace_id_));
+    TRACE_EVENT_WITH_FLOW0("toplevel.flow", "RunLoop_ExitedOnIdle",
+                           TRACE_ID_LOCAL(top_loop), TRACE_EVENT_FLAG_FLOW_IN);
     return true;
   }
   return false;
@@ -96,8 +95,7 @@ void RunLoop::RegisterDelegateForCurrentThread(Delegate* delegate) {
 RunLoop::RunLoop(Type type)
     : delegate_(GetTlsDelegate().Get()),
       type_(type),
-      origin_task_runner_(ThreadTaskRunnerHandle::Get()),
-      trace_id_(trace_event::GetNextGlobalTraceId()) {
+      origin_task_runner_(ThreadTaskRunnerHandle::Get()) {
   DCHECK(delegate_) << "A RunLoop::Delegate must be bound to this thread prior "
                        "to using RunLoop.";
   DCHECK(origin_task_runner_);
@@ -170,7 +168,11 @@ void RunLoop::Quit() {
     return;
   }
 
-  TRACE_EVENT("toplevel.flow", "RunLoop::Quit", perfetto::Flow(trace_id_));
+  // While Quit() is an "OUT" call to reach one of the quit-states ("IN"),
+  // OUT|IN is used to visually link multiple Quit*() together which can help
+  // when debugging flaky tests.
+  TRACE_EVENT_WITH_FLOW0("toplevel.flow", "RunLoop::Quit", TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN);
 
   quit_called_ = true;
   if (running_ && delegate_->active_run_loops_.top() == this) {
@@ -191,8 +193,10 @@ void RunLoop::QuitWhenIdle() {
     return;
   }
 
-  TRACE_EVENT("toplevel.flow", "RunLoop::QuitWhenIdle",
-              perfetto::Flow(trace_id_));
+  // OUT|IN as in Quit() to link all Quit*() together should there be multiple.
+  TRACE_EVENT_WITH_FLOW0("toplevel.flow", "RunLoop::QuitWhenIdle",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN);
 
   quit_when_idle_ = true;
   quit_when_idle_called_ = true;
@@ -333,8 +337,8 @@ bool RunLoop::BeforeRun() {
 
   // Allow Quit to be called before Run.
   if (quit_called_) {
-    TRACE_EVENT("toplevel.flow", "RunLoop_ExitedEarly",
-                perfetto::Flow(trace_id_));
+    TRACE_EVENT_WITH_FLOW0("toplevel.flow", "RunLoop_ExitedEarly",
+                           TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
     return false;
   }
 
@@ -359,7 +363,8 @@ void RunLoop::AfterRun() {
 
   running_ = false;
 
-  TRACE_EVENT("toplevel.flow", "RunLoop_Exited", perfetto::Flow(trace_id_));
+  TRACE_EVENT_WITH_FLOW0("toplevel.flow", "RunLoop_Exited",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
 
   auto& active_run_loops = delegate_->active_run_loops_;
   DCHECK_EQ(active_run_loops.top(), this);
