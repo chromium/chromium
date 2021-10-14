@@ -11,13 +11,14 @@
 #include "components/password_manager/core/browser/password_store_backend_migration_decorator.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace password_manager {
 
 namespace {
 bool ShouldRecordShadowTraffic(PrefService* prefs) {
-  return prefs_->GetBoolean(prefs::kIsEligibleForGmsPasswordsManagement) &&
+  return prefs->GetBoolean(prefs::kIsEligibleForGmsPasswordsManagement) &&
          base::FeatureList::IsEnabled(
              password_manager::features::kUnifiedPasswordManagerShadowAndroid);
 }
