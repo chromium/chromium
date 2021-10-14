@@ -133,6 +133,14 @@ component("evdev") {
     "//ui/ozone:ozone_base",
   ]
 
+  if (is_chromeos_ash) {
+    sources += [
+      "numberpad_metrics.cc",
+      "numberpad_metrics.h",
+    ]
+    deps += [ "//chromeos/components/feature_usage" ]
+  }
+
   public_configs = [ ":evdev_config" ]
 
   if (use_evdev_gestures) {
@@ -255,6 +263,11 @@ source_set("unittests") {
     "//ui/events/ozone/layout",
     "//ui/gfx/geometry",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [ "numberpad_metrics_unittest.cc" ]
+    deps += [ "//chromeos/components/feature_usage" ]
+  }
 
   visibility += [ "//ui/events/ozone:unittests" ]
 }

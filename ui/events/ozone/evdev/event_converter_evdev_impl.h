@@ -69,6 +69,9 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   void DispatchMouseButton(const input_event& input);
   void OnButtonChange(int code, bool down, base::TimeTicks timestamp);
 
+  // Opportunity to generate metrics for each key change
+  void GenerateKeyMetrics(unsigned key, bool down);
+
   // Flush events delimited by EV_SYN. This is useful for handling
   // non-axis-aligned movement properly.
   void FlushEvents(const input_event& input);
@@ -79,6 +82,7 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   // Input modalities for this device.
   bool has_keyboard_;
   bool has_touchpad_;
+  bool has_numberpad_;
   bool has_stylus_switch_;
 
   // LEDs for this device.
