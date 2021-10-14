@@ -21,6 +21,7 @@ import android.view.ViewStub;
 import android.view.animation.BaseInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
@@ -58,7 +59,10 @@ class StartSurfaceToolbarView extends RelativeLayout {
 
     private final List<Animator> mAnimators = new ArrayList();
 
+    private LinearLayout mNewTabViewWithText;
     private NewTabButton mNewTabButton;
+    private boolean mIsNewTabButtonAtStart;
+    private boolean mShouldShowNewTabViewText;
     private HomeButton mHomeButton;
     private View mLogo;
     private View mTabSwitcherButtonView;
@@ -83,8 +87,9 @@ class StartSurfaceToolbarView extends RelativeLayout {
     private boolean mIsHomeButtonInitialized;
     private boolean mIsShowing;
 
+    private boolean mIsMenuVisible;
     private boolean mIsLogoVisible;
-    private boolean mIsNewTabButtonVisible;
+    private boolean mIsNewTabViewVisible;
     private boolean mIsHomeButtonVisible;
     private boolean mIsIncognitoToggleVisible;
     private boolean mIsTabSwitcherButtonVisible;
@@ -101,6 +106,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mNewTabViewWithText = findViewById(R.id.new_tab_view);
         mNewTabButton = findViewById(R.id.new_tab_button);
         mHomeButton = findViewById(R.id.home_button_on_tab_switcher);
         ViewStub incognitoToggleTabsStub = findViewById(R.id.incognito_tabs_stub);
@@ -145,10 +151,12 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     /**
-     * Sets the {@link OnClickListener} that will be notified when the New Tab button is pressed.
-     * @param listener The callback that will be notified when the New Tab button is pressed.
+     * Sets the {@link OnClickListener} that will be notified when the New Tab view or New Tab
+     * button is pressed.
+     * @param listener The callback that will be notified when the New Tab view is pressed.
      */
     void setOnNewTabClickHandler(View.OnClickListener listener) {
+        mNewTabViewWithText.setOnClickListener(listener);
         mNewTabButton.setOnClickListener(listener);
     }
 
@@ -167,6 +175,9 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * @param isVisible Whether the menu button is visible.
      */
     void setMenuButtonVisibility(boolean isVisible) {
+        mIsMenuVisible = isVisible;
+        // TODO(crbug.com/1258204): Update the paddings of mIdentityDiscButton when it's moved to
+        // start and remove final values here.
         final int buttonPaddingLeft = getContext().getResources().getDimensionPixelOffset(
                 R.dimen.start_surface_toolbar_button_padding_to_button);
         final int buttonPaddingRight =
@@ -174,24 +185,43 @@ class StartSurfaceToolbarView extends RelativeLayout {
                            : getContext().getResources().getDimensionPixelOffset(
                                    R.dimen.start_surface_toolbar_button_padding_to_edge));
         mIdentityDiscButton.setPadding(buttonPaddingLeft, 0, buttonPaddingRight, 0);
-        mNewTabButton.setPadding(buttonPaddingLeft, 0, buttonPaddingRight, 0);
+        updateNewTabButtonPadding();
     }
 
     /**
      * If transition animations shouldn't show, visibility is updated; Otherwise animations of new
-     * tab button are added in startToolbarVisibilityAnimations() and visibility is set when
+     * tab view are added in startToolbarVisibilityAnimations() and visibility is set when
      * animations end.
-     * @param isVisible Whether the new tab button is visible.
+     * @param isVisible Whether the new tab view is visible.
      */
-    void setNewTabButtonVisibility(boolean isVisible) {
-        mIsNewTabButtonVisible = isVisible;
-        if (isVisible && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            // This is a workaround for the issue that the UrlBar is given the default focus on
-            // Android versions before Pie when showing the start surface toolbar with the new tab
-            // button (UrlBar is invisible to users). Check crbug.com/1081538 for more details.
-            mNewTabButton.getParent().requestChildFocus(mNewTabButton, mNewTabButton);
+    void setNewTabViewVisibility(boolean isVisible) {
+        mIsNewTabViewVisible = isVisible;
+        if (!mShowTransitionAnimations) updateNewTabButtonVisibility();
+    }
+
+    /**
+     * @param isAtStart Whether the new tab button is at start.
+     */
+    void setNewTabButtonAtStart(boolean isAtStart) {
+        if (mIsNewTabButtonAtStart == isAtStart) return;
+        mIsNewTabButtonAtStart = isAtStart;
+
+        if (mIsNewTabButtonAtStart) {
+            ((LayoutParams) mNewTabButton.getLayoutParams()).removeRule(RelativeLayout.START_OF);
+        } else {
+            ((LayoutParams) mNewTabButton.getLayoutParams())
+                    .addRule(RelativeLayout.START_OF, R.id.menu_anchor);
         }
-        if (!mShowTransitionAnimations) mNewTabButton.setVisibility(getVisibility(isVisible));
+        updateNewTabButtonPadding();
+    }
+
+    /**
+     * Set the visibility of new tab view text.
+     * @param isVisible Whether the new tab view text is visible.
+     */
+    void setNewTabViewTextVisibility(boolean isVisible) {
+        mShouldShowNewTabViewText = isVisible;
+        updateNewTabButtonVisibility();
     }
 
     /**
@@ -250,7 +280,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * @param isClickable Whether the buttons are clickable.
      */
     void setButtonClickableState(boolean isClickable) {
-        mNewTabButton.setClickable(isClickable);
+        mNewTabViewWithText.setClickable(isClickable);
         mIncognitoToggleTabLayout.setClickable(isClickable);
     }
 
@@ -401,6 +431,44 @@ class StartSurfaceToolbarView extends RelativeLayout {
         mShowTransitionAnimations = showAnimation;
     }
 
+    private void updateNewTabButtonVisibility() {
+        if (!mIsNewTabViewVisible) {
+            mNewTabButton.setVisibility(GONE);
+            mNewTabViewWithText.setVisibility(GONE);
+            return;
+        }
+
+        mNewTabButton.setVisibility(mShouldShowNewTabViewText ? GONE : VISIBLE);
+        mNewTabViewWithText.setVisibility(!mShouldShowNewTabViewText ? GONE : VISIBLE);
+
+        // This is a workaround for the issue that the UrlBar is given the default focus on
+        // Android versions before Pie when showing the start surface toolbar with the new
+        // tab button (UrlBar is invisible to users). Check crbug.com/1081538 for more
+        // details.
+        if (mShouldShowNewTabViewText) {
+            mNewTabViewWithText.getParent().requestChildFocus(
+                    mNewTabViewWithText, mNewTabViewWithText);
+        } else {
+            mNewTabViewWithText.getParent().requestChildFocus(mNewTabButton, mNewTabButton);
+        }
+    }
+
+    private View getNewTabButton() {
+        return mShouldShowNewTabViewText ? mNewTabViewWithText : mNewTabButton;
+    }
+
+    private void updateNewTabButtonPadding() {
+        final int buttonPaddingLeft = getContext().getResources().getDimensionPixelOffset(
+                mIsNewTabButtonAtStart ? R.dimen.start_surface_toolbar_button_padding_to_edge
+                                       : R.dimen.start_surface_toolbar_button_padding_to_button);
+        final int buttonPaddingRight =
+                getResources().getDimensionPixelOffset(mIsNewTabButtonAtStart || !mIsMenuVisible
+                                ? R.dimen.start_surface_toolbar_button_padding_to_edge
+                                : R.dimen.start_surface_toolbar_button_padding_to_button);
+        mNewTabButton.setPadding(buttonPaddingLeft, mNewTabButton.getPaddingTop(),
+                buttonPaddingRight, mNewTabButton.getPaddingBottom());
+    }
+
     /**
      * If transition animations shouldn't show, update the visibility of toolbar; Otherwise if
      * toolbar is already showing and transition animations should show, show transition animations.
@@ -458,12 +526,13 @@ class StartSurfaceToolbarView extends RelativeLayout {
                 mIsLogoVisible ? SLOW_DURATION_MS : MEDIUM_DURATION_MS,
                 mIsLogoVisible ? SHORT_DELAY_MS : 0, Interpolators.LINEAR_INTERPOLATOR);
 
-        addScaleAnimators(mNewTabButton, mIsNewTabButtonVisible, MEDIUM_DURATION_MS,
-                mIsNewTabButtonVisible ? MEDIUM_DELAY_MS : 0,
-                mIsNewTabButtonVisible ? Interpolators.DECELERATE_INTERPOLATOR
-                                       : Interpolators.ACCELERATE_INTERPOLATOR);
-        addFadeAnimator(mNewTabButton, mIsNewTabButtonVisible, MEDIUM_DURATION_MS,
-                mIsNewTabButtonVisible ? MEDIUM_DELAY_MS : 0, Interpolators.LINEAR_INTERPOLATOR);
+        // TODO(crbug.com/1258199): Add an animator for new tab text view.
+        addScaleAnimators(getNewTabButton(), mIsNewTabViewVisible, MEDIUM_DURATION_MS,
+                mIsNewTabViewVisible ? MEDIUM_DELAY_MS : 0,
+                mIsNewTabViewVisible ? Interpolators.DECELERATE_INTERPOLATOR
+                                     : Interpolators.ACCELERATE_INTERPOLATOR);
+        addFadeAnimator(getNewTabButton(), mIsNewTabViewVisible, MEDIUM_DURATION_MS,
+                mIsNewTabViewVisible ? MEDIUM_DELAY_MS : 0, Interpolators.LINEAR_INTERPOLATOR);
 
         addScaleAnimators(mHomeButton, mIsHomeButtonVisible, MEDIUM_DURATION_MS,
                 mIsHomeButtonVisible ? MEDIUM_DELAY_MS : 0,
