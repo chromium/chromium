@@ -130,3 +130,9 @@
 -DeepScanningReportingTest.Timeout
 -ExtensionsMenuViewUnitTest.ContextMenuButtonUserAction
 -PredictionManagerTest.AddObserverForOptimizationTargetModelAddAnotherObserverForSameTarget
+
+# crbug.com/1254563: run-test-component specific issues
+-DialServiceTest.TestMultipleNetworkInterfaces
+-DialServiceTest.TestSendMultipleRequests
+-UDPSocketUnitTest.TestUDPMulticastJoinGroup
+-UDPSocketUnitTest.TestUDPMulticastRecv
