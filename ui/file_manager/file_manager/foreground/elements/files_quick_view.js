@@ -12,6 +12,7 @@ import './icons.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {toSandboxedURL} from '../../common/js/url_constants.js';
 
 export const FilesQuickView = Polymer({
   _template: html`{__html_template__}`,
@@ -19,6 +20,12 @@ export const FilesQuickView = Polymer({
   is: 'files-quick-view',
 
   properties: {
+    /**
+     * True if the Quick View is used in legacy mode.
+     * @type {boolean}
+     */
+    isLegacy: Boolean,
+
     // File media type, e.g. image, video.
     type: String,
     subtype: String,
@@ -34,7 +41,10 @@ export const FilesQuickView = Polymer({
     canDelete: Boolean,
 
     // Preview content to be sent rendered in a sandboxed environment.
-    sourceContent: Object,
+    sourceContent: {
+      type: Object,
+      observer: 'refreshUntrustedIframe_',
+    },
 
     videoPoster: String,
     audioArtwork: String,
@@ -111,6 +121,28 @@ export const FilesQuickView = Polymer({
     webview.insertCSS({
       'file': 'untrusted_resources/files_text_content.css',
     });
+  },
+
+  /**
+   * Send browsable preview content (i.e. content that can be displayed by the
+   * browser directly as PDF/text/html) to the chrome-untrusted:// <iframe>.
+   */
+  refreshUntrustedIframe_: function() {
+    if (this.isLegacy || !this.browsable) {
+      return;
+    }
+
+    const iframe = this.shadowRoot.querySelector('#untrusted');
+    if (!iframe) {
+      return;
+    }
+
+    const data = {
+      browsable: this.browsable,
+      subtype: this.subtype,
+      sourceContent: this.sourceContent,
+    };
+    iframe.contentWindow.postMessage(data, toSandboxedURL().origin);
   },
 
   // Clears fields.

@@ -13,14 +13,14 @@ export const LEGACY_FILES_EXTENSION_ID = 'hhaomjibdihmijegdhdafkllkbggdgoj';
 export const SWA_FILES_APP_HOST = 'file-manager';
 
 /**
- * The URL of the legacy version of File Manger.
+ * The URL of the legacy version of File Manager.
  * @const {!URL}
  */
 export const LEGACY_FILES_APP_URL =
     new URL(`chrome-extension://${LEGACY_FILES_EXTENSION_ID}`);
 
 /**
- * The URL of the System Web App version of File Manger.
+ * The URL of the System Web App version of File Manager.
  * @const {!URL}
  */
 export const SWA_FILES_APP_URL = new URL(`chrome://${SWA_FILES_APP_HOST}`);
@@ -37,6 +37,17 @@ export const FILES_APP_ICON_PATH = 'common/images/icon96.png';
  */
 export function toFilesAppURL(path = '') {
   return new URL(path, window.isSWA ? SWA_FILES_APP_URL : LEGACY_FILES_APP_URL);
+}
+
+/**
+ * @param {string=} path relative to the sandboxed page origin.
+ * @return {!URL} The absolute URL.
+ */
+export function toSandboxedURL(path = '') {
+  const SANDBOXED_URL = window.isSWA ?
+      new URL(`chrome-untrusted://${SWA_FILES_APP_HOST}`) :
+      LEGACY_FILES_APP_URL;
+  return new URL(path, SANDBOXED_URL);
 }
 
 /**

@@ -36,7 +36,12 @@
       <div id="innerContentPanel" type$="[[type]]">
         <!-- PDF, Text -->
         <template is="dom-if" if="[[browsable]]">
-          <webview style="color: transparent; background: transparent;" on-contentload='applyTextCss' class="content text-content" src="[[generateBrowsableUrl_(sourceContent, subtype)]]"></webview>
+          <template is="dom-if" if="[[isLegacy]]">
+            <webview style="color: transparent; background: transparent;" on-contentload='applyTextCss' class="content text-content" src="[[generateBrowsableUrl_(sourceContent, subtype)]]"></webview>
+          </template>
+          <template is="dom-if" if="[[!isLegacy]]">
+            <iframe id="untrusted" style="color: transparent; background: transparent; width: 100%; height: 100%; border: 0px;" on-load="refreshUntrustedIframe_" class="content text-content" src="chrome-untrusted://file-manager/untrusted_resources/files_browsable_content.html"></iframe>
+          </template>
         </template>
         <!-- document/HTML -->
         <template is="dom-if" if="[[isHtml_(type, subtype)]]">
@@ -69,7 +74,9 @@
         </template>
         <!-- Audio -->
         <template is="dom-if" if="[[isAudio_(type)]]">
-          <files-safe-media type="image" id="audio-artwork" class="no-close-on-click" src="[[audioArtwork]]" hidden="[[!audioArtwork]]"></files-safe-media>
+          <template is="dom-if" if="[[audioArtwork]]">
+            <files-safe-media type="image" id="audio-artwork" class="no-close-on-click" src="[[audioArtwork]]"></files-safe-media>
+          </template>
         </template>
         <div>
           <files-safe-media tabindex="0" type="audio" class="no-close-on-click" controls autoplay="[[autoplay]]" src="[[audioContent_(sourceContent, type)]]" hidden="[[!isAudio_(type)]]"></files-safe-media>
@@ -84,8 +91,8 @@
           <div generic-thumbnail$="[[type]]"></div>
           <div class="no-preview">[[noPreviewText]]</div>
         </div>
-        </div> <!-- innerContentPanel -->
-      </div> <!-- contentPanel -->
+      </div> <!-- innerContentPanel -->
+    </div> <!-- contentPanel -->
     <files-metadata-box id="metadata-box" hidden$="[[!metadataBoxActive]]"></files-metadata-box>
   </div> <!-- mainPanel -->
   <files-tooltip></files-tooltip>

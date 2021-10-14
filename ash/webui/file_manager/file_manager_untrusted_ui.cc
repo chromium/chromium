@@ -37,6 +37,21 @@ FileManagerUntrustedUI::FileManagerUntrustedUI(content::WebUI* web_ui)
 
   untrusted_source->AddFrameAncestor(GURL(kChromeUIFileManagerURL));
 
+  // By default, prevent all network access. Allow framing blob: URLs for
+  // browsable content.
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, "frame-src blob: 'self';");
+
+  // Allow <img>, <audio>, <video> to handle blob: and data: URLs.
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::DefaultSrc,
+      "default-src blob: data: 'self';");
+
+  // Allow inline styling.
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      "style-src 'unsafe-inline' 'self';");
+
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, untrusted_source);
 }

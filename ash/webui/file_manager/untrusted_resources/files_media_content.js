@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 window.onload = () => {
-  const FILES_APP_ORIGIN =
-      'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj';
   let messageSource;
+  let filesAppOrigin;
 
   const content = document.querySelector('#content');
   let contentUrl;
 
   window.addEventListener('message', event => {
-    if (event.origin !== FILES_APP_ORIGIN) {
+    if (event.origin !== FILES_APP_SWA_ORIGIN &&
+        event.origin !== LEGACY_FILES_APP_ORIGIN) {
       console.error('Unknown origin: ' + event.origin);
       return;
     }
@@ -20,12 +20,14 @@ window.onload = () => {
     URL.revokeObjectURL(contentUrl);
     contentUrl = '';
 
+    filesAppOrigin = event.origin;
+    messageSource = event.source;
+
     /** @type {!UntrustedPreviewData} */
     const data = event.data;
 
-    messageSource = event.source;
-
     const sourceContent = data.sourceContent;
+
     switch (sourceContent.dataType) {
       case 'url':
         contentUrl = /** @type {string} */ (sourceContent.data);
@@ -99,7 +101,7 @@ window.onload = () => {
 
   function sendMessage(message) {
     if (messageSource) {
-      messageSource.postMessage(message, FILES_APP_ORIGIN);
+      messageSource.postMessage(message, filesAppOrigin);
     }
   }
 

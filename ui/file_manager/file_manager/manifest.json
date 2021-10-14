@@ -52,7 +52,8 @@
         "untrusted_resources/files_img_content.*",
         "untrusted_resources/files_media_content.js",
         "untrusted_resources/files_text_content.*",
-        "untrusted_resources/files_video_content.*"
+        "untrusted_resources/files_video_content.*",
+        "untrusted_resources/url_constants.js"
       ]
     }]
   },

@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-const FILES_APP_ORIGIN = 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj';
+import {toSandboxedURL} from '../../common/js/url_constants.js';
 
 /**
- * Polymer element to render a media securely inside webview.
- * When tapped, files-safe-media-tap-inside or
+ * Polymer element to render a media securely inside a webview or a
+ * chrome-untrusted:// iframe. When tapped, files-safe-media-tap-inside or
  * files-safe-media-tap-outside events are fired depending on the position
  * of the tap.
  */
@@ -40,13 +39,17 @@ const FilesSafeMedia = Polymer({
   sourceFile_: function() {
     switch (this.type) {
       case 'image':
-        return 'untrusted_resources/files_img_content.html';
+        return toSandboxedURL('untrusted_resources/files_img_content.html')
+            .toString();
       case 'audio':
-        return 'untrusted_resources/files_audio_content.html';
+        return toSandboxedURL('untrusted_resources/files_audio_content.html')
+            .toString();
       case 'video':
-        return 'untrusted_resources/files_video_content.html';
+        return toSandboxedURL('untrusted_resources/files_video_content.html')
+            .toString();
       case 'html':
-        return 'untrusted_resources/files_text_content.html';
+        return toSandboxedURL('untrusted_resources/files_text_content.html')
+            .toString();
       default:
         console.error('Unsupported type: ' + this.type);
         return '';
@@ -55,37 +58,59 @@ const FilesSafeMedia = Polymer({
 
   onSrcChange_: function() {
     const hasContent = this.src.dataType !== '';
-    if (!hasContent && this.webview_) {
-      // Remove webview to clean up unnecessary processes.
-      this.$.content.removeChild(this.webview_);
-      this.webview_ = null;
-    } else if (hasContent && !this.webview_) {
-      // Create webview node only if src exists to save resources.
-      const webview =
-          /** @type {!HTMLElement} */ (document.createElement('webview'));
-      this.webview_ = webview;
-      webview.partition = 'trusted';
-      webview.allowtransparency = 'true';
-      this.$.content.appendChild(webview);
-      webview.addEventListener('contentload', () => this.onSrcChange_());
-      webview.src = this.sourceFile_();
-    } else if (hasContent && this.webview_.contentWindow) {
+    if (!hasContent && this.contentsNode_) {
+      // Remove webview or iframe to clean up unnecessary processes.
+      this.$.content.removeChild(this.contentsNode_);
+      this.contentsNode_ = null;
+    } else if (hasContent && !this.contentsNode_) {
+      // Create node only if src exists to save resources.
+      if (window.isSWA) {
+        this.createUntrustedContents_();
+      } else {
+        this.createWebviewContents_();
+      }
+    } else if (hasContent && this.contentsNode_.contentWindow) {
       /** @type {!UntrustedPreviewData} */
       const data = {
         type: this.type,
         sourceContent: /** @type {!FilePreviewContent} */ (this.src),
       };
       window.setTimeout(() => {
-        this.webview_.contentWindow.postMessage(data, FILES_APP_ORIGIN);
+        this.contentsNode_.contentWindow.postMessage(
+            data, toSandboxedURL().origin);
       });
     }
   },
 
+  createWebviewContents_: function() {
+    const webview =
+        /** @type {!HTMLElement} */ (document.createElement('webview'));
+    this.contentsNode_ = webview;
+    webview.partition = 'trusted';
+    webview.allowtransparency = 'true';
+    this.$.content.appendChild(webview);
+    webview.addEventListener('contentload', () => this.onSrcChange_());
+    webview.src = this.sourceFile_();
+  },
+
+  createUntrustedContents_: function() {
+    const node =
+        /** @type {!HTMLElement} */ (document.createElement('iframe'));
+    this.contentsNode_ = node;
+    node.style.width = '100%';
+    node.style.height = '100%';
+    node.style.border = '0px';
+    this.$.content.appendChild(node);
+    node.addEventListener('load', () => this.onSrcChange_());
+    node.src = this.sourceFile_();
+  },
+
   created: function() {
     /**
-     * @type {HTMLElement}
+     * @private {?HTMLElement} Holds the untrusted frame when a source to
+     *     preview is set. Set to null otherwise.
      */
-    this.webview_ = null;
+    this.contentsNode_ = null;
   },
 
   ready: function() {
@@ -93,14 +118,14 @@ const FilesSafeMedia = Polymer({
       if (this.type === 'audio' || this.type === 'video') {
         // Avoid setting the focus on the files-safe-media itself, rather sends
         // it down to its webview element.
-        if (this.webview_) {
-          this.webview_.focus();
+        if (this.contentsNode_) {
+          this.contentsNode_.focus();
         }
       }
     });
     window.addEventListener('message', event => {
-      if (event.origin !== FILES_APP_ORIGIN) {
-        console.log('Unknown origin.');
+      if (event.origin !== toSandboxedURL().origin) {
+        console.error('Unknown origin: ' + event.origin);
         return;
       }
       if (event.data === 'tap-inside') {
@@ -108,12 +133,12 @@ const FilesSafeMedia = Polymer({
       } else if (event.data === 'tap-outside') {
         this.fire('files-safe-media-tap-outside');
       } else if (event.data === 'webview-loaded') {
-        if (this.webview_) {
-          this.webview_.setAttribute('loaded', '');
+        if (this.contentsNode_) {
+          this.contentsNode_.setAttribute('loaded', '');
         }
       } else if (event.data === 'webview-cleared') {
-        if (this.webview_) {
-          this.webview_.removeAttribute('loaded');
+        if (this.contentsNode_) {
+          this.contentsNode_.removeAttribute('loaded');
         }
       } else if (event.data === 'content-decode-failed') {
         this.fire('files-safe-media-load-error');
