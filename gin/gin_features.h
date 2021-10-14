@@ -29,6 +29,8 @@ GIN_EXPORT extern const base::FeatureParam<int> kV8ScriptDelayMs;
 GIN_EXPORT extern const base::FeatureParam<int> kV8ScriptDelayOnceMs;
 GIN_EXPORT extern const base::Feature kV8ShortBuiltinCalls;
 GIN_EXPORT extern const base::Feature kV8SlowHistograms;
+GIN_EXPORT extern const base::Feature
+    kV8SlowHistogramsCodeMemoryWriteProtection;
 GIN_EXPORT extern const base::Feature kV8SlowHistogramsSparkplug;
 GIN_EXPORT extern const base::Feature kV8SlowHistogramsSparkplugAndroid;
 GIN_EXPORT extern const base::Feature kV8SlowHistogramsScriptAblation;
