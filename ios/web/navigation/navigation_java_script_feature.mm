@@ -33,16 +33,17 @@ NavigationJavaScriptFeature::NavigationJavaScriptFeature()
           ContentWorld::kPageContentWorld,
           {FeatureScript::CreateWithFilename(
                kScriptName,
-               FeatureScript::InjectionTime::kDocumentEnd,
+               FeatureScript::InjectionTime::kDocumentStart,
                FeatureScript::TargetFrames::kMainFrame,
                FeatureScript::ReinjectionBehavior::kInjectOncePerWindow),
            FeatureScript::CreateWithFilename(
                kListenersScriptName,
-               FeatureScript::InjectionTime::kDocumentEnd,
+               FeatureScript::InjectionTime::kDocumentStart,
                FeatureScript::TargetFrames::kMainFrame,
                FeatureScript::ReinjectionBehavior::
                    kReinjectOnDocumentRecreation)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+          {web::java_script_features::GetCommonJavaScriptFeature(),
+           web::java_script_features::GetMessageJavaScriptFeature()}) {}
 
 NavigationJavaScriptFeature::~NavigationJavaScriptFeature() = default;
 

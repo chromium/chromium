@@ -28,6 +28,32 @@ function DataCloneError() {
   this.message = 'Cyclic structures are not supported.';
 }
 
+// Stores queued messages until they can be sent to the "NavigationEventMessage"
+// handler.
+var queuedMessages = [];
+
+// Attempts to send any queued messages. Messages will be only be removed once
+// they have been sent.
+function sendQueuedMessages() {
+  while (queuedMessages.length > 0) {
+    try {
+      __gCrWeb.common.sendWebKitMessage(
+          'NavigationEventMessage', queuedMessages[0]);
+      queuedMessages.shift();
+    } catch (e) {
+      // 'NavigationEventMessage' message handler is not currently registered.
+      // Send the message later when possible.
+      break;
+    }
+  }
+};
+
+// Queues the |message| and triggers the queue to be sent.
+function queueNavigationEventMessage(message) {
+  queuedMessages.push(message);
+  sendQueuedMessages();
+};
+
 /**
  * Intercepts window.history methods so native code can differentiate between
  * same-document navigation that are state navigations vs. hash navigations.
@@ -37,8 +63,7 @@ function DataCloneError() {
  * called for same-document navigation.
  */
 window.history.pushState = function(stateObject, pageTitle, pageUrl) {
-  __gCrWeb.common.sendWebKitMessage(
-      'NavigationEventMessage', {'command': 'willChangeState'});
+  queueNavigationEventMessage({'command': 'willChangeState'});
 
   // JSONStringify throws an exception when given a cyclical object. This
   // internal implementation detail should not be exposed to callers of
@@ -53,7 +78,7 @@ window.history.pushState = function(stateObject, pageTitle, pageUrl) {
   }
   pageUrl = pageUrl || window.location.href;
   originalWindowHistoryPushState.call(history, stateObject, pageTitle, pageUrl);
-  __gCrWeb.common.sendWebKitMessage('NavigationEventMessage', {
+  queueNavigationEventMessage({
     'command': 'didPushState',
     'stateObject': serializedState,
     'baseUrl': document.baseURI,
@@ -62,8 +87,7 @@ window.history.pushState = function(stateObject, pageTitle, pageUrl) {
 };
 
 window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
-  __gCrWeb.common.sendWebKitMessage(
-      'NavigationEventMessage', {'command': 'willChangeState'});
+  queueNavigationEventMessage({'command': 'willChangeState'});
 
   // JSONStringify throws an exception when given a cyclical object. This
   // internal implementation detail should not be exposed to callers of
@@ -80,13 +104,17 @@ window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
   pageUrl = pageUrl || window.location.href;
   originalWindowHistoryReplaceState.call(
       history, stateObject, pageTitle, pageUrl);
-  __gCrWeb.common.sendWebKitMessage('NavigationEventMessage', {
+  queueNavigationEventMessage({
     'command': 'didReplaceState',
     'stateObject': serializedState,
     'baseUrl': document.baseURI,
     'pageUrl': pageUrl.toString()
   });
 };
+
+window.addEventListener('__gCrWebWindowIdInjected', function() {
+  sendQueuedMessages();
+});
 
 /** Flush the message queue. */
 if (__gCrWeb.message) {
