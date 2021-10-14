@@ -10,21 +10,14 @@
 #include "base/values.h"
 #include "chromeos/components/multidevice/logging/log_buffer.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/proximity_auth/messenger_observer.h"
 #include "chromeos/components/proximity_auth/proximity_auth_client.h"
-#include "chromeos/components/proximity_auth/remote_device_life_cycle.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ListValue;
 }
-
-namespace proximity_auth {
-struct RemoteStatusUpdate;
-}  // namespace proximity_auth
 
 namespace chromeos {
 
@@ -34,13 +27,10 @@ namespace multidevice {
 class ProximityAuthWebUIHandler
     : public content::WebUIMessageHandler,
       public multidevice::LogBuffer::Observer,
-      public device_sync::DeviceSyncClient::Observer,
-      public proximity_auth::RemoteDeviceLifeCycle::Observer,
-      public proximity_auth::MessengerObserver {
+      public device_sync::DeviceSyncClient::Observer {
  public:
-  ProximityAuthWebUIHandler(
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client);
+  explicit ProximityAuthWebUIHandler(
+      device_sync::DeviceSyncClient* device_sync_client);
 
   ProximityAuthWebUIHandler(const ProximityAuthWebUIHandler&) = delete;
   ProximityAuthWebUIHandler& operator=(const ProximityAuthWebUIHandler&) =
@@ -65,37 +55,18 @@ class ProximityAuthWebUIHandler
   void OnWebContentsInitialized(const base::ListValue* args);
   void GetLogMessages(const base::ListValue* args);
   void ClearLogBuffer(const base::ListValue* args);
-  void ToggleUnlockKey(const base::ListValue* args);
-  void FindEligibleUnlockDevices(const base::ListValue* args);
   void GetLocalState(const base::ListValue* args);
   void ForceEnrollment(const base::ListValue* args);
   void ForceDeviceSync(const base::ListValue* args);
-  void ToggleConnection(const base::ListValue* args);
-
-  void StartRemoteDeviceLifeCycle(multidevice::RemoteDeviceRef remote_device);
-  void CleanUpRemoteDeviceLifeCycle();
 
   std::unique_ptr<base::DictionaryValue> RemoteDeviceToDictionary(
       const multidevice::RemoteDeviceRef& remote_device);
-
-  // proximity_auth::RemoteDeviceLifeCycle::Observer:
-  void OnLifeCycleStateChanged(
-      proximity_auth::RemoteDeviceLifeCycle::State old_state,
-      proximity_auth::RemoteDeviceLifeCycle::State new_state) override;
-
-  // proximity_auth::MessengerObserver:
-  void OnRemoteStatusUpdate(
-      const proximity_auth::RemoteStatusUpdate& status_update) override;
 
   void OnForceEnrollmentNow(bool success);
   void OnForceSyncNow(bool success);
   void OnSetSoftwareFeatureState(
       const std::string public_key,
       device_sync::mojom::NetworkRequestResult result_code);
-  void OnFindEligibleDevices(
-      device_sync::mojom::NetworkRequestResult result_code,
-      multidevice::RemoteDeviceRefList eligible_devices,
-      multidevice::RemoteDeviceRefList ineligible_devices);
   void OnGetDebugInfo(device_sync::mojom::DebugInfoPtr debug_info_ptr);
 
   void NotifyOnEnrollmentFinished(
@@ -116,18 +87,10 @@ class ProximityAuthWebUIHandler
 
   // The delegate used to fetch dependencies. Must outlive this instance.
   device_sync::DeviceSyncClient* device_sync_client_;
-  secure_channel::SecureChannelClient* secure_channel_client_;
 
   // True if we get a message from the loaded WebContents to know that it is
   // initialized, and we can inject JavaScript.
   bool web_contents_initialized_;
-
-  // Member variables for connecting to and authenticating the remote device.
-  // TODO(tengs): Support multiple simultaenous connections.
-  absl::optional<multidevice::RemoteDeviceRef> selected_remote_device_;
-  std::unique_ptr<proximity_auth::RemoteDeviceLifeCycle> life_cycle_;
-  std::unique_ptr<proximity_auth::RemoteStatusUpdate>
-      last_remote_status_update_;
 
   bool enrollment_update_waiting_for_debug_info_ = false;
   bool sync_update_waiting_for_debug_info_ = false;

@@ -17,10 +17,6 @@ namespace device_sync {
 class DeviceSyncClient;
 }  // namespace device_sync
 
-namespace secure_channel {
-class SecureChannelClient;
-}  // namespace secure_channel
-
 namespace multidevice {
 
 // The WebUI controller for chrome://proximity-auth.
@@ -33,7 +29,6 @@ class ProximityAuthUI : public ui::MojoWebUIController {
   // instance.
   ProximityAuthUI(content::WebUI* web_ui,
                   device_sync::DeviceSyncClient* device_sync_client,
-                  secure_channel::SecureChannelClient* secure_channel_client,
                   MultiDeviceSetupBinder multidevice_setup_binder);
 
   ProximityAuthUI(const ProximityAuthUI&) = delete;

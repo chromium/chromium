@@ -80,8 +80,3 @@ tr.subrow td:first-of-type {
 .remote-device button {
   margin: 0px 2px;
 }
-
-#eligible-devices-list[device-count='0'],
-#ineligible-devices-list[device-count='0'] {
-  display: none;
-}
