@@ -15,6 +15,14 @@
 
 namespace password_manager {
 
+namespace {
+bool ShouldRecordShadowTraffic(PrefService* prefs) {
+  return prefs_->GetBoolean(prefs::kIsEligibleForGmsPasswordsManagement) &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kUnifiedPasswordManagerShadowAndroid);
+}
+}  // namespace
+
 std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
     std::unique_ptr<LoginDatabase> login_db,
     PrefService* prefs) {
@@ -23,8 +31,7 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
     return std::make_unique<PasswordStoreAndroidBackend>(
         PasswordStoreAndroidBackendBridge::Create());
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerShadowAndroid)) {
+  if (ShouldRecordShadowTraffic(prefs)) {
     return std::make_unique<PasswordStoreBackendMigrationDecorator>(
         std::make_unique<PasswordStoreImpl>(std::move(login_db)),
         std::make_unique<PasswordStoreAndroidBackend>(
