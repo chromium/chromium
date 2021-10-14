@@ -44,6 +44,8 @@
 //  FunctorTraits<> -- Type traits used to determine the correct RunType and
 //                     invocation manner for a Functor.  This is where function
 //                     signature adapters are applied.
+//  StorageTraits<> -- Type traits that determine how a bound argument is
+//                     stored in BindState.
 //  InvokeHelper<> -- Take a Functor + arguments and actully invokes it.
 //                    Handle the differing syntaxes needed for WeakPtr<>
 //                    support.  This is separate from Invoker to avoid creating
@@ -85,6 +87,26 @@ class UnretainedWrapper {
 
  private:
   T* ptr_;
+};
+
+// Storage type for std::reference_wrapper so `BindState` can internally store
+// unprotected references using raw_ptr.
+//
+// std::reference_wrapper<T> and T& do not work, since the reference lifetime is
+// not safely protected by MiraclePtr.
+//
+// UnretainedWrapper<T> and raw_ptr<T> do not work, since BindUnwrapTraits
+// would try to pass by T* rather than T&.
+template <typename T>
+class UnretainedRefWrapper {
+ public:
+  explicit UnretainedRefWrapper(T& o) : ptr_(std::addressof(o)) {}
+  T& get() const { return *ptr_; }
+
+ private:
+  // This is intentionally a pointer to ensure the Big Rewrite will change this
+  // to raw_ptr.
+  T* const ptr_;
 };
 
 template <typename T>
@@ -629,6 +651,47 @@ struct FunctorTraits<RepeatingCallback<R(Args...)>> {
 template <typename Functor>
 using MakeFunctorTraits = FunctorTraits<std::decay_t<Functor>>;
 
+// StorageTraits<>
+//
+// See description at top of file.
+template <typename T, typename SFINAE = void>
+struct StorageTraits {
+  using Type = T;
+};
+
+// For T*, conditionally store as UnretainedWrapper<T> for safety. When the Big
+// Rewrite lands, UnretainedWrapper's internal T* field will be rewritten to
+// raw_ptr<T>, transitively providing safety.
+//
+// There is a bit of additional complexity here because raw_ptr<T> does not
+// support pointers to functions or pointers to Objective-C objects.
+//
+// TODO(dcheng): It should not be possible to instantiate raw_ptr<T> for
+// unsupported types, as that would allow this trait to be significantly
+// simplified.
+template <typename T>
+struct StorageTraits<T*, std::enable_if_t<!std::is_function<T>::value>> {
+  // In theory, this could be part of the std::enable_if_t expression as well,
+  // but due to the conditional define, it's easier to write it this way.
+#if __OBJC__
+  using Type = std::conditional_t<std::is_convertible<T*, id>::value,
+                                  T*,
+                                  UnretainedWrapper<T>>;
+#else
+  using Type = UnretainedWrapper<T>;
+#endif  // __OBJC__
+};
+
+// Unwrap std::reference_wrapper and store it in a custom wrapper so that
+// references are also protected with raw_ptr<T>.
+template <typename T>
+struct StorageTraits<std::reference_wrapper<T>> {
+  using Type = UnretainedRefWrapper<T>;
+};
+
+template <typename T>
+using MakeStorageType = typename StorageTraits<std::decay_t<T>>::Type;
+
 // InvokeHelper<>
 //
 // There are 2 logical InvokeHelper<> specializations: normal, WeakCalls.
@@ -930,7 +993,7 @@ template <typename Functor, typename... BoundArgs>
 struct MakeBindStateTypeImpl<false, Functor, BoundArgs...> {
   static_assert(!HasRefCountedTypeAsRawPtr<std::decay_t<BoundArgs>...>::value,
                 "A parameter is a refcounted type and needs scoped_refptr.");
-  using Type = BindState<std::decay_t<Functor>, std::decay_t<BoundArgs>...>;
+  using Type = BindState<std::decay_t<Functor>, MakeStorageType<BoundArgs>...>;
 };
 
 template <typename Functor>
@@ -960,7 +1023,7 @@ struct MakeBindStateTypeImpl<true, Functor, Receiver, BoundArgs...> {
       std::conditional_t<std::is_pointer<DecayedReceiver>::value,
                          scoped_refptr<std::remove_pointer_t<DecayedReceiver>>,
                          DecayedReceiver>,
-      std::decay_t<BoundArgs>...>;
+      MakeStorageType<BoundArgs>...>;
 };
 
 template <typename Functor, typename... BoundArgs>
@@ -1310,6 +1373,13 @@ struct BindUnwrapTraits {
 template <typename T>
 struct BindUnwrapTraits<internal::UnretainedWrapper<T>> {
   static T* Unwrap(const internal::UnretainedWrapper<T>& o) { return o.get(); }
+};
+
+template <typename T>
+struct BindUnwrapTraits<internal::UnretainedRefWrapper<T>> {
+  static T& Unwrap(const internal::UnretainedRefWrapper<T>& o) {
+    return o.get();
+  }
 };
 
 template <typename T>
