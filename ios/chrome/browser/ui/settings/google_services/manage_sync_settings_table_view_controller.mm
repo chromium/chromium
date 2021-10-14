@@ -14,11 +14,16 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+@interface ManageSyncSettingsTableViewController () <
+    PopoverLabelViewControllerDelegate>
+@end
 
 @implementation ManageSyncSettingsTableViewController
 
@@ -179,6 +184,14 @@
       buttonView.bounds;
   bubbleViewController.popoverPresentationController.permittedArrowDirections =
       UIPopoverArrowDirectionAny;
+  bubbleViewController.delegate = self;
+}
+
+#pragma mark - PopoverLabelViewControllerDelegate
+
+- (void)didTapLinkURL:(NSURL*)URL {
+  GURL convertedURL = net::GURLWithNSURL(URL);
+  [self view:nil didTapLinkURL:convertedURL];
 }
 
 @end
