@@ -72,7 +72,7 @@ void NavigationPredictor::Create(
   DCHECK(!IsPrerendering(render_frame_host));
 
   // Only valid for the main frame.
-  if (render_frame_host->GetParent())
+  if (render_frame_host->GetParentOrOuterDocument())
     return;
 
   content::WebContents* web_contents =

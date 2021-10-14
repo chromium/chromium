@@ -28,6 +28,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
@@ -615,8 +616,38 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, Incognito) {
   EXPECT_EQ(nullptr, incognito_service);
 }
 
-class NavigationPredictorPrerenderBrowserTest
+class NavigationPredictorMPArchBrowserTest
     : public NavigationPredictorBrowserTest {
+ public:
+  NavigationPredictorMPArchBrowserTest() = default;
+  ~NavigationPredictorMPArchBrowserTest() override = default;
+  NavigationPredictorMPArchBrowserTest(
+      const NavigationPredictorMPArchBrowserTest&) = delete;
+
+  NavigationPredictorMPArchBrowserTest& operator=(
+      const NavigationPredictorMPArchBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    test_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    test_server_.ServeFilesFromSourceDirectory(
+        "chrome/test/data/navigation_predictor");
+    test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    ASSERT_TRUE(test_server_.Start());
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  net::EmbeddedTestServer* test_server() { return &test_server_; }
+
+ private:
+  net::EmbeddedTestServer test_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+class NavigationPredictorPrerenderBrowserTest
+    : public NavigationPredictorMPArchBrowserTest {
  public:
   NavigationPredictorPrerenderBrowserTest()
       : prerender_test_helper_(base::BindRepeating(
@@ -630,31 +661,15 @@ class NavigationPredictorPrerenderBrowserTest
       const NavigationPredictorPrerenderBrowserTest&) = delete;
 
   void SetUp() override {
-    prerender_test_helper_.SetUp(&test_server_);
-    NavigationPredictorBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    test_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    test_server_.ServeFilesFromSourceDirectory(
-        "chrome/test/data/navigation_predictor");
-    test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-    ASSERT_TRUE(test_server_.Start());
+    prerender_test_helper_.SetUp(test_server());
+    NavigationPredictorMPArchBrowserTest::SetUp();
   }
 
   content::test::PrerenderTestHelper& prerender_test_helper() {
     return prerender_test_helper_;
   }
 
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  net::EmbeddedTestServer* test_server() { return &test_server_; }
-
  private:
-  net::EmbeddedTestServer test_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   content::test::PrerenderTestHelper prerender_test_helper_;
 };
 
@@ -697,6 +712,54 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPrerenderBrowserTest,
   // Make sure the activating logs anchors correctly.
   anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
   EXPECT_EQ(4u, anchor_entries.size());
+}
+
+class NavigationPredictorFencedFrameBrowserTest
+    : public NavigationPredictorMPArchBrowserTest {
+ public:
+  NavigationPredictorFencedFrameBrowserTest() = default;
+  ~NavigationPredictorFencedFrameBrowserTest() override = default;
+  NavigationPredictorFencedFrameBrowserTest(
+      const NavigationPredictorFencedFrameBrowserTest&) = delete;
+
+  NavigationPredictorFencedFrameBrowserTest& operator=(
+      const NavigationPredictorFencedFrameBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationPredictorFencedFrameBrowserTest,
+                       EnsureFencedFrameDoesNotCreateNavigationPredictor) {
+  auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  ResetUKM();
+
+  // Navigate to an initial page.
+  const GURL& url = test_server()->GetURL("/simple_page_with_anchors.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  WaitLinkEnteredViewport(1);
+
+  using AnchorEntry = ukm::builders::NavigationPredictorAnchorElementMetrics;
+  auto anchor_entries =
+      test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
+  EXPECT_EQ(2u, anchor_entries.size());
+
+  // Create a fenced frame.
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), url);
+
+  // Navigate the fenced frame.
+  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
+                                                            url);
+
+  // Make sure the fenced frame doesn't log any anchors.
+  anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
+  EXPECT_EQ(2u, anchor_entries.size());
 }
 
 }  // namespace
