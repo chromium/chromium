@@ -1585,13 +1585,6 @@ const char kJourneysOmniboxActionName[] = "History Journeys Omnibox Action";
 const char kJourneysOmniboxActionDescription[] =
     "Enables the History Journeys Omnibox Action.";
 
-const char kLegacyTLSEnforcedName[] =
-    "Enforce deprecation of legacy TLS versions";
-const char kLegacyTLSEnforcedDescription[] =
-    "Enable connection errors and interstitials for sites that use legacy TLS "
-    "versions (TLS 1.0 and TLS 1.1), which are deprecated and will be removed "
-    " in the future.";
-
 const char kLensCameraAssistedSearchName[] =
     "Google Lens in Omnibox and New Tab Page";
 const char kLensCameraAssistedSearchDescription[] =

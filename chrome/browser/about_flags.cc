@@ -6448,10 +6448,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kRunVideoCaptureServiceInBrowserProcess)},
 #endif  // defined(OS_WIN)
 
-    {"legacy-tls-enforced", flag_descriptions::kLegacyTLSEnforcedName,
-     flag_descriptions::kLegacyTLSEnforcedDescription, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(net::features::kLegacyTLSEnforced)},
-
     {"double-buffer-compositing",
      flag_descriptions::kDoubleBufferCompositingName,
      flag_descriptions::kDoubleBufferCompositingDescription, kOsCrOS,

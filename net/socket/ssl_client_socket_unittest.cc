@@ -5882,19 +5882,9 @@ TEST_P(SSLHandshakeDetailsTest, Metrics) {
   }
 }
 
-class LegacyTLSDeprecationTest : public SSLClientSocketTest {
- public:
-  LegacyTLSDeprecationTest() {
-    feature_list_.InitAndEnableFeature(features::kLegacyTLSEnforced);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Set version_min_warn to TLS 1.2 and check that TLS 1.0 and 1.1 fail (with the
 // expected error and cert status) but TLS 1.2 and 1.3 pass.
-TEST_F(LegacyTLSDeprecationTest, SetVersionMinWarnToTLS12) {
+TEST_F(SSLClientSocketTest, SetVersionMinWarnToTLS12) {
   const struct TestCase {
     uint16_t ssl_version;
     int expected_net_error;
@@ -5943,7 +5933,7 @@ TEST_F(LegacyTLSDeprecationTest, SetVersionMinWarnToTLS12) {
 
 // Check that TLS 1.0 and TLS 1.1 failure is bypassed when you add
 // allowed_bad_certs (with the expected error and cert status).
-TEST_F(LegacyTLSDeprecationTest, NoErrorWhenAddedToAllowedBadCerts) {
+TEST_F(SSLClientSocketTest, NoErrorWhenAddedToAllowedBadCerts) {
   SSLServerConfig server_config;
   server_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
   server_config.version_max = SSL_PROTOCOL_VERSION_TLS1;
@@ -5966,7 +5956,7 @@ TEST_F(LegacyTLSDeprecationTest, NoErrorWhenAddedToAllowedBadCerts) {
 
 // Check that if the we have bypassed a certificate error previously and then
 // the server responded with TLS 1.0, we fill in both cert status flags.
-TEST_F(LegacyTLSDeprecationTest, BypassedCertShouldSetLegacyTLSStatus) {
+TEST_F(SSLClientSocketTest, BypassedCertShouldSetLegacyTLSStatus) {
   SSLServerConfig server_config;
   server_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
   server_config.version_max = SSL_PROTOCOL_VERSION_TLS1;
@@ -5991,7 +5981,7 @@ TEST_F(LegacyTLSDeprecationTest, BypassedCertShouldSetLegacyTLSStatus) {
 }
 
 // Checks that other errors are prioritized over legacy TLS errors.
-TEST_F(LegacyTLSDeprecationTest, PrioritizeCertErrorsOverLegacyTLS) {
+TEST_F(SSLClientSocketTest, PrioritizeCertErrorsOverLegacyTLS) {
   SSLServerConfig server_config;
   server_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
   server_config.version_max = SSL_PROTOCOL_VERSION_TLS1;
@@ -6013,7 +6003,7 @@ TEST_F(LegacyTLSDeprecationTest, PrioritizeCertErrorsOverLegacyTLS) {
 }
 
 // Checks that legacy TLS errors are not fatal.
-TEST_F(LegacyTLSDeprecationTest, LegacyTLSErrorsNotFatal) {
+TEST_F(SSLClientSocketTest, LegacyTLSErrorsNotFatal) {
   SSLServerConfig server_config;
   server_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
   server_config.version_max = SSL_PROTOCOL_VERSION_TLS1;

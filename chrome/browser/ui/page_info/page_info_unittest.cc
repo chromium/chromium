@@ -997,9 +997,6 @@ TEST_F(PageInfoTest, HTTPSSHA1) {
 
 // Tests that the site connection status is correctly set for Legacy TLS sites.
 TEST_F(PageInfoTest, LegacyTLS) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(net::features::kLegacyTLSEnforced);
-
   security_level_ = security_state::WARNING;
   visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
   visible_security_state_.certificate = cert();
