@@ -2344,9 +2344,40 @@ message PopupListSectionProto {
   optional string no_selection_error_message = 6;
 }
 
+message AutofillEntryProto {
+  // The value that this data point holds.
+  optional string value = 1;
+  // The value should be used exactly as specified. Use this only in
+  // exceptional circumstances, as you will lose any of the additional
+  // processing done automatically by Autofill, such as:
+  // - Setting a NAME_FULL will split it and also set NAME_FIRST, NAME_MIDDLE
+  //   and NAME_LAST as applicable.
+  // - Setting a PHONE_HOME_WHOLE_NUMBER will also set PHONE_HOME_NUMBER,
+  //   PHONE_HOME_CITY_CODE, PHONE_HOME_COUNTRY_CODE and
+  //   PHONE_HOME_CITY_AND_NUMBER.
+  optional bool raw = 2;
+}
+
+message ProfileProto {
+  // The values, where the key is one of autofill::ServerFieldType.
+  map<int32, AutofillEntryProto> values = 2;
+
+  reserved 1;
+}
+
+message PaymentInstrumentProto {
+  // The values for the card, where the key is one of autofill::ServerFieldType.
+  map<int32, AutofillEntryProto> card_values = 2;
+  // The values for the billing address, where the key is one of
+  // autofill::ServerFieldType.
+  map<int32, AutofillEntryProto> address_values = 3;
+
+  reserved 1;
+}
+
 // Asks to provide the data used by UseAddressAction and
 // UseCreditCardAction.
-// Next: 34
+// Next: 38
 message CollectUserDataProto {
   enum TermsAndConditionsState {
     // No choice has been made yet.
@@ -2444,6 +2475,15 @@ message CollectUserDataProto {
   repeated RequiredDataPiece required_shipping_address_data_piece = 34;
   repeated RequiredDataPiece required_credit_card_data_piece = 35;
   repeated RequiredDataPiece required_billing_address_data_piece = 36;
+
+  message UserDataProto {
+    repeated ProfileProto available_profiles = 1;
+    repeated PaymentInstrumentProto available_payment_instruments = 2;
+    // The locale to be used when creating this data. This can have influence
+    // on the potential processing by Autofill.
+    optional string locale = 3;
+  }
+  optional UserDataProto user_data = 37;
 
   reserved 7, 14, 15, 26;
 }

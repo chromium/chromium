@@ -648,7 +648,8 @@ class AssistantCollectUserDataBinder
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_NAME)
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_EMAIL)
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE)
-                && (propertyKey != AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS)) {
+                && (propertyKey != AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS)
+                && (propertyKey != AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES)) {
             return false;
         }
 
@@ -660,25 +661,28 @@ class AssistantCollectUserDataBinder
             return true;
         }
 
+        boolean shouldStoreChanges =
+                model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES);
+
         Profile profile = Profile.fromWebContents(webContents);
         if (shouldShowContactDetails(model)) {
             ContactEditor contactEditor =
                     new ContactEditor(model.get(AssistantCollectUserDataModel.REQUEST_NAME),
                             model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
                             model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
-                            !webContents.isIncognito());
+                            /* saveToDisk= */ shouldStoreChanges);
             contactEditor.setEditorDialog(new EditorDialog(view.mActivity,
                     /*deleteRunnable =*/null, profile));
             view.mContactDetailsSection.setEditor(contactEditor);
         }
 
         AddressEditor addressEditor = new AddressEditor(AddressEditor.Purpose.AUTOFILL_ASSISTANT,
-                /* saveToDisk= */ !webContents.isIncognito());
+                /* saveToDisk= */ shouldStoreChanges);
         addressEditor.setEditorDialog(new EditorDialog(view.mActivity,
-                /*deleteRunnable =*/null, profile));
+                /* deleteRunnable= */ null, profile));
 
         CardEditor cardEditor = new CardEditor(webContents, addressEditor,
-                /* includeOrgLabel= */ false, /* saveToDisk= */ !webContents.isIncognito());
+                /* includeOrgLabel= */ false, /* saveToDisk= */ shouldStoreChanges);
         List<String> supportedCardNetworks =
                 model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS);
         if (supportedCardNetworks != null) {

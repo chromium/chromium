@@ -103,6 +103,9 @@ class CollectUserDataAction : public Action,
   void WriteProcessedAction(UserData* user_data, const UserModel* user_model);
   void UpdateProfileAndCardUse(UserData* user_data);
 
+  void UpdateUserDataFromProto(
+      const CollectUserDataProto::UserDataProto& proto_data,
+      UserData* user_data);
   // Update user data with the new state from personal data manager.
   void UpdatePersonalDataManagerProfiles(
       UserData* user_data,
@@ -110,6 +113,8 @@ class CollectUserDataAction : public Action,
   void UpdatePersonalDataManagerCards(
       UserData* user_data,
       UserData::FieldChange* field_change = nullptr);
+  void UpdateSelectedProfiles(UserData* user_data);
+  void UpdateSelectedCreditCard(UserData* user_data);
   void UpdateDateTimeRangeStart(UserData* user_data,
                                 UserData::FieldChange* field_change = nullptr);
   void UpdateDateTimeRangeEnd(UserData* user_data,

@@ -200,6 +200,8 @@ struct CollectUserDataOptions {
   std::vector<RequiredDataPiece> required_credit_card_data_pieces;
   std::vector<RequiredDataPiece> required_billing_address_data_pieces;
 
+  bool should_store_data_changes = false;
+
   // If empty, terms and conditions should not be shown.
   std::string accept_terms_and_conditions_text;
   std::string terms_require_review_text;

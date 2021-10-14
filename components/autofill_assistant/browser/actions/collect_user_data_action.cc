@@ -31,6 +31,7 @@
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/libaddressinput/chromium/addressinput_util.h"
@@ -614,10 +615,13 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
         profile_name, /* profile= */ nullptr, user_data);
   }
 
-  // Add available profiles and start listening.
-  delegate_->GetPersonalDataManager()->AddObserver(this);
-  UpdatePersonalDataManagerProfiles(user_data);
-  UpdatePersonalDataManagerCards(user_data);
+  if (proto_.collect_user_data().has_user_data()) {
+    UpdateUserDataFromProto(proto_.collect_user_data().user_data(), user_data);
+  } else {
+    delegate_->GetPersonalDataManager()->AddObserver(this);
+    UpdatePersonalDataManagerProfiles(user_data);
+    UpdatePersonalDataManagerCards(user_data);
+  }
   UpdateDateTimeRangeStart(user_data);
   UpdateDateTimeRangeEnd(user_data);
 
@@ -647,7 +651,9 @@ void CollectUserDataAction::OnGetUserData(
   delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
   WriteProcessedAction(user_data, user_model);
-  UpdateProfileAndCardUse(user_data);
+  if (collect_user_data_options_->should_store_data_changes) {
+    UpdateProfileAndCardUse(user_data);
+  }
   DCHECK(
       IsUserDataComplete(*user_data, *user_model, *collect_user_data_options_));
   EndAction(ClientStatus(ACTION_APPLIED));
@@ -801,6 +807,11 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
         std::vector<RequiredDataPiece>(
             collect_user_data.required_shipping_address_data_piece().begin(),
             collect_user_data.required_shipping_address_data_piece().end());
+  }
+
+  if (!delegate_->GetWebContents()->GetBrowserContext()->IsOffTheRecord() &&
+      !collect_user_data.has_user_data()) {
+    collect_user_data_options_->should_store_data_changes = true;
   }
 
   collect_user_data_options_->request_login_choice =
@@ -1274,12 +1285,154 @@ void CollectUserDataAction::UpdateProfileAndCardUse(UserData* user_data) {
   }
 }
 
+void CollectUserDataAction::UpdateUserDataFromProto(
+    const CollectUserDataProto::UserDataProto& proto_data,
+    UserData* user_data) {
+  DCHECK(user_data != nullptr);
+
+  if (RequiresProfiles(*collect_user_data_options_)) {
+    user_data->available_profiles_.clear();
+    for (const auto& profile_data : proto_data.available_profiles()) {
+      auto profile = std::make_unique<autofill::AutofillProfile>();
+      for (const auto& it : profile_data.values()) {
+        if (it.second.raw()) {
+          profile->SetRawInfo(static_cast<autofill::ServerFieldType>(it.first),
+                              base::UTF8ToUTF16(it.second.value()));
+        } else {
+          profile->SetInfo(static_cast<autofill::ServerFieldType>(it.first),
+                           base::UTF8ToUTF16(it.second.value()),
+                           proto_data.locale());
+        }
+      }
+      profile->FinalizeAfterImport();
+      user_data->available_profiles_.emplace_back(std::move(profile));
+    }
+    UpdateSelectedProfiles(user_data);
+  }
+
+  if (RequiresPaymentMethod(*collect_user_data_options_)) {
+    user_data->available_payment_instruments_.clear();
+    for (const auto& payment_data :
+         proto_data.available_payment_instruments()) {
+      auto unique_card = std::make_unique<autofill::CreditCard>();
+      unique_card->set_record_type(autofill::CreditCard::MASKED_SERVER_CARD);
+      for (const auto& it : payment_data.card_values()) {
+        if (it.second.raw()) {
+          unique_card->SetRawInfo(
+              static_cast<autofill::ServerFieldType>(it.first),
+              base::UTF8ToUTF16(it.second.value()));
+        } else {
+          unique_card->SetInfo(static_cast<autofill::ServerFieldType>(it.first),
+                               base::UTF8ToUTF16(it.second.value()),
+                               proto_data.locale());
+        }
+      }
+      // Note: If the incoming card did not set a network GetPaymentRequestData
+      // will fall back to "generic".
+      if (!collect_user_data_options_->supported_basic_card_networks.empty() &&
+          std::find(
+              collect_user_data_options_->supported_basic_card_networks.begin(),
+              collect_user_data_options_->supported_basic_card_networks.end(),
+              autofill::data_util::GetPaymentRequestData(unique_card->network())
+                  .basic_card_issuer_network) ==
+              collect_user_data_options_->supported_basic_card_networks.end()) {
+        continue;
+      }
+
+      auto payment_instrument = std::make_unique<PaymentInstrument>();
+      payment_instrument->card = std::move(unique_card);
+
+      if (!payment_data.address_values().empty()) {
+        auto profile = std::make_unique<autofill::AutofillProfile>();
+        for (const auto& it : payment_data.address_values()) {
+          if (it.second.raw()) {
+            profile->SetRawInfo(
+                static_cast<autofill::ServerFieldType>(it.first),
+                base::UTF8ToUTF16(it.second.value()));
+          } else {
+            profile->SetInfo(static_cast<autofill::ServerFieldType>(it.first),
+                             base::UTF8ToUTF16(it.second.value()),
+                             proto_data.locale());
+          }
+        }
+        profile->FinalizeAfterImport();
+        payment_instrument->billing_address = std::move(profile);
+      }
+
+      user_data->available_payment_instruments_.emplace_back(
+          std::move(payment_instrument));
+    }
+    UpdateSelectedCreditCard(user_data);
+  }
+}
+
 void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
     UserData* user_data,
     UserData::FieldChange* field_change) {
   if (!RequiresProfiles(*collect_user_data_options_)) {
     return;
   }
+  DCHECK(user_data != nullptr);
+
+  user_data->available_profiles_.clear();
+  for (const auto* profile :
+       delegate_->GetPersonalDataManager()->GetProfilesToSuggest()) {
+    user_data->available_profiles_.emplace_back(
+        user_data::MakeUniqueFromProfile(*profile));
+  }
+  UpdateSelectedProfiles(user_data);
+
+  if (field_change != nullptr) {
+    *field_change = UserData::FieldChange::AVAILABLE_PROFILES;
+  }
+}
+
+void CollectUserDataAction::UpdatePersonalDataManagerCards(
+    UserData* user_data,
+    UserData::FieldChange* field_change) {
+  if (!RequiresPaymentMethod(*collect_user_data_options_)) {
+    return;
+  }
+  DCHECK(user_data != nullptr);
+
+  user_data->available_payment_instruments_.clear();
+  for (const auto* card :
+       delegate_->GetPersonalDataManager()->GetCreditCardsToSuggest(
+           /* include_server_cards= */ true)) {
+    if (!collect_user_data_options_->supported_basic_card_networks.empty() &&
+        std::find(
+            collect_user_data_options_->supported_basic_card_networks.begin(),
+            collect_user_data_options_->supported_basic_card_networks.end(),
+            autofill::data_util::GetPaymentRequestData(card->network())
+                .basic_card_issuer_network) ==
+            collect_user_data_options_->supported_basic_card_networks.end()) {
+      continue;
+    }
+
+    auto payment_instrument = std::make_unique<PaymentInstrument>();
+    payment_instrument->card = std::make_unique<autofill::CreditCard>(*card);
+
+    if (!card->billing_address_id().empty()) {
+      auto* billing_address =
+          delegate_->GetPersonalDataManager()->GetProfileByGUID(
+              card->billing_address_id());
+      if (billing_address != nullptr) {
+        payment_instrument->billing_address =
+            user_data::MakeUniqueFromProfile(*billing_address);
+      }
+    }
+
+    user_data->available_payment_instruments_.emplace_back(
+        std::move(payment_instrument));
+  }
+  UpdateSelectedCreditCard(user_data);
+
+  if (field_change != nullptr) {
+    *field_change = UserData::FieldChange::AVAILABLE_PAYMENT_INSTRUMENTS;
+  }
+}
+
+void CollectUserDataAction::UpdateSelectedProfiles(UserData* user_data) {
   DCHECK(user_data != nullptr);
 
   bool found_profile = false;
@@ -1289,15 +1442,11 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
       collect_user_data_options_->contact_details_name);
   auto* shipping_address = user_data->selected_address(
       collect_user_data_options_->shipping_address_name);
-  user_data->available_profiles_.clear();
-  for (const auto* profile :
-       delegate_->GetPersonalDataManager()->GetProfilesToSuggest()) {
-    user_data->available_profiles_.emplace_back(
-        user_data::MakeUniqueFromProfile(*profile));
-
+  for (const std::unique_ptr<autofill::AutofillProfile>& profile :
+       user_data->available_profiles_) {
     if (selected_profile != nullptr &&
-        user_data::CompareContactDetails(*collect_user_data_options_, profile,
-                                         selected_profile)) {
+        user_data::CompareContactDetails(*collect_user_data_options_,
+                                         profile.get(), selected_profile)) {
       found_profile = true;
     }
 
@@ -1345,51 +1494,17 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
           user_data);
     }
   }
-
-  if (field_change != nullptr) {
-    *field_change = UserData::FieldChange::AVAILABLE_PROFILES;
-  }
 }
 
-void CollectUserDataAction::UpdatePersonalDataManagerCards(
-    UserData* user_data,
-    UserData::FieldChange* field_change) {
-  if (!RequiresPaymentMethod(*collect_user_data_options_)) {
-    return;
-  }
+void CollectUserDataAction::UpdateSelectedCreditCard(UserData* user_data) {
   DCHECK(user_data != nullptr);
 
   bool found_card = false;
-  user_data->available_payment_instruments_.clear();
-  for (const auto* card :
-       delegate_->GetPersonalDataManager()->GetCreditCardsToSuggest(true)) {
-    if (collect_user_data_options_->supported_basic_card_networks.empty() ||
-        std::find(
-            collect_user_data_options_->supported_basic_card_networks.begin(),
-            collect_user_data_options_->supported_basic_card_networks.end(),
-            autofill::data_util::GetPaymentRequestData(card->network())
-                .basic_card_issuer_network) !=
-            collect_user_data_options_->supported_basic_card_networks.end()) {
-      auto payment_instrument = std::make_unique<PaymentInstrument>();
-      payment_instrument->card = std::make_unique<autofill::CreditCard>(*card);
-
-      if (!card->billing_address_id().empty()) {
-        auto* billing_address =
-            delegate_->GetPersonalDataManager()->GetProfileByGUID(
-                card->billing_address_id());
-        if (billing_address != nullptr) {
-          payment_instrument->billing_address =
-              user_data::MakeUniqueFromProfile(*billing_address);
-        }
-      }
-
-      user_data->available_payment_instruments_.emplace_back(
-          std::move(payment_instrument));
-
-      if (user_data->selected_card() != nullptr &&
-          card->Compare(*user_data->selected_card()) == 0) {
-        found_card = true;
-      }
+  for (const std::unique_ptr<PaymentInstrument>& payment_instrument :
+       user_data->available_payment_instruments_) {
+    if (user_data->selected_card() != nullptr &&
+        payment_instrument->card->Compare(*user_data->selected_card()) == 0) {
+      found_card = true;
     }
   }
 
@@ -1419,10 +1534,6 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
             user_data);
       }
     }
-  }
-
-  if (field_change != nullptr) {
-    *field_change = UserData::FieldChange::AVAILABLE_PAYMENT_INSTRUMENTS;
   }
 }
 

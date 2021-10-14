@@ -42,6 +42,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.buildRequiredDataPiece;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.buildValueExpression;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toVisibleCssSelector;
@@ -66,12 +67,14 @@ import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill_assistant.carousel.ButtonView;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.AutofillEntryProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipIcon;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClickType;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto.TermsAndConditionsState;
+import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto.UserDataProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataResultProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ContactDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.DateProto;
@@ -87,6 +90,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ModelProto.ModelValu
 import org.chromium.chrome.browser.autofill_assistant.proto.PopupListSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ProfileProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
 import org.chromium.chrome.browser.autofill_assistant.proto.RequiredFieldProto;
@@ -97,6 +101,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputProto.InputType;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputSectionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.UseAddressProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UseCreditCardProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserFormSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueProto;
@@ -1048,5 +1053,83 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
         waitUntilViewMatchesCondition(
                 withContentDescription("Continue"), allOf(isDisplayed(), isEnabled()));
+    }
+
+    /**
+     * Fill a form with a contact from backend.
+     */
+    @Test
+    @MediumTest
+    public void testEnterBackendContact() throws Exception {
+        UserDataProto
+                .Builder data = UserDataProto.newBuilder().setLocale("en-US").addAvailableProfiles(
+                ProfileProto.newBuilder()
+                        .putValues(7, AutofillEntryProto.newBuilder().setValue("John Doe").build())
+                        .putValues(9,
+                                AutofillEntryProto.newBuilder()
+                                        .setValue("johndoe@google.com")
+                                        .build()));
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setCollectUserData(
+                                 CollectUserDataProto.newBuilder()
+                                         .setUserData(data)
+                                         .setContactDetails(
+                                                 ContactDetailsProto.newBuilder()
+                                                         .setContactDetailsName("contact")
+                                                         .setRequestPayerName(true)
+                                                         .setRequestPayerEmail(true)
+                                                         .setRequestPayerPhone(false)
+                                                         .addRequiredDataPiece(
+                                                                 buildRequiredDataPiece(
+                                                                         "Requires first name", 3))
+                                                         .addRequiredDataPiece(
+                                                                 buildRequiredDataPiece(
+                                                                         "Requires last name", 5))
+                                                         .addRequiredDataPiece(
+                                                                 buildRequiredDataPiece(
+                                                                         "Requires email", 9)))
+                                         .setRequestTermsAndConditions(false))
+                         .build());
+        list.add(
+                ActionProto.newBuilder()
+                        .setUseAddress(
+                                UseAddressProto.newBuilder()
+                                        .setName("contact")
+                                        .setFormFieldElement(toCssSelector("#profile_name"))
+                                        .addRequiredFields(
+                                                RequiredFieldProto.newBuilder()
+                                                        .setValueExpression(buildValueExpression(7))
+                                                        .setElement(toCssSelector("#profile_name"))
+                                                        .setForced(true))
+                                        .addRequiredFields(
+                                                RequiredFieldProto.newBuilder()
+                                                        .setValueExpression(buildValueExpression(9))
+                                                        .setElement(toCssSelector("#email"))
+                                                        .setForced(true)))
+                        .build());
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
+                                 PromptProto.Choice.newBuilder()))
+                         .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("form_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Contact")))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isEnabled(), isCompletelyDisplayed()));
+        onView(withText("Continue")).perform(click());
+        waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
+        assertThat(getElementValue(getWebContents(), "profile_name"), is("John Doe"));
+        assertThat(getElementValue(getWebContents(), "email"), is("johndoe@google.com"));
     }
 }

@@ -253,6 +253,9 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableObjectPropertyKey<ContactDescriptionOptions>
             CONTACT_FULL_DESCRIPTION_OPTIONS = new WritableObjectPropertyKey<>();
 
+    public static final WritableBooleanPropertyKey SHOULD_STORE_USER_DATA_CHANGES =
+            new WritableBooleanPropertyKey();
+
     public AssistantCollectUserDataModel() {
         super(DELEGATE, WEB_CONTENTS, VISIBLE, SELECTED_SHIPPING_ADDRESS,
                 SELECTED_PAYMENT_INSTRUMENT, SELECTED_CONTACT_DETAILS, CONTACT_SECTION_TITLE,
@@ -270,7 +273,8 @@ public class AssistantCollectUserDataModel extends PropertyModel {
                 PREPENDED_SECTIONS, APPENDED_SECTIONS, TERMS_REQUIRE_REVIEW_TEXT,
                 PRIVACY_NOTICE_TEXT, INFO_SECTION_TEXT, INFO_SECTION_TEXT_CENTER,
                 GENERIC_USER_INTERFACE_PREPENDED, GENERIC_USER_INTERFACE_APPENDED,
-                CONTACT_SUMMARY_DESCRIPTION_OPTIONS, CONTACT_FULL_DESCRIPTION_OPTIONS);
+                CONTACT_SUMMARY_DESCRIPTION_OPTIONS, CONTACT_FULL_DESCRIPTION_OPTIONS,
+                SHOULD_STORE_USER_DATA_CHANGES);
 
         /*
          * Set initial state for basic type properties (others are implicitly null).
@@ -278,6 +282,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
          */
         set(VISIBLE, false);
         set(TERMS_STATUS, AssistantTermsAndConditionsState.NOT_SELECTED);
+        set(SHOULD_STORE_USER_DATA_CHANGES, false);
         set(REQUEST_NAME, false);
         set(REQUEST_EMAIL, false);
         set(REQUEST_PHONE, false);
@@ -291,6 +296,11 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         set(AVAILABLE_SHIPPING_ADDRESSES, Collections.emptyList());
         set(AVAILABLE_BILLING_ADDRESSES, Collections.emptyList());
         set(INFO_SECTION_TEXT, "");
+    }
+
+    @CalledByNative
+    private void setShouldStoreUserDataChanges(boolean shouldStoreUserDataChanges) {
+        set(SHOULD_STORE_USER_DATA_CHANGES, shouldStoreUserDataChanges);
     }
 
     @CalledByNative

@@ -431,8 +431,7 @@ std::vector<std::string> GetPaymentInstrumentValidationErrors(
       // incomplete until decrypted.
       errors.push_back(l10n_util::GetStringUTF8(
           IDS_AUTOFILL_ASSISTANT_PAYMENT_INFORMATION_MISSING));
-    } else if (!credit_card || !billing_address ||
-               credit_card->billing_address_id().empty() ||
+    } else if (!billing_address ||
                GetAddressEditorCompletenessRating(*billing_address) != 0) {
       errors.push_back(l10n_util::GetStringUTF8(
           IDS_AUTOFILL_ASSISTANT_PAYMENT_INFORMATION_MISSING));

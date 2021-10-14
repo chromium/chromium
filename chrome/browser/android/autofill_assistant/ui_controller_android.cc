@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -1224,6 +1225,8 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
     return;
   }
 
+  Java_AssistantCollectUserDataModel_setShouldStoreUserDataChanges(
+      env, jmodel, collect_user_data_options->should_store_data_changes);
   Java_AssistantCollectUserDataModel_setRequestName(
       env, jmodel, collect_user_data_options->request_payer_name);
   Java_AssistantCollectUserDataModel_setRequestEmail(

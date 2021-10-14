@@ -16,8 +16,10 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/cud_condition.pb.h"
+#include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
@@ -59,6 +61,14 @@ RequiredDataPiece MakeRequiredDataPiece(autofill::ServerFieldType field) {
   return required_data_piece;
 }
 
+AutofillEntryProto MakeAutofillEntry(const std::string& value,
+                                     bool raw = false) {
+  AutofillEntryProto entry;
+  entry.set_value(value);
+  entry.set_raw(raw);
+  return entry;
+}
+
 void SetDateProto(DateProto* proto, int year, int month, int day) {
   proto->set_year(year);
   proto->set_month(month);
@@ -67,10 +77,17 @@ void SetDateProto(DateProto* proto, int year, int month, int day) {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::AnyOf;
+using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
+using ::testing::IsSupersetOf;
+using ::testing::Key;
 using ::testing::NiceMock;
+using ::testing::Not;
+using ::testing::Pair;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SizeIs;
@@ -2431,6 +2448,211 @@ TEST_F(CollectUserDataActionTest, ConfirmButtonFallbackText) {
                 .Run(&user_data_, &user_model_);
           }));
 
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+        EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
+        EXPECT_THAT(user_data_.available_profiles_[0]->guid(), Not(IsEmpty()));
+        auto mappings = field_formatter::CreateAutofillMappings(
+            *user_data_.available_profiles_[0], "en-US");
+        EXPECT_THAT(
+            mappings,
+            IsSupersetOf({Pair(field_formatter::Key(3), "John"),
+                          Pair(field_formatter::Key(5), "Doe"),
+                          Pair(field_formatter::Key(7), "John Doe"),
+                          Pair(field_formatter::Key(10), "1234567890"),
+                          Pair(field_formatter::Key(12), "1"),
+                          Pair(field_formatter::Key(14), "+11234567890")}));
+
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, &user_model_);
+      });
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->mutable_contact_details()->set_request_payer_name(true);
+  collect_user_data->mutable_contact_details()->set_request_payer_phone(true);
+  collect_user_data->mutable_contact_details()->set_contact_details_name(
+      kMemoryLocation);
+  collect_user_data->mutable_user_data()->set_locale("en-US");
+  auto* profile =
+      collect_user_data->mutable_user_data()->add_available_profiles();
+  (*profile->mutable_values())[7] = MakeAutofillEntry("John Doe");
+  (*profile->mutable_values())[14] = MakeAutofillEntry("+1 123-456-7890");
+
+  EXPECT_CALL(mock_personal_data_manager_, RecordUseOf).Times(0);
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
+  autofill::CountryNames::SetLocaleString("en-US");
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+        EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
+        EXPECT_THAT(user_data_.available_payment_instruments_[0]->card->guid(),
+                    Not(IsEmpty()));
+        EXPECT_THAT(user_data_.available_payment_instruments_[0]
+                        ->billing_address->guid(),
+                    Not(IsEmpty()));
+        auto card_mappings = field_formatter::CreateAutofillMappings(
+            *user_data_.available_payment_instruments_[0]->card, "en-US");
+        EXPECT_THAT(card_mappings,
+                    IsSupersetOf({Pair(field_formatter::Key(51), "John Doe"),
+                                  Pair(field_formatter::Key(53), "08"),
+                                  Pair(field_formatter::Key(-7), "8"),
+                                  Pair(field_formatter::Key(55), "2050"),
+                                  Pair(field_formatter::Key(54), "50"),
+                                  Pair(field_formatter::Key(56), "08/50"),
+                                  Pair(field_formatter::Key(57), "08/2050")}));
+        auto address_mappings = field_formatter::CreateAutofillMappings(
+            *user_data_.available_payment_instruments_[0]->billing_address,
+            "en-US");
+        EXPECT_THAT(address_mappings,
+                    IsSupersetOf({Pair(field_formatter::Key(3), "John"),
+                                  Pair(field_formatter::Key(5), "Doe"),
+                                  Pair(field_formatter::Key(7), "John Doe"),
+                                  Pair(field_formatter::Key(30),
+                                       "Brandschenkestrasse 110"),
+                                  Pair(field_formatter::Key(35), "8002"),
+                                  Pair(field_formatter::Key(33), "Zurich"),
+                                  Pair(field_formatter::Key(36), "Switzerland"),
+                                  Pair(field_formatter::Key(-8), "CH")}));
+
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, &user_model_);
+      });
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->set_request_payment_method(true);
+  collect_user_data->set_billing_address_name("billing");
+  collect_user_data->mutable_user_data()->set_locale("en-US");
+  auto* payment_instrument = collect_user_data->mutable_user_data()
+                                 ->add_available_payment_instruments();
+  (*payment_instrument->mutable_card_values())[51] =
+      MakeAutofillEntry("John Doe");
+  (*payment_instrument->mutable_card_values())[58] = MakeAutofillEntry("Visa");
+  (*payment_instrument->mutable_card_values())[53] = MakeAutofillEntry("8");
+  (*payment_instrument->mutable_card_values())[55] = MakeAutofillEntry("2050");
+  (*payment_instrument->mutable_address_values())[7] =
+      MakeAutofillEntry("John Doe");
+  (*payment_instrument->mutable_address_values())[30] =
+      MakeAutofillEntry("Brandschenkestrasse 110");
+  (*payment_instrument->mutable_address_values())[35] =
+      MakeAutofillEntry("8002");
+  (*payment_instrument->mutable_address_values())[33] =
+      MakeAutofillEntry("Zurich");
+  (*payment_instrument->mutable_address_values())[36] = MakeAutofillEntry("CH");
+
+  EXPECT_CALL(mock_personal_data_manager_, RecordUseOf).Times(0);
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, ShippingDataFromProto) {
+  autofill::CountryNames::SetLocaleString("en-US");
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+        EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
+        EXPECT_THAT(user_data_.available_profiles_[0]->guid(), Not(IsEmpty()));
+        auto mappings = field_formatter::CreateAutofillMappings(
+            *user_data_.available_profiles_[0], "en-US");
+        EXPECT_THAT(mappings,
+                    IsSupersetOf({Pair(field_formatter::Key(3), "John"),
+                                  Pair(field_formatter::Key(5), "Doe"),
+                                  Pair(field_formatter::Key(7), "John Doe"),
+                                  Pair(field_formatter::Key(30),
+                                       "Brandschenkestrasse 110"),
+                                  Pair(field_formatter::Key(35), "8002"),
+                                  Pair(field_formatter::Key(33), "Zurich"),
+                                  Pair(field_formatter::Key(36), "Switzerland"),
+                                  Pair(field_formatter::Key(-8), "CH")}));
+
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, &user_model_);
+      });
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->set_shipping_address_name("shipping");
+  collect_user_data->mutable_user_data()->set_locale("en-US");
+  auto* address =
+      collect_user_data->mutable_user_data()->add_available_profiles();
+  (*address->mutable_values())[7] = MakeAutofillEntry("John Doe");
+  (*address->mutable_values())[30] =
+      MakeAutofillEntry("Brandschenkestrasse 110");
+  (*address->mutable_values())[35] = MakeAutofillEntry("8002");
+  (*address->mutable_values())[33] = MakeAutofillEntry("Zurich");
+  (*address->mutable_values())[36] = MakeAutofillEntry("CH");
+
+  EXPECT_CALL(mock_personal_data_manager_, RecordUseOf).Times(0);
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+        EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
+        EXPECT_THAT(user_data_.available_profiles_[0]->guid(), Not(IsEmpty()));
+        auto mappings = field_formatter::CreateAutofillMappings(
+            *user_data_.available_profiles_[0], "en-US");
+        // Note: Phone number is still getting formatted on extraction, even if
+        // it was added with |raw|.
+        EXPECT_THAT(
+            mappings,
+            IsSupersetOf({Pair(field_formatter::Key(7), "John Doe"),
+                          Pair(field_formatter::Key(14), "+11234567890")}));
+        // Note: Phone number is still getting split, even if it's added with
+        // "raw=true".
+        EXPECT_THAT(mappings,
+                    Not(AnyOf(Contains(Key(field_formatter::Key(3))),
+                              Contains(Key(field_formatter::Key(5))))));
+
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, &user_model_);
+      });
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->mutable_contact_details()->set_request_payer_name(true);
+  collect_user_data->mutable_contact_details()->set_request_payer_phone(true);
+  collect_user_data->mutable_contact_details()->set_contact_details_name(
+      kMemoryLocation);
+  collect_user_data->mutable_user_data()->set_locale("en-US");
+  auto* profile =
+      collect_user_data->mutable_user_data()->add_available_profiles();
+  (*profile->mutable_values())[7] =
+      MakeAutofillEntry("John Doe", /* raw= */ true);
+  (*profile->mutable_values())[14] =
+      MakeAutofillEntry("+1 123-456-7890", /* raw= */ true);
+
+  EXPECT_CALL(mock_personal_data_manager_, RecordUseOf).Times(0);
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
