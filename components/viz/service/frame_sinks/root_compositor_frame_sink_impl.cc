@@ -192,15 +192,10 @@ RootCompositorFrameSinkImpl::~RootCompositorFrameSinkImpl() {
 }
 
 void RootCompositorFrameSinkImpl::DidEvictSurface(const SurfaceId& surface_id) {
-  const SurfaceId& current_surface_id = display_->CurrentSurfaceId();
-  if (!current_surface_id.is_valid())
+  if (display_->CurrentSurfaceId() != surface_id)
     return;
-  DCHECK_EQ(surface_id.frame_sink_id(), surface_id.frame_sink_id());
-  // This matches CompositorFrameSinkSupport's eviction logic.
-  if (surface_id.local_surface_id().parent_sequence_number() >=
-      current_surface_id.local_surface_id().parent_sequence_number()) {
-    display_->InvalidateCurrentSurfaceId();
-  }
+
+  display_->InvalidateCurrentSurfaceId();
 }
 
 const SurfaceId& RootCompositorFrameSinkImpl::CurrentSurfaceId() const {

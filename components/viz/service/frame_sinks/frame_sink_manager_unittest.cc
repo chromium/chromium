@@ -598,29 +598,6 @@ TEST_F(FrameSinkManagerTest, EvictRootSurfaceId) {
   manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
 }
 
-TEST_F(FrameSinkManagerTest, EvictNewerRootSurfaceId) {
-  manager_.RegisterFrameSinkId(kFrameSinkIdRoot, true /* report_activation */);
-
-  // Create a RootCompositorFrameSinkImpl.
-  RootCompositorFrameSinkData root_data;
-  manager_.CreateRootCompositorFrameSink(
-      root_data.BuildParams(kFrameSinkIdRoot));
-
-  ParentLocalSurfaceIdAllocator allocator;
-  allocator.GenerateId();
-  const LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
-  const SurfaceId surface_id(kFrameSinkIdRoot, local_surface_id);
-  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
-      local_surface_id, MakeDefaultCompositorFrame(), absl::nullopt, 0);
-  EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
-  allocator.GenerateId();
-  const LocalSurfaceId next_local_surface_id =
-      allocator.GetCurrentLocalSurfaceId();
-  manager_.EvictSurfaces({{kFrameSinkIdRoot, next_local_surface_id}});
-  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
-  manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
-}
-
 TEST_F(FrameSinkManagerTest, SubmitCompositorFrameWithEvictedSurfaceId) {
   manager_.RegisterFrameSinkId(kFrameSinkIdRoot, true /* report_activation */);
 
