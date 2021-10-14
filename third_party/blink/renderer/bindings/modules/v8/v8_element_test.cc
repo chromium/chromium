@@ -43,7 +43,7 @@ TEST_F(V8ElementTest, SetAttributeOperationCallback) {
 
 #if DCHECK_IS_ON()
   AtomicString test_attribute("test-attribute");
-  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 17u);
+  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 16u);
   AtomicString test_value("test-value");
   EXPECT_EQ(test_value.Impl()->RefCountChangeCountForTesting(), 11u);
 #endif
@@ -64,7 +64,7 @@ TEST_F(V8ElementTest, GetAttributeOperationCallback_NonExisting) {
 
 #if DCHECK_IS_ON()
   AtomicString test_attribute("test-attribute");
-  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 10u);
+  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 9u);
 #endif
 
   // Trigger a low memory notification. This will signal V8 to clear its
