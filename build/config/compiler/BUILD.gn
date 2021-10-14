@@ -1409,12 +1409,16 @@ config("default_warnings") {
     if (fatal_linker_warnings) {
       ldflags = [ "/WX" ]
     }
-    cflags += [
-      # Warnings to evaluate and possibly fix/reenable later:
+    defines = [
+      # Without this, Windows headers warn that functions like wcsnicmp
+      # should be spelled _wcsnicmp. But all other platforms keep spelling
+      # it wcsnicmp, making this warning unhelpful. We don't want it.
+      "_CRT_NONSTDC_NO_WARNINGS",
 
-      # Deprecated function warning;
-      # maps to -Wno-deprecated-declarations in clang-cl.
-      "/wd4996",
+      # TODO(thakis): winsock wants us to use getaddrinfo instead of
+      # gethostbyname. Fires mostly in non-Chromium code. We probably
+      # want to remove this define eventually.
+      "_WINSOCK_DEPRECATED_NO_WARNINGS",
     ]
     if (!is_clang) {
       # TODO(thakis): Remove this once
@@ -1654,11 +1658,6 @@ config("no_chromium_code") {
     cflags += [
       "/wd4800",  # Disable warning when forcing value to bool.
       "/wd4267",  # TODO(jschuh): size_t to int.
-      "/wd4996",  # Deprecated function warning.
-    ]
-    defines += [
-      "_CRT_NONSTDC_NO_WARNINGS",
-      "_CRT_NONSTDC_NO_DEPRECATE",
     ]
   } else {
     # GCC may emit unsuppressible warnings so don't add -Werror for no chromium
