@@ -244,7 +244,10 @@ src/webgpu/shader/execution/robust_access_vertex.spec.ts
 src/webgpu/shader/execution/zero_init.spec.ts
 src/webgpu/shader/execution/builtin/builtin.ts
 src/webgpu/shader/execution/builtin/abs.spec.ts
+src/webgpu/shader/execution/builtin/float_built_functions.spce.ts
+src/webgpu/shader/execution/builtin/integer_built_in_functions.spec.ts
 src/webgpu/shader/execution/builtin/logical_built_in_functions.spec.ts
+src/webgpu/shader/execution/builtin/value_testing_built_in_functions.spec.ts
 src/webgpu/shader/execution/shader_io/compute_builtins.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/variable_and_const.spec.ts
