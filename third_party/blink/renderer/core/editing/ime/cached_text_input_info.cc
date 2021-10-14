@@ -227,10 +227,14 @@ unsigned CachedTextInputInfo::RangeLength(const EphemeralRange& range) const {
           TextIterator::RangeLength(
               EphemeralRange(Position(node, 0), range.EndPosition()),
               Behavior());
+// TODO(crbug.com/1256635): Revert https://crrev.com/c/3221041 to re-enable this
+// DCHECK on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
       DCHECK_EQ(
           static_cast<unsigned>(TextIterator::RangeLength(range, Behavior())),
           length)
           << it->value << " " << range;
+#endif
       return length;
     }
   }
