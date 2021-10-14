@@ -137,7 +137,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableNdkTranslation64[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableOOBEChromeVoxHintForDevMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableOobeTestAPI[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableRequestTabletSite[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableRequisitionEdits[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableTabletFormFactor[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

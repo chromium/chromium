@@ -1369,7 +1369,7 @@ are declared in tools/grit/grit_rule.gni.
       </if>
 
       <!-- App menu -->
-      <if expr="chromeos">
+      <if expr="chromeos or lacros">
         <message name="IDS_TOGGLE_REQUEST_TABLET_SITE" desc="The toggle to request mobile version site on a touch dev.">
           Request mobile site
         </message>

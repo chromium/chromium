@@ -428,9 +428,6 @@ const char kEnableOOBEChromeVoxHintForDevMode[] =
 // Enables OOBE testing API for tast tests.
 const char kEnableOobeTestAPI[] = "enable-oobe-test-api";
 
-// Enables request of tablet site (via user agent override).
-const char kEnableRequestTabletSite[] = "enable-request-tablet-site";
-
 // Enables configuring the OEM Device Requsition in the OOBE.
 const char kEnableRequisitionEdits[] = "enable-requisition-edits";
 

@@ -96,10 +96,12 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#endif
+
+#if defined(OS_CHROMEOS)
+#include "chromeos/ui/base/tablet_state.h"
 #endif
 
 #if defined(OS_WIN)
@@ -899,11 +901,10 @@ void AppMenuModel::Build() {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Always show this option if we're in tablet mode on Chrome OS.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kEnableRequestTabletSite) ||
-      (ash::TabletMode::IsInTabletMode())) {
+  if (chromeos::TabletState::Get() &&
+      chromeos::TabletState::Get()->InTabletMode()) {
     AddCheckItemWithStringId(IDC_TOGGLE_REQUEST_TABLET_SITE,
                              IDS_TOGGLE_REQUEST_TABLET_SITE);
   }
