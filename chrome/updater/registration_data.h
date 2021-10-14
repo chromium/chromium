@@ -29,10 +29,10 @@ struct RegistrationRequest {
   // string.
   std::string brand_code;
 
-  // The tag value (e.g. from a tagged metainstaller). May be the empty string.
+  // The ap value (e.g. from a tagged metainstaller). May be the empty string.
   // This typically indicates channel, though it can carry additional data as
   // well.
-  std::string tag;
+  std::string ap;
 
   // The version of the app already installed. 0.0.0.0 if the app is not
   // already installed.

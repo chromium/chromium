@@ -95,7 +95,7 @@ TEST(KeystoneTest, TicketsToMigrate_Tickets) {
 
   EXPECT_EQ(out[0].app_id, "com.google.Keystone");
   EXPECT_EQ(out[0].brand_code, "");
-  EXPECT_EQ(out[0].tag, "");
+  EXPECT_EQ(out[0].ap, "");
   EXPECT_EQ(out[0].version, base::Version("1.3.16.180"));
   EXPECT_EQ(
       out[0].existence_checker_path,
@@ -104,7 +104,7 @@ TEST(KeystoneTest, TicketsToMigrate_Tickets) {
 
   EXPECT_EQ(out[1].app_id, "com.google.chrome_remote_desktop");
   EXPECT_EQ(out[1].brand_code, "");
-  EXPECT_EQ(out[1].tag, "");
+  EXPECT_EQ(out[1].ap, "");
   EXPECT_EQ(out[1].version, base::Version("94.0.4606.27"));
   EXPECT_EQ(
       out[1].existence_checker_path,
@@ -112,14 +112,14 @@ TEST(KeystoneTest, TicketsToMigrate_Tickets) {
 
   EXPECT_EQ(out[2].app_id, "com.google.Chrome");
   EXPECT_EQ(out[2].brand_code, "");
-  EXPECT_EQ(out[2].tag, "");
+  EXPECT_EQ(out[2].ap, "");
   EXPECT_EQ(out[2].version, base::Version("93.0.4577.82"));
   EXPECT_EQ(out[2].existence_checker_path,
             base::FilePath("/Applications/Google Chrome.app"));
 
   EXPECT_EQ(out[3].app_id, "com.google.Chrome.canary");
   EXPECT_EQ(out[3].brand_code, "");
-  EXPECT_EQ(out[3].tag, "canary");
+  EXPECT_EQ(out[3].ap, "canary");
   EXPECT_EQ(out[3].version, base::Version("96.0.4656.0"));
   EXPECT_EQ(out[3].existence_checker_path,
             base::FilePath("/Applications/Google Chrome Canary.app"));

@@ -190,14 +190,14 @@
 
 - (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
                           brandCode:(NSString* _Nullable)brandCode
-                                tag:(NSString* _Nullable)tag
+                                tag:(NSString* _Nullable)ap
                             version:(NSString* _Nullable)version
                existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
                               reply:(void (^_Nonnull)(int rc))reply {
   updater::RegistrationRequest request;
   request.app_id = base::SysNSStringToUTF8(appId);
   request.brand_code = base::SysNSStringToUTF8(brandCode);
-  request.tag = base::SysNSStringToUTF8(tag);
+  request.ap = base::SysNSStringToUTF8(ap);
   request.version = base::Version(base::SysNSStringToUTF8(version));
   request.existence_checker_path =
       base::FilePath(base::SysNSStringToUTF8(existenceCheckerPath));

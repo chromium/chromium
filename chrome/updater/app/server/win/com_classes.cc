@@ -114,7 +114,7 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id) {
 
 HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                                  const wchar_t* brand_code,
-                                 const wchar_t* tag,
+                                 const wchar_t* ap,
                                  const wchar_t* version,
                                  const wchar_t* existence_checker_path,
                                  IUpdaterRegisterAppCallback* callback) {
@@ -123,10 +123,10 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
 
   // Validates that string parameters are not longer than 16K characters.
   absl::optional<RegistrationRequest> request =
-      [app_id, brand_code, tag, version,
+      [app_id, brand_code, ap, version,
        existence_checker_path]() -> decltype(request) {
     for (const auto* str :
-         {app_id, brand_code, tag, version, existence_checker_path}) {
+         {app_id, brand_code, ap, version, existence_checker_path}) {
       constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
         return absl::nullopt;
@@ -141,7 +141,7 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                                          &request.brand_code)) {
       return absl::nullopt;
     }
-    if (!tag || !base::WideToUTF8(tag, wcslen(tag), &request.tag)) {
+    if (!ap || !base::WideToUTF8(ap, wcslen(ap), &request.ap)) {
       return absl::nullopt;
     }
     std::string version_str;

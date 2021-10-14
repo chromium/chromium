@@ -178,7 +178,7 @@ void KSAdminApp::Register() {
   RegistrationRequest registration;
   registration.app_id = SwitchValue(kCommandProductId);
   registration.brand_code = "";  // TODO(crbug.com/1250524): Implement.
-  registration.tag = SwitchValue(kCommandTag);
+  registration.ap = SwitchValue(kCommandTag);
   registration.version = base::Version(SwitchValue(kCommandVersion));
   registration.existence_checker_path =
       base::FilePath(SwitchValue(kCommandXCPath));

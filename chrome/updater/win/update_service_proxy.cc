@@ -579,7 +579,7 @@ void UpdateServiceProxy::RegisterAppOnSTA(
 
   std::wstring app_id;
   std::wstring brand_code;
-  std::wstring tag;
+  std::wstring ap;
   std::wstring version;
   std::wstring existence_checker_path;
   if (![&]() {
@@ -591,7 +591,7 @@ void UpdateServiceProxy::RegisterAppOnSTA(
                               request.brand_code.size(), &brand_code)) {
           return false;
         }
-        if (!base::UTF8ToWide(request.tag.c_str(), request.tag.size(), &tag)) {
+        if (!base::UTF8ToWide(request.ap.c_str(), request.ap.size(), &ap)) {
           return false;
         }
         std::string version_str = request.version.GetString();
@@ -608,7 +608,7 @@ void UpdateServiceProxy::RegisterAppOnSTA(
 
   auto callback_wrapper = Microsoft::WRL::Make<UpdaterRegisterAppCallback>(
       updater, std::move(callback));
-  hr = updater->RegisterApp(app_id.c_str(), brand_code.c_str(), tag.c_str(),
+  hr = updater->RegisterApp(app_id.c_str(), brand_code.c_str(), ap.c_str(),
                             version.c_str(), existence_checker_path.c_str(),
                             callback_wrapper.Get());
   if (FAILED(hr)) {

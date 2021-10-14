@@ -258,7 +258,7 @@ std::vector<RegistrationRequest> TicketsToMigrate(
         // TODO(crbug.com/1250524): Look up the file and read the brand code.
         registration.brand_code = "";
       } else if (key == "tag") {
-        registration.tag = value;
+        registration.ap = value;
       }
       // TODO(crbug.com/1250524): Handle tagPath/tagKey.
     }

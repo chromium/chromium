@@ -23,7 +23,7 @@ constexpr char kPV[] = "pv";    // Key for storing product version.
 constexpr char kFP[] = "fp";    // Key for storing fingerprint.
 constexpr char kECP[] = "ecp";  // Key for storing existence checker path.
 constexpr char kBC[] = "bc";    // Key for storing brand code.
-constexpr char kTG[] = "tg";    // Key for storing tag.
+constexpr char kAP[] = "ap";    // Key for storing ap.
 
 }  // namespace
 
@@ -91,21 +91,21 @@ void PersistedData::SetBrandCode(const std::string& id, const std::string& bc) {
   SetString(id, kBC, bc);
 }
 
-std::string PersistedData::GetTag(const std::string& id) const {
+std::string PersistedData::GetAP(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetString(id, kTG);
+  return GetString(id, kAP);
 }
 
-void PersistedData::SetTag(const std::string& id, const std::string& tag) {
+void PersistedData::SetAP(const std::string& id, const std::string& ap) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetString(id, kTG, tag);
+  SetString(id, kAP, ap);
 }
 
 void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   SetProductVersion(rq.app_id, rq.version);
   SetExistenceCheckerPath(rq.app_id, rq.existence_checker_path);
   SetBrandCode(rq.app_id, rq.brand_code);
-  SetTag(rq.app_id, rq.tag);
+  SetAP(rq.app_id, rq.ap);
 }
 
 bool PersistedData::RemoveApp(const std::string& id) {
