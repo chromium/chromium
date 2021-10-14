@@ -331,14 +331,14 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
 
 apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
     const WebApp* web_app) {
-  bool is_disabled = false;
+  apps::mojom::Readiness readiness =
+      web_app->is_locally_installed() ? apps::mojom::Readiness::kReady
+                                      : apps::mojom::Readiness::kDisabledByUser;
 #if defined(OS_CHROMEOS)
   DCHECK(web_app->chromeos_data().has_value());
-  is_disabled = web_app->chromeos_data()->is_disabled;
+  if (web_app->chromeos_data()->is_disabled)
+    readiness = apps::mojom::Readiness::kDisabledByPolicy;
 #endif
-  const apps::mojom::Readiness readiness =
-      is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
-                  : apps::mojom::Readiness::kReady;
 
   auto install_reason = GetHighestPriorityInstallReason(web_app);
   apps::mojom::AppPtr app =
@@ -393,7 +393,7 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
                        : apps::mojom::OptionalBool::kFalse;
 
 #if defined(OS_CHROMEOS)
-  if (is_disabled) {
+  if (readiness != apps::mojom::Readiness::kReady) {
     UpdateAppDisabledMode(app);
   }
 
@@ -899,11 +899,7 @@ void WebAppPublisherHelper::OnWebAppLocallyInstalledStateChanged(
     return;
   }
 
-  auto app = apps::mojom::App::New();
-  app->app_type = app_type();
-  app->app_id = app_id;
-  app->icon_key = MakeIconKey(web_app);
-  delegate_->PublishWebApp(std::move(app));
+  delegate_->PublishWebApp(ConvertWebApp(web_app));
 }
 
 void WebAppPublisherHelper::OnWebAppLastLaunchTimeChanged(

@@ -383,7 +383,11 @@ std::vector<std::string> AppServiceProxyBase::GetAppIdsForUrl(
 }
 
 bool ShouldIgnoreApp(const apps::AppUpdate& update) {
-  bool is_ready = apps_util::IsInstalled(update.Readiness());
+  // We don't ignore apps disabled by policy as they cause URL loads to be
+  // blocked.
+  bool is_ready =
+      update.Readiness() == apps::mojom::Readiness::kReady ||
+      update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy;
   bool show_in_launcher =
       update.ShowInLauncher() == apps::mojom::OptionalBool::kTrue;
   // TODO(1240906): Find a way to properly filter in/out apps that should
