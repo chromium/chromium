@@ -80,6 +80,11 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
         mSelectedAuthenticatorOption = option;
     }
 
+    /**
+     * Shows an Authenticator Selection dialog.
+     *
+     * @param authenticatorOptions The authenticator options available to the user.
+     */
     public void show(List<AuthenticatorOption> authenticatorOptions) {
         // By default, the first option will be selected.
         mSelectedAuthenticatorOption = authenticatorOptions.get(0);
@@ -114,6 +119,15 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
                                         R.string.autofill_payments_authenticator_selection_dialog_positive_button_label));
         mDialogModel = builder.build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
+    }
+
+    /**
+     * Dismisses the Authenticator Selection dialog.
+     *
+     * @param cause The dialog dismissal cause.
+     */
+    public void dismiss(int cause) {
+        mModalDialogManager.dismissDialog(mDialogModel, cause);
     }
 
     private void showProgressBarOverlay() {
