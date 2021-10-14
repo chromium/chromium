@@ -210,8 +210,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         BooleanSupplier showSyncConsent = () -> mFreProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE);
 
         boolean notifyAdapter = false;
-        // An optional sign-in page.
-        if (FREMobileIdentityConsistencyFieldTrial.isEnabled() && showSyncConsent.getAsBoolean()) {
+        // An optional sign-in page, the visibility of this page will be decided on the fly
+        // according to the situation.
+        if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
             mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, showSyncConsent));
             mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
             notifyAdapter = true;
@@ -234,7 +235,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         }
 
         // An optional sign-in page.
-        if (!FREMobileIdentityConsistencyFieldTrial.isEnabled() && showSyncConsent.getAsBoolean()) {
+        if (!FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
             mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, showSyncConsent));
             mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
             notifyAdapter = true;
