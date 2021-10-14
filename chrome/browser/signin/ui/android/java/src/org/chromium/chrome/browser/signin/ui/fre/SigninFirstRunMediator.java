@@ -8,6 +8,8 @@ import android.accounts.Account;
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -24,6 +26,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.signin.ChildAccountStatus.Status;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -190,19 +193,17 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
             setSelectedAccountName(accounts.get(0).name);
         }
 
-        if (accounts.size() == 1) {
-            mAccountManagerFacade.checkChildAccountStatus(accounts.get(0), status -> {
-                final boolean isChild = ChildAccountStatus.isChild(status);
-                mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
-                if (isChild && mDialogCoordinator != null) {
-                    mDialogCoordinator.dismissDialog();
-                }
-                // Selected account data will be updated in #onProfileDataUpdated()
-                mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);
-            });
-        } else {
-            mProfileDataCache.setBadge(0);
-            mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, false);
+        AccountUtils.checkChildAccountStatus(
+                mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
+    }
+
+    private void onChildAccountStatusReady(@Status int status, @Nullable Account childAccount) {
+        final boolean isChild = ChildAccountStatus.isChild(status);
+        mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
+        if (isChild && mDialogCoordinator != null) {
+            mDialogCoordinator.dismissDialog();
         }
+        // Selected account data will be updated in {@link #onProfileDataUpdated}
+        mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);
     }
 }

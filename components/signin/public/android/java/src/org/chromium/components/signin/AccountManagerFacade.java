@@ -31,8 +31,14 @@ public interface AccountManagerFacade {
     interface ChildAccountStatusListener {
         /**
          * The method is called when child account status is ready.
+         *
+         * @param status The status of the account.
+         * @param childAccount The child account if status != {@link Status.NOT_CHILD}; null
+         *         otherwise.
+         *
+         * TODO(crbug.com/1258563): consider refactoring this interface to use Promises.
          */
-        void onStatusReady(@ChildAccountStatus.Status int status);
+        void onStatusReady(@ChildAccountStatus.Status int status, @Nullable Account childAccount);
     }
 
     /**

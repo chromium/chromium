@@ -22,7 +22,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.childaccounts.ChildAccountService;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
@@ -34,6 +33,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -148,12 +148,13 @@ public abstract class FirstRunFlowSequencer  {
     public void start() {
         long childAccountStatusStart = SystemClock.elapsedRealtime();
         AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
-            ChildAccountService.checkChildAccountStatus(accounts, status -> {
-                RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
-                        SystemClock.elapsedRealtime() - childAccountStatusStart);
-                initializeSharedState(status, accounts);
-                processFreEnvironmentPreNative();
-            });
+            AccountUtils.checkChildAccountStatus(AccountManagerFacadeProvider.getInstance(),
+                    accounts, (status, childAccount) -> {
+                        RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
+                                SystemClock.elapsedRealtime() - childAccountStatusStart);
+                        initializeSharedState(status, accounts);
+                        processFreEnvironmentPreNative();
+                    });
         });
     }
 

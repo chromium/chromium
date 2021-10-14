@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -76,7 +78,8 @@ final class ChildAccountInfoFetcher {
                 this::onChildAccountStatusReady);
     }
 
-    private void onChildAccountStatusReady(@Status int status) {
+    private void onChildAccountStatusReady(@Status int status, @Nullable Account childAccount) {
+        assert childAccount.equals(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo));
         final boolean isChild = ChildAccountStatus.isChild(status);
         Log.d(TAG, "Setting child account status for %s to %s", mCoreAccountInfo.getEmail(),
                 isChild);

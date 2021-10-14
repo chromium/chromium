@@ -129,6 +129,7 @@ java_library("junit") {
   sources = [
     "junit/src/org/chromium/components/signin/AccountManagerFacadeImplTest.java",
     "junit/src/org/chromium/components/signin/AccountRenameCheckerTest.java",
+    "junit/src/org/chromium/components/signin/AccountUtilsTest.java",
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
     "junit/src/org/chromium/components/signin/identitymanager/AccountInfoServiceImplTest.java",
     "junit/src/org/chromium/components/signin/identitymanager/AccountTrackerServiceTest.java",
