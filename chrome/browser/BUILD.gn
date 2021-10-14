@@ -5005,6 +5005,8 @@ static_library("browser") {
       "lacros/account_manager/account_manager_util.h",
       "lacros/account_manager/account_profile_mapper.cc",
       "lacros/account_manager/account_profile_mapper.h",
+      "lacros/account_manager/add_account_helper.cc",
+      "lacros/account_manager/add_account_helper.h",
       "lacros/account_manager/profile_account_manager.cc",
       "lacros/account_manager/profile_account_manager.h",
       "lacros/account_manager/profile_account_manager_factory.cc",

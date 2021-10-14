@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
@@ -49,7 +50,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/url_data_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -684,7 +684,7 @@ void ProfilePickerHandler::GatherProfileStatistics(Profile* profile) {
 }
 
 void ProfilePickerHandler::OnProfileStatisticsReceived(
-    base::FilePath profile_path,
+    const base::FilePath& profile_path,
     profiles::ProfileCategoryStats result) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("profilePath", base::FilePathToValue(profile_path));
@@ -704,12 +704,12 @@ void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
-    // TODO(https://crbug.com/1226054): Implement the signin flow on Lacros: if
-    // the `gaiaId` parameter is non-empty, this the a unassigned account that
-    // should be used. If `gaiaId` is empty, an account should be added to the
-    // system and then used for the new profile.
-    NOTIMPLEMENTED();
-    FireWebUIListener("load-signin-finished", base::Value(/*success=*/false));
+    g_browser_process->profile_manager()
+        ->GetAccountProfileMapper()
+        ->ShowAddAccountDialog(
+            base::FilePath(),
+            base::BindOnce(&ProfilePickerHandler::OnLacrosProfileCreated,
+                           weak_factory_.GetWeakPtr()));
     return;
   }
 #endif
@@ -960,6 +960,23 @@ void ProfilePickerHandler::HandleGetUnassignedAccounts(
   // TODO(https://crbug/1226050): Add actual account info to the list, and
   // listen for account changes.
   FireWebUIListener("unassigned-accounts-changed", std::move(accounts_list));
+}
+
+void ProfilePickerHandler::OnLacrosProfileCreated(
+    const absl::optional<AccountProfileMapper::AddAccountResult>& result) {
+  DCHECK(base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
+  // TODO(https://crbug.com/1226054): Complete the account setup.
+  NOTIMPLEMENTED();
+  FireWebUIListener("load-signin-finished", base::Value(/*success=*/false));
+  if (result && !result->profile_path.empty()) {
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(result->profile_path);
+    entry->SetIsOmitted(false);
+  } else {
+    NOTREACHED() << "New profile creation failed.";
+  }
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -9,46 +9,19 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/files/file_path.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lacros/account_manager/add_account_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_addition_result.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 
 namespace {
-
-// Adds the account specified in `result` to the profile associated with
-// `profile_path`, and returns whether the operation succeeded.
-bool TryAddAccountToProfile(
-    ProfileAttributesStorage* storage,
-    const base::FilePath& profile_path,
-    const account_manager::AccountAdditionResult& result) {
-  ProfileAttributesEntry* entry =
-      storage->GetProfileAttributesWithPath(profile_path);
-  if (!entry)
-    return false;  // The profile no longer exists.
-  if (result.status() !=
-      account_manager::AccountAdditionResult::Status::kSuccess) {
-    return false;  // The OS flow failed.
-  }
-  const account_manager::Account& account = *result.account();
-  if (account.key.account_type() != account_manager::AccountType::kGaia)
-    return false;  // The account is not Gaia.
-  const std::string& gaia_id = account.key.id();
-  DCHECK(!gaia_id.empty());
-  auto profile_accounts = entry->GetGaiaIds();
-  auto inserted = profile_accounts.insert(gaia_id);
-  if (!inserted.second)
-    return false;  // The account already exists in the profile.
-  entry->SetGaiaIds(profile_accounts);
-  return true;
-}
 
 void DeleteProfile(const base::FilePath& profile_path) {
   // Pass an empty callback because this should never delete the last profile.
@@ -153,23 +126,15 @@ AccountProfileMapper::CreateAccessTokenFetcher(
 
 void AccountProfileMapper::ShowAddAccountDialog(
     const base::FilePath& profile_path,
-    account_manager::AccountManagerFacade::AccountAdditionSource source,
-    base::OnceCallback<void(const absl::optional<account_manager::Account>&)>
-        callback) {
-  if (!initialized_) {
-    initialization_callbacks_.push_back(base::BindOnce(
-        &AccountProfileMapper::ShowAddAccountDialog, weak_factory_.GetWeakPtr(),
-        profile_path, source, std::move(callback)));
-    return;
-  }
+    AddAccountCallback callback) {
+  DCHECK(!profile_path.empty())
+      << "For a new profile use ShowAddAccountDialogAndCreateNewProfile()";
+  ShowAddAccountDialogInternal(profile_path, std::move(callback));
+}
 
-  DCHECK_GE(account_addition_in_progress_, 0);
-  ++account_addition_in_progress_;
-  account_manager_facade_->ShowAddAccountDialog(
-      source,
-      base::BindOnce(&AccountProfileMapper::OnShowAddAccountDialogCompleted,
-                     weak_factory_.GetWeakPtr(), profile_path,
-                     std::move(callback)));
+void AccountProfileMapper::ShowAddAccountDialogAndCreateNewProfile(
+    AddAccountCallback callback) {
+  ShowAddAccountDialogInternal(base::FilePath(), std::move(callback));
 }
 
 void AccountProfileMapper::OnAccountUpserted(
@@ -184,6 +149,41 @@ void AccountProfileMapper::OnAccountRemoved(
   account_manager_facade_->GetAccounts(
       base::BindOnce(&AccountProfileMapper::OnGetAccountsCompleted,
                      weak_factory_.GetWeakPtr()));
+}
+
+void AccountProfileMapper::ShowAddAccountDialogInternal(
+    const base::FilePath& profile_path,
+    AddAccountCallback callback) {
+  if (!initialized_) {
+    initialization_callbacks_.push_back(base::BindOnce(
+        &AccountProfileMapper::ShowAddAccountDialogInternal,
+        weak_factory_.GetWeakPtr(), profile_path, std::move(callback)));
+    return;
+  }
+  add_account_helpers_.push_back(std::make_unique<AddAccountHelper>(
+      account_manager_facade_, profile_attributes_storage_));
+  AddAccountHelper* helper = add_account_helpers_.back().get();
+  helper->Start(
+      profile_path,
+      base::BindOnce(&AccountProfileMapper::OnAddAccountCompleted,
+                     weak_factory_.GetWeakPtr(), helper, std::move(callback)));
+}
+
+void AccountProfileMapper::OnAddAccountCompleted(
+    AddAccountHelper* helper,
+    AddAccountCallback callback,
+    const absl::optional<AddAccountResult>& result) {
+  if (result) {
+    for (auto& obs : observers_)
+      obs.OnAccountUpserted(result->profile_path, result->account);
+  }
+
+  if (callback)
+    std::move(callback).Run(result);
+
+  size_t erased_count =
+      base::EraseIf(add_account_helpers_, base::MatchesUniquePtr(helper));
+  DCHECK_EQ(erased_count, 1u);
 }
 
 std::vector<std::pair<base::FilePath, std::string>>
@@ -297,28 +297,6 @@ void AccountProfileMapper::OnGetAccountsCompleted(
   }
 }
 
-void AccountProfileMapper::OnShowAddAccountDialogCompleted(
-    const base::FilePath& profile_path,
-    base::OnceCallback<void(const absl::optional<account_manager::Account>&)>
-        client_callback,
-    const account_manager::AccountAdditionResult& result) {
-  DCHECK(initialized_);
-  bool added_to_profile =
-      TryAddAccountToProfile(profile_attributes_storage_, profile_path, result);
-  if (added_to_profile) {
-    for (auto& obs : observers_)
-      obs.OnAccountUpserted(profile_path, result.account().value());
-  }
-
-  if (client_callback) {
-    std::move(client_callback)
-        .Run(added_to_profile ? result.account() : absl::nullopt);
-  }
-
-  --account_addition_in_progress_;
-  DCHECK_GE(account_addition_in_progress_, 0);
-}
-
 bool AccountProfileMapper::ProfileContainsAccount(
     const base::FilePath& profile_path,
     const account_manager::AccountKey& account) const {
@@ -334,8 +312,8 @@ ProfileAttributesEntry* AccountProfileMapper::MaybeGetProfileForNewAccounts()
   // `AccountManagerFacade` may call `OnAccountUpserted()` before the
   // `ShowAddAccountDialog()` callback, which may result in this function being
   // called during the account addition. In this case, do not assign the new
-  // account here, as this will be done in `OnShowAddAccountDialogCompleted()`.
-  if (account_addition_in_progress_ > 0)
+  // account here, as this will be done by `AddAccountHelper`.
+  if (!add_account_helpers_.empty())
     return nullptr;
 
   std::vector<ProfileAttributesEntry*> entries =

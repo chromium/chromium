@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -17,6 +18,11 @@
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#endif
 
 // The handler for Javascript messages related to the profile picker main view.
 class ProfilePickerHandler : public content::WebUIMessageHandler,
@@ -77,7 +83,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
   void OnLoadSigninFinished(bool success);
   void GatherProfileStatistics(Profile* profile);
-  void OnProfileStatisticsReceived(base::FilePath profile_path,
+  void OnProfileStatisticsReceived(const base::FilePath& profile_path,
                                    profiles::ProfileCategoryStats result);
   void OnSwitchToProfileComplete(bool new_profile,
                                  bool open_settings,
@@ -123,6 +129,11 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // List of usnassigned accounts used by the profile choice and the account
   // selection screens.
   void HandleGetUnassignedAccounts(const base::ListValue* args);
+
+  // Called when a new Lacros profile is created. The profile is omitted,
+  // ephemeral, and has an account (but no primary account).
+  void OnLacrosProfileCreated(
+      const absl::optional<AccountProfileMapper::AddAccountResult>& result);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Returns the list of profiles in the same order as when the picker

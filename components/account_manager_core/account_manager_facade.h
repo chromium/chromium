@@ -65,8 +65,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kAccountManagerMigrationWelcomeScreen = 5,
     // Onboarding.
     kOnboarding = 6,
+    // At profile creation, main account of secondary profile.
+    kChromeProfileCreation = 7,
 
-    kMaxValue = kOnboarding
+    kMaxValue = kChromeProfileCreation
   };
 
   AccountManagerFacade();
