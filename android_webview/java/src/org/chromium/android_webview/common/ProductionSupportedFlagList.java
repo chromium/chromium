@@ -195,5 +195,7 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_LOG_FIRST_PARTY_PAGE_TIME_SPENT,
                     "Enables logging whether it was a first party page when logging"
                             + " PageTimeSpent."),
+            Flag.baseFeature(BlinkFeatures.FORCE_MAJOR_VERSION100_IN_USER_AGENT,
+                    "Force the Chrome major version number to 100 in the User-Agent string."),
     };
 }
