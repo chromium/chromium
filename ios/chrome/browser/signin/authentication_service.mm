@@ -331,12 +331,18 @@ void AuthenticationService::GrantSyncConsent(ChromeIdentity* identity) {
   CHECK(!account_info.IsEmpty());
   CHECK(!account_info.hosted_domain.empty());
 
-  const signin::PrimaryAccountMutator::PrimaryAccountError error =
-      identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account_id, signin::ConsentLevel::kSync);
-
-  CHECK_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError, error)
-      << "SetPrimaryAccount error: " << static_cast<int>(error);
+  // When sync is disabled by enterprise, sync consent is not removed.
+  // Consent can be skipped.
+  // TODO(crbug.com/1259054): Remove this if once the sync consent is removed
+  // when enteprise disable sync.
+  if (!HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
+    const signin::PrimaryAccountMutator::PrimaryAccountError error =
+        identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
+            account_id, signin::ConsentLevel::kSync);
+    CHECK_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
+             error)
+        << "SetPrimaryAccount error: " << static_cast<int>(error);
+  }
   CHECK_EQ(account_id,
            identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
 
