@@ -3706,35 +3706,6 @@
             ]
         }
     ],
-    "GoogleLensDesktopAndRegionSearchContextMenuSearch": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "enable-ukm-logging": "true",
-                        "event_trigger": "name:side_panel_trigger;comparator:==0;window:360;storage:360",
-                        "event_used": "name:side_panel_shown;comparator:==0;window:360;storage:360",
-                        "session_rate": "any"
-                    },
-                    "enable_features": [
-                        "IPH_ReadingListInSidePanel",
-                        "LensRegionSearch",
-                        "LensStandalone",
-                        "SidePanel"
-                    ]
-                }
-            ]
-        }
-    ],
     "GoogleLensSdkIntent": [
         {
             "platforms": [
@@ -7288,6 +7259,35 @@
                     },
                     "enable_features": [
                         "SharingHubLinkToggle"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SidePanelAndGoogleLensDesktopContextMenuSearch": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "enable-ukm-logging": "true",
+                        "event_trigger": "name:side_panel_trigger;comparator:==0;window:360;storage:360",
+                        "event_used": "name:side_panel_shown;comparator:==0;window:360;storage:360",
+                        "session_rate": "any"
+                    },
+                    "enable_features": [
+                        "IPH_ReadingListInSidePanel",
+                        "LensRegionSearch",
+                        "LensStandalone",
+                        "SidePanel"
                     ]
                 }
             ]
