@@ -44,6 +44,13 @@ void RejectWithTypeError(const String& message,
 mojom::blink::HidDeviceFilterPtr ConvertDeviceFilter(
     const HIDDeviceFilter& filter,
     ScriptPromiseResolver* resolver) {
+  if (!filter.hasVendorId() && !filter.hasProductId() &&
+      !filter.hasUsagePage() && !filter.hasUsage()) {
+    RejectWithTypeError("A filter must provide a property to filter by.",
+                        resolver);
+    return nullptr;
+  }
+
   if (filter.hasProductId() && !filter.hasVendorId()) {
     RejectWithTypeError(
         "A filter containing a productId must also contain a vendorId.",

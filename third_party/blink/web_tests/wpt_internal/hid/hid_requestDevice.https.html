@@ -17,6 +17,12 @@ promise_test((t) => {
 }, 'requestDevice() rejects without a user gesture');
 
 promise_test(async (t) => {
+  await trustedClick();
+  return promise_rejects_js(
+      t, TypeError, navigator.hid.requestDevice({filters: [{}]}));
+}, 'requestDevice() rejects with an empty filter');
+
+promise_test(async (t) => {
   let interceptor = new MojoInterfaceInterceptor(HidService.$interfaceName);
   interceptor.oninterfacerequest = e => e.handle.close();
   interceptor.start();
