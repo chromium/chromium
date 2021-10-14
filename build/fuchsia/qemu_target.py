@@ -99,8 +99,10 @@ class QemuTarget(emu_target.EmuTarget):
         'file=%s,format=qcow2,if=none,id=blobstore,snapshot=on' %
         _EnsureBlobstoreQcowAndReturnPath(self._out_dir,
                                           self._GetTargetSdkArch()),
+        '-object',
+        'iothread,id=iothread0',
         '-device',
-        'virtio-blk-pci,drive=blobstore',
+        'virtio-blk-pci,drive=blobstore,iothread=iothread0',
 
         # Use stdio for the guest OS only; don't attach the QEMU interactive
         # monitor.

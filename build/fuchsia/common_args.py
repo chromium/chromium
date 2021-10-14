@@ -161,6 +161,7 @@ def GetDeploymentTargetForArgs(args):
   if args.device:
     device = args.device
   else:
-    device = 'fvdl' if args.target_cpu == 'x64' else 'qemu'
+    # TODO(crbug.com/1246223): Use FVDL when 'iothread' feature is supported.
+    device = 'aemu' if args.target_cpu == 'x64' else 'qemu'
 
   return _LoadTargetClass(_GetPathToBuiltinTarget(device)).CreateFromArgs(args)
