@@ -10808,8 +10808,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="OptimizationGuide.IsPredictionModelValid"/>
   <affected-histogram
       name="OptimizationGuide.PredictionManager.ModelTypeChanged"/>
-  <affected-histogram
-      name="OptimizationGuide.PredictionModelEvaluationLatency"/>
+  <affected-histogram name="OptimizationGuide.PredictionModelEvaluationLatency">
+    <obsolete>
+      Deprecated as of 2021/10.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="OptimizationGuide.PredictionModelLoadedVersion"/>
   <affected-histogram name="OptimizationGuide.PredictionModelUpdateVersion"/>
   <affected-histogram
@@ -10821,7 +10824,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </affected-histogram>
   <affected-histogram
-      name="OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus"/>
+      name="OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus">
+    <obsolete>
+      Deprecated as of 2021/10.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="OptimizationGuide.TargetDecision"/>
 </histogram_suffixes>
 

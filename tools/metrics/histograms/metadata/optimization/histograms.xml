@@ -613,7 +613,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="OptimizationGuide.PredictionManager.HasHostModelFeaturesForHost"
-    enum="Boolean" expires_after="M106">
+    enum="Boolean" expires_after="2021-10-13">
+  <obsolete>
+    Deprecated as of 2021/10.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -728,7 +731,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="OptimizationGuide.PredictionModelEvaluationLatency" units="ms"
-    expires_after="M106">
+    expires_after="2021-10-13">
+  <obsolete>
+    Deprecated as of 2021/10.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -957,7 +963,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus"
-    enum="OptimizationGuidePredictionManagerModelStatus" expires_after="M106">
+    enum="OptimizationGuidePredictionManagerModelStatus"
+    expires_after="2021-10-13">
+  <obsolete>
+    Deprecated as of 2021/10.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
