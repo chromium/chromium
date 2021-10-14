@@ -78,6 +78,8 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     kMaxValue = SECURITY_SENSITIVE_DOWNLOAD
   };
 
+  using EventTypeFilter = base::RepeatingCallback<bool(const EventType&)>;
+
   // Enum representing the current user state. They are used as keys of the
   // SafeBrowsingEventTimestamps pref, entries must not be removed or reordered.
   // They are also used to construct suffixes of histograms. Please update the
@@ -147,8 +149,16 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // Helper functions for Safe Browsing events in pref.
   void AddSafeBrowsingEventAndUserStateToPref(UserState user_state,
                                               EventType event_type);
+
+  // Gets the latest event timestamp for events filtered by |event_type_filter|.
+  // Returns nullopt if none of the events happened in the past.
+  absl::optional<base::Time> GetLatestEventTimestamp(
+      EventTypeFilter event_type_filter);
   absl::optional<SafeBrowsingMetricsCollector::Event>
   GetLatestEventFromEventType(UserState user_state, EventType event_type);
+  absl::optional<SafeBrowsingMetricsCollector::Event>
+  GetLatestEventFromEventTypeFilter(UserState user_state,
+                                    EventTypeFilter event_type_filter);
   const base::Value* GetSafeBrowsingEventDictionary(UserState user_state);
   int GetEventCountSince(UserState user_state,
                          EventType event_type,

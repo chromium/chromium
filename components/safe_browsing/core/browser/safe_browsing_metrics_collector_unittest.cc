@@ -326,6 +326,71 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
+       LogEnhancedProtectionDisabledMetrics_GetLastSecuritySensitiveEventType) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  FastForwardAndAddEvent(
+      base::Hours(1), EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  // Changing enhanced protection to standard protection should log the metric.
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventType",
+      /* sample */ EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL,
+      /* expected_count */ 1);
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventInterval."
+      "SafeBrowsingInterstitial",
+      /* sample */ base::Hours(1),
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.EsbDisabled.SecuritySensitiveCountLast28Days."
+      "SafeBrowsingInterstitial",
+      /* sample */ 1,
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.EsbDisabled.SecuritySensitiveCountLast28Days."
+      "SSLInterstitial",
+      /* sample */ 0,
+      /* expected_count */ 1);
+
+  // Changing standard protection to enhanced protection shouldn't log the
+  // metric.
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventType",
+      /* sample */ EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL,
+      /* expected_count */ 1);
+
+  // Changing enhanced protection to no protection should log the metric.
+  FastForwardAndAddEvent(
+      base::Hours(1), EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
+  task_environment_.FastForwardBy(base::Days(1));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventType",
+      /* expected_count */ 2);
+  histograms.ExpectTimeBucketCount(
+      "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventInterval."
+      "SafeBrowsingInterstitial",
+      /* sample */ base::Days(1),
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.EsbDisabled.SecuritySensitiveCountLast28Days."
+      "SafeBrowsingInterstitial",
+      /* sample */ 2,
+      /* expected_count */ 1);
+
+  // Changing no protection to enhanced protection shouldn't log the metric.
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventType",
+      /* expected_count */ 2);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
        LogEnhancedProtectionDisabledMetrics_GetLastEnabledInterval) {
   base::HistogramTester histograms;
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);

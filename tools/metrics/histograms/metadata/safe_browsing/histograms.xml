@@ -861,6 +861,46 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventInterval.{EventType}"
+    units="ms" expires_after="2022-04-05">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the time between the last security sensitive event and when the user
+    disables Enhanced Safe Browsing. Logged each time a user disables Enhanced
+    Safe Browsing and the {EventType} is the last security sensitive event type.
+    Logged at most three times a week. If ESB is disabled for more than three
+    times a week, later records will be dropped.
+  </summary>
+  <token key="EventType" variants="MetricsCollectorSecuritySensitiveEventType"/>
+</histogram>
+
+<histogram name="SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventType"
+    enum="SBMetricsCollectorEventType" expires_after="2022-04-05">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the last security sensitive event type before a user disables
+    Enhanced Safe Browsing. Logged each time a user disables Enhanced Safe
+    Browsing. Logged at most three times a week.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.EsbDisabled.SecuritySensitiveCountLast28Days.{EventType}"
+    units="events" expires_after="2022-04-05">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the total number of {EventType} in the last 28 days. Logged each
+    time a user disables Enhanced Safe Browsing. Logged at most three times a
+    week. If ESB is disabled for more than three times a week, later records
+    will be dropped.
+  </summary>
+  <token key="EventType" variants="MetricsCollectorSecuritySensitiveEventType"/>
+</histogram>
+
 <histogram name="SafeBrowsing.FileTypeUpdate.DynamicUpdateResult"
     enum="SBFileTypeUpdateResult" expires_after="2022-08-15">
   <owner>drubery@chromium.org</owner>
