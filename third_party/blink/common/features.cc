@@ -834,7 +834,7 @@ const base::Feature kWebAppEnableUrlHandlers{"WebAppEnableUrlHandlers",
 // information:
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/URLProtocolHandler/explainer.md
 const base::Feature kWebAppEnableProtocolHandlers{
-    "WebAppEnableProtocolHandlers", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebAppEnableProtocolHandlers", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether web apps are able to be treated as note-taking apps. Controls parsing
 // of "note_taking" dictionary field and "new_note_url" entry in web app
