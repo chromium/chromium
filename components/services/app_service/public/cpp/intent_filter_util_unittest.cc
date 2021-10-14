@@ -225,6 +225,38 @@ TEST_F(IntentFilterUtilTest, HttpAndHttpsSchemes) {
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
 }
 
+TEST_F(IntentFilterUtilTest, PathsWithNoSlash) {
+  auto intent_filter = apps::mojom::IntentFilter::New();
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kScheme, url::kHttpScheme,
+      apps::mojom::PatternMatchType::kNone, intent_filter);
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kHost, "m.youtube.com",
+      apps::mojom::PatternMatchType::kNone, intent_filter);
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kPattern, ".*",
+      apps::mojom::PatternMatchType::kGlob, intent_filter);
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kPattern, ".*/foo",
+      apps::mojom::PatternMatchType::kGlob, intent_filter);
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kPattern, "",
+      apps::mojom::PatternMatchType::kPrefix, intent_filter);
+
+  std::set<std::string> links =
+      apps_util::AppManagementGetSupportedLinks(intent_filter);
+
+  EXPECT_EQ(links.size(), 3u);
+  EXPECT_EQ(links.count("m.youtube.com/*"), 1u);
+  EXPECT_EQ(links.count("m.youtube.com/.*"), 1u);
+  EXPECT_EQ(links.count("m.youtube.com/.*/foo"), 1u);
+}
+
 TEST_F(IntentFilterUtilTest, IsSupportedLink) {
   auto filter = MakeFilter("https", "www.google.com", "/maps",
                            apps::mojom::PatternMatchType::kLiteral);
