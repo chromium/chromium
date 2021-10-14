@@ -83,25 +83,20 @@ TabAndroid* TabMatcherAndroid::GetTabOpenWithURL(
   std::vector<TabAndroid*> all_tabs = GetAllHiddenAndNonCCTTabs(tab_models);
 
   for (TabAndroid* tab : all_tabs) {
-    content::WebContents* web_contents = tab->web_contents();
-    if (web_contents != nullptr) {
-      if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents))
-        return tab;
-    } else {
-      // Browser did not load the tab yet after Chrome started. To avoid
-      // reloading WebContents, we just compare URLs.
-      AutocompleteClientTabAndroidUserData::CreateForTabAndroid(tab);
-      AutocompleteClientTabAndroidUserData* user_data =
-          AutocompleteClientTabAndroidUserData::FromTabAndroid(tab);
-      DCHECK(user_data);
-      if (!user_data->IsInitialized())
-        user_data->UpdateStrippedURL(tab->GetURL(),
-                                     client_.GetTemplateURLService());
-
-      const GURL tab_stripped_url = user_data->GetStrippedURL();
-      if (tab_stripped_url == stripped_url)
-        return tab;
+    // Browser did not load the tab yet after Chrome started. To avoid
+    // reloading WebContents, we just compare URLs.
+    AutocompleteClientTabAndroidUserData::CreateForTabAndroid(tab);
+    AutocompleteClientTabAndroidUserData* user_data =
+        AutocompleteClientTabAndroidUserData::FromTabAndroid(tab);
+    DCHECK(user_data);
+    if (!user_data->IsInitialized()) {
+      user_data->UpdateStrippedURL(tab->GetURL(),
+                                   client_.GetTemplateURLService());
     }
+
+    const GURL& tab_stripped_url = user_data->GetStrippedURL();
+    if (tab_stripped_url == stripped_url)
+      return tab;
   }
 
   return nullptr;

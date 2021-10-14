@@ -4,13 +4,9 @@
 
 #include "chrome/browser/autocomplete/tab_matcher_desktop.h"
 
-// TODO(crbug.com/1176768): remove the file from Android sources after
-// dependency is removed.
-#if !defined(OS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#endif
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace {
@@ -55,9 +51,6 @@ AutocompleteClientWebContentsUserData::AutocompleteClientWebContentsUserData(
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutocompleteClientWebContentsUserData);
 }  // namespace
 
-// TODO(crbug.com/1176768): remove the file from Android sources after
-// dependency is removed.
-#if !defined(OS_ANDROID)
 bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
                                          const AutocompleteInput* input) const {
   const AutocompleteInput empty_input;
@@ -84,7 +77,6 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
 
   return false;
 }
-#endif
 
 bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
     const GURL& stripped_url,

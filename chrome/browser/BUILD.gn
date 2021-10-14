@@ -159,8 +159,6 @@ static_library("browser") {
     "autocomplete/remote_suggestions_service_factory.h",
     "autocomplete/shortcuts_backend_factory.cc",
     "autocomplete/shortcuts_backend_factory.h",
-    "autocomplete/tab_matcher_desktop.cc",
-    "autocomplete/tab_matcher_desktop.h",
     "autofill/address_normalizer_factory.cc",
     "autofill/address_normalizer_factory.h",
     "autofill/autocomplete_history_manager_factory.cc",
@@ -4501,6 +4499,13 @@ static_library("browser") {
     if (is_posix || is_fuchsia) {
       sources += [ "task_manager/sampling/shared_sampler_stub.cc" ]
     }
+  }
+
+  if (!is_android && !is_ios) {
+    sources += [
+      "autocomplete/tab_matcher_desktop.cc",
+      "autocomplete/tab_matcher_desktop.h",
+    ]
   }
 
   if (is_chromeos_ash) {

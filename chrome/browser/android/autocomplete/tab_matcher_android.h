@@ -7,23 +7,21 @@
 
 #include <vector>
 
-#include "chrome/browser/autocomplete/tab_matcher_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/tab_matcher.h"
 #include "content/public/browser/web_contents.h"
 
 class TabAndroid;
 class TabModel;
 
 // Implementation of TabMatcher targeting Android platform.
-// TODO(crbug.com/1176768): The code depends on Desktop's implementation for a
-// certain hack that does not help Android code much. Remove the dependency.
-class TabMatcherAndroid : public TabMatcherDesktop {
+class TabMatcherAndroid : public TabMatcher {
  public:
   TabMatcherAndroid(const AutocompleteProviderClient& client, Profile* profile)
-      : TabMatcherDesktop(client, profile) {}
+      : client_{client}, profile_{profile} {}
 
   bool IsTabOpenWithURL(const GURL& gurl,
                         const AutocompleteInput* input) const override;
@@ -37,6 +35,9 @@ class TabMatcherAndroid : public TabMatcherDesktop {
   // |tab_model|.
   std::vector<TabAndroid*> GetAllHiddenAndNonCCTTabs(
       const std::vector<TabModel*>& tab_models) const;
+
+  const AutocompleteProviderClient& client_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_AUTOCOMPLETE_TAB_MATCHER_ANDROID_H_

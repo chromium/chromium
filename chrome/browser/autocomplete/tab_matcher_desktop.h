@@ -19,9 +19,7 @@ class TabMatcherDesktop : public TabMatcher {
   bool IsTabOpenWithURL(const GURL& gurl,
                         const AutocompleteInput* input) const override;
 
-  // TODO(crbug.com/1176768): break relationship between Desktop and Android
-  // implementations and make this private.
- protected:
+ private:
   bool IsStrippedURLEqualToWebContentsURL(
       const GURL& stripped_url,
       content::WebContents* web_contents) const;
