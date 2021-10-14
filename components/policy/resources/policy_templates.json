@@ -27669,9 +27669,9 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
         'type': 'boolean',
       },
       'supported_on': [
-        'chrome.*:92-',
-        'chrome_os:92-',
-        'android:92-',
+        'chrome.*:92-96',
+        'chrome_os:92-96',
+        'android:92-96',
       ],
       'features': {
         'dynamic_refresh': True,
@@ -27691,6 +27691,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
           'caption': 'Use the default setting for 3DES cipher suites in TLS',
         },
       ],
+      'deprecated': True,
       'default': None,
       'example_value': False,
       'id': 858,

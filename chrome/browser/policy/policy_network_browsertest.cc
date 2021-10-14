@@ -637,16 +637,6 @@ class CECPQ2PolicyTest : public SSLPolicyTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class SSLPolicyTest3DES : public SSLPolicyTest {
- public:
-  SSLPolicyTest3DES() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSSLCipher3DES);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, CECPQ2EnabledPolicy) {
   net::SSLServerConfig ssl_config;
   ssl_config.curves_for_testing = {NID_CECPQ2};
@@ -705,73 +695,32 @@ IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, ChromeVariations) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// Test the admin policy behaves correctly when 3DES is enabled by feature flag.
-IN_PROC_BROWSER_TEST_F(SSLPolicyTest3DES, TripleDESEnabledPolicy) {
+// Test that 3DES is disabled by default. Historically, this was a test of the
+// 3DES policy. Now it is an integration test that 3DES is disabled in the
+// browser.
+//
+// TODO(https://crbug.com/1203442): Remove this test after unwinding the 3DES
+// toggles in //net, so that 3DES is always disabled.
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest, TripleDESDisabled) {
   // Start a server that only supports TLS_RSA_WITH_3DES_EDE_CBC_SHA.
   net::SSLServerConfig ssl_config;
   ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
   ssl_config.cipher_suite_for_testing = 0x000a;
   ASSERT_TRUE(StartTestServer(ssl_config));
 
-  // Without a policy, the feature flag takes predecence. title1.html has no
-  // title, so start with title2.html.
-  LoadResult result = LoadPage("/title2.html");
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(u"Title Of Awesomeness", result.title);
-
-  // Enable 3DES by policy.
-  PolicyMap policies;
-  SetPolicy(&policies, key::kTripleDESEnabled, base::Value(true));
-  UpdateProviderPolicy(policies);
-  content::FlushNetworkServiceInstanceForTesting();
-
-  // 3DES is still enabled.
-  result = LoadPage("/title3.html");
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(u"Title Of More Awesomeness", result.title);
-
-  // Disable 3DES by policy.
-  SetPolicy(&policies, key::kTripleDESEnabled, base::Value(false));
-  UpdateProviderPolicy(policies);
-  content::FlushNetworkServiceInstanceForTesting();
-
-  // 3DES is now disabled.
-  result = LoadPage("/title1.html");
-  EXPECT_FALSE(result.success);
-  ExpectVersionOrCipherMismatch();
-}
-
-// Test the admin policy behaves correctly when 3DES is disabled (default).
-IN_PROC_BROWSER_TEST_F(SSLPolicyTest, TripleDESEnabledPolicy) {
-  // Start a server that only supports TLS_RSA_WITH_3DES_EDE_CBC_SHA.
-  net::SSLServerConfig ssl_config;
-  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
-  ssl_config.cipher_suite_for_testing = 0x000a;
-  ASSERT_TRUE(StartTestServer(ssl_config));
-
-  // Without a policy, 3DES is disabled.
+  // 3DES should be disabled.
   LoadResult result = LoadPage("/title1.html");
   EXPECT_FALSE(result.success);
   ExpectVersionOrCipherMismatch();
 
-  // Enable 3DES by policy.
+  // Enable the old 3DES policy.
   PolicyMap policies;
   SetPolicy(&policies, key::kTripleDESEnabled, base::Value(true));
   UpdateProviderPolicy(policies);
   content::FlushNetworkServiceInstanceForTesting();
 
-  // 3DES is now enabled.
+  // 3DES is still disabled. The policy is now ignored.
   result = LoadPage("/title2.html");
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(u"Title Of Awesomeness", result.title);
-
-  // Disable 3DES by policy.
-  SetPolicy(&policies, key::kTripleDESEnabled, base::Value(false));
-  UpdateProviderPolicy(policies);
-  content::FlushNetworkServiceInstanceForTesting();
-
-  // 3DES is now disabled.
-  result = LoadPage("/title3.html");
   EXPECT_FALSE(result.success);
   ExpectVersionOrCipherMismatch();
 }
