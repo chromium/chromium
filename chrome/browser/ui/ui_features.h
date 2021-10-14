@@ -72,6 +72,7 @@ extern const base::Feature kSettingsLandingPageRedesign;
 // TODO(pbos): Once kReadLater is cleaned up on Desktop, move definition into
 // ui_features.cc. This is currently temporarily in reading_list_switches.h.
 extern const base::Feature kSidePanel;
+extern const base::Feature kSidePanelBorder;
 extern const base::Feature kSidePanelDragAndDrop;
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)

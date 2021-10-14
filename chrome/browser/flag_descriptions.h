@@ -1295,9 +1295,12 @@ extern const char kShoppingListName[];
 extern const char kShoppingListDescription[];
 
 extern const char kSidePanelFlagId[];
-
 extern const char kSidePanelName[];
 extern const char kSidePanelDescription[];
+
+extern const char kSidePanelBorderFlagId[];
+extern const char kSidePanelBorderName[];
+extern const char kSidePanelBorderDescription[];
 
 extern const char kSidePanelDragAndDropFlagId[];
 extern const char kSidePanelDragAndDropName[];

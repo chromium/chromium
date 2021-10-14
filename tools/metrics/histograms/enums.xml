@@ -51400,6 +51400,7 @@ from previous Chrome versions.
   <int value="559695461" label="UseChimeAndroidSdk:enabled"/>
   <int value="561374433" label="SCTAuditing:disabled"/>
   <int value="561951500" label="GlobalMediaControlsCastStartStop:enabled"/>
+  <int value="562111126" label="SidePanelBorder:enabled"/>
   <int value="562979188" label="DesktopIOSPromotion:enabled"/>
   <int value="564355877" label="OopRasterizationDDL:disabled"/>
   <int value="564522013" label="Av1Decoder:disabled"/>
@@ -51447,6 +51448,7 @@ from previous Chrome versions.
   <int value="603988014" label="NetworkService:enabled"/>
   <int value="604334859" label="Prerender2:enabled"/>
   <int value="605150752" label="WebUSB:disabled"/>
+  <int value="605332010" label="SidePanelBorder:disabled"/>
   <int value="605672144" label="PwaUpdateDialogForNameAndIcon:disabled"/>
   <int value="606288133" label="enable-print-preview-register-promos"/>
   <int value="606512202" label="AutofillCreditCardPopupLayout:enabled"/>
