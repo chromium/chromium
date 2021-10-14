@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "chrome/browser/power_bookmarks/proto/power_bookmark_meta.pb.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 
 class GURL;
@@ -38,6 +39,11 @@ struct PowerBookmarkQueryFields : bookmarks::QueryFields {
 
   // If his field is left null, the root of the bookmark model will be searched.
   const bookmarks::BookmarkNode* folder{nullptr};
+
+  // The type of bookmark to search for. By default this is empty which will
+  // retrieve any type of bookmark. If set to PowerBookmarkType::UNSPECIFIED,
+  // any bookmark that has power bookmark meta is retrieved.
+  absl::optional<power_bookmarks::PowerBookmarkType> type;
 };
 
 // This is the key for the storage of PowerBookmarkMeta in bookmarks' meta_info
@@ -79,7 +85,10 @@ void DeleteNodePowerBookmarkMeta(bookmarks::BookmarkModel* model,
 // counterpart in bookmark_utils, this method is capable of searching and
 // filtering on tags. A list of tags can be provided that will produce
 // bookmarks that at least have those tags. The bookmark's tags will also be
-// tested against the text search query. Output is put into \nodes\.
+// tested against the text search query. Output is put into \nodes\. Bookmarks
+// that are returned will match all of the other query fields that are set. For
+// example: if |folder| and |type| are set, all returned bookmarks will be a
+// descendant of |folder| and have a power bookmark typr of |type|.
 void GetBookmarksMatchingProperties(
     bookmarks::BookmarkModel* model,
     const PowerBookmarkQueryFields& query,

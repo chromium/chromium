@@ -21,6 +21,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -595,21 +596,24 @@ public class BookmarkBridge {
      * @return List of bookmark IDs that are related to the given query.
      */
     public List<BookmarkId> searchBookmarks(String query, int maxNumberOfResult) {
-        return searchBookmarks(query, null, maxNumberOfResult);
+        return searchBookmarks(query, null, null, maxNumberOfResult);
     }
 
     /**
      * Synchronously gets a list of bookmarks that match the specified search query.
      * @param query Keyword used for searching bookmarks.
      * @param tags A list of tags the resulting bookmarks should have.
+     * @param powerBookmarkType The type of power bookmark type to search for (or null for all).
      * @param maxNumberOfResult Maximum number of result to fetch.
      * @return List of bookmark IDs that are related to the given query.
      */
-    public List<BookmarkId> searchBookmarks(String query, String[] tags, int maxNumberOfResult) {
+    public List<BookmarkId> searchBookmarks(String query, @Nullable String[] tags,
+            @Nullable PowerBookmarkType powerBookmarkType, int maxNumberOfResult) {
         ThreadUtils.assertOnUiThread();
         List<BookmarkId> bookmarkMatches = new ArrayList<>();
+        int typeInt = powerBookmarkType == null ? -1 : powerBookmarkType.getNumber();
         BookmarkBridgeJni.get().searchBookmarks(mNativeBookmarkBridge, BookmarkBridge.this,
-                bookmarkMatches, query, tags, maxNumberOfResult);
+                bookmarkMatches, query, tags, typeInt, maxNumberOfResult);
         return bookmarkMatches;
     }
 
@@ -1213,7 +1217,8 @@ public class BookmarkBridge {
         void loadFakePartnerBookmarkShimForTesting(
                 long nativeBookmarkBridge, BookmarkBridge caller);
         void searchBookmarks(long nativeBookmarkBridge, BookmarkBridge caller,
-                List<BookmarkId> bookmarkMatches, String query, String[] tags, int maxNumber);
+                List<BookmarkId> bookmarkMatches, String query, String[] tags,
+                int powerBookmarkType, int maxNumber);
         long init(BookmarkBridge caller, Profile profile);
         boolean isDoingExtensiveChanges(long nativeBookmarkBridge, BookmarkBridge caller);
         void destroy(long nativeBookmarkBridge, BookmarkBridge caller);

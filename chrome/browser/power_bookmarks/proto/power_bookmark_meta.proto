@@ -14,7 +14,7 @@ package power_bookmarks;
 import "components/commerce/core/proto/price_tracking.proto";
 
 enum PowerBookmarkType {
-  NONE = 0;
+  UNSPECIFIED = 0;
   SHOPPING = 1;
 }
 

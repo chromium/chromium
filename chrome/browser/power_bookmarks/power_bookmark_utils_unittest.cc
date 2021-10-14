@@ -29,6 +29,16 @@ class PowerBookmarkUtilsTest : public testing::Test {
   }
 };
 
+// Ensure the list |nodes| contains |node|.
+bool ListContainsNode(const std::vector<const bookmarks::BookmarkNode*>& nodes,
+                      const bookmarks::BookmarkNode* node) {
+  for (auto* cur_node : nodes) {
+    if (cur_node == node)
+      return true;
+  }
+  return false;
+}
+
 TEST_F(PowerBookmarkUtilsTest, TestAddAndAccess) {
   bookmarks::BookmarkModel* model = CreateTestModel();
   const bookmarks::BookmarkNode* node =
@@ -317,6 +327,57 @@ TEST_F(PowerBookmarkUtilsTest, GetBookmarksMatchingPropertiesFolderSearch) {
   GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
   ASSERT_EQ(1U, nodes.size());
   EXPECT_TRUE(node == nodes[0]);
+  nodes.clear();
+}
+
+TEST_F(PowerBookmarkUtilsTest, GetBookmarksMatchingPropertiesTypeSearch) {
+  std::unique_ptr<bookmarks::BookmarkModel> model(
+      bookmarks::TestBookmarkClient::CreateModel());
+  const bookmarks::BookmarkNode* node1 = model->AddURL(
+      model->other_node(), 0, u"foo bar", GURL("http://www.google.com"));
+  std::unique_ptr<PowerBookmarkMeta> meta1 =
+      std::make_unique<PowerBookmarkMeta>();
+  meta1->set_type(PowerBookmarkType::SHOPPING);
+  SetNodePowerBookmarkMeta(model.get(), node1, std::move(meta1));
+
+  const bookmarks::BookmarkNode* node2 = model->AddURL(
+      model->other_node(), 0, u"baz buz", GURL("http://www.cnn.com"));
+  std::unique_ptr<PowerBookmarkMeta> meta2 =
+      std::make_unique<PowerBookmarkMeta>();
+  meta2->set_type(PowerBookmarkType::SHOPPING);
+  SetNodePowerBookmarkMeta(model.get(), node2, std::move(meta2));
+
+  const bookmarks::BookmarkNode* node3 = model->AddURL(
+      model->other_node(), 0, u"chromium", GURL("http://www.chromium.org"));
+  std::unique_ptr<PowerBookmarkMeta> meta3 =
+      std::make_unique<PowerBookmarkMeta>();
+  meta3->set_type(PowerBookmarkType::UNSPECIFIED);
+  SetNodePowerBookmarkMeta(model.get(), node3, std::move(meta3));
+
+  const bookmarks::BookmarkNode* normal_node = model->AddURL(
+      model->other_node(), 0, u"example page", GURL("http://www.example.com"));
+
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+  PowerBookmarkQueryFields query;
+
+  // Test that a query with no type returns all results.
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(4U, nodes.size());
+  nodes.clear();
+
+  // Test that a query for the SHOPPING type returns the correct results.
+  query.type = PowerBookmarkType::SHOPPING;
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(2U, nodes.size());
+  EXPECT_FALSE(ListContainsNode(nodes, normal_node));
+  EXPECT_FALSE(ListContainsNode(nodes, node3));
+  nodes.clear();
+
+  // Test that a query for the UNSPECIFIED type returns the correct results.
+  query.type = PowerBookmarkType::UNSPECIFIED;
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(3U, nodes.size());
+  EXPECT_FALSE(ListContainsNode(nodes, normal_node));
   nodes.clear();
 }
 

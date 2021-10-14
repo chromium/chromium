@@ -199,11 +199,13 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       const base::android::JavaParamRef<jobject>& j_folder_id_obj,
       const base::android::JavaParamRef<jobject>& j_callback_obj,
       const base::android::JavaParamRef<jobject>& j_result_obj);
+
   void SearchBookmarks(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj,
                        const base::android::JavaParamRef<jobject>& j_list,
                        const base::android::JavaParamRef<jstring>& j_query,
                        const base::android::JavaParamRef<jobjectArray>& j_tags,
+                       jint type,
                        jint max_results);
 
   base::android::ScopedJavaLocalRef<jobject> AddFolder(

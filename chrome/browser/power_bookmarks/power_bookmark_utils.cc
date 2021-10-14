@@ -150,6 +150,13 @@ void GetBookmarksMatchingPropertiesImpl(
     bool tags_match_query =
         query_words.empty() || DoBookmarkTagsContainWords(meta, query_words);
 
+    if (query.type.has_value()) {
+      if (!meta || (meta->type() != query.type.value() &&
+                    query.type.value() != PowerBookmarkType::UNSPECIFIED)) {
+        continue;
+      }
+    }
+
     if (!title_or_url_match_query && !tags_match_query)
       continue;
 

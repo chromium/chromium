@@ -748,6 +748,7 @@ void BookmarkBridge::SearchBookmarks(JNIEnv* env,
                                      const JavaParamRef<jobject>& j_list,
                                      const JavaParamRef<jstring>& j_query,
                                      const JavaParamRef<jobjectArray>& j_tags,
+                                     jint type,
                                      jint max_results) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(bookmark_model_->loaded());
@@ -763,6 +764,9 @@ void BookmarkBridge::SearchBookmarks(JNIEnv* env,
       base::android::AppendJavaStringArrayToStringVector(env, j_tags,
                                                          &query.tags);
     }
+
+    if (type >= 0)
+      query.type = static_cast<power_bookmarks::PowerBookmarkType>(type);
 
     power_bookmarks::GetBookmarksMatchingProperties(bookmark_model_, query,
                                                     max_results, &results);
