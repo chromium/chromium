@@ -24,7 +24,7 @@ enum CpuArchitectureEnum {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// NextMinVersion: 1, NextIndex: 17
+// NextMinVersion: 1, NextIndex: 18
 [Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 16,
@@ -44,6 +44,7 @@ enum ProbeCategoryEnum {
   kBus = 13,
   kTpm = 14,
   kGraphics = 15,
+  kDisplay = 17,
 
   // TODO(b/190459636): Rename it to kSystem after migration.
   kSystem2 = 0x10000,
@@ -938,6 +939,27 @@ struct EGLInfo {
   array<string> extensions;
 };
 
+// Display result.
+union DisplayResult {
+  // Valid DisplayInfo.
+  DisplayInfo display_info;
+  // The error that occurred attempting to retrieve the DisplayInfo.
+  ProbeError error;
+};
+
+// Display information.
+struct DisplayInfo {
+  // Embedded display info.
+  EmbeddedDisplayInfo edp_info;
+};
+
+struct EmbeddedDisplayInfo {
+  // Privacy screen is supported or not.
+  bool privacy_screen_supported;
+  // Privacy screen is enabled or not.
+  bool privacy_screen_enabled;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -1001,4 +1023,7 @@ struct TelemetryInfo {
   // Information about the graphics. Only present when kGraphics was included in
   // the categories input to ProbeTelemetryInfo.
   GraphicsResult? graphics_result;
+  // Information about the display. Only present when kDisplay was included in
+  // the categories input to ProbeTelemetryInfo.
+  DisplayResult? display_result;
 };
