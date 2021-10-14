@@ -90,7 +90,7 @@ void DevToolsVideoConsumer::SetFrameSinkId(
         frame_sink_id_.is_valid()
             ? absl::make_optional<viz::FrameSinkId>(frame_sink_id_)
             : absl::nullopt,
-        viz::SubtreeCaptureId());
+        nullptr);
   }
 }
 
@@ -132,7 +132,7 @@ void DevToolsVideoConsumer::InnerStartCapture(
                                       kDefaultUseFixedAspectRatio);
   capturer_->SetFormat(pixel_format_, color_space_);
   if (frame_sink_id_.is_valid())
-    capturer_->ChangeTarget(frame_sink_id_, viz::SubtreeCaptureId());
+    capturer_->ChangeTarget(frame_sink_id_, nullptr);
 
   capturer_->Start(this);
 }

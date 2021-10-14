@@ -12,6 +12,7 @@
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -139,7 +140,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
                backdrop_filters, backdrop_filter_bounds, SubtreeCaptureId{1u},
-               output_rect.size(), has_transparent_background,
+               output_rect.size(), nullptr, has_transparent_background,
                cache_render_pass, has_damage_from_contributing_content,
                generate_mipmap, has_per_quad_damage);
 
@@ -197,7 +198,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   contrib->SetAll(contrib_id, contrib_output_rect, contrib_damage_rect,
                   contrib_transform_to_root, contrib_filters,
                   contrib_backdrop_filters, contrib_backdrop_filter_bounds,
-                  SubtreeCaptureId{2u}, contrib_output_rect.size(),
+                  SubtreeCaptureId{2u}, contrib_output_rect.size(), nullptr,
                   contrib_has_transparent_background, contrib_cache_render_pass,
                   contrib_has_damage_from_contributing_content,
                   contrib_generate_mipmap, contrib_has_per_quad_damage);
@@ -252,7 +253,7 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
                backdrop_filters, backdrop_filter_bounds, SubtreeCaptureId(),
-               output_rect.size(), has_transparent_background,
+               output_rect.size(), nullptr, has_transparent_background,
                cache_render_pass, has_damage_from_contributing_content,
                generate_mipmap, has_per_quad_damage);
 

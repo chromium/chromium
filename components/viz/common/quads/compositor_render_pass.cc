@@ -88,8 +88,9 @@ void CompositorRenderPass::SetAll(
     const cc::FilterOperations& filters,
     const cc::FilterOperations& backdrop_filters,
     const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
-    SubtreeCaptureId capture_id,
-    gfx::Size size,
+    SubtreeCaptureId subtree_capture_id,
+    gfx::Size subtree_capture_size,
+    std::unique_ptr<RegionCaptureBounds> capture_bounds,
     bool has_transparent_background,
     bool cache_render_pass,
     bool has_damage_from_contributing_content,
@@ -104,8 +105,9 @@ void CompositorRenderPass::SetAll(
   this->filters = filters;
   this->backdrop_filters = backdrop_filters;
   this->backdrop_filter_bounds = backdrop_filter_bounds;
-  subtree_capture_id = capture_id;
-  subtree_size = size;
+  this->subtree_capture_id = subtree_capture_id;
+  this->subtree_size = subtree_capture_size;
+  this->capture_bounds = std::move(capture_bounds);
   this->has_transparent_background = has_transparent_background;
   this->cache_render_pass = cache_render_pass;
   this->has_damage_from_contributing_content =
@@ -121,7 +123,8 @@ void CompositorRenderPass::AsValueInto(
   RenderPassInternal::AsValueInto(value);
 
   value->SetString("subtree_capture_id", subtree_capture_id.ToString());
-
+  value->SetString("capture_bounds",
+                   capture_bounds ? capture_bounds->ToString() : "nullptr");
   cc::MathUtil::AddToTracedValue("subtree_size", subtree_size, value);
 
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
@@ -194,6 +197,9 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPass::DeepCopy() const {
   copy_pass->SetAll(id, output_rect, damage_rect, transform_to_root_target,
                     filters, backdrop_filters, backdrop_filter_bounds,
                     subtree_capture_id, subtree_size,
+                    capture_bounds
+                        ? std::make_unique<RegionCaptureBounds>(*capture_bounds)
+                        : nullptr,
                     has_transparent_background, cache_render_pass,
                     has_damage_from_contributing_content, generate_mipmap,
                     has_per_quad_damage);

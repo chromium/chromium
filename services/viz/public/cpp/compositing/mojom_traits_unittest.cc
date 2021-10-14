@@ -17,6 +17,7 @@
 #include "components/viz/common/resources/resource_settings.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -767,7 +768,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   auto input = CompositorRenderPass::Create();
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 filters, backdrop_filters, backdrop_filter_bounds,
-                subtree_capture_id, output_rect.size(),
+                subtree_capture_id, output_rect.size(), nullptr,
                 has_transparent_background, cache_render_pass,
                 has_damage_from_contributing_content, generate_mipmap,
                 has_per_quad_damage);
@@ -915,7 +916,7 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 cc::FilterOperations(), cc::FilterOperations(),
                 backdrop_filter_bounds, subtree_capture_id, output_rect.size(),
-                has_transparent_background, cache_render_pass,
+                nullptr, has_transparent_background, cache_render_pass,
                 has_damage_from_contributing_content, generate_mipmap,
                 has_per_quad_damage);
 

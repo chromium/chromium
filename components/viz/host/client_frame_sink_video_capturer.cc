@@ -73,12 +73,18 @@ void ClientFrameSinkVideoCapturer::SetAutoThrottlingEnabled(bool enabled) {
 
 void ClientFrameSinkVideoCapturer::ChangeTarget(
     const absl::optional<FrameSinkId>& frame_sink_id,
-    SubtreeCaptureId subtree_capture_id) {
+    mojom::SubTargetPtr sub_target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   target_ = frame_sink_id;
-  subtree_capture_id_ = subtree_capture_id;
-  capturer_remote_->ChangeTarget(frame_sink_id, subtree_capture_id);
+  if (sub_target) {
+    if (sub_target->is_subtree_capture_id()) {
+      subtree_capture_id_ = sub_target->get_subtree_capture_id();
+    } else if (sub_target->is_region_capture_crop_id()) {
+      crop_id_ = sub_target->get_region_capture_crop_id();
+    }
+  }
+  capturer_remote_->ChangeTarget(frame_sink_id, std::move(sub_target));
 }
 
 void ClientFrameSinkVideoCapturer::Start(
@@ -193,8 +199,15 @@ void ClientFrameSinkVideoCapturer::EstablishConnection() {
   }
   if (auto_throttling_enabled_)
     capturer_remote_->SetAutoThrottlingEnabled(*auto_throttling_enabled_);
-  if (target_)
-    capturer_remote_->ChangeTarget(target_, subtree_capture_id_);
+  if (target_) {
+    mojom::SubTargetPtr sub_target = nullptr;
+    if (subtree_capture_id_.is_valid()) {
+      sub_target = mojom::SubTarget::NewSubtreeCaptureId(subtree_capture_id_);
+    } else if (!crop_id_.is_zero()) {
+      sub_target = mojom::SubTarget::NewRegionCaptureCropId(crop_id_);
+    }
+    capturer_remote_->ChangeTarget(target_, std::move(sub_target));
+  }
   for (Overlay* overlay : overlays_)
     overlay->EstablishConnection(capturer_remote_.get());
   if (is_started_)

@@ -117,7 +117,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
   void ChangeTarget(const absl::optional<FrameSinkId>& frame_sink_id,
-                    const SubtreeCaptureId& subtree_capture_id) final;
+                    mojom::SubTargetPtr sub_target) final;
   void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer) final;
   void Stop() final;
   void RequestRefreshFrame() final;
@@ -265,11 +265,10 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // ChangeTarget().
   FrameSinkId requested_target_;
 
-  // If valid, this is the ID of a layer subtree within the requested frame
-  // sink, whose associated render pass should be captured by this capturer.
-  // If not valid, then this capturer capturer the root render pass of the
-  // target frame sink.
-  SubtreeCaptureId request_subtree_id_;
+  // A specifier that indicates what region of the layer should be captured.
+  // If not valid, then the root render pass of the target frame sink should
+  // be captured.
+  CapturableFrameSink::RegionSpecifier region_specifier_;
 
   // The resolved target of video capture, or null if the requested target does
   // not yet exist (or no longer exists).

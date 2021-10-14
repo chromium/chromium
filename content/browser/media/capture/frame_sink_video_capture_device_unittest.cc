@@ -12,6 +12,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -110,10 +111,14 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
                     bool use_fixed_aspect_ratio));
   MOCK_METHOD1(SetAutoThrottlingEnabled, void(bool));
   void ChangeTarget(const absl::optional<viz::FrameSinkId>& frame_sink_id,
-                    const viz::SubtreeCaptureId& subtree_capture_id) final {
+                    viz::mojom::SubTargetPtr sub_target) final {
     DCHECK_NOT_ON_DEVICE_THREAD();
+    viz::SubtreeCaptureId subtree_id;
+    if (sub_target->is_subtree_capture_id()) {
+      subtree_id = sub_target->get_subtree_capture_id();
+    }
     MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget{
-        frame_sink_id.value_or(viz::FrameSinkId{}), subtree_capture_id});
+        frame_sink_id.value_or(viz::FrameSinkId{}), subtree_id});
   }
   MOCK_METHOD1(
       MockChangeTarget,

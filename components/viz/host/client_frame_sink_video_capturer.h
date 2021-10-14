@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/viz_host_export.h"
 #include "media/base/video_types.h"
@@ -87,7 +88,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
                                 bool use_fixed_aspect_ratio);
   void SetAutoThrottlingEnabled(bool enabled);
   void ChangeTarget(const absl::optional<FrameSinkId>& frame_sink_id,
-                    SubtreeCaptureId subtree_capture_id);
+                    mojom::SubTargetPtr sub_target);
   void Stop();
   void RequestRefreshFrame();
 
@@ -156,6 +157,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   absl::optional<bool> auto_throttling_enabled_;
   absl::optional<FrameSinkId> target_;
   SubtreeCaptureId subtree_capture_id_;
+  RegionCaptureCropId crop_id_;
   // Overlays are owned by the callers of CreateOverlay().
   std::vector<Overlay*> overlays_;
   bool is_started_ = false;

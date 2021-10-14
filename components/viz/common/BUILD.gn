@@ -274,6 +274,8 @@ viz_component("common") {
     "surfaces/local_surface_id.h",
     "surfaces/parent_local_surface_id_allocator.cc",
     "surfaces/parent_local_surface_id_allocator.h",
+    "surfaces/region_capture_bounds.cc",
+    "surfaces/region_capture_bounds.h",
     "surfaces/scoped_surface_id_allocator.cc",
     "surfaces/scoped_surface_id_allocator.h",
     "surfaces/subtree_capture_id.cc",

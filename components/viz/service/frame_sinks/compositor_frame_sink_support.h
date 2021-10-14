@@ -19,6 +19,7 @@
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/service/frame_sinks/begin_frame_tracker.h"
@@ -196,8 +197,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // CapturableFrameSink implementation.
   void AttachCaptureClient(CapturableFrameSink::Client* client) override;
   void DetachCaptureClient(CapturableFrameSink::Client* client) override;
-  gfx::Size GetCopyOutputRequestSize(
-      SubtreeCaptureId subtree_id) const override;
+  gfx::Rect GetCopyOutputRequestRegion(
+      const CapturableFrameSink::RegionSpecifier& specifier) const override;
   void OnClientCaptureStarted() override;
   void OnClientCaptureStopped() override;
   void RequestCopyOfOutput(
@@ -263,6 +264,12 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void HandleCallback();
 
   int64_t ComputeTraceId();
+
+  // Internal logic for determining what region capture bounds are
+  // associated with a given |crop_id|. This assumes that we are capturing
+  // with |crop_id|, and so a return value of gfx::Rect{} indicates that
+  // we shouldn't capture any of the surface.
+  gfx::Rect GetCaptureBounds(const RegionCaptureCropId& crop_id) const;
 
   void MaybeEvictSurfaces();
   void EvictLastActiveSurface();

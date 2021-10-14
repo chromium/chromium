@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "services/viz/public/cpp/compositing/copy_output_request_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
@@ -71,6 +72,16 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
     return input->subtree_size;
   }
+
+  // TODO(https://crbug.com/1129604): figure out a better way to handle
+  // this optional value.
+  static const absl::optional<viz::RegionCaptureBounds> capture_bounds(
+      const std::unique_ptr<viz::CompositorRenderPass>& input) {
+    return input->capture_bounds ? absl::optional<viz::RegionCaptureBounds>(
+                                       *input->capture_bounds)
+                                 : absl::nullopt;
+  }
+
   static bool has_transparent_background(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
     return input->has_transparent_background;

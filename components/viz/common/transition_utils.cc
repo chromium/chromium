@@ -4,6 +4,7 @@
 
 #include "components/viz/common/transition_utils.h"
 
+#include <memory>
 
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
@@ -59,6 +60,9 @@ TransitionUtils::CopyPassWithRenderPassFiltering(
       source_pass.transform_to_root_target, source_pass.filters,
       source_pass.backdrop_filters, source_pass.backdrop_filter_bounds,
       source_pass.subtree_capture_id, source_pass.subtree_size,
+      source_pass.capture_bounds
+          ? std::make_unique<RegionCaptureBounds>(*source_pass.capture_bounds)
+          : nullptr,
       source_pass.has_transparent_background, source_pass.cache_render_pass,
       source_pass.has_damage_from_contributing_content,
       source_pass.generate_mipmap, source_pass.has_per_quad_damage);

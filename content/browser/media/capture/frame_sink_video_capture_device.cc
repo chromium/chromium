@@ -121,7 +121,11 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
                                       constraints.fixed_aspect_ratio);
 
   if (target_.frame_sink_id.is_valid()) {
-    capturer_->ChangeTarget(target_.frame_sink_id, target_.subtree_capture_id);
+    auto sub_target = viz::mojom::SubTarget::New();
+    if (target_.subtree_capture_id.is_valid()) {
+      sub_target->set_subtree_capture_id(target_.subtree_capture_id);
+    }
+    capturer_->ChangeTarget(target_.frame_sink_id, std::move(sub_target));
   }
 
 #if !defined(OS_ANDROID)
@@ -306,7 +310,7 @@ void FrameSinkVideoCaptureDevice::OnTargetChanged(
         target_.frame_sink_id.is_valid()
             ? absl::make_optional<viz::FrameSinkId>(target_.frame_sink_id)
             : absl::nullopt,
-        target.subtree_capture_id);
+        viz::mojom::SubTarget::NewSubtreeCaptureId(target.subtree_capture_id));
   }
 }
 

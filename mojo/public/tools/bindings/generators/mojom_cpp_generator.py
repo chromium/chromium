@@ -82,7 +82,12 @@ class _NameFormatter(object):
 
   def _MapKindName(self, token, internal):
     if not internal:
-      return token.name
+      try:
+        #print ('token is %s' % token)
+        return token.name
+      except AttributeError as e:
+        print('attribute error: %s for token %s' % (e, token))
+
     if (mojom.IsStructKind(token) or mojom.IsUnionKind(token) or
         mojom.IsEnumKind(token)):
       return token.name + "_Data"
