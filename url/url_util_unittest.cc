@@ -497,6 +497,25 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkup) {
   }
 }
 
+TEST_F(URLUtilTest, PotentiallyDanglingMarkupAfterReplacement) {
+  // Parse a URL with potentially dangling markup.
+  Parsed original_parsed;
+  RawCanonOutput<32> original;
+  const char* url = "htt\nps://example.com/<path";
+  Canonicalize(url, strlen(url), false, nullptr, &original, &original_parsed);
+  ASSERT_TRUE(original_parsed.potentially_dangling_markup);
+
+  // Perform a replacement, and validate that the potentially_dangling_markup
+  // flag carried over to the new Parsed object.
+  Replacements<char> replacements;
+  replacements.ClearRef();
+  Parsed replaced_parsed;
+  RawCanonOutput<32> replaced;
+  ReplaceComponents(original.data(), original.length(), original_parsed,
+                    replacements, nullptr, &replaced, &replaced_parsed);
+  EXPECT_TRUE(replaced_parsed.potentially_dangling_markup);
+}
+
 TEST_F(URLUtilTest, TestDomainIs) {
   const struct {
     const char* canonicalized_host;

@@ -453,6 +453,13 @@ TEST(KURLTest, AbsolutePotentiallyDanglingMarkup) {
   }
 }
 
+TEST(KURLTest, PotentiallyDanglingMarkupAfterFragmentRemoval) {
+  KURL url("ht\ntps://example.com/yay?<boo#foo");
+  EXPECT_TRUE(url.PotentiallyDanglingMarkup());
+  url.RemoveFragmentIdentifier();
+  EXPECT_TRUE(url.PotentiallyDanglingMarkup());
+}
+
 TEST(KURLTest, ResolveEmpty) {
   const KURL empty_base;
 
