@@ -16,6 +16,23 @@ mojom("stable_video_decoder") {
     "//ui/gfx/geometry/mojom",
   ]
 
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.stable.mojom.SubsampleEntry"
+          cpp = "::media::SubsampleEntry"
+        },
+        {
+          mojom = "media.stable.mojom.VideoCodec"
+          cpp = "::media::VideoCodec"
+        },
+      ]
+      traits_headers = [ "stable_video_decoder_types_mojom_traits.h" ]
+      traits_sources = [ "stable_video_decoder_types_mojom_traits.cc" ]
+    },
+  ]
+
   cpp_proxy_target = "//media/mojo/services"
   export_class_attribute = "MEDIA_MOJO_EXPORT"
   export_define = "MEDIA_MOJO_IMPLEMENTATION"
