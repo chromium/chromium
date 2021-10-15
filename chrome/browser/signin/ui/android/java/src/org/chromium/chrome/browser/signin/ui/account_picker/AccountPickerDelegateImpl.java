@@ -66,15 +66,11 @@ public class AccountPickerDelegateImpl implements AccountPickerDelegate {
                 Profile.getLastUsedRegularProfile());
     }
 
-    /** Releases resources used by this class. */
     @Override
     public void destroy() {
         destroyWebSigninBridge();
     }
 
-    /**
-     * Signs the user into the given account.
-     */
     @Override
     public void signIn(
             String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
@@ -107,11 +103,6 @@ public class AccountPickerDelegateImpl implements AccountPickerDelegate {
         });
     }
 
-    /**
-     * Notifies when the user clicked the "add account" button.
-     *
-     * TODO(https//crbug.com/1117000): Change the callback argument to CoreAccountInfo
-     */
     @Override
     public void addAccount(Callback<String> callback) {
         AccountManagerFacadeProvider.getInstance().createAddAccountIntent((@Nullable Intent intent)
@@ -134,9 +125,6 @@ public class AccountPickerDelegateImpl implements AccountPickerDelegate {
         });
     }
 
-    /**
-     * Updates credentials of the given account name.
-     */
     @Override
     public void updateCredentials(
             String accountName, Callback<Boolean> onUpdateCredentialsCallback) {
