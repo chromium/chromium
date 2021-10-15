@@ -53,7 +53,7 @@ const TypeInfo kTypeInfos[] = {
     {
         "android",
         {
-            "@ANDROID",
+            "@ANDROID-",
             FILE_PATH_LITERAL("-android"),
             [](base::CommandLine*) {},
         },
@@ -61,7 +61,7 @@ const TypeInfo kTypeInfos[] = {
     {
         "blink",
         {
-            "@BLINK",
+            "@BLINK-",
             FILE_PATH_LITERAL("-blink"),
             [](base::CommandLine*) {},
         },
@@ -69,7 +69,7 @@ const TypeInfo kTypeInfos[] = {
     {
         "linux",
         {
-            "@AURALINUX",
+            "@AURALINUX-",
             FILE_PATH_LITERAL("-auralinux"),
             [](base::CommandLine*) {},
         },
@@ -77,7 +77,7 @@ const TypeInfo kTypeInfos[] = {
     {
         "mac",
         {
-            "@MAC",
+            "@MAC-",
             FILE_PATH_LITERAL("-mac"),
             [](base::CommandLine*) {},
         },
@@ -93,7 +93,7 @@ const TypeInfo kTypeInfos[] = {
     {
         "uia",
         {
-            "@UIA-WIN",
+            "@UIA-WIN-",
             FILE_PATH_LITERAL("-uia-win"),
             [](base::CommandLine* command_line) {
 #if defined(OS_WIN)
@@ -106,7 +106,7 @@ const TypeInfo kTypeInfos[] = {
     {
         "win",
         {
-            "@WIN",
+            "@WIN-",
             FILE_PATH_LITERAL("-win"),
             [](base::CommandLine* command_line) {
 #if defined(OS_WIN)

@@ -5,8 +5,6 @@
 #ifndef AX_TREE_SERVER_H_
 #define AX_TREE_SERVER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
@@ -17,6 +15,10 @@
 #include "base/win/scoped_com_initializer.h"
 #endif
 
+namespace ui {
+class AXInspectScenario;
+}  // namespace ui
+
 namespace content {
 
 class AXTreeServer final {
@@ -25,8 +27,9 @@ class AXTreeServer final {
                const base::FilePath& filters_path);
 
  private:
-  // Generates property filters.
-  absl::optional<std::vector<ui::AXPropertyFilter>> GetPropertyFilters(
+  // Extracts filters and directives for the formatter from the specified
+  // filter file.
+  absl::optional<ui::AXInspectScenario> GetInspectScenario(
       const base::FilePath& filters_path);
 
 #if defined(OS_WIN)

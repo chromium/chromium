@@ -14,33 +14,33 @@ namespace ui {
 
 TEST(AXInspectScenarioTest, NoLoadExpected) {
   AXInspectScenario scenario =
-      AXInspectScenario::From("@MAC", {"@NO-LOAD-EXPECTED:broken.jpg"});
+      AXInspectScenario::From("@MAC-", {"@NO-LOAD-EXPECTED:broken.jpg"});
   EXPECT_THAT(scenario.no_load_expected, testing::ElementsAre("broken.jpg"));
 }
 
 TEST(AXInspectScenarioTest, WaitFor) {
   AXInspectScenario scenario =
-      AXInspectScenario::From("@MAC", {"@WAIT-FOR:(0, 50"});
+      AXInspectScenario::From("@MAC-", {"@WAIT-FOR:(0, 50"});
   EXPECT_THAT(scenario.wait_for, testing::ElementsAre("(0, 50"));
 }
 
 TEST(AXInspectScenarioTest, DefaultActionOn) {
   AXInspectScenario scenario =
-      AXInspectScenario::From("@MAC", {"@DEFAULT-ACTION-ON:Show time picker"});
+      AXInspectScenario::From("@MAC-", {"@DEFAULT-ACTION-ON:Show time picker"});
   EXPECT_THAT(scenario.default_action_on,
               testing::ElementsAre("Show time picker"));
 }
 
 TEST(AXInspectScenarioTest, ExecuteAndWaitFor) {
   AXInspectScenario scenario =
-      AXInspectScenario::From("@MAC", {"@EXECUTE-AND-WAIT-FOR:open_modal()"});
+      AXInspectScenario::From("@MAC-", {"@EXECUTE-AND-WAIT-FOR:open_modal()"});
   EXPECT_THAT(scenario.execute, testing::ElementsAre("open_modal()"));
 }
 
 TEST(AXInspectScenarioTest, PropertyFilters) {
   AXInspectScenario scenario = AXInspectScenario::From(
-      "@MAC", {"@MAC-ALLOW:AXRoleDescription", "@MAC-ALLOW-EMPTY:AXARIALive",
-               "@MAC-DENY:AXTitle"});
+      "@MAC-", {"@MAC-ALLOW:AXRoleDescription", "@MAC-ALLOW-EMPTY:AXARIALive",
+                "@MAC-DENY:AXTitle"});
   EXPECT_EQ(scenario.property_filters.size(), 3U);
   EXPECT_EQ(scenario.property_filters[0].type, AXPropertyFilter::ALLOW);
   EXPECT_EQ(scenario.property_filters[0].match_str, "AXRoleDescription");
@@ -52,7 +52,7 @@ TEST(AXInspectScenarioTest, PropertyFilters) {
 
 TEST(AXInspectScenarioTest, PropertyFilters_Multiline) {
   AXInspectScenario scenario = AXInspectScenario::From(
-      "@MAC", {"@MAC-ALLOW:", "  AXRoleDescription", "  AXARIALive"});
+      "@MAC-", {"@MAC-ALLOW:", "  AXRoleDescription", "  AXARIALive"});
   EXPECT_EQ(scenario.property_filters.size(), 2U);
   EXPECT_EQ(scenario.property_filters[0].type, AXPropertyFilter::ALLOW);
   EXPECT_EQ(scenario.property_filters[0].match_str, "AXRoleDescription");
@@ -62,7 +62,7 @@ TEST(AXInspectScenarioTest, PropertyFilters_Multiline) {
 
 TEST(AXInspectScenarioTest, NodeFilters) {
   AXInspectScenario scenario =
-      AXInspectScenario::From("@MAC", {"@MAC-DENY-NODE:AXRole=AXCheckBox"});
+      AXInspectScenario::From("@MAC-", {"@MAC-DENY-NODE:AXRole=AXCheckBox"});
   EXPECT_EQ(scenario.node_filters.size(), 1U);
   EXPECT_EQ(scenario.node_filters[0].property, "AXRole");
   EXPECT_EQ(scenario.node_filters[0].pattern, "AXCheckBox");
@@ -74,7 +74,7 @@ TEST(AXInspectScenarioTest, Script) {
        "  text_range:= textarea.AXTextMarkerRangeForUIElement(textarea)",
        "  textarea.AXSelectedTextMarkerRange(text_range)",
        "  wait for AXSelectedTextChanged", "textarea.AXSelectedText"});
-  AXInspectScenario scenario = AXInspectScenario::From("@MAC", lines);
+  AXInspectScenario scenario = AXInspectScenario::From("@MAC-", lines);
   EXPECT_EQ(scenario.script_instructions.size(), 4U);
   EXPECT_EQ(scenario.script_instructions[0].AsScript().ToString(),
             "text_range");

@@ -20,30 +20,29 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "content/public/browser/ax_inspect_factory.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 
 using ui::AXTreeFormatter;
 using ui::AXTreeSelector;
 
 namespace content {
 
-constexpr char kAllowOptEmptyStr[] = "@ALLOW-EMPTY:";
-constexpr char kAllowOptStr[] = "@ALLOW:";
-constexpr char kDenyOptStr[] = "@DENY:";
-
 AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
                            const base::FilePath& filters_path) {
   std::unique_ptr<AXTreeFormatter> formatter(
       AXInspectFactory::CreatePlatformFormatter());
 
-  // Set filters.
-  absl::optional<std::vector<ui::AXPropertyFilter>> filters =
-      GetPropertyFilters(filters_path);
-  if (!filters) {
-    LOG(ERROR) << "Failed to parse filters2";
+  // Get filters from optional filters file.
+  absl::optional<ui::AXInspectScenario> scenario =
+      GetInspectScenario(filters_path);
+  if (!scenario) {
+    LOG(ERROR) << "Failed to parse filter file";
     return;
   }
-  formatter->SetPropertyFilters(*filters,
-                                ui::AXTreeFormatter::kFiltersDefaultSet);
+
+  // Use optional filters with the default filter set
+  formatter->SetPropertyFilters(scenario->property_filters,
+                                AXTreeFormatter::kFiltersDefaultSet);
 
   // Get accessibility tree as a nested dictionary.
   base::Value dict = formatter->BuildTreeForSelector(selector);
@@ -56,11 +55,13 @@ AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
   printf("%s", formatter->FormatTree(dict).c_str());
 }
 
-absl::optional<std::vector<ui::AXPropertyFilter>>
-AXTreeServer::GetPropertyFilters(const base::FilePath& filters_path) {
-  std::vector<ui::AXPropertyFilter> filters;
+absl::optional<ui::AXInspectScenario> AXTreeServer::GetInspectScenario(
+    const base::FilePath& filters_path) {
+  std::vector<std::string> lines;
+
+  // Return with the default filter scenario
   if (filters_path.empty()) {
-    return filters;
+    return ui::AXInspectScenario::From("@", lines);
   }
 
   std::string raw_filters_text;
@@ -72,27 +73,13 @@ AXTreeServer::GetPropertyFilters(const base::FilePath& filters_path) {
     return absl::nullopt;
   }
 
-  for (const std::string& line :
-       base::SplitString(raw_filters_text, "\n", base::TRIM_WHITESPACE,
-                         base::SPLIT_WANT_ALL)) {
-    if (base::StartsWith(line, kAllowOptEmptyStr,
-                         base::CompareCase::SENSITIVE)) {
-      filters.emplace_back(line.substr(strlen(kAllowOptEmptyStr)),
-                           ui::AXPropertyFilter::ALLOW_EMPTY);
-    } else if (base::StartsWith(line, kAllowOptStr,
-                                base::CompareCase::SENSITIVE)) {
-      filters.emplace_back(line.substr(strlen(kAllowOptStr)),
-                           ui::AXPropertyFilter::ALLOW);
-    } else if (base::StartsWith(line, kDenyOptStr,
-                                base::CompareCase::SENSITIVE)) {
-      filters.emplace_back(line.substr(strlen(kDenyOptStr)),
-                           ui::AXPropertyFilter::DENY);
-    } else if (!line.empty()) {
-      LOG(ERROR) << "Unrecognized filter instruction at line: " << line;
-      return absl::nullopt;
-    }
-  }
-  return filters;
+  // Otherwise, assume the whole file contains only directives
+  lines = base::SplitString(raw_filters_text, "\n", base::TRIM_WHITESPACE,
+                            base::SPLIT_WANT_ALL);
+
+  // The first argument optionally specifies platform (ex: mac, auralinux),
+  // which we might add support for in the future.
+  return ui::AXInspectScenario::From("@", lines);
 }
 
 }  // namespace content
