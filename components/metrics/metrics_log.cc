@@ -179,34 +179,30 @@ MetricsLog::MetricsLog(const std::string& client_id,
                  session_id,
                  log_type,
                  base::DefaultClock::GetInstance(),
-                 nullptr,
+                 client->GetNetworkTimeTracker(),
                  client) {}
 
-MetricsLog::MetricsLog(
-    const std::string& client_id,
-    int session_id,
-    LogType log_type,
-    base::Clock* clock,
-    network_time::NetworkTimeTracker* network_clock_for_testing,
-    MetricsServiceClient* client)
+MetricsLog::MetricsLog(const std::string& client_id,
+                       int session_id,
+                       LogType log_type,
+                       base::Clock* clock,
+                       const network_time::NetworkTimeTracker* network_clock,
+                       MetricsServiceClient* client)
     : closed_(false),
       log_type_(log_type),
       client_(client),
       creation_time_(base::TimeTicks::Now()),
       has_environment_(false),
       clock_(clock),
-      network_clock_for_testing_(network_clock_for_testing) {
+      network_clock_(network_clock) {
   uma_proto_.set_client_id(Hash(client_id));
   uma_proto_.set_session_id(session_id);
 
   if (log_type == MetricsLog::ONGOING_LOG) {
-    auto* network_clock = network_clock_for_testing_
-                              ? network_clock_for_testing_
-                              : client_->GetNetworkTimeTracker();
     // Don't record the time when creating a log because creating a log happens
     // on startups and setting the timezone requires ICU initialization that is
     // too expensive to run during this critical time.
-    RecordCurrentTime(clock_, network_clock,
+    RecordCurrentTime(clock_, network_clock_,
                       /*record_time_zone=*/false,
                       uma_proto_.mutable_time_log_created());
   }
@@ -489,10 +485,7 @@ void MetricsLog::RecordLogWrittenByAppVersionIfNeeded() {
 void MetricsLog::CloseLog() {
   DCHECK(!closed_);
   if (log_type_ == MetricsLog::ONGOING_LOG) {
-    auto* network_clock = network_clock_for_testing_
-                              ? network_clock_for_testing_
-                              : client_->GetNetworkTimeTracker();
-    RecordCurrentTime(clock_, network_clock,
+    RecordCurrentTime(clock_, network_clock_,
                       /*record_time_zone=*/true,
                       uma_proto_.mutable_time_log_closed());
   }
