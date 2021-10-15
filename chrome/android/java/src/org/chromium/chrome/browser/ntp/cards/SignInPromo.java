@@ -143,6 +143,7 @@ public abstract class SignInPromo {
      * Updates visibility status. Overridden by subclasses that want to track visibility changes.
      */
     protected void setVisibilityInternal(boolean visibility) {
+        if (!mIsVisible && visibility) mSigninPromoController.increasePromoShowCount();
         mIsVisible = visibility;
     }
 

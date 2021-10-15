@@ -59,6 +59,7 @@ public class SigninPromoController {
 
     /** Suffix strings for promo shown count preference. */
     private static final String BOOKMARKS = "Bookmarks";
+    private static final String NTP = "Ntp";
     private static final String SETTINGS = "Settings";
 
     private @Nullable DisplayableProfileData mProfileData;
@@ -120,7 +121,7 @@ public class SigninPromoController {
 
         if (currentTime - lastShownTime >= resetAfterMs) {
             SharedPreferencesManager.getInstance().writeInt(
-                    ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP, 0);
+                    getPromoShowCountPreferenceName(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS), 0);
             SharedPreferencesManager.getInstance().removeKey(
                     ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME);
             SharedPreferencesManager.getInstance().removeKey(
@@ -155,7 +156,7 @@ public class SigninPromoController {
                 ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD, "MaxSigninPromoImpressions",
                 Integer.MAX_VALUE);
         if (SharedPreferencesManager.getInstance().readInt(
-                    ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP)
+                    getPromoShowCountPreferenceName(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS))
                         >= maxImpressions
                 || timeElapsedSinceFirstShownExceedsLimit()) {
             return false;
@@ -207,6 +208,8 @@ public class SigninPromoController {
         switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(BOOKMARKS);
+            case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
+                return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(NTP);
             case SigninAccessPoint.SETTINGS:
                 return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(SETTINGS);
             default:
@@ -422,6 +425,18 @@ public class SigninPromoController {
     public void increasePromoShowCount() {
         SharedPreferencesManager.getInstance().incrementInt(
                 getPromoShowCountPreferenceName(mAccessPoint));
+
+        if (mAccessPoint == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
+            final long currentTime = System.currentTimeMillis();
+            if (SharedPreferencesManager.getInstance().readLong(
+                        ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME)
+                    == 0) {
+                SharedPreferencesManager.getInstance().writeLong(
+                        ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, currentTime);
+            }
+            SharedPreferencesManager.getInstance().writeLong(
+                    ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, currentTime);
+        }
     }
 
     private void setupColdState(PersonalizedSigninPromoView view) {
@@ -517,18 +532,6 @@ public class SigninPromoController {
         // If mImpressionCountName is not null then we should record impressions.
         if (mImpressionCountName != null) {
             SharedPreferencesManager.getInstance().incrementInt(mImpressionCountName);
-        }
-
-        if (mAccessPoint == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
-            final long currentTime = System.currentTimeMillis();
-            if (SharedPreferencesManager.getInstance().readLong(
-                        ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME)
-                    == 0) {
-                SharedPreferencesManager.getInstance().writeLong(
-                        ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, currentTime);
-            }
-            SharedPreferencesManager.getInstance().writeLong(
-                    ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, currentTime);
         }
     }
 

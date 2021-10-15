@@ -79,8 +79,9 @@ public class SigninPromoControllerTest {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(Profile.getLastUsedRegularProfile()))
                 .thenReturn(mIdentityManagerMock);
-        mSharedPreferencesManager.writeInt(
-                ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP, 0);
+        mSharedPreferencesManager.writeInt(SigninPromoController.getPromoShowCountPreferenceName(
+                                                   SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
+                0);
         mSharedPreferencesManager.writeLong(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, 0L);
         mSharedPreferencesManager.writeLong(
@@ -144,7 +145,8 @@ public class SigninPromoControllerTest {
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS, false);
         FeatureList.setTestValues(testValues);
-        mSharedPreferencesManager.writeInt(ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,
+        mSharedPreferencesManager.writeInt(SigninPromoController.getPromoShowCountPreferenceName(
+                                                   SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
                 MAX_SIGN_IN_PROMO_IMPRESSIONS - 1);
 
         Assert.assertTrue(
@@ -160,7 +162,8 @@ public class SigninPromoControllerTest {
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS, false);
         FeatureList.setTestValues(testValues);
-        mSharedPreferencesManager.writeInt(ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,
+        mSharedPreferencesManager.writeInt(SigninPromoController.getPromoShowCountPreferenceName(
+                                                   SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
                 MAX_SIGN_IN_PROMO_IMPRESSIONS);
 
         Assert.assertFalse(
@@ -227,7 +230,8 @@ public class SigninPromoControllerTest {
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
         Assert.assertEquals(MAX_SIGN_IN_PROMO_IMPRESSIONS,
                 SharedPreferencesManager.getInstance().readInt(
-                        ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP));
+                        SigninPromoController.getPromoShowCountPreferenceName(
+                                SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
     }
 
     @Test
@@ -251,7 +255,8 @@ public class SigninPromoControllerTest {
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
         Assert.assertEquals(MAX_SIGN_IN_PROMO_IMPRESSIONS,
                 SharedPreferencesManager.getInstance().readInt(
-                        ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP));
+                        SigninPromoController.getPromoShowCountPreferenceName(
+                                SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
     }
 
     @Test
@@ -275,7 +280,8 @@ public class SigninPromoControllerTest {
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
         Assert.assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
-                        ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP));
+                        SigninPromoController.getPromoShowCountPreferenceName(
+                                SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
     }
 
     @Test
@@ -312,7 +318,8 @@ public class SigninPromoControllerTest {
                 signinPromoResetAfterHours);
 
         SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,
+                SigninPromoController.getPromoShowCountPreferenceName(
+                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
                 MAX_SIGN_IN_PROMO_IMPRESSIONS);
         SharedPreferencesManager.getInstance().writeLong(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, firstShownTime);
