@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {FileType} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/file_type.js';
-import {ImageOrientation} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.js';
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 
 import {ImageCache} from './cache.js';
 import {ImageLoaderUtil} from './image_loader_util.js';
+import {ImageOrientation} from './image_orientation.js';
 import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
 import {PiexLoader} from './piex_loader.js';
 

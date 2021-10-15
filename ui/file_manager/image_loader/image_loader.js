@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ImageOrientation} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {ImageCache} from './cache.js';
+import {ImageOrientation} from './image_orientation.js';
 import {ImageRequestTask} from './image_request_task.js';
 import {LoadImageRequest, LoadImageResponse} from './load_image_request.js';
 import {Scheduler} from './scheduler.js';

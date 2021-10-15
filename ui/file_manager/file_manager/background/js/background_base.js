@@ -30,7 +30,9 @@ export class BackgroundBaseImpl {
           console.error(chrome.runtime.lastError.message);
           return;
         }
-        loadTimeData.data = assert(stringData);
+        if (!loadTimeData.isInitialized()) {
+          loadTimeData.data = assert(stringData);
+        }
         fulfill(stringData);
       });
     });

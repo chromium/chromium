@@ -31,6 +31,8 @@
   "natively_connectable": ["com.google.ash_thumbnail_loader"],
   "web_accessible_resources": [
     "image_loader_client.js",
-    "load_image_request.js"
+    "image_orientation.js",
+    "load_image_request.js",
+    "lru_cache.js"
   ]
 }
