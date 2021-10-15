@@ -373,7 +373,7 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
    * @private
    * @override
    */
-  onLaunched_(launchData) {
+  async onLaunched_(launchData) {
     metrics.startInterval('Load.BackgroundLaunch');
     if (!launchData || !launchData.items || launchData.items.length == 0) {
       this.launch_(undefined);

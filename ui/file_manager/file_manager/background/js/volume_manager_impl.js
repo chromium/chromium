@@ -6,7 +6,6 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
-import {AsyncUtil} from '../../common/js/async_util.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
@@ -35,13 +34,6 @@ export class VolumeManagerImpl extends EventTarget {
      */
     this.requests_ = {};
 
-    /**
-     * Mutex guarding the mounting and unmounting operations, in order to
-     * guarantee that onMountCompleted events happen after initialization.
-     * @private @const {AsyncUtil.Queue}
-     */
-    this.mutex_ = new AsyncUtil.Queue();
-
     // The status should be merged into VolumeManager.
     // TODO(hidehiko): Remove them after the migration.
     /**
@@ -59,6 +51,24 @@ export class VolumeManagerImpl extends EventTarget {
     chrome.fileManagerPrivate.onDriveConnectionStatusChanged.addListener(
         this.onDriveConnectionStatusChanged_.bind(this));
     this.onDriveConnectionStatusChanged_();
+
+    /**
+     * Holds the resolver for the `waitForInitialization_` promise.
+     * @private {null|function():void}
+     */
+    this.finishInitialization_ = null;
+
+    /**
+     * Promise used to wait for the initialize() method to finish.
+     * @private {!Promise<void>}
+     */
+    this.waitForInitialization_ =
+        new Promise(resolve => this.finishInitialization_ = resolve);
+
+    // Subscribe to mount event as early as possible, but after the
+    // waitForInitialization_ above.
+    chrome.fileManagerPrivate.onMountCompleted.addListener(
+        this.onMountCompleted_.bind(this));
   }
 
   /** @override */
@@ -133,45 +143,74 @@ export class VolumeManagerImpl extends EventTarget {
    * @return {!Promise<void>}
    */
   async initialize() {
-    // Subscribe to mount event as early as possible.
-    chrome.fileManagerPrivate.onMountCompleted.addListener(
-        this.onMountCompleted_.bind(this));
-
-    console.warn('Getting volumes');
-    const volumeMetadataList = await new Promise(
-        resolve => chrome.fileManagerPrivate.getVolumeMetadataList(resolve));
-    if (!volumeMetadataList) {
-      console.error('Cannot get volumes');
-      return;
-    }
-    console.debug(`There are ${volumeMetadataList.length} volumes`);
-
-    // Create VolumeInfo for each volume.
-    volumeMetadataList.map(async (volumeMetadata) => {
-      console.debug(`Initializing volume '${volumeMetadata.volumeId}'`);
-      // createVolumeInfo() requests the filesystem and resolve its root, after
-      // that it only created a VolumeInfo.  We want this request and resolve
-      // outside of the lock to resolve all volumes in parallel.
-      const volumeInfo =
-          await volumeManagerUtil.createVolumeInfo(volumeMetadata);
-      const unlock = await this.mutex_.lock();
-      try {
-        // Add addVolumeInfo_() changes the VolumeInfoList which propagates
-        // to the foreground.
-        await this.addVolumeInfo_(volumeInfo);
-        console.debug(`Initialized volume '${volumeInfo.volumeId}'`);
-      } catch (error) {
-        console.warn(`Error initiliazing ${volumeMetadata.volumeId}`);
-        console.error(error);
-      } finally {
-        unlock();
+    let finished = false;
+    /**
+     * Resolves the initialization promise to unblock any code awaiting for
+     * it.
+     */
+    const finishInitialization = () => {
+      if (finished) {
+        return;
       }
-    });
+      finished = true;
+      this.finishInitialization_();
+    };
 
-    // At this point the volumes are still initializing.
-    console.warn(
-        `Queued the initialization of all ` +
-        `${volumeMetadataList.length} volumes`);
+    try {
+      console.warn('Getting volumes');
+      const volumeMetadataList = await new Promise(
+          resolve => chrome.fileManagerPrivate.getVolumeMetadataList(resolve));
+      if (!volumeMetadataList) {
+        console.error('Cannot get volumes');
+        finishInitialization();
+        return;
+      }
+      console.debug(`There are ${volumeMetadataList.length} volumes`);
+
+      let counter = 0;
+
+      // Create VolumeInfo for each volume.
+      volumeMetadataList.map(async (volumeMetadata, idx) => {
+        const volumeId = volumeMetadata.volumeId;
+        let volumeInfo = null;
+        try {
+          console.debug(`Initializing volume #${idx} '${volumeId}'`);
+          // createVolumeInfo() requests the filesystem and resolve its root,
+          // after that it only creates a VolumeInfo.
+          volumeInfo = await volumeManagerUtil.createVolumeInfo(volumeMetadata);
+          // Add addVolumeInfo_() changes the VolumeInfoList which propagates
+          // to the foreground.
+          await this.addVolumeInfo_(volumeInfo);
+          console.debug(`Initialized volume #${idx} ${volumeId}'`);
+        } catch (error) {
+          console.warn(`Error initiliazing #${idx} ${volumeId}`);
+          console.error(error);
+        } finally {
+          counter += 1;
+          // Finish after all volumes have been processed, or at least Downloads
+          // or Drive.
+          const isDriveOrDownloads = volumeInfo &&
+              (volumeInfo.volumeType ==
+                   VolumeManagerCommon.VolumeType.DOWNLOADS ||
+               volumeInfo.volumeType == VolumeManagerCommon.VolumeType.DRIVE);
+          if (counter === volumeMetadataList.length || isDriveOrDownloads) {
+            finishInitialization();
+          }
+        }
+      });
+
+      // At this point the volumes are still initializing.
+      console.warn(
+          `Queued the initialization of all ` +
+          `${volumeMetadataList.length} volumes`);
+
+      if (volumeMetadataList.length === 0) {
+        finishInitialization();
+      }
+    } catch (error) {
+      finishInitialization();
+      throw error;
+    }
   }
 
   /**
@@ -180,83 +219,84 @@ export class VolumeManagerImpl extends EventTarget {
    * @private
    */
   async onMountCompleted_(event) {
-    const unlock = await this.mutex_.lock();
-    try {
-      const {eventType, status, volumeMetadata} = event;
-      const {sourcePath = '', volumeId} = volumeMetadata;
+    // Wait for the initialization to guarantee that the initialize() runs for
+    // some volumes before any mount event, because the mounted volume can be
+    // unresponsive, getting stuck when resolving the root in the method
+    // createVolumeInfo(). crbug.com/504366
+    await this.waitForInitialization_;
 
-      switch (eventType) {
-        case 'mount': {
-          const requestKey = this.makeRequestKey_('mount', sourcePath);
+    const {eventType, status, volumeMetadata} = event;
+    const {sourcePath = '', volumeId} = volumeMetadata;
 
-          switch (status) {
-            case 'success':
-            case VolumeManagerCommon.VolumeError.UNKNOWN_FILESYSTEM:
-            case VolumeManagerCommon.VolumeError.UNSUPPORTED_FILESYSTEM: {
-              console.debug(`Mounted '${sourcePath}' as '${volumeId}'`);
-              const volumeInfo =
-                  await volumeManagerUtil.createVolumeInfo(volumeMetadata);
-              await this.addVolumeInfo_(volumeInfo);
-              this.finishRequest_(requestKey, status, volumeInfo);
-              return;
-            }
+    switch (eventType) {
+      case 'mount': {
+        const requestKey = this.makeRequestKey_('mount', sourcePath);
 
-            case VolumeManagerCommon.VolumeError.ALREADY_MOUNTED: {
-              console.warn(`'Cannot mount ${sourcePath}': Already mounted as '${
-                  volumeId}'`);
-              const navigationEvent =
-                  new Event(VolumeManagerCommon.VOLUME_ALREADY_MOUNTED);
-              navigationEvent.volumeId = volumeId;
-              this.dispatchEvent(navigationEvent);
-              this.finishRequest_(requestKey, status);
-              return;
-            }
-
-            case VolumeManagerCommon.VolumeError.NEED_PASSWORD: {
-              console.warn(`'Cannot mount ${sourcePath}': ${status}`);
-              this.finishRequest_(requestKey, status);
-              return;
-            }
-
-            default:
-              console.error(`Cannot mount '${sourcePath}': ${status}`);
-              this.finishRequest_(requestKey, status);
-              return;
+        switch (status) {
+          case 'success':
+          case VolumeManagerCommon.VolumeError.UNKNOWN_FILESYSTEM:
+          case VolumeManagerCommon.VolumeError.UNSUPPORTED_FILESYSTEM: {
+            console.debug(`Mounted '${sourcePath}' as '${volumeId}'`);
+            const volumeInfo =
+                await volumeManagerUtil.createVolumeInfo(volumeMetadata);
+            await this.addVolumeInfo_(volumeInfo);
+            this.finishRequest_(requestKey, status, volumeInfo);
+            return;
           }
-        }
 
-        case 'unmount': {
-          const requestKey = this.makeRequestKey_('unmount', volumeId);
-          const volumeInfoIndex = this.volumeInfoList.findIndex(volumeId);
-          const volumeInfo = volumeInfoIndex !== -1 ?
-              this.volumeInfoList.item(volumeInfoIndex) :
-              null;
-
-          switch (status) {
-            case 'success': {
-              const requested = requestKey in this.requests_;
-              if (!requested && volumeInfo) {
-                console.warn(`Unmounted '${volumeId}' without request`);
-                this.dispatchEvent(new CustomEvent(
-                    'externally-unmounted', {detail: volumeInfo}));
-              } else {
-                console.debug(`Unmounted '${volumeId}'`);
-              }
-
-              this.volumeInfoList.remove(volumeId);
-              this.finishRequest_(requestKey, status);
-              return;
-            }
-
-            default:
-              console.error(`Cannot unmount '${volumeId}': ${status}`);
-              this.finishRequest_(requestKey, status);
-              return;
+          case VolumeManagerCommon.VolumeError.ALREADY_MOUNTED: {
+            console.warn(`'Cannot mount ${sourcePath}': Already mounted as '${
+                volumeId}'`);
+            const navigationEvent =
+                new Event(VolumeManagerCommon.VOLUME_ALREADY_MOUNTED);
+            navigationEvent.volumeId = volumeId;
+            this.dispatchEvent(navigationEvent);
+            this.finishRequest_(requestKey, status);
+            return;
           }
+
+          case VolumeManagerCommon.VolumeError.NEED_PASSWORD: {
+            console.warn(`'Cannot mount ${sourcePath}': ${status}`);
+            this.finishRequest_(requestKey, status);
+            return;
+          }
+
+          default:
+            console.error(`Cannot mount '${sourcePath}': ${status}`);
+            this.finishRequest_(requestKey, status);
+            return;
         }
       }
-    } finally {
-      unlock();
+
+      case 'unmount': {
+        const requestKey = this.makeRequestKey_('unmount', volumeId);
+        const volumeInfoIndex = this.volumeInfoList.findIndex(volumeId);
+        const volumeInfo = volumeInfoIndex !== -1 ?
+            this.volumeInfoList.item(volumeInfoIndex) :
+            null;
+
+        switch (status) {
+          case 'success': {
+            const requested = requestKey in this.requests_;
+            if (!requested && volumeInfo) {
+              console.warn(`Unmounted '${volumeId}' without request`);
+              this.dispatchEvent(new CustomEvent(
+                  'externally-unmounted', {detail: volumeInfo}));
+            } else {
+              console.debug(`Unmounted '${volumeId}'`);
+            }
+
+            this.volumeInfoList.remove(volumeId);
+            this.finishRequest_(requestKey, status);
+            return;
+          }
+
+          default:
+            console.error(`Cannot unmount '${volumeId}': ${status}`);
+            this.finishRequest_(requestKey, status);
+            return;
+        }
+      }
     }
   }
 

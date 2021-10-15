@@ -329,21 +329,19 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenAudioFiles, /* open_audio_files.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("audioOpenCloseDrive"),
+    ::testing::Values(TestCase("audioOpenCloseDownloads"),
+                      TestCase("audioOpenCloseDownloads").InGuestMode(),
+                      TestCase("audioOpenCloseDrive"),
                       TestCase("audioOpenDownloads").InGuestMode(),
                       TestCase("audioOpenDownloads"),
                       TestCase("audioOpenDrive"),
+                      TestCase("audioAutoAdvanceDrive"),
+                      TestCase("audioRepeatAllModeMultipleFileDrive"),
                       TestCase("audioNoRepeatModeSingleFileDrive"),
                       TestCase("audioRepeatOneModeSingleFileDrive"),
-                      TestCase("audioNoRepeatModeMultipleFileDrive")
-                      // Disable flaky test, crbug.com/1254831
-                      // TestCase("audioOpenCloseDownloads"),
-                      // TestCase("audioOpenCloseDownloads").InGuestMode(),
-                      // TestCase("audioRepeatOneModeMultipleFileDrive"),
-                      // TestCase("audioAutoAdvanceDrive"),
-                      // TestCase("audioRepeatAllModeMultipleFileDrive"),
-                      // TestCase("audioRepeatAllModeSingleFileDrive"),
-                      ));
+                      TestCase("audioRepeatAllModeSingleFileDrive"),
+                      TestCase("audioNoRepeatModeMultipleFileDrive"),
+                      TestCase("audioRepeatOneModeMultipleFileDrive")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenImageMediaApp, /* open_image_media_app.js */

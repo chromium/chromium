@@ -41,3 +41,12 @@ export async function promisify(fn, ...args) {
 export async function openWindow(params) {
   return promisify(chrome.fileManagerPrivate.openWindow, params);
 }
+
+/**
+ * @param {!Array<!Entry>} isolatedEntries entries to be resolved.
+ * @return {!Promise<!Array<!Entry>>} entries resolved.
+ */
+export async function resolveIsolatedEntries(isolatedEntries) {
+  return promisify(
+      chrome.fileManagerPrivate.resolveIsolatedEntries, isolatedEntries);
+}
