@@ -1904,12 +1904,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC" desc="Text displayed to inform the user that syncable types are limited (i.e. managed). [iOS only]">
         Your organization limits what you can sync.
       </message>
-      <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC_DETAILS" desc="Text displayed to inform the user that syncable types are limited (i.e. managed). Includes a details link. [iOS only]">
-        Your organization limits what you can sync. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Details<ph name="END_LINK">END_LINK</ph>
-      </message>
-      <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC_DETAILS_POPOVER" desc="Text displayed in the popover to inform the user that syncable types are limited (i.e. managed).">
-          When you turn on sync, the data may be limited by what your organization has allowed.
-      </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
         You've Been Signed Out
       </message>
