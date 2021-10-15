@@ -1165,8 +1165,8 @@ extern const char kBookmarksImprovedSaveFlowDescription[];
 extern const char kBookmarksRefreshName[];
 extern const char kBookmarksRefreshDescription[];
 
-extern const char kForceWebContentsDarkModeName[];
-extern const char kForceWebContentsDarkModeDescription[];
+extern const char kAutoWebContentsDarkModeName[];
+extern const char kAutoWebContentsDarkModeDescription[];
 
 extern const char kForcedColorsName[];
 extern const char kForcedColorsDescription[];
