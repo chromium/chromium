@@ -180,6 +180,8 @@ class LaunchProcess {
   WindowOpenDisposition GetNavigationDisposition(bool is_new_browser) const;
   content::WebContents* MaybeLaunchSystemWebApp(const GURL& launch_url);
   std::tuple<Browser*, bool /*is_new_browser*/> EnsureBrowser();
+  LaunchHandler::RouteTo GetLaunchRouteTo() const;
+
   Browser* MaybeFindBrowserForLaunch() const;
   Browser* CreateBrowserForLaunch();
   content::WebContents* NavigateBrowser(Browser* browser,
@@ -195,13 +197,15 @@ class LaunchProcess {
   Profile& profile_;
   WebAppProvider& provider_;
   const apps::AppLaunchParams& params_;
+  const WebApp* web_app_ = nullptr;
 };
 
 LaunchProcess::LaunchProcess(Profile& profile,
                              const apps::AppLaunchParams& params)
     : profile_(profile),
       provider_(*WebAppProvider::GetForLocalAppsUnchecked(&profile)),
-      params_(params) {}
+      params_(params),
+      web_app_(provider_.registrar().GetAppById(params.app_id)) {}
 
 content::WebContents* LaunchProcess::Run() {
   if (Browser::GetCreationStatusForProfile(&profile_) !=
@@ -243,24 +247,24 @@ content::WebContents* LaunchProcess::Run() {
 }
 
 const apps::ShareTarget* LaunchProcess::MaybeGetShareTarget() const {
+  DCHECK(web_app_);
   bool is_share_intent =
       params_.intent &&
       (params_.intent->action == apps_util::kIntentActionSend ||
        params_.intent->action == apps_util::kIntentActionSendMultiple);
-  return is_share_intent
-             ? provider_.registrar().GetAppShareTarget(params_.app_id)
+  return is_share_intent && web_app_->share_target().has_value()
+             ? &web_app_->share_target().value()
              : nullptr;
 }
 
 std::tuple<GURL, bool /*is_file_handling*/> LaunchProcess::GetLaunchUrl(
     const apps::ShareTarget* share_target) const {
+  DCHECK(web_app_);
   GURL launch_url;
   bool is_file_handling = false;
   bool is_note_taking_intent =
       params_.intent &&
       params_.intent->action == apps_util::kIntentActionCreateNote;
-  const WebApp* web_app = provider_.registrar().GetAppById(params_.app_id);
-  DCHECK(web_app);
 
   if (!params_.override_url.is_empty()) {
     launch_url = params_.override_url;
@@ -282,9 +286,9 @@ std::tuple<GURL, bool /*is_file_handling*/> LaunchProcess::GetLaunchUrl(
     // Handle share_target launch.
     launch_url = share_target->action;
   } else if (is_note_taking_intent &&
-             web_app->note_taking_new_note_url().is_valid()) {
+             web_app_->note_taking_new_note_url().is_valid()) {
     // Handle Create Note launch.
-    launch_url = web_app->note_taking_new_note_url();
+    launch_url = web_app_->note_taking_new_note_url();
   } else {
     // This is a default launch.
     launch_url = provider_.registrar().GetAppLaunchUrl(params_.app_id);
@@ -314,6 +318,15 @@ WindowOpenDisposition LaunchProcess::GetNavigationDisposition(
   return params_.disposition == WindowOpenDisposition::CURRENT_TAB
              ? WindowOpenDisposition::CURRENT_TAB
              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+}
+
+LaunchHandler::RouteTo LaunchProcess::GetLaunchRouteTo() const {
+  DCHECK(web_app_);
+  LaunchHandler launch_handler =
+      web_app_->launch_handler().value_or(LaunchHandler());
+  if (launch_handler.route_to == LaunchHandler::RouteTo::kAuto)
+    return LaunchHandler::RouteTo::kNewClient;
+  return launch_handler.route_to;
 }
 
 content::WebContents* LaunchProcess::MaybeLaunchSystemWebApp(
@@ -348,11 +361,10 @@ Browser* LaunchProcess::MaybeFindBrowserForLaunch() const {
         display::Screen::GetScreen()->GetDisplayForNewWindows().id());
   }
 
-  if (params_.disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB)
+  if (!provider_.registrar().IsTabbedWindowModeEnabled(params_.app_id) &&
+      GetLaunchRouteTo() == LaunchHandler::RouteTo::kNewClient) {
     return nullptr;
-
-  if (!provider_.registrar().IsTabbedWindowModeEnabled(params_.app_id))
-    return nullptr;
+  }
 
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() == &profile_ &&
