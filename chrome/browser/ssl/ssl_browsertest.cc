@@ -3864,7 +3864,7 @@ IN_PROC_BROWSER_TEST_P(
   WriteTestFiles(*embedded_test_server(), "example.com");
   WriteFile(FILE_PATH_LITERAL("worker.js.mock-http-headers"),
             "HTTP/1.1 200 OK\n"
-            "Content-Type: text/html\n"
+            "Content-Type: application/javascript\n"
             "Content-Security-Policy: block-all-mixed-content;");
   for (bool strict_mixed_content_checking : {true, false}) {
     for (bool strictly_block_blockable_mixed_content : {true, false}) {
@@ -3897,7 +3897,7 @@ IN_PROC_BROWSER_TEST_P(
   WriteTestFiles(*embedded_test_server(), "example.com");
   WriteFile(FILE_PATH_LITERAL("worker.js.mock-http-headers"),
             "HTTP/1.1 200 OK\n"
-            "Content-Type: text/html\n"
+            "Content-Type: application/javascript\n"
             "Content-Security-Policy: block-all-mixed-content;");
   for (bool strict_mixed_content_checking : {true, false}) {
     for (bool strictly_block_blockable_mixed_content : {true, false}) {
