@@ -268,14 +268,14 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   bool GetAvailableRangeForTest(const SessionID& tab_id,
                                 std::pair<int, int>* range);
 
- private:
-  friend class SessionServiceBaseTestHelper;
-  friend class SessionServiceTestHelper;
-
   // Sets whether commands are saved. If false, SessionCommands are effectively
   // dropped (deleted). This is intended for use after a crash to ensure no
   // commands are written before the user acknowledges/restores the crash.
   void SetSavingEnabled(bool enabled);
+
+ private:
+  friend class SessionServiceBaseTestHelper;
+  friend class SessionServiceTestHelper;
 
   // This is always non-null.
   Profile* profile_;

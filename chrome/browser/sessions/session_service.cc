@@ -28,6 +28,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_common_utils.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -118,6 +119,13 @@ SessionService::SessionService(Profile* profile)
   closing_all_browsers_subscription_ = chrome::AddClosingAllBrowsersCallback(
       base::BindRepeating(&SessionService::OnClosingAllBrowsersChanged,
                           base::Unretained(this)));
+  ExitTypeService* exit_type_service =
+      ExitTypeService::GetInstanceForProfile(profile);
+  if (exit_type_service && exit_type_service->waiting_for_user_to_ack_crash()) {
+    SetSavingEnabled(false);
+    exit_type_service->AddCrashAckCallback(base::BindOnce(
+        &SessionService::SetSavingEnabled, weak_factory_.GetWeakPtr(), true));
+  }
 }
 
 SessionService::~SessionService() {
@@ -137,15 +145,17 @@ SessionService::~SessionService() {
     LogExitEvent();
 }
 
-bool SessionService::ShouldNewWindowStartSession(Browser* browser) {
-  // If saving is not enabled, then do not move the session file, otherwise
-  // we'll clobber the last session.
-  if (!is_saving_enabled())
-    return false;
+// static
+bool SessionService::IsRelevantWindowType(
+    sessions::SessionWindow::WindowType window_type) {
+  return (window_type == sessions::SessionWindow::TYPE_NORMAL) ||
+         (window_type == sessions::SessionWindow::TYPE_POPUP);
+}
 
-    // ChromeOS and OSX have different ideas of application lifetime than
-    // the other platforms.
-    // On ChromeOS opening a new window should never start a new session.
+bool SessionService::ShouldRestore(Browser* browser) {
+  // ChromeOS and OSX have different ideas of application lifetime than
+  // the other platforms.
+  // On ChromeOS opening a new window should never start a new session.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If the full restore feature is enabled, Chrome browser is not launched
   // automatically during the system startup phase. When Chrome browser is
@@ -209,6 +219,7 @@ bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
 }
 
 void SessionService::MoveCurrentSessionToLastSession() {
+  DCHECK(is_saving_enabled());
   pending_tab_close_ids_.clear();
   window_closing_ids_.clear();
   pending_window_close_ids_.clear();
@@ -462,17 +473,16 @@ void SessionService::DidScheduleCommand() {
 bool SessionService::ShouldRestoreWindowOfType(
     sessions::SessionWindow::WindowType window_type) const {
   // TYPE_APP and TYPE_APP_POPUP are handled by app_session_service.
-  return (window_type == sessions::SessionWindow::TYPE_NORMAL) ||
-         (window_type == sessions::SessionWindow::TYPE_POPUP);
+  return IsRelevantWindowType(window_type);
 }
 
 bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
                                         Browser* browser,
                                         bool restore_apps) {
-  if (ShouldNewWindowStartSession(browser)) {
+  if (ShouldRestore(browser)) {
     // We're going from no tabbed browsers to a tabbed browser (and not in
     // process startup), restore the last session.
-    if (move_on_new_browser_) {
+    if (move_on_new_browser_ && is_saving_enabled()) {
       // Make the current session the last.
       MoveCurrentSessionToLastSession();
       move_on_new_browser_ = false;
@@ -523,6 +533,7 @@ void SessionService::BuildCommandsForTab(
     absl::optional<tab_groups::TabGroupId> group,
     bool is_pinned,
     IdToRange* tab_to_available_range) {
+  DCHECK(is_saving_enabled());
   SessionServiceBase::BuildCommandsForTab(window_id, tab, index_in_window,
                                           group, is_pinned,
                                           tab_to_available_range);
@@ -556,6 +567,7 @@ void SessionService::BuildCommandsForTab(
 }
 
 void SessionService::ScheduleResetCommands() {
+  DCHECK(is_saving_enabled());
   command_storage_manager()->set_pending_reset(true);
   command_storage_manager()->ClearPendingCommands();
   tab_to_available_range()->clear();
@@ -625,8 +637,10 @@ bool SessionService::HasOpenTrackableBrowsers(
 }
 
 void SessionService::RebuildCommandsIfRequired() {
-  if (rebuild_on_next_save() && pending_window_close_ids_.empty())
+  if (rebuild_on_next_save() && pending_window_close_ids_.empty() &&
+      is_saving_enabled()) {
     ScheduleResetCommands();
+  }
 }
 
 void SessionService::OnClosingAllBrowsersChanged(bool closing) {

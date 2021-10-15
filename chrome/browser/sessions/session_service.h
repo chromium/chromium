@@ -63,11 +63,14 @@ class SessionService : public SessionServiceBase {
 
   ~SessionService() override;
 
-  // Returns true if a new window opening should really be treated like the
-  // start of a session (with potential session restore, startup URLs, etc.).
-  // In particular, this is true if there are no tabbed browsers running
-  // currently (eg. because only background or other app pages are running).
-  bool ShouldNewWindowStartSession(Browser* browser);
+  // Returns true if `window_type` identifies a type tracked by SessionService.
+  static bool IsRelevantWindowType(
+      sessions::SessionWindow::WindowType window_type);
+
+  // Returns true if restore should be triggered. If `browser` is non-null this
+  // is called as the result of a new Browser being created. If `browser` is
+  // null this is called from RestoreIfNecessary();
+  bool ShouldRestore(Browser* browser);
 
   // Invoke at a point when you think session restore might occur. For example,
   // during startup and window creation this is invoked to see if a session
