@@ -84,6 +84,9 @@ class MrfuCache {
     base::TimeDelta write_delay = base::Seconds(30);
   };
 
+  // A vector of items and their scores. No guarantees of ordering.
+  using Items = std::vector<std::pair<std::string, float>>;
+
   MrfuCache(const base::FilePath& path, const Params& params);
   ~MrfuCache();
 
@@ -98,6 +101,13 @@ class MrfuCache {
 
   // Returns the score of |item| divided by the sum of all scores.
   float GetNormalized(const std::string& item);
+
+  // Returns all items in the cache and their scores.
+  Items GetAll();
+
+  // Returns all items in the cache and their scores, normalized by the sum of
+  // all scores.
+  Items GetAllNormalized();
 
  private:
   friend class MrfuCacheTest;

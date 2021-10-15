@@ -138,6 +138,30 @@ float MrfuCache::GetNormalized(const std::string& item) {
   return Get(item) / proto_->total_score();
 }
 
+MrfuCache::Items MrfuCache::GetAll() {
+  if (!proto_.initialized())
+    return {};
+
+  MrfuCache::Items results;
+  for (auto& item_score : *proto_->mutable_items()) {
+    Score& score = item_score.second;
+    Decay(&score);
+    results.emplace_back(item_score.first, score.score());
+  }
+  return results;
+}
+
+MrfuCache::Items MrfuCache::GetAllNormalized() {
+  if (!proto_.initialized() || proto_->total_score() == 0.0f)
+    return {};
+
+  auto results = GetAll();
+  const float total = proto_->total_score();
+  for (auto& pair : results)
+    pair.second /= total;
+  return results;
+}
+
 void MrfuCache::Decay(Score* score) {
   int64_t update_count = proto_->update_count();
   int64_t count_delta = update_count - score->last_update_count();

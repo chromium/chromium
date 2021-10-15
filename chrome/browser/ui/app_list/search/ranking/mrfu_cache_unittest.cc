@@ -19,6 +19,10 @@
 namespace app_list {
 namespace {
 
+using testing::FloatNear;
+using testing::Pair;
+using testing::UnorderedElementsAre;
+
 constexpr float kEps = 1e-3f;
 
 }  // namespace
@@ -29,10 +33,11 @@ class MrfuCacheTest : public testing::Test {
 
   base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
 
-  MrfuCache::Params TestingParams() {
+  MrfuCache::Params TestingParams(float half_life = 10.0f,
+                                  float boost_factor = 5.0f) {
     MrfuCache::Params params;
-    params.half_life = 10.0f;
-    params.boost_factor = 5.0f;
+    params.half_life = half_life;
+    params.boost_factor = boost_factor;
     params.max_items = 3u;
     params.min_score = 0.01f;
     params.write_delay = base::Seconds(0);
@@ -106,12 +111,9 @@ TEST_F(MrfuCacheTest, GetNormalized) {
 
   EXPECT_FLOAT_EQ(cache.GetNormalized("A"), 0.0f);
 
-  cache.Use("A");
-  cache.Use("B");
-  cache.Use("A");
-  cache.Use("A");
-  cache.Use("B");
-  cache.Use("C");
+  for (std::string item : {"A", "B", "A", "A", "B", "C"}) {
+    cache.Use(item);
+  }
   float a = cache.Get("A");
   float b = cache.Get("B");
   float c = cache.Get("C");
@@ -120,6 +122,43 @@ TEST_F(MrfuCacheTest, GetNormalized) {
   EXPECT_NEAR(cache.GetNormalized("A"), a / total, kEps);
   EXPECT_NEAR(cache.GetNormalized("B"), b / total, kEps);
   EXPECT_NEAR(cache.GetNormalized("C"), c / total, kEps);
+}
+
+TEST_F(MrfuCacheTest, GetAll) {
+  MrfuCache cache(GetPath(),
+                  TestingParams(/*half_life=*/1.0f, /*boost_factor=*/1.0f));
+  EXPECT_TRUE(cache.GetAll().empty());
+  Wait();
+  EXPECT_TRUE(cache.GetAll().empty());
+
+  for (std::string item : {"A", "B", "C"}) {
+    cache.Use(item);
+  }
+
+  // These are hand-calculated scores.
+  EXPECT_THAT(cache.GetAll(),
+              UnorderedElementsAre(Pair("A", FloatNear(0.166f, kEps)),
+                                   Pair("B", FloatNear(0.333f, kEps)),
+                                   Pair("C", FloatNear(0.666f, kEps))));
+}
+
+TEST_F(MrfuCacheTest, GetAllNormalized) {
+  MrfuCache cache(GetPath(),
+                  TestingParams(/*half_life=*/1.0f, /*boost_factor=*/1.0f));
+  EXPECT_TRUE(cache.GetAll().empty());
+  Wait();
+  EXPECT_TRUE(cache.GetAll().empty());
+
+  for (std::string item : {"A", "B", "C"}) {
+    cache.Use(item);
+  }
+
+  // These are hand-calculate scores.
+  float total = 0.1666f + 0.333f + 0.666f;
+  EXPECT_THAT(cache.GetAllNormalized(),
+              UnorderedElementsAre(Pair("A", FloatNear(0.166f / total, kEps)),
+                                   Pair("B", FloatNear(0.333f / total, kEps)),
+                                   Pair("C", FloatNear(0.666f / total, kEps))));
 }
 
 TEST_F(MrfuCacheTest, CorrectBoostCoeffApproximation) {
