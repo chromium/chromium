@@ -26,6 +26,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
   // Returns the global instance if initialized. May return null.
   static FwupdClient* Get();
 
+  // Query fwupd for upgrades that are available for a particular device.
+  virtual void GetUpgrades(std::string device_id) = 0;
+
  protected:
   friend class FwupdClientTest;
 
@@ -33,6 +36,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
   // TODO(swifton): Replace this with an observer.
   bool client_is_in_testing_mode_ = false;
   int device_signal_call_count_for_testing_ = 0;
+  int get_upgrades_callback_call_count_for_testing_ = 0;
 };
 }  // namespace chromeos
 

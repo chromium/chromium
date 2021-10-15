@@ -4,10 +4,13 @@
 
 #include "chromeos/dbus/fwupd/fake_fwupd_client.h"
 
+#include <string>
+
 namespace chromeos {
 
 FakeFwupdClient::FakeFwupdClient() = default;
 FakeFwupdClient::~FakeFwupdClient() = default;
 void FakeFwupdClient::Init(dbus::Bus* bus) {}
+void FakeFwupdClient::GetUpgrades(std::string device_id) {}
 
 }  // namespace chromeos

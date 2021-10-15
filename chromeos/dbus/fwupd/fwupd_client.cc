@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/values.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -22,6 +23,8 @@ const char kFwupdServiceName[] = "org.freedesktop.fwupd";
 const char kFwupdServicePath[] = "/";
 const char kFwupdServiceInterface[] = "org.freedesktop.fwupd";
 const char kFwupdDeviceAddedSignalName[] = "DeviceAdded";
+const char kFwupdGetUpgradesMethodName[] = "GetUpgrades";
+
 }  // namespace
 
 class FwupdClientImpl : public FwupdClient {
@@ -47,7 +50,30 @@ class FwupdClientImpl : public FwupdClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void GetUpgrades(std::string device_id) override {
+    dbus::MethodCall method_call(kFwupdServiceInterface,
+                                 kFwupdGetUpgradesMethodName);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(device_id);
+    proxy_->CallMethodWithErrorResponse(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&FwupdClientImpl::GetUpgradesCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
  private:
+  void GetUpgradesCallback(dbus::Response* response,
+                           dbus::ErrorResponse* error_response) {
+    if (!response) {
+      LOG(ERROR) << "No Dbus response received from fwupd.";
+      return;
+    }
+
+    // TODO(swifton): This is a stub implementation. Replace this with a
+    // callback call for FirmwareUpdateHandler when it's implemented.
+    ++get_upgrades_callback_call_count_for_testing_;
+  }
+
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
                          bool is_connected) {

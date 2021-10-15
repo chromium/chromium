@@ -14,11 +14,21 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Invoke;
 
 namespace {
 const char kFwupdServiceName[] = "org.freedesktop.fwupd";
 const char kFwupdServicePath[] = "/";
 const char kFwupdDeviceAddedSignalName[] = "DeviceAdded";
+const char kFakeDeviceIdForTesting[] = "0123";
+
+void RunResponseOrErrorCallback(
+    dbus::ObjectProxy::ResponseOrErrorCallback callback,
+    std::unique_ptr<dbus::Response> response,
+    std::unique_ptr<dbus::ErrorResponse> error_response) {
+  std::move(callback).Run(response.get(), error_response.get());
+}
+
 }  // namespace
 
 namespace chromeos {
@@ -57,6 +67,30 @@ class FwupdClientTest : public testing::Test {
     return fwupd_client_->device_signal_call_count_for_testing_;
   }
 
+  int GetGetUpgradesCallbackCallCount() {
+    return fwupd_client_->get_upgrades_callback_call_count_for_testing_;
+  }
+
+  void OnMethodCalled(dbus::MethodCall* method_call,
+                      int timeout_ms,
+                      dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+    ASSERT_FALSE(dbus_method_call_simulated_results_.empty());
+    MethodCallResult result =
+        std::move(dbus_method_call_simulated_results_.front());
+    dbus_method_call_simulated_results_.pop_front();
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RunResponseOrErrorCallback, std::move(*callback),
+                       std::move(result.first), std::move(result.second)));
+  }
+
+  void AddDbusMethodCallResultSimulation(
+      std::unique_ptr<dbus::Response> response,
+      std::unique_ptr<dbus::ErrorResponse> error_response) {
+    dbus_method_call_simulated_results_.emplace_back(std::move(response),
+                                                     std::move(error_response));
+  }
+
  protected:
   // Synchronously passes |signal| to |client_|'s handler, simulating the signal
   // being emitted by fwupd.
@@ -67,6 +101,9 @@ class FwupdClientTest : public testing::Test {
         << "Client didn't register for signal " << signal_name;
     callback->second.Run(&signal);
   }
+
+  scoped_refptr<dbus::MockObjectProxy> proxy_;
+  std::unique_ptr<FwupdClient> fwupd_client_;
 
  private:
   // Handles calls to |proxy_|'s ConnectToSignal() method.
@@ -93,15 +130,32 @@ class FwupdClientTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  // Mock bus for simulating calls.
   scoped_refptr<dbus::MockBus> bus_;
-  scoped_refptr<dbus::MockObjectProxy> proxy_;
-  std::unique_ptr<FwupdClient> fwupd_client_;
+  using MethodCallResult = std::pair<std::unique_ptr<dbus::Response>,
+                                     std::unique_ptr<dbus::ErrorResponse>>;
+  std::deque<MethodCallResult> dbus_method_call_simulated_results_;
 };
 
 // TODO (swifton): Rewrite this test with an observer when it's available.
 TEST_F(FwupdClientTest, AddOneDevice) {
   EmitSignal(kFwupdDeviceAddedSignalName);
   EXPECT_EQ(1, GetDeviceSignalCallCount());
+}
+
+// TODO (swifton): Rewrite this test with an observer when it's available.
+TEST_F(FwupdClientTest, RequestUpgrades) {
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  AddDbusMethodCallResultSimulation(std::move(response), nullptr);
+
+  fwupd_client_->GetUpgrades(kFakeDeviceIdForTesting);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, GetGetUpgradesCallbackCallCount());
 }
 
 }  // namespace chromeos
