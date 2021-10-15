@@ -1277,8 +1277,13 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
   allocator.root()->Free(ptr2);
 }
 
-// Tests the handing out of freelists for partial slot spans.
-TEST_F(PartitionAllocTest, PartialPageFreelists) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk-disabled on mac-arm64 for bot stabilization: https://crbug.com/1154345
+#define MAYBE_PartialPageFreelists DISABLED_PartialPageFreelists
+#else
+#define MAYBE_PartialPageFreelists PartialPageFreelists
+#endif
+TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
   size_t big_size = SystemPageSize() - kExtraAllocSize;
   size_t bucket_index = SizeToIndex(big_size + kExtraAllocSize);
   PartitionRoot<ThreadSafe>::Bucket* bucket =
