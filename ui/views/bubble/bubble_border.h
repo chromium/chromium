@@ -204,6 +204,18 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // Returns the corner radius of the current image set.
   int corner_radius() const { return corner_radius_; }
 
+  // Returns the size of the bounding rectangle of the visible |arrow|.
+  static gfx::Size GetVisibleArrowSize(Arrow arrow);
+
+  // Returns the translation vector for |contents_bounds| to make space for
+  // inserting the visible arrow at the right position for |arrow_|.
+  gfx::Vector2d GetContentsBoundsOffsetToPlaceVisibleArrow(
+      const gfx::Rect& contents_bounds) const;
+
+  // Returns true if the arrow is vertical meaning that it is either placed on
+  // the top of the bottom of the border.
+  static bool IsVerticalArrow(BubbleBorder::Arrow arrow);
+
   // Overridden from Border:
   void Paint(const View& view, gfx::Canvas* canvas) override;
   gfx::Insets GetInsets() const override;
@@ -219,6 +231,11 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   static constexpr int kStroke = 1;
 
   gfx::Size GetSizeForContentsSize(const gfx::Size& contents_size) const;
+
+  // Calculates and assigns the |visible_arrow_rect_| for the given
+  // |contents_bounds| and the |anchor_point| in which the arrow is rendered to.
+  void CalculateVisibleArrowRect(const gfx::Rect& contents_bounds,
+                                 const gfx::Point& anchor_point) const;
 
   // Returns the region within |view| representing the client area. This can be
   // set as a canvas clip to ensure any fill or shadow from the border does not

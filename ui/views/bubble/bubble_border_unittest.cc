@@ -847,4 +847,116 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
       bounds.bottom());
 }
 
+// Tests that BubbleBorder::IsVerticalArrow() correctly returns if the arrow is
+// placed on the top or on the bottom of the bubble.
+TEST_F(BubbleBorderTest, IsVerticalArrow) {
+  struct TestCase {
+    BubbleBorder::Arrow arrow;
+    bool is_vertical_expected;
+  };
+
+  TestCase test_cases[] = {
+      // BOTTOM and TOP arrows are vertical.
+      {BubbleBorder::Arrow::BOTTOM_CENTER, true},
+      {BubbleBorder::Arrow::BOTTOM_LEFT, true},
+      {BubbleBorder::Arrow::BOTTOM_RIGHT, true},
+      {BubbleBorder::Arrow::TOP_CENTER, true},
+      {BubbleBorder::Arrow::TOP_LEFT, true},
+      {BubbleBorder::Arrow::TOP_RIGHT, true},
+      // The rest is horizontal.
+      {BubbleBorder::Arrow::LEFT_BOTTOM, false},
+      {BubbleBorder::Arrow::LEFT_CENTER, false},
+      {BubbleBorder::Arrow::LEFT_TOP, false},
+      {BubbleBorder::Arrow::RIGHT_BOTTOM, false},
+      {BubbleBorder::Arrow::RIGHT_CENTER, false},
+      {BubbleBorder::Arrow::RIGHT_TOP, false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(BubbleBorder::IsVerticalArrow(test_case.arrow),
+              test_case.is_vertical_expected);
+  }
+}
+
+// Test that the correct arrow size is returned for a given arrow position.
+TEST_F(BubbleBorderTest, GetVisibleArrowSize) {
+  const gfx::Size vertical_size(2 * BubbleBorder::kVisibleArrowRadius,
+                                BubbleBorder::kVisibleArrowLength);
+  const gfx::Size horizontal_size(BubbleBorder::kVisibleArrowLength,
+                                  2 * BubbleBorder::kVisibleArrowRadius);
+
+  struct TestCase {
+    BubbleBorder::Arrow arrow;
+    gfx::Size expected_size;
+  };
+
+  TestCase test_cases[] = {
+      // BOTTOM and TOP arrows have a vertical size.
+      {BubbleBorder::Arrow::BOTTOM_CENTER, vertical_size},
+      {BubbleBorder::Arrow::BOTTOM_LEFT, vertical_size},
+      {BubbleBorder::Arrow::BOTTOM_RIGHT, vertical_size},
+      {BubbleBorder::Arrow::TOP_CENTER, vertical_size},
+      {BubbleBorder::Arrow::TOP_LEFT, vertical_size},
+      {BubbleBorder::Arrow::TOP_RIGHT, vertical_size},
+      // The rest has a horizontal size.
+      {BubbleBorder::Arrow::LEFT_BOTTOM, horizontal_size},
+      {BubbleBorder::Arrow::LEFT_CENTER, horizontal_size},
+      {BubbleBorder::Arrow::LEFT_TOP, horizontal_size},
+      {BubbleBorder::Arrow::RIGHT_BOTTOM, horizontal_size},
+      {BubbleBorder::Arrow::RIGHT_CENTER, horizontal_size},
+      {BubbleBorder::Arrow::RIGHT_TOP, horizontal_size},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(BubbleBorder::GetVisibleArrowSize(test_case.arrow),
+              test_case.expected_size);
+  }
+}
+
+// Test that the contents bounds are moved correctly to place the visible arrow
+// at the appropriate position.
+TEST_F(BubbleBorderTest, MoveContentsBoundsToPlaceVisibleArrow) {
+  const int arrow_length =
+      BubbleBorder::kVisibleArrowLength + BubbleBorder::kVisibleArrowGap;
+  const gfx::Size bubble_size(100, 100);
+
+  struct TestCase {
+    BubbleBorder::Arrow arrow;
+    gfx::Vector2d expected_contents_bounds_move;
+    gfx::Point initial_bubble_origin = gfx::Point(0, 0);
+  };
+
+  TestCase test_cases[] = {
+      // BOTTOM cases: The contents is moved to the top of the screen.
+      {BubbleBorder::Arrow::BOTTOM_LEFT, gfx::Vector2d(0, -arrow_length)},
+      {BubbleBorder::Arrow::BOTTOM_CENTER, gfx::Vector2d(0, -arrow_length)},
+      {BubbleBorder::Arrow::BOTTOM_RIGHT, gfx::Vector2d(0, -arrow_length)},
+      // TOP cases: The contents is moved to the bottom of the screen.
+      {BubbleBorder::Arrow::TOP_LEFT, gfx::Vector2d(0, arrow_length)},
+      {BubbleBorder::Arrow::TOP_CENTER, gfx::Vector2d(0, arrow_length)},
+      {BubbleBorder::Arrow::TOP_RIGHT, gfx::Vector2d(0, arrow_length)},
+      // LEFT cases: The contents is moved to the right.
+      {BubbleBorder::Arrow::LEFT_BOTTOM, gfx::Vector2d(arrow_length, 0)},
+      {BubbleBorder::Arrow::LEFT_CENTER, gfx::Vector2d(arrow_length, 0)},
+      {BubbleBorder::Arrow::LEFT_TOP, gfx::Vector2d(arrow_length, 0)},
+      // RIGHT cases: The contents is moved to the left.
+      {BubbleBorder::Arrow::RIGHT_BOTTOM, gfx::Vector2d(-arrow_length, 0)},
+      {BubbleBorder::Arrow::RIGHT_CENTER, gfx::Vector2d(-arrow_length, 0)},
+      {BubbleBorder::Arrow::RIGHT_TOP, gfx::Vector2d(-arrow_length, 0)},
+  };
+
+  for (const auto& test_case : test_cases) {
+    // Create a bubble border with a visible arrow.
+    views::BubbleBorder border(test_case.arrow, BubbleBorder::STANDARD_SHADOW,
+                               SK_ColorWHITE);
+    border.set_visible_arrow(true);
+
+    // Create, move and verify the contents bounds.
+    gfx::Rect contents_bounds(test_case.initial_bubble_origin, bubble_size);
+    EXPECT_EQ(
+        border.GetContentsBoundsOffsetToPlaceVisibleArrow(contents_bounds),
+        test_case.expected_contents_bounds_move);
+  }
+}
+
 }  // namespace views
