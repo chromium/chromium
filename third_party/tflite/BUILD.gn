@@ -63,10 +63,13 @@ config("tflite_flags") {
     defines += [ "GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos || is_chromeos_lacros) {
     # TODO(crbug.com/1168787): Determine if neon can be supported
     # on chromeos builds.
-    defines += [ "TF_LITE_DISABLE_X86_NEON" ]
+    defines += [
+      "TF_LITE_DISABLE_X86_NEON",
+      "TFLITE_ENABLE_RUY=OFF",
+    ]
   }
 }
 
