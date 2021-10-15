@@ -17,6 +17,16 @@ using ui::AXPropertyFilter;
 using ui::AXScriptInstruction;
 using ui::AXTreeFormatter;
 
+#if defined(OS_MAC)
+
+constexpr const char kMacAction[]{"mac/action"};
+constexpr const char kMacAttributes[]{"mac/attributes"};
+constexpr const char kMacSelection[]{"mac/selection"};
+constexpr const char kMacTextMarker[]{"mac/textmarker"};
+constexpr const char kMacMethods[]{"mac/methods"};
+
+#endif
+
 // See content/test/data/accessibility/readme.md for an overview.
 //
 // This test loads an HTML file, invokes a script, and then
@@ -91,62 +101,6 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     }
     return dump;
   }
-
-  void RunMacActionTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "mac/action");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(html_file, "accessibility/mac/action");
-  }
-
-  void RunMacAttributesTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path =
-        GetTestFilePath("accessibility", "mac/attributes");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-    RunTest(html_file, "accessibility/mac/attributes");
-  }
-
-  void RunMacSelectionTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path =
-        GetTestFilePath("accessibility", "mac/selection");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(html_file, "accessibility/mac/selection");
-  }
-
-  void RunMacTextMarkerTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path =
-        GetTestFilePath("accessibility", "mac/textmarker");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(html_file, "accessibility/mac/textmarker");
-  }
-
-  void RunMacMethodsTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "mac/methods");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-    RunTest(html_file, "accessibility/mac/methods");
-  }
 };
 
 std::vector<ui::AXPropertyFilter> DumpAccessibilityScriptTest::DefaultFilters()
@@ -174,85 +128,83 @@ INSTANTIATE_TEST_SUITE_P(All,
                          TestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPressButton) {
-  RunMacActionTest(FILE_PATH_LITERAL("ax-press-button.html"));
+  RunTypedTest<kMacAction>("ax-press-button.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXAccessKey) {
-  RunMacAttributesTest(FILE_PATH_LITERAL("ax-access-key.html"));
+  RunTypedTest<kMacAttributes>("ax-access-key.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIAAtomic) {
-  RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-atomic.html"));
+  RunTypedTest<kMacAttributes>("ax-aria-atomic.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIABusy) {
-  RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-busy.html"));
+  RunTypedTest<kMacAttributes>("ax-aria-busy.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIACurrent) {
-  RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-current.html"));
+  RunTypedTest<kMacAttributes>("ax-aria-current.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIALive) {
-  RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-live.html"));
+  RunTypedTest<kMacAttributes>("ax-aria-live.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIARelevant) {
-  RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-relevant.html"));
+  RunTypedTest<kMacAttributes>("ax-aria-relevant.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXAutocompleteValue) {
-  RunMacAttributesTest(FILE_PATH_LITERAL("ax-autocomplete-value.html"));
+  RunTypedTest<kMacAttributes>("ax-autocomplete-value.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {
-  RunMacSelectionTest(FILE_PATH_LITERAL("selectall-textarea.html"));
+  RunTypedTest<kMacSelection>("selectall-textarea.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        SetSelectionContenteditable) {
-  RunMacSelectionTest(FILE_PATH_LITERAL("set-selection-contenteditable.html"));
+  RunTypedTest<kMacSelection>("set-selection-contenteditable.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SetSelectionTextarea) {
-  RunMacSelectionTest(FILE_PATH_LITERAL("set-selection-textarea.html"));
+  RunTypedTest<kMacSelection>("set-selection-textarea.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        SetSelectedTextRangeContenteditable) {
-  RunMacSelectionTest(
-      FILE_PATH_LITERAL("set-selectedtextrange-contenteditable.html"));
+  RunTypedTest<kMacSelection>("set-selectedtextrange-contenteditable.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AXNextWordEndTextMarkerForTextMarker) {
-  RunMacTextMarkerTest(
-      FILE_PATH_LITERAL("ax-next-word-end-text-marker-for-text-marker.html"));
+  RunTypedTest<kMacTextMarker>(
+      "ax-next-word-end-text-marker-for-text-marker.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AXPreviousWordStartTextMarkerForTextMarker) {
-  RunMacTextMarkerTest(FILE_PATH_LITERAL(
-      "ax-previous-word-start-text-marker-for-text-marker.html"));
+  RunTypedTest<kMacTextMarker>(
+      "ax-previous-word-start-text-marker-for-text-marker.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXStartTextMarker) {
-  RunMacTextMarkerTest(FILE_PATH_LITERAL("ax_start_text_marker.html"));
+  RunTypedTest<kMacTextMarker>("ax_start_text_marker.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AXTextMarkerRangeForUIElement) {
-  RunMacTextMarkerTest(
-      FILE_PATH_LITERAL("ax-text-marker-range-for-ui-element.html"));
+  RunTypedTest<kMacTextMarker>("ax-text-marker-range-for-ui-element.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityPlaceholderValue) {
-  RunMacMethodsTest(FILE_PATH_LITERAL("placeholder-value.html"));
+  RunTypedTest<kMacMethods>("placeholder-value.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityTitle) {
-  RunMacMethodsTest(FILE_PATH_LITERAL("title.html"));
+  RunTypedTest<kMacMethods>("title.html");
 }
 
 #endif

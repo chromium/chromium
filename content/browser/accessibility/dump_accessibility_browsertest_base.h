@@ -9,12 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/dump_accessibility_test_helper.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
@@ -48,6 +50,19 @@ class DumpAccessibilityTestBase
                const char* file_dir,
                const base::FilePath::StringType& expectations_qualifier =
                    FILE_PATH_LITERAL(""));
+
+  template <const char* type>
+  void RunTypedTest(const base::FilePath::CharType* file_path) {
+    base::FilePath test_path = GetTestFilePath("accessibility", type);
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
+    }
+    base::FilePath test_file = test_path.Append(base::FilePath(file_path));
+
+    std::string dir(std::string() + "accessibility/" + type);
+    RunTest(test_file, dir.c_str());
+  }
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override;
