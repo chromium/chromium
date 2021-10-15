@@ -189,10 +189,7 @@ class CORE_EXPORT LocalFrameView final
   // Returns true if commits will be deferred for first contentful paint.
   bool WillDoPaintHoldingForFCP() const;
 
-  // TODO(crbug.com/1259085): Remove LayoutCount() and rename layout_count_
-  // to layout_count_for_testing_ when we remove IdleWebFeatureTask.
-  unsigned LayoutCount() const { return layout_count_; }
-  unsigned LayoutCountForTesting() const { return layout_count_; }
+  unsigned LayoutCountForTesting() const { return layout_count_for_testing_; }
   unsigned LifecycleUpdateCountForTesting() const {
     return lifecycle_update_count_for_testing_;
   }
@@ -1022,7 +1019,7 @@ class CORE_EXPORT LocalFrameView final
   DepthOrderedLayoutObjectList orthogonal_writing_mode_root_list_;
 
   bool layout_scheduling_enabled_;
-  unsigned layout_count_;
+  unsigned layout_count_for_testing_;
   unsigned lifecycle_update_count_for_testing_;
   HeapTaskRunnerTimer<LocalFrameView> update_plugins_timer_;
 

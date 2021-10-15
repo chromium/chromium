@@ -3367,7 +3367,6 @@ enum WebFeature {
   kFlexboxAlignSingleLineDifference = 4057,
   kExternalProtocolBlockedBySandbox = 4058,
   kWebAssemblyDynamicTiering = 4059,
-  kDeferredShapingTallerIfc = 4060,
   kReadOrWriteWebDatabase = 4061,
 
   // Add new features immediately above this line. Don't change assigned
