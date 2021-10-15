@@ -236,7 +236,7 @@ UIColor* DimColorIncognito() {
 }
 
 - (BOOL)isTabMatch {
-  return _match.has_tab_match;
+  return _match.has_tab_match.value_or(false);
 }
 
 #pragma mark tail suggest

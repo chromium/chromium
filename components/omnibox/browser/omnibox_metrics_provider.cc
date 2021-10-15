@@ -105,7 +105,7 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
       suggestion->set_result_subtype_identifier(*i->subtypes.begin());
     }
 
-    suggestion->set_has_tab_match(i->has_tab_match);
+    suggestion->set_has_tab_match(i->has_tab_match.value_or(false));
     suggestion->set_is_keyword_suggestion(i->from_keyword);
   }
   for (auto i(log.providers_info.begin()); i != log.providers_info.end(); ++i) {

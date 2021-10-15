@@ -1963,9 +1963,9 @@ TEST_F(AutocompleteResultTest, ConvertsOpenTabsCorrectly) {
 
   result.ConvertOpenTabMatches(&client, nullptr);
 
-  EXPECT_TRUE(result.match_at(0)->has_tab_match);
-  EXPECT_TRUE(result.match_at(1)->has_tab_match);
-  EXPECT_FALSE(result.match_at(2)->has_tab_match);
+  EXPECT_TRUE(result.match_at(0)->has_tab_match.value_or(false));
+  EXPECT_TRUE(result.match_at(1)->has_tab_match.value_or(false));
+  EXPECT_FALSE(result.match_at(2)->has_tab_match.value_or(false));
 }
 
 TEST_F(AutocompleteResultTest, AttachesPedals) {

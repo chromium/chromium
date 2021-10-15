@@ -2068,7 +2068,7 @@ void OmniboxEditModel::OnPopupResultChanged() {
       // changed leave it.
       const bool has_focused_match =
           selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH &&
-          result.match_at(selection.line).has_tab_match;
+          result.match_at(selection.line).has_tab_match.value_or(false);
       const bool has_changed =
           selection.line != old_selected_line ||
           result.match_at(selection.line).destination_url != old_focused_url_;

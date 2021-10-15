@@ -141,7 +141,7 @@ const CGFloat kOmniboxIconSize = 16;
   const AutocompleteMatch& match =
       ((const AutocompleteResult&)_currentResult).match_at(row);
 
-  if (match.has_tab_match) {
+  if (match.has_tab_match.value_or(false)) {
     _delegate->OnMatchSelected(match, row,
                                WindowOpenDisposition::SWITCH_TO_TAB);
   } else {

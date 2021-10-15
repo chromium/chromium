@@ -485,13 +485,12 @@ void AutocompleteResult::ConvertOpenTabMatches(
   for (auto& match : matches_) {
     // If already converted this match, don't re-search through open tabs and
     // possibly re-change the description.
-    if (match.has_tab_match)
+    // Note: explicitly check for value rather than deferring to implicit
+    // boolean conversion of absl::optional.
+    if (match.has_tab_match.has_value())
       continue;
-    // If URL is in a tab, remember that.
-    if (client->GetTabMatcher().IsTabOpenWithURL(match.destination_url,
-                                                 input)) {
-      match.has_tab_match = true;
-    }
+    match.has_tab_match =
+        client->GetTabMatcher().IsTabOpenWithURL(match.destination_url, input);
   }
 
   base::TimeDelta time_delta = base::TimeTicks::Now() - start_time;

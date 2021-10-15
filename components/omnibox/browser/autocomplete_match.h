@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -668,7 +669,8 @@ struct AutocompleteMatch {
   Type type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
 
   // True if we saw a tab that matched this suggestion.
-  bool has_tab_match = false;
+  // Unset if has not been computed yet.
+  absl::optional<bool> has_tab_match;
 
   // Used to identify the specific source / type for suggestions by the
   // suggest server. See |result_subtypes| in omnibox.proto for more

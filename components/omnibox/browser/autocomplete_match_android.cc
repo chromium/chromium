@@ -104,7 +104,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           suggestion_group_id.value_or(
               SearchSuggestionParser::kNoSuggestionGroupId),
           j_query_tiles, ToJavaByteArray(env, clipboard_image_data),
-          has_tab_match, ToJavaArrayOfStrings(env, navsuggest_titles),
+          has_tab_match.value_or(false),
+          ToJavaArrayOfStrings(env, navsuggest_titles),
           url::GURLAndroid::ToJavaArrayOfGURLs(env, navsuggest_urls)));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);

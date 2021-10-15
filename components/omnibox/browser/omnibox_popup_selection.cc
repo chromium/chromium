@@ -71,9 +71,9 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
       // Buttons are suppressed for matches with an associated keyword, unless
       // dedicated button row is enabled.
       if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled())
-        return match.has_tab_match;
+        return match.has_tab_match.value_or(false);
       else
-        return match.has_tab_match && !match.associated_keyword;
+        return match.has_tab_match.value_or(false) && !match.associated_keyword;
     case FOCUSED_BUTTON_ACTION:
       return match.action != nullptr;
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
