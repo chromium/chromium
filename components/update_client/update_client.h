@@ -459,18 +459,17 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
 
   // Sends an uninstall ping for the CRX identified by |id| and |version|. The
   // |reason| parameter is defined by the caller. The current implementation of
-  // this function only sends a best-effort, fire-and-forget ping. It has no
-  // other side effects regarding installs or updates done through an instance
-  // of this class.
+  // this function only sends a best-effort ping. It has no other side effects
+  // regarding installs or updates done through an instance of this class.
   virtual void SendUninstallPing(const std::string& id,
                                  const base::Version& version,
                                  int reason,
                                  Callback callback) = 0;
 
   // Sends a registration ping for the CRX identified by |id| and |version|.
-  // The current implementation of this function only sends a best-effort,
-  // fire-and-forget ping. It has no other side effects regarding installs or
-  // updates done through an instance of this class.
+  // The current implementation of this function only sends a best-effort ping.
+  // It has no other side effects regarding installs or updates done through an
+  // instance of this class.
   virtual void SendRegistrationPing(const std::string& id,
                                     const base::Version& version,
                                     Callback callback) = 0;

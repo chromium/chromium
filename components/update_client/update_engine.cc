@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/guid.h"
@@ -319,20 +320,22 @@ void UpdateEngine::HandleComponentComplete(
   const auto& component = update_context->components.at(id);
   DCHECK(component);
 
+  base::OnceClosure callback =
+      base::BindOnce(&UpdateEngine::HandleComponent, this, update_context);
   if (component->IsHandled()) {
     update_context->next_update_delay = component->GetUpdateDuration();
-
-    if (!component->events().empty()) {
-      ping_manager_->SendPing(*component,
-                              base::BindOnce([](int, const std::string&) {}));
-    }
-
     queue.pop();
+    if (!component->events().empty()) {
+      ping_manager_->SendPing(
+          *component,
+          base::BindOnce([](base::OnceClosure callback, int,
+                            const std::string&) { std::move(callback).Run(); },
+                         std::move(callback)));
+      return;
+    }
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateEngine::HandleComponent, this, update_context));
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
 }
 
 void UpdateEngine::UpdateComplete(scoped_refptr<UpdateContext> update_context,
