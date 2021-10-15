@@ -104,7 +104,7 @@ class DWriteFontCollectionProxy
  private:
   Microsoft::WRL::ComPtr<IDWriteFactory> factory_;
   std::vector<Microsoft::WRL::ComPtr<DWriteFontFamilyProxy>> families_;
-  std::map<std::wstring, UINT32> family_names_;
+  std::map<std::u16string, UINT32> family_names_;
   UINT32 family_count_ = UINT_MAX;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   // Per-sequence mojo::Remote<DWriteFontProxy>. This is preferred to a
@@ -151,9 +151,9 @@ class DWriteFontFamilyProxy
 
   bool GetFontFromFontFace(IDWriteFontFace* font_face, IDWriteFont** font);
 
-  void SetName(const std::wstring& family_name);
+  void SetName(const std::u16string& family_name);
 
-  const std::wstring& GetName();
+  const std::u16string& GetName();
 
   bool IsLoaded();
 
@@ -162,7 +162,7 @@ class DWriteFontFamilyProxy
 
  private:
   UINT32 family_index_;
-  std::wstring family_name_;
+  std::u16string family_name_;
   Microsoft::WRL::ComPtr<DWriteFontCollectionProxy> proxy_collection_;
   Microsoft::WRL::ComPtr<IDWriteFontFamily> family_;
   Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> family_names_;

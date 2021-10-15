@@ -42,12 +42,12 @@ constexpr size_t kFamilyNamesLimit = 20;
 // Family names that opted-out from the limit enforced by
 // |kLimitFontFamilyNamesPerRenderer|. This is required because Blink uses these
 // fonts as last resort and crashes if they can't be loaded.
-const wchar_t* kLastResortFontNames[] = {
-    L"Sans",     L"Arial",   L"MS UI Gothic",    L"Microsoft Sans Serif",
-    L"Segoe UI", L"Calibri", L"Times New Roman", L"Courier New"};
+const char16_t* kLastResortFontNames[] = {
+    u"Sans",     u"Arial",   u"MS UI Gothic",    u"Microsoft Sans Serif",
+    u"Segoe UI", u"Calibri", u"Times New Roman", u"Courier New"};
 
-bool IsLastResortFontName(const std::wstring& font_name) {
-  for (const wchar_t* last_resort_font_name : kLastResortFontNames) {
+bool IsLastResortFontName(const std::u16string& font_name) {
+  for (const char16_t* last_resort_font_name : kLastResortFontNames) {
     if (font_name == last_resort_font_name)
       return true;
   }
@@ -127,7 +127,8 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(const WCHAR* family_name,
   DCHECK(exists);
   TRACE_EVENT0("dwrite,fonts", "FontProxy::FindFamilyName");
 
-  std::wstring name(family_name);
+  static_assert(sizeof(WCHAR) == sizeof(char16_t), "WCHAR should be UTF-16.");
+  const std::u16string name(reinterpret_cast<const char16_t*>(family_name));
 
   auto iter = family_names_.find(name);
   if (iter != family_names_.end()) {
@@ -144,7 +145,7 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(const WCHAR* family_name,
   }
 
   uint32_t family_index = 0;
-  if (!GetFontProxy().FindFamily(base::WideToUTF16(name), &family_index)) {
+  if (!GetFontProxy().FindFamily(name, &family_index)) {
     LogFontProxyError(FIND_FAMILY_SEND_FAILED);
     return E_FAIL;
   }
@@ -347,7 +348,7 @@ bool DWriteFontCollectionProxy::GetFontFamily(UINT32 family_index,
 
   mswr::ComPtr<DWriteFontFamilyProxy>& family = families_[family_index];
   if (!family->IsLoaded() || family->GetName().empty())
-    family->SetName(base::UTF16ToWide(family_name));
+    family->SetName(family_name);
 
   family.CopyTo(font_family);
   return true;
@@ -362,10 +363,9 @@ bool DWriteFontCollectionProxy::LoadFamilyNames(
   if (!GetFontProxy().GetFamilyNames(family_index, &pairs)) {
     return false;
   }
-  std::vector<std::pair<std::wstring, std::wstring>> strings;
+  std::vector<std::pair<std::u16string, std::u16string>> strings;
   for (auto& pair : pairs) {
-    strings.emplace_back(base::UTF16ToWide(pair->first),
-                         base::UTF16ToWide(pair->second));
+    strings.emplace_back(pair->first, pair->second);
   }
 
   HRESULT hr = mswr::MakeAndInitialize<DWriteLocalizedStrings>(
@@ -523,11 +523,11 @@ bool DWriteFontFamilyProxy::GetFontFromFontFace(IDWriteFontFace* font_face,
   return SUCCEEDED(hr);
 }
 
-void DWriteFontFamilyProxy::SetName(const std::wstring& family_name) {
+void DWriteFontFamilyProxy::SetName(const std::u16string& family_name) {
   family_name_.assign(family_name);
 }
 
-const std::wstring& DWriteFontFamilyProxy::GetName() {
+const std::u16string& DWriteFontFamilyProxy::GetName() {
   return family_name_;
 }
 
@@ -545,7 +545,7 @@ bool DWriteFontFamilyProxy::LoadFamily() {
   // TODO(dcheng): Is this crash key still used? There does not appear to be
   // anything obvious below that would trigger a crash report.
   SCOPED_CRASH_KEY_STRING32("LoadFamily", "font_key_name",
-                            base::WideToUTF8(family_name_));
+                            base::UTF16ToUTF8(family_name_));
 
   mswr::ComPtr<IDWriteFontCollection> collection;
   if (!proxy_collection_->LoadFamily(family_index_, &collection)) {
@@ -562,8 +562,10 @@ bool DWriteFontFamilyProxy::LoadFamily() {
     DCHECK(!family_name_.empty());
     UINT32 family_index = 0;
     BOOL found = FALSE;
-    hr =
-        collection->FindFamilyName(family_name_.c_str(), &family_index, &found);
+    static_assert(sizeof(WCHAR) == sizeof(char16_t), "WCHAR should be UTF-16.");
+    hr = collection->FindFamilyName(
+        reinterpret_cast<const WCHAR*>(family_name_.c_str()), &family_index,
+        &found);
     if (SUCCEEDED(hr) && found) {
       hr = collection->GetFontFamily(family_index, &family_);
       LogLoadFamilyResult(LOAD_FAMILY_SUCCESS_MATCHED_FAMILY);

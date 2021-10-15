@@ -4,6 +4,8 @@
 
 #include "content/child/dwrite_font_proxy/dwrite_localized_strings_win.h"
 
+#include "base/strings/string_piece.h"
+
 #include <stddef.h>
 
 
@@ -16,8 +18,11 @@ DWriteLocalizedStrings::~DWriteLocalizedStrings() = default;
 HRESULT DWriteLocalizedStrings::FindLocaleName(const WCHAR* locale_name,
                                                UINT32* index,
                                                BOOL* exists) {
+  static_assert(sizeof(WCHAR) == sizeof(char16_t), "WCHAR should be UTF-16.");
+  const base::StringPiece16 locale_name_str(
+      reinterpret_cast<const char16_t*>(locale_name));
   for (size_t n = 0; n < strings_.size(); ++n) {
-    if (_wcsicmp(strings_[n].first.data(), locale_name) == 0) {
+    if (strings_[n].first == locale_name_str) {
       *index = n;
       *exists = TRUE;
       return S_OK;
@@ -38,13 +43,14 @@ HRESULT DWriteLocalizedStrings::GetLocaleName(UINT32 index,
                                               UINT32 size) {
   if (index >= strings_.size())
     return E_INVALIDARG;
-  // wstring::size does not count the null terminator as part of the string,
+  // u16string::size does not count the null terminator as part of the string,
   // but GetLocaleName requires the caller to reserve space for the null
   // terminator, so we need to ensure |size| is greater than the count of
   // characters.
   if (size <= strings_[index].first.size())
     return E_INVALIDARG;
-  wcsncpy(locale_name, strings_[index].first.c_str(), size);
+  static_assert(sizeof(WCHAR) == sizeof(char16_t), "WCHAR should be UTF-16.");
+  strings_[index].first.copy(reinterpret_cast<char16_t*>(locale_name), size);
   return S_OK;
 }
 
@@ -64,12 +70,13 @@ HRESULT DWriteLocalizedStrings::GetString(UINT32 index,
                                           UINT32 size) {
   if (index >= strings_.size())
     return E_INVALIDARG;
-  // wstring::size does not count the null terminator as part of the string,
+  // u16string::size does not count the null terminator as part of the string,
   // but GetString requires the caller to reserve space for the null terminator,
   // so we need to ensure |size| is greater than the count of characters.
   if (size <= strings_[index].second.size())
     return E_INVALIDARG;
-  wcsncpy(string_buffer, strings_[index].second.c_str(), size);
+  static_assert(sizeof(WCHAR) == sizeof(char16_t), "WCHAR should be UTF-16.");
+  strings_[index].second.copy(reinterpret_cast<char16_t*>(string_buffer), size);
   return S_OK;
 }
 
@@ -84,7 +91,7 @@ HRESULT DWriteLocalizedStrings::GetStringLength(UINT32 index, UINT32* length) {
 }
 
 HRESULT DWriteLocalizedStrings::RuntimeClassInitialize(
-    std::vector<std::pair<std::wstring, std::wstring>>* strings) {
+    std::vector<std::pair<std::u16string, std::u16string>>* strings) {
   strings_.swap(*strings);
   return S_OK;
 }
