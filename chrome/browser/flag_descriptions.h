@@ -2993,9 +2993,6 @@ extern const char kVirtualKeyboardMultipasteDescription[];
 extern const char kVirtualKeyboardMultipasteSuggestionName[];
 extern const char kVirtualKeyboardMultipasteSuggestionDescription[];
 
-extern const char kVmStatusPageName[];
-extern const char kVmStatusPageDescription[];
-
 extern const char kWakeOnWifiAllowedName[];
 extern const char kWakeOnWifiAllowedDescription[];
 

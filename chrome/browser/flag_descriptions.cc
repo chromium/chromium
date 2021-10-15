@@ -5193,9 +5193,6 @@ const char kVirtualKeyboardMultipasteSuggestionDescription[] =
     "Show multipaste items in virtual keyboard suggestion bar if they are "
     "copied recently";
 
-const char kVmStatusPageName[] = "VM status page";
-const char kVmStatusPageDescription[] = "Enable VM status page";
-
 const char kWakeOnWifiAllowedName[] = "Allow enabling wake on WiFi features";
 const char kWakeOnWifiAllowedDescription[] =
     "Allows wake on WiFi features in shill to be enabled.";

@@ -5505,11 +5505,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "vm-status-page",
-    "owners": [ "lxj@google.com", "joelhockey", "timloh" ],
-    "expiry_milestone": 94
-  },
-  {
     "name": "voice-button-in-top-toolbar",
     "owners": [
       "jds@google.com",
