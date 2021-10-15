@@ -1660,6 +1660,37 @@ try_.chromium_mac_builder(
 )
 
 try_.chromium_mac_builder(
+    name = "mac-rel-orchestrator",
+    builderless = True,
+    cores = 2,
+    executable = "recipe:chromium/orchestrator",
+    use_clang_coverage = True,
+    main_list_view = "try",
+    os = os.LINUX_BIONIC,
+    properties = {
+        "$build/chromium_orchestrator": {
+            "compilator": "mac-rel-compilator",
+            "compilator_watcher_git_revision": compilator_watcher_git_revision,
+        },
+    },
+    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+)
+
+try_.chromium_mac_builder(
+    name = "mac-rel-compilator",
+    builderless = False,
+    cores = 24,
+    executable = "recipe:chromium/compilator",
+    goma_jobs = goma.jobs.J150,
+    properties = {
+        "orchestrator": {
+            "builder_name": "mac-rel-orchestrator",
+            "builder_group": "tryserver.chromium.mac",
+        },
+    },
+)
+
+try_.chromium_mac_builder(
     name = "mac11-arm64-rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     goma_jobs = goma.jobs.J150,
