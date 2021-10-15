@@ -73,7 +73,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
   // The functions and data below are used internally but also can be used for
   // diagnosis and testing.
   float MeanFrameRatioRate(const Config& config) const;
-  float GetDamageRatioRate() const { return ratio_rate_category; }
+  float GetDamageRatioRate() const { return ratio_rate_category_; }
   uint64_t LastChangeFrameCount(uint64_t curr_frame) const;
   // Categorization can happen over a series of |KNumRecords| frames.
   // The more records the smoother the categorization but the worse the latency.
@@ -81,11 +81,11 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
 
  private:
   void CategorizeDamageRatioRate(uint64_t curr_frame, const Config& config);
-  ResourceId prev_resource_id = kInvalidResourceId;
+  ResourceId prev_resource_id_ = kInvalidResourceId;
 
-  float ratio_rate_category = 0.0f;
+  float ratio_rate_category_ = 0.0f;
   // Next empty slot index. Used for circular samples buffer.
-  int next_index = 0;
+  int next_index_ = 0;
 
   // The state of this absent bool is as follows:
   // In the normal flow 'IsAbsent()' is tested which sets |absent| = true. Then
@@ -94,9 +94,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
   // 'IsAbsent()' is tested which sets |absent| = true but on the next frame
   // 'IsAbsent()' returns true  because |absent| was never reset to false. This
   // indicating this tracker should be removed.
-  bool absent = false;
-  uint64_t frame_record[kNumRecords] = {};
-  float damage_record[kNumRecords] = {};
+  bool absent_ = false;
+  uint64_t frame_record_[kNumRecords] = {};
+  float damage_record_[kNumRecords] = {};
 };
 
 }  // namespace viz
