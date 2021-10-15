@@ -2302,8 +2302,7 @@ StyleDifference LayoutObject::AdjustStyleDifference(
   // Optimization: for decoration/color property changes, invalidation is only
   // needed if we have style or text affected by these properties.
   if (diff.TextDecorationOrColorChanged() && !diff.NeedsPaintInvalidation()) {
-    if (StyleRef().HasBorderColorReferencingCurrentColor() ||
-        StyleRef().HasOutlineWithCurrentColor() ||
+    if (StyleRef().HasOutlineWithCurrentColor() ||
         StyleRef().HasBackgroundRelatedColorReferencingCurrentColor() ||
         // Skip any text nodes that do not contain text boxes. Whitespace cannot
         // be skipped or we will miss invalidating decorations (e.g.,

@@ -304,17 +304,6 @@ TEST_F(ComputedStyleTest, HasOutlineWithCurrentColor) {
   EXPECT_TRUE(style->HasOutlineWithCurrentColor());
 }
 
-TEST_F(ComputedStyleTest, HasBorderColorReferencingCurrentColor) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  EXPECT_FALSE(style->HasBorderColorReferencingCurrentColor());
-  style->SetBorderBottomColor(StyleColor::CurrentColor());
-  EXPECT_FALSE(style->HasBorderColorReferencingCurrentColor());
-  style->SetBorderBottomWidth(5);
-  EXPECT_FALSE(style->HasBorderColorReferencingCurrentColor());
-  style->SetBorderBottomStyle(EBorderStyle::kSolid);
-  EXPECT_TRUE(style->HasBorderColorReferencingCurrentColor());
-}
-
 TEST_F(ComputedStyleTest, BorderWidth) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetBorderBottomWidth(5);

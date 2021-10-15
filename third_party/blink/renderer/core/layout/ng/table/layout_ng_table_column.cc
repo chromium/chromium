@@ -28,11 +28,8 @@ void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
     if (LayoutNGTable* table = Table()) {
       if (old_style && diff.NeedsPaintInvalidation()) {
         // Regenerate table borders if needed
-        if (!old_style->BorderVisuallyEqual(StyleRef()) ||
-            (diff.TextDecorationOrColorChanged() &&
-             StyleRef().HasBorderColorReferencingCurrentColor())) {
+        if (!old_style->BorderVisuallyEqual(StyleRef()))
           table->GridBordersChanged();
-        }
         // Table paints column background. Tell table to repaint.
         if (StyleRef().HasBackground() || old_style->HasBackground())
           table->SetBackgroundNeedsFullPaintInvalidation();

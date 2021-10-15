@@ -22,9 +22,7 @@ void LayoutTableBoxComponent::InvalidateCollapsedBordersOnStyleChange(
     const ComputedStyle& old_style) {
   if (!table.ShouldCollapseBorders())
     return;
-  if (!old_style.BorderEquals(table_part.StyleRef()) ||
-      (diff.TextDecorationOrColorChanged() &&
-       table_part.StyleRef().HasBorderColorReferencingCurrentColor()))
+  if (!old_style.BorderEquals(table_part.StyleRef()))
     table.InvalidateCollapsedBorders();
 }
 

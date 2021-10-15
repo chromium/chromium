@@ -200,9 +200,7 @@ void LayoutNGTable::StyleDidChange(StyleDifference diff,
         !old_style->BorderVisuallyEqual(StyleRef()) ||
         old_style->GetWritingDirection() != StyleRef().GetWritingDirection() ||
         old_style->IsFixedTableLayout() != StyleRef().IsFixedTableLayout() ||
-        old_style->EmptyCells() != StyleRef().EmptyCells() ||
-        (diff.TextDecorationOrColorChanged() &&
-         StyleRef().HasBorderColorReferencingCurrentColor());
+        old_style->EmptyCells() != StyleRef().EmptyCells();
     bool collapse_changed =
         StyleRef().BorderCollapse() != old_style->BorderCollapse();
     if (borders_changed || collapse_changed)

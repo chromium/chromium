@@ -112,9 +112,7 @@ void LayoutNGTableCell::StyleDidChange(StyleDifference diff,
   if (LayoutNGTable* table = Table()) {
     if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
         (old_style && old_style->GetWritingDirection() !=
-                          StyleRef().GetWritingDirection()) ||
-        (diff.TextDecorationOrColorChanged() &&
-         StyleRef().HasBorderColorReferencingCurrentColor())) {
+                          StyleRef().GetWritingDirection())) {
       table->GridBordersChanged();
     }
   }
