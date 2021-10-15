@@ -1204,7 +1204,8 @@ bool H264Decoder::ProcessSPS(int sps_id, bool* need_new_buffers) {
     if (!Flush())
       return false;
     DVLOG(1) << "Codec profile: " << GetProfileName(new_profile)
-             << ", level: " << level << ", DPB size: " << max_dpb_size
+             << ", level: " << base::strict_cast<int>(level)
+             << ", DPB size: " << max_dpb_size
              << ", Picture size: " << new_pic_size.ToString()
              << ", bit depth: " << base::strict_cast<int>(new_bit_depth);
     *need_new_buffers = true;
