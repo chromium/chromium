@@ -1052,8 +1052,14 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (GetNode()->HasTagName(html_names::kDtTag))
     return ax::mojom::blink::Role::kDescriptionListTerm;
 
-  if (GetNode()->HasTagName(mathml_names::kMathTag))
-    return ax::mojom::blink::Role::kMath;
+  // Mapping of MathML elements. See https://w3c.github.io/mathml-aam/
+  if (auto* element = DynamicTo<MathMLElement>(GetNode())) {
+    if (element->HasTagName(mathml_names::kMathTag))
+      return ax::mojom::blink::Role::kMath;
+    // TODO(crbug.com/6606): Map more MathML elements.
+    if (element->HasTagName(mathml_names::kMspaceTag))
+      return ax::mojom::blink::Role::kNone;
+  }
 
   if (GetNode()->HasTagName(html_names::kRpTag) ||
       GetNode()->HasTagName(html_names::kRtTag)) {

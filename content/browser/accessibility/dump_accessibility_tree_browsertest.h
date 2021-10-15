@@ -18,6 +18,7 @@ constexpr const char kARIA[]{"aria"};
 constexpr const char kAOM[]{"aom"};
 constexpr const char kCSS[]{"css"};
 constexpr const char kHTML[]{"html"};
+constexpr const char kMathML[]{"mathml"};
 constexpr const char kDisplayLocking[]{"display-locking"};
 constexpr const char kRegression[]{"regression"};
 constexpr const char kTestHarness[]{"test-harness"};
@@ -79,6 +80,10 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
 
   void RunHtmlTest(const base::FilePath::CharType* file_path) {
     RunTypedTest<kHTML>(file_path);
+  }
+
+  void RunMathMLTest(const base::FilePath::CharType* file_path) {
+    RunTypedTest<kMathML>(file_path);
   }
 
   void RunDisplayLockingTest(const base::FilePath::CharType* file_path) {

@@ -3176,6 +3176,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, SVGAndMathElements) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-and-math-elements.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MathMLSpace) {
+  RunMathMLTest(FILE_PATH_LITERAL("mspace.html"));
+}
+
 //
 // AccName tests where having the full tree is desired.
 //

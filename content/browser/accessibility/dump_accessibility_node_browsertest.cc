@@ -86,6 +86,16 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
     base::FilePath html_file = test_path.Append(base::FilePath(file_path));
     RunTest(html_file, "accessibility/html", FILE_PATH_LITERAL("node"));
   }
+
+  void RunMathMLTest(const base::FilePath::CharType* file_path) {
+    base::FilePath test_path = GetTestFilePath("accessibility", "mathml");
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
+    }
+    base::FilePath mathml_file = test_path.Append(base::FilePath(file_path));
+    RunTest(mathml_file, "accessibility/mathml", FILE_PATH_LITERAL("node"));
+  }
 };
 
 class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
@@ -153,7 +163,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest,
   RunHtmlTest(FILE_PATH_LITERAL("table-th-colheader.html"));
 }
 
+//
+// MathML tests.
+//
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLSpace) {
+  RunMathMLTest(FILE_PATH_LITERAL("mspace.html"));
+}
+
+//
 // AccName tests.
+//
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, DescComboboxFocusable) {
   RunAccNameTest(FILE_PATH_LITERAL("desc-combobox-focusable.html"));
 }
