@@ -2,10 +2,3 @@ include_rules = [
   # For compressing data stored in SessionStorage.
   "+third_party/bzip2",
 ]
-
-specific_include_rules = {
-  '.*test\.cc': [
-    # Tests may depend upon views.
-    "+chrome/browser/ui/views",
-  ],
-}

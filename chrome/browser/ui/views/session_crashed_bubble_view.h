@@ -29,8 +29,6 @@ class SessionCrashedBubbleView : public SessionCrashedBubble {
                    bool skip_tab_checking,
                    bool uma_opted_in_already);
 
-  static views::BubbleDialogDelegate* GetInstanceForTest();
-
  private:
   friend class SessionCrashedBubbleViewTest;
 

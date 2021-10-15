@@ -29,7 +29,6 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sessions/session_service_base_test_helper.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -1430,26 +1429,4 @@ TEST_F(SessionServiceTest, OnErrorWritingSessionCommandsUnrecoverable) {
   ASSERT_TRUE(write_error_event);
   EXPECT_EQ(1, write_error_event->data.write_error.error_count);
   EXPECT_EQ(0, write_error_event->data.write_error.unrecoverable_error_count);
-}
-
-TEST_F(SessionServiceTest, DisableSaving) {
-  // Disable saving has to be done early on.
-  helper_.SetSavingEnabled(false);
-  helper_.SaveNow();
-  EXPECT_EQ(0, helper_.command_storage_manager()->commands_since_reset());
-  EXPECT_FALSE(helper_.did_save_commands_at_least_once());
-
-  // Schedule another command, it should not trigger any saving.
-  const SessionID window2_id = SessionID::NewUnique();
-  service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
-  EXPECT_FALSE(helper_.command_storage_manager()->HasPendingSave());
-  EXPECT_TRUE(helper_.command_storage_manager()->pending_commands().empty());
-  helper_.SaveNow();
-  EXPECT_EQ(0, helper_.command_storage_manager()->commands_since_reset());
-  EXPECT_FALSE(helper_.did_save_commands_at_least_once());
-
-  // Turn on saving, and a rebuild should be scheduled.
-  helper_.SetSavingEnabled(true);
-  EXPECT_TRUE(helper_.command_storage_manager()->HasPendingSave());
-  EXPECT_TRUE(helper_.command_storage_manager()->pending_reset());
 }
