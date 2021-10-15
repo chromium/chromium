@@ -2,15 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
-import("//build/config/chromecast_build.gni")
 import("//chromecast/chromecast.gni")
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-
-  flags = [ "ENABLE_CAST_AUDIO_RENDERER=$enable_cast_audio_renderer" ]
-}
 
 cast_source_set("receiver") {
   sources = [
@@ -65,7 +57,6 @@ cast_source_set("receiver_instance") {
 
   deps = [
     ":audio_output_service",
-    ":buildflags",
     "//base",
     "//chromecast/external_mojo/external_service_support:external_service",
     "//chromecast/media/audio:audio_io_thread",

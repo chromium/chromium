@@ -50,7 +50,11 @@ class Receiver::InitialSocket : public OutputSocket::Delegate {
 };
 
 Receiver::Receiver(const std::string& uds_path, int tcp_port)
-    : socket_service_(uds_path, tcp_port, kMaxAcceptLoop, this) {
+    : socket_service_(uds_path,
+                      tcp_port,
+                      kMaxAcceptLoop,
+                      this,
+                      /*use_socket_descriptor=*/true) {
   socket_service_.Accept();
 }
 
