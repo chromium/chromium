@@ -134,6 +134,8 @@ health::mojom::DiagnosticRoutineUserMessageEnum Convert(
 health::mojom::DiagnosticRoutineStatusEnum Convert(
     cros_healthd::mojom::DiagnosticRoutineStatusEnum input) {
   switch (input) {
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kUnknown:
+      return health::mojom::DiagnosticRoutineStatusEnum::kUnknown;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady:
       return health::mojom::DiagnosticRoutineStatusEnum::kReady;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRunning:

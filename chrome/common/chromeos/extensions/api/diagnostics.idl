@@ -19,6 +19,7 @@ namespace os.diagnostics {
   };
 
   enum RoutineStatus {
+    unknown,
     ready,
     running,
     waiting_user_action,

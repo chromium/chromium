@@ -72,6 +72,7 @@ mojom::StandardRoutineResult TestStatusToResult(
     case healthd::DiagnosticRoutineStatusEnum::kWaiting:
     case healthd::DiagnosticRoutineStatusEnum::kRemoved:
     case healthd::DiagnosticRoutineStatusEnum::kCancelling:
+    case healthd::DiagnosticRoutineStatusEnum::kUnknown:
       NOTREACHED();
       return mojom::StandardRoutineResult::kExecutionError;
   }
@@ -463,6 +464,7 @@ void SystemRoutineController::OnRoutineStatusUpdated(
     case healthd::DiagnosticRoutineStatusEnum::kRemoved:
     case healthd::DiagnosticRoutineStatusEnum::kCancelling:
     case healthd::DiagnosticRoutineStatusEnum::kNotRun:
+    case healthd::DiagnosticRoutineStatusEnum::kUnknown:
       // Any other reason, report failure.
       DVLOG(2) << "Routine failed: " << update->status_message;
       OnStandardRoutineResult(routine_type, TestStatusToResult(status));

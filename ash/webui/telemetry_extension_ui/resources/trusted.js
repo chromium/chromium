@@ -108,6 +108,7 @@ class DiagnosticsProxy {
      * @const
      */
     this.enumToStatus_ = new Map([
+      [statusEnum.kUnknown, 'unknonwn'],
       [statusEnum.kReady, 'ready'],
       [statusEnum.kRunning, 'running'],
       [statusEnum.kWaiting, 'waiting'],

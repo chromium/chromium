@@ -57,6 +57,8 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
 
 RoutineStatus ConvertRoutineStatus(MojoRoutineStatus status) {
   switch (status) {
+    case MojoRoutineStatus::kUnknown:
+      return RoutineStatus::ROUTINE_STATUS_UNKNOWN;
     case MojoRoutineStatus::kReady:
       return RoutineStatus::ROUTINE_STATUS_READY;
     case MojoRoutineStatus::kRunning:
