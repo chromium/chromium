@@ -201,7 +201,7 @@ HTMLSelectMenuElement::PartType HTMLSelectMenuElement::AssignedPartType(
 void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   DCHECK(IsShadowHost(this));
 
-  root.EnableNameBasedSlotAssignment();
+  root.SetDocumentShadowCascade();
   Document& document = GetDocument();
 
   // TODO(crbug.com/1121840) Where to put the styles for the default elements in

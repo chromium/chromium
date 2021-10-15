@@ -40,7 +40,7 @@ namespace blink {
 HTMLMeterElement::HTMLMeterElement(Document& document)
     : HTMLElement(html_names::kMeterTag, document) {
   UseCounter::Count(document, WebFeature::kMeterElement);
-  EnsureUserAgentShadowRoot().EnableNameBasedSlotAssignment();
+  EnsureUserAgentShadowRoot().SetDocumentShadowCascade();
 }
 
 HTMLMeterElement::~HTMLMeterElement() = default;

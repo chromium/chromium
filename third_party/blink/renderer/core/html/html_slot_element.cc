@@ -306,7 +306,7 @@ void HTMLSlotElement::RecalcFlatTreeChildren() {
 
 void HTMLSlotElement::DispatchSlotChangeEvent() {
   DCHECK(!IsInUserAgentShadowRoot() ||
-         ContainingShadowRoot()->SupportsNameBasedSlotAssignment());
+         ContainingShadowRoot()->IsNamedSlotting());
   Event* event = Event::CreateBubble(event_type_names::kSlotchange);
   event->SetTarget(this);
   DispatchScopedEvent(*event);
@@ -727,8 +727,7 @@ void HTMLSlotElement::EnqueueSlotChangeEvent() {
   // not running change detection logic in
   // SlotAssignment::Did{Add,Remove}SlotInternal etc., although naive skipping
   // turned out breaking fallback content handling.
-  if (IsInUserAgentShadowRoot() &&
-      !ContainingShadowRoot()->SupportsNameBasedSlotAssignment())
+  if (IsInUserAgentShadowRoot() && !ContainingShadowRoot()->IsNamedSlotting())
     return;
   if (slotchange_event_enqueued_)
     return;

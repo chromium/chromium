@@ -3116,7 +3116,7 @@ HTMLSlotElement* Node::AssignedSlot() const {
     // User agent shadow slot assignment (FindSlotInUserAgentShadow()) will
     // re-check the DOM tree, and if we're in the process of removing nodes
     // from the tree, there could be a mismatch here.
-    if (root->SupportsNameBasedSlotAssignment()) {
+    if (root->IsNamedSlotting()) {
       DCHECK_EQ(root->AssignedSlotFor(*this), data->AssignedSlot())
           << "Assigned slot mismatch for node " << this;
     }

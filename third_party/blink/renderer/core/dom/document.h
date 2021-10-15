@@ -249,6 +249,9 @@ enum DocumentClass {
   kXMLDocumentClass = 1 << 6,
 };
 
+// Best understood as a boolean.
+// kShadowCascadeNone means that there are no shadow roots.
+// kShadowCascade means that there might be shadow roots.
 enum ShadowCascadeOrder { kShadowCascadeNone, kShadowCascade };
 
 using DocumentClassFlags = unsigned char;

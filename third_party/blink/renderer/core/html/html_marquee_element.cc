@@ -56,7 +56,7 @@ namespace blink {
 HTMLMarqueeElement::HTMLMarqueeElement(Document& document)
     : HTMLElement(html_names::kMarqueeTag, document) {
   UseCounter::Count(document, WebFeature::kHTMLMarqueeElement);
-  EnsureUserAgentShadowRoot().EnableNameBasedSlotAssignment();
+  EnsureUserAgentShadowRoot().SetDocumentShadowCascade();
 }
 
 void HTMLMarqueeElement::DidAddUserAgentShadowRoot(ShadowRoot& shadow_root) {

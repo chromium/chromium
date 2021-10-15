@@ -411,7 +411,7 @@ HTMLFormElement* HTMLOptionElement::form() const {
 }
 
 void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
-  root.EnableNameBasedSlotAssignment();
+  root.SetDocumentShadowCascade();
   UpdateLabel();
 }
 
