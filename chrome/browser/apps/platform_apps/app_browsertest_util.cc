@@ -163,7 +163,7 @@ void PlatformAppBrowserTest::LaunchPlatformApp(const Extension* extension) {
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceTest));
+          apps::mojom::LaunchSource::kFromTest));
 }
 
 void PlatformAppBrowserTest::LaunchHostedApp(const Extension* extension) {

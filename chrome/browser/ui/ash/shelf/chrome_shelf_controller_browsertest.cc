@@ -1667,7 +1667,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), extensions::LaunchContainer::kLaunchContainerTab,
           WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceTest));
+          apps::mojom::LaunchSource::kFromTest));
 
   EXPECT_EQ(++browsers, BrowserShortcutMenuItemCount(false));
   EXPECT_EQ(++tabs, BrowserShortcutMenuItemCount(true));

@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest, CreateWindowInDisplay) {
   apps::AppLaunchParams params(
       "app_id", apps::mojom::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::AppLaunchSource::kSourceAppLauncher, display2);
+      apps::mojom::LaunchSource::kFromAppListGrid, display2);
   Browser* browser2 =
       CreateApplicationWindow(browser()->profile(), params, GURL());
   gfx::NativeWindow window2 = browser2->window()->GetNativeWindow();

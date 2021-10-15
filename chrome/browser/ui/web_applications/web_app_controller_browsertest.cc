@@ -149,8 +149,7 @@ content::WebContents* WebAppControllerBrowserTest::OpenApplication(
 
   apps::AppLaunchParams params(
       app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::AppLaunchSource::kSourceTest);
+      WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
   content::WebContents* contents =
       apps::AppServiceProxyFactory::GetForProfile(profile())
           ->BrowserAppLauncher()

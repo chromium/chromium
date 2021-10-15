@@ -576,7 +576,7 @@ void DemoSession::OnExtensionInstalled(content::BrowserContext* browser_context,
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceChromeInternal));
+          apps::mojom::LaunchSource::kFromChromeInternal));
 }
 
 void DemoSession::OnAppWindowActivated(extensions::AppWindow* app_window) {

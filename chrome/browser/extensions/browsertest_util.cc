@@ -58,7 +58,7 @@ Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
           ->LaunchAppWithParams(apps::AppLaunchParams(
               extension_app->id(), LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::CURRENT_TAB,
-              AppLaunchSource::kSourceTest)));
+              apps::mojom::LaunchSource::kFromTest)));
 
   Browser* browser = chrome::FindLastActive();
   bool is_correct_app_browser =

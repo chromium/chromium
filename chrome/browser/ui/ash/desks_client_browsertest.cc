@@ -127,8 +127,7 @@ web_app::AppId CreateSettingsSystemWebApp(Profile* profile) {
       profile, web_app::SystemAppType::SETTINGS);
   apps::AppLaunchParams params(
       settings_app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::AppLaunchSource::kSourceTest);
+      WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
   params.restore_id = kSettingsWindowId;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->BrowserAppLauncher()

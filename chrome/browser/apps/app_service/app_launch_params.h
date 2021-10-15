@@ -23,13 +23,13 @@ struct AppLaunchParams {
   AppLaunchParams(const std::string& app_id,
                   apps::mojom::LaunchContainer container,
                   WindowOpenDisposition disposition,
-                  apps::mojom::AppLaunchSource source,
+                  apps::mojom::LaunchSource launch_source,
                   int64_t display_id = display::kInvalidDisplayId);
 
   AppLaunchParams(const std::string& app_id,
                   apps::mojom::LaunchContainer container,
                   WindowOpenDisposition disposition,
-                  apps::mojom::AppLaunchSource source,
+                  apps::mojom::LaunchSource launch_source,
                   int64_t display_id,
                   const std::vector<base::FilePath>& files,
                   const apps::mojom::IntentPtr& intentPtr);

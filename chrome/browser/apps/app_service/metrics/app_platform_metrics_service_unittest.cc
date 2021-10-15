@@ -1488,7 +1488,7 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->BrowserAppLauncher()->LaunchAppWithParams(apps::AppLaunchParams(
       "w2", apps::mojom::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      apps::mojom::AppLaunchSource::kSourceTest));
+      apps::mojom::LaunchSource::kFromTest));
   VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kChromeBrowser,
                       apps::mojom::LaunchSource::kFromTest);
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
@@ -1497,7 +1497,7 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->BrowserAppLauncher()->LaunchAppWithParams(apps::AppLaunchParams(
       "s", apps::mojom::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      apps::mojom::AppLaunchSource::kSourceTest));
+      apps::mojom::LaunchSource::kFromTest));
   VerifyAppsLaunchUkm("app://s", AppTypeName::kSystemWeb,
                       apps::mojom::LaunchSource::kFromTest);
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kSystemWeb);

@@ -67,7 +67,7 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
     apps::AppLaunchParams params(
         kTestAppId, apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::AppLaunchSource::kSourceCommandLine);
+        apps::mojom::LaunchSource::kFromCommandLine);
 
     params.current_directory = base::FilePath(kCurrentDirectory);
     params.command_line = command_line;

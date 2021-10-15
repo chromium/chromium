@@ -368,7 +368,7 @@ void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
       ->BrowserAppLauncher()
       ->LaunchAppWithParams(apps::AppLaunchParams(
           app_id, launch_container, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::AppLaunchSource::kSourceManagementApi));
+          apps::mojom::LaunchSource::kFromManagementApi));
 }
 
 void OnWebAppInstallCompleted(InstallOrLaunchWebAppCallback callback,
@@ -439,10 +439,10 @@ void ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   }
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), launch_container,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::AppLaunchSource::kSourceManagementApi));
+      ->LaunchAppWithParams(
+          apps::AppLaunchParams(extension->id(), launch_container,
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                apps::mojom::LaunchSource::kFromManagementApi));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::DemoSession::RecordAppLaunchSourceIfInDemoMode(

@@ -41,8 +41,9 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
   if (!extension || extension->from_bookmark()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     AppLaunchParams params_for_restore(
-        params.app_id, params.container, params.disposition, params.source,
-        params.display_id, params.launch_files, params.intent);
+        params.app_id, params.container, params.disposition,
+        GetLaunchSource(params.source), params.display_id, params.launch_files,
+        params.intent);
     std::string app_id = params.app_id;
     apps::mojom::AppLaunchSource source = params.source;
     apps::mojom::LaunchContainer container = params.container;
@@ -97,8 +98,9 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
         apps::mojom::LaunchSource::kFromFullRestore, params.container);
 
     AppLaunchParams params_for_restore(
-        params.app_id, params.container, params.disposition, params.source,
-        params.display_id, params.launch_files, params.intent);
+        params.app_id, params.container, params.disposition,
+        GetLaunchSource(params.source), params.display_id, params.launch_files,
+        params.intent);
 
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         params_for_restore.app_id, params_for_restore.container,

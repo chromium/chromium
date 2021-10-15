@@ -535,19 +535,19 @@ void WebAppLaunchManager::LaunchApplication(
                 protocol_handler_launch_url.has_value() + !launch_files.empty(),
             1);
 
-  apps::mojom::AppLaunchSource launch_source =
-      apps::mojom::AppLaunchSource::kSourceCommandLine;
+  apps::mojom::LaunchSource launch_source =
+      apps::mojom::LaunchSource::kFromCommandLine;
 
   if (url_handler_launch_url.has_value())
-    launch_source = apps::mojom::AppLaunchSource::kSourceUrlHandler;
+    launch_source = apps::mojom::LaunchSource::kFromUrlHandler;
   else if (!launch_files.empty())
-    launch_source = apps::mojom::AppLaunchSource::kSourceFileHandler;
+    launch_source = apps::mojom::LaunchSource::kFromFileManager;
 
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
       command_line.HasSwitch(switches::kAppRunOnOsLoginMode)) {
-    launch_source = apps::mojom::AppLaunchSource::kSourceRunOnOsLogin;
+    launch_source = apps::mojom::LaunchSource::kFromOsLogin;
   } else if (protocol_handler_launch_url.has_value()) {
-    launch_source = apps::mojom::AppLaunchSource::kSourceProtocolHandler;
+    launch_source = apps::mojom::LaunchSource::kFromProtocolHandler;
   }
 
   apps::AppLaunchParams params(

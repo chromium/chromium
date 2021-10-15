@@ -818,7 +818,7 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
         disposition == WindowOpenDisposition::NEW_WINDOW
             ? apps::mojom::LaunchContainer::kLaunchContainerWindow
             : apps::mojom::LaunchContainer::kLaunchContainerTab,
-        disposition, apps::mojom::AppLaunchSource::kSourceNewTabPage);
+        disposition, apps::mojom::LaunchSource::kFromNewTabPage);
     params.override_url = override_url;
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
@@ -836,7 +836,7 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
         extension_id, launch_container,
         old_contents ? WindowOpenDisposition::CURRENT_TAB
                      : WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        extensions::AppLaunchSource::kSourceNewTabPage);
+        apps::mojom::LaunchSource::kFromNewTabPage);
     params.override_url = override_url;
     WebContents* new_contents =
         apps::AppServiceProxyFactory::GetForProfile(profile)

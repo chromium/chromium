@@ -111,7 +111,7 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
     apps::AppLaunchParams params(
         app_id_, apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::AppLaunchSource::kSourceCommandLine);
+        apps::mojom::LaunchSource::kFromCommandLine);
 
     params.launch_files = launch_files;
     params.url_handler_launch_url = url_handler_launch_url;

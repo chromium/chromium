@@ -64,7 +64,7 @@ apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(
   return apps::AppLaunchParams(
       *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::CURRENT_TAB,
-      apps::mojom::AppLaunchSource::kSourceAppLauncher);
+      apps::mojom::LaunchSource::kFromAppListGrid);
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(

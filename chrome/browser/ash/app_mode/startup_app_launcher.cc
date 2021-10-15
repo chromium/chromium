@@ -432,7 +432,7 @@ void StartupAppLauncher::LaunchApp() {
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceKiosk));
+          apps::mojom::LaunchSource::kFromKiosk));
 
   KioskAppManager::Get()->InitSession(profile_, app_id_);
   session_manager::SessionManager::Get()->SessionStarted();

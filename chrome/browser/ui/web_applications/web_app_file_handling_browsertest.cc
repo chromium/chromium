@@ -237,8 +237,8 @@ content::WebContents* LaunchApplication(
     const GURL& expected_launch_url,
     const apps::mojom::LaunchContainer launch_container =
         apps::mojom::LaunchContainer::kLaunchContainerWindow,
-    const apps::mojom::AppLaunchSource launch_source =
-        apps::mojom::AppLaunchSource::kSourceTest,
+    const apps::mojom::LaunchSource launch_source =
+        apps::mojom::LaunchSource::kFromTest,
     const std::vector<base::FilePath>& files = std::vector<base::FilePath>()) {
   apps::AppLaunchParams params(app_id, launch_container,
                                WindowOpenDisposition::NEW_WINDOW,
@@ -302,7 +302,7 @@ class WebAppFileHandlingBrowserTest
           apps::mojom::LaunchContainer::kLaunchContainerWindow) {
     web_contents_ = LaunchApplication(
         profile(), app_id, expected_launch_url, launch_container,
-        apps::mojom::AppLaunchSource::kSourceFileHandler, files);
+        apps::mojom::LaunchSource::kFromFileManager, files);
     destroyed_watcher_ =
         std::make_unique<content::WebContentsDestroyedWatcher>(web_contents_);
   }
@@ -1074,7 +1074,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
   content::WebContents* web_content = LaunchApplication(
       profile(), app_id, start_url,
       apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      apps::mojom::AppLaunchSource::kSourceFileHandler, {test_file_path});
+      apps::mojom::LaunchSource::kFromFileManager, {test_file_path});
   EXPECT_EQ(1,
             content::EvalJs(web_content, "window.launchParams.files.length"));
   EXPECT_EQ(test_file_path.BaseName().AsUTF8Unsafe(),

@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_P(WebAppGuestSessionBrowserTest, LaunchOsSettings) {
       web_app::kOsSettingsAppId,
       apps::mojom::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      apps::mojom::AppLaunchSource::kSourceTest);
+      apps::mojom::LaunchSource::kFromTest);
 
   content::WebContents* contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)

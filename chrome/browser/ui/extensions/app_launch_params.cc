@@ -24,7 +24,7 @@ apps::AppLaunchParams CreateAppLaunchParamsUserContainer(
   apps::mojom::LaunchContainer container =
       extensions::GetLaunchContainer(ExtensionPrefs::Get(profile), extension);
   return apps::AppLaunchParams(extension->id(), container, disposition,
-                               apps::GetAppLaunchSource(launch_source));
+                               launch_source);
 }
 
 apps::AppLaunchParams CreateAppLaunchParamsWithEventFlags(

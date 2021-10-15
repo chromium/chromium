@@ -66,8 +66,7 @@ content::WebContents* PermissionBubbleBrowserTest::OpenExtensionAppWindow() {
   apps::AppLaunchParams params(
       extension->id(),
       apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::AppLaunchSource::kSourceTest);
+      WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
 
   content::WebContents* app_contents =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())

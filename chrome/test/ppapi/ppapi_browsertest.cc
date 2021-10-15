@@ -2206,7 +2206,7 @@ class PackagedAppTest : public extensions::ExtensionBrowserTest {
     apps::AppLaunchParams params(
         extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::AppLaunchSource::kSourceTest);
+        apps::mojom::LaunchSource::kFromTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()

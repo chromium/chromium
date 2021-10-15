@@ -91,7 +91,7 @@ bool OpenExtensionApplicationWindow(Profile* profile,
 
   apps::AppLaunchParams params(app_id, launch_container,
                                WindowOpenDisposition::NEW_WINDOW,
-                               extensions::AppLaunchSource::kSourceCommandLine);
+                               apps::mojom::LaunchSource::kFromCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
 
@@ -118,7 +118,7 @@ bool OpenExtensionApplicationTab(Profile* profile, const std::string& app_id) {
       profile, apps::AppLaunchParams(
                    app_id, extensions::LaunchContainer::kLaunchContainerTab,
                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                   extensions::AppLaunchSource::kSourceCommandLine));
+                   apps::mojom::LaunchSource::kFromCommandLine));
   return app_tab != nullptr;
 }
 
@@ -156,7 +156,7 @@ bool OpenExtensionApplicationWithReenablePrompt(
   apps::AppLaunchParams params(
       app_id, extensions::LaunchContainer::kLaunchContainerNone,
       WindowOpenDisposition::NEW_WINDOW,
-      extensions::AppLaunchSource::kSourceCommandLine);
+      apps::mojom::LaunchSource::kFromCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
   ::OpenApplicationWithReenablePrompt(profile, std::move(params));

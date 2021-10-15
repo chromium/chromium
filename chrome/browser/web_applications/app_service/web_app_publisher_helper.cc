@@ -652,8 +652,9 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithIntent(
 content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
     apps::AppLaunchParams params) {
   apps::AppLaunchParams params_for_restore(
-      params.app_id, params.container, params.disposition, params.source,
-      params.display_id, params.launch_files, params.intent);
+      params.app_id, params.container, params.disposition,
+      apps::GetLaunchSource(params.source), params.display_id,
+      params.launch_files, params.intent);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Create the FullRestoreSaveHandler instance before launching the app to
@@ -836,8 +837,8 @@ content::WebContents* WebAppPublisherHelper::ExecuteContextMenuCommand(
 
   apps::AppLaunchParams params(
       app_id, ConvertDisplayModeToAppLaunchContainer(display_mode),
-      WindowOpenDisposition::CURRENT_TAB,
-      apps::mojom::AppLaunchSource::kSourceAppLauncher, display_id);
+      WindowOpenDisposition::CURRENT_TAB, apps::mojom::LaunchSource::kFromMenu,
+      display_id);
 
   auto menu_item = shortcut_id_map_.find(shortcut_id);
   if (menu_item != shortcut_id_map_.end()) {

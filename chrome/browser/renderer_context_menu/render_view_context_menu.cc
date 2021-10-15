@@ -3198,8 +3198,7 @@ void RenderViewContextMenu::ExecOpenWebApp() {
 
   apps::AppLaunchParams launch_params(
       *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::CURRENT_TAB,
-      apps::mojom::AppLaunchSource::kSourceContextMenu);
+      WindowOpenDisposition::CURRENT_TAB, apps::mojom::LaunchSource::kFromMenu);
   launch_params.override_url = params_.link_url;
   apps::AppServiceProxyFactory::GetForProfile(GetProfile())
       ->BrowserAppLauncher()

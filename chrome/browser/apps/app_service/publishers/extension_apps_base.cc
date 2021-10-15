@@ -433,8 +433,8 @@ void ExtensionAppsBase::LaunchAppWithFiles(
       app_id,
       extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile_),
                                      extension),
-      ui::DispositionFromEventFlags(event_flags),
-      GetAppLaunchSource(launch_source), display::kDefaultDisplayId);
+      ui::DispositionFromEventFlags(event_flags), launch_source,
+      display::kDefaultDisplayId);
   for (const auto& file_path : file_paths->file_paths) {
     params.launch_files.push_back(file_path);
   }

@@ -693,7 +693,7 @@ void NewWindow(Browser* browser) {
     }
     apps::AppLaunchParams params = apps::AppLaunchParams(
         app_id, launch_container, WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::AppLaunchSource::kSourceKeyboard);
+        apps::mojom::LaunchSource::kFromKeyboard);
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
         ->LaunchAppWithParams(std::move(params));

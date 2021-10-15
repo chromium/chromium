@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
     apps::AppLaunchParams params(
         app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::AppLaunchSource::kSourceTest);
+        apps::mojom::LaunchSource::kFromTest);
     content::WebContents* contents =
         apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
             ->BrowserAppLauncher()

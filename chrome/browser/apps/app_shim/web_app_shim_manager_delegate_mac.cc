@@ -177,11 +177,11 @@ void WebAppShimManagerDelegate::LaunchApp(
           app_id);
   apps::mojom::LaunchContainer launch_container =
       web_app::ConvertDisplayModeToAppLaunchContainer(display_mode);
-  apps::mojom::AppLaunchSource launch_source =
-      apps::mojom::AppLaunchSource::kSourceCommandLine;
+  apps::mojom::LaunchSource launch_source =
+      apps::mojom::LaunchSource::kFromCommandLine;
   if (login_item_restore_state !=
       chrome::mojom::AppShimLoginItemRestoreState::kNone) {
-    launch_source = apps::mojom::AppLaunchSource::kSourceRunOnOsLogin;
+    launch_source = apps::mojom::LaunchSource::kFromOsLogin;
   }
 
   apps::AppLaunchParams params(app_id, launch_container,

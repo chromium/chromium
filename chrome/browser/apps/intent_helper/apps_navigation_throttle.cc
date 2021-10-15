@@ -258,7 +258,7 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
       apps::AppLaunchParams launch_params(
           *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::AppLaunchSource::kSourceUrlHandler);
+          apps::mojom::LaunchSource::kFromUrlHandler);
       launch_params.override_url = handle->GetURL();
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()

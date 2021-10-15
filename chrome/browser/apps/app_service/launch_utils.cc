@@ -85,8 +85,8 @@ AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     container = fallback_container;
     disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
-  return AppLaunchParams(app_id, container, disposition,
-                         GetAppLaunchSource(launch_source), display_id);
+  return AppLaunchParams(app_id, container, disposition, launch_source,
+                         display_id);
 }
 
 apps::AppLaunchParams CreateAppLaunchParamsForIntent(
@@ -123,9 +123,10 @@ apps::mojom::AppLaunchSource GetAppLaunchSource(
     case apps::mojom::LaunchSource::kFromLink:
     case apps::mojom::LaunchSource::kFromOmnibox:
     case apps::mojom::LaunchSource::kFromOtherApp:
-    case apps::mojom::LaunchSource::kFromMenu:
     case apps::mojom::LaunchSource::kFromSharesheet:
       return apps::mojom::AppLaunchSource::kSourceAppLauncher;
+    case apps::mojom::LaunchSource::kFromMenu:
+      return apps::mojom::AppLaunchSource::kSourceContextMenu;
     case apps::mojom::LaunchSource::kFromKeyboard:
       return apps::mojom::AppLaunchSource::kSourceKeyboard;
     case apps::mojom::LaunchSource::kFromFileManager:
