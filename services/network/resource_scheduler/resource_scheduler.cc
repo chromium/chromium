@@ -73,6 +73,7 @@ enum class RequestStartTrigger {
   LONG_QUEUED_REQUESTS_TIMER_FIRED,
   EFFECTIVE_CONNECTION_TYPE_CHANGED,
   PEER_TO_PEER_CONNECTIONS_COUNT_CHANGED,
+  FOUND_IN_CACHE,
 };
 
 const char* RequestStartTriggerString(RequestStartTrigger trigger) {
@@ -97,6 +98,8 @@ const char* RequestStartTriggerString(RequestStartTrigger trigger) {
       return "EFFECTIVE_CONNECTION_TYPE_CHANGED";
     case RequestStartTrigger::PEER_TO_PEER_CONNECTIONS_COUNT_CHANGED:
       return "PEER_TO_PEER_CONNECTIONS_COUNT_CHANGED";
+    case RequestStartTrigger::FOUND_IN_CACHE:
+      return "FOUND_IN_CACHE";
   }
 }
 
@@ -254,7 +257,8 @@ class ResourceScheduler::ScheduledResourceRequestImpl
         priority_(priority),
         fifo_ordering_(0),
         peak_delayable_requests_in_flight_(0u),
-        host_port_pair_(net::HostPortPair::FromURL(request->url())) {
+        host_port_pair_(net::HostPortPair::FromURL(request->url())),
+        cache_checked_(false) {
     DCHECK(!request_->GetUserData(kUserDataKey));
     request_->SetUserData(kUserDataKey, std::make_unique<UnownedPointer>(this));
   }
@@ -308,6 +312,10 @@ class ResourceScheduler::ScheduledResourceRequestImpl
 
     ready_ = true;
   }
+
+  void set_cache_checked() { cache_checked_ = true; }
+
+  bool cache_checked() const { return cache_checked_; }
 
   void UpdateDelayableRequestsInFlight(size_t delayable_requests_in_flight) {
     peak_delayable_requests_in_flight_ = std::max(
@@ -371,6 +379,7 @@ class ResourceScheduler::ScheduledResourceRequestImpl
   size_t peak_delayable_requests_in_flight_;
   // Cached to excessive recomputation in ReachedMaxRequestsPerHostPerClient().
   const net::HostPortPair host_port_pair_;
+  bool cache_checked_;
 
   base::WeakPtrFactory<ResourceScheduler::ScheduledResourceRequestImpl>
       weak_ptr_factory_{this};
@@ -439,7 +448,8 @@ class ResourceScheduler::Client
     }
   }
 
-  void ScheduleRequest(const net::URLRequest& url_request,
+  // Returns true if the request is started.
+  bool ScheduleRequest(const net::URLRequest& url_request,
                        ScheduledResourceRequestImpl* request) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     UpdateSignalQualityStatus();
@@ -448,9 +458,11 @@ class ResourceScheduler::Client
     if (should_start == START_REQUEST) {
       // New requests can be started synchronously without issue.
       StartRequest(request, START_SYNC, RequestStartTrigger::NONE);
-    } else {
-      pending_requests_.Insert(request);
+      return true;
     }
+
+    pending_requests_.Insert(request);
+    return false;
   }
 
   void RemoveRequest(ScheduledResourceRequestImpl* request) {
@@ -539,6 +551,78 @@ class ResourceScheduler::Client
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     LoadAnyStartablePendingRequests(
         RequestStartTrigger::LONG_QUEUED_REQUESTS_TIMER_FIRED);
+  }
+
+  void OnCacheCheckForQueuedRequestsTimerFired() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    for (RequestQueue::NetQueue::const_iterator it =
+             pending_requests_.GetNextHighestIterator();
+         it != pending_requests_.End(); ++it) {
+      if (!(*it)->cache_checked() &&
+          tick_clock_->NowTicks() - (*it)->url_request()->creation_time() >=
+              features::kQueuedRequestsCacheCheckTimeThreshold.Get()) {
+        CheckDiskCacheForPendingRequest(*it);
+      }
+    }
+  }
+
+  void CheckDiskCacheForPendingRequest(ScheduledResourceRequestImpl* request) {
+    request->set_cache_checked();
+    net::URLRequest* url_request = request->url_request();
+    net::HttpCache* http_cache =
+        url_request->context()->http_transaction_factory()->GetCache();
+    if (!http_cache)
+      return;
+
+    if (http_cache->mode() == net::HttpCache::Mode::DISABLE)
+      return;
+
+    if (url_request->method() != net::HttpRequestHeaders::kGetMethod)
+      return;
+
+    int load_flags = url_request->load_flags();
+    if (load_flags & net::LOAD_DISABLE_CACHE ||
+        load_flags & net::LOAD_BYPASS_CACHE ||
+        load_flags & net::LOAD_VALIDATE_CACHE) {
+      return;
+    }
+
+    net::Error result = http_cache->CheckResourceExistence(
+        url_request->url(), url_request->method(),
+        url_request->isolation_info().network_isolation_key(),
+        url_request->isolation_info().request_type() ==
+            net::IsolationInfo::RequestType::kSubFrame,
+        base::BindOnce(&Client::StartPendingRequestIfCached,
+                       weak_ptr_factory_.GetWeakPtr(), url_request->url()));
+    if (result != net::OK)
+      return;
+
+    // It reaches here during iterating |pending_requests_|, and call
+    // StartPendingRequestIfCached() can change |pending_requests_|. So delay
+    // the run of StartPendingRequestIfCached() until after iterating
+    // |pending_requests_|.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&Client::StartPendingRequestIfCached,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  url_request->url(), net::OK));
+  }
+
+  void StartPendingRequestIfCached(const GURL& url, net::Error result) {
+    if (result != net::OK)
+      return;
+
+    for (RequestQueue::NetQueue::const_iterator it =
+             pending_requests_.GetNextHighestIterator();
+         it != pending_requests_.End(); ++it) {
+      ScheduledResourceRequestImpl* request = *it;
+      if (request->url_request()->url() == url) {
+        // Iterator invalidation doesn't matter because we are not going to loop
+        // again.
+        pending_requests_.Erase(request);
+        StartRequest(request, START_ASYNC, RequestStartTrigger::FOUND_IN_CACHE);
+        return;
+      }
+    }
   }
 
   bool HasNoPendingRequests() const {
@@ -1519,7 +1603,12 @@ ResourceScheduler::ScheduleRequest(int child_id,
   }
 
   Client* client = it->second.get();
-  client->ScheduleRequest(*url_request, request.get());
+  if (!client->ScheduleRequest(*url_request, request.get())) {
+    if (base::FeatureList::IsEnabled(features::kCheckCacheForQueuedRequests)) {
+      // If the request is queued, start the cache check timer.
+      StartCacheCheckForQueuedRequestsTimer();
+    }
+  }
 
   if (!IsLongQueuedRequestsDispatchTimerRunning())
     StartLongQueuedRequestsDispatchTimerIfNeeded();
@@ -1662,6 +1751,21 @@ void ResourceScheduler::OnLongQueuedRequestsDispatchTimerFired() {
   StartLongQueuedRequestsDispatchTimerIfNeeded();
 }
 
+void ResourceScheduler::StartCacheCheckForQueuedRequestsTimer() {
+  if (check_cache_for_queued_request_timer_.IsRunning())
+    return;
+
+  check_cache_for_queued_request_timer_.Start(
+      FROM_HERE, features::kQueuedRequestsCacheCheckInterval.Get(), this,
+      &ResourceScheduler::OnCacheCheckForQueuedRequestsTimerFired);
+}
+
+void ResourceScheduler::OnCacheCheckForQueuedRequestsTimerFired() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& client : client_map_)
+    client.second->OnCacheCheckForQueuedRequestsTimerFired();
+}
+
 void ResourceScheduler::ReprioritizeRequest(net::URLRequest* request,
                                             net::RequestPriority new_priority,
                                             int new_intra_priority_value) {
@@ -1740,6 +1844,11 @@ void ResourceScheduler::SetResourceSchedulerParamsManagerForTests(
 void ResourceScheduler::DispatchLongQueuedRequestsForTesting() {
   long_queued_requests_dispatch_timer_.Stop();
   OnLongQueuedRequestsDispatchTimerFired();
+}
+
+void ResourceScheduler::FireQueuedRequestsCacheCheckTimerForTesting() {
+  check_cache_for_queued_request_timer_.Stop();
+  OnCacheCheckForQueuedRequestsTimerFired();
 }
 
 }  // namespace network

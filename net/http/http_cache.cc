@@ -448,6 +448,33 @@ std::string HttpCache::GetResourceURLFromHttpCacheKey(const std::string& key) {
   return key.substr(pos);
 }
 
+Error HttpCache::CheckResourceExistence(
+    const GURL& url,
+    const base::StringPiece method,
+    const NetworkIsolationKey& network_isolation_key,
+    bool is_subframe,
+    base::OnceCallback<void(Error)> callback) {
+  if (!disk_cache_)
+    return ERR_CACHE_MISS;
+
+  HttpRequestInfo request_info;
+  request_info.url = url;
+  request_info.method = std::string(method);
+  request_info.network_isolation_key = network_isolation_key;
+  request_info.is_subframe_document_resource = is_subframe;
+
+  std::string key = GenerateCacheKey(&request_info);
+  disk_cache::EntryResult entry_result = disk_cache_->OpenEntry(
+      key, net::IDLE,
+      base::BindOnce(&HttpCache::ResourceExistenceCheckCallback, GetWeakPtr(),
+                     std::move(callback)));
+
+  if (entry_result.net_error() == OK && !entry_result.opened())
+    return ERR_CACHE_MISS;
+
+  return entry_result.net_error();
+}
+
 // static
 std::string HttpCache::GenerateCacheKeyForTest(const HttpRequestInfo* request) {
   return GenerateCacheKey(request);
@@ -1509,6 +1536,15 @@ void HttpCache::OnBackendCreated(int result, PendingOp* pending_op) {
   // The cache may be gone when we return from the callback.
   if (!item->DoCallback(result, disk_cache_.get()))
     item->NotifyTransaction(result, nullptr);
+}
+
+void HttpCache::ResourceExistenceCheckCallback(
+    base::OnceCallback<void(Error)> callback,
+    disk_cache::EntryResult entry_result) {
+  Error result = (entry_result.net_error() == OK && entry_result.opened())
+                     ? OK
+                     : ERR_CACHE_MISS;
+  std::move(callback).Run(result);
 }
 
 }  // namespace net
