@@ -44,6 +44,7 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
       const CardUnmaskChallengeOption& challenge_option) const override;
   std::u16string GetContentFooterText() const override;
   std::u16string GetOkButtonLabel() const override;
+  std::u16string GetProgressLabel() const override;
 
 #if defined(UNIT_TEST)
   CardUnmaskAuthenticationSelectionDialogView* GetDialogViewForTesting();

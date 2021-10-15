@@ -28,6 +28,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -211,5 +212,36 @@ PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
       return PaymentsBubbleClosedReason::kCancelled;
   }
 }
+
+ProgressBarWithTextView::ProgressBarWithTextView(
+    const std::u16string& progress_bar_text) {
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  progress_throbber_ = AddChildView(std::make_unique<views::Throbber>());
+  progress_label_ =
+      AddChildView(std::make_unique<views::Label>(progress_bar_text));
+}
+
+ProgressBarWithTextView::~ProgressBarWithTextView() = default;
+
+void ProgressBarWithTextView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  // We need to ensure |progress_label_|'s color matches the color of the
+  // throbber above it.
+  progress_label_->SetEnabledColor(
+      GetColorProvider()->GetColor(ui::kColorThrobber));
+}
+
+void ProgressBarWithTextView::AddedToWidget() {
+  progress_throbber_->Start();
+}
+
+BEGIN_METADATA(ProgressBarWithTextView, views::View)
+END_METADATA
 
 }  // namespace autofill
