@@ -2759,7 +2759,6 @@ void RenderFrameHostImpl::RenderProcessExited(
   // Reset state for the current RenderFrameHost once the FrameTreeNode has been
   // reset.
   RenderFrameDeleted();
-  InvalidateMojoConnection();
   broker_receiver_.reset();
   SetLastCommittedUrl(GURL());
   renderer_url_info_ = RendererURLInfo();
@@ -3137,6 +3136,7 @@ void RenderFrameHostImpl::RenderFrameDeleted() {
   if (was_created) {
     delegate_->RenderFrameDeleted(this);
   }
+  InvalidateMojoConnection();
 
   if (web_ui_) {
     web_ui_->RenderFrameDeleted();
