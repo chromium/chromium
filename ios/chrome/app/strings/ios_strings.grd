@@ -1905,7 +1905,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Your organization limits what you can sync.
       </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
-        You've Been Signed Out
+        You're Signed Out
       </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE" desc="The text in the 'Continue' button, displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy.">
         Continue

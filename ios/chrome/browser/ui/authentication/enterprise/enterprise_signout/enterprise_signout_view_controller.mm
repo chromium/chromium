@@ -22,7 +22,7 @@
   self.customSpacingAfterImage = 30;
 
   self.primaryActionAvailable = YES;
-  self.secondaryActionAvailable = YES;
+  self.secondaryActionAvailable = NO;
   self.showDismissBarButton = NO;
   self.titleString = l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT);
   self.subtitleString = l10n_util::GetNSString(
