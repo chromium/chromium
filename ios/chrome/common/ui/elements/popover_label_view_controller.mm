@@ -106,6 +106,7 @@ constexpr CGFloat kVerticalDistance = 10;
   textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   textView.adjustsFontForContentSizeCategory = YES;
   textView.translatesAutoresizingMaskIntoConstraints = NO;
+  textView.textContainerInset = UIEdgeInsetsZero;
   textView.textColor = [UIColor colorNamed:kTextSecondaryColor];
   textView.linkTextAttributes =
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
@@ -128,6 +129,7 @@ constexpr CGFloat kVerticalDistance = 10;
         [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
     secondaryTextView.adjustsFontForContentSizeCategory = YES;
     secondaryTextView.translatesAutoresizingMaskIntoConstraints = NO;
+    secondaryTextView.textContainerInset = UIEdgeInsetsZero;
     secondaryTextView.textColor = [UIColor colorNamed:kTextSecondaryColor];
     secondaryTextView.linkTextAttributes =
         @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
