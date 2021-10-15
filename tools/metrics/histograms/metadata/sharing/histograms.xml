@@ -209,7 +209,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.LongScreenshots.BitmapGenerationStatus"
-    enum="SharingLongScreenshotsEvent" expires_after="M98">
+    enum="SharingLongScreenshotsEvent" expires_after="M105">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -220,7 +220,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.LongScreenshots.BitmapSelectedHeight" units="pixels"
-    expires_after="M98">
+    expires_after="M105">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -230,7 +230,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.LongScreenshots.Event"
-    enum="SharingLongScreenshotsEvent" expires_after="M98">
+    enum="SharingLongScreenshotsEvent" expires_after="M105">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
