@@ -70,6 +70,11 @@ void DebugRectHistory::SaveDebugRectsForCurrentFrame(
 }
 
 void DebugRectHistory::SaveLayoutShiftRects(HeadsUpDisplayLayerImpl* hud) {
+  // We store the layout shift rects on the hud layer. If we don't have the hud
+  // layer, then there is nothing to store.
+  if (!hud)
+    return;
+
   for (gfx::Rect rect : hud->LayoutShiftRects()) {
     debug_rects_.push_back(DebugRect(
         LAYOUT_SHIFT_RECT_TYPE,

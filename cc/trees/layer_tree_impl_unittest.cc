@@ -10,6 +10,7 @@
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/trees/clip_node.h"
+#include "cc/trees/debug_rect_history.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2252,6 +2253,17 @@ TEST_F(LayerTreeImplTest, HitTestingCorrectLayerWheelListener) {
       host_impl().active_tree()->FindLayerThatIsHitByPoint(test_point);
 
   EXPECT_EQ(left_child, result_layer);
+}
+
+TEST_F(LayerTreeImplTest, DebugRectHistoryLayoutShiftWithoutHud) {
+  LayerTreeDebugState state;
+  state.show_layout_shift_regions = true;
+
+  auto history = DebugRectHistory::Create();
+  history->SaveDebugRectsForCurrentFrame(host_impl().active_tree(), nullptr,
+                                         RenderSurfaceList{}, state);
+
+  EXPECT_EQ(0u, history->debug_rects().size());
 }
 
 namespace {
