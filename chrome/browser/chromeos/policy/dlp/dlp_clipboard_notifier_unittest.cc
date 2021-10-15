@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_clipboard_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_notifier.h"
 
 #include <memory>
 #include <string>
@@ -10,8 +10,8 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ash/policy/dlp/clipboard_bubble.h"
-#include "chrome/browser/ash/policy/dlp/dlp_clipboard_bubble_constants.h"
+#include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/strings/grit/components_strings.h"

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/clipboard_bubble.h"
+#include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "chrome/browser/ash/policy/dlp/dlp_clipboard_bubble_constants.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"

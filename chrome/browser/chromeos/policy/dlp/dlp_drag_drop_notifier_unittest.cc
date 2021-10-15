@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_drag_drop_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_drag_drop_notifier.h"
 
 #include "base/stl_util.h"
 #include "base/test/mock_callback.h"

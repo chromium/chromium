@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_data_transfer_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_data_transfer_notifier.h"
 
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/bind.h"
-#include "chrome/browser/ash/policy/dlp/clipboard_bubble.h"
-#include "chrome/browser/ash/policy/dlp/dlp_clipboard_bubble_constants.h"
+#include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
