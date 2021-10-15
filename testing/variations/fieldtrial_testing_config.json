@@ -5769,24 +5769,6 @@
             ]
         }
     ],
-    "PageInfoV2Desktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PageInfoV2Desktop"
-                    ]
-                }
-            ]
-        }
-    ],
     "PaintPreviewShowOnStartup": [
         {
             "platforms": [
