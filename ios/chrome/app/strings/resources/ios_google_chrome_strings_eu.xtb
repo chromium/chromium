@@ -3,6 +3,7 @@
 <translationbundle lang="eu">
 <translation id="1096883626080133124">Egin gauza gehiago Chrome-rekin: sinplea, segurua eta inoiz baino bizkorragoa da</translation>
 <translation id="1282031177488366470">Lagundu Chrome-ren eginbideak eta funtzionamendua hobetzen</translation>
+<translation id="1354592789402432496">Erakunde-kontu batekin saioa hastea eskatzen du administratzaileak. Hark onartzen ez dituen kontuak ezkutatuta daude.</translation>
 <translation id="1479202195792305274">Saioa Google-ko kontu batekin hasten baduzu, Chrome-k pasahitzak egiazta ditzake.</translation>
 <translation id="1493827051843127077">Ezarri Chrome arakatzaile lehenetsi gisa fitxak, pasahitzak eta ordainketa-informazioa gailu guztietan sinkronizatzeko</translation>
 <translation id="1504372625950710826">Chrome-k ezin izan ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome-k ez du argazki eta bideoetarako sarbiderik. Gaitu ezazu iOS sistemako Settings &gt; Privacy &gt; Photos atalean.</translation>
 <translation id="4099578267706723511">Hobetu Chrome Google-ri erabilera-estatistikak eta hutsegite-txostenak bidalita.</translation>
 <translation id="417201473131094001">Ez da bateragarria Chrome Canary-rekin</translation>
+<translation id="4214277427269650960">Hasi saioa webgune honetan eta Chrome-n. Geroago aktiba dezakezu sinkronizazioa.</translation>
 <translation id="424864128008805179">Chrome-ko saioa amaitu nahi duzu?</translation>
 <translation id="4249068189593983585">Chrome-ri buruzko aholkua: fitxetako aukera gehiago ikusteko, eduki sakatuta tresna-barrako Erakutsi fitxak botoia. Pantailaren goiko edo beheko aldean aurkituko duzu.</translation>
 <translation id="4523886039239821078">Gehigarri batzuek Chrome huts egitea eragiten dute. Desinstala itzazu.</translation>
@@ -59,8 +61,10 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Interneteko konexiorik gabe, Chrome-k ezin ditu bilatu eguneratzeak</translation>
 <translation id="5716154293141027663">Ireki Chrome beste aplikazioetako estekak sakatzen dituzunean</translation>
+<translation id="572883588166315317">Erakundeak saioa hastea eskatzen du Chrome erabiltzeko. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Chrome-ri buruzko aholkua: botoi batzuk pantailaren behealdean daude; esaterako, Atzera, Aurrera eta Bilaketa botoiak.</translation>
 <translation id="5876773482963502140">Zure kokapena jakiteko baimena ematen badiozu Chrome-ri, baimena duten webguneei bidaliko die kokapena. Baliteke webguneek kokapena eskatzea tokiko informazioa (adibidez, inguruko dendak edo albisteak) erakusteko.</translation>
+<translation id="5998675059699164418">Saioa hasteko eskatzen dizu zure erakundeak, Chrome erabiltzearren.</translation>
 <translation id="6054613632208573261">Erabili Chrome modu lehenetsian</translation>
 <translation id="6063091872902370735">Eman Chrome-n saioa hasteko baimena</translation>
 <translation id="6181930887571472871">Aldatu Chrome-ra</translation>

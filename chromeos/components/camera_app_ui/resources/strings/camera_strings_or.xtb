@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
+<translation id="1113173431709655881">କ୍ୟାମେରା ମୋଡ</translation>
 <translation id="1175958423215084756">ଲିଙ୍କଟି ଚିହ୍ନଟ କରାଯାଇଛି। <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ଗ୍ୟାଲେରୀ ଛବିଗୁଡ଼ିକ</translation>
 <translation id="1300209025925956156">ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟ ସ୍କାନ୍ କରନ୍ତୁ</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">ରେକର୍ଡିଂ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="2599796128805996109">ପଛ କ୍ୟାମେରା</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> ସେକେଣ୍ଡ</translation>
+<translation id="2761536921376153655">ସ୍କାନର ପ୍ରକାର</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />କୁ ପ୍ଲଗ୍ ଇନ୍ କରାଯାଇଛି।</translation>
 <translation id="2968794441791257519">କ୍ୟାମେରାରେ ଉଠାଯାଇଥିବା ଫଟୋ ଏବଂ ଭିଡିଓଗୁଡ଼ିକ ଡାଉନ୍‌ଲୋଡ୍ ଫୋଲ୍ଡର୍‍କୁ ନିଆଯିବ। ଆପଣ ସେଗୁଡ଼ିକ ଫାଇଲ୍‌ଗୁଡ଼ିକରେ ଆକ୍ସେସ୍ କରାଯାଇପାରିବ।
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">3 ସେକେଣ୍ଡ</translation>
 <translation id="712848772518857951">ଆପଣ କ'ଣ ପ୍ରକୃତରେ <ph name="COUNT" />ଟି ଆଇଟମ୍ କାଢ଼ି ଦେବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="7134221860976209830">10 ସେକେଣ୍ଡର ଟାଇମର୍</translation>
+<translation id="7191890674911603392">ରେକର୍ଡର ପ୍ରକାର</translation>
 <translation id="7243947652761655814">ଭିଡିଓ ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="7337660886763914220">ଫାଇଲ୍ ସିଷ୍ଟମ୍‌ର ତ୍ରୁଟିଗୁଡ଼ିକ।</translation>
 <translation id="7450541714075000668">ଟେକ୍ସଟ୍ କପି କରାଯାଇଛି</translation>
+<translation id="7476762461674917065">GIF ରେକର୍ଡ କରିବାର ବିକଳ୍ପ ଦେଖାନ୍ତୁ</translation>
 <translation id="7488619942230388918">GIF ଭିଡିଓ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7557677699350329807">ପରବର୍ତ୍ତୀ କ୍ୟାମେରାକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="7607002721634913082">ଅଚଳିତ</translation>

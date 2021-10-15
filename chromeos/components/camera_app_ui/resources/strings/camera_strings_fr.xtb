@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1113173431709655881">Mode caméra</translation>
 <translation id="1175958423215084756">Lien détecté. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Images de la galerie</translation>
 <translation id="1300209025925956156">Scanner votre document</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
 <translation id="2599796128805996109">Caméra arrière</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
+<translation id="2761536921376153655">Type de recherche</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> est branchée.</translation>
 <translation id="2968794441791257519">Les photos et les vidéos prises avec l'appareil photo seront déplacées vers le dossier "Téléchargements". Vous pouvez y accéder via l'application Fichiers.
 
@@ -99,9 +101,11 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="698156982839284926">3 secondes</translation>
 <translation id="712848772518857951">Voulez-vous vraiment supprimer <ph name="COUNT" /> éléments ?</translation>
 <translation id="7134221860976209830">Minuteur de 10 secondes</translation>
+<translation id="7191890674911603392">Type d'enregistrement</translation>
 <translation id="7243947652761655814">Résolution vidéo</translation>
 <translation id="7337660886763914220">Erreurs du système de fichiers.</translation>
 <translation id="7450541714075000668">Texte copié</translation>
+<translation id="7476762461674917065">Afficher l'option d'enregistrement GIF</translation>
 <translation id="7488619942230388918">Enregistrer une vidéo GIF</translation>
 <translation id="7557677699350329807">Passer à la caméra suivante</translation>
 <translation id="7607002721634913082">Suspendu</translation>

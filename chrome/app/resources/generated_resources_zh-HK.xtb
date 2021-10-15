@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">請閱讀新版條款</translation>
 <translation id="103279545524624934">請釋出磁碟的儲存空間，以啟動 Android 應用程式。</translation>
 <translation id="1033780634303702874">存取您的序列裝置</translation>
+<translation id="1034484273907870301">平板電腦模式的縮圖分頁列</translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1036511912703768636">存取清單中所有 USB 裝置</translation>
 <translation id="1036982837258183574">按下 |<ph name="ACCELERATOR" />| 即可退出全螢幕</translation>
@@ -360,6 +361,7 @@
 <translation id="1378613616312864539">此設定目前受「<ph name="NAME" />」控制</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{沒有密碼被盜用}=1{1 個密碼被盜用}other{{NUM_COMPROMISED} 個密碼被盜用}}</translation>
 <translation id="1380028686461971526">自動連線至網絡</translation>
+<translation id="1381567580865186407">系統會將<ph name="LANGUAGE" />語音內容傳送給 Google 處理</translation>
 <translation id="1383597849754832576">無法下載即時字幕檔案，請稍後再試。</translation>
 <translation id="1383861834909034572">完成後開啟</translation>
 <translation id="1383876407941801731">搜尋</translation>
@@ -1158,6 +1160,7 @@
 <translation id="2173302385160625112">檢查互聯網連線</translation>
 <translation id="2173801458090845390">新增此裝置的申請 ID</translation>
 <translation id="2174948148799307353">帳戶由 <ph name="PARENT_EMAIL" /> 管理如要登出此裝置上的主要帳戶，請按一下螢幕上的時間。當畫面顯示選單時，按一下 [登出]。</translation>
+<translation id="2175384018164129879">管理搜尋引擎和站內搜尋</translation>
 <translation id="2175607476662778685">快速啟動列</translation>
 <translation id="217576141146192373">無法新增打印機。請檢查打印機設定，然後再試一次。</translation>
 <translation id="2175927920773552910">二維條碼</translation>
@@ -3863,6 +3866,7 @@
 <translation id="5040823038948176460">其他內容設定</translation>
 <translation id="5043440033854483429">名稱可以使用字母、數字和連字號 (-)，且必須介乎 1 至 15 個 (含上下限) 字元之間。</translation>
 <translation id="5043913660911154449">或指定打印機的 PPD <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">不要再顯示這個步驟</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="504561833207953641">正在現有的瀏覽器工作階段中開啟。</translation>
 <translation id="5047421709274785093">禁止網站使用動態和光線感應器</translation>
@@ -5313,6 +5317,7 @@
 <translation id="6619801788773578757">新增 Kiosk 應用程式</translation>
 <translation id="6619990499523117484">確認您的 PIN</translation>
 <translation id="6622980291894852883">繼續封鎖圖片</translation>
+<translation id="6624036901798307345">在平板電腦模式中，輕觸分頁計數器的工具列按鈕即可開啟新的分頁列，當中會顯示各分頁的縮圖。</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> 含有敏感或危險的內容。請要求擁有者修正。</translation>
 <translation id="6624687053722465643">小蛋糕</translation>
 <translation id="6628328486509726751">上載時間：<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -5618,6 +5623,7 @@
 <translation id="6955893174999506273">指派另外 1 個按鈕</translation>
 <translation id="6957044667612803194">此安全密鑰不支援 PIN</translation>
 <translation id="6960507406838246615">Linux 需要更新</translation>
+<translation id="6960648667961844909">無法下載<ph name="LANGUAGE" />語音檔案。系統稍後將再次嘗試下載。在下載作業完成前，系統會先將語音內容傳送給 Google 處理。</translation>
 <translation id="696103774840402661">已永久刪除此 <ph name="DEVICE_TYPE" /> 上所有使用者的所有檔案和本機資料。</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
@@ -6223,6 +6229,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (錯誤代碼 <ph name="ERROR_CODE" />)。</translation>
 <translation id="7598466960084663009">重新啟動電腦</translation>
 <translation id="7599527631045201165">裝置名稱太長。請輸入較短的名稱並再試一次。</translation>
+<translation id="7600054753482800821">管理搜尋引擎和站內搜尋</translation>
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">前往 <ph name="LANDING_PAGE" /> 以連接裝置。</translation>
 <translation id="7602079150116086782">沒有其他裝置的分頁</translation>
@@ -6890,6 +6897,7 @@
 <translation id="8244514732452879619">快到睡覺時間了</translation>
 <translation id="8246776524656196770">使用 PIN (個人識別碼) 保護您的安全密鑰</translation>
 <translation id="8248050856337841185">貼上(&amp;P)</translation>
+<translation id="8248887045858762645">Chrome 實用訣竅</translation>
 <translation id="8249048954461686687">OEM 資料夾</translation>
 <translation id="8249615410597138718">傳送至您的裝置</translation>
 <translation id="8249672078237421304">詢問是否把網頁翻譯為您慣用的語言</translation>
@@ -7363,6 +7371,7 @@
 <translation id="8763927697961133303">USB 裝置</translation>
 <translation id="87646919272181953">「Google 相片」中的相簿</translation>
 <translation id="8767621466733104912">自動為所有使用者更新 Chrome</translation>
+<translation id="8767765348545497220">關閉說明泡泡</translation>
 <translation id="8770406935328356739">擴充程式根目錄</translation>
 <translation id="8771300903067484968">起始網頁背景重設咗做預設背景。</translation>
 <translation id="8773302562181397928">儲存 <ph name="PRINTER_NAME" /></translation>

@@ -308,6 +308,7 @@
 <translation id="1313660246522271310">열려 있는 탭을 포함한 모든 사이트에서 로그아웃됩니다.</translation>
 <translation id="1313705515580255288">북마크, 방문 기록 및 기타 설정이 Google 계정에 동기화됩니다.</translation>
 <translation id="1316136264406804862">검색 중...</translation>
+<translation id="1316248800168909509"><ph name="DEVICE" />에 연결할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="1316495628809031177">동기화 일시중지됨</translation>
 <translation id="1317637799698924700">현재 도킹 스테이션은 USB 타입-C 호환 모드에서 작동합니다.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> 하위 페이지 뒤로 버튼</translation>
@@ -1192,6 +1193,7 @@
 <translation id="2200356397587687044">계속하려면 Chrome에 권한이 필요함</translation>
 <translation id="2202898655984161076">프린터를 나열하는 데 문제가 발생했습니다. <ph name="CLOUD_PRINT_NAME" />에 성공적으로 등록되지 못한 프린터가 있을 수 있습니다.</translation>
 <translation id="2203088913459920044">이름에는 문자, 숫자, 특수문자를 사용할 수 있습니다</translation>
+<translation id="220321590587754225">연결할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="2204034823255629767">입력한 항목 조회 및 변경</translation>
 <translation id="220858061631308971">'<ph name="DEVICE_NAME" />'의 PIN 코드를 입력하세요:</translation>
 <translation id="2210462644007531147">설치를 완료할 수 없음</translation>
@@ -4977,6 +4979,7 @@
 <translation id="6263284346895336537">중요하지 않음</translation>
 <translation id="6264365405983206840">모두 선택(&amp;A)</translation>
 <translation id="6265687851677020761">포트 삭제</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" />에 연결 중</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" />에 대해 인증을 받으려면 인증서를 선택하세요.</translation>
 <translation id="6268252012308737255"><ph name="APP" />(으)로 열기</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>

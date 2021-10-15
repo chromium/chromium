@@ -208,6 +208,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="718435575166326686">Chromium memerlukan izin kamera untuk situs ini</translation>
 <translation id="7196312274710523067">Tidak dapat meluncurkan Chromium. Harap coba lagi.</translation>
 <translation id="7197677400338048821">Chromium tidak dapat memeriksa sandi Anda. Coba lagi setelah 24 jam.</translation>
+<translation id="7218568399872925918">Situs yang dibuka akan mengingat informasi Anda hingga Anda menutup Chromium</translation>
 <translation id="7223968959479464213">Pengelola Tugas - Chromium</translation>
 <translation id="731795002583552498">Memperbarui Chromium</translation>
 <translation id="7318036098707714271">File preferensi Anda rusak atau tidak valid.
@@ -261,6 +262,8 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8621669128220841554">Pemasangan gagal karena kesalahan yang tidak ditentukan. Download Chromium lagi.</translation>
 <translation id="8697124171261953979">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chromium atau menelusuri dari Omnibox.</translation>
 <translation id="8704119203788522458">Ini Chromium Anda</translation>
+<translation id="8713679423359107094">Jika Anda menutup semua jendela Chromium, cookie dan data situs akan otomatis dihapus</translation>
+<translation id="8796443464227412154">Anda akan <ph name="BEGIN_BOLD" />logout dari sebagian besar situs<ph name="END_BOLD" /> saat Anda menutup Chromium. Jika sinkronisasi nonaktif, Anda juga akan <ph name="BEGIN_BOLD" />logout dari layanan Google dan Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium memerlukan izin akses ke kamera dan mikrofon untuk situs ini</translation>
 <translation id="8803635938069941624">Persyaratan Chromium OS</translation>
 <translation id="8821041990367117597">Chromium tidak dapat menyinkronkan data karena detail proses masuk Anda sebelum diperbarui.</translation>

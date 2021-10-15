@@ -403,6 +403,7 @@
 <translation id="2241693394036365668">파일 다운로드됨</translation>
 <translation id="2248949050832152960">WebAuthn 사용</translation>
 <translation id="2250931979407627383">왼쪽 에지 스티치</translation>
+<translation id="2251943122176102076">기밀 콘텐츠가 캡처되어 있으므로 관리자는 스크린샷을 촬영하거나 녹화하도록 권장하지 않습니다.</translation>
 <translation id="225207911366869382">이 값은 이 정책에 사용되지 않습니다.</translation>
 <translation id="2258928405015593961">만료일을 오늘 이후로 입력하고 다시 시도해 보세요.</translation>
 <translation id="225943865679747347">오류 코드: <ph name="ERROR_CODE" /></translation>
@@ -1192,6 +1193,7 @@
           <ph name="LIST_ITEM" />인터넷 서비스 제공업체에서 웹 트래픽을 모니터링할 수 있습니다.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">경고 켜기</translation>
+<translation id="4834718916855725099">화면에 기밀 콘텐츠가 표시되어 있으므로 관리자는 스크린샷을 찍거나 녹화하도록 권장하지 않습니다.</translation>
 <translation id="4838327282952368871">꿈</translation>
 <translation id="4840250757394056958">Chrome 방문 기록 보기</translation>
 <translation id="484462545196658690">자동</translation>

@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Über Chromium</translation>
 <translation id="1257458525759135959">Um Bilder zu speichern, geben Sie Chromium unter "Einstellungen" die Berechtigung zum Hinzufügen von Fotos</translation>
 <translation id="1289216811211435351">Zu Chromium wechseln</translation>
+<translation id="1354592789402432496">Ihr Administrator verlangt, dass Sie sich mit einem Organisationskonto anmelden. Konten, die Ihr Administrator eingeschränkt hat, sind ausgeblendet.</translation>
 <translation id="1361748954329991663">Chromium ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt Ihr Gerät neuere Versionen von Chromium möglicherweise nicht mehr.</translation>
 <translation id="1370204544543370355">Wenn Sie Chromium optimal nutzen möchten, melden Sie sich mit Ihrem Google-Konto in Chromium an</translation>
 <translation id="1431818719585918472">Erlauben Sie Chromium, Ihre Inkognitotabs zu sperren.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">In Chromium anmelden</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann Ihre Passwörter prüfen, wenn Sie sie speichern.</translation>
 <translation id="5308226104666789935">Chromium kann nicht nach Aktualisierungen suchen</translation>
+<translation id="5324242752415821224">Ihre Organisation verlangt, dass Sie sich für die Verwendung von Chromium anmelden. <ph name="BEGIN_LINK" />Weitere Informationen.<ph name="END_LINK" /></translation>
 <translation id="5396916991083608703">Chromium als Standardbrowser festlegen?</translation>
 <translation id="5521125884468363740">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Ihre Tabs überall dort aufzurufen, wo Sie Chromium verwenden</translation>
 <translation id="5573014823074921752">Chromium-Tipp: Wenn Sie weitere Tab-Optionen sehen möchten, berühren und halten Sie die Schaltfläche "Tabs anzeigen" in der Symbolleiste. Diese befindet sich unten oder oben auf dem Bildschirm.</translation>
@@ -63,6 +65,7 @@
 2. Tippen Sie auf „Standard-Browser-App“
 3. Wählen Sie Chromium aus.</translation>
 <translation id="6155422572367400359">Melden Sie sich bei dieser Website, in Ihrem Google-Konto und in Chromium an. Sie können die Synchronisierung später aktivieren.</translation>
+<translation id="6183442264225539303">Melden Sie sich bei dieser Website und in Chromium an. Sie können die Synchronisierung später aktivieren.</translation>
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
 <translation id="632825460376924298">Anmeldung in Chromium zulassen</translation>
 <translation id="6337530241089703714">Möchten Sie Ihre Chromium-Daten von diesem Gerät löschen oder sie behalten?</translation>

@@ -305,6 +305,7 @@
 <translation id="1313660246522271310">您将会自动退出所有网站（包括已打开的标签页中的网站）</translation>
 <translation id="1313705515580255288">系统会将您的书签、浏览记录和其他设置同步到您的Google帐号。</translation>
 <translation id="1316136264406804862">正在搜索...</translation>
+<translation id="1316248800168909509">无法连接到<ph name="DEVICE" />。请重试。</translation>
 <translation id="1316495628809031177">同步已暂停</translation>
 <translation id="1317637799698924700">您的基座将以与 USB C 型兼容的模式运行。</translation>
 <translation id="1319983966058170660">“<ph name="SUBPAGE_TITLE" />”子页面上的返回按钮</translation>
@@ -1174,6 +1175,7 @@
 <translation id="2200356397587687044">Chrome 需要获得相应权限才能继续</translation>
 <translation id="2202898655984161076">列出打印机时发生问题。您的某些打印机可能尚未成功使用“<ph name="CLOUD_PRINT_NAME" />”进行注册。</translation>
 <translation id="2203088913459920044">名称可以使用字母、数字和特殊字符</translation>
+<translation id="220321590587754225">无法连接。请重试。</translation>
 <translation id="2204034823255629767">读取和更改您输入的任何内容</translation>
 <translation id="220858061631308971">请在“<ph name="DEVICE_NAME" />”上输入此 PIN 码：</translation>
 <translation id="2210462644007531147">无法完成安装</translation>
@@ -4955,6 +4957,7 @@
 <translation id="6263284346895336537">非关键</translation>
 <translation id="6264365405983206840">全选(&amp;A)</translation>
 <translation id="6265687851677020761">移除此端口</translation>
+<translation id="6266532094411434237">正在连接到<ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">请选择证书，以在 <ph name="HOST_NAME" /> 上对您本人进行身份验证</translation>
 <translation id="6268252012308737255">使用<ph name="APP" />打开</translation>
 <translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>

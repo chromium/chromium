@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1113173431709655881">Cameramodus</translation>
 <translation id="1175958423215084756">Link gevonden. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galerij-afbeeldingen</translation>
 <translation id="1300209025925956156">Je document scannen</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">Opname starten</translation>
 <translation id="2599796128805996109">Camera aan achterzijde</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
+<translation id="2761536921376153655">Scantype</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is aangesloten.</translation>
 <translation id="2968794441791257519">Foto's en video's die zijn gemaakt met de camera worden verplaatst naar de map Downloads. Je kunt ze vinden via Bestanden.
 
@@ -99,9 +101,11 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="698156982839284926">3 seconden</translation>
 <translation id="712848772518857951">Weet je zeker dat je <ph name="COUNT" /> items wilt verwijderen?</translation>
 <translation id="7134221860976209830">Timer van 10 seconden</translation>
+<translation id="7191890674911603392">Opnametype</translation>
 <translation id="7243947652761655814">Videoresolutie</translation>
 <translation id="7337660886763914220">Bestandssysteemfouten.</translation>
 <translation id="7450541714075000668">Tekst gekopieerd</translation>
+<translation id="7476762461674917065">Gif-opnameoptie tonen</translation>
 <translation id="7488619942230388918">Gif-video opnemen</translation>
 <translation id="7557677699350329807">Naar volgende camera</translation>
 <translation id="7607002721634913082">Onderbroken</translation>

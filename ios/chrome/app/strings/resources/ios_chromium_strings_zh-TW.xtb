@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕觸 [設定] 並允許 Chromium 新增相片</translation>
 <translation id="1289216811211435351">改為使用 Chromium</translation>
+<translation id="1354592789402432496">你的管理員要求你使用機構帳戶登入。系統已隱藏受管理員限制登入的帳戶。</translation>
 <translation id="1361748954329991663">Chromium 版本過舊。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中沒有任何可用的更新，則表示你的裝置可能已停止支援新版 Chromium。</translation>
 <translation id="1370204544543370355">如要充分運用 Chromium 的所有功能，請透過 Google 帳戶登入 Chromium</translation>
 <translation id="1431818719585918472">讓 Chromium 鎖定你的無痕分頁。</translation>
@@ -51,6 +52,7 @@
 <translation id="5171868502429358653">登入 Chromium</translation>
 <translation id="5224391634244552924">未儲存任何密碼。你必須先儲存密碼，才能使用 Chromium 的密碼檢查功能。</translation>
 <translation id="5308226104666789935">Chromium 無法檢查更新</translation>
+<translation id="5324242752415821224">根據貴機構的政策規定，你必須先登入才能使用 Chromium。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />。</translation>
 <translation id="5396916991083608703">要將 Chromium 設為預設瀏覽器嗎？</translation>
 <translation id="5521125884468363740">登入帳戶並開啟同步功能後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="5573014823074921752">Chromium 提示。如需更多分頁選項，請輕觸並按住工具列 (位於畫面底部或頂端) 中的 [顯示分頁] 按鈕。</translation>
@@ -64,6 +66,7 @@
 2. 輕觸 [預設瀏覽器 App]
 3. 選取 [Chromium]</translation>
 <translation id="6155422572367400359">登入這個網站、Google 帳戶和 Chromium。你可以稍後再開啟同步功能。</translation>
+<translation id="6183442264225539303">登入這個網站和 Chromium。你可以稍後再開啟同步功能。</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="632825460376924298">允許登入 Chromium</translation>
 <translation id="6337530241089703714">選擇是否要清除你在這部裝置上的 Chromium 資料</translation>

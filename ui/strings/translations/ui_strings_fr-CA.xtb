@@ -30,6 +30,7 @@
 <translation id="1710340000377843106">maintenant</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{1 minute}one{# minute}other{# minutes}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> o</translation>
+<translation id="1770726142253415363">Déplacée à la ligne <ph name="ROW_NUMBER" />, colonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1801827354178857021">Point</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{Un mois}one{# mois}other{# mois}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> Mo/s</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1113173431709655881">Mode de càmera</translation>
 <translation id="1175958423215084756">Enllaç detectat. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Imatges de la galeria</translation>
 <translation id="1300209025925956156">Escaneja el document</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">Inicia la gravació</translation>
 <translation id="2599796128805996109">Càmera posterior</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
+<translation id="2761536921376153655">Tipus de cerca</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> està endollada.</translation>
 <translation id="2968794441791257519">Les fotos i els vídeos que es facin amb la càmera es mouran a la carpeta Baixades. Pots accedir-hi des de Fitxers.
 
@@ -99,9 +101,11 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="698156982839284926">3 segons</translation>
 <translation id="712848772518857951">Confirmes que vols suprimir <ph name="COUNT" /> elements?</translation>
 <translation id="7134221860976209830">Temporitzador de 10 segons</translation>
+<translation id="7191890674911603392">Tipus de gravació</translation>
 <translation id="7243947652761655814">Resolució del vídeo</translation>
 <translation id="7337660886763914220">Hi ha errors al sistema de fitxers.</translation>
 <translation id="7450541714075000668">El text s'ha copiat</translation>
+<translation id="7476762461674917065">Mostra l'opció de gravació en format GIF</translation>
 <translation id="7488619942230388918">Grava un vídeo en format GIF</translation>
 <translation id="7557677699350329807">Canvia a la càmera següent</translation>
 <translation id="7607002721634913082">En pausa</translation>

@@ -803,6 +803,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">ඔබේ පරිපාලකයා යෙදුම අවහිර කර ඇත</translation>
 <translation id="3608932978122581043">පෝෂණ දිශානතිය</translation>
+<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> සඳහා අතථ්‍ය කාඩ්පත</translation>
 <translation id="3614103345592970299">ප්‍රමාණය 2</translation>
 <translation id="361438452008624280">ලැයිස්තු ඇතුළත් කිරීම "<ph name="LANGUAGE_ID" />": නොදන්නා හෝ සහය නොදැක්වෙන භාෂාව.</translation>
 <translation id="3615877443314183785">වලංගු කල් ඉකුත් වීමේ දිනයක් ඇතුළු කරන්න</translation>
@@ -1619,6 +1620,7 @@
 <translation id="6272383483618007430">Google යාවත්කාලීන</translation>
 <translation id="6276112860590028508">ඔබේ කියවීම් ලැයිස්තුවෙන් පිටු මෙහි දිස් වනු ඇත</translation>
 <translation id="627746635834430766">මීළඟ වතාවේ දී වේගවත්ව ගෙවීමට, ඔබේ Google ගිණුමට ඔබේ කාඩ්පත සහ බිල්පත් ලිපිනය සුරකින්න.</translation>
+<translation id="6279098320682980337">අතථ්‍ය කාඩ්පත් අංකය පුරවා නැතිද? පිටපත් කිරීමට කාඩ්පත් විස්තර ක්ලික් කරන්න</translation>
 <translation id="6280223929691119688">මෙම ලිපිනයට බෙදා හැරීමට නොහැකිය. වෙනත් ලිපිනයක් තෝරන්න.</translation>
 <translation id="6282194474023008486">තැපැල් කේතය</translation>
 <translation id="6289939620939689042">පිටුවේ වර්ණය</translation>

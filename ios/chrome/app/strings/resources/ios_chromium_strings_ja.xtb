@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Chromium について</translation>
 <translation id="1257458525759135959">画像を保存するには、[設定] をタップして写真への追加を Chromium に許可してください</translation>
 <translation id="1289216811211435351">Chromium に切り替え</translation>
+<translation id="1354592789402432496">管理者が、組織アカウントでログインすることを求めています。管理者によって制限されているアカウントは非表示になっています。</translation>
 <translation id="1361748954329991663">Chromium は古いバージョンです。<ph name="BEGIN_LINK" />アプリストア<ph name="END_LINK" />に利用可能なアップデートがない場合は、デバイスで新しいバージョンの Chromium がサポートされなくなった可能性があります。</translation>
 <translation id="1370204544543370355">Chromium を最大限に活用するには、Google アカウントで Chromium にログインしてください</translation>
 <translation id="1431818719585918472">Chromium でシークレット タブをロックできるようにします。</translation>
@@ -51,6 +52,7 @@
 <translation id="5171868502429358653">Chromium にログイン</translation>
 <translation id="5224391634244552924">保存されているパスワードがありません。パスワードを保存すると、Chromium で確認できるようになります。</translation>
 <translation id="5308226104666789935">Chromium でアップデートを確認できません</translation>
+<translation id="5324242752415821224">組織が、Chromium を使用するにはログインすることを求めています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5396916991083608703">Chromium を既定に設定しますか？</translation>
 <translation id="5521125884468363740">どのデバイスからでも Chromium で自分のタブにアクセスするには、ログインして同期をオンにしてください</translation>
 <translation id="5573014823074921752">Chromium の使い方のヒント: タブのオプションをさらに表示するには、画面の下部または上部のツールバーにある [タブを表示] を長押しします。</translation>
@@ -64,6 +66,7 @@
 2. [デフォルトのブラウザアプリ] をタップします。
 3. Chromium を選択します。</translation>
 <translation id="6155422572367400359">このサイト、Google アカウント、Chromium にログインします。同期は後でオンにできます。</translation>
+<translation id="6183442264225539303">このサイトと Chromium にログインしてください。同期は後でオンにできます。</translation>
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
 <translation id="632825460376924298">Chromium へのログインを許可する</translation>
 <translation id="6337530241089703714">このデバイスから Chromium データを削除するかどうかを選択してください</translation>
