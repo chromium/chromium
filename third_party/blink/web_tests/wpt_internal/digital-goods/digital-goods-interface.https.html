@@ -19,10 +19,23 @@ digital_goods_test(async service => {
 
 promise_test(async () => {
   try {
+    await window.getDigitalGoodsService('');
+    assert_unreached();
+  } catch (error) {
+    assert_true(error instanceof TypeError);
+    assert_equals(error.name, 'TypeError');
+    assert_equals(error.message, 'Empty payment method');
+  }
+}, 'Digital goods service rejects for empty payment method.');
+
+promise_test(async () => {
+  try {
     await window.getDigitalGoodsService('https://not.known/payment/method');
     assert_unreached();
   } catch (error) {
-    assert_equals(error, 'unsupported payment method');
+    assert_true(error instanceof DOMException);
+    assert_equals(error.name, 'OperationError');
+    assert_equals(error.message, 'unsupported payment method');
   }
 }, 'Digital goods service rejects for unknown payment method.');
 
