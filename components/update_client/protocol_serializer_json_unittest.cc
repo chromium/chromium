@@ -62,7 +62,7 @@ TEST(SerializeRequestJSON, Serialize) {
           std::move(apps)));
   constexpr char regex[] =
       R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-      R"("acceptformat":"crx2,crx3",)"
+      R"("acceptformat":"crx3",)"
       R"("app":\[{"appid":"id1","attr1":"1","attr2":"2","brand":"brand1",)"
       R"("cohort":"c1","cohorthint":"ch1","cohortname":"cn1",)"
       R"("disabled":\[{"reason":0},{"reason":1}],"enabled":false,)"
@@ -119,7 +119,7 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
       "channel", "OS", "cacheable", {{"extra", "params"}}, &attributes, {}));
   constexpr char regex[] =
       R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-      R"("acceptformat":"crx2,crx3","arch":"\w+","dedup":"cr",)"
+      R"("acceptformat":"crx3","arch":"\w+","dedup":"cr",)"
       R"("dlpref":"cacheable","domainjoined":true,"extra":"params",)"
       R"("hw":{"physmemory":\d+},"ismachine":true,"lang":"lang",)"
       R"("nacl_arch":"[-\w]+",)"

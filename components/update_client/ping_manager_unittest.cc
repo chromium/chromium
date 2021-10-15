@@ -140,7 +140,7 @@ TEST_P(PingManagerTest, SendPing) {
       ASSERT_TRUE(request);
       EXPECT_TRUE(request->FindKey("@os"));
       EXPECT_EQ("fake_prodid", request->FindKey("@updater")->GetString());
-      EXPECT_EQ("crx2,crx3", request->FindKey("acceptformat")->GetString());
+      EXPECT_EQ("crx3", request->FindKey("acceptformat")->GetString());
       EXPECT_TRUE(request->FindKey("arch"));
       EXPECT_EQ("cr", request->FindKey("dedup")->GetString());
       EXPECT_LT(0, request->FindPath({"hw", "physmemory"})->GetInt());
