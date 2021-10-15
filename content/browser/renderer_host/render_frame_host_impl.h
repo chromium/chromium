@@ -477,13 +477,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // renderers with the newly computed value).
   blink::web_pref::WebPreferences GetOrCreateWebPreferences();
 
-  // Notifies the renderer whether hiding/showing the browser controls is
-  // enabled, what the current state should be, and whether or not to animate to
-  // the proper state.
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                  cc::BrowserControlsState current,
-                                  bool animate);
-
   // IPC::Sender
   bool Send(IPC::Message* msg) override;
 

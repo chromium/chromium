@@ -345,7 +345,7 @@ void RestoreBrowserControlsState(RenderFrameHostImpl* cached_rfh) {
     // If we currently aren't showing the controls let the cached renderer
     // know, so that it then reacts correctly to the SHOW controls message
     // that might follow during DidCommitNavigation.
-    cached_rfh->UpdateBrowserControlsState(
+    cached_rfh->GetPage().UpdateBrowserControlsState(
         cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kHidden,
         // Do not animate as we want this to happen "instantaneously"
         false);

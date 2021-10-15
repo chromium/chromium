@@ -5709,21 +5709,6 @@ RenderWidgetHostViewBase* RenderFrameHostImpl::GetViewForAccessibility() {
           : GetMainFrame()->render_view_host_->GetWidget()->GetView());
 }
 
-void RenderFrameHostImpl::UpdateBrowserControlsState(
-    cc::BrowserControlsState constraints,
-    cc::BrowserControlsState current,
-    bool animate) {
-  DCHECK(is_main_frame());
-
-  // TODO(https://crbug.com/1154852): Asking for the LocalMainFrame interface
-  // before the RenderFrame is created is racy.
-  if (!IsRenderFrameCreated())
-    return;
-
-  GetAssociatedLocalMainFrame()->UpdateBrowserControlsState(constraints,
-                                                            current, animate);
-}
-
 bool RenderFrameHostImpl::Reload() {
   return frame_tree_node_->navigator().controller().ReloadFrame(
       frame_tree_node_);

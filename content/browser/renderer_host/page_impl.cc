@@ -221,4 +221,16 @@ RenderFrameHostImpl& PageImpl::GetMainDocument() const {
   return main_document_;
 }
 
+void PageImpl::UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                          cc::BrowserControlsState current,
+                                          bool animate) {
+  // TODO(https://crbug.com/1154852): Asking for the LocalMainFrame interface
+  // before the RenderFrame is created is racy.
+  if (!GetMainDocument().IsRenderFrameCreated())
+    return;
+
+  GetMainDocument().GetAssociatedLocalMainFrame()->UpdateBrowserControlsState(
+      constraints, current, animate);
+}
+
 }  // namespace content

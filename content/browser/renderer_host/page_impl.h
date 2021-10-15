@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "cc/input/browser_controls_state.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/page.h"
@@ -122,6 +123,13 @@ class CONTENT_EXPORT PageImpl : public Page {
   // activation. Please note that this should only be called on prerender
   // activation.
   void MaybeDispatchLoadEventsOnPrerenderActivation();
+
+  // Hide or show the browser controls for the given Page, based on allowed
+  // states, desired state and whether the transition should be animated or
+  // not.
+  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                  cc::BrowserControlsState current,
+                                  bool animate);
 
   void set_load_progress(double load_progress) {
     load_progress_ = load_progress;
