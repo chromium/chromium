@@ -144,7 +144,8 @@ void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
   // Cap at one day but remember the exact time for the above equality check on
   // the next round.
   main_thread_only().next_delayed_do_work = run_time;
-  run_time = CapAtOneDay(run_time, lazy_now);
+  if (!run_time.is_max())
+    run_time = CapAtOneDay(run_time, lazy_now);
 
   // It's very rare for PostDelayedTask to be called outside of a DoWork in
   // production, so most of the time this does nothing.

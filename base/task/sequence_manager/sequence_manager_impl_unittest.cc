@@ -258,6 +258,8 @@ class FixtureWithMockMessagePump : public Fixture {
   }
 
   TimeDelta NextPendingTaskDelay() const override {
+    if (pump_->next_wake_up_time().is_max())
+      return TimeDelta::Max();
     return pump_->next_wake_up_time() - mock_tick_clock()->NowTicks();
   }
 
@@ -3628,18 +3630,7 @@ TEST_P(SequenceManagerTest, DelayedDoWorkNotPostedForDisabledQueue) {
       queue->CreateQueueEnabledVoter();
   voter->SetVoteToEnable(false);
 
-  switch (GetUnderlyingRunnerType()) {
-    case TestType::kMessagePump:
-      EXPECT_EQ(Days(1), NextPendingTaskDelay());
-      break;
-
-    case TestType::kMockTaskRunner:
-      EXPECT_EQ(TimeDelta::Max(), NextPendingTaskDelay());
-      break;
-
-    default:
-      NOTREACHED();
-  }
+  EXPECT_EQ(TimeDelta::Max(), NextPendingTaskDelay());
 
   voter->SetVoteToEnable(true);
   EXPECT_EQ(Milliseconds(1), NextPendingTaskDelay());
@@ -3670,18 +3661,7 @@ TEST_P(SequenceManagerTest, DisablingQueuesChangesDelayTillNextDoWork) {
   EXPECT_EQ(Milliseconds(100), NextPendingTaskDelay());
 
   voter2->SetVoteToEnable(false);
-  switch (GetUnderlyingRunnerType()) {
-    case TestType::kMessagePump:
-      EXPECT_EQ(Days(1), NextPendingTaskDelay());
-      break;
-
-    case TestType::kMockTaskRunner:
-      EXPECT_EQ(TimeDelta::Max(), NextPendingTaskDelay());
-      break;
-
-    default:
-      NOTREACHED();
-  }
+  EXPECT_EQ(TimeDelta::Max(), NextPendingTaskDelay());
 }
 
 TEST_P(SequenceManagerTest, GetNextDesiredWakeUp) {
