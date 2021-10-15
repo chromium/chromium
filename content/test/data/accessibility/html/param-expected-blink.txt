@@ -2,5 +2,3 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++pluginObject
-++++++++genericContainer ignored invisible
-++++++++++genericContainer ignored invisible

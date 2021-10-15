@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -346,11 +347,23 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
   // https://chromium-review.googlesource.com/c/chromium/src/+/2965317
   // For some reason the iframe tests hang, waiting for content to change. In
   // other words, returning true here causes some tree updates not to occur.
-  return node->GetDocument().IsFlatTreeTraversalForbidden() ||
-         node->GetDocument()
-             .GetSlotAssignmentEngine()
-             .HasPendingSlotAssignmentRecalc() ||
-         LayoutTreeBuilderTraversal::FirstChild(*slot_element);
+  if (node->GetDocument().IsFlatTreeTraversalForbidden() ||
+      node->GetDocument()
+          .GetSlotAssignmentEngine()
+          .HasPendingSlotAssignmentRecalc()) {
+    return true;
+  }
+
+  // If the slot element's host is an <object> with any descendant nodes
+  // (including whitespace), LayoutTreeBuilderTraversal::FirstChild will
+  // return a node. We should only treat that node as slot content if it is
+  // being used as fallback content.
+  if (const HTMLObjectElement* object_element =
+          DynamicTo<HTMLObjectElement>(node->OwnerShadowHost())) {
+    return object_element->UseFallbackContent();
+  }
+
+  return LayoutTreeBuilderTraversal::FirstChild(*slot_element);
 }
 
 bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {

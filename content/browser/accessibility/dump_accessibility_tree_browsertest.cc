@@ -2739,6 +2739,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvg) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySvgAsObjectSource) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-as-object-source.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilitySvgChildOfButton) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-child-of-button.html"));
 }
