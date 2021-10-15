@@ -359,7 +359,7 @@ class BASE_EXPORT StatisticsRecorder {
   // Previous global recorder that existed when this one was created.
   StatisticsRecorder* previous_ = nullptr;
 
-  // Global lock for internal synchronization. Uses fINITan absl::Mutex to
+  // Global lock for internal synchronization. Uses an absl::Mutex to
   // support read/write lock semantics.
   static LazyInstance<absl::Mutex>::Leaky lock_;
 
