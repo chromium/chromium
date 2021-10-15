@@ -238,7 +238,7 @@ TEST_F(NavigationEarlyHintsManagerTest, PreloadSchemeIsUnsupported) {
   early_hints_manager().HandleEarlyHints(std::move(hints),
                                          CreateNavigationResourceRequest());
 
-  EXPECT_TRUE(early_hints_manager().WasPreloadLinkHeaderReceived());
+  EXPECT_TRUE(early_hints_manager().WasResourceHintsReceived());
   EXPECT_FALSE(early_hints_manager().HasInflightPreloads());
 }
 

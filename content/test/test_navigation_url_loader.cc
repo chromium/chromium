@@ -73,7 +73,7 @@ void TestNavigationURLLoader::SimulateErrorWithStatus(
 }
 
 void TestNavigationURLLoader::SimulateEarlyHintsPreloadLinkHeaderReceived() {
-  was_early_hints_preload_link_header_received_ = true;
+  was_resource_hints_received_ = true;
 }
 
 void TestNavigationURLLoader::CallOnRequestRedirected(
@@ -103,8 +103,7 @@ void TestNavigationURLLoader::CallOnResponseStarted(
           url_loader_client_remote.InitWithNewPipeAndPassReceiver());
 
   NavigationURLLoaderDelegate::EarlyHints early_hints;
-  early_hints.was_preload_link_header_received =
-      was_early_hints_preload_link_header_received_;
+  early_hints.was_resource_hints_received = was_resource_hints_received_;
 
   delegate_->OnResponseStarted(
       std::move(url_loader_client_endpoints), std::move(response_head),

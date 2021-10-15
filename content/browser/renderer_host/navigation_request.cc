@@ -2894,8 +2894,7 @@ void NavigationRequest::OnResponseStarted(
   response_body_ = std::move(response_body);
   ssl_info_ = response_head_->ssl_info;
   auth_challenge_info_ = response_head_->auth_challenge_info;
-  was_early_hints_preload_link_header_received_ =
-      early_hints.was_preload_link_header_received;
+  was_resource_hints_received_ = early_hints.was_resource_hints_received;
   early_hints_manager_ = std::move(early_hints.manager);
 
   // A request was made. Record it before we decide to block this response for
@@ -5785,8 +5784,10 @@ bool NavigationRequest::IsWaitingToCommit() {
   return state_ == READY_TO_COMMIT;
 }
 
-bool NavigationRequest::WasEarlyHintsPreloadLinkHeaderReceived() {
-  return was_early_hints_preload_link_header_received_;
+bool NavigationRequest::WasResourceHintsReceived() {
+  DCHECK_GE(state_, WILL_PROCESS_RESPONSE)
+      << "Should only be called after the response started";
+  return was_resource_hints_received_;
 }
 
 bool NavigationRequest::IsLoadDataWithBaseURL() const {

@@ -489,10 +489,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // navigation or an error page.
   virtual bool IsWaitingToCommit() = 0;
 
-  // Returns true when at least one preload Link header was received via an
-  // Early Hints response during this navigation. True only for a main frame
-  // navigation.
-  virtual bool WasEarlyHintsPreloadLinkHeaderReceived() = 0;
+  // Returns true when at least one preload or preconnect Link header was
+  // received via an Early Hints response during this navigation. True only for
+  // a main frame navigation.
+  virtual bool WasResourceHintsReceived() = 0;
 
   // Write a representation of this object into a trace.
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;

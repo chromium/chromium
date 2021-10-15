@@ -368,13 +368,12 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
   }
 }
 
-bool NavigationEarlyHintsManager::WasPreloadLinkHeaderReceived() const {
+bool NavigationEarlyHintsManager::WasResourceHintsReceived() const {
   // The field trial for Early Hints preload uses this method to determine
   // whether custom page metrics for the trial should be recorded. Returns false
   // when Early Hints preloads are triggered by the origin trial but the field
   // trial is disabled so that we can avoid skewing the custom page metrics for
   // the field trial.
-  // TODO(crbug.com/1197989): Consider renaming this method.
   if (base::FeatureList::IsEnabled(features::kEarlyHintsPreloadForNavigation))
     return was_resource_hints_received_;
   return was_resource_hints_received_ &&

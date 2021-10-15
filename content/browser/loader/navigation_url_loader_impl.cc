@@ -1473,8 +1473,8 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
 
   NavigationURLLoaderDelegate::EarlyHints early_hints;
   if (early_hints_manager_) {
-    early_hints.was_preload_link_header_received =
-        early_hints_manager_->WasPreloadLinkHeaderReceived();
+    early_hints.was_resource_hints_received =
+        early_hints_manager_->WasResourceHintsReceived();
 
     // Make Early Hints manager outlive this loader only when the final response
     // succeeds. Dropping the manager cancels inflight preloads.

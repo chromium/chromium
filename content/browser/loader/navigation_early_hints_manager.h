@@ -106,9 +106,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   // True when at least one preload or preconnect Link header was received via
   // Early Hints responses for main frame navigation.
-  // TODO(crbug.com/1197989): Rename. Now this also returns true when preconnect
-  // headers are received.
-  bool WasPreloadLinkHeaderReceived() const;
+  bool WasResourceHintsReceived() const;
 
   std::vector<GURL> TakePreloadedResourceURLs();
 

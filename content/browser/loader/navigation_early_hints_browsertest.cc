@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, SimplePreconnect) {
   ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   EXPECT_EQ(preconnect_listener().num_accepted_sockets(), 1UL);
-  EXPECT_TRUE(GetEarlyHintsManager()->WasPreloadLinkHeaderReceived());
+  EXPECT_TRUE(GetEarlyHintsManager()->WasResourceHintsReceived());
 }
 
 class NavigationEarlyHintsAddressSpaceTest : public NavigationEarlyHintsTest {

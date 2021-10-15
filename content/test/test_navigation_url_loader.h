@@ -66,7 +66,7 @@ class TestNavigationURLLoader
 
   const NavigationURLLoader::LoaderType loader_type_;
 
-  bool was_early_hints_preload_link_header_received_ = false;
+  bool was_resource_hints_received_ = false;
 };
 
 }  // namespace content
