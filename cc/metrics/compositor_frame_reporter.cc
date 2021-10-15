@@ -341,6 +341,10 @@ std::string GetEventLatencyHistogramBaseName(
                            : is_pinch ? event_metrics.GetPinchTypeName() : ""});
 }
 
+constexpr char kTraceCategory[] =
+    "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame");
+constexpr char kTraceEventCategory[] = "cc,benchmark,input";
+
 base::TimeTicks ComputeSafeDeadlineForFrame(const viz::BeginFrameArgs& args) {
   return args.frame_time + (args.interval * 1.5);
 }
@@ -1060,8 +1064,7 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
   const auto trace_track =
       perfetto::Track(base::trace_event::GetNextGlobalTraceId());
   TRACE_EVENT_BEGIN(
-      "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
-      "PipelineReporter", trace_track, args_.frame_time,
+      kTraceCategory, "PipelineReporter", trace_track, args_.frame_time,
       [&](perfetto::EventContext context) {
         using perfetto::protos::pbzero::ChromeFrameReporter;
         bool frame_dropped = TestReportType(FrameReportType::kDroppedFrame);
@@ -1128,9 +1131,8 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
 
     if (stage.stage_type == StageType::kSendBeginMainFrameToCommit) {
       TRACE_EVENT_BEGIN(
-          "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
-          perfetto::StaticString{stage_name}, trace_track, stage.start_time,
-          [&](perfetto::EventContext context) {
+          kTraceCategory, perfetto::StaticString{stage_name}, trace_track,
+          stage.start_time, [&](perfetto::EventContext context) {
             DCHECK(processed_blink_breakdown_);
             auto* reporter =
                 context.event<perfetto::protos::pbzero::ChromeTrackEvent>()
@@ -1179,9 +1181,8 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
             }
           });
     } else {
-      TRACE_EVENT_BEGIN(
-          "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
-          perfetto::StaticString{stage_name}, trace_track, stage.start_time);
+      TRACE_EVENT_BEGIN(kTraceCategory, perfetto::StaticString{stage_name},
+                        trace_track, stage.start_time);
     }
 
     if (stage.stage_type ==
@@ -1194,20 +1195,16 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
         if (start_time >= end_time)
           continue;
         const char* breakdown_name = GetVizBreakdownName(it.GetBreakdown());
-        TRACE_EVENT_BEGIN("cc,benchmark",
+        TRACE_EVENT_BEGIN(kTraceCategory,
                           perfetto::StaticString{breakdown_name}, trace_track,
                           start_time);
-        TRACE_EVENT_END("cc,benchmark", trace_track, end_time);
+        TRACE_EVENT_END(kTraceCategory, trace_track, end_time);
       }
     }
-    TRACE_EVENT_END(
-        "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
-        trace_track, stage.end_time);
+    TRACE_EVENT_END(kTraceCategory, trace_track, stage.end_time);
   }
 
-  TRACE_EVENT_END(
-      "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
-      trace_track, frame_termination_time_);
+  TRACE_EVENT_END(kTraceCategory, trace_track, frame_termination_time_);
 }
 
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
@@ -1223,8 +1220,8 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
 
     const auto trace_id = TRACE_ID_LOCAL(event_metrics.get());
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "cc,input", "EventLatency", trace_id, generated_timestamp, "event",
-        event_metrics->GetTypeName());
+        kTraceEventCategory, "EventLatency", trace_id, generated_timestamp,
+        "event", event_metrics->GetTypeName());
 
     // Event dispatch stages.
     EventMetrics::DispatchStage dispatch_stage =
@@ -1251,9 +1248,9 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
       const char* breakdown_name =
           GetEventLatencyDispatchBreakdownName(dispatch_stage, end_stage);
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "cc,input", breakdown_name, trace_id, dispatch_timestamp);
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("cc,input", breakdown_name,
-                                                     trace_id, end_timestamp);
+          kTraceEventCategory, breakdown_name, trace_id, dispatch_timestamp);
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+          kTraceEventCategory, breakdown_name, trace_id, end_timestamp);
 
       dispatch_stage = end_stage;
       dispatch_timestamp = end_timestamp;
@@ -1283,9 +1280,10 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
         GetEventLatencyDispatchToCompositorBreakdownName(dispatch_stage,
                                                          stage_it->stage_type);
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "cc,input", d2c_breakdown_name, trace_id, dispatch_timestamp);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "cc,input", d2c_breakdown_name, trace_id, stage_it->start_time);
+        kTraceEventCategory, d2c_breakdown_name, trace_id, dispatch_timestamp);
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kTraceEventCategory,
+                                                   d2c_breakdown_name, trace_id,
+                                                   stage_it->start_time);
 
     // Compositor stages.
     for (; stage_it != stage_history_.end(); ++stage_it) {
@@ -1300,7 +1298,7 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
       const char* stage_name = GetStageName(stage_type_index);
 
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "cc,input", stage_name, trace_id, stage_it->start_time);
+          kTraceEventCategory, stage_name, trace_id, stage_it->start_time);
 
       if (stage_it->stage_type ==
           StageType::kSubmitCompositorFrameToPresentationCompositorFrame) {
@@ -1313,17 +1311,17 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
             continue;
           const char* breakdown_name = GetVizBreakdownName(it.GetBreakdown());
           TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-              "cc,input", breakdown_name, trace_id, start_time);
+              kTraceEventCategory, breakdown_name, trace_id, start_time);
           TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-              "cc,input", breakdown_name, trace_id, end_time);
+              kTraceEventCategory, breakdown_name, trace_id, end_time);
         }
       }
 
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-          "cc,input", stage_name, trace_id, stage_it->end_time);
+          kTraceEventCategory, stage_name, trace_id, stage_it->end_time);
     }
     TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "cc,input", "EventLatency", trace_id, frame_termination_time_);
+        kTraceEventCategory, "EventLatency", trace_id, frame_termination_time_);
   }
 }
 
