@@ -1649,6 +1649,22 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, ContextMenuPrintCommand) {
       {1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitForPrintPreview();
 }
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PrintButton) {
+  content::WebContents* guest_contents =
+      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  content::RenderFrameHost* frame = GetPluginFrame(guest_contents);
+  ASSERT_TRUE(frame);
+
+  PrintObserver print_observer(guest_contents, frame);
+  constexpr char kClickPrintButtonScript[] = R"(
+    viewer.shadowRoot.querySelector('#toolbar')
+        .shadowRoot.querySelector('#print')
+        .click();
+  )";
+  EXPECT_TRUE(ExecuteScript(guest_contents, kClickPrintButtonScript));
+  print_observer.WaitForPrintPreview();
+}
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 

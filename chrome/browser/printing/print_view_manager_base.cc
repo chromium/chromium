@@ -752,6 +752,14 @@ void PrintViewManagerBase::ShowInvalidPrinterSettingsError() {
                                     IDS_PRINT_INVALID_PRINTER_SETTINGS)));
 }
 
+void PrintViewManagerBase::RenderFrameHostStateChanged(
+    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost::LifecycleState /*old_state*/,
+    content::RenderFrameHost::LifecycleState new_state) {
+  if (new_state == content::RenderFrameHost::LifecycleState::kActive)
+    SendPrintingEnabled(printing_enabled_.GetValue(), render_frame_host);
+}
+
 void PrintViewManagerBase::DidStartLoading() {
   UpdatePrintingEnabled();
 }

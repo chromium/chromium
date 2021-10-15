@@ -158,6 +158,10 @@ class PrintViewManagerBase : public content::NotificationObserver,
                const content::NotificationDetails& details) override;
 
   // content::WebContentsObserver implementation.
+  void RenderFrameHostStateChanged(
+      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost::LifecycleState /*old_state*/,
+      content::RenderFrameHost::LifecycleState new_state) override;
   void DidStartLoading() override;
 
   // Cancels the print job.
@@ -249,7 +253,7 @@ class PrintViewManagerBase : public content::NotificationObserver,
   // Release the PrinterQuery associated with our |cookie_|.
   void ReleasePrinterQuery();
 
-  // Helper method for UpdatePrintingEnabled().
+  // Notifies `rfh` about whether printing is `enabled`.
   void SendPrintingEnabled(bool enabled, content::RenderFrameHost* rfh);
 
   content::NotificationRegistrar registrar_;

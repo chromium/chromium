@@ -159,9 +159,13 @@ void PrintViewManager::PrintPreviewForWebNode(content::RenderFrameHost* rfh) {
     return;
 
   DCHECK(rfh);
+  DCHECK(IsPrintRenderFrameConnected(rfh));
   DCHECK(!print_preview_rfh_);
   print_preview_rfh_ = rfh;
   print_preview_state_ = USER_INITIATED_PREVIEW;
+
+  for (auto& observer : GetObservers())
+    observer.OnPrintPreview(print_preview_rfh_);
 }
 
 void PrintViewManager::PrintPreviewAlmostDone() {
