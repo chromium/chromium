@@ -570,6 +570,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.FileResult.ThumbnailLoadedError"
+    enum="PlatformFileError" expires_after="2022-03-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Result of requesting a thumbnail icon for some types of file results in the
+    Chrome OS launcher. Emitted on each attempt to load a thumbnail, if it
+    results in an error.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.FileSearchProvider.Latency" units="ms"
     expires_after="M95">
   <owner>wrong@chromium.org</owner>
