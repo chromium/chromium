@@ -286,6 +286,7 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
           .did_uninstall_and_replace = uninstall_and_replace_triggered}));
 
   if (!is_placeholder) {
+    registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
     return;
   }
   InstallOsHooksOptions options;
