@@ -193,6 +193,9 @@ TEST_F(BluetoothSocketTest, TestDestroy) {
   run_loop.Run();
 }
 
+/******************************************************************************/
+// Input stream
+/******************************************************************************/
 TEST_F(BluetoothSocketTest, TestInputStream) {
   InputStream& input_stream = bluetooth_socket_->GetInputStream();
 
@@ -281,6 +284,58 @@ TEST_F(BluetoothSocketTest, TestInputStream_CloseWhileReading) {
   EXPECT_EQ(Exception::kIo, read_exception_or_byte_array.exception());
 }
 
+TEST_F(BluetoothSocketTest, TestInputStream_CloseCalledFromMultipleThreads) {
+  InputStream& input_stream = bluetooth_socket_->GetInputStream();
+
+  base::RunLoop run_loop;
+
+  const size_t kNumThreads = 2;
+
+  // Quit the run loop after Close() returns on all threads.
+  size_t num_close_calls = 0;
+  auto quit_callback =
+      base::BindLambdaForTesting([&num_close_calls, &run_loop] {
+        ++num_close_calls;
+        if (num_close_calls == kNumThreads)
+          run_loop.Quit();
+      });
+
+  // Call Close() from different threads simultaneously to ensure the stream is
+  // shutdown gracefully.
+  for (size_t thread = 0; thread < kNumThreads; ++thread) {
+    base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReply(
+        FROM_HERE, base::BindLambdaForTesting([&input_stream] {
+          base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+          EXPECT_EQ(Exception::kSuccess, input_stream.Close().value);
+        }),
+        quit_callback);
+  }
+  run_loop.Run();
+}
+
+TEST_F(BluetoothSocketTest, TestInputStream_ResetHandle) {
+  InputStream& input_stream = bluetooth_socket_->GetInputStream();
+
+  // Setup a message to receive that would work if the connection was not reset.
+  std::string message = "ReceivedMessage";
+  uint32_t message_size = message.size();
+  EXPECT_EQ(MOJO_RESULT_OK,
+            receive_stream_->WriteData(message.data(), &message_size,
+                                       MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(message.size(), message_size);
+
+  // Reset the pipe on the other side to trigger a peer_reset state.
+  receive_stream_.reset();
+
+  ExceptionOr<ByteArray> exception_or_byte_array =
+      input_stream.Read(message_size);
+  ASSERT_FALSE(exception_or_byte_array.ok());
+  EXPECT_EQ(Exception::kIo, exception_or_byte_array.exception());
+}
+
+/******************************************************************************/
+// Output stream
+/******************************************************************************/
 TEST_F(BluetoothSocketTest, TestOutputStream) {
   OutputStream& output_stream = bluetooth_socket_->GetOutputStream();
 
@@ -310,7 +365,7 @@ TEST_F(BluetoothSocketTest, TestOutputStream_MultipleChunks) {
   uint32_t message_size = 1024 * 1024;
   std::string message(message_size, 'A');
 
-  // Post to a thread pool because both InputStream::Write() and
+  // Post to a thread pool because both OutputStream::Write() and
   // ReadDataBlocking() below are blocking on each other.
   base::RunLoop run_loop;
   base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReply(
@@ -370,27 +425,36 @@ TEST_F(BluetoothSocketTest, TestOutputStream_CloseWhileWriting) {
   EXPECT_EQ(Exception::kIo, write_exception.value);
 }
 
-TEST_F(BluetoothSocketTest, TestInputStreamResetHandler) {
-  InputStream& input_stream = bluetooth_socket_->GetInputStream();
+TEST_F(BluetoothSocketTest, TestOutputStream_CloseCalledFromMultipleThreads) {
+  OutputStream& output_stream = bluetooth_socket_->GetOutputStream();
 
-  // Setup a message to receive that would work if the connection was not reset.
-  std::string message = "ReceivedMessage";
-  uint32_t message_size = message.size();
-  EXPECT_EQ(MOJO_RESULT_OK,
-            receive_stream_->WriteData(message.data(), &message_size,
-                                       MOJO_WRITE_DATA_FLAG_NONE));
-  EXPECT_EQ(message.size(), message_size);
+  base::RunLoop run_loop;
 
-  // Reset the pipe on the other side to trigger a peer_reset state.
-  receive_stream_.reset();
+  const size_t kNumThreads = 2;
 
-  ExceptionOr<ByteArray> exception_or_byte_array =
-      input_stream.Read(message_size);
-  ASSERT_FALSE(exception_or_byte_array.ok());
-  EXPECT_EQ(Exception::kIo, exception_or_byte_array.exception());
+  // Quit the run loop after Close() returns on all threads.
+  size_t num_close_calls = 0;
+  auto quit_callback =
+      base::BindLambdaForTesting([&num_close_calls, &run_loop] {
+        ++num_close_calls;
+        if (num_close_calls == kNumThreads)
+          run_loop.Quit();
+      });
+
+  // Call Close() from different threads simultaneously to ensure the stream is
+  // shutdown gracefully.
+  for (size_t thread = 0; thread < kNumThreads; ++thread) {
+    base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReply(
+        FROM_HERE, base::BindLambdaForTesting([&output_stream] {
+          base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+          EXPECT_EQ(Exception::kSuccess, output_stream.Close().value);
+        }),
+        quit_callback);
+  }
+  run_loop.Run();
 }
 
-TEST_F(BluetoothSocketTest, TestOutputStreamResetHandling) {
+TEST_F(BluetoothSocketTest, TestOutputStream_ResetHandle) {
   OutputStream& output_stream = bluetooth_socket_->GetOutputStream();
 
   // Reset the pipe on the other side to trigger a peer_reset state.

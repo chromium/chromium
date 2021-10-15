@@ -49,22 +49,30 @@ class InputStreamImpl : public InputStream {
                             base::Unretained(this)));
   }
 
-  ~InputStreamImpl() override { this->Close(); }
+  ~InputStreamImpl() override {
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+    // Because this destructor already runs on the |task_runner_|, call
+    // DoClose() directly.
+    DoClose(/*task_run_waitable_event=*/nullptr);
+  }
 
   InputStreamImpl(const InputStreamImpl&) = delete;
   InputStreamImpl& operator=(const InputStreamImpl&) = delete;
 
   // InputStream:
   ExceptionOr<ByteArray> Read(std::int64_t size) override {
+    if (IsClosed())
+      return {Exception::kIo};
+
     bool invalid_size =
         size <= 0 || size > std::numeric_limits<uint32_t>::max();
-    if (!receive_stream_ || invalid_size) {
-      if (invalid_size) {
-        // Only log it as a read failure when |size| is out of range as in
-        // reality a null |receive_stream_| is an expected state after Close()
-        // was called normally.
-        LogSocketReadResult(false);
-      }
+    if (invalid_size) {
+      // Only log it as a read failure when |size| is out of range as in
+      // reality a null |receive_stream_| is an expected state after Close()
+      // was called normally.
+      LogSocketReadResult(false);
+
       return {Exception::kIo};
     }
 
@@ -83,39 +91,23 @@ class InputStreamImpl : public InputStream {
 
     // |receive_stream_| might have been reset in Close() while
     // |read_waitable_event_| was waiting.
-    if (!receive_stream_)
+    if (IsClosed())
       return {Exception::kIo};
 
     LogSocketReadResult(exception_or_received_byte_array_.ok());
     return exception_or_received_byte_array_;
   }
+
   Exception Close() override {
-    if (!receive_stream_)
-      return {Exception::kSuccess};
-
-    // Must cancel |receive_stream_watcher_| on the same sequence it was
-    // initialized on.
-    base::WaitableEvent task_run;
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(
-                               [](mojo::SimpleWatcher* receive_stream_watcher,
-                                  base::WaitableEvent* task_run) {
-                                 receive_stream_watcher->Cancel();
-                                 task_run->Signal();
-                               },
-                               &receive_stream_watcher_, &task_run));
-    task_run.Wait();
-
-    receive_stream_.reset();
-
-    // It is possible that a Read() call could still be blocking a different
-    // sequence via |read_waitable_event_| when Close() is called. Notably, this
-    // happens on the receiving device when a Nearby Share transfer finishes. If
-    // we only cancel the stream watcher, the Read() call will block forever. We
-    // trigger the event manually here, which will cause an IO exception to be
-    // returned from Read().
-    if (read_waitable_event_)
-      read_waitable_event_->Signal();
+    // NOTE(http://crbug.com/1247876): Close() might be called from multiple
+    // threads at the same time; sequence calls and check if stream is already
+    // closed inside task. Also, must cancel |receive_stream_watcher_| on the
+    // same sequence it was initialized on.
+    base::WaitableEvent task_run_waitable_event;
+    task_runner_->PostTask(FROM_HERE, base::BindOnce(&InputStreamImpl::DoClose,
+                                                     base::Unretained(this),
+                                                     &task_run_waitable_event));
+    task_run_waitable_event.Wait();
 
     return {Exception::kSuccess};
   }
@@ -124,7 +116,7 @@ class InputStreamImpl : public InputStream {
   void ReceiveMore(MojoResult result, const mojo::HandleSignalsState& state) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     DCHECK_NE(result, MOJO_RESULT_SHOULD_WAIT);
-    DCHECK(receive_stream_.is_valid());
+    DCHECK(!IsClosed());
     DCHECK(pending_read_buffer_);
     DCHECK_LT(pending_read_buffer_pos_, pending_read_buffer_->size());
     DCHECK(read_waitable_event_);
@@ -162,6 +154,30 @@ class InputStreamImpl : public InputStream {
     read_waitable_event_->Signal();
   }
 
+  bool IsClosed() { return !receive_stream_.is_valid(); }
+
+  void DoClose(base::WaitableEvent* task_run_waitable_event) {
+    // Must cancel |receive_stream_watcher_| on the same sequence it was
+    // initialized on.
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+    if (!IsClosed()) {
+      receive_stream_watcher_.Cancel();
+      receive_stream_.reset();
+
+      // It is possible that a Read() call could still be blocking a different
+      // sequence via |read_waitable_event_| when Close() is called. If we only
+      // cancel the stream watcher, the Read() call will block forever. We
+      // trigger the event manually here, which will cause an IO exception to be
+      // returned from Read().
+      if (read_waitable_event_)
+        read_waitable_event_->Signal();
+    }
+
+    if (task_run_waitable_event)
+      task_run_waitable_event->Signal();
+  }
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::ScopedDataPipeConsumerHandle receive_stream_;
   mojo::SimpleWatcher receive_stream_watcher_;
@@ -191,14 +207,20 @@ class OutputStreamImpl : public OutputStream {
                             base::Unretained(this)));
   }
 
-  ~OutputStreamImpl() override { this->Close(); }
+  ~OutputStreamImpl() override {
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+    // Because this destructor already runs on the |task_runner_|, call
+    // DoClose() directly.
+    DoClose(/*task_run_waitable_event=*/nullptr);
+  }
 
   OutputStreamImpl(const OutputStreamImpl&) = delete;
   OutputStreamImpl& operator=(const OutputStreamImpl&) = delete;
 
   // OutputStream:
   Exception Write(const ByteArray& data) override {
-    if (!send_stream_)
+    if (IsClosed())
       return {Exception::kIo};
 
     DCHECK(!write_success_);
@@ -220,45 +242,32 @@ class OutputStreamImpl : public OutputStream {
 
     // |send_stream_| might have been reset in Close() while
     // |write_waitable_event_| was waiting.
-    if (!send_stream_)
+    if (IsClosed())
       return {Exception::kIo};
 
     // Ignore a null |send_stream_| when logging since it might be an expected
     // state as mentioned above.
     LogSocketWriteResult(result.Ok());
+
     return result;
   }
+
   Exception Flush() override {
     // TODO(hansberry): Unsure if anything can reasonably be done here. Need to
     // ask a reviewer from the Nearby team.
     return {Exception::kSuccess};
   }
+
   Exception Close() override {
-    if (!send_stream_)
-      return {Exception::kSuccess};
-
-    // Must cancel |send_stream_watcher_| on the same sequence it was
-    // initialized on.
-    base::WaitableEvent task_run;
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(
-                               [](mojo::SimpleWatcher* send_stream_watcher,
-                                  base::WaitableEvent* task_run) {
-                                 send_stream_watcher->Cancel();
-                                 task_run->Signal();
-                               },
-                               &send_stream_watcher_, &task_run));
-    task_run.Wait();
-
-    send_stream_.reset();
-
-    // It is possible that a Write() call could still be blocking a different
-    // sequence via |write_waitable_event_| when Close() is called. If we only
-    // cancel the stream watcher, the Write() call will block forever. We
-    // trigger the event manually here, which will cause an IO exception to be
-    // returned from Write().
-    if (write_waitable_event_)
-      write_waitable_event_->Signal();
+    // NOTE(http://crbug.com/1247876): Close() might be called from multiple
+    // threads at the same time; sequence calls and check if stream is already
+    // closed inside task. Also, must cancel |send_stream_watcher_| on the same
+    // sequence it was initialized on.
+    base::WaitableEvent task_run_waitable_event;
+    task_runner_->PostTask(FROM_HERE, base::BindOnce(&OutputStreamImpl::DoClose,
+                                                     base::Unretained(this),
+                                                     &task_run_waitable_event));
+    task_run_waitable_event.Wait();
 
     return {Exception::kSuccess};
   }
@@ -267,7 +276,7 @@ class OutputStreamImpl : public OutputStream {
   void SendMore(MojoResult result, const mojo::HandleSignalsState& state) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     DCHECK_NE(result, MOJO_RESULT_SHOULD_WAIT);
-    DCHECK(send_stream_.is_valid());
+    DCHECK(!IsClosed());
     DCHECK(pending_write_buffer_);
     DCHECK_LT(pending_write_buffer_pos_, pending_write_buffer_->size());
     DCHECK(write_waitable_event_);
@@ -296,6 +305,30 @@ class OutputStreamImpl : public OutputStream {
 
     write_success_ = result == MOJO_RESULT_OK;
     write_waitable_event_->Signal();
+  }
+
+  bool IsClosed() { return !send_stream_.is_valid(); }
+
+  void DoClose(base::WaitableEvent* task_run_waitable_event) {
+    // Must cancel |send_stream_watcher_| on the same sequence it was
+    // initialized on.
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+    if (!IsClosed()) {
+      send_stream_watcher_.Cancel();
+      send_stream_.reset();
+
+      // It is possible that a Write() call could still be blocking a different
+      // sequence via |write_waitable_event_| when Close() is called. If we only
+      // cancel the stream watcher, the Write() call will block forever. We
+      // trigger the event manually here, which will cause an IO exception to be
+      // returned from Write().
+      if (write_waitable_event_)
+        write_waitable_event_->Signal();
+    }
+
+    if (task_run_waitable_event)
+      task_run_waitable_event->Signal();
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -341,10 +374,8 @@ BluetoothSocket::~BluetoothSocket() {
   // These properties must be destroyed on the same sequence they are later run
   // on. See |task_runner_|.
   CountDownLatch latch(2);
-
   auto count_down_latch_callback = base::BindRepeating(
       [](CountDownLatch* latch) { latch->CountDown(); }, &latch);
-
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BluetoothSocket::DestroyInputStream,
@@ -353,7 +384,6 @@ BluetoothSocket::~BluetoothSocket() {
       FROM_HERE,
       base::BindOnce(&BluetoothSocket::DestroyOutputStream,
                      base::Unretained(this), count_down_latch_callback));
-
   latch.Await();
 }
 
@@ -394,10 +424,8 @@ void BluetoothSocket::InitializeStreams(
   // These properties must be created on the same sequence they are later run
   // on. See |task_runner_|.
   CountDownLatch latch(2);
-
   auto count_down_latch_callback = base::BindRepeating(
       [](CountDownLatch* latch) { latch->CountDown(); }, &latch);
-
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BluetoothSocket::CreateInputStream,
@@ -407,7 +435,6 @@ void BluetoothSocket::InitializeStreams(
       FROM_HERE, base::BindOnce(&BluetoothSocket::CreateOutputStream,
                                 base::Unretained(this), std::move(send_stream),
                                 count_down_latch_callback));
-
   latch.Await();
 }
 
