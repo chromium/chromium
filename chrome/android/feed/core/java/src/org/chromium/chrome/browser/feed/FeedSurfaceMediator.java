@@ -23,27 +23,21 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.feedmanagement.FeedManagementActivity;
+import org.chromium.chrome.browser.app.feed.feedmanagement.FeedManagementActivity;
+import org.chromium.chrome.browser.feed.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.feed.sections.OnSectionHeaderSelectedListener;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderProperties;
 import org.chromium.chrome.browser.feed.sections.SectionType;
 import org.chromium.chrome.browser.feed.sections.ViewVisibility;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
-import org.chromium.chrome.browser.feed.shared.stream.Stream;
-import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
-import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
@@ -94,62 +88,6 @@ public class FeedSurfaceMediator
     @VisibleForTesting
     public static final String FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA = "FeedContentFirstLoadedTime";
     private static final int INTEREST_FEED_HEADER_POSITION = 0;
-
-    /**
-     * Class for storing scroll state of a feed surface.
-     */
-    public static class ScrollState {
-        private static final String TAG = "FeedScrollState";
-
-        private static final String SCROLL_POSITION = "pos";
-        private static final String SCROLL_LAST_POSITION = "lpos";
-        private static final String SCROLL_OFFSET = "off";
-        private static final String TAB_ID = "tabId";
-        private static final String FEED_CONTENT_STATE = "contentState";
-
-        public int position;
-        public int lastPosition;
-        public int offset;
-        public int tabId;
-        // Represents the state of Feed content. If it changes,
-        // the scroll state should not be retained.
-        public String feedContentState = "";
-
-        /** Turns the fields into json. */
-        public String toJson() {
-            JSONObject jsonSavedState = new JSONObject();
-            try {
-                jsonSavedState.put(SCROLL_POSITION, position);
-                jsonSavedState.put(SCROLL_LAST_POSITION, lastPosition);
-                jsonSavedState.put(SCROLL_OFFSET, offset);
-                jsonSavedState.put(TAB_ID, tabId);
-                jsonSavedState.put(FEED_CONTENT_STATE, feedContentState);
-                return jsonSavedState.toString();
-            } catch (JSONException e) {
-                Log.d(TAG, "Unable to write to a JSONObject.");
-            }
-            return "";
-        }
-
-        /** Reads from json to recover a ScrollState object. */
-        @Nullable
-        static ScrollState fromJson(String json) {
-            if (json == null) return null;
-            ScrollState result = new ScrollState();
-            try {
-                JSONObject jsonSavedState = new JSONObject(json);
-                result.position = jsonSavedState.getInt(SCROLL_POSITION);
-                result.lastPosition = jsonSavedState.getInt(SCROLL_LAST_POSITION);
-                result.offset = jsonSavedState.getInt(SCROLL_OFFSET);
-                result.tabId = jsonSavedState.getInt(TAB_ID);
-                result.feedContentState = jsonSavedState.getString(FEED_CONTENT_STATE);
-            } catch (JSONException e) {
-                Log.d(TAG, "Unable to parse a JSONObject from a string.");
-                return null;
-            }
-            return result;
-        }
-    }
 
     private class FeedSurfaceHeaderSelectedCallback implements OnSectionHeaderSelectedListener {
         @Override
@@ -261,8 +199,7 @@ public class FeedSurfaceMediator
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private final SigninManager mSigninManager;
     private final PropertyModel mSectionHeaderModel;
-
-    private final NativePageNavigationDelegate mPageNavigationDelegate;
+    private final FeedActionDelegate mActionDelegate;
 
     private @Nullable RecyclerView.OnScrollListener mStreamScrollListener;
     private final ObserverList<ScrollListener> mScrollListeners = new ObserverList<>();
@@ -296,7 +233,7 @@ public class FeedSurfaceMediator
     // that Feed content is still loading at that time and the {@link mContentFirstAvailableTimeMs}
     // hasn't been set yet.
     private boolean mHasPendingUmaRecording;
-    private ScrollState mRestoreScrollState;
+    private FeedScrollState mRestoreScrollState;
 
     private final HashMap<Integer, Stream> mTabToStreamMap = new HashMap<>();
     private Stream mCurrentStream;
@@ -308,21 +245,19 @@ public class FeedSurfaceMediator
      * @param coordinator The {@link FeedSurfaceCoordinator} that interacts with this class.
      * @param context The current context.
      * @param snapScrollHelper The {@link SnapScrollHelper} that handles snap scrolling.
-     * @param pageNavigationDelegate The {@link NativePageNavigationDelegate} that handles page
-     *         navigation.
      * @param headerModel The {@link PropertyModel} that contains this mediator should work with.
      * @param openingTabId The {@link FeedSurfaceCoordinator.StreamTabId} the feed should open to.
      */
     FeedSurfaceMediator(FeedSurfaceCoordinator coordinator, Context context,
-            @Nullable SnapScrollHelper snapScrollHelper,
-            @Nullable NativePageNavigationDelegate pageNavigationDelegate,
-            PropertyModel headerModel, @FeedSurfaceCoordinator.StreamTabId int openingTabId) {
+            @Nullable SnapScrollHelper snapScrollHelper, PropertyModel headerModel,
+            @FeedSurfaceCoordinator.StreamTabId int openingTabId,
+            FeedActionDelegate actionDelegate) {
         mCoordinator = coordinator;
         mContext = context;
         mSnapScrollHelper = snapScrollHelper;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-        mPageNavigationDelegate = pageNavigationDelegate;
+        mActionDelegate = actionDelegate;
 
         if (sTestPrefChangeRegistar != null) {
             mPrefChangeRegistrar = sTestPrefChangeRegistar;
@@ -336,11 +271,6 @@ public class FeedSurfaceMediator
             mRestoreTabId = getPrefService().getInteger(Pref.LAST_SEEN_FEED_TYPE);
         } else {
             mRestoreTabId = openingTabId;
-        }
-
-        // Check that there is a navigation delegate when using the feed header menu.
-        if (mPageNavigationDelegate == null) {
-            assert false : "Need navigation delegate for header menu";
         }
 
         mSectionHeaderModel = headerModel;
@@ -407,7 +337,7 @@ public class FeedSurfaceMediator
 
     /** Gets the current state, for restoring later. */
     String getSavedInstanceString() {
-        ScrollState state = new ScrollState();
+        FeedScrollState state = new FeedScrollState();
         int tabId = mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY);
         state.tabId = tabId;
         LinearLayoutManager layoutManager =
@@ -430,7 +360,7 @@ public class FeedSurfaceMediator
 
     /** Restores a previously saved state. */
     void restoreSavedInstanceState(String json) {
-        ScrollState state = ScrollState.fromJson(json);
+        FeedScrollState state = FeedScrollState.fromJson(json);
         if (state == null) return;
         mRestoreTabId = state.tabId;
         if (mSectionHeaderModel != null) {
@@ -1128,21 +1058,21 @@ public class FeedSurfaceMediator
             Intent intent = new Intent(mContext, FeedManagementActivity.class);
             mContext.startActivity(intent);
         } else if (itemId == R.id.ntp_feed_header_menu_item_activity) {
-            mPageNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
+            mActionDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://myactivity.google.com/myactivity?product=50"));
             if (stream != null) {
                 stream.recordActionManageActivity();
             }
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MY_ACTIVITY);
         } else if (itemId == R.id.ntp_feed_header_menu_item_interest) {
-            mPageNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
+            mActionDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://www.google.com/preferences/interests"));
             if (stream != null) {
                 stream.recordActionManageInterests();
             }
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_INTERESTS);
         } else if (itemId == R.id.ntp_feed_header_menu_item_reactions) {
-            mPageNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
+            mActionDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://www.google.com/search/contributions/reactions"));
             if (stream != null) {
                 stream.recordActionManageReactions();
@@ -1152,7 +1082,7 @@ public class FeedSurfaceMediator
             mCoordinator.launchAutoplaySettings();
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_AUTOPLAY);
         } else if (itemId == R.id.ntp_feed_header_menu_item_learn) {
-            mPageNavigationDelegate.navigateToHelpPage();
+            mActionDelegate.openHelpPage();
             if (stream != null) {
                 stream.recordActionLearnMore();
             }
@@ -1209,8 +1139,8 @@ public class FeedSurfaceMediator
         return true;
     }
 
-    private ScrollState getScrollStateForAutoScrollToTop() {
-        ScrollState state = new ScrollState();
+    private FeedScrollState getScrollStateForAutoScrollToTop() {
+        FeedScrollState state = new FeedScrollState();
         state.position = 1;
         state.lastPosition = 5;
         return state;
