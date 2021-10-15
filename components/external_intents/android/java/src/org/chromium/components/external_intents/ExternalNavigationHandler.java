@@ -900,11 +900,11 @@ public class ExternalNavigationHandler {
             return false;
         }
 
-        String packageName = mDelegate.getContext().getPackageName();
+        String selfPackageName = mDelegate.getContext().getPackageName();
         boolean matchesOtherPackage = false;
         for (ResolveInfo resolveInfo : resolveInfos) {
             ActivityInfo info = resolveInfo.activityInfo;
-            if (info == null || !packageName.equals(info.packageName)) {
+            if (info == null || !selfPackageName.equals(info.packageName)) {
                 matchesOtherPackage = true;
                 break;
             }
@@ -917,6 +917,15 @@ public class ExternalNavigationHandler {
         // Fall back to querying for browser packages if the intent doesn't obviously match or not
         // match a browser. This will catch custom URL schemes like googlechrome://.
         Set<String> browserPackages = getInstalledBrowserPackages();
+
+        if (hasSpecializedHandler) {
+            List<String> specializedPackages = getSpecializedHandlers(resolveInfos);
+            for (String packageName : specializedPackages) {
+                // A non-browser package is specialized, so don't consider it to be targeting a
+                // browser.
+                if (!browserPackages.contains(packageName)) return false;
+            }
+        }
 
         for (ResolveInfo resolveInfo : resolveInfos) {
             ActivityInfo info = resolveInfo.activityInfo;
