@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './bluetooth_pairing_device_selection_page.js';
 import './bluetooth_pairing_request_code_page.js';
 import './bluetooth_pairing_confirm_code_page.js';
+import './bluetooth_spinner_page.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert, assertNotReached} from '../../../js/assert.m.js';
@@ -23,6 +24,7 @@ const BluetoothPairingSubpageId = {
   DEVICE_SELECTION_PAGE: 'deviceSelectionPage',
   DEVICE_REQUEST_CODE_PAGE: 'deviceRequestCodePage',
   DEVICE_CONFIRM_CODE_PAGE: 'deviceConfirmCodePage',
+  SPINNER_PAGE: 'spinnerPage',
 };
 
 /**
@@ -249,6 +251,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
    * @private
    */
   onRequestCodeEntered_(event) {
+    this.selectedPageId_ = BluetoothPairingSubpageId.SPINNER_PAGE;
     event.stopPropagation();
     assert(this.pairingAuthType_);
     assert(this.requestCodeCallback_.resolve);
@@ -291,7 +294,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
    * @private
    */
   onConfirmCode_(event) {
-    // TODO(crbug.com/1010321): Show spinner and disable pair button.
+    this.selectedPageId_ = BluetoothPairingSubpageId.SPINNER_PAGE;
     event.stopPropagation();
     assert(this.pairingAuthType_);
     assert(this.confirmCodeCallback_);

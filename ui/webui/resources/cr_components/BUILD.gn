@@ -127,6 +127,7 @@ preprocess_if_expr("preprocess_generated") {
       "chromeos/bluetooth/bluetooth_dialog.js",
       "chromeos/bluetooth/bluetooth_icon.js",
       "chromeos/bluetooth/bluetooth_icons.js",
+      "chromeos/bluetooth/bluetooth_spinner_page.js",
       "chromeos/bluetooth/bluetooth_pairing_device_selection_page.js",
       "chromeos/bluetooth/bluetooth_pairing_request_code_page.js",
       "chromeos/bluetooth/bluetooth_pairing_confirm_code_page.js",

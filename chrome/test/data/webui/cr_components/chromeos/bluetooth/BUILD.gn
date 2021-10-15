@@ -21,6 +21,7 @@ js_type_check("closure_compile") {
     ":bluetooth_pairing_device_selection_page_test",
     ":bluetooth_pairing_request_code_page_test",
     ":bluetooth_pairing_ui_test",
+    ":bluetooth_spinner_page_test",
     ":fake_bluetooth_config",
     ":fake_bluetooth_discovery_delegate",
     ":fake_device_pairing_handler",
@@ -91,6 +92,14 @@ js_library("bluetooth_pairing_confirm_code_page_test") {
   deps = [
     "../../..:chai_assert",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_confirm_code_page",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("bluetooth_spinner_page_test") {
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_spinner_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

@@ -21,6 +21,7 @@ js_type_check("closure_compile_module") {
     ":bluetooth_pairing_device_selection_page",
     ":bluetooth_pairing_request_code_page",
     ":bluetooth_pairing_ui",
+    ":bluetooth_spinner_page",
     ":bluetooth_types",
     ":bluetooth_utils",
     ":cros_bluetooth_config",
@@ -138,6 +139,14 @@ js_library("cros_bluetooth_config") {
   deps = [ "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile" ]
 }
 
+js_library("bluetooth_spinner_page") {
+  deps = [
+    ":bluetooth_base_page",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 html_to_js("polymer3_elements") {
   js_files = [
     "bluetooth_dialog.js",
@@ -150,5 +159,6 @@ html_to_js("polymer3_elements") {
     "bluetooth_pairing_ui.js",
     "bluetooth_base_page.js",
     "bluetooth_device_battery_info.js",
+    "bluetooth_spinner_page.js",
   ]
 }

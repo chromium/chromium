@@ -11,7 +11,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
-import {waitAfterNextRender} from '../../../test_util.js';
+import {eventToPromise, waitAfterNextRender} from '../../../test_util.js';
 
 // clang-format on
 
@@ -96,5 +96,23 @@ suite('CrComponentsBluetoothBasePageTest', function() {
     await waitAfterNextRender(bluetoothBasePage);
     const pairButton = bluetoothBasePage.shadowRoot.querySelector('#pair');
     assertEquals(getDeepActiveElement(), pairButton);
+  });
+
+  test('Cancel and pair events fired on click', async function() {
+    const getCancelButton = () =>
+        bluetoothBasePage.shadowRoot.querySelector('#cancel');
+    const getPairButton = () =>
+        bluetoothBasePage.shadowRoot.querySelector('#pair');
+
+    setStateForAllButtons(ButtonState.ENABLED);
+
+    let cancelEventPromise = eventToPromise('cancel', bluetoothBasePage);
+    let pairEventPromise = eventToPromise('pair', bluetoothBasePage);
+
+    getCancelButton().click();
+    await cancelEventPromise;
+
+    getPairButton().click();
+    await pairEventPromise;
   });
 });

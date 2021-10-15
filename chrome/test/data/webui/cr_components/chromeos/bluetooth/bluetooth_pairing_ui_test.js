@@ -280,6 +280,8 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
         bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
     const getDeviceConfirmCodePage = () =>
         bluetoothPairingUi.shadowRoot.querySelector('#deviceConfirmCodePage');
+    const getSpinnerPage = () =>
+        bluetoothPairingUi.shadowRoot.querySelector('#spinnerPage');
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456',
         /*publicName=*/ 'BeatsX',
@@ -297,6 +299,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     // By default device selection page should be shown.
     assertTrue(!!getDeviceSelectionPage());
     assertFalse(!!getDeviceConfirmCodePage());
+    assertFalse(!!getSpinnerPage());
 
     // Test canceling while on confirm code page.
     await selectDevice(device.deviceProperties);
@@ -315,6 +318,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
     // We return to device selection page when pairing is cancelled.
     assertFalse(!!getDeviceConfirmCodePage());
+    assertFalse(!!getSpinnerPage());
 
     // Retry pairing.
     await selectDevice(device.deviceProperties);
@@ -330,12 +334,16 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     getDeviceConfirmCodePage().dispatchEvent(event);
     await flushAsync();
 
+    // Spinner should be shown.
+    assertTrue(!!getSpinnerPage());
+
     assertTrue(deviceHandler.getConfirmPasskeyResult());
     deviceHandler.completePairDevice(/*success=*/ false);
     await flushAsync();
 
     // We return to device selection page on pair failure.
     assertFalse(!!getDeviceConfirmCodePage());
+    assertFalse(!!getSpinnerPage());
 
     // Retry pairing.
     await selectDevice(device.deviceProperties);
@@ -347,6 +355,9 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     event = new CustomEvent('confirm-code');
     getDeviceConfirmCodePage().dispatchEvent(event);
     await flushAsync();
+
+    // Spinner should be shown.
+    assertTrue(!!getSpinnerPage());
 
     // Finished event is fired on successful pairing.
     deviceHandler.completePairDevice(/*success=*/ true);
