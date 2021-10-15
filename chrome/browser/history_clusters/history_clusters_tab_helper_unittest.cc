@@ -65,7 +65,6 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
     helper_ = HistoryClustersTabHelper::FromWebContents(web_contents());
     ASSERT_TRUE(helper_);
 
-    ASSERT_TRUE(profile()->CreateHistoryService());
     ASSERT_TRUE(history_service_ = HistoryServiceFactory::GetForProfile(
                     profile(), ServiceAccessType::IMPLICIT_ACCESS));
 
@@ -85,6 +84,11 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
 
     run_loop_quit_ = run_loop_.QuitClosure();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{HistoryServiceFactory::GetInstance(),
+             HistoryServiceFactory::GetDefaultFactory()}};
   }
 
   std::vector<history::AnnotatedVisit> GetVisits() const {
