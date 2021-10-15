@@ -94,8 +94,6 @@ _NEGATIVE_FILTER = [
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3517
     'ChromeDriverTest.testPrint',
     'ChromeDriverTest.testPrintInvalidArgument',
-    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3878
-    'ChromeDriverTest.testClickElementJustOutsidePage',
 ]
 
 

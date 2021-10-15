@@ -57,8 +57,8 @@ bool ParseFromValue(base::Value* value, WebPoint* point) {
   auto y = value->FindDoubleKey("y");
   if (!x.has_value() || !y.has_value())
     return false;
-  point->x = static_cast<int>(x.value());
-  point->y = static_cast<int>(y.value());
+  point->x = x.value();
+  point->y = y.value();
   return true;
 }
 
@@ -69,8 +69,8 @@ bool ParseFromValue(base::Value* value, WebSize* size) {
   auto height = value->FindDoubleKey("height");
   if (!width.has_value() || !height.has_value())
     return false;
-  size->width = static_cast<int>(width.value());
-  size->height = static_cast<int>(height.value());
+  size->width = width.value();
+  size->height = height.value();
   return true;
 }
 
@@ -84,10 +84,10 @@ bool ParseFromValue(base::Value* value, WebRect* rect) {
   if (!x.has_value() || !y.has_value() || !width.has_value() ||
       !height.has_value())
     return false;
-  rect->origin.x = static_cast<int>(x.value());
-  rect->origin.y = static_cast<int>(y.value());
-  rect->size.width = static_cast<int>(width.value());
-  rect->size.height = static_cast<int>(height.value());
+  rect->origin.x = x.value();
+  rect->origin.y = y.value();
+  rect->size.width = width.value();
+  rect->size.height = height.value();
   return true;
 }
 
