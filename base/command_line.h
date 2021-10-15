@@ -29,8 +29,8 @@
 
 namespace base {
 
-class FilePath;
 class DuplicateSwitchHandler;
+class FilePath;
 
 class BASE_EXPORT CommandLine {
  public:

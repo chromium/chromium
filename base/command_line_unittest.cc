@@ -575,13 +575,15 @@ TEST(CommandLineTest, MultipleSameSwitch) {
 // Helper class for the next test case
 class MergeDuplicateFoosSemicolon : public DuplicateSwitchHandler {
  public:
+  ~MergeDuplicateFoosSemicolon() override;
+
   void ResolveDuplicate(base::StringPiece key,
                         CommandLine::StringPieceType new_value,
                         CommandLine::StringType& out_value) override;
-  ~MergeDuplicateFoosSemicolon() override;
 };
 
 MergeDuplicateFoosSemicolon::~MergeDuplicateFoosSemicolon() = default;
+
 void MergeDuplicateFoosSemicolon::ResolveDuplicate(
     base::StringPiece key,
     CommandLine::StringPieceType new_value,
@@ -603,15 +605,14 @@ void MergeDuplicateFoosSemicolon::ResolveDuplicate(
 // This flag is an exception to the rule that the second duplicate flag wins
 // Not thread safe
 TEST(CommandLineTest, MultipleFilterFileSwitch) {
-  const CommandLine::CharType* argv[] = {
+  const CommandLine::CharType* const argv[] = {
       FILE_PATH_LITERAL("program"),
       FILE_PATH_LITERAL("--mergeable-foo=one"),  // --first time
       FILE_PATH_LITERAL("-baz"),
       FILE_PATH_LITERAL("--mergeable-foo=two")  // --second time
   };
-  MergeDuplicateFoosSemicolon mdfs;
   CommandLine::SetDuplicateSwitchHandler(
-      std::make_unique<MergeDuplicateFoosSemicolon>(mdfs));
+      std::make_unique<MergeDuplicateFoosSemicolon>());
 
   CommandLine cl(size(argv), argv);
 

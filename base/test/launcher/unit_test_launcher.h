@@ -172,10 +172,11 @@ class UnitTestLauncherDelegate : public TestLauncherDelegate {
 // duplicate
 class MergeTestFilterSwitchHandler : public DuplicateSwitchHandler {
  public:
+  ~MergeTestFilterSwitchHandler() override;
+
   void ResolveDuplicate(base::StringPiece key,
                         CommandLine::StringPieceType new_value,
                         CommandLine::StringType& out_value) override;
-  ~MergeTestFilterSwitchHandler() override;
 };
 
 }   // namespace base
