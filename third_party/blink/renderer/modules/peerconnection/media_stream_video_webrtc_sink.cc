@@ -237,6 +237,16 @@ void MediaStreamVideoWebRtcSink::OnContentHintChanged(
       ContentHintTypeToWebRtcContentHint(content_hint));
 }
 
+void MediaStreamVideoWebRtcSink::OnVideoConstraintsChanged(
+    absl::optional<double> min_fps,
+    absl::optional<double> max_fps) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DVLOG(3) << __func__ << " min " << min_fps.value_or(-1) << " max "
+           << max_fps.value_or(-1);
+  video_source_proxy_->ProcessConstraints(
+      webrtc::VideoTrackSourceConstraints{min_fps, max_fps});
+}
+
 absl::optional<bool>
 MediaStreamVideoWebRtcSink::SourceNeedsDenoisingForTesting() const {
   return video_source_->needs_denoising();

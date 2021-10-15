@@ -36,9 +36,11 @@ namespace blink {
 namespace media_stream_video_track_test {
 
 using base::test::RunOnceClosure;
+using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::Mock;
+using ::testing::Optional;
 using ::testing::Return;
 using ::testing::Values;
 
@@ -548,6 +550,71 @@ TEST_F(MediaStreamVideoTrackEncodedTest, SourceStopped) {
   mock_source()->StopSource();
   EXPECT_EQ(WebMediaStreamSource::kReadyStateEnded, sink.state());
   sink.DisconnectEncodedFromTrack();
+}
+
+TEST_F(MediaStreamVideoTrackTest, DeliversConstraintsToKnownSinks) {
+  InitializeSource();
+  WebMediaStreamTrack track = CreateTrack();
+  MockMediaStreamVideoSink sink1;
+  EXPECT_CALL(sink1, OnVideoConstraintsChanged(Eq(absl::nullopt), Optional(0)));
+  sink1.ConnectToTrack(track);
+  MockMediaStreamVideoSink sink2;
+  EXPECT_CALL(sink2, OnVideoConstraintsChanged(Eq(absl::nullopt), Optional(0)));
+  sink2.ConnectToTrack(track);
+  MediaStreamVideoTrack* const native_track =
+      MediaStreamVideoTrack::From(track);
+  Mock::VerifyAndClearExpectations(&sink1);
+  Mock::VerifyAndClearExpectations(&sink2);
+
+  EXPECT_CALL(sink1, OnVideoConstraintsChanged(Eq(absl::nullopt), Optional(0)));
+  EXPECT_CALL(sink2, OnVideoConstraintsChanged(Eq(absl::nullopt), Optional(0)));
+  native_track->SetTrackAdapterSettings(VideoTrackAdapterSettings());
+  native_track->NotifyConstraintsConfigurationComplete();
+  Mock::VerifyAndClearExpectations(&sink1);
+  Mock::VerifyAndClearExpectations(&sink2);
+
+  native_track->SetMinimumFrameRate(200);
+  EXPECT_CALL(sink1, OnVideoConstraintsChanged(Optional(200.0), Optional(0)));
+  EXPECT_CALL(sink2, OnVideoConstraintsChanged(Optional(200.0), Optional(0)));
+  native_track->SetTrackAdapterSettings(VideoTrackAdapterSettings());
+  native_track->NotifyConstraintsConfigurationComplete();
+  Mock::VerifyAndClearExpectations(&sink1);
+  Mock::VerifyAndClearExpectations(&sink2);
+
+  EXPECT_CALL(sink1,
+              OnVideoConstraintsChanged(Optional(200.0), Optional(300.0)));
+  EXPECT_CALL(sink2,
+              OnVideoConstraintsChanged(Optional(200.0), Optional(300.0)));
+  VideoTrackAdapterSettings settings;
+  settings.set_max_frame_rate(300);
+  native_track->SetTrackAdapterSettings(settings);
+  native_track->NotifyConstraintsConfigurationComplete();
+  Mock::VerifyAndClearExpectations(&sink1);
+  Mock::VerifyAndClearExpectations(&sink2);
+
+  sink1.DisconnectFromTrack();
+  sink2.DisconnectFromTrack();
+}
+
+TEST_F(MediaStreamVideoTrackTest, DeliversConstraintsToNewSinks) {
+  InitializeSource();
+  WebMediaStreamTrack track = CreateTrack();
+  MediaStreamVideoTrack* const native_track =
+      MediaStreamVideoTrack::From(track);
+  native_track->SetMinimumFrameRate(10);
+  VideoTrackAdapterSettings settings;
+  settings.set_max_frame_rate(20);
+  native_track->SetTrackAdapterSettings(settings);
+  native_track->NotifyConstraintsConfigurationComplete();
+
+  MockMediaStreamVideoSink sink1;
+  sink1.ConnectToTrack(track);
+  Mock::VerifyAndClearExpectations(&sink1);
+
+  MockMediaStreamVideoSink sink2;
+  EXPECT_CALL(sink1, OnVideoConstraintsChanged).Times(0);
+  EXPECT_CALL(sink2, OnVideoConstraintsChanged(Optional(10.0), Optional(20.0)));
+  sink2.ConnectToTrack(track);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

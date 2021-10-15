@@ -15,6 +15,31 @@
 
 namespace blink {
 
+using ::testing::AllOf;
+using ::testing::Field;
+using ::testing::Invoke;
+using ::testing::Mock;
+using ::testing::Optional;
+
+class MockPeerConnectionDependencyFactory2
+    : public MockPeerConnectionDependencyFactory {
+ public:
+  MOCK_METHOD(scoped_refptr<webrtc::VideoTrackSourceInterface>,
+              CreateVideoTrackSourceProxy,
+              (webrtc::VideoTrackSourceInterface * source),
+              (override));
+};
+
+class MockVideoTrackSourceProxy : public MockWebRtcVideoTrackSource {
+ public:
+  MockVideoTrackSourceProxy()
+      : MockWebRtcVideoTrackSource(/*supports_encoded_output=*/false) {}
+  MOCK_METHOD(void,
+              ProcessConstraints,
+              (const webrtc::VideoTrackSourceConstraints& constraints),
+              (override));
+};
+
 class MediaStreamVideoWebRtcSinkTest : public ::testing::Test {
  public:
   void SetVideoTrack() {
@@ -55,6 +80,33 @@ TEST_F(MediaStreamVideoWebRtcSinkTest, NoiseReductionDefaultsToNotSet) {
       blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   EXPECT_TRUE(my_sink.webrtc_video_track());
   EXPECT_FALSE(my_sink.SourceNeedsDenoisingForTesting());
+}
+
+TEST_F(MediaStreamVideoWebRtcSinkTest,
+       ForwardsConstraintsChangeToWebRtcVideoTrackSourceProxy) {
+  Persistent<MockPeerConnectionDependencyFactory2> dependency_factory2 =
+      MakeGarbageCollected<MockPeerConnectionDependencyFactory2>();
+  dependency_factory_ = dependency_factory2;
+  MockVideoTrackSourceProxy* source_proxy = nullptr;
+  EXPECT_CALL(*dependency_factory2, CreateVideoTrackSourceProxy)
+      .WillOnce(Invoke([&source_proxy](webrtc::VideoTrackSourceInterface*) {
+        source_proxy = new MockVideoTrackSourceProxy();
+        return source_proxy;
+      }));
+  SetVideoTrack();
+  blink::MediaStreamVideoWebRtcSink sink(
+      component_, dependency_factory_.Get(),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+  ASSERT_TRUE(source_proxy != nullptr);
+  Mock::VerifyAndClearExpectations(dependency_factory_);
+
+  EXPECT_CALL(
+      *source_proxy,
+      ProcessConstraints(AllOf(
+          Field(&webrtc::VideoTrackSourceConstraints::min_fps, Optional(12.0)),
+          Field(&webrtc::VideoTrackSourceConstraints::max_fps,
+                Optional(34.0)))));
+  sink.OnVideoConstraintsChanged(12, 34);
 }
 
 }  // namespace blink

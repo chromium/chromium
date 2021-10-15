@@ -274,9 +274,8 @@ void MediaStreamVideoTrack::FrameDeliverer::RemoveEncodedCallbackOnIO(
 
   // Callback destruction needs to happen on the specified task runner.
   auto it = encoded_callbacks_.find(id);
-  if (it == encoded_callbacks_.end()) {
+  if (it == encoded_callbacks_.end())
     return;
-  }
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
       CrossThreadBindOnce([](EncodedVideoFrameInternalCallback callback) {},
@@ -456,8 +455,6 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
     MediaStreamVideoSource::ConstraintsOnceCallback callback,
     bool enabled)
     : MediaStreamTrackPlatform(true),
-      adapter_settings_(std::make_unique<VideoTrackAdapterSettings>(
-          VideoTrackAdapterSettings())),
       is_screencast_(false),
       source_(source->GetWeakPtr()) {
   frame_deliverer_ =
@@ -493,8 +490,7 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
     MediaStreamVideoSource::ConstraintsOnceCallback callback,
     bool enabled)
     : MediaStreamTrackPlatform(true),
-      adapter_settings_(
-          std::make_unique<VideoTrackAdapterSettings>(adapter_settings)),
+      adapter_settings_(adapter_settings),
       noise_reduction_(noise_reduction),
       is_screencast_(is_screen_cast),
       min_frame_rate_(min_frame_rate),
@@ -558,6 +554,11 @@ void MediaStreamVideoTrack::AddSink(
   } else if (uses_alpha == MediaStreamVideoSink::UsesAlpha::kNo) {
     alpha_discarding_sinks_.insert(sink);
   }
+
+  // Ensure sink gets told about any constraints set.
+  sink->OnVideoConstraintsChanged(min_frame_rate_,
+                                  adapter_settings_.max_frame_rate());
+
   // Request source to deliver a frame because a new sink is added.
   if (!source_)
     return;
@@ -761,9 +762,23 @@ void MediaStreamVideoTrack::OnReadyStateChanged(
     encoded_sink->OnReadyStateChanged(state);
 }
 
+void MediaStreamVideoTrack::SetMinimumFrameRate(double min_frame_rate) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
+  min_frame_rate_ = min_frame_rate;
+}
+
 void MediaStreamVideoTrack::SetTrackAdapterSettings(
     const VideoTrackAdapterSettings& settings) {
-  adapter_settings_ = std::make_unique<VideoTrackAdapterSettings>(settings);
+  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
+  adapter_settings_ = settings;
+}
+
+void MediaStreamVideoTrack::NotifyConstraintsConfigurationComplete() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
+  for (auto* sink : sinks_) {
+    sink->OnVideoConstraintsChanged(min_frame_rate_,
+                                    adapter_settings_.max_frame_rate());
+  }
 }
 
 media::VideoCaptureFormat MediaStreamVideoTrack::GetComputedSourceFormat() {
@@ -777,11 +792,6 @@ void MediaStreamVideoTrack::OnFrameDropped(
   if (!source_)
     return;
   source_->OnFrameDropped(reason);
-}
-
-void MediaStreamVideoTrack::SetMinimumFrameRate(double min_frame_rate) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  min_frame_rate_ = min_frame_rate;
 }
 
 void MediaStreamVideoTrack::StartTimerForRequestingFrames() {

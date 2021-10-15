@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_MEDIA_STREAM_VIDEO_WEBRTC_SINK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_MEDIA_STREAM_VIDEO_WEBRTC_SINK_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -57,8 +58,14 @@ class MODULES_EXPORT MediaStreamVideoWebRtcSink : public MediaStreamVideoSink {
   void OnEnabledChanged(bool enabled) override;
   void OnContentHintChanged(
       WebMediaStreamTrack::ContentHintType content_hint) override;
+  void OnVideoConstraintsChanged(absl::optional<double> min_fps,
+                                 absl::optional<double> max_fps) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      MediaStreamVideoWebRtcSinkTest,
+      ForwardsConstraintsChangeToWebRtcVideoTrackSourceProxy);
+
   // Used to DCHECK that we are called on the correct thread.
   THREAD_CHECKER(thread_checker_);
 

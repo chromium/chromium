@@ -355,8 +355,9 @@ MockPeerConnectionDependencyFactory::CreatePeerConnection(
 scoped_refptr<webrtc::VideoTrackSourceInterface>
 MockPeerConnectionDependencyFactory::CreateVideoTrackSourceProxy(
     webrtc::VideoTrackSourceInterface* source) {
-  return nullptr;
+  return source;
 }
+
 scoped_refptr<webrtc::MediaStreamInterface>
 MockPeerConnectionDependencyFactory::CreateLocalMediaStream(
     const String& label) {

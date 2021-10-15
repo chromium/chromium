@@ -152,6 +152,7 @@ void ApplyConstraintsProcessor::MaybeStopSourceForRestart(
     video_source_->ReconfigureTrack(GetCurrentVideoTrack(),
                                     settings.track_adapter_settings());
     ApplyConstraintsSucceeded();
+    GetCurrentVideoTrack()->NotifyConstraintsConfigurationComplete();
   } else {
     video_source_->StopForRestart(
         WTF::Bind(&ApplyConstraintsProcessor::MaybeSourceStoppedForRestart,
@@ -231,6 +232,7 @@ void ApplyConstraintsProcessor::FinalizeVideoRequest() {
     video_source_->ReconfigureTrack(GetCurrentVideoTrack(),
                                     settings.track_adapter_settings());
     ApplyConstraintsSucceeded();
+    GetCurrentVideoTrack()->NotifyConstraintsConfigurationComplete();
   } else {
     ApplyConstraintsFailed(settings.failed_constraint_name());
   }
