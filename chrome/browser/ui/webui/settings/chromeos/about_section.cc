@@ -293,6 +293,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_LTS},
     {"aboutCheckForUpdates", IDS_SETTINGS_ABOUT_PAGE_CHECK_FOR_UPDATES},
     {"aboutCurrentlyOnChannel", IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL},
+    {"aboutCurrentlyOnChannelInfo",
+     IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_INFO},
     {"aboutDetailedBuildInfo", IDS_SETTINGS_ABOUT_PAGE_DETAILED_BUILD_INFO},
     {version_ui::kApplicationLabel, IDS_PRODUCT_NAME},
     {version_ui::kPlatform, IDS_PLATFORM_LABEL},
