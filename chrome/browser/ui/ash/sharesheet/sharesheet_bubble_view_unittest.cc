@@ -9,12 +9,16 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
+#include "chrome/browser/sharesheet/sharesheet_test_util.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view_delegate.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_header_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -49,6 +53,9 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
   void SetUp() override {
     ChromeAshTestBase::SetUp();
 
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSharesheetCopyToClipboard);
+
     profile_ = std::make_unique<TestingProfile>();
 
     // Set up parent window for sharesheet to anchor to.
@@ -68,13 +75,14 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     parent_window_ = widget->GetNativeWindow();
   }
 
-  void ShowAndVerifyBubble(apps::mojom::IntentPtr intent) {
+  void ShowAndVerifyBubble(
+      apps::mojom::IntentPtr intent,
+      ::sharesheet::SharesheetMetrics::LaunchSource source) {
     ::sharesheet::SharesheetService* const sharesheet_service =
         ::sharesheet::SharesheetServiceFactory::GetForProfile(profile_.get());
     sharesheet_service->ShowBubbleForTesting(
         parent_window_, std::move(intent),
-        /*contains_hosted_document=*/false,
-        ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown,
+        /*contains_hosted_document=*/false, source,
         /*delivered_callback=*/base::DoNothing(),
         /*close_callback=*/base::DoNothing());
     bubble_delegate_ = static_cast<SharesheetBubbleViewDelegate*>(
@@ -97,12 +105,6 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     ASSERT_FALSE(sharesheet_widget_->IsVisible());
   }
 
-  apps::mojom::IntentPtr CreateDefaultTextIntent() {
-    auto intent = apps_util::CreateShareIntentFromText("text", "title");
-    intent->action = apps_util::kIntentActionSend;
-    return intent;
-  }
-
   SharesheetBubbleView* sharesheet_bubble_view() {
     return sharesheet_bubble_view_;
   }
@@ -120,6 +122,7 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   gfx::NativeWindow parent_window_;
   std::unique_ptr<TestingProfile> profile_;
   SharesheetBubbleViewDelegate* bubble_delegate_;
@@ -128,12 +131,14 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
 };
 
 TEST_F(SharesheetBubbleViewTest, BubbleDoesOpenAndClose) {
-  ShowAndVerifyBubble(CreateDefaultTextIntent());
+  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
+                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
   CloseBubble();
 }
 
 TEST_F(SharesheetBubbleViewTest, EmptyState) {
-  ShowAndVerifyBubble(CreateDefaultTextIntent());
+  ShowAndVerifyBubble(::sharesheet::CreateInvalidIntent(),
+                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
 
   // Header should contain Share label.
   ASSERT_TRUE(header_view()->GetVisible());
@@ -146,6 +151,59 @@ TEST_F(SharesheetBubbleViewTest, EmptyState) {
   // Footer should be an empty view that just acts as padding.
   ASSERT_TRUE(footer_view()->GetVisible());
   ASSERT_EQ(footer_view()->children().size(), 0);
+}
+
+TEST_F(SharesheetBubbleViewTest, RecordLaunchSource) {
+  base::HistogramTester histograms;
+
+  auto source =
+      ::sharesheet::SharesheetMetrics::LaunchSource::kFilesAppShareButton;
+  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(), source);
+  CloseBubble();
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetLaunchSourceResultHistogram, source, 1);
+
+  source = ::sharesheet::SharesheetMetrics::LaunchSource::kArcNearbyShare;
+  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(), source);
+  CloseBubble();
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetLaunchSourceResultHistogram, source, 1);
+}
+
+TEST_F(SharesheetBubbleViewTest, RecordShareActionCount) {
+  // Text intent should only show copy action.
+  base::HistogramTester histograms;
+  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
+                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
+  CloseBubble();
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetShareActionResultHistogram,
+      ::sharesheet::SharesheetMetrics::UserAction::kDriveAction, 0);
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetShareActionResultHistogram,
+      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 1);
+
+  // Drive intent should show copy and drive action.
+  ShowAndVerifyBubble(::sharesheet::CreateDriveIntent(),
+                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
+  CloseBubble();
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetShareActionResultHistogram,
+      ::sharesheet::SharesheetMetrics::UserAction::kDriveAction, 1);
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetShareActionResultHistogram,
+      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 2);
+
+  // Invalid intent should not show any actions.
+  ShowAndVerifyBubble(::sharesheet::CreateInvalidIntent(),
+                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
+  CloseBubble();
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetShareActionResultHistogram,
+      ::sharesheet::SharesheetMetrics::UserAction::kDriveAction, 1);
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetShareActionResultHistogram,
+      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 2);
 }
 
 }  // namespace sharesheet

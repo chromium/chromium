@@ -6,10 +6,11 @@
 
 #include <string>
 
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
 namespace sharesheet {
@@ -19,8 +20,8 @@ CopyToClipboardShareAction::CopyToClipboardShareAction() = default;
 CopyToClipboardShareAction::~CopyToClipboardShareAction() = default;
 
 const std::u16string CopyToClipboardShareAction::GetActionName() {
-  // TODO(crbug.com/1244143) Add translation string.
-  return base::UTF8ToUTF16(base::StringPiece("Copy to clipboard"));
+  return l10n_util::GetStringUTF16(
+      IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL);
 }
 
 const gfx::VectorIcon& CopyToClipboardShareAction::GetActionIcon() {

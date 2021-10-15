@@ -11900,6 +11900,7 @@ histogram as enum -->
   <int value="3" label="Cancelled by user pressing Esc key"/>
   <int value="4" label="Launch Web app"/>
   <int value="5" label="Launch Drive share action"/>
+  <int value="6" label="Launch Copy share action"/>
 </enum>
 
 <enum name="ChromeOSSharesheetFormFactor">

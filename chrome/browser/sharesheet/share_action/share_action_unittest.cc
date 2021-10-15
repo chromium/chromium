@@ -11,36 +11,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharesheet/share_action/share_action_cache.h"
+#include "chrome/browser/sharesheet/sharesheet_test_util.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
-
-namespace {
-
-const std::u16string kCopyToClipboardName = u"Copy to clipboard";
-const char kTestUrl[] = "https://fake-url.com/fake";
-
-apps::mojom::IntentPtr CreateValidDefaultIntent() {
-  return apps_util::CreateShareIntentFromText("text", "title");
-}
-
-apps::mojom::IntentPtr CreateInvalidIntent() {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = apps_util::kIntentActionSend;
-  return intent;
-}
-
-apps::mojom::IntentPtr CreateDriveIntent() {
-  return apps_util::CreateShareIntentFromDriveFile(GURL(kTestUrl), "image/",
-                                                   GURL(kTestUrl), false);
-}
-
-}  // namespace
 
 namespace sharesheet {
 
@@ -75,28 +53,32 @@ TEST_F(ShareActionTest, ShareActionCacheGetAllActions) {
   // is predetermined.
   EXPECT_EQ(share_actions[0]->GetActionName(),
             l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL));
-  EXPECT_EQ(share_actions[1]->GetActionName(), kCopyToClipboardName);
+  EXPECT_EQ(share_actions[1]->GetActionName(),
+            l10n_util::GetStringUTF16(
+                IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
 }
 
 TEST_F(ShareActionTest, ShareActionCacheGetActionFromName) {
-  auto* share_action = share_action_cache()->GetActionFromName(
-      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL));
-  EXPECT_EQ(share_action->GetActionName(),
-            l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL));
+  auto name = l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL);
+  l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL);
+  auto* share_action = share_action_cache()->GetActionFromName(name);
+  EXPECT_EQ(share_action->GetActionName(), name);
 
-  share_action = share_action_cache()->GetActionFromName(kCopyToClipboardName);
-  EXPECT_EQ(share_action->GetActionName(), kCopyToClipboardName);
+  name = l10n_util::GetStringUTF16(
+      IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL);
+  share_action = share_action_cache()->GetActionFromName(name);
+  EXPECT_EQ(share_action->GetActionName(), name);
 }
 
 TEST_F(ShareActionTest, ShareActionCacheHasVisibleActions) {
   EXPECT_TRUE(share_action_cache()->HasVisibleActions(
-      CreateValidDefaultIntent(), /*contains_hosted_document=*/false));
+      CreateValidTextIntent(), /*contains_hosted_document=*/false));
   // False due to invalid intent.
   EXPECT_FALSE(share_action_cache()->HasVisibleActions(
       CreateInvalidIntent(), /*contains_hosted_document=*/false));
   // False if the intent contains a hosted document that is not a drive intent.
   EXPECT_FALSE(share_action_cache()->HasVisibleActions(
-      CreateValidDefaultIntent(), /*contains_hosted_document=*/true));
+      CreateValidTextIntent(), /*contains_hosted_document=*/true));
   // True as a drive intent means drive_share_action is visible.
   EXPECT_TRUE(share_action_cache()->HasVisibleActions(
       CreateDriveIntent(), /*contains_hosted_document=*/true));

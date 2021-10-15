@@ -195,6 +195,7 @@ void SharesheetService::ShowBubbleForTesting(
     CloseCallback close_callback) {
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
   auto targets = GetActionsForIntent(intent, contains_hosted_document);
+  RecordTargetCountMetrics(targets);
   OnReadyToShowBubble(native_window, std::move(intent),
                       std::move(delivered_callback), std::move(close_callback),
                       std::move(targets));
@@ -464,6 +465,11 @@ void SharesheetService::RecordShareActionMetrics(
              l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL)) {
     SharesheetMetrics::RecordSharesheetShareAction(
         SharesheetMetrics::UserAction::kDriveAction);
+  } else if (target_name ==
+             l10n_util::GetStringUTF16(
+                 IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL)) {
+    SharesheetMetrics::RecordSharesheetShareAction(
+        SharesheetMetrics::UserAction::kCopyAction);
   } else {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     NOTREACHED();
