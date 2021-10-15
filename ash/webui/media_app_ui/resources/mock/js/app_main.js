@@ -34,8 +34,33 @@ const createImgChild = async (blobSrc, fileName) => {
   } catch (error) {
     // Mimic what the real app does on decode errors so we can test error
     // handling for file access.
-    img.alt = 'Unable to decode';
+    return /** @type {!HTMLElement} */ (
+        await createErrorChild(blobSrc, fileName));
   }
+  return img;
+};
+
+/** @type {ModuleHandler} */
+const createAudioChild = async (blobSrc, fileName) => {
+  const container =
+      /** @type {HTMLDivElement} */ (document.createElement('div'));
+  const audio = /** @type {HTMLAudioElement} */
+      (container.appendChild(document.createElement('audio')));
+  audio.src = blobSrc;
+  const title = /** @type {HTMLDivElement} */
+      (container.appendChild(document.createElement('div')));
+  title.className = 'title';
+  title.innerText = fileName;
+  return container;
+};
+
+/** @type {ModuleHandler} */
+const createErrorChild = async (_, fileName) => {
+  console.warn(`Mock handling of ${fileName} resulted in error.`);
+  // In the real app, a loaderror element is loaded infront of a placeholder
+  // image with some error alt text. For tests, we only mock the placeholder.
+  const img = /** @type {!HTMLImageElement} */ (document.createElement('img'));
+  img.alt = 'Unable to decode';
   return img;
 };
 
@@ -67,11 +92,43 @@ class BacklightApp extends HTMLElement {
    * @private
    */
   async preprocessFile(file) {
-    // This mock is only used for tests (which only test a .orf RAW file). We
-    // don't maintain the full list of RAW extensions here.
-    if (file && file.name.toLowerCase().endsWith('.orf')) {
+    // This mock is only used for tests (which only test a .orf and .nef RAW
+    // file). We don't maintain the full list of RAW extensions here.
+    const rawExtensions = ['orf', 'nef'];
+    const isRawFile =
+        file && rawExtensions.includes(file.name.split('.').pop());
+    if (isRawFile) {
       file.blob = await this.delegate.extractPreview(file.blob);
+      file.mimeType = 'image/x-RAW';
     }
+  }
+
+  /**
+   * Emulates the sniffing done in the "real" BacklightApp to detect a file's
+   * mime type. See go/media-app-element.
+   *
+   * @param {?mediaApp.AbstractFile} file
+   * @return {!Promise<string>} The sniffed mime type, or empty string if none
+   *     detected.
+   * @private
+   */
+  async sniffedMimeType(file) {
+    const START_OF_IMAGE_MARKER = 0xffd8;
+
+    const PNG_MARKER = 0x89504e47;  // Literally '‰PNG'.
+
+    if (file.size < 4) {
+      return '';
+    }
+
+    const view = new DataView(await file.blob.slice(0, 4).arrayBuffer());
+    if (view.getUint32(0) === PNG_MARKER) {
+      return 'image/png';
+    }
+    if (view.getUint16(0) === START_OF_IMAGE_MARKER) {
+      return 'image/jpeg';
+    }
+    return '';
   }
 
   /**
@@ -80,8 +137,21 @@ class BacklightApp extends HTMLElement {
    */
   async loadFile(file) {
     await this.preprocessFile(file);
-    const isVideo = file.mimeType.match('^video/');
-    const factory = isVideo ? createVideoChild : createImgChild;
+    const mimeType = file.mimeType || await this.sniffedMimeType(file);
+    let factory;
+    switch (mimeType.split('/')[0]) {
+      case 'video':
+        factory = createVideoChild;
+        break;
+      case 'image':
+        factory = createImgChild;
+        break;
+      case 'audio':
+        factory = createAudioChild;
+        break;
+      default:
+        factory = createErrorChild;
+    }
     // Note the mock app will just leak this Blob URL.
     const child = await factory(URL.createObjectURL(file.blob), file.name);
 

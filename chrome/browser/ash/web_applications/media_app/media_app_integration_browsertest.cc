@@ -52,8 +52,14 @@ constexpr char kFileJpeg640x480[] = "image3.jpg";
 // swapped out with "exif.jpg".
 constexpr char kRaw378x272[] = "raw.orf";
 
+// A RAW file from a Nikon camera.
+constexpr char kRaw120x160[] = "raw.nef";
+
 // A 1-second long 648x486 VP9-encoded video with stereo Opus-encoded audio.
 constexpr char kFileVideoVP9[] = "world.webm";
+
+// A 5-second long 96kb/s Ogg-Vorbis 44.1kHz mono audio file.
+constexpr char kFileAudioOgg[] = "music.ogg";
 
 constexpr char kUnhandledRejectionScript[] =
     "window.dispatchEvent("
@@ -68,13 +74,38 @@ constexpr char kDomExceptionScript[] =
     "new "
     "CustomEvent('simulate-unhandled-rejection-with-dom-exception-for-test'));";
 
-using MediaAppIntegrationTest = SystemWebAppIntegrationTest;
+class MediaAppIntegrationTest : public SystemWebAppIntegrationTest {
+ public:
+  void MediaAppLaunchWithFile(bool audio_enabled);
+  void MediaAppWithLaunchSystemWebAppAsync(bool audio_enabled);
+  void MediaAppEligibleOpenTask(bool audio_enabled);
+};
 
 class MediaAppIntegrationWithFilesAppTest : public MediaAppIntegrationTest {
   void SetUpOnMainThread() override {
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
     MediaAppIntegrationTest::SetUpOnMainThread();
   }
+};
+
+class MediaAppIntegrationAudioEnabledTest : public MediaAppIntegrationTest {
+ public:
+  MediaAppIntegrationAudioEnabledTest() {
+    feature_list_.InitAndEnableFeature(ash::features::kMediaAppHandlesAudio);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class MediaAppIntegrationAudioDisabledTest : public MediaAppIntegrationTest {
+ public:
+  MediaAppIntegrationAudioDisabledTest() {
+    feature_list_.InitAndDisableFeature(ash::features::kMediaAppHandlesAudio);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 using MediaAppIntegrationAllProfilesTest = MediaAppIntegrationTest;
@@ -105,6 +136,18 @@ content::WebContents* PrepareActiveBrowserForTest() {
       app_browser->tab_strip_model()->GetActiveWebContents();
   PrepareAppForTest(web_ui);
   return web_ui;
+}
+
+// Waits for a promise that resolves with the audio track title, once a <div>
+// element with title track information appears in the light DOM.
+content::EvalJsResult WaitForAudioTrackTitle(content::WebContents* web_ui) {
+  constexpr char kScript[] = R"(
+      (async function waitForAudioTrackTitle() {
+        return (await waitForNode('div.title')).innerText;
+      })();
+  )";
+
+  return MediaAppUiBrowserTest::EvalJsInAppFrame(web_ui, kScript);
 }
 
 // Waits for a promise that resolves with image dimensions, once an <img>
@@ -153,51 +196,89 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaApp) {
 
 // Test that the MediaApp successfully loads a file passed in on its launch
 // params. This exercises only web_applications logic.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
+void MediaAppIntegrationTest::MediaAppLaunchWithFile(bool audio_enabled) {
   WaitForTestSystemAppInstall();
+  // Launch the App for the first time.
   content::WebContents* app = LaunchAppWithFile(web_app::SystemAppType::MEDIA,
                                                 TestFile(kFilePng800x600));
+  Browser* first_browser = chrome::FindBrowserWithActiveWindow();
   PrepareAppForTest(app);
 
   EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
 
-  // Relaunch with a different file. This currently re-uses the existing window,
-  // so we don't wait for page load here.
-  LaunchAppWithFileWithoutWaiting(web_app::SystemAppType::MEDIA,
-                                  TestFile(kFileJpeg640x480));
+  // Launch with a different file.
+  if (audio_enabled) {
+    // Open file in new window.
+    app = LaunchAppWithFile(web_app::SystemAppType::MEDIA,
+                            TestFile(kFileJpeg640x480));
+  } else {
+    // Open file in same window.
+    LaunchAppWithFileWithoutWaiting(web_app::SystemAppType::MEDIA,
+                                    TestFile(kFileJpeg640x480));
+  }
+  Browser* second_browser = chrome::FindBrowserWithActiveWindow();
+  PrepareAppForTest(app);
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
+  if (audio_enabled) {
+    EXPECT_NE(first_browser, second_browser);
+  } else {
+    EXPECT_EQ(first_browser, second_browser);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
+                       MediaAppLaunchWithFile) {
+  MediaAppLaunchWithFile(true);
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioDisabledTest,
+                       MediaAppLaunchWithFile) {
+  MediaAppLaunchWithFile(false);
 }
 
 // Test that the MediaApp successfully loads a file using
 // LaunchSystemWebAppAsync. This exercises high level integration with SWA
 // platform (a different code path than MediaAppLaunchWithFile test).
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
-                       MediaAppWithLaunchSystemWebAppAsync) {
+void MediaAppIntegrationTest::MediaAppWithLaunchSystemWebAppAsync(
+    bool audio_enabled) {
   WaitForTestSystemAppInstall();
-
-  content::WebContents* app;
-
   // Launch the App for the first time.
-  {
-    web_app::SystemAppLaunchParams params;
-    params.launch_paths.push_back(TestFile(kFilePng800x600));
-    web_app::LaunchSystemWebAppAsync(browser()->profile(),
-                                     web_app::SystemAppType::MEDIA, params);
-    web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
-    app = PrepareActiveBrowserForTest();
-    EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
-  }
+  web_app::SystemAppLaunchParams audio_params;
+  audio_params.launch_paths.push_back(TestFile(kFilePng800x600));
+  web_app::LaunchSystemWebAppAsync(browser()->profile(),
+                                   web_app::SystemAppType::MEDIA, audio_params);
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  Browser* first_browser = chrome::FindBrowserWithActiveWindow();
+  content::WebContents* app = PrepareActiveBrowserForTest();
 
-  // Launch the App for the second time. This re-uses the existing window.
-  {
-    web_app::SystemAppLaunchParams params;
-    params.launch_paths.push_back(TestFile(kFileJpeg640x480));
-    web_app::LaunchSystemWebAppAsync(browser()->profile(),
-                                     web_app::SystemAppType::MEDIA, params);
-    web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
-    EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
+  EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
+
+  // Launch the App for the second time.
+  web_app::SystemAppLaunchParams image_params;
+  image_params.launch_paths.push_back(TestFile(kFileJpeg640x480));
+  web_app::LaunchSystemWebAppAsync(browser()->profile(),
+                                   web_app::SystemAppType::MEDIA, image_params);
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  Browser* second_browser = chrome::FindBrowserWithActiveWindow();
+  app = PrepareActiveBrowserForTest();
+
+  EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
+  if (audio_enabled) {
+    EXPECT_NE(first_browser, second_browser);
+  } else {
+    EXPECT_EQ(first_browser, second_browser);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
+                       MediaAppWithLaunchSystemWebAppAsync) {
+  MediaAppWithLaunchSystemWebAppAsync(true);
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioDisabledTest,
+                       MediaAppWithLaunchSystemWebAppAsync) {
+  MediaAppWithLaunchSystemWebAppAsync(false);
 }
 
 // Regression test for b/172881869.
@@ -434,13 +515,29 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 
 // Test that the MediaApp can load RAW files passed on launch params.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, HandleRawFiles) {
   WaitForTestSystemAppInstall();
-  content::WebContents* web_ui =
-      LaunchAppWithFile(web_app::SystemAppType::MEDIA, TestFile(kRaw378x272));
-  PrepareAppForTest(web_ui);
 
-  EXPECT_EQ("378x272", WaitForImageAlt(web_ui, kRaw378x272));
+  // Initialize a folder with 2 RAW images. Note this approach doesn't guarantee
+  // the modification times of the files so, and therefore does not suggest an
+  // ordering to the files of the directory contents. But by having at most two
+  // active files, we can still write a robust test. We load two RAW images so
+  // that the piexif module can load and we can perform an injection to check
+  // that EXIF is respected.
+  file_manager::test::FolderInMyFiles folder(profile());
+  folder.Add({TestFile(kRaw120x160), TestFile(kRaw378x272)});
+  folder.Open(TestFile(kRaw120x160));
+
+  // Window focus changes on ChromeOS are synchronous, so just get the newly
+  // focused window.
+  content::WebContents* web_ui = PrepareActiveBrowserForTest();
+
+  EXPECT_EQ("120x160", WaitForImageAlt(web_ui, kRaw120x160));
+
+  // We load the first file when the app launches, other files in the working
+  // directory are loaded afterwards. Wait for the second load to occur
+  // indicated by being able to navigate.
+  WaitForNavigable(web_ui);
 
   // Loading a raw file will put the RAW loading module into the JS context.
   // Inject a script to manipulate the RAW loader into returning a result that
@@ -458,16 +555,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
   content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
   EXPECT_EQ(true, ExecuteScript(app, kAdd270DegreeRotation));
 
-  // Launch with a file that has a different name to ensure the rotated version
-  // of the file is detected robustly.
-  LaunchAppWithFileWithoutWaiting(web_app::SystemAppType::MEDIA,
-                                  TestFile(kFileJpeg640x480));
-
-  EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
-
-  // Add the handcrafted RAW file to launch params and launch.
-  LaunchAppWithFileWithoutWaiting(web_app::SystemAppType::MEDIA,
-                                  TestFile(kRaw378x272));
+  // Navigate to the next file in the directory.
+  EXPECT_EQ(true, ExecuteScript(web_ui, "advance(1)"));
 
   // Width and height should be swapped now.
   EXPECT_EQ("272x378", WaitForImageAlt(web_ui, kRaw378x272));
@@ -475,14 +564,17 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
 
 // Ensures that chrome://media-app is available as a file task for the ChromeOS
 // file manager and eligible for opening appropriate files / mime types.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
-                       MediaAppEligibleOpenTask) {
-  base::FilePath image_path = TestFile(kFilePng800x600);
-  base::FilePath video_path = TestFile(kFileVideoVP9);
+void MediaAppIntegrationTest::MediaAppEligibleOpenTask(bool audio_enabled) {
+  std::vector<base::FilePath> file_paths;
+  file_paths.push_back(TestFile(kFilePng800x600));
+  file_paths.push_back(TestFile(kFileVideoVP9));
+  if (audio_enabled) {
+    file_paths.push_back(TestFile(kFileAudioOgg));
+  }
 
   WaitForTestSystemAppInstall();
 
-  for (const auto& file_path : {video_path, image_path}) {
+  for (const auto& file_path : file_paths) {
     std::vector<file_manager::file_tasks::FullTaskDescriptor> result =
         file_manager::test::GetTasksForFile(profile(), file_path);
 
@@ -500,6 +592,16 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
     EXPECT_EQ(file_manager::file_tasks::TASK_TYPE_WEB_APP,
               descriptor.task_type);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
+                       MediaAppEligibleOpenTask) {
+  MediaAppEligibleOpenTask(true);
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioDisabledTest,
+                       MediaAppEligibleOpenTask) {
+  MediaAppEligibleOpenTask(false);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
@@ -671,6 +773,48 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromFileManager", 1);
 }
 
+// Ensures both the "audio" and "gallery" flavours of the MediaApp can be
+// launched at the same time when launched via the files app.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
+                       FileOpenCanLaunchBothAudioAndImages) {
+  base::HistogramTester histograms;
+
+  WaitForTestSystemAppInstall();
+
+  file_manager::test::FolderInMyFiles folder(profile());
+  folder.Add({TestFile(kFileJpeg640x480), TestFile(kFileAudioOgg)});
+
+  // Launch with the audio file.
+  EXPECT_EQ(folder.Open(TestFile(kFileAudioOgg)),
+            platform_util::OPEN_SUCCEEDED);
+  Browser* audio_app_browser = chrome::FindBrowserWithActiveWindow();
+  content::WebContents* audio_web_ui =
+      audio_app_browser->tab_strip_model()->GetActiveWebContents();
+  PrepareAppForTest(audio_web_ui);
+
+  // Launch with the image file.
+  EXPECT_EQ(folder.Open(TestFile(kFileJpeg640x480)),
+            platform_util::OPEN_SUCCEEDED);
+  Browser* image_app_browser = chrome::FindBrowserWithActiveWindow();
+  content::WebContents* image_web_ui =
+      image_app_browser->tab_strip_model()->GetActiveWebContents();
+  PrepareAppForTest(image_web_ui);
+
+  EXPECT_NE(image_app_browser, audio_app_browser);
+  EXPECT_TRUE(web_app::IsBrowserForSystemWebApp(image_app_browser,
+                                                SystemAppType::MEDIA));
+  EXPECT_TRUE(web_app::IsBrowserForSystemWebApp(audio_app_browser,
+                                                SystemAppType::MEDIA));
+
+  // Verify that launch params were correctly proceed by the "second" app to
+  // launch.
+  EXPECT_EQ(kFileAudioOgg, WaitForAudioTrackTitle(audio_web_ui));
+  EXPECT_EQ("640x480", WaitForImageAlt(image_web_ui, kFileJpeg640x480));
+
+  // Check the metrics are recorded.
+  histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromFileManager", 2);
+}
+
 // Test that the MediaApp can navigate other files in the directory of a file
 // that was opened, even if those files have changed since launch.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
@@ -831,6 +975,12 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   EXPECT_EQ(1u, folder.files().size());
   EXPECT_EQ("thumbs.db", folder.files()[0].BaseName().value());
 }
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    MediaAppIntegrationAudioEnabledTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    MediaAppIntegrationAudioDisabledTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationTest);

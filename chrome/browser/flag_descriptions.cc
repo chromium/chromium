@@ -4883,13 +4883,13 @@ const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
 
+const char kMediaAppHandlesAudioName[] = "Media App Handles Audio";
+const char kMediaAppHandlesAudioDescription[] =
+    "Enables opening audio files by default in chrome://media-app";
+
 const char kMediaAppHandlesPdfName[] = "Media App Handles PDF";
 const char kMediaAppHandlesPdfDescription[] =
     "Enables opening PDF files by default in chrome://media-app";
-
-const char kMediaAppMultiWindowName[] = "Media App Multi Window";
-const char kMediaAppMultiWindowDescription[] =
-    "Enables opening multiple instances of chrome://media-app";
 
 const char kMeteredShowToggleName[] = "Show Metered Toggle";
 const char kMeteredShowToggleDescription[] =

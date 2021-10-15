@@ -737,13 +737,13 @@ const base::Feature kLockScreenMediaControls{"LockScreenMediaControls",
 const base::Feature kManagedDeviceUIRedesign{"ManagedDeviceUIRedesign",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Whether audio files are opened by default in the ChromeOS media app.
+const base::Feature kMediaAppHandlesAudio{"MediaAppHandlesAudio",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Whether PDF files are opened by default in the ChromeOS media app.
 const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Whether to allow the ChromeOS media app to open with multiple windows.
-const base::Feature kMediaAppMultiWindow{"MediaAppMultiWindow",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables notification of when a microphone-using app is launched while the
 // microphone is muted.

@@ -78,6 +78,16 @@ TaskType GetTaskType(apps::mojom::AppType app_type) {
 const char kImportCrostiniImageHandlerId[] = "import-crostini-image";
 const char kInstallLinuxPackageHandlerId[] = "install-linux-package";
 
+bool IsAudio(const base::FilePath& path) {
+  constexpr const char* kAudioExtensions[] = {".flac", ".m4a",  ".mp3", ".weba",
+                                              ".ogg",  ".opus", ".wav", ".oga"};
+  for (const char* extension : kAudioExtensions) {
+    if (path.MatchesExtension(extension))
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 bool FileHandlerIsEnabled(Profile* profile,
@@ -112,10 +122,13 @@ void FindAppServiceTasks(Profile* profile,
   // permitted at present. See https://crbug.com/1079065.
   bool has_non_native_file = false;
   bool has_pdf_file = false;
+  bool has_audio_file = false;
   for (const auto& entry : entries) {
     if (!has_non_native_file &&
         util::IsUnderNonNativeLocalPath(profile, entry.path))
       has_non_native_file = true;
+    if (!has_audio_file && IsAudio(entry.path))
+      has_audio_file = true;
     if (!has_pdf_file && entry.path.Extension() == ".pdf")
       has_pdf_file = true;
   }
@@ -162,10 +175,13 @@ void FindAppServiceTasks(Profile* profile,
       }
 
       // "Hide" the media app task (i.e. skip the rest of this loop which would
-      // add it as a handler) when the flag to handle PDF is off.
+      // add it as a handler) when the flag to handle PDF or audio is off.
       if (launch_entry.app_id == web_app::kMediaAppId &&
-          !base::FeatureList::IsEnabled(ash::features::kMediaAppHandlesPdf) &&
-          has_pdf_file)
+          ((!base::FeatureList::IsEnabled(ash::features::kMediaAppHandlesPdf) &&
+            has_pdf_file) ||
+           (!base::FeatureList::IsEnabled(
+                ash::features::kMediaAppHandlesAudio) &&
+            has_audio_file)))
         continue;
 
       // Check the origin trial and feature flag for file handling in web apps.
