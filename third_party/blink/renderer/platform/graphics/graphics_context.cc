@@ -72,10 +72,10 @@ namespace {
 SkRect GetRectForTextLine(FloatPoint pt, float width, float stroke_thickness) {
   int thickness = std::max(static_cast<int>(stroke_thickness), 1);
   SkRect r;
-  r.fLeft = WebCoreFloatToSkScalar(pt.X());
+  r.fLeft = WebCoreFloatToSkScalar(pt.x());
   // Avoid anti-aliasing lines. Currently, these are always horizontal.
   // Round to nearest pixel to match text and other content.
-  r.fTop = WebCoreFloatToSkScalar(floorf(pt.Y() + 0.5f));
+  r.fTop = WebCoreFloatToSkScalar(floorf(pt.y() + 0.5f));
   r.fRight = r.fLeft + WebCoreFloatToSkScalar(width);
   r.fBottom = r.fTop + SkIntToScalar(thickness);
   return r;
@@ -84,8 +84,8 @@ SkRect GetRectForTextLine(FloatPoint pt, float width, float stroke_thickness) {
 std::pair<IntPoint, IntPoint> GetPointsForTextLine(FloatPoint pt,
                                                    float width,
                                                    float stroke_thickness) {
-  int y = floorf(pt.Y() + std::max<float>(stroke_thickness / 2.0f, 0.5f));
-  return {IntPoint(pt.X(), y), IntPoint(pt.X() + width, y)};
+  int y = floorf(pt.y() + std::max<float>(stroke_thickness / 2.0f, 0.5f));
+  return {IntPoint(pt.x(), y), IntPoint(pt.x() + width, y)};
 }
 
 Color DarkModeColor(GraphicsContext& context,
@@ -428,30 +428,30 @@ static void EnforceDotsAtEndpoints(GraphicsContext& context,
     if (use_start_dot) {
       SkRect start_dot;
       if (is_vertical_line) {
-        start_dot.setLTRB(p1.X() - width / 2, p1.Y(),
-                          p1.X() + width - width / 2,
-                          p1.Y() + width + start_dot_growth);
-        p1.SetY(p1.Y() + (2 * width + start_line_offset));
+        start_dot.setLTRB(p1.x() - width / 2, p1.y(),
+                          p1.x() + width - width / 2,
+                          p1.y() + width + start_dot_growth);
+        p1.set_y(p1.y() + (2 * width + start_line_offset));
       } else {
-        start_dot.setLTRB(p1.X(), p1.Y() - width / 2,
-                          p1.X() + width + start_dot_growth,
-                          p1.Y() + width - width / 2);
-        p1.SetX(p1.X() + (2 * width + start_line_offset));
+        start_dot.setLTRB(p1.x(), p1.y() - width / 2,
+                          p1.x() + width + start_dot_growth,
+                          p1.y() + width - width / 2);
+        p1.set_x(p1.x() + (2 * width + start_line_offset));
       }
       context.DrawRect(start_dot, fill_flags, auto_dark_mode);
     }
     if (use_end_dot) {
       SkRect end_dot;
       if (is_vertical_line) {
-        end_dot.setLTRB(p2.X() - width / 2, p2.Y() - width - end_dot_growth,
-                        p2.X() + width - width / 2, p2.Y());
+        end_dot.setLTRB(p2.x() - width / 2, p2.y() - width - end_dot_growth,
+                        p2.x() + width - width / 2, p2.y());
         // Be sure to stop drawing before we get to the last dot
-        p2.SetY(p2.Y() - (width + end_dot_growth + 1));
+        p2.set_y(p2.y() - (width + end_dot_growth + 1));
       } else {
-        end_dot.setLTRB(p2.X() - width - end_dot_growth, p2.Y() - width / 2,
-                        p2.X(), p2.Y() + width - width / 2);
+        end_dot.setLTRB(p2.x() - width - end_dot_growth, p2.y() - width / 2,
+                        p2.x(), p2.y() + width - width / 2);
         // Be sure to stop drawing before we get to the last dot
-        p2.SetX(p2.X() - (width + end_dot_growth + 1));
+        p2.set_x(p2.x() - (width + end_dot_growth + 1));
       }
       context.DrawRect(end_dot, fill_flags, auto_dark_mode);
     }
@@ -471,14 +471,14 @@ void GraphicsContext::DrawLine(const IntPoint& point1,
 
   FloatPoint p1 = FloatPoint(point1);
   FloatPoint p2 = FloatPoint(point2);
-  bool is_vertical_line = (p1.X() == p2.X());
+  bool is_vertical_line = (p1.x() == p2.x());
   int width = roundf(StrokeThickness());
 
   // We know these are vertical or horizontal lines, so the length will just
   // be the sum of the displacement component vectors give or take 1 -
   // probably worth the speed up of no square root, which also won't be exact.
   FloatSize disp = p2 - p1;
-  int length = SkScalarRoundToInt(disp.Width() + disp.Height());
+  int length = SkScalarRoundToInt(disp.width() + disp.height());
   const DarkModeFlags flags(this, auto_dark_mode,
                             paint_flags
                                 ? *paint_flags
@@ -501,17 +501,17 @@ void GraphicsContext::DrawLine(const IntPoint& point1,
       // endcaps, producing circles. The endcaps extend beyond the line's
       // endpoints, so move the start and end in.
       if (is_vertical_line) {
-        p1.SetY(p1.Y() + width / 2.f);
-        p2.SetY(p2.Y() - width / 2.f);
+        p1.set_y(p1.y() + width / 2.f);
+        p2.set_y(p2.y() - width / 2.f);
       } else {
-        p1.SetX(p1.X() + width / 2.f);
-        p2.SetX(p2.X() - width / 2.f);
+        p1.set_x(p1.x() + width / 2.f);
+        p2.set_x(p2.x() - width / 2.f);
       }
     }
   }
 
   AdjustLineToPixelBoundaries(p1, p2, width);
-  canvas_->drawLine(p1.X(), p1.Y(), p2.X(), p2.Y(), flags);
+  canvas_->drawLine(p1.x(), p1.y(), p2.x(), p2.y(), flags);
 }
 
 void GraphicsContext::DrawLineForText(const FloatPoint& pt,
@@ -777,7 +777,7 @@ void GraphicsContext::DrawImageRRect(
   DCHECK(dest.IsRenderable());
 
   const FloatRect visible_src =
-      Intersection(src_rect, FloatRect(image->Rect()));
+      IntersectRects(src_rect, FloatRect(image->Rect()));
   if (dest.IsEmpty() || visible_src.IsEmpty())
     return;
 
@@ -836,8 +836,8 @@ cc::PaintFlags::FilterQuality GraphicsContext::ComputeFilterQuality(
     resampling = kInterpolationDefault;
   } else {
     resampling = ComputeInterpolationQuality(
-        SkScalarToFloat(src.Width()), SkScalarToFloat(src.Height()),
-        SkScalarToFloat(dest.Width()), SkScalarToFloat(dest.Height()),
+        SkScalarToFloat(src.width()), SkScalarToFloat(src.height()),
+        SkScalarToFloat(dest.width()), SkScalarToFloat(dest.height()),
         image->CurrentFrameIsComplete());
 
     if (resampling == kInterpolationNone) {
@@ -968,13 +968,12 @@ bool IsSimpleDRRect(const FloatRoundedRect& outer,
                     const FloatRoundedRect& inner) {
   // A DRRect is "simple" (i.e. can be drawn as a rrect stroke) if
   //   1) all sides have the same width
-  const FloatSize stroke_size =
-      inner.Rect().MinXMinYCorner() - outer.Rect().MinXMinYCorner();
+  const FloatSize stroke_size = inner.Rect().origin() - outer.Rect().origin();
   if (!WebCoreFloatNearlyEqual(stroke_size.AspectRatio(), 1) ||
-      !WebCoreFloatNearlyEqual(stroke_size.Width(),
-                               outer.Rect().MaxX() - inner.Rect().MaxX()) ||
-      !WebCoreFloatNearlyEqual(stroke_size.Height(),
-                               outer.Rect().MaxY() - inner.Rect().MaxY())) {
+      !WebCoreFloatNearlyEqual(stroke_size.width(),
+                               outer.Rect().right() - inner.Rect().right()) ||
+      !WebCoreFloatNearlyEqual(stroke_size.height(),
+                               outer.Rect().bottom() - inner.Rect().bottom())) {
     return false;
   }
 
@@ -988,10 +987,10 @@ bool IsSimpleDRRect(const FloatRoundedRect& outer,
     //   2) all corners are isotropic
     // and
     //   3) the inner radii are not constrained
-    return WebCoreFloatNearlyEqual(outer.Width(), outer.Height()) &&
-           WebCoreFloatNearlyEqual(inner.Width(), inner.Height()) &&
-           WebCoreFloatNearlyEqual(outer.Width(),
-                                   inner.Width() + stroke_size.Width());
+    return WebCoreFloatNearlyEqual(outer.width(), outer.height()) &&
+           WebCoreFloatNearlyEqual(inner.width(), inner.height()) &&
+           WebCoreFloatNearlyEqual(outer.width(),
+                                   inner.width() + stroke_size.width());
   };
 
   const auto& o_radii = outer.GetRadii();
@@ -1027,7 +1026,7 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
   }
 
   // We can draw this as a stroked rrect.
-  float stroke_width = inner.Rect().X() - outer.Rect().X();
+  float stroke_width = inner.Rect().x() - outer.Rect().x();
   SkRRect stroke_r_rect = outer;
   stroke_r_rect.inset(stroke_width / 2, stroke_width / 2);
 
@@ -1190,7 +1189,7 @@ void GraphicsContext::SetURLDestinationLocation(const String& name,
   if (paint_preview_tracker_)
     return;
 
-  SkRect rect = SkRect::MakeXYWH(location.X(), location.Y(), 0, 0);
+  SkRect rect = SkRect::MakeXYWH(location.x(), location.y(), 0, 0);
   sk_sp<SkData> sk_name(SkData::MakeWithCString(name.Utf8().c_str()));
   canvas_->Annotate(cc::PaintCanvas::AnnotationType::NAMED_DESTINATION, rect,
                     std::move(sk_name));
@@ -1209,14 +1208,14 @@ void GraphicsContext::AdjustLineToPixelBoundaries(FloatPoint& p1,
   // always true that an even width gave us a perfect position, but an odd width
   // gave us a position that is off by exactly 0.5.
   if (static_cast<int>(stroke_width) % 2) {  // odd
-    if (p1.X() == p2.X()) {
+    if (p1.x() == p2.x()) {
       // We're a vertical line.  Adjust our x.
-      p1.SetX(p1.X() + 0.5f);
-      p2.SetX(p2.X() + 0.5f);
+      p1.set_x(p1.x() + 0.5f);
+      p2.set_x(p2.x() + 0.5f);
     } else {
       // We're a horizontal line. Adjust our y.
-      p1.SetY(p1.Y() + 0.5f);
-      p2.SetY(p2.Y() + 0.5f);
+      p1.set_y(p1.y() + 0.5f);
+      p2.set_y(p2.y() + 0.5f);
     }
   }
 }

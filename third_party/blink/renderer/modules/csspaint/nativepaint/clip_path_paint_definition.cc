@@ -38,7 +38,7 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
       const Vector<double>& offsets,
       const absl::optional<double>& progress,
       cc::PaintWorkletInput::PropertyKeys property_keys)
-      : PaintWorkletInput(container_rect.Size(),
+      : PaintWorkletInput(container_rect.size(),
                           worklet_id,
                           std::move(property_keys)),
         zoom_(zoom),
@@ -382,7 +382,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
           std::move(input_property_keys));
 
   return PaintWorkletDeferredImage::Create(std::move(input),
-                                           reference_box.Size());
+                                           reference_box.size());
 }
 
 void ClipPathPaintDefinition::Trace(Visitor* visitor) const {

@@ -13,7 +13,7 @@ std::ostream& operator<<(std::ostream& ostream, const IntSize& size) {
 }
 
 String IntSize::ToString() const {
-  return String::Format("%dx%d", Width(), Height());
+  return String::Format("%dx%d", width(), height());
 }
 
 }  // namespace blink

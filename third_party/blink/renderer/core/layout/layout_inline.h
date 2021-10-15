@@ -405,7 +405,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   IntRect BorderBoundingBox() const final {
     NOT_DESTROYED();
     IntRect bounding_box = EnclosingIntRect(PhysicalLinesBoundingBox());
-    return IntRect(0, 0, bounding_box.Width(), bounding_box.Height());
+    return IntRect(0, 0, bounding_box.width(), bounding_box.height());
   }
 
   virtual InlineFlowBox* CreateInlineFlowBox();  // Subclassed by SVG and Ruby

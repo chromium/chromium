@@ -223,10 +223,10 @@ void SnapToLinesLayouter::UpdateLayout() {
   IntRect title_area =
       EnclosingIntRect(cue_box_.ContainingBlock()->PhysicalBorderBoxRect());
   if (blink::IsHorizontalWritingMode(writing_mode)) {
-    title_area.Move(0, margin.ToInt());
+    title_area.Offset(0, margin.ToInt());
     title_area.Contract(0, (2 * margin).ToInt());
   } else {
-    title_area.Move(margin.ToInt(), 0);
+    title_area.Offset(margin.ToInt(), 0);
     title_area.Contract((2 * margin).ToInt(), 0);
   }
 
@@ -356,7 +356,7 @@ IntRect LayoutVTTCue::ComputeControlsRect() const {
       To<LayoutBox>(*timeline_layout_object),
       To<LayoutBox>(*controls->ContainerLayoutObject()));
 
-  button_panel_box.Unite(timeline_box);
+  button_panel_box.Union(timeline_box);
   return button_panel_box;
 }
 

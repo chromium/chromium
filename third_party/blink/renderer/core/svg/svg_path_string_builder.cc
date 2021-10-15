@@ -46,8 +46,8 @@ static void AppendBool(StringBuilder& string_builder, bool value) {
 
 static void AppendPoint(StringBuilder& string_builder,
                         const FloatPoint& point) {
-  AppendFloat(string_builder, point.X());
-  AppendFloat(string_builder, point.Y());
+  AppendFloat(string_builder, point.x());
+  AppendFloat(string_builder, point.y());
 }
 
 // TODO(fs): Centralized location for this (SVGPathSeg.h?)
@@ -90,11 +90,11 @@ void SVGPathStringBuilder::EmitSegment(const PathSegmentData& segment) {
       break;
     case kPathSegLineToHorizontalRel:
     case kPathSegLineToHorizontalAbs:
-      AppendFloat(string_builder_, segment.target_point.X());
+      AppendFloat(string_builder_, segment.target_point.x());
       break;
     case kPathSegLineToVerticalRel:
     case kPathSegLineToVerticalAbs:
-      AppendFloat(string_builder_, segment.target_point.Y());
+      AppendFloat(string_builder_, segment.target_point.y());
       break;
     case kPathSegClosePath:
       break;
@@ -117,7 +117,7 @@ void SVGPathStringBuilder::EmitSegment(const PathSegmentData& segment) {
     case kPathSegArcRel:
     case kPathSegArcAbs:
       AppendPoint(string_builder_, segment.point1);
-      AppendFloat(string_builder_, segment.point2.X());
+      AppendFloat(string_builder_, segment.point2.x());
       AppendBool(string_builder_, segment.arc_large);
       AppendBool(string_builder_, segment.arc_sweep);
       AppendPoint(string_builder_, segment.target_point);

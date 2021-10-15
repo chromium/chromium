@@ -84,10 +84,10 @@ class PLATFORM_EXPORT VertexPair {
   virtual const FloatPoint& Vertex1() const = 0;
   virtual const FloatPoint& Vertex2() const = 0;
 
-  float MinX() const { return std::min(Vertex1().X(), Vertex2().X()); }
-  float MinY() const { return std::min(Vertex1().Y(), Vertex2().Y()); }
-  float MaxX() const { return std::max(Vertex1().X(), Vertex2().X()); }
-  float MaxY() const { return std::max(Vertex1().Y(), Vertex2().Y()); }
+  float MinX() const { return std::min(Vertex1().x(), Vertex2().x()); }
+  float MinY() const { return std::min(Vertex1().y(), Vertex2().y()); }
+  float MaxX() const { return std::max(Vertex1().x(), Vertex2().x()); }
+  float MaxY() const { return std::max(Vertex1().y(), Vertex2().y()); }
 
   bool Intersection(const VertexPair&, FloatPoint&) const;
 };
@@ -144,9 +144,9 @@ template <>
 struct ValueToString<blink::FloatPolygonEdge*> {
   STATIC_ONLY(ValueToString);
   static String ToString(const blink::FloatPolygonEdge* edge) {
-    return String::Format("%p (%f,%f %f,%f)", edge, edge->Vertex1().X(),
-                          edge->Vertex1().Y(), edge->Vertex2().X(),
-                          edge->Vertex2().Y());
+    return String::Format("%p (%f,%f %f,%f)", edge, edge->Vertex1().x(),
+                          edge->Vertex1().y(), edge->Vertex2().x(),
+                          edge->Vertex2().y());
   }
 };
 #endif

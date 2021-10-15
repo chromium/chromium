@@ -134,8 +134,8 @@ VideoFrameMetadata* WebGLVideoTexture::shareVideoImageWEBGL(
   current_frame_metadata_->setExpectedDisplayTime(
       metadata.expected_timestamp.InMicrosecondsF());
 
-  current_frame_metadata_->setWidth(metadata.visible_rect.Width());
-  current_frame_metadata_->setHeight(metadata.visible_rect.Height());
+  current_frame_metadata_->setWidth(metadata.visible_rect.width());
+  current_frame_metadata_->setHeight(metadata.visible_rect.height());
   current_frame_metadata_->setMediaTime(metadata.timestamp.InSecondsF());
 
   // This is a required field. It is supposed to be monotonically increasing for

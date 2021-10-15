@@ -254,7 +254,7 @@ float AdjustEndAngle(float start_angle, float end_angle, bool anticlockwise) {
 }
 
 inline void LineToFloatPoint(CanvasPath* path, const FloatPoint& p) {
-  path->lineTo(p.X(), p.Y());
+  path->lineTo(p.x(), p.y());
 }
 
 inline FloatPoint GetPointOnEllipse(float radius_x,

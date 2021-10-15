@@ -161,7 +161,7 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
     // because the offset has been baked into ReplacedContentTransform.
     if (!fragment_data.PaintProperties() ||
         !fragment_data.PaintProperties()->ReplacedContentTransform()) {
-      offset = main_graphics_layer->ContentsRect().Location() +
+      offset = main_graphics_layer->ContentsRect().origin() +
                main_graphics_layer->GetOffsetFromTransformNode();
     }
     main_graphics_layer->SetContentsLayerState(

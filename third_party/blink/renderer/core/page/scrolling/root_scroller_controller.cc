@@ -67,11 +67,11 @@ bool FillsViewport(const Element& element) {
   IntSize controls_hidden_size = ExpandedIntSize(
       top_document.View()->ViewportSizeForViewportUnits().ScaledBy(zoom));
 
-  if (bounding_box.Size() != icb_size &&
-      bounding_box.Size() != controls_hidden_size)
+  if (bounding_box.size() != icb_size &&
+      bounding_box.size() != controls_hidden_size)
     return false;
 
-  return bounding_box.Location() == IntPoint::Zero();
+  return bounding_box.origin() == IntPoint::Zero();
 }
 
 // If the element is an iframe this grabs the ScrollableArea for the owned

@@ -292,7 +292,7 @@ class ChromePrintContext : public PrintContext {
 
   virtual float GetPageShrink(uint32_t page_number) const {
     IntRect page_rect = page_rects_[page_number];
-    return printed_page_width_ / page_rect.Width();
+    return printed_page_width_ / page_rect.width();
   }
 
   float SpoolSinglePage(cc::PaintCanvas* canvas, int page_number) {
@@ -335,8 +335,8 @@ class ChromePrintContext : public PrintContext {
 
     ComputePageRects(page_size_in_pixels);
 
-    FloatRect all_pages_rect(0, 0, spool_size_in_pixels.Width(),
-                             spool_size_in_pixels.Height());
+    FloatRect all_pages_rect(0, 0, spool_size_in_pixels.width(),
+                             spool_size_in_pixels.height());
 
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
     GraphicsContext& context = builder->Context();
@@ -357,7 +357,7 @@ class ChromePrintContext : public PrintContext {
         context.SetStrokeColor(Color(0, 0, 255));
         context.DrawLine(
             IntPoint(0, current_height - 1),
-            IntPoint(spool_size_in_pixels.Width(), current_height - 1),
+            IntPoint(spool_size_in_pixels.width(), current_height - 1),
             AutoDarkMode::Disabled());
         context.Restore();
       }
@@ -368,17 +368,17 @@ class ChromePrintContext : public PrintContext {
       WebPrintPageDescription description;
       GetFrame()->GetDocument()->GetPageDescription(page_index, &description);
       if (description.orientation == PageOrientation::kUpright) {
-        current_height += page_size_in_pixels.Height() + 1;
+        current_height += page_size_in_pixels.height() + 1;
       } else {
         if (description.orientation == PageOrientation::kRotateRight) {
-          transform.Translate(page_size_in_pixels.Height(), 0);
+          transform.Translate(page_size_in_pixels.height(), 0);
           transform.Rotate(90);
         } else {
           DCHECK_EQ(description.orientation, PageOrientation::kRotateLeft);
-          transform.Translate(0, page_size_in_pixels.Width());
+          transform.Translate(0, page_size_in_pixels.width());
           transform.Rotate(-90);
         }
-        current_height += page_size_in_pixels.Width() + 1;
+        current_height += page_size_in_pixels.width() + 1;
       }
 
 #if defined(OS_WIN) || defined(OS_MAC)
@@ -406,14 +406,14 @@ class ChromePrintContext : public PrintContext {
   // do the scaling and ignore the return value.
   virtual float SpoolPage(GraphicsContext& context, int page_number) {
     IntRect page_rect = page_rects_[page_number];
-    float scale = printed_page_width_ / page_rect.Width();
+    float scale = printed_page_width_ / page_rect.width();
 
     AffineTransform transform;
 #if defined(OS_POSIX) && !defined(OS_MAC)
     transform.Scale(scale);
 #endif
-    transform.Translate(static_cast<float>(-page_rect.X()),
-                        static_cast<float>(-page_rect.Y()));
+    transform.Translate(static_cast<float>(-page_rect.x()),
+                        static_cast<float>(-page_rect.y()));
     context.Save();
     context.ConcatCTM(transform);
     context.ClipRect(page_rect);
@@ -785,7 +785,7 @@ gfx::Size WebLocalFrameImpl::DocumentSize() const {
 
   return ToGfxSize(
       PixelSnappedIntRect(GetFrameView()->GetLayoutView()->DocumentRect())
-          .Size());
+          .size());
 }
 
 bool WebLocalFrameImpl::HasVisibleContent() const {
@@ -1710,7 +1710,7 @@ uint32_t WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
   }
 
   FloatSize size(print_params.print_content_area.size());
-  print_context_->BeginPrintMode(size.Width(), size.Height());
+  print_context_->BeginPrintMode(size.width(), size.height());
   print_context_->ComputePageRects(size);
 
   return print_context_->PageCount();

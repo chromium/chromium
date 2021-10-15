@@ -479,10 +479,10 @@ PhysicalRect ShapeOutsideInfo::ComputedShapePhysicalBoundingBox() const {
 }
 
 FloatPoint ShapeOutsideInfo::ShapeToLayoutObjectPoint(FloatPoint point) const {
-  FloatPoint result = FloatPoint(point.X() + LogicalLeftOffset(),
-                                 point.Y() + LogicalTopOffset());
+  FloatPoint result = FloatPoint(point.x() + LogicalLeftOffset(),
+                                 point.y() + LogicalTopOffset());
   if (layout_box_->StyleRef().IsFlippedBlocksWritingMode())
-    result.SetY(layout_box_->LogicalHeight() - result.Y());
+    result.set_y(layout_box_->LogicalHeight() - result.y());
   if (!layout_box_->StyleRef().IsHorizontalWritingMode())
     result = result.TransposedPoint();
   return result;

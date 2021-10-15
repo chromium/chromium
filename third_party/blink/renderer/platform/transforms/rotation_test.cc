@@ -13,9 +13,9 @@ const double kAngleTolerance = 1e-4;
 
 #define EXPECT_AXIS(expected, actual)                      \
   do {                                                     \
-    EXPECT_NEAR(expected.X(), actual.X(), kAxisTolerance); \
-    EXPECT_NEAR(expected.Y(), actual.Y(), kAxisTolerance); \
-    EXPECT_NEAR(expected.Z(), actual.Z(), kAxisTolerance); \
+    EXPECT_NEAR(expected.x(), actual.x(), kAxisTolerance); \
+    EXPECT_NEAR(expected.y(), actual.y(), kAxisTolerance); \
+    EXPECT_NEAR(expected.z(), actual.z(), kAxisTolerance); \
   } while (false)
 
 #define EXPECT_ANGLE(expected, actual) \

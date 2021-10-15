@@ -188,7 +188,7 @@ GrDirectContext* CanvasResource::GetGrContext() const {
 
 SkImageInfo CanvasResource::CreateSkImageInfo() const {
   return SkImageInfo::Make(
-      Size().Width(), Size().Height(), ColorParams().GetSkColorType(),
+      Size().width(), Size().height(), ColorParams().GetSkColorType(),
       ColorParams().GetSkAlphaType(), ColorParams().GetSkColorSpace());
 }
 
@@ -245,7 +245,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
   // canvas resource that owns the shared memory stays alive at least until
   // the SkImage is destroyed.
   SkImageInfo image_info = SkImageInfo::Make(
-      Size().Width(), Size().Height(), ColorParams().GetSkColorType(),
+      Size().width(), Size().height(), ColorParams().GetSkColorType(),
       ColorParams().GetSkAlphaType(), ColorParams().GetSkColorSpace());
   SkPixmap pixmap(image_info, shared_mapping_.memory(),
                   image_info.minRowBytes());
@@ -300,7 +300,7 @@ bool CanvasResourceSharedBitmap::HasGpuMailbox() const {
 
 void CanvasResourceSharedBitmap::TakeSkImage(sk_sp<SkImage> image) {
   SkImageInfo image_info = SkImageInfo::Make(
-      Size().Width(), Size().Height(), ColorParams().GetSkColorType(),
+      Size().width(), Size().height(), ColorParams().GetSkColorType(),
       ColorParams().GetSkAlphaType(), ColorParams().GetSkColorSpace());
 
   bool read_pixels_successful = image->readPixels(
@@ -488,7 +488,7 @@ GrBackendTexture CanvasResourceRasterSharedImage::CreateGrTexture() const {
   texture_info.fID = GetTextureIdForWriteAccess();
   texture_info.fTarget = TextureTarget();
   texture_info.fFormat = ColorParams().GLSizedInternalFormat();
-  return GrBackendTexture(Size().Width(), Size().Height(), GrMipMapped::kNo,
+  return GrBackendTexture(Size().width(), Size().height(), GrMipMapped::kNo,
                           texture_info);
 }
 
@@ -876,7 +876,7 @@ GrBackendTexture CanvasResourceSkiaDawnSharedImage::CreateGrTexture() const {
   info.fFormat = wgpu::TextureFormat::RGBA8Unorm;
 #endif
   info.fLevelCount = 1;
-  return GrBackendTexture(Size().Width(), Size().Height(), info);
+  return GrBackendTexture(Size().width(), Size().height(), info);
 }
 
 void CanvasResourceSkiaDawnSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
@@ -1189,7 +1189,7 @@ void CanvasResourceSwapChain::TakeSkImage(sk_sp<SkImage> image) {
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
   SkImageInfo image_info = SkImageInfo::Make(
-      Size().Width(), Size().Height(), ColorParams().GetSkColorType(),
+      Size().width(), Size().height(), ColorParams().GetSkColorType(),
       ColorParams().GetSkAlphaType(), ColorParams().GetSkColorSpace());
 
   // It's safe to share the back buffer texture id if we're on the same thread
@@ -1282,8 +1282,8 @@ void CanvasResourceSwapChain::PresentSwapChain() {
   // copied into the back buffer to support a retained mode like canvas expects.
   // The wait sync token ensure that the present executes before we do the copy.
   raster_interface->CopySubTexture(front_buffer_mailbox_, back_buffer_mailbox_,
-                                   GL_TEXTURE_2D, 0, 0, 0, 0, size_.Width(),
-                                   size_.Height(), false /* unpack_flip_y */,
+                                   GL_TEXTURE_2D, 0, 0, 0, 0, size_.width(),
+                                   size_.height(), false /* unpack_flip_y */,
                                    false /* unpack_premultiply_alpha */);
   // Don't generate sync token here so that the copy is not on critical path.
 }

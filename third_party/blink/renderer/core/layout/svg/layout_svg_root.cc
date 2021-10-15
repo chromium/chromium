@@ -91,7 +91,7 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
   if (!intrinsic_sizing_info.size.IsEmpty()) {
     intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
   } else {
-    FloatSize view_box_size = svg->viewBox()->CurrentValue()->Value().Size();
+    FloatSize view_box_size = svg->viewBox()->CurrentValue()->Value().size();
     if (!view_box_size.IsEmpty()) {
       // The viewBox can only yield an intrinsic ratio, not an intrinsic size.
       intrinsic_sizing_info.aspect_ratio = view_box_size;
@@ -102,8 +102,8 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
       (ar_type == EAspectRatioType::kAutoAndRatio &&
        intrinsic_sizing_info.aspect_ratio.IsEmpty())) {
     FloatSize aspect_ratio = StyleRef().AspectRatio().GetRatio();
-    intrinsic_sizing_info.aspect_ratio.SetWidth(aspect_ratio.Width());
-    intrinsic_sizing_info.aspect_ratio.SetHeight(aspect_ratio.Height());
+    intrinsic_sizing_info.aspect_ratio.set_width(aspect_ratio.width());
+    intrinsic_sizing_info.aspect_ratio.set_height(aspect_ratio.height());
   }
 
   if (!IsHorizontalWritingMode())
@@ -499,8 +499,8 @@ SVGTransformChange LayoutSVGRoot::BuildLocalToBorderBoxTransform() {
   LayoutSize border_and_padding(BorderLeft() + PaddingLeft(),
                                 BorderTop() + PaddingTop());
   AffineTransform view_to_border_box_transform(
-      scale, 0, 0, scale, border_and_padding.Width() + translate.X(),
-      border_and_padding.Height() + translate.Y());
+      scale, 0, 0, scale, border_and_padding.Width() + translate.x(),
+      border_and_padding.Height() + translate.y());
   view_to_border_box_transform.Scale(svg->currentScale());
   local_to_border_box_transform_.PreMultiply(view_to_border_box_transform);
   return change_detector.ComputeChange(local_to_border_box_transform_);

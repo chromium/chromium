@@ -345,8 +345,8 @@ TEST_F(DeferredImageDecoderTest, decodedSize) {
   lazy_decoder_->SetData(data_, true /* all_data_received */);
   PaintImage image = CreatePaintImage();
   ASSERT_TRUE(image);
-  EXPECT_EQ(decoded_size_.Width(), image.width());
-  EXPECT_EQ(decoded_size_.Height(), image.height());
+  EXPECT_EQ(decoded_size_.width(), image.width());
+  EXPECT_EQ(decoded_size_.height(), image.height());
 
   UseMockImageDecoderFactory();
 

@@ -158,13 +158,13 @@ class LinkSelectionTest : public LinkSelectionTestBase {
         *document, link_to_select, 5, link_to_select, 16);
 
     const auto& selection_rect = range_to_select->BoundingBox();
-    const auto& selection_rect_center_y = selection_rect.Center().Y();
-    left_point_in_link_ = selection_rect.MinXMinYCorner();
-    left_point_in_link_.SetY(selection_rect_center_y);
+    const auto& selection_rect_center_y = selection_rect.CenterPoint().y();
+    left_point_in_link_ = selection_rect.origin();
+    left_point_in_link_.set_y(selection_rect_center_y);
 
-    right_point_in_link_ = selection_rect.MaxXMinYCorner();
-    right_point_in_link_.SetY(selection_rect_center_y);
-    right_point_in_link_.Move(-2, 0);
+    right_point_in_link_ = selection_rect.top_right();
+    right_point_in_link_.set_y(selection_rect_center_y);
+    right_point_in_link_.Offset(-2, 0);
   }
 
   void TearDown() override {
@@ -261,8 +261,8 @@ TEST_F(LinkSelectionTest, SingleClickWithAltStartsDownloadWhenTextSelected) {
   const auto* range_to_select = MakeGarbageCollected<Range>(
       *document, text_to_select, 1, text_to_select, 20);
   const auto& selection_rect = range_to_select->BoundingBox();
-  main_frame_->MoveRangeSelection(ToGfxPoint(selection_rect.MinXMinYCorner()),
-                                  ToGfxPoint(selection_rect.MaxXMaxYCorner()));
+  main_frame_->MoveRangeSelection(ToGfxPoint(selection_rect.origin()),
+                                  ToGfxPoint(selection_rect.bottom_right()));
   EXPECT_FALSE(GetSelectionText().IsEmpty());
 
   EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,
@@ -319,8 +319,8 @@ class LinkSelectionClickEventsTest : public LinkSelectionTestBase {
 
     const auto& elem_bounds = element.BoundsInViewport();
     const int click_count = double_click_event ? 2 : 1;
-    EmulateMouseClick(elem_bounds.Center(), WebMouseEvent::Button::kLeft, 0,
-                      click_count);
+    EmulateMouseClick(elem_bounds.CenterPoint(), WebMouseEvent::Button::kLeft,
+                      0, click_count);
 
     if (double_click_event) {
       EXPECT_EQ(element.innerText().IsEmpty(), GetSelectionText().IsEmpty());

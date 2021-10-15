@@ -120,14 +120,14 @@ LayoutUnit ValueForLength(const Length& length, LayoutUnit maximum_value) {
 FloatSize FloatSizeForLengthSize(const LengthSize& length_size,
                                  const FloatSize& box_size) {
   return FloatSize(
-      FloatValueForLength(length_size.Width(), box_size.Width()),
-      FloatValueForLength(length_size.Height(), box_size.Height()));
+      FloatValueForLength(length_size.Width(), box_size.width()),
+      FloatValueForLength(length_size.Height(), box_size.height()));
 }
 
 FloatPoint FloatPointForLengthPoint(const LengthPoint& length_point,
                                     const FloatSize& box_size) {
-  return FloatPoint(FloatValueForLength(length_point.X(), box_size.Width()),
-                    FloatValueForLength(length_point.Y(), box_size.Height()));
+  return FloatPoint(FloatValueForLength(length_point.X(), box_size.width()),
+                    FloatValueForLength(length_point.Y(), box_size.height()));
 }
 
 }  // namespace blink

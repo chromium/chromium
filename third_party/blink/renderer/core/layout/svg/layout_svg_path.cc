@@ -111,12 +111,12 @@ void LayoutSVGPath::UpdateMarkers() {
   for (const auto& position : marker_positions_) {
     if (LayoutSVGResourceMarker* marker =
             position.SelectMarker(marker_start, marker_mid, marker_end)) {
-      boundaries.Unite(marker->MarkerBoundaries(
+      boundaries.Union(marker->MarkerBoundaries(
           marker->MarkerTransformation(position, stroke_width)));
     }
   }
 
-  stroke_bounding_box_.Unite(boundaries);
+  stroke_bounding_box_.Union(boundaries);
 }
 
 }  // namespace blink

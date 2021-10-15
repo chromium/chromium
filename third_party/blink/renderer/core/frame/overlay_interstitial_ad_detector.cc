@@ -111,8 +111,8 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   if (main_frame->View()->HasDominantVideoElement())
     return;
 
-  HitTestLocation location(DoublePoint(main_frame_size.Width() / 2.0,
-                                       main_frame_size.Height() / 2.0));
+  HitTestLocation location(DoublePoint(main_frame_size.width() / 2.0,
+                                       main_frame_size.height() / 2.0));
   HitTestResult result;
   main_frame->ContentLayoutObject()->HitTestNoLifecycleUpdate(location, result);
 
@@ -144,7 +144,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
     // If the main frame scrolling offset hasn't changed since the candidate's
     // appearance, we consider it to be a overlay interstitial; otherwise, we
     // skip that candidate because it could be a parallax/scroller ad.
-    if (main_frame->GetMainFrameScrollOffset().Y() ==
+    if (main_frame->GetMainFrameScrollOffset().y() ==
         candidate_start_main_frame_scroll_offset_) {
       OnPopupDetected(main_frame, candidate_is_ad_);
     }
@@ -176,7 +176,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   IntRect overlay_rect = element->GetLayoutObject()->AbsoluteBoundingBoxRect();
 
   bool is_large =
-      (overlay_rect.Size().Area() >
+      (overlay_rect.size().Area() >
        main_frame_size.Area() * kLargeAdSizeToViewportSizeThreshold);
 
   bool has_gesture = LocalFrame::HasTransientUserActivation(main_frame);
@@ -197,7 +197,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
     candidate_id_ = element_id;
     candidate_is_ad_ = is_ad;
     candidate_start_main_frame_scroll_offset_ =
-        main_frame->GetMainFrameScrollOffset().Y();
+        main_frame->GetMainFrameScrollOffset().y();
   } else {
     last_unqualified_element_id_ = element_id;
   }

@@ -15,11 +15,11 @@ std::ostream& operator<<(std::ostream& ostream, const IntPoint& point) {
 }
 
 String IntPoint::ToString() const {
-  return String::Format("%d,%d", X(), Y());
+  return String::Format("%d,%d", x(), y());
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const IntPoint& p) {
-  return ts << "(" << p.X() << "," << p.Y() << ")";
+  return ts << "(" << p.x() << "," << p.y() << ")";
 }
 
 }  // namespace blink

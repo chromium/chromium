@@ -95,8 +95,8 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
 
 void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
     std::unique_ptr<CanvasResourceProvider> resource_provider) {
-  int resource_size = resource_provider->Size().Width() *
-                      resource_provider->Size().Height() *
+  int resource_size = resource_provider->Size().width() *
+                      resource_provider->Size().height() *
                       resource_provider->ColorParams().BytesPerPixel();
   if (context_provider_) {
     total_unused_resources_in_bytes_ += resource_size;

@@ -43,7 +43,7 @@ namespace blink {
 typedef FloatSize ScrollOffset;
 
 inline ScrollOffset ToScrollOffset(const FloatPoint& p) {
-  return ScrollOffset(p.X(), p.Y());
+  return ScrollOffset(p.x(), p.y());
 }
 
 inline ScrollOffset ToScrollOffset(const gfx::PointF& p) {

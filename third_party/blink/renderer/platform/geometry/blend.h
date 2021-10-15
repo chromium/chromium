@@ -43,15 +43,15 @@ inline LayoutUnit Blend(LayoutUnit from, LayoutUnit to, double progress) {
 inline IntPoint Blend(const IntPoint& from,
                       const IntPoint& to,
                       double progress) {
-  return IntPoint(Blend(from.X(), to.X(), progress),
-                  Blend(from.Y(), to.Y(), progress));
+  return IntPoint(Blend(from.x(), to.x(), progress),
+                  Blend(from.y(), to.y(), progress));
 }
 
 inline FloatPoint Blend(const FloatPoint& from,
                         const FloatPoint& to,
                         double progress) {
-  return FloatPoint(Blend(from.X(), to.X(), progress),
-                    Blend(from.Y(), to.Y(), progress));
+  return FloatPoint(Blend(from.x(), to.x(), progress),
+                    Blend(from.y(), to.y(), progress));
 }
 
 }  // namespace blink

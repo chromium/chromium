@@ -1138,7 +1138,7 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
     run->glyph_data_.SetOffsetAt(i, offset);
 
     total_advance += advance;
-    has_vertical_offsets |= (offset.Height() != 0);
+    has_vertical_offsets |= (offset.height() != 0);
   }
 
   run->width_ = std::max(0.0f, total_advance);
@@ -1594,7 +1594,7 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForStretchyMathOperator(
         GlyphOffset glyph_offset(
             0, -assembly_parameters.stretch_size + part.full_advance);
         run->glyph_data_.SetOffsetAt(glyph_index, glyph_offset);
-        result->has_vertical_offsets_ |= (glyph_offset.Height() != 0);
+        result->has_vertical_offsets_ |= (glyph_offset.height() != 0);
       }
       part_index++;
     }
@@ -1967,7 +1967,7 @@ void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
 
   if (!is_horizontal_run)
     bounds.ConvertVerticalRunToLogical(current_font_data.GetFontMetrics());
-  ink_bounds->Unite(bounds.bounds);
+  ink_bounds->Union(bounds.bounds);
 }
 
 FloatRect ShapeResult::ComputeInkBounds() const {

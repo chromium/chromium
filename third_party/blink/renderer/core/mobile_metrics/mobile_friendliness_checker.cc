@@ -187,11 +187,11 @@ int ExtractAndCountAllTapTargets(
         object = object->NextInPreOrder();
         continue;
       }
-      const int top = ClampTo<int>(rect.Y() - finger_radius + scroll_offset);
+      const int top = ClampTo<int>(rect.y() - finger_radius + scroll_offset);
       const int bottom =
-          ClampTo<int>(rect.MaxY() + finger_radius + scroll_offset);
-      const int left = ClampTo<int>(rect.X() - finger_radius);
-      const int right = ClampTo<int>(rect.MaxX() + finger_radius);
+          ClampTo<int>(rect.bottom() + finger_radius + scroll_offset);
+      const int left = ClampTo<int>(rect.x() - finger_radius);
+      const int right = ClampTo<int>(rect.right() + finger_radius);
       const int center = right / 2 + left / 2;
       if (top > max_height) {
         break;
@@ -301,7 +301,7 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
 
   // This is like DOMWindow::scrollY() but without layout update.
   const int scroll_y = AdjustForAbsoluteZoom::AdjustScroll(
-      frame_view_->LayoutViewport()->GetScrollOffset().Height(),
+      frame_view_->LayoutViewport()->GetScrollOffset().height(),
       frame_view_->GetFrame().PageZoomFactor());
   const int screen_height =
       frame_view_->LayoutViewport()->GetLayoutBox()->Size().Height().ToInt();
@@ -435,7 +435,7 @@ void MobileFriendlinessChecker::ComputeSmallTextRatio(
 }
 
 int MobileFriendlinessChecker::ComputeContentOutsideViewport() {
-  int frame_width = frame_view_->GetPage()->GetVisualViewport().Size().Width();
+  int frame_width = frame_view_->GetPage()->GetVisualViewport().Size().width();
   if (frame_width == 0) {
     return 0;
   }
@@ -450,7 +450,7 @@ int MobileFriendlinessChecker::ComputeContentOutsideViewport() {
                              .FinalConstraints()
                              .initial_scale;
   int content_width =
-      root_frame_viewport->LayoutViewport().ContentsSize().Width() *
+      root_frame_viewport->LayoutViewport().ContentsSize().width() *
       initial_scale;
   int max_scroll_offset = content_width - frame_width;
 

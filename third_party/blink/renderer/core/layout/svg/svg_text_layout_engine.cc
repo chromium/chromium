@@ -60,11 +60,11 @@ SVGTextLayoutEngine::~SVGTextLayoutEngine() = default;
 bool SVGTextLayoutEngine::SetCurrentTextPosition(const SVGCharacterData& data) {
   bool has_x = data.HasX();
   if (has_x)
-    text_position_.SetX(data.x);
+    text_position_.set_x(data.x);
 
   bool has_y = data.HasY();
   if (has_y)
-    text_position_.SetY(data.y);
+    text_position_.set_y(data.y);
 
   // If there's an absolute x/y position available, it marks the beginning of
   // a new position along the path.
@@ -92,9 +92,9 @@ void SVGTextLayoutEngine::AdvanceCurrentTextPosition(float glyph_advance) {
   // TODO(fs): m_textPathCurrentOffset should preferably also be updated
   // here, but that requires a bit more untangling yet.
   if (is_vertical_text_)
-    text_position_.SetY(text_position_.Y() + glyph_advance);
+    text_position_.set_y(text_position_.y() + glyph_advance);
   else
-    text_position_.SetX(text_position_.X() + glyph_advance);
+    text_position_.set_x(text_position_.x() + glyph_advance);
 }
 
 bool SVGTextLayoutEngine::ApplyRelativePositionAdjustmentsIfNeeded(
@@ -102,11 +102,11 @@ bool SVGTextLayoutEngine::ApplyRelativePositionAdjustmentsIfNeeded(
   FloatPoint delta;
   bool has_dx = data.HasDx();
   if (has_dx)
-    delta.SetX(data.dx);
+    delta.set_x(data.dx);
 
   bool has_dy = data.HasDy();
   if (has_dy)
-    delta.SetY(data.dy);
+    delta.set_y(data.dy);
 
   // Apply dx/dy value adjustments to current text position, if needed.
   text_position_.MoveBy(delta);
@@ -115,8 +115,8 @@ bool SVGTextLayoutEngine::ApplyRelativePositionAdjustmentsIfNeeded(
     if (is_vertical_text_)
       delta = delta.TransposedPoint();
 
-    text_path_current_offset_ += delta.X();
-    text_path_displacement_ += delta.Y();
+    text_path_current_offset_ += delta.x();
+    text_path_displacement_ += delta.y();
   }
   return has_dx || has_dy;
 }
@@ -395,9 +395,9 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
       is_vertical_text_, text_line_layout);
   FloatPoint baseline_shift;
   if (is_vertical_text_)
-    baseline_shift.SetX(baseline_shift_value);
+    baseline_shift.set_x(baseline_shift_value);
   else
-    baseline_shift.SetY(-baseline_shift_value);
+    baseline_shift.set_y(-baseline_shift_value);
 
   // Main layout algorithm.
   const unsigned box_end_offset = text_box->Start() + text_box->Len();
@@ -458,7 +458,8 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
     if (in_path_layout_) {
       float scaled_glyph_advance = glyph_advance * text_path_scaling_;
       // Setup translations that move to the glyph midpoint.
-      text_path_shift.Set(-scaled_glyph_advance / 2, text_path_displacement_);
+      text_path_shift.SetPoint(-scaled_glyph_advance / 2,
+                               text_path_displacement_);
       if (is_vertical_text_)
         text_path_shift = text_path_shift.TransposedPoint();
       text_path_shift += baseline_shift;
@@ -522,16 +523,16 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
           visual_metrics_iterator_.CharacterOffset();
       current_text_fragment_.metrics_list_offset =
           visual_metrics_iterator_.MetricsListOffset();
-      current_text_fragment_.x = position.point.X();
-      current_text_fragment_.y = position.point.Y();
+      current_text_fragment_.x = position.point.x();
+      current_text_fragment_.y = position.point.y();
 
       // Build fragment transformation.
       if (position.tangent_in_degrees)
         current_text_fragment_.transform.Rotate(position.tangent_in_degrees);
 
-      if (text_path_shift.X() || text_path_shift.Y()) {
-        current_text_fragment_.transform.Translate(text_path_shift.X(),
-                                                   text_path_shift.Y());
+      if (text_path_shift.x() || text_path_shift.y()) {
+        current_text_fragment_.transform.Translate(text_path_shift.x(),
+                                                   text_path_shift.y());
       }
 
       // For vertical text, always rotate by 90 degrees regardless of

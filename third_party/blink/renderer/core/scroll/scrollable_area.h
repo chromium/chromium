@@ -357,8 +357,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   virtual IntRect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const = 0;
-  virtual int VisibleHeight() const { return VisibleContentRect().Height(); }
-  virtual int VisibleWidth() const { return VisibleContentRect().Width(); }
+  virtual int VisibleHeight() const { return VisibleContentRect().height(); }
+  virtual int VisibleWidth() const { return VisibleContentRect().width(); }
   virtual IntSize ContentsSize() const = 0;
 
   // scroll snapport is the area of the scrollport that is used as the alignment
@@ -425,12 +425,12 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   // Convenience functions
   float MinimumScrollOffset(ScrollbarOrientation orientation) {
-    return orientation == kHorizontalScrollbar ? MinimumScrollOffset().Width()
-                                               : MinimumScrollOffset().Height();
+    return orientation == kHorizontalScrollbar ? MinimumScrollOffset().width()
+                                               : MinimumScrollOffset().height();
   }
   float MaximumScrollOffset(ScrollbarOrientation orientation) {
-    return orientation == kHorizontalScrollbar ? MaximumScrollOffset().Width()
-                                               : MaximumScrollOffset().Height();
+    return orientation == kHorizontalScrollbar ? MaximumScrollOffset().width()
+                                               : MaximumScrollOffset().height();
   }
   float ClampScrollOffset(ScrollbarOrientation orientation, float offset) {
     return ClampTo(offset, MinimumScrollOffset(orientation),

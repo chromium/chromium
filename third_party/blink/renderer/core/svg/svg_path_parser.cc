@@ -31,15 +31,15 @@ namespace blink {
 
 static FloatPoint ReflectedPoint(const FloatPoint& reflect_in,
                                  const FloatPoint& point_to_reflect) {
-  return FloatPoint(2 * reflect_in.X() - point_to_reflect.X(),
-                    2 * reflect_in.Y() - point_to_reflect.Y());
+  return FloatPoint(2 * reflect_in.x() - point_to_reflect.x(),
+                    2 * reflect_in.y() - point_to_reflect.y());
 }
 
 // Blend the points with a ratio (1/3):(2/3).
 static FloatPoint BlendPoints(const FloatPoint& p1, const FloatPoint& p2) {
   const float kOneOverThree = 1 / 3.f;
-  return FloatPoint((p1.X() + 2 * p2.X()) * kOneOverThree,
-                    (p1.Y() + 2 * p2.Y()) * kOneOverThree);
+  return FloatPoint((p1.x() + 2 * p2.x()) * kOneOverThree,
+                    (p1.y() + 2 * p2.y()) * kOneOverThree);
 }
 
 static inline bool IsCubicCommand(SVGPathSegType command) {
@@ -80,10 +80,10 @@ void SVGPathNormalizer::EmitSegment(const PathSegmentData& segment) {
       norm_seg.target_point += current_point_;
       break;
     case kPathSegLineToHorizontalAbs:
-      norm_seg.target_point.SetY(current_point_.Y());
+      norm_seg.target_point.set_y(current_point_.y());
       break;
     case kPathSegLineToVerticalAbs:
-      norm_seg.target_point.SetX(current_point_.X());
+      norm_seg.target_point.set_x(current_point_.x());
       break;
     case kPathSegClosePath:
       // Reset m_currentPoint for the next path.
@@ -176,8 +176,8 @@ bool SVGPathNormalizer::DecomposeArcToCubic(
   // If rx = 0 or ry = 0 then this arc is treated as a straight line segment (a
   // "lineto") joining the endpoints.
   // http://www.w3.org/TR/SVG/implnote.html#ArcOutOfRangeParameters
-  float rx = fabsf(arc_segment.ArcRadii().X());
-  float ry = fabsf(arc_segment.ArcRadii().Y());
+  float rx = fabsf(arc_segment.ArcRadii().x());
+  float ry = fabsf(arc_segment.ArcRadii().y());
   if (!rx || !ry)
     return false;
 
@@ -195,11 +195,11 @@ bool SVGPathNormalizer::DecomposeArcToCubic(
   point_transform.Rotate(-angle);
 
   FloatPoint transformed_mid_point = point_transform.MapPoint(
-      FloatPoint(mid_point_distance.Width(), mid_point_distance.Height()));
+      FloatPoint(mid_point_distance.width(), mid_point_distance.height()));
   float square_rx = rx * rx;
   float square_ry = ry * ry;
-  float square_x = transformed_mid_point.X() * transformed_mid_point.X();
-  float square_y = transformed_mid_point.Y() * transformed_mid_point.Y();
+  float square_x = transformed_mid_point.x() * transformed_mid_point.x();
+  float square_y = transformed_mid_point.y() * transformed_mid_point.y();
 
   // Check if the radii are big enough to draw the arc, scale radii if not.
   // http://www.w3.org/TR/SVG/implnote.html#ArcCorrectionOutOfRangeRadii
@@ -217,7 +217,7 @@ bool SVGPathNormalizer::DecomposeArcToCubic(
   FloatPoint point2 = point_transform.MapPoint(arc_segment.target_point);
   FloatSize delta = point2 - point1;
 
-  float d = delta.Width() * delta.Width() + delta.Height() * delta.Height();
+  float d = delta.width() * delta.width() + delta.height() * delta.height();
   float scale_factor_squared = std::max(1 / d - 0.25f, 0.f);
 
   float scale_factor = sqrtf(scale_factor_squared);
@@ -227,7 +227,7 @@ bool SVGPathNormalizer::DecomposeArcToCubic(
   delta.Scale(scale_factor);
   FloatPoint center_point = point1 + point2;
   center_point.Scale(0.5f, 0.5f);
-  center_point.Move(-delta.Height(), delta.Width());
+  center_point.Offset(-delta.height(), delta.width());
 
   float theta1 = FloatPoint(point1 - center_point).SlopeAngleRadians();
   float theta2 = FloatPoint(point2 - center_point).SlopeAngleRadians();
@@ -260,11 +260,11 @@ bool SVGPathNormalizer::DecomposeArcToCubic(
 
     point1 = FloatPoint(cos_start_theta - t * sin_start_theta,
                         sin_start_theta + t * cos_start_theta);
-    point1.Move(center_point.X(), center_point.Y());
+    point1.Offset(center_point.x(), center_point.y());
     FloatPoint target_point = FloatPoint(cos_end_theta, sin_end_theta);
-    target_point.Move(center_point.X(), center_point.Y());
+    target_point.Offset(center_point.x(), center_point.y());
     point2 = target_point;
-    point2.Move(t * sin_end_theta, -t * cos_end_theta);
+    point2.Offset(t * sin_end_theta, -t * cos_end_theta);
 
     PathSegmentData cubic_segment;
     cubic_segment.command = kPathSegCurveToCubicAbs;
@@ -292,9 +292,9 @@ void SVGPathAbsolutizer::EmitSegment(const PathSegmentData& segment) {
   if (absolute_segment.command == kPathSegClosePath) {
     current_point_ = sub_path_point_;
   } else if (absolute_segment.command == kPathSegLineToHorizontalAbs) {
-    current_point_.SetX(absolute_segment.target_point.X());
+    current_point_.set_x(absolute_segment.target_point.x());
   } else if (absolute_segment.command == kPathSegLineToVerticalAbs) {
-    current_point_.SetY(absolute_segment.target_point.Y());
+    current_point_.set_y(absolute_segment.target_point.y());
   } else {
     current_point_ = absolute_segment.target_point;
     if (absolute_segment.command == kPathSegMoveToAbs) {

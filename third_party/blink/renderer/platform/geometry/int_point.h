@@ -54,21 +54,21 @@ class PLATFORM_EXPORT IntPoint {
   constexpr IntPoint() : x_(0), y_(0) {}
   constexpr IntPoint(int x, int y) : x_(x), y_(y) {}
   constexpr explicit IntPoint(const IntSize& size)
-      : x_(size.Width()), y_(size.Height()) {}
+      : x_(size.width()), y_(size.height()) {}
   constexpr explicit IntPoint(const gfx::Point& p) : x_(p.x()), y_(p.y()) {}
   constexpr explicit IntPoint(const gfx::Vector2d& v) : x_(v.x()), y_(v.y()) {}
 
   static IntPoint Zero() { return IntPoint(); }
 
-  constexpr int X() const { return x_; }
-  constexpr int Y() const { return y_; }
+  constexpr int x() const { return x_; }
+  constexpr int y() const { return y_; }
 
-  void SetX(int x) { x_ = x; }
-  void SetY(int y) { y_ = y; }
+  void set_x(int x) { x_ = x; }
+  void set_y(int y) { y_ = y; }
 
-  void Move(const IntSize& s) { Move(s.Width(), s.Height()); }
-  void MoveBy(const IntPoint& offset) { Move(offset.X(), offset.Y()); }
-  void Move(int dx, int dy) {
+  void Offset(const IntSize& s) { Offset(s.width(), s.height()); }
+  void MoveBy(const IntPoint& offset) { Offset(offset.x(), offset.y()); }
+  void Offset(int dx, int dy) {
     x_ += dx;
     y_ += dy;
   }
@@ -116,37 +116,37 @@ class PLATFORM_EXPORT IntPoint {
 };
 
 inline IntPoint& operator+=(IntPoint& a, const IntSize& b) {
-  a.Move(b.Width(), b.Height());
+  a.Offset(b.width(), b.height());
   return a;
 }
 
 inline IntPoint& operator-=(IntPoint& a, const IntSize& b) {
-  a.Move(-b.Width(), -b.Height());
+  a.Offset(-b.width(), -b.height());
   return a;
 }
 
 constexpr IntPoint operator+(const IntPoint& a, const IntSize& b) {
-  return IntPoint(a.X() + b.Width(), a.Y() + b.Height());
+  return IntPoint(a.x() + b.width(), a.y() + b.height());
 }
 
 constexpr IntPoint operator+(const IntPoint& a, const IntPoint& b) {
-  return IntPoint(a.X() + b.X(), a.Y() + b.Y());
+  return IntPoint(a.x() + b.x(), a.y() + b.y());
 }
 
 constexpr IntSize operator-(const IntPoint& a, const IntPoint& b) {
-  return IntSize(a.X() - b.X(), a.Y() - b.Y());
+  return IntSize(a.x() - b.x(), a.y() - b.y());
 }
 
 constexpr IntPoint operator-(const IntPoint& a, const IntSize& b) {
-  return IntPoint(a.X() - b.Width(), a.Y() - b.Height());
+  return IntPoint(a.x() - b.width(), a.y() - b.height());
 }
 
 constexpr IntPoint operator-(const IntPoint& point) {
-  return IntPoint(-point.X(), -point.Y());
+  return IntPoint(-point.x(), -point.y());
 }
 
 constexpr bool operator==(const IntPoint& a, const IntPoint& b) {
-  return a.X() == b.X() && a.Y() == b.Y();
+  return a.x() == b.x() && a.y() == b.y();
 }
 
 constexpr bool operator!=(const IntPoint& a, const IntPoint& b) {
@@ -154,7 +154,7 @@ constexpr bool operator!=(const IntPoint& a, const IntPoint& b) {
 }
 
 inline IntSize ToIntSize(const IntPoint& a) {
-  return IntSize(a.X(), a.Y());
+  return IntSize(a.x(), a.y());
 }
 
 inline int IntPoint::DistanceSquaredToPoint(const IntPoint& point) const {
@@ -162,11 +162,11 @@ inline int IntPoint::DistanceSquaredToPoint(const IntPoint& point) const {
 }
 
 constexpr gfx::Point ToGfxPoint(const IntPoint& p) {
-  return gfx::Point(p.X(), p.Y());
+  return gfx::Point(p.x(), p.y());
 }
 
 constexpr gfx::Vector2d ToGfxVector2d(const IntPoint& p) {
-  return gfx::Vector2d(p.X(), p.Y());
+  return gfx::Vector2d(p.x(), p.y());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const IntPoint&);

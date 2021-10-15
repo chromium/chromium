@@ -92,19 +92,19 @@ Path SVGRectElement::AsPath() const {
 
   FloatSize size(ToFloatSize(
       length_context.ResolveLengthPair(style.Width(), style.Height(), style)));
-  if (size.Width() < 0 || size.Height() < 0 ||
-      (!size.Width() && !size.Height()))
+  if (size.width() < 0 || size.height() < 0 ||
+      (!size.width() && !size.height()))
     return path;
 
   FloatRect rect(length_context.ResolveLengthPair(style.X(), style.Y(), style),
                  size);
   FloatPoint radii(
       length_context.ResolveLengthPair(style.Rx(), style.Ry(), style));
-  if (radii.X() > 0 || radii.Y() > 0) {
+  if (radii.x() > 0 || radii.y() > 0) {
     if (style.Rx().IsAuto())
-      radii.SetX(radii.Y());
+      radii.set_x(radii.y());
     else if (style.Ry().IsAuto())
-      radii.SetY(radii.X());
+      radii.set_y(radii.x());
 
     path.AddRoundedRect(rect, ToFloatSize(radii));
   } else {

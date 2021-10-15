@@ -570,14 +570,14 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
   if (!row_buffer)
     return;
 
-  DCHECK_GT(frame_rect.Height(), 0);
-  if (row_index >= static_cast<unsigned>(frame_rect.Height()))
+  DCHECK_GT(frame_rect.height(), 0);
+  if (row_index >= static_cast<unsigned>(frame_rect.height()))
     return;
 
-  int y = row_index + frame_rect.Y();
+  int y = row_index + frame_rect.y();
   if (y < 0)
     return;
-  DCHECK_LT(y, Size().Height());
+  DCHECK_LT(y, Size().height());
 
   /* libpng comments (continued).
    *
@@ -605,17 +605,17 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
     unsigned bytes_per_pixel = has_alpha ? 4 : 3;
     if (decode_to_half_float_)
       bytes_per_pixel *= 2;
-    row = interlace_buffer + (row_index * bytes_per_pixel * Size().Width());
+    row = interlace_buffer + (row_index * bytes_per_pixel * Size().width());
     png_progressive_combine_row(reader_->PngPtr(), row, row_buffer);
   }
 
   // Write the decoded row pixels to the frame buffer. The repetitive
   // form of the row write loops is for speed.
-  const int width = frame_rect.Width();
+  const int width = frame_rect.width();
   png_bytep src_ptr = row;
 
   if (!decode_to_half_float_) {
-    ImageFrame::PixelData* const dst_row = buffer.GetAddr(frame_rect.X(), y);
+    ImageFrame::PixelData* const dst_row = buffer.GetAddr(frame_rect.x(), y);
     if (has_alpha) {
       if (ColorProfileTransform* xform = ColorTransform()) {
         ImageFrame::PixelData* xform_dst = dst_row;
@@ -631,7 +631,7 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
             // allocating the full width of the PNG, we know it will be able to
             // hold temporary data for any subsequent frame.
             color_transform_scanline_.reset(
-                new ImageFrame::PixelData[Size().Width()]);
+                new ImageFrame::PixelData[Size().width()]);
           }
           xform_dst = color_transform_scanline_.get();
         }
@@ -720,7 +720,7 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
     }
   } else {  // for if (!decode_to_half_float_)
     ImageFrame::PixelDataF16* const dst_row_f16 =
-        buffer.GetAddrF16(frame_rect.X(), y);
+        buffer.GetAddrF16(frame_rect.x(), y);
 
     // TODO(zakerinasab): https://crbug.com/874057
     // Due to a lack of 16 bit APNG encoders, multi-frame 16 bit APNGs are not

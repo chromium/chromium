@@ -48,14 +48,14 @@ class SVGRect final : public SVGPropertyHelper<SVGRect> {
   const FloatRect& Value() const { return value_; }
   void SetValue(const FloatRect& v) { value_ = v; }
 
-  float X() const { return value_.X(); }
-  float Y() const { return value_.Y(); }
-  float Width() const { return value_.Width(); }
-  float Height() const { return value_.Height(); }
-  void SetX(float f) { value_.SetX(f); }
-  void SetY(float f) { value_.SetY(f); }
-  void SetWidth(float f) { value_.SetWidth(f); }
-  void SetHeight(float f) { value_.SetHeight(f); }
+  float X() const { return value_.x(); }
+  float Y() const { return value_.y(); }
+  float Width() const { return value_.width(); }
+  float Height() const { return value_.height(); }
+  void SetX(float f) { value_.set_x(f); }
+  void SetY(float f) { value_.set_y(f); }
+  void SetWidth(float f) { value_.set_width(f); }
+  void SetHeight(float f) { value_.set_height(f); }
 
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);

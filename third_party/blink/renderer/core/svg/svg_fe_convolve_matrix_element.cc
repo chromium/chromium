@@ -168,10 +168,10 @@ IntPoint SVGFEConvolveMatrixElement::TargetPoint() const {
                   target_y_->CurrentValue()->Value());
   // The spec says the default value is: targetX = floor ( orderX / 2 ))
   if (!target_x_->IsSpecified())
-    target.SetX(order.Width() / 2);
+    target.set_x(order.width() / 2);
   // The spec says the default value is: targetY = floor ( orderY / 2 ))
   if (!target_y_->IsSpecified())
-    target.SetY(order.Height() / 2);
+    target.set_y(order.height() / 2);
   return target;
 }
 

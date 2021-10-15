@@ -115,9 +115,9 @@ bool FEConvolveMatrix::ParametersValid() const {
     return false;
   if (SafeCast<size_t>(kernel_area) != kernel_matrix_.size())
     return false;
-  if (target_offset_.X() < 0 || target_offset_.X() >= kernel_size_.Width())
+  if (target_offset_.x() < 0 || target_offset_.x() >= kernel_size_.width())
     return false;
-  if (target_offset_.Y() < 0 || target_offset_.Y() >= kernel_size_.Height())
+  if (target_offset_.y() < 0 || target_offset_.y() >= kernel_size_.height())
     return false;
   if (!divisor_)
     return false;
@@ -131,12 +131,12 @@ sk_sp<PaintFilter> FEConvolveMatrix::CreateImageFilter() {
   sk_sp<PaintFilter> input(paint_filter_builder::Build(
       InputEffect(0), OperatingInterpolationSpace()));
   SkISize kernel_size(
-      SkISize::Make(kernel_size_.Width(), kernel_size_.Height()));
+      SkISize::Make(kernel_size_.width(), kernel_size_.height()));
   // parametersValid() above checks that the kernel area fits in int.
   int num_elements = SafeCast<int>(kernel_size_.Area());
   SkScalar gain = SkFloatToScalar(1.0f / divisor_);
   SkScalar bias = SkFloatToScalar(bias_ * 255);
-  SkIPoint target = SkIPoint::Make(target_offset_.X(), target_offset_.Y());
+  SkIPoint target = SkIPoint::Make(target_offset_.x(), target_offset_.y());
   SkTileMode tile_mode = ToSkiaTileMode(edge_mode_);
   bool convolve_alpha = !preserve_alpha_;
   auto kernel = std::make_unique<SkScalar[]>(num_elements);

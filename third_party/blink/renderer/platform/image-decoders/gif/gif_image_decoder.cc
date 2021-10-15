@@ -242,7 +242,7 @@ void GIFImageDecoder::Decode(wtf_size_t index) {
     wtf_size_t required_previous_frame_index =
         frame.RequiredPreviousFrameIndex();
     if (required_previous_frame_index == kNotFound) {
-      frame.AllocatePixelData(Size().Width(), Size().Height(),
+      frame.AllocatePixelData(Size().width(), Size().height(),
                               ColorSpaceForSkImages());
       frame.ZeroFillPixelData();
       prior_frame_ = SkCodec::kNoFrame;

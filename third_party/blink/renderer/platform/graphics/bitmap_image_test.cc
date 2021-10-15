@@ -184,9 +184,9 @@ class BitmapImageTest : public testing::Test {
     CHECK(paint_image);
 
     SkBitmap bitmap;
-    SkImageInfo info = SkImageInfo::MakeN32Premul(image->Size().Width(),
-                                                  image->Size().Height());
-    bitmap.allocPixels(info, image->Size().Width() * 4);
+    SkImageInfo info = SkImageInfo::MakeN32Premul(image->Size().width(),
+                                                  image->Size().height());
+    bitmap.allocPixels(info, image->Size().width() * 4);
     bitmap.eraseColor(SK_AlphaTRANSPARENT);
     cc::SkiaPaintCanvas canvas(bitmap);
     canvas.drawImage(paint_image, 0u, 0u);

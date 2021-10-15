@@ -45,11 +45,11 @@ PathSegmentData SVGPathByteStreamSource::ParseSegment() {
       break;
     case kPathSegLineToHorizontalRel:
     case kPathSegLineToHorizontalAbs:
-      segment.target_point.SetX(ReadFloat());
+      segment.target_point.set_x(ReadFloat());
       break;
     case kPathSegLineToVerticalRel:
     case kPathSegLineToVerticalAbs:
-      segment.target_point.SetY(ReadFloat());
+      segment.target_point.set_y(ReadFloat());
       break;
     case kPathSegClosePath:
       break;

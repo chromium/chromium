@@ -272,7 +272,7 @@ class RadialGradient final : public Gradient {
       // gradient center point.
       DCHECK(p0_ == p1_);
       adjusted_local_matrix.emplace(local_matrix);
-      adjusted_local_matrix->preScale(1, 1 / aspect_ratio_, p0_.X(), p0_.Y());
+      adjusted_local_matrix->preScale(1, 1 / aspect_ratio_, p0_.x(), p0_.y());
       matrix = &*adjusted_local_matrix;
     }
 
@@ -336,13 +336,13 @@ class ConicGradient final : public Gradient {
     absl::optional<SkMatrix> adjusted_local_matrix;
     if (skia_rotation) {
       adjusted_local_matrix.emplace(local_matrix);
-      adjusted_local_matrix->preRotate(skia_rotation, position_.X(),
-                                       position_.Y());
+      adjusted_local_matrix->preRotate(skia_rotation, position_.x(),
+                                       position_.y());
       matrix = &*adjusted_local_matrix;
     }
 
     return PaintShader::MakeSweepGradient(
-        position_.X(), position_.Y(), colors.data(), pos.data(),
+        position_.x(), position_.y(), colors.data(), pos.data(),
         static_cast<int>(colors.size()), tile_mode, start_angle_, end_angle_,
         flags, matrix, fallback_color);
   }

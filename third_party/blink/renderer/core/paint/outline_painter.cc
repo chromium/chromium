@@ -70,10 +70,10 @@ int FocusRingOffset(const ComputedStyle& style) {
 // become smaller than twice the computed value of the outline-width, in each
 // direction separately. See: https://drafts.csswg.org/css-ui/#outline-offset
 int AdjustedOutlineOffsetX(const IntRect& rect, int offset) {
-  return std::max(offset, -rect.Width() / 2);
+  return std::max(offset, -rect.width() / 2);
 }
 int AdjustedOutlineOffsetY(const IntRect& rect, int offset) {
-  return std::max(offset, -rect.Height() / 2);
+  return std::max(offset, -rect.height() / 2);
 }
 
 // Construct a clockwise path along the outer edge of the region covered by
@@ -87,9 +87,9 @@ bool ComputeRightAnglePath(SkPath& path,
   SkRegion region;
   for (auto& r : rects) {
     IntRect rect = r;
-    rect.InflateX(AdjustedOutlineOffsetX(rect, outline_offset));
-    rect.InflateY(AdjustedOutlineOffsetY(rect, outline_offset));
-    rect.Inflate(additional_outset);
+    rect.OutsetX(AdjustedOutlineOffsetX(rect, outline_offset));
+    rect.OutsetY(AdjustedOutlineOffsetY(rect, outline_offset));
+    rect.Outset(additional_outset);
     region.op(rect, SkRegion::kUnion_Op);
   }
   return region.getBoundaryPath(&path);
@@ -245,8 +245,8 @@ void AdjustLineBetweenCorners(Line& line,
   if (line.start.x() == line.end.x()) {
     // |line| is vertical, and adjacent lines are horizontal.
     float height = std::abs(line.end.y() - line.start.y());
-    float corner1_height = corner1.Height();
-    float corner2_height = corner2.Height();
+    float corner1_height = corner1.height();
+    float corner2_height = corner2.height();
     if (corner1_height + corner2_height > height) {
       // Scale down the corner heights to make the corners fit in |height|.
       float scale = height / (corner1_height + corner2_height);
@@ -263,8 +263,8 @@ void AdjustLineBetweenCorners(Line& line,
   } else {
     // |line| is horizontal, and adjacent lines are vertical.
     float width = std::abs(line.end.x() - line.start.x());
-    float corner1_width = corner1.Width();
-    float corner2_width = corner2.Width();
+    float corner1_width = corner1.width();
+    float corner2_width = corner2.width();
     if (corner1_width + corner2_width > width) {
       // Scale down the corner widths to make the corners fit in |width|.
       float scale = width / (corner1_width + corner2_width);
@@ -865,7 +865,7 @@ void OutlinePainter::PaintOutlineRects(
     return;
 
   IntRect united_outline_rect =
-      UnionRectEvenIfEmpty(pixel_snapped_outline_rects);
+      UnionRectsEvenIfEmpty(pixel_snapped_outline_rects);
   gfx::Rect visual_rect = ToGfxRect(united_outline_rect);
   visual_rect.Outset(OutlineOutsetExtent(style));
   DrawingRecorder recorder(paint_info.context, client, paint_info.phase,

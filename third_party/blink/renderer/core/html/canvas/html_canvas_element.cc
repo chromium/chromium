@@ -240,8 +240,8 @@ void HTMLCanvasElement::SetSize(const IntSize& new_size) {
   if (new_size == Size())
     return;
   ignore_reset_ = true;
-  SetIntegralAttribute(html_names::kWidthAttr, new_size.Width());
-  SetIntegralAttribute(html_names::kHeightAttr, new_size.Height());
+  SetIntegralAttribute(html_names::kWidthAttr, new_size.width());
+  SetIntegralAttribute(html_names::kHeightAttr, new_size.height());
   ignore_reset_ = false;
   Reset();
 }
@@ -469,10 +469,10 @@ void HTMLCanvasElement::DidDraw(const SkIRect& rect) {
   if (IsRenderingContext2D() && context_->ShouldAntialias() && GetPage() &&
       GetPage()->DeviceScaleFactorDeprecated() > 1.0f) {
     FloatRect inflated_rect = FloatRect(IntRect(rect));
-    inflated_rect.Inflate(1);
-    dirty_rect_.Unite(inflated_rect);
+    inflated_rect.Outset(1);
+    dirty_rect_.Union(inflated_rect);
   } else {
-    dirty_rect_.Unite(FloatRect(IntRect(rect)));
+    dirty_rect_.Union(FloatRect(IntRect(rect)));
   }
   if (IsRenderingContext2D() && canvas2d_bridge_)
     canvas2d_bridge_->DidDraw();
@@ -503,11 +503,11 @@ void HTMLCanvasElement::PostFinalizeFrame() {
     const base::TimeTicks start_time = base::TimeTicks::Now();
     const scoped_refptr<CanvasResource> canvas_resource =
         ResourceProvider()->ProduceCanvasResource();
-    const FloatRect src_rect(0, 0, Size().Width(), Size().Height());
+    const FloatRect src_rect(0, 0, Size().width(), Size().height());
     dirty_rect_.Intersect(src_rect);
     const IntRect int_dirty = EnclosingIntRect(dirty_rect_);
     const SkIRect damage_rect = SkIRect::MakeXYWH(
-        int_dirty.X(), int_dirty.Y(), int_dirty.Width(), int_dirty.Height());
+        int_dirty.x(), int_dirty.y(), int_dirty.width(), int_dirty.height());
     const bool needs_vertical_flip = !RenderingContext()->IsOriginTopLeft();
     frame_dispatcher_->DispatchFrame(std::move(canvas_resource), start_time,
                                      damage_rect, needs_vertical_flip,
@@ -566,7 +566,7 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
   }
 
   if (IsRenderingContext2D()) {
-    FloatRect src_rect(0, 0, Size().Width(), Size().Height());
+    FloatRect src_rect(0, 0, Size().width(), Size().height());
     dirty_rect_.Intersect(src_rect);
 
     FloatRect invalidation_rect;
@@ -576,7 +576,7 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
       if (context_->IsComposited()) {
         // Composited 2D canvases need the dirty rect to be expressed relative
         // to the content box, as opposed to the layout box.
-        mapped_dirty_rect.MoveBy(-content_rect.Location());
+        mapped_dirty_rect.MoveBy(-content_rect.origin());
       }
       invalidation_rect = mapped_dirty_rect;
     } else {
@@ -823,8 +823,8 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
         if (FilterQuality() != cc::PaintFlags::FilterQuality::kNone) {
           context.Canvas()->save();
           context.Canvas()->translate(r.X(), r.Y());
-          context.Canvas()->scale(r.Width() / Size().Width(),
-                                  r.Height() / Size().Height());
+          context.Canvas()->scale(r.Width() / Size().width(),
+                                  r.Height() / Size().height());
           context.Canvas()->drawPicture(canvas2d_bridge_->getLastRecord());
           context.Canvas()->restore();
           UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", true);
@@ -913,7 +913,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
         // size. Hence, we need to query the adjusted size of DrawingBuffer.
         IntSize adjusted_size = context_->DrawingBufferSize();
         SkImageInfo info =
-            SkImageInfo::Make(adjusted_size.Width(), adjusted_size.Height(),
+            SkImageInfo::Make(adjusted_size.width(), adjusted_size.height(),
                               kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
         info = info.makeColorSpace(ColorParams().GetSkColorSpace());
         if (ColorParams().GetSkColorType() != kN32_SkColorType)
@@ -1134,7 +1134,7 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
       !base::FeatureList::IsEnabled(
           features::kWebviewAccelerateSmallCanvases)) {
     base::CheckedNumeric<int> checked_canvas_pixel_count =
-        Size().Width() * Size().Height();
+        Size().width() * Size().height();
     if (!checked_canvas_pixel_count.IsValid())
       return false;
     int canvas_pixel_count = checked_canvas_pixel_count.ValueOrDie();
@@ -1242,8 +1242,8 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
     std::unique_ptr<Canvas2DLayerBridge> bridge,
     const IntSize& size) {
   DiscardResourceProvider();
-  SetIntegralAttribute(html_names::kWidthAttr, size.Width());
-  SetIntegralAttribute(html_names::kHeightAttr, size.Height());
+  SetIntegralAttribute(html_names::kWidthAttr, size.width());
+  SetIntegralAttribute(html_names::kHeightAttr, size.height());
   SetCanvas2DLayerBridgeInternal(std::move(bridge));
   ReplaceResourceProvider(std::move(resource_provider));
 }

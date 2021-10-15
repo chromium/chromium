@@ -661,14 +661,14 @@ void inspector_layout_event::BeginData(perfetto::TracedValue context,
 
 static void CreateQuad(perfetto::TracedValue context, const FloatQuad& quad) {
   auto array = std::move(context).WriteArray();
-  array.Append(quad.P1().X());
-  array.Append(quad.P1().Y());
-  array.Append(quad.P2().X());
-  array.Append(quad.P2().Y());
-  array.Append(quad.P3().X());
-  array.Append(quad.P3().Y());
-  array.Append(quad.P4().X());
-  array.Append(quad.P4().Y());
+  array.Append(quad.p1().x());
+  array.Append(quad.p1().y());
+  array.Append(quad.p2().x());
+  array.Append(quad.p2().y());
+  array.Append(quad.p3().x());
+  array.Append(quad.p3().y());
+  array.Append(quad.p4().x());
+  array.Append(quad.p4().y());
 }
 
 static void SetGeneratingNodeInfo(
@@ -1280,12 +1280,12 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
   if (const ImageResourceContent* content = layout_image.CachedImage())
     dict.Add("url", content->Url().ElidedString());
 
-  dict.Add("x", dest_rect.X());
-  dict.Add("y", dest_rect.Y());
-  dict.Add("width", dest_rect.Width());
-  dict.Add("height", dest_rect.Height());
-  dict.Add("srcWidth", src_rect.Width());
-  dict.Add("srcHeight", src_rect.Height());
+  dict.Add("x", dest_rect.x());
+  dict.Add("y", dest_rect.y());
+  dict.Add("width", dest_rect.width());
+  dict.Add("height", dest_rect.height());
+  dict.Add("srcWidth", src_rect.width());
+  dict.Add("srcHeight", src_rect.height());
 }
 
 void inspector_paint_image_event::Data(perfetto::TracedValue context,
@@ -1308,12 +1308,12 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
   if (const ImageResourceContent* content = style_image.CachedImage())
     dict.Add("url", content->Url().ElidedString());
 
-  dict.Add("x", dest_rect.X());
-  dict.Add("y", dest_rect.Y());
-  dict.Add("width", dest_rect.Width());
-  dict.Add("height", dest_rect.Height());
-  dict.Add("srcWidth", src_rect.Width());
-  dict.Add("srcHeight", src_rect.Height());
+  dict.Add("x", dest_rect.x());
+  dict.Add("y", dest_rect.y());
+  dict.Add("width", dest_rect.width());
+  dict.Add("height", dest_rect.height());
+  dict.Add("srcWidth", src_rect.width());
+  dict.Add("srcHeight", src_rect.height());
 }
 
 void inspector_paint_image_event::Data(
@@ -1488,8 +1488,8 @@ void inspector_hit_test_event::EndData(perfetto::TracedValue context,
                                        const HitTestLocation& location,
                                        const HitTestResult& result) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("x", location.RoundedPoint().X());
-  dict.Add("y", location.RoundedPoint().Y());
+  dict.Add("x", location.RoundedPoint().x());
+  dict.Add("y", location.RoundedPoint().y());
   if (location.IsRectBasedTest())
     dict.Add("rect", true);
   if (location.IsRectilinear())

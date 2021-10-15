@@ -951,8 +951,8 @@ static FloatPoint3D TransformOrigin(const ComputedStyle& style,
     return FloatPoint3D();
   FloatSize border_box_size(size);
   return FloatPoint3D(
-      FloatValueForLength(style.TransformOriginX(), border_box_size.Width()),
-      FloatValueForLength(style.TransformOriginY(), border_box_size.Height()),
+      FloatValueForLength(style.TransformOriginX(), border_box_size.width()),
+      FloatValueForLength(style.TransformOriginY(), border_box_size.height()),
       style.TransformOriginZ());
 }
 
@@ -1814,9 +1814,9 @@ bool FragmentPaintPropertyTreeBuilder::NeedsOverflowControlsClip() const {
   IntRect scroll_controls_bounds =
       scrollable_area->ScrollCornerAndResizerRect();
   if (const auto* scrollbar = scrollable_area->HorizontalScrollbar())
-    scroll_controls_bounds.Unite(scrollbar->FrameRect());
+    scroll_controls_bounds.Union(scrollbar->FrameRect());
   if (const auto* scrollbar = scrollable_area->VerticalScrollbar())
-    scroll_controls_bounds.Unite(scrollbar->FrameRect());
+    scroll_controls_bounds.Union(scrollbar->FrameRect());
   IntRect pixel_snapped_border_box_rect(
       IntPoint(), box.PixelSnappedBorderBoxSize(context_.current.paint_offset));
   return !pixel_snapped_border_box_rect.Contains(scroll_controls_bounds);
@@ -1941,7 +1941,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
           // could overflow by 1px due to pre-snapping. Adjust clip rect to
           // match pre-snapped box as a special case.
           clip_rect.SetRect(
-              FloatRect(clip_rect.Rect().Location(),
+              FloatRect(clip_rect.Rect().origin(),
                         FloatSize(replaced.ReplacedContentRect().size)));
         }
         // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
@@ -3729,7 +3729,7 @@ void PaintPropertyTreeBuilder::
 
   if (auto* scrollable_area = view->GetScrollableArea()) {
     context_.fragments[0].fixed_position.paint_offset.top -=
-        LayoutUnit(scrollable_area->ScrollPosition().Y());
+        LayoutUnit(scrollable_area->ScrollPosition().y());
   }
 
   for (int page = 1; page < page_count; page++) {
@@ -3751,7 +3751,7 @@ void PaintPropertyTreeBuilder::
   // Convert the bounding box into the scrolling contents space.
   if (auto* scrollable_area = view->GetScrollableArea()) {
     context_.repeating_table_section_bounding_box.offset.top +=
-        LayoutUnit(scrollable_area->ScrollPosition().Y());
+        LayoutUnit(scrollable_area->ScrollPosition().y());
   }
 
   auto page_height = view->PageLogicalHeight();

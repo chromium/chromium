@@ -254,8 +254,8 @@ bool CanScrollDirection(LayoutBox* layout_box,
         page->GetVisualViewport().MaximumScrollOffset();
     can_scroll =
         can_scroll || (orientation == ScrollOrientation::kHorizontalScroll
-                           ? maximum_scroll_offset.Width() > 0
-                           : maximum_scroll_offset.Height() > 0);
+                           ? maximum_scroll_offset.width() > 0
+                           : maximum_scroll_offset.height() > 0);
   }
 
   return can_scroll;
@@ -290,18 +290,18 @@ void AutoscrollController::HandleMouseMoveForMiddleClickAutoscroll(
       (position_global - middle_click_autoscroll_start_pos_global_)
           .ScaledBy(1 / frame->DevicePixelRatio());
 
-  if (fabs(distance.Width()) <= kNoMiddleClickAutoscrollRadius)
-    distance.SetWidth(0);
-  if (fabs(distance.Height()) <= kNoMiddleClickAutoscrollRadius)
-    distance.SetHeight(0);
+  if (fabs(distance.width()) <= kNoMiddleClickAutoscrollRadius)
+    distance.set_width(0);
+  if (fabs(distance.height()) <= kNoMiddleClickAutoscrollRadius)
+    distance.set_height(0);
 
   const float kExponent = 2.2f;
   const float kMultiplier = -0.000008f;
-  const int x_signum = (distance.Width() < 0) ? -1 : (distance.Width() > 0);
-  const int y_signum = (distance.Height() < 0) ? -1 : (distance.Height() > 0);
+  const int x_signum = (distance.width() < 0) ? -1 : (distance.width() > 0);
+  const int y_signum = (distance.height() < 0) ? -1 : (distance.height() > 0);
   gfx::Vector2dF velocity(
-      pow(fabs(distance.Width()), kExponent) * kMultiplier * x_signum,
-      pow(fabs(distance.Height()), kExponent) * kMultiplier * y_signum);
+      pow(fabs(distance.width()), kExponent) * kMultiplier * x_signum,
+      pow(fabs(distance.height()), kExponent) * kMultiplier * y_signum);
 
   bool can_scroll_vertically =
       vertical_autoscroll_possible

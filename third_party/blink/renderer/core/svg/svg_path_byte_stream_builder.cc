@@ -45,8 +45,8 @@ class CoalescingBuffer {
   void WriteFlag(bool value) { WriteType<bool>(value); }
   void WriteFloat(float value) { WriteType<float>(value); }
   void WriteFloatPoint(const FloatPoint& point) {
-    WriteType<float>(point.X());
-    WriteType<float>(point.Y());
+    WriteType<float>(point.x());
+    WriteType<float>(point.y());
   }
   void WriteSegmentType(uint16_t value) { WriteType<uint16_t>(value); }
 
@@ -77,11 +77,11 @@ void SVGPathByteStreamBuilder::EmitSegment(const PathSegmentData& segment) {
       break;
     case kPathSegLineToHorizontalRel:
     case kPathSegLineToHorizontalAbs:
-      buffer.WriteFloat(segment.target_point.X());
+      buffer.WriteFloat(segment.target_point.x());
       break;
     case kPathSegLineToVerticalRel:
     case kPathSegLineToVerticalAbs:
-      buffer.WriteFloat(segment.target_point.Y());
+      buffer.WriteFloat(segment.target_point.y());
       break;
     case kPathSegClosePath:
       break;
@@ -104,7 +104,7 @@ void SVGPathByteStreamBuilder::EmitSegment(const PathSegmentData& segment) {
     case kPathSegArcRel:
     case kPathSegArcAbs:
       buffer.WriteFloatPoint(segment.point1);
-      buffer.WriteFloat(segment.point2.X());
+      buffer.WriteFloat(segment.point2.x());
       buffer.WriteFlag(segment.arc_large);
       buffer.WriteFlag(segment.arc_sweep);
       buffer.WriteFloatPoint(segment.target_point);

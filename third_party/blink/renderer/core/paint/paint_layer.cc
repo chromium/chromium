@@ -923,7 +923,7 @@ bool PaintLayer::UpdateSize() {
              GetLayoutObject().IsLayoutInline()) {
     auto& inline_flow = To<LayoutInline>(GetLayoutObject());
     IntRect line_box = EnclosingIntRect(inline_flow.PhysicalLinesBoundingBox());
-    size_ = LayoutSize(line_box.Size());
+    size_ = LayoutSize(line_box.size());
   } else if (LayoutBox* box = GetLayoutBox()) {
     size_ = box->Size();
   }
@@ -1983,7 +1983,7 @@ static double ComputeZOffset(const HitTestingTransformState& transform_state) {
   FloatPoint3D backmapped_point =
       transform_state.accumulated_transform_.MapPoint(
           FloatPoint3D(target_point));
-  return backmapped_point.Z();
+  return backmapped_point.z();
 }
 
 HitTestingTransformState PaintLayer::CreateLocalTransformState(
@@ -2732,7 +2732,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   // the coordinate system is the top-left of the reference box, so adjust
   // the point accordingly.
   if (clipper->ClipPathUnits() == SVGUnitTypes::kSvgUnitTypeUserspaceonuse)
-    point.MoveBy(-reference_box.Location());
+    point.MoveBy(-reference_box.origin());
   // Unzoom the point and the reference box, since the <clipPath> geometry is
   // not zoomed.
   float inverse_zoom = 1 / GetLayoutObject().StyleRef().EffectiveZoom();
@@ -2888,7 +2888,7 @@ IntRect PaintLayer::ExpandedBoundingBoxForCompositingOverlapTest(
         if (!children_bounds.IsEmpty()) {
           GetLayoutObject().MapToVisualRectInAncestorSpace(
               GetLayoutObject().View(), children_bounds, kUseGeometryMapper);
-          abs_bounds.Unite(EnclosingIntRect(children_bounds));
+          abs_bounds.Union(EnclosingIntRect(children_bounds));
         }
       }
 
@@ -2898,8 +2898,8 @@ IntRect PaintLayer::ExpandedBoundingBoxForCompositingOverlapTest(
       ScrollOffset min_scroll_delta =
           current_scroll_offset - scrollable_area->MinimumScrollOffset();
       abs_bounds.Expand(
-          IntRectOutsets(min_scroll_delta.Height(), max_scroll_delta.Width(),
-                         max_scroll_delta.Height(), min_scroll_delta.Width()));
+          IntRectOutsets(min_scroll_delta.height(), max_scroll_delta.width(),
+                         max_scroll_delta.height(), min_scroll_delta.width()));
     }
   }
   return abs_bounds;

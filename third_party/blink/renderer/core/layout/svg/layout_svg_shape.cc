@@ -47,10 +47,10 @@ namespace blink {
 namespace {
 
 void ClampBoundsToFinite(FloatRect& bounds) {
-  bounds.SetX(ClampTo<float>(bounds.X()));
-  bounds.SetY(ClampTo<float>(bounds.Y()));
-  bounds.SetWidth(ClampTo<float>(bounds.Width()));
-  bounds.SetHeight(ClampTo<float>(bounds.Height()));
+  bounds.set_x(ClampTo<float>(bounds.x()));
+  bounds.set_y(ClampTo<float>(bounds.y()));
+  bounds.set_width(ClampTo<float>(bounds.width()));
+  bounds.set_height(ClampTo<float>(bounds.height()));
 }
 
 }  // namespace
@@ -180,7 +180,7 @@ FloatRect LayoutSVGShape::ApproximateStrokeBoundingBox(
       delta *= M_SQRT2;
     }
   }
-  stroke_box.Inflate(delta);
+  stroke_box.Outset(delta);
   return stroke_box;
 }
 
@@ -468,7 +468,7 @@ FloatRect LayoutSVGShape::CalculateNonScalingStrokeBoundingBox() const {
         ApproximateStrokeBoundingBox(non_scaling_stroke.BoundingRect());
     stroke_bounding_rect =
         non_scaling_transform.Inverse().MapRect(stroke_bounding_rect);
-    stroke_bounding_box.Unite(stroke_bounding_rect);
+    stroke_bounding_box.Union(stroke_bounding_rect);
   }
   return stroke_bounding_box;
 }

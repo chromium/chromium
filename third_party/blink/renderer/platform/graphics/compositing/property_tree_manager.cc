@@ -887,7 +887,7 @@ bool PropertyTreeManager::SupportsShaderBasedRoundedCorner(
     return false;
 
   auto WidthAndHeightAreTheSame = [](const FloatSize& size) {
-    return size.Width() == size.Height();
+    return size.width() == size.height();
   };
 
   const FloatRoundedRect::Radii& radii = clip.PaintClipRect().GetRadii();

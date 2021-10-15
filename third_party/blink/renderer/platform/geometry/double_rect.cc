@@ -12,10 +12,10 @@
 namespace blink {
 
 DoubleRect::DoubleRect(const IntRect& r)
-    : location_(r.Location()), size_(r.Size()) {}
+    : location_(r.origin()), size_(r.size()) {}
 
 DoubleRect::DoubleRect(const FloatRect& r)
-    : location_(r.Location()), size_(r.Size()) {}
+    : location_(r.origin()), size_(r.size()) {}
 
 DoubleRect::DoubleRect(const LayoutRect& r)
     : location_(r.Location()), size_(r.Size()) {}
@@ -25,8 +25,8 @@ IntRect EnclosingIntRect(const DoubleRect& rect) {
   IntPoint max_point = CeiledIntPoint(rect.MaxXMaxYCorner());
 
   return IntRect(location,
-                 IntSize(base::ClampSub(max_point.X(), location.X()),
-                         base::ClampSub(max_point.Y(), location.Y())));
+                 IntSize(base::ClampSub(max_point.x(), location.x()),
+                         base::ClampSub(max_point.y(), location.y())));
 }
 
 IntRect EnclosedIntRect(const DoubleRect& rect) {

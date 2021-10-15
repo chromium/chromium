@@ -84,10 +84,10 @@ FloatSize StyleCrossfadeImage::ImageSize(float multiplier,
 
   float percentage = original_value_->Percentage().GetFloatValue();
   float inverse_percentage = 1 - percentage;
-  return FloatSize(from_image_size.Width() * inverse_percentage +
-                       to_image_size.Width() * percentage,
-                   from_image_size.Height() * inverse_percentage +
-                       to_image_size.Height() * percentage);
+  return FloatSize(from_image_size.width() * inverse_percentage +
+                       to_image_size.width() * percentage,
+                   from_image_size.height() * inverse_percentage +
+                       to_image_size.height() * percentage);
 }
 
 bool StyleCrossfadeImage::HasIntrinsicSize() const {

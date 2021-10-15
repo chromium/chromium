@@ -436,11 +436,11 @@ void InspectorDOMSnapshotAgent::VisitDocument(Document* document) {
 
   if (document->View() && document->View()->LayoutViewport()) {
     auto offset = document->View()->LayoutViewport()->GetScrollOffset();
-    document_->setScrollOffsetX(offset.Width());
-    document_->setScrollOffsetY(offset.Height());
+    document_->setScrollOffsetX(offset.width());
+    document_->setScrollOffsetY(offset.height());
     auto contents_size = document->View()->LayoutViewport()->ContentsSize();
-    document_->setContentWidth(contents_size.Width());
-    document_->setContentHeight(contents_size.Height());
+    document_->setContentWidth(contents_size.width());
+    document_->setContentHeight(contents_size.height());
   }
 
   if (paint_order_map_) {

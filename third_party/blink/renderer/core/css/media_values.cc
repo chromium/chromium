@@ -80,14 +80,14 @@ double MediaValues::CalculateViewportWidth(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->View());
   DCHECK(frame->GetDocument());
-  return frame->View()->ViewportSizeForMediaQueries().Width();
+  return frame->View()->ViewportSizeForMediaQueries().width();
 }
 
 double MediaValues::CalculateViewportHeight(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->View());
   DCHECK(frame->GetDocument());
-  return frame->View()->ViewportSizeForMediaQueries().Height();
+  return frame->View()->ViewportSizeForMediaQueries().height();
 }
 
 int MediaValues::CalculateDeviceWidth(LocalFrame* frame) {

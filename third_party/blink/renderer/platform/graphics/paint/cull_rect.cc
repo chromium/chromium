@@ -32,7 +32,7 @@ static int LocalPixelDistanceToExpand(
   GeometryMapper::SourceToDestinationRect(root_transform, local_transform,
                                           rect);
   // Now rect.Size() is the size of a screen pixel in local coordinates.
-  float scale = std::max(rect.Width(), rect.Height());
+  float scale = std::max(rect.width(), rect.height());
   // A very big scale may be caused by non-invertable near non-invertable
   // transforms. Fallback to scale 1. The limit is heuristic.
   if (scale > kReasonablePixelLimit / kPixelDistanceToExpand)

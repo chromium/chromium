@@ -738,7 +738,7 @@ void WindowPerformance::AddElementTiming(const AtomicString& name,
   PerformanceElementTiming* entry = PerformanceElementTiming::Create(
       name, url, rect, MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(load_time), identifier,
-      intrinsic_size.Width(), intrinsic_size.Height(), id, element);
+      intrinsic_size.width(), intrinsic_size.height(), id, element);
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
                ToTraceValue(DomWindow()->GetFrame()));

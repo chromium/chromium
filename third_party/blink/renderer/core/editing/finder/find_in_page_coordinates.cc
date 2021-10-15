@@ -88,10 +88,10 @@ static FloatRect ToNormalizedRect(const FloatRect& absolute_rect,
   // Since we work with rects enclosing quad unions this is still
   // transform-friendly.
   FloatRect normalized_rect = absolute_rect;
-  normalized_rect.MoveBy(-container_rect.Location());
+  normalized_rect.MoveBy(-container_rect.origin());
 
-  normalized_rect.Scale(1 / container_rect.Width(),
-                        1 / container_rect.Height());
+  normalized_rect.Scale(1 / container_rect.width(),
+                        1 / container_rect.height());
   return normalized_rect;
 }
 
@@ -118,9 +118,9 @@ FloatRect FindInPageRectFromAbsoluteRect(
       FloatRect normalized_box_rect =
           ToNormalizedRect(FloatRect(layout_object->AbsoluteBoundingBoxRect()),
                            layout_object, container);
-      normalized_rect.Scale(normalized_box_rect.Width(),
-                            normalized_box_rect.Height());
-      normalized_rect.MoveBy(normalized_box_rect.Location());
+      normalized_rect.Scale(normalized_box_rect.width(),
+                            normalized_box_rect.height());
+      normalized_rect.MoveBy(normalized_box_rect.origin());
 
       layout_object = container;
     }

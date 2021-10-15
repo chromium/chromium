@@ -686,16 +686,16 @@ TEST_P(CompositedLayerMappingTest,
   IntSize layer_size(1000, 1000);
   IntRect previous_interest_rect(100, 100, 100, 100);
   IntRect new_interest_rect(previous_interest_rect);
-  new_interest_rect.Move(512, 0);
+  new_interest_rect.Offset(512, 0);
   EXPECT_FALSE(InterestRectChangedEnoughToRepaint(
       previous_interest_rect, new_interest_rect, layer_size));
-  new_interest_rect.Move(0, 512);
+  new_interest_rect.Offset(0, 512);
   EXPECT_FALSE(InterestRectChangedEnoughToRepaint(
       previous_interest_rect, new_interest_rect, layer_size));
-  new_interest_rect.Move(1, 0);
+  new_interest_rect.Offset(1, 0);
   EXPECT_TRUE(InterestRectChangedEnoughToRepaint(
       previous_interest_rect, new_interest_rect, layer_size));
-  new_interest_rect.Move(-1, 1);
+  new_interest_rect.Offset(-1, 1);
   EXPECT_TRUE(InterestRectChangedEnoughToRepaint(
       previous_interest_rect, new_interest_rect, layer_size));
 }
@@ -1253,8 +1253,8 @@ TEST_P(CompositedLayerMappingTest, StickyPositionMainThreadOffset) {
       To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->ScrollToAbsolutePosition(
-      FloatPoint(scrollable_area->ScrollPosition().X(), 100));
-  ASSERT_EQ(100.0, scrollable_area->ScrollPosition().Y());
+      FloatPoint(scrollable_area->ScrollPosition().x(), 100));
+  ASSERT_EQ(100.0, scrollable_area->ScrollPosition().y());
 
   sticky_layer->SetNeedsCompositingInputsUpdate();
   EXPECT_TRUE(sticky_layer->NeedsCompositingInputsUpdate());
@@ -1323,7 +1323,7 @@ TEST_P(CompositedLayerMappingTest,
       To<LayoutBlock>(GetLayoutObjectByElementId("scroller"))->Layer();
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->ScrollToAbsolutePosition(
-      FloatPoint(scrollable_area->ScrollPosition().Y(), 100));
+      FloatPoint(scrollable_area->ScrollPosition().y(), 100));
   UpdateAllLifecyclePhasesForTest();
 
   // On the blink side, a sticky offset of (0, 100) should have been applied to
@@ -1342,8 +1342,8 @@ TEST_P(CompositedLayerMappingTest,
   auto sticky_position_relative_to_root =
       transform_from_sticky_to_root.MapPoint(
           FloatPoint(main_graphics_layer->GetOffsetFromTransformNode()));
-  EXPECT_FLOAT_EQ(8, sticky_position_relative_to_root.X());
-  EXPECT_FLOAT_EQ(8, sticky_position_relative_to_root.Y());
+  EXPECT_FLOAT_EQ(8, sticky_position_relative_to_root.x());
+  EXPECT_FLOAT_EQ(8, sticky_position_relative_to_root.y());
 }
 
 TEST_P(CompositedLayerMappingTest,
@@ -1373,7 +1373,7 @@ TEST_P(CompositedLayerMappingTest,
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   scrollable_area->ScrollToAbsolutePosition(
-      FloatPoint(scrollable_area->ScrollPosition().Y(), 100));
+      FloatPoint(scrollable_area->ScrollPosition().y(), 100));
   UpdateAllLifecyclePhasesForTest();
 
   GraphicsLayer* root_scrolling_layer =
@@ -1388,8 +1388,8 @@ TEST_P(CompositedLayerMappingTest,
   auto sticky_position_relative_to_root =
       transform_from_sticky_to_root.MapPoint(
           FloatPoint(main_graphics_layer->GetOffsetFromTransformNode()));
-  EXPECT_FLOAT_EQ(8, sticky_position_relative_to_root.X());
-  EXPECT_FLOAT_EQ(8, sticky_position_relative_to_root.Y());
+  EXPECT_FLOAT_EQ(8, sticky_position_relative_to_root.x());
+  EXPECT_FLOAT_EQ(8, sticky_position_relative_to_root.y());
 }
 
 TEST_P(CompositedLayerMappingTest, ScrollingContainerBoundsChange) {

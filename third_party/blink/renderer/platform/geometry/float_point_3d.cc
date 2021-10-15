@@ -61,11 +61,11 @@ std::ostream& operator<<(std::ostream& ostream, const FloatPoint3D& point) {
 }
 
 String FloatPoint3D::ToString() const {
-  return String::Format("%lg,%lg,%lg", X(), Y(), Z());
+  return String::Format("%lg,%lg,%lg", x(), y(), z());
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const FloatPoint3D& p) {
-  ts << "x=" << p.X() << " y=" << p.Y() << " z=" << p.Z();
+  ts << "x=" << p.x() << " y=" << p.y() << " z=" << p.z();
   return ts;
 }
 

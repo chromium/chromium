@@ -30,7 +30,7 @@ void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
       paint_offset + layout_embedded_content_.ReplacedContentRect().offset));
 
   IntSize view_paint_offset =
-      paint_location - embedded_content_view->FrameRect().Location();
+      paint_location - embedded_content_view->FrameRect().origin();
   CullRect adjusted_cull_rect = paint_info.GetCullRect();
   adjusted_cull_rect.Move(ToGfxVector2d(-view_paint_offset));
   embedded_content_view->Paint(paint_info.context,

@@ -224,8 +224,8 @@ class PLATFORM_EXPORT BMPImageReader final {
   // the end of the image.  Here "plus" means "toward the end of the
   // image", so downwards for is_top_down_ images and upwards otherwise.
   inline bool PastEndOfImage(int num_rows) {
-    return is_top_down_ ? ((coord_.Y() + num_rows) >= parent_->Size().Height())
-                        : ((coord_.Y() - num_rows) < 0);
+    return is_top_down_ ? ((coord_.y() + num_rows) >= parent_->Size().height())
+                        : ((coord_.y() - num_rows) < 0);
   }
 
   // Returns the pixel data for the current |decoded_offset_| in a uint32_t.
@@ -286,8 +286,8 @@ class PLATFORM_EXPORT BMPImageReader final {
                       unsigned green,
                       unsigned blue,
                       unsigned alpha) {
-    buffer_->SetRGBA(coord_.X(), coord_.Y(), red, green, blue, alpha);
-    coord_.Move(1, 0);
+    buffer_->SetRGBA(coord_.x(), coord_.y(), red, green, blue, alpha);
+    coord_.Offset(1, 0);
   }
 
   // Fills pixels from the current X-coordinate up to, but not including,
@@ -299,7 +299,7 @@ class PLATFORM_EXPORT BMPImageReader final {
                        unsigned green,
                        unsigned blue,
                        unsigned alpha) {
-    while (coord_.X() < end_coord)
+    while (coord_.x() < end_coord)
       SetRGBA(red, green, blue, alpha);
   }
 

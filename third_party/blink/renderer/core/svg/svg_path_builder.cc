@@ -123,16 +123,16 @@ void SVGPathBuilder::EmitSegment(const PathSegmentData& segment) {
       EmitLineTo(current_point_ + segment.target_point);
       break;
     case kPathSegLineToHorizontalAbs:
-      EmitLineTo(FloatPoint(segment.target_point.X(), current_point_.Y()));
+      EmitLineTo(FloatPoint(segment.target_point.x(), current_point_.y()));
       break;
     case kPathSegLineToHorizontalRel:
-      EmitLineTo(current_point_ + FloatSize(segment.target_point.X(), 0));
+      EmitLineTo(current_point_ + FloatSize(segment.target_point.x(), 0));
       break;
     case kPathSegLineToVerticalAbs:
-      EmitLineTo(FloatPoint(current_point_.X(), segment.target_point.Y()));
+      EmitLineTo(FloatPoint(current_point_.x(), segment.target_point.y()));
       break;
     case kPathSegLineToVerticalRel:
-      EmitLineTo(current_point_ + FloatSize(0, segment.target_point.Y()));
+      EmitLineTo(current_point_ + FloatSize(0, segment.target_point.y()));
       break;
     case kPathSegCurveToQuadraticAbs:
       EmitQuadTo(segment.point1, segment.target_point);

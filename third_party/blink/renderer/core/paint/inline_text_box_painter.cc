@@ -732,8 +732,8 @@ void InlineTextBoxPainter::PaintDocumentMarker(const PaintInfo& paint_info,
     IntRect marker_rect = EnclosingIntRect(
         font.SelectionRectForText(run, FloatPoint(start_point), sel_height,
                                   marker_offsets.start, marker_offsets.end));
-    start = marker_rect.X() - start_point.left;
-    width = LayoutUnit(marker_rect.Width());
+    start = marker_rect.x() - start_point.left;
+    width = LayoutUnit(marker_rect.width());
   }
   DocumentMarkerPainter::PaintDocumentMarker(
       paint_info, box_origin, style, marker.GetType(),

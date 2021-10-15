@@ -478,10 +478,10 @@ void ScrollTimeline::GetCurrentAndMaxOffset(const LayoutBox* layout_box,
   // Using the absolute value of the scroll offset only makes sense if either
   // the max or min scroll offset for a given axis is 0. This should be
   // guaranteed by the scroll origin code, but these DCHECKs ensure that.
-  DCHECK(scrollable_area->MaximumScrollOffset().Height() == 0 ||
-         scrollable_area->MinimumScrollOffset().Height() == 0);
-  DCHECK(scrollable_area->MaximumScrollOffset().Width() == 0 ||
-         scrollable_area->MinimumScrollOffset().Width() == 0);
+  DCHECK(scrollable_area->MaximumScrollOffset().height() == 0 ||
+         scrollable_area->MinimumScrollOffset().height() == 0);
+  DCHECK(scrollable_area->MaximumScrollOffset().width() == 0 ||
+         scrollable_area->MinimumScrollOffset().width() == 0);
   ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
   ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
                                    scrollable_area->MinimumScrollOffset();
@@ -490,11 +490,11 @@ void ScrollTimeline::GetCurrentAndMaxOffset(const LayoutBox* layout_box,
       ToPhysicalScrollOrientation(orientation_, *layout_box);
 
   if (physical_orientation == kHorizontalScroll) {
-    current_offset = scroll_offset.Width();
-    max_offset = scroll_dimensions.Width();
+    current_offset = scroll_offset.width();
+    max_offset = scroll_dimensions.width();
   } else {
-    current_offset = scroll_offset.Height();
-    max_offset = scroll_dimensions.Height();
+    current_offset = scroll_offset.height();
+    max_offset = scroll_dimensions.height();
   }
   // When using a rtl direction, current_offset grows correctly from 0 to
   // max_offset, but is negative. Since our offsets are all just deltas along

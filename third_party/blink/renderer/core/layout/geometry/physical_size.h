@@ -98,17 +98,17 @@ struct CORE_EXPORT PhysicalSize {
   constexpr LayoutSize ToLayoutSize() const { return {width, height}; }
 
   static PhysicalSize FromFloatSizeRound(const FloatSize& size) {
-    return {LayoutUnit::FromFloatRound(size.Width()),
-            LayoutUnit::FromFloatRound(size.Height())};
+    return {LayoutUnit::FromFloatRound(size.width()),
+            LayoutUnit::FromFloatRound(size.height())};
   }
   static PhysicalSize FromFloatSizeFloor(const FloatSize& size) {
-    return {LayoutUnit::FromFloatFloor(size.Width()),
-            LayoutUnit::FromFloatFloor(size.Height())};
+    return {LayoutUnit::FromFloatFloor(size.width()),
+            LayoutUnit::FromFloatFloor(size.height())};
   }
   constexpr explicit operator FloatSize() const { return {width, height}; }
 
   explicit PhysicalSize(const IntSize& size)
-      : width(size.Width()), height(size.Height()) {}
+      : width(size.width()), height(size.height()) {}
 
   String ToString() const;
 };

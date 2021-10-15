@@ -57,12 +57,12 @@ void ExpectDrawGrayBox(MockPaintCanvas& canvas,
                        const FloatRect& expected_rect) {
   EXPECT_CALL(
       canvas,
-      drawRect(AllOf(Property(&SkRect::x, FloatNear(expected_rect.X(), 0.01)),
-                     Property(&SkRect::y, FloatNear(expected_rect.Y(), 0.01)),
+      drawRect(AllOf(Property(&SkRect::x, FloatNear(expected_rect.x(), 0.01)),
+                     Property(&SkRect::y, FloatNear(expected_rect.y(), 0.01)),
                      Property(&SkRect::width,
-                              FloatNear(expected_rect.Width(), 0.01)),
+                              FloatNear(expected_rect.width(), 0.01)),
                      Property(&SkRect::height,
-                              FloatNear(expected_rect.Height(), 0.01))),
+                              FloatNear(expected_rect.height(), 0.01))),
                AllOf(Property(&PaintFlags::getStyle, PaintFlags::kFill_Style),
                      Property(&PaintFlags::getColor,
                               SkColorSetARGB(0x80, 0xD9, 0xD9, 0xD9)))))
@@ -91,11 +91,11 @@ void DrawImageExpectingIconOnly(PlaceholderImage& image,
       drawImageRect(
           /*image=*/_, /*src=*/_, /*dst=*/
           AllOf(Property(&SkRect::x,
-                         FloatNear(dest_rect.Center().X() -
+                         FloatNear(dest_rect.CenterPoint().x() -
                                        scale_factor * kBaseIconWidth / 2.0f,
                                    0.01)),
                 Property(&SkRect::y,
-                         FloatNear(dest_rect.Center().Y() -
+                         FloatNear(dest_rect.CenterPoint().y() -
                                        scale_factor * kBaseIconHeight / 2.0f,
                                    0.01)),
                 Property(&SkRect::width,
@@ -152,9 +152,9 @@ void DrawImageExpectingIconAndTextLTR(PlaceholderImage& image,
           (kBaseIconOnlyFeatureWidth + kBasePaddingBetweenIconAndText) +
       expected_text_width;
   const float expected_feature_x =
-      dest_rect.Center().X() - expected_feature_width / 2.0f;
+      dest_rect.CenterPoint().x() - expected_feature_width / 2.0f;
   const float expected_feature_y =
-      dest_rect.Center().Y() - scale_factor * kBaseFeatureHeight / 2.0f;
+      dest_rect.CenterPoint().y() - scale_factor * kBaseFeatureHeight / 2.0f;
 
   EXPECT_CALL(
       canvas,
@@ -404,9 +404,9 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
           (kBaseIconOnlyFeatureWidth + kBasePaddingBetweenIconAndText) +
       expected_text_width;
   const float expected_feature_x =
-      dest_rect.Center().X() - expected_feature_width / 2.0f;
+      dest_rect.CenterPoint().x() - expected_feature_width / 2.0f;
   const float expected_feature_y =
-      dest_rect.Center().Y() - kScaleFactor * kBaseFeatureHeight / 2.0f;
+      dest_rect.CenterPoint().y() - kScaleFactor * kBaseFeatureHeight / 2.0f;
 
   EXPECT_CALL(
       canvas,

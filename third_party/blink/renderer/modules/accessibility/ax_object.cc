@@ -4620,8 +4620,8 @@ IntPoint AXObject::GetScrollOffset() const {
   if (!area)
     return IntPoint();
 
-  return IntPoint(area->ScrollOffsetInt().Width(),
-                  area->ScrollOffsetInt().Height());
+  return IntPoint(area->ScrollOffsetInt().width(),
+                  area->ScrollOffsetInt().height());
 }
 
 IntPoint AXObject::MinimumScrollOffset() const {
@@ -4629,8 +4629,8 @@ IntPoint AXObject::MinimumScrollOffset() const {
   if (!area)
     return IntPoint();
 
-  return IntPoint(area->MinimumScrollOffsetInt().Width(),
-                  area->MinimumScrollOffsetInt().Height());
+  return IntPoint(area->MinimumScrollOffsetInt().width(),
+                  area->MinimumScrollOffsetInt().height());
 }
 
 IntPoint AXObject::MaximumScrollOffset() const {
@@ -4638,8 +4638,8 @@ IntPoint AXObject::MaximumScrollOffset() const {
   if (!area)
     return IntPoint();
 
-  return IntPoint(area->MaximumScrollOffsetInt().Width(),
-                  area->MaximumScrollOffsetInt().Height());
+  return IntPoint(area->MaximumScrollOffsetInt().width(),
+                  area->MaximumScrollOffsetInt().height());
 }
 
 void AXObject::SetScrollOffset(const IntPoint& offset) const {
@@ -4648,7 +4648,7 @@ void AXObject::SetScrollOffset(const IntPoint& offset) const {
     return;
 
   // TODO(bokan): This should potentially be a UserScroll.
-  area->SetScrollOffset(ScrollOffset(offset.X(), offset.Y()),
+  area->SetScrollOffset(ScrollOffset(offset.x(), offset.y()),
                         mojom::blink::ScrollType::kProgrammatic);
 }
 
@@ -4903,7 +4903,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
 
   if (IsWebArea()) {
     if (LocalFrameView* view = layout_object->GetFrame()->View()) {
-      out_bounds_in_container.SetSize(FloatSize(view->Size()));
+      out_bounds_in_container.set_size(FloatSize(view->Size()));
 
       // If it's a popup, account for the popup window's offset.
       if (view->GetPage()->GetChromeClient().IsPopup()) {
@@ -4919,9 +4919,9 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
         float scale_factor =
             view->GetPage()->GetChromeClient().WindowToViewportScalar(
                 layout_object->GetFrame(), 1.0f);
-        out_bounds_in_container.SetLocation(
-            FloatPoint(scale_factor * (frame_rect.X() - root_frame_rect.X()),
-                       scale_factor * (frame_rect.Y() - root_frame_rect.Y())));
+        out_bounds_in_container.set_origin(
+            FloatPoint(scale_factor * (frame_rect.x() - root_frame_rect.x()),
+                       scale_factor * (frame_rect.y() - root_frame_rect.y())));
       }
     }
     return;
@@ -4978,7 +4978,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   // If the container has a scroll offset, subtract that out because we want our
   // bounds to be relative to the *unscrolled* position of the container object.
   if (auto* scrollable_area = container->GetScrollableAreaIfScrollable())
-    out_bounds_in_container.Move(scrollable_area->GetScrollOffset());
+    out_bounds_in_container.Offset(scrollable_area->GetScrollOffset());
 
   // Compute the transform between the container's coordinate space and this
   // object.
@@ -4989,7 +4989,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   // bounding box, but if it's a non-trivial transformation like a rotation,
   // scaling, etc. then return the full matrix instead.
   if (transform.IsIdentityOr2DTranslation()) {
-    out_bounds_in_container.Move(transform.To2DTranslation());
+    out_bounds_in_container.Offset(transform.To2DTranslation());
   } else {
     out_container_transform = TransformationMatrix::ToSkMatrix44(transform);
   }
@@ -5008,12 +5008,12 @@ LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
   FloatRect bounds;
   skia::Matrix44 transform;
   GetRelativeBounds(&container, bounds, transform);
-  FloatRect computed_bounds(0, 0, bounds.Width(), bounds.Height());
+  FloatRect computed_bounds(0, 0, bounds.width(), bounds.height());
   while (container && container != this) {
-    computed_bounds.Move(bounds.X(), bounds.Y());
+    computed_bounds.Offset(bounds.x(), bounds.y());
     if (!container->IsWebArea()) {
-      computed_bounds.Move(-container->GetScrollOffset().X(),
-                           -container->GetScrollOffset().Y());
+      computed_bounds.Offset(-container->GetScrollOffset().x(),
+                             -container->GetScrollOffset().y());
     }
     if (!transform.isIdentity()) {
       TransformationMatrix transformation_matrix(transform);

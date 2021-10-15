@@ -61,16 +61,16 @@ void StaticBitmapImage::DrawHelper(cc::PaintCanvas* canvas,
     canvas->save();
 
     // ImageOrientation expects the origin to be at (0, 0)
-    canvas->translate(adjusted_dst_rect.X(), adjusted_dst_rect.Y());
-    adjusted_dst_rect.SetLocation(FloatPoint());
+    canvas->translate(adjusted_dst_rect.x(), adjusted_dst_rect.y());
+    adjusted_dst_rect.set_origin(FloatPoint());
 
     canvas->concat(AffineTransformToSkMatrix(
-        orientation_.TransformFromDefault(adjusted_dst_rect.Size())));
+        orientation_.TransformFromDefault(adjusted_dst_rect.size())));
 
     if (orientation_.UsesWidthAsHeight()) {
       adjusted_dst_rect =
-          FloatRect(adjusted_dst_rect.X(), adjusted_dst_rect.Y(),
-                    adjusted_dst_rect.Height(), adjusted_dst_rect.Width());
+          FloatRect(adjusted_dst_rect.x(), adjusted_dst_rect.y(),
+                    adjusted_dst_rect.height(), adjusted_dst_rect.width());
     }
   }
 

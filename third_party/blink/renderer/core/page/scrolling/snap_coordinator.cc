@@ -266,7 +266,7 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
     FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
         scrollable_area->MaximumScrollOffset());
     snap_container_data.set_max_position(
-        gfx::Vector2dF(max_position.X(), max_position.Y()));
+        gfx::Vector2dF(max_position.x(), max_position.y()));
 
     // Scroll-padding represents inward offsets from the corresponding edge of
     // the scrollport.

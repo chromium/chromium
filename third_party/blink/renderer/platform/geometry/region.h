@@ -197,7 +197,7 @@ static inline cc::Region RegionToCCRegion(const Region& in_region) {
   Vector<IntRect> rects = in_region.Rects();
   cc::Region out_region;
   for (const IntRect& r : rects)
-    out_region.Union(gfx::Rect(r.X(), r.Y(), r.Width(), r.Height()));
+    out_region.Union(gfx::Rect(r.x(), r.y(), r.width(), r.height()));
   return out_region;
 }
 

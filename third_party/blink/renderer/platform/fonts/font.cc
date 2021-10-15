@@ -161,7 +161,7 @@ void DrawBlobs(cc::PaintCanvas* canvas,
         canvas->save();
 
         SkMatrix m;
-        m.setSinCos(-1, 0, point.X(), point.Y());
+        m.setSinCos(-1, 0, point.x(), point.y());
         canvas->concat(m);
         break;
       }
@@ -169,14 +169,14 @@ void DrawBlobs(cc::PaintCanvas* canvas,
         canvas->save();
 
         SkMatrix m;
-        m.setSinCos(-1, 0, point.X(), point.Y());
+        m.setSinCos(-1, 0, point.x(), point.y());
         // TODO(yosin): We should use angle specified in CSS instead of
         // constant value -15deg.
         // Note: We draw glyph in right-top corner upper.
         // See CSS "transform: skew(0, -15deg)"
         SkMatrix skewY;
         constexpr SkScalar kSkewY = -0.2679491924311227;  // tan(-15deg)
-        skewY.setSkew(0, kSkewY, point.X(), point.Y());
+        skewY.setSkew(0, kSkewY, point.x(), point.y());
         m.preConcat(skewY);
         canvas->concat(m);
         break;
@@ -189,16 +189,16 @@ void DrawBlobs(cc::PaintCanvas* canvas,
         canvas->save();
         SkMatrix skewX;
         constexpr SkScalar kSkewX = 0.2679491924311227;  // tan(15deg)
-        skewX.setSkew(kSkewX, 0, point.X(), point.Y());
+        skewX.setSkew(kSkewX, 0, point.x(), point.y());
         canvas->concat(skewX);
         break;
       }
     }
     if (node_id != cc::kInvalidNodeId) {
-      canvas->drawTextBlob(blob_info.blob, point.X(), point.Y(), node_id,
+      canvas->drawTextBlob(blob_info.blob, point.x(), point.y(), node_id,
                            flags);
     } else {
-      canvas->drawTextBlob(blob_info.blob, point.X(), point.Y(), flags);
+      canvas->drawTextBlob(blob_info.blob, point.x(), point.y(), flags);
     }
   }
 }
@@ -314,7 +314,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     DrawBlobs(canvas, flags, bloberizer.Blobs(), curr_point);
 
     bidi_run = bidi_run->Next();
-    curr_point.Move(bloberizer.Advance(), 0);
+    curr_point.Offset(bloberizer.Advance(), 0);
   }
 
   bidi_runs.DeleteRuns();
@@ -473,9 +473,9 @@ void Font::GetTextIntercepts(const NGTextFragmentPaintInfo& text_info,
 static inline FloatRect PixelSnappedSelectionRect(FloatRect rect) {
   // Using roundf() rather than ceilf() for the right edge as a compromise to
   // ensure correct caret positioning.
-  float rounded_x = roundf(rect.X());
-  return FloatRect(rounded_x, rect.Y(), roundf(rect.MaxX() - rounded_x),
-                   rect.Height());
+  float rounded_x = roundf(rect.x());
+  return FloatRect(rounded_x, rect.y(), roundf(rect.right() - rounded_x),
+                   rect.height());
 }
 
 FloatRect Font::SelectionRectForText(const TextRun& run,
@@ -491,7 +491,7 @@ FloatRect Font::SelectionRectForText(const TextRun& run,
   CharacterRange range = shaper.GetCharacterRange(run, from, to);
 
   return PixelSnappedSelectionRect(
-      FloatRect(point.X() + range.start, point.Y(), range.Width(), height));
+      FloatRect(point.x() + range.start, point.y(), range.Width(), height));
 }
 
 int Font::OffsetForPosition(const TextRun& run,

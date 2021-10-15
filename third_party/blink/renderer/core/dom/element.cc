@@ -1432,7 +1432,7 @@ int Element::clientWidth() {
         return result;
       }
       int result = AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                       LayoutUnit(layout_view->GetLayoutSize().Width()),
+                       LayoutUnit(layout_view->GetLayoutSize().width()),
                        layout_view->StyleRef())
                        .Round();
       RecordScrollbarSizeForStudy(result, /* is_width= */ true,
@@ -1486,7 +1486,7 @@ int Element::clientHeight() {
         return result;
       }
       int result = AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                       LayoutUnit(layout_view->GetLayoutSize().Height()),
+                       LayoutUnit(layout_view->GetLayoutSize().height()),
                        layout_view->StyleRef())
                        .Round();
       RecordScrollbarSizeForStudy(result, /* is_width= */ false,
@@ -1547,7 +1547,7 @@ double Element::scrollLeft() {
     }
 
     return AdjustForAbsoluteZoom::AdjustScroll(
-        scrollable_area->GetScrollOffset().Width(), *GetLayoutBox());
+        scrollable_area->GetScrollOffset().width(), *GetLayoutBox());
   }
 
   return 0;
@@ -1580,7 +1580,7 @@ double Element::scrollTop() {
     }
 
     return AdjustForAbsoluteZoom::AdjustScroll(
-        scrollable_area->GetScrollOffset().Height(), *GetLayoutBox());
+        scrollable_area->GetScrollOffset().height(), *GetLayoutBox());
   }
 
   return 0;
@@ -1622,7 +1622,7 @@ void Element::setScrollLeft(double new_left) {
     }
 
     ScrollOffset end_offset(new_left * box->Style()->EffectiveZoom(),
-                            scrollable_area->GetScrollOffset().Height());
+                            scrollable_area->GetScrollOffset().height());
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
             ToGfxVector2dF(scrollable_area->ScrollOffsetToPosition(end_offset)),
@@ -1673,7 +1673,7 @@ void Element::setScrollTop(double new_top) {
       }
     }
 
-    ScrollOffset end_offset(scrollable_area->GetScrollOffset().Width(),
+    ScrollOffset end_offset(scrollable_area->GetScrollOffset().width(),
                             new_top * box->Style()->EffectiveZoom());
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
@@ -1701,7 +1701,7 @@ int Element::scrollWidth() {
   if (GetDocument().ScrollingElementNoLayout() == this) {
     if (GetDocument().View()) {
       return AdjustForAbsoluteZoom::AdjustInt(
-          GetDocument().View()->LayoutViewport()->ContentsSize().Width(),
+          GetDocument().View()->LayoutViewport()->ContentsSize().width(),
           GetDocument().GetFrame()->PageZoomFactor());
     }
     return 0;
@@ -1724,7 +1724,7 @@ int Element::scrollHeight() {
   if (GetDocument().ScrollingElementNoLayout() == this) {
     if (GetDocument().View()) {
       return AdjustForAbsoluteZoom::AdjustInt(
-          GetDocument().View()->LayoutViewport()->ContentsSize().Height(),
+          GetDocument().View()->LayoutViewport()->ContentsSize().height(),
           GetDocument().GetFrame()->PageZoomFactor());
     }
     return 0;
@@ -1803,8 +1803,8 @@ void Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options) {
     return;
   if (PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea()) {
     DCHECK(box);
-    gfx::Vector2dF current_position(scrollable_area->ScrollPosition().X(),
-                                    scrollable_area->ScrollPosition().Y());
+    gfx::Vector2dF current_position(scrollable_area->ScrollPosition().x(),
+                                    scrollable_area->ScrollPosition().y());
     displacement.Scale(box->Style()->EffectiveZoom());
     gfx::Vector2dF new_offset(current_position + displacement);
     FloatPoint new_position(new_offset.x(), new_offset.y());
@@ -1857,12 +1857,12 @@ void Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
 
     ScrollOffset new_offset = scrollable_area->GetScrollOffset();
     if (scroll_to_options->hasLeft()) {
-      new_offset.SetWidth(
+      new_offset.set_width(
           ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->left()) *
           box->Style()->EffectiveZoom());
     }
     if (scroll_to_options->hasTop()) {
-      new_offset.SetHeight(
+      new_offset.set_height(
           ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->top()) *
           box->Style()->EffectiveZoom());
     }
@@ -1936,12 +1936,12 @@ void Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
 
   ScrollOffset new_offset = viewport->GetScrollOffset();
   if (scroll_to_options->hasLeft()) {
-    new_offset.SetWidth(
+    new_offset.set_width(
         ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->left()) *
         frame->PageZoomFactor());
   }
   if (scroll_to_options->hasTop()) {
-    new_offset.SetHeight(
+    new_offset.set_height(
         ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->top()) *
         frame->PageZoomFactor());
   }
@@ -1994,7 +1994,7 @@ IntRect Element::BoundsInViewport() const {
 
   IntRect result = quads[0].EnclosingBoundingBox();
   for (wtf_size_t i = 1; i < quads.size(); ++i)
-    result.Unite(quads[i].EnclosingBoundingBox());
+    result.Union(quads[i].EnclosingBoundingBox());
 
   return view->FrameToViewport(result);
 }
@@ -2125,7 +2125,7 @@ FloatRect Element::GetBoundingClientRectNoLifecycleUpdate() const {
 
   FloatRect result = quads[0].BoundingBox();
   for (wtf_size_t i = 1; i < quads.size(); ++i)
-    result.Unite(quads[i].BoundingBox());
+    result.Union(quads[i].BoundingBox());
 
   LayoutObject* element_layout_object = GetLayoutObject();
   DCHECK(element_layout_object);

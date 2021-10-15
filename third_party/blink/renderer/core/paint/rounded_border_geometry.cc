@@ -26,20 +26,20 @@ FloatRoundedRect::Radii CalcRadiiFor(const ComputedStyle& style,
 void ExcludeSides(PhysicalBoxSides sides_to_include,
                   FloatRoundedRect::Radii* radii) {
   if (!sides_to_include.left) {
-    radii->SetTopLeft(FloatSize(0, radii->TopLeft().Height()));
-    radii->SetBottomLeft(FloatSize(0, radii->BottomLeft().Height()));
+    radii->SetTopLeft(FloatSize(0, radii->TopLeft().height()));
+    radii->SetBottomLeft(FloatSize(0, radii->BottomLeft().height()));
   }
   if (!sides_to_include.right) {
-    radii->SetTopRight(FloatSize(0, radii->TopRight().Height()));
-    radii->SetBottomRight(FloatSize(0, radii->BottomRight().Height()));
+    radii->SetTopRight(FloatSize(0, radii->TopRight().height()));
+    radii->SetBottomRight(FloatSize(0, radii->BottomRight().height()));
   }
   if (!sides_to_include.top) {
-    radii->SetTopLeft(FloatSize(radii->TopLeft().Width(), 0));
-    radii->SetTopRight(FloatSize(radii->TopRight().Width(), 0));
+    radii->SetTopLeft(FloatSize(radii->TopLeft().width(), 0));
+    radii->SetTopRight(FloatSize(radii->TopRight().width(), 0));
   }
   if (!sides_to_include.bottom) {
-    radii->SetBottomLeft(FloatSize(radii->BottomLeft().Width(), 0));
-    radii->SetBottomRight(FloatSize(radii->BottomRight().Width(), 0));
+    radii->SetBottomLeft(FloatSize(radii->BottomLeft().width(), 0));
+    radii->SetBottomRight(FloatSize(radii->BottomRight().width(), 0));
   }
 }
 

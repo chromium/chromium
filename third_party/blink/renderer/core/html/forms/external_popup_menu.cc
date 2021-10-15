@@ -130,9 +130,9 @@ bool ExternalPopupMenu::ShowInternal() {
       rect_in_viewport.Scale(1 / dpr);
 
     gfx::Rect bounds =
-        gfx::Rect(rect_in_viewport.X() * scale_for_emulation,
-                  rect_in_viewport.Y() * scale_for_emulation,
-                  rect_in_viewport.Width(), rect_in_viewport.Height());
+        gfx::Rect(rect_in_viewport.x() * scale_for_emulation,
+                  rect_in_viewport.y() * scale_for_emulation,
+                  rect_in_viewport.width(), rect_in_viewport.height());
     local_frame_->GetLocalFrameHostRemote().ShowPopupMenu(
         receiver_.BindNewPipeAndPassRemote(execution_context->GetTaskRunner(
             TaskType::kInternalUserInteraction)),

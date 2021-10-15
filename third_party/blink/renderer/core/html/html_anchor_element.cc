@@ -191,9 +191,9 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
   clamped_point.ClampNegativeToZero();
 
   url.Append('?');
-  url.AppendNumber(clamped_point.X());
+  url.AppendNumber(clamped_point.x());
   url.Append(',');
-  url.AppendNumber(clamped_point.Y());
+  url.AppendNumber(clamped_point.y());
 }
 
 void HTMLAnchorElement::DefaultEventHandler(Event& event) {

@@ -632,8 +632,8 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
       GeometryMapper::SourceToDestinationProjection(clip.LocalTransformSpace(),
                                                     transform);
   new_translation_2d_or_matrix.MapRect(layer_bounds);
-  new_translation_2d_or_matrix.PostTranslate(-layer_bounds.X(),
-                                             -layer_bounds.Y());
+  new_translation_2d_or_matrix.PostTranslate(-layer_bounds.x(),
+                                             -layer_bounds.y());
 
   if (!path && new_translation_2d_or_matrix.IsIdentityOr2DTranslation()) {
     const auto& translation = new_translation_2d_or_matrix.Translation2D();
@@ -653,8 +653,8 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
     layer_->SetNeedsDisplay();
 
   layer_->SetOffsetToTransformParent(
-      gfx::Vector2dF(layer_bounds.X(), layer_bounds.Y()));
-  layer_->SetBounds(ToGfxSize(layer_bounds.Size()));
+      gfx::Vector2dF(layer_bounds.x(), layer_bounds.y()));
+  layer_->SetBounds(ToGfxSize(layer_bounds.size()));
   rrect_ = new_rrect;
   path_ = path;
 }

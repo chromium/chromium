@@ -50,13 +50,13 @@ namespace {
   EXPECT_EQ(a.width(), b.width()); \
   EXPECT_EQ(a.height(), b.height());
 
-#define EXPECT_OPAQUE_PIXELS_IN_RECT(bitmap, opaqueRect)         \
-  {                                                              \
-    for (int y = opaqueRect.Y(); y < opaqueRect.MaxY(); ++y)     \
-      for (int x = opaqueRect.X(); x < opaqueRect.MaxX(); ++x) { \
-        int alpha = *bitmap.getAddr32(x, y) >> 24;               \
-        EXPECT_EQ(255, alpha);                                   \
-      }                                                          \
+#define EXPECT_OPAQUE_PIXELS_IN_RECT(bitmap, opaqueRect)          \
+  {                                                               \
+    for (int y = opaqueRect.y(); y < opaqueRect.bottom(); ++y)    \
+      for (int x = opaqueRect.x(); x < opaqueRect.right(); ++x) { \
+        int alpha = *bitmap.getAddr32(x, y) >> 24;                \
+        EXPECT_EQ(255, alpha);                                    \
+      }                                                           \
   }
 
 #define EXPECT_OPAQUE_PIXELS_ONLY_IN_RECT(bitmap, opaqueRect) \

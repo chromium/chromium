@@ -140,8 +140,8 @@ bool GPUCanvasContext::PushFrame() {
   auto canvas_resource = swapchain_->ExportCanvasResource();
   if (!canvas_resource)
     return false;
-  const int width = canvas_resource->Size().Width();
-  const int height = canvas_resource->Size().Height();
+  const int width = canvas_resource->Size().width();
+  const int height = canvas_resource->Size().height();
   return Host()->PushFrame(std::move(canvas_resource),
                            SkIRect::MakeWH(width, height));
 }

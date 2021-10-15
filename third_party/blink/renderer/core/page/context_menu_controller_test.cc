@@ -702,10 +702,10 @@ TEST_P(ContextMenuControllerTest, SelectionRectClipped) {
   selection.ComputeAbsoluteBounds(anchor, focus);
   anchor = document->GetFrame()->View()->FrameToViewport(anchor);
   focus = document->GetFrame()->View()->FrameToViewport(focus);
-  int left = std::min(focus.X(), anchor.X());
-  int top = std::min(focus.Y(), anchor.Y());
-  int right = std::max(focus.MaxX(), anchor.MaxX());
-  int bottom = std::max(focus.MaxY(), anchor.MaxY());
+  int left = std::min(focus.x(), anchor.x());
+  int top = std::min(focus.y(), anchor.y());
+  int right = std::max(focus.right(), anchor.right());
+  int bottom = std::max(focus.bottom(), anchor.bottom());
   gfx::Rect selection_rect(left, top, right - left, bottom - top);
   EXPECT_EQ(context_menu_data.selection_rect, selection_rect);
 
@@ -721,10 +721,11 @@ TEST_P(ContextMenuControllerTest, SelectionRectClipped) {
   selection.ComputeAbsoluteBounds(anchor, focus);
   anchor = document->GetFrame()->View()->FrameToViewport(anchor);
   focus = document->GetFrame()->View()->FrameToViewport(focus);
-  left = std::max(clip_bound.X(), std::min(focus.X(), anchor.X()));
-  top = std::max(clip_bound.Y(), std::min(focus.Y(), anchor.Y()));
-  right = std::min(clip_bound.MaxX(), std::max(focus.MaxX(), anchor.MaxX()));
-  bottom = std::min(clip_bound.MaxY(), std::max(focus.MaxY(), anchor.MaxY()));
+  left = std::max(clip_bound.x(), std::min(focus.x(), anchor.x()));
+  top = std::max(clip_bound.y(), std::min(focus.y(), anchor.y()));
+  right = std::min(clip_bound.right(), std::max(focus.right(), anchor.right()));
+  bottom =
+      std::min(clip_bound.bottom(), std::max(focus.bottom(), anchor.bottom()));
   selection_rect = gfx::Rect(left, top, right - left, bottom - top);
   EXPECT_EQ(context_menu_data.selection_rect, selection_rect);
 }

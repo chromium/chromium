@@ -40,9 +40,9 @@ static inline float DimensionForLengthMode(SVGLengthMode mode,
                                            const FloatSize& viewport_size) {
   switch (mode) {
     case SVGLengthMode::kWidth:
-      return viewport_size.Width();
+      return viewport_size.width();
     case SVGLengthMode::kHeight:
-      return viewport_size.Height();
+      return viewport_size.height();
     case SVGLengthMode::kOther:
       return sqrtf(viewport_size.DiagonalLengthSquared() / 2);
   }
@@ -110,11 +110,11 @@ static inline float ViewportLengthPercent(const float width_or_height) {
 }
 
 static inline float ViewportMinPercent(const FloatSize& viewport_size) {
-  return std::min(viewport_size.Width(), viewport_size.Height()) / 100;
+  return std::min(viewport_size.width(), viewport_size.height()) / 100;
 }
 
 static inline float ViewportMaxPercent(const FloatSize& viewport_size) {
-  return std::max(viewport_size.Width(), viewport_size.Height()) / 100;
+  return std::max(viewport_size.width(), viewport_size.height()) / 100;
 }
 
 static inline float DimensionForViewportUnit(const SVGElement* context,
@@ -135,11 +135,11 @@ static inline float DimensionForViewportUnit(const SVGElement* context,
 
   switch (unit) {
     case CSSPrimitiveValue::UnitType::kViewportWidth:
-      return ViewportLengthPercent(viewport_size.Width()) /
+      return ViewportLengthPercent(viewport_size.width()) /
              style->EffectiveZoom();
 
     case CSSPrimitiveValue::UnitType::kViewportHeight:
-      return ViewportLengthPercent(viewport_size.Height()) /
+      return ViewportLengthPercent(viewport_size.height()) /
              style->EffectiveZoom();
 
     case CSSPrimitiveValue::UnitType::kViewportMin:
@@ -168,12 +168,12 @@ FloatRect SVGLengthContext::ResolveRectangle(const SVGElement* context,
   DCHECK_NE(SVGUnitTypes::kSvgUnitTypeUnknown, type);
   if (type != SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
     return FloatRect(
-        ConvertValueFromPercentageToUserUnits(x, viewport.Width()) +
-            viewport.X(),
-        ConvertValueFromPercentageToUserUnits(y, viewport.Height()) +
-            viewport.Y(),
-        ConvertValueFromPercentageToUserUnits(width, viewport.Width()),
-        ConvertValueFromPercentageToUserUnits(height, viewport.Height()));
+        ConvertValueFromPercentageToUserUnits(x, viewport.width()) +
+            viewport.x(),
+        ConvertValueFromPercentageToUserUnits(y, viewport.height()) +
+            viewport.y(),
+        ConvertValueFromPercentageToUserUnits(width, viewport.width()),
+        ConvertValueFromPercentageToUserUnits(height, viewport.height()));
   }
 
   SVGLengthContext length_context(context);
@@ -208,13 +208,13 @@ FloatPoint SVGLengthContext::ResolveLengthPair(
     // to zero so that the corresponding Length resolves to zero. This matches
     // the behavior of ValueForLength() below.
     if (x_length.IsAuto())
-      viewport_size.SetWidth(0);
+      viewport_size.set_width(0);
     else if (y_length.IsAuto())
-      viewport_size.SetHeight(0);
+      viewport_size.set_height(0);
   }
   float zoom = style.EffectiveZoom();
-  return FloatPoint(ValueForLength(x_length, zoom, viewport_size.Width()),
-                    ValueForLength(y_length, zoom, viewport_size.Height()));
+  return FloatPoint(ValueForLength(x_length, zoom, viewport_size.width()),
+                    ValueForLength(y_length, zoom, viewport_size.height()));
 }
 
 float SVGLengthContext::ResolveLength(const SVGElement* context,
@@ -467,7 +467,7 @@ bool SVGLengthContext::DetermineViewport(FloatSize& viewport_size) const {
   if (!svg)
     return false;
 
-  viewport_size = svg->CurrentViewBoxRect().Size();
+  viewport_size = svg->CurrentViewBoxRect().size();
   if (viewport_size.IsEmpty())
     viewport_size = svg->CurrentViewportSize();
 

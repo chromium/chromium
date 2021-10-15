@@ -153,22 +153,22 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
       return pattern_data;
     tile_transform = SVGFitToViewBox::ViewBoxToViewTransform(
         attributes.ViewBox(), attributes.PreserveAspectRatio(),
-        tile_bounds.Size());
+        tile_bounds.size());
   } else {
     // A viewBox overrides patternContentUnits, per spec.
     if (attributes.PatternContentUnits() ==
         SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
-      tile_transform.Scale(object_bounding_box.Width(),
-                           object_bounding_box.Height());
+      tile_transform.Scale(object_bounding_box.width(),
+                           object_bounding_box.height());
     }
   }
 
   pattern_data->pattern = Pattern::CreatePaintRecordPattern(
-      AsPaintRecord(tile_bounds.Size(), tile_transform),
-      FloatRect(FloatPoint(), tile_bounds.Size()));
+      AsPaintRecord(tile_bounds.size(), tile_transform),
+      FloatRect(FloatPoint(), tile_bounds.size()));
 
   // Compute pattern space transformation.
-  pattern_data->transform.Translate(tile_bounds.X(), tile_bounds.Y());
+  pattern_data->transform.Translate(tile_bounds.x(), tile_bounds.y());
   pattern_data->transform.PreMultiply(attributes.PatternTransform());
 
   return pattern_data;

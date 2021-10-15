@@ -102,10 +102,10 @@ bool ParseQuad(std::unique_ptr<protocol::Array<double>> quad_array,
   const size_t kCoordinatesInQuad = 8;
   if (!quad_array || quad_array->size() != kCoordinatesInQuad)
     return false;
-  quad->SetP1(FloatPoint((*quad_array)[0], (*quad_array)[1]));
-  quad->SetP2(FloatPoint((*quad_array)[2], (*quad_array)[3]));
-  quad->SetP3(FloatPoint((*quad_array)[4], (*quad_array)[5]));
-  quad->SetP4(FloatPoint((*quad_array)[6], (*quad_array)[7]));
+  quad->set_p1(FloatPoint((*quad_array)[0], (*quad_array)[1]));
+  quad->set_p2(FloatPoint((*quad_array)[2], (*quad_array)[3]));
+  quad->set_p3(FloatPoint((*quad_array)[4], (*quad_array)[5]));
+  quad->set_p4(FloatPoint((*quad_array)[6], (*quad_array)[7]));
   return true;
 }
 
@@ -1172,8 +1172,8 @@ static std::unique_ptr<protocol::DictionaryValue> BuildObjectForSize(
     const IntSize& size) {
   std::unique_ptr<protocol::DictionaryValue> result =
       protocol::DictionaryValue::create();
-  result->setInteger("width", size.Width());
-  result->setInteger("height", size.Height());
+  result->setInteger("width", size.width());
+  result->setInteger("height", size.height());
   return result;
 }
 
@@ -1299,7 +1299,7 @@ void InspectorOverlayAgent::Reset(
       GetFrame()->GetPage()->GetChromeClient().ViewportToScreen(
           IntRect(IntPoint(), viewport_size), GetFrame()->View());
   reset_data->setObject("viewportSize",
-                        BuildObjectForSize(viewport_in_screen.Size()));
+                        BuildObjectForSize(viewport_in_screen.size()));
   reset_data->setObject("viewportSizeForMediaQueries",
                         BuildObjectForSize(viewport_size_for_media_queries));
 

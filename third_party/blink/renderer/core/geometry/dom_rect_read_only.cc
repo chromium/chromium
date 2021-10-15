@@ -31,13 +31,13 @@ ScriptValue DOMRectReadOnly::toJSONForBinding(ScriptState* script_state) const {
 }
 
 DOMRectReadOnly* DOMRectReadOnly::FromIntRect(const IntRect& rect) {
-  return MakeGarbageCollected<DOMRectReadOnly>(rect.X(), rect.Y(), rect.Width(),
-                                               rect.Height());
+  return MakeGarbageCollected<DOMRectReadOnly>(rect.x(), rect.y(), rect.width(),
+                                               rect.height());
 }
 
 DOMRectReadOnly* DOMRectReadOnly::FromFloatRect(const FloatRect& rect) {
-  return MakeGarbageCollected<DOMRectReadOnly>(rect.X(), rect.Y(), rect.Width(),
-                                               rect.Height());
+  return MakeGarbageCollected<DOMRectReadOnly>(rect.x(), rect.y(), rect.width(),
+                                               rect.height());
 }
 
 DOMRectReadOnly* DOMRectReadOnly::fromRect(const DOMRectInit* other) {

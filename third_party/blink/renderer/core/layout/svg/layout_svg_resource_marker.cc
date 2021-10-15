@@ -121,7 +121,7 @@ AffineTransform LayoutSVGResourceMarker::MarkerTransformation(
   }
 
   AffineTransform transform;
-  transform.Translate(position.origin.X(), position.origin.Y());
+  transform.Translate(position.origin.x(), position.origin.y());
   transform.Rotate(computed_angle);
   transform.Scale(marker_scale);
 
@@ -129,7 +129,7 @@ AffineTransform LayoutSVGResourceMarker::MarkerTransformation(
   // contents so we include the value in each marker's transform.
   FloatPoint mapped_reference_point =
       LocalToSVGParentTransform().MapPoint(ReferencePoint());
-  transform.Translate(-mapped_reference_point.X(), -mapped_reference_point.Y());
+  transform.Translate(-mapped_reference_point.x(), -mapped_reference_point.y());
   return transform;
 }
 

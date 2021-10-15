@@ -26,8 +26,8 @@ void FrameViewAutoSizeInfo::Trace(Visitor* visitor) const {
 void FrameViewAutoSizeInfo::ConfigureAutoSizeMode(const IntSize& min_size,
                                                   const IntSize& max_size) {
   DCHECK(!min_size.IsEmpty());
-  DCHECK_LE(min_size.Width(), max_size.Width());
-  DCHECK_LE(min_size.Height(), max_size.Height());
+  DCHECK_LE(min_size.width(), max_size.width());
+  DCHECK_LE(min_size.height(), max_size.height());
 
   if (min_auto_size_ == min_size && max_auto_size_ == max_size)
     return;
@@ -55,8 +55,8 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
   if (!did_run_autosize_) {
     running_first_autosize_ = true;
     did_run_autosize_ = true;
-    if (size.Height() != min_auto_size_.Height()) {
-      frame_view_->Resize(size.Width(), min_auto_size_.Height());
+    if (size.height() != min_auto_size_.height()) {
+      frame_view_->Resize(size.width(), min_auto_size_.height());
       return true;
     }
   }
@@ -89,16 +89,16 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
   // if so, increase the other dimension to account for the scrollbar.
   // Since the dimensions are only for the view rectangle, once a
   // dimension exceeds the maximum, there is no need to increase it further.
-  if (new_size.Width() > max_auto_size_.Width()) {
-    new_size.Expand(0, layout_viewport->HypotheticalScrollbarThickness(
-                           kHorizontalScrollbar));
+  if (new_size.width() > max_auto_size_.width()) {
+    new_size.Enlarge(0, layout_viewport->HypotheticalScrollbarThickness(
+                            kHorizontalScrollbar));
     // Don't bother checking for a vertical scrollbar because the width is at
     // already greater the maximum.
-  } else if (new_size.Height() > max_auto_size_.Height() &&
+  } else if (new_size.height() > max_auto_size_.height() &&
              // If we have a real vertical scrollbar, it's already included in
              // PreferredLogicalWidths(), so don't add a hypothetical one.
              !layout_viewport->HasVerticalScrollbar()) {
-    new_size.Expand(
+    new_size.Enlarge(
         layout_viewport->HypotheticalScrollbarThickness(kVerticalScrollbar), 0);
     // Don't bother checking for a horizontal scrollbar because the height is
     // already greater the maximum.
@@ -111,14 +111,14 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
   // show.
   mojom::blink::ScrollbarMode horizontal_scrollbar_mode =
       mojom::blink::ScrollbarMode::kAlwaysOff;
-  if (new_size.Width() > max_auto_size_.Width()) {
-    new_size.SetWidth(max_auto_size_.Width());
+  if (new_size.width() > max_auto_size_.width()) {
+    new_size.set_width(max_auto_size_.width());
     horizontal_scrollbar_mode = mojom::blink::ScrollbarMode::kAlwaysOn;
   }
   mojom::blink::ScrollbarMode vertical_scrollbar_mode =
       mojom::blink::ScrollbarMode::kAlwaysOff;
-  if (new_size.Height() > max_auto_size_.Height()) {
-    new_size.SetHeight(max_auto_size_.Height());
+  if (new_size.height() > max_auto_size_.height()) {
+    new_size.set_height(max_auto_size_.height());
     vertical_scrollbar_mode = mojom::blink::ScrollbarMode::kAlwaysOn;
   }
 
@@ -128,14 +128,14 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
   // While loading only allow the size to increase (to avoid twitching during
   // intermediate smaller states) unless autoresize has just been turned on or
   // the maximum size is smaller than the current size.
-  if (!running_first_autosize_ && size.Height() <= max_auto_size_.Height() &&
-      size.Width() <= max_auto_size_.Width() &&
+  if (!running_first_autosize_ && size.height() <= max_auto_size_.height() &&
+      size.width() <= max_auto_size_.width() &&
       !frame_view_->GetFrame().GetDocument()->LoadEventFinished() &&
-      (new_size.Height() < size.Height() || new_size.Width() < size.Width())) {
+      (new_size.height() < size.height() || new_size.width() < size.width())) {
     return false;
   }
 
-  frame_view_->Resize(new_size.Width(), new_size.Height());
+  frame_view_->Resize(new_size.width(), new_size.height());
   // Force the scrollbar state to avoid the scrollbar code adding them and
   // causing them to be needed. For example, a vertical scrollbar may cause
   // text to wrap and thus increase the height (which is the only reason the

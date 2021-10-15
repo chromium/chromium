@@ -42,12 +42,12 @@ Node* FindNonEmptyAnchorNode(const FloatPoint& absolute_point,
   // variability under resize.
   IntSize node_size =
       node->GetLayoutObject()
-          ? node->GetLayoutObject()->AbsoluteBoundingBoxRect().Size()
+          ? node->GetLayoutObject()->AbsoluteBoundingBoxRect().size()
           : IntSize();
   const int max_node_area =
-      view_rect.Width() * view_rect.Height() * kViewportToNodeMaxRelativeArea;
-  if (node_size.Width() * node_size.Height() > max_node_area) {
-    IntSize point_offset = view_rect.Size();
+      view_rect.width() * view_rect.height() * kViewportToNodeMaxRelativeArea;
+  if (node_size.width() * node_size.height() > max_node_area) {
+    IntSize point_offset = view_rect.size();
     point_offset.Scale(kViewportAnchorRelativeEpsilon);
     HitTestLocation alternative_location(point + point_offset);
     node = event_handler
@@ -68,19 +68,19 @@ Node* FindNonEmptyAnchorNode(const FloatPoint& absolute_point,
 
 void MoveToEncloseRect(IntRect& outer, const FloatRect& inner) {
   IntPoint minimum_position =
-      CeiledIntPoint(inner.Location() + inner.Size() - FloatSize(outer.Size()));
-  IntPoint maximum_position = FlooredIntPoint(inner.Location());
+      CeiledIntPoint(inner.origin() + inner.size() - FloatSize(outer.size()));
+  IntPoint maximum_position = FlooredIntPoint(inner.origin());
 
-  IntPoint outer_origin = outer.Location();
+  IntPoint outer_origin = outer.origin();
   outer_origin = outer_origin.ExpandedTo(minimum_position);
   outer_origin = outer_origin.ShrunkTo(maximum_position);
 
-  outer.SetLocation(outer_origin);
+  outer.set_origin(outer_origin);
 }
 
 void MoveIntoRect(FloatRect& inner, const IntRect& outer) {
-  FloatPoint minimum_position = FloatPoint(outer.Location());
-  FloatPoint maximum_position = minimum_position + outer.Size() - inner.Size();
+  FloatPoint minimum_position = FloatPoint(outer.origin());
+  FloatPoint maximum_position = minimum_position + outer.size() - inner.size();
 
   // Adjust maximumPosition to the nearest lower integer because
   // VisualViewport::maximumScrollPosition() does the same.
@@ -88,11 +88,11 @@ void MoveIntoRect(FloatRect& inner, const IntRect& outer) {
   // constructed from an integer point.
   maximum_position = FloatPoint(FlooredIntPoint(maximum_position));
 
-  FloatPoint inner_origin = inner.Location();
+  FloatPoint inner_origin = inner.origin();
   inner_origin = inner_origin.ExpandedTo(minimum_position);
   inner_origin = inner_origin.ShrunkTo(maximum_position);
 
-  inner.SetLocation(inner_origin);
+  inner.set_origin(inner_origin);
 }
 
 }  // namespace
@@ -126,7 +126,7 @@ void RotationViewportAnchor::SetAnchor() {
   // Save the absolute location in case we won't find the anchor node, we'll
   // fall back to that.
   visual_viewport_in_document_ =
-      FloatPoint(root_frame_viewport->VisibleContentRect().Location());
+      FloatPoint(root_frame_viewport->VisibleContentRect().origin());
 
   anchor_node_ = nullptr;
   anchor_node_bounds_ = PhysicalRect();
@@ -136,8 +136,7 @@ void RotationViewportAnchor::SetAnchor() {
   IntRect inner_view_rect = root_frame_viewport->VisibleContentRect();
 
   // Preserve origins at the absolute screen origin.
-  if (inner_view_rect.Location() == IntPoint::Zero() ||
-      inner_view_rect.IsEmpty())
+  if (inner_view_rect.origin() == IntPoint::Zero() || inner_view_rect.IsEmpty())
     return;
 
   IntRect outer_view_rect =
@@ -146,14 +145,14 @@ void RotationViewportAnchor::SetAnchor() {
   // Normalize by the size of the outer rect
   DCHECK(!outer_view_rect.IsEmpty());
   normalized_visual_viewport_offset_ = visual_viewport_->GetScrollOffset();
-  normalized_visual_viewport_offset_.Scale(1.0 / outer_view_rect.Width(),
-                                           1.0 / outer_view_rect.Height());
+  normalized_visual_viewport_offset_.Scale(1.0 / outer_view_rect.width(),
+                                           1.0 / outer_view_rect.height());
 
   // Note, we specifically use the unscaled visual viewport size here as the
   // conversion into content-space below will apply the scale.
   FloatPoint anchor_offset(visual_viewport_->Size());
-  anchor_offset.Scale(anchor_in_inner_view_coords_.Width(),
-                      anchor_in_inner_view_coords_.Height());
+  anchor_offset.Scale(anchor_in_inner_view_coords_.width(),
+                      anchor_in_inner_view_coords_.height());
 
   // Note, we specifically convert to the rootFrameView contents here, rather
   // than the layout viewport. That's because hit testing works from the
@@ -214,11 +213,11 @@ void RotationViewportAnchor::ComputeOrigins(
     const FloatSize& inner_size,
     IntPoint& main_frame_offset,
     FloatPoint& visual_viewport_offset) const {
-  IntSize outer_size = LayoutViewport().VisibleContentRect().Size();
+  IntSize outer_size = LayoutViewport().VisibleContentRect().size();
 
   // Compute the viewport origins in CSS pixels relative to the document.
   FloatSize abs_visual_viewport_offset = normalized_visual_viewport_offset_;
-  abs_visual_viewport_offset.Scale(outer_size.Width(), outer_size.Height());
+  abs_visual_viewport_offset.Scale(outer_size.width(), outer_size.height());
 
   FloatPoint inner_origin = GetInnerOrigin(inner_size);
   FloatPoint outer_origin = inner_origin - abs_visual_viewport_offset;
@@ -228,14 +227,14 @@ void RotationViewportAnchor::ComputeOrigins(
 
   MoveToEncloseRect(outer_rect, inner_rect);
 
-  outer_rect.SetLocation(IntPoint(
-      LayoutViewport().ClampScrollOffset(ToIntSize(outer_rect.Location()))));
+  outer_rect.set_origin(IntPoint(
+      LayoutViewport().ClampScrollOffset(ToIntSize(outer_rect.origin()))));
 
   MoveIntoRect(inner_rect, outer_rect);
 
-  main_frame_offset = outer_rect.Location();
+  main_frame_offset = outer_rect.origin();
   visual_viewport_offset =
-      FloatPoint(inner_rect.Location() - outer_rect.Location());
+      FloatPoint(inner_rect.origin() - outer_rect.origin());
 }
 
 FloatPoint RotationViewportAnchor::GetInnerOrigin(
@@ -258,16 +257,16 @@ FloatPoint RotationViewportAnchor::GetInnerOrigin(
   // Compute the new anchor point relative to the node position
   FloatSize anchor_offset_from_node(
       current_node_bounds_in_layout_viewport.size);
-  anchor_offset_from_node.Scale(anchor_in_node_coords_.Width(),
-                                anchor_in_node_coords_.Height());
+  anchor_offset_from_node.Scale(anchor_in_node_coords_.width(),
+                                anchor_in_node_coords_.height());
   FloatPoint anchor_point =
       FloatPoint(current_node_bounds_in_layout_viewport.offset) +
       anchor_offset_from_node;
 
   // Compute the new origin point relative to the new anchor point
   FloatSize anchor_offset_from_origin = inner_size;
-  anchor_offset_from_origin.Scale(anchor_in_inner_view_coords_.Width(),
-                                  anchor_in_inner_view_coords_.Height());
+  anchor_offset_from_origin.Scale(anchor_in_inner_view_coords_.width(),
+                                  anchor_in_inner_view_coords_.height());
   return anchor_point - anchor_offset_from_origin;
 }
 

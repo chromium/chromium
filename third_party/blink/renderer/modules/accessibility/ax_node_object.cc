@@ -2274,9 +2274,9 @@ String AXNodeObject::ImageDataUrl(const IntSize& max_size) const {
   // empty. It only resizes the image to be smaller (if necessary), not
   // larger.
   float x_scale =
-      max_size.Width() ? max_size.Width() * 1.0 / image->width() : 1.0;
+      max_size.width() ? max_size.width() * 1.0 / image->width() : 1.0;
   float y_scale =
-      max_size.Height() ? max_size.Height() * 1.0 / image->height() : 1.0;
+      max_size.height() ? max_size.height() * 1.0 / image->height() : 1.0;
   float scale = std::min(x_scale, y_scale);
   if (scale >= 1.0)
     scale = 1.0;
@@ -3485,7 +3485,7 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
     }
 
     if (*out_container) {
-      out_bounds_in_container = UnionRect(rects);
+      out_bounds_in_container = UnionRects(rects);
       return;
     }
   }
@@ -3500,10 +3500,11 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
       position_provider->GetRelativeBounds(
           out_container, out_bounds_in_container, out_container_transform,
           clips_children);
-      if (*out_container)
-        out_bounds_in_container.SetSize(
-            FloatSize(out_bounds_in_container.Width(),
-                      std::min(10.0f, out_bounds_in_container.Height())));
+      if (*out_container) {
+        out_bounds_in_container.set_size(
+            FloatSize(out_bounds_in_container.width(),
+                      std::min(10.0f, out_bounds_in_container.height())));
+      }
       break;
     }
   }

@@ -55,10 +55,10 @@ namespace {
 
 // The following two functions are helpers used in cropImage
 static inline IntRect NormalizeRect(const IntRect& rect) {
-  int x = rect.X();
-  int y = rect.Y();
-  int width = rect.Width();
-  int height = rect.Height();
+  int x = rect.x();
+  int y = rect.y();
+  int width = rect.width();
+  int height = rect.height();
   if (width < 0) {
     x = base::ClampAdd(x, width);
     width = -width;
@@ -98,16 +98,16 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
         << IDLEnumAsString(options->colorSpaceConversion());
   }
 
-  int source_width = source_size.Width();
-  int source_height = source_size.Height();
+  int source_width = source_size.width();
+  int source_height = source_size.height();
   if (!crop_rect) {
     parsed_options.crop_rect = IntRect(0, 0, source_width, source_height);
   } else {
     parsed_options.crop_rect = NormalizeRect(*crop_rect);
   }
   if (!options->hasResizeWidth() && !options->hasResizeHeight()) {
-    parsed_options.resize_width = parsed_options.crop_rect.Width();
-    parsed_options.resize_height = parsed_options.crop_rect.Height();
+    parsed_options.resize_width = parsed_options.crop_rect.width();
+    parsed_options.resize_height = parsed_options.crop_rect.height();
   } else if (options->hasResizeWidth() && options->hasResizeHeight()) {
     parsed_options.resize_width = options->resizeWidth();
     parsed_options.resize_height = options->resizeHeight();
@@ -115,17 +115,17 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
     parsed_options.resize_width = options->resizeWidth();
     parsed_options.resize_height = ceil(
         static_cast<float>(options->resizeWidth()) /
-        parsed_options.crop_rect.Width() * parsed_options.crop_rect.Height());
+        parsed_options.crop_rect.width() * parsed_options.crop_rect.height());
   } else {
     parsed_options.resize_height = options->resizeHeight();
     parsed_options.resize_width = ceil(
         static_cast<float>(options->resizeHeight()) /
-        parsed_options.crop_rect.Height() * parsed_options.crop_rect.Width());
+        parsed_options.crop_rect.height() * parsed_options.crop_rect.width());
   }
   if (static_cast<int>(parsed_options.resize_width) ==
-          parsed_options.crop_rect.Width() &&
+          parsed_options.crop_rect.width() &&
       static_cast<int>(parsed_options.resize_height) ==
-          parsed_options.crop_rect.Height()) {
+          parsed_options.crop_rect.height()) {
     parsed_options.should_scale_input = false;
     return parsed_options;
   }
@@ -147,8 +147,8 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
 // width * height * bytesPerPixel will never overflow unsigned.
 // This function assumes that the pixel format is N32.
 bool DstBufferSizeHasOverflow(const ImageBitmap::ParsedOptions& options) {
-  base::CheckedNumeric<unsigned> total_bytes = options.crop_rect.Width();
-  total_bytes *= options.crop_rect.Height();
+  base::CheckedNumeric<unsigned> total_bytes = options.crop_rect.width();
+  total_bytes *= options.crop_rect.height();
   total_bytes *= SkColorTypeBytesPerPixel(kN32_SkColorType);
   if (!total_bytes.IsValid())
     return true;
@@ -380,7 +380,7 @@ scoped_refptr<StaticBitmapImage> ApplyColorSpaceConversion(
 scoped_refptr<StaticBitmapImage> MakeBlankImage(
     const ImageBitmap::ParsedOptions& parsed_options) {
   SkImageInfo info = SkImageInfo::Make(
-      parsed_options.crop_rect.Width(), parsed_options.crop_rect.Height(),
+      parsed_options.crop_rect.width(), parsed_options.crop_rect.height(),
       kN32_SkColorType, kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
   if (parsed_options.should_scale_input) {
     info =
@@ -429,7 +429,7 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
 
   IntRect img_rect(IntPoint(), IntSize(image->width(), image->height()));
   const IntRect& src_rect{parsed_options.crop_rect};
-  const IntRect intersect_rect = Intersection(img_rect, src_rect);
+  const IntRect intersect_rect = IntersectRects(img_rect, src_rect);
 
   // If cropRect doesn't intersect the source image, return a transparent black
   // image.
@@ -439,8 +439,8 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
   scoped_refptr<StaticBitmapImage> result = image;
   if (src_rect != img_rect) {
     auto paint_image = result->PaintImageForCurrentFrame();
-    auto image_info = paint_image.GetSkImageInfo().makeWH(src_rect.Width(),
-                                                          src_rect.Height());
+    auto image_info = paint_image.GetSkImageInfo().makeWH(src_rect.width(),
+                                                          src_rect.height());
     auto resource_provider =
         CreateProvider(image->ContextProviderWrapper(), image_info, result,
                        true /* fallback_to_software*/);
@@ -450,9 +450,9 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
     cc::PaintFlags paint;
     paint.setBlendMode(SkBlendMode::kSrc);
     canvas->drawImageRect(paint_image,
-                          SkRect::MakeXYWH(src_rect.X(), src_rect.Y(),
-                                           src_rect.Width(), src_rect.Height()),
-                          SkRect::MakeWH(src_rect.Width(), src_rect.Height()),
+                          SkRect::MakeXYWH(src_rect.x(), src_rect.y(),
+                                           src_rect.width(), src_rect.height()),
+                          SkRect::MakeWH(src_rect.width(), src_rect.height()),
                           SkSamplingOptions(), &paint,
                           SkCanvas::kStrict_SrcRectConstraint);
     result = resource_provider->Snapshot(image->CurrentFrameOrientation());
@@ -689,7 +689,7 @@ ImageBitmap::ImageBitmap(ImageData* data,
   const IntRect& src_rect{parsed_options.crop_rect};
   const IntRect data_src_rect = IntRect(IntPoint(), data->Size());
   const IntRect intersect_rect =
-      crop_rect ? Intersection(src_rect, data_src_rect) : data_src_rect;
+      crop_rect ? IntersectRects(src_rect, data_src_rect) : data_src_rect;
 
   // If cropRect doesn't intersect the source image, return a transparent black
   // image.
@@ -700,7 +700,7 @@ ImageBitmap::ImageBitmap(ImageData* data,
 
   // Copy / color convert the pixels
   SkImageInfo info = SkImageInfo::Make(
-      src_rect.Width(), src_rect.Height(), kN32_SkColorType,
+      src_rect.width(), src_rect.height(), kN32_SkColorType,
       parsed_options.premultiply_alpha ? kPremul_SkAlphaType
                                        : kUnpremul_SkAlphaType,
       SkColorSpace::MakeSRGB());
@@ -711,8 +711,8 @@ ImageBitmap::ImageBitmap(ImageData* data,
   if (!image_pixels)
     return;
   if (!data->GetSkPixmap().readPixels(info, image_pixels->writable_data(),
-                                      info.minRowBytes(), src_rect.X(),
-                                      src_rect.Y())) {
+                                      info.minRowBytes(), src_rect.x(),
+                                      src_rect.y())) {
     return;
   }
 
@@ -884,7 +884,7 @@ void ImageBitmap::RasterizeImageOnBackgroundThread(
                                       const ImageOrientationEnum)> callback) {
   DCHECK(!IsMainThread());
   SkImageInfo info =
-      SkImageInfo::MakeN32Premul(dst_rect.Width(), dst_rect.Height());
+      SkImageInfo::MakeN32Premul(dst_rect.width(), dst_rect.height());
   SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
   sk_sp<SkSurface> surface = SkSurface::MakeRaster(info, &props);
   sk_sp<SkImage> skia_image;
@@ -941,11 +941,11 @@ ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording(draw_src_rect);
   if (parsed_options.flip_y) {
-    canvas->translate(0, draw_dst_rect.Height());
+    canvas->translate(0, draw_dst_rect.height());
     canvas->scale(1, -1);
   }
   SVGImageForContainer::Create(To<SVGImage>(input.get()),
-                               FloatSize(input_rect.Size()), 1, NullURL())
+                               FloatSize(input_rect.size()), 1, NullURL())
       ->Draw(canvas, cc::PaintFlags(), FloatRect(draw_dst_rect),
              FloatRect(draw_src_rect), ImageDrawOptions());
   sk_sp<PaintRecord> paint_record = recorder.finishRecordingAsPicture();
@@ -990,16 +990,16 @@ unsigned ImageBitmap::width() const {
   if (!image_)
     return 0;
   IntSize size = image_->PreferredDisplaySize();
-  DCHECK_GT(size.Width(), 0);
-  return size.Width();
+  DCHECK_GT(size.width(), 0);
+  return size.width();
 }
 
 unsigned ImageBitmap::height() const {
   if (!image_)
     return 0;
   IntSize size = image_->PreferredDisplaySize();
-  DCHECK_GT(size.Height(), 0);
-  return size.Height();
+  DCHECK_GT(size.height(), 0);
+  return size.height();
 }
 
 bool ImageBitmap::IsAccelerated() const {

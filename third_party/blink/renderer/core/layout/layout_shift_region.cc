@@ -30,7 +30,7 @@ struct SweepEvent {
 };
 
 // The sequence of adjacent intervals on the y-axis whose endpoints are the
-// extents (IntRect::Y and IntRect::MaxY) of all the rectangles in the input.
+// extents (IntRect::y and IntRect::bottom) of all the rectangles in the input.
 class BasicIntervals {
  public:
   // Add all the endpoints before creating the index.
@@ -268,8 +268,8 @@ uint64_t Sweeper::Sweep() const {
 
 void Sweeper::InitIntervals(BasicIntervals& y_vals) const {
   for (const IntRect& rect : rects_) {
-    y_vals.AddEndpoint(rect.Y());
-    y_vals.AddEndpoint(rect.MaxY());
+    y_vals.AddEndpoint(rect.y());
+    y_vals.AddEndpoint(rect.bottom());
   }
   y_vals.CreateIndex();
 }
@@ -278,9 +278,9 @@ void Sweeper::InitEventQueue(Vector<SweepEvent>& events,
                              const BasicIntervals& y_vals) const {
   events.ReserveInitialCapacity(rects_.size() << 1);
   for (const IntRect& rect : rects_) {
-    Segment segment = y_vals.SegmentFromEndpoints(rect.Y(), rect.MaxY());
-    events.push_back(SweepEvent{rect.X(), EventType::START, segment});
-    events.push_back(SweepEvent{rect.MaxX(), EventType::END, segment});
+    Segment segment = y_vals.SegmentFromEndpoints(rect.y(), rect.bottom());
+    events.push_back(SweepEvent{rect.x(), EventType::START, segment});
+    events.push_back(SweepEvent{rect.right(), EventType::END, segment});
   }
   std::sort(events.begin(), events.end(),
             [](const SweepEvent& e1, const SweepEvent& e2) -> bool {
@@ -315,7 +315,7 @@ uint64_t LayoutShiftRegion::Area() const {
   // Optimization: for a single rect, we don't need Sweeper.
   if (rects_.size() == 1) {
     const IntRect& rect = rects_.front();
-    return rect.Width() * rect.Height();
+    return rect.width() * rect.height();
   }
   return Sweeper(rects_).Sweep();
 }

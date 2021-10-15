@@ -124,10 +124,10 @@ void LayoutEmbeddedObject::ComputeIntrinsicSizingInfo(
     if (aspect_ratio.GetType() == EAspectRatioType::kRatio ||
         (aspect_ratio.GetType() == EAspectRatioType::kAutoAndRatio &&
          intrinsic_sizing_info.aspect_ratio.IsEmpty())) {
-      intrinsic_sizing_info.aspect_ratio.SetWidth(
-          aspect_ratio.GetRatio().Width());
-      intrinsic_sizing_info.aspect_ratio.SetHeight(
-          aspect_ratio.GetRatio().Height());
+      intrinsic_sizing_info.aspect_ratio.set_width(
+          aspect_ratio.GetRatio().width());
+      intrinsic_sizing_info.aspect_ratio.set_height(
+          aspect_ratio.GetRatio().height());
     }
 
     if (!IsHorizontalWritingMode())

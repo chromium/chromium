@@ -125,9 +125,9 @@ void NGLayoutInputNode::IntrinsicSize(
   To<LayoutReplaced>(box_.Get())
       ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
   if (!*computed_inline_size && legacy_sizing_info.has_width)
-    *computed_inline_size = LayoutUnit(legacy_sizing_info.size.Width());
+    *computed_inline_size = LayoutUnit(legacy_sizing_info.size.width());
   if (!*computed_block_size && legacy_sizing_info.has_height)
-    *computed_block_size = LayoutUnit(legacy_sizing_info.size.Height());
+    *computed_block_size = LayoutUnit(legacy_sizing_info.size.height());
 }
 
 NGLayoutInputNode NGLayoutInputNode::NextSibling() const {

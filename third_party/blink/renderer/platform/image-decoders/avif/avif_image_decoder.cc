@@ -300,8 +300,8 @@ cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {
 IntSize AVIFImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   DCHECK(IsDecodedSizeAvailable());
   if (index == cc::YUVIndex::kU || index == cc::YUVIndex::kV) {
-    return IntSize(UVSize(Size().Width(), chroma_shift_x_),
-                   UVSize(Size().Height(), chroma_shift_y_));
+    return IntSize(UVSize(Size().width(), chroma_shift_x_),
+                   UVSize(Size().height(), chroma_shift_y_));
   }
   return Size();
 }
@@ -314,7 +314,7 @@ wtf_size_t AVIFImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
   // The comments for Dav1dPicAllocator in dav1d/picture.h require the pixel
   // width be padded to a multiple of 128 pixels.
   wtf_size_t aligned_width =
-      static_cast<wtf_size_t>(base::bits::AlignUp(Size().Width(), 128));
+      static_cast<wtf_size_t>(base::bits::AlignUp(Size().width(), 128));
   if (index == cc::YUVIndex::kU || index == cc::YUVIndex::kV) {
     aligned_width >>= chroma_shift_x_;
   }
@@ -1015,20 +1015,20 @@ void AVIFImageDecoder::ColorCorrectImage(ImageFrame* buffer) {
                                 : skcms_AlphaFormat_Unpremul;
   if (decode_to_half_float_) {
     const skcms_PixelFormat color_format = skcms_PixelFormat_RGBA_hhhh;
-    for (int y = 0; y < Size().Height(); ++y) {
+    for (int y = 0; y < Size().height(); ++y) {
       ImageFrame::PixelDataF16* const row = buffer->GetAddrF16(0, y);
       const bool success = skcms_Transform(
           row, color_format, alpha_format, transform->SrcProfile(), row,
-          color_format, alpha_format, transform->DstProfile(), Size().Width());
+          color_format, alpha_format, transform->DstProfile(), Size().width());
       DCHECK(success);
     }
   } else {
     const skcms_PixelFormat color_format = XformColorFormat();
-    for (int y = 0; y < Size().Height(); ++y) {
+    for (int y = 0; y < Size().height(); ++y) {
       ImageFrame::PixelData* const row = buffer->GetAddr(0, y);
       const bool success = skcms_Transform(
           row, color_format, alpha_format, transform->SrcProfile(), row,
-          color_format, alpha_format, transform->DstProfile(), Size().Width());
+          color_format, alpha_format, transform->DstProfile(), Size().width());
       DCHECK(success);
     }
   }

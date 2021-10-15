@@ -1874,9 +1874,9 @@ void WebGL2RenderingContextBase::texImage3D(GLenum target,
                                             ImageData* pixels) {
   DCHECK(pixels);
   IntRect source_image_rect;
-  source_image_rect.SetLocation(
+  source_image_rect.set_origin(
       IntPoint(unpack_skip_pixels_, unpack_skip_rows_));
-  source_image_rect.SetSize(IntSize(width, height));
+  source_image_rect.set_size(IntSize(width, height));
   TexImageHelperImageData(kTexImage3D, target, level, internalformat, 0, format,
                           type, depth, 0, 0, 0, pixels, source_image_rect,
                           unpack_image_height_);

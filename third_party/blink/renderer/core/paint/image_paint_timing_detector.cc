@@ -318,7 +318,7 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
     visualizer->DumpImageDebuggingRect(object, mapped_visual_rect,
                                        cached_image);
   }
-  uint64_t rect_size = mapped_visual_rect.Size().Area();
+  uint64_t rect_size = mapped_visual_rect.size().Area();
   // Transform visual rect to window before calling downscale.
   FloatRect float_visual_rect =
       frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
@@ -334,7 +334,7 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
             : frame_view_->GetScrollableArea()->VisibleContentRect();
     FloatRect viewport = frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
         FloatRect(viewport_int_rect));
-    viewport_size_ = viewport.Size().Area();
+    viewport_size_ = viewport.size().Area();
   }
   // An SVG image size is computed with respect to the virtual viewport of the
   // SVG, so |rect_size| can be larger than |*viewport_size| in edge cases. If
@@ -347,7 +347,7 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
 
   rect_size = DownScaleIfIntrinsicSizeIsSmaller(
       rect_size, intrinsic_size.Area(),
-      float_visual_rect.Width() * float_visual_rect.Height());
+      float_visual_rect.width() * float_visual_rect.height());
   return rect_size;
 }
 

@@ -78,12 +78,12 @@ void LayoutSVGImage::WillBeDestroyed() {
 
 static float ResolveWidthForRatio(float height,
                                   const FloatSize& intrinsic_ratio) {
-  return height * intrinsic_ratio.Width() / intrinsic_ratio.Height();
+  return height * intrinsic_ratio.width() / intrinsic_ratio.height();
 }
 
 static float ResolveHeightForRatio(float width,
                                    const FloatSize& intrinsic_ratio) {
-  return width * intrinsic_ratio.Height() / intrinsic_ratio.Width();
+  return width * intrinsic_ratio.height() / intrinsic_ratio.width();
 }
 
 bool LayoutSVGImage::HasOverriddenIntrinsicSize() const {
@@ -105,7 +105,7 @@ FloatSize LayoutSVGImage::CalculateObjectSize() const {
   } else {
     if (!cached_image || cached_image->ErrorOccurred() ||
         !cached_image->IsSizeAvailable())
-      return object_bounding_box_.Size();
+      return object_bounding_box_.size();
 
     RespectImageOrientationEnum respect_orientation =
         LayoutObject::ShouldRespectImageOrientation(this);
@@ -123,20 +123,20 @@ FloatSize LayoutSVGImage::CalculateObjectSize() const {
   if (StyleRef().Height().IsAuto()) {
     if (has_intrinsic_ratio) {
       return FloatSize(
-          object_bounding_box_.Width(),
-          ResolveHeightForRatio(object_bounding_box_.Width(), intrinsic_size));
+          object_bounding_box_.width(),
+          ResolveHeightForRatio(object_bounding_box_.width(), intrinsic_size));
     }
-    return FloatSize(object_bounding_box_.Width(), intrinsic_size.Height());
+    return FloatSize(object_bounding_box_.width(), intrinsic_size.height());
   }
 
   DCHECK(StyleRef().Width().IsAuto());
   if (has_intrinsic_ratio) {
     return FloatSize(
-        ResolveWidthForRatio(object_bounding_box_.Height(), intrinsic_size),
-        object_bounding_box_.Height());
+        ResolveWidthForRatio(object_bounding_box_.height(), intrinsic_size),
+        object_bounding_box_.height());
   }
 
-  return FloatSize(intrinsic_size.Width(), object_bounding_box_.Height());
+  return FloatSize(intrinsic_size.width(), object_bounding_box_.height());
 }
 
 bool LayoutSVGImage::UpdateBoundingBox() {
@@ -151,7 +151,7 @@ bool LayoutSVGImage::UpdateBoundingBox() {
                     style.Width(), style.Height(), style)));
 
   if (style.Width().IsAuto() || style.Height().IsAuto())
-    object_bounding_box_.SetSize(CalculateObjectSize());
+    object_bounding_box_.set_size(CalculateObjectSize());
 
   return old_object_bounding_box != object_bounding_box_;
 }
@@ -246,7 +246,7 @@ void LayoutSVGImage::ImageChanged(WrappedImagePtr, CanDeferInvalidation defer) {
                                                                          false);
 
   if (StyleRef().Width().IsAuto() || StyleRef().Height().IsAuto()) {
-    if (CalculateObjectSize() != object_bounding_box_.Size())
+    if (CalculateObjectSize() != object_bounding_box_.size())
       SetNeedsLayout(layout_invalidation_reason::kSizeChanged);
   }
 

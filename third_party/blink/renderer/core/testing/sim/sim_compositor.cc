@@ -65,7 +65,7 @@ SimCanvas::Commands SimCompositor::PaintFrame() {
                                          kGlobalPaintFlattenCompositingLayers);
 
   auto infinite_rect = LayoutRect::InfiniteIntRect();
-  SimCanvas canvas(infinite_rect.Width(), infinite_rect.Height());
+  SimCanvas canvas(infinite_rect.width(), infinite_rect.height());
   builder->EndRecording()->Playback(&canvas);
   return canvas.GetCommands();
 }

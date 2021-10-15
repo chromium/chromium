@@ -93,8 +93,8 @@ float DOMVisualViewport::pageLeft() const {
     return 0;
 
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-  float viewport_x = page->GetVisualViewport().GetScrollOffset().Width() +
-                     view->LayoutViewport()->GetScrollOffset().Width();
+  float viewport_x = page->GetVisualViewport().GetScrollOffset().width() +
+                     view->LayoutViewport()->GetScrollOffset().width();
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_x,
                                              frame->PageZoomFactor());
 }
@@ -113,8 +113,8 @@ float DOMVisualViewport::pageTop() const {
     return 0;
 
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-  float viewport_y = page->GetVisualViewport().GetScrollOffset().Height() +
-                     view->LayoutViewport()->GetScrollOffset().Height();
+  float viewport_y = page->GetVisualViewport().GetScrollOffset().height() +
+                     view->LayoutViewport()->GetScrollOffset().height();
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_y,
                                              frame->PageZoomFactor());
 }
@@ -130,7 +130,7 @@ double DOMVisualViewport::width() const {
         DocumentUpdateReason::kJavaScript);
     auto* scrollable_area = frame->View()->LayoutViewport();
     float width =
-        scrollable_area->VisibleContentRect(kExcludeScrollbars).Width();
+        scrollable_area->VisibleContentRect(kExcludeScrollbars).width();
     return AdjustForAbsoluteZoom::AdjustInt(ClampTo<int>(ceilf(width)),
                                             frame->PageZoomFactor());
   }
@@ -152,7 +152,7 @@ double DOMVisualViewport::height() const {
         DocumentUpdateReason::kJavaScript);
     auto* scrollable_area = frame->View()->LayoutViewport();
     float height =
-        scrollable_area->VisibleContentRect(kExcludeScrollbars).Height();
+        scrollable_area->VisibleContentRect(kExcludeScrollbars).height();
     return AdjustForAbsoluteZoom::AdjustInt(ClampTo<int>(ceilf(height)),
                                             frame->PageZoomFactor());
   }

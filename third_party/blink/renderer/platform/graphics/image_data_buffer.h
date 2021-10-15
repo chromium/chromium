@@ -58,8 +58,8 @@ class PLATFORM_EXPORT ImageDataBuffer {
 
   const unsigned char* Pixels() const;
   const IntSize& size() const { return size_; }
-  int Height() const { return size_.Height(); }
-  int Width() const { return size_.Width(); }
+  int Height() const { return size_.height(); }
+  int Width() const { return size_.width(); }
   size_t ComputeByteSize() const { return pixmap_.computeByteSize(); }
 
  private:

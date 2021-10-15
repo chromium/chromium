@@ -1303,7 +1303,7 @@ static FloatRect ComputeTextRectTemplate(
     const EphemeralRangeTemplate<Strategy>& range) {
   FloatRect result;
   for (auto rect : ComputeTextBounds<Strategy>(range))
-    result.Unite(rect.BoundingBox());
+    result.Union(rect.BoundingBox());
   return result;
 }
 
@@ -1342,20 +1342,20 @@ IntRect FirstRectForRange(const EphemeralRange& range) {
   if (end_caret_rect.IsEmpty())
     return IntRect();
 
-  if (start_caret_rect.Y() == end_caret_rect.Y()) {
+  if (start_caret_rect.y() == end_caret_rect.y()) {
     // start and end are on the same line
     return IntRect(
-        std::min(start_caret_rect.X(), end_caret_rect.X()),
-        start_caret_rect.Y(), abs(end_caret_rect.X() - start_caret_rect.X()),
-        std::max(start_caret_rect.Height(), end_caret_rect.Height()));
+        std::min(start_caret_rect.x(), end_caret_rect.x()),
+        start_caret_rect.y(), abs(end_caret_rect.x() - start_caret_rect.x()),
+        std::max(start_caret_rect.height(), end_caret_rect.height()));
   }
 
   // start and end aren't on the same line, so go from start to the end of its
   // line
   return IntRect(
-      start_caret_rect.X(), start_caret_rect.Y(),
-      (start_caret_rect.Width() + extra_width_to_end_of_line).ToInt(),
-      start_caret_rect.Height());
+      start_caret_rect.x(), start_caret_rect.y(),
+      (start_caret_rect.width() + extra_width_to_end_of_line).ToInt(),
+      start_caret_rect.height());
 }
 
 }  // namespace blink

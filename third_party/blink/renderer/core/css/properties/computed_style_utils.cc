@@ -1469,7 +1469,7 @@ static bool IsSVGObjectWithWidthAndHeight(const LayoutObject& layout_object) {
 FloatSize ComputedStyleUtils::UsedBoxSize(const LayoutObject& layout_object) {
   if (layout_object.IsSVGChild() &&
       IsSVGObjectWithWidthAndHeight(layout_object)) {
-    FloatSize size(layout_object.ObjectBoundingBox().Size());
+    FloatSize size(layout_object.ObjectBoundingBox().size());
     // The object bounding box does not have zoom applied. Multiply with zoom
     // here since we'll divide by it when we produce the CSS value.
     size.Scale(layout_object.StyleRef().EffectiveZoom());
@@ -2031,7 +2031,7 @@ CSSValue* ComputedStyleUtils::ComputedTransformList(
     const LayoutObject* layout_object) {
   FloatSize box_size(0, 0);
   if (layout_object)
-    box_size = ReferenceBoxForTransform(*layout_object).Size();
+    box_size = ReferenceBoxForTransform(*layout_object).size();
 
   return ValueForTransformList(style.Transform(), style.EffectiveZoom(),
                                box_size);

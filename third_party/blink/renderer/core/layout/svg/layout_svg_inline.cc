@@ -86,12 +86,12 @@ void LayoutSVGInline::ObjectBoundingBoxForCursor(NGInlineCursor& cursor,
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const NGFragmentItem& item = *cursor.CurrentItem();
     if (item.Type() == NGFragmentItem::kSvgText) {
-      bounds.Unite(cursor.Current().ObjectBoundingBox(cursor));
+      bounds.Union(cursor.Current().ObjectBoundingBox(cursor));
     } else if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
       for (; descendants; descendants.MoveToNext()) {
         const NGFragmentItem& descendant_item = *descendants.CurrentItem();
         if (descendant_item.Type() == NGFragmentItem::kSvgText)
-          bounds.Unite(descendants.Current().ObjectBoundingBox(cursor));
+          bounds.Union(descendants.Current().ObjectBoundingBox(cursor));
       }
     }
   }
@@ -107,7 +107,7 @@ FloatRect LayoutSVGInline::ObjectBoundingBox() const {
     return bounds;
   }
   for (InlineFlowBox* box : *LineBoxes())
-    bounds.Unite(FloatRect(box->FrameRect()));
+    bounds.Union(FloatRect(box->FrameRect()));
   return bounds;
 }
 

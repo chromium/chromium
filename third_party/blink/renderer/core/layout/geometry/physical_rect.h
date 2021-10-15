@@ -188,10 +188,10 @@ struct CORE_EXPORT PhysicalRect {
   }
 
   static PhysicalRect EnclosingRect(const FloatRect& rect) {
-    PhysicalOffset offset(LayoutUnit::FromFloatFloor(rect.X()),
-                          LayoutUnit::FromFloatFloor(rect.Y()));
-    PhysicalSize size(LayoutUnit::FromFloatCeil(rect.MaxX()) - offset.left,
-                      LayoutUnit::FromFloatCeil(rect.MaxY()) - offset.top);
+    PhysicalOffset offset(LayoutUnit::FromFloatFloor(rect.x()),
+                          LayoutUnit::FromFloatFloor(rect.y()));
+    PhysicalSize size(LayoutUnit::FromFloatCeil(rect.right()) - offset.left,
+                      LayoutUnit::FromFloatCeil(rect.bottom()) - offset.top);
     return PhysicalRect(offset, size);
   }
 
@@ -199,12 +199,12 @@ struct CORE_EXPORT PhysicalRect {
   // prefer performance to accuracy and haven't observed problems caused by the
   // tiny error (< LayoutUnit::Epsilon()).
   static PhysicalRect FastAndLossyFromFloatRect(const FloatRect& rect) {
-    return PhysicalRect(LayoutUnit(rect.X()), LayoutUnit(rect.Y()),
-                        LayoutUnit(rect.Width()), LayoutUnit(rect.Height()));
+    return PhysicalRect(LayoutUnit(rect.x()), LayoutUnit(rect.y()),
+                        LayoutUnit(rect.width()), LayoutUnit(rect.height()));
   }
 
   explicit PhysicalRect(const IntRect& r)
-      : offset(r.Location()), size(r.Size()) {}
+      : offset(r.origin()), size(r.size()) {}
   explicit PhysicalRect(const gfx::Rect& r) : PhysicalRect(IntRect(r)) {}
 
   static IntRect InfiniteIntRect() { return LayoutRect::InfiniteIntRect(); }

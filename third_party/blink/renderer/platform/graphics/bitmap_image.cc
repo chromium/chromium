@@ -211,7 +211,7 @@ Image::SizeAvailability BitmapImage::SetData(scoped_refptr<SharedBuffer> data,
 // integer.
 static inline uint64_t ImageDensityInCentiBpp(IntSize size,
                                               size_t image_size_bytes) {
-  uint64_t image_area = static_cast<uint64_t>(size.Width()) * size.Height();
+  uint64_t image_area = static_cast<uint64_t>(size.width()) * size.height();
   return (static_cast<uint64_t>(image_size_bytes) * 100 * 8 + image_area / 2) /
          image_area;
 }
@@ -230,7 +230,7 @@ Image::SizeAvailability BitmapImage::DataChanged(bool all_data_received) {
   if (ShouldReportByteSizeUMAs(all_data_received) &&
       decoder_->FilenameExtension() == "jpg") {
     BitmapImageMetrics::CountImageJpegDensity(
-        std::min(Size().Width(), Size().Height()),
+        std::min(Size().width(), Size().height()),
         ImageDensityInCentiBpp(Size(), decoder_->ByteSize()),
         decoder_->ByteSize());
   }
@@ -273,8 +273,8 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
   if (!density_corrected_size_.IsEmpty()) {
     FloatSize src_size(size_);
     adjusted_src_rect.Scale(
-        src_size.Width() / density_corrected_size_.Width(),
-        src_size.Height() / density_corrected_size_.Height());
+        src_size.width() / density_corrected_size_.width(),
+        src_size.height() / density_corrected_size_.height());
   }
 
   adjusted_src_rect.Intersect(SkRect::MakeWH(image.width(), image.height()));
@@ -292,19 +292,19 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
     canvas->save();
 
     // ImageOrientation expects the origin to be at (0, 0)
-    canvas->translate(adjusted_dst_rect.X(), adjusted_dst_rect.Y());
-    adjusted_dst_rect.SetLocation(FloatPoint());
+    canvas->translate(adjusted_dst_rect.x(), adjusted_dst_rect.y());
+    adjusted_dst_rect.set_origin(FloatPoint());
 
     canvas->concat(AffineTransformToSkMatrix(
-        orientation.TransformFromDefault(adjusted_dst_rect.Size())));
+        orientation.TransformFromDefault(adjusted_dst_rect.size())));
 
     if (orientation.UsesWidthAsHeight()) {
       // The destination rect will have its width and height already reversed
       // for the orientation of the image, as it was needed for page layout, so
       // we need to reverse it back here.
       adjusted_dst_rect =
-          FloatRect(adjusted_dst_rect.X(), adjusted_dst_rect.Y(),
-                    adjusted_dst_rect.Height(), adjusted_dst_rect.Width());
+          FloatRect(adjusted_dst_rect.x(), adjusted_dst_rect.y(),
+                    adjusted_dst_rect.height(), adjusted_dst_rect.width());
     }
   }
 
@@ -333,7 +333,7 @@ size_t BitmapImage::FrameCount() {
 }
 
 static inline bool HasVisibleImageSize(IntSize size) {
-  return (size.Width() > 1 || size.Height() > 1);
+  return (size.width() > 1 || size.height() > 1);
 }
 
 bool BitmapImage::IsSizeAvailable() {

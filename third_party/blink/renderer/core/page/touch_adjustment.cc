@@ -343,7 +343,7 @@ float ZoomableIntersectionQuotient(const IntPoint& touch_hotspot,
   intersection.Intersect(touch_area);
 
   // Return the quotient of the intersection.
-  return rect.Size().Area() / (float)intersection.Size().Area();
+  return rect.size().Area() / (float)intersection.size().Area();
 }
 
 // Uses a hybrid of distance to adjust and intersect ratio, normalizing each
@@ -359,15 +359,15 @@ float HybridDistanceFunction(const IntPoint& touch_hotspot,
   IntRect rect = subtarget.GetNode()->GetDocument().View()->ConvertToRootFrame(
       subtarget.BoundingBox());
 
-  float radius_squared = 0.25f * (touch_rect.Size().DiagonalLengthSquared());
+  float radius_squared = 0.25f * (touch_rect.size().DiagonalLengthSquared());
   float distance_to_adjust_score =
       rect.DistanceSquaredToPoint(touch_hotspot) / radius_squared;
 
-  int max_overlap_width = std::min(touch_rect.Width(), rect.Width());
-  int max_overlap_height = std::min(touch_rect.Height(), rect.Height());
+  int max_overlap_width = std::min(touch_rect.width(), rect.width());
+  int max_overlap_height = std::min(touch_rect.height(), rect.height());
   float max_overlap_area = std::max(max_overlap_width * max_overlap_height, 1);
   rect.Intersect(touch_rect);
-  float intersect_area = rect.Size().Area();
+  float intersect_area = rect.size().Area();
   float intersection_score = 1 - intersect_area / max_overlap_area;
 
   float hybrid_score = intersection_score + distance_to_adjust_score;
@@ -376,24 +376,24 @@ float HybridDistanceFunction(const IntPoint& touch_hotspot,
 }
 
 FloatPoint ConvertToRootFrame(LocalFrameView* view, FloatPoint pt) {
-  int x = static_cast<int>(pt.X() + 0.5f);
-  int y = static_cast<int>(pt.Y() + 0.5f);
+  int x = static_cast<int>(pt.x() + 0.5f);
+  int y = static_cast<int>(pt.y() + 0.5f);
   IntPoint adjusted = view->ConvertToRootFrame(IntPoint(x, y));
-  return FloatPoint(adjusted.X(), adjusted.Y());
+  return FloatPoint(adjusted.x(), adjusted.y());
 }
 
 // Adjusts 'point' to the nearest point inside rect, and leaves it unchanged if
 // already inside.
 void AdjustPointToRect(FloatPoint& point, const IntRect& rect) {
-  if (point.X() < rect.X())
-    point.SetX(rect.X());
-  else if (point.X() > rect.MaxX())
-    point.SetX(rect.MaxX());
+  if (point.x() < rect.x())
+    point.set_x(rect.x());
+  else if (point.x() > rect.right())
+    point.set_x(rect.right());
 
-  if (point.Y() < rect.Y())
-    point.SetY(rect.Y());
-  else if (point.Y() > rect.MaxY())
-    point.SetY(rect.MaxY());
+  if (point.y() < rect.y())
+    point.set_y(rect.y());
+  else if (point.y() > rect.bottom())
+    point.set_y(rect.bottom());
 }
 
 bool SnapTo(const SubtargetGeometry& geom,
@@ -411,7 +411,7 @@ bool SnapTo(const SubtargetGeometry& geom,
     }
     if (bounds.Intersects(touch_area)) {
       bounds.Intersect(touch_area);
-      adjusted_point = bounds.Center();
+      adjusted_point = bounds.CenterPoint();
       return true;
     }
     return false;
@@ -424,10 +424,10 @@ bool SnapTo(const SubtargetGeometry& geom,
   // the quad. Corner-cases exist where the quad will intersect but this will
   // fail to adjust the point to somewhere in the intersection.
 
-  FloatPoint p1 = ConvertToRootFrame(view, quad.P1());
-  FloatPoint p2 = ConvertToRootFrame(view, quad.P2());
-  FloatPoint p3 = ConvertToRootFrame(view, quad.P3());
-  FloatPoint p4 = ConvertToRootFrame(view, quad.P4());
+  FloatPoint p1 = ConvertToRootFrame(view, quad.p1());
+  FloatPoint p2 = ConvertToRootFrame(view, quad.p2());
+  FloatPoint p3 = ConvertToRootFrame(view, quad.p3());
+  FloatPoint p4 = ConvertToRootFrame(view, quad.p4());
   quad = FloatQuad(p1, p2, p3, p4);
 
   if (quad.ContainsPoint(FloatPoint(touch_point))) {

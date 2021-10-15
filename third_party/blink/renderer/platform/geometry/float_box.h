@@ -69,26 +69,26 @@ class PLATFORM_EXPORT FloatBox {
   // Use ToBoxF() instead.
   operator gfx::BoxF() const = delete;
 
-  void SetOrigin(const FloatPoint3D& origin) {
-    x_ = origin.X();
-    y_ = origin.Y();
-    z_ = origin.Z();
+  void set_origin(const FloatPoint3D& origin) {
+    x_ = origin.x();
+    y_ = origin.y();
+    z_ = origin.z();
   }
 
-  void SetSize(const FloatPoint3D& origin) {
-    DCHECK_GE(origin.X(), 0);
-    DCHECK_GE(origin.Y(), 0);
-    DCHECK_GE(origin.Z(), 0);
+  void set_size(const FloatPoint3D& origin) {
+    DCHECK_GE(origin.x(), 0);
+    DCHECK_GE(origin.y(), 0);
+    DCHECK_GE(origin.z(), 0);
 
-    width_ = origin.X();
-    height_ = origin.Y();
-    depth_ = origin.Z();
+    width_ = origin.x();
+    height_ = origin.y();
+    depth_ = origin.z();
   }
 
   void Move(const FloatPoint3D& location) {
-    x_ += location.X();
-    y_ += location.Y();
-    z_ += location.Z();
+    x_ += location.x();
+    y_ += location.y();
+    z_ += location.z();
   }
 
   void Flatten() {
@@ -100,11 +100,11 @@ class PLATFORM_EXPORT FloatBox {
   void ExpandTo(const FloatPoint3D& point) { ExpandTo(point, point); }
 
   void ExpandTo(const FloatBox& box) {
-    ExpandTo(FloatPoint3D(box.X(), box.Y(), box.Z()),
-             FloatPoint3D(box.Right(), box.Bottom(), box.front()));
+    ExpandTo(FloatPoint3D(box.x(), box.y(), box.z()),
+             FloatPoint3D(box.right(), box.bottom(), box.front()));
   }
 
-  void UnionBounds(const FloatBox& box) {
+  void Union(const FloatBox& box) {
     if (box.IsEmpty())
       return;
 
@@ -121,15 +121,15 @@ class PLATFORM_EXPORT FloatBox {
            (height_ <= 0 && depth_ <= 0);
   }
 
-  constexpr float Right() const { return x_ + width_; }
-  constexpr float Bottom() const { return y_ + height_; }
+  constexpr float right() const { return x_ + width_; }
+  constexpr float bottom() const { return y_ + height_; }
   constexpr float front() const { return z_ + depth_; }
-  constexpr float X() const { return x_; }
-  constexpr float Y() const { return y_; }
-  constexpr float Z() const { return z_; }
-  constexpr float Width() const { return width_; }
-  constexpr float Height() const { return height_; }
-  constexpr float Depth() const { return depth_; }
+  constexpr float x() const { return x_; }
+  constexpr float y() const { return y_; }
+  constexpr float z() const { return z_; }
+  constexpr float width() const { return width_; }
+  constexpr float height() const { return height_; }
+  constexpr float depth() const { return depth_; }
 
   String ToString() const;
 
@@ -143,9 +143,9 @@ class PLATFORM_EXPORT FloatBox {
 };
 
 constexpr bool operator==(const FloatBox& a, const FloatBox& b) {
-  return a.X() == b.X() && a.Y() == b.Y() && a.Z() == b.Z() &&
-         a.Width() == b.Width() && a.Height() == b.Height() &&
-         a.Depth() == b.Depth();
+  return a.x() == b.x() && a.y() == b.y() && a.z() == b.z() &&
+         a.width() == b.width() && a.height() == b.height() &&
+         a.depth() == b.depth();
 }
 
 constexpr bool operator!=(const FloatBox& a, const FloatBox& b) {
@@ -153,7 +153,7 @@ constexpr bool operator!=(const FloatBox& a, const FloatBox& b) {
 }
 
 constexpr gfx::BoxF ToGfxBoxF(const FloatBox& b) {
-  return gfx::BoxF(b.X(), b.Y(), b.Z(), b.Width(), b.Height(), b.Depth());
+  return gfx::BoxF(b.x(), b.y(), b.z(), b.width(), b.height(), b.depth());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatBox&);

@@ -374,20 +374,20 @@ NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
   // Font::TextInkBounds().
   PhysicalSize item_size =
       style.IsHorizontalWritingMode()
-          ? PhysicalSize(LayoutUnit(rect.Width() / length_adjust_scale),
-                         LayoutUnit(rect.Height()))
-          : PhysicalSize(LayoutUnit(rect.Width()),
-                         LayoutUnit(rect.Height() / length_adjust_scale));
+          ? PhysicalSize(LayoutUnit(rect.width() / length_adjust_scale),
+                         LayoutUnit(rect.height()))
+          : PhysicalSize(LayoutUnit(rect.width()),
+                         LayoutUnit(rect.height() / length_adjust_scale));
   absl::optional<PhysicalRect> ink_overflow =
       ComputeTextInkOverflow(text_info, style, scaled_font, item_size);
   const bool needs_transform =
       scaling_factor != 1.0f || !transform.IsIdentity();
-  PhysicalSize unscaled_size = PhysicalSize::FromFloatSizeRound(rect.Size());
+  PhysicalSize unscaled_size = PhysicalSize::FromFloatSizeRound(rect.size());
   unscaled_size.Scale(1.0f / scaling_factor);
   if (!ink_overflow) {
     if (needs_transform) {
       FloatRect transformed_rect = transform.MapRect(rect);
-      transformed_rect.Move(-rect.X(), -rect.Y());
+      transformed_rect.Offset(-rect.x(), -rect.y());
       transformed_rect.Scale(1 / scaling_factor);
       *ink_overflow_out = PhysicalRect::EnclosingRect(transformed_rect);
       ink_overflow_out->ExpandEdgesToPixelBoundaries();
@@ -409,9 +409,9 @@ NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
   }
   if (needs_transform) {
     FloatRect transformed_rect = FloatRect(*ink_overflow);
-    transformed_rect.Move(rect.X(), rect.Y());
+    transformed_rect.Offset(rect.x(), rect.y());
     transformed_rect = transform.MapRect(transformed_rect);
-    transformed_rect.Move(-rect.X(), -rect.Y());
+    transformed_rect.Offset(-rect.x(), -rect.y());
     transformed_rect.Scale(1 / scaling_factor);
     *ink_overflow_out = PhysicalRect::EnclosingRect(transformed_rect);
     ink_overflow_out->ExpandEdgesToPixelBoundaries();
@@ -558,7 +558,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
       decoration_info.SetPerLineData(
           TextDecoration::kUnderline, paint_underline_offset,
           TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness), 1);
-      accumulated_bound.Unite(
+      accumulated_bound.Union(
           decoration_info.BoundsForLine(TextDecoration::kUnderline));
     }
     if (has_overline) {
@@ -577,7 +577,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
           TextDecoration::kOverline, paint_overline_offset,
           -TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness),
           1);
-      accumulated_bound.Unite(
+      accumulated_bound.Union(
           decoration_info.BoundsForLine(TextDecoration::kOverline));
     }
     if (EnumHasFlags(lines, TextDecoration::kLineThrough)) {
@@ -595,7 +595,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
           floorf(TextDecorationInfo::DoubleOffsetFromThickness(
               resolved_thickness)),
           0);
-      accumulated_bound.Unite(
+      accumulated_bound.Union(
           decoration_info.BoundsForLine(TextDecoration::kLineThrough));
     }
   }

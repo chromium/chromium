@@ -40,7 +40,7 @@ class PLATFORM_EXPORT FloatPoint3D {
 
   constexpr FloatPoint3D(float x, float y, float z) : x_(x), y_(y), z_(z) {}
 
-  constexpr FloatPoint3D(const FloatPoint& p) : x_(p.X()), y_(p.Y()), z_(0) {}
+  constexpr FloatPoint3D(const FloatPoint& p) : x_(p.x()), y_(p.y()), z_(0) {}
 
   constexpr FloatPoint3D(const FloatPoint3D&) = default;
 
@@ -48,20 +48,20 @@ class PLATFORM_EXPORT FloatPoint3D {
 
   FloatPoint3D(const gfx::Point3F&);
 
-  constexpr float X() const { return x_; }
-  void SetX(float x) { x_ = x; }
+  constexpr float x() const { return x_; }
+  void set_x(float x) { x_ = x; }
 
-  constexpr float Y() const { return y_; }
-  void SetY(float y) { y_ = y; }
+  constexpr float y() const { return y_; }
+  void set_y(float y) { y_ = y; }
 
-  constexpr float Z() const { return z_; }
-  void SetZ(float z) { z_ = z; }
-  void Set(float x, float y, float z) {
+  constexpr float z() const { return z_; }
+  void set_z(float z) { z_ = z; }
+  void SetPoint(float x, float y, float z) {
     x_ = x;
     y_ = y;
     z_ = z;
   }
-  void Move(float dx, float dy, float dz) {
+  void Offset(float dx, float dy, float dz) {
     x_ += dx;
     y_ += dy;
     z_ += dz;
@@ -77,7 +77,7 @@ class PLATFORM_EXPORT FloatPoint3D {
   void Normalize();
 
   float Dot(const FloatPoint3D& a) const {
-    return x_ * a.X() + y_ * a.Y() + z_ * a.Z();
+    return x_ * a.x() + y_ * a.y() + z_ * a.z();
   }
 
   // Compute the angle (in radians) between this and y.  If either vector is the
@@ -88,9 +88,9 @@ class PLATFORM_EXPORT FloatPoint3D {
   // It is safe for "this" to be the same as either or both of the
   // arguments.
   void Cross(const FloatPoint3D& a, const FloatPoint3D& b) {
-    float x = a.Y() * b.Z() - a.Z() * b.Y();
-    float y = a.Z() * b.X() - a.X() * b.Z();
-    float z = a.X() * b.Y() - a.Y() * b.X();
+    float x = a.y() * b.z() - a.z() * b.y();
+    float y = a.z() * b.x() - a.x() * b.z();
+    float z = a.x() * b.y() - a.y() * b.x();
     x_ = x;
     y_ = y;
     z_ = z;
@@ -125,25 +125,25 @@ class PLATFORM_EXPORT FloatPoint3D {
 };
 
 inline FloatPoint3D& operator+=(FloatPoint3D& a, const FloatPoint3D& b) {
-  a.Move(b.X(), b.Y(), b.Z());
+  a.Offset(b.x(), b.y(), b.z());
   return a;
 }
 
 inline FloatPoint3D& operator-=(FloatPoint3D& a, const FloatPoint3D& b) {
-  a.Move(-b.X(), -b.Y(), -b.Z());
+  a.Offset(-b.x(), -b.y(), -b.z());
   return a;
 }
 
 constexpr FloatPoint3D operator+(const FloatPoint3D& a, const FloatPoint3D& b) {
-  return FloatPoint3D(a.X() + b.X(), a.Y() + b.Y(), a.Z() + b.Z());
+  return FloatPoint3D(a.x() + b.x(), a.y() + b.y(), a.z() + b.z());
 }
 
 constexpr FloatPoint3D operator-(const FloatPoint3D& a, const FloatPoint3D& b) {
-  return FloatPoint3D(a.X() - b.X(), a.Y() - b.Y(), a.Z() - b.Z());
+  return FloatPoint3D(a.x() - b.x(), a.y() - b.y(), a.z() - b.z());
 }
 
 constexpr bool operator==(const FloatPoint3D& a, const FloatPoint3D& b) {
-  return a.X() == b.X() && a.Y() == b.Y() && a.Z() == b.Z();
+  return a.x() == b.x() && a.y() == b.y() && a.z() == b.z();
 }
 
 constexpr bool operator!=(const FloatPoint3D& a, const FloatPoint3D& b) {
@@ -156,11 +156,11 @@ inline float operator*(const FloatPoint3D& a, const FloatPoint3D& b) {
 }
 
 inline FloatPoint3D operator*(float k, const FloatPoint3D& v) {
-  return FloatPoint3D(k * v.X(), k * v.Y(), k * v.Z());
+  return FloatPoint3D(k * v.x(), k * v.y(), k * v.z());
 }
 
 inline FloatPoint3D operator*(const FloatPoint3D& v, float k) {
-  return FloatPoint3D(k * v.X(), k * v.Y(), k * v.Z());
+  return FloatPoint3D(k * v.x(), k * v.y(), k * v.z());
 }
 
 inline float FloatPoint3D::DistanceTo(const FloatPoint3D& a) const {
@@ -168,11 +168,11 @@ inline float FloatPoint3D::DistanceTo(const FloatPoint3D& a) const {
 }
 
 constexpr gfx::Point3F ToGfxPoint3F(const FloatPoint3D& p) {
-  return gfx::Point3F(p.X(), p.Y(), p.Z());
+  return gfx::Point3F(p.x(), p.y(), p.z());
 }
 
 constexpr gfx::Vector3dF ToGfxVector3dF(const FloatPoint3D& p) {
-  return gfx::Vector3dF(p.X(), p.Y(), p.Z());
+  return gfx::Vector3dF(p.x(), p.y(), p.z());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatPoint3D&);

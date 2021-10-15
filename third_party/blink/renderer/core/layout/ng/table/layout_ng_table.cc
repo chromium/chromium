@@ -225,12 +225,12 @@ PhysicalRect LayoutNGTable::OverflowClipRect(
     const auto overflow_clip = GetOverflowClipAxes();
     IntRect infinite_rect = PhysicalRect::InfiniteIntRect();
     if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
-      clip_rect.offset.left = LayoutUnit(infinite_rect.X());
-      clip_rect.size.width = LayoutUnit(infinite_rect.Width());
+      clip_rect.offset.left = LayoutUnit(infinite_rect.x());
+      clip_rect.size.width = LayoutUnit(infinite_rect.width());
     }
     if ((overflow_clip & kOverflowClipY) == kNoOverflowClip) {
-      clip_rect.offset.top = LayoutUnit(infinite_rect.Y());
-      clip_rect.size.height = LayoutUnit(infinite_rect.Height());
+      clip_rect.offset.top = LayoutUnit(infinite_rect.y());
+      clip_rect.size.height = LayoutUnit(infinite_rect.height());
     }
   } else {
     clip_rect = LayoutNGMixin<LayoutBlock>::OverflowClipRect(

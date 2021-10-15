@@ -2562,8 +2562,8 @@ void Document::GetPageDescription(uint32_t page_index,
       break;
     case PageSizeType::kFixed: {
       FloatSize size = style->PageSize();
-      width = size.Width();
-      height = size.Height();
+      width = size.width();
+      height = size.height();
       break;
     }
     default:
@@ -4834,7 +4834,7 @@ void Document::SendFocusNotification(Element* new_focused_element,
           new_focused_element->OutlineRectsInVisualViewport(
               DocumentUpdateReason::kFocus);
       for (auto& outline_rect : outline_rects)
-        bounds_in_viewport.Unite(outline_rect);
+        bounds_in_viewport.Union(outline_rect);
     }
 
     if (GetFrame()->GetWidgetForLocalRoot()) {

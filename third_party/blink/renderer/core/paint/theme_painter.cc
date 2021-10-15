@@ -323,27 +323,27 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
   }
 
   if (is_horizontal) {
-    tick_rect.SetWidth(floor(tick_size.Width() * zoom_factor));
-    tick_rect.SetHeight(floor(tick_size.Height() * zoom_factor));
-    tick_rect.SetY(
-        floor(rect.Y() + rect.Height() / 2.0 +
+    tick_rect.set_width(floor(tick_size.width() * zoom_factor));
+    tick_rect.set_height(floor(tick_size.height() * zoom_factor));
+    tick_rect.set_y(
+        floor(rect.y() + rect.height() / 2.0 +
               LayoutTheme::GetTheme().SliderTickOffsetFromTrackCenter() *
                   zoom_factor));
     tick_region_side_margin =
-        track_bounds.X() +
-        (thumb_size.Width() - tick_size.Width() * zoom_factor) / 2.0;
-    tick_region_width = track_bounds.Width() - thumb_size.Width();
+        track_bounds.x() +
+        (thumb_size.width() - tick_size.width() * zoom_factor) / 2.0;
+    tick_region_width = track_bounds.width() - thumb_size.width();
   } else {
-    tick_rect.SetWidth(floor(tick_size.Height() * zoom_factor));
-    tick_rect.SetHeight(floor(tick_size.Width() * zoom_factor));
-    tick_rect.SetX(
-        floor(rect.X() + rect.Width() / 2.0 +
+    tick_rect.set_width(floor(tick_size.height() * zoom_factor));
+    tick_rect.set_height(floor(tick_size.width() * zoom_factor));
+    tick_rect.set_x(
+        floor(rect.x() + rect.width() / 2.0 +
               LayoutTheme::GetTheme().SliderTickOffsetFromTrackCenter() *
                   zoom_factor));
     tick_region_side_margin =
-        track_bounds.Y() +
-        (thumb_size.Height() - tick_size.Width() * zoom_factor) / 2.0;
-    tick_region_width = track_bounds.Height() - thumb_size.Height();
+        track_bounds.y() +
+        (thumb_size.height() - tick_size.width() * zoom_factor) / 2.0;
+    tick_region_width = track_bounds.height() - thumb_size.height();
   }
   HTMLDataListOptionsCollection* options = data_list->options();
   for (unsigned i = 0; HTMLOptionElement* option_element = options->Item(i);
@@ -362,9 +362,9 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
     double tick_position =
         round(tick_region_side_margin + tick_region_width * tick_ratio);
     if (is_horizontal)
-      tick_rect.SetX(tick_position);
+      tick_rect.set_x(tick_position);
     else
-      tick_rect.SetY(tick_position);
+      tick_rect.set_y(tick_position);
     paint_info.context.FillRect(
         tick_rect, o.ResolveColor(GetCSSPropertyColor()),
         PaintAutoDarkMode(o.StyleRef(),

@@ -143,7 +143,7 @@ std::tuple<const NGFragmentItem*, FloatRect> ScaledCharacterRectInContainer(
     return {item, FloatRect()};
   auto char_rect =
       FloatRect(item->LocalRect(item_text, start_ifc_offset, end_ifc_offset));
-  char_rect.MoveBy(item->SvgFragmentData()->rect.Location());
+  char_rect.MoveBy(item->SvgFragmentData()->rect.origin());
   return {item, char_rect};
 }
 
@@ -206,11 +206,11 @@ FloatPoint NGSvgTextQuery::StartPositionOfCharacter(unsigned index) const {
   const bool is_ltr = IsLtr(item->ResolvedDirection());
   FloatPoint point;
   if (item->IsHorizontal()) {
-    point = is_ltr ? char_rect.Location() : char_rect.MaxXMinYCorner();
-    point.Move(0.0f, ascent);
+    point = is_ltr ? char_rect.origin() : char_rect.top_right();
+    point.Offset(0.0f, ascent);
   } else {
-    point = is_ltr ? char_rect.MaxXMinYCorner() : char_rect.MaxXMaxYCorner();
-    point.Move(-ascent, 0.0f);
+    point = is_ltr ? char_rect.top_right() : char_rect.bottom_right();
+    point.Offset(-ascent, 0.0f);
   }
   if (item->HasSvgTransformForPaint())
     point = item->BuildSvgTransformForPaint().MapPoint(point);
@@ -234,11 +234,11 @@ FloatPoint NGSvgTextQuery::EndPositionOfCharacter(unsigned index) const {
   const bool is_ltr = IsLtr(item->ResolvedDirection());
   FloatPoint point;
   if (item->IsHorizontal()) {
-    point = is_ltr ? char_rect.MaxXMinYCorner() : char_rect.Location();
-    point.Move(0.0f, ascent);
+    point = is_ltr ? char_rect.top_right() : char_rect.origin();
+    point.Offset(0.0f, ascent);
   } else {
-    point = is_ltr ? char_rect.MaxXMaxYCorner() : char_rect.MaxXMinYCorner();
-    point.Move(-ascent, 0.0f);
+    point = is_ltr ? char_rect.bottom_right() : char_rect.top_right();
+    point.Offset(-ascent, 0.0f);
   }
   if (item->HasSvgTransformForPaint())
     point = item->BuildSvgTransformForPaint().MapPoint(point);

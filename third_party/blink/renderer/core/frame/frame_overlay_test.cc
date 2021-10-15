@@ -45,7 +45,7 @@ class SolidColorOverlay : public FrameOverlay::Delegate {
     if (DrawingRecorder::UseCachedDrawingIfPossible(
             graphics_context, frame_overlay, DisplayItem::kFrameOverlay))
       return;
-    FloatRect rect(0, 0, size.Width(), size.Height());
+    FloatRect rect(0, 0, size.width(), size.height());
     DrawingRecorder recorder(graphics_context, frame_overlay,
                              DisplayItem::kFrameOverlay,
                              gfx::Rect(ToGfxSize(size)));

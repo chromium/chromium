@@ -149,7 +149,7 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
     TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::CreateSkSurface");
 
     SkImageInfo info = SkImageInfo::Make(
-        Size().Width(), Size().Height(), ColorParams().GetSkColorType(),
+        Size().width(), Size().height(), ColorParams().GetSkColorType(),
         kPremul_SkAlphaType, ColorParams().GetSkColorSpace());
     SkSurfaceProps props = ColorParams().GetSkSurfaceProps();
     return SkSurface::MakeRaster(info, &props);
@@ -457,7 +457,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
 
           raster_interface->CopySubTexture(
               old_mailbox, mailbox, GetBackingTextureTarget(), 0, 0, 0, 0,
-              Size().Width(), Size().Height(), false /* unpack_flip_y */,
+              Size().width(), Size().height(), false /* unpack_flip_y */,
               false /* unpack_premultiply_alpha */);
         } else if (use_oop_rasterization_) {
           // If we're not copying over the previous contents, we need to ensure
@@ -814,7 +814,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     texture_info.fTarget = resource_->TextureTarget();
     texture_info.fFormat = ColorParams().GLSizedInternalFormat();
 
-    auto backend_texture = GrBackendTexture(Size().Width(), Size().Height(),
+    auto backend_texture = GrBackendTexture(Size().width(), Size().height(),
                                             GrMipMapped::kNo, texture_info);
 
     SkSurfaceProps props = ColorParams().GetSkSurfaceProps();
@@ -963,9 +963,9 @@ CanvasResourceProvider::CreateSharedImageProvider(
       base::FeatureList::IsEnabled(blink::features::kDawn2dCanvas);
   // TODO(senorblanco): once Dawn reports maximum texture size, Dawn Canvas
   // should respect it.  http://crbug.com/1082760
-  if (!skia_use_dawn && (size.Width() < 1 || size.Height() < 1 ||
-                         size.Width() > capabilities.max_texture_size ||
-                         size.Height() > capabilities.max_texture_size)) {
+  if (!skia_use_dawn && (size.width() < 1 || size.height() < 1 ||
+                         size.width() > capabilities.max_texture_size ||
+                         size.height() > capabilities.max_texture_size)) {
     return nullptr;
   }
 
@@ -1056,8 +1056,8 @@ CanvasResourceProvider::CreatePassThroughProvider(
 
   const auto& capabilities =
       context_provider_wrapper->ContextProvider()->GetCapabilities();
-  if (size.Width() > capabilities.max_texture_size ||
-      size.Height() > capabilities.max_texture_size) {
+  if (size.width() > capabilities.max_texture_size ||
+      size.height() > capabilities.max_texture_size) {
     return nullptr;
   }
 
@@ -1099,8 +1099,8 @@ CanvasResourceProvider::CreateSwapChainProvider(
 
   const auto& capabilities =
       context_provider_wrapper->ContextProvider()->GetCapabilities();
-  if (size.Width() > capabilities.max_texture_size ||
-      size.Height() > capabilities.max_texture_size ||
+  if (size.width() > capabilities.max_texture_size ||
+      size.height() > capabilities.max_texture_size ||
       !capabilities.shared_image_swap_chain) {
     return nullptr;
   }
@@ -1309,7 +1309,7 @@ cc::PaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
     // |recorder_|.
     recorder_ = std::make_unique<MemoryManagedPaintRecorder>(this);
 
-    return recorder_->beginRecording(Size().Width(), Size().Height());
+    return recorder_->beginRecording(Size().width(), Size().height());
   }
   return recorder_->getRecordingCanvas();
 }
@@ -1403,7 +1403,7 @@ sk_sp<cc::PaintRecord> CanvasResourceProvider::FlushCanvasInternal(
   RasterRecord(last_recording, preserve_recording);
   total_pinned_image_bytes_ = 0;
   cc::PaintCanvas* canvas =
-      recorder_->beginRecording(Size().Width(), Size().Height());
+      recorder_->beginRecording(Size().width(), Size().height());
   if (restore_clip_stack_callback_)
     restore_clip_stack_callback_.Run(canvas);
   if (!preserve_recording)
@@ -1436,13 +1436,13 @@ void CanvasResourceProvider::RasterRecordOOP(
 
   list->StartPaint();
   list->push<cc::DrawRecordOp>(std::move(last_recording));
-  list->EndPaintOfUnpaired(gfx::Rect(Size().Width(), Size().Height()));
+  list->EndPaintOfUnpaired(gfx::Rect(Size().width(), Size().height()));
   list->Finalize();
 
-  gfx::Size size(Size().Width(), Size().Height());
+  gfx::Size size(Size().width(), Size().height());
   size_t max_op_size_hint = gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
-  gfx::Rect full_raster_rect(Size().Width(), Size().Height());
-  gfx::Rect playback_rect(Size().Width(), Size().Height());
+  gfx::Rect full_raster_rect(Size().width(), Size().height());
+  gfx::Rect playback_rect(Size().width(), Size().height());
   gfx::Vector2dF post_translate(0.f, 0.f);
   gfx::Vector2dF post_scale(1.f, 1.f);
 
@@ -1609,7 +1609,7 @@ void CanvasResourceProvider::SkipQueuedDrawCommands() {
     return;
   recorder_->finishRecordingAsPicture();
   cc::PaintCanvas* canvas =
-      recorder_->beginRecording(Size().Width(), Size().Height());
+      recorder_->beginRecording(Size().width(), Size().height());
   total_pinned_image_bytes_ = 0;
   if (restore_clip_stack_callback_)
     restore_clip_stack_callback_.Run(canvas);
@@ -1622,8 +1622,8 @@ void CanvasResourceProvider::SetRestoreClipStackCallback(
 }
 
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
-  DCHECK_EQ(image.height(), Size().Height());
-  DCHECK_EQ(image.width(), Size().Width());
+  DCHECK_EQ(image.height(), Size().height());
+  DCHECK_EQ(image.width(), Size().width());
   EnsureSkiaCanvas();
   cc::PaintFlags copy_paint;
   copy_paint.setBlendMode(SkBlendMode::kSrc);
@@ -1631,8 +1631,8 @@ void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
 }
 
 void CanvasResourceProvider::RestoreBackBufferOOP(const cc::PaintImage& image) {
-  DCHECK_EQ(image.height(), Size().Height());
-  DCHECK_EQ(image.width(), Size().Width());
+  DCHECK_EQ(image.height(), Size().height());
+  DCHECK_EQ(image.width(), Size().width());
 
   auto sk_image = image.GetSwSkImage();
   DCHECK(sk_image);

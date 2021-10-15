@@ -47,10 +47,10 @@ void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
   tile_rect.Expand(tiling_info.spacing);
 
   SkMatrix pattern_matrix =
-      SkMatrix::Translate(tiling_info.phase.X(), tiling_info.phase.Y());
-  pattern_matrix.preScale(tiling_info.scale.Width(),
-                          tiling_info.scale.Height());
-  pattern_matrix.preTranslate(tile_rect.X(), tile_rect.Y());
+      SkMatrix::Translate(tiling_info.phase.x(), tiling_info.phase.y());
+  pattern_matrix.preScale(tiling_info.scale.width(),
+                          tiling_info.scale.height());
+  pattern_matrix.preTranslate(tile_rect.x(), tile_rect.y());
 
   sk_sp<PaintShader> tile_shader = CreateShader(
       tile_rect, &pattern_matrix, tiling_info.image_rect, draw_options);

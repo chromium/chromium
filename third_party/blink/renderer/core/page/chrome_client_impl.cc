@@ -493,7 +493,7 @@ void ChromeClientImpl::OverrideVisibleRectForMainFrame(
     IntRect* visible_rect) const {
   DCHECK(frame.IsMainFrame());
   return web_view_->GetDevToolsEmulator()->OverrideVisibleRect(
-      IntRect(frame.GetWidgetForLocalRoot()->ViewRect()).Size(), visible_rect);
+      IntRect(frame.GetWidgetForLocalRoot()->ViewRect()).size(), visible_rect);
 }
 
 float ChromeClientImpl::InputEventsScaleForEmulation() const {

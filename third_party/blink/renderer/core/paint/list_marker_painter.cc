@@ -49,9 +49,9 @@ DisclosureOrientation GetDisclosureOrientation(const ComputedStyle& style,
 
 Path CreatePath(const FloatPoint* path) {
   Path result;
-  result.MoveTo(FloatPoint(path[0].X(), path[0].Y()));
+  result.MoveTo(FloatPoint(path[0].x(), path[0].y()));
   for (int i = 1; i < 4; ++i)
-    result.AddLineTo(FloatPoint(path[i].X(), path[i].Y()));
+    result.AddLineTo(FloatPoint(path[i].x(), path[i].y()));
   return result;
 }
 

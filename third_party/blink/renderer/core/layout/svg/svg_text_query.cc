@@ -322,9 +322,9 @@ static FloatPoint LogicalGlyphPositionToPhysical(
 
   FloatPoint glyph_position(fragment.x, fragment.y);
   if (query_data->is_vertical_text)
-    glyph_position.Move(0, physical_glyph_offset);
+    glyph_position.Offset(0, physical_glyph_offset);
   else
-    glyph_position.Move(physical_glyph_offset, 0);
+    glyph_position.Offset(physical_glyph_offset, 0);
 
   return glyph_position;
 }
@@ -455,9 +455,9 @@ static FloatRect PhysicalGlyphExtents(const QueryData* query_data,
   // bounding box.
   if (!query_data->text_box->IsLeftToRightDirection()) {
     if (query_data->is_vertical_text)
-      glyph_extents.Move(0, -glyph_extents.Height());
+      glyph_extents.Offset(0, -glyph_extents.height());
     else
-      glyph_extents.Move(-glyph_extents.Width(), 0);
+      glyph_extents.Offset(-glyph_extents.width(), 0);
   }
   return glyph_extents;
 }
@@ -480,7 +480,7 @@ static inline FloatRect CalculateGlyphBoundaries(
       CalculateGlyphRange(query_data, fragment, 0, start_position);
   FloatPoint glyph_position = LogicalGlyphPositionToPhysical(
       query_data, fragment, glyph_offset_in_direction);
-  glyph_position.Move(0, -baseline);
+  glyph_position.Offset(0, -baseline);
 
   // Use the SVGTextMetrics computed by SVGTextMetricsBuilder.
   const MetricsList& metrics_list = query_data->text_line_layout.MetricsList();
@@ -605,7 +605,7 @@ static bool CharacterNumberAtPositionCallback(QueryData* query_data,
   while (fragment_offset < fragment.length) {
     FloatPoint glyph_position =
         LogicalGlyphPositionToPhysical(data, fragment, glyph_offset);
-    glyph_position.Move(0, -baseline);
+    glyph_position.Offset(0, -baseline);
 
     FloatRect extent = fragment_transform.MapRect(
         PhysicalGlyphExtents(data, *metrics, glyph_position));

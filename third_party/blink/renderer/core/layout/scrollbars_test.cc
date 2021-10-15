@@ -238,14 +238,14 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
     WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                           base::TimeTicks::Now(), device);
 
-    event.SetPositionInWidget(gfx::PointF(position.X(), position.Y()));
+    event.SetPositionInWidget(gfx::PointF(position.x(), position.y()));
 
     if (type == WebInputEvent::Type::kGestureScrollUpdate) {
-      event.data.scroll_update.delta_x = offset.Width();
-      event.data.scroll_update.delta_y = offset.Height();
+      event.data.scroll_update.delta_x = offset.width();
+      event.data.scroll_update.delta_y = offset.height();
     } else if (type == WebInputEvent::Type::kGestureScrollBegin) {
-      event.data.scroll_begin.delta_x_hint = offset.Width();
-      event.data.scroll_begin.delta_y_hint = offset.Height();
+      event.data.scroll_begin.delta_x_hint = offset.width();
+      event.data.scroll_begin.delta_y_hint = offset.height();
     }
     return WebCoalescedInputEvent(event, ui::LatencyInfo());
   }
@@ -1728,7 +1728,7 @@ TEST_P(ScrollbarAppearanceTest, HugeScrollingThumbPosition) {
 
   Compositor().BeginFrame();
 
-  int scroll_y = scrollable_area->GetScrollOffset().Height();
+  int scroll_y = scrollable_area->GetScrollOffset().height();
   ASSERT_EQ(9999000, scroll_y);
 
   Scrollbar* scrollbar = scrollable_area->VerticalScrollbar();
@@ -2067,8 +2067,8 @@ TEST_P(ScrollbarsTest, AutosizeTest) {
     Compositor().BeginFrame();
     EXPECT_FALSE(layout_viewport->VerticalScrollbar());
     EXPECT_FALSE(layout_viewport->HorizontalScrollbar());
-    EXPECT_EQ(100, frame_view->FrameRect().Width());
-    EXPECT_EQ(150, frame_view->FrameRect().Height());
+    EXPECT_EQ(100, frame_view->FrameRect().width());
+    EXPECT_EQ(150, frame_view->FrameRect().height());
   }
 
   // Subsequent autosizes should be stable. Specifically checking the condition
@@ -2078,8 +2078,8 @@ TEST_P(ScrollbarsTest, AutosizeTest) {
     Compositor().BeginFrame();
     EXPECT_FALSE(layout_viewport->VerticalScrollbar());
     EXPECT_FALSE(layout_viewport->HorizontalScrollbar());
-    EXPECT_EQ(100, frame_view->FrameRect().Width());
-    EXPECT_EQ(150, frame_view->FrameRect().Height());
+    EXPECT_EQ(100, frame_view->FrameRect().width());
+    EXPECT_EQ(150, frame_view->FrameRect().height());
   }
 
   // Try again.
@@ -2088,8 +2088,8 @@ TEST_P(ScrollbarsTest, AutosizeTest) {
     Compositor().BeginFrame();
     EXPECT_FALSE(layout_viewport->VerticalScrollbar());
     EXPECT_FALSE(layout_viewport->HorizontalScrollbar());
-    EXPECT_EQ(100, frame_view->FrameRect().Width());
-    EXPECT_EQ(150, frame_view->FrameRect().Height());
+    EXPECT_EQ(100, frame_view->FrameRect().width());
+    EXPECT_EQ(150, frame_view->FrameRect().height());
   }
 }
 

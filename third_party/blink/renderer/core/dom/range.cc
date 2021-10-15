@@ -1723,7 +1723,7 @@ FloatRect Range::BoundingRect() const {
 
   FloatRect result;
   for (const FloatQuad& quad : quads)
-    result.Unite(quad.BoundingBox());  // Skips empty rects.
+    result.Union(quad.BoundingBox());  // Skips empty rects.
 
   // If all rects are empty, return the first rect.
   if (result.IsEmpty() && !quads.IsEmpty())

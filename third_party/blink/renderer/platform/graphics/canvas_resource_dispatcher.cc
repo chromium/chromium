@@ -231,7 +231,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   frame->metadata.frame_token = ++next_frame_token_;
 
-  const gfx::Rect bounds(size_.Width(), size_.Height());
+  const gfx::Rect bounds(size_.width(), size_.height());
   constexpr viz::CompositorRenderPassId kRenderPassId{1};
   auto pass =
       viz::CompositorRenderPass::Create(/*shared_quad_state_list_size=*/1u,

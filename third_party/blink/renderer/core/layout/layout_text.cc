@@ -596,9 +596,9 @@ void LayoutText::CollectLineBoxRects(const PhysicalRectCollector& yield,
                                       : IntRect();
     if (!ellipsis_rect.IsEmpty()) {
       if (IsHorizontalWritingMode())
-        boundaries.SetWidth(ellipsis_rect.MaxX() - boundaries.X());
+        boundaries.SetWidth(ellipsis_rect.right() - boundaries.X());
       else
-        boundaries.SetHeight(ellipsis_rect.MaxY() - boundaries.Y());
+        boundaries.SetHeight(ellipsis_rect.bottom() - boundaries.Y());
     }
     yield(FlipForWritingMode(boundaries, block_for_flipping));
   }
@@ -785,7 +785,7 @@ FloatRect LayoutText::LocalBoundingBoxRectForAccessibility() const {
   CollectLineBoxRects(
       [this, &result, block_for_flipping](const PhysicalRect& r) {
         LayoutRect rect = FlipForWritingMode(r, block_for_flipping);
-        result.Unite(FloatRect(rect));
+        result.Union(FloatRect(rect));
       },
       kClipToEllipsis);
   // TODO(wangxianzhu): This is one of a few cases that a FloatRect is required
@@ -1133,8 +1133,8 @@ ALWAYS_INLINE float LayoutText::WidthFromFont(
       f.Width(run, fallback_fonts,
               glyph_bounds_accumulation ? &new_glyph_bounds : nullptr);
   if (glyph_bounds_accumulation) {
-    new_glyph_bounds.Move(text_width_so_far, 0);
-    glyph_bounds_accumulation->Unite(new_glyph_bounds);
+    new_glyph_bounds.Offset(text_width_so_far, 0);
+    glyph_bounds_accumulation->Union(new_glyph_bounds);
   }
   return result;
 }
@@ -2464,7 +2464,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
       if (svg_inline_text) {
         FloatRect float_rect(item_rect);
         const NGFragmentItem& item = *cursor.CurrentItem();
-        float_rect.MoveBy(item.SvgFragmentData()->rect.Location());
+        float_rect.MoveBy(item.SvgFragmentData()->rect.origin());
         if (item.HasSvgTransformForBoundingBox()) {
           float_rect =
               item.BuildSvgTransformForBoundingBox().MapRect(float_rect);

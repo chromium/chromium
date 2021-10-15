@@ -51,9 +51,9 @@ class BoxBorderPainter {
                           Color color,
                           EBorderStyle style,
                           const AutoDarkMode& auto_dark_mode) {
-    DrawLineForBoxSide(context, snapped_edge_rect.X(), snapped_edge_rect.Y(),
-                       snapped_edge_rect.MaxX(), snapped_edge_rect.MaxY(), side,
-                       color, style, 0, 0, true, auto_dark_mode);
+    DrawLineForBoxSide(context, snapped_edge_rect.x(), snapped_edge_rect.y(),
+                       snapped_edge_rect.right(), snapped_edge_rect.bottom(),
+                       side, color, style, 0, 0, true, auto_dark_mode);
   }
 
   // TODO(crbug.com/1201762): The float parameters are truncated to int in the

@@ -59,8 +59,8 @@ DoubleSize ContentsScrollOffset(AbstractView* abstract_view) {
   if (!scrollable_area)
     return DoubleSize();
   float scale_factor = frame->PageZoomFactor();
-  return DoubleSize(scrollable_area->ScrollOffsetInt().Width() / scale_factor,
-                    scrollable_area->ScrollOffsetInt().Height() / scale_factor);
+  return DoubleSize(scrollable_area->ScrollOffsetInt().width() / scale_factor,
+                    scrollable_area->ScrollOffsetInt().height() / scale_factor);
 }
 
 float PageZoomFactor(const UIEvent* event) {
@@ -194,10 +194,10 @@ void MouseEvent::SetCoordinatesFromWebPointerProperties(
     client_point = frame_point.ScaledBy(scale_factor);
   }
 
-  initializer->setScreenX(screen_point.X());
-  initializer->setScreenY(screen_point.Y());
-  initializer->setClientX(client_point.X());
-  initializer->setClientY(client_point.Y());
+  initializer->setScreenX(screen_point.x());
+  initializer->setScreenY(screen_point.y());
+  initializer->setClientX(client_point.x());
+  initializer->setClientY(client_point.y());
 
   // TODO(crbug.com/982379): We need to merge the code path of raw movement
   // events and regular events so that we can remove the block below.
@@ -453,7 +453,7 @@ void MouseEvent::ComputeRelativePosition() {
     // box.
     if (layout_object->IsBoxModelObject()) {
       const auto* layout_box = To<LayoutBoxModelObject>(layout_object);
-      local_pos.Move(-layout_box->BorderLeft(), -layout_box->BorderTop());
+      local_pos.Offset(-layout_box->BorderLeft(), -layout_box->BorderTop());
     }
 
     offset_location_ = DoublePoint(local_pos);

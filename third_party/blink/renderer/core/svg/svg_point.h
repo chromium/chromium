@@ -52,10 +52,10 @@ class SVGPoint final : public SVGListablePropertyBase {
   const FloatPoint& Value() const { return value_; }
   void SetValue(const FloatPoint& value) { value_ = value; }
 
-  float X() const { return value_.X(); }
-  float Y() const { return value_.Y(); }
-  void SetX(float f) { value_.SetX(f); }
-  void SetY(float f) { value_.SetY(f); }
+  float X() const { return value_.x(); }
+  float Y() const { return value_.y(); }
+  void SetX(float f) { value_.set_x(f); }
+  void SetY(float f) { value_.set_y(f); }
 
   String ValueAsString() const override;
 

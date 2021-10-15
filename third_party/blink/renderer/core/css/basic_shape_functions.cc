@@ -373,8 +373,8 @@ FloatPoint FloatPointForCenterCoordinate(
     const BasicShapeCenterCoordinate& center_x,
     const BasicShapeCenterCoordinate& center_y,
     FloatSize box_size) {
-  float x = FloatValueForLength(center_x.ComputedLength(), box_size.Width());
-  float y = FloatValueForLength(center_y.ComputedLength(), box_size.Height());
+  float x = FloatValueForLength(center_x.ComputedLength(), box_size.width());
+  float y = FloatValueForLength(center_y.ComputedLength(), box_size.height());
   return FloatPoint(x, y);
 }
 

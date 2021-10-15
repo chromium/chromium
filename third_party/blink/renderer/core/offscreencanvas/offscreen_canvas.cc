@@ -146,13 +146,13 @@ void OffscreenCanvas::SetPlaceholderCanvasId(DOMNodeId canvas_id) {
 
 void OffscreenCanvas::setWidth(unsigned width) {
   IntSize new_size = size_;
-  new_size.SetWidth(ClampTo<int>(width));
+  new_size.set_width(ClampTo<int>(width));
   SetSize(new_size);
 }
 
 void OffscreenCanvas::setHeight(unsigned height) {
   IntSize new_size = size_;
-  new_size.SetHeight(ClampTo<int>(height));
+  new_size.set_height(ClampTo<int>(height));
   SetSize(new_size);
 }
 
@@ -168,13 +168,13 @@ void OffscreenCanvas::SetSize(const IntSize& size) {
 
   size_ = size;
   UpdateMemoryUsage();
-  current_frame_damage_rect_ = SkIRect::MakeWH(size_.Width(), size_.Height());
+  current_frame_damage_rect_ = SkIRect::MakeWH(size_.width(), size_.height());
 
   if (frame_dispatcher_)
     frame_dispatcher_->Reshape(size_);
   if (context_) {
     if (context_->IsWebGL()) {
-      context_->Reshape(size_.Width(), size_.Height());
+      context_->Reshape(size_.width(), size_.height());
     } else if (context_->IsRenderingContext2D()) {
       context_->Reset();
       origin_clean_ = true;
@@ -197,8 +197,8 @@ void OffscreenCanvas::RecordTransfer() {
 void OffscreenCanvas::SetNeutered() {
   DCHECK(!context_);
   is_neutered_ = true;
-  size_.SetWidth(0);
-  size_.SetHeight(0);
+  size_.set_width(0);
+  size_.set_height(0);
   DeregisterFromAnimationFrameProvider();
 }
 
@@ -245,12 +245,12 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
   if (!context_) {
     *status = kInvalidSourceImageStatus;
     sk_sp<SkSurface> surface =
-        SkSurface::MakeRasterN32Premul(size_.Width(), size_.Height());
+        SkSurface::MakeRasterN32Premul(size_.width(), size_.height());
     return surface ? UnacceleratedStaticBitmapImage::Create(
                          surface->makeImageSnapshot())
                    : nullptr;
   }
-  if (!size.Width() || !size.Height()) {
+  if (!size.width() || !size.height()) {
     *status = kZeroSizeCanvasSourceImageStatus;
     return nullptr;
   }
@@ -552,8 +552,8 @@ void OffscreenCanvas::UpdateMemoryUsage() {
   int bytes_per_pixel = ColorParams().BytesPerPixel();
 
   base::CheckedNumeric<int32_t> memory_usage_checked = bytes_per_pixel;
-  memory_usage_checked *= Size().Width();
-  memory_usage_checked *= Size().Height();
+  memory_usage_checked *= Size().width();
+  memory_usage_checked *= Size().height();
   int32_t new_memory_usage =
       memory_usage_checked.ValueOrDefault(std::numeric_limits<int32_t>::max());
 

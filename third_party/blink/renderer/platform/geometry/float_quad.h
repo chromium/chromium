@@ -57,16 +57,16 @@ class PLATFORM_EXPORT FloatQuad {
       : p1_(p1), p2_(p2), p3_(p3), p4_(p4) {}
 
   constexpr FloatQuad(const FloatRect& in_rect)
-      : p1_(in_rect.Location()),
-        p2_(in_rect.MaxX(), in_rect.Y()),
-        p3_(in_rect.MaxX(), in_rect.MaxY()),
-        p4_(in_rect.X(), in_rect.MaxY()) {}
+      : p1_(in_rect.origin()),
+        p2_(in_rect.right(), in_rect.y()),
+        p3_(in_rect.right(), in_rect.bottom()),
+        p4_(in_rect.x(), in_rect.bottom()) {}
 
   explicit FloatQuad(const IntRect& in_rect)
-      : p1_(in_rect.Location()),
-        p2_(in_rect.MaxX(), in_rect.Y()),
-        p3_(in_rect.MaxX(), in_rect.MaxY()),
-        p4_(in_rect.X(), in_rect.MaxY()) {}
+      : p1_(in_rect.origin()),
+        p2_(in_rect.right(), in_rect.y()),
+        p3_(in_rect.right(), in_rect.bottom()),
+        p4_(in_rect.x(), in_rect.bottom()) {}
 
   // Converts from an array of four SkPoints, as from SkMatrix::mapRectToQuad.
   explicit FloatQuad(const SkPoint (&)[4]);
@@ -78,15 +78,15 @@ class PLATFORM_EXPORT FloatQuad {
   // Use ToGfxQuadF() instead.
   operator gfx::QuadF() const = delete;
 
-  constexpr FloatPoint P1() const { return p1_; }
-  constexpr FloatPoint P2() const { return p2_; }
-  constexpr FloatPoint P3() const { return p3_; }
-  constexpr FloatPoint P4() const { return p4_; }
+  constexpr FloatPoint p1() const { return p1_; }
+  constexpr FloatPoint p2() const { return p2_; }
+  constexpr FloatPoint p3() const { return p3_; }
+  constexpr FloatPoint p4() const { return p4_; }
 
-  void SetP1(const FloatPoint& p) { p1_ = p; }
-  void SetP2(const FloatPoint& p) { p2_ = p; }
-  void SetP3(const FloatPoint& p) { p3_ = p; }
-  void SetP4(const FloatPoint& p) { p4_ = p; }
+  void set_p1(const FloatPoint& p) { p1_ = p; }
+  void set_p2(const FloatPoint& p) { p2_ = p; }
+  void set_p3(const FloatPoint& p) { p3_ = p; }
+  void set_p4(const FloatPoint& p) { p4_ = p; }
 
   // isEmpty tests that the bounding box is empty. This will not identify
   // "slanted" empty quads.
@@ -125,8 +125,8 @@ class PLATFORM_EXPORT FloatQuad {
   // The center of the quad. If the quad is the result of a affine-transformed
   // rectangle this is the same as the original center transformed.
   FloatPoint Center() const {
-    return FloatPoint((p1_.X() + p2_.X() + p3_.X() + p4_.X()) / 4.0,
-                      (p1_.Y() + p2_.Y() + p3_.Y() + p4_.Y()) / 4.0);
+    return FloatPoint((p1_.x() + p2_.x() + p3_.x() + p4_.x()) / 4.0,
+                      (p1_.y() + p2_.y() + p3_.y() + p4_.y()) / 4.0);
   }
 
   FloatRect BoundingBox() const;
@@ -146,10 +146,10 @@ class PLATFORM_EXPORT FloatQuad {
   }
 
   void Move(float dx, float dy) {
-    p1_.Move(dx, dy);
-    p2_.Move(dx, dy);
-    p3_.Move(dx, dy);
-    p4_.Move(dx, dy);
+    p1_.Offset(dx, dy);
+    p2_.Offset(dx, dy);
+    p3_.Offset(dx, dy);
+    p4_.Offset(dx, dy);
   }
 
   void Scale(float dx, float dy) {
@@ -178,13 +178,13 @@ inline FloatQuad& operator+=(FloatQuad& a, const FloatSize& b) {
 }
 
 inline FloatQuad& operator-=(FloatQuad& a, const FloatSize& b) {
-  a.Move(-b.Width(), -b.Height());
+  a.Move(-b.width(), -b.height());
   return a;
 }
 
 constexpr bool operator==(const FloatQuad& a, const FloatQuad& b) {
-  return a.P1() == b.P1() && a.P2() == b.P2() && a.P3() == b.P3() &&
-         a.P4() == b.P4();
+  return a.p1() == b.p1() && a.p2() == b.p2() && a.p3() == b.p3() &&
+         a.p4() == b.p4();
 }
 
 constexpr bool operator!=(const FloatQuad& a, const FloatQuad& b) {
@@ -192,8 +192,8 @@ constexpr bool operator!=(const FloatQuad& a, const FloatQuad& b) {
 }
 
 constexpr gfx::QuadF ToGfxQuadF(const FloatQuad& q) {
-  return gfx::QuadF(ToGfxPointF(q.P1()), ToGfxPointF(q.P2()),
-                    ToGfxPointF(q.P3()), ToGfxPointF(q.P4()));
+  return gfx::QuadF(ToGfxPointF(q.p1()), ToGfxPointF(q.p2()),
+                    ToGfxPointF(q.p3()), ToGfxPointF(q.p4()));
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatQuad&);

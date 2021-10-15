@@ -74,7 +74,7 @@ void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
   // both in the same coordinate system.
   FloatRect parent_bounding_box =
       ParentObject()->LocalBoundingBoxRectForAccessibility();
-  out_bounds_in_container.MoveBy(-parent_bounding_box.Location());
+  out_bounds_in_container.MoveBy(-parent_bounding_box.origin());
 }
 
 bool AXInlineTextBox::ComputeAccessibilityIsIgnored(

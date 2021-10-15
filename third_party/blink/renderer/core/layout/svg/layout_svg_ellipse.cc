@@ -52,7 +52,7 @@ void LayoutSVGEllipse::UpdateShapeFromElement() {
 
   // Spec: "A negative value is an error. A value of zero disables rendering of
   // the element."
-  if (radii_.Width() < 0 || radii_.Height() < 0)
+  if (radii_.width() < 0 || radii_.height() < 0)
     return;
 
   if (!radii_.IsEmpty()) {
@@ -94,28 +94,28 @@ void LayoutSVGEllipse::CalculateRadiiAndCenter() {
     radii_ = ToFloatSize(
         length_context.ResolveLengthPair(style.Rx(), style.Ry(), style));
     if (style.Rx().IsAuto())
-      radii_.SetWidth(radii_.Height());
+      radii_.set_width(radii_.height());
     else if (style.Ry().IsAuto())
-      radii_.SetHeight(radii_.Width());
+      radii_.set_height(radii_.width());
   }
 }
 
 bool LayoutSVGEllipse::ShapeDependentStrokeContains(
     const HitTestLocation& location) {
   NOT_DESTROYED();
-  if (radii_.Width() < 0 || radii_.Height() < 0)
+  if (radii_.width() < 0 || radii_.height() < 0)
     return false;
 
   // The optimized check below for circles does not support non-circular and
   // the cases that we set use_path_fallback_ in UpdateShapeFromElement().
-  if (use_path_fallback_ || radii_.Width() != radii_.Height())
+  if (use_path_fallback_ || radii_.width() != radii_.height())
     return LayoutSVGShape::ShapeDependentStrokeContains(location);
 
   const FloatPoint& point = location.TransformedPoint();
   const FloatPoint center =
-      FloatPoint(center_.X() - point.X(), center_.Y() - point.Y());
+      FloatPoint(center_.x() - point.x(), center_.y() - point.y());
   const float half_stroke_width = StrokeWidth() / 2;
-  const float r = radii_.Width();
+  const float r = radii_.width();
   return std::abs(center.length() - r) <= half_stroke_width;
 }
 
@@ -125,12 +125,12 @@ bool LayoutSVGEllipse::ShapeDependentFillContains(
   NOT_DESTROYED();
   const FloatPoint& point = location.TransformedPoint();
   const FloatPoint center =
-      FloatPoint(center_.X() - point.X(), center_.Y() - point.Y());
+      FloatPoint(center_.x() - point.x(), center_.y() - point.y());
 
   // This works by checking if the point satisfies the ellipse equation.
   // (x/rX)^2 + (y/rY)^2 <= 1
-  const float xr_x = center.X() / radii_.Width();
-  const float yr_y = center.Y() / radii_.Height();
+  const float xr_x = center.x() / radii_.width();
+  const float yr_y = center.y() / radii_.height();
   return xr_x * xr_x + yr_y * yr_y <= 1.0;
 }
 

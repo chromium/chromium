@@ -112,8 +112,8 @@ TEST_F(FontUpdateInvalidationTest,
   auto* reference =
       To<SVGTextElement>(GetDocument().getElementById("reference"));
 
-  EXPECT_GT(250 + 10, target->GetBBox().Width());
-  EXPECT_GT(250 + 10, reference->GetBBox().Width());
+  EXPECT_GT(250 + 10, target->GetBBox().width());
+  EXPECT_GT(250 + 10, reference->GetBBox().width());
 
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(ReadAhemWoff2());
@@ -130,8 +130,8 @@ TEST_F(FontUpdateInvalidationTest,
   EXPECT_FALSE(reference->GetLayoutObject()->NeedsLayout());
 
   Compositor().BeginFrame();
-  EXPECT_EQ(250 + 10, target->GetBBox().Width());
-  EXPECT_GT(250 + 10, reference->GetBBox().Width());
+  EXPECT_EQ(250 + 10, target->GetBBox().width());
+  EXPECT_GT(250 + 10, reference->GetBBox().width());
 
   main_resource.Finish();
 }

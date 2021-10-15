@@ -170,15 +170,15 @@ void RemoteFrameView::UpdateCompositingRect() {
   // it seems to make guttering rare with slow to medium speed wheel scrolling.
   // Can we collect UMA data to estimate how much extra rastering this causes,
   // and possibly how common guttering is?
-  compositing_rect_.InflateX(ceilf(local_viewport_rect.Width() * 0.15f));
-  compositing_rect_.InflateY(ceilf(local_viewport_rect.Height() * 0.15f));
-  compositing_rect_.SetWidth(
-      std::min(frame_size.Width(), compositing_rect_.Width()));
-  compositing_rect_.SetHeight(
-      std::min(frame_size.Height(), compositing_rect_.Height()));
-  IntPoint compositing_rect_location = compositing_rect_.Location();
+  compositing_rect_.OutsetX(ceilf(local_viewport_rect.Width() * 0.15f));
+  compositing_rect_.OutsetY(ceilf(local_viewport_rect.Height() * 0.15f));
+  compositing_rect_.set_width(
+      std::min(frame_size.width(), compositing_rect_.width()));
+  compositing_rect_.set_height(
+      std::min(frame_size.height(), compositing_rect_.height()));
+  IntPoint compositing_rect_location = compositing_rect_.origin();
   compositing_rect_location.ClampNegativeToZero();
-  compositing_rect_.SetLocation(compositing_rect_location);
+  compositing_rect_.set_origin(compositing_rect_location);
 
   if (compositing_rect_ != previous_rect)
     needs_frame_rect_propagation_ = true;
@@ -277,7 +277,7 @@ void RemoteFrameView::Paint(GraphicsContext& context,
     DrawingRecorder recorder(context, owner_layout_object,
                              DisplayItem::kDocumentBackground);
     context.Save();
-    context.Translate(paint_offset.Width(), paint_offset.Height());
+    context.Translate(paint_offset.width(), paint_offset.height());
     DCHECK(context.Canvas());
 
     uint32_t content_id = 0;

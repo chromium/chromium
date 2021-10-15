@@ -95,7 +95,7 @@ class TestImage : public Image {
 
   static sk_sp<SkSurface> CreateSkSurface(IntSize size) {
     return SkSurface::MakeRaster(
-        SkImageInfo::MakeN32(size.Width(), size.Height(), kPremul_SkAlphaType));
+        SkImageInfo::MakeN32(size.width(), size.height(), kPremul_SkAlphaType));
   }
 
   sk_sp<SkImage> image_;
@@ -115,8 +115,8 @@ TEST(DragImageTest, NonNullHandling) {
 
   drag_image->Scale(0.5, 0.5);
   IntSize size = drag_image->Size();
-  EXPECT_EQ(1, size.Width());
-  EXPECT_EQ(1, size.Height());
+  EXPECT_EQ(1, size.width());
+  EXPECT_EQ(1, size.height());
 }
 
 TEST(DragImageTest, CreateDragImage) {
@@ -147,7 +147,7 @@ TEST(DragImageTest, TrimWhitespace) {
   std::unique_ptr<DragImage> expected_image = DragImage::Create(
       url, expected_label, font_description, device_scale_factor);
 
-  EXPECT_EQ(test_image->Size().Width(), expected_image->Size().Width());
+  EXPECT_EQ(test_image->Size().width(), expected_image->Size().width());
 }
 
 TEST(DragImageTest, InterpolationNone) {

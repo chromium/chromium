@@ -174,7 +174,7 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
     return;
 
   IntRect visual_rect = FrameRect();
-  visual_rect.Move(paint_offset);
+  visual_rect.Offset(paint_offset);
 
   if (WantsWheelEvents()) {
     context.GetPaintController().RecordHitTestData(*GetLayoutEmbeddedContent(),
@@ -206,8 +206,8 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
   // The plugin is positioned in the root frame's coordinates, so it needs to
   // be painted in them too.
   FloatPoint origin(ParentFrameView()->ConvertToRootFrame(IntPoint()));
-  origin.Move(-paint_offset);
-  context.Translate(-origin.X(), -origin.Y());
+  origin.Offset(-paint_offset);
+  context.Translate(-origin.x(), -origin.y());
 
   cc::PaintCanvas* canvas = context.Canvas();
 
@@ -862,8 +862,8 @@ void WebPluginContainerImpl::HandleDragEvent(MouseEvent& event) {
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
   gfx::PointF drag_screen_location(event.screenX(), event.screenY());
   IntPoint location(Location());
-  gfx::PointF drag_location(event.AbsoluteLocation().X() - location.X(),
-                            event.AbsoluteLocation().Y() - location.Y());
+  gfx::PointF drag_location(event.AbsoluteLocation().X() - location.x(),
+                            event.AbsoluteLocation().Y() - location.y());
 
   web_plugin_->HandleDragStatusUpdate(drag_status, drag_data,
                                       drag_operation_mask, drag_location,
@@ -881,7 +881,7 @@ void WebPluginContainerImpl::HandleWheelEvent(WheelEvent& event) {
   FloatPoint local_point =
       element_->GetLayoutObject()->AbsoluteToLocalFloatPoint(absolute_location);
   WebMouseWheelEvent translated_event = event.NativeEvent().FlattenTransform();
-  translated_event.SetPositionInWidget(local_point.X(), local_point.Y());
+  translated_event.SetPositionInWidget(local_point.x(), local_point.y());
 
   ui::Cursor dummy_cursor;
   if (web_plugin_->HandleInputEvent(

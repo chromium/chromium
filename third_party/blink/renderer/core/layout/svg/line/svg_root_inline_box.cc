@@ -91,7 +91,7 @@ FloatRect SVGRootInlineBox::LayoutInlineBoxes(InlineBox& box) {
   } else {
     for (InlineBox* child = To<InlineFlowBox>(box).FirstChild(); child;
          child = child->NextOnLine())
-      rect.Unite(LayoutInlineBoxes(*child));
+      rect.Union(LayoutInlineBoxes(*child));
   }
 
   LayoutRect logical_rect(EnclosingLayoutRect(rect));

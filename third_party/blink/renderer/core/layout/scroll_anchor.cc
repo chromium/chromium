@@ -478,8 +478,8 @@ void ScrollAnchor::NotifyBeforeLayout() {
   ScrollOffset scroll_offset = scroller_->GetScrollOffset();
   float block_direction_scroll_offset =
       ScrollerLayoutBox(scroller_)->IsHorizontalWritingMode()
-          ? scroll_offset.Height()
-          : scroll_offset.Width();
+          ? scroll_offset.height()
+          : scroll_offset.width();
   if (block_direction_scroll_offset == 0) {
     ClearSelf();
     return;
@@ -524,9 +524,9 @@ IntSize ScrollAnchor::ComputeAdjustment() const {
   // Only adjust on the block layout axis.
   const LayoutBox* scroller_box = ScrollerLayoutBox(scroller_);
   if (scroller_box->IsHorizontalWritingMode())
-    delta.SetWidth(0);
+    delta.set_width(0);
   else
-    delta.SetHeight(0);
+    delta.set_height(0);
 
   if (anchor_is_cv_auto_without_layout_) {
     // See the effect delta would have on the anchor rect.
@@ -535,18 +535,18 @@ IntSize ScrollAnchor::ComputeAdjustment() const {
     anchor_rect.Move(-delta);
     if (scroller_box->IsHorizontalWritingMode()) {
       if (anchor_rect.MaxY() < 0)
-        delta.SetHeight(delta.Height() + anchor_rect.MaxY().ToInt());
+        delta.set_height(delta.height() + anchor_rect.MaxY().ToInt());
     } else {
       // For the flipped blocks writing mode, we need to adjust the offset to
       // align the opposite edge of the block (MaxX edge instead of X edge).
       if (scroller_box->HasFlippedBlocksWritingMode()) {
         auto visible_rect = GetVisibleRect(scroller_);
         if (anchor_rect.X() > visible_rect.MaxX()) {
-          delta.SetWidth(delta.Width() - (anchor_rect.X().ToInt() -
-                                          visible_rect.MaxX().ToInt()));
+          delta.set_width(delta.width() - (anchor_rect.X().ToInt() -
+                                           visible_rect.MaxX().ToInt()));
         }
       } else if (anchor_rect.MaxX() < 0) {
-        delta.SetWidth(delta.Width() + anchor_rect.MaxX().ToInt());
+        delta.set_width(delta.width() + anchor_rect.MaxX().ToInt());
       }
     }
   }
@@ -555,7 +555,7 @@ IntSize ScrollAnchor::ComputeAdjustment() const {
   // make it physical.
   if (!scroller_box->IsHorizontalWritingMode() &&
       scroller_box->HasFlippedBlocksWritingMode()) {
-    delta.SetWidth(-delta.Width());
+    delta.set_width(-delta.width());
   }
   return delta;
 }
@@ -650,12 +650,12 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
     FloatRect bounding_box = anchor_object->AbsoluteBoundingBoxFloatRect();
     FloatPoint location_point =
         anchor_object->Style()->IsFlippedBlocksWritingMode()
-            ? bounding_box.MaxXMinYCorner()
-            : bounding_box.Location();
+            ? bounding_box.top_right()
+            : bounding_box.origin();
     FloatPoint desired_point = location_point + current_offset;
 
     ScrollOffset desired_offset =
-        ScrollOffset(desired_point.X(), desired_point.Y());
+        ScrollOffset(desired_point.x(), desired_point.y());
     ScrollOffset delta =
         ScrollOffset(RoundedIntSize(serialized_anchor.relative_offset));
     desired_offset -= delta;

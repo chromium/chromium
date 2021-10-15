@@ -144,7 +144,7 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
     FloatPoint offset(logical_offset.inline_offset,
                       logical_offset.block_offset + ascent);
     if (!horizontal_)
-      offset.Set(-offset.Y(), offset.X());
+      offset.SetPoint(-offset.y(), offset.x());
     css_positions_.push_back(offset);
 
     info.inline_size = horizontal_ ? item.Size().width : item.Size().height;
@@ -181,15 +181,15 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsDxDy(
     const NGSvgCharacterData& resolve = iterator.AdvanceTo(i);
     // https://github.com/w3c/svgwg/issues/846
     if (resolve.HasX())
-      shift.SetX(0.0f);
+      shift.set_x(0.0f);
     if (resolve.HasY())
-      shift.SetY(0.0f);
+      shift.set_y(0.0f);
 
     // If this character is the first one in a <textPath>, reset both of x
     // and y.
     if (IsFirstCharacterInTextPath(i)) {
-      shift.SetX(0.0f);
-      shift.SetY(0.0f);
+      shift.set_x(0.0f);
+      shift.set_y(0.0f);
     }
 
     // 2.1. If resolve_x[i] is unspecified, set it to 0. If resolve_y[i] is
@@ -198,13 +198,13 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsDxDy(
     // 2.2. Let shift.x = shift.x + resolve_x[i] and
     // shift.y = shift.y + resolve_y[i].
     // https://github.com/w3c/svgwg/issues/271
-    shift.Move(resolve.HasDx() ? resolve.dx : 0.0f,
-               resolve.HasDy() ? resolve.dy : 0.0f);
+    shift.Offset(resolve.HasDx() ? resolve.dx : 0.0f,
+                 resolve.HasDy() ? resolve.dy : 0.0f);
     // 2.3. Let result[i].x = CSS_positions[i].x + shift.x and
     // result[i].y = CSS_positions[i].y + shift.y.
     const float scaling_factor = ScalingFactorAt(items, i);
-    result_[i].x = css_positions_[i].X() + shift.X() * scaling_factor;
-    result_[i].y = css_positions_[i].Y() + shift.Y() * scaling_factor;
+    result_[i].x = css_positions_[i].x() + shift.x() * scaling_factor;
+    result_[i].y = css_positions_[i].y() + shift.y() * scaling_factor;
   }
 }
 
@@ -385,7 +385,7 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
   //   <position specified by x/y attributes>
   //   + <shift specified by dx/dy attributes>
   //   + <baseline-shift done in the inline layout>
-  // css_positions_[i].Y() for horizontal_ or css_positions_[i].X() for
+  // css_positions_[i].y() for horizontal_ or css_positions_[i].x() for
   // !horizontal_ represents baseline-shift because the block offsets of the
   // normal baseline is 0.
 
@@ -404,36 +404,36 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
     // shift.x = resolved_x[index] − result.x[index].
     // https://github.com/w3c/svgwg/issues/845
     if (resolve.HasX()) {
-      shift.SetX(resolve.x * scaling_factor - css_positions_[i].X() -
-                 result_[i].text_length_shift_x);
+      shift.set_x(resolve.x * scaling_factor - css_positions_[i].x() -
+                  result_[i].text_length_shift_x);
       // Take into account of baseline-shift.
       if (!horizontal_)
-        shift.SetX(shift.X() + css_positions_[i].X());
+        shift.set_x(shift.x() + css_positions_[i].x());
     }
     // 3.2. If resolved_y[index] is set, then let
     // shift.y = resolved_y[index] − result.y[index].
     // https://github.com/w3c/svgwg/issues/845
     if (resolve.HasY()) {
-      shift.SetY(resolve.y * scaling_factor - css_positions_[i].Y() -
-                 result_[i].text_length_shift_y);
+      shift.set_y(resolve.y * scaling_factor - css_positions_[i].y() -
+                  result_[i].text_length_shift_y);
       // Take into account of baseline-shift.
       if (horizontal_)
-        shift.SetY(shift.Y() + css_positions_[i].Y());
+        shift.set_y(shift.y() + css_positions_[i].y());
     }
 
     // If this character is the first one in a <textPath>, reset the
     // block-direction shift.
     if (IsFirstCharacterInTextPath(i)) {
       if (horizontal_)
-        shift.SetY(0.0f);
+        shift.set_y(0.0f);
       else
-        shift.SetX(0.0f);
+        shift.set_x(0.0f);
     }
 
     // 3.3. Let result.x[index] = result.x[index] + shift.x and
     // result.y[index] = result.y[index] + shift.y.
-    result_[i].x = *result_[i].x + shift.X();
-    result_[i].y = *result_[i].y + shift.Y();
+    result_[i].x = *result_[i].x + shift.x();
+    result_[i].y = *result_[i].y + shift.y();
     // 3.4. If the "middle" and "anchored chunk" flags of result[index] are
     // both true, then:
     if (result_[i].middle && result_[i].anchored_chunk) {
@@ -643,12 +643,12 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
             info.rotate = point_tangent.tangent_in_degrees;
             if (*info.rotate == 0.0f) {
               if (horizontal_) {
-                info.x = point_tangent.point.X() * scaling_factor -
+                info.x = point_tangent.point.x() * scaling_factor -
                          info.inline_size / 2;
-                info.y = point_tangent.point.Y() * scaling_factor + *info.y;
+                info.y = point_tangent.point.y() * scaling_factor + *info.y;
               } else {
-                info.x = point_tangent.point.X() * scaling_factor + *info.x;
-                info.y = point_tangent.point.Y() * scaling_factor -
+                info.x = point_tangent.point.x() * scaling_factor + *info.x;
+                info.y = point_tangent.point.y() * scaling_factor -
                          info.inline_size / 2;
               }
             } else {
@@ -657,8 +657,8 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
               // AffineTransform produced from baseline_shift and inline_size/2.
               // See |NGFragmentItem::BuildSVGTransformForTextPath()|.
               info.baseline_shift = horizontal_ ? *info.y : *info.x;
-              info.x = point_tangent.point.X() * scaling_factor;
-              info.y = point_tangent.point.Y() * scaling_factor;
+              info.x = point_tangent.point.x() * scaling_factor;
+              info.y = point_tangent.point.y() * scaling_factor;
             }
           }
         }
@@ -693,8 +693,8 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
           PointAndTangent point_tangent;
           path_mapper->PointAndNormalAtLength(path_mapper->length(),
                                               point_tangent);
-          path_end_x = point_tangent.point.X() * scaling_factor - *info.x;
-          path_end_y = point_tangent.point.Y() * scaling_factor - *info.y;
+          path_end_x = point_tangent.point.x() * scaling_factor - *info.x;
+          path_end_y = point_tangent.point.y() * scaling_factor - *info.y;
         } else {
           // The 'current text position' should be at the next to the last
           // drawn character.
@@ -792,7 +792,7 @@ void NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
           item.item.BuildSvgTransformForBoundingBox().MapRect(transformd_rect);
     }
     transformd_rect.Scale(1 / scaling_factor);
-    unscaled_visual_rect.Unite(transformd_rect);
+    unscaled_visual_rect.Union(transformd_rect);
   }
   if (items[0]->Type() == NGFragmentItem::kLine) {
     items[0].item.SetSvgLineLocalRect(

@@ -427,7 +427,7 @@ void GraphicsLayer::Paint(
     PropertyTreeState property_tree_state = GetPropertyTreeState().Unalias();
     EnsureRasterInvalidator().Generate(
         raster_invalidation_function_, chunks,
-        gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
+        gfx::Vector2dF(layer_state_->offset.x(), layer_state_->offset.y()),
         Size(), property_tree_state, this->Id());
 
     absl::optional<RasterUnderInvalidationCheckingParams>
@@ -446,7 +446,7 @@ void GraphicsLayer::Paint(
         old_layer_size != Size() || raster_under_invalidation_params) {
       cc_display_item_list_ = PaintChunksToCcLayer::Convert(
           chunks, property_tree_state,
-          gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
+          gfx::Vector2dF(layer_state_->offset.x(), layer_state_->offset.y()),
           cc::DisplayItemList::kTopLevelDisplayItemList,
           base::OptionalOrNullptr(raster_under_invalidation_params));
       raster_invalidated_ = false;
@@ -493,7 +493,7 @@ void GraphicsLayer::UpdateContentsLayerBounds() {
   if (!contents_layer_)
     return;
 
-  IntSize contents_size = contents_rect_.Size();
+  IntSize contents_size = contents_rect_.size();
   contents_layer_->SetBounds(ToGfxSize(contents_size));
 }
 

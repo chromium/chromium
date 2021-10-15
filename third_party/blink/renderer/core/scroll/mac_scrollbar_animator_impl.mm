@@ -85,7 +85,7 @@ ScrollbarPainter ScrollbarPainterForScrollbar(blink::Scrollbar& scrollbar) {
     return NSZeroRect;
 
   blink::IntSize contentsSize = _scrollableArea->ContentsSize();
-  return NSMakeRect(0, 0, contentsSize.Width(), contentsSize.Height());
+  return NSMakeRect(0, 0, contentsSize.width(), contentsSize.height());
 }
 
 - (BOOL)inLiveResizeForScrollerImpPair:(id)scrollerImpPair {
@@ -857,8 +857,8 @@ void MacScrollbarAnimatorImpl::SendContentAreaScrolledTask() {
   if (SupportsContentAreaScrolledInDirection()) {
     [scrollbar_painter_controller_
         contentAreaScrolledInDirection:
-            NSMakePoint(content_area_scrolled_timer_scroll_delta_.Width(),
-                        content_area_scrolled_timer_scroll_delta_.Height())];
+            NSMakePoint(content_area_scrolled_timer_scroll_delta_.width(),
+                        content_area_scrolled_timer_scroll_delta_.height())];
     content_area_scrolled_timer_scroll_delta_ = ScrollOffset();
   } else
     [scrollbar_painter_controller_ contentAreaScrolled];

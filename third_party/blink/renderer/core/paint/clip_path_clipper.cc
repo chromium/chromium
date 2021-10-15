@@ -150,7 +150,7 @@ absl::optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
     // the current transform space, and the reference box is unused.
     // While SVG object has no concept of paint offset, HTML object's
     // local space is shifted by paint offset.
-    bounding_box.MoveBy(reference_box.Location());
+    bounding_box.MoveBy(reference_box.origin());
   }
   bounding_box.Intersect(LayoutRect::InfiniteIntRect());
   return bounding_box;
@@ -164,7 +164,7 @@ static AffineTransform MaskToContentTransform(
   if (resource_clipper.ClipPathUnits() ==
       SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
     if (uses_zoomed_reference_box) {
-      mask_to_content.Translate(reference_box.X(), reference_box.Y());
+      mask_to_content.Translate(reference_box.x(), reference_box.y());
       mask_to_content.Scale(resource_clipper.StyleRef().EffectiveZoom());
     }
   }

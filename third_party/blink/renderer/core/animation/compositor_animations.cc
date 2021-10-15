@@ -903,7 +903,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
       case CSSPropertyID::kTransform: {
         FloatSize box_size = ComputedStyleUtils::ReferenceBoxForTransform(
                                  *target_element.GetLayoutObject())
-                                 .Size();
+                                 .size();
         auto transform_curve =
             std::make_unique<CompositorTransformAnimationCurve>();
         AddKeyframesToCurve(*transform_curve, values, box_size);

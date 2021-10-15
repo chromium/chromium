@@ -121,9 +121,9 @@ static String ImageTitle(const String& filename, const IntSize& size) {
   result.Append(" (");
   // FIXME: Localize numbers. Safari/OSX shows localized numbers with group
   // separaters. For example, "1,920x1,080".
-  result.AppendNumber(size.Width());
+  result.AppendNumber(size.width());
   result.Append(static_cast<UChar>(0xD7));  // U+00D7 (multiplication sign)
-  result.AppendNumber(size.Height());
+  result.AppendNumber(size.height());
   result.Append(')');
   return result.ToString();
 }
@@ -308,7 +308,7 @@ void ImageDocument::UpdateTitle() {
   // level.  At a zoom level of 1 the image is guaranteed to have an integer
   // size.
   IntSize size = ImageSize();
-  if (!size.Width())
+  if (!size.width())
     return;
   // Compute the title, we use the decoded filename of the resource, falling
   // back on the (decoded) hostname if there is no path.
@@ -336,8 +336,8 @@ float ImageDocument::Scale() const {
   // page in (but not when the zoom is coming from device scale).
   const float viewport_zoom =
       view->GetChromeClient()->WindowToViewportScalar(GetFrame(), 1.f);
-  float width_scale = view->Width() / (viewport_zoom * image_size.Width());
-  float height_scale = view->Height() / (viewport_zoom * image_size.Height());
+  float width_scale = view->Width() / (viewport_zoom * image_size.width());
+  float height_scale = view->Height() / (viewport_zoom * image_size.height());
 
   return std::min(width_scale, height_scale);
 }
@@ -350,8 +350,8 @@ void ImageDocument::ResizeImageToFit() {
   IntSize image_size = ImageSize();
   image_size.Scale(Scale());
 
-  image_element_->setWidth(image_size.Width());
-  image_element_->setHeight(image_size.Height());
+  image_element_->setWidth(image_size.width());
+  image_element_->setHeight(image_size.height());
 
   UpdateImageStyle();
 }
@@ -463,8 +463,8 @@ void ImageDocument::RestoreImageSize() {
     return;
 
   IntSize image_size = ImageSize();
-  image_element_->setWidth(image_size.Width());
-  image_element_->setHeight(image_size.Height());
+  image_element_->setWidth(image_size.width());
+  image_element_->setHeight(image_size.height());
   UpdateImageStyle();
 
   did_shrink_image_ = false;
@@ -484,13 +484,13 @@ int ImageDocument::CalculateDivWidth() {
   //   of the frame.
   // * Images smaller in either dimension are centered along that axis.
   int viewport_width =
-      GetFrame()->GetPage()->GetVisualViewport().Size().Width() /
+      GetFrame()->GetPage()->GetVisualViewport().Size().width() /
       GetFrame()->PageZoomFactor();
 
   // For huge images, minimum-scale=0.1 is still too big on small screens.
   // Set the <div> width so that the image will shrink to fit the width of the
   // screen when the scale is minimum.
-  int max_width = std::min(ImageSize().Width(), viewport_width * 10);
+  int max_width = std::min(ImageSize().width(), viewport_width * 10);
   return std::max(viewport_width, max_width);
 }
 
@@ -513,7 +513,7 @@ void ImageDocument::WindowSizeChanged() {
     // the URL bar is showing, but won't fill the new space when the URL bar
     // hides.
     float aspect_ratio = View()->GetLayoutSize().AspectRatio();
-    int div_height = std::max(ImageSize().Height(),
+    int div_height = std::max(ImageSize().height(),
                               static_cast<int>(div_width / aspect_ratio));
     div_element_->SetInlineStyleProperty(CSSPropertyID::kHeight, div_height,
                                          CSSPrimitiveValue::UnitType::kPixels);

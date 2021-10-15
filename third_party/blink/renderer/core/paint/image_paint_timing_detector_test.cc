@@ -1150,7 +1150,7 @@ TEST_P(ImagePaintTimingDetectorTest, Iframe_ClippedByMainFrameViewport) {
     <img id="target"></img>
   )HTML");
   // Make sure the iframe is out of main-frame's viewport.
-  DCHECK_LT(GetViewportRect(GetFrameView()).Height(), 1234567);
+  DCHECK_LT(GetViewportRect(GetFrameView()).height(), 1234567);
   SetChildFrameImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(CountVisibleImageRecords(), 0u);

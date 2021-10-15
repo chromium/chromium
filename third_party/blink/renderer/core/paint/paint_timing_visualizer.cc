@@ -21,14 +21,14 @@ static void CreateQuad(TracedValue* value,
                        const char* name,
                        const FloatQuad& quad) {
   value->BeginArray(name);
-  value->PushDouble(quad.P1().X());
-  value->PushDouble(quad.P1().Y());
-  value->PushDouble(quad.P2().X());
-  value->PushDouble(quad.P2().Y());
-  value->PushDouble(quad.P3().X());
-  value->PushDouble(quad.P3().Y());
-  value->PushDouble(quad.P4().X());
-  value->PushDouble(quad.P4().Y());
+  value->PushDouble(quad.p1().x());
+  value->PushDouble(quad.p1().y());
+  value->PushDouble(quad.p2().x());
+  value->PushDouble(quad.p2().y());
+  value->PushDouble(quad.p3().x());
+  value->PushDouble(quad.p3().y());
+  value->PushDouble(quad.p4().x());
+  value->PushDouble(quad.p4().y());
   value->EndArray();
 }
 

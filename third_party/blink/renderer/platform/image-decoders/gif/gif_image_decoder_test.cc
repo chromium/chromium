@@ -354,14 +354,14 @@ TEST(GIFImageDecoderTest, firstFrameHasGreaterSizeThanScreenSize) {
         SharedBuffer::Create(full_data.data(), i);
     decoder->SetData(data.get(), i == full_data.size());
 
-    if (decoder->IsSizeAvailable() && !frame_size.Width() &&
-        !frame_size.Height()) {
+    if (decoder->IsSizeAvailable() && !frame_size.width() &&
+        !frame_size.height()) {
       frame_size = decoder->DecodedSize();
       continue;
     }
 
-    ASSERT_EQ(frame_size.Width(), decoder->DecodedSize().Width());
-    ASSERT_EQ(frame_size.Height(), decoder->DecodedSize().Height());
+    ASSERT_EQ(frame_size.width(), decoder->DecodedSize().width());
+    ASSERT_EQ(frame_size.height(), decoder->DecodedSize().height());
   }
 }
 

@@ -510,7 +510,7 @@ void SpatialNavigationController::MoveInterestTo(Node* next_node) {
 void SpatialNavigationController::DispatchMouseMoveAt(Element* element) {
   gfx::PointF event_position(-1, -1);
   if (element) {
-    event_position = ToGfxPointF(RectInViewport(*element).Location());
+    event_position = ToGfxPointF(RectInViewport(*element).origin());
     event_position.Offset(1, 1);
   }
 

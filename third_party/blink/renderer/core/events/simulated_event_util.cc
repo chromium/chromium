@@ -62,20 +62,18 @@ void PopulateMouseEventInitCoordinates(
         dom_window->GetFrame()->View()->ConvertFromRootFrame(root_frame_center);
     IntPoint frame_center_point = RoundedIntPoint(frame_center);
     // We are only interested in the top left corner.
-    IntRect center_rect(frame_center_point.X(), frame_center_point.Y(), 1, 1);
-    IntPoint screen_center = dom_window->GetFrame()
-                                 ->View()
-                                 ->FrameToScreen(center_rect)
-                                 .MinXMinYCorner();
+    IntRect center_rect(frame_center_point.x(), frame_center_point.y(), 1, 1);
+    IntPoint screen_center =
+        dom_window->GetFrame()->View()->FrameToScreen(center_rect).origin();
 
     initializer->setScreenX(
-        AdjustForAbsoluteZoom::AdjustInt(screen_center.X(), layout_object));
+        AdjustForAbsoluteZoom::AdjustInt(screen_center.x(), layout_object));
     initializer->setScreenY(
-        AdjustForAbsoluteZoom::AdjustInt(screen_center.Y(), layout_object));
+        AdjustForAbsoluteZoom::AdjustInt(screen_center.y(), layout_object));
     initializer->setClientX(AdjustForAbsoluteZoom::AdjustInt(
-        frame_center_point.X(), layout_object));
+        frame_center_point.x(), layout_object));
     initializer->setClientY(AdjustForAbsoluteZoom::AdjustInt(
-        frame_center_point.Y(), layout_object));
+        frame_center_point.y(), layout_object));
   }
 }
 

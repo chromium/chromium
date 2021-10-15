@@ -87,7 +87,7 @@ void ImeOnFocusTest::RunImeOnFocusTest(
     Focus(focus_element);
   EXPECT_EQ(0u, widget_host.VirtualKeyboardRequestCount());
 
-  if (tap_point.X() >= 0 && tap_point.Y() >= 0)
+  if (tap_point.x() >= 0 && tap_point.y() >= 0)
     SendGestureTap(web_view, tap_point);
 
   if (!frame.IsEmpty()) {

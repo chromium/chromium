@@ -85,14 +85,14 @@ PhysicalRect RectBelowStartingPoint(const PhysicalRect& rect,
 float GetMoveDistance(const FloatPoint& old_starting_point,
                       const FloatPoint& new_starting_point) {
   FloatSize location_delta = new_starting_point - old_starting_point;
-  return std::max(fabs(location_delta.Width()), fabs(location_delta.Height()));
+  return std::max(fabs(location_delta.width()), fabs(location_delta.height()));
 }
 
 bool EqualWithinMovementThreshold(const FloatPoint& a,
                                   const FloatPoint& b,
                                   float threshold_physical_px) {
-  return fabs(a.X() - b.X()) < threshold_physical_px &&
-         fabs(a.Y() - b.Y()) < threshold_physical_px;
+  return fabs(a.x() - b.x()) < threshold_physical_px &&
+         fabs(a.y() - b.y()) < threshold_physical_px;
 }
 
 bool SmallerThanRegionGranularity(const LayoutRect& rect) {
@@ -108,10 +108,10 @@ void RectToTracedValue(const IntRect& rect,
     value.BeginArray(key);
   else
     value.BeginArray();
-  value.PushInteger(rect.X());
-  value.PushInteger(rect.Y());
-  value.PushInteger(rect.Width());
-  value.PushInteger(rect.Height());
+  value.PushInteger(rect.x());
+  value.PushInteger(rect.y());
+  value.PushInteger(rect.width());
+  value.PushInteger(rect.height());
   value.EndArray();
 }
 
@@ -308,15 +308,15 @@ void LayoutShiftTracker::ObjectShifted(
   FloatRect old_rect_in_root(old_rect);
   // TODO(crbug.com/1187979): Shift by |scroll_delta| to keep backward
   // compatibility in https://crrev.com/c/2754969. See the bug for details.
-  old_rect_in_root.Move(scroll_delta);
+  old_rect_in_root.Offset(scroll_delta);
   transform.MapRect(old_rect_in_root);
   FloatRect new_rect_in_root(new_rect);
   transform.MapRect(new_rect_in_root);
 
   IntRect visible_old_rect =
-      RoundedIntRect(Intersection(old_rect_in_root, clip_rect.Rect()));
+      RoundedIntRect(IntersectRects(old_rect_in_root, clip_rect.Rect()));
   IntRect visible_new_rect =
-      RoundedIntRect(Intersection(new_rect_in_root, clip_rect.Rect()));
+      RoundedIntRect(IntersectRects(new_rect_in_root, clip_rect.Rect()));
   if (visible_old_rect.IsEmpty() && visible_new_rect.IsEmpty())
     return;
 
@@ -326,11 +326,11 @@ void LayoutShiftTracker::ObjectShifted(
     FloatPoint old_inline_direction_indifferent_starting_point_in_root =
         old_starting_point_in_root;
     if (object.IsHorizontalWritingMode()) {
-      old_inline_direction_indifferent_starting_point_in_root.SetX(
-          new_starting_point_in_root.X());
+      old_inline_direction_indifferent_starting_point_in_root.set_x(
+          new_starting_point_in_root.x());
     } else {
-      old_inline_direction_indifferent_starting_point_in_root.SetY(
-          new_starting_point_in_root.Y());
+      old_inline_direction_indifferent_starting_point_in_root.set_y(
+          new_starting_point_in_root.y());
     }
     if (EqualWithinMovementThreshold(
             old_inline_direction_indifferent_starting_point_in_root,
@@ -355,8 +355,8 @@ void LayoutShiftTracker::ObjectShifted(
             << old_rect_in_root << " to " << new_rect_in_root
             << " (visible from " << visible_old_rect << " to "
             << visible_new_rect << ")";
-    if (old_starting_point_in_root != old_rect_in_root.Location() ||
-        new_starting_point_in_root != new_rect_in_root.Location() ||
+    if (old_starting_point_in_root != old_rect_in_root.origin() ||
+        new_starting_point_in_root != new_rect_in_root.origin() ||
         !translation_delta.IsZero() || !scroll_delta.IsZero()) {
       VLOG(1) << " (starting point from " << old_starting_point_in_root
               << " to " << new_starting_point_in_root << ")";
@@ -390,11 +390,11 @@ bool LayoutShiftTracker::Attribution::Encloses(const Attribution& other) const {
 }
 
 int LayoutShiftTracker::Attribution::Area() const {
-  int old_area = old_visual_rect.Width() * old_visual_rect.Height();
-  int new_area = new_visual_rect.Width() * new_visual_rect.Height();
+  int old_area = old_visual_rect.width() * old_visual_rect.height();
+  int new_area = new_visual_rect.width() * new_visual_rect.height();
 
-  IntRect intersection = Intersection(old_visual_rect, new_visual_rect);
-  int shared_area = intersection.Width() * intersection.Height();
+  IntRect intersection = IntersectRects(old_visual_rect, new_visual_rect);
+  int shared_area = intersection.width() * intersection.height();
   return old_area + new_area - shared_area;
 }
 
@@ -518,12 +518,12 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
   if (viewport.IsEmpty())
     return;
 
-  double viewport_area = double(viewport.Width()) * double(viewport.Height());
+  double viewport_area = double(viewport.width()) * double(viewport.height());
   double impact_fraction = region_.Area() / viewport_area;
   DCHECK_GT(impact_fraction, 0);
 
   DCHECK_GT(frame_max_distance_, 0.0);
-  double viewport_max_dimension = std::max(viewport.Width(), viewport.Height());
+  double viewport_max_dimension = std::max(viewport.width(), viewport.height());
   double move_distance_factor =
       (frame_max_distance_ < viewport_max_dimension)
           ? double(frame_max_distance_) / viewport_max_dimension

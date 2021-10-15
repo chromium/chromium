@@ -207,7 +207,7 @@ void TextPainterBase::DecorationsStripeIntercepts(
     FloatRect clip_rect(
         clip_origin + FloatPoint(intercept.begin_, upper),
         FloatSize(intercept.end_ - intercept.begin_, stripe_width));
-    clip_rect.InflateX(dilation);
+    clip_rect.OutsetX(dilation);
     // We need to ensure the clip rectangle is covering the full underline
     // extent. For horizontal drawing, using enclosingIntRect would be
     // sufficient, since we can clamp to full device pixels that way. However,
@@ -215,7 +215,7 @@ void TextPainterBase::DecorationsStripeIntercepts(
     // integers-equal-device pixels assumption, so vertically inflating by 1
     // pixel makes sure we're always covering. This should only be done on the
     // clipping rectangle, not when computing the glyph intersects.
-    clip_rect.InflateY(1.0);
+    clip_rect.OutsetY(1.0);
 
     if (!clip_rect.IsFinite())
       continue;
@@ -358,10 +358,10 @@ void TextPainterBase::PaintDecorationUnderOrOverLine(
       ETextDecorationSkipInk::kAuto) {
     // In order to ignore intersects less than 0.5px, inflate by -0.5.
     FloatRect decoration_bounds = decoration_info.BoundsForLine(line);
-    decoration_bounds.InflateY(-0.5);
+    decoration_bounds.OutsetY(-0.5);
     ClipDecorationsStripe(
-        decoration_info.InkSkipClipUpper(decoration_bounds.Y()),
-        decoration_bounds.Height(),
+        decoration_info.InkSkipClipUpper(decoration_bounds.y()),
+        decoration_bounds.height(),
         std::min(decoration_info.ResolvedThickness(),
                  kDecorationClipMaxDilation));
   }

@@ -1644,7 +1644,7 @@ FloatRect LayoutObject::AbsoluteBoundingBoxFloatRect(
 
   FloatRect result = quads[0].BoundingBox();
   for (wtf_size_t i = 1; i < n; ++i)
-    result.Unite(quads[i].BoundingBox());
+    result.Union(quads[i].BoundingBox());
   return result;
 }
 
@@ -1660,7 +1660,7 @@ IntRect LayoutObject::AbsoluteBoundingBoxRect(MapCoordinatesFlags flags) const {
 
   IntRect result = quads[0].EnclosingBoundingBox();
   for (wtf_size_t i = 1; i < n; ++i)
-    result.Unite(quads[i].EnclosingBoundingBox());
+    result.Union(quads[i].EnclosingBoundingBox());
   return result;
 }
 
@@ -1693,7 +1693,7 @@ PhysicalRect LayoutObject::AbsoluteBoundingBoxRectForScrollIntoView() const {
 void LayoutObject::AddAbsoluteRectForLayer(IntRect& result) {
   NOT_DESTROYED();
   if (HasLayer())
-    result.Unite(AbsoluteBoundingBoxRect());
+    result.Union(AbsoluteBoundingBoxRect());
   for (LayoutObject* current = SlowFirstChild(); current;
        current = current->NextSibling())
     current->AddAbsoluteRectForLayer(result);
@@ -3264,7 +3264,7 @@ FloatQuad LayoutObject::AncestorToLocalQuad(
   NOT_DESTROYED();
   TransformState transform_state(
       TransformState::kUnapplyInverseTransformDirection,
-      quad.BoundingBox().Center(), quad);
+      quad.BoundingBox().CenterPoint(), quad);
   MapAncestorToLocal(ancestor, transform_state, mode);
   transform_state.Flatten();
   return transform_state.LastPlanarQuad();
@@ -3480,8 +3480,8 @@ void LayoutObject::GetTransformFromContainer(
     TransformationMatrix perspective_matrix;
     perspective_matrix.ApplyPerspective(
         container_object->StyleRef().UsedPerspective());
-    perspective_matrix.ApplyTransformOrigin(perspective_origin.X(),
-                                            perspective_origin.Y(), 0);
+    perspective_matrix.ApplyTransformOrigin(perspective_origin.x(),
+                                            perspective_origin.y(), 0);
 
     transform = perspective_matrix * transform;
   }
@@ -3534,7 +3534,7 @@ bool LayoutObject::LocalToAncestorRectFastPath(
   // FirstFragment().PaintOffset() is relative to the transform space defined by
   // FirstFragment().LocalBorderBoxProperties() (if this == property_container)
   // or property_container->FirstFragment().ContentsProperties().
-  mapping_rect.Move(FloatSize(FirstFragment().PaintOffset()));
+  mapping_rect.Offset(FloatSize(FirstFragment().PaintOffset()));
 
   if (property_container != ancestor) {
     GeometryMapper::SourceToDestinationRect(
@@ -3542,7 +3542,7 @@ bool LayoutObject::LocalToAncestorRectFastPath(
         ancestor->FirstFragment().ContentsProperties().Transform(),
         mapping_rect);
   }
-  mapping_rect.Move(-FloatSize(ancestor->FirstFragment().PaintOffset()));
+  mapping_rect.Offset(-FloatSize(ancestor->FirstFragment().PaintOffset()));
 
   result = PhysicalRect::EnclosingRect(mapping_rect);
   return true;
@@ -3571,7 +3571,8 @@ FloatQuad LayoutObject::LocalToAncestorQuad(
   // as the reference point to decide which column's transform to apply in
   // multiple-column blocks.
   TransformState transform_state(TransformState::kApplyTransformDirection,
-                                 local_quad.BoundingBox().Center(), local_quad);
+                                 local_quad.BoundingBox().CenterPoint(),
+                                 local_quad);
   MapLocalToAncestor(ancestor, transform_state, mode);
   transform_state.Flatten();
 

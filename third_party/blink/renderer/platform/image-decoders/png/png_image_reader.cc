@@ -218,8 +218,8 @@ void PNGImageReader::StartFrameDecoding(const FastSharedBufferReader& reader,
   png_byte* header = reinterpret_cast<png_byte*>(read_buffer);
   if (chunk != header)
     memcpy(header, chunk, kHeaderSize);
-  png_save_uint_32(header +  8, frame_rect.Width());
-  png_save_uint_32(header + 12, frame_rect.Height());
+  png_save_uint_32(header + 8, frame_rect.width());
+  png_save_uint_32(header + 12, frame_rect.height());
   // IHDR has been modified, so tell libpng to ignore CRC errors.
   png_set_crc_action(png_, PNG_CRC_QUIET_USE, PNG_CRC_QUIET_USE);
   png_process_data(png_, info_, header, kHeaderSize);

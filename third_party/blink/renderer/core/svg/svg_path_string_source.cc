@@ -194,13 +194,13 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
   switch (segment.command) {
     case kPathSegCurveToCubicRel:
     case kPathSegCurveToCubicAbs:
-      segment.point1.SetX(ParseNumberWithError());
-      segment.point1.SetY(ParseNumberWithError());
+      segment.point1.set_x(ParseNumberWithError());
+      segment.point1.set_y(ParseNumberWithError());
       FALLTHROUGH;
     case kPathSegCurveToCubicSmoothRel:
     case kPathSegCurveToCubicSmoothAbs:
-      segment.point2.SetX(ParseNumberWithError());
-      segment.point2.SetY(ParseNumberWithError());
+      segment.point2.set_x(ParseNumberWithError());
+      segment.point2.set_y(ParseNumberWithError());
       FALLTHROUGH;
     case kPathSegMoveToRel:
     case kPathSegMoveToAbs:
@@ -208,36 +208,36 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
     case kPathSegLineToAbs:
     case kPathSegCurveToQuadraticSmoothRel:
     case kPathSegCurveToQuadraticSmoothAbs:
-      segment.target_point.SetX(ParseNumberWithError());
-      segment.target_point.SetY(ParseNumberWithError());
+      segment.target_point.set_x(ParseNumberWithError());
+      segment.target_point.set_y(ParseNumberWithError());
       break;
     case kPathSegLineToHorizontalRel:
     case kPathSegLineToHorizontalAbs:
-      segment.target_point.SetX(ParseNumberWithError());
+      segment.target_point.set_x(ParseNumberWithError());
       break;
     case kPathSegLineToVerticalRel:
     case kPathSegLineToVerticalAbs:
-      segment.target_point.SetY(ParseNumberWithError());
+      segment.target_point.set_y(ParseNumberWithError());
       break;
     case kPathSegClosePath:
       EatWhitespace();
       break;
     case kPathSegCurveToQuadraticRel:
     case kPathSegCurveToQuadraticAbs:
-      segment.point1.SetX(ParseNumberWithError());
-      segment.point1.SetY(ParseNumberWithError());
-      segment.target_point.SetX(ParseNumberWithError());
-      segment.target_point.SetY(ParseNumberWithError());
+      segment.point1.set_x(ParseNumberWithError());
+      segment.point1.set_y(ParseNumberWithError());
+      segment.target_point.set_x(ParseNumberWithError());
+      segment.target_point.set_y(ParseNumberWithError());
       break;
     case kPathSegArcRel:
     case kPathSegArcAbs:
-      segment.ArcRadii().SetX(ParseNumberWithError());
-      segment.ArcRadii().SetY(ParseNumberWithError());
+      segment.ArcRadii().set_x(ParseNumberWithError());
+      segment.ArcRadii().set_y(ParseNumberWithError());
       segment.SetArcAngle(ParseNumberWithError());
       segment.arc_large = ParseArcFlagWithError();
       segment.arc_sweep = ParseArcFlagWithError();
-      segment.target_point.SetX(ParseNumberWithError());
-      segment.target_point.SetY(ParseNumberWithError());
+      segment.target_point.set_x(ParseNumberWithError());
+      segment.target_point.set_y(ParseNumberWithError());
       break;
     case kPathSegUnknown:
       NOTREACHED();

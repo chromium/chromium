@@ -380,7 +380,7 @@ void PointerEventManager::AdjustTouchPointerEvent(
       location, hit_test_result, adjusted_point, adjusted_node);
 
   if (adjusted)
-    pointer_event.SetPositionInWidget(adjusted_point.X(), adjusted_point.Y());
+    pointer_event.SetPositionInWidget(adjusted_point.x(), adjusted_point.y());
 
   frame_->GetEventHandler().CacheTouchAdjustmentResult(
       pointer_event.unique_touch_event_id,

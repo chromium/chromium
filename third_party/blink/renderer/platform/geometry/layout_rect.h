@@ -67,11 +67,11 @@ class PLATFORM_EXPORT LayoutRect {
   constexpr LayoutRect(const IntPoint& location, const IntSize& size)
       : location_(location), size_(size) {}
   constexpr explicit LayoutRect(const IntRect& rect)
-      : location_(rect.Location()), size_(rect.Size()) {}
+      : location_(rect.origin()), size_(rect.size()) {}
 
   // Don't do these implicitly since they are lossy.
   constexpr explicit LayoutRect(const FloatRect& r)
-      : location_(r.Location()), size_(r.Size()) {}
+      : location_(r.origin()), size_(r.size()) {}
   explicit LayoutRect(const DoubleRect&);
 
   constexpr explicit operator FloatRect() const {
@@ -115,13 +115,13 @@ class PLATFORM_EXPORT LayoutRect {
 
   void Move(const LayoutSize& size) { location_ += size; }
   void Move(const IntSize& size) {
-    location_.Move(LayoutUnit(size.Width()), LayoutUnit(size.Height()));
+    location_.Move(LayoutUnit(size.width()), LayoutUnit(size.height()));
   }
   void MoveBy(const LayoutPoint& offset) {
     location_.Move(offset.X(), offset.Y());
   }
   void MoveBy(const IntPoint& offset) {
-    location_.Move(LayoutUnit(offset.X()), LayoutUnit(offset.Y()));
+    location_.Move(LayoutUnit(offset.x()), LayoutUnit(offset.y()));
   }
   void Move(LayoutUnit dx, LayoutUnit dy) { location_.Move(dx, dy); }
   void Move(int dx, int dy) { location_.Move(LayoutUnit(dx), LayoutUnit(dy)); }
@@ -342,10 +342,10 @@ inline IntRect EnclosedIntRect(const LayoutRect& rect) {
 }
 
 inline LayoutRect EnclosingLayoutRect(const FloatRect& rect) {
-  LayoutUnit x = LayoutUnit::FromFloatFloor(rect.X());
-  LayoutUnit y = LayoutUnit::FromFloatFloor(rect.Y());
-  LayoutUnit max_x = LayoutUnit::FromFloatCeil(rect.MaxX());
-  LayoutUnit max_y = LayoutUnit::FromFloatCeil(rect.MaxY());
+  LayoutUnit x = LayoutUnit::FromFloatFloor(rect.x());
+  LayoutUnit y = LayoutUnit::FromFloatFloor(rect.y());
+  LayoutUnit max_x = LayoutUnit::FromFloatCeil(rect.right());
+  LayoutUnit max_y = LayoutUnit::FromFloatCeil(rect.bottom());
   return LayoutRect(x, y, max_x - x, max_y - y);
 }
 

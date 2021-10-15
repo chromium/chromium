@@ -91,8 +91,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   bool IsPaintable() const;
 
   // Required by template functions in WebGLRenderingContextBase
-  int width() const { return Size().Width(); }
-  int height() const { return Size().Height(); }
+  int width() const { return Size().width(); }
+  int height() const { return Size().height(); }
 
   // Partial CanvasResourceHost implementation
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const final;

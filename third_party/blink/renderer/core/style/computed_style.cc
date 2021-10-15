@@ -1292,14 +1292,14 @@ void ComputedStyle::ApplyTransform(
   float origin_y = 0;
   float origin_z = 0;
 
-  const FloatSize& box_size = bounding_box.Size();
+  const FloatSize& box_size = bounding_box.size();
   if (apply_transform_origin ||
       // We need to calculate originX and originY for applying motion path.
       apply_motion_path == kIncludeMotionPath) {
-    origin_x = FloatValueForLength(TransformOriginX(), box_size.Width()) +
-               bounding_box.X();
-    origin_y = FloatValueForLength(TransformOriginY(), box_size.Height()) +
-               bounding_box.Y();
+    origin_x = FloatValueForLength(TransformOriginX(), box_size.width()) +
+               bounding_box.x();
+    origin_y = FloatValueForLength(TransformOriginY(), box_size.height()) +
+               bounding_box.y();
     if (apply_transform_origin) {
       origin_z = TransformOriginZ();
       result.Translate3d(origin_x, origin_y, origin_z);
@@ -1357,8 +1357,8 @@ void ComputedStyle::ApplyMotionPathTransform(
     path_position.tangent_in_degrees =
         ClampTo<float, float>(To<StyleRay>(*path).Angle() - 90);
     float tangent_in_radians = Deg2rad(path_position.tangent_in_degrees);
-    path_position.point.SetX(float_distance * cos(tangent_in_radians));
-    path_position.point.SetY(float_distance * sin(tangent_in_radians));
+    path_position.point.set_x(float_distance * cos(tangent_in_radians));
+    path_position.point.set_y(float_distance * sin(tangent_in_radians));
   } else {
     float zoom = EffectiveZoom();
     const StylePath& motion_path = To<StylePath>(*path);
@@ -1388,17 +1388,17 @@ void ComputedStyle::ApplyMotionPathTransform(
   // they will have the default value, auto.
   FloatPoint anchor_point(origin_x, origin_y);
   if (!position.X().IsAuto() || !anchor.X().IsAuto()) {
-    anchor_point = FloatPointForLengthPoint(anchor, bounding_box.Size());
-    anchor_point += bounding_box.Location();
+    anchor_point = FloatPointForLengthPoint(anchor, bounding_box.size());
+    anchor_point += bounding_box.origin();
 
     // Shift the origin from transform-origin to offset-anchor.
-    origin_shift_x = anchor_point.X() - origin_x;
-    origin_shift_y = anchor_point.Y() - origin_y;
+    origin_shift_x = anchor_point.x() - origin_x;
+    origin_shift_y = anchor_point.y() - origin_y;
   }
 
   transform.Translate(
-      path_position.point.X() - anchor_point.X() + origin_shift_x,
-      path_position.point.Y() - anchor_point.Y() + origin_shift_y);
+      path_position.point.x() - anchor_point.x() + origin_shift_x,
+      path_position.point.y() - anchor_point.y() + origin_shift_y);
   transform.Rotate(path_position.tangent_in_degrees + rotate.angle);
 
   if (!position.X().IsAuto() || !anchor.X().IsAuto())

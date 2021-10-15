@@ -841,8 +841,8 @@ FloatPoint TransformationMatrix::ProjectPoint(const FloatPoint& p,
     return FloatPoint();
   }
 
-  double x = p.X();
-  double y = p.Y();
+  double x = p.x();
+  double y = p.y();
   double z = -(M13() * x + M23() * y + M43()) / M33();
 
   double out_x = x * M11() + y * M21() + z * M31() + M41();
@@ -874,10 +874,10 @@ FloatQuad TransformationMatrix::ProjectQuad(const FloatQuad& q) const {
   bool clamped3 = false;
   bool clamped4 = false;
 
-  projected_quad.SetP1(ProjectPoint(q.P1(), &clamped1));
-  projected_quad.SetP2(ProjectPoint(q.P2(), &clamped2));
-  projected_quad.SetP3(ProjectPoint(q.P3(), &clamped3));
-  projected_quad.SetP4(ProjectPoint(q.P4(), &clamped4));
+  projected_quad.set_p1(ProjectPoint(q.p1(), &clamped1));
+  projected_quad.set_p2(ProjectPoint(q.p2(), &clamped2));
+  projected_quad.set_p3(ProjectPoint(q.p3(), &clamped3));
+  projected_quad.set_p4(ProjectPoint(q.p4(), &clamped4));
 
   // If all points on the quad had w < 0, then the entire quad would not be
   // visible to the projected surface.
@@ -898,22 +898,22 @@ LayoutRect TransformationMatrix::ClampedBoundsOfProjectedQuad(
     const FloatQuad& q) const {
   FloatRect mapped_quad_bounds = ProjectQuad(q).BoundingBox();
 
-  float left = ClampEdgeValue(floorf(mapped_quad_bounds.X()));
-  float top = ClampEdgeValue(floorf(mapped_quad_bounds.Y()));
+  float left = ClampEdgeValue(floorf(mapped_quad_bounds.x()));
+  float top = ClampEdgeValue(floorf(mapped_quad_bounds.y()));
 
   float right;
-  if (std::isinf(mapped_quad_bounds.X()) &&
-      std::isinf(mapped_quad_bounds.Width()))
+  if (std::isinf(mapped_quad_bounds.x()) &&
+      std::isinf(mapped_quad_bounds.width()))
     right = (LayoutUnit::Max() / 2).ToFloat();
   else
-    right = ClampEdgeValue(ceilf(mapped_quad_bounds.MaxX()));
+    right = ClampEdgeValue(ceilf(mapped_quad_bounds.right()));
 
   float bottom;
-  if (std::isinf(mapped_quad_bounds.Y()) &&
-      std::isinf(mapped_quad_bounds.Height()))
+  if (std::isinf(mapped_quad_bounds.y()) &&
+      std::isinf(mapped_quad_bounds.height()))
     bottom = (LayoutUnit::Max() / 2).ToFloat();
   else
-    bottom = ClampEdgeValue(ceilf(mapped_quad_bounds.MaxY()));
+    bottom = ClampEdgeValue(ceilf(mapped_quad_bounds.bottom()));
 
   return LayoutRect(LayoutUnit::Clamp(left), LayoutUnit::Clamp(top),
                     LayoutUnit::Clamp(right - left),
@@ -926,12 +926,12 @@ void TransformationMatrix::TransformBox(FloatBox& box) const {
   for (size_t i = 0; i < 2; ++i) {
     for (size_t j = 0; j < 2; ++j) {
       for (size_t k = 0; k < 2; ++k) {
-        FloatPoint3D point(box.X(), box.Y(), box.Z());
+        FloatPoint3D point(box.x(), box.y(), box.z());
         point +=
-            FloatPoint3D(i * box.Width(), j * box.Height(), k * box.Depth());
+            FloatPoint3D(i * box.width(), j * box.height(), k * box.depth());
         point = MapPoint(point);
         if (first_point) {
-          bounds.SetOrigin(point);
+          bounds.set_origin(point);
           first_point = false;
         } else {
           bounds.ExpandTo(point);
@@ -943,19 +943,19 @@ void TransformationMatrix::TransformBox(FloatBox& box) const {
 }
 
 FloatPoint TransformationMatrix::MapPoint(const FloatPoint& p) const {
-  if (IsIdentityOrTranslation())
-    return FloatPoint(p.X() + static_cast<float>(matrix_[3][0]),
-                      p.Y() + static_cast<float>(matrix_[3][1]));
-
+  if (IsIdentityOrTranslation()) {
+    return FloatPoint(p.x() + static_cast<float>(matrix_[3][0]),
+                      p.y() + static_cast<float>(matrix_[3][1]));
+  }
   return InternalMapPoint(p);
 }
 
 FloatPoint3D TransformationMatrix::MapPoint(const FloatPoint3D& p) const {
-  if (IsIdentityOrTranslation())
-    return FloatPoint3D(p.X() + static_cast<float>(matrix_[3][0]),
-                        p.Y() + static_cast<float>(matrix_[3][1]),
-                        p.Z() + static_cast<float>(matrix_[3][2]));
-
+  if (IsIdentityOrTranslation()) {
+    return FloatPoint3D(p.x() + static_cast<float>(matrix_[3][0]),
+                        p.y() + static_cast<float>(matrix_[3][1]),
+                        p.z() + static_cast<float>(matrix_[3][2]));
+  }
   return InternalMapPoint(p);
 }
 
@@ -970,19 +970,19 @@ LayoutRect TransformationMatrix::MapRect(const LayoutRect& r) const {
 FloatRect TransformationMatrix::MapRect(const FloatRect& r) const {
   if (IsIdentityOrTranslation()) {
     FloatRect mapped_rect(r);
-    mapped_rect.Move(static_cast<float>(matrix_[3][0]),
-                     static_cast<float>(matrix_[3][1]));
+    mapped_rect.Offset(static_cast<float>(matrix_[3][0]),
+                       static_cast<float>(matrix_[3][1]));
     return mapped_rect;
   }
 
   FloatQuad result;
 
-  float max_x = r.MaxX();
-  float max_y = r.MaxY();
-  result.SetP1(InternalMapPoint(FloatPoint(r.X(), r.Y())));
-  result.SetP2(InternalMapPoint(FloatPoint(max_x, r.Y())));
-  result.SetP3(InternalMapPoint(FloatPoint(max_x, max_y)));
-  result.SetP4(InternalMapPoint(FloatPoint(r.X(), max_y)));
+  float max_x = r.right();
+  float max_y = r.bottom();
+  result.set_p1(InternalMapPoint(FloatPoint(r.x(), r.y())));
+  result.set_p2(InternalMapPoint(FloatPoint(max_x, r.y())));
+  result.set_p3(InternalMapPoint(FloatPoint(max_x, max_y)));
+  result.set_p4(InternalMapPoint(FloatPoint(r.x(), max_y)));
 
   return result.BoundingBox();
 }
@@ -996,10 +996,10 @@ FloatQuad TransformationMatrix::MapQuad(const FloatQuad& q) const {
   }
 
   FloatQuad result;
-  result.SetP1(InternalMapPoint(q.P1()));
-  result.SetP2(InternalMapPoint(q.P2()));
-  result.SetP3(InternalMapPoint(q.P3()));
-  result.SetP4(InternalMapPoint(q.P4()));
+  result.set_p1(InternalMapPoint(q.p1()));
+  result.set_p2(InternalMapPoint(q.p2()));
+  result.set_p3(InternalMapPoint(q.p3()));
+  result.set_p4(InternalMapPoint(q.p4()));
   return result;
 }
 
@@ -1030,7 +1030,7 @@ TransformationMatrix& TransformationMatrix::Scale3d(double sx,
 }
 
 TransformationMatrix& TransformationMatrix::Rotate3d(const Rotation& rotation) {
-  return Rotate3d(rotation.axis.X(), rotation.axis.Y(), rotation.axis.Z(),
+  return Rotate3d(rotation.axis.x(), rotation.axis.y(), rotation.axis.z(),
                   rotation.angle);
 }
 
@@ -1639,8 +1639,8 @@ TransformationMatrix& TransformationMatrix::Multiply(
 
 FloatPoint TransformationMatrix::InternalMapPoint(
     const FloatPoint& source_point) const {
-  double x = source_point.X();
-  double y = source_point.Y();
+  double x = source_point.x();
+  double y = source_point.y();
   double result_x = matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0];
   double result_y = matrix_[3][1] + x * matrix_[0][1] + y * matrix_[1][1];
   double w = matrix_[3][3] + x * matrix_[0][3] + y * matrix_[1][3];
@@ -1653,9 +1653,9 @@ FloatPoint TransformationMatrix::InternalMapPoint(
 
 FloatPoint3D TransformationMatrix::InternalMapPoint(
     const FloatPoint3D& source_point) const {
-  double x = source_point.X();
-  double y = source_point.Y();
-  double z = source_point.Z();
+  double x = source_point.x();
+  double y = source_point.y();
+  double z = source_point.z();
   double result_x =
       matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0] + z * matrix_[2][0];
   double result_y =

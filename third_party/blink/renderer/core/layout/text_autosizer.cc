@@ -66,8 +66,8 @@ inline int GetLayoutInlineSize(const Document& document,
   IntSize size = main_frame_view.GetLayoutSize();
   const LayoutView* layout_view = document.GetLayoutView();
   if (IsHorizontalWritingMode(layout_view->StyleRef().GetWritingMode()))
-    return size.Width();
-  return size.Height();
+    return size.width();
+  return size.height();
 }
 
 }  // namespace
@@ -643,7 +643,7 @@ void TextAutosizer::UpdatePageInfo() {
         frame_size = WindowSize();
 
       page_info_.shared_info_.main_frame_width =
-          horizontal_writing_mode ? frame_size.Width() : frame_size.Height();
+          horizontal_writing_mode ? frame_size.width() : frame_size.height();
 
       page_info_.shared_info_.main_frame_layout_width =
           GetLayoutInlineSize(*document_, *main_frame.View());
@@ -802,7 +802,7 @@ bool TextAutosizer::ClusterHasEnoughTextToAutosize(
             ->GetChromeClient()
             .ViewportToScreen(IntRect(0, 0, minimum_text_length_to_autosize, 0),
                               view)
-            .Width();
+            .width();
   }
 
   float length = 0;

@@ -47,8 +47,8 @@ sk_sp<PaintShader> PaintWorkletDeferredImage::CreateShader(
     const SkMatrix* pattern_matrix,
     const FloatRect& src_rect,
     const ImageDrawOptions&) {
-  SkRect tile = SkRect::MakeXYWH(tile_rect.X(), tile_rect.Y(),
-                                 tile_rect.Width(), tile_rect.Height());
+  SkRect tile = SkRect::MakeXYWH(tile_rect.x(), tile_rect.y(),
+                                 tile_rect.width(), tile_rect.height());
   sk_sp<PaintShader> shader = PaintShader::MakeImage(
       image_, SkTileMode::kRepeat, SkTileMode::kRepeat, pattern_matrix, &tile);
 

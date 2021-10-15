@@ -23,9 +23,9 @@ class PLATFORM_EXPORT DoubleSize {
   constexpr DoubleSize(double width, double height)
       : width_(width), height_(height) {}
   constexpr explicit DoubleSize(const IntSize& p)
-      : width_(p.Width()), height_(p.Height()) {}
+      : width_(p.width()), height_(p.height()) {}
   constexpr DoubleSize(const FloatSize& s)
-      : width_(s.Width()), height_(s.Height()) {}
+      : width_(s.width()), height_(s.height()) {}
   explicit DoubleSize(const LayoutSize&);
 
   constexpr double Width() const { return width_; }

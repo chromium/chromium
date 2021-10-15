@@ -80,7 +80,7 @@ class CORE_EXPORT TextDecorationInfo {
   }
   bool ShouldAntialias() const { return antialias_; }
   float InkSkipClipUpper(float bounds_upper) const {
-    return -baseline_ + bounds_upper - local_origin_.Y();
+    return -baseline_ + bounds_upper - local_origin_.y();
   }
 
   // SetDecorationIndex must be called before using these methods.

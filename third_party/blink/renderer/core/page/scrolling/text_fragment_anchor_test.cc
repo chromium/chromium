@@ -81,7 +81,7 @@ class TextFragmentAnchorTest : public SimTest {
   }
 
   IntRect ViewportRect() {
-    return IntRect(IntPoint(), LayoutViewport()->VisibleContentRect().Size());
+    return IntRect(IntPoint(), LayoutViewport()->VisibleContentRect().size());
   }
 
   IntRect BoundingRectInFrame(Node& node) {
@@ -2491,8 +2491,8 @@ TEST_F(TextFragmentAnchorTest, ShouldOpenContextMenuOnTap) {
                 IGNORE_EXCEPTION_FOR_TESTING);
   ASSERT_EQ("This is a test page", range->GetText());
 
-  IntPoint tap_point = range->BoundingBox().Center();
-  SimulateTap(tap_point.X(), tap_point.Y());
+  IntPoint tap_point = range->BoundingBox().CenterPoint();
+  SimulateTap(tap_point.x(), tap_point.y());
 
   if (RuntimeEnabledFeatures::TextFragmentTapOpensContextMenuEnabled()) {
     EXPECT_TRUE(GetDocument()
@@ -2514,8 +2514,8 @@ TEST_F(TextFragmentAnchorTest, ShouldOpenContextMenuOnTap) {
                      IGNORE_EXCEPTION_FOR_TESTING);
   ASSERT_EQ("Second test page two", range->GetText());
 
-  tap_point = range->BoundingBox().Center();
-  SimulateTap(tap_point.X(), tap_point.Y());
+  tap_point = range->BoundingBox().CenterPoint();
+  SimulateTap(tap_point.x(), tap_point.y());
 
   EXPECT_FALSE(GetDocument()
                    .GetPage()
@@ -2593,8 +2593,8 @@ TEST_F(TextFragmentAnchorTest,
   ASSERT_EQ("This is a test page", range->GetText());
 
   mock_notifier.Reset();
-  IntPoint tap_point = range->BoundingBox().Center();
-  SimulateTap(tap_point.X(), tap_point.Y());
+  IntPoint tap_point = range->BoundingBox().CenterPoint();
+  SimulateTap(tap_point.x(), tap_point.y());
 
   base::RunLoop().RunUntilIdle();
   if (RuntimeEnabledFeatures::TextFragmentTapOpensContextMenuEnabled()) {
@@ -2612,8 +2612,8 @@ TEST_F(TextFragmentAnchorTest,
   ASSERT_EQ("Second test page two", range->GetText());
 
   mock_notifier.Reset();
-  tap_point = range->BoundingBox().Center();
-  SimulateTap(tap_point.X(), tap_point.Y());
+  tap_point = range->BoundingBox().CenterPoint();
+  SimulateTap(tap_point.x(), tap_point.y());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_notifier.WasUnhandledTap());
@@ -2680,8 +2680,8 @@ TEST_F(TextFragmentAnchorTest, TapOpeningContextMenuWithDirtyLifecycleNoCrash) {
 
   Range* range = CreateRange(EphemeralRange(start, end));
 
-  IntPoint tap_point = range->BoundingBox().Center();
-  SimulateTap(tap_point.X(), tap_point.Y());
+  IntPoint tap_point = range->BoundingBox().CenterPoint();
+  SimulateTap(tap_point.x(), tap_point.y());
 
   // Expect that we won't see the context menu because we preventDefaulted the
   // mouseup but this test passes if it doesn't crash.

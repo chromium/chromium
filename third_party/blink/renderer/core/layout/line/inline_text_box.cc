@@ -599,7 +599,7 @@ LayoutUnit InlineTextBox::PositionForOffset(int offset) const {
   return LayoutUnit(font.SelectionRectForText(
                             ConstructTextRun(style_to_use),
                             FloatPoint(LogicalLeft().ToInt(), 0), 0, from, to)
-                        .MaxX());
+                        .right());
 }
 
 bool InlineTextBox::ContainsCaretOffset(int offset) const {

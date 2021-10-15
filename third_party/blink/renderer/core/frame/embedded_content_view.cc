@@ -19,7 +19,7 @@ void EmbeddedContentView::SetFrameRect(const IntRect& unsaturated_frame_rect) {
 }
 
 IntPoint EmbeddedContentView::Location() const {
-  IntPoint location(frame_rect_.Location());
+  IntPoint location(frame_rect_.origin());
 
   // As an optimization, we don't include the root layer's scroll offset in the
   // frame rect.  As a result, we don't need to recalculate the frame rect every
@@ -33,7 +33,7 @@ IntPoint EmbeddedContentView::Location() const {
       // want to reevaluate that since scroll offsets/layout can be fractional.
       IntPoint scroll_offset(
           FlooredIntPoint(owner_layout_view->ScrolledContentOffset()));
-      location.SaturatedMove(-scroll_offset.X(), -scroll_offset.Y());
+      location.SaturatedMove(-scroll_offset.x(), -scroll_offset.y());
     }
   }
   return location;

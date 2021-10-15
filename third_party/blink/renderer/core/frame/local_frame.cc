@@ -1216,15 +1216,15 @@ FloatSize LocalFrame::ResizePageRectsKeepingRatio(
     return FloatSize();
 
   bool is_horizontal = layout_object->StyleRef().IsHorizontalWritingMode();
-  float width = original_size.Width();
-  float height = original_size.Height();
+  float width = original_size.width();
+  float height = original_size.height();
   if (!is_horizontal)
     std::swap(width, height);
   DCHECK_GT(fabs(width), std::numeric_limits<float>::epsilon());
   float ratio = height / width;
 
   float result_width =
-      floorf(is_horizontal ? expected_size.Width() : expected_size.Height());
+      floorf(is_horizontal ? expected_size.width() : expected_size.height());
   float result_height = floorf(result_width * ratio);
   if (!is_horizontal)
     std::swap(result_width, result_height);
@@ -2064,7 +2064,7 @@ void LocalFrame::SetViewportIntersectionFromParent(
 
     // Return <0, 0, 0, 0> if there is no area.
     if (rect.IsEmpty())
-      rect.SetLocation(IntPoint(0, 0));
+      rect.set_origin(IntPoint(0, 0));
     Client()->OnMainFrameIntersectionChanged(rect);
   }
 
@@ -2090,7 +2090,7 @@ IntSize LocalFrame::GetMainFrameViewportSize() const {
              ? local_root.View()
                    ->GetScrollableArea()
                    ->VisibleContentRect()
-                   .Size()
+                   .size()
              : IntSize(local_root.intersection_state_.main_frame_viewport_size);
 }
 

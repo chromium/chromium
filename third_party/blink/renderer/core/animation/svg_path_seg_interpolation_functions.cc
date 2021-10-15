@@ -89,9 +89,9 @@ PathSegmentData ConsumeInterpolableSingleCoordinate(
   bool is_absolute = IsAbsolutePathSegType(seg_type);
   PathSegmentData segment;
   segment.command = seg_type;
-  segment.target_point.SetX(ConsumeInterpolableCoordinateAxis(
+  segment.target_point.set_x(ConsumeInterpolableCoordinateAxis(
       list.Get(0), is_absolute, coordinates.current_x));
-  segment.target_point.SetY(ConsumeInterpolableCoordinateAxis(
+  segment.target_point.set_y(ConsumeInterpolableCoordinateAxis(
       list.Get(1), is_absolute, coordinates.current_y));
 
   if (ToAbsolutePathSegType(seg_type) == kPathSegMoveToAbs) {
@@ -131,17 +131,17 @@ PathSegmentData ConsumeInterpolableCurvetoCubic(const InterpolableValue& value,
   bool is_absolute = IsAbsolutePathSegType(seg_type);
   PathSegmentData segment;
   segment.command = seg_type;
-  segment.point1.SetX(ConsumeInterpolableControlAxis(list.Get(0), is_absolute,
-                                                     coordinates.current_x));
-  segment.point1.SetY(ConsumeInterpolableControlAxis(list.Get(1), is_absolute,
-                                                     coordinates.current_y));
-  segment.point2.SetX(ConsumeInterpolableControlAxis(list.Get(2), is_absolute,
-                                                     coordinates.current_x));
-  segment.point2.SetY(ConsumeInterpolableControlAxis(list.Get(3), is_absolute,
-                                                     coordinates.current_y));
-  segment.target_point.SetX(ConsumeInterpolableCoordinateAxis(
+  segment.point1.set_x(ConsumeInterpolableControlAxis(list.Get(0), is_absolute,
+                                                      coordinates.current_x));
+  segment.point1.set_y(ConsumeInterpolableControlAxis(list.Get(1), is_absolute,
+                                                      coordinates.current_y));
+  segment.point2.set_x(ConsumeInterpolableControlAxis(list.Get(2), is_absolute,
+                                                      coordinates.current_x));
+  segment.point2.set_y(ConsumeInterpolableControlAxis(list.Get(3), is_absolute,
+                                                      coordinates.current_y));
+  segment.target_point.set_x(ConsumeInterpolableCoordinateAxis(
       list.Get(4), is_absolute, coordinates.current_x));
-  segment.target_point.SetY(ConsumeInterpolableCoordinateAxis(
+  segment.target_point.set_y(ConsumeInterpolableCoordinateAxis(
       list.Get(5), is_absolute, coordinates.current_y));
   return segment;
 }
@@ -170,13 +170,13 @@ PathSegmentData ConsumeInterpolableCurvetoQuadratic(
   bool is_absolute = IsAbsolutePathSegType(seg_type);
   PathSegmentData segment;
   segment.command = seg_type;
-  segment.point1.SetX(ConsumeInterpolableControlAxis(list.Get(0), is_absolute,
-                                                     coordinates.current_x));
-  segment.point1.SetY(ConsumeInterpolableControlAxis(list.Get(1), is_absolute,
-                                                     coordinates.current_y));
-  segment.target_point.SetX(ConsumeInterpolableCoordinateAxis(
+  segment.point1.set_x(ConsumeInterpolableControlAxis(list.Get(0), is_absolute,
+                                                      coordinates.current_x));
+  segment.point1.set_y(ConsumeInterpolableControlAxis(list.Get(1), is_absolute,
+                                                      coordinates.current_y));
+  segment.target_point.set_x(ConsumeInterpolableCoordinateAxis(
       list.Get(2), is_absolute, coordinates.current_x));
-  segment.target_point.SetY(ConsumeInterpolableCoordinateAxis(
+  segment.target_point.set_y(ConsumeInterpolableCoordinateAxis(
       list.Get(3), is_absolute, coordinates.current_y));
   return segment;
 }
@@ -205,12 +205,12 @@ PathSegmentData ConsumeInterpolableArc(const InterpolableValue& value,
   bool is_absolute = IsAbsolutePathSegType(seg_type);
   PathSegmentData segment;
   segment.command = seg_type;
-  segment.target_point.SetX(ConsumeInterpolableCoordinateAxis(
+  segment.target_point.set_x(ConsumeInterpolableCoordinateAxis(
       list.Get(0), is_absolute, coordinates.current_x));
-  segment.target_point.SetY(ConsumeInterpolableCoordinateAxis(
+  segment.target_point.set_y(ConsumeInterpolableCoordinateAxis(
       list.Get(1), is_absolute, coordinates.current_y));
-  segment.ArcRadii().SetX(To<InterpolableNumber>(list.Get(2))->Value());
-  segment.ArcRadii().SetY(To<InterpolableNumber>(list.Get(3))->Value());
+  segment.ArcRadii().set_x(To<InterpolableNumber>(list.Get(2))->Value());
+  segment.ArcRadii().set_y(To<InterpolableNumber>(list.Get(3))->Value());
   segment.SetArcAngle(To<InterpolableNumber>(list.Get(4))->Value());
   segment.arc_large = To<InterpolableNumber>(list.Get(5))->Value() >= 0.5;
   segment.arc_sweep = To<InterpolableNumber>(list.Get(6))->Value() >= 0.5;
@@ -231,7 +231,7 @@ PathSegmentData ConsumeInterpolableLinetoHorizontal(
   bool is_absolute = IsAbsolutePathSegType(seg_type);
   PathSegmentData segment;
   segment.command = seg_type;
-  segment.target_point.SetX(ConsumeInterpolableCoordinateAxis(
+  segment.target_point.set_x(ConsumeInterpolableCoordinateAxis(
       &value, is_absolute, coordinates.current_x));
   return segment;
 }
@@ -250,7 +250,7 @@ PathSegmentData ConsumeInterpolableLinetoVertical(
   bool is_absolute = IsAbsolutePathSegType(seg_type);
   PathSegmentData segment;
   segment.command = seg_type;
-  segment.target_point.SetY(ConsumeInterpolableCoordinateAxis(
+  segment.target_point.set_y(ConsumeInterpolableCoordinateAxis(
       &value, is_absolute, coordinates.current_y));
   return segment;
 }
@@ -279,13 +279,13 @@ PathSegmentData ConsumeInterpolableCurvetoCubicSmooth(
   bool is_absolute = IsAbsolutePathSegType(seg_type);
   PathSegmentData segment;
   segment.command = seg_type;
-  segment.point2.SetX(ConsumeInterpolableControlAxis(list.Get(0), is_absolute,
-                                                     coordinates.current_x));
-  segment.point2.SetY(ConsumeInterpolableControlAxis(list.Get(1), is_absolute,
-                                                     coordinates.current_y));
-  segment.target_point.SetX(ConsumeInterpolableCoordinateAxis(
+  segment.point2.set_x(ConsumeInterpolableControlAxis(list.Get(0), is_absolute,
+                                                      coordinates.current_x));
+  segment.point2.set_y(ConsumeInterpolableControlAxis(list.Get(1), is_absolute,
+                                                      coordinates.current_y));
+  segment.target_point.set_x(ConsumeInterpolableCoordinateAxis(
       list.Get(2), is_absolute, coordinates.current_x));
-  segment.target_point.SetY(ConsumeInterpolableCoordinateAxis(
+  segment.target_point.set_y(ConsumeInterpolableCoordinateAxis(
       list.Get(3), is_absolute, coordinates.current_y));
   return segment;
 }

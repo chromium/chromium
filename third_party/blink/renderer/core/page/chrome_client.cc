@@ -64,31 +64,31 @@ IntRect ChromeClient::CalculateWindowRectWithAdjustment(
   IntSize size_for_constraining_move = minimum_size;
   // Let size 0 pass through, since that indicates default size, not minimum
   // size.
-  if (window.Width()) {
-    int width = std::max(minimum_size.Width(), window.Width());
+  if (window.width()) {
+    int width = std::max(minimum_size.width(), window.width());
     // If the Window Placement experiment is enabled, the window could be placed
     // on another screen, and so it should not be limited by the current screen.
     // This relies on the embedder clamping bounds to the target screen for now.
     // TODO(http://crbug.com/897300): Implement multi-screen clamping in Blink.
     if (!RuntimeEnabledFeatures::WindowPlacementEnabled(
             requesting_frame.DomWindow())) {
-      width = std::min(width, screen.Width());
+      width = std::min(width, screen.width());
     }
-    window.SetWidth(width);
-    size_for_constraining_move.SetWidth(window.Width());
+    window.set_width(width);
+    size_for_constraining_move.set_width(window.width());
   }
-  if (window.Height()) {
-    int height = std::max(minimum_size.Height(), window.Height());
+  if (window.height()) {
+    int height = std::max(minimum_size.height(), window.height());
     // If the Window Placement experiment is enabled, the window could be placed
     // on another screen, and so it should not be limited by the current screen.
     // This relies on the embedder clamping bounds to the target screen for now.
     // TODO(http://crbug.com/897300): Implement multi-screen clamping in Blink.
     if (!RuntimeEnabledFeatures::WindowPlacementEnabled(
             requesting_frame.DomWindow())) {
-      height = std::min(height, screen.Height());
+      height = std::min(height, screen.height());
     }
-    window.SetHeight(height);
-    size_for_constraining_move.SetHeight(window.Height());
+    window.set_height(height);
+    size_for_constraining_move.set_height(window.height());
   }
 
   // If the Window Placement experiment is enabled, the window could be placed
@@ -98,14 +98,14 @@ IntRect ChromeClient::CalculateWindowRectWithAdjustment(
   if (!RuntimeEnabledFeatures::WindowPlacementEnabled(
           requesting_frame.DomWindow())) {
     // Constrain the window position within the valid screen area.
-    window.SetX(
-        std::max(screen.X(),
-                 std::min(window.X(),
-                          screen.MaxX() - size_for_constraining_move.Width())));
-    window.SetY(std::max(
-        screen.Y(),
-        std::min(window.Y(),
-                 screen.MaxY() - size_for_constraining_move.Height())));
+    window.set_x(std::max(
+        screen.x(),
+        std::min(window.x(),
+                 screen.right() - size_for_constraining_move.width())));
+    window.set_y(std::max(
+        screen.y(),
+        std::min(window.y(),
+                 screen.bottom() - size_for_constraining_move.height())));
   }
 
   // Coarsely measure whether coordinates may be requesting another screen.

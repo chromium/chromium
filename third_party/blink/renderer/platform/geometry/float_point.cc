@@ -73,21 +73,21 @@ bool FindIntersection(const FloatPoint& p1,
                       const FloatPoint& d1,
                       const FloatPoint& d2,
                       FloatPoint& intersection) {
-  float px_length = p2.X() - p1.X();
-  float py_length = p2.Y() - p1.Y();
+  float px_length = p2.x() - p1.x();
+  float py_length = p2.y() - p1.y();
 
-  float dx_length = d2.X() - d1.X();
-  float dy_length = d2.Y() - d1.Y();
+  float dx_length = d2.x() - d1.x();
+  float dy_length = d2.y() - d1.y();
 
   float denom = px_length * dy_length - py_length * dx_length;
   if (!denom)
     return false;
 
   float param =
-      ((d1.X() - p1.X()) * dy_length - (d1.Y() - p1.Y()) * dx_length) / denom;
+      ((d1.x() - p1.x()) * dy_length - (d1.y() - p1.y()) * dx_length) / denom;
 
-  intersection.SetX(p1.X() + param * px_length);
-  intersection.SetY(p1.Y() + param * py_length);
+  intersection.set_x(p1.x() + param * px_length);
+  intersection.set_y(p1.y() + param * py_length);
   return true;
 }
 
@@ -96,12 +96,12 @@ std::ostream& operator<<(std::ostream& ostream, const FloatPoint& point) {
 }
 
 String FloatPoint::ToString() const {
-  return String::Format("%lg,%lg", X(), Y());
+  return String::Format("%lg,%lg", x(), y());
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const FloatPoint& p) {
-  ts << "(" << WTF::TextStream::FormatNumberRespectingIntegers(p.X());
-  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(p.Y());
+  ts << "(" << WTF::TextStream::FormatNumberRespectingIntegers(p.x());
+  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(p.y());
   ts << ")";
   return ts;
 }

@@ -27,23 +27,23 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
     case kReflectionAbove:
       direction = BoxReflection::kVerticalReflection;
       offset =
-          -FloatValueForLength(reflect_style->Offset(), frame_rect.Height());
+          -FloatValueForLength(reflect_style->Offset(), frame_rect.height());
       break;
     case kReflectionBelow:
       direction = BoxReflection::kVerticalReflection;
       offset =
-          2 * frame_rect.Height() +
-          FloatValueForLength(reflect_style->Offset(), frame_rect.Height());
+          2 * frame_rect.height() +
+          FloatValueForLength(reflect_style->Offset(), frame_rect.height());
       break;
     case kReflectionLeft:
       direction = BoxReflection::kHorizontalReflection;
       offset =
-          -FloatValueForLength(reflect_style->Offset(), frame_rect.Width());
+          -FloatValueForLength(reflect_style->Offset(), frame_rect.width());
       break;
     case kReflectionRight:
       direction = BoxReflection::kHorizontalReflection;
-      offset = 2 * frame_rect.Width() +
-               FloatValueForLength(reflect_style->Offset(), frame_rect.Width());
+      offset = 2 * frame_rect.width() +
+               FloatValueForLength(reflect_style->Offset(), frame_rect.width());
       break;
   }
 

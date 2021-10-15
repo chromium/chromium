@@ -287,13 +287,14 @@ static IntSize ExtractDensityCorrectedSize(const DecodedImageMetaData& metadata,
   if (metadata.resolution_unit != kresolution_unitDPI || metadata.resolution.IsEmpty() || metadata.size.IsEmpty())
     return physical_size;
 
-  CHECK(metadata.resolution.Width());
-  CHECK(metadata.resolution.Height());
+  CHECK(metadata.resolution.width());
+  CHECK(metadata.resolution.height());
 
   // Division by zero is not possible since we check for empty resolution earlier.
   FloatSize size_from_resolution(
-      physical_size.Width() * kDefaultResolution / metadata.resolution.Width(),
-      physical_size.Height() * kDefaultResolution / metadata.resolution.Height());
+      physical_size.width() * kDefaultResolution / metadata.resolution.width(),
+      physical_size.height() * kDefaultResolution /
+          metadata.resolution.height());
 
   if (RoundedIntSize(size_from_resolution) == metadata.size)
     return metadata.size;
@@ -360,13 +361,17 @@ static void ReadExifDirectory(JOCTET* dir_start,
         break;
 
       case ExifTags::kResolutionXTag:
-        if (type == kUnsignedRationalType && count == 1)
-          metadata.resolution.SetWidth(ReadUnsignedRational(value_ptr, is_big_endian));
+        if (type == kUnsignedRationalType && count == 1) {
+          metadata.resolution.set_width(
+              ReadUnsignedRational(value_ptr, is_big_endian));
+        }
         break;
 
       case ExifTags::kResolutionYTag:
-        if (type == kUnsignedRationalType && count == 1)
-          metadata.resolution.SetHeight(ReadUnsignedRational(value_ptr, is_big_endian));
+        if (type == kUnsignedRationalType && count == 1) {
+          metadata.resolution.set_height(
+              ReadUnsignedRational(value_ptr, is_big_endian));
+        }
         break;
 
       case ExifTags::kPixelXDimensionTag:
@@ -374,10 +379,10 @@ static void ReadExifDirectory(JOCTET* dir_start,
           break;
         switch (type) {
           case kUnsignedShortType:
-            metadata.size.SetWidth(ReadUint16(value_ptr, is_big_endian));
+            metadata.size.set_width(ReadUint16(value_ptr, is_big_endian));
             break;
           case kUnsignedLongType:
-            metadata.size.SetWidth(ReadUint32(value_ptr, is_big_endian));
+            metadata.size.set_width(ReadUint32(value_ptr, is_big_endian));
             break;
         }
         break;
@@ -387,10 +392,10 @@ static void ReadExifDirectory(JOCTET* dir_start,
           break;
         switch (type) {
           case kUnsignedShortType:
-            metadata.size.SetHeight(ReadUint16(value_ptr, is_big_endian));
+            metadata.size.set_height(ReadUint16(value_ptr, is_big_endian));
             break;
           case kUnsignedLongType:
-            metadata.size.SetHeight(ReadUint32(value_ptr, is_big_endian));
+            metadata.size.set_height(ReadUint32(value_ptr, is_big_endian));
             break;
         }
         break;
@@ -1105,7 +1110,7 @@ wtf_size_t JPEGImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
 }
 
 unsigned JPEGImageDecoder::DesiredScaleNumerator() const {
-  wtf_size_t original_bytes = Size().Width() * Size().Height() * 4;
+  wtf_size_t original_bytes = Size().width() * Size().height() * 4;
 
   return JPEGImageDecoder::DesiredScaleNumerator(
       max_decoded_bytes_, original_bytes, g_scale_denominator);
@@ -1171,8 +1176,8 @@ gfx::Size JPEGImageDecoder::GetImageCodedSize() const {
     return gfx::Size();
   }
 
-  const int coded_width = Align(Size().Width(), max_h_samp_factor * 8);
-  const int coded_height = Align(Size().Height(), max_v_samp_factor * 8);
+  const int coded_width = Align(Size().width(), max_h_samp_factor * 8);
+  const int coded_height = Align(Size().height(), max_v_samp_factor * 8);
 
   return gfx::Size(coded_width, coded_height);
 }
@@ -1271,7 +1276,7 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
   int y_height = info->output_height;
   int v = info->comp_info[0].v_samp_factor;
   IntSize uv_size = reader->UvSize();
-  int uv_height = uv_size.Height();
+  int uv_height = uv_size.height();
   JSAMPROW output_y =
       static_cast<JSAMPROW>(image_planes->Plane(cc::YUVIndex::kY));
   JSAMPROW output_u =
@@ -1333,9 +1338,9 @@ bool JPEGImageDecoder::OutputScanlines() {
   ImageFrame& buffer = frame_buffer_cache_[0];
   if (buffer.GetStatus() == ImageFrame::kFrameEmpty) {
     DCHECK_EQ(info->output_width,
-              static_cast<JDIMENSION>(decoded_size_.Width()));
+              static_cast<JDIMENSION>(decoded_size_.width()));
     DCHECK_EQ(info->output_height,
-              static_cast<JDIMENSION>(decoded_size_.Height()));
+              static_cast<JDIMENSION>(decoded_size_.height()));
 
     if (!buffer.AllocatePixelData(info->output_width, info->output_height,
                                   ColorSpaceForSkImages()))

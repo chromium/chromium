@@ -63,16 +63,16 @@ bool Path::operator==(const Path& other) const {
 }
 
 bool Path::Contains(const FloatPoint& point) const {
-  if (!std::isfinite(point.X()) || !std::isfinite(point.Y()))
+  if (!std::isfinite(point.x()) || !std::isfinite(point.y()))
     return false;
-  return path_.contains(SkScalar(point.X()), SkScalar(point.Y()));
+  return path_.contains(SkScalar(point.x()), SkScalar(point.y()));
 }
 
 bool Path::Contains(const FloatPoint& point, WindRule rule) const {
-  if (!std::isfinite(point.X()) || !std::isfinite(point.Y()))
+  if (!std::isfinite(point.x()) || !std::isfinite(point.y()))
     return false;
-  SkScalar x = point.X();
-  SkScalar y = point.Y();
+  SkScalar x = point.x();
+  SkScalar y = point.y();
   SkPathFillType fill_type = WebCoreWindRuleToSkFillType(rule);
   if (path_.getFillType() != fill_type) {
     SkPath tmp(path_);
@@ -103,10 +103,10 @@ SkPath Path::StrokePath(const StrokeData& stroke_data,
 bool Path::StrokeContains(const FloatPoint& point,
                           const StrokeData& stroke_data,
                           const AffineTransform& transform) const {
-  if (!std::isfinite(point.X()) || !std::isfinite(point.Y()))
+  if (!std::isfinite(point.x()) || !std::isfinite(point.y()))
     return false;
   return StrokePath(stroke_data, transform)
-      .contains(SkScalar(point.X()), SkScalar(point.Y()));
+      .contains(SkScalar(point.x()), SkScalar(point.y()));
 }
 
 FloatRect Path::TightBoundingRect() const {
@@ -127,8 +127,8 @@ static FloatPoint* ConvertPathPoints(FloatPoint dst[],
                                      const SkPoint src[],
                                      int count) {
   for (int i = 0; i < count; i++) {
-    dst[i].SetX(SkScalarToFloat(src[i].fX));
-    dst[i].SetY(SkScalarToFloat(src[i].fY));
+    dst[i].set_x(SkScalarToFloat(src[i].fX));
+    dst[i].set_y(SkScalarToFloat(src[i].fY));
   }
   return dst;
 }
@@ -288,8 +288,8 @@ FloatPoint Path::CurrentPoint() const {
     SkPoint sk_result;
     path_.getLastPt(&sk_result);
     FloatPoint result;
-    result.SetX(SkScalarToFloat(sk_result.fX));
-    result.SetY(SkScalarToFloat(sk_result.fY));
+    result.set_x(SkScalarToFloat(sk_result.fX));
+    result.set_y(SkScalarToFloat(sk_result.fY));
     return result;
   }
 
@@ -331,12 +331,12 @@ void Path::AddArcTo(const FloatPoint& p,
                     float x_rotate,
                     bool large_arc,
                     bool sweep) {
-  path_.arcTo(WebCoreFloatToSkScalar(r.Width()),
-              WebCoreFloatToSkScalar(r.Height()),
+  path_.arcTo(WebCoreFloatToSkScalar(r.width()),
+              WebCoreFloatToSkScalar(r.height()),
               WebCoreFloatToSkScalar(x_rotate),
               large_arc ? SkPath::kLarge_ArcSize : SkPath::kSmall_ArcSize,
               sweep ? SkPathDirection::kCW : SkPathDirection::kCCW,
-              WebCoreFloatToSkScalar(p.X()), WebCoreFloatToSkScalar(p.Y()));
+              WebCoreFloatToSkScalar(p.x()), WebCoreFloatToSkScalar(p.y()));
 }
 
 void Path::CloseSubpath() {
@@ -352,8 +352,8 @@ void Path::AddEllipse(const FloatPoint& p,
   DCHECK_GE(start_angle, 0);
   DCHECK_LT(start_angle, kTwoPiFloat);
 
-  SkScalar cx = WebCoreFloatToSkScalar(p.X());
-  SkScalar cy = WebCoreFloatToSkScalar(p.Y());
+  SkScalar cx = WebCoreFloatToSkScalar(p.x());
+  SkScalar cy = WebCoreFloatToSkScalar(p.y());
   SkScalar radius_x_scalar = WebCoreFloatToSkScalar(radius_x);
   SkScalar radius_y_scalar = WebCoreFloatToSkScalar(radius_y);
 
@@ -411,14 +411,14 @@ void Path::AddEllipse(const FloatPoint& p,
   DCHECK_LT(start_angle, kTwoPiFloat);
 
   if (!rotation) {
-    AddEllipse(FloatPoint(p.X(), p.Y()), radius_x, radius_y, start_angle,
+    AddEllipse(FloatPoint(p.x(), p.y()), radius_x, radius_y, start_angle,
                end_angle);
     return;
   }
 
   // Add an arc after the relevant transform.
   AffineTransform ellipse_transform =
-      AffineTransform::Translation(p.X(), p.Y()).RotateRadians(rotation);
+      AffineTransform::Translation(p.x(), p.y()).RotateRadians(rotation);
   DCHECK(ellipse_transform.IsInvertible());
   AffineTransform inverse_ellipse_transform = ellipse_transform.Inverse();
   Transform(inverse_ellipse_transform);
@@ -442,7 +442,7 @@ void Path::AddRoundedRect(const FloatRect& rect,
     return;
 
   FloatSize radius(rounding_radii);
-  FloatSize half_size(rect.Width() / 2, rect.Height() / 2);
+  FloatSize half_size(rect.width() / 2, rect.height() / 2);
 
   // Apply the SVG corner radius constraints, per the rect section of the SVG
   // shapes spec: if one of rx,ry is negative, then the other corner radius
@@ -450,17 +450,17 @@ void Path::AddRoundedRect(const FloatRect& rect,
   // greater than half of the width of the rectangle then set rx to half of the
   // width; ry is handled similarly.
 
-  if (radius.Width() < 0)
-    radius.SetWidth((radius.Height() < 0) ? 0 : radius.Height());
+  if (radius.width() < 0)
+    radius.set_width((radius.height() < 0) ? 0 : radius.height());
 
-  if (radius.Height() < 0)
-    radius.SetHeight(radius.Width());
+  if (radius.height() < 0)
+    radius.set_height(radius.width());
 
-  if (radius.Width() > half_size.Width())
-    radius.SetWidth(half_size.Width());
+  if (radius.width() > half_size.width())
+    radius.set_width(half_size.width());
 
-  if (radius.Height() > half_size.Height())
-    radius.SetHeight(half_size.Height());
+  if (radius.height() > half_size.height())
+    radius.set_height(half_size.height());
 
   const bool clockwise = true;
   AddPathForRoundedRect(rect, radius, radius, radius, radius, clockwise);
@@ -474,11 +474,11 @@ void Path::AddRoundedRect(const FloatRect& rect,
   if (rect.IsEmpty())
     return;
 
-  if (rect.Width() < top_left_radius.Width() + top_right_radius.Width() ||
-      rect.Width() < bottom_left_radius.Width() + bottom_right_radius.Width() ||
-      rect.Height() < top_left_radius.Height() + bottom_left_radius.Height() ||
-      rect.Height() <
-          top_right_radius.Height() + bottom_right_radius.Height()) {
+  if (rect.width() < top_left_radius.width() + top_right_radius.width() ||
+      rect.width() < bottom_left_radius.width() + bottom_right_radius.width() ||
+      rect.height() < top_left_radius.height() + bottom_left_radius.height() ||
+      rect.height() <
+          top_right_radius.height() + bottom_right_radius.height()) {
     // If all the radii cannot be accommodated, return a rect.
     // FIXME: Is this an error scenario, given that it appears the code in
     // FloatRoundedRect::constrainRadii() should be always called first? Should
@@ -511,8 +511,8 @@ void Path::AddPath(const Path& src, const AffineTransform& transform) {
 }
 
 void Path::Translate(const FloatSize& size) {
-  path_.offset(WebCoreFloatToSkScalar(size.Width()),
-               WebCoreFloatToSkScalar(size.Height()));
+  path_.offset(WebCoreFloatToSkScalar(size.width()),
+               WebCoreFloatToSkScalar(size.height()));
 }
 
 bool Path::SubtractPath(const Path& other) {

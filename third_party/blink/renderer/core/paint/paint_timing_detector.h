@@ -292,7 +292,7 @@ class ScopedPaintTimingDetectorBlockPaintHook {
     // these cases, |top_| will be null. This is a known bug, see the related
     // crbug.com/933479.
     if (top_ && top_->data_)
-      top_->data_->aggregated_visual_rect_.Unite(visual_rect);
+      top_->data_->aggregated_visual_rect_.Union(visual_rect);
   }
 
   absl::optional<base::AutoReset<ScopedPaintTimingDetectorBlockPaintHook*>>
@@ -328,14 +328,14 @@ class LCPRectInfo {
       : frame_rect_info_(frame_rect_info), root_rect_info_(root_rect_info) {}
 
   void OutputToTraceValue(TracedValue& value) {
-    value.SetInteger("frame_x", frame_rect_info_.X());
-    value.SetInteger("frame_y", frame_rect_info_.Y());
-    value.SetInteger("frame_width", frame_rect_info_.Width());
-    value.SetInteger("frame_height", frame_rect_info_.Height());
-    value.SetInteger("root_x", root_rect_info_.X());
-    value.SetInteger("root_y", root_rect_info_.Y());
-    value.SetInteger("root_width", root_rect_info_.Width());
-    value.SetInteger("root_height", root_rect_info_.Height());
+    value.SetInteger("frame_x", frame_rect_info_.x());
+    value.SetInteger("frame_y", frame_rect_info_.y());
+    value.SetInteger("frame_width", frame_rect_info_.width());
+    value.SetInteger("frame_height", frame_rect_info_.height());
+    value.SetInteger("root_x", root_rect_info_.x());
+    value.SetInteger("root_y", root_rect_info_.y());
+    value.SetInteger("root_width", root_rect_info_.width());
+    value.SetInteger("root_height", root_rect_info_.height());
   }
 
  private:

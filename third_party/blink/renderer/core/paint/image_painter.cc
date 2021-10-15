@@ -60,9 +60,9 @@ bool CheckForOversizedImagesPolicy(const LayoutImage& layout_image,
   const double dsf =
       layout_image.GetDocument().GetPage()->DeviceScaleFactorDeprecated();
   const double downscale_ratio_width =
-      image_size.Width() / layout_size.Width() / dsf;
+      image_size.width() / layout_size.Width() / dsf;
   const double downscale_ratio_height =
-      image_size.Height() / layout_size.Height() / dsf;
+      image_size.height() / layout_size.Height() / dsf;
 
   const LayoutImageResource* image_resource = layout_image.ImageResource();
   const ImageResourceContent* cached_image =

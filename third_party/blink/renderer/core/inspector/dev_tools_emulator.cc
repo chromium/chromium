@@ -453,8 +453,8 @@ void DevToolsEmulator::ApplyViewportOverride(TransformationMatrix* transform) {
   gfx::PointF visual_offset = web_view_->VisualViewportOffset();
   float scroll_x = scroll_offset.x() + visual_offset.x();
   float scroll_y = scroll_offset.y() + visual_offset.y();
-  transform->Translate(-viewport_override_->position.X() + scroll_x,
-                       -viewport_override_->position.Y() + scroll_y);
+  transform->Translate(-viewport_override_->position.x() + scroll_x,
+                       -viewport_override_->position.y() + scroll_y);
 
   // First, reverse page scale, so we don't have to take it into account for
   // calculation of the translation.

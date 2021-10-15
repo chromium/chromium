@@ -56,9 +56,9 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   AffineTransform content_transformation;
   if (masker->MaskContentUnits() ==
       SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
-    content_transformation.Translate(reference_box.X(), reference_box.Y());
-    content_transformation.ScaleNonUniform(reference_box.Width(),
-                                           reference_box.Height());
+    content_transformation.Translate(reference_box.x(), reference_box.y());
+    content_transformation.ScaleNonUniform(reference_box.width(),
+                                           reference_box.height());
   } else if (layout_object.IsSVGForeignObject()) {
     content_transformation.Scale(style.EffectiveZoom());
   }

@@ -161,8 +161,8 @@ void TestPixel(const char* jxl_file,
   for (size_t i = 0; i < coordinates.size(); ++i) {
     const SkBitmap& bitmap =
         decoder->DecodeFrameBufferAtIndex(coordinates[i].frame)->Bitmap();
-    int x = coordinates[i].point.X();
-    int y = coordinates[i].point.Y();
+    int x = coordinates[i].point.x();
+    int y = coordinates[i].point.y();
     SkColor frame_color = bitmap.getColor(x, y);
     int r_expected = (expected_colors[i] >> 16) & 255;
     int g_expected = (expected_colors[i] >> 8) & 255;

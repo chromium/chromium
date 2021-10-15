@@ -23,8 +23,8 @@ class PaintSize : public ScriptWrappable {
 
   ~PaintSize() override = default;
 
-  float width() const { return size_.Width(); }
-  float height() const { return size_.Height(); }
+  float width() const { return size_.width(); }
+  float height() const { return size_.height(); }
 
  private:
   FloatSize size_;

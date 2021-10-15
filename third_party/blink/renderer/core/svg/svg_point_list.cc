@@ -117,11 +117,11 @@ void SVGPointList::CalculateAnimatedValue(
 
     FloatPoint result(
         ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                              effective_from.X(), effective_to.X(),
-                              effective_to_at_end.X()),
+                              effective_from.x(), effective_to.x(),
+                              effective_to_at_end.x()),
         ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                              effective_from.Y(), effective_to.Y(),
-                              effective_to_at_end.Y()));
+                              effective_from.y(), effective_to.y(),
+                              effective_to_at_end.y()));
     if (parameters.is_additive)
       result += at(i)->Value();
 

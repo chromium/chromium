@@ -576,7 +576,7 @@ FloatRect SVGUseElement::GetBBox() {
   // translation directly on the LayoutObject corresponding to the
   // SVGUseElement.
   FloatRect bbox = transformable_container.ObjectBoundingBox();
-  bbox.Move(transformable_container.AdditionalTranslation());
+  bbox.Offset(transformable_container.AdditionalTranslation());
   return bbox;
 }
 

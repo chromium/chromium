@@ -68,7 +68,7 @@ FloatRect SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
 
   FloatRect visual_rect = object.VisualRectInLocalSVGCoordinates();
   if (int outset = OutlinePainter::OutlineOutsetExtent(object.StyleRef()))
-    visual_rect.Inflate(outset);
+    visual_rect.Outset(outset);
   return visual_rect;
 }
 
@@ -266,7 +266,7 @@ FloatRect SVGLayoutSupport::ExtendTextBBoxWithStroke(
     // TODO(fs): This approximation doesn't appear to be conservative enough
     // since while text (usually?) won't have caps it could have joins and thus
     // miters.
-    bounds.Inflate(length_context.ValueForLength(style.StrokeWidth()));
+    bounds.Outset(length_context.ValueForLength(style.StrokeWidth()));
   }
   return bounds;
 }

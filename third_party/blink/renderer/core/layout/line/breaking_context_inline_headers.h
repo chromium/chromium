@@ -918,7 +918,7 @@ ALWAYS_INLINE bool BreakingContext::RewindToMidWordBreak(
   }
 
   FloatRect rect = font.SelectionRectForText(run, FloatPoint(), 0, 0, len);
-  return RewindToMidWordBreak(word_measurement, end, rect.Width());
+  return RewindToMidWordBreak(word_measurement, end, rect.width());
 }
 
 ALWAYS_INLINE bool BreakingContext::Hyphenate(
@@ -1328,7 +1328,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
         &word_measurement.fallback_fonts, &word_measurement.glyph_bounds);
     word_measurement.width =
         last_width_measurement + word_spacing_for_word_measurement;
-    word_measurement.glyph_bounds.Move(word_spacing_for_word_measurement, 0);
+    word_measurement.glyph_bounds.Offset(word_spacing_for_word_measurement, 0);
   }
   last_width_measurement += last_space_word_spacing;
 
@@ -1453,7 +1453,7 @@ inline WordMeasurement& BreakingContext::CalculateWordWidth(
 
   word_measurement.width =
       last_width_measurement + word_spacing_for_word_measurement;
-  word_measurement.glyph_bounds.Move(word_spacing_for_word_measurement, 0);
+  word_measurement.glyph_bounds.Offset(word_spacing_for_word_measurement, 0);
   return word_measurement;
 }
 

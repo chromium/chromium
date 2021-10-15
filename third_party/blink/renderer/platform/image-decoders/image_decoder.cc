@@ -378,10 +378,10 @@ bool ImageDecoder::IsSizeAvailable() {
 
   const IntSize size = DecodedSize();
   const wtf_size_t decoded_size_bytes =
-      size.Width() * size.Height() * decoded_bytes_per_pixel;
+      size.width() * size.height() * decoded_bytes_per_pixel;
   if (decoded_size_bytes > max_decoded_bytes_) {
-    LOG(WARNING) << "Blocked decode of oversized image: " << size.Width() << "x"
-                 << size.Height();
+    LOG(WARNING) << "Blocked decode of oversized image: " << size.width() << "x"
+                 << size.height();
     return SetFailed();
   }
 #endif
@@ -432,7 +432,7 @@ ImageFrame* ImageDecoder::DecodeFrameBufferAtIndex(wtf_size_t index) {
     if (frame->GetStatus() == ImageFrame::kFrameComplete) {
       BitmapImageMetrics::CountDecodedImageFrameTime(
           FilenameExtension(), metrics_time_delta_,
-          frame->OriginalFrameRect().Size().Area(),
+          frame->OriginalFrameRect().size().Area(),
           metrics_first_ && (index == 0));
       metrics_frame_index_ = kNotFound;
       metrics_time_delta_ = base::TimeDelta();
@@ -473,8 +473,8 @@ wtf_size_t ImageDecoder::FrameBytesAtIndex(wtf_size_t index) const {
     decoded_bytes_per_pixel = 8;
   }
   IntSize size = FrameSizeAtIndex(index);
-  base::CheckedNumeric<wtf_size_t> area = size.Width();
-  area *= size.Height();
+  base::CheckedNumeric<wtf_size_t> area = size.width();
+  area *= size.height();
   area *= decoded_bytes_per_pixel;
   return area.ValueOrDie();
 }
@@ -627,7 +627,7 @@ bool ImageDecoder::InitFrameBuffer(wtf_size_t frame_index) {
       buffer->RequiredPreviousFrameIndex();
   if (required_previous_frame_index == kNotFound) {
     // This frame doesn't rely on any previous data.
-    if (!buffer->AllocatePixelData(Size().Width(), Size().Height(),
+    if (!buffer->AllocatePixelData(Size().width(), Size().height(),
                                    ColorSpaceForSkImages())) {
       return false;
     }

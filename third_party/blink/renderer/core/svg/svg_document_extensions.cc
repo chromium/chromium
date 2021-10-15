@@ -155,15 +155,17 @@ bool SVGDocumentExtensions::ZoomAndPanEnabled() const {
 }
 
 void SVGDocumentExtensions::StartPan(const FloatPoint& start) {
-  if (SVGSVGElement* svg = rootElement(*document_))
-    translate_ = FloatPoint(start.X() - svg->CurrentTranslate().X(),
-                            start.Y() - svg->CurrentTranslate().Y());
+  if (SVGSVGElement* svg = rootElement(*document_)) {
+    translate_ = FloatPoint(start.x() - svg->CurrentTranslate().x(),
+                            start.y() - svg->CurrentTranslate().y());
+  }
 }
 
 void SVGDocumentExtensions::UpdatePan(const FloatPoint& pos) const {
-  if (SVGSVGElement* svg = rootElement(*document_))
+  if (SVGSVGElement* svg = rootElement(*document_)) {
     svg->SetCurrentTranslate(
-        FloatPoint(pos.X() - translate_.X(), pos.Y() - translate_.Y()));
+        FloatPoint(pos.x() - translate_.x(), pos.y() - translate_.y()));
+  }
 }
 
 SVGSVGElement* SVGDocumentExtensions::rootElement(const Document& document) {

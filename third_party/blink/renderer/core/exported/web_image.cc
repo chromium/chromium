@@ -66,7 +66,7 @@ SkBitmap WebImage::FromData(const WebData& data,
       break;  // Perfect match.
     }
 
-    const int frame_area = frame_size.Width() * frame_size.Height();
+    const int frame_area = frame_size.width() * frame_size.height();
     if (frame_area < (desired_size.width() * desired_size.height()))
       break;  // No more frames that are large enough.
 

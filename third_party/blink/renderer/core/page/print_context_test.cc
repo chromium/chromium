@@ -124,7 +124,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GetDocument().SetPrinting(Document::kBeforePrinting);
     Event* event = MakeGarbageCollected<BeforePrintEvent>();
     GetPrintContext().GetFrame()->DomWindow()->DispatchEvent(*event);
-    GetPrintContext().BeginPrintMode(page_rect.Width(), page_rect.Height());
+    GetPrintContext().BeginPrintMode(page_rect.width(), page_rect.height());
     UpdateAllLifecyclePhasesForTest();
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
     GraphicsContext& context = builder->Context();

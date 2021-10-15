@@ -89,10 +89,10 @@ std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
     // gradient or a filter) will be ignored.
     if (object_bounding_box.IsEmpty())
       return gradient_data;
-    gradient_data->userspace_transform.Translate(object_bounding_box.X(),
-                                                 object_bounding_box.Y());
+    gradient_data->userspace_transform.Translate(object_bounding_box.x(),
+                                                 object_bounding_box.y());
     gradient_data->userspace_transform.ScaleNonUniform(
-        object_bounding_box.Width(), object_bounding_box.Height());
+        object_bounding_box.width(), object_bounding_box.height());
   }
 
   // Create gradient object

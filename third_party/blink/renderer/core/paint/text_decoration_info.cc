@@ -262,13 +262,13 @@ FloatRect TextDecorationInfo::BoundsForLine(TextDecoration line) const {
       return BoundsForWavy(line);
     case ETextDecorationStyle::kDouble:
       if (DoubleOffset(line) > 0) {
-        return FloatRect(start_point.X(), start_point.Y(), width_,
+        return FloatRect(start_point.x(), start_point.y(), width_,
                          DoubleOffset(line) + ResolvedThickness());
       }
-      return FloatRect(start_point.X(), start_point.Y() + DoubleOffset(line),
+      return FloatRect(start_point.x(), start_point.y() + DoubleOffset(line),
                        width_, -DoubleOffset(line) + ResolvedThickness());
     case ETextDecorationStyle::kSolid:
-      return FloatRect(start_point.X(), start_point.Y(), width_,
+      return FloatRect(start_point.x(), start_point.y(), width_,
                        ResolvedThickness());
     default:
       break;
@@ -365,21 +365,21 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
   // better.
   float step = 2 * std::max<float>(2, ResolvedThickness());
 
-  bool is_vertical_line = (p1.X() == p2.X());
+  bool is_vertical_line = (p1.x() == p2.x());
 
   if (is_vertical_line) {
-    DCHECK(p1.X() == p2.X());
+    DCHECK(p1.x() == p2.x());
 
-    float x_axis = p1.X();
+    float x_axis = p1.x();
     float y1;
     float y2;
 
-    if (p1.Y() < p2.Y()) {
-      y1 = p1.Y();
-      y2 = p2.Y();
+    if (p1.y() < p2.y()) {
+      y1 = p1.y();
+      y2 = p2.y();
     } else {
-      y1 = p2.Y();
-      y2 = p1.Y();
+      y1 = p2.y();
+      y2 = p1.y();
     }
 
     AdjustStepToDecorationLength(step, control_point_distance, y2 - y1);
@@ -387,25 +387,25 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
     FloatPoint control_point2(x_axis - control_point_distance, 0);
 
     for (float y = y1; y + 2 * step <= y2;) {
-      control_point1.SetY(y + step);
-      control_point2.SetY(y + step);
+      control_point1.set_y(y + step);
+      control_point2.set_y(y + step);
       y += 2 * step;
       path.AddBezierCurveTo(control_point1, control_point2,
                             FloatPoint(x_axis, y));
     }
   } else {
-    DCHECK(p1.Y() == p2.Y());
+    DCHECK(p1.y() == p2.y());
 
-    float y_axis = p1.Y();
+    float y_axis = p1.y();
     float x1;
     float x2;
 
-    if (p1.X() < p2.X()) {
-      x1 = p1.X();
-      x2 = p2.X();
+    if (p1.x() < p2.x()) {
+      x1 = p1.x();
+      x2 = p2.x();
     } else {
-      x1 = p2.X();
-      x2 = p1.X();
+      x1 = p2.x();
+      x2 = p1.x();
     }
 
     AdjustStepToDecorationLength(step, control_point_distance, x2 - x1);
@@ -413,8 +413,8 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
     FloatPoint control_point2(0, y_axis - control_point_distance);
 
     for (float x = x1; x + 2 * step <= x2;) {
-      control_point1.SetX(x + step);
-      control_point2.SetX(x + step);
+      control_point1.set_x(x + step);
+      control_point2.set_x(x + step);
       x += 2 * step;
       path.AddBezierCurveTo(control_point1, control_point2,
                             FloatPoint(x, y_axis));

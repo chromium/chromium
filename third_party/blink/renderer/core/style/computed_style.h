@@ -1876,7 +1876,7 @@ class ComputedStyle : public ComputedStyleBase,
   }
   void SetBorderRadius(const IntSize& s) {
     SetBorderRadius(
-        LengthSize(Length::Fixed(s.Width()), Length::Fixed(s.Height())));
+        LengthSize(Length::Fixed(s.width()), Length::Fixed(s.height())));
   }
 
   bool CanRenderBorderImage() const;

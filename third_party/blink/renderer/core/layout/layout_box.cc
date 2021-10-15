@@ -667,7 +667,7 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
     // offset is the distance from the beginning of flow for the box, which is
     // the dimension we want to preserve.
     ScrollOffset old_offset = scrollable_area->GetScrollOffset();
-    if (old_offset.Width() || old_offset.Height()) {
+    if (old_offset.width() || old_offset.height()) {
       ScrollOffset new_offset = old_offset.ScaledBy(new_style.EffectiveZoom() /
                                                     old_style->EffectiveZoom());
       scrollable_area->SetScrollOffsetUnconditionally(new_offset);
@@ -1494,14 +1494,14 @@ void LayoutBox::SetLocationAndUpdateOverflowControlsIfNeeded(
   // The Layer does not yet have the up to date subpixel accumulation
   // so we base the size strictly on the frame rect's location.
   IntSize old_pixel_snapped_border_rect_size =
-      PixelSnappedBorderBoxRect().Size();
+      PixelSnappedBorderBoxRect().size();
   SetLocation(location);
   // TODO(crbug.com/1020913): This is problematic because this function may be
   // called after layout of this LayoutBox. Changing scroll container size here
   // will cause inconsistent layout. Also we should be careful not to set
   // this LayoutBox NeedsLayout. This will be unnecessary when we support
   // subpixel layout of scrollable area and overflow controls.
-  if (PixelSnappedBorderBoxRect().Size() !=
+  if (PixelSnappedBorderBoxRect().size() !=
       old_pixel_snapped_border_rect_size) {
     bool needed_layout = NeedsLayout();
     PaintLayerScrollableArea::FreezeScrollbarsScope freeze_scrollbar;
@@ -1805,15 +1805,15 @@ PhysicalOffset LayoutBox::CalculateAutoscrollDirection(
   belt_box.Inflate(LayoutUnit(-kAutoscrollBeltSize));
   FloatPoint point = point_in_root_frame;
 
-  if (point.X() < belt_box.X())
-    point.Move(-kAutoscrollBeltSize, 0);
-  else if (point.X() > belt_box.Right())
-    point.Move(kAutoscrollBeltSize, 0);
+  if (point.x() < belt_box.X())
+    point.Offset(-kAutoscrollBeltSize, 0);
+  else if (point.x() > belt_box.Right())
+    point.Offset(kAutoscrollBeltSize, 0);
 
-  if (point.Y() < belt_box.Y())
-    point.Move(0, -kAutoscrollBeltSize);
-  else if (point.Y() > belt_box.Bottom())
-    point.Move(0, kAutoscrollBeltSize);
+  if (point.y() < belt_box.Y())
+    point.Offset(0, -kAutoscrollBeltSize);
+  else if (point.y() > belt_box.Bottom())
+    point.Offset(0, kAutoscrollBeltSize);
 
   return PhysicalOffset::FromFloatSizeRound(point - point_in_root_frame);
 }
@@ -2075,8 +2075,8 @@ bool LayoutBox::MapVisualRectToContainer(
     TransformationMatrix perspective_matrix;
     perspective_matrix.ApplyPerspective(
         container_object->StyleRef().UsedPerspective());
-    perspective_matrix.ApplyTransformOrigin(perspective_origin.X(),
-                                            perspective_origin.Y(), 0);
+    perspective_matrix.ApplyTransformOrigin(perspective_origin.x(),
+                                            perspective_origin.y(), 0);
 
     transform = perspective_matrix * transform;
   }
@@ -3161,8 +3161,8 @@ LayoutUnit LayoutBox::PerpendicularContainingBlockLogicalHeight() const {
   if (!logical_height_length.IsFixed()) {
     LayoutUnit fill_fallback_extent =
         LayoutUnit(containing_block_style.IsHorizontalWritingMode()
-                       ? View()->GetFrameView()->Size().Height()
-                       : View()->GetFrameView()->Size().Width());
+                       ? View()->GetFrameView()->Size().height()
+                       : View()->GetFrameView()->Size().width());
     LayoutUnit fill_available_extent =
         ContainingBlock()->AvailableLogicalHeight(kExcludeMarginBorderPadding);
     if (fill_available_extent == -1)
@@ -5565,8 +5565,8 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
   NOT_DESTROYED();
   if (auto* layout_view = DynamicTo<LayoutView>(this)) {
     return LayoutUnit(IsHorizontalWritingMode()
-                          ? layout_view->GetFrameView()->Size().Height()
-                          : layout_view->GetFrameView()->Size().Width());
+                          ? layout_view->GetFrameView()->Size().height()
+                          : layout_view->GetFrameView()->Size().width());
   }
 
   // We need to stop here, since we don't want to increase the height of the
@@ -7184,7 +7184,7 @@ PhysicalRect LayoutBox::PhysicalVisualOverflowRectIncludingFilters() const {
   if (!StyleRef().HasFilter())
     return bounds_rect;
   FloatRect float_rect(bounds_rect);
-  float_rect.UniteIfNonZero(Layer()->FilterReferenceBox());
+  float_rect.UnionIfNonZero(Layer()->FilterReferenceBox());
   float_rect = Layer()->MapRectForFilter(float_rect);
   return PhysicalRect::EnclosingRect(float_rect);
 }

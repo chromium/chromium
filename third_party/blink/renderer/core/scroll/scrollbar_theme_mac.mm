@@ -172,8 +172,8 @@ void ScrollbarThemeMac::PaintTickmarks(GraphicsContext& context,
                                        const Scrollbar& scrollbar,
                                        const IntRect& rect) {
   IntRect tickmark_track_rect = rect;
-  tickmark_track_rect.SetX(tickmark_track_rect.X() + 1);
-  tickmark_track_rect.SetWidth(tickmark_track_rect.Width() - 1);
+  tickmark_track_rect.set_x(tickmark_track_rect.x() + 1);
+  tickmark_track_rect.set_width(tickmark_track_rect.width() - 1);
   ScrollbarTheme::PaintTickmarks(context, scrollbar, tickmark_track_rect);
 }
 
@@ -290,7 +290,7 @@ void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
                                    const Scrollbar& scrollbar,
                                    const IntRect& rect) {
   GraphicsContextStateSaver state_saver(context);
-  context.Translate(rect.X(), rect.Y());
+  context.Translate(rect.x(), rect.y());
 
   // The track opacity will be read from the ScrollbarPainter.
   float opacity = 1.f;
@@ -315,8 +315,8 @@ void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
     context.BeginLayer(opacity);
   WebThemeEngine::ExtraParams params =
       GetPaintParams(scrollbar, UsesOverlayScrollbars());
-  IntRect bounds(0, 0, scrollbar.FrameRect().Width(),
-                 scrollbar.FrameRect().Height());
+  IntRect bounds(0, 0, scrollbar.FrameRect().width(),
+                 scrollbar.FrameRect().height());
   WebThemeEngine::Part track_part =
       params.scrollbar_extra.orientation ==
               WebThemeEngine::ScrollbarOrientation::kHorizontal
@@ -348,8 +348,8 @@ void ScrollbarThemeMac::PaintScrollCorner(
                            ToGfxRect(rect));
 
   GraphicsContextStateSaver state_saver(context);
-  context.Translate(rect.X(), rect.Y());
-  IntRect bounds(0, 0, rect.Width(), rect.Height());
+  context.Translate(rect.x(), rect.y());
+  IntRect bounds(0, 0, rect.width(), rect.height());
   WebThemeEngine::ExtraParams params =
       GetPaintParams(*vertical_scrollbar, UsesOverlayScrollbars());
   Platform::Current()->ThemeEngine()->Paint(
@@ -370,8 +370,8 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
                            ToGfxRect(rect));
 
   GraphicsContextStateSaver state_saver(context);
-  context.Translate(rect.X(), rect.Y());
-  IntRect local_rect(IntPoint(), rect.Size());
+  context.Translate(rect.x(), rect.y());
+  IntRect local_rect(IntPoint(), rect.size());
 
   // The thumb size will be read from the ScrollbarPainter.
   int thumb_size = 0;
@@ -396,7 +396,7 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
     // will only cause the scrollbar to engorge when moved over the top of the
     // scrollbar area.
     [scrollbar_painter
-        setBoundsSize:NSSizeFromCGSize(CGSize(scrollbar.FrameRect().Size()))];
+        setBoundsSize:NSSizeFromCGSize(CGSize(scrollbar.FrameRect().size()))];
     [observer setSuppressSetScrollbarsHidden:NO];
 
     thumb_size = [scrollbar_painter trackBoxWidth] * scrollbar.ScaleFromDIP();
@@ -412,13 +412,13 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
   IntRect bounds;
   switch (params.scrollbar_extra.orientation) {
     case WebThemeEngine::ScrollbarOrientation::kVerticalOnRight:
-      bounds = IntRect(rect.Width() - thumb_size, 0, thumb_size, rect.Height());
+      bounds = IntRect(rect.width() - thumb_size, 0, thumb_size, rect.height());
       break;
     case WebThemeEngine::ScrollbarOrientation::kVerticalOnLeft:
-      bounds = IntRect(0, 0, thumb_size, rect.Height());
+      bounds = IntRect(0, 0, thumb_size, rect.height());
       break;
     case WebThemeEngine::ScrollbarOrientation::kHorizontal:
-      bounds = IntRect(0, rect.Height() - thumb_size, rect.Width(), thumb_size);
+      bounds = IntRect(0, rect.height() - thumb_size, rect.width(), thumb_size);
       break;
   }
 

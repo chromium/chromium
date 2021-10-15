@@ -332,10 +332,10 @@ FloatSize LayoutImage::ImageSizeOverriddenByIntrinsicSize(
   FloatSize overridden_intrinsic_size(kDefaultWidth, kDefaultHeight);
   if (multiplier != 1) {
     overridden_intrinsic_size.Scale(multiplier);
-    if (overridden_intrinsic_size.Width() < 1.0f)
-      overridden_intrinsic_size.SetWidth(1.0f);
-    if (overridden_intrinsic_size.Height() < 1.0f)
-      overridden_intrinsic_size.SetHeight(1.0f);
+    if (overridden_intrinsic_size.width() < 1.0f)
+      overridden_intrinsic_size.set_width(1.0f);
+    if (overridden_intrinsic_size.height() < 1.0f)
+      overridden_intrinsic_size.set_height(1.0f);
   }
 
   return overridden_intrinsic_size;
@@ -375,10 +375,10 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
       if (aspect_ratio.GetType() == EAspectRatioType::kRatio ||
           (aspect_ratio.GetType() == EAspectRatioType::kAutoAndRatio &&
            intrinsic_sizing_info.aspect_ratio.IsEmpty())) {
-        intrinsic_sizing_info.aspect_ratio.SetWidth(
-            aspect_ratio.GetRatio().Width());
-        intrinsic_sizing_info.aspect_ratio.SetHeight(
-            aspect_ratio.GetRatio().Height());
+        intrinsic_sizing_info.aspect_ratio.set_width(
+            aspect_ratio.GetRatio().width());
+        intrinsic_sizing_info.aspect_ratio.set_height(
+            aspect_ratio.GetRatio().height());
       }
 
       if (!IsHorizontalWritingMode())
@@ -394,18 +394,18 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
         !image_resource_->HasIntrinsicSize() && !IsListMarkerImage()) {
       if (HasOverrideContainingBlockContentLogicalWidth() &&
           HasOverrideContainingBlockContentLogicalHeight()) {
-        intrinsic_sizing_info.size.SetWidth(
+        intrinsic_sizing_info.size.set_width(
             OverrideContainingBlockContentLogicalWidth().ToFloat());
-        intrinsic_sizing_info.size.SetHeight(
+        intrinsic_sizing_info.size.set_height(
             OverrideContainingBlockContentLogicalHeight().ToFloat());
       } else {
         LayoutObject* containing_block =
             IsOutOfFlowPositioned() ? Container() : ContainingBlock();
         if (containing_block->IsBox()) {
           auto* box = To<LayoutBox>(containing_block);
-          intrinsic_sizing_info.size.SetWidth(
+          intrinsic_sizing_info.size.set_width(
               box->AvailableLogicalWidth().ToFloat());
-          intrinsic_sizing_info.size.SetHeight(
+          intrinsic_sizing_info.size.set_height(
               box->AvailableLogicalHeight(kIncludeMarginBorderPadding)
                   .ToFloat());
         }

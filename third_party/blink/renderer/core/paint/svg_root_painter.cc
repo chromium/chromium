@@ -25,12 +25,12 @@ AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
     const PhysicalOffset& paint_offset) const {
   const IntRect snapped_size = PixelSnappedSize(paint_offset);
   AffineTransform paint_offset_to_border_box =
-      AffineTransform::Translation(snapped_size.X(), snapped_size.Y());
+      AffineTransform::Translation(snapped_size.x(), snapped_size.y());
   LayoutSize size = layout_svg_root_.Size();
   if (!size.IsEmpty()) {
     paint_offset_to_border_box.Scale(
-        snapped_size.Width() / size.Width().ToFloat(),
-        snapped_size.Height() / size.Height().ToFloat());
+        snapped_size.width() / size.Width().ToFloat(),
+        snapped_size.height() / size.Height().ToFloat());
   }
   paint_offset_to_border_box.Multiply(
       layout_svg_root_.LocalToBorderBoxTransform());

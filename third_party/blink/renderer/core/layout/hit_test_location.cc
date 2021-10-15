@@ -104,7 +104,7 @@ HitTestLocation& HitTestLocation::operator=(const HitTestLocation& other) =
 void HitTestLocation::Move(const PhysicalOffset& offset) {
   point_ += offset;
   bounding_box_.Move(offset);
-  transformed_point_.Move(FloatSize(offset));
+  transformed_point_.Offset(FloatSize(offset));
   transformed_rect_.Move(FloatSize(offset));
 }
 

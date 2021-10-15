@@ -97,8 +97,8 @@ void NGTextDecorationPainter::Begin(Phase phase) {
       //
       // TODO(dazabani@igalia.com): take text-underline-offset and other
       // text-decoration properties into account?
-      clip_rect_->SetY(clip_rect_->Y() - clip_rect_->Height());
-      clip_rect_->SetHeight(3.0 * clip_rect_->Height());
+      clip_rect_->set_y(clip_rect_->y() - clip_rect_->height());
+      clip_rect_->set_height(3.0 * clip_rect_->height());
     }
   }
 

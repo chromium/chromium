@@ -124,7 +124,7 @@ static inline void UpdateObjectBoundingBox(FloatRect& object_bounding_box,
     object_bounding_box_valid = true;
     return;
   }
-  object_bounding_box.UniteEvenIfEmpty(other_bounding_box);
+  object_bounding_box.UnionEvenIfEmpty(other_bounding_box);
 }
 
 static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
@@ -174,7 +174,7 @@ bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
     UpdateObjectBoundingBox(
         object_bounding_box, object_bounding_box_valid,
         transform.MapRect(ObjectBoundsForPropagation(*current)));
-    stroke_bounding_box.Unite(transform.MapRect(current->StrokeBoundingBox()));
+    stroke_bounding_box.Union(transform.MapRect(current->StrokeBoundingBox()));
   }
 
   bool changed = false;

@@ -474,7 +474,7 @@ TEST_P(PaintLayerScrollableAreaTest, IncludeOverlayScrollbarsInVisibleWidth) {
   ASSERT_TRUE(scrollable_area);
   scrollable_area->SetScrollOffset(ScrollOffset(100, 0),
                                    mojom::blink::ScrollType::kClamping);
-  EXPECT_EQ(scrollable_area->GetScrollOffset().Width(), 0);
+  EXPECT_EQ(scrollable_area->GetScrollOffset().width(), 0);
 }
 
 TEST_P(PaintLayerScrollableAreaTest, ShowAutoScrollbarsForVisibleContent) {
@@ -564,7 +564,7 @@ TEST_P(PaintLayerScrollableAreaTest, ScrollOriginInRtlContainer) {
       To<LayoutBoxModelObject>(container->GetLayoutObject())
           ->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
-  EXPECT_EQ(scrollable_area->ScrollOrigin().X(), 100);
+  EXPECT_EQ(scrollable_area->ScrollOrigin().x(), 100);
 }
 
 TEST_P(PaintLayerScrollableAreaTest, OverflowHiddenScrollOffsetInvalidation) {

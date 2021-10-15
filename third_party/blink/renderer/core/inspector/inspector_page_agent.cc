@@ -1514,10 +1514,10 @@ Response InspectorPageAgent::getLayoutMetrics(
   IntRect visible_contents =
       main_frame->View()->LayoutViewport()->VisibleContentRect();
   *out_layout_viewport = protocol::Page::LayoutViewport::create()
-                             .setPageX(visible_contents.X())
-                             .setPageY(visible_contents.Y())
-                             .setClientWidth(visible_contents.Width())
-                             .setClientHeight(visible_contents.Height())
+                             .setPageX(visible_contents.x())
+                             .setPageY(visible_contents.y())
+                             .setClientWidth(visible_contents.width())
+                             .setClientHeight(visible_contents.height())
                              .build();
 
   // `visible_contents` is in DIP or DP depending on the
@@ -1527,10 +1527,10 @@ Response InspectorPageAgent::getLayoutMetrics(
       main_frame->GetPage()->GetChromeClient().ViewportToScreen(
           visible_contents, main_frame->View());
   *out_css_layout_viewport = protocol::Page::LayoutViewport::create()
-                                 .setPageX(css_visible_contents.X())
-                                 .setPageY(css_visible_contents.Y())
-                                 .setClientWidth(css_visible_contents.Width())
-                                 .setClientHeight(css_visible_contents.Height())
+                                 .setPageX(css_visible_contents.x())
+                                 .setPageY(css_visible_contents.y())
+                                 .setClientWidth(css_visible_contents.width())
+                                 .setClientHeight(css_visible_contents.height())
                                  .build();
 
   LocalFrameView* frame_view = main_frame->View();
@@ -1540,8 +1540,8 @@ Response InspectorPageAgent::getLayoutMetrics(
   *out_content_size = protocol::DOM::Rect::create()
                           .setX(0)
                           .setY(0)
-                          .setWidth(content_size.Width())
-                          .setHeight(content_size.Height())
+                          .setWidth(content_size.width())
+                          .setHeight(content_size.height())
                           .build();
 
   // `content_size` is in DIP or DP depending on the
@@ -1551,10 +1551,10 @@ Response InspectorPageAgent::getLayoutMetrics(
       main_frame->GetPage()->GetChromeClient().ViewportToScreen(
           IntRect(IntPoint(0, 0), content_size), main_frame->View());
   *out_css_content_size = protocol::DOM::Rect::create()
-                              .setX(css_content_size.X())
-                              .setY(css_content_size.Y())
-                              .setWidth(css_content_size.Width())
-                              .setHeight(css_content_size.Height())
+                              .setX(css_content_size.x())
+                              .setY(css_content_size.y())
+                              .setWidth(css_content_size.width())
+                              .setHeight(css_content_size.height())
                               .build();
 
   // page_zoom is either CSS-to-DP or CSS-to-DIP depending on
@@ -1569,15 +1569,15 @@ Response InspectorPageAgent::getLayoutMetrics(
   float scale = visual_viewport.Scale();
   *out_visual_viewport = protocol::Page::VisualViewport::create()
                              .setOffsetX(AdjustForAbsoluteZoom::AdjustScroll(
-                                 visible_rect.X(), page_zoom))
+                                 visible_rect.x(), page_zoom))
                              .setOffsetY(AdjustForAbsoluteZoom::AdjustScroll(
-                                 visible_rect.Y(), page_zoom))
+                                 visible_rect.y(), page_zoom))
                              .setPageX(AdjustForAbsoluteZoom::AdjustScroll(
-                                 page_offset.Width(), page_zoom))
+                                 page_offset.width(), page_zoom))
                              .setPageY(AdjustForAbsoluteZoom::AdjustScroll(
-                                 page_offset.Height(), page_zoom))
-                             .setClientWidth(visible_rect.Width())
-                             .setClientHeight(visible_rect.Height())
+                                 page_offset.height(), page_zoom))
+                             .setClientWidth(visible_rect.width())
+                             .setClientHeight(visible_rect.height())
                              .setScale(scale)
                              .setZoom(page_zoom_factor)
                              .build();
@@ -1585,17 +1585,17 @@ Response InspectorPageAgent::getLayoutMetrics(
   *out_css_visual_viewport =
       protocol::Page::VisualViewport::create()
           .setOffsetX(
-              AdjustForAbsoluteZoom::AdjustScroll(visible_rect.X(), page_zoom))
+              AdjustForAbsoluteZoom::AdjustScroll(visible_rect.x(), page_zoom))
           .setOffsetY(
-              AdjustForAbsoluteZoom::AdjustScroll(visible_rect.Y(), page_zoom))
-          .setPageX(AdjustForAbsoluteZoom::AdjustScroll(page_offset.Width(),
+              AdjustForAbsoluteZoom::AdjustScroll(visible_rect.y(), page_zoom))
+          .setPageX(AdjustForAbsoluteZoom::AdjustScroll(page_offset.width(),
                                                         page_zoom))
-          .setPageY(AdjustForAbsoluteZoom::AdjustScroll(page_offset.Height(),
+          .setPageY(AdjustForAbsoluteZoom::AdjustScroll(page_offset.height(),
                                                         page_zoom))
           .setClientWidth(AdjustForAbsoluteZoom::AdjustScroll(
-              visible_rect.Width(), page_zoom))
+              visible_rect.width(), page_zoom))
           .setClientHeight(AdjustForAbsoluteZoom::AdjustScroll(
-              visible_rect.Height(), page_zoom))
+              visible_rect.height(), page_zoom))
           .setScale(scale)
           .setZoom(page_zoom_factor)
           .build();

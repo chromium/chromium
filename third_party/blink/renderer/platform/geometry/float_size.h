@@ -60,7 +60,7 @@ class PLATFORM_EXPORT FloatSize {
   constexpr FloatSize(float width, float height)
       : width_(width), height_(height) {}
   constexpr explicit FloatSize(const IntSize& s)
-      : FloatSize(s.Width(), s.Height()) {}
+      : FloatSize(s.width(), s.height()) {}
   constexpr explicit FloatSize(const gfx::Vector2dF& v)
       : FloatSize(v.x(), v.y()) {}
   constexpr explicit FloatSize(const gfx::Size& s)
@@ -72,11 +72,11 @@ class PLATFORM_EXPORT FloatSize {
 
   static FloatSize NarrowPrecision(double width, double height);
 
-  constexpr float Width() const { return width_; }
-  constexpr float Height() const { return height_; }
+  constexpr float width() const { return width_; }
+  constexpr float height() const { return height_; }
 
-  constexpr void SetWidth(float width) { width_ = width; }
-  constexpr void SetHeight(float height) { height_ = height; }
+  constexpr void set_width(float width) { width_ = width; }
+  constexpr void set_height(float height) { height_ = height; }
 
   constexpr bool IsEmpty() const { return width_ <= 0 || height_ <= 0; }
   constexpr bool IsZero() const {
@@ -96,7 +96,7 @@ class PLATFORM_EXPORT FloatSize {
 
   float Area() const { return width_ * height_; }
 
-  void Expand(float width, float height) {
+  void Enlarge(float width, float height) {
     width_ += width;
     height_ += height;
   }
@@ -161,39 +161,39 @@ class PLATFORM_EXPORT FloatSize {
 };
 
 inline FloatSize& operator+=(FloatSize& a, const FloatSize& b) {
-  a.SetWidth(a.Width() + b.Width());
-  a.SetHeight(a.Height() + b.Height());
+  a.set_width(a.width() + b.width());
+  a.set_height(a.height() + b.height());
   return a;
 }
 
 constexpr FloatSize& operator-=(FloatSize& a, const FloatSize& b) {
-  a.SetWidth(a.Width() - b.Width());
-  a.SetHeight(a.Height() - b.Height());
+  a.set_width(a.width() - b.width());
+  a.set_height(a.height() - b.height());
   return a;
 }
 
 constexpr FloatSize operator+(const FloatSize& a, const FloatSize& b) {
-  return FloatSize(a.Width() + b.Width(), a.Height() + b.Height());
+  return FloatSize(a.width() + b.width(), a.height() + b.height());
 }
 
 constexpr FloatSize operator-(const FloatSize& a, const FloatSize& b) {
-  return FloatSize(a.Width() - b.Width(), a.Height() - b.Height());
+  return FloatSize(a.width() - b.width(), a.height() - b.height());
 }
 
 constexpr FloatSize operator-(const FloatSize& size) {
-  return FloatSize(-size.Width(), -size.Height());
+  return FloatSize(-size.width(), -size.height());
 }
 
 constexpr FloatSize operator*(const FloatSize& a, const float b) {
-  return FloatSize(a.Width() * b, a.Height() * b);
+  return FloatSize(a.width() * b, a.height() * b);
 }
 
 constexpr FloatSize operator*(const float a, const FloatSize& b) {
-  return FloatSize(a * b.Width(), a * b.Height());
+  return FloatSize(a * b.width(), a * b.height());
 }
 
 constexpr bool operator==(const FloatSize& a, const FloatSize& b) {
-  return a.Width() == b.Width() && a.Height() == b.Height();
+  return a.width() == b.width() && a.height() == b.height();
 }
 
 constexpr bool operator!=(const FloatSize& a, const FloatSize& b) {
@@ -201,34 +201,34 @@ constexpr bool operator!=(const FloatSize& a, const FloatSize& b) {
 }
 
 inline IntSize RoundedIntSize(const FloatSize& p) {
-  return IntSize(ClampTo<int>(roundf(p.Width())),
-                 ClampTo<int>(roundf(p.Height())));
+  return IntSize(ClampTo<int>(roundf(p.width())),
+                 ClampTo<int>(roundf(p.height())));
 }
 
 inline IntSize FlooredIntSize(const FloatSize& p) {
-  return IntSize(ClampTo<int>(floorf(p.Width())),
-                 ClampTo<int>(floorf(p.Height())));
+  return IntSize(ClampTo<int>(floorf(p.width())),
+                 ClampTo<int>(floorf(p.height())));
 }
 
 inline IntSize ExpandedIntSize(const FloatSize& p) {
-  return IntSize(ClampTo<int>(ceilf(p.Width())),
-                 ClampTo<int>(ceilf(p.Height())));
+  return IntSize(ClampTo<int>(ceilf(p.width())),
+                 ClampTo<int>(ceilf(p.height())));
 }
 
 inline IntPoint FlooredIntPoint(const FloatSize& p) {
-  return IntPoint(ClampTo<int>(floorf(p.Width())),
-                  ClampTo<int>(floorf(p.Height())));
+  return IntPoint(ClampTo<int>(floorf(p.width())),
+                  ClampTo<int>(floorf(p.height())));
 }
 
 // Use this only for logical sizes, which can not be negative. Things that are
 // offsets instead, and can be negative, should use a gfx::Vector2dF.
 constexpr gfx::SizeF ToGfxSizeF(const FloatSize& s) {
-  return gfx::SizeF(s.Width(), s.Height());
+  return gfx::SizeF(s.width(), s.height());
 }
 // FloatSize is used as an offset, which can be negative, but gfx::SizeF can
 // not. The Vector2dF type is used for offsets instead.
 constexpr gfx::Vector2dF ToGfxVector2dF(const FloatSize& s) {
-  return gfx::Vector2dF(s.Width(), s.Height());
+  return gfx::Vector2dF(s.width(), s.height());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatSize&);
@@ -248,12 +248,12 @@ struct DefaultHash<blink::FloatSize> {
     STATIC_ONLY(Hash);
     typedef typename IntTypes<sizeof(float)>::UnsignedType Bits;
     static unsigned GetHash(const blink::FloatSize& key) {
-      return HashInts(bit_cast<Bits>(key.Width()),
-                      bit_cast<Bits>(key.Height()));
+      return HashInts(bit_cast<Bits>(key.width()),
+                      bit_cast<Bits>(key.height()));
     }
     static bool Equal(const blink::FloatSize& a, const blink::FloatSize& b) {
-      return bit_cast<Bits>(a.Width()) == bit_cast<Bits>(b.Width()) &&
-             bit_cast<Bits>(a.Height()) == bit_cast<Bits>(b.Height());
+      return bit_cast<Bits>(a.width()) == bit_cast<Bits>(b.width()) &&
+             bit_cast<Bits>(a.height()) == bit_cast<Bits>(b.height());
     }
     static const bool safe_to_compare_to_empty_or_deleted = true;
   };

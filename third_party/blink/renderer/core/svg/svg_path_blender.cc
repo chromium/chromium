@@ -78,10 +78,10 @@ float SVGPathBlender::BlendState::BlendAnimatedDimensonalFloat(
   if (types_are_equal_)
     return Blend(from, to, progress_);
 
-  float from_value = blend_mode == kBlendHorizontal ? from_current_point_.X()
-                                                    : from_current_point_.Y();
-  float to_value = blend_mode == kBlendHorizontal ? to_current_point_.X()
-                                                  : to_current_point_.Y();
+  float from_value = blend_mode == kBlendHorizontal ? from_current_point_.x()
+                                                    : from_current_point_.y();
+  float to_value = blend_mode == kBlendHorizontal ? to_current_point_.x()
+                                                  : to_current_point_.y();
 
   // Transform toY to the coordinate mode of fromY
   float anim_value =
@@ -121,7 +121,7 @@ FloatPoint SVGPathBlender::BlendState::BlendAnimatedFloatPoint(
   if (from_is_absolute_)
     animated_point += to_current_point_;
   else
-    animated_point.Move(-to_current_point_.X(), -to_current_point_.Y());
+    animated_point.Offset(-to_current_point_.x(), -to_current_point_.y());
 
   animated_point = Blend(from_point, animated_point, progress_);
 
@@ -137,7 +137,7 @@ FloatPoint SVGPathBlender::BlendState::BlendAnimatedFloatPoint(
   if (!from_is_absolute_)
     return animated_point + current_point;
 
-  animated_point.Move(-current_point.X(), -current_point.Y());
+  animated_point.Offset(-current_point.x(), -current_point.y());
   return animated_point;
 }
 
@@ -191,10 +191,10 @@ static void UpdateCurrentPoint(FloatPoint& sub_path_point,
       current_point = segment.target_point;
       break;
     case kPathSegLineToHorizontalAbs:
-      current_point.SetX(segment.target_point.X());
+      current_point.set_x(segment.target_point.x());
       break;
     case kPathSegLineToVerticalAbs:
-      current_point.SetY(segment.target_point.Y());
+      current_point.set_y(segment.target_point.y());
       break;
     case kPathSegClosePath:
       current_point = sub_path_point;
@@ -236,14 +236,14 @@ bool SVGPathBlender::BlendState::BlendSegments(
       break;
     case kPathSegLineToHorizontalRel:
     case kPathSegLineToHorizontalAbs:
-      blended_segment.target_point.SetX(BlendAnimatedDimensonalFloat(
-          from_seg.target_point.X(), to_seg.target_point.X(),
+      blended_segment.target_point.set_x(BlendAnimatedDimensonalFloat(
+          from_seg.target_point.x(), to_seg.target_point.x(),
           kBlendHorizontal));
       break;
     case kPathSegLineToVerticalRel:
     case kPathSegLineToVerticalAbs:
-      blended_segment.target_point.SetY(BlendAnimatedDimensonalFloat(
-          from_seg.target_point.Y(), to_seg.target_point.Y(), kBlendVertical));
+      blended_segment.target_point.set_y(BlendAnimatedDimensonalFloat(
+          from_seg.target_point.y(), to_seg.target_point.y(), kBlendVertical));
       break;
     case kPathSegClosePath:
       break;

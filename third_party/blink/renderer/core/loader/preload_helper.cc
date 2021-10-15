@@ -103,8 +103,8 @@ MediaValues* CreateMediaValues(
                                media_values->DeviceHeight());
     PageScaleConstraints constraints = viewport_description->Resolve(
         initial_viewport, document.GetViewportData().ViewportDefaultMinWidth());
-    media_values->OverrideViewportDimensions(constraints.layout_size.Width(),
-                                             constraints.layout_size.Height());
+    media_values->OverrideViewportDimensions(constraints.layout_size.width(),
+                                             constraints.layout_size.height());
   }
   return media_values;
 }

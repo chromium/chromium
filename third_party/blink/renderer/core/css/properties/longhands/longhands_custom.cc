@@ -435,9 +435,9 @@ const CSSValue* AspectRatio::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
 
   auto* ratio_value = MakeGarbageCollected<cssvalue::CSSRatioValue>(
-      *CSSNumericLiteralValue::Create(ratio.GetRatio().Width(),
+      *CSSNumericLiteralValue::Create(ratio.GetRatio().width(),
                                       CSSPrimitiveValue::UnitType::kNumber),
-      *CSSNumericLiteralValue::Create(ratio.GetRatio().Height(),
+      *CSSNumericLiteralValue::Create(ratio.GetRatio().height(),
                                       CSSPrimitiveValue::UnitType::kNumber));
   if (ratio.GetTypeForComputedStyle() == EAspectRatioType::kRatio)
     return ratio_value;
@@ -2337,10 +2337,10 @@ const CSSValue* Cursor::ParseSingleValue(CSSParserTokenRange& range,
     IntPoint hot_spot(-1, -1);
     bool hot_spot_specified = false;
     if (css_parsing_utils::ConsumeNumberRaw(range, context, num)) {
-      hot_spot.SetX(ClampTo<int>(num));
+      hot_spot.set_x(ClampTo<int>(num));
       if (!css_parsing_utils::ConsumeNumberRaw(range, context, num))
         return nullptr;
-      hot_spot.SetY(ClampTo<int>(num));
+      hot_spot.set_y(ClampTo<int>(num));
       hot_spot_specified = true;
     }
 
@@ -3553,7 +3553,7 @@ const CSSValue* Height::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   if (ComputedStyleUtils::WidthOrHeightShouldReturnUsedValue(layout_object)) {
     return ZoomAdjustedPixelValue(
-        ComputedStyleUtils::UsedBoxSize(*layout_object).Height(), style);
+        ComputedStyleUtils::UsedBoxSize(*layout_object).height(), style);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.Height(),
                                                              style);
@@ -7225,10 +7225,10 @@ const CSSValue* TransformOrigin::CSSValueFromComputedStyleInternal(
     FloatRect reference_box = ComputedStyleUtils::ReferenceBoxForTransform(
         *layout_object, ComputedStyleUtils::kDontUsePixelSnappedBox);
     FloatSize resolved_origin(
-        FloatValueForLength(style.TransformOriginX(), reference_box.Width()),
-        FloatValueForLength(style.TransformOriginY(), reference_box.Height()));
-    list->Append(*ZoomAdjustedPixelValue(resolved_origin.Width(), style));
-    list->Append(*ZoomAdjustedPixelValue(resolved_origin.Height(), style));
+        FloatValueForLength(style.TransformOriginX(), reference_box.width()),
+        FloatValueForLength(style.TransformOriginY(), reference_box.height()));
+    list->Append(*ZoomAdjustedPixelValue(resolved_origin.width(), style));
+    list->Append(*ZoomAdjustedPixelValue(resolved_origin.height(), style));
   } else {
     list->Append(*ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
         style.TransformOriginX(), style));
@@ -8574,7 +8574,7 @@ const CSSValue* Width::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   if (ComputedStyleUtils::WidthOrHeightShouldReturnUsedValue(layout_object)) {
     return ZoomAdjustedPixelValue(
-        ComputedStyleUtils::UsedBoxSize(*layout_object).Width(), style);
+        ComputedStyleUtils::UsedBoxSize(*layout_object).width(), style);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.Width(),
                                                              style);

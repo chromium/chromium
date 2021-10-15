@@ -111,8 +111,8 @@ SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform(
   SVGTransformChangeDetector change_detector(local_transform_);
   local_transform_ =
       element->CalculateTransform(SVGElement::kIncludeMotionTransform);
-  local_transform_.Translate(additional_translation_.Width(),
-                             additional_translation_.Height());
+  local_transform_.Translate(additional_translation_.width(),
+                             additional_translation_.height());
   needs_transform_update_ = false;
   return change_detector.ComputeChange(local_transform_);
 }

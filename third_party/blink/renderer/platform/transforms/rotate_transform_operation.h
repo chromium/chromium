@@ -58,9 +58,9 @@ class PLATFORM_EXPORT RotateTransformOperation : public TransformOperation {
     return *this == static_cast<const TransformOperation&>(other);
   }
 
-  double X() const { return rotation_.axis.X(); }
-  double Y() const { return rotation_.axis.Y(); }
-  double Z() const { return rotation_.axis.Z(); }
+  double X() const { return rotation_.axis.x(); }
+  double Y() const { return rotation_.axis.y(); }
+  double Z() const { return rotation_.axis.z(); }
   double Angle() const { return rotation_.angle; }
   const FloatPoint3D& Axis() const { return rotation_.axis; }
 

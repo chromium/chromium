@@ -155,7 +155,7 @@ FloatRect LayoutSVGInlineText::FloatLinesBoundingBox() const {
   NOT_DESTROYED();
   FloatRect bounding_box;
   for (InlineTextBox* box : TextBoxes())
-    bounding_box.Unite(FloatRect(box->FrameRect()));
+    bounding_box.Union(FloatRect(box->FrameRect()));
   return bounding_box;
 }
 
@@ -193,7 +193,7 @@ FloatRect LayoutSVGInlineText::ObjectBoundingBox() const {
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const NGFragmentItem& item = *cursor.CurrentItem();
     if (item.Type() == NGFragmentItem::kSvgText)
-      bounds.Unite(cursor.Current().ObjectBoundingBox(cursor));
+      bounds.Union(cursor.Current().ObjectBoundingBox(cursor));
   }
   return bounds;
 }
@@ -281,8 +281,8 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
         // to apply the inverse transformation for the fragment and then map
         // against the (untransformed) fragment rect.
         position_in_fragment = fragment.is_vertical
-                                   ? absolute_point.Y() - fragment_rect.Y()
-                                   : absolute_point.X() - fragment_rect.X();
+                                   ? absolute_point.y() - fragment_rect.y()
+                                   : absolute_point.x() - fragment_rect.x();
       }
     }
   }

@@ -66,13 +66,13 @@ gfx::Vector2dF FrameTranslation(const LocalFrameView* frame_view) {
     LocalFrameView* root_view = frame_view->GetFrame().LocalFrameRoot().View();
     if (root_view) {
       visual_viewport = FlooredIntPoint(
-          root_view->GetPage()->GetVisualViewport().VisibleRect().Location());
+          root_view->GetPage()->GetVisualViewport().VisibleRect().origin());
       overscroll_offset =
           root_view->GetPage()->GetChromeClient().ElasticOverscroll();
     }
   }
-  return gfx::Vector2dF(visual_viewport.X() + overscroll_offset.Width(),
-                        visual_viewport.Y() + overscroll_offset.Height());
+  return gfx::Vector2dF(visual_viewport.x() + overscroll_offset.width(),
+                        visual_viewport.y() + overscroll_offset.height());
 }
 
 void UpdateWebMouseEventFromCoreMouseEvent(const MouseEvent& event,
@@ -258,7 +258,7 @@ WebMouseEventBuilder::WebMouseEventBuilder(const LayoutObject* layout_object,
   // The mouse event co-ordinates should be generated from the co-ordinates of
   // the touch point.
   FloatPoint screen_point = touch->ScreenLocation();
-  SetPositionInScreen(screen_point.X(), screen_point.Y());
+  SetPositionInScreen(screen_point.x(), screen_point.y());
 
   button = WebMouseEvent::Button::kLeft;
   modifiers_ |= WebInputEvent::kLeftButtonDown;

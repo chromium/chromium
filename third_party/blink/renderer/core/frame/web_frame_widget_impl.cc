@@ -160,9 +160,8 @@ const float kIdealPaddingRatio = 0.3f;
 // location and size.
 FloatRect NormalizeRect(const IntRect& to_normalize, const IntRect& base_rect) {
   FloatRect result(to_normalize);
-  result.SetLocation(
-      FloatPoint(to_normalize.Location() + (-base_rect.Location())));
-  result.Scale(1.0 / base_rect.Width(), 1.0 / base_rect.Height());
+  result.set_origin(FloatPoint(to_normalize.origin() + (-base_rect.origin())));
+  result.Scale(1.0 / base_rect.width(), 1.0 / base_rect.height());
   return result;
 }
 
@@ -4288,26 +4287,25 @@ WebFrameWidgetImpl::GetScrollParamsForFocusedEditableElement(
   // align the scroll. If this cant be satisfied, the scroll will be right
   // aligned.
   IntRect maximal_rect =
-      UnionRect(absolute_element_bounds, absolute_caret_bounds);
+      UnionRects(absolute_element_bounds, absolute_caret_bounds);
 
   // Set the ideal margin.
   maximal_rect.ShiftXEdgeTo(
-      maximal_rect.X() -
-      static_cast<int>(kIdealPaddingRatio * absolute_element_bounds.Width()));
+      maximal_rect.x() -
+      static_cast<int>(kIdealPaddingRatio * absolute_element_bounds.width()));
 
   bool maximal_rect_fits_in_frame =
-      !(frame_view.Size() - maximal_rect.Size()).IsEmpty();
+      !(frame_view.Size() - maximal_rect.size()).IsEmpty();
 
   if (!maximal_rect_fits_in_frame) {
-    IntRect frame_rect(maximal_rect.Location(), frame_view.Size());
+    IntRect frame_rect(maximal_rect.origin(), frame_view.Size());
     maximal_rect.Intersect(frame_rect);
-    IntPoint point_forced_to_be_visible =
-        absolute_caret_bounds.MaxXMaxYCorner() +
-        IntSize(kCaretPadding, kCaretPadding);
+    IntPoint point_forced_to_be_visible = absolute_caret_bounds.bottom_right() +
+                                          IntSize(kCaretPadding, kCaretPadding);
     if (!maximal_rect.Contains(point_forced_to_be_visible)) {
       // Move the rect towards the point until the point is barely contained.
-      maximal_rect.Move(point_forced_to_be_visible -
-                        maximal_rect.MaxXMaxYCorner());
+      maximal_rect.Offset(point_forced_to_be_visible -
+                          maximal_rect.bottom_right());
     }
   }
 
@@ -4315,9 +4313,9 @@ WebFrameWidgetImpl::GetScrollParamsForFocusedEditableElement(
       ScrollAlignment::CreateScrollIntoViewParams();
   params->zoom_into_rect = View()->ShouldZoomToLegibleScale(element);
   params->relative_element_bounds = ToGfxRectF(NormalizeRect(
-      Intersection(absolute_element_bounds, maximal_rect), maximal_rect));
+      IntersectRects(absolute_element_bounds, maximal_rect), maximal_rect));
   params->relative_caret_bounds = ToGfxRectF(NormalizeRect(
-      Intersection(absolute_caret_bounds, maximal_rect), maximal_rect));
+      IntersectRects(absolute_caret_bounds, maximal_rect), maximal_rect));
   params->behavior = mojom::blink::ScrollBehavior::kInstant;
   out_rect_to_scroll = PhysicalRect(maximal_rect);
   return params;

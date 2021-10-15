@@ -296,20 +296,20 @@ IntRect CustomScrollbar::ButtonRect(ScrollbarPart part_type) const {
     case kBackButtonStartPart:
       break;
     case kForwardButtonEndPart:
-      button_rect.Move(is_horizontal ? Width() - button_length : 0,
-                       is_horizontal ? 0 : Height() - button_length);
+      button_rect.Offset(is_horizontal ? Width() - button_length : 0,
+                         is_horizontal ? 0 : Height() - button_length);
       break;
     case kForwardButtonStartPart: {
       IntRect previous_button = ButtonRect(kBackButtonStartPart);
-      button_rect.Move(is_horizontal ? previous_button.Width() : 0,
-                       is_horizontal ? 0 : previous_button.Height());
+      button_rect.Offset(is_horizontal ? previous_button.width() : 0,
+                         is_horizontal ? 0 : previous_button.height());
       break;
     }
     case kBackButtonEndPart: {
       IntRect next_button = ButtonRect(kForwardButtonEndPart);
-      button_rect.Move(
-          is_horizontal ? Width() - next_button.Width() - button_length : 0,
-          is_horizontal ? 0 : Height() - next_button.Height() - button_length);
+      button_rect.Offset(
+          is_horizontal ? Width() - next_button.width() - button_length : 0,
+          is_horizontal ? 0 : Height() - next_button.height() - button_length);
       break;
     }
     default:
@@ -348,12 +348,12 @@ IntRect CustomScrollbar::TrackPieceRectWithMargins(
 
   IntRect rect = old_rect;
   if (Orientation() == kHorizontalScrollbar) {
-    rect.SetX((rect.X() + part_layout_object->MarginLeft()).ToInt());
-    rect.SetWidth((rect.Width() - part_layout_object->MarginWidth()).ToInt());
+    rect.set_x((rect.x() + part_layout_object->MarginLeft()).ToInt());
+    rect.set_width((rect.width() - part_layout_object->MarginWidth()).ToInt());
   } else {
-    rect.SetY((rect.Y() + part_layout_object->MarginTop()).ToInt());
-    rect.SetHeight(
-        (rect.Height() - part_layout_object->MarginHeight()).ToInt());
+    rect.set_y((rect.y() + part_layout_object->MarginTop()).ToInt());
+    rect.set_height(
+        (rect.height() - part_layout_object->MarginHeight()).ToInt());
   }
   return rect;
 }
@@ -413,7 +413,7 @@ void CustomScrollbar::PositionScrollbarParts() {
     // TODO(crbug.com/1020913): This should be part of PaintPropertyTreeBuilder
     // when we support subpixel layout of overflow controls.
     part.value->GetMutableForPainting().FirstFragment().SetPaintOffset(
-        PhysicalOffset(part_rect.Location()));
+        PhysicalOffset(part_rect.origin()));
     // The part's frame_rect is relative to the scrollbar.
     part_rect.MoveBy(-Location());
     part.value->SetFrameRect(LayoutRect(part_rect));

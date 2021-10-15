@@ -504,10 +504,10 @@ bool KeyframeEffect::UpdateBoxSizeAndCheckTransformAxisAlignment(
   if (HasAnimation()) {
     if (effect_target_size_) {
       if ((size_dependencies & TransformOperation::kDependsWidth) &&
-          (effect_target_size_->Width() != box_size.Width()))
+          (effect_target_size_->width() != box_size.width()))
         RestartRunningAnimationOnCompositor();
       else if ((size_dependencies & TransformOperation::kDependsHeight) &&
-               (effect_target_size_->Height() != box_size.Height()))
+               (effect_target_size_->height() != box_size.height()))
         RestartRunningAnimationOnCompositor();
     }
   }

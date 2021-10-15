@@ -127,8 +127,8 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
   }
 
   base::CheckedNumeric<int> data_size = color_params.BytesPerPixel();
-  data_size *= size.Width();
-  data_size *= size.Height();
+  data_size *= size.width();
+  data_size *= size.height();
   if (!data_size.IsValid() ||
       data_size.ValueOrDie() > v8::TypedArray::kMaxLength)
     return nullptr;
@@ -409,7 +409,7 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
     return nullptr;
 
   SkBitmap bitmap;
-  bitmap.allocN32Pixels(size_.Width(), size_.Height());
+  bitmap.allocN32Pixels(size_.width(), size_.height());
   ReadFramebufferIntoBitmapPixels(static_cast<uint8_t*>(bitmap.getPixels()));
   auto sk_image = SkImage::MakeFromBitmap(bitmap);
 
@@ -481,7 +481,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     // into the color channels.
     gl_->CopySubTextureCHROMIUM(premultiplied_alpha_false_texture_, 0,
                                 texture_target_, back_color_buffer_->texture_id,
-                                0, 0, 0, 0, 0, size_.Width(), size_.Height(),
+                                0, 0, 0, 0, 0, size_.width(), size_.height(),
                                 GL_FALSE, GL_TRUE, GL_FALSE);
   }
 
@@ -521,8 +521,8 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     }
     gl_->CopySubTextureCHROMIUM(
         back_color_buffer_->texture_id, 0, texture_target_,
-        color_buffer_for_mailbox->texture_id, 0, 0, 0, 0, 0, size_.Width(),
-        size_.Height(), GL_FALSE, GL_FALSE, GL_FALSE);
+        color_buffer_for_mailbox->texture_id, 0, 0, 0, 0, 0, size_.width(),
+        size_.height(), GL_FALSE, GL_FALSE, GL_FALSE);
   }
 
   // Signal we will no longer access |color_buffer_for_mailbox| before exporting
@@ -642,15 +642,15 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
     // lost. We intentionally leave the transparent black image in legacy color
     // space.
     SkBitmap black_bitmap;
-    black_bitmap.allocN32Pixels(size_.Width(), size_.Height());
+    black_bitmap.allocN32Pixels(size_.width(), size_.height());
     black_bitmap.eraseARGB(0, 0, 0, 0);
     return UnacceleratedStaticBitmapImage::Create(
         SkImage::MakeFromBitmap(black_bitmap));
   }
 
   DCHECK(release_callback);
-  DCHECK_EQ(size_.Width(), transferable_resource.size.width());
-  DCHECK_EQ(size_.Height(), transferable_resource.size.height());
+  DCHECK_EQ(size_.width(), transferable_resource.size.width());
+  DCHECK_EQ(size_.height(), transferable_resource.size.height());
 
   // We reuse the same mailbox name from above since our texture id was consumed
   // from it.
@@ -667,7 +667,7 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
       /*gpu_compositing=*/true, transferable_resource.format);
 
   const SkImageInfo sk_image_info = SkImageInfo::Make(
-      size_.Width(), size_.Height(), sk_color_type, kPremul_SkAlphaType);
+      size_.width(), size_.height(), sk_color_type, kPremul_SkAlphaType);
 
   // TODO(xidachen): Create a small pool of recycled textures from
   // ImageBitmapRenderingContext's transferFromImageBitmap, and try to use them
@@ -951,7 +951,7 @@ bool DrawingBuffer::Initialize(const IntSize& size, bool use_multisampling) {
   }
   if (!ResizeFramebufferInternal(size)) {
     DLOG(ERROR) << "Initialization failed to allocate backbuffer of size "
-                << size.Width() << " x " << size.Height() << ".";
+                << size.width() << " x " << size.height() << ".";
     return false;
   }
 
@@ -1052,9 +1052,9 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
         src_texture, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
     dst_gl->CopySubTextureCHROMIUM(
         src_texture, 0, dst_texture_target, dst_texture, dst_level,
-        dst_texture_offset.X(), dst_texture_offset.Y(), src_sub_rectangle.X(),
-        src_sub_rectangle.Y(), src_sub_rectangle.Width(),
-        src_sub_rectangle.Height(), flip_y, unpack_premultiply_alpha_needed,
+        dst_texture_offset.x(), dst_texture_offset.y(), src_sub_rectangle.x(),
+        src_sub_rectangle.y(), src_sub_rectangle.width(),
+        src_sub_rectangle.height(), flip_y, unpack_premultiply_alpha_needed,
         unpack_unpremultiply_alpha_needed);
     dst_gl->EndSharedImageAccessDirectCHROMIUM(src_texture);
     dst_gl->DeleteTextures(1, &src_texture);
@@ -1076,9 +1076,9 @@ bool DrawingBuffer::CopyToPlatformMailbox(
 
   auto copy_function = [&](gpu::Mailbox src_mailbox) {
     dst_raster_interface->CopySubTexture(
-        src_mailbox, dst_mailbox, dst_texture_target, dst_texture_offset.X(),
-        dst_texture_offset.Y(), src_sub_rectangle.X(), src_sub_rectangle.Y(),
-        src_sub_rectangle.Width(), src_sub_rectangle.Height(), flip_y,
+        src_mailbox, dst_mailbox, dst_texture_target, dst_texture_offset.x(),
+        dst_texture_offset.y(), src_sub_rectangle.x(), src_sub_rectangle.y(),
+        src_sub_rectangle.width(), src_sub_rectangle.height(), flip_y,
         unpack_premultiply_alpha_needed);
   };
 
@@ -1232,14 +1232,14 @@ bool DrawingBuffer::ResizeDefaultFramebuffer(const IntSize& size) {
     if (anti_aliasing_mode_ == kAntialiasingModeMSAAImplicitResolve) {
       gl_->RenderbufferStorageMultisampleEXT(GL_RENDERBUFFER, sample_count_,
                                              GL_DEPTH24_STENCIL8_OES,
-                                             size.Width(), size.Height());
+                                             size.width(), size.height());
     } else if (anti_aliasing_mode_ == kAntialiasingModeMSAAExplicitResolve) {
       gl_->RenderbufferStorageMultisampleCHROMIUM(
-          GL_RENDERBUFFER, sample_count_, GL_DEPTH24_STENCIL8_OES, size.Width(),
-          size.Height());
+          GL_RENDERBUFFER, sample_count_, GL_DEPTH24_STENCIL8_OES, size.width(),
+          size.height());
     } else {
       gl_->RenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES,
-                               size.Width(), size.Height());
+                               size.width(), size.height());
     }
     // For ES 2.0 contexts DEPTH_STENCIL is not available natively, so we
     // emulate
@@ -1315,11 +1315,11 @@ IntSize DrawingBuffer::AdjustSize(const IntSize& desired_size,
 
   // Clamp if the desired size is greater than the maximum texture size for the
   // device.
-  if (adjusted_size.Height() > max_texture_size)
-    adjusted_size.SetHeight(max_texture_size);
+  if (adjusted_size.height() > max_texture_size)
+    adjusted_size.set_height(max_texture_size);
 
-  if (adjusted_size.Width() > max_texture_size)
-    adjusted_size.SetWidth(max_texture_size);
+  if (adjusted_size.width() > max_texture_size)
+    adjusted_size.set_width(max_texture_size);
 
   return adjusted_size;
 }
@@ -1382,8 +1382,8 @@ void DrawingBuffer::ResolveMultisampleFramebufferInternal() {
     gl_->BindFramebuffer(GL_DRAW_FRAMEBUFFER_ANGLE, fbo_);
     gl_->Disable(GL_SCISSOR_TEST);
 
-    int width = size_.Width();
-    int height = size_.Height();
+    int width = size_.width();
+    int height = size_.height();
     // Use NEAREST, because there is no scale performed during the blit.
     GLuint filter = GL_NEAREST;
 
@@ -1496,11 +1496,11 @@ bool DrawingBuffer::ReallocateMultisampleRenderbuffer(const IntSize& size) {
   if (has_eqaa_support) {
     gl_->RenderbufferStorageMultisampleAdvancedAMD(
         GL_RENDERBUFFER, sample_count_, eqaa_storage_sample_count_,
-        internal_format, size.Width(), size.Height());
+        internal_format, size.width(), size.height());
   } else {
     gl_->RenderbufferStorageMultisampleCHROMIUM(GL_RENDERBUFFER, sample_count_,
-                                                internal_format, size.Width(),
-                                                size.Height());
+                                                internal_format, size.width(),
+                                                size.height());
   }
 
   if (gl_->GetError() == GL_OUT_OF_MEMORY)
@@ -1547,9 +1547,9 @@ sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
     color_type = kRGBA_F16_SkColorType;
     row_bytes *= 2;
   }
-  row_bytes *= Size().Width();
+  row_bytes *= Size().width();
 
-  base::CheckedNumeric<size_t> num_rows = Size().Height();
+  base::CheckedNumeric<size_t> num_rows = Size().height();
   base::CheckedNumeric<size_t> data_size = num_rows * row_bytes;
   if (!data_size.IsValid())
     return nullptr;
@@ -1603,8 +1603,8 @@ void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
   GLenum data_type = GL_UNSIGNED_BYTE;
 
   base::CheckedNumeric<size_t> expected_data_size = 4;
-  expected_data_size *= Size().Width();
-  expected_data_size *= Size().Height();
+  expected_data_size *= Size().width();
+  expected_data_size *= Size().height();
 
   if (RuntimeEnabledFeatures::CanvasColorManagementV2Enabled() &&
       color_type == kRGBA_F16_SkColorType) {
@@ -1614,7 +1614,7 @@ void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
 
   DCHECK_EQ(expected_data_size.ValueOrDie(), pixels.size());
 
-  gl_->ReadPixels(0, 0, Size().Width(), Size().Height(), GL_RGBA, data_type,
+  gl_->ReadPixels(0, 0, Size().width(), Size().height(), GL_RGBA, data_type,
                   pixels.data());
 
   // For half float storage Skia order is RGBA, hence no swizzling is needed.
@@ -1655,7 +1655,7 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
     // alpha channel into the color channels.
     gl_->CopySubTextureCHROMIUM(premultiplied_alpha_false_texture_, 0,
                                 texture_target_, back_color_buffer_->texture_id,
-                                0, 0, 0, 0, 0, size_.Width(), size_.Height(),
+                                0, 0, 0, 0, 0, size_.width(), size_.height(),
                                 GL_FALSE, GL_TRUE, GL_FALSE);
   }
 
@@ -1677,7 +1677,7 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
                                  : back_color_buffer_->texture_id;
     gl_->CopySubTextureCHROMIUM(front_color_buffer_->texture_id, 0,
                                 texture_target_, dest_texture_id, 0, 0, 0, 0, 0,
-                                size_.Width(), size_.Height(), GL_FALSE,
+                                size_.width(), size_.height(), GL_FALSE,
                                 GL_FALSE, GL_FALSE);
   }
   ResetBuffersToAutoClear();

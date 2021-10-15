@@ -490,17 +490,17 @@ TEST_F(DisplayLockContextTest,
 
   // Sort the layout rects by y coordinate for deterministic checks below.
   std::sort(tick_rects.begin(), tick_rects.end(),
-            [](const IntRect& a, const IntRect& b) { return a.Y() < b.Y(); });
+            [](const IntRect& a, const IntRect& b) { return a.y() < b.y(); });
 
-  int y_offset = tick_rects[0].Height();
+  int y_offset = tick_rects[0].height();
 
   // The first tick rect will be based on the text itself, so we don't need to
   // check that. The next three should be the small, medium and large rects,
   // since those are the locked roots.
   EXPECT_EQ(IntRect(0, y_offset, 100, 100), tick_rects[1]);
-  y_offset += tick_rects[1].Height();
+  y_offset += tick_rects[1].height();
   EXPECT_EQ(IntRect(0, y_offset, 150, 150), tick_rects[2]);
-  y_offset += tick_rects[2].Height();
+  y_offset += tick_rects[2].height();
   EXPECT_EQ(IntRect(0, y_offset, 200, 200), tick_rects[3]);
 }
 

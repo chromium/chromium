@@ -122,7 +122,7 @@ FloatRect SVGInlineTextBox::SelectionRectForTextFragment(
   if (scaling_factor != 1)
     text_origin.Scale(scaling_factor, scaling_factor);
 
-  text_origin.Move(0, -scaled_font_metrics.FloatAscent());
+  text_origin.Offset(0, -scaled_font_metrics.FloatAscent());
 
   FloatRect selection_rect = scaled_font.SelectionRectForText(
       ConstructTextRun(style, fragment), text_origin,
@@ -165,7 +165,7 @@ LayoutRect SVGInlineTextBox::LocalSelectionRect(
     if (fragment.IsTransformed())
       fragment_rect = fragment.BuildFragmentTransform().MapRect(fragment_rect);
 
-    selection_rect.Unite(fragment_rect);
+    selection_rect.Union(fragment_rect);
   }
 
   return LayoutRect(EnclosingIntRect(selection_rect));
@@ -273,7 +273,7 @@ FloatRect SVGInlineTextBox::CalculateBoundaries() const {
 
   FloatRect text_bounding_rect;
   for (const SVGTextFragment& fragment : text_fragments_)
-    text_bounding_rect.Unite(fragment.OverflowBoundingBox(baseline));
+    text_bounding_rect.Union(fragment.OverflowBoundingBox(baseline));
 
   return text_bounding_rect;
 }

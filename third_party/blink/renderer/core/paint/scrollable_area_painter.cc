@@ -97,24 +97,24 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
           .GetLayoutBox()
           ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
     on_left = true;
-    points[0].SetX(resizer_corner_rect.X() + 1);
-    points[1].SetX(resizer_corner_rect.X() + resizer_corner_rect.Width() -
-                   resizer_corner_rect.Width() / 2);
-    points[2].SetX(points[0].X());
-    points[3].SetX(resizer_corner_rect.X() + resizer_corner_rect.Width() -
-                   resizer_corner_rect.Width() * 3 / 4);
+    points[0].set_x(resizer_corner_rect.x() + 1);
+    points[1].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() -
+                    resizer_corner_rect.width() / 2);
+    points[2].set_x(points[0].x());
+    points[3].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() -
+                    resizer_corner_rect.width() * 3 / 4);
   } else {
-    points[0].SetX(resizer_corner_rect.X() + resizer_corner_rect.Width() - 1);
-    points[1].SetX(resizer_corner_rect.X() + resizer_corner_rect.Width() / 2);
-    points[2].SetX(points[0].X());
-    points[3].SetX(resizer_corner_rect.X() +
-                   resizer_corner_rect.Width() * 3 / 4);
+    points[0].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() - 1);
+    points[1].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() / 2);
+    points[2].set_x(points[0].x());
+    points[3].set_x(resizer_corner_rect.x() +
+                    resizer_corner_rect.width() * 3 / 4);
   }
-  points[0].SetY(resizer_corner_rect.Y() + resizer_corner_rect.Height() / 2);
-  points[1].SetY(resizer_corner_rect.Y() + resizer_corner_rect.Height() - 1);
-  points[2].SetY(resizer_corner_rect.Y() +
-                 resizer_corner_rect.Height() * 3 / 4);
-  points[3].SetY(points[1].Y());
+  points[0].set_y(resizer_corner_rect.y() + resizer_corner_rect.height() / 2);
+  points[1].set_y(resizer_corner_rect.y() + resizer_corner_rect.height() - 1);
+  points[2].set_y(resizer_corner_rect.y() +
+                  resizer_corner_rect.height() * 3 / 4);
+  points[3].set_y(points[1].y());
 
   PaintFlags paint_flags;
   paint_flags.setStyle(PaintFlags::kStroke_Style);
@@ -127,19 +127,19 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
                         DarkModeFilter::ElementRole::kBackground));
 
   // Draw a dark line, to ensure contrast against a light background
-  line_path.moveTo(points[0].X(), points[0].Y());
-  line_path.lineTo(points[1].X(), points[1].Y());
-  line_path.moveTo(points[2].X(), points[2].Y());
-  line_path.lineTo(points[3].X(), points[3].Y());
+  line_path.moveTo(points[0].x(), points[0].y());
+  line_path.lineTo(points[1].x(), points[1].y());
+  line_path.moveTo(points[2].x(), points[2].y());
+  line_path.lineTo(points[3].x(), points[3].y());
   paint_flags.setColor(SkColorSetARGB(153, 0, 0, 0));
   context.DrawPath(line_path.detach(), paint_flags, auto_dark_mode);
 
   // Draw a light line one pixel below the light line,
   // to ensure contrast against a dark background
-  line_path.moveTo(points[0].X(), points[0].Y() + 1);
-  line_path.lineTo(points[1].X() + (on_left ? -1 : 1), points[1].Y());
-  line_path.moveTo(points[2].X(), points[2].Y() + 1);
-  line_path.lineTo(points[3].X() + (on_left ? -1 : 1), points[3].Y());
+  line_path.moveTo(points[0].x(), points[0].y() + 1);
+  line_path.lineTo(points[1].x() + (on_left ? -1 : 1), points[1].y());
+  line_path.moveTo(points[2].x(), points[2].y() + 1);
+  line_path.lineTo(points[3].x() + (on_left ? -1 : 1), points[3].y());
   paint_flags.setColor(SkColorSetARGB(153, 255, 255, 255));
   context.DrawPath(line_path.detach(), paint_flags, auto_dark_mode);
 }

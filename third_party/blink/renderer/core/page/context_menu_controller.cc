@@ -376,11 +376,11 @@ static gfx::Rect ComputeSelectionRect(LocalFrame* selected_frame) {
   selected_frame->Selection().ComputeAbsoluteBounds(anchor, focus);
   anchor = selected_frame->View()->FrameToViewport(anchor);
   focus = selected_frame->View()->FrameToViewport(focus);
-  int left = std::min(focus.X(), anchor.X());
-  int top = std::min(focus.Y(), anchor.Y());
-  int right = std::max(focus.X() + focus.Width(), anchor.X() + anchor.Width());
+  int left = std::min(focus.x(), anchor.x());
+  int top = std::min(focus.y(), anchor.y());
+  int right = std::max(focus.x() + focus.width(), anchor.x() + anchor.width());
   int bottom =
-      std::max(focus.Y() + focus.Height(), anchor.Y() + anchor.Height());
+      std::max(focus.y() + focus.height(), anchor.y() + anchor.height());
   // Intersect the selection rect and the visible bounds of the focused_element
   // to ensure the selection rect is visible.
   Document* doc = selected_frame->GetDocument();
@@ -388,10 +388,10 @@ static gfx::Rect ComputeSelectionRect(LocalFrame* selected_frame) {
     Element* focused_element = doc->FocusedElement();
     if (focused_element) {
       IntRect visible_bound = focused_element->VisibleBoundsInVisualViewport();
-      left = std::max(visible_bound.X(), left);
-      top = std::max(visible_bound.Y(), top);
-      right = std::min(visible_bound.MaxX(), right);
-      bottom = std::min(visible_bound.MaxY(), bottom);
+      left = std::max(visible_bound.x(), left);
+      top = std::max(visible_bound.y(), top);
+      right = std::min(visible_bound.right(), right);
+      bottom = std::min(visible_bound.bottom(), bottom);
     }
   }
 

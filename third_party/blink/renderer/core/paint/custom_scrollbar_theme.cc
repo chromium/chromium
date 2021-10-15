@@ -63,11 +63,11 @@ void CustomScrollbarTheme::ButtonSizesAlongTrackAxis(const Scrollbar& scrollbar,
   IntRect third_button = ButtonRect(scrollbar, kBackButtonEndPart);
   IntRect fourth_button = ButtonRect(scrollbar, kForwardButtonEndPart);
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
-    before_size = first_button.Width() + second_button.Width();
-    after_size = third_button.Width() + fourth_button.Width();
+    before_size = first_button.width() + second_button.width();
+    after_size = third_button.width() + fourth_button.width();
   } else {
-    before_size = first_button.Height() + second_button.Height();
-    after_size = third_button.Height() + fourth_button.Height();
+    before_size = first_button.height() + second_button.height();
+    after_size = third_button.height() + fourth_button.height();
   }
 }
 
@@ -122,11 +122,11 @@ IntRect CustomScrollbarTheme::ConstrainTrackRectToTrackPieces(
           kForwardTrackPart, rect);
   IntRect result = rect;
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
-    result.SetX(back_rect.X());
-    result.SetWidth(forward_rect.MaxX() - back_rect.X());
+    result.set_x(back_rect.x());
+    result.set_width(forward_rect.right() - back_rect.x());
   } else {
-    result.SetY(back_rect.Y());
-    result.SetHeight(forward_rect.MaxY() - back_rect.Y());
+    result.set_y(back_rect.y());
+    result.set_height(forward_rect.bottom() - back_rect.y());
   }
   return result;
 }

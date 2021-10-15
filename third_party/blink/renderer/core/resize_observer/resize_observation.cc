@@ -57,7 +57,7 @@ LayoutSize ResizeObservation::ComputeTargetSize() const {
       if (auto* svg_graphics_element =
               DynamicTo<SVGGraphicsElement>(target_.Get())) {
         LayoutSize bounding_box_size =
-            LayoutSize(svg_graphics_element->GetBBox().Size());
+            LayoutSize(svg_graphics_element->GetBBox().size());
         switch (observed_box_) {
           case ResizeObserverBoxOptions::BorderBox:
           case ResizeObserverBoxOptions::ContentBox:

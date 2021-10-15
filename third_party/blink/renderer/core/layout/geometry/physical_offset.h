@@ -91,27 +91,27 @@ struct CORE_EXPORT PhysicalOffset {
   constexpr LayoutSize ToLayoutSize() const { return {left, top}; }
 
   explicit PhysicalOffset(const IntPoint& point)
-      : left(point.X()), top(point.Y()) {}
+      : left(point.x()), top(point.y()) {}
   explicit PhysicalOffset(const IntSize& size)
-      : left(size.Width()), top(size.Height()) {}
+      : left(size.width()), top(size.height()) {}
   explicit PhysicalOffset(const gfx::Point& point)
       : left(point.x()), top(point.y()) {}
 
   static PhysicalOffset FromFloatPointFloor(const FloatPoint& point) {
-    return {LayoutUnit::FromFloatFloor(point.X()),
-            LayoutUnit::FromFloatFloor(point.Y())};
+    return {LayoutUnit::FromFloatFloor(point.x()),
+            LayoutUnit::FromFloatFloor(point.y())};
   }
   static PhysicalOffset FromFloatPointRound(const FloatPoint& point) {
-    return {LayoutUnit::FromFloatRound(point.X()),
-            LayoutUnit::FromFloatRound(point.Y())};
+    return {LayoutUnit::FromFloatRound(point.x()),
+            LayoutUnit::FromFloatRound(point.y())};
   }
   static PhysicalOffset FromFloatSizeFloor(const FloatSize& size) {
-    return {LayoutUnit::FromFloatFloor(size.Width()),
-            LayoutUnit::FromFloatFloor(size.Height())};
+    return {LayoutUnit::FromFloatFloor(size.width()),
+            LayoutUnit::FromFloatFloor(size.height())};
   }
   static PhysicalOffset FromFloatSizeRound(const FloatSize& size) {
-    return {LayoutUnit::FromFloatRound(size.Width()),
-            LayoutUnit::FromFloatRound(size.Height())};
+    return {LayoutUnit::FromFloatRound(size.width()),
+            LayoutUnit::FromFloatRound(size.height())};
   }
 
   void Scale(float s) {

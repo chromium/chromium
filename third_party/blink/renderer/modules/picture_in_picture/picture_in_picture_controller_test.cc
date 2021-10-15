@@ -416,7 +416,7 @@ TEST_F(PictureInPictureControllerTest, PerformMediaPlayerAction) {
       MakeGarbageCollected<HTMLVideoElement>(*document);
   document->body()->AppendChild(video);
 
-  IntPoint bounds = video->BoundsInViewport().Center();
+  IntPoint bounds = video->BoundsInViewport().CenterPoint();
 
   // Performs the specified media player action on the media element at the
   // given location.

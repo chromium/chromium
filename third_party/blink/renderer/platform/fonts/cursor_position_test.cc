@@ -47,7 +47,7 @@ class CursorPositionTest : public ::testing::Test {
     DCHECK_LE(end, static_cast<int>(text_run.length()));
     FloatRect rect =
         font.SelectionRectForText(text_run, FloatPoint(), 12, start, end);
-    return rect.Width();
+    return rect.width();
   }
 
   int GetCharacter(FontName font_name,

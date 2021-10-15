@@ -443,7 +443,7 @@ Response InspectorLayerTreeAgent::loadSnapshot(
   for (wtf_size_t i = 0; i < tiles_length; ++i) {
     protocol::LayerTree::PictureTile* tile = (*tiles)[i].get();
     decoded_tiles[i] = base::AdoptRef(new PictureSnapshot::TilePictureStream());
-    decoded_tiles[i]->layer_offset.Set(tile->getX(), tile->getY());
+    decoded_tiles[i]->layer_offset.SetPoint(tile->getX(), tile->getY());
     const protocol::Binary& data = tile->getPicture();
     decoded_tiles[i]->picture =
         SkPicture::MakeFromData(data.data(), data.size());

@@ -184,7 +184,7 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
   if (UpdateTransformAfterLayout(bounds_changed) || bounds_changed)
     SetNeedsBoundariesUpdate();
   if (bounds_changed)
-    SetSize(LayoutSize(boundaries.MaxX(), boundaries.MaxY()));
+    SetSize(LayoutSize(boundaries.right(), boundaries.bottom()));
 
   UpdateTransformAffectsVectorEffect();
 }
@@ -211,7 +211,7 @@ FloatRect LayoutNGSVGText::ObjectBoundingBox() const {
           continue;
         // Do not use item.RectInContainerFragment() in order to avoid
         // precision loss.
-        bbox.Unite(item.ObjectBoundingBox(*fragment.Items()));
+        bbox.Union(item.ObjectBoundingBox(*fragment.Items()));
       }
     }
     bounding_box_ = bbox;

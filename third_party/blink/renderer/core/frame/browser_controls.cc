@@ -38,16 +38,16 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
     return pending_delta;
 
   if ((permitted_state_ == cc::BrowserControlsState::kShown &&
-       pending_delta.Height() > 0) ||
+       pending_delta.height() > 0) ||
       (permitted_state_ == cc::BrowserControlsState::kHidden &&
-       pending_delta.Height() < 0))
+       pending_delta.height() < 0))
     return pending_delta;
 
   float page_scale = page_->GetVisualViewport().Scale();
 
   // Update accumulated vertical scroll and apply it to browser controls
   // Compute scroll delta in viewport space by applying page scale
-  accumulated_scroll_delta_ += pending_delta.Height() * page_scale;
+  accumulated_scroll_delta_ += pending_delta.height() * page_scale;
 
   // We want to base our calculations on top or bottom controls. After consuming
   // the scroll delta, we will calculate a shown ratio for the controls. The

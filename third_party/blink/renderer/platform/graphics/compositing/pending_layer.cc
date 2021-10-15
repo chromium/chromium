@@ -271,10 +271,10 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
     new_guest_bounds.Rect().Intersect(FloatRect(*merged_visibility_limit));
 
   FloatRect merged_bounds =
-      UnionRect(new_home_bounds.Rect(), new_guest_bounds.Rect());
-  float sum_area = new_home_bounds.Rect().Size().Area() +
-                   new_guest_bounds.Rect().Size().Area();
-  if (merged_bounds.Size().Area() - sum_area > kMergeSparsityAreaTolerance)
+      UnionRects(new_home_bounds.Rect(), new_guest_bounds.Rect());
+  float sum_area = new_home_bounds.Rect().size().Area() +
+                   new_guest_bounds.Rect().size().Area();
+  if (merged_bounds.size().Area() - sum_area > kMergeSparsityAreaTolerance)
     return false;
 
   FloatRect merged_rect_known_to_be_opaque =

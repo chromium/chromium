@@ -128,9 +128,9 @@ class PLATFORM_EXPORT FloatRoundedRect {
   void SetRect(const FloatRect& rect) { rect_ = rect; }
   void SetRadii(const Radii& radii) { radii_ = radii; }
 
-  void Move(const FloatSize& size) { rect_.Move(size); }
+  void Move(const FloatSize& size) { rect_.Offset(size); }
   void InflateWithRadii(int size);
-  void Inflate(float size) { rect_.Inflate(size); }
+  void Inflate(float size) { rect_.Outset(size); }
 
   // expandRadii() does not have any effect on corner radii which have zero
   // width or height. This is because the process of expanding the radius of a
@@ -143,22 +143,22 @@ class PLATFORM_EXPORT FloatRoundedRect {
   FloatRect RadiusCenterRect() const;
 
   constexpr FloatRect TopLeftCorner() const {
-    return FloatRect(rect_.X(), rect_.Y(), radii_.TopLeft().Width(),
-                     radii_.TopLeft().Height());
+    return FloatRect(rect_.x(), rect_.y(), radii_.TopLeft().width(),
+                     radii_.TopLeft().height());
   }
   constexpr FloatRect TopRightCorner() const {
-    return FloatRect(rect_.MaxX() - radii_.TopRight().Width(), rect_.Y(),
-                     radii_.TopRight().Width(), radii_.TopRight().Height());
+    return FloatRect(rect_.right() - radii_.TopRight().width(), rect_.y(),
+                     radii_.TopRight().width(), radii_.TopRight().height());
   }
   constexpr FloatRect BottomLeftCorner() const {
-    return FloatRect(rect_.X(), rect_.MaxY() - radii_.BottomLeft().Height(),
-                     radii_.BottomLeft().Width(), radii_.BottomLeft().Height());
+    return FloatRect(rect_.x(), rect_.bottom() - radii_.BottomLeft().height(),
+                     radii_.BottomLeft().width(), radii_.BottomLeft().height());
   }
   constexpr FloatRect BottomRightCorner() const {
-    return FloatRect(rect_.MaxX() - radii_.BottomRight().Width(),
-                     rect_.MaxY() - radii_.BottomRight().Height(),
-                     radii_.BottomRight().Width(),
-                     radii_.BottomRight().Height());
+    return FloatRect(rect_.right() - radii_.BottomRight().width(),
+                     rect_.bottom() - radii_.BottomRight().height(),
+                     radii_.BottomRight().width(),
+                     radii_.BottomRight().height());
   }
 
   bool XInterceptsAtY(float y,
@@ -197,14 +197,14 @@ inline FloatRoundedRect::operator SkRRect() const {
 
   if (IsRounded()) {
     SkVector radii[4];
-    radii[SkRRect::kUpperLeft_Corner].set(TopLeftCorner().Width(),
-                                          TopLeftCorner().Height());
-    radii[SkRRect::kUpperRight_Corner].set(TopRightCorner().Width(),
-                                           TopRightCorner().Height());
-    radii[SkRRect::kLowerRight_Corner].set(BottomRightCorner().Width(),
-                                           BottomRightCorner().Height());
-    radii[SkRRect::kLowerLeft_Corner].set(BottomLeftCorner().Width(),
-                                          BottomLeftCorner().Height());
+    radii[SkRRect::kUpperLeft_Corner].set(TopLeftCorner().width(),
+                                          TopLeftCorner().height());
+    radii[SkRRect::kUpperRight_Corner].set(TopRightCorner().width(),
+                                           TopRightCorner().height());
+    radii[SkRRect::kLowerRight_Corner].set(BottomRightCorner().width(),
+                                           BottomRightCorner().height());
+    radii[SkRRect::kLowerLeft_Corner].set(BottomLeftCorner().width(),
+                                          BottomLeftCorner().height());
 
     rrect.setRectRadii(Rect(), radii);
   } else {

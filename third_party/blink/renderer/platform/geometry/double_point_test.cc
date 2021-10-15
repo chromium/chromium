@@ -12,8 +12,8 @@ TEST(DoublePointTest, RoundedIntPoint) {
   // Value not exactly representable as a float.
   DoublePoint p1(16777217.0, -16777217.0);
   IntPoint rounded_p1 = RoundedIntPoint(p1);
-  EXPECT_EQ(16777217, rounded_p1.X());
-  EXPECT_EQ(-16777217, rounded_p1.Y());
+  EXPECT_EQ(16777217, rounded_p1.x());
+  EXPECT_EQ(-16777217, rounded_p1.y());
 }
 
 }  // namespace blink

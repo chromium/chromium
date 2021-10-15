@@ -163,8 +163,8 @@ TEST_F(ElementTest, BoundsInViewportCorrectForStickyElementsAfterInsertion) {
   // The sticky element should remain at (0, 25) relative to the viewport due to
   // the constraints.
   IntRect bounds_in_viewport = sticky->BoundsInViewport();
-  EXPECT_EQ(0, bounds_in_viewport.Y());
-  EXPECT_EQ(25, bounds_in_viewport.X());
+  EXPECT_EQ(0, bounds_in_viewport.y());
+  EXPECT_EQ(25, bounds_in_viewport.x());
 
   // Insert a new <div> above the sticky. This will dirty layout and invalidate
   // the sticky constraints.
@@ -181,8 +181,8 @@ TEST_F(ElementTest, BoundsInViewportCorrectForStickyElementsAfterInsertion) {
                     ->Layer()
                     ->NeedsCompositingInputsUpdate());
   }
-  EXPECT_EQ(0, bounds_in_viewport.Y());
-  EXPECT_EQ(25, bounds_in_viewport.X());
+  EXPECT_EQ(0, bounds_in_viewport.y());
+  EXPECT_EQ(25, bounds_in_viewport.x());
 }
 
 TEST_F(ElementTest, OutlineRectsIncludesImgChildren) {
@@ -199,8 +199,8 @@ TEST_F(ElementTest, OutlineRectsIncludesImgChildren) {
 
   // The a element should include the image in computing its bounds.
   IntRect img_bounds_in_viewport = img->BoundsInViewport();
-  EXPECT_EQ(220, img_bounds_in_viewport.Width());
-  EXPECT_EQ(147, img_bounds_in_viewport.Height());
+  EXPECT_EQ(220, img_bounds_in_viewport.width());
+  EXPECT_EQ(147, img_bounds_in_viewport.height());
   LOG(INFO) << "img_bounds_in_viewport: " << img_bounds_in_viewport;
 
   Vector<IntRect> a_outline_rects = a->OutlineRectsInVisualViewport();
@@ -208,13 +208,13 @@ TEST_F(ElementTest, OutlineRectsIncludesImgChildren) {
 
   IntRect a_outline_rect;
   for (auto& r : a_outline_rects) {
-    a_outline_rect.Unite(r);
+    a_outline_rect.Union(r);
     LOG(INFO) << "r: " << r;
     LOG(INFO) << "a_outline_rect: " << a_outline_rect;
   }
 
-  EXPECT_EQ(img_bounds_in_viewport.Width(), a_outline_rect.Width());
-  EXPECT_EQ(img_bounds_in_viewport.Height(), a_outline_rect.Height());
+  EXPECT_EQ(img_bounds_in_viewport.width(), a_outline_rect.width());
+  EXPECT_EQ(img_bounds_in_viewport.height(), a_outline_rect.height());
 }
 
 TEST_F(ElementTest, StickySubtreesAreTrackedCorrectly) {

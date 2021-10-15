@@ -176,14 +176,14 @@ XRWebGLLayer::~XRWebGLLayer() {
 
 uint32_t XRWebGLLayer::framebufferWidth() const {
   if (drawing_buffer_) {
-    return drawing_buffer_->size().Width();
+    return drawing_buffer_->size().width();
   }
   return webgl_context_->drawingBufferWidth();
 }
 
 uint32_t XRWebGLLayer::framebufferHeight() const {
   if (drawing_buffer_) {
-    return drawing_buffer_->size().Height();
+    return drawing_buffer_->size().height();
   }
   return webgl_context_->drawingBufferHeight();
 }

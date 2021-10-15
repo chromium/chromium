@@ -131,13 +131,13 @@ FloatRect CalculateSideRect(const FloatRoundedRect& outer_border,
   float width = edge.Width();
 
   if (side == BoxSide::kTop)
-    side_rect.SetHeight(width);
+    side_rect.set_height(width);
   else if (side == BoxSide::kBottom)
-    side_rect.ShiftYEdgeTo(side_rect.MaxY() - width);
+    side_rect.ShiftYEdgeTo(side_rect.bottom() - width);
   else if (side == BoxSide::kLeft)
-    side_rect.SetWidth(width);
+    side_rect.set_width(width);
   else
-    side_rect.ShiftXEdgeTo(side_rect.MaxX() - width);
+    side_rect.ShiftXEdgeTo(side_rect.right() - width);
 
   return side_rect;
 }
@@ -157,72 +157,72 @@ FloatRoundedRect CalculateAdjustedInnerBorder(
 
   switch (side) {
     case BoxSide::kTop:
-      overshoot = new_radii.TopLeft().Width() + new_radii.TopRight().Width() -
-                  new_rect.Width();
+      overshoot = new_radii.TopLeft().width() + new_radii.TopRight().width() -
+                  new_rect.width();
       // FIXME: once we start pixel-snapping rounded rects after this point, the
       // overshoot concept should disappear.
       if (overshoot > 0.1) {
-        new_rect.SetWidth(new_rect.Width() + overshoot);
-        if (!new_radii.TopLeft().Width())
-          new_rect.Move(-overshoot, 0);
+        new_rect.set_width(new_rect.width() + overshoot);
+        if (!new_radii.TopLeft().width())
+          new_rect.Offset(-overshoot, 0);
       }
       new_radii.SetBottomLeft(FloatSize(0, 0));
       new_radii.SetBottomRight(FloatSize(0, 0));
       max_radii =
-          std::max(new_radii.TopLeft().Height(), new_radii.TopRight().Height());
-      if (max_radii > new_rect.Height())
-        new_rect.SetHeight(max_radii);
+          std::max(new_radii.TopLeft().height(), new_radii.TopRight().height());
+      if (max_radii > new_rect.height())
+        new_rect.set_height(max_radii);
       break;
 
     case BoxSide::kBottom:
-      overshoot = new_radii.BottomLeft().Width() +
-                  new_radii.BottomRight().Width() - new_rect.Width();
+      overshoot = new_radii.BottomLeft().width() +
+                  new_radii.BottomRight().width() - new_rect.width();
       if (overshoot > 0.1) {
-        new_rect.SetWidth(new_rect.Width() + overshoot);
-        if (!new_radii.BottomLeft().Width())
-          new_rect.Move(-overshoot, 0);
+        new_rect.set_width(new_rect.width() + overshoot);
+        if (!new_radii.BottomLeft().width())
+          new_rect.Offset(-overshoot, 0);
       }
       new_radii.SetTopLeft(FloatSize(0, 0));
       new_radii.SetTopRight(FloatSize(0, 0));
-      max_radii = std::max(new_radii.BottomLeft().Height(),
-                           new_radii.BottomRight().Height());
-      if (max_radii > new_rect.Height()) {
-        new_rect.Move(0, new_rect.Height() - max_radii);
-        new_rect.SetHeight(max_radii);
+      max_radii = std::max(new_radii.BottomLeft().height(),
+                           new_radii.BottomRight().height());
+      if (max_radii > new_rect.height()) {
+        new_rect.Offset(0, new_rect.height() - max_radii);
+        new_rect.set_height(max_radii);
       }
       break;
 
     case BoxSide::kLeft:
-      overshoot = new_radii.TopLeft().Height() +
-                  new_radii.BottomLeft().Height() - new_rect.Height();
+      overshoot = new_radii.TopLeft().height() +
+                  new_radii.BottomLeft().height() - new_rect.height();
       if (overshoot > 0.1) {
-        new_rect.SetHeight(new_rect.Height() + overshoot);
-        if (!new_radii.TopLeft().Height())
-          new_rect.Move(0, -overshoot);
+        new_rect.set_height(new_rect.height() + overshoot);
+        if (!new_radii.TopLeft().height())
+          new_rect.Offset(0, -overshoot);
       }
       new_radii.SetTopRight(FloatSize(0, 0));
       new_radii.SetBottomRight(FloatSize(0, 0));
       max_radii =
-          std::max(new_radii.TopLeft().Width(), new_radii.BottomLeft().Width());
-      if (max_radii > new_rect.Width())
-        new_rect.SetWidth(max_radii);
+          std::max(new_radii.TopLeft().width(), new_radii.BottomLeft().width());
+      if (max_radii > new_rect.width())
+        new_rect.set_width(max_radii);
       break;
 
     case BoxSide::kRight:
-      overshoot = new_radii.TopRight().Height() +
-                  new_radii.BottomRight().Height() - new_rect.Height();
+      overshoot = new_radii.TopRight().height() +
+                  new_radii.BottomRight().height() - new_rect.height();
       if (overshoot > 0.1) {
-        new_rect.SetHeight(new_rect.Height() + overshoot);
-        if (!new_radii.TopRight().Height())
-          new_rect.Move(0, -overshoot);
+        new_rect.set_height(new_rect.height() + overshoot);
+        if (!new_radii.TopRight().height())
+          new_rect.Offset(0, -overshoot);
       }
       new_radii.SetTopLeft(FloatSize(0, 0));
       new_radii.SetBottomLeft(FloatSize(0, 0));
-      max_radii = std::max(new_radii.TopRight().Width(),
-                           new_radii.BottomRight().Width());
-      if (max_radii > new_rect.Width()) {
-        new_rect.Move(new_rect.Width() - max_radii, 0);
-        new_rect.SetWidth(max_radii);
+      max_radii = std::max(new_radii.TopRight().width(),
+                           new_radii.BottomRight().width());
+      if (max_radii > new_rect.width()) {
+        new_rect.Offset(new_rect.width() - max_radii, 0);
+        new_rect.set_width(max_radii);
       }
       break;
   }
@@ -237,7 +237,7 @@ void DrawSolidBorderRect(GraphicsContext& context,
                          const AutoDarkMode& auto_dark_mode) {
   FloatRect stroke_rect(border_rect);
   border_width = floorf(border_width);
-  stroke_rect.Inflate(-border_width / 2);
+  stroke_rect.Outset(-border_width / 2);
 
   bool was_antialias = context.ShouldAntialias();
   if (!was_antialias)
@@ -871,8 +871,8 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
 
   // Make sure that the border width isn't larger than the border box, which
   // can pixel snap smaller.
-  float max_width = outer_.Rect().Width();
-  float max_height = outer_.Rect().Height();
+  float max_width = outer_.Rect().width();
+  float max_height = outer_.Rect().height();
   Edge(BoxSide::kTop).ClampWidth(max_height);
   Edge(BoxSide::kRight).ClampWidth(max_width);
   Edge(BoxSide::kBottom).ClampWidth(max_height);
@@ -1106,7 +1106,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
       if (use_path)
         path = &border_info.rounded_border_path;
       else
-        side_rect.SetHeight(floorf(edge.Width()));
+        side_rect.set_height(floorf(edge.Width()));
 
       PaintOneBorderSide(side_rect, BoxSide::kTop, BoxSide::kLeft,
                          BoxSide::kRight, path, color, completed_edges);
@@ -1120,7 +1120,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
       if (use_path)
         path = &border_info.rounded_border_path;
       else
-        side_rect.ShiftYEdgeTo(side_rect.MaxY() - floorf(edge.Width()));
+        side_rect.ShiftYEdgeTo(side_rect.bottom() - floorf(edge.Width()));
 
       PaintOneBorderSide(side_rect, BoxSide::kBottom, BoxSide::kLeft,
                          BoxSide::kRight, path, color, completed_edges);
@@ -1134,7 +1134,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
       if (use_path)
         path = &border_info.rounded_border_path;
       else
-        side_rect.SetWidth(floorf(edge.Width()));
+        side_rect.set_width(floorf(edge.Width()));
 
       PaintOneBorderSide(side_rect, BoxSide::kLeft, BoxSide::kTop,
                          BoxSide::kBottom, path, color, completed_edges);
@@ -1148,7 +1148,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
       if (use_path)
         path = &border_info.rounded_border_path;
       else
-        side_rect.ShiftXEdgeTo(side_rect.MaxX() - floorf(edge.Width()));
+        side_rect.ShiftXEdgeTo(side_rect.right() - floorf(edge.Width()));
 
       PaintOneBorderSide(side_rect, BoxSide::kRight, BoxSide::kTop,
                          BoxSide::kBottom, path, color, completed_edges);
@@ -1246,8 +1246,8 @@ void BoxBorderPainter::PaintOneBorderSide(
     }
 
     DrawLineForBoxSide(
-        context_, side_rect.X(), side_rect.Y(), side_rect.MaxX(),
-        side_rect.MaxY(), side, color, edge_to_render.BorderStyle(),
+        context_, side_rect.x(), side_rect.y(), side_rect.right(),
+        side_rect.bottom(), side, color, edge_to_render.BorderStyle(),
         miter1 != kNoMiter ? floorf(adjacent_edge1.Width()) : 0,
         miter2 != kNoMiter ? floorf(adjacent_edge2.Width()) : 0,
         /*antialias*/ true,
@@ -1444,20 +1444,20 @@ FloatRect BoxBorderPainter::CalculateSideRectIncludingInner(
 
   switch (side) {
     case BoxSide::kTop:
-      width = side_rect.Height() - Edge(BoxSide::kBottom).Width();
-      side_rect.SetHeight(width);
+      width = side_rect.height() - Edge(BoxSide::kBottom).Width();
+      side_rect.set_height(width);
       break;
     case BoxSide::kBottom:
-      width = side_rect.Height() - Edge(BoxSide::kTop).Width();
-      side_rect.ShiftYEdgeTo(side_rect.MaxY() - width);
+      width = side_rect.height() - Edge(BoxSide::kTop).Width();
+      side_rect.ShiftYEdgeTo(side_rect.bottom() - width);
       break;
     case BoxSide::kLeft:
-      width = side_rect.Width() - Edge(BoxSide::kRight).Width();
-      side_rect.SetWidth(width);
+      width = side_rect.width() - Edge(BoxSide::kRight).Width();
+      side_rect.set_width(width);
       break;
     case BoxSide::kRight:
-      width = side_rect.Width() - Edge(BoxSide::kLeft).Width();
-      side_rect.ShiftXEdgeTo(side_rect.MaxX() - width);
+      width = side_rect.width() - Edge(BoxSide::kLeft).Width();
+      side_rect.ShiftXEdgeTo(side_rect.right() - width);
       break;
   }
 
@@ -1510,40 +1510,40 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       edge_quad[2] = FloatPoint(inner_rect.MaxXMinYCorner());
       edge_quad[3] = FloatPoint(outer_rect.MaxXMinYCorner());
 
-      DCHECK(edge_quad[0].Y() == edge_quad[3].Y());
-      DCHECK(edge_quad[1].Y() == edge_quad[2].Y());
+      DCHECK(edge_quad[0].y() == edge_quad[3].y());
+      DCHECK(edge_quad[1].y() == edge_quad[2].y());
 
-      bound_quad1 = FloatPoint(edge_quad[0].X(), edge_quad[1].Y());
-      bound_quad2 = FloatPoint(edge_quad[3].X(), edge_quad[2].Y());
+      bound_quad1 = FloatPoint(edge_quad[0].x(), edge_quad[1].y());
+      bound_quad2 = FloatPoint(edge_quad[3].x(), edge_quad[2].y());
 
-      extension_offset.SetWidth(-kExtensionLength);
-      extension_offset.SetHeight(0);
+      extension_offset.set_width(-kExtensionLength);
+      extension_offset.set_height(0);
 
       if (!inner_.GetRadii().TopLeft().IsZero()) {
         FindIntersection(
             edge_quad[0], edge_quad[1],
-            FloatPoint(edge_quad[1].X() + inner_.GetRadii().TopLeft().Width(),
-                       edge_quad[1].Y()),
-            FloatPoint(edge_quad[1].X(),
-                       edge_quad[1].Y() + inner_.GetRadii().TopLeft().Height()),
+            FloatPoint(edge_quad[1].x() + inner_.GetRadii().TopLeft().width(),
+                       edge_quad[1].y()),
+            FloatPoint(edge_quad[1].x(),
+                       edge_quad[1].y() + inner_.GetRadii().TopLeft().height()),
             edge_quad[1]);
-        DCHECK(bound_quad1.Y() <= edge_quad[1].Y());
-        bound_quad1.SetY(edge_quad[1].Y());
-        bound_quad2.SetY(edge_quad[1].Y());
+        DCHECK(bound_quad1.y() <= edge_quad[1].y());
+        bound_quad1.set_y(edge_quad[1].y());
+        bound_quad2.set_y(edge_quad[1].y());
       }
 
       if (!inner_.GetRadii().TopRight().IsZero()) {
         FindIntersection(
             edge_quad[3], edge_quad[2],
-            FloatPoint(edge_quad[2].X() - inner_.GetRadii().TopRight().Width(),
-                       edge_quad[2].Y()),
+            FloatPoint(edge_quad[2].x() - inner_.GetRadii().TopRight().width(),
+                       edge_quad[2].y()),
             FloatPoint(
-                edge_quad[2].X(),
-                edge_quad[2].Y() + inner_.GetRadii().TopRight().Height()),
+                edge_quad[2].x(),
+                edge_quad[2].y() + inner_.GetRadii().TopRight().height()),
             edge_quad[2]);
-        if (bound_quad1.Y() < edge_quad[2].Y()) {
-          bound_quad1.SetY(edge_quad[2].Y());
-          bound_quad2.SetY(edge_quad[2].Y());
+        if (bound_quad1.y() < edge_quad[2].y()) {
+          bound_quad1.set_y(edge_quad[2].y());
+          bound_quad2.set_y(edge_quad[2].y());
         }
       }
       break;
@@ -1556,41 +1556,41 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       edge_quad[2] = FloatPoint(inner_rect.MinXMinYCorner());
       edge_quad[3] = FloatPoint(outer_rect.MinXMinYCorner());
 
-      DCHECK(edge_quad[0].X() == edge_quad[3].X());
-      DCHECK(edge_quad[1].X() == edge_quad[2].X());
+      DCHECK(edge_quad[0].x() == edge_quad[3].x());
+      DCHECK(edge_quad[1].x() == edge_quad[2].x());
 
-      bound_quad1 = FloatPoint(edge_quad[1].X(), edge_quad[0].Y());
-      bound_quad2 = FloatPoint(edge_quad[2].X(), edge_quad[3].Y());
+      bound_quad1 = FloatPoint(edge_quad[1].x(), edge_quad[0].y());
+      bound_quad2 = FloatPoint(edge_quad[2].x(), edge_quad[3].y());
 
-      extension_offset.SetWidth(0);
-      extension_offset.SetHeight(kExtensionLength);
+      extension_offset.set_width(0);
+      extension_offset.set_height(kExtensionLength);
 
       if (!inner_.GetRadii().TopLeft().IsZero()) {
         FindIntersection(
             edge_quad[3], edge_quad[2],
-            FloatPoint(edge_quad[2].X() + inner_.GetRadii().TopLeft().Width(),
-                       edge_quad[2].Y()),
-            FloatPoint(edge_quad[2].X(),
-                       edge_quad[2].Y() + inner_.GetRadii().TopLeft().Height()),
+            FloatPoint(edge_quad[2].x() + inner_.GetRadii().TopLeft().width(),
+                       edge_quad[2].y()),
+            FloatPoint(edge_quad[2].x(),
+                       edge_quad[2].y() + inner_.GetRadii().TopLeft().height()),
             edge_quad[2]);
-        DCHECK(bound_quad2.X() <= edge_quad[2].X());
-        bound_quad1.SetX(edge_quad[2].X());
-        bound_quad2.SetX(edge_quad[2].X());
+        DCHECK(bound_quad2.x() <= edge_quad[2].x());
+        bound_quad1.set_x(edge_quad[2].x());
+        bound_quad2.set_x(edge_quad[2].x());
       }
 
       if (!inner_.GetRadii().BottomLeft().IsZero()) {
         FindIntersection(
             edge_quad[0], edge_quad[1],
             FloatPoint(
-                edge_quad[1].X() + inner_.GetRadii().BottomLeft().Width(),
-                edge_quad[1].Y()),
+                edge_quad[1].x() + inner_.GetRadii().BottomLeft().width(),
+                edge_quad[1].y()),
             FloatPoint(
-                edge_quad[1].X(),
-                edge_quad[1].Y() - inner_.GetRadii().BottomLeft().Height()),
+                edge_quad[1].x(),
+                edge_quad[1].y() - inner_.GetRadii().BottomLeft().height()),
             edge_quad[1]);
-        if (bound_quad1.X() < edge_quad[1].X()) {
-          bound_quad1.SetX(edge_quad[1].X());
-          bound_quad2.SetX(edge_quad[1].X());
+        if (bound_quad1.x() < edge_quad[1].x()) {
+          bound_quad1.set_x(edge_quad[1].x());
+          bound_quad2.set_x(edge_quad[1].x());
         }
       }
       break;
@@ -1603,43 +1603,43 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       edge_quad[2] = FloatPoint(inner_rect.MinXMaxYCorner());
       edge_quad[3] = FloatPoint(outer_rect.MinXMaxYCorner());
 
-      DCHECK(edge_quad[0].Y() == edge_quad[3].Y());
-      DCHECK(edge_quad[1].Y() == edge_quad[2].Y());
+      DCHECK(edge_quad[0].y() == edge_quad[3].y());
+      DCHECK(edge_quad[1].y() == edge_quad[2].y());
 
-      bound_quad1 = FloatPoint(edge_quad[0].X(), edge_quad[1].Y());
-      bound_quad2 = FloatPoint(edge_quad[3].X(), edge_quad[2].Y());
+      bound_quad1 = FloatPoint(edge_quad[0].x(), edge_quad[1].y());
+      bound_quad2 = FloatPoint(edge_quad[3].x(), edge_quad[2].y());
 
-      extension_offset.SetWidth(kExtensionLength);
-      extension_offset.SetHeight(0);
+      extension_offset.set_width(kExtensionLength);
+      extension_offset.set_height(0);
 
       if (!inner_.GetRadii().BottomLeft().IsZero()) {
         FindIntersection(
             edge_quad[3], edge_quad[2],
             FloatPoint(
-                edge_quad[2].X() + inner_.GetRadii().BottomLeft().Width(),
-                edge_quad[2].Y()),
+                edge_quad[2].x() + inner_.GetRadii().BottomLeft().width(),
+                edge_quad[2].y()),
             FloatPoint(
-                edge_quad[2].X(),
-                edge_quad[2].Y() - inner_.GetRadii().BottomLeft().Height()),
+                edge_quad[2].x(),
+                edge_quad[2].y() - inner_.GetRadii().BottomLeft().height()),
             edge_quad[2]);
-        DCHECK(bound_quad2.Y() >= edge_quad[2].Y());
-        bound_quad1.SetY(edge_quad[2].Y());
-        bound_quad2.SetY(edge_quad[2].Y());
+        DCHECK(bound_quad2.y() >= edge_quad[2].y());
+        bound_quad1.set_y(edge_quad[2].y());
+        bound_quad2.set_y(edge_quad[2].y());
       }
 
       if (!inner_.GetRadii().BottomRight().IsZero()) {
         FindIntersection(
             edge_quad[0], edge_quad[1],
             FloatPoint(
-                edge_quad[1].X() - inner_.GetRadii().BottomRight().Width(),
-                edge_quad[1].Y()),
+                edge_quad[1].x() - inner_.GetRadii().BottomRight().width(),
+                edge_quad[1].y()),
             FloatPoint(
-                edge_quad[1].X(),
-                edge_quad[1].Y() - inner_.GetRadii().BottomRight().Height()),
+                edge_quad[1].x(),
+                edge_quad[1].y() - inner_.GetRadii().BottomRight().height()),
             edge_quad[1]);
-        if (bound_quad1.Y() > edge_quad[1].Y()) {
-          bound_quad1.SetY(edge_quad[1].Y());
-          bound_quad2.SetY(edge_quad[1].Y());
+        if (bound_quad1.y() > edge_quad[1].y()) {
+          bound_quad1.set_y(edge_quad[1].y());
+          bound_quad2.set_y(edge_quad[1].y());
         }
       }
       break;
@@ -1650,42 +1650,42 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       edge_quad[2] = FloatPoint(inner_rect.MaxXMaxYCorner());
       edge_quad[3] = FloatPoint(outer_rect.MaxXMaxYCorner());
 
-      DCHECK(edge_quad[0].X() == edge_quad[3].X());
-      DCHECK(edge_quad[1].X() == edge_quad[2].X());
+      DCHECK(edge_quad[0].x() == edge_quad[3].x());
+      DCHECK(edge_quad[1].x() == edge_quad[2].x());
 
-      bound_quad1 = FloatPoint(edge_quad[1].X(), edge_quad[0].Y());
-      bound_quad2 = FloatPoint(edge_quad[2].X(), edge_quad[3].Y());
+      bound_quad1 = FloatPoint(edge_quad[1].x(), edge_quad[0].y());
+      bound_quad2 = FloatPoint(edge_quad[2].x(), edge_quad[3].y());
 
-      extension_offset.SetWidth(0);
-      extension_offset.SetHeight(-kExtensionLength);
+      extension_offset.set_width(0);
+      extension_offset.set_height(-kExtensionLength);
 
       if (!inner_.GetRadii().TopRight().IsZero()) {
         FindIntersection(
             edge_quad[0], edge_quad[1],
-            FloatPoint(edge_quad[1].X() - inner_.GetRadii().TopRight().Width(),
-                       edge_quad[1].Y()),
+            FloatPoint(edge_quad[1].x() - inner_.GetRadii().TopRight().width(),
+                       edge_quad[1].y()),
             FloatPoint(
-                edge_quad[1].X(),
-                edge_quad[1].Y() + inner_.GetRadii().TopRight().Height()),
+                edge_quad[1].x(),
+                edge_quad[1].y() + inner_.GetRadii().TopRight().height()),
             edge_quad[1]);
-        DCHECK(bound_quad1.X() >= edge_quad[1].X());
-        bound_quad1.SetX(edge_quad[1].X());
-        bound_quad2.SetX(edge_quad[1].X());
+        DCHECK(bound_quad1.x() >= edge_quad[1].x());
+        bound_quad1.set_x(edge_quad[1].x());
+        bound_quad2.set_x(edge_quad[1].x());
       }
 
       if (!inner_.GetRadii().BottomRight().IsZero()) {
         FindIntersection(
             edge_quad[3], edge_quad[2],
             FloatPoint(
-                edge_quad[2].X() - inner_.GetRadii().BottomRight().Width(),
-                edge_quad[2].Y()),
+                edge_quad[2].x() - inner_.GetRadii().BottomRight().width(),
+                edge_quad[2].y()),
             FloatPoint(
-                edge_quad[2].X(),
-                edge_quad[2].Y() - inner_.GetRadii().BottomRight().Height()),
+                edge_quad[2].x(),
+                edge_quad[2].y() - inner_.GetRadii().BottomRight().height()),
             edge_quad[2]);
-        if (bound_quad1.X() > edge_quad[2].X()) {
-          bound_quad1.SetX(edge_quad[2].X());
-          bound_quad2.SetX(edge_quad[2].X());
+        if (bound_quad1.x() > edge_quad[2].x()) {
+          bound_quad1.set_x(edge_quad[2].x());
+          bound_quad2.set_x(edge_quad[2].x());
         }
       }
       break;

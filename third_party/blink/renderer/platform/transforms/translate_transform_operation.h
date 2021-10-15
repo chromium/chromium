@@ -59,10 +59,10 @@ class PLATFORM_EXPORT TranslateTransformOperation final
   }
 
   double X(const FloatSize& border_box_size) const {
-    return FloatValueForLength(x_, border_box_size.Width());
+    return FloatValueForLength(x_, border_box_size.width());
   }
   double Y(const FloatSize& border_box_size) const {
-    return FloatValueForLength(y_, border_box_size.Height());
+    return FloatValueForLength(y_, border_box_size.height());
   }
 
   const Length& X() const { return x_; }

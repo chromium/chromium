@@ -155,13 +155,13 @@ TransformationMatrix XRViewData::UnprojectPointer(double x,
   FloatPoint3D y_axis = z_axis.Cross(x_axis);
   y_axis.Normalize();
 
-  // TODO(bajones): There's probably a more efficent way to do this?
-  TransformationMatrix inv_pointer(x_axis.X(), y_axis.X(), z_axis.X(), 0.0,
-                                   x_axis.Y(), y_axis.Y(), z_axis.Y(), 0.0,
-                                   x_axis.Z(), y_axis.Z(), z_axis.Z(), 0.0, 0.0,
+  // TODO(bajones): There's probably a more efficient way to do this?
+  TransformationMatrix inv_pointer(x_axis.x(), y_axis.x(), z_axis.x(), 0.0,
+                                   x_axis.y(), y_axis.y(), z_axis.y(), 0.0,
+                                   x_axis.z(), y_axis.z(), z_axis.z(), 0.0, 0.0,
                                    0.0, 0.0, 1.0);
-  inv_pointer.Translate3d(-point_in_view_space.X(), -point_in_view_space.Y(),
-                          -point_in_view_space.Z());
+  inv_pointer.Translate3d(-point_in_view_space.x(), -point_in_view_space.y(),
+                          -point_in_view_space.z());
 
   // LookAt matrices are view matrices (inverted), so invert before returning.
   return inv_pointer.Inverse();

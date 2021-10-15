@@ -64,22 +64,22 @@ void ImageInputType::AppendToFormData(FormData& form_data) const {
     return;
   const AtomicString& name = GetElement().GetName();
   if (name.IsEmpty()) {
-    form_data.AppendFromElement("x", click_location_.X());
-    form_data.AppendFromElement("y", click_location_.Y());
+    form_data.AppendFromElement("x", click_location_.x());
+    form_data.AppendFromElement("y", click_location_.y());
     return;
   }
 
   DEFINE_STATIC_LOCAL(String, dot_x_string, (".x"));
   DEFINE_STATIC_LOCAL(String, dot_y_string, (".y"));
-  form_data.AppendFromElement(name + dot_x_string, click_location_.X());
-  form_data.AppendFromElement(name + dot_y_string, click_location_.Y());
+  form_data.AppendFromElement(name + dot_x_string, click_location_.x());
+  form_data.AppendFromElement(name + dot_y_string, click_location_.y());
 }
 
 String ImageInputType::ResultForDialogSubmit() const {
   StringBuilder result;
-  result.AppendNumber(click_location_.X());
+  result.AppendNumber(click_location_.x());
   result.Append(',');
-  result.AppendNumber(click_location_.Y());
+  result.AppendNumber(click_location_.y());
   return result.ToString();
 }
 
@@ -176,7 +176,7 @@ unsigned ImageInputType::Height() const {
     if (image_loader && image_loader->GetContent()) {
       return image_loader->GetContent()
           ->IntrinsicSize(kRespectImageOrientation)
-          .Height();
+          .height();
     }
   }
 
@@ -202,7 +202,7 @@ unsigned ImageInputType::Width() const {
     if (image_loader && image_loader->GetContent()) {
       return image_loader->GetContent()
           ->IntrinsicSize(kRespectImageOrientation)
-          .Width();
+          .width();
     }
   }
 

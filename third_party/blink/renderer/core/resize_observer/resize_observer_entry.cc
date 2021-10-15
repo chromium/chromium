@@ -26,7 +26,7 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
 
     if (auto* svg_graphics_element = DynamicTo<SVGGraphicsElement>(target)) {
       LayoutSize bounding_box_size =
-          LayoutSize(svg_graphics_element->GetBBox().Size());
+          LayoutSize(svg_graphics_element->GetBBox().size());
       content_rect_ = DOMRectReadOnly::FromFloatRect(
           FloatRect(FloatPoint(), FloatSize(bounding_box_size)));
       ResizeObserverSize* size = ResizeObserverSize::Create(
@@ -38,8 +38,8 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
           ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
               bounding_box_size, layout_object, style);
       ResizeObserverSize* device_pixel_content_box_size =
-          ResizeObserverSize::Create(snapped_device_pixel_content_box.Width(),
-                                     snapped_device_pixel_content_box.Height());
+          ResizeObserverSize::Create(snapped_device_pixel_content_box.width(),
+                                     snapped_device_pixel_content_box.height());
       device_pixel_content_box_size_.push_back(device_pixel_content_box_size);
     } else if (layout_object->IsBox()) {
       LayoutBox* layout_box = target->GetLayoutBox();
@@ -59,12 +59,12 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
               style);
 
       ResizeObserverSize* device_pixel_content_box_size =
-          ResizeObserverSize::Create(device_pixel_content_box.Width(),
-                                     device_pixel_content_box.Height());
+          ResizeObserverSize::Create(device_pixel_content_box.width(),
+                                     device_pixel_content_box.height());
       ResizeObserverSize* content_box_size =
-          ResizeObserverSize::Create(content_box.Width(), content_box.Height());
+          ResizeObserverSize::Create(content_box.width(), content_box.height());
       ResizeObserverSize* border_box_size =
-          ResizeObserverSize::Create(border_box.Width(), border_box.Height());
+          ResizeObserverSize::Create(border_box.width(), border_box.height());
 
       content_box_size_.push_back(content_box_size);
       border_box_size_.push_back(border_box_size);

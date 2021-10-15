@@ -115,8 +115,8 @@ bool ICOImageDecoder::HotSpotAtIndex(wtf_size_t index,
 bool ICOImageDecoder::CompareEntries(const IconDirectoryEntry& a,
                                      const IconDirectoryEntry& b) {
   // Larger icons are better.  After that, higher bit-depth icons are better.
-  const int a_entry_area = a.size_.Width() * a.size_.Height();
-  const int b_entry_area = b.size_.Width() * b.size_.Height();
+  const int a_entry_area = a.size_.width() * a.size_.height();
+  const int b_entry_area = b.size_.width() * b.size_.height();
   return (a_entry_area == b_entry_area) ? (a.bit_count_ > b.bit_count_)
                                         : (a_entry_area > b_entry_area);
 }
@@ -288,8 +288,8 @@ bool ICOImageDecoder::ProcessDirectoryEntries() {
   const IconDirectoryEntry& dir_entry = dir_entries_.front();
   // Technically, this next call shouldn't be able to fail, since the width
   // and height here are each <= 256, and |frame_size_| is empty.
-  return SetSize(static_cast<unsigned>(dir_entry.size_.Width()),
-                 static_cast<unsigned>(dir_entry.size_.Height()));
+  return SetSize(static_cast<unsigned>(dir_entry.size_.width()),
+                 static_cast<unsigned>(dir_entry.size_.height()));
 }
 
 ICOImageDecoder::IconDirectoryEntry ICOImageDecoder::ReadDirectoryEntry() {

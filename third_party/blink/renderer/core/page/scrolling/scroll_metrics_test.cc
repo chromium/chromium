@@ -63,7 +63,7 @@ class ScrollBeginEventBuilder : public WebGestureEvent {
                         device) {
     SetPositionInWidget(ToGfxPointF(position));
     SetPositionInScreen(ToGfxPointF(position));
-    data.scroll_begin.delta_y_hint = delta.Y();
+    data.scroll_begin.delta_y_hint = delta.y();
     frame_scale_ = 1;
   }
 };

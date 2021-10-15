@@ -837,7 +837,7 @@ LayoutUnit LayoutFlexibleBox::ComputeMainSizeFromAspectRatioUsing(
   if (ar_type == EAspectRatioType::kRatio ||
       (ar_type == EAspectRatioType::kAutoAndRatio && aspect_ratio.IsEmpty())) {
     FloatSize int_ratio = child.StyleRef().AspectRatio().GetRatio();
-    aspect_ratio = LayoutSize{int_ratio.Width(), int_ratio.Height()};
+    aspect_ratio = LayoutSize{int_ratio.width(), int_ratio.height()};
     if (child.StyleRef().BoxSizingForAspectRatio() == EBoxSizing::kContentBox) {
       cross_size -= cross_axis_border_and_padding;
       border_and_padding = main_axis_border_and_padding;

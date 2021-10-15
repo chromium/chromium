@@ -123,12 +123,12 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   int ViewHeight(
       IncludeScrollbarsInRect scrollbar_inclusion = kExcludeScrollbars) const {
     NOT_DESTROYED();
-    return GetLayoutSize(scrollbar_inclusion).Height();
+    return GetLayoutSize(scrollbar_inclusion).height();
   }
   int ViewWidth(
       IncludeScrollbarsInRect scrollbar_inclusion = kExcludeScrollbars) const {
     NOT_DESTROYED();
-    return GetLayoutSize(scrollbar_inclusion).Width();
+    return GetLayoutSize(scrollbar_inclusion).width();
   }
 
   int ViewLogicalWidth(IncludeScrollbarsInRect = kExcludeScrollbars) const;

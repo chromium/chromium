@@ -318,7 +318,7 @@ void FrameLoader::SaveScrollState() {
   if (ScrollableArea* layout_scrollable_area = frame_->View()->LayoutViewport())
     history_item->SetScrollOffset(layout_scrollable_area->GetScrollOffset());
   history_item->SetVisualViewportScrollOffset(ToScrollOffset(
-      frame_->GetPage()->GetVisualViewport().VisibleRect().Location()));
+      frame_->GetPage()->GetVisualViewport().VisibleRect().origin()));
 
   if (frame_->IsMainFrame())
     history_item->SetPageScaleFactor(frame_->GetPage()->PageScaleFactor());

@@ -327,7 +327,7 @@ static bool CombineClip(const ClipPaintPropertyNode& clip,
   // The combined is the intersection if both are rectangular.
   DCHECK(!combined_is_rounded && !clip_is_rounded);
   combined_clip_rect = FloatRoundedRect(
-      Intersection(combined_clip_rect.Rect(), clip.PaintClipRect().Rect()));
+      IntersectRects(combined_clip_rect.Rect(), clip.PaintClipRect().Rect()));
   return true;
 }
 
@@ -577,8 +577,9 @@ void ConversionContext::StartEffect(const EffectPaintPropertyNode& effect) {
     // the bounds of the effect on an empty source. For empty chunks, or chunks
     // with empty bounds, with a filter applied that produces output even when
     // there's no input this will expand the bounds to match.
-    gfx::RectF filtered_bounds = current_effect_->MapRect(gfx::RectF(
-        ToGfxPointF(effect.Filter().ReferenceBox().Center()), gfx::SizeF()));
+    gfx::RectF filtered_bounds = current_effect_->MapRect(
+        gfx::RectF(ToGfxPointF(effect.Filter().ReferenceBox().CenterPoint()),
+                   gfx::SizeF()));
     effect_bounds_stack_.back().bounds = filtered_bounds;
     // Emit an empty paint operation to add the filtered bounds (mapped to layer
     // space) to the visual rect of the filter's SaveLayerOp.

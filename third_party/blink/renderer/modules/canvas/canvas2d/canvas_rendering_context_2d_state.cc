@@ -525,7 +525,7 @@ sk_sp<PaintFilter>& CanvasRenderingContext2DState::ShadowOnlyImageFilter()
   if (!shadow_only_image_filter_) {
     const auto sigma = BlurRadiusToStdDev(shadow_blur_);
     shadow_only_image_filter_ = sk_make_sp<DropShadowPaintFilter>(
-        shadow_offset_.Width(), shadow_offset_.Height(), sigma, sigma,
+        shadow_offset_.width(), shadow_offset_.height(), sigma, sigma,
         shadow_color_, ShadowMode::kDrawShadowOnly, nullptr);
   }
   return shadow_only_image_filter_;
@@ -537,7 +537,7 @@ CanvasRenderingContext2DState::ShadowAndForegroundImageFilter() const {
   if (!shadow_and_foreground_image_filter_) {
     const auto sigma = BlurRadiusToStdDev(shadow_blur_);
     shadow_and_foreground_image_filter_ = sk_make_sp<DropShadowPaintFilter>(
-        shadow_offset_.Width(), shadow_offset_.Height(), sigma, sigma,
+        shadow_offset_.width(), shadow_offset_.height(), sigma, sigma,
         shadow_color_, ShadowMode::kDrawShadowAndForeground, nullptr);
   }
   return shadow_and_foreground_image_filter_;
@@ -551,12 +551,12 @@ void CanvasRenderingContext2DState::ShadowParameterChanged() {
 }
 
 void CanvasRenderingContext2DState::SetShadowOffsetX(double x) {
-  shadow_offset_.SetWidth(ClampTo<float>(x));
+  shadow_offset_.set_width(ClampTo<float>(x));
   ShadowParameterChanged();
 }
 
 void CanvasRenderingContext2DState::SetShadowOffsetY(double y) {
-  shadow_offset_.SetHeight(ClampTo<float>(y));
+  shadow_offset_.set_height(ClampTo<float>(y));
   ShadowParameterChanged();
 }
 

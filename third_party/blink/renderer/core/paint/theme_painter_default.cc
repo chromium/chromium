@@ -95,7 +95,7 @@ DirectionFlippingScope::DirectionFlippingScope(
   if (!needs_flipping_)
     return;
   paint_info_.context.Save();
-  paint_info_.context.Translate(2 * rect.X() + rect.Width(), 0);
+  paint_info_.context.Translate(2 * rect.x() + rect.width(), 0);
   paint_info_.context.Scale(-1, 1);
 }
 
@@ -107,8 +107,8 @@ DirectionFlippingScope::~DirectionFlippingScope() {
 
 IntRect DeterminateProgressValueRectFor(const LayoutProgress& layout_progress,
                                         const IntRect& rect) {
-  int dx = rect.Width() * layout_progress.GetPosition();
-  return IntRect(rect.X(), rect.Y(), dx, rect.Height());
+  int dx = rect.width() * layout_progress.GetPosition();
+  return IntRect(rect.x(), rect.y(), dx, rect.height());
 }
 
 IntRect IndeterminateProgressValueRectFor(const LayoutProgress& layout_progress,
@@ -116,17 +116,18 @@ IntRect IndeterminateProgressValueRectFor(const LayoutProgress& layout_progress,
   // Value comes from default of GTK+.
   static const int kProgressActivityBlocks = 5;
 
-  int value_width = rect.Width() / kProgressActivityBlocks;
-  int movable_width = rect.Width() - value_width;
+  int value_width = rect.width() / kProgressActivityBlocks;
+  int movable_width = rect.width() - value_width;
   if (movable_width <= 0)
     return IntRect();
 
   double progress = layout_progress.AnimationProgress();
-  if (progress < 0.5)
-    return IntRect(rect.X() + progress * 2 * movable_width, rect.Y(),
-                   value_width, rect.Height());
-  return IntRect(rect.X() + (1.0 - progress) * 2 * movable_width, rect.Y(),
-                 value_width, rect.Height());
+  if (progress < 0.5) {
+    return IntRect(rect.x() + progress * 2 * movable_width, rect.y(),
+                   value_width, rect.height());
+  }
+  return IntRect(rect.x() + (1.0 - progress) * 2 * movable_width, rect.y(),
+                 value_width, rect.height());
 }
 
 IntRect ProgressValueRectFor(const LayoutProgress& layout_progress,
@@ -146,7 +147,7 @@ IntRect ConvertToPaintingRect(const LayoutObject& input_layout_object,
   // Move the rect into partLayoutObject's coords.
   part_rect.Move(offset_from_input_layout_object);
   // Account for the local drawing offset.
-  part_rect.Move(PhysicalOffset(local_offset.Location()));
+  part_rect.Move(PhysicalOffset(local_offset.origin()));
 
   return PixelSnappedIntRect(part_rect);
 }
@@ -329,9 +330,9 @@ void ThemePainterDefault::SetupMenuListArrow(
     const ComputedStyle& style,
     const IntRect& rect,
     WebThemeEngine::ExtraParams& extra_params) {
-  const int left = rect.X() + floorf(style.BorderLeftWidth());
-  const int right = rect.X() + rect.Width() - floorf(style.BorderRightWidth());
-  const int middle = rect.Y() + rect.Height() / 2;
+  const int left = rect.x() + floorf(style.BorderLeftWidth());
+  const int right = rect.x() + rect.width() - floorf(style.BorderRightWidth());
+  const int middle = rect.y() + rect.height() / 2;
 
   extra_params.menu_list.arrow_y = middle;
   float arrow_box_width =
@@ -377,10 +378,10 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
     LayoutBox* input_box = input->GetLayoutBox();
     if (thumb) {
       IntRect thumb_rect = PixelSnappedIntRect(thumb->FrameRect());
-      extra_params.slider.thumb_x = thumb_rect.X() +
+      extra_params.slider.thumb_x = thumb_rect.x() +
                                     input_box->PaddingLeft().ToInt() +
                                     input_box->BorderLeft().ToInt();
-      extra_params.slider.thumb_y = thumb_rect.Y() +
+      extra_params.slider.thumb_y = thumb_rect.y() +
                                     input_box->PaddingTop().ToInt() +
                                     input_box->BorderTop().ToInt();
     }
@@ -459,10 +460,10 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
 
   WebThemeEngine::ExtraParams extra_params;
   extra_params.progress_bar.determinate = layout_progress->IsDeterminate();
-  extra_params.progress_bar.value_rect_x = value_rect.X();
-  extra_params.progress_bar.value_rect_y = value_rect.Y();
-  extra_params.progress_bar.value_rect_width = value_rect.Width();
-  extra_params.progress_bar.value_rect_height = value_rect.Height();
+  extra_params.progress_bar.value_rect_x = value_rect.x();
+  extra_params.progress_bar.value_rect_y = value_rect.y();
+  extra_params.progress_bar.value_rect_width = value_rect.width();
+  extra_params.progress_bar.value_rect_height = value_rect.height();
   extra_params.progress_bar.zoom = style.EffectiveZoom();
 
   DirectionFlippingScope scope(layout_object, paint_info, rect);
@@ -504,7 +505,7 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
   // Make sure the scaled button stays square and will fit in its parent's box.
   LayoutUnit cancel_button_size =
       std::min(input_content_box.size.width,
-               std::min(input_content_box.size.height, LayoutUnit(r.Height())));
+               std::min(input_content_box.size.height, LayoutUnit(r.height())));
   // Calculate cancel button's coordinates relative to the input element.
   // Center the button vertically.  Round up though, so if it has to be one
   // pixel off-center, it will be one pixel closer to the bottom of the field.

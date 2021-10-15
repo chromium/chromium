@@ -1434,8 +1434,8 @@ TEST(PNGTests, truncated) {
   // should be transparent.
   auto* frame = decoder->DecodeFrameBufferAtIndex(0);
   auto size = decoder->Size();
-  for (int i = 0; i < size.Width(); ++i) {
-    for (int j = 0; j < size.Height(); ++j) {
+  for (int i = 0; i < size.width(); ++i) {
+    for (int j = 0; j < size.height(); ++j) {
       ASSERT_NE(SK_ColorTRANSPARENT, *frame->GetAddr(i, j));
     }
   }

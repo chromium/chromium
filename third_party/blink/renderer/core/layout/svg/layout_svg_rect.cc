@@ -52,7 +52,7 @@ void LayoutSVGRect::UpdateShapeFromElement() {
       length_context.ResolveLengthPair(style.Width(), style.Height(), style)));
 
   // Spec: "A negative value is an error."
-  if (bounding_box_size.Width() < 0 || bounding_box_size.Height() < 0)
+  if (bounding_box_size.width() < 0 || bounding_box_size.height() < 0)
     return;
 
   // Spec: "A value of zero disables rendering of the element."
@@ -69,7 +69,7 @@ void LayoutSVGRect::UpdateShapeFromElement() {
     }
     FloatPoint radii(
         length_context.ResolveLengthPair(style.Rx(), style.Ry(), style));
-    if (radii.X() > 0 || radii.Y() > 0 || !DefinitelyHasSimpleStroke()) {
+    if (radii.x() > 0 || radii.y() > 0 || !DefinitelyHasSimpleStroke()) {
       CreatePath();
       use_path_fallback_ = true;
     }
@@ -94,14 +94,14 @@ bool LayoutSVGRect::ShapeDependentStrokeContains(
 
   const FloatPoint& point = location.TransformedPoint();
   const float half_stroke_width = StrokeWidth() / 2;
-  const float half_width = fill_bounding_box_.Width() / 2;
-  const float half_height = fill_bounding_box_.Height() / 2;
+  const float half_width = fill_bounding_box_.width() / 2;
+  const float half_height = fill_bounding_box_.height() / 2;
 
   const FloatPoint fill_bounding_box_center =
-      FloatPoint(fill_bounding_box_.X() + half_width,
-                 fill_bounding_box_.Y() + half_height);
-  const float abs_delta_x = std::abs(point.X() - fill_bounding_box_center.X());
-  const float abs_delta_y = std::abs(point.Y() - fill_bounding_box_center.Y());
+      FloatPoint(fill_bounding_box_.x() + half_width,
+                 fill_bounding_box_.y() + half_height);
+  const float abs_delta_x = std::abs(point.x() - fill_bounding_box_center.x());
+  const float abs_delta_y = std::abs(point.y() - fill_bounding_box_center.y());
 
   if (!(abs_delta_x <= half_width + half_stroke_width &&
         abs_delta_y <= half_height + half_stroke_width))
@@ -117,7 +117,7 @@ bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
   if (use_path_fallback_)
     return LayoutSVGShape::ShapeDependentFillContains(location, fill_rule);
   const FloatPoint& point = location.TransformedPoint();
-  return fill_bounding_box_.Contains(point.X(), point.Y());
+  return fill_bounding_box_.Contains(point.x(), point.y());
 }
 
 // Returns true if the stroke is continuous and definitely uses miter joins.

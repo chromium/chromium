@@ -241,12 +241,12 @@ class WebGPUImageBitmapHandlerTest : public testing::Test {
     // Compare content and results
     uint32_t bytes_per_row = wgpu_info.wgpu_bytes_per_row;
     uint32_t content_row_index =
-        (copy_rect.Y() * width + copy_rect.X()) * bytes_per_pixel;
+        (copy_rect.y() * width + copy_rect.x()) * bytes_per_pixel;
     uint32_t result_row_index = 0;
-    for (int i = 0; i < copy_rect.Height(); ++i) {
+    for (int i = 0; i < copy_rect.height(); ++i) {
       EXPECT_EQ(0, memcmp(&expected_value[content_row_index],
                           &results[result_row_index],
-                          copy_rect.Width() * bytes_per_pixel));
+                          copy_rect.width() * bytes_per_pixel));
       content_row_index += width * bytes_per_pixel;
       result_row_index += bytes_per_row;
     }

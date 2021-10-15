@@ -31,7 +31,7 @@ FloatSize GetSpecifiedSize(const FloatSize& size, float zoom) {
   auto un_zoom_fn = [un_zoom_factor](float a) -> float {
     return a * un_zoom_factor;
   };
-  return FloatSize(un_zoom_fn(size.Width()), un_zoom_fn(size.Height()));
+  return FloatSize(un_zoom_fn(size.width()), un_zoom_fn(size.height()));
 }
 
 }  // namespace

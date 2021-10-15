@@ -595,8 +595,8 @@ static inline void SetLogicalWidthForTextRun(
           measured_width += layout_text.StyleRef().WordSpacing();
       } else {
         FloatRect word_glyph_bounds = word_measurement.glyph_bounds;
-        word_glyph_bounds.Move(measured_width, 0);
-        glyph_bounds.Unite(word_glyph_bounds);
+        word_glyph_bounds.Offset(measured_width, 0);
+        glyph_bounds.Union(word_glyph_bounds);
         measured_width += word_measurement.width;
       }
       if (!word_measurement.fallback_fonts.IsEmpty()) {

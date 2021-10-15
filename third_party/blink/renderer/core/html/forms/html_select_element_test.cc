@@ -181,7 +181,7 @@ TEST_F(HTMLSelectElementTest, VisibleBoundsInVisualViewport) {
   auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
   ASSERT_NE(select, nullptr);
   IntRect bounds = select->VisibleBoundsInVisualViewport();
-  EXPECT_EQ(24, bounds.Height());
+  EXPECT_EQ(24, bounds.height());
 }
 
 TEST_F(HTMLSelectElementTest, PopupIsVisible) {

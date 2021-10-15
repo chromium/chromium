@@ -290,7 +290,7 @@ static void BoundingBoxForArc(const FloatPoint3D& point,
   FloatPoint3D from_point = from_matrix.MapPoint(point);
 
   if (box.IsEmpty())
-    box.SetOrigin(from_point);
+    box.set_origin(from_point);
   else
     box.ExpandTo(from_point);
 
@@ -298,16 +298,16 @@ static void BoundingBoxForArc(const FloatPoint3D& point,
 
   switch (from_transform.GetType()) {
     case TransformOperation::kRotateX:
-      FindCandidatesInPlane(point.Y(), point.Z(), from_transform.X(),
+      FindCandidatesInPlane(point.y(), point.z(), from_transform.X(),
                             candidates, &num_candidates);
       break;
     case TransformOperation::kRotateY:
-      FindCandidatesInPlane(point.Z(), point.X(), from_transform.Y(),
+      FindCandidatesInPlane(point.z(), point.x(), from_transform.Y(),
                             candidates, &num_candidates);
       break;
     case TransformOperation::kRotateZ:
     case TransformOperation::kRotate:
-      FindCandidatesInPlane(point.X(), point.Y(), from_transform.Z(),
+      FindCandidatesInPlane(point.x(), point.y(), from_transform.Z(),
                             candidates, &num_candidates);
       break;
     default: {
@@ -342,11 +342,11 @@ static void BoundingBoxForArc(const FloatPoint3D& point,
       // tan(t) = v2.x/v1.x
       // t = atan2(v2.x, v1.x) + n*M_PI;
 
-      candidates[0] = atan2(v2.X(), v1.X());
+      candidates[0] = atan2(v2.x(), v1.x());
       candidates[1] = candidates[0] + M_PI;
-      candidates[2] = atan2(v2.Y(), v1.Y());
+      candidates[2] = atan2(v2.y(), v1.y());
       candidates[3] = candidates[2] + M_PI;
-      candidates[4] = atan2(v2.Z(), v1.Z());
+      candidates[4] = atan2(v2.z(), v1.z());
       candidates[5] = candidates[4] + M_PI;
       num_candidates = 6;
     } break;
@@ -367,7 +367,7 @@ static void BoundingBoxForArc(const FloatPoint3D& point,
       continue;
 
     TransformationMatrix rotation;
-    rotation.Rotate3d(axis.X(), axis.Y(), axis.Z(), Rad2deg(radians));
+    rotation.Rotate3d(axis.x(), axis.y(), axis.z(), Rad2deg(radians));
     box.ExpandTo(rotation.MapPoint(point));
   }
 }
@@ -469,7 +469,7 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
 
         if (!from_rotation) {
           identity_rotation = RotateTransformOperation::Create(
-              axis.X(), axis.Y(), axis.Z(), 0,
+              axis.x(), axis.y(), axis.z(), 0,
               from_operation ? from_operation->GetType()
                              : to_operation->GetType());
           from_rotation = identity_rotation.get();
@@ -478,7 +478,7 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
         if (!to_rotation) {
           if (!identity_rotation)
             identity_rotation = RotateTransformOperation::Create(
-                axis.X(), axis.Y(), axis.Z(), 0,
+                axis.x(), axis.y(), axis.z(), 0,
                 from_operation ? from_operation->GetType()
                                : to_operation->GetType());
           to_rotation = identity_rotation.get();
@@ -490,10 +490,10 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
           for (size_t k = 0; k < 2; ++k) {
             for (size_t m = 0; m < 2; ++m) {
               FloatBox bounds_for_arc;
-              FloatPoint3D corner(from_box.X(), from_box.Y(), from_box.Z());
+              FloatPoint3D corner(from_box.x(), from_box.y(), from_box.z());
               corner +=
-                  FloatPoint3D(j * from_box.Width(), k * from_box.Height(),
-                               m * from_box.Depth());
+                  FloatPoint3D(j * from_box.width(), k * from_box.height(),
+                               m * from_box.depth());
               BoundingBoxForArc(corner, *from_rotation, *to_rotation,
                                 min_progress, max_progress, bounds_for_arc);
               if (first) {

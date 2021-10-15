@@ -283,8 +283,8 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
   // When render this element, we always do pixel snapping to its nearest pixel,
   // therefore we use rounded |container_size| to create the rendering context.
   IntSize rounded_size = RoundedIntSize(container_size);
-  if (!context_ || context_->Width() != rounded_size.Width() ||
-      context_->Height() != rounded_size.Height()) {
+  if (!context_ || context_->Width() != rounded_size.width() ||
+      context_->Height() != rounded_size.height()) {
     PaintRenderingContext2DSettings* context_settings =
         PaintRenderingContext2DSettings::Create();
     context_ = MakeGarbageCollected<PaintRenderingContext2D>(

@@ -64,12 +64,12 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
             ScrollbarTheme* = nullptr);
   ~Scrollbar() override;
 
-  int X() const { return frame_rect_.X(); }
-  int Y() const { return frame_rect_.Y(); }
-  int Width() const { return frame_rect_.Width(); }
-  int Height() const { return frame_rect_.Height(); }
-  IntSize Size() const { return frame_rect_.Size(); }
-  IntPoint Location() const { return frame_rect_.Location(); }
+  int X() const { return frame_rect_.x(); }
+  int Y() const { return frame_rect_.y(); }
+  int Width() const { return frame_rect_.width(); }
+  int Height() const { return frame_rect_.height(); }
+  IntSize Size() const { return frame_rect_.size(); }
+  IntPoint Location() const { return frame_rect_.origin(); }
 
   void SetFrameRect(const IntRect&);
   const IntRect& FrameRect() const { return frame_rect_; }

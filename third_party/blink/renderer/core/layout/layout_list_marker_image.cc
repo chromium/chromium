@@ -48,8 +48,8 @@ void LayoutListMarkerImage::ComputeIntrinsicSizingInfoByDefaultSize(
   concrete_size.Scale(ImageDevicePixelRatio());
   LayoutSize image_size(RoundedLayoutSize(concrete_size));
 
-  intrinsic_sizing_info.size.SetWidth(image_size.Width());
-  intrinsic_sizing_info.size.SetHeight(image_size.Height());
+  intrinsic_sizing_info.size.set_width(image_size.Width());
+  intrinsic_sizing_info.size.set_height(image_size.Height());
   intrinsic_sizing_info.has_width = true;
   intrinsic_sizing_info.has_height = true;
 }

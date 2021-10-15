@@ -41,7 +41,7 @@ CanvasGradient::CanvasGradient(const FloatPoint& p0, const FloatPoint& p1)
                                  Gradient::DegenerateHandling::kDisallow)) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kCreateLinearGradient, p0.X(), p0.Y(), p1.X(), p1.Y());
+        CanvasOps::kCreateLinearGradient, p0.x(), p0.y(), p1.x(), p1.y());
   }
 }
 
@@ -60,7 +60,7 @@ CanvasGradient::CanvasGradient(const FloatPoint& p0,
                                  Gradient::DegenerateHandling::kDisallow)) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kCreateRadialGradient, p0.X(), p0.Y(), r0, p1.X(), p1.Y(),
+        CanvasOps::kCreateRadialGradient, p0.x(), p0.y(), r0, p1.x(), p1.y(),
         r1);
   }
 }

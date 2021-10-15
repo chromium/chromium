@@ -88,7 +88,7 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
       scoped_paint_timing_detector_block_paint_hook.EmplaceIfNeeded(
           layout_file_upload_control_, paint_info.context.GetPaintController()
                                            .CurrentPaintChunkProperties());
-      text_bounds.Move(text_x, text_y);
+      text_bounds.Offset(text_x, text_y);
       PaintTimingDetector::NotifyTextPaint(EnclosingIntRect(text_bounds));
     }
   }

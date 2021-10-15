@@ -35,8 +35,8 @@ const double kEpsilon = 1e-5;
 const double kAngleEpsilon = 1e-4;
 
 Quaternion ComputeQuaternion(const Rotation& rotation) {
-  return Quaternion::FromAxisAngle(rotation.axis.X(), rotation.axis.Y(),
-                                   rotation.axis.Z(), Deg2rad(rotation.angle));
+  return Quaternion::FromAxisAngle(rotation.axis.x(), rotation.axis.y(),
+                                   rotation.axis.z(), Deg2rad(rotation.angle));
 }
 
 FloatPoint3D NormalizeAxis(FloatPoint3D axis) {
@@ -46,7 +46,7 @@ FloatPoint3D NormalizeAxis(FloatPoint3D axis) {
     normalized.Normalize();
   } else {
     // Rotation angle is zero so the axis is arbitrary.
-    normalized.Set(0, 0, 1);
+    normalized.SetPoint(0, 0, 1);
   }
   return normalized;
 }

@@ -185,7 +185,7 @@ void TextPaintTimingDetector::RecordAggregatedText(
   FloatRect mapped_visual_rect =
       frame_view_->GetPaintTimingDetector().CalculateVisualRect(
           aggregated_visual_rect, property_tree_state);
-  uint64_t aggregated_size = mapped_visual_rect.Size().Area();
+  uint64_t aggregated_size = mapped_visual_rect.size().Area();
   DCHECK_LE(IgnorePaintTimingScope::IgnoreDepth(), 1);
   // Record the largest aggregated text that is hidden due to documentElement
   // being invisible but by no other reason (i.e. IgnoreDepth() needs to be 1).

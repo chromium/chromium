@@ -60,26 +60,26 @@ LineSegment RectangleShape::GetExcludedInterval(
   float y1 = logical_top.ToFloat();
   float y2 = (logical_top + logical_height).ToFloat();
 
-  if (y2 < bounds.Y() || y1 >= bounds.MaxY())
+  if (y2 < bounds.y() || y1 >= bounds.bottom())
     return LineSegment();
 
-  float x1 = bounds.X();
-  float x2 = bounds.MaxX();
+  float x1 = bounds.x();
+  float x2 = bounds.right();
 
   float margin_radius_x = Rx() + ShapeMargin();
   float margin_radius_y = Ry() + ShapeMargin();
 
   if (margin_radius_y > 0) {
-    if (y2 < bounds.Y() + margin_radius_y) {
-      float yi = y2 - bounds.Y() - margin_radius_y;
+    if (y2 < bounds.y() + margin_radius_y) {
+      float yi = y2 - bounds.y() - margin_radius_y;
       float xi = EllipseXIntercept(yi, margin_radius_x, margin_radius_y);
-      x1 = bounds.X() + margin_radius_x - xi;
-      x2 = bounds.MaxX() - margin_radius_x + xi;
-    } else if (y1 > bounds.MaxY() - margin_radius_y) {
-      float yi = y1 - (bounds.MaxY() - margin_radius_y);
+      x1 = bounds.x() + margin_radius_x - xi;
+      x2 = bounds.right() - margin_radius_x + xi;
+    } else if (y1 > bounds.bottom() - margin_radius_y) {
+      float yi = y1 - (bounds.bottom() - margin_radius_y);
       float xi = EllipseXIntercept(yi, margin_radius_x, margin_radius_y);
-      x1 = bounds.X() + margin_radius_x - xi;
-      x2 = bounds.MaxX() - margin_radius_x + xi;
+      x1 = bounds.x() + margin_radius_x - xi;
+      x2 = bounds.right() - margin_radius_x + xi;
     }
   }
 
@@ -88,10 +88,11 @@ LineSegment RectangleShape::GetExcludedInterval(
 
 void RectangleShape::BuildDisplayPaths(DisplayPaths& paths) const {
   paths.shape.AddRoundedRect(bounds_, radii_);
-  if (ShapeMargin())
+  if (ShapeMargin()) {
     paths.margin_shape.AddRoundedRect(
-        ShapeMarginBounds(), FloatSize(radii_.Width() + ShapeMargin(),
-                                       radii_.Height() + ShapeMargin()));
+        ShapeMarginBounds(), FloatSize(radii_.width() + ShapeMargin(),
+                                       radii_.height() + ShapeMargin()));
+  }
 }
 
 }  // namespace blink

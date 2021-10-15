@@ -183,19 +183,19 @@ void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
 
     const StyleAspectRatio& aspect_ratio = StyleRef().AspectRatio();
     if (!aspect_ratio.IsAuto()) {
-      intrinsic_sizing_info.aspect_ratio.SetWidth(
-          aspect_ratio.GetRatio().Width());
-      intrinsic_sizing_info.aspect_ratio.SetHeight(
-          aspect_ratio.GetRatio().Height());
+      intrinsic_sizing_info.aspect_ratio.set_width(
+          aspect_ratio.GetRatio().width());
+      intrinsic_sizing_info.aspect_ratio.set_height(
+          aspect_ratio.GetRatio().height());
     }
 
     // If any of the dimensions are overridden, set those sizes.
     if (HasOverrideIntrinsicContentLogicalWidth()) {
-      intrinsic_sizing_info.size.SetWidth(
+      intrinsic_sizing_info.size.set_width(
           OverrideIntrinsicContentLogicalWidth().ToFloat());
     }
     if (HasOverrideIntrinsicContentLogicalHeight()) {
-      intrinsic_sizing_info.size.SetHeight(
+      intrinsic_sizing_info.size.set_height(
           OverrideIntrinsicContentLogicalHeight().ToFloat());
     }
     return;
@@ -239,12 +239,12 @@ FloatSize LayoutReplaced::ConstrainIntrinsicSizeToMinMax(
     // breaks tests, like images/zoomed-img-size.html, which
     // can only be fixed once subpixel precision is available for things like
     // intrinsicWidth/Height - which include zoom!
-    constrained_size.SetWidth(LayoutBox::ComputeReplacedLogicalHeight() *
-                              intrinsic_sizing_info.size.Width() /
-                              intrinsic_sizing_info.size.Height());
-    constrained_size.SetHeight(LayoutBox::ComputeReplacedLogicalWidth() *
-                               intrinsic_sizing_info.size.Height() /
-                               intrinsic_sizing_info.size.Width());
+    constrained_size.set_width(LayoutBox::ComputeReplacedLogicalHeight() *
+                               intrinsic_sizing_info.size.width() /
+                               intrinsic_sizing_info.size.height());
+    constrained_size.set_height(LayoutBox::ComputeReplacedLogicalWidth() *
+                                intrinsic_sizing_info.size.height() /
+                                intrinsic_sizing_info.size.width());
   }
   return constrained_size;
 }
@@ -708,10 +708,10 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
 
   const StyleAspectRatio& aspect_ratio = StyleRef().AspectRatio();
   if (!aspect_ratio.IsAuto()) {
-    intrinsic_sizing_info.aspect_ratio.SetWidth(
-        aspect_ratio.GetRatio().Width());
-    intrinsic_sizing_info.aspect_ratio.SetHeight(
-        aspect_ratio.GetRatio().Height());
+    intrinsic_sizing_info.aspect_ratio.set_width(
+        aspect_ratio.GetRatio().width());
+    intrinsic_sizing_info.aspect_ratio.set_height(
+        aspect_ratio.GetRatio().height());
     if (!IsHorizontalWritingMode()) {
       intrinsic_sizing_info.aspect_ratio =
           intrinsic_sizing_info.aspect_ratio.TransposedSize();
@@ -779,9 +779,10 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
     // If 'height' and 'width' both have computed values of 'auto' and the
     // element also has an intrinsic width, then that intrinsic width is the
     // used value of 'width'.
-    if (computed_height_is_auto && intrinsic_sizing_info.has_width)
+    if (computed_height_is_auto && intrinsic_sizing_info.has_width) {
       return ComputeReplacedLogicalWidthRespectingMinMaxWidth(
-          LayoutUnit(constrained_size.Width()), should_compute_preferred);
+          LayoutUnit(constrained_size.width()), should_compute_preferred);
+    }
 
     if (!intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
       // If 'height' and 'width' both have computed values of 'auto' and the
@@ -795,7 +796,7 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
           !computed_height_is_auto) {
         LayoutUnit estimated_used_width =
             intrinsic_sizing_info.has_width
-                ? LayoutUnit(constrained_size.Width())
+                ? LayoutUnit(constrained_size.width())
                 : ComputeConstrainedLogicalWidth(should_compute_preferred);
         LayoutUnit logical_height =
             ComputeReplacedLogicalHeight(estimated_used_width);
@@ -809,8 +810,8 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
         logical_height += border_padding.BlockSum();
         if (StyleRef().AspectRatio().GetType() == EAspectRatioType::kRatio)
           box_sizing = StyleRef().BoxSizing();
-        double aspect_ratio = intrinsic_sizing_info.aspect_ratio.Width() /
-                              intrinsic_sizing_info.aspect_ratio.Height();
+        double aspect_ratio = intrinsic_sizing_info.aspect_ratio.width() /
+                              intrinsic_sizing_info.aspect_ratio.height();
         return ComputeReplacedLogicalWidthRespectingMinMaxWidth(
             InlineSizeFromAspectRatio(border_padding, aspect_ratio, box_sizing,
                                       logical_height) -
@@ -833,9 +834,10 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
     // Otherwise, if 'width' has a computed value of 'auto', and the element has
     // an intrinsic width, then that intrinsic width is the used value of
     // 'width'.
-    if (intrinsic_sizing_info.has_width)
+    if (intrinsic_sizing_info.has_width) {
       return ComputeReplacedLogicalWidthRespectingMinMaxWidth(
-          LayoutUnit(constrained_size.Width()), should_compute_preferred);
+          LayoutUnit(constrained_size.width()), should_compute_preferred);
+    }
 
     // Otherwise, if 'width' has a computed value of 'auto', but none of the
     // conditions above are met, then the used value of 'width' becomes 300px.
@@ -878,19 +880,20 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalHeight(
   // If 'height' and 'width' both have computed values of 'auto' and the element
   // also has an intrinsic height, then that intrinsic height is the used value
   // of 'height'.
-  if (width_is_auto && intrinsic_sizing_info.has_height)
+  if (width_is_auto && intrinsic_sizing_info.has_height) {
     return ComputeReplacedLogicalHeightRespectingMinMaxHeight(
-        LayoutUnit(constrained_size.Height()));
+        LayoutUnit(constrained_size.height()));
+  }
 
   absl::optional<double> aspect_ratio;
   if (!intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
-    aspect_ratio = intrinsic_sizing_info.aspect_ratio.Height() /
-                   intrinsic_sizing_info.aspect_ratio.Width();
+    aspect_ratio = intrinsic_sizing_info.aspect_ratio.height() /
+                   intrinsic_sizing_info.aspect_ratio.width();
   } else if (!StyleRef().AspectRatio().IsAuto() &&
              !intrinsic_sizing_info.has_height &&
              intrinsic_sizing_info.has_width) {
-    aspect_ratio = StyleRef().AspectRatio().GetRatio().Height() /
-                   StyleRef().AspectRatio().GetRatio().Width();
+    aspect_ratio = StyleRef().AspectRatio().GetRatio().height() /
+                   StyleRef().AspectRatio().GetRatio().width();
   }
   // Otherwise, if 'height' has a computed value of 'auto', and the element has
   // an intrinsic ratio then the used value of 'height' is:
@@ -917,9 +920,10 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalHeight(
   // Otherwise, if 'height' has a computed value of 'auto', and the element has
   // an intrinsic height, then that intrinsic height is the used value of
   // 'height'.
-  if (intrinsic_sizing_info.has_height)
+  if (intrinsic_sizing_info.has_height) {
     return ComputeReplacedLogicalHeightRespectingMinMaxHeight(
-        LayoutUnit(constrained_size.Height()));
+        LayoutUnit(constrained_size.height()));
+  }
 
   // Otherwise, if 'height' has a computed value of 'auto', but none of the
   // conditions above are met, then the used value of 'height' must be set to

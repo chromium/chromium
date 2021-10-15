@@ -2453,12 +2453,12 @@ TEST_F(WebViewTest, HistoryResetScrollAndScaleState) {
                     .GetDocumentLoader()
                     ->GetHistoryItem()
                     ->GetViewState()
-                    ->scroll_offset_.Width());
+                    ->scroll_offset_.width());
   EXPECT_EQ(111, main_frame_local->Loader()
                      .GetDocumentLoader()
                      ->GetHistoryItem()
                      ->GetViewState()
-                     ->scroll_offset_.Height());
+                     ->scroll_offset_.height());
 
   // Confirm that resetting the page state resets the saved scroll position.
   web_view_impl->ResetScrollAndScaleState();
@@ -2699,7 +2699,7 @@ bool WebViewTest::TapElement(WebInputEvent::Type type, Element* element) {
           ->MainFrameImpl()
           ->GetFrameView()
           ->FrameToScreen(element->GetLayoutObject()->AbsoluteBoundingBoxRect())
-          .Center()));
+          .CenterPoint()));
 
   WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                         WebInputEvent::GetStaticTimeStampForTests(),
@@ -2724,9 +2724,9 @@ IntSize WebViewTest::PrintICBSizeFromPageSize(const FloatSize& page_size) {
   // The expected layout size comes from the calculation done in
   // ResizePageRectsKeepingRatio() which is used from PrintContext::begin() to
   // scale the page size.
-  const float ratio = page_size.Height() / (float)page_size.Width();
+  const float ratio = page_size.height() / (float)page_size.width();
   const int icb_width =
-      floor(page_size.Width() * PrintContext::kPrintingMinimumShrinkFactor);
+      floor(page_size.width() * PrintContext::kPrintingMinimumShrinkFactor);
   const int icb_height = floor(icb_width * ratio);
   return IntSize(icb_width, icb_height);
 }
@@ -5293,13 +5293,13 @@ TEST_F(WebViewTest, ResizeForPrintingViewportUnits) {
 
   frame->PrintBegin(print_params, WebNode());
 
-  EXPECT_EQ(expected_size.Width(), vw_element->OffsetWidth());
-  EXPECT_EQ(expected_size.Height(), vw_element->OffsetHeight());
+  EXPECT_EQ(expected_size.width(), vw_element->OffsetWidth());
+  EXPECT_EQ(expected_size.height(), vw_element->OffsetHeight());
 
   web_view->MainFrameWidget()->Resize(page_size);
 
-  EXPECT_EQ(expected_size.Width(), vw_element->OffsetWidth());
-  EXPECT_EQ(expected_size.Height(), vw_element->OffsetHeight());
+  EXPECT_EQ(expected_size.width(), vw_element->OffsetWidth());
+  EXPECT_EQ(expected_size.height(), vw_element->OffsetHeight());
 
   web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   frame->PrintEnd();
@@ -5366,7 +5366,7 @@ TEST_F(WebViewTest, ViewportUnitsPrintingWithPageZoom) {
   EXPECT_EQ(400, t2->OffsetWidth());
 
   gfx::Size page_size(600, 720);
-  int expected_width = PrintICBSizeFromPageSize(FloatSize(page_size)).Width();
+  int expected_width = PrintICBSizeFromPageSize(FloatSize(page_size)).width();
 
   WebPrintParams print_params;
   print_params.print_content_area.set_size(page_size);
@@ -6105,12 +6105,12 @@ TEST_F(WebViewTest, LongPressAndThenLongTapLinkInIframeShouldShowContextMenu) {
           web_view->MainFrame()->FirstChild()->ToWebLocalFrame())
           ->GetFrameView()
           ->FrameToScreen(anchor->GetLayoutObject()->AbsoluteBoundingBoxRect())
-          .Center();
+          .CenterPoint();
   WebGestureEvent event(WebInputEvent::Type::kGestureLongPress,
                         WebInputEvent::kNoModifiers,
                         WebInputEvent::GetStaticTimeStampForTests(),
                         WebGestureDevice::kTouchscreen);
-  event.SetPositionInWidget(gfx::PointF(center.X(), center.X()));
+  event.SetPositionInWidget(gfx::PointF(center.x(), center.x()));
 
   EXPECT_EQ(WebInputEventResult::kHandledSystem,
             web_view->MainFrameWidget()->HandleInputEvent(
@@ -6120,7 +6120,7 @@ TEST_F(WebViewTest, LongPressAndThenLongTapLinkInIframeShouldShowContextMenu) {
                             WebInputEvent::kNoModifiers,
                             WebInputEvent::GetStaticTimeStampForTests(),
                             WebGestureDevice::kTouchscreen);
-  tap_event.SetPositionInWidget(gfx::PointF(center.X(), center.X()));
+  tap_event.SetPositionInWidget(gfx::PointF(center.x(), center.x()));
 
   EXPECT_EQ(WebInputEventResult::kNotHandled,
             web_view->MainFrameWidget()->HandleInputEvent(

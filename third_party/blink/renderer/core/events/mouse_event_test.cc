@@ -71,8 +71,8 @@ TEST_P(MouseEventLayerPositionTest, LayerPositionAsExpected) {
   mouse_event_init.setClientY(input_layer_location.Y());
   MouseEvent mouse_event("mousedown", &mouse_event_init);
 
-  ASSERT_EQ(mouse_event.layerX(), expected_layer_location.X());
-  ASSERT_EQ(mouse_event.layerY(), expected_layer_location.Y());
+  ASSERT_EQ(mouse_event.layerX(), expected_layer_location.x());
+  ASSERT_EQ(mouse_event.layerY(), expected_layer_location.y());
 }
 
 INSTANTIATE_TEST_SUITE_P(

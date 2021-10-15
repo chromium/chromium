@@ -307,7 +307,7 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
         WebInputEvent::Type::kGestureScrollUpdate, 0, -100));
     EXPECT_FLOAT_EQ(100, container->scrollTop());
     EXPECT_FLOAT_EQ(
-        0, MainFrameView()->LayoutViewport()->GetScrollOffset().Height());
+        0, MainFrameView()->LayoutViewport()->GetScrollOffset().height());
   }
 
   {
@@ -321,7 +321,7 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
         WebInputEvent::Type::kGestureScrollUpdate, 0, -500));
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(
-        0, MainFrameView()->LayoutViewport()->GetScrollOffset().Height());
+        0, MainFrameView()->LayoutViewport()->GetScrollOffset().height());
     RunPendingTasks();
     Mock::VerifyAndClearExpectations(
         &widget->GetOverscrollWidgetInputHandlerHost());
@@ -337,7 +337,7 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
         WebInputEvent::Type::kGestureScrollUpdate, 0, -20));
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(
-        0, MainFrameView()->LayoutViewport()->GetScrollOffset().Height());
+        0, MainFrameView()->LayoutViewport()->GetScrollOffset().height());
     RunPendingTasks();
     Mock::VerifyAndClearExpectations(
         &widget->GetOverscrollWidgetInputHandlerHost());
@@ -360,7 +360,7 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
         WebInputEvent::Type::kGestureScrollUpdate, 0, -30));
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(
-        0, MainFrameView()->LayoutViewport()->GetScrollOffset().Height());
+        0, MainFrameView()->LayoutViewport()->GetScrollOffset().height());
     RunPendingTasks();
     Mock::VerifyAndClearExpectations(
         &widget->GetOverscrollWidgetInputHandlerHost());
@@ -603,8 +603,8 @@ TEST_F(RootScrollerTest, UseVisualViewportScrollbars) {
   ScrollableArea* container_scroller = GetScrollableArea(*container);
   EXPECT_FALSE(container_scroller->HorizontalScrollbar());
   EXPECT_FALSE(container_scroller->VerticalScrollbar());
-  EXPECT_GT(container_scroller->MaximumScrollOffset().Width(), 0);
-  EXPECT_GT(container_scroller->MaximumScrollOffset().Height(), 0);
+  EXPECT_GT(container_scroller->MaximumScrollOffset().width(), 0);
+  EXPECT_GT(container_scroller->MaximumScrollOffset().height(), 0);
 }
 
 // On Android, the main scrollbars are owned by the visual viewport and the
@@ -624,8 +624,8 @@ TEST_F(RootScrollerTest, UseVisualViewportScrollbarsIframe) {
 
   EXPECT_FALSE(container_scroller->HorizontalScrollbar());
   EXPECT_FALSE(container_scroller->VerticalScrollbar());
-  EXPECT_GT(container_scroller->MaximumScrollOffset().Width(), 0);
-  EXPECT_GT(container_scroller->MaximumScrollOffset().Height(), 0);
+  EXPECT_GT(container_scroller->MaximumScrollOffset().width(), 0);
+  EXPECT_GT(container_scroller->MaximumScrollOffset().height(), 0);
 }
 
 TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
@@ -663,7 +663,7 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
   // change in maximum scroll offset due to the top controls hiding. That is,
   // since the controls are hidden, the "content area" is taller so the maximum
   // scroll offset should shrink.
-  ASSERT_EQ(1000 - 400, container_scroller->MaximumScrollOffset().Height());
+  ASSERT_EQ(1000 - 400, container_scroller->MaximumScrollOffset().height());
 
   GetWebView()->MainFrameWidget()->HandleInputEvent(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollBegin));
@@ -674,16 +674,16 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
                                 -GetBrowserControls().TopHeight()));
   ASSERT_EQ(0, GetBrowserControls().TopShownRatio());
   ASSERT_EQ(0, GetBrowserControls().BottomShownRatio());
-  EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().Height());
+  EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().height());
 
   GetWebView()->MainFrameWidget()->HandleInputEvent(GenerateTouchGestureEvent(
       WebInputEvent::Type::kGestureScrollUpdate, 0, -3000));
-  EXPECT_EQ(1000 - 450, container_scroller->GetScrollOffset().Height());
+  EXPECT_EQ(1000 - 450, container_scroller->GetScrollOffset().height());
 
   GetWebView()->MainFrameWidget()->HandleInputEvent(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
   GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 450), 50, 50, false);
-  EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().Height());
+  EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().height());
 }
 
 TEST_F(RootScrollerTest, RotationAnchoring) {
@@ -721,12 +721,12 @@ TEST_F(RootScrollerTest, RotationAnchoring) {
 
     // The visual viewport should be 1.5 screens scrolled so that the target
     // occupies the bottom quadrant of the layout viewport.
-    ASSERT_EQ((250 * 3) / 2, container_scroller->GetScrollOffset().Width());
-    ASSERT_EQ((1000 * 3) / 2, container_scroller->GetScrollOffset().Height());
+    ASSERT_EQ((250 * 3) / 2, container_scroller->GetScrollOffset().width());
+    ASSERT_EQ((1000 * 3) / 2, container_scroller->GetScrollOffset().height());
 
     // The visual viewport should have scrolled the last half layout viewport.
-    ASSERT_EQ((250) / 2, GetVisualViewport().GetScrollOffset().Width());
-    ASSERT_EQ((1000) / 2, GetVisualViewport().GetScrollOffset().Height());
+    ASSERT_EQ((250) / 2, GetVisualViewport().GetScrollOffset().width());
+    ASSERT_EQ((1000) / 2, GetVisualViewport().GetScrollOffset().height());
   }
 
   // Now do a rotation resize.
@@ -735,8 +735,8 @@ TEST_F(RootScrollerTest, RotationAnchoring) {
 
   // The visual viewport should remain fully filled by the target.
   DOMRect* rect = target->getBoundingClientRect();
-  EXPECT_EQ(rect->left(), GetVisualViewport().GetScrollOffset().Width());
-  EXPECT_EQ(rect->top(), GetVisualViewport().GetScrollOffset().Height());
+  EXPECT_EQ(rect->left(), GetVisualViewport().GetScrollOffset().width());
+  EXPECT_EQ(rect->top(), GetVisualViewport().GetScrollOffset().height());
 }
 
 // Tests that we don't crash if the default documentElement isn't a valid root

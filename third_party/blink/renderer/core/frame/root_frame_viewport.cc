@@ -29,19 +29,19 @@ FloatRect GetUserScrollableRect(const ScrollableArea& area) {
   FloatSize scrollable_size =
       area.MaximumScrollOffset() - area.MinimumScrollOffset();
   if (area.UserInputScrollable(kHorizontalScrollbar)) {
-    user_scrollable_rect.SetX(area.MinimumScrollOffset().Width());
-    user_scrollable_rect.SetWidth(scrollable_size.Width());
+    user_scrollable_rect.set_x(area.MinimumScrollOffset().width());
+    user_scrollable_rect.set_width(scrollable_size.width());
   } else {
-    user_scrollable_rect.SetX(area.GetScrollOffset().Width());
-    user_scrollable_rect.SetWidth(0);
+    user_scrollable_rect.set_x(area.GetScrollOffset().width());
+    user_scrollable_rect.set_width(0);
   }
 
   if (area.UserInputScrollable(kVerticalScrollbar)) {
-    user_scrollable_rect.SetY(area.MinimumScrollOffset().Height());
-    user_scrollable_rect.SetHeight(scrollable_size.Height());
+    user_scrollable_rect.set_y(area.MinimumScrollOffset().height());
+    user_scrollable_rect.set_height(scrollable_size.height());
   } else {
-    user_scrollable_rect.SetY(area.GetScrollOffset().Height());
-    user_scrollable_rect.SetHeight(0);
+    user_scrollable_rect.set_y(area.GetScrollOffset().height());
+    user_scrollable_rect.set_height(0);
   }
   return user_scrollable_rect;
 }
@@ -115,8 +115,8 @@ void RootFrameViewport::RestoreToAnchor(const ScrollOffset& target_offset) {
                                      mojom::blink::ScrollType::kProgrammatic);
   } else {
     IntSize layout_delta = IntSize(
-        delta.Width() < 0 ? floor(delta.Width()) : ceil(delta.Width()),
-        delta.Height() < 0 ? floor(delta.Height()) : ceil(delta.Height()));
+        delta.width() < 0 ? floor(delta.width()) : ceil(delta.width()),
+        delta.height() < 0 ? floor(delta.height()) : ceil(delta.height()));
 
     LayoutViewport().SetScrollOffset(
         ScrollOffset(LayoutViewport().ScrollOffsetInt() + layout_delta),
@@ -181,7 +181,7 @@ IntRect RootFrameViewport::VisibleContentRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   return IntRect(
       IntPoint(ScrollOffsetInt()),
-      GetVisualViewport().VisibleContentRect(scrollbar_inclusion).Size());
+      GetVisualViewport().VisibleContentRect(scrollbar_inclusion).size());
 }
 
 PhysicalRect RootFrameViewport::VisibleScrollSnapportRect(
@@ -191,13 +191,13 @@ PhysicalRect RootFrameViewport::VisibleScrollSnapportRect(
   PhysicalRect frame_rect_in_content(
       PhysicalOffset::FromFloatSizeRound(LayoutViewport().GetScrollOffset()),
       PhysicalSize(
-          LayoutViewport().VisibleContentRect(scrollbar_inclusion).Size()));
+          LayoutViewport().VisibleContentRect(scrollbar_inclusion).size()));
   PhysicalRect visual_rect_in_content(
       PhysicalOffset::FromFloatSizeRound(
           LayoutViewport().GetScrollOffset() +
           GetVisualViewport().GetScrollAnimator().CurrentOffset()),
       PhysicalSize(
-          GetVisualViewport().VisibleContentRect(scrollbar_inclusion).Size()));
+          GetVisualViewport().VisibleContentRect(scrollbar_inclusion).size()));
 
   PhysicalRect visible_scroll_snapport =
       Intersection(visual_rect_in_content, frame_rect_in_content);
@@ -234,8 +234,8 @@ bool RootFrameViewport::IsActive() const {
 int RootFrameViewport::ScrollSize(ScrollbarOrientation orientation) const {
   IntSize scroll_dimensions =
       MaximumScrollOffsetInt() - MinimumScrollOffsetInt();
-  return (orientation == kHorizontalScrollbar) ? scroll_dimensions.Width()
-                                               : scroll_dimensions.Height();
+  return (orientation == kHorizontalScrollbar) ? scroll_dimensions.width()
+                                               : scroll_dimensions.height();
 }
 
 bool RootFrameViewport::IsScrollCornerVisible() const {
@@ -259,8 +259,8 @@ void RootFrameViewport::ApplyPendingHistoryRestoreScrollOffset() {
   // If the visual viewport's offset is (-1, -1) it means the history item
   // is an old version of HistoryItem so distribute the scroll between
   // the main frame and the visual viewport as best as we can.
-  if (visual_viewport_offset.Width() == -1 &&
-      visual_viewport_offset.Height() == -1) {
+  if (visual_viewport_offset.width() == -1 &&
+      visual_viewport_offset.height() == -1) {
     visual_viewport_offset = pending_view_state_->scroll_offset_ -
                              LayoutViewport().GetScrollOffset();
   }
@@ -322,10 +322,10 @@ ScrollOffset RootFrameViewport::ClampToUserScrollableOffset(
   ScrollOffset scroll_offset = offset;
   FloatRect user_scrollable = GetUserScrollableRect(LayoutViewport()) +
                               GetUserScrollableRect(GetVisualViewport());
-  scroll_offset.SetWidth(ClampTo(scroll_offset.Width(), user_scrollable.X(),
-                                 user_scrollable.MaxX()));
-  scroll_offset.SetHeight(ClampTo(scroll_offset.Height(), user_scrollable.Y(),
-                                  user_scrollable.MaxY()));
+  scroll_offset.set_width(ClampTo(scroll_offset.width(), user_scrollable.x(),
+                                  user_scrollable.right()));
+  scroll_offset.set_height(ClampTo(scroll_offset.height(), user_scrollable.y(),
+                                   user_scrollable.bottom()));
   return scroll_offset;
 }
 
@@ -551,17 +551,17 @@ ScrollResult RootFrameViewport::UserScroll(
   FloatSize layout_delta = pixel_delta - visual_consumed_delta;
   FloatSize scrollable_axis_delta(
       LayoutViewport().UserInputScrollable(kHorizontalScrollbar)
-          ? layout_delta.Width()
+          ? layout_delta.width()
           : 0,
       LayoutViewport().UserInputScrollable(kVerticalScrollbar)
-          ? layout_delta.Height()
+          ? layout_delta.height()
           : 0);
 
   // If there won't be any scrolling, bail early so we don't produce any side
   // effects like cancelling existing animations.
   if (visual_consumed_delta.IsZero() && scrollable_axis_delta.IsZero()) {
-    return ScrollResult(false, false, pixel_delta.Width(),
-                        pixel_delta.Height());
+    return ScrollResult(false, false, pixel_delta.width(),
+                        pixel_delta.height());
   }
 
   CancelProgrammaticScrollAnimation();
@@ -594,8 +594,8 @@ ScrollResult RootFrameViewport::UserScroll(
   return ScrollResult(
       visual_result.did_scroll_x || layout_result.did_scroll_x,
       visual_result.did_scroll_y || layout_result.did_scroll_y,
-      layout_result.unused_scroll_delta_x + unscrollable_axis_delta.Width(),
-      layout_result.unused_scroll_delta_y + unscrollable_axis_delta.Height());
+      layout_result.unused_scroll_delta_x + unscrollable_axis_delta.width(),
+      layout_result.unused_scroll_delta_y + unscrollable_axis_delta.height());
 }
 
 bool RootFrameViewport::ScrollAnimatorEnabled() const {

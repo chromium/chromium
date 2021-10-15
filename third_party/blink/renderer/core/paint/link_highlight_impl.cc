@@ -319,13 +319,13 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
     link_highlight_fragment.SetColor(color);
 
     auto bounding_rect = EnclosingIntRect(new_path.BoundingRect());
-    new_path.Translate(-FloatSize(ToIntSize(bounding_rect.Location())));
+    new_path.Translate(-FloatSize(ToIntSize(bounding_rect.origin())));
 
     cc::Layer* layer = link_highlight_fragment.Layer();
     DCHECK(layer);
     if (link_highlight_fragment.GetPath() != new_path) {
       link_highlight_fragment.SetPath(new_path);
-      layer->SetBounds(ToGfxSize(bounding_rect.Size()));
+      layer->SetBounds(ToGfxSize(bounding_rect.size()));
       layer->SetNeedsDisplay();
     }
 
@@ -337,7 +337,7 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
     property_tree_state.SetEffect(Effect());
     RecordForeignLayer(
         context, *debug_name_client, DisplayItem::kForeignLayerLinkHighlight,
-        layer, ToGfxPoint(bounding_rect.Location()), &property_tree_state);
+        layer, ToGfxPoint(bounding_rect.origin()), &property_tree_state);
   }
 
   DCHECK_EQ(index, fragments_.size());

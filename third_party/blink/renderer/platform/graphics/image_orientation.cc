@@ -32,8 +32,8 @@ namespace blink {
 
 AffineTransform ImageOrientation::TransformFromDefault(
     const FloatSize& drawn_size) const {
-  float w = drawn_size.Width();
-  float h = drawn_size.Height();
+  float w = drawn_size.width();
+  float h = drawn_size.height();
 
   switch (orientation_) {
     case ImageOrientationEnum::kOriginTopLeft:

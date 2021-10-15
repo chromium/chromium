@@ -143,19 +143,19 @@ IntPoint GetMiddleSelectionCaretOfPosition(
   if (local_caret_rect.IsEmpty())
     return IntPoint();
   const IntRect rect = AbsoluteCaretBoundsOf(position);
-  // In a multiline edit, rect.MaxY() would end up on the next line, so
+  // In a multiline edit, rect.bottom() would end up on the next line, so
   // take the midpoint in order to use this corner point directly.
   if (local_caret_rect.layout_object->IsHorizontalWritingMode())
-    return {rect.X(), (rect.Y() + rect.MaxY()) / 2};
+    return {rect.x(), (rect.y() + rect.bottom()) / 2};
 
-  // When text is vertical, rect.MaxX() would end up on the next line, so
+  // When text is vertical, rect.right() would end up on the next line, so
   // take the midpoint in order to use this corner point directly.
-  return {(rect.X() + rect.MaxX()) / 2, rect.Y()};
+  return {(rect.x() + rect.right()) / 2, rect.y()};
 }
 
 bool ContainsEvenAtEdge(const IntRect& rect, const IntPoint& point) {
-  return point.X() >= rect.X() && point.X() <= rect.MaxX() &&
-         point.Y() >= rect.Y() && point.Y() <= rect.MaxY();
+  return point.x() >= rect.x() && point.x() <= rect.right() &&
+         point.y() >= rect.y() && point.y() <= rect.bottom();
 }
 
 IntPoint DetermineHotSpot(const Image& image,
@@ -171,10 +171,10 @@ IntPoint DetermineHotSpot(const Image& image,
     if (image_rect.Contains(specified_hot_spot))
       return specified_hot_spot;
 
-    return IntPoint(ClampTo<int>(specified_hot_spot.X(), image_rect.X(),
-                                 image_rect.MaxX() - 1),
-                    ClampTo<int>(specified_hot_spot.Y(), image_rect.Y(),
-                                 image_rect.MaxY() - 1));
+    return IntPoint(ClampTo<int>(specified_hot_spot.x(), image_rect.x(),
+                                 image_rect.right() - 1),
+                    ClampTo<int>(specified_hot_spot.y(), image_rect.y(),
+                                 image_rect.bottom() - 1));
   }
 
   // If hot spot is not specified externally, it can be extracted from some
@@ -590,8 +590,8 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
       // Limit the size of cursors (in UI pixels) so that they cannot be
       // used to cover UI elements in chrome.
       size.Scale(1 / scale);
-      if (size.Width() > kMaximumCursorSize ||
-          size.Height() > kMaximumCursorSize)
+      if (size.width() > kMaximumCursorSize ||
+          size.height() > kMaximumCursorSize)
         continue;
 
       // For large cursors below the max size, limit their ability to cover UI
@@ -605,8 +605,8 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
       // large cursor. Also, consider augmenting the intervention to drop the
       // cursor for iframes if the cursor image obscures content in the parent
       // frame.
-      if (size.Width() > kMaximumCursorSizeWithoutFallback ||
-          size.Height() > kMaximumCursorSizeWithoutFallback) {
+      if (size.width() > kMaximumCursorSizeWithoutFallback ||
+          size.height() > kMaximumCursorSizeWithoutFallback) {
         PhysicalOffset cursor_offset =
             frame_->ContentLayoutObject()->LocalToAncestorPoint(
                 location.Point(),
@@ -2043,7 +2043,7 @@ void EventHandler::ApplyTouchAdjustment(WebGestureEvent* gesture_event,
     DCHECK(location.IsRectBasedTest());
     location = hit_test_result->ResolveRectBasedTest(adjusted_node, point);
     gesture_event->ApplyTouchAdjustment(
-        gfx::PointF(adjusted_point.X(), adjusted_point.Y()));
+        gfx::PointF(adjusted_point.x(), adjusted_point.y()));
   }
 }
 
@@ -2130,10 +2130,10 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
         visible_selection.ComputeEndPosition(), visible_selection.Affinity());
     const IntPoint end_point = GetMiddleSelectionCaretOfPosition(end_position);
 
-    int left = std::min(start_point.X(), end_point.X());
-    int top = std::min(start_point.Y(), end_point.Y());
-    int right = std::max(start_point.X(), end_point.X());
-    int bottom = std::max(start_point.Y(), end_point.Y());
+    int left = std::min(start_point.x(), end_point.x());
+    int top = std::min(start_point.y(), end_point.y());
+    int right = std::max(start_point.x(), end_point.x());
+    int bottom = std::max(start_point.y(), end_point.y());
 
     // If selection is a caret and is inside an anchor element, then set that
     // as the "focused" element so we can show "open link" option in context
@@ -2148,10 +2148,10 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
     if (focused_element) {
       IntRect clipped_rect = view->ViewportToFrame(
           GetFocusedElementRectForNonLocatedContextMenu(focused_element));
-      left = std::max(clipped_rect.X(), left);
-      top = std::max(clipped_rect.Y(), top);
-      right = std::min(clipped_rect.MaxX(), right);
-      bottom = std::min(clipped_rect.MaxY(), bottom);
+      left = std::max(clipped_rect.x(), left);
+      top = std::max(clipped_rect.y(), top);
+      right = std::min(clipped_rect.right(), right);
+      bottom = std::min(clipped_rect.bottom(), bottom);
     }
     IntRect selection_rect = IntRect(left, top, right - left, bottom - top);
 
@@ -2161,26 +2161,27 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
       location_in_root_frame = view->ConvertToRootFrame(end_point);
     } else {
       location_in_root_frame =
-          view->ConvertToRootFrame(selection_rect.Center());
+          view->ConvertToRootFrame(selection_rect.CenterPoint());
     }
   } else if (focused_element) {
     IntRect clipped_rect =
         GetFocusedElementRectForNonLocatedContextMenu(focused_element);
     location_in_root_frame =
-        visual_viewport.ViewportToRootFrame(clipped_rect.Center());
+        visual_viewport.ViewportToRootFrame(clipped_rect.CenterPoint());
   } else {
     location_in_root_frame = IntPoint(
-        visual_viewport.GetScrollOffset().Width() + kContextMenuMargin,
-        visual_viewport.GetScrollOffset().Height() + kContextMenuMargin);
+        visual_viewport.GetScrollOffset().width() + kContextMenuMargin,
+        visual_viewport.GetScrollOffset().height() + kContextMenuMargin);
   }
 
   frame_->View()->SetCursor(PointerCursor());
   IntPoint location_in_viewport =
       visual_viewport.RootFrameToViewport(location_in_root_frame);
   IntPoint global_position =
-      view->GetChromeClient()->ViewportToScreen(
-          IntRect(location_in_viewport, IntSize()), frame_->View())
-          .Location();
+      view->GetChromeClient()
+          ->ViewportToScreen(IntRect(location_in_viewport, IntSize()),
+                             frame_->View())
+          .origin();
 
   // Use the focused node as the target for hover and active.
   HitTestRequest request(HitTestRequest::kActive |
@@ -2201,8 +2202,8 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
 
   WebMouseEvent mouse_event(
       event_type,
-      gfx::PointF(location_in_root_frame.X(), location_in_root_frame.Y()),
-      gfx::PointF(global_position.X(), global_position.Y()),
+      gfx::PointF(location_in_root_frame.x(), location_in_root_frame.y()),
+      gfx::PointF(global_position.x(), global_position.y()),
       WebPointerProperties::Button::kNoButton, /* clickCount */ 0,
       WebInputEvent::kNoModifiers, base::TimeTicks::Now(), source_type);
   mouse_event.id = PointerEventFactory::kMouseId;

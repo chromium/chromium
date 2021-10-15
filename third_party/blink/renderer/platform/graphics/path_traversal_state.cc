@@ -26,14 +26,14 @@ namespace blink {
 
 static inline FloatPoint MidPoint(const FloatPoint& first,
                                   const FloatPoint& second) {
-  return FloatPoint((first.X() + second.X()) / 2.0f,
-                    (first.Y() + second.Y()) / 2.0f);
+  return FloatPoint((first.x() + second.x()) / 2.0f,
+                    (first.y() + second.y()) / 2.0f);
 }
 
 static inline float DistanceLine(const FloatPoint& start,
                                  const FloatPoint& end) {
-  return sqrtf((end.X() - start.X()) * (end.X() - start.X()) +
-               (end.Y() - start.Y()) * (end.Y() - start.Y()));
+  return sqrtf((end.x() - start.x()) * (end.x() - start.x()) +
+               (end.y() - start.y()) * (end.y() - start.y()));
 }
 
 struct QuadraticBezier {
@@ -208,7 +208,7 @@ void PathTraversalState::ProcessSegment() {
     float slope = FloatPoint(current_ - previous_).SlopeAngleRadians();
     if (action_ == kTraversalPointAtLength) {
       float offset = desired_length_ - total_length_;
-      current_.Move(offset * cosf(slope), offset * sinf(slope));
+      current_.Offset(offset * cosf(slope), offset * sinf(slope));
     } else {
       normal_angle_ = Rad2deg(slope);
     }

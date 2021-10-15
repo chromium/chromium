@@ -43,8 +43,8 @@ LayoutBoxModelObject* EnclosingBoxModelObject(LayoutObject* object) {
 }
 
 bool IsCoordinateInPage(int top, int left, const IntRect& page) {
-  return page.X() <= left && left < page.MaxX() && page.Y() <= top &&
-         top < page.MaxY();
+  return page.x() <= left && left < page.right() && page.y() <= top &&
+         top < page.bottom();
 }
 
 }  // namespace
@@ -66,7 +66,7 @@ void PrintContext::ComputePageRects(const FloatSize& print_size) {
     return;
 
   if (!use_printing_layout_) {
-    IntRect page_rect(0, 0, print_size.Width(), print_size.Height());
+    IntRect page_rect(0, 0, print_size.width(), print_size.height());
     page_rects_.push_back(page_rect);
     return;
   }
@@ -93,23 +93,23 @@ void PrintContext::ComputePageRectsWithPageSizeInternal(
 
   IntRect snapped_doc_rect = PixelSnappedIntRect(view->DocumentRect());
 
-  int page_width = page_size_in_pixels.Width();
+  int page_width = page_size_in_pixels.width();
   // We scaled with floating point arithmetic and need to ensure results like
   // 13329.99 are treated as 13330 so that we don't mistakenly assign an extra
   // page for the stray pixel.
-  int page_height = page_size_in_pixels.Height() + LayoutUnit::Epsilon();
+  int page_height = page_size_in_pixels.height() + LayoutUnit::Epsilon();
 
   bool is_horizontal = view->StyleRef().IsHorizontalWritingMode();
 
   int doc_logical_height =
-      is_horizontal ? snapped_doc_rect.Height() : snapped_doc_rect.Width();
+      is_horizontal ? snapped_doc_rect.height() : snapped_doc_rect.width();
   int page_logical_height = is_horizontal ? page_height : page_width;
   int page_logical_width = is_horizontal ? page_width : page_height;
 
-  int inline_direction_start = snapped_doc_rect.X();
-  int inline_direction_end = snapped_doc_rect.MaxX();
-  int block_direction_start = snapped_doc_rect.Y();
-  int block_direction_end = snapped_doc_rect.MaxY();
+  int inline_direction_start = snapped_doc_rect.x();
+  int inline_direction_end = snapped_doc_rect.right();
+  int block_direction_start = snapped_doc_rect.y();
+  int block_direction_end = snapped_doc_rect.bottom();
   if (!is_horizontal) {
     std::swap(block_direction_start, inline_direction_start);
     std::swap(block_direction_end, inline_direction_end);
@@ -137,7 +137,7 @@ void PrintContext::ComputePageRectsWithPageSizeInternal(
     if (!is_horizontal)
       page_rect = page_rect.TransposedRect();
     IntSize frame_scroll = scrollable_area->ScrollOffsetInt();
-    page_rect.Move(-frame_scroll.Width(), -frame_scroll.Height());
+    page_rect.Offset(-frame_scroll.width(), -frame_scroll.height());
     page_rects_.push_back(page_rect);
   }
 }
@@ -185,7 +185,7 @@ int PrintContext::PageNumberForElement(Element* element,
   LocalFrame* frame = element->GetDocument().GetFrame();
   FloatRect page_rect(FloatPoint(0, 0), page_size_in_pixels);
   ScopedPrintContext print_context(frame);
-  print_context->BeginPrintMode(page_rect.Width(), page_rect.Height());
+  print_context->BeginPrintMode(page_rect.width(), page_rect.height());
 
   LayoutBoxModelObject* box =
       EnclosingBoxModelObject(element->GetLayoutObject());
@@ -194,8 +194,8 @@ int PrintContext::PageNumberForElement(Element* element,
 
   FloatSize scaled_page_size = page_size_in_pixels;
   scaled_page_size.Scale(
-      frame->View()->LayoutViewport()->ContentsSize().Width() /
-      page_rect.Width());
+      frame->View()->LayoutViewport()->ContentsSize().width() /
+      page_rect.width());
   print_context->ComputePageRectsWithPageSize(scaled_page_size);
 
   int top = box->PixelSnappedOffsetTop(box->OffsetParent());
@@ -243,7 +243,7 @@ void PrintContext::OutputLinkedDestinations(GraphicsContext& context,
     LayoutObject* layout_object = entry.value->GetLayoutObject();
     if (!layout_object || !layout_object->GetFrameView())
       continue;
-    IntPoint anchor_point = layout_object->AbsoluteBoundingBoxRect().Location();
+    IntPoint anchor_point = layout_object->AbsoluteBoundingBoxRect().origin();
     if (page_rect.Contains(anchor_point))
       context.SetURLDestinationLocation(entry.key, anchor_point);
   }
@@ -277,10 +277,10 @@ String PrintContext::PageProperty(LocalFrame* frame,
                style->GetFontDescription().Family())
         ->CssText();
   }
-  if (!strcmp(property_name, "size"))
-    return String::Number(style->PageSize().Width()) + ' ' +
-           String::Number(style->PageSize().Height());
-
+  if (!strcmp(property_name, "size")) {
+    return String::Number(style->PageSize().width()) + ' ' +
+           String::Number(style->PageSize().height());
+  }
   return String("pageProperty() unimplemented for: ") + property_name;
 }
 
@@ -319,12 +319,12 @@ int PrintContext::NumberOfPages(LocalFrame* frame,
 
   FloatRect page_rect(FloatPoint(0, 0), page_size_in_pixels);
   ScopedPrintContext print_context(frame);
-  print_context->BeginPrintMode(page_rect.Width(), page_rect.Height());
+  print_context->BeginPrintMode(page_rect.width(), page_rect.height());
   // Account for shrink-to-fit.
   FloatSize scaled_page_size = page_size_in_pixels;
   scaled_page_size.Scale(
-      frame->View()->LayoutViewport()->ContentsSize().Width() /
-      page_rect.Width());
+      frame->View()->LayoutViewport()->ContentsSize().width() /
+      page_rect.width());
   print_context->ComputePageRectsWithPageSize(scaled_page_size);
   return print_context->PageCount();
 }

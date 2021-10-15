@@ -128,10 +128,10 @@ TEST(AnimatedWebPTests, verifyAnimationParametersTransparentImage) {
     EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
     EXPECT_EQ(kCanvasWidth, frame->Bitmap().width());
     EXPECT_EQ(kCanvasHeight, frame->Bitmap().height());
-    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().X());
-    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().Y());
-    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().Width());
-    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().Height());
+    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().x());
+    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().y());
+    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().width());
+    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().height());
     EXPECT_EQ(kFrameParameters[i].disposal_method, frame->GetDisposalMethod());
     EXPECT_EQ(kFrameParameters[i].alpha_blend_source,
               frame->GetAlphaBlendSource());
@@ -171,10 +171,10 @@ TEST(AnimatedWebPTests,
     EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
     EXPECT_EQ(kCanvasWidth, frame->Bitmap().width());
     EXPECT_EQ(kCanvasHeight, frame->Bitmap().height());
-    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().X());
-    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().Y());
-    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().Width());
-    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().Height());
+    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().x());
+    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().y());
+    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().width());
+    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().height());
     EXPECT_EQ(kFrameParameters[i].disposal_method, frame->GetDisposalMethod());
     EXPECT_EQ(kFrameParameters[i].alpha_blend_source,
               frame->GetAlphaBlendSource());
@@ -213,10 +213,10 @@ TEST(AnimatedWebPTests, verifyAnimationParametersBlendOverwrite) {
     EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
     EXPECT_EQ(kCanvasWidth, frame->Bitmap().width());
     EXPECT_EQ(kCanvasHeight, frame->Bitmap().height());
-    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().X());
-    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().Y());
-    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().Width());
-    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().Height());
+    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().x());
+    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().y());
+    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().width());
+    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().height());
     EXPECT_EQ(kFrameParameters[i].disposal_method, frame->GetDisposalMethod());
     EXPECT_EQ(kFrameParameters[i].alpha_blend_source,
               frame->GetAlphaBlendSource());

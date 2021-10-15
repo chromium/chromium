@@ -71,9 +71,9 @@ bool Region::Contains(const IntPoint& point) const {
     int y = span->y;
     int max_y = (span + 1)->y;
 
-    if (y > point.Y())
+    if (y > point.y())
       break;
-    if (max_y <= point.Y())
+    if (max_y <= point.y())
       continue;
 
     for (Shape::SegmentIterator segment = shape_.SegmentsBegin(span),
@@ -82,9 +82,9 @@ bool Region::Contains(const IntPoint& point) const {
       int x = *segment;
       int max_x = *(segment + 1);
 
-      if (x > point.X())
+      if (x > point.x())
         break;
-      if (max_x > point.X())
+      if (max_x > point.x())
         return true;
     }
   }
@@ -235,10 +235,10 @@ struct Region::Shape::CompareIntersectsOperation {
 Region::Shape::Shape() = default;
 
 Region::Shape::Shape(const IntRect& rect) {
-  AppendSpan(rect.Y());
-  AppendSegment(rect.X());
-  AppendSegment(rect.MaxX());
-  AppendSpan(rect.MaxY());
+  AppendSpan(rect.y());
+  AppendSegment(rect.x());
+  AppendSegment(rect.right());
+  AppendSpan(rect.bottom());
 }
 
 Region::Shape::Shape(wtf_size_t segments_capacity, wtf_size_t spans_capacity) {
@@ -382,9 +382,9 @@ IntRect Region::Shape::Bounds() const {
 
 void Region::Shape::Translate(const IntSize& offset) {
   for (wtf_size_t i = 0; i < segments_.size(); ++i)
-    segments_[i] += offset.Width();
+    segments_[i] += offset.width();
   for (wtf_size_t i = 0; i < spans_.size(); ++i)
-    spans_[i].y += offset.Height();
+    spans_[i].y += offset.height();
 }
 
 void Region::Shape::Swap(Shape& other) {
@@ -572,8 +572,8 @@ Region::Shape Region::Shape::SubtractShapes(const Shape& shape1,
 
 #if DCHECK_IS_ON()
 void Region::Dump() const {
-  printf("Bounds: (%d, %d, %d, %d)\n", bounds_.X(), bounds_.Y(),
-         bounds_.Width(), bounds_.Height());
+  printf("Bounds: (%d, %d, %d, %d)\n", bounds_.x(), bounds_.y(),
+         bounds_.width(), bounds_.height());
   shape_.Dump();
 }
 #endif
@@ -611,7 +611,7 @@ void Region::Unite(const Region& region) {
   Shape united_shape = Shape::UnionShapes(shape_, region.shape_);
 
   shape_.Swap(united_shape);
-  bounds_.Unite(region.bounds_);
+  bounds_.Union(region.bounds_);
 }
 
 void Region::Subtract(const Region& region) {
@@ -629,7 +629,7 @@ void Region::Subtract(const Region& region) {
 }
 
 void Region::Translate(const IntSize& offset) {
-  bounds_.Move(offset);
+  bounds_.Offset(offset);
   shape_.Translate(offset);
 }
 

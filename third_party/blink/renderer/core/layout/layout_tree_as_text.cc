@@ -609,10 +609,10 @@ static void Write(WTF::TextStream& ts,
     ScrollOffset adjusted_scroll_offset =
         scrollable_area->GetScrollOffset() +
         ToFloatSize(FloatPoint(scrollable_area->ScrollOrigin()));
-    if (adjusted_scroll_offset.Width())
-      ts << " scrollX " << adjusted_scroll_offset.Width();
-    if (adjusted_scroll_offset.Height())
-      ts << " scrollY " << adjusted_scroll_offset.Height();
+    if (adjusted_scroll_offset.width())
+      ts << " scrollX " << adjusted_scroll_offset.width();
+    if (adjusted_scroll_offset.height())
+      ts << " scrollY " << adjusted_scroll_offset.height();
     if (layer.GetLayoutBox() &&
         layer.GetLayoutBox()->PixelSnappedClientWidth() !=
             layer.GetLayoutBox()->PixelSnappedScrollWidth())

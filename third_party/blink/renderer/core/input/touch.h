@@ -84,14 +84,14 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
   // DOM Touch implementation
   EventTarget* target() const { return target_.Get(); }
   int identifier() const { return identifier_; }
-  double clientX() const { return client_pos_.X(); }
-  double clientY() const { return client_pos_.Y(); }
-  double screenX() const { return screen_pos_.X(); }
-  double screenY() const { return screen_pos_.Y(); }
-  double pageX() const { return page_pos_.X(); }
-  double pageY() const { return page_pos_.Y(); }
-  float radiusX() const { return radius_.Width(); }
-  float radiusY() const { return radius_.Height(); }
+  double clientX() const { return client_pos_.x(); }
+  double clientY() const { return client_pos_.y(); }
+  double screenX() const { return screen_pos_.x(); }
+  double screenY() const { return screen_pos_.y(); }
+  double pageX() const { return page_pos_.x(); }
+  double pageY() const { return page_pos_.y(); }
+  float radiusX() const { return radius_.width(); }
+  float radiusY() const { return radius_.height(); }
   float rotationAngle() const { return rotation_angle_; }
   float force() const { return force_; }
 

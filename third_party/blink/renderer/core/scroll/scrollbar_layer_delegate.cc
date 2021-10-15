@@ -168,9 +168,9 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
       scrollbar_->ClearThumbNeedsRepaint();
       break;
     case cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS: {
-      DCHECK_EQ(IntSize(rect.size()), scrollbar_->FrameRect().Size());
+      DCHECK_EQ(IntSize(rect.size()), scrollbar_->FrameRect().size());
       IntPoint offset(IntPoint(rect.origin()) -
-                      scrollbar_->FrameRect().Location());
+                      scrollbar_->FrameRect().origin());
       theme.PaintTrackButtonsTickmarks(painter.Context(), *scrollbar_, offset);
       scrollbar_->ClearTrackNeedsRepaint();
       break;

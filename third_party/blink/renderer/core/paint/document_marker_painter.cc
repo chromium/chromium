@@ -94,8 +94,8 @@ void DrawDocumentMarker(GraphicsContext& context,
                         float zoom,
                         PaintRecord* const marker) {
   // Position already includes zoom and device scale factor.
-  SkScalar origin_x = WebCoreFloatToSkScalar(pt.X());
-  SkScalar origin_y = WebCoreFloatToSkScalar(pt.Y());
+  SkScalar origin_x = WebCoreFloatToSkScalar(pt.x());
+  SkScalar origin_y = WebCoreFloatToSkScalar(pt.y());
 
 #if defined(OS_MAC)
   // Make sure to draw only complete dots, and finish inside the marked text.
@@ -143,8 +143,8 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
     LayoutUnit logical_height,
     bool in_dark_mode) {
   // start of line to draw, relative to box_origin.X()
-  LayoutUnit start = LayoutUnit(marker_rect.X());
-  LayoutUnit width = LayoutUnit(marker_rect.Width());
+  LayoutUnit start = LayoutUnit(marker_rect.x());
+  LayoutUnit width = LayoutUnit(marker_rect.width());
 
   // We need to have some space between underlines of subsequent clauses,
   // because some input methods do not use different underline styles for those.

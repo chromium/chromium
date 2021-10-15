@@ -220,8 +220,8 @@ ScrollOffset ScrollableArea::ResolveScrollDelta(ScrollGranularity granularity,
 ScrollResult ScrollableArea::UserScroll(ScrollGranularity granularity,
                                         const ScrollOffset& delta,
                                         ScrollCallback on_finish) {
-  TRACE_EVENT2("input", "ScrollableArea::UserScroll", "x", delta.Width(), "y",
-               delta.Height());
+  TRACE_EVENT2("input", "ScrollableArea::UserScroll", "x", delta.width(), "y",
+               delta.height());
 
   if (on_finish)
     RegisterScrollCompleteCallback(std::move(on_finish));
@@ -232,12 +232,12 @@ ScrollResult ScrollableArea::UserScroll(ScrollGranularity granularity,
   ScrollOffset pixel_delta = ResolveScrollDelta(granularity, delta);
 
   ScrollOffset scrollable_axis_delta(
-      UserInputScrollable(kHorizontalScrollbar) ? pixel_delta.Width() : 0,
-      UserInputScrollable(kVerticalScrollbar) ? pixel_delta.Height() : 0);
+      UserInputScrollable(kHorizontalScrollbar) ? pixel_delta.width() : 0,
+      UserInputScrollable(kVerticalScrollbar) ? pixel_delta.height() : 0);
 
   if (scrollable_axis_delta.IsZero()) {
-    return ScrollResult(false, false, pixel_delta.Width(),
-                        pixel_delta.Height());
+    return ScrollResult(false, false, pixel_delta.width(),
+                        pixel_delta.height());
   }
 
   CancelProgrammaticScrollAnimation();
@@ -250,8 +250,8 @@ ScrollResult ScrollableArea::UserScroll(ScrollGranularity granularity,
   // Delta that wasn't scrolled because the axis is !userInputScrollable
   // should count as unusedScrollDelta.
   ScrollOffset unscrollable_axis_delta = pixel_delta - scrollable_axis_delta;
-  result.unused_scroll_delta_x += unscrollable_axis_delta.Width();
-  result.unused_scroll_delta_y += unscrollable_axis_delta.Height();
+  result.unused_scroll_delta_x += unscrollable_axis_delta.width();
+  result.unused_scroll_delta_y += unscrollable_axis_delta.height();
 
   return result;
 }
@@ -288,7 +288,7 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   }
 
   TRACE_EVENT2("blink", "ScrollableArea::SetScrollOffset", "cur_x",
-               GetScrollOffset().Width(), "cur_y", GetScrollOffset().Height());
+               GetScrollOffset().width(), "cur_y", GetScrollOffset().height());
   TRACE_EVENT_INSTANT1("blink", "Type", TRACE_EVENT_SCOPE_THREAD, "type",
                        scroll_type);
   TRACE_EVENT_INSTANT1("blink", "Behavior", TRACE_EVENT_SCOPE_THREAD,
@@ -377,11 +377,11 @@ void ScrollableArea::UserScrollHelper(
     sequencer->AbortAnimations();
 
   float x = UserInputScrollable(kHorizontalScrollbar)
-                ? offset.Width()
-                : GetScrollAnimator().CurrentOffset().Width();
+                ? offset.width()
+                : GetScrollAnimator().CurrentOffset().width();
   float y = UserInputScrollable(kVerticalScrollbar)
-                ? offset.Height()
-                : GetScrollAnimator().CurrentOffset().Height();
+                ? offset.height()
+                : GetScrollAnimator().CurrentOffset().height();
 
   // Smooth user scrolls (keyboard, wheel clicks) are handled via the userScroll
   // method.
@@ -404,7 +404,7 @@ PhysicalRect ScrollableArea::ScrollIntoView(
 void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
                                          mojom::blink::ScrollType scroll_type) {
   TRACE_EVENT2("input", "ScrollableArea::scrollOffsetChanged", "x",
-               offset.Width(), "y", offset.Height());
+               offset.width(), "y", offset.height());
   TRACE_EVENT_INSTANT1("input", "Type", TRACE_EVENT_SCOPE_THREAD, "type",
                        scroll_type);
 
@@ -851,8 +851,8 @@ int ScrollableArea::PageStep(ScrollbarOrientation orientation) const {
   // [1] https://drafts.csswg.org/css-scroll-snap/#scroll-padding
   IntSize snapport_size =
       VisibleScrollSnapportRect(kExcludeScrollbars).PixelSnappedSize();
-  int length = (orientation == kHorizontalScrollbar) ? snapport_size.Width()
-                                                     : snapport_size.Height();
+  int length = (orientation == kHorizontalScrollbar) ? snapport_size.width()
+                                                     : snapport_size.height();
   int min_page_step =
       static_cast<float>(length) * MinFractionToStepWhenPaging();
   int page_step = std::max(min_page_step, length - MaxOverlapBetweenPages());
@@ -901,8 +901,8 @@ FloatQuad ScrollableArea::LocalToVisibleContentQuad(const FloatQuad& quad,
 }
 
 IntSize ScrollableArea::ExcludeScrollbars(const IntSize& size) const {
-  return IntSize(std::max(0, size.Width() - VerticalScrollbarWidth()),
-                 std::max(0, size.Height() - HorizontalScrollbarHeight()));
+  return IntSize(std::max(0, size.width() - VerticalScrollbarWidth()),
+                 std::max(0, size.height() - HorizontalScrollbarHeight()));
 }
 
 void ScrollableArea::DidCompositorScroll(const FloatPoint& position) {
@@ -1045,7 +1045,7 @@ void ScrollableArea::InjectGestureScrollEvent(
 
   GetChromeClient()->InjectGestureScrollEvent(
       *GetLayoutBox()->GetFrame(), device,
-      gfx::Vector2dF(delta.Width(), delta.Height()), granularity,
+      gfx::Vector2dF(delta.width(), delta.height()), granularity,
       GetScrollElementId(), gesture_type);
 }
 

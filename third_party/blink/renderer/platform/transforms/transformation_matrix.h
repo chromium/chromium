@@ -332,7 +332,7 @@ class PLATFORM_EXPORT TransformationMatrix {
   // Changes the transform to apply as if the origin were at (x, y, z).
   TransformationMatrix& ApplyTransformOrigin(double x, double y, double z);
   TransformationMatrix& ApplyTransformOrigin(const FloatPoint3D& origin) {
-    return ApplyTransformOrigin(origin.X(), origin.Y(), origin.Z());
+    return ApplyTransformOrigin(origin.x(), origin.y(), origin.z());
   }
 
   // Changes the transform to:

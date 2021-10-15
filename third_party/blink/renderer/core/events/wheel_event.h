@@ -72,10 +72,10 @@ class CORE_EXPORT WheelEvent final : public MouseEvent {
     return wheelDeltaY() ? wheelDeltaY() : wheelDeltaX();
   }  // Deprecated.
   int wheelDeltaX() const {
-    return wheel_delta_.X();
+    return wheel_delta_.x();
   }  // Deprecated, negative when scrolling right.
   int wheelDeltaY() const {
-    return wheel_delta_.Y();
+    return wheel_delta_.y();
   }  // Deprecated, negative when scrolling down.
   unsigned deltaMode() const { return delta_mode_; }
 

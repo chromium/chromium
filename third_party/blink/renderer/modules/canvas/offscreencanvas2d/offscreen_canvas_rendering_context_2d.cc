@@ -166,11 +166,11 @@ bool OffscreenCanvasRenderingContext2D::WouldTaintOrigin(
 }
 
 int OffscreenCanvasRenderingContext2D::Width() const {
-  return Host()->Size().Width();
+  return Host()->Size().width();
 }
 
 int OffscreenCanvasRenderingContext2D::Height() const {
-  return Host()->Size().Height();
+  return Host()->Size().height();
 }
 
 bool OffscreenCanvasRenderingContext2D::CanCreateCanvas2dResourceProvider()
@@ -691,18 +691,18 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
 
   switch (align) {
     case kCenterTextAlign:
-      location.SetX(location.X() - width / 2);
+      location.set_x(location.x() - width / 2);
       break;
     case kRightTextAlign:
-      location.SetX(location.X() - width);
+      location.set_x(location.x() - width);
       break;
     default:
       break;
   }
 
   FloatRect bounds(
-      location.X() - font_metrics.Height() / 2,
-      location.Y() - font_metrics.Ascent() - font_metrics.LineGap(),
+      location.x() - font_metrics.Height() / 2,
+      location.y() - font_metrics.Ascent() - font_metrics.LineGap(),
       width + font_metrics.Height(), font_metrics.LineSpacing());
   if (paint_type == CanvasRenderingContext2DState::kStrokePaintType)
     InflateStrokeRect(bounds);
@@ -710,7 +710,7 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
   int save_count = paint_canvas->getSaveCount();
   if (use_max_width) {
     paint_canvas->save();
-    paint_canvas->translate(location.X(), location.Y());
+    paint_canvas->translate(location.x(), location.y());
     // We draw when fontWidth is 0 so compositing operations (eg, a "copy" op)
     // still work.
     paint_canvas->scale((font_width > 0 ? (width / font_width) : 0), 1);

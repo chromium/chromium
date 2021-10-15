@@ -61,8 +61,8 @@ TEST_F(RotationViewportAnchorTest, SimpleAbsolutePosition) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(600, 400));
   Compositor().BeginFrame();
 
-  EXPECT_EQ(3050 - 200, layout_viewport->GetScrollOffset().Width());
-  EXPECT_EQ(4050, layout_viewport->GetScrollOffset().Height());
+  EXPECT_EQ(3050 - 200, layout_viewport->GetScrollOffset().width());
+  EXPECT_EQ(4050, layout_viewport->GetScrollOffset().height());
 }
 
 TEST_F(RotationViewportAnchorTest, PositionRelativeToViewportSize) {
@@ -100,9 +100,9 @@ TEST_F(RotationViewportAnchorTest, PositionRelativeToViewportSize) {
   // Place the target at the top-center of the viewport. This is where the
   // rotation anchor finds the node to anchor to.
   layout_viewport->SetScrollOffset(
-      ScrollOffset(target_position.X() -
+      ScrollOffset(target_position.x() -
                        WebView().MainFrameViewWidget()->Size().width() / 2 + 25,
-                   target_position.Y()),
+                   target_position.y()),
       mojom::blink::ScrollType::kProgrammatic);
 
   WebView().MainFrameViewWidget()->Resize(gfx::Size(600, 100));
@@ -113,12 +113,12 @@ TEST_F(RotationViewportAnchorTest, PositionRelativeToViewportSize) {
                5 * WebView().MainFrameViewWidget()->Size().height());
 
   IntPoint expected_offset(
-      target_position.X() -
+      target_position.x() -
           WebView().MainFrameViewWidget()->Size().width() / 2 + 25,
-      target_position.Y());
+      target_position.y());
 
-  EXPECT_EQ(expected_offset.X(), layout_viewport->GetScrollOffset().Width());
-  EXPECT_EQ(expected_offset.Y(), layout_viewport->GetScrollOffset().Height());
+  EXPECT_EQ(expected_offset.x(), layout_viewport->GetScrollOffset().width());
+  EXPECT_EQ(expected_offset.y(), layout_viewport->GetScrollOffset().height());
 }
 
 }  // namespace

@@ -627,15 +627,15 @@ void ReadYUV(const char* file_name,
   row_bytes[1] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kU);
   row_bytes[2] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kV);
 
-  size_t planes_data_size = row_bytes[0] * y_size.Height() +
-                            row_bytes[1] * u_size.Height() +
-                            row_bytes[2] * v_size.Height();
+  size_t planes_data_size = row_bytes[0] * y_size.height() +
+                            row_bytes[1] * u_size.height() +
+                            row_bytes[2] * v_size.height();
   auto planes_data = std::make_unique<char[]>(planes_data_size);
 
   void* planes[3];
   planes[0] = planes_data.get();
-  planes[1] = static_cast<char*>(planes[0]) + row_bytes[0] * y_size.Height();
-  planes[2] = static_cast<char*>(planes[1]) + row_bytes[1] * u_size.Height();
+  planes[1] = static_cast<char*>(planes[0]) + row_bytes[0] * y_size.height();
+  planes[2] = static_cast<char*>(planes[1]) + row_bytes[1] * u_size.height();
 
   decoder->SetImagePlanes(
       std::make_unique<ImagePlanes>(planes, row_bytes, color_type));
@@ -649,7 +649,7 @@ void ReadYUV(const char* file_name,
   EXPECT_EQ(ToGfxSize(size), metadata.image_size);
   if (expected_y_size == expected_uv_size)
     EXPECT_EQ(cc::YUVSubsampling::k444, metadata.yuv_subsampling);
-  else if (expected_y_size.Height() == expected_uv_size.Height())
+  else if (expected_y_size.height() == expected_uv_size.height())
     EXPECT_EQ(cc::YUVSubsampling::k422, metadata.yuv_subsampling);
   else
     EXPECT_EQ(cc::YUVSubsampling::k420, metadata.yuv_subsampling);

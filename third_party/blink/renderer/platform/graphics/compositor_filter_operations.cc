@@ -71,7 +71,7 @@ void CompositorFilterOperations::AppendBlurFilter(float amount,
 void CompositorFilterOperations::AppendDropShadowFilter(IntPoint offset,
                                                         float std_deviation,
                                                         const Color& color) {
-  gfx::Point gfx_offset(offset.X(), offset.Y());
+  gfx::Point gfx_offset(offset.x(), offset.y());
   filter_operations_.Append(cc::FilterOperation::CreateDropShadowFilter(
       gfx_offset, std_deviation, color.Rgb()));
 }

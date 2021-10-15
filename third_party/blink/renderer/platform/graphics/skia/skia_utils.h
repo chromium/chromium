@@ -112,8 +112,8 @@ inline WindRule SkFillTypeToWindRule(SkPathFillType fill_type) {
 }
 
 inline SkPoint FloatPointToSkPoint(const FloatPoint& point) {
-  return SkPoint::Make(WebCoreFloatToSkScalar(point.X()),
-                       WebCoreFloatToSkScalar(point.Y()));
+  return SkPoint::Make(WebCoreFloatToSkScalar(point.x()),
+                       WebCoreFloatToSkScalar(point.y()));
 }
 
 SkMatrix PLATFORM_EXPORT AffineTransformToSkMatrix(const AffineTransform&);

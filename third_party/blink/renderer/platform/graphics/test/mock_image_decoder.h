@@ -130,7 +130,7 @@ class MockImageDecoder : public ImageDecoder {
 
   void InitializeNewFrame(wtf_size_t index) override {
     if (frame_buffer_cache_[index].AllocatePixelData(
-            Size().Width(), Size().Height(), ColorSpaceForSkImages()))
+            Size().width(), Size().height(), ColorSpaceForSkImages()))
       frame_buffer_cache_[index].ZeroFillPixelData();
     frame_buffer_cache_[index].SetHasAlpha(false);
   }
@@ -155,8 +155,8 @@ class MockImageDecoderFactory : public ImageDecoderFactory {
 
   std::unique_ptr<ImageDecoder> Create() override {
     auto decoder = std::make_unique<MockImageDecoder>(client_);
-    decoder->SetSize(static_cast<unsigned>(decoded_size_.Width()),
-                     static_cast<unsigned>(decoded_size_.Height()));
+    decoder->SetSize(static_cast<unsigned>(decoded_size_.width()),
+                     static_cast<unsigned>(decoded_size_.height()));
     return std::move(decoder);
   }
 

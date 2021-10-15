@@ -42,7 +42,7 @@ class OverlapMapContainer {
  public:
   void Add(const IntRect& bounds) {
     layer_rects_.push_back(bounds);
-    bounding_box_.Unite(bounds);
+    bounding_box_.Union(bounds);
   }
 
   bool OverlapsLayers(const IntRect& bounds) const {
@@ -60,7 +60,7 @@ class OverlapMapContainer {
 
   void Unite(const OverlapMapContainer& other_container) {
     layer_rects_.AppendVector(other_container.layer_rects_);
-    bounding_box_.Unite(other_container.bounding_box_);
+    bounding_box_.Union(other_container.bounding_box_);
   }
 
  private:
@@ -447,7 +447,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
                       any_descendant_has3d_transform, unclipped_descendants,
                       absolute_child_descendant_bounding_box,
                       compositing_reasons_stats);
-      absolute_descendant_bounding_box.Unite(
+      absolute_descendant_bounding_box.Union(
           absolute_child_descendant_bounding_box);
 
       // If we have to make a layer for this child, make one now so we can have
@@ -498,7 +498,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
                       any_descendant_has3d_transform, unclipped_descendants,
                       absolute_child_descendant_bounding_box,
                       compositing_reasons_stats);
-      absolute_descendant_bounding_box.Unite(
+      absolute_descendant_bounding_box.Union(
           absolute_child_descendant_bounding_box);
     }
   }

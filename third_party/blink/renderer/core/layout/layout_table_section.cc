@@ -2173,7 +2173,7 @@ bool LayoutTableSection::MapToVisualRectInAncestorSpaceInternal(
   if (IsRepeatingHeaderGroup() || IsRepeatingFooterGroup()) {
     transform_state.Flatten();
     FloatRect rect = transform_state.LastPlanarQuad().BoundingBox();
-    rect.SetHeight(Table()->LogicalHeight());
+    rect.set_height(Table()->LogicalHeight());
     transform_state.SetQuad(FloatQuad(rect));
     return Table()->MapToVisualRectInAncestorSpaceInternal(
         ancestor, transform_state, flags);

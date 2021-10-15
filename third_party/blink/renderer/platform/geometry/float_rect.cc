@@ -45,20 +45,20 @@ FloatRect FloatRect::NarrowPrecision(double x,
 #if DCHECK_IS_ON()
 bool FloatRect::MayNotHaveExactIntRectRepresentation() const {
   static const float kMaxExactlyExpressible = 1 << FLT_MANT_DIG;
-  return fabs(X()) > kMaxExactlyExpressible ||
-         fabs(Y()) > kMaxExactlyExpressible ||
-         fabs(Width()) > kMaxExactlyExpressible ||
-         fabs(Height()) > kMaxExactlyExpressible ||
-         fabs(MaxX()) > kMaxExactlyExpressible ||
-         fabs(MaxY()) > kMaxExactlyExpressible;
+  return fabs(x()) > kMaxExactlyExpressible ||
+         fabs(y()) > kMaxExactlyExpressible ||
+         fabs(width()) > kMaxExactlyExpressible ||
+         fabs(height()) > kMaxExactlyExpressible ||
+         fabs(right()) > kMaxExactlyExpressible ||
+         fabs(bottom()) > kMaxExactlyExpressible;
 }
 
 bool FloatRect::EqualWithinEpsilon(const FloatRect& other,
                                    float epsilon) const {
-  return std::abs(other.X() - X()) <= epsilon &&
-         std::abs(other.Y() - Y()) <= epsilon &&
-         std::abs(other.Width() - Width()) <= epsilon &&
-         std::abs(other.Height() - Height()) <= epsilon;
+  return std::abs(other.x() - x()) <= epsilon &&
+         std::abs(other.y() - y()) <= epsilon &&
+         std::abs(other.width() - width()) <= epsilon &&
+         std::abs(other.height() - height()) <= epsilon;
 }
 
 #endif
@@ -68,118 +68,118 @@ bool FloatRect::IsFinite() const {
 }
 
 bool FloatRect::IsExpressibleAsIntRect() const {
-  return IsWithinIntRange(X()) && IsWithinIntRange(Y()) &&
-         IsWithinIntRange(Width()) && IsWithinIntRange(Height()) &&
-         IsWithinIntRange(MaxX()) && IsWithinIntRange(MaxY());
+  return IsWithinIntRange(x()) && IsWithinIntRange(y()) &&
+         IsWithinIntRange(width()) && IsWithinIntRange(height()) &&
+         IsWithinIntRange(right()) && IsWithinIntRange(bottom());
 }
 
 void FloatRect::ShiftXEdgeTo(float edge) {
-  float delta = edge - X();
-  SetX(edge);
-  SetWidth(std::max(0.0f, Width() - delta));
+  float delta = edge - x();
+  set_x(edge);
+  set_width(std::max(0.0f, width() - delta));
 }
 
 void FloatRect::ShiftMaxXEdgeTo(float edge) {
-  float delta = edge - MaxX();
-  SetWidth(std::max(0.0f, Width() + delta));
+  float delta = edge - right();
+  set_width(std::max(0.0f, width() + delta));
 }
 
 void FloatRect::ShiftYEdgeTo(float edge) {
-  float delta = edge - Y();
-  SetY(edge);
-  SetHeight(std::max(0.0f, Height() - delta));
+  float delta = edge - y();
+  set_y(edge);
+  set_height(std::max(0.0f, height() - delta));
 }
 
 void FloatRect::ShiftMaxYEdgeTo(float edge) {
-  float delta = edge - MaxY();
-  SetHeight(std::max(0.0f, Height() + delta));
+  float delta = edge - bottom();
+  set_height(std::max(0.0f, height() + delta));
 }
 
 bool FloatRect::Intersects(const FloatRect& other) const {
   // Checking emptiness handles negative widths as well as zero.
-  return !IsEmpty() && !other.IsEmpty() && X() < other.MaxX() &&
-         other.X() < MaxX() && Y() < other.MaxY() && other.Y() < MaxY();
+  return !IsEmpty() && !other.IsEmpty() && x() < other.right() &&
+         other.x() < right() && y() < other.bottom() && other.y() < bottom();
 }
 
 bool FloatRect::Intersects(const IntRect& other) const {
   // Checking emptiness handles negative widths as well as zero.
-  return !IsEmpty() && !other.IsEmpty() && X() < other.MaxX() &&
-         other.X() < MaxX() && Y() < other.MaxY() && other.Y() < MaxY();
+  return !IsEmpty() && !other.IsEmpty() && x() < other.right() &&
+         other.x() < right() && y() < other.bottom() && other.y() < bottom();
 }
 
 bool FloatRect::Contains(const IntRect& other) const {
-  return X() <= other.X() && MaxX() >= other.MaxX() && Y() <= other.Y() &&
-         MaxY() >= other.MaxY();
+  return x() <= other.x() && right() >= other.right() && y() <= other.y() &&
+         bottom() >= other.bottom();
 }
 
 bool FloatRect::Contains(const FloatRect& other) const {
-  return X() <= other.X() && MaxX() >= other.MaxX() && Y() <= other.Y() &&
-         MaxY() >= other.MaxY();
+  return x() <= other.x() && right() >= other.right() && y() <= other.y() &&
+         bottom() >= other.bottom();
 }
 
 bool FloatRect::Contains(const FloatPoint& point,
                          ContainsMode contains_mode) const {
   if (contains_mode == kInsideOrOnStroke)
-    return Contains(point.X(), point.Y());
-  return X() < point.X() && MaxX() > point.X() && Y() < point.Y() &&
-         MaxY() > point.Y();
+    return Contains(point.x(), point.y());
+  return x() < point.x() && right() > point.x() && y() < point.y() &&
+         bottom() > point.y();
 }
 
 void FloatRect::Intersect(const IntRect& other) {
-  float left = std::max(X(), static_cast<float>(other.X()));
-  float top = std::max(Y(), static_cast<float>(other.Y()));
-  float right = std::min(MaxX(), static_cast<float>(other.MaxX()));
-  float bottom = std::min(MaxY(), static_cast<float>(other.MaxY()));
+  float new_left = std::max(x(), static_cast<float>(other.x()));
+  float new_top = std::max(y(), static_cast<float>(other.y()));
+  float new_right = std::min(right(), static_cast<float>(other.right()));
+  float new_bottom = std::min(bottom(), static_cast<float>(other.bottom()));
 
   // Return a clean empty rectangle for non-intersecting cases.
-  if (left >= right || top >= bottom) {
-    left = 0;
-    top = 0;
-    right = 0;
-    bottom = 0;
+  if (new_left >= new_right || new_top >= new_bottom) {
+    new_left = 0;
+    new_top = 0;
+    new_right = 0;
+    new_bottom = 0;
   }
 
-  SetLocationAndSizeFromEdges(left, top, right, bottom);
+  SetLocationAndSizeFromEdges(new_left, new_top, new_right, new_bottom);
 }
 
 void FloatRect::Intersect(const FloatRect& other) {
-  float left = std::max(X(), other.X());
-  float top = std::max(Y(), other.Y());
-  float right = std::min(MaxX(), other.MaxX());
-  float bottom = std::min(MaxY(), other.MaxY());
+  float new_left = std::max(x(), other.x());
+  float new_top = std::max(y(), other.y());
+  float new_right = std::min(right(), other.right());
+  float new_bottom = std::min(bottom(), other.bottom());
 
   // Return a clean empty rectangle for non-intersecting cases.
-  if (left >= right || top >= bottom) {
-    left = 0;
-    top = 0;
-    right = 0;
-    bottom = 0;
+  if (new_left >= new_right || new_top >= new_bottom) {
+    new_left = 0;
+    new_top = 0;
+    new_right = 0;
+    new_bottom = 0;
   }
 
-  SetLocationAndSizeFromEdges(left, top, right, bottom);
+  SetLocationAndSizeFromEdges(new_left, new_top, new_right, new_bottom);
 }
 
 bool FloatRect::InclusiveIntersect(const FloatRect& other) {
-  float left = std::max(X(), other.X());
-  float top = std::max(Y(), other.Y());
-  float right = std::min(MaxX(), other.MaxX());
-  float bottom = std::min(MaxY(), other.MaxY());
+  float new_left = std::max(x(), other.x());
+  float new_top = std::max(y(), other.y());
+  float new_right = std::min(right(), other.right());
+  float new_bottom = std::min(bottom(), other.bottom());
 
   // Return a clean empty rectangle for non-intersecting cases.
-  if (left > right || top > bottom) {
-    left = 0;
-    top = 0;
-    right = 0;
-    bottom = 0;
-    SetLocationAndSizeFromEdges(left, top, right, bottom);
+  if (new_left > new_right || new_top > new_bottom) {
+    new_left = 0;
+    new_top = 0;
+    new_right = 0;
+    new_bottom = 0;
+    SetLocationAndSizeFromEdges(new_left, new_top, new_right, new_bottom);
     return false;
   }
 
-  SetLocationAndSizeFromEdges(left, top, right, bottom);
+  SetLocationAndSizeFromEdges(new_left, new_top, new_right, new_bottom);
   return true;
 }
 
-void FloatRect::Unite(const FloatRect& other) {
+void FloatRect::Union(const FloatRect& other) {
   // Handle empty special cases first.
   if (other.IsEmpty())
     return;
@@ -188,19 +188,19 @@ void FloatRect::Unite(const FloatRect& other) {
     return;
   }
 
-  UniteEvenIfEmpty(other);
+  UnionEvenIfEmpty(other);
 }
 
-void FloatRect::UniteEvenIfEmpty(const FloatRect& other) {
-  float min_x = std::min(X(), other.X());
-  float min_y = std::min(Y(), other.Y());
-  float max_x = std::max(this->MaxX(), other.MaxX());
-  float max_y = std::max(this->MaxY(), other.MaxY());
+void FloatRect::UnionEvenIfEmpty(const FloatRect& other) {
+  float min_x = std::min(x(), other.x());
+  float min_y = std::min(y(), other.y());
+  float max_x = std::max(this->right(), other.right());
+  float max_y = std::max(this->bottom(), other.bottom());
 
   SetLocationAndSizeFromEdges(min_x, min_y, max_x, max_y);
 }
 
-void FloatRect::UniteIfNonZero(const FloatRect& other) {
+void FloatRect::UnionIfNonZero(const FloatRect& other) {
   // Handle empty special cases first.
   if (other.IsZero())
     return;
@@ -209,37 +209,37 @@ void FloatRect::UniteIfNonZero(const FloatRect& other) {
     return;
   }
 
-  UniteEvenIfEmpty(other);
+  UnionEvenIfEmpty(other);
 }
 
 void FloatRect::Extend(const FloatPoint& p) {
-  float min_x = std::min(X(), p.X());
-  float min_y = std::min(Y(), p.Y());
-  float max_x = std::max(this->MaxX(), p.X());
-  float max_y = std::max(this->MaxY(), p.Y());
+  float min_x = std::min(x(), p.x());
+  float min_y = std::min(y(), p.y());
+  float max_x = std::max(this->right(), p.x());
+  float max_y = std::max(this->bottom(), p.y());
 
   SetLocationAndSizeFromEdges(min_x, min_y, max_x, max_y);
 }
 
 void FloatRect::Scale(float sx, float sy) {
-  location_.SetX(X() * sx);
-  location_.SetY(Y() * sy);
-  size_.SetWidth(Width() * sx);
-  size_.SetHeight(Height() * sy);
+  location_.set_x(x() * sx);
+  location_.set_y(y() * sy);
+  size_.set_width(width() * sx);
+  size_.set_height(height() * sy);
 }
 
 float FloatRect::SquaredDistanceTo(const FloatPoint& point) const {
   FloatPoint closest_point;
-  closest_point.SetX(ClampTo<float>(point.X(), X(), MaxX()));
-  closest_point.SetY(ClampTo<float>(point.Y(), Y(), MaxY()));
+  closest_point.set_x(ClampTo<float>(point.x(), x(), right()));
+  closest_point.set_y(ClampTo<float>(point.y(), y(), bottom()));
   return (point - closest_point).DiagonalLengthSquared();
 }
 
-FloatRect UnionRect(const Vector<FloatRect>& rects) {
+FloatRect UnionRects(const Vector<FloatRect>& rects) {
   FloatRect result;
 
   for (const auto& rect : rects)
-    result.Unite(rect);
+    result.Union(rect);
 
   return result;
 }
@@ -247,10 +247,10 @@ FloatRect UnionRect(const Vector<FloatRect>& rects) {
 FloatRect MaximumCoveredRect(const FloatRect& a, const FloatRect& b) {
   // Check a or b by itself.
   FloatRect maximum(a);
-  float maximum_area = a.Size().Area();
-  if (b.Size().Area() > maximum_area) {
+  float maximum_area = a.size().Area();
+  if (b.size().Area() > maximum_area) {
     maximum = b;
-    maximum_area = b.Size().Area();
+    maximum_area = b.size().Area();
   }
   // Check the regions that include the intersection of a and b. This can be
   // done by taking the intersection and expanding it vertically and
@@ -260,47 +260,48 @@ FloatRect MaximumCoveredRect(const FloatRect& a, const FloatRect& b) {
   intersection.InclusiveIntersect(b);
   if (!intersection.IsZero()) {
     FloatRect vert_expanded_intersection(intersection);
-    vert_expanded_intersection.ShiftYEdgeTo(std::min(a.Y(), b.Y()));
-    vert_expanded_intersection.ShiftMaxYEdgeTo(std::max(a.MaxY(), b.MaxY()));
-    if (vert_expanded_intersection.Size().Area() > maximum_area) {
+    vert_expanded_intersection.ShiftYEdgeTo(std::min(a.y(), b.y()));
+    vert_expanded_intersection.ShiftMaxYEdgeTo(
+        std::max(a.bottom(), b.bottom()));
+    if (vert_expanded_intersection.size().Area() > maximum_area) {
       maximum = vert_expanded_intersection;
-      maximum_area = vert_expanded_intersection.Size().Area();
+      maximum_area = vert_expanded_intersection.size().Area();
     }
     FloatRect horiz_expanded_intersection(intersection);
-    horiz_expanded_intersection.ShiftXEdgeTo(std::min(a.X(), b.X()));
-    horiz_expanded_intersection.ShiftMaxXEdgeTo(std::max(a.MaxX(), b.MaxX()));
-    if (horiz_expanded_intersection.Size().Area() > maximum_area) {
+    horiz_expanded_intersection.ShiftXEdgeTo(std::min(a.x(), b.x()));
+    horiz_expanded_intersection.ShiftMaxXEdgeTo(std::max(a.right(), b.right()));
+    if (horiz_expanded_intersection.size().Area() > maximum_area) {
       maximum = horiz_expanded_intersection;
-      maximum_area = horiz_expanded_intersection.Size().Area();
+      maximum_area = horiz_expanded_intersection.size().Area();
     }
   }
   return maximum;
 }
 
 IntRect EnclosedIntRect(const FloatRect& rect) {
-  IntPoint location = CeiledIntPoint(rect.Location());
-  IntPoint max_point = FlooredIntPoint(rect.MaxXMaxYCorner());
-  IntSize size(base::ClampSub(max_point.X(), location.X()),
-               base::ClampSub(max_point.Y(), location.Y()));
+  IntPoint location = CeiledIntPoint(rect.origin());
+  IntPoint max_point = FlooredIntPoint(rect.bottom_right());
+  IntSize size(base::ClampSub(max_point.x(), location.x()),
+               base::ClampSub(max_point.y(), location.y()));
   size.ClampNegativeToZero();
   return IntRect(location, size);
 }
 
 IntRect RoundedIntRect(const FloatRect& rect) {
-  return IntRect(RoundedIntPoint(rect.Location()), RoundedIntSize(rect.Size()));
+  return IntRect(RoundedIntPoint(rect.origin()), RoundedIntSize(rect.size()));
 }
 
 FloatRect MapRect(const FloatRect& r,
                   const FloatRect& src_rect,
                   const FloatRect& dest_rect) {
-  if (!src_rect.Width() || !src_rect.Height())
+  if (!src_rect.width() || !src_rect.height())
     return FloatRect();
 
-  float width_scale = dest_rect.Width() / src_rect.Width();
-  float height_scale = dest_rect.Height() / src_rect.Height();
-  return FloatRect(dest_rect.X() + (r.X() - src_rect.X()) * width_scale,
-                   dest_rect.Y() + (r.Y() - src_rect.Y()) * height_scale,
-                   r.Width() * width_scale, r.Height() * height_scale);
+  float width_scale = dest_rect.width() / src_rect.width();
+  float height_scale = dest_rect.height() / src_rect.height();
+  return FloatRect(dest_rect.x() + (r.x() - src_rect.x()) * width_scale,
+                   dest_rect.y() + (r.y() - src_rect.y()) * height_scale,
+                   r.width() * width_scale, r.height() * height_scale);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const FloatRect& rect) {
@@ -308,15 +309,15 @@ std::ostream& operator<<(std::ostream& ostream, const FloatRect& rect) {
 }
 
 String FloatRect::ToString() const {
-  return String::Format("%s %s", Location().ToString().Ascii().c_str(),
-                        Size().ToString().Ascii().c_str());
+  return String::Format("%s %s", origin().ToString().Ascii().c_str(),
+                        size().ToString().Ascii().c_str());
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const FloatRect& r) {
-  ts << "at (" << WTF::TextStream::FormatNumberRespectingIntegers(r.X());
-  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(r.Y());
-  ts << ") size " << WTF::TextStream::FormatNumberRespectingIntegers(r.Width());
-  ts << "x" << WTF::TextStream::FormatNumberRespectingIntegers(r.Height());
+  ts << "at (" << WTF::TextStream::FormatNumberRespectingIntegers(r.x());
+  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(r.y());
+  ts << ") size " << WTF::TextStream::FormatNumberRespectingIntegers(r.width());
+  ts << "x" << WTF::TextStream::FormatNumberRespectingIntegers(r.height());
   return ts;
 }
 

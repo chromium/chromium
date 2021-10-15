@@ -30,7 +30,7 @@ PaintRenderingContext2D::PaintRenderingContext2D(
 void PaintRenderingContext2D::InitializePaintRecorder() {
   paint_recorder_ = std::make_unique<PaintRecorder>();
   cc::PaintCanvas* canvas = paint_recorder_->beginRecording(
-      container_size_.Width(), container_size_.Height());
+      container_size_.width(), container_size_.height());
 
   // Always save an initial frame, to support resetting the top level matrix
   // and clip.
@@ -42,11 +42,11 @@ void PaintRenderingContext2D::InitializePaintRecorder() {
 }
 
 int PaintRenderingContext2D::Width() const {
-  return container_size_.Width();
+  return container_size_.width();
 }
 
 int PaintRenderingContext2D::Height() const {
-  return container_size_.Height();
+  return container_size_.height();
 }
 
 bool PaintRenderingContext2D::ParseColorOrCurrentColor(

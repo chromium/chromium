@@ -611,7 +611,7 @@ FloatRect LayoutBoxModelObject::LocalBoundingBoxFloatRect() const {
 
   FloatRect result = quads[0].BoundingBox();
   for (wtf_size_t i = 1; i < n; ++i)
-    result.Unite(quads[i].BoundingBox());
+    result.Union(quads[i].BoundingBox());
   return result;
 }
 
@@ -1091,8 +1091,8 @@ PhysicalOffset LayoutBoxModelObject::StickyPositionOffset() const {
   PhysicalRect constraining_rect = ComputeStickyConstrainingRect();
   FloatPoint scroll_position =
       ancestor_scroll_container_layer->GetScrollableArea()->ScrollPosition();
-  constraining_rect.Move(PhysicalOffset(LayoutUnit(scroll_position.X()),
-                                        LayoutUnit(scroll_position.Y())));
+  constraining_rect.Move(PhysicalOffset(LayoutUnit(scroll_position.x()),
+                                        LayoutUnit(scroll_position.y())));
   return constraints->ComputeStickyOffset(
       constraining_rect, ancestor_scroll_container_layer->GetScrollableArea()
                              ->GetStickyConstraintsMap());

@@ -43,14 +43,14 @@ static inline bool AreCollinearPoints(const FloatPoint& p0,
 
 static inline bool AreCoincidentPoints(const FloatPoint& p0,
                                        const FloatPoint& p1) {
-  return p0.X() == p1.X() && p0.Y() == p1.Y();
+  return p0.x() == p1.x() && p0.y() == p1.y();
 }
 
 static inline bool IsPointOnLineSegment(const FloatPoint& vertex1,
                                         const FloatPoint& vertex2,
                                         const FloatPoint& point) {
-  return point.X() >= std::min(vertex1.X(), vertex2.X()) &&
-         point.X() <= std::max(vertex1.X(), vertex2.X()) &&
+  return point.x() >= std::min(vertex1.x(), vertex2.x()) &&
+         point.x() <= std::max(vertex1.x(), vertex2.x()) &&
          AreCollinearPoints(vertex1, vertex2, point);
 }
 
@@ -92,7 +92,7 @@ FloatPolygon::FloatPolygon(Vector<FloatPoint> vertices)
   empty_ = n_vertices < 3;
 
   if (n_vertices)
-    bounding_box_.SetLocation(VertexAt(0));
+    bounding_box_.set_origin(VertexAt(0));
 
   if (empty_)
     return;
@@ -100,9 +100,9 @@ FloatPolygon::FloatPolygon(Vector<FloatPoint> vertices)
   unsigned min_vertex_index = 0;
   for (unsigned i = 1; i < n_vertices; ++i) {
     const FloatPoint& vertex = VertexAt(i);
-    if (vertex.Y() < VertexAt(min_vertex_index).Y() ||
-        (vertex.Y() == VertexAt(min_vertex_index).Y() &&
-         vertex.X() < VertexAt(min_vertex_index).X()))
+    if (vertex.y() < VertexAt(min_vertex_index).y() ||
+        (vertex.y() == VertexAt(min_vertex_index).y() &&
+         vertex.x() < VertexAt(min_vertex_index).x()))
       min_vertex_index = i;
   }
   FloatPoint next_vertex = VertexAt((min_vertex_index + 1) % n_vertices);
@@ -168,8 +168,8 @@ bool FloatPolygon::OverlappingEdges(
 static inline float LeftSide(const FloatPoint& vertex1,
                              const FloatPoint& vertex2,
                              const FloatPoint& point) {
-  return ((point.X() - vertex1.X()) * (vertex2.Y() - vertex1.Y())) -
-         ((vertex2.X() - vertex1.X()) * (point.Y() - vertex1.Y()));
+  return ((point.x() - vertex1.x()) * (vertex2.y() - vertex1.y())) -
+         ((vertex2.x() - vertex1.x()) * (point.y() - vertex1.y()));
 }
 
 bool FloatPolygon::ContainsEvenOdd(const FloatPoint& point) const {
@@ -181,10 +181,10 @@ bool FloatPolygon::ContainsEvenOdd(const FloatPoint& point) const {
     const FloatPoint& vertex2 = EdgeAt(i).Vertex2();
     if (IsPointOnLineSegment(vertex1, vertex2, point))
       return true;
-    if ((vertex1.Y() <= point.Y() && vertex2.Y() > point.Y()) ||
-        (vertex1.Y() > point.Y() && vertex2.Y() <= point.Y())) {
-      float vt = (point.Y() - vertex1.Y()) / (vertex2.Y() - vertex1.Y());
-      if (point.X() < vertex1.X() + vt * (vertex2.X() - vertex1.X()))
+    if ((vertex1.y() <= point.y() && vertex2.y() > point.y()) ||
+        (vertex1.y() > point.y() && vertex2.y() <= point.y())) {
+      float vt = (point.y() - vertex1.y()) / (vertex2.y() - vertex1.y());
+      if (point.x() < vertex1.x() + vt * (vertex2.x() - vertex1.x()))
         ++crossing_count;
     }
   }
@@ -200,11 +200,11 @@ bool FloatPolygon::ContainsNonZero(const FloatPoint& point) const {
     const FloatPoint& vertex2 = EdgeAt(i).Vertex2();
     if (IsPointOnLineSegment(vertex1, vertex2, point))
       return true;
-    if (vertex2.Y() <= point.Y()) {
-      if ((vertex1.Y() > point.Y()) && (LeftSide(vertex1, vertex2, point) > 0))
+    if (vertex2.y() <= point.y()) {
+      if ((vertex1.y() > point.y()) && (LeftSide(vertex1, vertex2, point) > 0))
         ++winding_number;
-    } else if (vertex2.Y() >= point.Y()) {
-      if ((vertex1.Y() <= point.Y()) && (LeftSide(vertex1, vertex2, point) < 0))
+    } else if (vertex2.y() >= point.y()) {
+      if ((vertex1.y() <= point.y()) && (LeftSide(vertex1, vertex2, point) < 0))
         --winding_number;
     }
   }

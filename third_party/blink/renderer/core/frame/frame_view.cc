@@ -144,9 +144,9 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       // intersection rect that is bigger than the rect we started with. Clamp
       // the size of the viewport intersection to the bounds of the iframe's
       // content rect.
-      viewport_intersection.SetLocation(
-          viewport_intersection.Location().ExpandedTo(IntPoint()));
-      viewport_intersection.SetSize(viewport_intersection.Size().ShrunkTo(
+      viewport_intersection.set_origin(
+          viewport_intersection.origin().ExpandedTo(IntPoint()));
+      viewport_intersection.set_size(viewport_intersection.size().ShrunkTo(
           RoundedIntSize(owner_layout_object->ContentSize())));
     }
 
@@ -162,9 +162,9 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       } else {
         mainframe_intersection = EnclosingIntRect(mainframe_intersection_rect);
       }
-      mainframe_intersection.SetLocation(
-          mainframe_intersection.Location().ExpandedTo(IntPoint()));
-      mainframe_intersection.SetSize(mainframe_intersection.Size().ShrunkTo(
+      mainframe_intersection.set_origin(
+          mainframe_intersection.origin().ExpandedTo(IntPoint()));
+      mainframe_intersection.set_size(mainframe_intersection.size().ShrunkTo(
           RoundedIntSize(owner_layout_object->ContentSize())));
     }
 
@@ -206,7 +206,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
             .BoundingBox()));
     // Return <0, 0, 0, 0> if there is no area.
     if (projected_rect.IsEmpty())
-      projected_rect.SetLocation(IntPoint(0, 0));
+      projected_rect.set_origin(IntPoint(0, 0));
     GetFrame().Client()->OnMainFrameIntersectionChanged(projected_rect);
   }
 

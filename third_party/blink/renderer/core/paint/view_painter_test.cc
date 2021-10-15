@@ -93,7 +93,7 @@ void ViewPainterFixedBackgroundTest::RunFixedBackgroundTest(
   if (prefer_compositing_to_lcd_text) {
     EXPECT_EQ(SkRect::MakeXYWH(0, 0, 800, 600), rect);
   } else {
-    EXPECT_EQ(SkRect::MakeXYWH(scroll_offset.Width(), scroll_offset.Height(),
+    EXPECT_EQ(SkRect::MakeXYWH(scroll_offset.width(), scroll_offset.height(),
                                800, 600),
               rect);
   }

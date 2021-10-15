@@ -140,7 +140,7 @@ static FloatRect DefaultFilterPrimitiveSubregion(FilterEffect* filter_effect) {
     // filter region..."
     if (input_effect->GetFilterEffectType() == kFilterEffectTypeSourceInput)
       return filter_effect->GetFilter()->FilterRegion();
-    subregion_union.Unite(input_effect->FilterPrimitiveSubregion());
+    subregion_union.Union(input_effect->FilterPrimitiveSubregion());
   }
   return subregion_union;
 }
@@ -156,13 +156,13 @@ void SVGFilterPrimitiveStandardAttributes::SetStandardAttributes(
       SVGLengthContext::ResolveRectangle(this, primitive_units, reference_box);
 
   if (x()->IsSpecified())
-    subregion.SetX(primitive_boundaries.X());
+    subregion.set_x(primitive_boundaries.x());
   if (y()->IsSpecified())
-    subregion.SetY(primitive_boundaries.Y());
+    subregion.set_y(primitive_boundaries.y());
   if (width()->IsSpecified())
-    subregion.SetWidth(primitive_boundaries.Width());
+    subregion.set_width(primitive_boundaries.width());
   if (height()->IsSpecified())
-    subregion.SetHeight(primitive_boundaries.Height());
+    subregion.set_height(primitive_boundaries.height());
 
   filter_effect->SetFilterPrimitiveSubregion(subregion);
 }

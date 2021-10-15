@@ -362,7 +362,7 @@ void LayoutEmbeddedContent::UpdateGeometry(
   FloatRect absolute_bounding_box =
       transform_state.LastPlanarQuad().BoundingBox();
   IntRect frame_rect(IntPoint(),
-                     PixelSnappedIntRect(absolute_replaced_rect).Size());
+                     PixelSnappedIntRect(absolute_replaced_rect).size());
   // Normally the location of the frame rect is ignored by the painter, but
   // currently it is still used by a family of coordinate conversion function in
   // LocalFrameView. This is incorrect because coordinate conversion
@@ -372,7 +372,7 @@ void LayoutEmbeddedContent::UpdateGeometry(
   // RemoteFrameView::frameRectsChanged().
   // WebPluginContainerImpl::reportGeometry()
   // TODO(trchen): Remove this hack once we fixed all callers.
-  frame_rect.SetLocation(RoundedIntPoint(absolute_bounding_box.Location()));
+  frame_rect.set_origin(RoundedIntPoint(absolute_bounding_box.origin()));
 
   // As an optimization, we don't include the root layer's scroll offset in the
   // frame rect.  As a result, we don't need to recalculate the frame rect every

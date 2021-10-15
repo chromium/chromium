@@ -30,7 +30,7 @@
 namespace blink {
 
 IntRect::operator CGRect() const {
-  return CGRectMake(X(), Y(), Width(), Height());
+  return CGRectMake(x(), y(), width(), height());
 }
 
 IntRect EnclosingIntRect(const CGRect& rect) {

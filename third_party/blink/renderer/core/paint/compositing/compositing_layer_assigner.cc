@@ -96,10 +96,10 @@ bool CompositingLayerAssigner::SquashingWouldExceedSparsityTolerance(
     const CompositingLayerAssigner::SquashingState& squashing_state) {
   IntRect bounds = candidate->ClippedAbsoluteBoundingBox();
   IntRect new_bounding_rect = squashing_state.bounding_rect;
-  new_bounding_rect.Unite(bounds);
-  const uint64_t new_bounding_rect_area = new_bounding_rect.Size().Area();
+  new_bounding_rect.Union(bounds);
+  const uint64_t new_bounding_rect_area = new_bounding_rect.size().Area();
   const uint64_t new_squashed_area =
-      squashing_state.total_area_of_squashed_rects + bounds.Size().Area();
+      squashing_state.total_area_of_squashed_rects + bounds.size().Area();
   return new_bounding_rect_area >
          kSquashingSparsityTolerance * new_squashed_area;
 }
@@ -352,8 +352,8 @@ void CompositingLayerAssigner::AssignLayersToBackingsInternal(
         squashing_state.next_layer_may_squash_into_scrolling_contents = false;
         IntRect layer_bounds = layer->ClippedAbsoluteBoundingBox();
         squashing_state.total_area_of_squashed_rects +=
-            layer_bounds.Size().Area();
-        squashing_state.bounding_rect.Unite(layer_bounds);
+            layer_bounds.size().Area();
+        squashing_state.bounding_rect.Union(layer_bounds);
       }
     }
   }

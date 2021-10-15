@@ -32,7 +32,7 @@ void ExpandFixedBoundsInScroller(const TransformPaintPropertyNode* local,
 
   // First move the rect back to the min scroll offset, by accounting for the
   // current scroll offset.
-  rect_to_map.Rect().Move(FloatSize(node->Translation2D()));
+  rect_to_map.Rect().Offset(FloatSize(node->Translation2D()));
 
   // Calculate the max scroll offset and expand by that amount. The max scroll
   // offset is the contents size minus one viewport's worth of space (i.e. the

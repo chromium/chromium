@@ -345,7 +345,7 @@ class PLATFORM_EXPORT GeometryMapper {
       bool& success);
 
   static void MoveRect(FloatRect& rect, const gfx::Vector2dF& delta) {
-    rect.Move(delta.x(), delta.y());
+    rect.Offset(delta.x(), delta.y());
   }
 
   static void MoveRect(LayoutRect& rect, const gfx::Vector2dF& delta) {

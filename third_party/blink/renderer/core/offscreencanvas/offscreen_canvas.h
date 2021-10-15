@@ -50,8 +50,8 @@ class CORE_EXPORT OffscreenCanvas final
 
   bool IsOffscreenCanvas() const override { return true; }
   // IDL attributes
-  unsigned width() const { return size_.Width(); }
-  unsigned height() const { return size_.Height(); }
+  unsigned width() const { return size_.width(); }
+  unsigned height() const { return size_.height(); }
   void setWidth(unsigned);
   void setHeight(unsigned);
 

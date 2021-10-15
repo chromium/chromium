@@ -40,15 +40,15 @@ inline unsigned ApproximateBoxWidth(float s) {
 }
 
 IntSize CalculateKernelSize(const FloatSize& std) {
-  DCHECK(std.Width() >= 0 && std.Height() >= 0);
+  DCHECK(std.width() >= 0 && std.height() >= 0);
   IntSize kernel_size;
-  if (std.Width()) {
-    int size = std::max<unsigned>(2, ApproximateBoxWidth(std.Width()));
-    kernel_size.SetWidth(size);
+  if (std.width()) {
+    int size = std::max<unsigned>(2, ApproximateBoxWidth(std.width()));
+    kernel_size.set_width(size);
   }
-  if (std.Height()) {
-    int size = std::max<unsigned>(2, ApproximateBoxWidth(std.Height()));
-    kernel_size.SetHeight(size);
+  if (std.height()) {
+    int size = std::max<unsigned>(2, ApproximateBoxWidth(std.height()));
+    kernel_size.set_height(size);
   }
   return kernel_size;
 }
@@ -64,8 +64,8 @@ FloatRect FEGaussianBlur::MapEffect(const FloatSize& std_deviation,
   // We take the half kernel size and multiply it by three, because we run box
   // blur three times.
   FloatRect result = rect;
-  result.InflateX(3.0f * kernel_size.Width() * 0.5f);
-  result.InflateY(3.0f * kernel_size.Height() * 0.5f);
+  result.OutsetX(3.0f * kernel_size.width() * 0.5f);
+  result.OutsetY(3.0f * kernel_size.height() * 0.5f);
   return result;
 }
 

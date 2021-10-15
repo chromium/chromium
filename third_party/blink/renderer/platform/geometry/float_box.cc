@@ -10,17 +10,17 @@
 namespace blink {
 
 void FloatBox::ExpandTo(const FloatPoint3D& low, const FloatPoint3D& high) {
-  DCHECK_LE(low.X(), high.X());
-  DCHECK_LE(low.Y(), high.Y());
-  DCHECK_LE(low.Z(), high.Z());
+  DCHECK_LE(low.x(), high.x());
+  DCHECK_LE(low.y(), high.y());
+  DCHECK_LE(low.z(), high.z());
 
-  float min_x = std::min(x_, low.X());
-  float min_y = std::min(y_, low.Y());
-  float min_z = std::min(z_, low.Z());
+  float min_x = std::min(x_, low.x());
+  float min_y = std::min(y_, low.y());
+  float min_z = std::min(z_, low.z());
 
-  float max_x = std::max(Right(), high.X());
-  float max_y = std::max(Bottom(), high.Y());
-  float max_z = std::max(front(), high.Z());
+  float max_x = std::max(right(), high.x());
+  float max_y = std::max(bottom(), high.y());
+  float max_z = std::max(front(), high.z());
 
   x_ = min_x;
   y_ = min_y;
@@ -36,8 +36,8 @@ std::ostream& operator<<(std::ostream& ostream, const FloatBox& box) {
 }
 
 String FloatBox::ToString() const {
-  return String::Format("%lg,%lg,%lg %lgx%lgx%lg", X(), Y(), Z(), Width(),
-                        Height(), Depth());
+  return String::Format("%lg,%lg,%lg %lgx%lgx%lg", x(), y(), z(), width(),
+                        height(), depth());
 }
 
 }  // namespace blink

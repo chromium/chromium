@@ -936,8 +936,8 @@ static void HandleMetaViewport(
                              media_values->DeviceHeight());
   PageScaleConstraints constraints = description.Resolve(
       initial_viewport, document_parameters->default_viewport_min_width);
-  media_values->OverrideViewportDimensions(constraints.layout_size.Width(),
-                                           constraints.layout_size.Height());
+  media_values->OverrideViewportDimensions(constraints.layout_size.width(),
+                                           constraints.layout_size.height());
 }
 
 static void HandleMetaReferrer(const String& attribute_value,

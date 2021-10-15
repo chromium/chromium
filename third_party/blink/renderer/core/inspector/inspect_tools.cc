@@ -813,12 +813,12 @@ void ScreenshotTool::Dispatch(const ScriptValue& message,
 
   // Points are in device independent pixels (dip) now.
   IntRect rect =
-      UnionRectEvenIfEmpty(IntRect(p1, IntSize()), IntRect(p2, IntSize()));
+      UnionRectsEvenIfEmpty(IntRect(p1, IntSize()), IntRect(p2, IntSize()));
   frontend_->screenshotRequested(protocol::Page::Viewport::create()
-                                     .setX(rect.X())
-                                     .setY(rect.Y())
-                                     .setWidth(rect.Width())
-                                     .setHeight(rect.Height())
+                                     .setX(rect.x())
+                                     .setY(rect.y())
+                                     .setWidth(rect.width())
+                                     .setHeight(rect.height())
                                      .setScale(scale)
                                      .build());
 }

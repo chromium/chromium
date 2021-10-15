@@ -185,8 +185,8 @@ class MousePressEventBuilder : public WebMouseEvent {
                       base::TimeTicks::Now()) {
     click_count = click_count_param;
     button = button_param;
-    SetPositionInWidget(position_param.X(), position_param.Y());
-    SetPositionInScreen(position_param.X(), position_param.Y());
+    SetPositionInWidget(position_param.x(), position_param.y());
+    SetPositionInScreen(position_param.x(), position_param.y());
     frame_scale_ = 1;
   }
 };
@@ -433,7 +433,7 @@ TEST_F(EventHandlerTest, HitOnTextShowsIBeam) {
   SetHtmlInnerHTML("blabla");
   Node* const text = GetDocument().body()->firstChild();
   HitTestLocation location(
-      text->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -447,7 +447,7 @@ TEST_F(EventHandlerTest, HitOnUserSelectNoneDoesNotShowIBeam) {
   SetHtmlInnerHTML("<span style='user-select: none'>blabla</span>");
   Node* const text = GetDocument().body()->firstChild()->firstChild();
   HitTestLocation location(
-      text->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -464,7 +464,7 @@ TEST_F(EventHandlerTest, ShadowChildCanOverrideUserSelectNone) {
 
   Node* const text = shadow_root->getElementById("bla")->firstChild();
   HitTestLocation location(
-      text->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -482,7 +482,7 @@ TEST_F(EventHandlerTest, UserSelectAllCanOverrideUserSelectNone) {
   Node* const text =
       GetDocument().body()->firstChild()->firstChild()->firstChild();
   HitTestLocation location(
-      text->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -500,7 +500,7 @@ TEST_F(EventHandlerTest, UserSelectNoneCanOverrideUserSelectAll) {
   Node* const text =
       GetDocument().body()->firstChild()->firstChild()->firstChild();
   HitTestLocation location(
-      text->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -518,7 +518,7 @@ TEST_F(EventHandlerTest, UserSelectTextCanOverrideUserSelectNone) {
   Node* const text =
       GetDocument().body()->firstChild()->firstChild()->firstChild();
   HitTestLocation location(
-      text->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -535,7 +535,7 @@ TEST_F(EventHandlerTest, UserSelectNoneCanOverrideUserSelectText) {
       "</div>");
   Node* const text = GetDocument().body()->firstChild()->firstChild()->firstChild();
   HitTestLocation location(
-      text->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -552,7 +552,7 @@ TEST_F(EventHandlerTest, ShadowChildCanOverrideUserSelectText) {
 
   Node* const text = shadow_root->getElementById("bla")->firstChild();
   HitTestLocation location(
-      text->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -567,7 +567,7 @@ TEST_F(EventHandlerTest, InputFieldsCanStartSelection) {
   auto* const field = To<HTMLInputElement>(GetDocument().body()->firstChild());
   Element* const text = field->InnerEditorElement();
   HitTestLocation location(
-      text->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -587,7 +587,7 @@ TEST_F(EventHandlerTest, ReadOnlyInputDoesNotInheritUserSelect) {
   Node* const text = input->InnerEditorElement()->firstChild();
 
   HitTestLocation location(
-      text->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -601,7 +601,7 @@ TEST_F(EventHandlerTest, ImagesCannotStartSelection) {
   SetHtmlInnerHTML("<img>");
   auto* const img = To<Element>(GetDocument().body()->firstChild());
   HitTestLocation location(
-      img->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      img->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -615,7 +615,7 @@ TEST_F(EventHandlerTest, AnchorTextCannotStartSelection) {
   SetHtmlInnerHTML("<a href='bala'>link text</a>");
   Node* const link = GetDocument().body()->firstChild();
   HitTestLocation location(
-      link->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      link->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult result =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -642,7 +642,7 @@ TEST_F(EventHandlerTest, EditableAnchorTextCanStartSelection) {
   SetHtmlInnerHTML("<a contenteditable='true' href='bala'>editable link</a>");
   Node* const link = GetDocument().body()->firstChild();
   HitTestLocation location(
-      link->GetLayoutObject()->AbsoluteBoundingBoxRect().Center());
+      link->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult result =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
@@ -666,8 +666,8 @@ TEST_F(EventHandlerTest, CursorForVerticalResizableTextArea) {
   SetHtmlInnerHTML("<textarea style='resize:vertical'>vertical</textarea>");
   Node* const element = GetDocument().body()->firstChild();
   blink::IntPoint point =
-      element->GetLayoutObject()->AbsoluteBoundingBoxRect().MaxXMaxYCorner();
-  point.Move(-5, -5);
+      element->GetLayoutObject()->AbsoluteBoundingBoxRect().bottom_right();
+  point.Offset(-5, -5);
   HitTestLocation location(point);
   HitTestResult result =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
@@ -686,8 +686,8 @@ TEST_F(EventHandlerTest, CursorForHorizontalResizableTextArea) {
   SetHtmlInnerHTML("<textarea style='resize:horizontal'>horizontal</textarea>");
   Node* const element = GetDocument().body()->firstChild();
   blink::IntPoint point =
-      element->GetLayoutObject()->AbsoluteBoundingBoxRect().MaxXMaxYCorner();
-  point.Move(-5, -5);
+      element->GetLayoutObject()->AbsoluteBoundingBoxRect().bottom_right();
+  point.Offset(-5, -5);
   HitTestLocation location(point);
   HitTestResult result =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
@@ -706,8 +706,8 @@ TEST_F(EventHandlerTest, CursorForResizableTextArea) {
   SetHtmlInnerHTML("<textarea style='resize:both'>both</textarea>");
   Node* const element = GetDocument().body()->firstChild();
   blink::IntPoint point =
-      element->GetLayoutObject()->AbsoluteBoundingBoxRect().MaxXMaxYCorner();
-  point.Move(-5, -5);
+      element->GetLayoutObject()->AbsoluteBoundingBoxRect().bottom_right();
+  point.Offset(-5, -5);
   HitTestLocation location(point);
   HitTestResult result =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
@@ -728,8 +728,8 @@ TEST_F(EventHandlerTest, CursorForRtlResizableTextArea) {
       "<textarea style='resize:both;direction:rtl'>both</textarea>");
   Node* const element = GetDocument().body()->firstChild();
   blink::IntPoint point =
-      element->GetLayoutObject()->AbsoluteBoundingBoxRect().MinXMaxYCorner();
-  point.Move(5, -5);
+      element->GetLayoutObject()->AbsoluteBoundingBoxRect().bottom_left();
+  point.Offset(5, -5);
   HitTestLocation location(point);
   HitTestResult result =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
@@ -752,8 +752,8 @@ TEST_F(EventHandlerTest, CursorForInlineVerticalWritingMode) {
       "Test</p>Test");
   Node* const element = GetDocument().body()->firstChild()->nextSibling();
   blink::IntPoint point =
-      element->GetLayoutObject()->AbsoluteBoundingBoxRect().MinXMinYCorner();
-  point.Move(25, 25);
+      element->GetLayoutObject()->AbsoluteBoundingBoxRect().origin();
+  point.Offset(25, 25);
   HitTestLocation location(point);
   HitTestResult result =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
@@ -774,8 +774,8 @@ TEST_F(EventHandlerTest, CursorForBlockVerticalWritingMode) {
       "Test</p>Test");
   Node* const element = GetDocument().body()->firstChild()->nextSibling();
   blink::IntPoint point =
-      element->GetLayoutObject()->AbsoluteBoundingBoxRect().MinXMinYCorner();
-  point.Move(25, 25);
+      element->GetLayoutObject()->AbsoluteBoundingBoxRect().origin();
+  point.Offset(25, 25);
   HitTestLocation location(point);
   HitTestResult result =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
@@ -1251,7 +1251,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromMouseDoesntUpdateTooltip) {
 
   Element* element = GetDocument().getElementById("b");
   gfx::PointF mouse_press_point =
-      ToGfxPointF(FloatPoint(element->BoundsInViewport().Center()));
+      ToGfxPointF(FloatPoint(element->BoundsInViewport().CenterPoint()));
   WebMouseEvent mouse_press_event(
       WebInputEvent::Type::kMouseDown, mouse_press_point, mouse_press_point,
       WebPointerProperties::Button::kLeft, 1,
@@ -1783,12 +1783,12 @@ TEST_F(EventHandlerSimTest, MAYBE_GestureTapWithScrollSnaps) {
   for (int i = 0; i < kFramesToRun; i++)
     Compositor().BeginFrame();
 
-  EXPECT_NE(scrollable_area->GetScrollOffset().Height(), 0);
+  EXPECT_NE(scrollable_area->GetScrollOffset().height(), 0);
 
   // Finish the animation, verify that we're back at 0 and not animating.
   Compositor().BeginFrame(0.3);
 
-  EXPECT_EQ(scrollable_area->GetScrollOffset().Height(), 0);
+  EXPECT_EQ(scrollable_area->GetScrollOffset().height(), 0);
   EXPECT_FALSE(
       scrollable_area->ExistingScrollAnimator()->HasRunningAnimation());
 }
@@ -2046,7 +2046,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterCompositorScrollAtBeginFrame) {
   WebView().MainFrameWidget()->ApplyViewportChangesForTesting(
       {gfx::Vector2dF(), gfx::Vector2dF(), 1.0f, false, 0, 0,
        cc::BrowserControlsState::kBoth, true});
-  ASSERT_EQ(500, frame_view->LayoutViewport()->GetScrollOffset().Height());
+  ASSERT_EQ(500, frame_view->LayoutViewport()->GetScrollOffset().height());
   EXPECT_EQ("currently hovered", element1.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element2.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element3.InnerHTML().Utf8());
@@ -2113,7 +2113,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterMainThreadScrollAtBeginFrame) {
   InjectScrollFromGestureEvents(
       frame_view->LayoutViewport()->GetScrollElementId().GetStableId(), 0,
       delta_y);
-  ASSERT_EQ(500, frame_view->LayoutViewport()->GetScrollOffset().Height());
+  ASSERT_EQ(500, frame_view->LayoutViewport()->GetScrollOffset().height());
   EXPECT_EQ("currently hovered", element1.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element2.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element3.InnerHTML().Utf8());
@@ -2187,8 +2187,8 @@ TEST_F(EventHandlerSimTest,
   InjectScrollFromGestureEvents(
       iframe_scrollable_area->GetScrollElementId().GetStableId(), 0, delta_y);
   LocalFrameView* frame_view = GetDocument().View();
-  ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().Height());
-  ASSERT_EQ(1000, iframe_scrollable_area->ScrollOffsetInt().Height());
+  ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().height());
+  ASSERT_EQ(1000, iframe_scrollable_area->ScrollOffsetInt().height());
   EXPECT_TRUE(element->IsHovered());
 
   // The fake mouse move event is dispatched at the begin frame to update hover.
@@ -2237,19 +2237,19 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterJSScrollAtBeginFrame) {
           base::BindOnce([](bool* finished) { *finished = true; }, &finished)));
   Compositor().BeginFrame();
   LocalFrameView* frame_view = GetDocument().View();
-  ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().Height());
+  ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().height());
   ASSERT_FALSE(finished);
   // Scrolling is in progress but the hover is not updated yet.
   Compositor().BeginFrame();
   // Start scroll animation, but it is not finished.
   Compositor().BeginFrame();
-  ASSERT_GT(frame_view->LayoutViewport()->GetScrollOffset().Height(), 0);
+  ASSERT_GT(frame_view->LayoutViewport()->GetScrollOffset().height(), 0);
   ASSERT_FALSE(finished);
 
   // Mark hover state dirty but the hover state does not change after the
   // animation finishes.
   Compositor().BeginFrame(1);
-  ASSERT_EQ(1000, frame_view->LayoutViewport()->GetScrollOffset().Height());
+  ASSERT_EQ(1000, frame_view->LayoutViewport()->GetScrollOffset().height());
   ASSERT_TRUE(finished);
   EXPECT_TRUE(element->IsHovered());
 
@@ -2316,7 +2316,7 @@ TEST_F(EventHandlerSimTest,
   constexpr float delta_y = 300;
   InjectScrollFromGestureEvents(
       scrollable_area->GetScrollElementId().GetStableId(), 0, delta_y);
-  ASSERT_EQ(300, scrollable_area->GetScrollOffset().Height());
+  ASSERT_EQ(300, scrollable_area->GetScrollOffset().height());
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
 
@@ -2324,20 +2324,20 @@ TEST_F(EventHandlerSimTest,
   // not finished.
   Compositor().BeginFrame();
   Compositor().BeginFrame();
-  ASSERT_EQ(300, scrollable_area->GetScrollOffset().Height());
+  ASSERT_EQ(300, scrollable_area->GetScrollOffset().height());
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
 
   // The programmatic scroll animation finishes and the hover state is set to
   // dirty.
   Compositor().BeginFrame(1);
-  ASSERT_EQ(400, scrollable_area->GetScrollOffset().Height());
+  ASSERT_EQ(400, scrollable_area->GetScrollOffset().height());
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
 
   // The hover effect on targets is updated after the next begin frame.
   Compositor().BeginFrame();
-  ASSERT_EQ(400, scrollable_area->GetScrollOffset().Height());
+  ASSERT_EQ(400, scrollable_area->GetScrollOffset().height());
   EXPECT_FALSE(target1->IsHovered());
   EXPECT_TRUE(target2->IsHovered());
 }
@@ -2395,17 +2395,17 @@ TEST_F(EventHandlerSimTest,
   // snap point.
   ScrollableArea* scrollable_area =
       scroller->GetLayoutBox()->GetScrollableArea();
-  ASSERT_EQ(0, scrollable_area->GetScrollOffset().Height());
+  ASSERT_EQ(0, scrollable_area->GetScrollOffset().height());
   constexpr float delta_y = 500;
   InjectScrollFromGestureEvents(
       scrollable_area->GetScrollElementId().GetStableId(), 0, delta_y);
-  ASSERT_EQ(500, scrollable_area->GetScrollOffset().Height());
+  ASSERT_EQ(500, scrollable_area->GetScrollOffset().height());
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
 
   // The hover effect on targets is updated after the next begin frame.
   Compositor().BeginFrame();
-  ASSERT_EQ(500, scrollable_area->GetScrollOffset().Height());
+  ASSERT_EQ(500, scrollable_area->GetScrollOffset().height());
   EXPECT_FALSE(target1->IsHovered());
   EXPECT_TRUE(target2->IsHovered());
 }
@@ -2678,7 +2678,7 @@ TEST_F(EventHandlerSimTest, NotExposeKeyboardEvent) {
   // Arrow key caused scroll down in post event dispatch process. Ensure page
   // scrolled.
   ScrollableArea* scrollable_area = GetDocument().View()->LayoutViewport();
-  EXPECT_GT(scrollable_area->ScrollOffsetInt().Height(), 0);
+  EXPECT_GT(scrollable_area->ScrollOffsetInt().height(), 0);
 }
 
 TEST_F(EventHandlerSimTest, DoNotScrollWithTouchpadIfOverflowIsHidden) {
@@ -2868,7 +2868,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScroll) {
       gesture_scroll_end);
 
   LocalFrameView* frame_view = GetDocument().View();
-  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().Height(), delta_y);
+  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().height(), delta_y);
 
   // Switch to the element_id-based targeting for GSB, then resend GSU
   // and validate that the subscroller scrolled (and that the viewport
@@ -2885,8 +2885,8 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScroll) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       gesture_scroll_end);
 
-  ASSERT_EQ(scrollable_area->ScrollOffsetInt().Height(), delta_y);
-  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().Height(), delta_y);
+  ASSERT_EQ(scrollable_area->ScrollOffsetInt().height(), delta_y);
+  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().height(), delta_y);
 
   // Remove the scroller, update layout, and ensure the same gestures
   // don't crash or scroll the layout viewport.
@@ -2899,7 +2899,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScroll) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       gesture_scroll_end);
 
-  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().Height(), delta_y);
+  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().height(), delta_y);
 }
 
 TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrame) {
@@ -2958,8 +2958,8 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrame) {
       gesture_scroll_end);
 
   LocalFrameView* frame_view = GetDocument().View();
-  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().Height(), 0);
-  ASSERT_EQ(scrollable_area->ScrollOffsetInt().Height(), delta_y);
+  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().height(), 0);
+  ASSERT_EQ(scrollable_area->ScrollOffsetInt().height(), delta_y);
 }
 
 TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrameNoCrash) {
@@ -3053,8 +3053,8 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollViewport) {
       gesture_scroll_end);
 
   LocalFrameView* frame_view = GetDocument().View();
-  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().Height(), 400);
-  ASSERT_EQ(visual_viewport.GetScrollOffset().Height(), 300);
+  ASSERT_EQ(frame_view->LayoutViewport()->GetScrollOffset().height(), 400);
+  ASSERT_EQ(visual_viewport.GetScrollOffset().height(), 300);
 }
 
 TEST_F(EventHandlerSimTest, SelecteTransformedTextWhenCapturing) {
@@ -3445,9 +3445,9 @@ TEST_F(EventHandlerSimTest, TestNoCrashOnMouseWheelZeroDelta) {
   EXPECT_EQ("received wheel event, deltaX: 0 deltaY: 0",
             element.InnerHTML().Utf8());
   ASSERT_EQ(0,
-            GetDocument().View()->LayoutViewport()->GetScrollOffset().Height());
+            GetDocument().View()->LayoutViewport()->GetScrollOffset().height());
   ASSERT_EQ(0,
-            GetDocument().View()->LayoutViewport()->GetScrollOffset().Width());
+            GetDocument().View()->LayoutViewport()->GetScrollOffset().width());
 }
 
 // The mouse wheel events which have the phases of "MayBegin" or "Cancel"

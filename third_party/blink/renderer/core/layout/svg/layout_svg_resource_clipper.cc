@@ -219,7 +219,7 @@ void LayoutSVGResourceClipper::CalculateLocalClipBounds() {
     if (!ContributesToClip(child_element))
       continue;
     const LayoutObject* layout_object = child_element.GetLayoutObject();
-    local_clip_bounds_.Unite(layout_object->LocalToSVGParentTransform().MapRect(
+    local_clip_bounds_.Union(layout_object->LocalToSVGParentTransform().MapRect(
         layout_object->VisualRectInLocalSVGCoordinates()));
   }
 }
@@ -238,8 +238,8 @@ AffineTransform LayoutSVGResourceClipper::CalculateClipTransform(
       To<SVGClipPathElement>(GetElement())
           ->CalculateTransform(SVGElement::kIncludeMotionTransform);
   if (ClipPathUnits() == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
-    transform.Translate(reference_box.X(), reference_box.Y());
-    transform.ScaleNonUniform(reference_box.Width(), reference_box.Height());
+    transform.Translate(reference_box.x(), reference_box.y());
+    transform.ScaleNonUniform(reference_box.width(), reference_box.height());
   }
   return transform;
 }

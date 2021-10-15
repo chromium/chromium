@@ -48,7 +48,7 @@ static inline float Max4(float a, float b, float c, float d) {
 }
 
 inline float Dot(const FloatSize& a, const FloatSize& b) {
-  return a.Width() * b.Width() + a.Height() * b.Height();
+  return a.width() * b.width() + a.height() * b.height();
 }
 
 inline bool IsPointInTriangle(const FloatPoint& p,
@@ -86,11 +86,11 @@ static inline float ClampToIntRange(float value) {
 }
 
 FloatRect FloatQuad::BoundingBox() const {
-  float left = ClampToIntRange(Min4(p1_.X(), p2_.X(), p3_.X(), p4_.X()));
-  float top = ClampToIntRange(Min4(p1_.Y(), p2_.Y(), p3_.Y(), p4_.Y()));
+  float left = ClampToIntRange(Min4(p1_.x(), p2_.x(), p3_.x(), p4_.x()));
+  float top = ClampToIntRange(Min4(p1_.y(), p2_.y(), p3_.y(), p4_.y()));
 
-  float right = ClampToIntRange(Max4(p1_.X(), p2_.X(), p3_.X(), p4_.X()));
-  float bottom = ClampToIntRange(Max4(p1_.Y(), p2_.Y(), p3_.Y(), p4_.Y()));
+  float right = ClampToIntRange(Max4(p1_.x(), p2_.x(), p3_.x(), p4_.x()));
+  float bottom = ClampToIntRange(Max4(p1_.y(), p2_.y(), p3_.y(), p4_.y()));
 
   return FloatRect(left, top, right - left, bottom - top);
 }
@@ -106,10 +106,10 @@ FloatQuad::FloatQuad(const SkPoint (&quad)[4])
                 FloatPoint(quad[3])) {}
 
 bool FloatQuad::IsRectilinear() const {
-  return (WithinEpsilon(p1_.X(), p2_.X()) && WithinEpsilon(p2_.Y(), p3_.Y()) &&
-          WithinEpsilon(p3_.X(), p4_.X()) && WithinEpsilon(p4_.Y(), p1_.Y())) ||
-         (WithinEpsilon(p1_.Y(), p2_.Y()) && WithinEpsilon(p2_.X(), p3_.X()) &&
-          WithinEpsilon(p3_.Y(), p4_.Y()) && WithinEpsilon(p4_.X(), p1_.X()));
+  return (WithinEpsilon(p1_.x(), p2_.x()) && WithinEpsilon(p2_.y(), p3_.y()) &&
+          WithinEpsilon(p3_.x(), p4_.x()) && WithinEpsilon(p4_.y(), p1_.y())) ||
+         (WithinEpsilon(p1_.y(), p2_.y()) && WithinEpsilon(p2_.x(), p3_.x()) &&
+          WithinEpsilon(p3_.y(), p4_.y()) && WithinEpsilon(p4_.x(), p1_.x()));
 }
 
 bool FloatQuad::ContainsPoint(const FloatPoint& p) const {
@@ -119,8 +119,8 @@ bool FloatQuad::ContainsPoint(const FloatPoint& p) const {
 
 // Note that we only handle convex quads here.
 bool FloatQuad::ContainsQuad(const FloatQuad& other) const {
-  return ContainsPoint(other.P1()) && ContainsPoint(other.P2()) &&
-         ContainsPoint(other.P3()) && ContainsPoint(other.P4());
+  return ContainsPoint(other.p1()) && ContainsPoint(other.p2()) &&
+         ContainsPoint(other.p3()) && ContainsPoint(other.p4());
 }
 
 static inline FloatPoint RightMostCornerToVector(const FloatRect& rect,
@@ -136,14 +136,14 @@ static inline FloatPoint RightMostCornerToVector(const FloatRect& rect,
   //   Q       is left of the vector, and intersection impossible.
   //
   FloatPoint point;
-  if (vector.Width() >= 0)
-    point.SetY(rect.MaxY());
+  if (vector.width() >= 0)
+    point.set_y(rect.bottom());
   else
-    point.SetY(rect.Y());
-  if (vector.Height() >= 0)
-    point.SetX(rect.X());
+    point.set_y(rect.y());
+  if (vector.height() >= 0)
+    point.set_x(rect.x());
   else
-    point.SetX(rect.MaxX());
+    point.set_x(rect.right());
   return point;
 }
 
@@ -195,8 +195,8 @@ static inline bool LineIntersectsCircle(const FloatPoint& center,
                                         float radius,
                                         const FloatPoint& p0,
                                         const FloatPoint& p1) {
-  float x0 = p0.X() - center.X(), y0 = p0.Y() - center.Y();
-  float x1 = p1.X() - center.X(), y1 = p1.Y() - center.Y();
+  float x0 = p0.x() - center.x(), y0 = p0.y() - center.y();
+  float x1 = p1.x() - center.x(), y1 = p1.y() - center.y();
   float radius2 = radius * radius;
   if ((x0 * x0 + y0 * y0) <= radius2 || (x1 * x1 + y1 * y1) <= radius2)
     return true;
@@ -235,12 +235,12 @@ bool FloatQuad::IntersectsEllipse(const FloatPoint& center,
   // product of major radius and minor radius.  Here we apply the same
   // transformation to the quad.
   FloatQuad transformed_quad(*this);
-  transformed_quad.Move(-center.X(), -center.Y());
-  transformed_quad.Scale(radii.Height(), radii.Width());
+  transformed_quad.Move(-center.x(), -center.y());
+  transformed_quad.Scale(radii.height(), radii.width());
 
   FloatPoint origin_point;
   return transformed_quad.IntersectsCircle(origin_point,
-                                           radii.Height() * radii.Width());
+                                           radii.height() * radii.width());
 }
 
 bool FloatQuad::IsCounterclockwise() const {

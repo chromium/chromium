@@ -32,8 +32,8 @@ class SpellCheckerTest : public SpellCheckTestBase {
 void SpellCheckerTest::ForceLayout() {
   LocalFrameView& frame_view = Page().GetFrameView();
   IntRect frame_rect = frame_view.FrameRect();
-  frame_rect.SetWidth(frame_rect.Width() + 1);
-  frame_rect.SetHeight(frame_rect.Height() + 1);
+  frame_rect.set_width(frame_rect.width() + 1);
+  frame_rect.set_height(frame_rect.height() + 1);
   Page().GetFrameView().SetFrameRect(frame_rect);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 }

@@ -156,8 +156,8 @@ bool BMPImageReader::DecodeBMP(bool only_size) {
       ((info_header_.bit_count < 16) || !bit_masks_[3] ||
        !seen_non_zero_alpha_pixel_)) {
     // Reset decoding coordinates to start of image.
-    coord_.SetX(0);
-    coord_.SetY(is_top_down_ ? 0 : (parent_->Size().Height() - 1));
+    coord_.set_x(0);
+    coord_.set_y(is_top_down_ ? 0 : (parent_->Size().height() - 1));
 
     // The AND mask is stored as 1-bit data.
     info_header_.bit_count = 1;
@@ -761,8 +761,8 @@ bool BMPImageReader::ProcessColorTable() {
 }
 
 bool BMPImageReader::InitFrame() {
-  if (!buffer_->AllocatePixelData(parent_->Size().Width(),
-                                  parent_->Size().Height(),
+  if (!buffer_->AllocatePixelData(parent_->Size().width(),
+                                  parent_->Size().height(),
                                   parent_->ColorSpaceForSkImages()))
     return parent_->SetFailed();  // Unable to allocate.
 
@@ -777,7 +777,7 @@ bool BMPImageReader::InitFrame() {
   buffer_->SetOriginalFrameRect(IntRect(IntPoint(), parent_->Size()));
 
   if (!is_top_down_)
-    coord_.SetY(parent_->Size().Height() - 1);
+    coord_.set_y(parent_->Size().height() - 1);
   return true;
 }
 
@@ -834,7 +834,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
       switch (code) {
         case 0:  // Magic token: EOL
           // Skip any remaining pixels in this row.
-          if (coord_.X() < parent_->Size().Width())
+          if (coord_.x() < parent_->Size().width())
             buffer_->SetHasAlpha(true);
           ColorCorrectCurrentRow();
           MoveBufferToNextRow();
@@ -844,9 +844,9 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
 
         case 1:  // Magic token: EOF
           // Skip any remaining pixels in the image.
-          if ((coord_.X() < parent_->Size().Width()) ||
-              (is_top_down_ ? (coord_.Y() < (parent_->Size().Height() - 1))
-                            : (coord_.Y() > 0)))
+          if ((coord_.x() < parent_->Size().width()) ||
+              (is_top_down_ ? (coord_.y() < (parent_->Size().height() - 1))
+                            : (coord_.y() > 0)))
             buffer_->SetHasAlpha(true);
           ColorCorrectCurrentRow();
           // There's no need to move |coord_| here to trigger the caller
@@ -870,12 +870,12 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
             if (dy)
               ColorCorrectCurrentRow();
           }
-          if (((coord_.X() + dx) > parent_->Size().Width()) ||
+          if (((coord_.x() + dx) > parent_->Size().width()) ||
               PastEndOfImage(dy))
             return kFailure;
 
           // Skip intervening pixels.
-          coord_.Move(dx, is_top_down_ ? dy : -dy);
+          coord_.Offset(dx, is_top_down_ ? dy : -dy);
 
           decoded_offset_ += 4;
           break;
@@ -900,7 +900,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
       // The following color data is repeated for |count| total pixels.
       // Strangely, some BMPs seem to specify excessively large counts
       // here; ignore pixels past the end of the row.
-      const int end_x = std::min(coord_.X() + count, parent_->Size().Width());
+      const int end_x = std::min(coord_.x() + count, parent_->Size().width());
 
       if (info_header_.compression == RLE24) {
         // Bail if there isn't enough data.
@@ -919,7 +919,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
           color_indexes[0] = (color_indexes[0] >> 4) & 0xf;
           color_indexes[1] &= 0xf;
         }
-        for (wtf_size_t which = 0; coord_.X() < end_x;) {
+        for (wtf_size_t which = 0; coord_.x() < end_x;) {
           // Some images specify color values past the end of the
           // color table; set these pixels to black.
           if (color_indexes[which] < info_header_.clr_used)
@@ -942,11 +942,11 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessNonRLEData(
     return kInsufficientData;
 
   if (!in_rle)
-    num_pixels = parent_->Size().Width();
+    num_pixels = parent_->Size().width();
 
   // Fail if we're being asked to decode more pixels than remain in the row.
-  const int end_x = coord_.X() + num_pixels;
-  if (end_x > parent_->Size().Width())
+  const int end_x = coord_.x() + num_pixels;
+  if (end_x > parent_->Size().width())
     return kFailure;
 
   // Determine how many bytes of data the requested number of pixels
@@ -979,7 +979,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessNonRLEData(
            decoded_offset_ < end_offset; ++decoded_offset_) {
         uint8_t pixel_data = ReadUint8(0);
         for (wtf_size_t pixel = 0;
-             (pixel < pixels_per_byte) && (coord_.X() < end_x); ++pixel) {
+             (pixel < pixels_per_byte) && (coord_.x() < end_x); ++pixel) {
           const wtf_size_t color_index =
               (pixel_data >> (8 - info_header_.bit_count)) & mask;
           if (decoding_and_mask_) {
@@ -992,7 +992,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessNonRLEData(
               SetRGBA(0, 0, 0, 0);
               buffer_->SetHasAlpha(true);
             } else {
-              coord_.Move(1, 0);
+              coord_.Offset(1, 0);
             }
           } else {
             // See comments near the end of ProcessRLEData().
@@ -1006,7 +1006,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessNonRLEData(
       }
     } else {
       // RGB data.  Decode pixels one at a time, left to right.
-      for (; coord_.X() < end_x; decoded_offset_ += bytes_per_pixel) {
+      for (; coord_.x() < end_x; decoded_offset_ += bytes_per_pixel) {
         const uint32_t pixel = ReadCurrentPixel(bytes_per_pixel);
 
         // Some BMPs specify an alpha channel but don't actually use it
@@ -1050,7 +1050,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessNonRLEData(
 }
 
 void BMPImageReader::MoveBufferToNextRow() {
-  coord_.Move(-coord_.X(), is_top_down_ ? 1 : -1);
+  coord_.Offset(-coord_.x(), is_top_down_ ? 1 : -1);
 }
 
 void BMPImageReader::ColorCorrectCurrentRow() {
@@ -1060,7 +1060,7 @@ void BMPImageReader::ColorCorrectCurrentRow() {
   const ColorProfileTransform* const transform = parent_->ColorTransform();
   if (!transform)
     return;
-  ImageFrame::PixelData* const row = buffer_->GetAddr(0, coord_.Y());
+  ImageFrame::PixelData* const row = buffer_->GetAddr(0, coord_.y());
   const skcms_PixelFormat fmt = XformColorFormat();
   const skcms_AlphaFormat alpha =
       (buffer_->HasAlpha() && buffer_->PremultiplyAlpha())
@@ -1068,7 +1068,7 @@ void BMPImageReader::ColorCorrectCurrentRow() {
           : skcms_AlphaFormat_Unpremul;
   const bool success =
       skcms_Transform(row, fmt, alpha, transform->SrcProfile(), row, fmt, alpha,
-                      transform->DstProfile(), parent_->Size().Width());
+                      transform->DstProfile(), parent_->Size().width());
   DCHECK(success);
   buffer_->SetPixelsChanged(true);
 }

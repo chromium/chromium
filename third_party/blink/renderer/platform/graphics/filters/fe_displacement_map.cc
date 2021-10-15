@@ -42,8 +42,8 @@ FEDisplacementMap::FEDisplacementMap(Filter* filter,
 
 FloatRect FEDisplacementMap::MapEffect(const FloatRect& rect) const {
   FloatRect result = rect;
-  result.InflateX(GetFilter()->ApplyHorizontalScale(std::abs(scale_) / 2));
-  result.InflateY(GetFilter()->ApplyVerticalScale(std::abs(scale_) / 2));
+  result.OutsetX(GetFilter()->ApplyHorizontalScale(std::abs(scale_) / 2));
+  result.OutsetY(GetFilter()->ApplyVerticalScale(std::abs(scale_) / 2));
   return result;
 }
 

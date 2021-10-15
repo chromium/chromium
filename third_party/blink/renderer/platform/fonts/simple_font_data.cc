@@ -116,7 +116,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
     if (x_glyph) {
       FloatRect glyph_bounds(BoundsForGlyph(x_glyph));
       // SkGlyph bounds, y down, based on rendering at (0,0).
-      x_height = -glyph_bounds.Y();
+      x_height = -glyph_bounds.y();
     }
 #endif
     font_metrics_.SetXHeight(x_height);

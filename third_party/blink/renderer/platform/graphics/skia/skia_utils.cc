@@ -259,11 +259,11 @@ bool NearlyIntegral(float value) {
 bool IsValidImageSize(const IntSize& size) {
   if (size.IsEmpty())
     return false;
-  base::CheckedNumeric<int> area = size.Width();
-  area *= size.Height();
+  base::CheckedNumeric<int> area = size.width();
+  area *= size.height();
   if (!area.IsValid() || area.ValueOrDie() > kMaxCanvasArea)
     return false;
-  if (size.Width() > kMaxSkiaDim || size.Height() > kMaxSkiaDim)
+  if (size.width() > kMaxSkiaDim || size.height() > kMaxSkiaDim)
     return false;
   return true;
 }

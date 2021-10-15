@@ -136,9 +136,9 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
       source_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
   dest_gl->CopySubTextureCHROMIUM(
       source_texture_id, 0, dest_target, dest_texture_id, dest_level,
-      dest_point.X(), dest_point.Y(), source_sub_rectangle.X(),
-      source_sub_rectangle.Y(), source_sub_rectangle.Width(),
-      source_sub_rectangle.Height(), unpack_flip_y ? GL_FALSE : GL_TRUE,
+      dest_point.x(), dest_point.y(), source_sub_rectangle.x(),
+      source_sub_rectangle.y(), source_sub_rectangle.width(),
+      source_sub_rectangle.height(), unpack_flip_y ? GL_FALSE : GL_TRUE,
       GL_FALSE, unpack_premultiply_alpha ? GL_FALSE : GL_TRUE);
   dest_gl->EndSharedImageAccessDirectCHROMIUM(source_texture_id);
   dest_gl->DeleteTextures(1, &source_texture_id);
@@ -181,7 +181,7 @@ bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
   DCHECK(ri);
   ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
   ri->CopySubTexture(mailbox_, dst_mailbox, dst_target, 0, 0, 0, 0,
-                     Size().Width(), Size().Height(), unpack_flip_y,
+                     Size().width(), Size().height(), unpack_flip_y,
                      unpack_premultiply_alpha);
   // We need to update the texture holder's sync token to ensure that when this
   // mailbox is recycled or deleted, it is done after the copy operation above.

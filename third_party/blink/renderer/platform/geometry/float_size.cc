@@ -53,13 +53,13 @@ std::ostream& operator<<(std::ostream& ostream, const FloatSize& size) {
 }
 
 String FloatSize::ToString() const {
-  return String::Format("%lgx%lg", Width(), Height());
+  return String::Format("%lgx%lg", width(), height());
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const FloatSize& s) {
-  ts << "width=" << WTF::TextStream::FormatNumberRespectingIntegers(s.Width());
+  ts << "width=" << WTF::TextStream::FormatNumberRespectingIntegers(s.width());
   ts << " height="
-     << WTF::TextStream::FormatNumberRespectingIntegers(s.Height());
+     << WTF::TextStream::FormatNumberRespectingIntegers(s.height());
   return ts;
 }
 

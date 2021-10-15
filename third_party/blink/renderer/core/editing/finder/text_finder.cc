@@ -719,9 +719,9 @@ int TextFinder::NearestFindMatch(const FloatPoint& point,
   float nearest_distance_squared = FLT_MAX;
   for (wtf_size_t i = 0; i < find_matches_cache_.size(); ++i) {
     DCHECK(!find_matches_cache_[i].rect_.IsEmpty());
-    FloatSize offset = point - find_matches_cache_[i].rect_.Center();
-    float width = offset.Width();
-    float height = offset.Height();
+    FloatSize offset = point - find_matches_cache_[i].rect_.CenterPoint();
+    float width = offset.width();
+    float height = offset.height();
     float current_distance_squared = width * width + height * height;
     if (current_distance_squared < nearest_distance_squared) {
       nearest = i;

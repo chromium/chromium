@@ -12,7 +12,7 @@ double CSSStyleImageValue::intrinsicWidth(bool& is_null) const {
     is_null = true;
     return 0;
   }
-  return size.value().Width();
+  return size.value().width();
 }
 
 double CSSStyleImageValue::intrinsicHeight(bool& is_null) const {
@@ -21,16 +21,16 @@ double CSSStyleImageValue::intrinsicHeight(bool& is_null) const {
     is_null = true;
     return 0;
   }
-  return size.value().Height();
+  return size.value().height();
 }
 
 double CSSStyleImageValue::intrinsicRatio(bool& is_null) const {
   const absl::optional<IntSize> size = IntrinsicSize();
-  if (!size || size.value().Height() == 0) {
+  if (!size || size.value().height() == 0) {
     is_null = true;
     return 0;
   }
-  return static_cast<double>(size.value().Width()) / size.value().Height();
+  return static_cast<double>(size.value().width()) / size.value().height();
 }
 
 FloatSize CSSStyleImageValue::ElementSize(

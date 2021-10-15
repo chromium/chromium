@@ -15,8 +15,8 @@ namespace {
 void PointsApproximatelyEqual(const FloatPoint& p1,
                               const FloatPoint& p2,
                               float epsilon) {
-  EXPECT_NEAR(p1.X(), p2.X(), epsilon);
-  EXPECT_NEAR(p1.Y(), p2.Y(), epsilon);
+  EXPECT_NEAR(p1.x(), p2.x(), epsilon);
+  EXPECT_NEAR(p1.y(), p2.y(), epsilon);
 }
 
 TEST(SVGPathQueryTest, PointAtLength_ArcDecomposedToMultipleCubics) {

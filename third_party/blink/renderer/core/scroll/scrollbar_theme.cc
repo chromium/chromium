@@ -69,7 +69,7 @@ ScrollbarPart ScrollbarTheme::HitTestRootFramePosition(
 
   IntPoint test_position =
       scrollbar.ConvertFromRootFrame(position_in_root_frame);
-  test_position.Move(scrollbar.X(), scrollbar.Y());
+  test_position.Offset(scrollbar.X(), scrollbar.Y());
   return HitTest(scrollbar, test_position);
 }
 
@@ -135,7 +135,7 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
   if (scrollbar.Orientation() != kVerticalScrollbar)
     return;
 
-  if (rect.Height() <= 0 || rect.Width() <= 0)
+  if (rect.height() <= 0 || rect.width() <= 0)
     return;
 
   Vector<IntRect> tickmarks = scrollbar.GetTickmarks();
@@ -154,17 +154,17 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
   for (const IntRect& tickmark : tickmarks) {
     // Calculate how far down (in %) the tick-mark should appear.
     const float percent =
-        static_cast<float>(tickmark.Y()) / scrollbar.TotalSize();
+        static_cast<float>(tickmark.y()) / scrollbar.TotalSize();
 
     // Calculate how far down (in pixels) the tick-mark should appear.
-    const int y_pos = rect.Y() + (rect.Height() * percent);
+    const int y_pos = rect.y() + (rect.height() * percent);
 
-    FloatRect tick_rect(rect.X(), y_pos, rect.Width(), 3);
+    FloatRect tick_rect(rect.x(), y_pos, rect.width(), 3);
     context.FillRect(tick_rect, Color(0xB0, 0x60, 0x00, 0xFF),
                      AutoDarkMode::Disabled());
 
-    FloatRect tick_stroke(rect.X() + TickmarkBorderWidth(), y_pos + 1,
-                          rect.Width() - 2 * TickmarkBorderWidth(), 1);
+    FloatRect tick_stroke(rect.x() + TickmarkBorderWidth(), y_pos + 1,
+                          rect.width() - 2 * TickmarkBorderWidth(), 1);
     context.FillRect(tick_stroke, Color(0xFF, 0xDD, 0x00, 0xFF),
                      AutoDarkMode::Disabled());
   }
@@ -219,16 +219,16 @@ int ScrollbarTheme::TrackPosition(const Scrollbar& scrollbar) {
   IntRect constrained_track_rect =
       ConstrainTrackRectToTrackPieces(scrollbar, TrackRect(scrollbar));
   return (scrollbar.Orientation() == kHorizontalScrollbar)
-             ? constrained_track_rect.X() - scrollbar.X()
-             : constrained_track_rect.Y() - scrollbar.Y();
+             ? constrained_track_rect.x() - scrollbar.X()
+             : constrained_track_rect.y() - scrollbar.Y();
 }
 
 int ScrollbarTheme::TrackLength(const Scrollbar& scrollbar) {
   IntRect constrained_track_rect =
       ConstrainTrackRectToTrackPieces(scrollbar, TrackRect(scrollbar));
   return (scrollbar.Orientation() == kHorizontalScrollbar)
-             ? constrained_track_rect.Width()
-             : constrained_track_rect.Height();
+             ? constrained_track_rect.width()
+             : constrained_track_rect.height();
 }
 
 IntRect ScrollbarTheme::ThumbRect(const Scrollbar& scrollbar) {
@@ -255,23 +255,23 @@ void ScrollbarTheme::SplitTrack(const Scrollbar& scrollbar,
       ConstrainTrackRectToTrackPieces(scrollbar, unconstrained_track_rect);
   int thumb_pos = ThumbPosition(scrollbar);
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
-    thumb_rect = IntRect(track_rect.X() + thumb_pos, track_rect.Y(),
+    thumb_rect = IntRect(track_rect.x() + thumb_pos, track_rect.y(),
                          ThumbLength(scrollbar), scrollbar.Height());
     before_thumb_rect =
-        IntRect(track_rect.X(), track_rect.Y(),
-                thumb_pos + thumb_rect.Width() / 2, track_rect.Height());
+        IntRect(track_rect.x(), track_rect.y(),
+                thumb_pos + thumb_rect.width() / 2, track_rect.height());
     after_thumb_rect = IntRect(
-        track_rect.X() + before_thumb_rect.Width(), track_rect.Y(),
-        track_rect.MaxX() - before_thumb_rect.MaxX(), track_rect.Height());
+        track_rect.x() + before_thumb_rect.width(), track_rect.y(),
+        track_rect.right() - before_thumb_rect.right(), track_rect.height());
   } else {
-    thumb_rect = IntRect(track_rect.X(), track_rect.Y() + thumb_pos,
+    thumb_rect = IntRect(track_rect.x(), track_rect.y() + thumb_pos,
                          scrollbar.Width(), ThumbLength(scrollbar));
     before_thumb_rect =
-        IntRect(track_rect.X(), track_rect.Y(), track_rect.Width(),
-                thumb_pos + thumb_rect.Height() / 2);
+        IntRect(track_rect.x(), track_rect.y(), track_rect.width(),
+                thumb_pos + thumb_rect.height() / 2);
     after_thumb_rect = IntRect(
-        track_rect.X(), track_rect.Y() + before_thumb_rect.Height(),
-        track_rect.Width(), track_rect.MaxY() - before_thumb_rect.MaxY());
+        track_rect.x(), track_rect.y() + before_thumb_rect.height(),
+        track_rect.width(), track_rect.bottom() - before_thumb_rect.bottom());
   }
 }
 

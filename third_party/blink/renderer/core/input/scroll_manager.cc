@@ -531,8 +531,8 @@ WebInputEventResult ScrollManager::HandleGestureScrollBegin(
   std::unique_ptr<ScrollStateData> scroll_state_data =
       std::make_unique<ScrollStateData>();
   IntPoint position = FlooredIntPoint(gesture_event.PositionInRootFrame());
-  scroll_state_data->position_x = position.X();
-  scroll_state_data->position_y = position.Y();
+  scroll_state_data->position_x = position.x();
+  scroll_state_data->position_y = position.y();
   scroll_state_data->delta_x_hint = -gesture_event.DeltaXInRootFrame();
   scroll_state_data->delta_y_hint = -gesture_event.DeltaYInRootFrame();
   scroll_state_data->delta_granularity = gesture_event.DeltaUnits();
@@ -650,13 +650,13 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
 
   std::unique_ptr<ScrollStateData> scroll_state_data =
       std::make_unique<ScrollStateData>();
-  scroll_state_data->delta_x = delta.Width();
-  scroll_state_data->delta_y = delta.Height();
+  scroll_state_data->delta_x = delta.width();
+  scroll_state_data->delta_y = delta.height();
   scroll_state_data->delta_granularity = gesture_event.DeltaUnits();
-  scroll_state_data->velocity_x = velocity.Width();
-  scroll_state_data->velocity_y = velocity.Height();
-  scroll_state_data->position_x = position.X();
-  scroll_state_data->position_y = position.Y();
+  scroll_state_data->velocity_x = velocity.width();
+  scroll_state_data->velocity_y = velocity.height();
+  scroll_state_data->position_x = position.x();
+  scroll_state_data->position_y = position.y();
   scroll_state_data->is_in_inertial_phase =
       gesture_event.InertialPhase() ==
       WebGestureEvent::InertialPhaseState::kMomentum;
@@ -686,8 +686,8 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
 
   last_scroll_delta_for_scroll_gesture_ = delta;
 
-  bool did_scroll_x = scroll_state->deltaX() != delta.Width();
-  bool did_scroll_y = scroll_state->deltaY() != delta.Height();
+  bool did_scroll_x = scroll_state->deltaX() != delta.width();
+  bool did_scroll_y = scroll_state->deltaY() != delta.height();
 
   did_scroll_x_for_scroll_gesture_ |= did_scroll_x;
   did_scroll_y_for_scroll_gesture_ |= did_scroll_y;
@@ -706,7 +706,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   if (RuntimeEnabledFeatures::OverscrollCustomizationEnabled()) {
     if (Node* overscroll_target = GetScrollEventTarget()) {
       overscroll_target->GetDocument().EnqueueOverscrollEventForNode(
-          overscroll_target, delta.Width(), delta.Height());
+          overscroll_target, delta.width(), delta.height());
     }
   }
 
@@ -742,7 +742,7 @@ void ScrollManager::AdjustForSnapAtScrollUpdate(
   FloatPoint current_position = scrollable_area->ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForDirection(
-          gfx::Vector2dF(current_position.X(), current_position.Y()),
+          gfx::Vector2dF(current_position.x(), current_position.y()),
           gfx::Vector2dF(scroll_state_data->delta_x,
                          scroll_state_data->delta_y),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
@@ -752,8 +752,8 @@ void ScrollManager::AdjustForSnapAtScrollUpdate(
   if (!snap_point)
     return;
 
-  scroll_state_data->delta_x = (snap_point->X() - current_position.X());
-  scroll_state_data->delta_y = (snap_point->Y() - current_position.Y());
+  scroll_state_data->delta_x = (snap_point->x() - current_position.x());
+  scroll_state_data->delta_y = (snap_point->y() - current_position.y());
   scroll_state_data->delta_granularity = ui::ScrollGranularity::kScrollByPixel;
 }
 
@@ -942,7 +942,7 @@ gfx::Vector2dF ScrollManager::ScrollByForSnapFling(
 
   CustomizedScroll(*scroll_state);
   FloatPoint end_position = scrollable_area->ScrollPosition();
-  return gfx::Vector2dF(end_position.X(), end_position.Y());
+  return gfx::Vector2dF(end_position.x(), end_position.y());
 }
 
 void ScrollManager::ScrollEndForSnapFling(bool did_finish) {
@@ -1220,8 +1220,8 @@ bool ScrollManager::HandleScrollGestureOnResizer(
     if (resize_scrollable_area_ && resize_scrollable_area_->InResizeMode()) {
       IntPoint pos =
           RoundedIntPoint(FloatPoint(gesture_event.PositionInRootFrame()));
-      pos.Move(gesture_event.DeltaXInRootFrame(),
-               gesture_event.DeltaYInRootFrame());
+      pos.Offset(gesture_event.DeltaXInRootFrame(),
+                 gesture_event.DeltaYInRootFrame());
       resize_scrollable_area_->Resize(pos, offset_from_resize_corner_);
       return true;
     }

@@ -779,7 +779,7 @@ TEST_F(TextPaintTimingDetectorTest, ClippedByViewport) {
     <div id='d'>text</div>
   )HTML");
   // Make sure the margin-top is larger than the viewport height.
-  DCHECK_LT(GetViewportRect(GetFrameView()).Height(), 1234567);
+  DCHECK_LT(GetViewportRect(GetFrameView()).height(), 1234567);
   EXPECT_EQ(CountPendingPresentationTime(GetFrameView()), 0u);
   EXPECT_EQ(CountVisibleTexts(), 0u);
 }
@@ -851,7 +851,7 @@ TEST_F(TextPaintTimingDetectorTest, Iframe_ClippedByViewport) {
     </style>
     <div id='d'>text</div>
   )HTML");
-  DCHECK_EQ(GetViewportRect(GetChildFrameView()).Height(), 100);
+  DCHECK_EQ(GetViewportRect(GetChildFrameView()).height(), 100);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(CountPendingPresentationTime(GetChildFrameView()), 0u);
 }

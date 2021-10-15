@@ -36,13 +36,13 @@ namespace blink {
 
 static inline FloatSize InwardEdgeNormal(const FloatPolygonEdge& edge) {
   FloatSize edge_delta = edge.Vertex2() - edge.Vertex1();
-  if (!edge_delta.Width())
-    return FloatSize((edge_delta.Height() > 0 ? -1 : 1), 0);
-  if (!edge_delta.Height())
-    return FloatSize(0, (edge_delta.Width() > 0 ? 1 : -1));
+  if (!edge_delta.width())
+    return FloatSize((edge_delta.height() > 0 ? -1 : 1), 0);
+  if (!edge_delta.height())
+    return FloatSize(0, (edge_delta.width() > 0 ? 1 : -1));
   float edge_length = edge_delta.DiagonalLength();
-  return FloatSize(-edge_delta.Height() / edge_length,
-                   edge_delta.Width() / edge_length);
+  return FloatSize(-edge_delta.height() / edge_length,
+                   edge_delta.width() / edge_length);
 }
 
 static inline FloatSize OutwardEdgeNormal(const FloatPolygonEdge& edge) {
@@ -50,23 +50,23 @@ static inline FloatSize OutwardEdgeNormal(const FloatPolygonEdge& edge) {
 }
 
 static inline bool OverlapsYRange(const FloatRect& rect, float y1, float y2) {
-  return !rect.IsEmpty() && y2 >= y1 && y2 >= rect.Y() && y1 <= rect.MaxY();
+  return !rect.IsEmpty() && y2 >= y1 && y2 >= rect.y() && y1 <= rect.bottom();
 }
 
 float OffsetPolygonEdge::XIntercept(float y) const {
   DCHECK_GE(y, MinY());
   DCHECK_LE(y, MaxY());
 
-  if (Vertex1().Y() == Vertex2().Y() || Vertex1().X() == Vertex2().X())
+  if (Vertex1().y() == Vertex2().y() || Vertex1().x() == Vertex2().x())
     return MinX();
   if (y == MinY())
-    return Vertex1().Y() < Vertex2().Y() ? Vertex1().X() : Vertex2().X();
+    return Vertex1().y() < Vertex2().y() ? Vertex1().x() : Vertex2().x();
   if (y == MaxY())
-    return Vertex1().Y() > Vertex2().Y() ? Vertex1().X() : Vertex2().X();
+    return Vertex1().y() > Vertex2().y() ? Vertex1().x() : Vertex2().x();
 
-  return Vertex1().X() +
-         ((y - Vertex1().Y()) * (Vertex2().X() - Vertex1().X()) /
-          (Vertex2().Y() - Vertex1().Y()));
+  return Vertex1().x() +
+         ((y - Vertex1().y()) * (Vertex2().x() - Vertex1().x()) /
+          (Vertex2().y() - Vertex1().y()));
 }
 
 FloatShapeInterval OffsetPolygonEdge::ClippedEdgeXRange(float y1,
@@ -83,15 +83,15 @@ FloatShapeInterval OffsetPolygonEdge::ClippedEdgeXRange(float y1,
 
   FloatPoint min_y_vertex;
   FloatPoint max_y_vertex;
-  if (Vertex1().Y() < Vertex2().Y()) {
+  if (Vertex1().y() < Vertex2().y()) {
     min_y_vertex = Vertex1();
     max_y_vertex = Vertex2();
   } else {
     min_y_vertex = Vertex2();
     max_y_vertex = Vertex1();
   }
-  float x_for_y1 = (min_y_vertex.Y() < y1) ? XIntercept(y1) : min_y_vertex.X();
-  float x_for_y2 = (max_y_vertex.Y() > y2) ? XIntercept(y2) : max_y_vertex.X();
+  float x_for_y1 = (min_y_vertex.y() < y1) ? XIntercept(y1) : min_y_vertex.x();
+  float x_for_y2 = (max_y_vertex.y() > y2) ? XIntercept(y2) : max_y_vertex.x();
   return FloatShapeInterval(std::min(x_for_y1, x_for_y2),
                             std::max(x_for_y1, x_for_y2));
 }
@@ -105,22 +105,22 @@ static FloatShapeInterval ClippedCircleXRange(const FloatPoint& center,
                                               float radius,
                                               float y1,
                                               float y2) {
-  if (y1 >= center.Y() + radius || y2 <= center.Y() - radius)
+  if (y1 >= center.y() + radius || y2 <= center.y() - radius)
     return FloatShapeInterval();
 
-  if (center.Y() >= y1 && center.Y() <= y2)
-    return FloatShapeInterval(center.X() - radius, center.X() + radius);
+  if (center.y() >= y1 && center.y() <= y2)
+    return FloatShapeInterval(center.x() - radius, center.x() + radius);
 
   // Clip the circle to the vertical range y1,y2 and return the extent of the
   // clipped circle's projection on the X axis
 
-  float xi = CircleXIntercept((y2 < center.Y() ? y2 : y1) - center.Y(), radius);
-  return FloatShapeInterval(center.X() - xi, center.X() + xi);
+  float xi = CircleXIntercept((y2 < center.y() ? y2 : y1) - center.y(), radius);
+  return FloatShapeInterval(center.x() - xi, center.x() + xi);
 }
 
 LayoutRect PolygonShape::ShapeMarginLogicalBoundingBox() const {
   FloatRect box = polygon_.BoundingBox();
-  box.Inflate(ShapeMargin());
+  box.Outset(ShapeMargin());
   return LayoutRect(box);
 }
 

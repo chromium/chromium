@@ -80,8 +80,8 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   IntSize main_frame_size = main_frame->GetMainFrameViewportSize();
 
   // Hit test the bottom center of the viewport.
-  HitTestLocation location(DoublePoint(main_frame_size.Width() / 2.0,
-                                       main_frame_size.Height() * 9.0 / 10));
+  HitTestLocation location(DoublePoint(main_frame_size.width() / 2.0,
+                                       main_frame_size.height() * 9.0 / 10));
 
   HitTestResult result;
   main_frame->ContentLayoutObject()->HitTestNoLifecycleUpdate(location, result);
@@ -99,7 +99,7 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
     // than the height of the candidate, and the candidate is still at the
     // bottom center, then we record the use counter.
     if (std::abs(candidate_start_main_frame_scroll_offset_ -
-                 main_frame->GetMainFrameScrollOffset().Y()) >
+                 main_frame->GetMainFrameScrollOffset().y()) >
         candidate_height_) {
       OnLargeStickyAdDetected(main_frame);
     }
@@ -119,7 +119,7 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   IntRect overlay_rect = element->GetLayoutObject()->AbsoluteBoundingBoxRect();
 
   bool is_large =
-      (overlay_rect.Size().Area() >
+      (overlay_rect.size().Area() >
        main_frame_size.Area() * kLargeAdSizeToViewportSizeThreshold);
 
   bool is_main_page_scrollable =
@@ -127,9 +127,9 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
 
   if (is_large && is_main_page_scrollable && IsStickyAdCandidate(element)) {
     candidate_id_ = element_id;
-    candidate_height_ = overlay_rect.Size().Height();
+    candidate_height_ = overlay_rect.size().height();
     candidate_start_main_frame_scroll_offset_ =
-        main_frame->GetMainFrameScrollOffset().Y();
+        main_frame->GetMainFrameScrollOffset().y();
   }
 }
 

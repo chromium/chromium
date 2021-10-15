@@ -54,7 +54,7 @@ void LayoutSVGForeignObject::UpdateLogicalWidth() {
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
   float logical_width =
-      style.IsHorizontalWritingMode() ? viewport_.Width() : viewport_.Height();
+      style.IsHorizontalWritingMode() ? viewport_.width() : viewport_.height();
   logical_width *= style.EffectiveZoom();
   SetLogicalWidth(LayoutUnit(logical_width));
 }
@@ -66,7 +66,7 @@ void LayoutSVGForeignObject::ComputeLogicalHeight(
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
   float logical_height =
-      style.IsHorizontalWritingMode() ? viewport_.Height() : viewport_.Width();
+      style.IsHorizontalWritingMode() ? viewport_.height() : viewport_.width();
   logical_height *= style.EffectiveZoom();
   computed_values.extent_ = LayoutUnit(logical_height);
   computed_values.position_ = logical_top;
@@ -115,7 +115,7 @@ void LayoutSVGForeignObject::UpdateLayout() {
   // interpose a transform that "unzooms" the effective zoom to let the children
   // of the foreign object exist with their specified zoom.
   FloatPoint zoomed_location =
-      viewport_.Location().ScaledBy(style.EffectiveZoom());
+      viewport_.origin().ScaledBy(style.EffectiveZoom());
 
   // Set box origin to the foreignObject x/y translation, so positioned objects
   // in XHTML content get correct positions. A regular LayoutBoxModelObject

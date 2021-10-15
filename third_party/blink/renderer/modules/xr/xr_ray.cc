@@ -70,7 +70,7 @@ void XRRay::Set(const TransformationMatrix& matrix,
                 ExceptionState& exception_state) {
   FloatPoint3D origin = matrix.MapPoint(FloatPoint3D(0, 0, 0));
   FloatPoint3D direction = matrix.MapPoint(FloatPoint3D(0, 0, -1));
-  direction.Move(-origin.X(), -origin.Y(), -origin.Z());
+  direction.Offset(-origin.x(), -origin.y(), -origin.z());
 
   Set(origin, direction, exception_state);
 }
@@ -88,9 +88,9 @@ void XRRay::Set(FloatPoint3D origin,
 
   direction.Normalize();
 
-  origin_ = DOMPointReadOnly::Create(origin.X(), origin.Y(), origin.Z(), 1.0);
-  direction_ = DOMPointReadOnly::Create(direction.X(), direction.Y(),
-                                        direction.Z(), 0.0);
+  origin_ = DOMPointReadOnly::Create(origin.x(), origin.y(), origin.z(), 1.0);
+  direction_ = DOMPointReadOnly::Create(direction.x(), direction.y(),
+                                        direction.z(), 0.0);
 }
 
 XRRay* XRRay::Create(XRRigidTransform* transform,
@@ -169,7 +169,7 @@ DOMFloat32Array* XRRay::matrix() {
       matrix.Rotate3d(1, 0, 0, 180);
     } else {
       // Rotation needed - create it from axis-angle.
-      matrix.Rotate3d(axis.X(), axis.Y(), axis.Z(),
+      matrix.Rotate3d(axis.x(), axis.y(), axis.z(),
                       Rad2deg(std::acos(cos_angle)));
     }
 

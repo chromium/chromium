@@ -207,11 +207,11 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
 
   if (GetAnimationMode() != kPathAnimation) {
     float animated_x = ComputeAnimatedNumber(
-        parameters, percentage, repeat_count, from_point_.X(), to_point_.X(),
-        to_point_at_end_of_duration_.X());
+        parameters, percentage, repeat_count, from_point_.x(), to_point_.x(),
+        to_point_at_end_of_duration_.x());
     float animated_y = ComputeAnimatedNumber(
-        parameters, percentage, repeat_count, from_point_.Y(), to_point_.Y(),
-        to_point_at_end_of_duration_.Y());
+        parameters, percentage, repeat_count, from_point_.y(), to_point_.y(),
+        to_point_at_end_of_duration_.y());
     transform->Translate(animated_x, animated_y);
     return;
   }
@@ -230,7 +230,7 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
     position.point.MoveBy(position_at_end_of_duration.ScaledBy(repeat_count));
   }
 
-  transform->Translate(position.point.X(), position.point.Y());
+  transform->Translate(position.point.x(), position.point.y());
   RotateMode rotate_mode = GetRotateMode();
   if (rotate_mode != kRotateAuto && rotate_mode != kRotateAutoReverse)
     return;

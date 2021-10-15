@@ -77,11 +77,11 @@ Path SVGEllipseElement::AsPath() const {
   FloatSize radii(ToFloatSize(
       length_context.ResolveLengthPair(style.Rx(), style.Ry(), style)));
   if (style.Rx().IsAuto())
-    radii.SetWidth(radii.Height());
+    radii.set_width(radii.height());
   else if (style.Ry().IsAuto())
-    radii.SetHeight(radii.Width());
-  if (radii.Width() < 0 || radii.Height() < 0 ||
-      (!radii.Width() && !radii.Height()))
+    radii.set_height(radii.width());
+  if (radii.width() < 0 || radii.height() < 0 ||
+      (!radii.width() && !radii.height()))
     return path;
 
   FloatPoint center(

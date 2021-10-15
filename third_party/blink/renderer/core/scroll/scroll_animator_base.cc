@@ -58,14 +58,14 @@ ScrollResult ScrollAnimatorBase::UserScroll(
   ScrollOffset consumed_delta = ComputeDeltaToConsume(delta);
   ScrollOffset new_pos = current_offset_ + consumed_delta;
   if (current_offset_ == new_pos)
-    return ScrollResult(false, false, delta.Width(), delta.Height());
+    return ScrollResult(false, false, delta.width(), delta.height());
 
   SetCurrentOffset(new_pos);
   NotifyOffsetChanged();
 
-  return ScrollResult(consumed_delta.Width(), consumed_delta.Height(),
-                      delta.Width() - consumed_delta.Width(),
-                      delta.Height() - consumed_delta.Height());
+  return ScrollResult(consumed_delta.width(), consumed_delta.height(),
+                      delta.width() - consumed_delta.width(),
+                      delta.height() - consumed_delta.height());
 }
 
 void ScrollAnimatorBase::ScrollToOffsetWithoutAnimation(

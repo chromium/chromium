@@ -771,8 +771,8 @@ void WebViewImpl::ComputeScaleAndScrollForBlockRect(
     rect.set_x(std::max<float>(
         rect.x(), hit_point_in_root_frame.x() + padding - screen_width));
   }
-  scroll.SetX(rect.x());
-  scroll.SetY(rect.y());
+  scroll.set_x(rect.x());
+  scroll.set_y(rect.y());
 
   scale = ClampPageScaleFactorToLimits(scale);
   scroll = MainFrameImpl()->GetFrameView()->RootFrameToDocument(scroll);
@@ -1118,8 +1118,8 @@ void WebViewImpl::UpdateICBAndResizeViewport(
   if (GetBrowserControls().PermittedState() ==
           cc::BrowserControlsState::kBoth &&
       !GetBrowserControls().ShrinkViewport()) {
-    icb_size.Expand(0, -(GetBrowserControls().TotalHeight() -
-                         GetBrowserControls().TotalMinHeight()));
+    icb_size.Enlarge(0, -(GetBrowserControls().TotalHeight() -
+                          GetBrowserControls().TotalMinHeight()));
   }
 
   GetPageScaleConstraintsSet().DidChangeInitialContainingBlockSize(icb_size);
@@ -1223,8 +1223,8 @@ void WebViewImpl::ResizeViewWhileAnchored(
     UpdateICBAndResizeViewport(visible_viewport_size);
     IntSize new_size = frame_view->Size();
     frame_view->MarkViewportConstrainedObjectsForLayout(
-        old_size.Width() != new_size.Width(),
-        old_size.Height() != new_size.Height());
+        old_size.width() != new_size.width(),
+        old_size.height() != new_size.height());
   }
 
   fullscreen_controller_->UpdateSize();
@@ -1289,7 +1289,7 @@ void WebViewImpl::ResizeWithBrowserControls(
 
   bool is_rotation =
       GetPage()->GetSettings().GetMainFrameResizesAreOrientationChanges() &&
-      size_.width() && ContentsSize().Width() &&
+      size_.width() && ContentsSize().width() &&
       main_frame_widget_size.width() != size_.width() &&
       !fullscreen_controller_->IsFullscreenOrTransitioning();
   size_ = main_frame_widget_size;
@@ -2086,8 +2086,8 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
   if (root_scroller != MainFrameImpl()->GetFrame()->GetDocument() &&
       controller.RootScrollerArea()) {
     ScrollOffset offset = controller.RootScrollerArea()->GetScrollOffset();
-    element_bounds_in_content.Move(FlooredIntSize(offset));
-    caret_bounds_in_content.Move(FlooredIntSize(offset));
+    element_bounds_in_content.Offset(FlooredIntSize(offset));
+    caret_bounds_in_content.Offset(FlooredIntSize(offset));
   }
 
   if (!zoom_into_legible_scale) {
@@ -2097,14 +2097,14 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
     // the caret height will become minReadableCaretHeightForNode (adjusted
     // for dpi and font scale factor).
     const int min_readable_caret_height_for_node =
-        (element_bounds_in_content.Height() >=
-                 2 * caret_bounds_in_content.Height()
+        (element_bounds_in_content.height() >=
+                 2 * caret_bounds_in_content.height()
              ? minReadableCaretHeightForTextArea
              : minReadableCaretHeight) *
         MainFrameImpl()->GetFrame()->PageZoomFactor();
     new_scale = ClampPageScaleFactorToLimits(
         MaximumLegiblePageScale() * min_readable_caret_height_for_node /
-        caret_bounds_in_content.Height());
+        caret_bounds_in_content.height());
     new_scale = std::max(new_scale, PageScaleFactor());
   }
   const float delta_scale = new_scale / PageScaleFactor();
@@ -2126,10 +2126,10 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
 
   // If the box is partially offscreen and it's possible to bring it fully
   // onscreen, then animate.
-  if (visual_viewport.VisibleRect().Width() >=
-          element_bounds_in_content.Width() &&
-      visual_viewport.VisibleRect().Height() >=
-          element_bounds_in_content.Height() &&
+  if (visual_viewport.VisibleRect().width() >=
+          element_bounds_in_content.width() &&
+      visual_viewport.VisibleRect().height() >=
+          element_bounds_in_content.height() &&
       !root_viewport->VisibleContentRect().Contains(element_bounds_in_content))
     need_animation = true;
 
@@ -2139,37 +2139,37 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
   FloatSize target_viewport_size(visual_viewport.Size());
   target_viewport_size.Scale(1 / new_scale);
 
-  if (element_bounds_in_content.Width() <= target_viewport_size.Width()) {
+  if (element_bounds_in_content.width() <= target_viewport_size.width()) {
     // Field is narrower than screen. Try to leave padding on left so field's
     // label is visible, but it's more important to ensure entire field is
     // onscreen.
-    int ideal_left_padding = target_viewport_size.Width() * leftBoxRatio;
+    int ideal_left_padding = target_viewport_size.width() * leftBoxRatio;
     int max_left_padding_keeping_box_onscreen =
-        target_viewport_size.Width() - element_bounds_in_content.Width();
-    new_scroll.SetX(element_bounds_in_content.X() -
-                    std::min<int>(ideal_left_padding,
-                                  max_left_padding_keeping_box_onscreen));
+        target_viewport_size.width() - element_bounds_in_content.width();
+    new_scroll.set_x(element_bounds_in_content.x() -
+                     std::min<int>(ideal_left_padding,
+                                   max_left_padding_keeping_box_onscreen));
   } else {
     // Field is wider than screen. Try to left-align field, unless caret would
     // be offscreen, in which case right-align the caret.
-    new_scroll.SetX(std::max<int>(
-        element_bounds_in_content.X(),
-        caret_bounds_in_content.X() + caret_bounds_in_content.Width() +
-            caretPadding - target_viewport_size.Width()));
+    new_scroll.set_x(std::max<int>(
+        element_bounds_in_content.x(),
+        caret_bounds_in_content.x() + caret_bounds_in_content.width() +
+            caretPadding - target_viewport_size.width()));
   }
-  if (element_bounds_in_content.Height() <= target_viewport_size.Height()) {
+  if (element_bounds_in_content.height() <= target_viewport_size.height()) {
     // Field is shorter than screen. Vertically center it.
-    new_scroll.SetY(
-        element_bounds_in_content.Y() -
-        (target_viewport_size.Height() - element_bounds_in_content.Height()) /
+    new_scroll.set_y(
+        element_bounds_in_content.y() -
+        (target_viewport_size.height() - element_bounds_in_content.height()) /
             2);
   } else {
     // Field is taller than screen. Try to top align field, unless caret would
     // be offscreen, in which case bottom-align the caret.
-    new_scroll.SetY(std::max<int>(
-        element_bounds_in_content.Y(),
-        caret_bounds_in_content.Y() + caret_bounds_in_content.Height() +
-            caretPadding - target_viewport_size.Height()));
+    new_scroll.set_y(std::max<int>(
+        element_bounds_in_content.y(),
+        caret_bounds_in_content.y() + caret_bounds_in_content.height() +
+            caretPadding - target_viewport_size.height()));
   }
 }
 
@@ -2256,12 +2256,12 @@ void WebViewImpl::SetVisualViewportOffset(const gfx::PointF& offset) {
 
 gfx::PointF WebViewImpl::VisualViewportOffset() const {
   DCHECK(GetPage());
-  return ToGfxPointF(GetPage()->GetVisualViewport().VisibleRect().Location());
+  return ToGfxPointF(GetPage()->GetVisualViewport().VisibleRect().origin());
 }
 
 gfx::SizeF WebViewImpl::VisualViewportSize() const {
   DCHECK(GetPage());
-  return ToGfxSizeF(GetPage()->GetVisualViewport().VisibleRect().Size());
+  return ToGfxSizeF(GetPage()->GetVisualViewport().VisibleRect().size());
 }
 
 void WebViewImpl::SetPageScaleFactorAndLocation(float scale_factor,
@@ -2736,7 +2736,7 @@ IntSize WebViewImpl::ContentsSize() const {
       GetPage()->DeprecatedLocalMainFrame()->ContentLayoutObject();
   if (!layout_view)
     return IntSize();
-  return PixelSnappedIntRect(layout_view->DocumentRect()).Size();
+  return PixelSnappedIntRect(layout_view->DocumentRect()).size();
 }
 
 gfx::Size WebViewImpl::ContentsPreferredMinimumSize() {
@@ -3555,8 +3555,8 @@ void WebViewImpl::ApplyViewportChanges(const ApplyViewportChangesArgs& args) {
   // controls ratio since doing so will change the bounds and move the
   // viewports to keep the offsets valid. The compositor may have already
   // done that so we don't want to double apply the deltas here.
-  FloatPoint visual_viewport_offset = visual_viewport.VisibleRect().Location();
-  visual_viewport_offset.Move(args.inner_delta.x(), args.inner_delta.y());
+  FloatPoint visual_viewport_offset = visual_viewport.VisibleRect().origin();
+  visual_viewport_offset.Offset(args.inner_delta.x(), args.inner_delta.y());
 
   GetBrowserControls().SetShownRatio(
       GetBrowserControls().TopShownRatio() + args.top_controls_delta,

@@ -302,7 +302,7 @@ void ViewPainter::PaintRootElementGroup(
       // With transforms, paint offset is encoded in paint property nodes but we
       // can use the |paint_rect|'s adjusted location as the offset from the
       // view to the root element.
-      background_image_offset = PhysicalOffset(paint_rect.Location());
+      background_image_offset = PhysicalOffset(paint_rect.origin());
     } else {
       background_image_offset = -root_object->FirstFragment().PaintOffset();
     }

@@ -53,12 +53,12 @@ class RectangleShape final : public Shape {
  private:
   FloatRect ShapeMarginBounds() const;
 
-  float Rx() const { return radii_.Width(); }
-  float Ry() const { return radii_.Height(); }
-  float X() const { return bounds_.X(); }
-  float Y() const { return bounds_.Y(); }
-  float Width() const { return bounds_.Width(); }
-  float Height() const { return bounds_.Height(); }
+  float Rx() const { return radii_.width(); }
+  float Ry() const { return radii_.height(); }
+  float X() const { return bounds_.x(); }
+  float Y() const { return bounds_.y(); }
+  float Width() const { return bounds_.width(); }
+  float Height() const { return bounds_.height(); }
 
   FloatRect bounds_;
   FloatSize radii_;

@@ -51,7 +51,7 @@ void EllipsisBoxPainter::PaintEllipsis(const PaintInfo& paint_info,
   DCHECK(ellipsis_box_.KnownToHaveNoOverflow());
   IntRect visual_rect = EnclosingIntRect(box_rect);
   if (!ellipsis_box_.IsHorizontal())
-    visual_rect.SetSize(visual_rect.Size().TransposedSize());
+    visual_rect.set_size(visual_rect.size().TransposedSize());
   DrawingRecorder recorder(context, ellipsis_box_, paint_info.phase,
                            ToGfxRect(visual_rect));
 

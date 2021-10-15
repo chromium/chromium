@@ -255,7 +255,7 @@ void AffineTransform::Map(double x, double y, double& x2, double& y2) const {
 
 IntPoint AffineTransform::MapPoint(const IntPoint& point) const {
   double x2, y2;
-  Map(point.X(), point.Y(), x2, y2);
+  Map(point.x(), point.y(), x2, y2);
 
   // Round the point.
   return IntPoint(static_cast<int>(lround(x2)), static_cast<int>(lround(y2)));
@@ -263,22 +263,22 @@ IntPoint AffineTransform::MapPoint(const IntPoint& point) const {
 
 FloatPoint AffineTransform::MapPoint(const FloatPoint& point) const {
   double x2, y2;
-  Map(point.X(), point.Y(), x2, y2);
+  Map(point.x(), point.y(), x2, y2);
 
   return FloatPoint(ClampTo<float>(x2), ClampTo<float>(y2));
 }
 
 IntSize AffineTransform::MapSize(const IntSize& size) const {
-  double width2 = size.Width() * XScale();
-  double height2 = size.Height() * YScale();
+  double width2 = size.width() * XScale();
+  double height2 = size.height() * YScale();
 
   return IntSize(static_cast<int>(lround(width2)),
                  static_cast<int>(lround(height2)));
 }
 
 FloatSize AffineTransform::MapSize(const FloatSize& size) const {
-  double width2 = size.Width() * XScale();
-  double height2 = size.Height() * YScale();
+  double width2 = size.width() * XScale();
+  double height2 = size.height() * YScale();
 
   return FloatSize(ClampTo<float>(width2), ClampTo<float>(height2));
 }
@@ -293,16 +293,16 @@ FloatRect AffineTransform::MapRect(const FloatRect& rect) const {
       return rect;
 
     FloatRect mapped_rect(rect);
-    mapped_rect.Move(ClampTo<float>(transform_[4]),
-                     ClampTo<float>(transform_[5]));
+    mapped_rect.Offset(ClampTo<float>(transform_[4]),
+                       ClampTo<float>(transform_[5]));
     return mapped_rect;
   }
 
   FloatQuad result;
-  result.SetP1(MapPoint(rect.Location()));
-  result.SetP2(MapPoint(FloatPoint(rect.MaxX(), rect.Y())));
-  result.SetP3(MapPoint(FloatPoint(rect.MaxX(), rect.MaxY())));
-  result.SetP4(MapPoint(FloatPoint(rect.X(), rect.MaxY())));
+  result.set_p1(MapPoint(rect.origin()));
+  result.set_p2(MapPoint(FloatPoint(rect.right(), rect.y())));
+  result.set_p3(MapPoint(FloatPoint(rect.right(), rect.bottom())));
+  result.set_p4(MapPoint(FloatPoint(rect.x(), rect.bottom())));
   return result.BoundingBox();
 }
 
@@ -315,10 +315,10 @@ FloatQuad AffineTransform::MapQuad(const FloatQuad& q) const {
   }
 
   FloatQuad result;
-  result.SetP1(MapPoint(q.P1()));
-  result.SetP2(MapPoint(q.P2()));
-  result.SetP3(MapPoint(q.P3()));
-  result.SetP4(MapPoint(q.P4()));
+  result.set_p1(MapPoint(q.p1()));
+  result.set_p2(MapPoint(q.p2()));
+  result.set_p3(MapPoint(q.p3()));
+  result.set_p4(MapPoint(q.p4()));
   return result;
 }
 

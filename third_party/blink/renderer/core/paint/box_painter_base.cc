@@ -116,7 +116,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
         style.UsedColorScheme());
 
     FloatRect fill_rect = border.Rect();
-    fill_rect.Inflate(shadow_spread);
+    fill_rect.Outset(shadow_spread);
     if (fill_rect.IsEmpty())
       continue;
 
@@ -148,7 +148,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
         // pixel-aligned. Those are avoided by insetting the clipping path by
         // one CSS pixel.
         if (has_opaque_background)
-          rect_to_clip_out.Inflate(-1);
+          rect_to_clip_out.Outset(-1);
 
         if (!rect_to_clip_out.IsEmpty())
           context.ClipOut(rect_to_clip_out);
@@ -206,14 +206,14 @@ namespace {
 inline FloatRect AreaCastingShadowInHole(const FloatRect& hole_rect,
                                          const ShadowData& shadow) {
   FloatRect bounds(hole_rect);
-  bounds.Inflate(shadow.Blur());
+  bounds.Outset(shadow.Blur());
 
   if (shadow.Spread() < 0)
-    bounds.Inflate(-shadow.Spread());
+    bounds.Outset(-shadow.Spread());
 
   FloatRect offset_bounds = bounds;
   offset_bounds.MoveBy(-shadow.Location());
-  return UnionRect(bounds, offset_bounds);
+  return UnionRects(bounds, offset_bounds);
 }
 
 void AdjustInnerRectForSideClipping(FloatRect& inner_rect,
@@ -221,21 +221,21 @@ void AdjustInnerRectForSideClipping(FloatRect& inner_rect,
                                     PhysicalBoxSides sides_to_include) {
   if (!sides_to_include.left) {
     float extend_by = std::max(shadow.X(), 0.0f) + shadow.Blur();
-    inner_rect.Move(-extend_by, 0);
-    inner_rect.SetWidth(inner_rect.Width() + extend_by);
+    inner_rect.Offset(-extend_by, 0);
+    inner_rect.set_width(inner_rect.width() + extend_by);
   }
   if (!sides_to_include.top) {
     float extend_by = std::max(shadow.Y(), 0.0f) + shadow.Blur();
-    inner_rect.Move(0, -extend_by);
-    inner_rect.SetHeight(inner_rect.Height() + extend_by);
+    inner_rect.Offset(0, -extend_by);
+    inner_rect.set_height(inner_rect.height() + extend_by);
   }
   if (!sides_to_include.right) {
     float shrink_by = std::min(shadow.X(), 0.0f) - shadow.Blur();
-    inner_rect.SetWidth(inner_rect.Width() - shrink_by);
+    inner_rect.set_width(inner_rect.width() - shrink_by);
   }
   if (!sides_to_include.bottom) {
     float shrink_by = std::min(shadow.Y(), 0.0f) - shadow.Blur();
-    inner_rect.SetHeight(inner_rect.Height() - shrink_by);
+    inner_rect.set_height(inner_rect.height() - shrink_by);
   }
 }
 
@@ -263,7 +263,7 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
         PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
 
     FloatRect inner_rect(bounds.Rect());
-    inner_rect.Inflate(-shadow.Spread());
+    inner_rect.Outset(-shadow.Spread());
     if (inner_rect.IsEmpty()) {
       context.FillRoundedRect(bounds, shadow_color, auto_dark_mode);
       continue;
@@ -411,13 +411,13 @@ FloatRect SnapSourceRectIfNearIntegral(const FloatRect src_rect) {
   // "Close" in this context means we will allow floating point inaccuracy,
   // when converted to layout units, to be at most one LayoutUnit::Epsilon and
   // still snap.
-  if (std::abs(std::round(src_rect.X()) - src_rect.X()) <=
+  if (std::abs(std::round(src_rect.x()) - src_rect.x()) <=
           LayoutUnit::Epsilon() &&
-      std::abs(std::round(src_rect.Y()) - src_rect.Y()) <=
+      std::abs(std::round(src_rect.y()) - src_rect.y()) <=
           LayoutUnit::Epsilon() &&
-      std::abs(std::round(src_rect.MaxX()) - src_rect.MaxX()) <=
+      std::abs(std::round(src_rect.right()) - src_rect.right()) <=
           LayoutUnit::Epsilon() &&
-      std::abs(std::round(src_rect.MaxY()) - src_rect.MaxY()) <=
+      std::abs(std::round(src_rect.bottom()) - src_rect.bottom()) <=
           LayoutUnit::Epsilon()) {
     IntRect rounded_src_rect = RoundedIntRect(src_rect);
     // If we have snapped the image size to 0, revert the rounding.
@@ -474,12 +474,12 @@ absl::optional<FloatRect> OptimizeToSingleTileDraw(
   // CAP, and maybe other cases.
   // DCHECK(one_tile_rect.Contains(dest_rect_for_subset));
   const FloatSize scale(
-      geometry.TileSize().width / intrinsic_tile_size.Width(),
-      geometry.TileSize().height / intrinsic_tile_size.Height());
+      geometry.TileSize().width / intrinsic_tile_size.width(),
+      geometry.TileSize().height / intrinsic_tile_size.height());
   FloatRect visible_src_rect(
-      offset_in_tile.left / scale.Width(), offset_in_tile.top / scale.Height(),
-      geometry.UnsnappedDestRect().Width() / scale.Width(),
-      geometry.UnsnappedDestRect().Height() / scale.Height());
+      offset_in_tile.left / scale.width(), offset_in_tile.top / scale.height(),
+      geometry.UnsnappedDestRect().Width() / scale.width(),
+      geometry.UnsnappedDestRect().Height() / scale.height());
 
   // Content providers almost always choose source pixels at integer locations,
   // so snap to integers. This is particularly important for sprite maps.
@@ -542,7 +542,7 @@ void DrawTiledBackground(GraphicsContext& context,
 
   // Note that this tile rect uses the image's pre-scaled size.
   ImageTilingInfo tiling_info;
-  tiling_info.image_rect.SetSize(intrinsic_tile_size);
+  tiling_info.image_rect.set_size(intrinsic_tile_size);
   tiling_info.phase = FloatPoint(geometry.ComputeDestPhase());
   tiling_info.spacing = FloatSize(geometry.SpaceSize());
 
@@ -562,8 +562,8 @@ void DrawTiledBackground(GraphicsContext& context,
   const LayoutUnit ref_tile_height = tile_dest_diff.height.Abs() <= 0.5f
                                          ? geometry.SnappedDestRect().Height()
                                          : geometry.TileSize().height;
-  tiling_info.scale = {ref_tile_width / tiling_info.image_rect.Width(),
-                       ref_tile_height / tiling_info.image_rect.Height()};
+  tiling_info.scale = {ref_tile_width / tiling_info.image_rect.width(),
+                       ref_tile_height / tiling_info.image_rect.height()};
 
   // This call takes the unscaled image, applies the given scale, and paints
   // it into the snapped_dest_rect using phase from one_tile_rect and the
@@ -603,10 +603,10 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
   if (!info.should_paint_color_with_paint_worklet_image)
     return false;
   scoped_refptr<Image> paint_worklet_image =
-      GetBGColorPaintWorkletImage(document, node, dest_rect.Rect().Size());
+      GetBGColorPaintWorkletImage(document, node, dest_rect.Rect().size());
   if (!paint_worklet_image)
     return false;
-  FloatRect src_rect(FloatPoint(), dest_rect.Rect().Size());
+  FloatRect src_rect(FloatPoint(), dest_rect.Rect().size());
   context.DrawImageRRect(
       paint_worklet_image.get(), Image::kSyncDecode,
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground),
@@ -680,8 +680,8 @@ inline bool PaintFastBottomLayer(const Document* document,
     const FloatRect& image_rect = image_border.Rect();
     if (!image_rect.IsEmpty()) {
       // We cannot optimize if the tile is too small.
-      if (geometry.TileSize().width < image_rect.Width() ||
-          geometry.TileSize().height < image_rect.Height())
+      if (geometry.TileSize().width < image_rect.width() ||
+          geometry.TileSize().height < image_rect.height())
         return false;
 
       // Use FastAndLossyFromFloatRect when converting the image border rect.

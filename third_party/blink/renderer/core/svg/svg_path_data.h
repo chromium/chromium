@@ -71,23 +71,23 @@ struct PathSegmentData {
   const FloatPoint& ArcRadii() const { return point1; }
   FloatPoint& ArcRadii() { return point1; }
 
-  float ArcAngle() const { return point2.X(); }
-  void SetArcAngle(float angle) { point2.SetX(angle); }
+  float ArcAngle() const { return point2.x(); }
+  void SetArcAngle(float angle) { point2.set_x(angle); }
 
-  float R1() const { return ArcRadii().X(); }
-  float R2() const { return ArcRadii().Y(); }
+  float R1() const { return ArcRadii().x(); }
+  float R2() const { return ArcRadii().y(); }
 
   bool LargeArcFlag() const { return arc_large; }
   bool SweepFlag() const { return arc_sweep; }
 
-  float X() const { return target_point.X(); }
-  float Y() const { return target_point.Y(); }
+  float X() const { return target_point.x(); }
+  float Y() const { return target_point.y(); }
 
-  float X1() const { return point1.X(); }
-  float Y1() const { return point1.Y(); }
+  float X1() const { return point1.x(); }
+  float Y1() const { return point1.y(); }
 
-  float X2() const { return point2.X(); }
-  float Y2() const { return point2.Y(); }
+  float X2() const { return point2.x(); }
+  float Y2() const { return point2.y(); }
 
   SVGPathSegType command;
   FloatPoint target_point;

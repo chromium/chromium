@@ -740,7 +740,7 @@ void ShapeResultView::ComputePartInkBounds(
 
   if (!is_horizontal_run)
     bounds.ConvertVerticalRunToLogical(current_font_data.GetFontMetrics());
-  ink_bounds->Unite(bounds.bounds);
+  ink_bounds->Union(bounds.bounds);
 }
 
 FloatRect ShapeResultView::ComputeInkBounds() const {

@@ -99,9 +99,9 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
     }
 
     pending_glyphs_.push_back(glyph);
-    pending_offsets_.push_back(offset.X() +
+    pending_offsets_.push_back(offset.x() +
                                pending_vertical_baseline_x_offset_);
-    pending_offsets_.push_back(offset.Y());
+    pending_offsets_.push_back(offset.y());
     if (UNLIKELY(!current_text_.IsNull())) {
       DVLOG(5) << "  Appending glyph " << glyph << " with start index "
                << character_index;

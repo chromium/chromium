@@ -1478,12 +1478,12 @@ TEST_F(WebFrameTest, ZeroHeightPositiveWidthNotIgnored) {
                                 ->MainFrameImpl()
                                 ->GetFrameView()
                                 ->GetLayoutSize()
-                                .Width());
+                                .width());
   EXPECT_EQ(viewport_height, web_view_helper.GetWebView()
                                  ->MainFrameImpl()
                                  ->GetFrameView()
                                  ->GetLayoutSize()
-                                 .Height());
+                                 .height());
 }
 
 TEST_F(WebFrameTest, DeviceScaleFactorUsesDefaultWithoutViewportTag) {
@@ -1690,12 +1690,12 @@ TEST_F(WebFrameTest, NoWideViewportIgnoresPageViewportWidth) {
                                 ->MainFrameImpl()
                                 ->GetFrameView()
                                 ->Size()
-                                .Width());
+                                .width());
   EXPECT_EQ(viewport_height, web_view_helper.GetWebView()
                                  ->MainFrameImpl()
                                  ->GetFrameView()
                                  ->Size()
-                                 .Height());
+                                 .height());
 }
 
 TEST_F(WebFrameTest, NoWideViewportIgnoresPageViewportWidthButAccountsScale) {
@@ -1720,12 +1720,12 @@ TEST_F(WebFrameTest, NoWideViewportIgnoresPageViewportWidthButAccountsScale) {
                                     ->MainFrameImpl()
                                     ->GetFrameView()
                                     ->Size()
-                                    .Width());
+                                    .width());
   EXPECT_EQ(viewport_height / 2, web_view_helper.GetWebView()
                                      ->MainFrameImpl()
                                      ->GetFrameView()
                                      ->Size()
-                                     .Height());
+                                     .height());
 }
 
 TEST_F(WebFrameTest, WideViewportSetsTo980WithoutViewportTag) {
@@ -1747,14 +1747,14 @@ TEST_F(WebFrameTest, WideViewportSetsTo980WithoutViewportTag) {
                      ->GetFrameView()
                      ->LayoutViewport()
                      ->ContentsSize()
-                     .Width());
+                     .width());
   EXPECT_EQ(980.0 / viewport_width * viewport_height,
             web_view_helper.GetWebView()
                 ->MainFrameImpl()
                 ->GetFrameView()
                 ->LayoutViewport()
                 ->ContentsSize()
-                .Height());
+                .height());
 }
 
 TEST_F(WebFrameTest, WideViewportSetsTo980WithXhtmlMp) {
@@ -1777,12 +1777,12 @@ TEST_F(WebFrameTest, WideViewportSetsTo980WithXhtmlMp) {
                                 ->MainFrameImpl()
                                 ->GetFrameView()
                                 ->Size()
-                                .Width());
+                                .width());
   EXPECT_EQ(viewport_height, web_view_helper.GetWebView()
                                  ->MainFrameImpl()
                                  ->GetFrameView()
                                  ->Size()
-                                 .Height());
+                                 .height());
 }
 
 TEST_F(WebFrameTest, NoWideViewportAndHeightInMeta) {
@@ -1803,7 +1803,7 @@ TEST_F(WebFrameTest, NoWideViewportAndHeightInMeta) {
                                 ->MainFrameImpl()
                                 ->GetFrameView()
                                 ->Size()
-                                .Width());
+                                .width());
 }
 
 TEST_F(WebFrameTest, WideViewportSetsTo980WithAutoWidth) {
@@ -1825,13 +1825,13 @@ TEST_F(WebFrameTest, WideViewportSetsTo980WithAutoWidth) {
                      ->MainFrameImpl()
                      ->GetFrameView()
                      ->Size()
-                     .Width());
+                     .width());
   EXPECT_EQ(980.0 / viewport_width * viewport_height,
             web_view_helper.GetWebView()
                 ->MainFrameImpl()
                 ->GetFrameView()
                 ->Size()
-                .Height());
+                .height());
 }
 
 TEST_F(WebFrameTest, PageViewportInitialScaleOverridesLoadWithOverviewMode) {
@@ -1983,7 +1983,7 @@ TEST_F(WebFrameTest, PermanentInitialPageScaleFactorAffectsLayoutWidth) {
                 ->MainFrameImpl()
                 ->GetFrameView()
                 ->Size()
-                .Width());
+                .width());
   EXPECT_EQ(enforced_page_scale_factor,
             web_view_helper.GetWebView()->PageScaleFactor());
 }
@@ -2071,7 +2071,7 @@ TEST_F(WebFrameTest, SetForceZeroLayoutHeight) {
                                  ->MainFrameImpl()
                                  ->GetFrameView()
                                  ->GetLayoutSize()
-                                 .Height());
+                                 .height());
   web_view_helper.GetWebView()->GetSettings()->SetForceZeroLayoutHeight(true);
   EXPECT_TRUE(web_view_helper.GetWebView()
                   ->MainFrameImpl()
@@ -2082,7 +2082,7 @@ TEST_F(WebFrameTest, SetForceZeroLayoutHeight) {
                    ->MainFrameImpl()
                    ->GetFrameView()
                    ->GetLayoutSize()
-                   .Height());
+                   .height());
 
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height * 2));
   EXPECT_FALSE(web_view_helper.GetWebView()
@@ -2093,21 +2093,21 @@ TEST_F(WebFrameTest, SetForceZeroLayoutHeight) {
                    ->MainFrameImpl()
                    ->GetFrameView()
                    ->GetLayoutSize()
-                   .Height());
+                   .height());
 
   web_view_helper.Resize(gfx::Size(viewport_width * 2, viewport_height));
   EXPECT_EQ(0, web_view_helper.GetWebView()
                    ->MainFrameImpl()
                    ->GetFrameView()
                    ->GetLayoutSize()
-                   .Height());
+                   .height());
 
   web_view_helper.GetWebView()->GetSettings()->SetForceZeroLayoutHeight(false);
   EXPECT_LE(viewport_height, web_view_helper.GetWebView()
                                  ->MainFrameImpl()
                                  ->GetFrameView()
                                  ->GetLayoutSize()
-                                 .Height());
+                                 .height());
 }
 
 TEST_F(WebFrameTest, ToggleViewportMetaOnOff) {
@@ -2267,7 +2267,7 @@ TEST_F(WebFrameTest, SetForceZeroLayoutHeightWorksAcrossNavigations) {
                    ->MainFrameImpl()
                    ->GetFrameView()
                    ->GetLayoutSize()
-                   .Height());
+                   .height());
 }
 
 TEST_F(WebFrameTest, SetForceZeroLayoutHeightWithWideViewportQuirk) {
@@ -2290,7 +2290,7 @@ TEST_F(WebFrameTest, SetForceZeroLayoutHeightWithWideViewportQuirk) {
                    ->MainFrameImpl()
                    ->GetFrameView()
                    ->GetLayoutSize()
-                   .Height());
+                   .height());
 }
 
 TEST_F(WebFrameTest, WideViewportQuirkClobbersHeight) {
@@ -2315,7 +2315,7 @@ TEST_F(WebFrameTest, WideViewportQuirkClobbersHeight) {
                      ->MainFrameImpl()
                      ->GetFrameView()
                      ->GetLayoutSize()
-                     .Height());
+                     .height());
   EXPECT_EQ(1, web_view_helper.GetWebView()->PageScaleFactor());
 }
 
@@ -2401,7 +2401,7 @@ TEST_F(WebFrameTest, NonZeroValuesNoQuirk) {
                 ->MainFrameImpl()
                 ->GetFrameView()
                 ->GetLayoutSize()
-                .Width());
+                .width());
   EXPECT_EQ(expected_page_scale_factor,
             web_view_helper.GetWebView()->PageScaleFactor());
 
@@ -2412,7 +2412,7 @@ TEST_F(WebFrameTest, NonZeroValuesNoQuirk) {
                 ->MainFrameImpl()
                 ->GetFrameView()
                 ->GetLayoutSize()
-                .Width());
+                .width());
   EXPECT_EQ(expected_page_scale_factor,
             web_view_helper.GetWebView()->PageScaleFactor());
 }
@@ -2539,18 +2539,18 @@ TEST_F(WebFrameTest, pageScaleFactorDoesntShrinkFrameView) {
   web_view_helper.GetWebView()->SetPageScaleFactor(2);
 
   IntSize unscaled_size = view->Size();
-  EXPECT_EQ(viewport_width, unscaled_size.Width());
-  EXPECT_EQ(viewport_height, unscaled_size.Height());
+  EXPECT_EQ(viewport_width, unscaled_size.width());
+  EXPECT_EQ(viewport_height, unscaled_size.height());
 
   IntSize unscaled_size_minus_scrollbar = view->Size();
   EXPECT_EQ(viewport_width_minus_scrollbar,
-            unscaled_size_minus_scrollbar.Width());
+            unscaled_size_minus_scrollbar.width());
   EXPECT_EQ(viewport_height_minus_scrollbar,
-            unscaled_size_minus_scrollbar.Height());
+            unscaled_size_minus_scrollbar.height());
 
   IntSize frame_view_size = view->Size();
-  EXPECT_EQ(viewport_width_minus_scrollbar, frame_view_size.Width());
-  EXPECT_EQ(viewport_height_minus_scrollbar, frame_view_size.Height());
+  EXPECT_EQ(viewport_width_minus_scrollbar, frame_view_size.width());
+  EXPECT_EQ(viewport_height_minus_scrollbar, frame_view_size.height());
 }
 
 TEST_F(WebFrameTest, pageScaleFactorDoesNotApplyCssTransform) {
@@ -2576,7 +2576,7 @@ TEST_F(WebFrameTest, pageScaleFactorDoesNotApplyCssTransform) {
                      ->GetFrameView()
                      ->LayoutViewport()
                      ->ContentsSize()
-                     .Width());
+                     .width());
 }
 
 TEST_F(WebFrameTest, targetDensityDpiHigh) {
@@ -2615,14 +2615,14 @@ TEST_F(WebFrameTest, targetDensityDpiHigh) {
                     ->MainFrameImpl()
                     ->GetFrameView()
                     ->GetLayoutSize()
-                    .Width(),
+                    .width(),
                 1.0f);
     EXPECT_NEAR(viewport_height * density_dpi_scale_ratio,
                 web_view_helper.GetWebView()
                     ->MainFrameImpl()
                     ->GetFrameView()
                     ->GetLayoutSize()
-                    .Height(),
+                    .height(),
                 1.0f);
     EXPECT_NEAR(1.0f / density_dpi_scale_ratio,
                 web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
@@ -2657,14 +2657,14 @@ TEST_F(WebFrameTest, targetDensityDpiDevice) {
                     ->MainFrameImpl()
                     ->GetFrameView()
                     ->GetLayoutSize()
-                    .Width(),
+                    .width(),
                 1.0f);
     EXPECT_NEAR(viewport_height * device_scale_factors[i],
                 web_view_helper.GetWebView()
                     ->MainFrameImpl()
                     ->GetFrameView()
                     ->GetLayoutSize()
-                    .Height(),
+                    .height(),
                 1.0f);
     if (Platform::Current()->IsUseZoomForDSFEnabled()) {
       EXPECT_NEAR(1.0f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
@@ -2709,14 +2709,14 @@ TEST_F(WebFrameTest, targetDensityDpiDeviceAndFixedWidth) {
                     ->MainFrameImpl()
                     ->GetFrameView()
                     ->GetLayoutSize()
-                    .Width(),
+                    .width(),
                 1.0f);
     EXPECT_NEAR(viewport_height,
                 web_view_helper.GetWebView()
                     ->MainFrameImpl()
                     ->GetFrameView()
                     ->GetLayoutSize()
-                    .Height(),
+                    .height(),
                 1.0f);
     EXPECT_NEAR(1.0f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
   }
@@ -2749,14 +2749,14 @@ TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOne) {
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Width(),
+                  .width(),
               1.0f);
   EXPECT_NEAR(viewport_height * device_scale_factor,
               web_view_helper.GetWebView()
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Height(),
+                  .height(),
               1.0f);
   if (Platform::Current()->IsUseZoomForDSFEnabled()) {
     EXPECT_NEAR(0.25f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
@@ -2800,14 +2800,14 @@ TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOneWithDeviceWidth) {
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Width(),
+                  .width(),
               4.0f);
   EXPECT_NEAR(viewport_height * device_scale_factor / kPageZoom,
               web_view_helper.GetWebView()
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Height(),
+                  .height(),
               4.0f);
   if (Platform::Current()->IsUseZoomForDSFEnabled()) {
     EXPECT_NEAR(kPageZoom, web_view_helper.GetWebView()->PageScaleFactor(),
@@ -2845,14 +2845,14 @@ TEST_F(WebFrameTest, NoWideViewportAndNoViewportWithInitialPageScaleOverride) {
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Width(),
+                  .width(),
               1.0f);
   EXPECT_NEAR(viewport_height / enforced_page_scale_factor,
               web_view_helper.GetWebView()
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Height(),
+                  .height(),
               1.0f);
   EXPECT_NEAR(enforced_page_scale_factor,
               web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
@@ -2878,14 +2878,14 @@ TEST_F(WebFrameTest, NoUserScalableQuirkIgnoresViewportScale) {
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Width(),
+                  .width(),
               1.0f);
   EXPECT_NEAR(viewport_height,
               web_view_helper.GetWebView()
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Height(),
+                  .height(),
               1.0f);
   EXPECT_NEAR(1.0f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
 }
@@ -2921,14 +2921,14 @@ TEST_F(WebFrameTest,
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Width(),
+                  .width(),
               1.0f);
   EXPECT_NEAR(viewport_height * device_scale_factor,
               web_view_helper.GetWebView()
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Height(),
+                  .height(),
               1.0f);
   if (Platform::Current()->IsUseZoomForDSFEnabled()) {
     EXPECT_NEAR(2.0f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
@@ -2965,14 +2965,14 @@ TEST_F(WebFrameTest, NoUserScalableQuirkIgnoresViewportScaleForWideViewport) {
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Width(),
+                  .width(),
               1.0f);
   EXPECT_NEAR(viewport_height,
               web_view_helper.GetWebView()
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
-                  .Height(),
+                  .height(),
               1.0f);
   EXPECT_NEAR(1.0f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
 }
@@ -3144,16 +3144,16 @@ TEST_F(WebFrameTest, pageScaleFactorUpdatesScrollbars) {
   LocalFrameView* view = web_view_helper.LocalMainFrame()->GetFrameView();
   ScrollableArea* scrollable_area = view->LayoutViewport();
   EXPECT_EQ(scrollable_area->ScrollSize(kHorizontalScrollbar),
-            scrollable_area->ContentsSize().Width() - view->Width());
+            scrollable_area->ContentsSize().width() - view->Width());
   EXPECT_EQ(scrollable_area->ScrollSize(kVerticalScrollbar),
-            scrollable_area->ContentsSize().Height() - view->Height());
+            scrollable_area->ContentsSize().height() - view->Height());
 
   web_view_helper.GetWebView()->SetPageScaleFactor(10);
 
   EXPECT_EQ(scrollable_area->ScrollSize(kHorizontalScrollbar),
-            scrollable_area->ContentsSize().Width() - view->Width());
+            scrollable_area->ContentsSize().width() - view->Width());
   EXPECT_EQ(scrollable_area->ScrollSize(kVerticalScrollbar),
-            scrollable_area->ContentsSize().Height() - view->Height());
+            scrollable_area->ContentsSize().height() - view->Height());
 }
 
 TEST_F(WebFrameTest, CanOverrideScaleLimits) {
@@ -3290,8 +3290,8 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
   // The div should horizontally fill the screen (modulo margins), and
   // vertically centered (modulo integer rounding).
   EXPECT_NEAR(viewport_width / (float)wide_div.width(), scale, 0.1);
-  EXPECT_NEAR(wide_div.x(), scroll.X(), 20);
-  EXPECT_EQ(0, scroll.Y());
+  EXPECT_NEAR(wide_div.x(), scroll.x(), 20);
+  EXPECT_EQ(0, scroll.y());
 
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), ToGfxPoint(scroll),
                              scale);
@@ -3315,8 +3315,8 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
       double_tap_zoom_already_legible_scale, scale, scroll);
   // The div should start at the top left of the viewport.
   EXPECT_NEAR(viewport_width / (float)tall_div.width(), scale, 0.1);
-  EXPECT_NEAR(tall_div.x(), scroll.X(), 20);
-  EXPECT_NEAR(tall_div.y(), scroll.Y(), 20);
+  EXPECT_NEAR(tall_div.x(), scroll.x(), 20);
+  EXPECT_NEAR(tall_div.y(), scroll.y(), 20);
 }
 
 TEST_F(WebFrameTest, DivAutoZoomWideDivTest) {
@@ -3383,7 +3383,7 @@ TEST_F(WebFrameTest, DivAutoZoomVeryTallTest) {
   web_view_helper.GetWebView()->ComputeScaleAndScrollForBlockRect(
       point, block_bound, 0, 1.0f, scale, scroll);
   EXPECT_EQ(scale, 1.0f);
-  EXPECT_EQ(scroll.Y(), 2660);
+  EXPECT_EQ(scroll.y(), 2660);
 }
 
 TEST_F(WebFrameTest, DivAutoZoomMultipleDivsTest) {
@@ -3958,10 +3958,10 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
   // The edit box should be left aligned with a margin for possible label.
   int h_scroll =
       edit_box_with_text.x() - left_box_ratio * viewport_width / scale;
-  EXPECT_NEAR(h_scroll, scroll.X(), 2);
+  EXPECT_NEAR(h_scroll, scroll.x(), 2);
   int v_scroll = edit_box_with_text.y() -
                  (viewport_height / scale - edit_box_with_text.height()) / 2;
-  EXPECT_NEAR(v_scroll, scroll.Y(), 2);
+  EXPECT_NEAR(v_scroll, scroll.y(), 2);
   EXPECT_NEAR(min_readable_caret_height / caret.height(), scale, 0.1);
 
   // The edit box is wider than the viewport when legible.
@@ -3979,7 +3979,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
   // The caret should be right aligned since the caret would be offscreen when
   // the edit box is left aligned.
   h_scroll = caret.x() + caret.width() + caret_padding - viewport_width / scale;
-  EXPECT_NEAR(h_scroll, scroll.X(), 2);
+  EXPECT_NEAR(h_scroll, scroll.x(), 2);
   EXPECT_NEAR(min_readable_caret_height / caret.height(), scale, 0.1);
 
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), gfx::Point(),
@@ -3994,10 +3994,10 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
   EXPECT_TRUE(need_animation);
   // The edit box should be left aligned.
   h_scroll = edit_box_with_no_text.x();
-  EXPECT_NEAR(h_scroll, scroll.X(), 2);
+  EXPECT_NEAR(h_scroll, scroll.x(), 2);
   v_scroll = edit_box_with_no_text.y() -
              (viewport_height / scale - edit_box_with_no_text.height()) / 2;
-  EXPECT_NEAR(v_scroll, scroll.Y(), 2);
+  EXPECT_NEAR(v_scroll, scroll.y(), 2);
   EXPECT_NEAR(min_readable_caret_height / caret.height(), scale, 0.1);
 
   // Move focus back to the first edit box.
@@ -4067,10 +4067,10 @@ TEST_F(WebFrameTest, DivScrollIntoEditablePreservePageScaleTest) {
   EXPECT_TRUE(need_animation);
   // Edit box and caret should be left alinged
   int h_scroll = edit_box_with_text.x();
-  EXPECT_NEAR(h_scroll, scroll.X(), 1);
+  EXPECT_NEAR(h_scroll, scroll.x(), 1);
   int v_scroll = edit_box_with_text.y() -
                  (kViewportHeight / scale - edit_box_with_text.height()) / 2;
-  EXPECT_NEAR(v_scroll, scroll.Y(), 1);
+  EXPECT_NEAR(v_scroll, scroll.y(), 1);
   // Page scale have to be unchanged
   EXPECT_EQ(new_scale, scale);
 
@@ -4086,10 +4086,10 @@ TEST_F(WebFrameTest, DivScrollIntoEditablePreservePageScaleTest) {
       need_animation);
   EXPECT_TRUE(need_animation);
   // Horizontal scroll have to be the same
-  EXPECT_NEAR(h_scroll, scroll.X(), 1);
+  EXPECT_NEAR(h_scroll, scroll.x(), 1);
   v_scroll = edit_box_with_text.y() -
              (kViewportHeight / scale - edit_box_with_text.height()) / 2;
-  EXPECT_NEAR(v_scroll, scroll.Y(), 1);
+  EXPECT_NEAR(v_scroll, scroll.y(), 1);
   // Page scale have to be unchanged
   EXPECT_EQ(new_scale, scale);
 }
@@ -4148,10 +4148,10 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestZoomToLegibleScaleDisabled) {
   EXPECT_TRUE(need_animation);
   int h_scroll =
       edit_box_with_no_text.x() - left_box_ratio * viewport_width / scale;
-  EXPECT_NEAR(h_scroll, scroll.X(), 2);
+  EXPECT_NEAR(h_scroll, scroll.x(), 2);
   int v_scroll = edit_box_with_no_text.y() -
                  (viewport_height / scale - edit_box_with_no_text.height()) / 2;
-  EXPECT_NEAR(v_scroll, scroll.Y(), 2);
+  EXPECT_NEAR(v_scroll, scroll.y(), 2);
 
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), ToGfxPoint(scroll),
                              scale);
@@ -4221,11 +4221,11 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestWithDeviceScaleFactor) {
   EXPECT_TRUE(need_animation);
   // The edit box wider than the viewport when legible should be left aligned.
   int h_scroll = edit_box_with_text.x();
-  EXPECT_NEAR(h_scroll, scroll.X(), 2);
+  EXPECT_NEAR(h_scroll, scroll.x(), 2);
   int v_scroll = edit_box_with_text.y() -
                  (viewport_height / scale - edit_box_with_text.height()) / 2;
-  EXPECT_NEAR(v_scroll, scroll.Y(), 2);
-  EXPECT_NEAR(min_readable_caret_height / caret_bounds.Height(), scale, 0.1);
+  EXPECT_NEAR(v_scroll, scroll.y(), 2);
+  EXPECT_NEAR(min_readable_caret_height / caret_bounds.height(), scale, 0.1);
 }
 
 TEST_F(WebFrameTest, FirstRectForCharacterRangeWithPinchZoom) {
@@ -4924,7 +4924,7 @@ TEST_F(WebFrameTest, FindInPageMatchRects) {
 
     // Select the match by the center of its rect.
     EXPECT_EQ(main_frame->EnsureTextFinder().SelectNearestFindMatch(
-                  ToGfxPointF(result_rect.Center()), nullptr),
+                  ToGfxPointF(result_rect.CenterPoint()), nullptr),
               result_index + 1);
 
     // Check that the find result ordering matches with our expectations.
@@ -7999,7 +7999,7 @@ TEST_F(WebFrameTest, MaximumScrollPositionCanBeNegative) {
 
   LocalFrameView* frame_view = web_view_helper.LocalMainFrame()->GetFrameView();
   ScrollableArea* layout_viewport = frame_view->LayoutViewport();
-  EXPECT_LT(layout_viewport->MaximumScrollOffset().Width(), 0);
+  EXPECT_LT(layout_viewport->MaximumScrollOffset().width(), 0);
 }
 
 TEST_F(WebFrameTest, FullscreenLayerSize) {
@@ -8767,13 +8767,13 @@ static void NodeImageTestValidation(const IntSize& reference_bitmap_size,
                                     DragImage* drag_image) {
   // Prepare the reference bitmap.
   SkBitmap bitmap;
-  bitmap.allocN32Pixels(reference_bitmap_size.Width(),
-                        reference_bitmap_size.Height());
+  bitmap.allocN32Pixels(reference_bitmap_size.width(),
+                        reference_bitmap_size.height());
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawColor(SK_ColorGREEN);
 
-  EXPECT_EQ(reference_bitmap_size.Width(), drag_image->Size().Width());
-  EXPECT_EQ(reference_bitmap_size.Height(), drag_image->Size().Height());
+  EXPECT_EQ(reference_bitmap_size.width(), drag_image->Size().width());
+  EXPECT_EQ(reference_bitmap_size.height(), drag_image->Size().height());
   const SkBitmap& drag_bitmap = drag_image->Bitmap();
   EXPECT_EQ(0, memcmp(bitmap.getPixels(), drag_bitmap.getPixels(),
                       bitmap.computeByteSize()));
@@ -9057,8 +9057,8 @@ TEST_F(WebFrameSwapTest, ValidateSizeOnRemoteToLocalMainFrameSwap) {
   // after swapping to a local frame.
   Page* page =
       To<WebViewImpl>(local_frame->View())->GetPage()->MainFrame()->GetPage();
-  EXPECT_EQ(size.width(), page->GetVisualViewport().Size().Width());
-  EXPECT_EQ(size.height(), page->GetVisualViewport().Size().Height());
+  EXPECT_EQ(size.width(), page->GetVisualViewport().Size().width());
+  EXPECT_EQ(size.height(), page->GetVisualViewport().Size().height());
 }
 
 // Verify that size changes to browser controls while the main frame is remote
@@ -11931,7 +11931,7 @@ TEST_F(WebFrameSimTest, TickmarksDocumentRelative) {
       frame_view->LayoutViewport()->GetTickmarks();
   EXPECT_EQ(1u, original_tickmarks.size());
 
-  EXPECT_EQ(IntPoint(800, 2000), original_tickmarks[0].Location());
+  EXPECT_EQ(IntPoint(800, 2000), original_tickmarks[0].origin());
 }
 
 TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
@@ -11995,13 +11995,13 @@ TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
 
   FloatRect result_rect = static_cast<FloatRect>(web_match_rects[0]);
   frame->EnsureTextFinder().SelectNearestFindMatch(
-      ToGfxPointF(result_rect.Center()), nullptr);
+      ToGfxPointF(result_rect.CenterPoint()), nullptr);
 
   EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
       box1_rect));
   result_rect = static_cast<FloatRect>(web_match_rects[1]);
   frame->EnsureTextFinder().SelectNearestFindMatch(
-      ToGfxPointF(result_rect.Center()), nullptr);
+      ToGfxPointF(result_rect.CenterPoint()), nullptr);
 
   EXPECT_TRUE(
       frame_view->GetScrollableArea()->VisibleContentRect().Contains(box2_rect))
@@ -12147,7 +12147,7 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
       ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic);
 
   ASSERT_EQ(FloatPoint(),
-            frame_view->GetScrollableArea()->VisibleContentRect().Location());
+            frame_view->GetScrollableArea()->VisibleContentRect().origin());
 
   WebView()
       .MainFrameImpl()
@@ -12263,7 +12263,7 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
   IntRect inputRect(200, 700, 100, 20);
   ASSERT_EQ(1, visual_viewport.Scale());
   ASSERT_EQ(FloatPoint(0, 300),
-            frame_view->GetScrollableArea()->VisibleContentRect().Location());
+            frame_view->GetScrollableArea()->VisibleContentRect().origin());
   ASSERT_FALSE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
       inputRect));
 
@@ -12345,7 +12345,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
   VisualViewport& visual_viewport = frame->GetPage()->GetVisualViewport();
 
   ASSERT_EQ(FloatPoint(),
-            frame_view->GetScrollableArea()->VisibleContentRect().Location());
+            frame_view->GetScrollableArea()->VisibleContentRect().origin());
 
   // Simulate the keyboard being shown and resizing the widget. Cause a scroll
   // into view after.

@@ -63,7 +63,7 @@ class PLATFORM_EXPORT FloatRect {
   constexpr FloatRect(float x, float y, float width, float height)
       : location_(FloatPoint(x, y)), size_(FloatSize(width, height)) {}
   constexpr explicit FloatRect(const IntRect& r)
-      : FloatRect(r.X(), r.Y(), r.Width(), r.Height()) {}
+      : FloatRect(r.x(), r.y(), r.width(), r.height()) {}
   constexpr explicit FloatRect(const gfx::RectF& r)
       : FloatRect(r.x(), r.y(), r.width(), r.height()) {}
   FloatRect(const SkRect& r) : FloatRect(r.x(), r.y(), r.width(), r.height()) {}
@@ -74,23 +74,23 @@ class PLATFORM_EXPORT FloatRect {
                                    double width,
                                    double height);
 
-  constexpr FloatPoint Location() const { return location_; }
-  constexpr FloatSize Size() const { return size_; }
+  constexpr FloatPoint origin() const { return location_; }
+  constexpr FloatSize size() const { return size_; }
 
-  void SetLocation(const FloatPoint& location) { location_ = location; }
-  void SetSize(const FloatSize& size) { size_ = size; }
+  void set_origin(const FloatPoint& location) { location_ = location; }
+  void set_size(const FloatSize& size) { size_ = size; }
 
-  constexpr float X() const { return location_.X(); }
-  constexpr float Y() const { return location_.Y(); }
-  constexpr float MaxX() const { return X() + Width(); }
-  constexpr float MaxY() const { return Y() + Height(); }
-  constexpr float Width() const { return size_.Width(); }
-  constexpr float Height() const { return size_.Height(); }
+  constexpr float x() const { return location_.x(); }
+  constexpr float y() const { return location_.y(); }
+  constexpr float right() const { return x() + width(); }
+  constexpr float bottom() const { return y() + height(); }
+  constexpr float width() const { return size_.width(); }
+  constexpr float height() const { return size_.height(); }
 
-  void SetX(float x) { location_.SetX(x); }
-  void SetY(float y) { location_.SetY(y); }
-  void SetWidth(float width) { size_.SetWidth(width); }
-  void SetHeight(float height) { size_.SetHeight(height); }
+  void set_x(float x) { location_.set_x(x); }
+  void set_y(float y) { location_.set_y(y); }
+  void set_width(float width) { size_.set_width(width); }
+  void set_height(float height) { size_.set_height(height); }
 
   constexpr bool IsEmpty() const { return size_.IsEmpty(); }
   constexpr bool IsZero() const { return size_.IsZero(); }
@@ -98,40 +98,41 @@ class PLATFORM_EXPORT FloatRect {
   bool IsFinite() const;
   bool IsExpressibleAsIntRect() const;
 
-  FloatPoint Center() const {
-    return FloatPoint(X() + Width() / 2, Y() + Height() / 2);
+  FloatPoint CenterPoint() const {
+    return FloatPoint(x() + width() / 2, y() + height() / 2);
   }
 
-  void Move(const FloatSize& delta) { location_ += delta; }
-  void MoveBy(const FloatPoint& delta) { location_.Move(delta.X(), delta.Y()); }
-  void Move(float dx, float dy) { location_.Move(dx, dy); }
+  void Offset(const FloatSize& delta) { location_ += delta; }
+  void MoveBy(const FloatPoint& delta) {
+    location_.Offset(delta.x(), delta.y());
+  }
+  void Offset(float dx, float dy) { location_.Offset(dx, dy); }
 
   void Expand(const FloatSize& size) { size_ += size; }
-  void Expand(float dw, float dh) { size_.Expand(dw, dh); }
+  void Expand(float dw, float dh) { size_.Enlarge(dw, dh); }
   void Expand(const FloatRectOutsets& outsets) {
-    location_.Move(-outsets.Left(), -outsets.Top());
-    size_.Expand(outsets.Left() + outsets.Right(),
-                 outsets.Top() + outsets.Bottom());
+    location_.Offset(-outsets.Left(), -outsets.Top());
+    size_.Enlarge(outsets.Left() + outsets.Right(),
+                  outsets.Top() + outsets.Bottom());
   }
 
   void Contract(const FloatSize& size) { size_ -= size; }
-  void Contract(float dw, float dh) { size_.Expand(-dw, -dh); }
+  void Contract(float dw, float dh) { size_.Enlarge(-dw, -dh); }
 
   void ShiftXEdgeTo(float);
   void ShiftMaxXEdgeTo(float);
   void ShiftYEdgeTo(float);
   void ShiftMaxYEdgeTo(float);
 
-  FloatPoint MinXMinYCorner() const { return location_; }  // typically topLeft
-  FloatPoint MaxXMinYCorner() const {
-    return FloatPoint(location_.X() + size_.Width(), location_.Y());
+  FloatPoint top_right() const {
+    return FloatPoint(location_.x() + size_.width(), location_.y());
   }  // typically topRight
-  FloatPoint MinXMaxYCorner() const {
-    return FloatPoint(location_.X(), location_.Y() + size_.Height());
+  FloatPoint bottom_left() const {
+    return FloatPoint(location_.x(), location_.y() + size_.height());
   }  // typically bottomLeft
-  FloatPoint MaxXMaxYCorner() const {
-    return FloatPoint(location_.X() + size_.Width(),
-                      location_.Y() + size_.Height());
+  FloatPoint bottom_right() const {
+    return FloatPoint(location_.x() + size_.width(),
+                      location_.y() + size_.height());
   }  // typically bottomRight
 
   WARN_UNUSED_RESULT bool Intersects(const IntRect&) const;
@@ -150,29 +151,29 @@ class PLATFORM_EXPORT FloatRect {
   // whether the two rectangle actually have an intersection, since checking
   // the result for isEmpty() is not conclusive.
   bool InclusiveIntersect(const FloatRect&);
-  void Unite(const FloatRect&);
-  void UniteEvenIfEmpty(const FloatRect&);
-  void UniteIfNonZero(const FloatRect&);
+  void Union(const FloatRect&);
+  void UnionEvenIfEmpty(const FloatRect&);
+  void UnionIfNonZero(const FloatRect&);
   void Extend(const FloatPoint&);
 
   // Note, this doesn't match what IntRect::contains(IntPoint&) does; the int
   // version is really checking for containment of 1x1 rect, but that doesn't
   // make sense with floats.
   bool Contains(float px, float py) const {
-    return px >= X() && px <= MaxX() && py >= Y() && py <= MaxY();
+    return px >= x() && px <= right() && py >= y() && py <= bottom();
   }
 
-  void InflateX(float dx) {
-    location_.SetX(location_.X() - dx);
-    size_.SetWidth(size_.Width() + dx + dx);
+  void OutsetX(float dx) {
+    location_.set_x(location_.x() - dx);
+    size_.set_width(size_.width() + dx + dx);
   }
-  void InflateY(float dy) {
-    location_.SetY(location_.Y() - dy);
-    size_.SetHeight(size_.Height() + dy + dy);
+  void OutsetY(float dy) {
+    location_.set_y(location_.y() - dy);
+    size_.set_height(size_.height() + dy + dy);
   }
-  void Inflate(float d) {
-    InflateX(d);
-    InflateY(d);
+  void Outset(float d) {
+    OutsetX(d);
+    OutsetY(d);
   }
   void Scale(float s) { Scale(s, s); }
   void Scale(float sx, float sy);
@@ -189,7 +190,7 @@ class PLATFORM_EXPORT FloatRect {
 #endif
 
   operator SkRect() const {
-    return SkRect::MakeXYWH(X(), Y(), Width(), Height());
+    return SkRect::MakeXYWH(x(), y(), width(), height());
   }
 
   // This is deleted during blink geometry type to gfx migration.
@@ -211,43 +212,43 @@ class PLATFORM_EXPORT FloatRect {
                                    float top,
                                    float right,
                                    float bottom) {
-    location_.Set(left, top);
-    size_.SetWidth(right - left);
-    size_.SetHeight(bottom - top);
+    location_.SetPoint(left, top);
+    size_.set_width(right - left);
+    size_.set_height(bottom - top);
   }
 };
 
-inline FloatRect Intersection(const FloatRect& a, const FloatRect& b) {
+inline FloatRect IntersectRects(const FloatRect& a, const FloatRect& b) {
   FloatRect c = a;
   c.Intersect(b);
   return c;
 }
 
-inline FloatRect UnionRect(const FloatRect& a, const FloatRect& b) {
+inline FloatRect UnionRects(const FloatRect& a, const FloatRect& b) {
   FloatRect c = a;
-  c.Unite(b);
+  c.Union(b);
   return c;
 }
 
-PLATFORM_EXPORT FloatRect UnionRect(const Vector<FloatRect>&);
+PLATFORM_EXPORT FloatRect UnionRects(const Vector<FloatRect>&);
 
 // Return a maximum rectangle in which any point is covered by either a or b.
 PLATFORM_EXPORT FloatRect MaximumCoveredRect(const FloatRect& a,
                                              const FloatRect& b);
 
 inline FloatRect& operator+=(FloatRect& a, const FloatRect& b) {
-  a.Move(b.X(), b.Y());
-  a.SetWidth(a.Width() + b.Width());
-  a.SetHeight(a.Height() + b.Height());
+  a.Offset(b.x(), b.y());
+  a.set_width(a.width() + b.width());
+  a.set_height(a.height() + b.height());
   return a;
 }
 
 constexpr FloatRect operator+(const FloatRect& a, const FloatRect& b) {
-  return FloatRect(a.Location() + b.Location(), a.Size() + b.Size());
+  return FloatRect(a.origin() + b.origin(), a.size() + b.size());
 }
 
 constexpr bool operator==(const FloatRect& a, const FloatRect& b) {
-  return a.Location() == b.Location() && a.Size() == b.Size();
+  return a.origin() == b.origin() && a.size() == b.size();
 }
 
 constexpr bool operator!=(const FloatRect& a, const FloatRect& b) {
@@ -256,11 +257,11 @@ constexpr bool operator!=(const FloatRect& a, const FloatRect& b) {
 
 // Returns a IntRect containing the given FloatRect.
 inline IntRect EnclosingIntRect(const FloatRect& rect) {
-  IntPoint location = FlooredIntPoint(rect.Location());
-  IntPoint max_point = CeiledIntPoint(rect.MaxXMaxYCorner());
+  IntPoint location = FlooredIntPoint(rect.origin());
+  IntPoint max_point = CeiledIntPoint(rect.bottom_right());
   return IntRect(location,
-                 IntSize(base::ClampSub(max_point.X(), location.X()),
-                         base::ClampSub(max_point.Y(), location.Y())));
+                 IntSize(base::ClampSub(max_point.x(), location.x()),
+                         base::ClampSub(max_point.y(), location.y())));
 }
 
 // Returns a valid IntRect contained within the given FloatRect.
@@ -274,7 +275,7 @@ PLATFORM_EXPORT FloatRect MapRect(const FloatRect&,
                                   const FloatRect& dest_rect);
 
 constexpr gfx::RectF ToGfxRectF(const FloatRect& r) {
-  return gfx::RectF(r.X(), r.Y(), r.Width(), r.Height());
+  return gfx::RectF(r.x(), r.y(), r.width(), r.height());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatRect&);

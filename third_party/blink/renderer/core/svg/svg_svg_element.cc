@@ -301,11 +301,11 @@ void SVGSVGElement::SvgAttributeChanged(
 // FloatRect::intersects does not consider horizontal or vertical lines (because
 // of isEmpty()).
 static bool IntersectsAllowingEmpty(const FloatRect& r1, const FloatRect& r2) {
-  if (r1.Width() < 0 || r1.Height() < 0 || r2.Width() < 0 || r2.Height() < 0)
+  if (r1.width() < 0 || r1.height() < 0 || r2.width() < 0 || r2.height() < 0)
     return false;
 
-  return r1.X() < r2.MaxX() && r2.X() < r1.MaxX() && r1.Y() < r2.MaxY() &&
-         r2.Y() < r1.MaxY();
+  return r1.x() < r2.right() && r2.x() < r1.right() && r1.y() < r2.bottom() &&
+         r2.y() < r1.bottom();
 }
 
 // One of the element types that can cause graphics to be drawn onto the target
@@ -648,7 +648,7 @@ FloatSize SVGSVGElement::CurrentViewportSize() const {
 
   FloatRect viewport_rect =
       To<LayoutSVGViewportContainer>(GetLayoutObject())->Viewport();
-  return viewport_rect.Size();
+  return viewport_rect.size();
 }
 
 absl::optional<float> SVGSVGElement::IntrinsicWidth() const {

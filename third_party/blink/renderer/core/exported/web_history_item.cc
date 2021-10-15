@@ -93,7 +93,7 @@ gfx::PointF WebHistoryItem::VisualViewportScrollOffset() const {
       scroll_and_view_state
           ? scroll_and_view_state->visual_viewport_scroll_offset_
           : ScrollOffset();
-  return gfx::PointF(offset.Width(), offset.Height());
+  return gfx::PointF(offset.width(), offset.height());
 }
 
 void WebHistoryItem::SetVisualViewportScrollOffset(
@@ -106,7 +106,7 @@ gfx::Point WebHistoryItem::GetScrollOffset() const {
   ScrollOffset offset = scroll_and_view_state
                             ? scroll_and_view_state->scroll_offset_
                             : ScrollOffset();
-  return gfx::Point(offset.Width(), offset.Height());
+  return gfx::Point(offset.width(), offset.height());
 }
 
 void WebHistoryItem::SetScrollOffset(const gfx::Point& scroll_offset) {

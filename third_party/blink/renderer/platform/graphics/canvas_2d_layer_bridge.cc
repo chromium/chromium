@@ -369,8 +369,8 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
   if (!GetOrCreateResourceProvider())
     return false;
 
-  if (x <= 0 && y <= 0 && x + orig_info.width() >= size_.Width() &&
-      y + orig_info.height() >= size_.Height()) {
+  if (x <= 0 && y <= 0 && x + orig_info.width() >= size_.width() &&
+      y + orig_info.height() >= size_.height()) {
     SkipQueuedDrawCommands();
   } else {
     FlushRecording();

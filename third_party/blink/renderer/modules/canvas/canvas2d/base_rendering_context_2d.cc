@@ -579,13 +579,13 @@ void BaseRenderingContext2D::setMiterLimit(double limit) {
 }
 
 double BaseRenderingContext2D::shadowOffsetX() const {
-  return GetState().ShadowOffset().Width();
+  return GetState().ShadowOffset().width();
 }
 
 void BaseRenderingContext2D::setShadowOffsetX(double x) {
   if (!std::isfinite(x))
     return;
-  if (GetState().ShadowOffset().Width() == x)
+  if (GetState().ShadowOffset().width() == x)
     return;
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetX,
@@ -595,13 +595,13 @@ void BaseRenderingContext2D::setShadowOffsetX(double x) {
 }
 
 double BaseRenderingContext2D::shadowOffsetY() const {
-  return GetState().ShadowOffset().Height();
+  return GetState().ShadowOffset().height();
 }
 
 void BaseRenderingContext2D::setShadowOffsetY(double y) {
   if (!std::isfinite(y))
     return;
-  if (GetState().ShadowOffset().Height() == y)
+  if (GetState().ShadowOffset().height() == y)
     return;
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetY,
@@ -1245,8 +1245,8 @@ void BaseRenderingContext2D::DrawPathInternal(
 
   SkPath sk_path = path.GetSkPath();
   FloatRect bounds = path.BoundingRect();
-  if (std::isnan(bounds.X()) || std::isnan(bounds.Y()) ||
-      std::isnan(bounds.Width()) || std::isnan(bounds.Height()))
+  if (std::isnan(bounds.x()) || std::isnan(bounds.y()) ||
+      std::isnan(bounds.width()) || std::isnan(bounds.height()))
     return;
   sk_path.setFillType(fill_type);
 
@@ -1372,11 +1372,11 @@ static void StrokeRectOnCanvas(const FloatRect& rect,
                                cc::PaintCanvas* canvas,
                                const PaintFlags* flags) {
   DCHECK_EQ(flags->getStyle(), PaintFlags::kStroke_Style);
-  if ((rect.Width() > 0) != (rect.Height() > 0)) {
+  if ((rect.width() > 0) != (rect.height() > 0)) {
     // When stroking, we must skip the zero-dimension segments
     SkPath path;
-    path.moveTo(rect.X(), rect.Y());
-    path.lineTo(rect.MaxX(), rect.MaxY());
+    path.moveTo(rect.x(), rect.y());
+    path.lineTo(rect.right(), rect.bottom());
     path.close();
     canvas->drawPath(path, *flags);
     return;
@@ -1409,8 +1409,8 @@ void BaseRenderingContext2D::strokeRect(double x,
   FloatRect bounds = rect;
   InflateStrokeRect(bounds);
 
-  if (!ValidateRectForCanvas(bounds.X(), bounds.Y(), bounds.Width(),
-                             bounds.Height()))
+  if (!ValidateRectForCanvas(bounds.x(), bounds.y(), bounds.width(),
+                             bounds.height()))
     return;
 
   Draw<OverdrawOp::kNone>(
@@ -1590,10 +1590,10 @@ void BaseRenderingContext2D::clearRect(double x,
 }
 
 static inline FloatRect NormalizeRect(const FloatRect& rect) {
-  return FloatRect(std::min(rect.X(), rect.MaxX()),
-                   std::min(rect.Y(), rect.MaxY()),
-                   std::max(rect.Width(), -rect.Width()),
-                   std::max(rect.Height(), -rect.Height()));
+  return FloatRect(std::min(rect.x(), rect.right()),
+                   std::min(rect.y(), rect.bottom()),
+                   std::max(rect.width(), -rect.width()),
+                   std::max(rect.height(), -rect.height()));
 }
 
 static inline void ClipRectsToImageRect(const FloatRect& image_rect,
@@ -1603,19 +1603,19 @@ static inline void ClipRectsToImageRect(const FloatRect& image_rect,
     return;
 
   // Compute the src to dst transform
-  FloatSize scale(dst_rect->Size().Width() / src_rect->Size().Width(),
-                  dst_rect->Size().Height() / src_rect->Size().Height());
-  FloatPoint scaled_src_location = src_rect->Location();
-  scaled_src_location.Scale(scale.Width(), scale.Height());
-  FloatSize offset = dst_rect->Location() - scaled_src_location;
+  FloatSize scale(dst_rect->size().width() / src_rect->size().width(),
+                  dst_rect->size().height() / src_rect->size().height());
+  FloatPoint scaled_src_location = src_rect->origin();
+  scaled_src_location.Scale(scale.width(), scale.height());
+  FloatSize offset = dst_rect->origin() - scaled_src_location;
 
   src_rect->Intersect(image_rect);
 
   // To clip the destination rectangle in the same proportion, transform the
   // clipped src rect
   *dst_rect = *src_rect;
-  dst_rect->Scale(scale.Width(), scale.Height());
-  dst_rect->Move(offset);
+  dst_rect->Scale(scale.width(), scale.height());
+  dst_rect->Offset(offset);
 }
 
 void BaseRenderingContext2D::drawImage(ScriptState* script_state,
@@ -1634,9 +1634,9 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
       default_object_size, respect_orientation);
   FloatSize dest_rect_size = image_source_internal->DefaultDestinationSize(
       default_object_size, respect_orientation);
-  drawImage(script_state, image_source_internal, 0, 0, source_rect_size.Width(),
-            source_rect_size.Height(), x, y, dest_rect_size.Width(),
-            dest_rect_size.Height(), exception_state);
+  drawImage(script_state, image_source_internal, 0, 0, source_rect_size.width(),
+            source_rect_size.height(), x, y, dest_rect_size.width(),
+            dest_rect_size.height(), exception_state);
 }
 
 void BaseRenderingContext2D::drawImage(ScriptState* script_state,
@@ -1654,8 +1654,8 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
   FloatSize source_rect_size = image_source_internal->ElementSize(
       default_object_size,
       RespectImageOrientationInternal(image_source_internal));
-  drawImage(script_state, image_source_internal, 0, 0, source_rect_size.Width(),
-            source_rect_size.Height(), x, y, width, height, exception_state);
+  drawImage(script_state, image_source_internal, 0, 0, source_rect_size.width(),
+            source_rect_size.height(), x, y, width, height, exception_state);
 }
 
 void BaseRenderingContext2D::drawImage(ScriptState* script_state,
@@ -1704,8 +1704,8 @@ bool BaseRenderingContext2D::ShouldDrawImageAntialiased(
     width_expansion = ctm[SkMatrix::kMScaleX];
     height_expansion = ctm[SkMatrix::kMScaleY];
   }
-  return dest_rect.Width() * fabs(width_expansion) < 1 ||
-         dest_rect.Height() * fabs(height_expansion) < 1;
+  return dest_rect.width() * fabs(width_expansion) < 1 ||
+         dest_rect.height() * fabs(height_expansion) < 1;
 }
 
 void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
@@ -1798,10 +1798,10 @@ void BaseRenderingContext2D::DrawImageInternal(
   if (image_source->IsVideoElement()) {
     c->save();
     c->clipRect(dst_rect);
-    c->translate(dst_rect.X(), dst_rect.Y());
-    c->scale(dst_rect.Width() / src_rect.Width(),
-             dst_rect.Height() / src_rect.Height());
-    c->translate(-src_rect.X(), -src_rect.Y());
+    c->translate(dst_rect.x(), dst_rect.y());
+    c->scale(dst_rect.width() / src_rect.width(),
+             dst_rect.height() / src_rect.height());
+    c->translate(-src_rect.x(), -src_rect.y());
     HTMLVideoElement* video = static_cast<HTMLVideoElement*>(image_source);
     video->PaintCurrentFrame(
         c,
@@ -1825,10 +1825,10 @@ void BaseRenderingContext2D::DrawImageInternal(
 
     c->save();
     c->clipRect(dst_rect);
-    c->translate(dst_rect.X(), dst_rect.Y());
-    c->scale(dst_rect.Width() / corrected_src_rect.Width(),
-             dst_rect.Height() / corrected_src_rect.Height());
-    c->translate(-corrected_src_rect.X(), -corrected_src_rect.Y());
+    c->translate(dst_rect.x(), dst_rect.y());
+    c->scale(dst_rect.width() / corrected_src_rect.width(),
+             dst_rect.height() / corrected_src_rect.height());
+    c->translate(-corrected_src_rect.x(), -corrected_src_rect.y());
     DrawVideoFrameIntoCanvas(std::move(media_frame), c, image_flags,
                              ignore_transformation);
   } else {
@@ -2098,7 +2098,7 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
                                  ->ElementSize(default_object_size,
                                                RespectImageOrientationInternal(
                                                    image_source))
-                                 .Width()
+                                 .width()
                              ? "height"
                              : "width"));
       return nullptr;
@@ -2144,7 +2144,7 @@ ImageData* BaseRenderingContext2D::createImageData(
   ImageData::ValidateAndCreateParams params;
   params.context_2d_error_mode = true;
   return ImageData::ValidateAndCreate(
-      image_data->Size().Width(), image_data->Size().Height(), absl::nullopt,
+      image_data->Size().width(), image_data->Size().height(), absl::nullopt,
       image_data->getSettings(), params, exception_state);
 }
 
@@ -2286,9 +2286,9 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     validate_and_create_params.zero_initialize = true;
   } else if (snapshot) {
     // Zero-initialize if some of the readback area is out of bounds.
-    if (image_data_rect.X() < 0 || image_data_rect.Y() < 0 ||
-        image_data_rect.MaxX() > snapshot->Size().Width() ||
-        image_data_rect.MaxY() > snapshot->Size().Height()) {
+    if (image_data_rect.x() < 0 || image_data_rect.y() < 0 ||
+        image_data_rect.right() > snapshot->Size().width() ||
+        image_data_rect.bottom() > snapshot->Size().height()) {
       validate_and_create_params.zero_initialize = true;
     }
   }
@@ -2377,13 +2377,13 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   IntRect dest_rect(dirty_x, dirty_y, dirty_width, dirty_height);
   dest_rect.Intersect(IntRect(0, 0, data->width(), data->height()));
   IntSize dest_offset(static_cast<int>(dx), static_cast<int>(dy));
-  dest_rect.Move(dest_offset);
+  dest_rect.Offset(dest_offset);
   dest_rect.Intersect(IntRect(0, 0, Width(), Height()));
   if (dest_rect.IsEmpty())
     return;
 
   IntRect source_rect(dest_rect);
-  source_rect.Move(-dest_offset);
+  source_rect.Offset(-dest_offset);
 
   CheckOverdraw(dest_rect, nullptr, CanvasRenderingContext2DState::kNoImage,
                 OverdrawOp::kPutImageData, kUntransformedUnclippedFill);
@@ -2439,15 +2439,15 @@ void BaseRenderingContext2D::PutByteArray(const SkPixmap& source,
     return;
 
   DCHECK(IntRect(0, 0, source.width(), source.height()).Contains(source_rect));
-  int dest_x = dest_point.X() + source_rect.X();
+  int dest_x = dest_point.x() + source_rect.x();
   DCHECK_GE(dest_x, 0);
   DCHECK_LT(dest_x, Width());
-  int dest_y = dest_point.Y() + source_rect.Y();
+  int dest_y = dest_point.y() + source_rect.y();
   DCHECK_GE(dest_y, 0);
   DCHECK_LT(dest_y, Height());
 
   SkImageInfo info =
-      source.info().makeWH(source_rect.Width(), source_rect.Height());
+      source.info().makeWH(source_rect.width(), source_rect.height());
   if (kOpaque == GetCanvas2DColorParams().GetOpacityMode()) {
     // If the surface is opaque, tell it that we are writing opaque
     // pixels.  Writing non-opaque pixels to opaque is undefined in
@@ -2461,7 +2461,7 @@ void BaseRenderingContext2D::PutByteArray(const SkPixmap& source,
   if (info.colorType() == kN32_SkColorType)
     info = info.makeColorType(kRGBA_8888_SkColorType);
 
-  WritePixels(info, source.addr(source_rect.X(), source_rect.Y()),
+  WritePixels(info, source.addr(source_rect.x(), source_rect.y()),
               source.rowBytes(), dest_x, dest_y);
 }
 
@@ -2476,7 +2476,7 @@ void BaseRenderingContext2D::InflateStrokeRect(FloatRect& rect) const {
   else if (GetState().GetLineCap() == kSquareCap)
     delta *= kRoot2;
 
-  rect.Inflate(ClampTo<float>(delta));
+  rect.Outset(ClampTo<float>(delta));
 }
 
 bool BaseRenderingContext2D::imageSmoothingEnabled() const {

@@ -1313,7 +1313,7 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
       SkBitmap sk_bitmap = static_bitmap_image->AsSkBitmapForCurrentFrame(
           kRespectImageOrientation);
       IntSize int_size = static_bitmap_image->Size();
-      gfx::Size size(int_size.Width(), int_size.Height());
+      gfx::Size size(int_size.width(), int_size.height());
       images.emplace_back(sk_bitmap, size, image->widthInMeters());
       ++index;
     }

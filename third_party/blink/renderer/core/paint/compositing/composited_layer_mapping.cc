@@ -598,7 +598,7 @@ void CompositedLayerMapping::UpdateSquashingLayerGeometry(
   total_squash_bounds.Move(
       compositing_container_offset_from_parent_graphics_layer);
   const IntRect squash_layer_bounds = EnclosingIntRect(total_squash_bounds);
-  const IntPoint squash_layer_origin = squash_layer_bounds.Location();
+  const IntPoint squash_layer_origin = squash_layer_bounds.origin();
   const PhysicalOffset squash_layer_origin_in_compositing_container_space =
       PhysicalOffset(squash_layer_origin) -
       compositing_container_offset_from_parent_graphics_layer;
@@ -638,12 +638,12 @@ void CompositedLayerMapping::UpdateSquashingLayerGeometry(
   }
 
   non_scrolling_squashing_layer_->SetSize(
-      ToGfxSize(squash_layer_bounds.Size()));
+      ToGfxSize(squash_layer_bounds.size()));
   // We can't non_scrolling_squashing_layer_->SetOffsetFromLayoutObject().
   // Squashing layer has special paint and invalidation logic that already
   // compensated for compositing bounds, setting it here would end up
   // double adjustment.
-  auto new_offset = squash_layer_bounds.Location() -
+  auto new_offset = squash_layer_bounds.origin() -
                     snapped_offset_from_composited_ancestor +
                     ToIntSize(graphics_layer_parent_location);
   if (new_offset != non_scrolling_squashing_layer_offset_from_layout_object_) {
@@ -674,7 +674,7 @@ void CompositedLayerMapping::UpdateGraphicsLayerGeometry(
       non_scrolling_squashed_layers_, layers_needing_paint_invalidation);
 
   UpdateMaskLayerGeometry();
-  UpdateDecorationOutlineLayerGeometry(local_compositing_bounds.Size());
+  UpdateDecorationOutlineLayerGeometry(local_compositing_bounds.size());
   UpdateScrollingContentsLayerGeometry(layers_needing_paint_invalidation);
   UpdateForegroundLayerGeometry();
 
@@ -692,8 +692,8 @@ void CompositedLayerMapping::UpdateGraphicsLayerGeometry(
 void CompositedLayerMapping::UpdateMainGraphicsLayerGeometry(
     const IntRect& local_compositing_bounds) {
   graphics_layer_->SetOffsetFromLayoutObject(
-      ToIntSize(local_compositing_bounds.Location()));
-  graphics_layer_->SetSize(ToGfxSize(local_compositing_bounds.Size()));
+      ToIntSize(local_compositing_bounds.origin()));
+  graphics_layer_->SetSize(ToGfxSize(local_compositing_bounds.size()));
 
   // m_graphicsLayer is the corresponding GraphicsLayer for this PaintLayer
   // and its non-compositing descendants. So, the visibility flag for
@@ -728,9 +728,9 @@ void CompositedLayerMapping::ComputeGraphicsLayerParentLocation(
     IntPoint scroll_offset = layout_box.PixelSnappedScrolledContentOffset();
     IntPoint scroll_origin =
         compositing_container->GetScrollableArea()->ScrollOrigin();
-    scroll_origin.Move(-layout_box.OriginAdjustmentForScrollbars());
-    scroll_origin.Move(-layout_box.BorderLeft().ToInt(),
-                       -layout_box.BorderTop().ToInt());
+    scroll_origin.Offset(-layout_box.OriginAdjustmentForScrollbars());
+    scroll_origin.Offset(-layout_box.BorderLeft().ToInt(),
+                         -layout_box.BorderTop().ToInt());
     graphics_layer_parent_location = -(scroll_origin + scroll_offset);
   }
 }
@@ -757,9 +757,9 @@ void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
       layout_box.OverflowClipRect(owning_layer_->SubpixelAccumulation()));
 
   bool scroll_container_size_changed =
-      previous_scroll_container_size_ != overflow_clip_rect.Size();
+      previous_scroll_container_size_ != overflow_clip_rect.size();
   if (scroll_container_size_changed)
-    previous_scroll_container_size_ = overflow_clip_rect.Size();
+    previous_scroll_container_size_ = overflow_clip_rect.size();
 
   PaintLayerScrollableArea* scrollable_area =
       owning_layer_->GetScrollableArea();
@@ -767,7 +767,7 @@ void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
       owning_layer_->SubpixelAccumulation());
 
   // Ensure scrolling contents are at least as large as the scroll clip
-  scroll_size = scroll_size.ExpandedTo(overflow_clip_rect.Size());
+  scroll_size = scroll_size.ExpandedTo(overflow_clip_rect.size());
 
   auto* scrolling_coordinator = owning_layer_->GetScrollingCoordinator();
   scrolling_coordinator->UpdateCompositorScrollOffset(*layout_box.GetFrame(),
@@ -781,7 +781,7 @@ void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
   scrolling_contents_layer_->SetSize(ToGfxSize(scroll_size));
 
   scrolling_contents_layer_->SetOffsetFromLayoutObject(
-      overflow_clip_rect.Location() - scrollable_area->ScrollOrigin());
+      overflow_clip_rect.origin() - scrollable_area->ScrollOrigin());
 
   for (auto& layer : squashed_layers_in_scrolling_contents_) {
     layer->composited_bounds = layer->paint_layer->BoundingBoxForCompositing();
@@ -843,8 +843,8 @@ void CompositedLayerMapping::UpdateForegroundLayerGeometry() {
   }
 
   foreground_layer_->SetOffsetFromLayoutObject(
-      ToIntSize(compositing_bounds.Location()));
-  foreground_layer_->SetSize(ToGfxSize(compositing_bounds.Size()));
+      ToIntSize(compositing_bounds.origin()));
+  foreground_layer_->SetSize(ToGfxSize(compositing_bounds.size()));
 }
 
 void CompositedLayerMapping::UpdateDecorationOutlineLayerGeometry(
@@ -1052,10 +1052,10 @@ void CompositedLayerMapping::PositionOverflowControlsLayers() {
         owning_layer_->GetScrollableArea()->HorizontalScrollbar();
     if (h_bar) {
       IntRect frame_rect = h_bar->FrameRect();
-      layer->SetOffsetFromLayoutObject(ToIntSize(frame_rect.Location()));
-      layer->SetSize(ToGfxSize(frame_rect.Size()));
+      layer->SetOffsetFromLayoutObject(ToIntSize(frame_rect.origin()));
+      layer->SetSize(ToGfxSize(frame_rect.size()));
       if (layer->HasContentsLayer())
-        layer->SetContentsRect(IntRect(IntPoint(), frame_rect.Size()));
+        layer->SetContentsRect(IntRect(IntPoint(), frame_rect.size()));
     }
     bool h_bar_visible = h_bar && !layer->HasContentsLayer();
     layer->SetDrawsContent(h_bar_visible);
@@ -1066,10 +1066,10 @@ void CompositedLayerMapping::PositionOverflowControlsLayers() {
     Scrollbar* v_bar = owning_layer_->GetScrollableArea()->VerticalScrollbar();
     if (v_bar) {
       IntRect frame_rect = v_bar->FrameRect();
-      layer->SetOffsetFromLayoutObject(ToIntSize(frame_rect.Location()));
-      layer->SetSize(ToGfxSize(frame_rect.Size()));
+      layer->SetOffsetFromLayoutObject(ToIntSize(frame_rect.origin()));
+      layer->SetSize(ToGfxSize(frame_rect.size()));
       if (layer->HasContentsLayer())
-        layer->SetContentsRect(IntRect(IntPoint(), frame_rect.Size()));
+        layer->SetContentsRect(IntRect(IntPoint(), frame_rect.size()));
     }
     bool v_bar_visible = v_bar && !layer->HasContentsLayer();
     layer->SetDrawsContent(v_bar_visible);
@@ -1080,8 +1080,8 @@ void CompositedLayerMapping::PositionOverflowControlsLayers() {
     const IntRect& scroll_corner_and_resizer =
         owning_layer_->GetScrollableArea()->ScrollCornerAndResizerRect();
     layer->SetOffsetFromLayoutObject(
-        ToIntSize(scroll_corner_and_resizer.Location()));
-    layer->SetSize(ToGfxSize(scroll_corner_and_resizer.Size()));
+        ToIntSize(scroll_corner_and_resizer.origin()));
+    layer->SetSize(ToGfxSize(scroll_corner_and_resizer.size()));
     layer->SetDrawsContent(!scroll_corner_and_resizer.IsEmpty());
     layer->SetHitTestable(!scroll_corner_and_resizer.IsEmpty());
   }
@@ -1526,7 +1526,7 @@ void CompositedLayerMapping::DoPaintTask(
   IntSize offset = paint_info.offset_from_layout_object;
   // The dirtyRect is in the coords of the painting root.
   IntRect dirty_rect(clip);
-  dirty_rect.Move(offset);
+  dirty_rect.Offset(offset);
 
   if (paint_layer_flags & (kPaintLayerPaintingOverflowContents)) {
     dirty_rect.MoveBy(
@@ -1650,17 +1650,17 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
     // / down. However, this will at most make us paint more content, which is
     // better than erroneously deciding that the rect produced here is far
     // offscreen.
-    if (unpadded_intersection.X() < -reasonable_pixel_limit)
-      unpadded_intersection.SetX(-reasonable_pixel_limit);
-    if (unpadded_intersection.Y() < -reasonable_pixel_limit)
-      unpadded_intersection.SetY(-reasonable_pixel_limit);
-    if (unpadded_intersection.MaxX() > reasonable_pixel_limit) {
-      unpadded_intersection.SetWidth(reasonable_pixel_limit -
-                                     unpadded_intersection.X());
+    if (unpadded_intersection.x() < -reasonable_pixel_limit)
+      unpadded_intersection.set_x(-reasonable_pixel_limit);
+    if (unpadded_intersection.y() < -reasonable_pixel_limit)
+      unpadded_intersection.set_y(-reasonable_pixel_limit);
+    if (unpadded_intersection.right() > reasonable_pixel_limit) {
+      unpadded_intersection.set_width(reasonable_pixel_limit -
+                                      unpadded_intersection.x());
     }
-    if (unpadded_intersection.MaxY() > reasonable_pixel_limit) {
-      unpadded_intersection.SetHeight(reasonable_pixel_limit -
-                                      unpadded_intersection.Y());
+    if (unpadded_intersection.bottom() > reasonable_pixel_limit) {
+      unpadded_intersection.set_height(reasonable_pixel_limit -
+                                       unpadded_intersection.y());
     }
 
     unpadded_intersection.Intersect(FloatRect(graphics_layer_bounds));
@@ -1676,12 +1676,12 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
     // are zero or nearly zero, fall back to kPixelDistanceToRecord.
     // This is the same as the else clause below.
     float x_scale =
-        visible_content_rect.Width() > std::numeric_limits<float>::epsilon()
-            ? local_interest_rect.Width() / visible_content_rect.Width()
+        visible_content_rect.width() > std::numeric_limits<float>::epsilon()
+            ? local_interest_rect.width() / visible_content_rect.width()
             : 1.0f;
     float y_scale =
-        visible_content_rect.Height() > std::numeric_limits<float>::epsilon()
-            ? local_interest_rect.Height() / visible_content_rect.Height()
+        visible_content_rect.height() > std::numeric_limits<float>::epsilon()
+            ? local_interest_rect.height() / visible_content_rect.height()
             : 1.0f;
     // Take the max, to account for situations like rotation transforms, which
     // swap x and y.
@@ -1689,13 +1689,13 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
     // perspective (see the comments above), cap it to something reasonable.
     float scale = std::min(std::max(x_scale, y_scale),
                            reasonable_pixel_limit / kPixelDistanceToRecord);
-    local_interest_rect.Inflate(kPixelDistanceToRecord * scale);
+    local_interest_rect.Outset(kPixelDistanceToRecord * scale);
   } else {
     // Expand by interest rect padding amount.
-    local_interest_rect.Inflate(kPixelDistanceToRecord);
+    local_interest_rect.Outset(kPixelDistanceToRecord);
   }
-  return Intersection(EnclosingIntRect(local_interest_rect),
-                      graphics_layer_bounds);
+  return IntersectRects(EnclosingIntRect(local_interest_rect),
+                        graphics_layer_bounds);
 }
 
 static const int kMinimumDistanceBeforeRepaint = 512;
@@ -1717,7 +1717,7 @@ bool CompositedLayerMapping::InterestRectChangedEnoughToRepaint(
   // Repaint if the new interest rect includes area outside of a skirt around
   // the existing interest rect.
   IntRect expanded_previous_interest_rect(previous_interest_rect);
-  expanded_previous_interest_rect.Inflate(kMinimumDistanceBeforeRepaint);
+  expanded_previous_interest_rect.Outset(kMinimumDistanceBeforeRepaint);
   if (!expanded_previous_interest_rect.Contains(new_interest_rect))
     return true;
 
@@ -1726,15 +1726,15 @@ bool CompositedLayerMapping::InterestRectChangedEnoughToRepaint(
   // touched by the existing interest rect.  Because it's impossible to expose
   // more area in the direction, repainting cannot be deferred until the
   // exposed new area satisfies the condition above.
-  if (new_interest_rect.X() == 0 && previous_interest_rect.X() != 0)
+  if (new_interest_rect.x() == 0 && previous_interest_rect.x() != 0)
     return true;
-  if (new_interest_rect.Y() == 0 && previous_interest_rect.Y() != 0)
+  if (new_interest_rect.y() == 0 && previous_interest_rect.y() != 0)
     return true;
-  if (new_interest_rect.MaxX() == layer_size.Width() &&
-      previous_interest_rect.MaxX() != layer_size.Width())
+  if (new_interest_rect.right() == layer_size.width() &&
+      previous_interest_rect.right() != layer_size.width())
     return true;
-  if (new_interest_rect.MaxY() == layer_size.Height() &&
-      previous_interest_rect.MaxY() != layer_size.Height())
+  if (new_interest_rect.bottom() == layer_size.height() &&
+      previous_interest_rect.bottom() != layer_size.height())
     return true;
 
   return false;
@@ -1780,7 +1780,7 @@ IntRect CompositedLayerMapping::PaintableRegion(
   if (cull_rect.IsInfinite())
     return layer_rect;
   cull_rect.Move(ToGfxVector2d(-graphics_layer->GetOffsetFromTransformNode()));
-  return Intersection(IntRect(cull_rect.Rect()), layer_rect);
+  return IntersectRects(IntRect(cull_rect.Rect()), layer_rect);
 }
 
 LayoutSize CompositedLayerMapping::SubpixelAccumulation() const {
@@ -1806,7 +1806,7 @@ bool CompositedLayerMapping::AdjustForCompositedScrolling(
         // offsetFromLayoutObject adds the origin offset from top/left to the
         // beginning of flow.
         ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
-        offset.Expand(-scroll_offset.Width(), -scroll_offset.Height());
+        offset.Enlarge(-scroll_offset.width(), -scroll_offset.height());
         return true;
       }
     }

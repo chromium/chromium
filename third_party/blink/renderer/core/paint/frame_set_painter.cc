@@ -49,12 +49,12 @@ void FrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
 
   // Now stroke the edges but only if we have enough room to paint both edges
   // with a little bit of the fill color showing through.
-  if (border_rect.Width() >= 3) {
+  if (border_rect.width() >= 3) {
     context.FillRect(
-        IntRect(border_rect.Location(), IntSize(1, border_rect.Height())),
+        IntRect(border_rect.origin(), IntSize(1, border_rect.height())),
         BorderStartEdgeColor(), auto_dark_mode);
-    context.FillRect(IntRect(IntPoint(border_rect.MaxX() - 1, border_rect.Y()),
-                             IntSize(1, border_rect.Height())),
+    context.FillRect(IntRect(IntPoint(border_rect.right() - 1, border_rect.y()),
+                             IntSize(1, border_rect.height())),
                      BorderEndEdgeColor(), auto_dark_mode);
   }
 }
@@ -78,13 +78,14 @@ void FrameSetPainter::PaintRowBorder(const PaintInfo& paint_info,
 
   // Now stroke the edges but only if we have enough room to paint both edges
   // with a little bit of the fill color showing through.
-  if (border_rect.Height() >= 3) {
+  if (border_rect.height() >= 3) {
     context.FillRect(
-        IntRect(border_rect.Location(), IntSize(border_rect.Width(), 1)),
+        IntRect(border_rect.origin(), IntSize(border_rect.width(), 1)),
         BorderStartEdgeColor(), auto_dark_mode);
-    context.FillRect(IntRect(IntPoint(border_rect.X(), border_rect.MaxY() - 1),
-                             IntSize(border_rect.Width(), 1)),
-                     BorderEndEdgeColor(), auto_dark_mode);
+    context.FillRect(
+        IntRect(IntPoint(border_rect.x(), border_rect.bottom() - 1),
+                IntSize(border_rect.width(), 1)),
+        BorderEndEdgeColor(), auto_dark_mode);
   }
 }
 

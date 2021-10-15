@@ -172,7 +172,7 @@ int ScrollbarThemeAura::ScrollbarThickness(float scale_from_dip,
   IntSize scrollbar_size = IntSize(Platform::Current()->ThemeEngine()->GetSize(
       WebThemeEngine::kPartScrollbarVerticalTrack));
 
-  return scrollbar_size.Width() * Proportion(scrollbar_width) * scale_from_dip;
+  return scrollbar_size.width() * Proportion(scrollbar_width) * scale_from_dip;
 }
 
 bool ScrollbarThemeAura::HasThumb(const Scrollbar& scrollbar) {
@@ -183,35 +183,35 @@ bool ScrollbarThemeAura::HasThumb(const Scrollbar& scrollbar) {
 
 IntRect ScrollbarThemeAura::BackButtonRect(const Scrollbar& scrollbar) {
   IntSize size = ButtonSize(scrollbar);
-  return IntRect(scrollbar.X(), scrollbar.Y(), size.Width(), size.Height());
+  return IntRect(scrollbar.X(), scrollbar.Y(), size.width(), size.height());
 }
 
 IntRect ScrollbarThemeAura::ForwardButtonRect(const Scrollbar& scrollbar) {
   IntSize size = ButtonSize(scrollbar);
   int x, y;
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
-    x = scrollbar.X() + scrollbar.Width() - size.Width();
+    x = scrollbar.X() + scrollbar.Width() - size.width();
     y = scrollbar.Y();
   } else {
     x = scrollbar.X();
-    y = scrollbar.Y() + scrollbar.Height() - size.Height();
+    y = scrollbar.Y() + scrollbar.Height() - size.height();
   }
-  return IntRect(x, y, size.Width(), size.Height());
+  return IntRect(x, y, size.width(), size.height());
 }
 
 IntRect ScrollbarThemeAura::TrackRect(const Scrollbar& scrollbar) {
   // The track occupies all space between the two buttons.
   IntSize bs = ButtonSize(scrollbar);
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
-    if (scrollbar.Width() <= 2 * bs.Width())
+    if (scrollbar.Width() <= 2 * bs.width())
       return IntRect();
-    return IntRect(scrollbar.X() + bs.Width(), scrollbar.Y(),
-                   scrollbar.Width() - 2 * bs.Width(), scrollbar.Height());
+    return IntRect(scrollbar.X() + bs.width(), scrollbar.Y(),
+                   scrollbar.Width() - 2 * bs.width(), scrollbar.Height());
   }
-  if (scrollbar.Height() <= 2 * bs.Height())
+  if (scrollbar.Height() <= 2 * bs.height())
     return IntRect();
-  return IntRect(scrollbar.X(), scrollbar.Y() + bs.Height(), scrollbar.Width(),
-                 scrollbar.Height() - 2 * bs.Height());
+  return IntRect(scrollbar.X(), scrollbar.Y() + bs.height(), scrollbar.Width(),
+                 scrollbar.Height() - 2 * bs.height());
 }
 
 int ScrollbarThemeAura::MinimumThumbLength(const Scrollbar& scrollbar) {
@@ -245,10 +245,10 @@ void ScrollbarThemeAura::PaintTrack(GraphicsContext& context,
   IntRect align_rect = TrackRect(scrollbar);
   WebThemeEngine::ExtraParams extra_params;
   extra_params.scrollbar_track.is_back = false;
-  extra_params.scrollbar_track.track_x = align_rect.X();
-  extra_params.scrollbar_track.track_y = align_rect.Y();
-  extra_params.scrollbar_track.track_width = align_rect.Width();
-  extra_params.scrollbar_track.track_height = align_rect.Height();
+  extra_params.scrollbar_track.track_x = align_rect.x();
+  extra_params.scrollbar_track.track_y = align_rect.y();
+  extra_params.scrollbar_track.track_width = align_rect.width();
+  extra_params.scrollbar_track.track_height = align_rect.height();
 
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(),
@@ -349,8 +349,8 @@ bool ScrollbarThemeAura::ShouldSnapBackToDragOrigin(
   // snapping back, the code below only uses the thickness of the scrollbar for
   // its calculations.
   bool is_horizontal = scrollbar.Orientation() == kHorizontalScrollbar;
-  int thickness = is_horizontal ? TrackRect(scrollbar).Height()
-                                : TrackRect(scrollbar).Width();
+  int thickness = is_horizontal ? TrackRect(scrollbar).height()
+                                : TrackRect(scrollbar).width();
   // Even if the platform's scrollbar is narrower than the default Windows one,
   // we still want to provide at least as much slop area, since a slightly
   // narrower scrollbar doesn't necessarily imply that users will drag
@@ -364,7 +364,7 @@ bool ScrollbarThemeAura::ShouldSnapBackToDragOrigin(
   IntPoint mouse_position = scrollbar.ConvertFromRootFrame(
       FlooredIntPoint(event.PositionInRootFrame()));
   int mouse_offset_in_scrollbar =
-      is_horizontal ? mouse_position.Y() : mouse_position.X();
+      is_horizontal ? mouse_position.y() : mouse_position.x();
 
   return (mouse_offset_in_scrollbar < snap_outside_of_min ||
           mouse_offset_in_scrollbar >= snap_outside_of_max);

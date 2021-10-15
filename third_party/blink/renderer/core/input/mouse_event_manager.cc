@@ -83,11 +83,11 @@ void UpdateMouseMovementXY(const WebMouseEvent& mouse_event,
     initializer->setMovementX(
         base::saturated_cast<int>(mouse_event.PositionInScreen().x() *
                                   device_scale_factor) -
-        base::saturated_cast<int>(last_position->X() * device_scale_factor));
+        base::saturated_cast<int>(last_position->x() * device_scale_factor));
     initializer->setMovementY(
         base::saturated_cast<int>(mouse_event.PositionInScreen().y() *
                                   device_scale_factor) -
-        base::saturated_cast<int>(last_position->Y() * device_scale_factor));
+        base::saturated_cast<int>(last_position->y() * device_scale_factor));
   }
 }
 
@@ -1149,8 +1149,8 @@ bool MouseEventManager::DragThresholdExceeded(
   // want to revive that behavior, we can multiply the threshold constants with
   // a number based on dragState().m_dragType.
 
-  return abs(delta.Width()) >= kDragThresholdX ||
-         abs(delta.Height()) >= kDragThresholdY;
+  return abs(delta.width()) >= kDragThresholdX ||
+         abs(delta.height()) >= kDragThresholdY;
 }
 
 void MouseEventManager::ClearDragHeuristicState() {

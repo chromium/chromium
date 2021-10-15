@@ -76,17 +76,17 @@ FloatSize DragImage::ClampedImageScale(const IntSize& image_size,
                                        const IntSize& max_size) {
   // Non-uniform scaling for size mapping.
   FloatSize image_scale(
-      static_cast<float>(size.Width()) / image_size.Width(),
-      static_cast<float>(size.Height()) / image_size.Height());
+      static_cast<float>(size.width()) / image_size.width(),
+      static_cast<float>(size.height()) / image_size.height());
 
   // Uniform scaling for clamping.
   const float clamp_scale_x =
-      size.Width() > max_size.Width()
-          ? static_cast<float>(max_size.Width()) / size.Width()
+      size.width() > max_size.width()
+          ? static_cast<float>(max_size.width()) / size.width()
           : 1;
   const float clamp_scale_y =
-      size.Height() > max_size.Height()
-          ? static_cast<float>(max_size.Height()) / size.Height()
+      size.height() > max_size.height()
+          ? static_cast<float>(max_size.height()) / size.height()
           : 1;
   image_scale.Scale(std::min(clamp_scale_x, clamp_scale_y));
 
@@ -172,26 +172,26 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
                      label_font_data->GetFontMetrics().Ascent() +
                          label_font_data->GetFontMetrics().Descent());
 
-  if (label_size.Width() > max_drag_label_string_width_dip) {
-    label_size.SetWidth(max_drag_label_string_width_dip);
+  if (label_size.width() > max_drag_label_string_width_dip) {
+    label_size.set_width(max_drag_label_string_width_dip);
     clip_label_string = true;
   }
 
   IntSize url_string_size;
-  IntSize image_size(label_size.Width() + kDragLabelBorderX * 2,
-                     label_size.Height() + kDragLabelBorderY * 2);
+  IntSize image_size(label_size.width() + kDragLabelBorderX * 2,
+                     label_size.height() + kDragLabelBorderY * 2);
 
   if (draw_url_string) {
-    url_string_size.SetWidth(url_font.Width(url_run));
-    url_string_size.SetHeight(url_font_data->GetFontMetrics().Ascent() +
-                              url_font_data->GetFontMetrics().Descent());
-    image_size.SetHeight(image_size.Height() + url_string_size.Height());
-    if (url_string_size.Width() > max_drag_label_string_width_dip) {
-      image_size.SetWidth(max_drag_label_string_width_dip);
+    url_string_size.set_width(url_font.Width(url_run));
+    url_string_size.set_height(url_font_data->GetFontMetrics().Ascent() +
+                               url_font_data->GetFontMetrics().Descent());
+    image_size.set_height(image_size.height() + url_string_size.height());
+    if (url_string_size.width() > max_drag_label_string_width_dip) {
+      image_size.set_width(max_drag_label_string_width_dip);
       clip_url_string = true;
     } else {
-      image_size.SetWidth(
-          std::max(label_size.Width(), url_string_size.Width()) +
+      image_size.set_width(
+          std::max(label_size.width(), url_string_size.width()) +
           kDragLabelBorderX * 2);
     }
   }
@@ -218,7 +218,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   background_paint.setColor(SkColorSetRGB(140, 140, 140));
   background_paint.setAntiAlias(true);
   SkRRect rrect;
-  rrect.setRectXY(SkRect::MakeWH(image_size.Width(), image_size.Height()),
+  rrect.setRectXY(SkRect::MakeWH(image_size.width(), image_size.height()),
                   kDragLabelRadius, kDragLabelRadius);
   resource_provider->Canvas()->drawRRect(rrect, background_paint);
 
@@ -227,20 +227,21 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   if (draw_url_string) {
     if (clip_url_string)
       url_string = StringTruncator::CenterTruncate(
-          url_string, image_size.Width() - (kDragLabelBorderX * 2.0f),
+          url_string, image_size.width() - (kDragLabelBorderX * 2.0f),
           url_font);
     FloatPoint text_pos(
         kDragLabelBorderX,
-        image_size.Height() -
+        image_size.height() -
             (kLabelBorderYOffset + url_font_data->GetFontMetrics().Descent()));
     TextRun text_run(url_string);
     url_font.DrawText(resource_provider->Canvas(), TextRunPaintInfo(text_run),
                       text_pos, device_scale_factor, text_paint);
   }
 
-  if (clip_label_string)
+  if (clip_label_string) {
     label = StringTruncator::RightTruncate(
-        label, image_size.Width() - (kDragLabelBorderX * 2.0f), label_font);
+        label, image_size.width() - (kDragLabelBorderX * 2.0f), label_font);
+  }
 
   bool has_strong_directionality;
   TextRun text_run =
@@ -251,8 +252,8 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   if (has_strong_directionality &&
       text_run.Direction() == TextDirection::kRtl) {
     float text_width = label_font.Width(text_run);
-    int available_width = image_size.Width() - kDragLabelBorderX * 2;
-    text_pos.SetX(available_width - ceilf(text_width));
+    int available_width = image_size.width() - kDragLabelBorderX * 2;
+    text_pos.set_x(available_width - ceilf(text_width));
   }
   label_font.DrawBidiText(resource_provider->Canvas(),
                           TextRunPaintInfo(text_run), FloatPoint(text_pos),

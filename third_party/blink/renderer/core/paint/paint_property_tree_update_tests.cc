@@ -1023,8 +1023,8 @@ TEST_P(PaintPropertyTreeUpdateTest, InlineAddRemoveMask) {
   EXPECT_NE(nullptr, properties->Mask());
   const auto* mask_clip = properties->MaskClip();
   ASSERT_NE(nullptr, mask_clip);
-  EXPECT_EQ(50, mask_clip->LayoutClipRect().Rect().Width());
-  EXPECT_EQ(50, mask_clip->PaintClipRect().Rect().Width());
+  EXPECT_EQ(50, mask_clip->LayoutClipRect().Rect().width());
+  EXPECT_EQ(50, mask_clip->PaintClipRect().Rect().width());
 
   target->setAttribute(html_names::kStyleAttr, "");
   UpdateAllLifecyclePhasesForTest();
@@ -1042,16 +1042,16 @@ TEST_P(PaintPropertyTreeUpdateTest, MaskClipNodeInlineBoundsChange) {
   ASSERT_NE(nullptr, properties);
   const auto* mask_clip = properties->MaskClip();
   ASSERT_NE(nullptr, mask_clip);
-  EXPECT_EQ(50, mask_clip->LayoutClipRect().Rect().Width());
-  EXPECT_EQ(50, mask_clip->PaintClipRect().Rect().Width());
+  EXPECT_EQ(50, mask_clip->LayoutClipRect().Rect().width());
+  EXPECT_EQ(50, mask_clip->PaintClipRect().Rect().width());
 
   GetDocument().getElementById("img")->setAttribute(html_names::kStyleAttr,
                                                     "width: 100px");
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_EQ(mask_clip, properties->MaskClip());
-  EXPECT_EQ(100, mask_clip->LayoutClipRect().Rect().Width());
-  EXPECT_EQ(100, mask_clip->PaintClipRect().Rect().Width());
+  EXPECT_EQ(100, mask_clip->LayoutClipRect().Rect().width());
+  EXPECT_EQ(100, mask_clip->PaintClipRect().Rect().width());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, AddRemoveSVGMask) {
@@ -1254,12 +1254,12 @@ TEST_P(PaintPropertyTreeUpdateTest,
   ASSERT_EQ(2u, NumFragments(flow_thread));
   const auto* clip0 =
       FragmentAt(flow_thread, 0).PaintProperties()->FragmentClip();
-  EXPECT_EQ(1000000, clip0->LayoutClipRect().Rect().MaxX());
-  EXPECT_EQ(1000000, clip0->PaintClipRect().Rect().MaxX());
+  EXPECT_EQ(1000000, clip0->LayoutClipRect().Rect().right());
+  EXPECT_EQ(1000000, clip0->PaintClipRect().Rect().right());
   const auto* clip1 =
       FragmentAt(flow_thread, 1).PaintProperties()->FragmentClip();
-  EXPECT_EQ(-999950, clip1->LayoutClipRect().Rect().X());
-  EXPECT_EQ(-999950, clip1->PaintClipRect().Rect().X());
+  EXPECT_EQ(-999950, clip1->LayoutClipRect().Rect().x());
+  EXPECT_EQ(-999950, clip1->PaintClipRect().Rect().x());
 
   GetDocument()
       .getElementById("container")
@@ -1268,12 +1268,12 @@ TEST_P(PaintPropertyTreeUpdateTest,
   ASSERT_EQ(2u, NumFragments(flow_thread));
   EXPECT_EQ(clip0,
             FragmentAt(flow_thread, 0).PaintProperties()->FragmentClip());
-  EXPECT_EQ(1000000, clip0->LayoutClipRect().Rect().MaxX());
-  EXPECT_EQ(1000000, clip0->PaintClipRect().Rect().MaxX());
+  EXPECT_EQ(1000000, clip0->LayoutClipRect().Rect().right());
+  EXPECT_EQ(1000000, clip0->PaintClipRect().Rect().right());
   EXPECT_EQ(clip1,
             FragmentAt(flow_thread, 1).PaintProperties()->FragmentClip());
-  EXPECT_EQ(-999750, clip1->LayoutClipRect().Rect().X());
-  EXPECT_EQ(-999750, clip1->PaintClipRect().Rect().X());
+  EXPECT_EQ(-999750, clip1->LayoutClipRect().Rect().x());
+  EXPECT_EQ(-999750, clip1->PaintClipRect().Rect().x());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest,
@@ -1765,14 +1765,14 @@ TEST_P(PaintPropertyTreeUpdateTest, InlineFilterReferenceBoxChange) {
   ASSERT_TRUE(properties);
   ASSERT_TRUE(properties->Filter());
   EXPECT_EQ(FloatPoint(0, 20),
-            properties->Filter()->Filter().ReferenceBox().Location());
+            properties->Filter()->Filter().ReferenceBox().origin());
 
   GetDocument().getElementById("spacer")->setAttribute(
       html_names::kStyleAttr, "display: inline-block; height: 100px");
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(properties, PaintPropertiesForElement("span"));
   EXPECT_EQ(FloatPoint(0, 100),
-            properties->Filter()->Filter().ReferenceBox().Location());
+            properties->Filter()->Filter().ReferenceBox().origin());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, StartSVGAnimation) {

@@ -304,8 +304,8 @@ TEST_F(RangeTest, BoundingRectMustIndependentFromSelection) {
   auto* const range = MakeGarbageCollected<Range>(
       GetDocument(), div->firstChild(), 1, div->firstChild(), 4);
   const FloatRect rect_before = range->BoundingRect();
-  EXPECT_GT(rect_before.Width(), 0);
-  EXPECT_GT(rect_before.Height(), 0);
+  EXPECT_GT(rect_before.width(), 0);
+  EXPECT_GT(rect_before.height(), 0);
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(EphemeralRange(range))
@@ -345,7 +345,7 @@ static Vector<FloatQuad> GetBorderAndTextQuads(const Position& start,
 static Vector<IntSize> ComputeSizesOfQuads(const Vector<FloatQuad>& quads) {
   Vector<IntSize> sizes;
   for (const auto& quad : quads)
-    sizes.push_back(quad.EnclosingBoundingBox().Size());
+    sizes.push_back(quad.EnclosingBoundingBox().size());
   return sizes;
 }
 
@@ -408,11 +408,11 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterOne) {
   ASSERT_EQ(2u, sample_quads.size());
   ASSERT_EQ(3u, expected_quads.size())
       << "expected_quads has SPAN, SPAN.firstChild and P.lastChild";
-  EXPECT_EQ(expected_quads[0].EnclosingBoundingBox().Size(),
-            sample_quads[0].EnclosingBoundingBox().Size())
+  EXPECT_EQ(expected_quads[0].EnclosingBoundingBox().size(),
+            sample_quads[0].EnclosingBoundingBox().size())
       << "Check size of first-letter part";
-  EXPECT_EQ(expected_quads[2].EnclosingBoundingBox().Size(),
-            sample_quads[1].EnclosingBoundingBox().Size())
+  EXPECT_EQ(expected_quads[2].EnclosingBoundingBox().size(),
+            sample_quads[1].EnclosingBoundingBox().size())
       << "Check size of first-letter part";
 
   EXPECT_EQ(ComputeSizesOfQuads(
@@ -453,11 +453,11 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterThree) {
   ASSERT_EQ(2u, sample_quads.size());
   ASSERT_EQ(3u, expected_quads.size())
       << "expected_quads has SPAN, SPAN.firstChild and P.lastChild";
-  EXPECT_EQ(expected_quads[0].EnclosingBoundingBox().Size(),
-            sample_quads[0].EnclosingBoundingBox().Size())
+  EXPECT_EQ(expected_quads[0].EnclosingBoundingBox().size(),
+            sample_quads[0].EnclosingBoundingBox().size())
       << "Check size of first-letter part";
-  EXPECT_EQ(expected_quads[2].EnclosingBoundingBox().Size(),
-            sample_quads[1].EnclosingBoundingBox().Size())
+  EXPECT_EQ(expected_quads[2].EnclosingBoundingBox().size(),
+            sample_quads[1].EnclosingBoundingBox().size())
       << "Check size of first-letter part";
 
   EXPECT_EQ(ComputeSizesOfQuads(
@@ -514,11 +514,11 @@ TEST_F(RangeTest, CollapsedRangeGetBorderAndTextQuadsWithFirstLetter) {
   ASSERT_EQ(2u, sample_quads.size());
   ASSERT_EQ(3u, expected_quads.size())
       << "expected_quads has SPAN, SPAN.firstChild and P.lastChild";
-  EXPECT_EQ(expected_quads[0].EnclosingBoundingBox().Size(),
-            sample_quads[0].EnclosingBoundingBox().Size())
+  EXPECT_EQ(expected_quads[0].EnclosingBoundingBox().size(),
+            sample_quads[0].EnclosingBoundingBox().size())
       << "Check size of first-letter part";
-  EXPECT_EQ(expected_quads[2].EnclosingBoundingBox().Size(),
-            sample_quads[1].EnclosingBoundingBox().Size())
+  EXPECT_EQ(expected_quads[2].EnclosingBoundingBox().size(),
+            sample_quads[1].EnclosingBoundingBox().size())
       << "Check size of first-letter part";
 
   EXPECT_EQ(ComputeSizesOfQuads(GetBorderAndTextQuads(

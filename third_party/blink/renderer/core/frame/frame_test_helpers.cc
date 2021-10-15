@@ -260,8 +260,8 @@ WebMouseEvent CreateMouseEvent(WebInputEvent::Type type,
   WebMouseEvent result(type, modifiers,
                        WebInputEvent::GetStaticTimeStampForTests());
   result.pointer_type = WebPointerProperties::PointerType::kMouse;
-  result.SetPositionInWidget(point.X(), point.Y());
-  result.SetPositionInScreen(point.X(), point.Y());
+  result.SetPositionInWidget(point.x(), point.y());
+  result.SetPositionInScreen(point.x(), point.y());
   result.button = button;
   result.click_count = 1;
   return result;

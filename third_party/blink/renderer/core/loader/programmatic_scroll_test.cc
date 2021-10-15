@@ -177,7 +177,7 @@ TEST_F(ProgrammaticScrollSimTest, NavigateToHash) {
   Compositor().BeginFrame();
 
   ScrollableArea* layout_viewport = GetDocument().View()->LayoutViewport();
-  EXPECT_EQ(3000, layout_viewport->GetScrollOffset().Height());
+  EXPECT_EQ(3000, layout_viewport->GetScrollOffset().height());
 }
 
 }  // namespace blink
