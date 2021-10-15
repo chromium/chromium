@@ -45,6 +45,21 @@ var MediaAppUIGtestBrowserTest = class extends testing.Test {
   }
 };
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
+var MediaAppUIWithAudioGtestBrowserTest =
+    class extends MediaAppUIGtestBrowserTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        ...super.featureList.enabled,
+        'ash::features::kMediaAppHandlesAudio',
+      ]
+    };
+  }
+};
+
 async function GetTestHarness() {
   const testHarnessPolicy = trustedTypes.createPolicy('test-harness', {
     createScriptURL: () => './media_app_ui_browsertest.js',
@@ -132,6 +147,10 @@ TEST_F('MediaAppUIGtestBrowserTest', 'ReLaunchableAfterFastLoad', () => {
 
 TEST_F('MediaAppUIGtestBrowserTest', 'MultipleFilesHaveTokens', () => {
   runMediaAppTest('MultipleFilesHaveTokens');
+});
+
+TEST_F('MediaAppUIWithAudioGtestBrowserTest', 'SingleAudioLaunch', () => {
+  runMediaAppTest('SingleAudioLaunch');
 });
 
 TEST_F('MediaAppUIGtestBrowserTest', 'MultipleSelectionLaunch', () => {

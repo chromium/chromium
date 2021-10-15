@@ -819,15 +819,6 @@ async function maybeGetFileFromFileHandle(handle) {
 }
 
 /**
- * Returns whether `fileName` has an extension indicating a possible RAW image.
- * @param {string} fileName
- * @return {boolean}
- */
-function isRawImageFile(fileName) {
-  return /\.(arw|cr2|dng|nef|nrw|orf|raf|rw2)$/.test(fileName.toLowerCase());
-}
-
-/**
  * Returns whether `fileName` is a file potentially containing subtitles.
  * @param {string} fileName
  * @return {boolean}
@@ -846,14 +837,33 @@ function isVideoFile(fileName) {
 }
 
 /**
+ * Returns whether `fileName` is a file likely to be an image.
+ * @param {string} fileName
+ * @return {boolean}
+ */
+function isImageFile(fileName) {
+  // Detect RAW images, which often don't have a mime type set.
+  return /\.(arw|cr2|dng|nef|nrw|orf|raf|rw2)$/.test(fileName.toLowerCase()) ||
+      /^image\//.test(getMimeTypeFromFilename(fileName));
+}
+
+/**
+ * Returns whether `fileName` is a file likely to be audio.
+ * @param {string} fileName
+ * @return {boolean}
+ */
+function isAudioFile(fileName) {
+  return /^audio\//.test(getMimeTypeFromFilename(fileName));
+}
+
+/**
  * Returns whether fileName is the filename for a video or image, or a related
  * file type (e.g. video subtitles).
  * @param {string} fileName
  * @return {boolean}
  */
 function isVideoOrImage(fileName) {
-  const fileType = getMimeTypeFromFilename(fileName);
-  return /^(image)|(video)\//.test(fileType) || isRawImageFile(fileName) ||
+  return isImageFile(fileName) || isVideoFile(fileName) ||
       isSubtitleFile(fileName);
 }
 
@@ -1234,14 +1244,17 @@ async function launchConsumer(params) {
   }
   const directory =
       /** @type {!FileSystemDirectoryHandle} */ (params.files[0]);
+  // With a single file selected, that file is the focus file. Otherwise, there
+  // is no inherent focus file.
+  const maybeFocusEntry = assertCast(params.files[1]);
 
   // With a single file selected, launch with all files in the directory as
   // navigation candidates. Otherwise, launch with all selected files (except
-  // the launch directory itself) as navigation candidates.
-  if (params.files.length === 2) {
-    const focusEntry = assertCast(params.files[1]);
+  // the launch directory itself) as navigation candidates. The only exception
+  // to this is audio files, which we explicitly don't load the directory for.
+  if (params.files.length === 2 && !isAudioFile(maybeFocusEntry.name)) {
     try {
-      await launchWithDirectory(directory, focusEntry);
+      await launchWithDirectory(directory, maybeFocusEntry);
     } catch (e) {
       console.error(e, '(launchWithDirectory aborted)');
     }

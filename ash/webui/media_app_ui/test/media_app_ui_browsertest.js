@@ -351,6 +351,18 @@ MediaAppUIBrowserTest.MultipleFilesHaveTokens = async () => {
   assertEquals(fileHandleForToken(currentFiles[1].token), directory.files[1]);
 };
 
+// Tests that a launch with a single audio file selected in the files app loads
+// only that audio file and not the directory.
+MediaAppUIBrowserTest.SingleAudioLaunch = async () => {
+  await launchWithFiles([
+    // Zero-byte audio. It won't load, but should still be added to DOM.
+    new File([], 'audio1.wav', {type: 'audio/wav'}),
+    new File([], 'audio2.wav', {type: 'audio/wav'}),
+  ]);
+
+  assertFilenamesToBe('audio1.wav');
+};
+
 // Tests that a launch with multiple files selected in the files app loads only
 // the files selected.
 MediaAppUIBrowserTest.MultipleSelectionLaunch = async () => {
