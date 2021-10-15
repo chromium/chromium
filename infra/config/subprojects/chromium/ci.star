@@ -6479,6 +6479,9 @@ ci.win_builder(
     os = os.WINDOWS_10,
     main_console_view = "main",
     triggered_by = ["ci/Win Builder (dbg)"],
+    experiments = {
+        "luci.buildbucket.bbagent_getbuild": 100,
+    },
 )
 
 ci.win_builder(
