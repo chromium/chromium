@@ -320,6 +320,17 @@ TEST_F('CrSettingsPasswordsDeviceSectionTest', 'All', function() {
   mocha.run();
 });
 
+var CrSettingsPasswordEditDialogTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/password_edit_dialog_test.js';
+  }
+};
+
+TEST_F('CrSettingsPasswordEditDialogTest', 'All', function() {
+  mocha.run();
+});
+
 var CrSettingsMultiStoreExceptionEntryTest =
     class extends CrSettingsBrowserTest {
   /** @override */
