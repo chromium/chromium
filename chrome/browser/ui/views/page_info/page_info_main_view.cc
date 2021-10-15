@@ -87,15 +87,6 @@ PageInfoMainView::PageInfoMainView(
   permissions_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
-    auto info = ui_delegate_->GetAboutThisSiteInfo();
-    if (info) {
-      layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-      about_this_site_section_ =
-          layout->AddView(CreateAboutThisSiteSection(info));
-    }
-  }
-
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   site_settings_view_ = layout->AddView(CreateContainerView());
 
@@ -114,6 +105,15 @@ PageInfoMainView::PageInfoMainView(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
         /*tooltip_text=*/l10n_util::GetStringUTF16(tooltip_text_id),
         std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
+  }
+
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
+    auto info = ui_delegate_->GetAboutThisSiteInfo();
+    if (info) {
+      layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
+      about_this_site_section_ =
+          layout->AddView(CreateAboutThisSiteSection(info));
+    }
   }
 
   presenter_->InitializeUiState(this);
@@ -273,11 +273,7 @@ void PageInfoMainView::SetPermissionInfo(
   // show reset button.
   reset_button_->SetVisible(false);
   UpdateResetButton(permission_info_list);
-  // 'About this site' section has separators on top and bottom. If it is shown,
-  // bottom separator here isn't needed anymore.
-  if (!about_this_site_section_) {
-    permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
-  }
+  permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
 
   PreferredSizeChanged();
 }
@@ -513,17 +509,14 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
   // logic to determine short description showed as subtitle.
   auto* about_this_site_button = about_this_site_section->AddChildView(
       std::make_unique<PageInfoHoverButton>(
-          base::BindRepeating(
-              [](PageInfoMainView* view) {
-                // TODO(crbug.com/1250653): Open 'About this site' subpage.
-              },
-              this),
+          base::BindRepeating(&PageInfoNavigationHandler::OpenAboutThisSitePage,
+                              base::Unretained(navigation_handler_)),
           PageInfoViewFactory::GetAboutThisSiteIcon(), 0, std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
           std::u16string(), base::ASCIIToUTF16(info->entity_description()),
           PageInfoViewFactory::GetOpenSubpageIcon()));
   about_this_site_button->SetTitleText(u"About this site");
+  about_this_site_button->SetSubtitleMultiline(false);
 
-  about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator());
   return about_this_site_section;
 }

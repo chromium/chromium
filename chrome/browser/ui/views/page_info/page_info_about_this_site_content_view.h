@@ -1,0 +1,33 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ABOUT_THIS_SITE_CONTENT_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ABOUT_THIS_SITE_CONTENT_VIEW_H_
+
+#include "components/page_info/proto/about_this_site_metadata.pb.h"
+#include "ui/views/view.h"
+
+class ChromePageInfoUiDelegate;
+class PageInfo;
+
+// The view that is used as a content view of the "About this site" subpage in
+// page info. It contains short description about the website with the source
+// (usually from Wikipedia).
+class PageInfoAboutThisSiteContentView : public views::View {
+ public:
+  PageInfoAboutThisSiteContentView(PageInfo* presenter,
+                                   ChromePageInfoUiDelegate* ui_delegate);
+  ~PageInfoAboutThisSiteContentView() override;
+
+ private:
+  std::unique_ptr<views::View> CreateSourceLabel(
+      const absl::optional<page_info::proto::SiteInfo> info) WARN_UNUSED_RESULT;
+  void SourceLinkClicked(const ui::Event& event);
+
+  PageInfo* presenter_;
+  ChromePageInfoUiDelegate* ui_delegate_;
+  absl::optional<page_info::proto::SiteInfo> info_;
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ABOUT_THIS_SITE_CONTENT_VIEW_H_

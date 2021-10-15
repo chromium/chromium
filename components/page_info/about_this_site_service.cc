@@ -32,6 +32,8 @@ AboutThisSiteService::GetAboutThisSiteInfo(const GURL& url) const {
   if (url == test_gurl) {
     site_info_metadata.set_entity_description(
         "A domain used in illustrative examples in documents");
+    site_info_metadata.set_source_url("https://example.com");
+    site_info_metadata.set_source_name("Example source");
     return site_info_metadata;
   }
 
@@ -41,6 +43,8 @@ AboutThisSiteService::GetAboutThisSiteInfo(const GURL& url) const {
         "A site containing test buttons for various browser APIs, in order"
         " to trigger permission dialogues and similar UI in modern "
         "browsers.");
+    site_info_metadata.set_source_url("https://example.com");
+    site_info_metadata.set_source_name("Example source");
     return site_info_metadata;
   }
 

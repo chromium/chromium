@@ -79,6 +79,12 @@ void PageInfoNewBubbleView::OpenPermissionPage(ContentSettingsType type) {
   page_container_->SwitchToPage(view_factory_->CreatePermissionPageView(type));
 }
 
+void PageInfoNewBubbleView::OpenAboutThisSitePage() {
+  presenter_->RecordPageInfoAction(
+      PageInfo::PageInfoAction::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
+  page_container_->SwitchToPage(view_factory_->CreateAboutThisSitePageView());
+}
+
 void PageInfoNewBubbleView::CloseBubble() {
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);

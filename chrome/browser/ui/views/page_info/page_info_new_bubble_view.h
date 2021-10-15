@@ -38,6 +38,7 @@ class PageInfoNewBubbleView : public PageInfoBubbleViewBase,
   void OpenMainPage() override;
   void OpenSecurityPage() override;
   void OpenPermissionPage(ContentSettingsType type) override;
+  void OpenAboutThisSitePage() override;
   void CloseBubble() override;
 
   // WebContentsObserver:

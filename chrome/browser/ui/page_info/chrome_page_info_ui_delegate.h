@@ -18,6 +18,10 @@ namespace content {
 class WebContents;
 }
 
+namespace ui {
+class Event;
+}
+
 class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
  public:
   ChromePageInfoUiDelegate(content::WebContents* web_contents,
@@ -36,6 +40,8 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
 
   // Returns "About this site" info for the active page.
   absl::optional<page_info::proto::SiteInfo> GetAboutThisSiteInfo();
+
+  void AboutThisSiteSourceClicked(GURL url, const ui::Event& event);
 
 #if !defined(OS_ANDROID)
   // If PageInfo should show a link to the site or app's settings page, this

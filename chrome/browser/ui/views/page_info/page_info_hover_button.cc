@@ -169,6 +169,10 @@ void PageInfoHoverButton::SetTitleText(const std::u16string& title_text) {
   UpdateAccessibleName();
 }
 
+void PageInfoHoverButton::SetSubtitleMultiline(bool is_multiline) {
+  subtitle()->SetMultiLine(is_multiline);
+}
+
 void PageInfoHoverButton::UpdateAccessibleName() {
   const std::u16string title_text =
       secondary_label_ == nullptr
