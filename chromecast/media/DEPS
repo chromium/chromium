@@ -1,6 +1,7 @@
 include_rules = [
   "+chromecast/common/mojom",
   "+chromecast/external_mojo",
+  "+chromecast/net/socket_util.h",
   "+media/audio",
   "+media/base",
   "+media/cdm",
@@ -8,6 +9,7 @@ include_rules = [
   "+media/mojo/mojom",
   "+mojo/core/embedder/embedder.h",
   "+mojo/public/cpp/bindings",
+  "+mojo/public/cpp/platform/platform_handle.h",
   "+net/base/io_buffer.h",
   "+net/base/net_errors.h",
   "+net/socket/stream_socket.h",

@@ -9,9 +9,11 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "chromecast/common/mojom/audio_socket.mojom.h"
 #include "chromecast/media/audio/audio_output_service/audio_output_service.pb.h"
 #include "chromecast/media/audio/audio_output_service/output_connection.h"
 #include "chromecast/media/audio/audio_output_service/output_socket.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace net {
 class IOBuffer;
@@ -47,7 +49,10 @@ class OutputStreamConnection : public OutputConnection,
     virtual ~Delegate() = default;
   };
 
-  OutputStreamConnection(Delegate* delegate, CmaBackendParams params);
+  OutputStreamConnection(
+      Delegate* delegate,
+      CmaBackendParams params,
+      mojo::PendingRemote<mojom::AudioSocketBroker> pending_socket_broker);
   OutputStreamConnection(const OutputStreamConnection&) = delete;
   OutputStreamConnection& operator=(const OutputStreamConnection&) = delete;
   ~OutputStreamConnection() override;
@@ -80,6 +85,7 @@ class OutputStreamConnection : public OutputConnection,
  private:
   // OutputConnection implementation:
   void OnConnected(std::unique_ptr<OutputSocket> socket) override;
+  void OnConnectionFailed() override;
   void OnConnectionError() override;
 
   // OutputSocket::Delegate implementation:

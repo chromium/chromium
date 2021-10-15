@@ -72,6 +72,8 @@ CastAudioRenderer::CastAudioRenderer(
 
   interface_broker->GetInterface(application_media_info_manager_pending_remote_
                                      .InitWithNewPipeAndPassReceiver());
+  interface_broker->GetInterface(
+      audio_socket_broker_pending_remote_.InitWithNewPipeAndPassReceiver());
 }
 
 CastAudioRenderer::~CastAudioRenderer() {
@@ -558,7 +560,8 @@ void CastAudioRenderer::OnApplicationMediaInfoReceived(
 
   output_connection_ =
       base::SequenceBound<audio_output_service::OutputStreamConnection>(
-          AudioIoThread::Get()->task_runner(), this, std::move(backend_params));
+          AudioIoThread::Get()->task_runner(), this, std::move(backend_params),
+          std::move(audio_socket_broker_pending_remote_));
   output_connection_.AsyncCall(
       &audio_output_service::OutputStreamConnection::Connect);
 }

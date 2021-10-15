@@ -14,6 +14,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromecast/common/mojom/audio_socket.mojom.h"
 #include "chromecast/media/audio/audio_output_service/output_stream_connection.h"
 #include "media/base/audio_renderer.h"
 #include "media/base/buffering_state.h"
@@ -194,6 +195,8 @@ class CastAudioRenderer
       application_media_info_manager_pending_remote_;
   mojo::Remote<::media::mojom::CastApplicationMediaInfoManager>
       application_media_info_manager_remote_;
+  mojo::PendingRemote<mojom::AudioSocketBroker>
+      audio_socket_broker_pending_remote_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
