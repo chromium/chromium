@@ -177,13 +177,16 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
     @Override
     public int[] getExperimentIds() {
-        assert ThreadUtils.runningOnUiThread();
+        // TODO(iwells): figure out why this is being called from another thread right after FRE
+        if (!ThreadUtils.runningOnUiThread()) {
+            return new int[0];
+        }
         return FeedProcessScopeDependencyProviderJni.get().getExperimentIds();
     }
 
     @Override
     public String getSignedOutSessionId() {
-        ThreadUtils.runningOnUiThread();
+        assert ThreadUtils.runningOnUiThread();
         return FeedProcessScopeDependencyProviderJni.get().getSessionId();
     }
 
