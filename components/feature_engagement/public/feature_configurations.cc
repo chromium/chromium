@@ -241,6 +241,8 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("tab_switcher_iph_triggered", Comparator(EQUAL, 0), 90, 90);
     config->used = EventConfig("tab_switcher_button_clicked",
                                Comparator(EQUAL, 0), 14, 90);
+    config->snooze_params.snooze_interval = 7;
+    config->snooze_params.max_limit = 3;
     return config;
   }
   if (kIPHWebFeedFollowFeature.name == feature->name) {
