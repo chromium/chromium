@@ -79,8 +79,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 @property(nonatomic, assign) IdentitySigninState signinStateOnStart;
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-// YES if the user tapped on the managed, learn more link.
-@property(nonatomic, assign) BOOL managedLearnMoreLinkWasTapped;
 
 @end
 
@@ -275,14 +273,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   return self.unifiedConsentCoordinator.selectedIdentity != nil;
 }
 
-- (BOOL)unifiedConsentCoordinatorHasManagedSyncDataType {
-  return self.unifiedConsentCoordinator.hasManagedSyncDataType;
-}
-
-- (BOOL)unifiedConsentCoordinatorhasAccountRestrictions {
-  return self.unifiedConsentCoordinator.hasAccountRestrictions;
-}
-
 - (void)userSigninViewControllerDidTapOnAddAccount {
   DCHECK(!self.addAccountSigninCoordinator);
   [self notifyUserSigninAttempted];
@@ -315,12 +305,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   [self startSigninFlow];
 }
 
-- (void)userSigninViewControllerDidTapOnLearnMoreURL {
-  DCHECK(!self.managedLearnMoreLinkWasTapped);
-  self.managedLearnMoreLinkWasTapped = YES;
-  [self cancelSignin];
-}
-
 #pragma mark - UserSigninMediatorDelegate
 
 - (BOOL)userSigninMediatorGetSettingsLinkWasTapped {
@@ -351,9 +335,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
           ? self.unifiedConsentCoordinator.selectedIdentity
           : nil;
   SigninCompletionAction completionAction = SigninCompletionActionNone;
-  if (self.managedLearnMoreLinkWasTapped) {
-    completionAction = SigninCompletionActionShowManagedLearnMore;
-  } else if (self.unifiedConsentCoordinator.settingsLinkWasTapped) {
+  if (self.unifiedConsentCoordinator.settingsLinkWasTapped) {
     // Sign-in is finished but the advanced settings link was tapped.
     [self displayAdvancedSettings];
     return;
@@ -398,7 +380,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 
 - (void)userSigninMediatorSigninFailed {
   [self.unifiedConsentCoordinator resetSettingLinkTapped];
-  self.managedLearnMoreLinkWasTapped = NO;
   self.unifiedConsentCoordinator.uiDisabled = NO;
   [self.viewController signinDidStop];
   [self.viewController updatePrimaryActionButtonStyle];
@@ -647,7 +628,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   [self.advancedSettingsSigninCoordinator stop];
   self.advancedSettingsSigninCoordinator = nil;
   [self.unifiedConsentCoordinator resetSettingLinkTapped];
-  self.managedLearnMoreLinkWasTapped = NO;
   self.unifiedConsentCoordinator.uiDisabled = NO;
 }
 

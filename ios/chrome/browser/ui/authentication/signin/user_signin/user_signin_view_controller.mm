@@ -8,21 +8,16 @@
 
 #import "base/check_op.h"
 #import "base/logging.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/gradient_view.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
 #include "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -82,7 +77,7 @@ enum AuthenticationButtonType {
 };
 }  // namespace
 
-@interface UserSigninViewController () <UITextViewDelegate>
+@interface UserSigninViewController ()
 
 // Container view used to center vertically the user consent view between the
 // top of the controller view and the top of the button view.
@@ -97,8 +92,6 @@ enum AuthenticationButtonType {
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 // Stack view that displays the skip and continue buttons.
 @property(nonatomic, strong) UIStackView* actionButtonsView;
-// Stack view that displays a notice (if any) and actionButtonsView.
-@property(nonatomic, strong) UIStackView* bottomView;
 // Property that denotes whether the unified consent screen reached bottom has
 // triggered.
 @property(nonatomic, assign) BOOL hasUnifiedConsentScreenReachedBottom;
@@ -268,22 +261,7 @@ enum AuthenticationButtonType {
   ]];
   self.actionButtonsView.distribution = UIStackViewDistributionEqualCentering;
   self.actionButtonsView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  NSMutableArray* bottomViews = [[NSMutableArray alloc] init];
-  if (self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType ||
-      self.delegate.unifiedConsentCoordinatorhasAccountRestrictions) {
-    UITextView* noticeTextView = [self
-        noticeViewForMessageID:IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_LEARN_MORE
-                           URL:GURL(kChromeUIManagementURL)];
-    [bottomViews addObject:noticeTextView];
-  }
-  [bottomViews addObject:self.actionButtonsView];
-
-  self.bottomView = [[UIStackView alloc] initWithArrangedSubviews:bottomViews];
-  self.bottomView.distribution = UIStackViewDistributionEqualSpacing;
-  self.bottomView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.bottomView.axis = UILayoutConstraintAxisVertical;
-  [self.view addSubview:self.bottomView];
+  [self.view addSubview:self.actionButtonsView];
 
   self.embeddedViewController.view.translatesAutoresizingMaskIntoConstraints =
       NO;
@@ -332,13 +310,13 @@ enum AuthenticationButtonType {
   NSMutableArray* constraints = [NSMutableArray array];
   [constraints addObjectsFromArray:@[
     [self.view.safeAreaLayoutGuide.trailingAnchor
-        constraintEqualToAnchor:self.bottomView.trailingAnchor
+        constraintEqualToAnchor:self.actionButtonsView.trailingAnchor
                        constant:constants.ButtonHorizontalPadding],
     [self.view.safeAreaLayoutGuide.leadingAnchor
-        constraintEqualToAnchor:self.bottomView.leadingAnchor
+        constraintEqualToAnchor:self.actionButtonsView.leadingAnchor
                        constant:-constants.ButtonHorizontalPadding],
     [self.view.safeAreaLayoutGuide.bottomAnchor
-        constraintEqualToAnchor:self.bottomView.bottomAnchor
+        constraintEqualToAnchor:self.actionButtonsView.bottomAnchor
                        constant:constants.ButtonVerticalPadding]
   ]];
   return constraints;
@@ -418,7 +396,7 @@ enum AuthenticationButtonType {
       [self.embeddedViewController.view.trailingAnchor
           constraintEqualToAnchor:self.containerView.trailingAnchor],
       // Constraint between the container view and the horizontal buttons.
-      [self.bottomView.topAnchor
+      [self.actionButtonsView.topAnchor
           constraintEqualToAnchor:self.containerView.bottomAnchor
                          constant:kCompactConstants.ButtonVerticalPadding],
     ]];
@@ -450,7 +428,7 @@ enum AuthenticationButtonType {
       [self.embeddedViewController.view.centerYAnchor
           constraintEqualToAnchor:self.containerView.centerYAnchor],
       // Constraint between the container view and the horizontal buttons.
-      [self.bottomView.topAnchor
+      [self.actionButtonsView.topAnchor
           constraintEqualToAnchor:self.containerView.bottomAnchor
                          constant:kRegularConstants.ButtonVerticalPadding],
     ]];
@@ -503,35 +481,6 @@ enum AuthenticationButtonType {
 
   [self updateButtonStyleWithButton:self.secondaryActionButton
                               style:SECONDARY_ACTION_STYLE];
-}
-
-// Creates a UITextView with the given |messageID| that should contain a link
-// and the destination |URL| for the link. Will be displayed above consent
-// buttons.
-- (UITextView*)noticeViewForMessageID:(int)messageID URL:(const GURL&)URL {
-  UITextView* noticeView = [[UITextView alloc] init];
-  noticeView.scrollEnabled = NO;
-  noticeView.editable = NO;
-  noticeView.delegate = self;
-  noticeView.adjustsFontForContentSizeCategory = YES;
-  noticeView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  NSString* fullText = l10n_util::GetNSString(messageID);
-  NSDictionary* textAttributes = @{
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle]
-  };
-  NSDictionary* linkAttributes = @{
-    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
-    NSLinkAttributeName : net::NSURLWithGURL(URL),
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle]
-  };
-  noticeView.attributedText = AttributedStringFromStringWithLink(
-      fullText, textAttributes, linkAttributes);
-
-  return noticeView;
 }
 
 #pragma mark - Styling
@@ -598,19 +547,6 @@ enum AuthenticationButtonType {
       break;
     }
   }
-}
-
-#pragma mark - UITextViewDelegate
-
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  if (URL) {
-    [self.delegate userSigninViewControllerDidTapOnLearnMoreURL];
-  }
-  // Return NO as the app is handling the opening of the URL.
-  return NO;
 }
 
 @end

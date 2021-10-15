@@ -15,9 +15,15 @@
 // Returns whether there are policies disabling Sync for at least one data type.
 - (BOOL)unifiedConsentCoordinatorHasManagedSyncDataType;
 
+// Returns true if there are account restrictions.
+- (BOOL)unifiedConsentCoordinatorHasAccountRestrictions;
+
 // Called when the user taps on the settings link.
 - (void)unifiedConsentViewControllerDidTapSettingsLink:
     (UnifiedConsentViewController*)controller;
+
+// Performs operations needed to open management help page.
+- (void)unifiedConsentViewControllerDidTapManagementLearnMore;
 
 // Called when the user taps at |point| on the IdentityButtonControl. |point| is
 // in the window coordinates.
