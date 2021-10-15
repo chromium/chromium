@@ -164,7 +164,7 @@ AggregatableReportRequest CreateExampleRequest() {
               url::Origin::Create(GURL("https://b.example"))},
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::
-                     kCountValueHistogram,
+                     kHierarchicalHistogram,
                  /*bucket=*/123, /*value=*/456,
                  AggregationServicePayloadContents::ProcessingType::kTwoParty,
                  url::Origin::Create(GURL("https://reporting.example"))),
@@ -288,8 +288,8 @@ std::ostream& operator<<(
     std::ostream& out,
     const AggregationServicePayloadContents::Operation& operation) {
   switch (operation) {
-    case AggregationServicePayloadContents::Operation::kCountValueHistogram:
-      return out << "kCountValueHistogram";
+    case AggregationServicePayloadContents::Operation::kHierarchicalHistogram:
+      return out << "kHierarchicalHistogram";
   }
 }
 

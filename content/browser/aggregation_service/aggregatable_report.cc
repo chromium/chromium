@@ -66,8 +66,9 @@ std::vector<DpfParameters> ConstructDpfParameters() {
 // Returns empty vector in case of error.
 std::vector<DpfKey> GenerateDpfKeys(
     const AggregationServicePayloadContents& contents) {
-  DCHECK_EQ(contents.operation,
-            AggregationServicePayloadContents::Operation::kCountValueHistogram);
+  DCHECK_EQ(
+      contents.operation,
+      AggregationServicePayloadContents::Operation::kHierarchicalHistogram);
   DCHECK_EQ(contents.processing_type,
             AggregationServicePayloadContents::ProcessingType::kTwoParty);
 

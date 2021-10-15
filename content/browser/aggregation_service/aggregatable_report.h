@@ -30,8 +30,8 @@ class AggregatableReportRequest;
 struct CONTENT_EXPORT AggregationServicePayloadContents {
   // TODO(alexmt): Add kDistinctCount option.
   enum class Operation {
-    kCountValueHistogram = 0,
-    kMaxValue = kCountValueHistogram,
+    kHierarchicalHistogram = 0,
+    kMaxValue = kHierarchicalHistogram,
   };
 
   // TODO(crbug.com/1228501): Add kSingleServer option.

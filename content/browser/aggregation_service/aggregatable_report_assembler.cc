@@ -84,8 +84,9 @@ void AggregatableReportAssembler::AssembleReport(
       report_request.payload_contents();
 
   // Currently, these should be the only possible enum values.
-  DCHECK_EQ(contents.operation,
-            AggregationServicePayloadContents::Operation::kCountValueHistogram);
+  DCHECK_EQ(
+      contents.operation,
+      AggregationServicePayloadContents::Operation::kHierarchicalHistogram);
   DCHECK_EQ(contents.processing_type,
             AggregationServicePayloadContents::ProcessingType::kTwoParty);
 
