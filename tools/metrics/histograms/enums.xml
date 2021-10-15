@@ -92822,6 +92822,13 @@ Called by update_scheduler_enums.py.-->
   <int value="2" label="Error"/>
 </enum>
 
+<enum name="ZygoteChildState">
+  <int value="0" label="Failed to create a RELRO bundle in the App Zygote"/>
+  <int value="1" label="The first usable App Zygote found"/>
+  <int value="2" label="App Zygote restarted without browser restart"/>
+  <int value="3" label="App Zygote has already been seen"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>
