@@ -77,6 +77,10 @@ bool WasLauncherShownPreviously(PrefService* prefs) {
 
 }  // namespace
 
+// static
+constexpr base::TimeDelta
+    LauncherNudgeController::kMinIntervalAfterHomeButtonAppears;
+
 LauncherNudgeController::LauncherNudgeController()
     : show_nudge_timer_(std::make_unique<base::WallClockTimer>()) {
   Shell::Get()->app_list_controller()->AddObserver(this);
@@ -164,9 +168,15 @@ bool LauncherNudgeController::ShouldShowNudge(base::Time& recheck_time) const {
   }
   DCHECK(!last_shown_time.is_null());
 
-  if (GetNow() < last_shown_time + interval) {
+  // The expect shown time of the nudge is set to the later one between the
+  // calculated expect shown time since last shown and the
+  // `earliest_available_time`, which is set to ensure the nudge is shown after
+  // the home button has been shown enough of time.
+  base::Time expect_shown_time =
+      std::max(last_shown_time + interval, earliest_available_time_);
+  if (GetNow() < expect_shown_time) {
     // Set the `recheck_time` to the expected time to show nudge.
-    recheck_time = last_shown_time + interval;
+    recheck_time = expect_shown_time;
     return false;
   }
 
@@ -242,8 +252,9 @@ void LauncherNudgeController::OnActiveUserPrefServiceChanged(
     return;
   }
 
-  // Check if the nudge should be shown right away and show the nudge
-  // if necessary.
+  // Set the `earliest_available_time_` according to the current login time and
+  // check when the nudge could be shown.
+  earliest_available_time_ = GetNow() + kMinIntervalAfterHomeButtonAppears;
   MaybeShowNudge();
 }
 
@@ -268,7 +279,11 @@ void LauncherNudgeController::OnAppListVisibilityChanged(bool shown,
 
 void LauncherNudgeController::OnTabletModeEnded() {
   // If a nudge event became available while the device was in tablet mode, it
-  // would have been ignored. Recheck whether the nudge can be shown again.
+  // would have been ignored. Recheck whether the nudge can be shown again. Note
+  // that the nudge is designed to be shown after
+  // `kMinIntervalAfterHomeButtonAppears` amount of time since changing to
+  // clamshell mode where home button exists.
+  earliest_available_time_ = GetNow() + kMinIntervalAfterHomeButtonAppears;
   MaybeShowNudge();
 }
 
