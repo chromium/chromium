@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/metrics_hashes.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/time.h"
@@ -58,6 +59,12 @@ using content::RenderFrameHostTester;
 using testing::AnyNumber;
 using testing::Mock;
 using testing::Return;
+using UserInteractionLatenciesPtr =
+    page_load_metrics::mojom::UserInteractionLatenciesPtr;
+using UserInteractionLatencies =
+    page_load_metrics::mojom::UserInteractionLatencies;
+using UserInteractionLatency = page_load_metrics::mojom::UserInteractionLatency;
+using UserInteractionType = page_load_metrics::mojom::UserInteractionType;
 
 namespace {
 
@@ -1036,6 +1043,153 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   DeleteContents();
 
   TestLCP(990, LargestContentType::kImage, false /* test_main_frame */);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       NormalizedUserInteractionLatenciesWithoutAllLatencies) {
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  page_load_metrics::mojom::InputTiming input_timing;
+  input_timing.num_interactions = 3;
+  input_timing.max_event_durations =
+      UserInteractionLatencies::NewWorstInteractionLatency(
+          base::Milliseconds(120));
+  input_timing.total_event_durations =
+      UserInteractionLatencies::NewWorstInteractionLatency(
+          base::Milliseconds(140));
+
+  tester()->SimulateInputTimingUpdate(input_timing);
+  DeleteContents();
+
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      tester()->test_ukm_recorder().GetMergedEntriesByName(
+          PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(kv.second.get(),
+                                                          GURL(kTestUrl1));
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_WorstUserInteractionLatency_MaxEventDurationName,
+        120);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_WorstUserInteractionLatency_TotalEventDurationName,
+        140);
+  }
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       NormalizedUserInteractionLatenciesWithAllLatencies) {
+  // Flip the flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kSendAllUserInteractionLatencies);
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  page_load_metrics::mojom::InputTiming input_timing;
+  input_timing.num_interactions = 3;
+  input_timing.max_event_durations =
+      UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& max_event_durations =
+      input_timing.max_event_durations->get_user_interaction_latencies();
+
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(50), UserInteractionType::kKeyboard));
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(100), UserInteractionType::kTapOrClick));
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(150), UserInteractionType::kDrag));
+  input_timing.total_event_durations =
+      UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& total_event_durations =
+      input_timing.total_event_durations->get_user_interaction_latencies();
+
+  total_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(55), UserInteractionType::kKeyboard));
+  total_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(105), UserInteractionType::kTapOrClick));
+  total_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(155), UserInteractionType::kDrag));
+
+  tester()->SimulateInputTimingUpdate(input_timing);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      tester()->test_ukm_recorder().GetMergedEntriesByName(
+          PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(kv.second.get(),
+                                                          GURL(kTestUrl1));
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_WorstUserInteractionLatency_MaxEventDurationName,
+        150);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_WorstUserInteractionLatencyOverBudget_MaxEventDurationName,
+        50);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventDurationName,
+        50);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDurationName,
+        16);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_MaxEventDurationName,
+        50);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventDurationName,
+        50);
+
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_WorstUserInteractionLatency_TotalEventDurationName,
+        155);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_WorstUserInteractionLatencyOverBudget_TotalEventDurationName,
+        55);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_SumOfUserInteractionLatencyOverBudget_TotalEventDurationName,
+        65);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_AverageUserInteractionLatencyOverBudget_TotalEventDurationName,
+        21);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_TotalEventDurationName,
+        55);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        PageLoad::
+            kInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_TotalEventDurationName,
+        55);
+  }
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
