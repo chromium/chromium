@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.accounts.Account;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -46,6 +47,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
@@ -363,6 +365,7 @@ public class SyncConsentFragmentTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "crbug/1257761")
     public void testFRESyncConsentScreenWhenSelectedAccountIsRemoved() {
         final CoreAccountInfo defaultAccount =
                 mAccountManagerTestRule.addAccount("test.default.account@gmail.com");
