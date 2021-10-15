@@ -119,4 +119,17 @@ export function fakeShortcutProviderTest() {
           assertEquals(AcceleratorConfigResult.kSuccess, result);
         });
   });
+
+  test('RestoreAllDefaultsFake', () => {
+    return provider.restoreAllDefaults().then((result) => {
+      assertEquals(AcceleratorConfigResult.kSuccess, result);
+    });
+  });
+
+  test('RestoreActionDefaultsFake', () => {
+    return provider.restoreActionDefaults(AcceleratorSource.kAsh, 0)
+        .then((result) => {
+          assertEquals(AcceleratorConfigResult.kSuccess, result);
+        });
+  });
 }
