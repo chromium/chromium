@@ -155,7 +155,7 @@ DarkModeSettings BuildDarkModeSettings() {
   settings.image_policy = Clamp<DarkModeImagePolicy>(
       GetImagePolicy(switch_params), DarkModeImagePolicy::kFirst,
       DarkModeImagePolicy::kLast);
-  settings.text_brightness_threshold =
+  settings.foreground_brightness_threshold =
       Clamp<int>(GetTextBrightnessThreshold(switch_params), 0, 255);
   settings.background_brightness_threshold =
       Clamp<int>(GetBackgroundBrightnessThreshold(switch_params), 0, 255);

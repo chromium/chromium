@@ -73,7 +73,7 @@ class PLATFORM_EXPORT DarkModeFilter {
     explicit ImmutableData(const DarkModeSettings& settings);
 
     DarkModeSettings settings;
-    std::unique_ptr<DarkModeColorClassifier> text_classifier;
+    std::unique_ptr<DarkModeColorClassifier> foreground_classifier;
     std::unique_ptr<DarkModeColorClassifier> background_classifier;
     std::unique_ptr<DarkModeImageClassifier> image_classifier;
     std::unique_ptr<DarkModeColorFilter> color_filter;

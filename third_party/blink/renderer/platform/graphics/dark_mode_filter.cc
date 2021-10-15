@@ -71,7 +71,7 @@ DarkModeFilter::~DarkModeFilter() {}
 
 DarkModeFilter::ImmutableData::ImmutableData(const DarkModeSettings& settings)
     : settings(settings),
-      text_classifier(nullptr),
+      foreground_classifier(nullptr),
       background_classifier(nullptr),
       image_classifier(nullptr),
       color_filter(nullptr),
@@ -85,7 +85,8 @@ DarkModeFilter::ImmutableData::ImmutableData(const DarkModeSettings& settings)
   else
     image_filter = color_filter->ToSkColorFilter();
 
-  text_classifier = DarkModeColorClassifier::MakeTextColorClassifier(settings);
+  foreground_classifier =
+      DarkModeColorClassifier::MakeForegroundColorClassifier(settings);
   background_classifier =
       DarkModeColorClassifier::MakeBackgroundColorClassifier(settings);
   image_classifier = std::make_unique<DarkModeImageClassifier>();
@@ -169,15 +170,9 @@ bool DarkModeFilter::ShouldApplyToColor(SkColor color, ElementRole role) {
   switch (role) {
     case ElementRole::kSVG:
     case ElementRole::kText:
-      DCHECK(immutable_.text_classifier);
-      return immutable_.text_classifier->ShouldInvertColor(color) ==
-             DarkModeResult::kApplyFilter;
     case ElementRole::kListSymbol:
-      // TODO(prashant.n): Rename text_classifier to foreground_classifier,
-      // so that same classifier can be used for all roles which are supposed
-      // to be at foreground.
-      DCHECK(immutable_.text_classifier);
-      return immutable_.text_classifier->ShouldInvertColor(color) ==
+      DCHECK(immutable_.foreground_classifier);
+      return immutable_.foreground_classifier->ShouldInvertColor(color) ==
              DarkModeResult::kApplyFilter;
     case ElementRole::kBackground:
       DCHECK(immutable_.background_classifier);
