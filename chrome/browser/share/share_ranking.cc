@@ -19,6 +19,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/locale_utils.h"
 #include "chrome/browser/profiles/profile_android.h"
 
 #include "chrome/browser/share/jni_headers/ShareRankingBridge_jni.h"
@@ -497,7 +498,16 @@ void ShareRanking::OnRankGetOldRankingDone(
 
 ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
     const std::string& type) {
+#if defined(OS_ANDROID)
+  // On Android, just use the app's default locale string - we don't have a pref
+  // locale to consult regardless, and l10n_util::GetApplicationLocale can do
+  // blocking disk IO (!) while it checks whether we have a string pack for the
+  // various eligible locales. We don't care about strings here, so just go with
+  // what the system is set to, and don't block on the UI thread.
+  std::string locale = base::android::GetDefaultLocaleString();
+#else
   std::string locale = l10n_util::GetApplicationLocale("", false);
+#endif
   return initial_ranking_for_test_.value_or(
       DefaultRankingForLocaleAndType(locale, type));
 }
