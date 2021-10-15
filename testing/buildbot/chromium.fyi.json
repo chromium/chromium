@@ -6,11 +6,6 @@
       "chromium_builder_asan"
     ]
   },
-  "ASAN Release (reclient shadow)": {
-    "additional_compile_targets": [
-      "chromium_builder_asan"
-    ]
-  },
   "ASAN Release Media (reclient shadow)": {
     "additional_compile_targets": [
       "chromium_builder_asan"

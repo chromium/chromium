@@ -4332,21 +4332,6 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
-    name = "ASAN Release (reclient shadow)",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux asan",
-        short_name = "rel",
-    ),
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 5,
-    ),
-    goma_backend = None,
-    reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.fyi_builder(
     name = "ASAN Release Media (reclient shadow)",
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",
