@@ -55,9 +55,8 @@ class CC_PAINT_EXPORT SkottieWrapper
  private:
   friend class base::RefCountedThreadSafe<SkottieWrapper>;
 
-  explicit SkottieWrapper(base::span<const uint8_t> data);
-  explicit SkottieWrapper(std::vector<uint8_t> data);
-
+  SkottieWrapper(base::span<const uint8_t> data,
+                 std::vector<uint8_t> owned_data);
   ~SkottieWrapper();
 
   base::Lock lock_;

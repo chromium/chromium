@@ -37,30 +37,26 @@ class SkottieLogWriter : public skottie::Logger {
 // static
 scoped_refptr<SkottieWrapper> SkottieWrapper::CreateSerializable(
     std::vector<uint8_t> data) {
+  base::span<const uint8_t> data_span(data);
   return base::WrapRefCounted<SkottieWrapper>(
-      new SkottieWrapper(std::move(data)));
+      new SkottieWrapper(data_span, std::move(data)));
 }
 
 // static
 scoped_refptr<SkottieWrapper> SkottieWrapper::CreateNonSerializable(
     base::span<const uint8_t> data) {
-  return base::WrapRefCounted<SkottieWrapper>(new SkottieWrapper(data));
+  return base::WrapRefCounted<SkottieWrapper>(
+      new SkottieWrapper(data, /*owned_data=*/std::vector<uint8_t>()));
 }
 
-SkottieWrapper::SkottieWrapper(base::span<const uint8_t> data)
+SkottieWrapper::SkottieWrapper(base::span<const uint8_t> data,
+                               std::vector<uint8_t> owned_data)
     : animation_(
           skottie::Animation::Builder()
               .setLogger(sk_make_sp<SkottieLogWriter>())
               .make(reinterpret_cast<const char*>(data.data()), data.size())),
+      raw_data_(std::move(owned_data)),
       id_(base::FastHash(data)) {}
-
-SkottieWrapper::SkottieWrapper(std::vector<uint8_t> data)
-    : animation_(
-          skottie::Animation::Builder()
-              .setLogger(sk_make_sp<SkottieLogWriter>())
-              .make(reinterpret_cast<const char*>(data.data()), data.size())),
-      raw_data_(std::move(data)),
-      id_(base::FastHash(raw_data_)) {}
 
 SkottieWrapper::~SkottieWrapper() = default;
 
