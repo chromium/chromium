@@ -6,8 +6,11 @@ function runTest() {
   var canvas = document.createElement("canvas");
   var ctx = canvas.getContext('2d');
   ctx.beginLayer();
-  ctx.reset();
-  ctx.restore();
+  ctx.globalAlpha = 0.5;
+  ctx.filter = 'sepia(0.5)';
+  ctx.shadowOffsetX = -10;
+  ctx.shadowOffsetY = 10;
+  ctx.shadowColor = 'orange';
   ctx.reset();
   ctx.endLayer();
 }
@@ -17,6 +20,6 @@ async_test(t => {
         t.step(runTest);
         t.done();
     }
-}, 'Verify that setting the font does not crash.');
+}, 'Verify that using reset and attributes will not crash.');
 
 </script>

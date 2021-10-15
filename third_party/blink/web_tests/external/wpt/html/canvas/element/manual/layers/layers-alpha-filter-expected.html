@@ -1,4 +1,5 @@
 <body>
+<p class="desc"> Test to ensure beginlayer works when both alpha and filter are applied. </p>
 <script>
     var canvas, ctx;
     canvas = document.createElement("canvas");
@@ -8,12 +9,9 @@
 
     ctx = canvas.getContext("2d");
     ctx.fillStyle = 'rgba(0,0,255,1)';
-    var circle = new Path2D();
-    circle.arc(90, 90, 40, 0, 2 * Math.PI);
-    ctx.fill(circle);
+    ctx.fillRect(60,60,75,50);
     ctx.filter = 'drop-shadow(-9px 9px 0px #e81)';
     ctx.globalAlpha = 0.6;
-    ctx.globalCompositeOperation = 'source-in';
 
     canvas2 = document.createElement("canvas");
     ctx2 = canvas2.getContext("2d");
@@ -24,6 +22,5 @@
     ctx2.fillRect(70,70,75,50);
 
     ctx.drawImage(canvas2,0,0);
-
 </script>
 </body>

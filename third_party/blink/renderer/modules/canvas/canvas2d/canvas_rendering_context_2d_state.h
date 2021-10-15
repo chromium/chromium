@@ -39,9 +39,16 @@ class CanvasRenderingContext2DState final
  public:
   enum ClipListCopyMode { kCopyClipList, kDontCopyClipList };
   // SaveType indicates whether the state was pushed to the state stack by Save
-  // or by BeginLayer. The first state on the state stack, which is created in 
-  // the canvas constructor and not by Save or BeginLayer, has SaveType kInitial.
-  enum class SaveType { kSaveRestore, kBeginEndLayer, kInitial };
+  // or by BeginLayer. The first state on the state stack, which is created in
+  // the canvas constructor and not by Save or BeginLayer, has SaveType
+  // kInitial. In some circumpstances we have to split an endlayer into two
+  // 'states', we use the kExtraState for that.
+  enum class SaveType {
+    kSaveRestore,
+    kBeginEndLayer,
+    kInternalLayer,
+    kInitial
+  };
 
   CanvasRenderingContext2DState();
   CanvasRenderingContext2DState(const CanvasRenderingContext2DState&,
@@ -61,6 +68,8 @@ class CanvasRenderingContext2DState final
     kStrokePaintType,
     kImagePaintType,
   };
+
+  enum ImageType { kNoImage, kOpaqueImage, kNonOpaqueImage };
 
   // FontSelectorClient implementation
   void FontsNeedUpdate(FontSelector*, FontInvalidationReason) override;
@@ -229,19 +238,13 @@ class CanvasRenderingContext2DState final
 
   bool ShouldDrawShadows() const;
 
-  enum ImageType { kNoImage, kOpaqueImage, kNonOpaqueImage };
-
   // If paint will not be used for painting a bitmap, set bitmapOpacity to
   // Opaque.
   const PaintFlags* GetFlags(PaintType, ShadowMode, ImageType = kNoImage) const;
 
   SaveType GetSaveType() const { return save_type_; }
 
-  void setRestoreToCount(absl::optional<int> count) {
-    restore_to_count_ = count;
-  }
-
-  absl::optional<int> getRestoreToCount() { return restore_to_count_; }
+  sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
  private:
   void UpdateLineDash() const;
@@ -254,7 +257,6 @@ class CanvasRenderingContext2DState final
   sk_sp<SkDrawLooper>& ShadowOnlyDrawLooper() const;
   sk_sp<SkDrawLooper>& ShadowAndForegroundDrawLooper() const;
   sk_sp<PaintFilter>& ShadowOnlyImageFilter() const;
-  sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
   String unparsed_stroke_color_;
   String unparsed_fill_color_;
@@ -321,10 +323,6 @@ class CanvasRenderingContext2DState final
   ClipList clip_list_;
 
   const SaveType save_type_ = SaveType::kInitial;
-
-  // Some endlayer calls need to restore to a specific save count.
-  // If no such restore is needed, restore_to_count_ is set to nullopt.
-  absl::optional<int> restore_to_count_ = absl::nullopt;
 };
 
 ALWAYS_INLINE bool CanvasRenderingContext2DState::ShouldDrawShadows() const {

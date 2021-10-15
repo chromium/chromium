@@ -77,6 +77,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   String shadowColor() const;
   void setShadowColor(const String&);
 
+  // Alpha value that goes from 0 to 1.
   double globalAlpha() const;
   void setGlobalAlpha(double);
 

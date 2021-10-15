@@ -166,46 +166,62 @@ void BaseRenderingContext2D::beginLayer() {
   // canvas to state_stack_. Get the canvas before adjusting state_stack_ to
   // ensure canvas is synced prior to adjusting state_stack_.
   cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
+  if (!canvas)
+    return;
 
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
       GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
       CanvasRenderingContext2DState::SaveType::kBeginEndLayer));
   layer_count_++;
 
-  PaintFlags flags;
-  GetState().FillStyle()->ApplyToFlags(flags);
-  flags.setColor(GetState().FillStyle()->PaintColor());
-  flags.setBlendMode(GetState().GlobalComposite());
-  flags.setImageFilter(StateGetFilter());
-  // TODO(crbug.com/1235854): Add shadows to flags.
+  if (globalAlpha() != 1 &&
+      (StateHasFilter() || GetState().ShouldDrawShadows())) {
+    // For alpha and either filters or shadows, we have to split the save into
+    // two layers, so the shadow and filter can properly interact with alpha.
+    // We also need to flip how and where the shadows and filter are applied
+    // if there are shadows.
+    PaintFlags flags;
+    GetState().FillStyle()->ApplyToFlags(flags);
+    flags.setColor(GetState().FillStyle()->PaintColor());
+    flags.setBlendMode(GetState().GlobalComposite());
+    flags.setImageFilter(GetState().ShouldDrawShadows()
+                             ? GetState().ShadowAndForegroundImageFilter()
+                             : StateGetFilter());
+    canvas->saveLayer(nullptr, &flags);
 
-  if (canvas) {
-    if (StateGetFilter() && globalAlpha() != 1) {
-      // We have to save the filter before alpha.
-      GetState().setRestoreToCount(canvas->getSaveCount());
-      canvas->saveLayer(nullptr, &flags);
+    // Push to state stack to keep stack size up to date.
+    state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
+        GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
+        CanvasRenderingContext2DState::SaveType::kInternalLayer));
 
-      // Push to state stack to keep stack size up to date.
-      state_stack_.push_back(
-          MakeGarbageCollected<CanvasRenderingContext2DState>(
-              GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
-              CanvasRenderingContext2DState::SaveType::kBeginEndLayer));
-
-      PaintFlags second_layer_flags;
-      GetState().FillStyle()->ApplyToFlags(second_layer_flags);
-      second_layer_flags.setColor(GetState().FillStyle()->PaintColor());
-      second_layer_flags.setAlpha(globalAlpha() * 255);
-      canvas->saveLayer(nullptr, &second_layer_flags);
-    } else {
-      GetState().setRestoreToCount(absl::nullopt);
-      flags.setAlpha(globalAlpha() * 255);
-      canvas->saveLayer(nullptr, &flags);
-    }
+    PaintFlags extra_flags;
+    GetState().FillStyle()->ApplyToFlags(extra_flags);
+    extra_flags.setColor(GetState().FillStyle()->PaintColor());
+    extra_flags.setAlpha(globalAlpha() * 255);
+    if (GetState().ShouldDrawShadows())
+      extra_flags.setImageFilter(StateGetFilter());
+    canvas->saveLayer(nullptr, &extra_flags);
+  } else {
+    PaintFlags flags;
+    GetState().FillStyle()->ApplyToFlags(flags);
+    flags.setColor(GetState().FillStyle()->PaintColor());
+    flags.setBlendMode(GetState().GlobalComposite());
+    // This ComposePaintFilter will work always, whether there is only
+    // shadows, or filters, both of them, or none of them.
+    flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
+        GetState().ShadowAndForegroundImageFilter(), StateGetFilter()));
+    flags.setAlpha(globalAlpha() * 255);
+    canvas->saveLayer(nullptr, &flags);
   }
 
   ValidateStateStack();
 
   // Reset compositing attributes.
+  setShadowOffsetX(0);
+  setShadowOffsetY(0);
+  setShadowBlur(0);
+  GetState().SetShadowColor(Color::kTransparent);
+  DCHECK(!GetState().ShouldDrawShadows());
   setGlobalAlpha(1.0);
   setGlobalCompositeOperation("source-over");
   V8UnionCanvasFilterOrString* filter =
@@ -230,13 +246,18 @@ void BaseRenderingContext2D::endLayer() {
     path_.Transform(GetState().GetTransform());
 
   // All saves performed since the last beginLayer are no-ops.
-  while (state_stack_.back()->GetSaveType() ==
-         CanvasRenderingContext2DState::SaveType::kSaveRestore) {
+  while (state_stack_.back() &&
+         state_stack_.back()->GetSaveType() ==
+             CanvasRenderingContext2DState::SaveType::kSaveRestore) {
     PopAndRestore();
   }
 
+  // If we do an endLayer, we have to be sure that we did a beginLayer (that
+  // could have introduced an extra state).
   DCHECK(state_stack_.back()->GetSaveType() ==
-         CanvasRenderingContext2DState::SaveType::kBeginEndLayer);
+             CanvasRenderingContext2DState::SaveType::kBeginEndLayer ||
+         state_stack_.back()->GetSaveType() ==
+             CanvasRenderingContext2DState::SaveType::kInternalLayer);
   PopAndRestore();
   layer_count_--;
 }
@@ -254,22 +275,23 @@ void BaseRenderingContext2D::PopAndRestore() {
   if (IsTransformInvertible())
     path_.Transform(GetState().GetTransform().Inverse());
 
-  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
+  cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
 
-  if (c) {
-    const absl::optional<int> restore_to_count =
-        state_stack_.back()->getRestoreToCount();
-    if (restore_to_count.has_value()) {
-      c->restoreToCount(restore_to_count.value());
-      int pops = state_stack_.size() - restore_to_count.value() + 1;
-      for (int i = 0; i < pops; i++) {
-        state_stack_.pop_back();
-        state_stack_.back()->ClearResolvedFilter();
-      }
-    } else {
-      c->restore();
-    }
+  if (!canvas)
+    return;
+
+  if (state_stack_.back()->GetSaveType() ==
+      CanvasRenderingContext2DState::SaveType::kInternalLayer) {
+    // If this is a ExtraState state, it means we have to restore twice, as we
+    // added an extra state while doing a beginLayer.
+    canvas->restore();
+    state_stack_.pop_back();
+    DCHECK(state_stack_.back());
+    state_stack_.back()->ClearResolvedFilter();
+    DCHECK(state_stack_.back()->GetSaveType() ==
+           CanvasRenderingContext2DState::SaveType::kBeginEndLayer);
   }
+  canvas->restore();
 
   ValidateStateStack();
 }
