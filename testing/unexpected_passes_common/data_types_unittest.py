@@ -622,7 +622,7 @@ class TestExpectationMapAddResultListUnittest(unittest.TestCase):
     self.assertEqual(expectation_map, expected_expectation_map)
 
 
-class TestExpectationMapAddResultUnittest(unittest.TestCase):
+class TestExpectationMapAddGroupedResultsUnittest(unittest.TestCase):
   def testResultMatchPassingNew(self):
     """Test adding a passing result when no results for a builder exist."""
     r = data_types.Result('some/test/case', ['win', 'win10'], 'Pass',
@@ -634,8 +634,12 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
             e: data_types.BuilderStepMap(),
         }),
     })
-    found_matching = expectation_map._AddResult(r, 'builder', None)
-    self.assertTrue(found_matching)
+    grouped_results = {
+        'some/test/case': [r],
+    }
+    matched_results = expectation_map._AddGroupedResults(
+        grouped_results, 'builder', None)
+    self.assertEqual(matched_results, set([r]))
     stats = data_types.BuildStats()
     stats.AddPassedBuild()
     expected_expectation_map = {
@@ -660,8 +664,12 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
             e: data_types.BuilderStepMap(),
         }),
     })
-    found_matching = expectation_map._AddResult(r, 'builder', None)
-    self.assertTrue(found_matching)
+    grouped_results = {
+        'some/test/case': [r],
+    }
+    matched_results = expectation_map._AddGroupedResults(
+        grouped_results, 'builder', None)
+    self.assertEqual(matched_results, set([r]))
     stats = data_types.BuildStats()
     stats.AddFailedBuild('build_id')
     expected_expectation_map = {
@@ -694,8 +702,12 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
             }),
         }),
     })
-    found_matching = expectation_map._AddResult(r, 'builder', None)
-    self.assertTrue(found_matching)
+    grouped_results = {
+        'some/test/case': [r],
+    }
+    matched_results = expectation_map._AddGroupedResults(
+        grouped_results, 'builder', None)
+    self.assertEqual(matched_results, set([r]))
     stats = data_types.BuildStats()
     stats.AddFailedBuild('build_id')
     stats.AddPassedBuild()
@@ -729,8 +741,12 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
             }),
         }),
     })
-    found_matching = expectation_map._AddResult(r, 'builder', None)
-    self.assertTrue(found_matching)
+    grouped_results = {
+        'some/test/case': [r],
+    }
+    matched_results = expectation_map._AddGroupedResults(
+        grouped_results, 'builder', None)
+    self.assertEqual(matched_results, set([r]))
     stats = data_types.BuildStats()
     stats.AddFailedBuild('build_id')
     stats.AddPassedBuild()
@@ -758,8 +774,12 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
             e2: data_types.BuilderStepMap(),
         }),
     })
-    found_matching = expectation_map._AddResult(r, 'builder', None)
-    self.assertTrue(found_matching)
+    grouped_results = {
+        'some/test/case': [r],
+    }
+    matched_results = expectation_map._AddGroupedResults(
+        grouped_results, 'builder', None)
+    self.assertEqual(matched_results, set([r]))
     stats = data_types.BuildStats()
     stats.AddPassedBuild()
     expected_expectation_map = {
@@ -789,8 +809,12 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
             e: data_types.BuilderStepMap(),
         })
     })
-    found_matching = expectation_map._AddResult(r, 'builder', None)
-    self.assertFalse(found_matching)
+    grouped_results = {
+        'some/test/case': [r],
+    }
+    matched_results = expectation_map._AddGroupedResults(
+        grouped_results, 'builder', None)
+    self.assertEqual(matched_results, set())
     expected_expectation_map = {'expectation_file': {e: {}}}
     self.assertEqual(expectation_map, expected_expectation_map)
 
@@ -805,9 +829,12 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
         'bar_expectations':
         data_types.ExpectationBuilderMap({e: data_types.BuilderStepMap()}),
     })
-    found_matching = expectation_map._AddResult(r, 'builder',
-                                                ['bar_expectations'])
-    self.assertTrue(found_matching)
+    grouped_results = {
+        'some/test/case': [r],
+    }
+    matched_results = expectation_map._AddGroupedResults(
+        grouped_results, 'builder', ['bar_expectations'])
+    self.assertEqual(matched_results, set([r]))
     stats = data_types.BuildStats()
     stats.AddPassedBuild()
     expected_expectation_map = {
@@ -820,6 +847,61 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
                     'pixel_tests': stats,
                 }
             }
+        }
+    }
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testMultipleResults(self):
+    """Tests that behavior is as expected when multiple results are given."""
+    r1 = data_types.Result('some/test/case', ['win'], 'Pass', 'pixel_tests',
+                           'build_id')
+    r2 = data_types.Result('some/test/case', ['linux'], 'Pass', 'pixel_tests',
+                           'build_id')
+    r3 = data_types.Result('some/other/test', ['win'], 'Pass', 'pixel_tests',
+                           'build_id')
+    r4 = data_types.Result('some/other/test', ['linux'], 'Pass', 'pixel_tests',
+                           'build_id')
+    r5 = data_types.Result('some/other/other/test', ['win'], 'Pass',
+                           'pixel_tests', 'build_id')
+    r6 = data_types.Result('some/other/other/test', ['linux'], 'Pass',
+                           'pixel_tests', 'build_id')
+    e1 = data_types.Expectation('some/test/case', [], 'Failure')
+    e2 = data_types.Expectation('some/other/test', ['win'], 'Failure')
+    e3 = data_types.Expectation('some/other/other/test', ['mac'], 'Failure')
+    expectation_map = data_types.TestExpectationMap({
+        'expectation_file':
+        data_types.ExpectationBuilderMap({
+            e1: data_types.BuilderStepMap(),
+            e2: data_types.BuilderStepMap(),
+            e3: data_types.BuilderStepMap(),
+        })
+    })
+    grouped_results = {
+        'some/test/case': [r1, r2],
+        'some/other/test': [r3, r4],
+        'some/other/other/test': [r5, r6],
+    }
+    matched_results = expectation_map._AddGroupedResults(
+        grouped_results, 'builder', None)
+    self.assertEqual(matched_results, set([r1, r2, r3]))
+    stats1 = data_types.BuildStats()
+    stats1.AddPassedBuild()
+    stats1.AddPassedBuild()
+    stats2 = data_types.BuildStats()
+    stats2.AddPassedBuild()
+    expected_expectation_map = {
+        'expectation_file': {
+            e1: {
+                'builder': {
+                    'pixel_tests': stats1,
+                },
+            },
+            e2: {
+                'builder': {
+                    'pixel_tests': stats2,
+                },
+            },
+            e3: {},
         }
     }
     self.assertEqual(expectation_map, expected_expectation_map)

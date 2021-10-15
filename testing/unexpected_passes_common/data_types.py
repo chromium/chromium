@@ -72,6 +72,17 @@ class Expectation(object):
     assert isinstance(result, Result)
     return (self._comp(result.test) and self.tags <= result.tags)
 
+  def MaybeAppliesToTest(self, test_name):
+    """Similar to AppliesToResult, but used to do initial filtering.
+
+    Args:
+      test_name: A string containing the name of a test.
+
+    Returns:
+      True if |self| could apply to a test named |test_name|, otherwise False.
+    """
+    return self._comp(test_name)
+
 
 class Result(object):
   """Container for a test result.
@@ -319,40 +330,53 @@ class TestExpectationMap(BaseTypedMap):
           Result(r.test, r.tags, 'Pass', r.step, r.build_id))
     pass_results -= modified_failing_retry_results
 
-    for r in pass_results | failure_results:
-      found_matching = self._AddResult(r, builder, expectation_files)
-      if not found_matching:
-        unmatched_results.append(r)
+    # Group identically named results together so we reduce the number of
+    # comparisons we have to make.
+    all_results = pass_results | failure_results
+    grouped_results = collections.defaultdict(list)
+    for r in all_results:
+      grouped_results[r.test].append(r)
+
+    matched_results = self._AddGroupedResults(grouped_results, builder,
+                                              expectation_files)
+    unmatched_results = list(all_results - matched_results)
 
     return unmatched_results
 
-  def _AddResult(self, result, builder, expectation_files):
-    """Adds a single |result| to |self|.
+  def _AddGroupedResults(self, grouped_results, builder, expectation_files):
+    """Adds all results in |grouped_results| to |self|.
 
     Args:
-      result: A data_types.Result object to add.
-      builder: A string containing the name of the builder |result| came from.
+      grouped_results: A dict mapping test name (str) to a list of
+          data_types.Result objects for that test.
+      builder: A string containing the name of the builder |grouped_results|
+          came from.
       expectation_files: An iterable of expectation file names that these
           results could possibly apply to. If None, then expectations from all
           known expectation files will be used.
 
     Returns:
-      True if an expectation in |self| applied to |result|, otherwise False.
+      A set of data_types.Result objects that had at least one matching
+      expectation.
     """
-    found_matching_expectation = False
-    for ef, expectation_map in self.items():
-      if expectation_files is not None and ef not in expectation_files:
-        continue
-      for expectation, builder_map in expectation_map.items():
-        if expectation.AppliesToResult(result):
-          found_matching_expectation = True
-          step_map = builder_map.setdefault(builder, StepBuildStatsMap())
-          stats = step_map.setdefault(result.step, BuildStats())
-          if result.actual_result == 'Pass':
-            stats.AddPassedBuild()
-          else:
-            stats.AddFailedBuild(result.build_id)
-    return found_matching_expectation
+    matched_results = set()
+    for test_name, result_list in grouped_results.items():
+      for ef, expectation_map in self.items():
+        if expectation_files is not None and ef not in expectation_files:
+          continue
+        for expectation, builder_map in expectation_map.items():
+          if not expectation.MaybeAppliesToTest(test_name):
+            continue
+          for r in result_list:
+            if expectation.AppliesToResult(r):
+              matched_results.add(r)
+              step_map = builder_map.setdefault(builder, StepBuildStatsMap())
+              stats = step_map.setdefault(r.step, BuildStats())
+              if r.actual_result == 'Pass':
+                stats.AddPassedBuild()
+              else:
+                stats.AddFailedBuild(r.build_id)
+    return matched_results
 
   def SplitByStaleness(self):
     """Separates stored data based on expectation staleness.
