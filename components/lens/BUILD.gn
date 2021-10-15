@@ -9,7 +9,11 @@ static_library("lens") {
     "lens_features.cc",
     "lens_features.h",
   ]
-  deps = [ "//base:base" ]
+  deps = [
+    "//base:base",
+    "//net",
+    "//url",
+  ]
 }
 
 source_set("unit_tests") {
@@ -21,5 +25,6 @@ source_set("unit_tests") {
     "//base",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }
