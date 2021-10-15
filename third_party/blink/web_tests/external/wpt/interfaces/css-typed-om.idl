@@ -242,6 +242,8 @@ interface CSSTransformValue : CSSStyleValue {
     DOMMatrix toMatrix();
 };
 
+typedef (CSSNumericValue or CSSKeywordish) CSSPerspectiveValue;
+
 [Exposed=(Window, Worker, PaintWorklet, LayoutWorklet)]
 interface CSSTransformComponent {
     stringifier;
@@ -299,8 +301,8 @@ interface CSSSkewY : CSSTransformComponent {
 
 [Exposed=(Window, Worker, PaintWorklet, LayoutWorklet)]
 interface CSSPerspective : CSSTransformComponent {
-    constructor(CSSNumericValue length);
-    attribute CSSNumericValue length;
+    constructor(CSSPerspectiveValue length);
+    attribute CSSPerspectiveValue length;
 };
 
 [Exposed=(Window, Worker, PaintWorklet, LayoutWorklet)]

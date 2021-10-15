@@ -27,6 +27,7 @@ interface AppHistory : EventTarget {
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
+  attribute EventHandler oncurrentchange;
 };
 
 dictionary AppHistoryUpdateCurrentOptions {
@@ -49,6 +50,19 @@ dictionary AppHistoryReloadOptions : AppHistoryNavigationOptions {
 dictionary AppHistoryResult {
   Promise<AppHistoryEntry> committed;
   Promise<AppHistoryEntry> finished;
+};
+
+[Exposed=Window]
+interface AppHistoryCurrentChangeEvent : Event {
+  constructor(DOMString type, AppHistoryCurrentChangeEventInit eventInit);
+
+  readonly attribute AppHistoryNavigationType? navigationType;
+  readonly attribute AppHistoryEntry from;
+};
+
+dictionary AppHistoryCurrentChangeEventInit : EventInit {
+  AppHistoryNavigationType? navigationType = null;
+  required AppHistoryEntry destination;
 };
 
 [Exposed=Window]
