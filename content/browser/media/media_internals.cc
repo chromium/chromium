@@ -402,13 +402,12 @@ static bool ConvertEventToUpdate(int render_process_id,
 
   // Convert PipelineStatus to human readable string
   if (event.type == media::MediaLogRecord::Type::kMediaStatus) {
-    int status;
-    if (!event.params.GetInteger("pipeline_error", &status) ||
-        status < static_cast<int>(media::PIPELINE_OK) ||
-        status > static_cast<int>(media::PIPELINE_STATUS_MAX)) {
+    absl::optional<int> status = event.params.FindIntKey("pipeline_error");
+    if (!status || *status < static_cast<int>(media::PIPELINE_OK) ||
+        *status > static_cast<int>(media::PIPELINE_STATUS_MAX)) {
       return false;
     }
-    media::PipelineStatus error = static_cast<media::PipelineStatus>(status);
+    media::PipelineStatus error = static_cast<media::PipelineStatus>(*status);
     dict.SetString("params.pipeline_error",
                    media::PipelineStatusToString(error));
   } else {

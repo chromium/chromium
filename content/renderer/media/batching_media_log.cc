@@ -175,8 +175,8 @@ std::string BatchingMediaLog::MediaEventToMessageString(
     const media::MediaLogRecord& event) {
   switch (event.type) {
     case media::MediaLogRecord::Type::kMediaStatus: {
-      int error_code = 0;
-      event.params.GetInteger(media::MediaLog::kStatusText, &error_code);
+      int error_code =
+          event.params.FindIntKey(media::MediaLog::kStatusText).value_or(0);
       DCHECK_NE(error_code, 0);
       return PipelineStatusToString(
           static_cast<media::PipelineStatus>(error_code));

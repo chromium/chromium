@@ -96,8 +96,6 @@ void DevToolsProtocolTestBindings::HandleMessageFromTest(base::Value message) {
     return;
   }
 
-  int request_id = 0;
-  dict->GetInteger("id", &request_id);
   dict->GetList("params", &params);
 
   if (method == "dispatchProtocolMessage" && params &&

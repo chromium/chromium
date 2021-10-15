@@ -68,9 +68,9 @@ class MediaInternalsTestBase {
   }
 
   void ExpectInt(const std::string& key, int expected_value) const {
-    int actual_value = 0;
-    ASSERT_TRUE(update_data_.GetInteger(key, &actual_value));
-    EXPECT_EQ(expected_value, actual_value);
+    absl::optional<int> actual_value = update_data_.FindIntKey(key);
+    ASSERT_TRUE(actual_value);
+    EXPECT_EQ(expected_value, *actual_value);
   }
 
   void ExpectString(const std::string& key,

@@ -255,16 +255,16 @@ void DevToolsProtocolTest::DispatchProtocolMessage(
                                 message.size());
   auto root = base::DictionaryValue::From(
       base::JSONReader::ReadDeprecated(message_str));
-  int id;
-  if (root->GetInteger("id", &id)) {
-    result_ids_.push_back(id);
+  absl::optional<int> id = root->FindIntKey("id");
+  if (id) {
+    result_ids_.push_back(*id);
     base::DictionaryValue* result;
     bool have_result = root->GetDictionary("result", &result);
     result_.reset(have_result ? result->DeepCopy() : nullptr);
     base::Value* error = root->FindDictKey("error");
     error_ = error ? error->Clone() : base::Value();
     in_dispatch_ = false;
-    if (id && id == waiting_for_command_result_id_) {
+    if (*id && *id == waiting_for_command_result_id_) {
       waiting_for_command_result_id_ = 0;
       std::move(run_loop_quit_closure_).Run();
     }

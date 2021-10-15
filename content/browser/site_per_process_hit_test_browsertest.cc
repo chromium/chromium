@@ -666,19 +666,22 @@ bool ConvertJSONToRect(const std::string& str, gfx::Rect* rect) {
   base::DictionaryValue* root;
   if (!value->GetAsDictionary(&root))
     return false;
-  int x, y, width, height;
-  if (!root->GetInteger("x", &x))
+  absl::optional<int> x = root->FindIntKey("x");
+  if (!x)
     return false;
-  if (!root->GetInteger("y", &y))
+  absl::optional<int> y = root->FindIntKey("y");
+  if (!y)
     return false;
-  if (!root->GetInteger("width", &width))
+  absl::optional<int> width = root->FindIntKey("width");
+  if (!width)
     return false;
-  if (!root->GetInteger("height", &height))
+  absl::optional<int> height = root->FindIntKey("height");
+  if (!height)
     return false;
-  rect->set_x(x);
-  rect->set_y(y);
-  rect->set_width(width);
-  rect->set_height(height);
+  rect->set_x(*x);
+  rect->set_y(*y);
+  rect->set_width(*width);
+  rect->set_height(*height);
   return true;
 }
 #endif  // defined(USE_AURA)

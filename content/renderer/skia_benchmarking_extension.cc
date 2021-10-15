@@ -187,7 +187,8 @@ void SkiaBenchmarking::Rasterize(gin::Arguments* args) {
     const base::DictionaryValue* params_dict = nullptr;
     if (params_value.get() && params_value->GetAsDictionary(&params_dict)) {
       scale = params_dict->FindDoubleKey("scale").value_or(scale);
-      params_dict->GetInteger("stop", &stop_index);
+      if (absl::optional<int> stop = params_dict->FindIntKey("stop"))
+        stop_index = *stop;
 
       const base::Value* clip_value = nullptr;
       if (params_dict->Get("clip", &clip_value))

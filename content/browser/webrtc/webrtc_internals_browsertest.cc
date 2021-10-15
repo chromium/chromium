@@ -258,15 +258,16 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     for (size_t i = 0; i < requests.size(); ++i) {
       base::DictionaryValue* dict = nullptr;
       ASSERT_TRUE(list_request->GetDictionary(i, &dict));
-      int rid, pid;
+      absl::optional<int> rid = dict->FindIntKey("rid");
+      absl::optional<int> pid = dict->FindIntKey("pid");
       std::string origin, audio, video;
-      ASSERT_TRUE(dict->GetInteger("rid", &rid));
-      ASSERT_TRUE(dict->GetInteger("pid", &pid));
+      ASSERT_TRUE(rid);
+      ASSERT_TRUE(pid);
       ASSERT_TRUE(dict->GetString("origin", &origin));
       ASSERT_TRUE(dict->GetString("audio", &audio));
       ASSERT_TRUE(dict->GetString("video", &video));
-      EXPECT_EQ(requests[i].rid, rid);
-      EXPECT_EQ(requests[i].pid, pid);
+      EXPECT_EQ(requests[i].rid, *rid);
+      EXPECT_EQ(requests[i].pid, *pid);
       EXPECT_EQ(requests[i].origin, origin);
       EXPECT_EQ(requests[i].audio_constraints, audio);
       EXPECT_EQ(requests[i].video_constraints, video);

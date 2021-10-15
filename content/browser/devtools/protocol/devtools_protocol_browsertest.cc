@@ -1583,7 +1583,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateError) {
   GURL test_url = https_server.GetURL("/devtools/navigation.html");
   std::unique_ptr<base::DictionaryValue> params;
   std::unique_ptr<base::DictionaryValue> command_params;
-  int eventId;
+  absl::optional<int> eventId;
 
   shell()->LoadURL(GURL("about:blank"));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
@@ -1606,9 +1606,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateError) {
   EXPECT_EQ(
       test_url,
       shell()->web_contents()->GetController().GetPendingEntry()->GetURL());
-  EXPECT_TRUE(params->GetInteger("eventId", &eventId));
+  eventId = params->FindIntKey("eventId");
+  ASSERT_TRUE(eventId);
   command_params = std::make_unique<base::DictionaryValue>();
-  command_params->SetInteger("eventId", eventId);
+  command_params->SetInteger("eventId", *eventId);
   command_params->SetString("action", "cancel");
   SendCommand("Security.handleCertificateError", std::move(command_params),
               false);
@@ -1626,9 +1627,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateError) {
   TestNavigationObserver continue_observer(shell()->web_contents(), 1);
   shell()->LoadURL(test_url);
   params = WaitForNotification("Security.certificateError", false);
-  EXPECT_TRUE(params->GetInteger("eventId", &eventId));
+  eventId = params->FindIntKey("eventId");
+  EXPECT_TRUE(eventId);
   command_params = std::make_unique<base::DictionaryValue>();
-  command_params->SetInteger("eventId", eventId);
+  command_params->SetInteger("eventId", *eventId);
   command_params->SetString("action", "continue");
   SendCommand("Security.handleCertificateError", std::move(command_params),
               false);
@@ -1748,7 +1750,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SubresourceWithCertificateError) {
   GURL test_url = https_server.GetURL("/image.html");
   std::unique_ptr<base::DictionaryValue> params;
   std::unique_ptr<base::DictionaryValue> command_params;
-  int eventId;
+  absl::optional<int> eventId;
 
   shell()->LoadURL(GURL("about:blank"));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
@@ -1765,18 +1767,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SubresourceWithCertificateError) {
 
   // Expect certificateError event for main frame.
   params = WaitForNotification("Security.certificateError", false);
-  EXPECT_TRUE(params->GetInteger("eventId", &eventId));
+  eventId = params->FindIntKey("eventId");
+  ASSERT_TRUE(eventId);
   command_params = std::make_unique<base::DictionaryValue>();
-  command_params->SetInteger("eventId", eventId);
+  command_params->SetInteger("eventId", *eventId);
   command_params->SetString("action", "continue");
   SendCommand("Security.handleCertificateError", std::move(command_params),
               false);
 
   // Expect certificateError event for image.
   params = WaitForNotification("Security.certificateError", false);
-  EXPECT_TRUE(params->GetInteger("eventId", &eventId));
+  eventId = params->FindIntKey("eventId");
+  ASSERT_TRUE(eventId);
   command_params = std::make_unique<base::DictionaryValue>();
-  command_params->SetInteger("eventId", eventId);
+  command_params->SetInteger("eventId", *eventId);
   command_params->SetString("action", "continue");
   SendCommand("Security.handleCertificateError", std::move(command_params),
               false);
