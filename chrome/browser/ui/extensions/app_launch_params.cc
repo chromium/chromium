@@ -35,10 +35,11 @@ apps::AppLaunchParams CreateAppLaunchParamsWithEventFlags(
     Profile* profile,
     const extensions::Extension* extension,
     int event_flags,
-    apps::mojom::AppLaunchSource source,
+    apps::mojom::LaunchSource launch_source,
     int64_t display_id) {
   apps::mojom::LaunchContainer fallback_container =
       extensions::GetLaunchContainer(ExtensionPrefs::Get(profile), extension);
   return apps::CreateAppIdLaunchParamsWithEventFlags(
-      extension->id(), event_flags, source, display_id, fallback_container);
+      extension->id(), event_flags, launch_source, display_id,
+      fallback_container);
 }

@@ -100,7 +100,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
                                             const GURL& expected_url) {
     apps::AppLaunchParams params = apps::CreateAppLaunchParamsForIntent(
         app_id,
-        /*event_flags=*/0, apps::mojom::AppLaunchSource::kSourceAppLauncher,
+        /*event_flags=*/0, apps::mojom::LaunchSource::kFromSharesheet,
         display::kDefaultDisplayId,
         apps::mojom::LaunchContainer::kLaunchContainerWindow,
         std::move(intent));

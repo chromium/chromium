@@ -588,7 +588,7 @@ content::WebContents* WebAppPublisherHelper::Launch(
   DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
 
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
-      web_app->app_id(), event_flags, apps::GetAppLaunchSource(launch_source),
+      web_app->app_id(), event_flags, launch_source,
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       /*fallback_container=*/
       ConvertDisplayModeToAppLaunchContainer(display_mode));
@@ -604,8 +604,7 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithFiles(
     apps::mojom::FilePathsPtr file_paths) {
   DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
-      app_id, event_flags, apps::GetAppLaunchSource(launch_source),
-      display::kInvalidDisplayId,
+      app_id, event_flags, launch_source, display::kInvalidDisplayId,
       /*fallback_container=*/
       ConvertDisplayModeToAppLaunchContainer(display_mode));
   if (file_paths) {
@@ -1174,7 +1173,7 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithIntentImpl(
   }
 
   auto params = apps::CreateAppLaunchParamsForIntent(
-      app_id, event_flags, apps::GetAppLaunchSource(launch_source), display_id,
+      app_id, event_flags, launch_source, display_id,
       ConvertDisplayModeToAppLaunchContainer(
           registrar().GetAppEffectiveDisplayMode(app_id)),
       std::move(intent));

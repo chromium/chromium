@@ -20,7 +20,7 @@ class LaunchUtilsTest : public testing::Test {
     return apps::CreateAppIdLaunchParamsWithEventFlags(
         app_id,
         apps::GetEventFlags(container, disposition, preferred_container),
-        apps::mojom::AppLaunchSource::kSourceChromeInternal,
+        apps::mojom::LaunchSource::kFromChromeInternal,
         display::kInvalidDisplayId, fallback_container);
   }
 
@@ -87,7 +87,7 @@ TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
 
   auto params = apps::CreateAppLaunchParamsForIntent(
       app_id, apps::GetEventFlags(container, disposition, true),
-      apps::mojom::AppLaunchSource::kSourceIntentUrl,
+      apps::mojom::LaunchSource::kFromChromeInternal,
       display::kInvalidDisplayId,
       apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent));
 

@@ -190,8 +190,7 @@ void LacrosExtensionAppsController::Launch(
   extensions::LaunchContainer launch_container = extensions::GetLaunchContainer(
       extensions::ExtensionPrefs::Get(profile), extension);
   auto params = apps::CreateAppLaunchParamsForIntent(
-      extension->id(), ui::EF_NONE,
-      apps::GetAppLaunchSource(launch_params->launch_source),
+      extension->id(), ui::EF_NONE, launch_params->launch_source,
       display::kInvalidDisplayId, launch_container, std::move(intent));
   OpenApplication(profile, std::move(params));
 

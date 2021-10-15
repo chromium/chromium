@@ -64,7 +64,7 @@ Browser* CreateBrowserWithNewTabPage(Profile* profile) {
 AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     const std::string& app_id,
     int event_flags,
-    apps::mojom::AppLaunchSource source,
+    apps::mojom::LaunchSource launch_source,
     int64_t display_id,
     apps::mojom::LaunchContainer fallback_container) {
   WindowOpenDisposition raw_disposition =
@@ -85,18 +85,19 @@ AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     container = fallback_container;
     disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
-  return AppLaunchParams(app_id, container, disposition, source, display_id);
+  return AppLaunchParams(app_id, container, disposition,
+                         GetAppLaunchSource(launch_source), display_id);
 }
 
 apps::AppLaunchParams CreateAppLaunchParamsForIntent(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::AppLaunchSource source,
+    apps::mojom::LaunchSource launch_source,
     int64_t display_id,
     apps::mojom::LaunchContainer fallback_container,
     apps::mojom::IntentPtr&& intent) {
   auto params = CreateAppIdLaunchParamsWithEventFlags(
-      app_id, event_flags, source, display_id, fallback_container);
+      app_id, event_flags, launch_source, display_id, fallback_container);
 
   if (intent->url.has_value()) {
     params.source = apps::mojom::AppLaunchSource::kSourceIntentUrl;

@@ -177,7 +177,7 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
 
   apps::AppLaunchParams params = CreateAppLaunchParamsWithEventFlags(
       profile_, extension, event_flags,
-      apps::mojom::AppLaunchSource::kSourceAppLauncher, display_id);
+      ShelfLaunchSourceToAppsLaunchSource(source), display_id);
   if ((source == ash::LAUNCH_FROM_APP_LIST ||
        source == ash::LAUNCH_FROM_APP_LIST_SEARCH) &&
       app_id == extensions::kWebStoreAppId) {

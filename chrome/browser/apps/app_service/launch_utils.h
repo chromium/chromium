@@ -47,14 +47,14 @@ Browser* CreateBrowserWithNewTabPage(Profile* profile);
 AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     const std::string& app_id,
     int event_flags,
-    apps::mojom::AppLaunchSource source,
+    apps::mojom::LaunchSource source,
     int64_t display_id,
     apps::mojom::LaunchContainer fallback_container);
 
 apps::AppLaunchParams CreateAppLaunchParamsForIntent(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::AppLaunchSource source,
+    apps::mojom::LaunchSource source,
     int64_t display_id,
     apps::mojom::LaunchContainer fallback_container,
     apps::mojom::IntentPtr&& intent);

@@ -29,7 +29,7 @@ apps::AppLaunchParams CreateAppLaunchParamsWithEventFlags(
     Profile* profile,
     const extensions::Extension* extension,
     int event_flags,
-    apps::mojom::AppLaunchSource source,
+    apps::mojom::LaunchSource source,
     int64_t display_id);
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_APP_LAUNCH_PARAMS_H_

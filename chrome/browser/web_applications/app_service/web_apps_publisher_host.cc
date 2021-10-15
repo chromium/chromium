@@ -264,8 +264,7 @@ void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
       return;
     }
     auto params = apps::CreateAppLaunchParamsForIntent(
-        launch_params->app_id, ui::EF_NONE,
-        apps::GetAppLaunchSource(launch_params->launch_source),
+        launch_params->app_id, ui::EF_NONE, launch_params->launch_source,
         display::kDefaultDisplayId,
         ConvertDisplayModeToAppLaunchContainer(
             registrar().GetAppEffectiveDisplayMode(launch_params->app_id)),

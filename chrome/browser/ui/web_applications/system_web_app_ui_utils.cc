@@ -106,7 +106,7 @@ absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
   // TODO(crbug/1113502): Plumb through better launch sources from callsites.
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
       app_id.value(), /*event_flags=*/0,
-      apps::mojom::AppLaunchSource::kSourceChromeInternal, display_id,
+      apps::mojom::LaunchSource::kFromChromeInternal, display_id,
       /*fallback_container=*/
       ConvertDisplayModeToAppLaunchContainer(display_mode));
 

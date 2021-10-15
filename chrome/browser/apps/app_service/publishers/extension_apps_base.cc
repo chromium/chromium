@@ -255,7 +255,7 @@ content::WebContents* ExtensionAppsBase::LaunchAppWithIntentImpl(
   }
 
   auto params = apps::CreateAppLaunchParamsForIntent(
-      app_id, event_flags, GetAppLaunchSource(launch_source),
+      app_id, event_flags, launch_source,
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile_),
                                      extension),
@@ -387,7 +387,7 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
 
   // The app will be created for the currently active profile.
   AppLaunchParams params = CreateAppLaunchParamsWithEventFlags(
-      profile_, extension, event_flags, GetAppLaunchSource(launch_source),
+      profile_, extension, event_flags, launch_source,
       window_info ? window_info->display_id : display::kInvalidDisplayId);
   ash::ShelfLaunchSource source = ConvertLaunchSource(launch_source);
   if ((source == ash::LAUNCH_FROM_APP_LIST ||
