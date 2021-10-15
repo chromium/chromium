@@ -20,8 +20,10 @@ constexpr int kRecentAppButtonSize = 32;
 
 }  // namespace
 
-PhoneHubRecentAppButton::PhoneHubRecentAppButton(const gfx::Image& icon,
-                                                 PressedCallback callback)
+PhoneHubRecentAppButton::PhoneHubRecentAppButton(
+    const gfx::Image& icon,
+    const std::u16string& visible_app_name,
+    PressedCallback callback)
     : views::ImageButton(callback) {
   SetImage(views::Button::STATE_NORMAL,
            gfx::ImageSkiaOperations::CreateResizedImage(
@@ -31,6 +33,7 @@ PhoneHubRecentAppButton::PhoneHubRecentAppButton(const gfx::Image& icon,
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   views::InstallCircleHighlightPathGenerator(this);
+  SetAccessibleName(visible_app_name);
 }
 
 PhoneHubRecentAppButton::~PhoneHubRecentAppButton() = default;

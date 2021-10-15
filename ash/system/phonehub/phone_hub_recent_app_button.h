@@ -18,7 +18,9 @@ namespace ash {
 // same application.
 class ASH_EXPORT PhoneHubRecentAppButton : public views::ImageButton {
  public:
-  PhoneHubRecentAppButton(const gfx::Image& icon, PressedCallback callback);
+  PhoneHubRecentAppButton(const gfx::Image& icon,
+                          const std::u16string& visible_app_name,
+                          PressedCallback callback);
   ~PhoneHubRecentAppButton() override;
   PhoneHubRecentAppButton(PhoneHubRecentAppButton&) = delete;
   PhoneHubRecentAppButton operator=(PhoneHubRecentAppButton&) = delete;
