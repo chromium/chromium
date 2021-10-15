@@ -2366,9 +2366,7 @@ TEST_F(WebContentsImplTest, ActiveContentsCountChangeBrowsingInstance) {
 class LoadingWebContentsObserver : public WebContentsObserver {
  public:
   explicit LoadingWebContentsObserver(WebContents* contents)
-      : WebContentsObserver(contents),
-        is_loading_(false),
-        did_receive_response_(false) {}
+      : WebContentsObserver(contents), is_loading_(false) {}
 
   LoadingWebContentsObserver(const LoadingWebContentsObserver&) = delete;
   LoadingWebContentsObserver& operator=(const LoadingWebContentsObserver&) =
@@ -2378,26 +2376,18 @@ class LoadingWebContentsObserver : public WebContentsObserver {
 
   // The assertions on these messages ensure that they are received in order.
   void DidStartLoading() override {
-    ASSERT_FALSE(did_receive_response_);
     ASSERT_FALSE(is_loading_);
     is_loading_ = true;
-  }
-  void DidReceiveResponse() override {
-    ASSERT_TRUE(is_loading_);
-    did_receive_response_ = true;
   }
   void DidStopLoading() override {
     ASSERT_TRUE(is_loading_);
     is_loading_ = false;
-    did_receive_response_ = false;
   }
 
   bool is_loading() const { return is_loading_; }
-  bool did_receive_response() const { return did_receive_response_; }
 
  private:
   bool is_loading_;
-  bool did_receive_response_;
 };
 
 // Subclass of WebContentsImplTest for cases that need out-of-process iframes.
@@ -2443,7 +2433,6 @@ TEST_F(WebContentsImplTestWithSiteIsolation, StartStopEventsBalance) {
   // The Observer callback implementations contain assertions to ensure that the
   // events arrive in the correct order.
   EXPECT_TRUE(observer.is_loading());
-  EXPECT_TRUE(observer.did_receive_response());
 
   // Create a child frame to navigate multiple times.
   TestRenderFrameHost* subframe = orig_rfh->AppendChild("subframe");
@@ -2460,7 +2449,6 @@ TEST_F(WebContentsImplTestWithSiteIsolation, StartStopEventsBalance) {
   // expected that the WebContents is still in loading state.
   EXPECT_TRUE(contents()->IsLoading());
   EXPECT_TRUE(observer.is_loading());
-  EXPECT_TRUE(observer.did_receive_response());
 
   // After navigation, the RenderFrameHost may change.
   subframe = static_cast<TestRenderFrameHost*>(
@@ -2493,14 +2481,12 @@ TEST_F(WebContentsImplTestWithSiteIsolation, StartStopEventsBalance) {
   // hasn't sent the DidstopLoading message yet.
   EXPECT_TRUE(contents()->IsLoading());
   EXPECT_TRUE(observer.is_loading());
-  EXPECT_TRUE(observer.did_receive_response());
 
   // Send the DidStopLoading for the main frame and ensure it isn't loading
   // anymore.
   main_frame_navigation->StopLoading();
   EXPECT_FALSE(contents()->IsLoading());
   EXPECT_FALSE(observer.is_loading());
-  EXPECT_FALSE(observer.did_receive_response());
 }
 
 // Tests that WebContentsImpl::IsLoadingToDifferentDocument only reports main

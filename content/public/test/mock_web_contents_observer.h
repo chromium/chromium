@@ -93,7 +93,6 @@ class MockWebContentsObserver : public WebContentsObserver {
                base::TimeTicks activation_time),
               (override));
   MOCK_METHOD(void, DidStartLoading, (), (override));
-  MOCK_METHOD(void, DidReceiveResponse, (), (override));
   MOCK_METHOD(void, DidStopLoading, (), (override));
   MOCK_METHOD(void, LoadProgressChanged, (double progress), (override));
   MOCK_METHOD(void,

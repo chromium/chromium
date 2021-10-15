@@ -4282,7 +4282,6 @@ void WebContentsImpl::SetNotWaitingForResponse() {
     return;
 
   waiting_for_response_ = false;
-  observers_.NotifyObservers(&WebContentsObserver::DidReceiveResponse);
 
   // LoadingStateChanged must be called last in case it triggers deletion of
   // |this| due to recursive message pumps.

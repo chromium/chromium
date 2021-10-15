@@ -341,7 +341,6 @@ class CONTENT_EXPORT WebContentsObserver {
   // loading for the first time (initiates outgoing requests), when incoming
   // data subsequently starts arriving, and when it finishes loading.
   virtual void DidStartLoading() {}
-  virtual void DidReceiveResponse() {}
   virtual void DidStopLoading() {}
 
   // The page has made some progress loading. |progress| is a value between 0.0
