@@ -356,6 +356,13 @@ class DownloadTargetDeterminerTest : public ChromeRenderViewHostTestHarness {
     return download_prefs_.get();
   }
 
+ protected:
+  // ChromeRenderViewHostTestHarness overrides.
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{HistoryServiceFactory::GetInstance(),
+             HistoryServiceFactory::GetDefaultFactory()}};
+  }
+
  private:
   void SetUpFileTypePolicies();
 
@@ -1193,9 +1200,6 @@ TEST_F(DownloadTargetDeterminerTest, VisitedReferrer) {
   ASSERT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
             safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
                 base::FilePath(FILE_PATH_LITERAL("foo.kindabad"))));
-
-  // First the history service must exist.
-  ASSERT_TRUE(profile()->CreateHistoryService());
 
   GURL url("http://visited.example.com/visited-link.html");
   // The time of visit is picked to be several seconds prior to the most recent
