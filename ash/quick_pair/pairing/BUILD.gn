@@ -23,6 +23,8 @@ source_set("pairing") {
     "fast_pair/fast_pair_key_pair.h",
     "fast_pair/fast_pair_pairer.cc",
     "fast_pair/fast_pair_pairer.h",
+    "fast_pair/fast_pair_unpair_handler.cc",
+    "fast_pair/fast_pair_unpair_handler.h",
     "pairer_broker.h",
     "pairer_broker_impl.cc",
     "pairer_broker_impl.h",
@@ -69,6 +71,7 @@ source_set("unit_tests") {
     "fast_pair/fast_pair_encryption_unittest.cc",
     "fast_pair/fast_pair_gatt_service_client_unittest.cc",
     "fast_pair/fast_pair_pairer_unittest.cc",
+    "fast_pair/fast_pair_unpair_handler_unittest.cc",
     "retroactive_pairing_detector_unittest.cc",
   ]
 
