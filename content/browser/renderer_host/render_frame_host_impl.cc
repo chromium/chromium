@@ -6230,16 +6230,15 @@ void RenderFrameHostImpl::ShowContextMenu(
   // directly, don't show them in the context menu.
   ContextMenuParams validated_params(params);
   validated_params.page_url = GetMainFrame()->GetLastCommittedURL();
-  if (GetParent())  // Only populate |frame_url| for subframes.
-    validated_params.frame_url = GetLastCommittedURL();
+  // Only populate |frame_url| if `this` is actually a subframe.
+  validated_params.frame_url = GetParent() ? GetLastCommittedURL() : GURL();
 
   // We don't validate |unfiltered_link_url| so that this field can be used
-  // when users want to copy the original link URL.
+  // when users want to copy the original link URL.  We also don't filter the
+  // URLs based on trustworthy data (e.g. `page_url` and `frame_url`).
   RenderProcessHost* process = GetProcess();
   process->FilterURL(true, &validated_params.link_url);
   process->FilterURL(true, &validated_params.src_url);
-  process->FilterURL(false, &validated_params.page_url);
-  process->FilterURL(true, &validated_params.frame_url);
 
   // It is necessary to transform the coordinates to account for nested
   // RenderWidgetHosts, such as with out-of-process iframes.
