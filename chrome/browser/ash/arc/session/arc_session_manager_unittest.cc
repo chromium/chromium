@@ -1067,6 +1067,26 @@ TEST_F(ArcSessionManagerTest, RequestDisableDoesNotRemoveData) {
   arc_session_manager()->Shutdown();
 }
 
+TEST_F(ArcSessionManagerTest, RequestDisableWithArcDataRemoval) {
+  // Start ARC.
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+            arc_session_manager()->state());
+
+  // Disable ARC and remove ARC data.
+  arc_session_manager()->RequestDisableWithArcDataRemoval();
+
+  // Data removal is requested.
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kArcDataRemoveRequested));
+
+  // Correctly stop service.
+  arc_session_manager()->Shutdown();
+}
+
 // Tests that |vm_info| is initialized with absl::nullopt.
 TEST_F(ArcSessionManagerTest, GetVmInfo_InitialValue) {
   const auto& vm_info = arc_session_manager()->GetVmInfo();
