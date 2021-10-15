@@ -3062,6 +3062,7 @@ message GetElementStatusProto {
   message MatchOptions {
     optional bool case_sensitive = 1;
     optional bool remove_space = 2;
+    optional string find_and_remove_re2 = 3;
   }
 
   message MatchExpectation {
