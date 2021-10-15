@@ -121,7 +121,11 @@ source_set("eg_test_support+eg2") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "google_services_settings_app_interface.h" ]
+  sources = [
+    "google_services_settings_app_interface.h",
+    "google_services_settings_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }
 
 source_set("eg2_tests") {

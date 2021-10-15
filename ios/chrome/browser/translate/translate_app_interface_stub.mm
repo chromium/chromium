@@ -9,10 +9,4 @@
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(TranslateAppInterface);
-#pragma clang diagnostic pop
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(TranslateAppInterface)

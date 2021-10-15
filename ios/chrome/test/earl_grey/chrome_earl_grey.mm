@@ -72,8 +72,6 @@ UIWindow* GetAnyKeyWindow() {
 }
 }  // namespace chrome_test_util
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
-
 @interface ChromeEarlGreyImpl ()
 
 // Waits for session restoration to finish within a timeout, or a GREYAssert is

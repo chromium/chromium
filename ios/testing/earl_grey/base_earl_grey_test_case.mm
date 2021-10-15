@@ -20,8 +20,6 @@
 #error "This file requires ARC support."
 #endif
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(BaseEarlGreyTestCaseAppInterface)
-
 namespace {
 
 // If true, +setUpForTestCase will be called from -setUp.  This flag is used to

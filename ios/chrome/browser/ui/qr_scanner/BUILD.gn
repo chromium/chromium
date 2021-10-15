@@ -115,6 +115,12 @@ source_set("eg_test_support+eg2") {
   ]
   testonly = true
 
-  sources = [ "qr_scanner_app_interface.h" ]
-  deps = [ "//ios/chrome/browser/ui/scanner:camera_state" ]
+  sources = [
+    "qr_scanner_app_interface.h",
+    "qr_scanner_app_interface_stub.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/scanner:camera_state",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
 }

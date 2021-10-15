@@ -344,7 +344,9 @@ source_set("eg_test_support+eg2") {
 
   sources = [
     "lookalike_url_app_interface.h",
+    "lookalike_url_app_interface_stub.mm",
     "progress_indicator_app_interface.h",
+    "progress_indicator_app_interface_stub.mm",
   ]
 
   deps = [

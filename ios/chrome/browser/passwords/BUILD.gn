@@ -293,5 +293,9 @@ source_set("eg_test_support+eg2") {
   ]
   testonly = true
 
-  sources = [ "password_manager_app_interface.h" ]
+  sources = [
+    "password_manager_app_interface.h",
+    "password_manager_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }

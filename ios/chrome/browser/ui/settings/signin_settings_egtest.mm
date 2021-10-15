@@ -21,11 +21,6 @@
 #error "This file requires ARC support."
 #endif
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(SigninSettingsAppInterface);
-#pragma clang diagnostic pop
-
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;

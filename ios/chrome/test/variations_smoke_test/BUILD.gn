@@ -44,5 +44,9 @@ source_set("eg_test_support+eg2") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "variations_smoke_test_app_interface.h" ]
+  sources = [
+    "variations_smoke_test_app_interface.h",
+    "variations_smoke_test_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }

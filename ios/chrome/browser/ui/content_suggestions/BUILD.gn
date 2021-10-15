@@ -339,7 +339,10 @@ source_set("eg_test_support+eg2") {
   ]
   testonly = true
 
-  sources = [ "new_tab_page_app_interface.h" ]
+  sources = [
+    "new_tab_page_app_interface.h",
+    "new_tab_page_app_interface_stub.mm",
+  ]
 
   deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }

@@ -508,13 +508,13 @@ source_set("test_lib") {
   deps = [
     ":app_framework_shared_headers",
     ":ui_lib_shared_headers",
-    "//build/config/ios:xctest",
     "//ios/third_party/edo",
   ]
 
   public_deps = [
     ":common_lib",
     ":test_lib_shared_headers",
+    "//build/config/ios:xctest",
   ]
 
   frameworks = [

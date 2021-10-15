@@ -16,11 +16,6 @@
 #error "This file requires ARC support."
 #endif
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(HandoffManagerAppInterface);
-#pragma clang diagnostic pop
-
 namespace {
 
 // Checks that Handoff will report the specified |gurl|.

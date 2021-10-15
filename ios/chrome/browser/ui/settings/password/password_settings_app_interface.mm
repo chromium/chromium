@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/settings/password/passwords_settings_app_interface.h"
+#include "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 

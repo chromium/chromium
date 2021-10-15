@@ -74,7 +74,11 @@ source_set("eg_test_support+eg2") {
   ]
   testonly = true
 
-  sources = [ "handoff_manager_app_interface.h" ]
+  sources = [
+    "handoff_manager_app_interface.h",
+    "handoff_manager_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }
 
 source_set("eg2_tests") {

@@ -12,8 +12,6 @@
 #error "This file requires ARC support."
 #endif
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeMatchersAppInterface)
-
 namespace chrome_test_util {
 
 id<GREYMatcher> WindowWithNumber(int window_number) {

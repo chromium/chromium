@@ -11,8 +11,6 @@
 #error "This file requires ARC support."
 #endif
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(EarlGreyScopedBlockSwizzlerAppInterface)
-
 EarlGreyScopedBlockSwizzler::EarlGreyScopedBlockSwizzler(NSString* target,
                                                          NSString* selector,
                                                          id block)

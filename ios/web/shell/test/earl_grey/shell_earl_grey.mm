@@ -17,8 +17,6 @@ using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ShellEarlGreyAppInterface)
-
 @implementation ShellEarlGreyImpl
 
 - (void)loadURL:(const GURL&)URL {

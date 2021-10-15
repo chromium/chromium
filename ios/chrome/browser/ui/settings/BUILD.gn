@@ -391,11 +391,17 @@ source_set("eg_test_support+eg2") {
   testonly = true
   sources = [
     "block_popups_app_interface.h",
+    "block_popups_app_interface_stub.mm",
     "settings_app_interface.h",
+    "settings_app_interface_stub.mm",
     "signin_settings_app_interface.h",
+    "signin_settings_app_interface_stub.mm",
   ]
   public_deps = [ "//components/content_settings/core/common" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
 }
 
 source_set("eg2_tests") {

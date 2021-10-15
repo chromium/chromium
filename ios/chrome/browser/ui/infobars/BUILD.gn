@@ -96,5 +96,9 @@ source_set("eg_test_support+eg2") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "infobar_manager_app_interface.h" ]
+  sources = [
+    "infobar_manager_app_interface.h",
+    "infobar_manager_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }

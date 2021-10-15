@@ -115,8 +115,6 @@ void ResetAuthentication() {
 
 }  // namespace
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
-
 @interface ChromeTestCase () <AppLaunchManagerObserver> {
   // Block to be executed during object tearDown.
   ProceduralBlock _tearDownHandler;

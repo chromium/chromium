@@ -56,8 +56,14 @@ source_set("eg_test_support+eg2") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "feature_engagement_app_interface.h" ]
-  deps = [ "//base" ]
+  sources = [
+    "feature_engagement_app_interface.h",
+    "feature_engagement_app_interface_stub.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
 }
 
 source_set("eg2_tests") {
