@@ -247,17 +247,13 @@ void StopEchoCancellationDump(webrtc::AudioProcessing* audio_processing) {
 
 rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
     const AudioProcessingSettings& settings) {
-  // Create and configure the webrtc::AudioProcessing.
   webrtc::AudioProcessingBuilder ap_builder;
   if (settings.echo_cancellation) {
     ap_builder.SetEchoControlFactory(
         std::make_unique<webrtc::EchoCanceller3Factory>());
   }
-  rtc::scoped_refptr<webrtc::AudioProcessing> audio_processing_module =
-      ap_builder.Create();
 
-  webrtc::AudioProcessing::Config apm_config =
-      audio_processing_module->GetConfig();
+  webrtc::AudioProcessing::Config apm_config;
   apm_config.pipeline.multi_channel_render = true;
   apm_config.pipeline.multi_channel_capture =
       settings.multi_channel_capture_processing;
@@ -277,16 +273,12 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
   apm_config.transient_suppression.enabled =
       settings.transient_noise_suppression;
 #endif
-
   ConfigAutomaticGainControl(settings, apm_config);
-
   // Ensure that 48 kHz APM processing is always active. This overrules the
   // default setting in WebRTC of 32 kHz for ARM platforms.
   if (Allow48kHzApmProcessing()) {
     apm_config.pipeline.maximum_internal_processing_rate = 48000;
   }
-
-  audio_processing_module->ApplyConfig(apm_config);
-  return audio_processing_module;
+  return ap_builder.SetConfig(apm_config).Create();
 }
 }  // namespace media
