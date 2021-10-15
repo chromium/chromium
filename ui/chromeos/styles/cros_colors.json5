@@ -19,8 +19,46 @@
     },
   },
   colors: {
-    /*
+    /* =========================================================================
      * Core colors.
+     * =======================================================================*/
+    color_primary: {
+      light: "$google_grey_900",
+      dark: "$google_grey_200",
+    },
+    color_secondary: {
+      light: "$google_grey_700",
+      dark: "$google_grey_400",
+    },
+    color_disabled: {
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
+    },
+    color_prominent: {
+      light: "$google_blue_600",
+      dark: "$google_blue_300",
+      debug: "$google_red_600",
+    },
+    color_alert: {
+      light: "$google_red_600",
+      dark: "$google_red_300",
+    },
+    color_warning: {
+      light: "$google_yellow_600",
+      dark: "$google_yellow_300",
+    },
+    color_positive: {
+      light: "$google_green_600",
+      dark: "$google_green_300",
+    },
+    color_selection: {
+      light: "$google_blue_700",
+      dark: "$google_blue_200",
+      debug: "$google_red_700",
+    },
+
+    /*
+     * Background colors.
      */
     bg_color: {
       light: "$white",
@@ -46,99 +84,83 @@
       light: "$white",
       dark: "#3c3c3e", /* google_grey_900 + white 12% */
     },
+    bg_color_dropped_elevation_1: {
+      light: "$google_grey_50",
+      dark: "#1a1b1d", /* google_grey_900 + black 20% */
+    },
+    bg_color_dropped_elevation_2: {
+      light: "$google_grey_200",
+      dark: "$black",
+    },
 
+    /*
+     * Text colors.
+     */
     text_color_primary: {
-      light: "$google_grey_900",
-      dark: "$google_grey_200",
+      default: "$color_primary",
       debug: "$google_green_400",
     },
     text_color_secondary: {
-      light: "$google_grey_700",
-      dark: "$google_grey_400",
-      debug: "$google_yellow_700",
+      default: "$color_secondary",
+      debug: "$google_green_400",
     },
-    text_color_disabled: {
-      light: "$google_grey_600",
-      dark: "$google_grey_500",
-    },
-    text_color_alert: {
-      light: "$google_red_600",
-      dark: "$google_red_300",
-    },
-    text_color_warning: {
-      light: "$google_yellow_600",
-      dark: "$google_yellow_300",
-    },
-    text_color_positive: {
-      light: "$google_green_600",
-      dark: "$google_green_300",
-    },
-    text_color_prominent: "$icon_color_prominent",
-    text_color_selection: {
-      light: "$google_blue_700",
-      dark: "$google_blue_200",
-      debug: "$google_red_700",
-    },
+    text_color_disabled: "$color_disabled",
+    text_color_prominent: "$color_prominent",
+    text_color_selection: "$color_selection",
+    text_color_positive: "$color_positive",
+    text_color_warning: "$color_warning",
+    text_color_alert: "$color_alert",
 
-    dark_icon_color_primary: "$google_grey_900",
+    /*
+     * Icon colors.
+     */
     icon_color_primary: {
-      light: "$dark_icon_color_primary",
-      dark: "$google_grey_200",
+      default: "$color_primary",
       debug: "#ff00ff",
     },
     icon_color_secondary: {
-      light: "$google_grey_700",
-      dark: "$google_grey_400",
+      default: "$color_secondary",
       debug: "#00ffff",
     },
-    icon_color_disabled: {
-      light: "$google_grey_600",
-      dark: "$google_grey_500",
-    },
-    icon_color_alert: {
-      light: "$google_red_600",
-      dark: "$google_red_300",
-    },
-    light_icon_color_warning: "$google_yellow_300",
-    icon_color_warning: {
-      light: "$google_yellow_600",
-      dark: "$light_icon_color_warning",
-    },
-    icon_color_positive: {
-      light: "$google_green_600",
-      dark: "$google_green_300",
-    },
-    icon_color_prominent: {
-      light: "$google_blue_600",
-      dark: "$google_blue_300",
-      debug: "$google_red_600",
-    },
-    icon_color_selection: {
-      light: "$google_blue_700",
-      dark: "$google_blue_200",
-      debug: "$google_yellow_500",
-    },
+    icon_color_disabled: "$color_disabled",
+    icon_color_prominent: "$color_prominent",
+    icon_color_selection: "$color_selection",
+    icon_color_positive: "$color_positive",
+    icon_color_warning: "$color_warning",
+    icon_color_alert: "$color_alert",
 
+    // TODO(calamity): add attribute to allow generation of named variables for
+    // each mode.
+    dark_icon_color_primary: "$google_grey_900",
+    light_icon_color_warning: "$google_yellow_300",
+
+    /*
+     * Other foundational colors.
+     */
+    focus_ring_color: "$color_prominent",
+    focus_aura_color: "rgba($color_prominent_rgb, 0.24)",
+    separator_color: {
+      light: "rgba($black_rgb, 0.14)",
+      dark: "rgba($white_rgb, 0.14)",
+    },
+    link_color: "$color_prominent",
     highlight_color: {
       light: "$google_blue_50",
       dark: "rgba($google_blue_300_rgb, 0.3)",
       debug: "rgba($google_red_300_rgb, 0.3)",
     },
-
     ripple_color: {
       light: "rgba($black_rgb, 0.06)",
       dark: "rgba($white_rgb, 0.08)",
     },
     ripple_color_prominent: {
-      light: "rgba($icon_color_prominent_rgb, 0.06)",
-      dark: "rgba($icon_color_prominent_rgb, 0.08)",
+      light: "rgba($color_prominent_rgb, 0.06)",
+      dark: "rgba($color_prominent_rgb, 0.08)",
     },
 
-    focus_ring_color: "$icon_color_prominent",
-
-    /*
+    /* =========================================================================
      * Component colors.
-     */
+     * =======================================================================*/
     toolbar_search_bg_color: {
       light: "$google_grey_100",
       dark: "rgba($white_rgb, 0.1)",
@@ -150,29 +172,19 @@
     },
     menu_item_ripple_color: "$ripple_color",
 
-    toggle_color: "$icon_color_prominent",
+    toggle_color: "$color_prominent",
     toggle_bg_color_inactive: "$google_grey_400",
     toggle_button_color_inactive: "$white",
     toggle_ripple_color: "rgba($toggle_color_rgb, .2)",
     toggle_ripple_color_inactive: "rgba($google_grey_600_rgb, .15)",
 
-    radio_button_color: "$icon_color_prominent",
+    radio_button_color: "$color_prominent",
     radio_button_ripple_color: "rgba($radio_button_color_rgb, .2)",
     radio_button_color_unchecked: "$google_grey_700",
     radio_button_ripple_color_unchecked: "rgba($google_grey_600_rgb, .15)",
 
-    separator_color: {
-      light: "rgba($black_rgb, 0.14)",
-      dark: "rgba($white_rgb, 0.14)",
-    },
-
-    link_color: {
-      light: "$google_blue_700",
-      dark: "$google_blue_300",
-    },
-
     /* button-primary */
-    button_background_color_primary: "$icon_color_prominent",
+    button_background_color_primary: "$color_prominent",
     button_label_color_primary: {
       light: "$google_grey_200",
       dark: "$google_grey_900",
@@ -203,13 +215,12 @@
     },
 
     /* button-secondary */
-    button_label_color_secondary: "$icon_color_prominent",
+    button_label_color_secondary: "$color_prominent",
     button_stroke_color_secondary: {
       light: "$google_grey_300",
       dark: "$google_grey_700",
     },
-    button_ripple_color_secondary: "$icon_color_prominent",
-
+    button_ripple_color_secondary: "$color_prominent",
     /* button-secondary:hover */
     button_stroke_color_secondary_hover: {
       light: "$google_blue_100",
@@ -307,12 +318,9 @@
       light: "$google_grey_700",
       dark: "rgba($white_rgb, 0.6)",
     },
-    textfield_input_color: {
-      light: "$google_grey_900",
-      dark: "rgba($white_rgb, 0.87)",
-    },
+    textfield_input_color: "$icon_color_primary",
     /* textfield:focus */
-    textfield_label_color_focus: "$icon_color_prominent",
+    textfield_label_color_focus: "$color_prominent",
     /* textfield[error] */
     textfield_label_color_error: {
       light: "$google_red_600",
