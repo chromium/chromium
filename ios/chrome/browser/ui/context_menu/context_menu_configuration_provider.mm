@@ -328,12 +328,14 @@ const CGFloat kFaviconWidthHeight = 24;
     menuTitle = GetContextMenuTitle(params);
   }
 
+  BOOL canShowPreview = isLink && web::UrlHasWebScheme(linkURL);
   BOOL previewEnabled = self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
       prefs::kLinkPreviewEnabled);
 
   UIMenu* menu;
   if (base::FeatureList::IsEnabled(
-          web::features::kWebViewNativeContextMenuPhase2)) {
+          web::features::kWebViewNativeContextMenuPhase2) &&
+      canShowPreview) {
     UIAction* previewAction;
     if (previewEnabled) {
       previewAction = [actionFactory actionToHideLinkPreview];
@@ -371,7 +373,7 @@ const CGFloat kFaviconWidthHeight = 24;
       return nil;
     }
     if (isLink) {
-      if (previewEnabled) {
+      if (canShowPreview && previewEnabled) {
         self.linkPreview =
             [[LinkPreviewCoordinator alloc] initWithBrowser:self.browser
                                                         URL:linkURL];
