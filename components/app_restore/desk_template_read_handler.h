@@ -9,41 +9,36 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "components/app_restore/app_restore_arc_info.h"
+#include "components/app_restore/arc_read_handler.h"
 
 namespace app_restore {
 
+struct AppLaunchInfo;
 class RestoreData;
 struct WindowInfo;
 
-// A class which acts as a proxy to fetch data from a delegate class located in
-// chrome/browser.
-// TODO(sammiequon): Revisit after M93 and move this class to a more suitable
-// location, outside of components/app_restore as it is part of a different
-// feature.
-class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler {
+// DeskTemplateReadHandler is responsible for receiving `RestoreData` from desks
+// storage. It keeps a copy of restore data during a desk template launch and
+// provides APIs for reading window info of the launched applications.
+class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler
+    : public ArcReadHandler::Delegate,
+      public AppRestoreArcInfo::Observer {
  public:
-  class Delegate {
-   public:
-    // Gets the window information for `restore_window_id`.
-    virtual std::unique_ptr<WindowInfo> GetWindowInfo(
-        int restore_window_id) = 0;
-
-    // Fetches the restore id for the window from RestoreData for the given
-    // `app_id`. `app_id` should be a Chrome app id.
-    virtual int32_t FetchRestoreWindowId(const std::string& app_id) = 0;
-
-   protected:
-    virtual ~Delegate() = default;
-  };
-
-  static DeskTemplateReadHandler* GetInstance();
-
   DeskTemplateReadHandler();
   DeskTemplateReadHandler(const DeskTemplateReadHandler&) = delete;
   DeskTemplateReadHandler& operator=(const DeskTemplateReadHandler&) = delete;
-  ~DeskTemplateReadHandler();
+  ~DeskTemplateReadHandler() override;
 
-  void SetDelegate(Delegate* delegate);
+  static DeskTemplateReadHandler* Get();
+
+  RestoreData* restore_data() { return restore_data_.get(); }
+
+  // Sets the `restore_data` for a launch session. `restore_data` can be
+  // nullptr, which signifies that a launch session is over. Creates
+  // `arc_read_handler_` if necessary, which is a helper class for dealing with
+  // ARC apps.
+  void SetRestoreData(std::unique_ptr<RestoreData> restore_data);
 
   // Gets the window information for `restore_window_id`.
   std::unique_ptr<WindowInfo> GetWindowInfo(int restore_window_id);
@@ -52,8 +47,35 @@ class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler {
   // `app_id`. `app_id` should be a Chrome app id.
   int32_t FetchRestoreWindowId(const std::string& app_id);
 
+  // Modifies the `restore_data_` to set the next restore window id for the
+  // chrome app with `app_id`.
+  void SetNextRestoreWindowIdForChromeApp(const std::string& app_id);
+
+  // ArcReadHandler::Delegate:
+  std::unique_ptr<AppLaunchInfo> GetAppLaunchInfo(
+      const base::FilePath& profile_path,
+      const std::string& app_id,
+      int32_t restore_window_id) override;
+  std::unique_ptr<WindowInfo> GetWindowInfo(const base::FilePath& profile_path,
+                                            const std::string& app_id,
+                                            int32_t restore_window_id) override;
+  void RemoveAppRestoreData(const base::FilePath& profile_path,
+                            const std::string& app_id,
+                            int32_t restore_window_id) override;
+
+  // AppRestoreArcInfo::Observer:
+  void OnTaskCreated(const std::string& app_id,
+                     int32_t task_id,
+                     int32_t session_id) override;
+  void OnTaskDestroyed(int32_t task_id) override;
+
  private:
-  Delegate* delegate_ = nullptr;
+  // The restore data read from desk storage. Empty when no launch is underway.
+  std::unique_ptr<RestoreData> restore_data_;
+
+  // Helper that is created if an ARC app is launched. This class contains some
+  // ARC specific logic needed to launch ARC apps.
+  std::unique_ptr<ArcReadHandler> arc_read_handler_;
 };
 
 }  // namespace app_restore

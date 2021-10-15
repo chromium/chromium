@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
-#include "components/app_restore/desk_template_read_handler.h"
 
 class Profile;
 
@@ -18,15 +17,13 @@ enum class AppTypeName;
 }  // namespace apps
 
 namespace app_restore {
+class DeskTemplateReadHandler;
 class RestoreData;
-struct WindowInfo;
 }  // namespace app_restore
 
 // The DeskTemplateAppLaunchHandler class is passed in the desk template restore
 // data and profile, and will launch apps and web pages based on the template.
-class DeskTemplateAppLaunchHandler
-    : public ash::AppLaunchHandler,
-      public app_restore::DeskTemplateReadHandler::Delegate {
+class DeskTemplateAppLaunchHandler : public ash::AppLaunchHandler {
  public:
   explicit DeskTemplateAppLaunchHandler(Profile* profile);
   DeskTemplateAppLaunchHandler(const DeskTemplateAppLaunchHandler&) = delete;
@@ -36,11 +33,6 @@ class DeskTemplateAppLaunchHandler
 
   void SetRestoreDataAndLaunch(
       std::unique_ptr<app_restore::RestoreData> restore_data);
-
-  // app_restore::DeskTemplateReadHandler::Delegate:
-  std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
-      int restore_window_id) override;
-  int32_t FetchRestoreWindowId(const std::string& app_id) override;
 
  protected:
   // chromeos::AppLaunchHandler:
@@ -54,19 +46,16 @@ class DeskTemplateAppLaunchHandler
   // Go through the restore data launch list and launches the browser windows.
   void LaunchBrowsers();
 
+  // Resets the restore data in `read_handler_`. Callback for a timeout after
+  // `SetRestoreDataAndLaunch()` sets new RestoreData. Once this is called, the
+  // current desk template launch is considered done.
+  void ClearDeskTemplateReadHandlerRestoreData();
+
   // chromeos::AppLaunchHandler:
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
-  // Resets `restore_data_clone_`. Callback for a timeout after
-  // `SetRestoreDataAndLaunch()` sets new RestoreData. Once
-  // `restore_data_clone_` is deleted, the current desk template launch is
-  // ended.
-  void ClearRestoreDataClone();
-
-  // A copy of `restore_data_` from when it was set. `restore_data_` has entries
-  // removed before launching, but we need to reference the data during launch,
-  // which is async, so keep a copy around.
-  std::unique_ptr<app_restore::RestoreData> restore_data_clone_;
+  // Cached convenience pointer to the desk template read handler.
+  app_restore::DeskTemplateReadHandler* const read_handler_;
 
   base::WeakPtrFactory<DeskTemplateAppLaunchHandler> weak_ptr_factory_{this};
 };

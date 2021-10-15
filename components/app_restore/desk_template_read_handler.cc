@@ -4,34 +4,129 @@
 
 #include "components/app_restore/desk_template_read_handler.h"
 
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_data.h"
+#include "components/app_restore/features.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 
 namespace app_restore {
 
-// static
-DeskTemplateReadHandler* DeskTemplateReadHandler::GetInstance() {
-  static base::NoDestructor<DeskTemplateReadHandler> desk_template_read_handler;
-  return desk_template_read_handler.get();
-}
-
 DeskTemplateReadHandler::DeskTemplateReadHandler() = default;
 
 DeskTemplateReadHandler::~DeskTemplateReadHandler() = default;
 
-void DeskTemplateReadHandler::SetDelegate(Delegate* delegate) {
-  delegate_ = delegate;
+// static
+DeskTemplateReadHandler* DeskTemplateReadHandler::Get() {
+  static base::NoDestructor<DeskTemplateReadHandler> desk_template_read_handler;
+  return desk_template_read_handler.get();
+}
+
+void DeskTemplateReadHandler::SetRestoreData(
+    std::unique_ptr<RestoreData> restore_data) {
+  // It is expected we do not replace an existing valid `restore_data_` before
+  // it is cleared by the app launch handler.
+  if (restore_data) {
+    DCHECK(!restore_data_)
+        << "Restore data should be cleared before setting a new one";
+  }
+
+  restore_data_ = std::move(restore_data);
+
+  if (!features::IsArcAppsForDesksTemplatesEnabled())
+    return;
+
+  arc_read_handler_.reset();
+  if (!restore_data_)
+    return;
+
+  // Add restore data to the `arc_read_handler_` for ARC apps. Create
+  // `arc_read_handler_` if we have at least one ARC app.
+  for (const std::pair<std::string, const RestoreData::LaunchList&> entry :
+       restore_data_->app_id_to_launch_list()) {
+    const std::string& app_id = entry.first;
+    for (const std::pair<int, const std::unique_ptr<AppRestoreData>&>
+             app_restore_data : entry.second) {
+      // Only ARC app launch parameters have event_flag.
+      if (!app_restore_data.second->event_flag.has_value())
+        continue;
+      if (!arc_read_handler_) {
+        arc_read_handler_ =
+            std::make_unique<ArcReadHandler>(base::FilePath(), this);
+      }
+      const int32_t& window_id = app_restore_data.first;
+      arc_read_handler_->AddRestoreData(app_id, window_id);
+    }
+  }
 }
 
 std::unique_ptr<WindowInfo> DeskTemplateReadHandler::GetWindowInfo(
     int restore_window_id) {
-  return delegate_ ? delegate_->GetWindowInfo(restore_window_id) : nullptr;
+  if (!restore_data_)
+    return nullptr;
+
+  // Try to find the window info associated with `restore_window_id`.
+  const RestoreData::AppIdToLaunchList& launch_list =
+      restore_data_->app_id_to_launch_list();
+  for (const auto& it : launch_list) {
+    const std::string& app_id = it.first;
+    const AppRestoreData* app_restore_data =
+        restore_data_->GetAppRestoreData(app_id, restore_window_id);
+    if (app_restore_data)
+      return app_restore_data->GetWindowInfo();
+  }
+
+  return nullptr;
 }
 
 int32_t DeskTemplateReadHandler::FetchRestoreWindowId(
     const std::string& app_id) {
-  return delegate_ ? delegate_->FetchRestoreWindowId(app_id) : 0;
+  return restore_data_ ? restore_data_->FetchRestoreWindowId(app_id) : 0;
+}
+
+void DeskTemplateReadHandler::SetNextRestoreWindowIdForChromeApp(
+    const std::string& app_id) {
+  if (restore_data_)
+    restore_data_->SetNextRestoreWindowIdForChromeApp(app_id);
+}
+
+std::unique_ptr<app_restore::AppLaunchInfo>
+DeskTemplateReadHandler::GetAppLaunchInfo(const base::FilePath& profile_path,
+                                          const std::string& app_id,
+                                          int32_t restore_window_id) {
+  return restore_data_
+             ? restore_data_->GetAppLaunchInfo(app_id, restore_window_id)
+             : nullptr;
+}
+
+std::unique_ptr<WindowInfo> DeskTemplateReadHandler::GetWindowInfo(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int32_t restore_window_id) {
+  return restore_data_ ? restore_data_->GetWindowInfo(app_id, restore_window_id)
+                       : nullptr;
+}
+
+void DeskTemplateReadHandler::RemoveAppRestoreData(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int32_t restore_window_id) {
+  if (restore_data_)
+    restore_data_->RemoveAppRestoreData(app_id, restore_window_id);
+}
+
+void DeskTemplateReadHandler::OnTaskCreated(const std::string& app_id,
+                                            int32_t task_id,
+                                            int32_t session_id) {
+  if (arc_read_handler_)
+    arc_read_handler_->OnTaskCreated(app_id, task_id, session_id);
+}
+
+void DeskTemplateReadHandler::OnTaskDestroyed(int32_t task_id) {
+  if (arc_read_handler_)
+    arc_read_handler_->OnTaskDestroyed(task_id);
 }
 
 }  // namespace app_restore

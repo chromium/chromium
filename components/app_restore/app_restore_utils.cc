@@ -70,8 +70,8 @@ void ModifyWidgetParams(int32_t restore_window_id,
     // templates. Otherwise, default to getting `window_info` from full restore.
     // TODO(sammiequon): Separate full restore and desk templates logic.
     if (!full_restore_read_handler->IsFullRestoreRunning()) {
-      window_info = DeskTemplateReadHandler::GetInstance()->GetWindowInfo(
-          restore_window_id);
+      window_info =
+          DeskTemplateReadHandler::Get()->GetWindowInfo(restore_window_id);
     }
     if (!window_info) {
       window_info = full_restore_read_handler->GetWindowInfoForActiveProfile(

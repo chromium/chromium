@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "extensions/common/extension.h"
@@ -34,22 +35,19 @@ constexpr base::TimeDelta kClearRestoreDataDuration = base::Seconds(5);
 }  // namespace
 
 DeskTemplateAppLaunchHandler::DeskTemplateAppLaunchHandler(Profile* profile)
-    : ash::AppLaunchHandler(profile) {
-  app_restore::DeskTemplateReadHandler::GetInstance()->SetDelegate(this);
-}
+    : ash::AppLaunchHandler(profile),
+      read_handler_(app_restore::DeskTemplateReadHandler::Get()) {}
 
-DeskTemplateAppLaunchHandler::~DeskTemplateAppLaunchHandler() {
-  app_restore::DeskTemplateReadHandler::GetInstance()->SetDelegate(nullptr);
-}
+DeskTemplateAppLaunchHandler::~DeskTemplateAppLaunchHandler() = default;
 
 void DeskTemplateAppLaunchHandler::SetRestoreDataAndLaunch(
     std::unique_ptr<app_restore::RestoreData> new_restore_data) {
   // Another desk template is underway.
-  // TODO(sammiequon): Checking for `restore_data_clone_` is temporary. We will
-  // want to use a better check of whether a desk template is underway. Perhaps
-  // removing entries from `restore_data_clone_` of launched apps and/or using
-  // individual shorter timeouts.
-  if (restore_data_clone_)
+  // TODO(sammiequon): Checking the read handler for restore data is temporary.
+  // We will want to use a better check of whether a desk template is underway.
+  // Perhaps removing entries from read handler's restore data of launched apps
+  // and/or using individual shorter timeouts.
+  if (read_handler_->restore_data())
     return;
 
   set_restore_data(std::move(new_restore_data));
@@ -57,41 +55,17 @@ void DeskTemplateAppLaunchHandler::SetRestoreDataAndLaunch(
   if (!HasRestoreData())
     return;
 
-  restore_data_clone_ = restore_data()->Clone();
+  read_handler_->SetRestoreData(restore_data()->Clone());
 
   LaunchApps();
   LaunchBrowsers();
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&DeskTemplateAppLaunchHandler::ClearRestoreDataClone,
+      base::BindOnce(&DeskTemplateAppLaunchHandler::
+                         ClearDeskTemplateReadHandlerRestoreData,
                      weak_ptr_factory_.GetWeakPtr()),
       kClearRestoreDataDuration);
-}
-
-std::unique_ptr<app_restore::WindowInfo>
-DeskTemplateAppLaunchHandler::GetWindowInfo(int restore_window_id) {
-  if (!restore_data_clone_)
-    return nullptr;
-
-  // Try to find the window info associated with `restore_window_id`.
-  const app_restore::RestoreData::AppIdToLaunchList& launch_list =
-      restore_data_clone_->app_id_to_launch_list();
-  for (const auto& it : launch_list) {
-    const std::string& app_id = it.first;
-    const app_restore::AppRestoreData* app_restore_data =
-        restore_data_clone_->GetAppRestoreData(app_id, restore_window_id);
-    if (app_restore_data)
-      return app_restore_data->GetWindowInfo();
-  }
-
-  return nullptr;
-}
-
-int32_t DeskTemplateAppLaunchHandler::FetchRestoreWindowId(
-    const std::string& app_id) {
-  return restore_data_clone_ ? restore_data_clone_->FetchRestoreWindowId(app_id)
-                             : 0;
 }
 
 bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
@@ -148,8 +122,7 @@ bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
 
 void DeskTemplateAppLaunchHandler::OnExtensionLaunching(
     const std::string& app_id) {
-  if (restore_data_clone_)
-    restore_data_clone_->SetNextRestoreWindowIdForChromeApp(app_id);
+  read_handler_->SetNextRestoreWindowIdForChromeApp(app_id);
 }
 
 base::WeakPtr<ash::AppLaunchHandler>
@@ -225,12 +198,12 @@ void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
   restore_data()->RemoveApp(extension_misc::kChromeAppId);
 }
 
+void DeskTemplateAppLaunchHandler::ClearDeskTemplateReadHandlerRestoreData() {
+  read_handler_->SetRestoreData(nullptr);
+}
+
 void DeskTemplateAppLaunchHandler::RecordRestoredAppLaunch(
     apps::AppTypeName app_type_name) {
   // TODO: Add UMA Histogram.
   NOTIMPLEMENTED();
-}
-
-void DeskTemplateAppLaunchHandler::ClearRestoreDataClone() {
-  restore_data_clone_.reset();
 }
