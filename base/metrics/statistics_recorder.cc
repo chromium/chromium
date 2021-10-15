@@ -455,9 +455,6 @@ void StatisticsRecorder::ImportGlobalPersistentHistograms() {
     allocator->ImportHistogramsToStatisticsRecorder();
 }
 
-// This singleton instance should be started during the single threaded portion
-// of main(), and hence it is not thread safe. It initializes globals to provide
-// support for all future calls.
 StatisticsRecorder::StatisticsRecorder() {
   lock_.Get().AssertHeld();
   previous_ = top_;

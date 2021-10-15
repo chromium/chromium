@@ -339,6 +339,10 @@ class BASE_EXPORT StatisticsRecorder {
 
   // Constructs a new StatisticsRecorder and sets it as the current global
   // recorder.
+  //
+  // This singleton instance should be started during the single-threaded
+  // portion of startup and hence it is not thread safe. It initializes globals
+  // to provide support for all future calls.
   StatisticsRecorder() EXCLUSIVE_LOCKS_REQUIRED(lock_.Pointer());
 
   // Initialize implementation but without lock. Caller should guard
