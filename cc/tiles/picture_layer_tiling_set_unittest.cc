@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 
+#include "build/build_config.h"
 #include "cc/test/fake_output_surface_client.h"
 #include "cc/test/fake_picture_layer_tiling_client.h"
 #include "cc/test/fake_raster_source.h"
@@ -321,7 +322,12 @@ TEST_F(PictureLayerTilingSetTestWithResources, ManyTilings_Equal) {
   RunTest(10, 1.f, 1.f, 5.f, 5.f);
 }
 
-TEST_F(PictureLayerTilingSetTestWithResources, ManyTilings_NotEqual) {
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_ManyTilings_NotEqual DISABLED_ManyTilings_NotEqual
+#else
+#define MAYBE_ManyTilings_NotEqual ManyTilings_NotEqual
+#endif
+TEST_F(PictureLayerTilingSetTestWithResources, MAYBE_ManyTilings_NotEqual) {
   RunTest(10, 1.f, 1.f, 4.5f, 5.f);
 }
 
