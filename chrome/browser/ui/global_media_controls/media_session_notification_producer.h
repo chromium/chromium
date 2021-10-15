@@ -27,11 +27,6 @@ class MediaItemManager;
 class MediaItemUI;
 }  // namespace global_media_controls
 
-namespace media_router {
-class CastDialogController;
-class StartPresentationContext;
-}  // namespace media_router
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GlobalMediaControlsDismissReason {
@@ -86,10 +81,10 @@ class MediaSessionNotificationProducer
   void OnMediaItemUIDismissed(const std::string& id) override;
 
   bool HasSession(const std::string& id) const;
-  std::unique_ptr<media_router::CastDialogController>
-  CreateCastDialogControllerForSession(const std::string& id);
+
   bool HasActiveControllableSessionForWebContents(
       content::WebContents* web_contents) const;
+
   // Returns the notification id of the session associated with |web_contents|.
   // There is at most one session per WebContents.
   std::string GetActiveControllableSessionForWebContents(
@@ -105,9 +100,6 @@ class MediaSessionNotificationProducer
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       const std::string& id,
       base::RepeatingCallback<void(bool)> callback) override;
-
-  void OnStartPresentationContextCreated(
-      std::unique_ptr<media_router::StartPresentationContext> context);
 
   void set_device_provider_for_testing(
       std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
@@ -275,8 +267,6 @@ class MediaSessionNotificationProducer
 
   std::unique_ptr<MediaNotificationDeviceProvider> device_provider_;
 
-  // Used to initialize a MediaRouterUI.
-  std::unique_ptr<media_router::StartPresentationContext> context_;
   base::WeakPtrFactory<MediaSessionNotificationProducer> weak_ptr_factory_{
       this};
 };

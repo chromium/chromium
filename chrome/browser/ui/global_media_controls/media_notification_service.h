@@ -109,6 +109,9 @@ class MediaNotificationService : public KeyedService {
   std::unique_ptr<PresentationRequestNotificationProducer>
       presentation_request_notification_producer_;
 
+  // Used to initialize a MediaRouterUI.
+  std::unique_ptr<media_router::StartPresentationContext> context_;
+
   base::WeakPtrFactory<MediaNotificationService> weak_ptr_factory_{this};
 };
 

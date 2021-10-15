@@ -238,6 +238,19 @@ WebContents* MediaSession::GetWebContentsFromRequestId(
 }
 
 // static
+WebContents* MediaSession::GetWebContentsFromRequestId(
+    const std::string& request_id) {
+  for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
+    MediaSessionImpl* session = MediaSessionImpl::FromWebContents(web_contents);
+    if (!session)
+      continue;
+    if (session->GetRequestId().ToString() == request_id)
+      return web_contents;
+  }
+  return nullptr;
+}
+
+// static
 const base::UnguessableToken& MediaSession::GetRequestIdFromWebContents(
     WebContents* web_contents) {
   DCHECK(web_contents);

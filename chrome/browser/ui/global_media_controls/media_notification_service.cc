@@ -164,9 +164,8 @@ void MediaNotificationService::OnStartPresentationContextCreated(
   } else if (media_session_notification_producer_
                  ->HasActiveControllableSessionForWebContents(web_contents)) {
     // If there exists a media session notification associated with
-    // |web_contents|, pass |context| to |media_session_notification_producer_|.
-    media_session_notification_producer_->OnStartPresentationContextCreated(
-        std::move(context));
+    // |web_contents|, hold onto the context for later use.
+    context_ = std::move(context);
   } else if (presentation_request_notification_producer_) {
     // If there do not exist active notifications, pass |context| to
     // |presentation_request_notification_producer_| to create a dummy
@@ -181,8 +180,17 @@ void MediaNotificationService::OnStartPresentationContextCreated(
 std::unique_ptr<media_router::CastDialogController>
 MediaNotificationService::CreateCastDialogControllerForSession(
     const std::string& id) {
-  return media_session_notification_producer_
-      ->CreateCastDialogControllerForSession(id);
+  auto* web_contents = content::MediaSession::GetWebContentsFromRequestId(id);
+  if (!web_contents)
+    return nullptr;
+
+  auto ui = std::make_unique<media_router::MediaRouterUI>(web_contents);
+  if (context_) {
+    ui->InitWithStartPresentationContext(std::move(context_));
+  } else {
+    ui->InitWithDefaultMediaSource();
+  }
+  return ui;
 }
 
 std::unique_ptr<media_router::CastDialogController>

@@ -230,12 +230,6 @@ base::CallbackListSubscription MediaSessionNotificationProducer::Session::
       std::move(callback));
 }
 
-void MediaSessionNotificationProducer::OnStartPresentationContextCreated(
-    std::unique_ptr<media_router::StartPresentationContext> context) {
-  DCHECK(context);
-  context_ = std::move(context);
-}
-
 void MediaSessionNotificationProducer::Session::
     SetPresentationManagerForTesting(
         base::WeakPtr<media_router::WebContentsPresentationManager>
@@ -479,22 +473,6 @@ void MediaSessionNotificationProducer::ActivateItem(const std::string& id) {
 
 bool MediaSessionNotificationProducer::HasSession(const std::string& id) const {
   return base::Contains(sessions_, id);
-}
-
-std::unique_ptr<media_router::CastDialogController>
-MediaSessionNotificationProducer::CreateCastDialogControllerForSession(
-    const std::string& session_id) {
-  auto it = sessions_.find(session_id);
-  if (it == sessions_.end())
-    return nullptr;
-  auto ui =
-      std::make_unique<media_router::MediaRouterUI>(it->second.web_contents());
-  if (context_) {
-    ui->InitWithStartPresentationContext(std::move(context_));
-  } else {
-    ui->InitWithDefaultMediaSource();
-  }
-  return ui;
 }
 
 bool MediaSessionNotificationProducer::
