@@ -5,13 +5,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_REGION_CAPTURE_CROP_ID_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_REGION_CAPTURE_CROP_ID_H_
 
+#include "base/guid.h"
 #include "base/token.h"
 #include "base/types/strong_alias.h"
+#include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {
 
 using RegionCaptureCropId =
     base::StrongAlias<class RegionCaptureCropIdTag, base::Token>;
+
+// Convert between base::GUID and base::Token. Both encode identity using
+// 128 bits of information, but GUID does so in a string-based way that is
+// inefficient to move around.
+CORE_EXPORT base::Token GUIDToToken(const base::GUID& guid);
+CORE_EXPORT base::GUID TokenToGUID(const base::Token& token);
 
 }  // namespace blink
 
