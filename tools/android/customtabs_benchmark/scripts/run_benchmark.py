@@ -14,8 +14,6 @@ import os
 import sys
 import threading
 
-from . import customtabs_benchmark
-
 _SRC_PATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..', '..'))
 
@@ -25,6 +23,10 @@ from devil.android import device_utils
 sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
 import devil_chromium
 
+sys.path.append(
+    os.path.join(_SRC_PATH, 'tools', 'android', 'customtabs_benchmark',
+                 'scripts'))
+import customtabs_benchmark
 
 _KEYS = ['url', 'warmup', 'skip_launcher_activity', 'speculation_mode',
          'delay_to_may_launch_url', 'delay_to_launch_url', 'cold',
