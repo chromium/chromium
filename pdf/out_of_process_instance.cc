@@ -17,7 +17,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -713,24 +712,6 @@ std::string OutOfProcessInstance::Prompt(const std::string& question,
   pp::Var result =
       pp::PDF::ShowPromptDialog(this, question.c_str(), default_answer.c_str());
   return result.is_string() ? result.AsString() : std::string();
-}
-
-void OutOfProcessInstance::SubmitForm(const std::string& url,
-                                      const void* data,
-                                      int length) {
-  UrlRequest request;
-  request.url = url;
-  request.method = "POST";
-  request.body.assign(static_cast<const char*>(data), length);
-
-  form_loader_ = CreateUrlLoaderInternal();
-  form_loader_->Open(request, base::BindOnce(&OutOfProcessInstance::FormDidOpen,
-                                             weak_factory_.GetWeakPtr()));
-}
-
-void OutOfProcessInstance::FormDidOpen(int32_t result) {
-  // TODO(crbug.com/719344): Process response.
-  LOG_IF(ERROR, result != PP_OK) << "FormDidOpen failed: " << result;
 }
 
 std::vector<PDFEngine::Client::SearchStringResult>

@@ -670,10 +670,6 @@ std::string PdfViewWebPlugin::Prompt(const std::string& question,
       .Utf8();
 }
 
-void PdfViewWebPlugin::SubmitForm(const std::string& url,
-                                  const void* data,
-                                  int length) {}
-
 std::vector<PDFEngine::Client::SearchStringResult>
 PdfViewWebPlugin::SearchString(const char16_t* string,
                                const char16_t* term,
