@@ -46,6 +46,7 @@
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
+#include "components/exo/permission.h"
 #include "components/exo/pointer.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
@@ -2887,6 +2888,19 @@ TEST_F(ClientControlledShellSurfaceFullRestoreTest,
   EXPECT_TRUE(wide_frame);
   EXPECT_EQ(window->parent(),
             wide_frame->GetWidget()->GetNativeWindow()->parent());
+}
+
+TEST_F(ClientControlledShellSurfaceTest,
+       InitializeWindowStateGrantsPermissionToActivate) {
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+  surface->Commit();
+
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  auto* permission = window->GetProperty(kPermissionKey);
+
+  EXPECT_TRUE(permission->Check(Permission::Capability::kActivate));
 }
 
 }  // namespace exo
