@@ -276,19 +276,19 @@
   <message name="IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DATA_USAGE" desc="Text for search result item which, when clicked, navigates the user to Nearby Share edit data usage button in settings.">
     Nearby Share data usage
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub settings, with a toggle to enable/disable the feature. Phone hub provides the user with information about their Android phone and allows the user to perform phone-side actions directly in the Chrome OS UI.">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB" desc="Text for search result item which, when clicked, navigates the user to Phone Hub settings, with a toggle to enable/disable the feature. Phone hub provides the user with information about their Android phone and allows the user to perform phone-side actions directly in the Chrome OS UI.">
     Phone Hub
   </message>
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL" desc="Text for search result item which, when clicked, navigates the user to Phone Hub photo settings, with a toggle to enable/disable the feature. Phone hub populates the 4 most recently updated photos/videos thumbnail in connected phone's camera roll on Chromebook, and give options to intereact with them.">
     Recent Photos
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Notifications mirrors all standard notifications currently being shown on connected phone device.">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Notifications mirrors all standard notifications currently being shown on connected phone device.">
     Phone Hub notifications
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Task Continuation allows user to continue a task between connected device and Chrome OS">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Task Continuation allows user to continue a task between connected device and Chrome OS">
     Phone Hub task continuation
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_APPS" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Apps settings, with a toggle to enable/disable the feature. Phone Hub Aapps allows user to app streaming from connected phone device.">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_APPS" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Apps settings, with a toggle to enable/disable the feature. Phone Hub Aapps allows user to app streaming from connected phone device.">
     Phone Hub apps
   </message>
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC" desc="Text for search result item which, when clicked, navigates the user to Wi-Fi Sync settings, with a toggle to enable/disable the feature. Wi-Fi Sync V2 allows user to sync network configurations between Chrome OS devices and a connected Android phone">
