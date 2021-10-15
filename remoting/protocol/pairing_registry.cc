@@ -63,14 +63,14 @@ PairingRegistry::Pairing PairingRegistry::Pairing::Create(
 PairingRegistry::Pairing PairingRegistry::Pairing::CreateFromValue(
     const base::DictionaryValue& pairing) {
   std::string client_name, client_id;
-  double created_time_value;
-  if (pairing.GetDouble(kCreatedTimeKey, &created_time_value) &&
-      pairing.GetString(kClientNameKey, &client_name) &&
+  absl::optional<double> created_time_value =
+      pairing.FindDoubleKey(kCreatedTimeKey);
+  if (created_time_value && pairing.GetString(kClientNameKey, &client_name) &&
       pairing.GetString(kClientIdKey, &client_id)) {
     // The shared secret is optional.
     std::string shared_secret;
     pairing.GetString(kSharedSecretKey, &shared_secret);
-    base::Time created_time = base::Time::FromJsTime(created_time_value);
+    base::Time created_time = base::Time::FromJsTime(*created_time_value);
     return Pairing(created_time, client_name, client_id, shared_secret);
   }
 

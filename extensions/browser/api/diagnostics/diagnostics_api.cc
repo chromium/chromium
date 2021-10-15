@@ -42,8 +42,10 @@ bool ParseResult(const std::string& status, std::string* ip, double* latency) {
   if (!iterator.value().GetAsDictionary(&info))
     return false;
 
-  if (!info->GetDouble("avg", latency))
+  absl::optional<double> avg = info->FindDoubleKey("avg");
+  if (!avg)
     return false;
+  *latency = *avg;
 
   *ip = iterator.key();
   return true;

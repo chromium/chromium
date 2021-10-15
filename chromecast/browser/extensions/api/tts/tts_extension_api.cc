@@ -185,7 +185,11 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
 
   double rate = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
   if (options->HasKey(constants::kRateKey)) {
-    EXTENSION_FUNCTION_VALIDATE(options->GetDouble(constants::kRateKey, &rate));
+    absl::optional<double> rate_option =
+        options->FindDoubleKey(constants::kRateKey);
+    EXTENSION_FUNCTION_VALIDATE(rate_option);
+    if (rate_option)
+      rate = *rate_option;
     if (rate < 0.1 || rate > 10.0) {
       return RespondNow(Error(constants::kErrorInvalidRate));
     }
@@ -193,8 +197,11 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
 
   double pitch = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
   if (options->HasKey(constants::kPitchKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetDouble(constants::kPitchKey, &pitch));
+    absl::optional<double> pitch_option =
+        options->FindDoubleKey(constants::kPitchKey);
+    EXTENSION_FUNCTION_VALIDATE(pitch_option);
+    if (pitch_option)
+      pitch = *pitch_option;
     if (pitch < 0.0 || pitch > 2.0) {
       return RespondNow(Error(constants::kErrorInvalidPitch));
     }
@@ -202,8 +209,11 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
 
   double volume = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
   if (options->HasKey(constants::kVolumeKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetDouble(constants::kVolumeKey, &volume));
+    absl::optional<double> volume_option =
+        options->FindDoubleKey(constants::kVolumeKey);
+    EXTENSION_FUNCTION_VALIDATE(volume_option);
+    if (volume_option)
+      volume = *volume_option;
     if (volume < 0.0 || volume > 1.0) {
       return RespondNow(Error(constants::kErrorInvalidVolume));
     }

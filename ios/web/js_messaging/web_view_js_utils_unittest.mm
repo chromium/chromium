@@ -100,9 +100,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromDictionaryWKResult) {
   dictionary->GetDictionary("Key2", &inner_dictionary);
   EXPECT_NE(nullptr, inner_dictionary);
 
-  double value3;
-  inner_dictionary->GetDouble("Key3", &value3);
-  EXPECT_EQ(42, value3);
+  EXPECT_EQ(42, *inner_dictionary->FindDoubleKey("Key3"));
 }
 
 // Tests that ValueResultFromWKResult converts NSArray to properly

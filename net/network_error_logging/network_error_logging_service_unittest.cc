@@ -219,9 +219,9 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
 void ExpectDictDoubleValue(double expected_value,
                            const base::DictionaryValue& value,
                            const std::string& key) {
-  double double_value = 0.0;
-  EXPECT_TRUE(value.GetDouble(key, &double_value)) << key;
-  EXPECT_DOUBLE_EQ(expected_value, double_value) << key;
+  absl::optional<double> double_value = value.FindDoubleKey(key);
+  EXPECT_TRUE(double_value.has_value()) << key;
+  EXPECT_DOUBLE_EQ(expected_value, double_value.value_or(0.0)) << key;
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, CreateService) {

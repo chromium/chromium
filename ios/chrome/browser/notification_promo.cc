@@ -177,7 +177,8 @@ void NotificationPromo::InitFromPrefs() {
   if (!ntp_promo)
     return;
 
-  ntp_promo->GetDouble(kPrefPromoFirstViewTime, &first_view_time_);
+  first_view_time_ = ntp_promo->FindDoubleKey(kPrefPromoFirstViewTime)
+                         .value_or(first_view_time_);
   ntp_promo->GetInteger(kPrefPromoViews, &views_);
   closed_ = ntp_promo->FindBoolPath(kPrefPromoClosed).value_or(closed_);
 }

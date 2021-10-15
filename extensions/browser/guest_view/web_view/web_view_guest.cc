@@ -1212,7 +1212,8 @@ void WebViewGuest::ApplyAttributes(const base::DictionaryValue& params) {
     SetAllowScaling(*allow_scaling);
 
   // Check for a pending zoom from before the first navigation.
-  params.GetDouble(webview::kInitialZoomFactor, &pending_zoom_factor_);
+  pending_zoom_factor_ = params.FindDoubleKey(webview::kInitialZoomFactor)
+                             .value_or(pending_zoom_factor_);
 
   bool is_pending_new_window = false;
   WebViewGuest* opener = GetOpener();

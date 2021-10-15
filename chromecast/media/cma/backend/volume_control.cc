@@ -201,11 +201,12 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
     saved_volumes_writer_ = std::make_unique<base::ImportantFileWriter>(
         storage_path_, thread_.task_runner(), base::Seconds(1));
 
-    double dbfs;
     for (auto type : {AudioContentType::kMedia, AudioContentType::kAlarm,
                       AudioContentType::kCommunication}) {
-      CHECK(stored_values_.GetDouble(ContentTypeToDbFSPath(type), &dbfs));
-      volumes_[type] = VolumeControl::DbFSToVolume(dbfs);
+      absl::optional<double> dbfs =
+          stored_values_.FindDoubleKey(ContentTypeToDbFSPath(type));
+      CHECK(dbfs);
+      volumes_[type] = VolumeControl::DbFSToVolume(*dbfs);
       volume_multipliers_[type] = 1.0f;
 
 #if BUILDFLAG(SYSTEM_OWNS_VOLUME)
@@ -213,7 +214,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
       // multiplier.
       mixer_->SetVolume(type, 1.0f);
 #else
-      mixer_->SetVolume(type, DbFsToScale(dbfs));
+      mixer_->SetVolume(type, DbFsToScale(*dbfs));
 #endif
 
       // Note that mute state is not persisted across reboots.

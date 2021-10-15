@@ -81,14 +81,13 @@ base::Time GetRatelimitPeriodStart(base::Value* metadata) {
   base::DictionaryValue* ratelimit_params = GetRatelimitParams(metadata);
   RCHECK(ratelimit_params, base::Time());
 
-  double seconds = 0.0;
-  RCHECK(
-      ratelimit_params->GetDouble(kLockfileRatelimitPeriodStartKey, &seconds),
-      base::Time());
+  absl::optional<double> seconds =
+      ratelimit_params->FindDoubleKey(kLockfileRatelimitPeriodStartKey);
+  RCHECK(seconds, base::Time());
 
   // Return value of 0 indicates "not initialized", so we need to explicitly
   // check for it and return time_t = 0 equivalent.
-  return seconds ? base::Time::FromDoubleT(seconds) : base::Time::UnixEpoch();
+  return *seconds ? base::Time::FromDoubleT(*seconds) : base::Time::UnixEpoch();
 }
 
 // Sets the time of the current ratelimit period's start in |metadata| to

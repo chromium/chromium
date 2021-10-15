@@ -236,11 +236,8 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
   if (!header_dict->GetInteger("Sequence", &sequence))
     return false;
 
-  double not_after;
-  if (!header_dict->GetDouble("NotAfter", &not_after)) {
-    // NotAfter is optional for now.
-    not_after = 0;
-  }
+  // NotAfter is optional for now.
+  double not_after = header_dict->FindDoubleKey("NotAfter").value_or(0);
   if (not_after < 0)
     return false;
 

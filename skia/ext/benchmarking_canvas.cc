@@ -398,12 +398,7 @@ double BenchmarkingCanvas::GetTime(size_t index) {
   const base::DictionaryValue* op;
   if (!op_records_.GetDictionary(index, &op))
     return 0;
-
-  double t;
-  if (!op->GetDouble("cmd_time", &t))
-    return 0;
-
-  return t;
+  return op->FindDoubleKey("cmd_time").value_or(0);
 }
 
 void BenchmarkingCanvas::willSave() {

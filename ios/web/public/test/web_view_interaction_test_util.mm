@@ -215,17 +215,18 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
   if (!found)
     return CGRectNull;
 
-  double left, top, width, height;
-  if (!(rect->GetDouble("left", &left) && rect->GetDouble("top", &top) &&
-        rect->GetDouble("width", &width) &&
-        rect->GetDouble("height", &height))) {
+  absl::optional<double> left = rect->FindDoubleKey("left");
+  absl::optional<double> top = rect->FindDoubleKey("top");
+  absl::optional<double> width = rect->FindDoubleKey("width");
+  absl::optional<double> height = rect->FindDoubleKey("height");
+  if (!(left && top && width && height))
     return CGRectNull;
-  }
 
   CGFloat scale = [[web_state->GetWebViewProxy() scrollViewProxy] zoomScale];
 
   CGRect elementFrame =
-      CGRectMake(left * scale, top * scale, width * scale, height * scale);
+      CGRectMake(left.value() * scale, top.value() * scale,
+                 width.value() * scale, height.value() * scale);
   UIEdgeInsets contentInset =
       web_state->GetWebViewProxy().scrollViewProxy.contentInset;
   elementFrame =
