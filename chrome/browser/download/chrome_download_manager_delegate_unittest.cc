@@ -1899,19 +1899,27 @@ class DownloadLaterTriggerTest : public ChromeDownloadManagerDelegateTest {
     // correctly.
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         download::features::kDownloadLater,
-        {{download::features::kDownloadLaterMinFileSizeKb, "204800"}});
+        {{download::features::kDownloadLaterMinFileSizeKb, "204800"},
+         {download::features::kDownloadLaterShowDateTimePicker, "false"}});
     ChromeDownloadManagerDelegateTest::SetUp();
   }
 
+  void SetConnectionType(ConnectionType connection_type) {
+    ResetNetworkNotifier();
+    mock_network_notifier_ =
+        std::make_unique<MockNetworkChangeNotifier>(connection_type);
+  }
+
+  void ResetNetworkNotifier() { mock_network_notifier_.reset(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<MockNetworkChangeNotifier> mock_network_notifier_;
 };
 
 TEST_F(DownloadLaterTriggerTest, DownloadLaterTrigger) {
   net::NetworkChangeNotifier::DisableForTest disable_for_test;
-  std::unique_ptr<net::NetworkChangeNotifier> mock_network_notifier =
-      std::make_unique<MockNetworkChangeNotifier>(
-          ConnectionType::CONNECTION_2G);
+  SetConnectionType(ConnectionType::CONNECTION_2G);
 
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(1);
@@ -1925,25 +1933,28 @@ TEST_F(DownloadLaterTriggerTest, DownloadLaterTrigger) {
             net::NetworkChangeNotifier::GetConnectionType());
   EXPECT_TRUE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
 
-  mock_network_notifier.reset();
-  mock_network_notifier = std::make_unique<MockNetworkChangeNotifier>(
-      ConnectionType::CONNECTION_4G);
+  SetConnectionType(ConnectionType::CONNECTION_4G);
   EXPECT_FALSE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
 
   // Large file.
   ON_CALL(*download_item, GetTotalBytes())
       .WillByDefault(Return(400 * 1024 * 1024));
   EXPECT_TRUE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
+  SetConnectionType(ConnectionType::CONNECTION_WIFI);
+  EXPECT_FALSE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
 
   // Small file.
+  SetConnectionType(ConnectionType::CONNECTION_4G);
   ON_CALL(*download_item, GetTotalBytes())
       .WillByDefault(Return(190 * 1024 * 1024));
   EXPECT_FALSE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
 
   // Pref turn off.
+  SetConnectionType(ConnectionType::CONNECTION_2G);
   pref_service()->SetInteger(
       prefs::kDownloadLaterPromptStatus,
       static_cast<int>(DownloadLaterPromptStatus::kDontShow));
   EXPECT_FALSE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
+  ResetNetworkNotifier();
 }
 #endif  // OS_ANDROID

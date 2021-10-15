@@ -1218,13 +1218,23 @@ bool ChromeDownloadManagerDelegate::ShouldShowDownloadLaterDialog(
     met_network_condition = true;
   }
 
+  if (met_network_condition)
+    return true;
+
+  // If the options to user are "download now" and "download on wifi" and the
+  // user is already on wifi, then don't show.
+  if (network_type == ConnectionType::CONNECTION_WIFI &&
+      !DownloadDialogBridge::ShouldShowDateTimePicker()) {
+    return false;
+  }
+
   int64_t min_file_size_kb =
       static_cast<int64_t>(DownloadDialogBridge::GetDownloadLaterMinFileSize());
 
   // Show download later dialog on large download file.
   bool met_file_size_condition =
       download && download->GetTotalBytes() >= min_file_size_kb * 1024;
-  return (met_network_condition || met_file_size_condition);
+  return met_file_size_condition;
 }
 #endif  // defined(OS_ANDROID)
 
