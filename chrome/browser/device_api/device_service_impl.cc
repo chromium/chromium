@@ -137,8 +137,7 @@ void DeviceServiceImpl::Create(
     mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!IsTrustedContext(host,
-                        url::Origin::Create(host->GetLastCommittedURL()))) {
+  if (!IsTrustedContext(host, host->GetMainFrame()->GetLastCommittedOrigin())) {
     // Not sending bad message here since the API is always exposed to the end
     // user.
     return;
