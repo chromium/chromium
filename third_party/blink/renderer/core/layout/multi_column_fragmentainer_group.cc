@@ -329,13 +329,14 @@ unsigned MultiColumnFragmentainerGroup::ActualColumnCount() const {
 
 void MultiColumnFragmentainerGroup::SetColumnBlockSizeFromNG(
     LayoutUnit block_size) {
-  // We clamp the fragmentainer block size from 0 to 1 for legacy write-back
-  // if there is content that overflows the zero-height fragmentainer. However,
-  // if the last fragmentainer contains no overflow, while previous
-  // fragmentainers do, the known height may be different than the |block_size|
-  // passed in. Don't override the stored height if this is the case.
+  // We clamp the fragmentainer block size up to 1 for legacy write-back if
+  // there is content that overflows the less-than-1px-height (or even
+  // zero-height) fragmentainer. However, if one fragmentainer contains no
+  // overflow, while others fragmentainers do, the known height may be different
+  // than the |block_size| passed in. Don't override the stored height if this
+  // is the case.
   DCHECK(!is_logical_height_known_ || logical_height_ == block_size ||
-         block_size == LayoutUnit());
+         block_size <= LayoutUnit(1));
   if (is_logical_height_known_)
     return;
   logical_height_ = block_size;
