@@ -1469,23 +1469,6 @@ ci.angle_thin_tester(
     triggered_by = ["win-angle-x64-builder"],
 )
 
-ci.angle_windows_builder(
-    name = "win-angle-x86-builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|Builder|ANGLE",
-        short_name = "x86",
-    ),
-)
-
-ci.angle_thin_tester(
-    name = "win7-angle-x86-amd",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|Win7-AMD|ANGLE",
-        short_name = "x86",
-    ),
-    triggered_by = ["win-angle-x86-builder"],
-)
-
 ci.chromium_builder(
     name = "android-archive-dbg",
     # Bump to 32 if needed.

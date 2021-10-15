@@ -769,12 +769,6 @@ try_.chromium_angle_builder(
     executable = "recipe:angle_chromium_trybot",
 )
 
-try_.chromium_angle_builder(
-    name = "win-angle-x86-try",
-    os = os.WINDOWS_ANY,
-    executable = "recipe:angle_chromium_trybot",
-)
-
 try_.chromium_chromiumos_builder(
     name = "chromeos-amd64-generic-cfi-thin-lto-rel",
 )

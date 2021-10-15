@@ -6298,14 +6298,6 @@
       'gpu_angle_deqp_gles3_d3d11_gtests',
     ],
 
-    'gpu_angle_win_amd_gtests': [
-      'gpu_angle_deqp_gles2_d3d11_gtests',
-      'gpu_angle_deqp_gles2_vulkan_gtests',
-      'gpu_angle_end2end_with_retry_gtests',
-      'gpu_angle_unit_gtests',
-      'gpu_angle_white_box_gtests',
-    ],
-
     'gpu_angle_win_intel_gtests': [
       'gpu_angle_deqp_gles2_d3d11_gtests',
       'gpu_angle_end2end_gtests',

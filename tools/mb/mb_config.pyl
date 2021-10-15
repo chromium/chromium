@@ -138,7 +138,6 @@
       'win-angle-chromium-x64-builder': 'gpu_tests_release_trybot_minimal_symbols',
       'win-angle-chromium-x86-builder': 'gpu_tests_release_bot_dcheck_always_on_x86',
       'win-angle-x64-builder': 'angle_specific_release_bot_dcheck_always_on',
-      'win-angle-x86-builder': 'angle_specific_release_bot_dcheck_always_on_x86',
     },
 
     'chromium.chromiumos': {
@@ -896,7 +895,6 @@
       'win-angle-chromium-x64-try': 'gpu_tests_release_trybot',
       'win-angle-chromium-x86-try': 'gpu_tests_release_trybot_x86',
       'win-angle-x64-try': 'angle_specific_release_trybot',
-      'win-angle-x86-try': 'angle_specific_release_trybot_x86',
     },
 
     'tryserver.chrome': {
@@ -1656,10 +1654,6 @@
       'angle_specific_tests', 'release_trybot_minimal_symbols', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
 
-    'angle_specific_release_bot_dcheck_always_on_x86': [
-      'angle_specific_tests', 'shared_release_bot_dcheck_always_on', 'x86',
-    ],
-
     'angle_specific_release_trybot': [
       'angle_specific_tests', 'shared_release_trybot',
     ],
@@ -1670,10 +1664,6 @@
 
     'angle_specific_release_trybot_ios': [
       'angle_specific_tests', 'release_trybot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
-    ],
-
-    'angle_specific_release_trybot_x86': [
-      'angle_specific_tests', 'shared_release_trybot', 'x86',
     ],
 
     'asan_clang_shared_v8_heap_minimal_symbols_release_tot': [

@@ -1386,7 +1386,6 @@
       'win-angle-chromium-x64-builder': {},
       'win-angle-chromium-x86-builder': {},
       'win-angle-x64-builder': {},
-      'win-angle-x86-builder': {},
       'win10-angle-chromium-x64-intel': {
         'os_type': 'win',
         'browser_config': 'release_x64',
@@ -1442,15 +1441,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_win7_nvidia_gtests',
-        },
-      },
-      'win7-angle-x86-amd': {
-        'os_type': 'win',
-        'mixins': [
-          'win7_amd_r7_240',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_win_amd_gtests',
         },
       },
     },
