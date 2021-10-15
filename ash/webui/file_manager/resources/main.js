@@ -14,10 +14,10 @@ import './crt0.js';
  */
 import {BrowserProxy} from './browser_proxy.js'
 import {ScriptLoader} from './script_loader.js'
-import {promisify} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/api.js';
-import {VolumeManagerImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/volume_manager_impl.js';
-import 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/metrics_start.js';
-import {background} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background.js';
+import {promisify} from 'chrome://file-manager/common/js/api.js';
+import {VolumeManagerImpl} from 'chrome://file-manager/background/js/volume_manager_impl.js';
+import 'chrome://file-manager/background/js/metrics_start.js';
+import {background} from 'chrome://file-manager/background/js/background.js';
 import './test_util_swa.js';
 
 /**
@@ -61,7 +61,9 @@ class FileManagerApp {
     window.cr.webUIResponse = origWebUIResponse;
     window.cr.webUIListenerCallback = origWebUIListenerCallback;
 
-    console.debug('Files app UI loaded');
+    console.log(
+        '%cYou are running File System Web App',
+        'font-size: 2em; background-color: #ff0; color: #000;')
   }
 }
 

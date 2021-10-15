@@ -55,7 +55,7 @@ js_type_check("closure_compile") {
                     "js_module_root=" + rebase_path(".", root_build_dir),
                     "js_module_root=" +
                         rebase_path(mojom_webui_folder, root_build_dir),
-                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=../../ui/file_manager/file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=../../ui/file_manager/file_manager/\"",
                   ]
 }
 
@@ -124,8 +124,7 @@ optimize_webui("build") {
 
   excludes = [ "chrome://resources/mojo/mojo/public/js/bindings.js" ]
 
-  external_paths =
-      [ "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path" ]
+  external_paths = [ "chrome://file-manager|$files_app_path" ]
 
   deps = [
     ":preprocess",

@@ -58,16 +58,13 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
   // Script security policy.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
-      "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
+      "script-src chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
       "chrome://resources "
       "'self' ;");
 
   // Metadata Shared Worker security policy.
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc,
-      "worker-src chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
-      "'self' ;");
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src 'self' ;");
 
   // Allow using the chrome-untrusted:// scheme in the host.
   source->OverrideContentSecurityPolicy(
