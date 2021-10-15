@@ -737,6 +737,42 @@
             ]
         }
     ],
+    "ArcGuestZram": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledGroup128MB_20211005",
+                    "params": {
+                        "size": "134217728"
+                    },
+                    "enable_features": [
+                        "ArcGuestZram"
+                    ]
+                },
+                {
+                    "name": "EnabledGroup256MB_20211005",
+                    "params": {
+                        "size": "268435456"
+                    },
+                    "enable_features": [
+                        "ArcGuestZram"
+                    ]
+                },
+                {
+                    "name": "EnabledGroup512MB_20211005",
+                    "params": {
+                        "size": "536870912"
+                    },
+                    "enable_features": [
+                        "ArcGuestZram"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmMemorySize": [
         {
             "platforms": [
