@@ -861,7 +861,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             addGroup(new ForeignSessionGroup(session));
         }
 
-        switch (mRecentTabsManager.getPromoType()) {
+        switch (mRecentTabsManager.getPromoState()) {
             case RecentTabsManager.PromoState.PROMO_NONE:
                 break;
             case RecentTabsManager.PromoState.PROMO_SIGNIN_PERSONALIZED:

@@ -71,6 +71,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     private final Tab mTab;
     private final Runnable mShowHistoryManager;
 
+    private @PromoState int mPromoState = PromoState.PROMO_NONE;
     private FaviconHelper mFaviconHelper;
     private ForeignSessionHelper mForeignSessionHelper;
     private List<ForeignSession> mForeignSessions;
@@ -111,6 +112,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mSigninPromoController = new SigninPromoController(
                 SigninAccessPoint.RECENT_TABS, SyncConsentActivityLauncherImpl.get());
         mSyncService = SyncService.get();
+        updatePromoState();
 
         mRecentlyClosedTabManager.setTabsUpdatedRunnable(() -> {
             updateRecentlyClosedTabs();
@@ -362,11 +364,13 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         return mPrefs.getSyncPromoCollapsed();
     }
 
-    /**
-     * @return The promo type that will be displayed on the screen.
-     */
+    /** Returns the current promo state. */
     @PromoState
-    int getPromoType() {
+    int getPromoState() {
+        return mPromoState;
+    }
+
+    private @PromoState int calculatePromoState() {
         if (!mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
             if (!mSignInManager.isSignInAllowed()) {
                 return PromoState.PROMO_NONE;
@@ -387,6 +391,20 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
             return PromoState.PROMO_NONE;
         }
         return PromoState.PROMO_SYNC;
+    }
+
+    private void updatePromoState() {
+        final @PromoState int newState = calculatePromoState();
+        if (newState == mPromoState) return;
+
+        final boolean hasSyncPromoStateChangedtoShown =
+                (mPromoState == PromoState.PROMO_NONE || mPromoState == PromoState.PROMO_SYNC)
+                && (newState == PromoState.PROMO_SIGNIN_PERSONALIZED
+                        || newState == PromoState.PROMO_SYNC_PERSONALIZED);
+        if (hasSyncPromoStateChangedtoShown) {
+            mSigninPromoController.increasePromoShowCount();
+        }
+        mPromoState = newState;
     }
 
     /**
@@ -432,6 +450,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     }
 
     private void update() {
+        updatePromoState();
         // TODO(crbug.com/1129853): Re-evaluate whether it's necessary to post
         // a task.
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
