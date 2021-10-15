@@ -780,6 +780,10 @@ TEST_F(
 }
 
 TEST_F(SyncServiceCryptoTest, ShouldNotGetRecoverabilityIfFeatureDisabled) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndDisableFeature(
+      switches::kSyncTrustedVaultPassphraseRecovery);
+
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
                                   base::Time::Now());

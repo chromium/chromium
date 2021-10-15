@@ -91,8 +91,6 @@ AutofillUiTest::AutofillUiTest()
 AutofillUiTest::~AutofillUiTest() {}
 
 void AutofillUiTest::SetUpOnMainThread() {
-  // Don't want Keychain coming up on Mac.
-  test::DisableSystemServices(browser()->profile()->GetPrefs());
   // Make autofill popup stay open by ignoring external changes when possible.
   ChromeAutofillClient::FromWebContents(GetWebContents())
       ->KeepPopupOpenForTesting();
@@ -122,7 +120,6 @@ void AutofillUiTest::TearDownOnMainThread() {
   if (autofill_manager)
     autofill_manager->client()->HideAutofillPopup(
         autofill::PopupHidingReason::kTabGone);
-  test::ReenableSystemServices();
 }
 
 void AutofillUiTest::SendKeyToPage(content::WebContents* web_contents,

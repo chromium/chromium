@@ -84,7 +84,13 @@ const base::Feature kSyncTrustedVaultPassphraseiOSRPC{
 // Keep this entry in sync with the equivalent name in
 // ChromeFeatureList.java.
 const base::Feature kSyncTrustedVaultPassphraseRecovery{
-    "SyncTrustedVaultPassphraseRecovery", base::FEATURE_DISABLED_BY_DEFAULT};
+  "SyncTrustedVaultPassphraseRecovery",
+#if defined(OS_IOS)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Whether the entry point to opt in to trusted vault in settings should be
 // shown.
