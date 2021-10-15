@@ -14,10 +14,8 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/grit/generated_resources.h"
-#include "extensions/common/constants.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/file_manager/grit/file_manager_resources.h"
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   auto info = std::make_unique<WebApplicationInfo>();
@@ -26,17 +24,8 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   info->title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
-      {
-          {"icon16.png", 16, IDR_FILE_MANAGER_ICON_16},
-          {"icon32.png", 32, IDR_FILE_MANAGER_ICON_32},
-          {"icon48.png", 48, IDR_FILE_MANAGER_ICON_48},
-          {"icon64.png", 64, IDR_FILE_MANAGER_ICON_64},
-          {"icon128.png", 128, IDR_FILE_MANAGER_ICON_128},
-          {"icon192.png", 192, IDR_FILE_MANAGER_ICON_192},
-          {"icon256.png", 256, IDR_FILE_MANAGER_ICON_256},
-      },
-      *info);
-  info->theme_color = 0xFFFFFFFF;
+      {{"icon192.png", 192, IDR_FILE_MANAGER_SWA_IMAGES_ICON192_PNG}}, *info);
+  info->theme_color = 0xFF4285F4;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;

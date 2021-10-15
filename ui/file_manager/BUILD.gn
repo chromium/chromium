@@ -63,7 +63,6 @@ group("unit_test_data") {
     "file_manager/foreground/js/ui/banners:js_test_gen_html_modules",
     "image_loader:js_test_gen_html_modules",
   ]
-  data_deps = [ "image_loader:copy_from_filesapp" ]
 }
 
 preprocess_folder = "$target_gen_dir/preprocessed"
@@ -381,9 +380,6 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/ui/banners/trash_banner.js",
     "file_manager/foreground/js/ui/banners/warning_banner.js",
     "file_manager/foreground/js/ui/breadcrumb.js",
-
-    "image_loader/image_orientation.js",
-    "image_loader/lru_cache.js",
   ]
 
   deps = [
@@ -392,7 +388,6 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/file_manager/foreground/elements:web_components",
     "//ui/file_manager/file_manager/foreground/js/ui:web_components",
     "//ui/file_manager/file_manager/foreground/js/ui/banners:web_components",
-    "//ui/file_manager/image_loader:copy_from_filesapp",
   ]
 }
 
@@ -415,7 +410,6 @@ generate_grd("build_grd") {
     "//ui/file_manager/audio_player/js:build_background",
     "//ui/file_manager/audio_player/js:build_worker",
     "//ui/file_manager/file_manager:fix_broken_images",
-    "//ui/file_manager/image_loader:build",
   ]
 
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
@@ -438,7 +432,6 @@ generate_grd("build_grd") {
     "audio_player/js/main_background.rollup.js|audio_player/js/main_background.js",
     "audio_player/js/metadata_worker.rollup.js|audio_player/js/metadata_worker.js",
     "audio_player/js/runtime_loaded_test_util.rollup.js|audio_player/js/runtime_loaded_test_util.js",
-    "image_loader/background.m.rollup.js|image_loader/background.m.js",
   ]
 
   if (optimize_webui) {
@@ -452,8 +445,6 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/shared.m.rollup.js",
 
       "image_loader/background.m.rollup.js",
-      "image_loader/image_orientation.js",
-      "image_loader/lru_cache.js",
     ]
 
     resource_path_rewrites += [
@@ -462,6 +453,8 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/deferred_elements.m.rollup.js|file_manager/foreground/js/deferred_elements.m.js",
       "file_manager/foreground/js/main.rollup.js|file_manager/foreground/js/main.js",
       "file_manager/foreground/js/metadata_dispatcher.rollup.js|file_manager/foreground/js/metadata/metadata_dispatcher.js",
+
+      "image_loader/background.m.rollup.js|image_loader/background.m.js",
     ]
 
     deps += [
@@ -469,6 +462,7 @@ generate_grd("build_grd") {
       "//ui/file_manager/file_manager/foreground/elements:elements",
       "//ui/file_manager/file_manager/foreground/js:build",
       "//ui/file_manager/file_manager/foreground/js:build_worker",
+      "//ui/file_manager/image_loader:build",
     ]
   } else {
     manifest_files = [
