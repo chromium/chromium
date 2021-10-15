@@ -1224,19 +1224,6 @@ bool DictionaryValue::GetInteger(StringPiece path, int* out_value) const {
   return is_int;
 }
 
-bool DictionaryValue::GetDouble(StringPiece path, double* out_value) const {
-  const Value* value;
-  if (!Get(path, &value))
-    return false;
-
-  const bool is_convertible_to_double = value->is_double() || value->is_int();
-  if (out_value && is_convertible_to_double) {
-    *out_value = value->GetDouble();
-  }
-
-  return is_convertible_to_double;
-}
-
 bool DictionaryValue::GetString(StringPiece path,
                                 std::string* out_value) const {
   const Value* value;

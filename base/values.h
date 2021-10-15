@@ -709,11 +709,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // DEPRECATED, use `Value::FindIntKey(key)` or `Value::FindIntPath(path)`
   // instead.
   bool GetInteger(StringPiece path, int* out_value) const;
-  // Values of both type Type::INTEGER and Type::DOUBLE can be obtained as
-  // doubles.
-  // DEPRECATED, use `Value::FindDoubleKey(key)` or
-  // `Value::FindDoublePath(path)`.
-  bool GetDouble(StringPiece path, double* out_value) const;
   // DEPRECATED, use `Value::FindStringKey(key)` or
   // `Value::FindStringPath(path)` instead.
   bool GetString(StringPiece path, std::string* out_value) const;

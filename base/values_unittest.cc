@@ -2216,16 +2216,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(main_dict.GetInteger("list", nullptr));
   EXPECT_FALSE(main_dict.GetInteger("DNE", nullptr));
 
-  // Both int and double values can be obtained from GetDouble.
-  EXPECT_FALSE(main_dict.GetDouble("bool", nullptr));
-  EXPECT_TRUE(main_dict.GetDouble("int", nullptr));
-  EXPECT_TRUE(main_dict.GetDouble("double", nullptr));
-  EXPECT_FALSE(main_dict.GetDouble("string", nullptr));
-  EXPECT_FALSE(main_dict.GetDouble("binary", nullptr));
-  EXPECT_FALSE(main_dict.GetDouble("dict", nullptr));
-  EXPECT_FALSE(main_dict.GetDouble("list", nullptr));
-  EXPECT_FALSE(main_dict.GetDouble("DNE", nullptr));
-
   EXPECT_FALSE(main_dict.GetString("bool", static_cast<std::string*>(nullptr)));
   EXPECT_FALSE(main_dict.GetString("int", static_cast<std::string*>(nullptr)));
   EXPECT_FALSE(
