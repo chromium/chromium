@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/test/scoped_path_override.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,6 +26,10 @@ class TestingBrowserProcess;
 namespace sync_preferences {
 class PrefServiceSyncable;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class AccountProfileMapper;
+#endif
 
 // The TestingProfileManager is a TestingProfile factory for a multi-profile
 // environment. It will bring up a full ProfileManager and attach it to the
@@ -111,6 +116,10 @@ class TestingProfileManager : public ProfileObserver {
 
   // Sets the last used profile; also sets the active time to now.
   void UpdateLastUser(Profile* last_active);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void SetAccountProfileMapper(std::unique_ptr<AccountProfileMapper> mapper);
+#endif
 
   // Helper accessors.
   const base::FilePath& profiles_dir();

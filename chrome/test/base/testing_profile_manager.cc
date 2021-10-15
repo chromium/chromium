@@ -29,6 +29,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#endif
+
 const char kGuestProfileName[] = "Guest";
 const char kSystemProfileName[] = "System";
 
@@ -247,6 +251,15 @@ void TestingProfileManager::UpdateLastUser(Profile* last_active) {
   profile_manager_->UpdateLastUser(last_active);
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void TestingProfileManager::SetAccountProfileMapper(
+    std::unique_ptr<AccountProfileMapper> mapper) {
+  DCHECK(!profile_manager_->account_profile_mapper_)
+      << "AccountProfileMapper must be set before the first usage";
+  profile_manager_->account_profile_mapper_ = std::move(mapper);
+}
+#endif
 
 const base::FilePath& TestingProfileManager::profiles_dir() {
   DCHECK(called_set_up_);
