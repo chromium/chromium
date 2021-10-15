@@ -1453,8 +1453,6 @@ class CONTENT_EXPORT NavigationRequest
   // Note: |commit_params_->is_browser_initiated| and |common_params_| may be
   // mutated by ContentBrowserClient::OverrideNavigationParams at construction
   // time (i.e. before we actually kick off the navigation).
-  // |commit_params_->is_browser_initiated| will always be true for history
-  // navigations, even if they began in the renderer using the history API.
   blink::mojom::CommonNavigationParamsPtr common_params_;
   blink::mojom::BeginNavigationParamsPtr begin_params_;
   blink::mojom::CommitNavigationParamsPtr commit_params_;
