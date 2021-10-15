@@ -32,8 +32,10 @@
                 "vk_swiftshader_icd.json",
                 "vulkan-1.dll"
             ],
-            "file_globs": ["*.manifest"],
-            "dirs": ["locales"],
+            "file_globs": [
+                "locales\\*.pak",
+                "*.manifest"
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Win/{%position%}/chrome-win.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP",
