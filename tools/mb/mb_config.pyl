@@ -2928,7 +2928,7 @@
     ],
 
     'release_trybot_backuprefptr_arm64': [
-      'release_trybot_minimal_symbols', 'backuprefptr', 'backuprefptr', 'android', 'arm64',
+      'release_trybot_minimal_symbols', 'backuprefptr', 'android', 'arm64',
     ],
 
     'release_trybot_paeverywhere_x64': [

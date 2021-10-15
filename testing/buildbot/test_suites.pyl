@@ -376,6 +376,36 @@
       'wm_unittests': {},
     },
 
+    'backuprefptr_generic_gtests': {
+      'base_unittests': {},
+      'blink_common_unittests': {},
+      'blink_platform_unittests': {},
+      'cast_unittests': {},
+      'cc_unittests': {},
+      'components_unittests': {
+        'android_swarming': {
+          'shards': 4,
+        },
+      },
+      'content_unittests': {
+        'android_swarming': {
+          'shards': 3,
+        },
+      },
+      'unit_tests': {
+        'android_swarming': {
+          'shards': 2,
+        },
+      },
+      'webkit_unit_tests': {
+        'test': 'blink_unittests',
+        'android_swarming': {
+          'shards': 6,
+        },
+      },
+      'wtf_unittests': {},
+    },
+
     'bfcache_android_specific_gtests': {
       'bf_cache_android_browsertests': {
         'args': [
@@ -5903,6 +5933,10 @@
     'android_wpt_scripts': [
       'system_webview_wpt',
       'weblayer_shell_wpt',
+    ],
+
+    'backuprefptr_gtests': [
+      'backuprefptr_generic_gtests',
     ],
 
     'bfcache_android_gtests': [

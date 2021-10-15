@@ -2834,7 +2834,7 @@
       },
       'android-backuprefptr-arm-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'chromium_android_gtests',
+          'gtest_tests': 'backuprefptr_gtests',
         },
         'mixins': [
           'has_native_resultdb_integration',
@@ -2845,7 +2845,7 @@
       },
       'android-backuprefptr-arm64-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'chromium_android_gtests',
+          'gtest_tests': 'backuprefptr_gtests',
         },
         'mixins': [
           'has_native_resultdb_integration',
@@ -3627,7 +3627,7 @@
       },
       'win-backuprefptr-x86-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'backuprefptr_gtests',
         },
         'mixins': [
           'win10',
