@@ -83,7 +83,6 @@ content::WebUIDataSource* CreateBookmarksUIHTMLSource(Profile* profile) {
       {"menuAddFolder", IDS_BOOKMARK_MANAGER_MENU_ADD_FOLDER},
       {"menuCut", IDS_BOOKMARK_MANAGER_MENU_CUT},
       {"menuCopy", IDS_BOOKMARK_MANAGER_MENU_COPY},
-      {"menuCopyURL", IDS_BOOKMARK_MANAGER_MENU_COPY_URL},
       {"menuPaste", IDS_BOOKMARK_MANAGER_MENU_PASTE},
       {"menuDelete", IDS_DELETE},
       {"menuEdit", IDS_EDIT},
@@ -124,7 +123,6 @@ content::WebUIDataSource* CreateBookmarksUIHTMLSource(Profile* profile) {
       {"toastFolderSorted", IDS_BOOKMARK_MANAGER_TOAST_FOLDER_SORTED},
       {"toastItemCopied", IDS_BOOKMARK_MANAGER_TOAST_ITEM_COPIED},
       {"toastItemDeleted", IDS_BOOKMARK_MANAGER_TOAST_ITEM_DELETED},
-      {"toastUrlCopied", IDS_BOOKMARK_MANAGER_TOAST_URL_COPIED},
       {"undo", IDS_BOOKMARK_BAR_UNDO},
   };
   for (const auto& str : kStrings)

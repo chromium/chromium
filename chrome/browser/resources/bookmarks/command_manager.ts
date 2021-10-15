@@ -253,8 +253,6 @@ export class BookmarksCommandManagerElement extends
       case Command.CUT:
       case Command.COPY:
         return itemIds.size >= 1 && this.globalCanEdit_;
-      case Command.COPY_URL:
-        return this.isSingleBookmark_(itemIds);
       case Command.DELETE:
         return itemIds.size > 0 && this.globalCanEdit_;
       case Command.SHOW_IN_FOLDER:
@@ -325,15 +323,11 @@ export class BookmarksCommandManagerElement extends
         this.$.editDialog.get().showEditDialog(state.nodes[id]!);
         break;
       }
-      case Command.COPY_URL:
       case Command.COPY: {
         const idList = Array.from(itemIds);
         chrome.bookmarkManagerPrivate.copy(idList, () => {
           let labelPromise: Promise<string>;
-          if (command === Command.COPY_URL) {
-            labelPromise =
-                Promise.resolve(loadTimeData.getString('toastUrlCopied'));
-          } else if (idList.length === 1) {
+          if (idList.length === 1) {
             labelPromise =
                 Promise.resolve(loadTimeData.getString('toastItemCopied'));
           } else {
@@ -605,9 +599,6 @@ export class BookmarksCommandManagerElement extends
       case Command.COPY:
         label = 'menuCopy';
         break;
-      case Command.COPY_URL:
-        label = 'menuCopyURL';
-        break;
       case Command.PASTE:
         label = 'menuPaste';
         break;
@@ -702,7 +693,6 @@ export class BookmarksCommandManagerElement extends
           // <hr>
           Command.CUT,
           Command.COPY,
-          Command.COPY_URL,
           Command.PASTE,
           // <hr>
           Command.OPEN_NEW_TAB,

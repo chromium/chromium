@@ -8688,7 +8688,7 @@ Called by update_bad_message_reasons.py.-->
 
 <enum name="BookmarkManagerCommand">
   <int value="0" label="Edit"/>
-  <int value="1" label="Copy URL"/>
+  <int value="1" label="Copy URL (removed)"/>
   <int value="2" label="Show in folder"/>
   <int value="3" label="Delete"/>
   <int value="4" label="Open in new tab"/>

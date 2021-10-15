@@ -90,13 +90,6 @@ suite('<bookmarks-command-manager>', function() {
     DialogFocusManager.setInstance(null);
   });
 
-  test('Copy URL is only active for single URL items', function() {
-    assertFalse(commandManager.canExecute(Command.COPY_URL, new Set(['11'])));
-    assertFalse(
-        commandManager.canExecute(Command.COPY_URL, new Set(['11', '13'])));
-    assertTrue(commandManager.canExecute(Command.COPY_URL, new Set(['13'])));
-  });
-
   test('context menu hides invalid commands', function() {
     store.data.selection.items = new Set(['11', '13']);
     store.notifyObservers();
@@ -112,7 +105,6 @@ suite('<bookmarks-command-manager>', function() {
     // With a folder and an item selected, the only available context menu item
     // is 'Delete'.
     assertTrue(commandHidden[Command.EDIT]);
-    assertTrue(commandHidden[Command.COPY_URL]);
     assertFalse(commandHidden[Command.DELETE]);
   });
 

@@ -376,9 +376,6 @@
   <message name="IDS_BOOKMARK_MANAGER_MENU_COPY" desc="Title of the bookmark dropdown menu item that copies one or more bookmarks.">
     Copy
   </message>
-  <message name="IDS_BOOKMARK_MANAGER_MENU_COPY_URL" desc="Title of the bookmark dropdown menu item that copies the url of the bookmark.">
-    Copy URL
-  </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_PASTE" desc="Title of the bookmark dropdown menu item that pastes one or more bookmarks.">
     Paste
   </message>
@@ -467,9 +464,6 @@
     {COUNT, plural,
       =1 {1 bookmark deleted}
       other {{COUNT} bookmarks deleted}}
-  </message>
-  <message name="IDS_BOOKMARK_MANAGER_TOAST_URL_COPIED" desc="Label displayed in toast popup message when a URL is copied.">
-    URL copied
   </message>
   <message name="IDS_BOOKMARK_MANAGER_TOAST_ITEM_COPIED" desc="Label displayed in toast popup message when a single item is copied.">
     '<ph name="COPIED_ITEM_NAME">$1<ex>Bookmark X</ex></ph>' copied
