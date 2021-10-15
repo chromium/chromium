@@ -18,6 +18,7 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
+#include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -1122,6 +1123,7 @@ class PCScan::PCScanThread final {
   friend class base::NoDestructor<PCScanThread>;
 
   PCScanThread() {
+    ScopedAllowAllocations allow_allocations_within_std_thread;
     std::thread{[](PCScanThread* instance) {
                   static constexpr const char* kThreadName = "PCScan";
                   // Ideally we should avoid mixing base:: and std:: API for
@@ -1219,9 +1221,8 @@ void PCScanInternal::Initialize(PCScan::InitConfig config) {
   }
   scannable_roots_ = RootsMap();
   nonscannable_roots_ = RootsMap();
-  // The thread constructor allocates, make sure it is not running from within
-  // the allocator, e.g. when starting the first scan in free().
-  PCScan::PCScanThread::Instance();
+  // Don't initialize PCScanThread::Instance() as otherwise sandbox complains
+  // about multiple threads running on sandbox initialization.
   is_initialized_ = true;
 }
 
