@@ -399,7 +399,8 @@ TEST_P(LinkHighlightImplTest, MultiColumn) {
   multicol->setAttribute(html_names::kStyleAttr, "height: 25px");
   UpdateAllLifecyclePhases();
   ASSERT_EQ(&first_fragment, &touch_node->GetLayoutObject()->FirstFragment());
-  ASSERT_EQ(second_fragment, first_fragment.NextFragment());
+  second_fragment = first_fragment.NextFragment();
+  ASSERT_TRUE(second_fragment);
   const auto* third_fragment = second_fragment->NextFragment();
   ASSERT_TRUE(third_fragment);
   EXPECT_FALSE(third_fragment->NextFragment());
