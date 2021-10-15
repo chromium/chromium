@@ -385,16 +385,7 @@ bool ChromeShelfController::ShouldSyncItemWithReentrancy(
 }
 
 bool ChromeShelfController::ShouldSyncItem(const ash::ShelfItem& item) {
-  // Syncing is only enabled for pinned items.
-  if (!ItemTypeIsPinned(item))
-    return false;
-
-  // Syncing is disabled for standalone-browser based chrome apps for now.
-  // See https://crbug.com/1250480.
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-  auto app_type = proxy->AppRegistryCache().GetAppType(item.id.app_id);
-  return app_type != apps::mojom::AppType::kStandaloneBrowserExtension;
+  return ItemTypeIsPinned(item);
 }
 
 bool ChromeShelfController::IsPinned(const ash::ShelfID& id) {
