@@ -390,6 +390,7 @@ source_set("unit_tests") {
     "actions/set_touchable_area_action_unittest.cc",
     "actions/show_cast_action_unittest.cc",
     "actions/show_details_action_unittest.cc",
+    "actions/show_form_action_unittest.cc",
     "actions/show_generic_ui_action_unittest.cc",
     "actions/show_progress_bar_action_unittest.cc",
     "actions/stopwatch_unittest.cc",

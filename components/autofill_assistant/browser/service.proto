@@ -2857,6 +2857,12 @@ message CounterInputProto {
     // value.
     optional int32 initial_value = 4 [default = 0];
 
+    // The weight of adding 1 in this counter. Defaults to 1. Incrementing by 1
+    // in counter has an effect of incrementing by |size| in the counter
+    // section. For example, a family ticket in showtimes counts as |size|
+    // tickets in total amount restriction.
+    optional int32 size = 9 [default = 1];
+
     reserved 7;
   }
 
