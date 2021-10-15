@@ -23,6 +23,9 @@ class PromoCodeLabelButton : public views::LabelButton {
   PromoCodeLabelButton& operator=(const PromoCodeLabelButton&) = delete;
 
   ~PromoCodeLabelButton() override;
+
+  // views::Button:
+  void OnThemeChanged() override;
 };
 
 }  // namespace autofill
