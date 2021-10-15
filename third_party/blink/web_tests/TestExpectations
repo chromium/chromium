@@ -146,9 +146,10 @@ crbug.com/1254943 paint/invalidation/overflow/resize-child-within-overflow.html 
 crbug.com/1254943 fast/events/hit-test-counts.html [ Failure ]
 
 # Image isn't present:
-crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-dom-offset-attr.html [ Failure ]
-crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Failure ]
-crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-offset-prop.html [ Failure ]
+crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-dom-offset-attr.html [ Pass Failure ]
+crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Pass Failure ]
+crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-offset-prop.html [ Pass Failure ]
+crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Pass Failure ]
 
 # Fails flakily or times out
 crbug.com/1255285 virtual/threaded/transitions/transition-currentcolor.html [ Failure Pass ]
