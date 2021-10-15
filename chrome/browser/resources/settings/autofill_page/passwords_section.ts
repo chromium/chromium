@@ -33,11 +33,11 @@ import './avatar_icon.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
@@ -51,11 +51,11 @@ import {Route, Router} from '../router.js';
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
-import {MergeExceptionsStoreCopiesMixin, MergeExceptionsStoreCopiesMixinInterface} from './merge_exceptions_store_copies_mixin.js';
-import {MergePasswordsStoreCopiesBehavior, MergePasswordsStoreCopiesBehaviorInterface} from './merge_passwords_store_copies_behavior.js';
+import {MergeExceptionsStoreCopiesMixin} from './merge_exceptions_store_copies_mixin.js';
+import {MergePasswordsStoreCopiesMixin} from './merge_passwords_store_copies_mixin.js';
 import {MultiStoreExceptionEntry} from './multi_store_exception_entry.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
-import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
+import {PasswordCheckMixin} from './password_check_mixin.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
 
@@ -87,18 +87,9 @@ interface PasswordsSectionElement {
   };
 }
 
-const PasswordsSectionElementBase =
-    mixinBehaviors(
-        [
-          MergePasswordsStoreCopiesBehavior,
-        ],
-        PrefsMixin(GlobalScrollTargetMixin(
-            MergeExceptionsStoreCopiesMixin(WebUIListenerMixin(
-                I18nMixin(PasswordCheckMixin(PolymerElement))))))) as {
-      new (): PolymerElement & I18nMixinInterface &
-      WebUIListenerMixinInterface & MergeExceptionsStoreCopiesMixinInterface &
-      MergePasswordsStoreCopiesBehaviorInterface & PasswordCheckMixinInterface
-    };
+const PasswordsSectionElementBase = MergePasswordsStoreCopiesMixin(
+    PrefsMixin(GlobalScrollTargetMixin(MergeExceptionsStoreCopiesMixin(
+        WebUIListenerMixin(I18nMixin(PasswordCheckMixin(PolymerElement)))))));
 
 class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
