@@ -33,7 +33,6 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-forward.h"
@@ -56,7 +55,6 @@ class StorageKey;
 
 namespace content {
 
-class AppCacheNavigationHandle;
 class CrossOriginEmbedderPolicyReporter;
 class ServiceWorkerMainResourceHandle;
 class ServiceWorkerObjectHost;
@@ -122,8 +120,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
                          base::OnceCallback<void(bool)> callback);
   void AllowWebLocks(const GURL& url, base::OnceCallback<void(bool)> callback);
 
-  void CreateAppCacheBackend(
-      mojo::PendingReceiver<blink::mojom::AppCacheBackend> receiver);
   void CreateWebTransportConnector(
       mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
   void BindCacheStorage(
@@ -138,8 +134,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
                  const blink::MessagePortChannel& port,
                  ukm::SourceId client_ukm_source_id);
 
-  void SetAppCacheHandle(
-      std::unique_ptr<AppCacheNavigationHandle> appcache_handle);
   void SetServiceWorkerHandle(
       std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle);
 
@@ -293,10 +287,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       this};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
-
-  // The handle owns the precreated AppCacheHost until it's claimed by the
-  // renderer after main script loading finishes.
-  std::unique_ptr<AppCacheNavigationHandle> appcache_handle_;
 
   std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 

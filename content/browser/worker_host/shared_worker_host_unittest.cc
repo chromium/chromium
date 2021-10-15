@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
-#include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -73,8 +72,7 @@ class SharedWorkerHostTest : public testing::Test {
 
   SharedWorkerHostTest()
       : service_(nullptr /* storage_partition */,
-                 nullptr /* service_worker_context */,
-                 nullptr /* appcache_service */) {}
+                 nullptr /* service_worker_context */) {}
 
   base::WeakPtr<SharedWorkerHost> CreateHost() {
     SharedWorkerInstance instance(

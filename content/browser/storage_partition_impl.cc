@@ -1235,8 +1235,8 @@ void StoragePartitionImpl::Initialize(
   native_io_context_->Initialize(
       path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy);
 
-  shared_worker_service_ = std::make_unique<SharedWorkerServiceImpl>(
-      this, service_worker_context_, appcache_service_);
+  shared_worker_service_ =
+      std::make_unique<SharedWorkerServiceImpl>(this, service_worker_context_);
 
   push_messaging_context_ = std::make_unique<PushMessagingContext>(
       browser_context_, service_worker_context_);

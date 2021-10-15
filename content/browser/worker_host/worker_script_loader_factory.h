@@ -22,7 +22,6 @@ class SharedURLLoaderFactory;
 
 namespace content {
 
-class AppCacheHost;
 class BrowserContext;
 class ServiceWorkerMainResourceHandle;
 class WorkerScriptLoader;
@@ -50,7 +49,6 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
       const DedicatedOrSharedWorkerToken& worker_token,
       const net::IsolationInfo& isolation_info,
       ServiceWorkerMainResourceHandle* service_worker_handle,
-      base::WeakPtr<AppCacheHost> appcache_host,
       const BrowserContextGetter& browser_context_getter,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       ukm::SourceId worker_source_id);
@@ -80,7 +78,6 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
   const DedicatedOrSharedWorkerToken worker_token_;
   const net::IsolationInfo isolation_info_;
   base::WeakPtr<ServiceWorkerMainResourceHandle> service_worker_handle_;
-  base::WeakPtr<AppCacheHost> appcache_host_;
   BrowserContextGetter browser_context_getter_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
   const ukm::SourceId worker_source_id_;

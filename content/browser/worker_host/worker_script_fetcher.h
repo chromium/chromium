@@ -36,7 +36,6 @@ class URLLoaderThrottle;
 
 namespace content {
 
-class AppCacheHost;
 class DevToolsAgentHostImpl;
 class RenderFrameHost;
 class ServiceWorkerContextWrapper;
@@ -94,7 +93,6 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       network::mojom::RequestDestination request_destination,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       ServiceWorkerMainResourceHandle* service_worker_handle,
-      base::WeakPtr<AppCacheHost> appcache_host,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       scoped_refptr<network::SharedURLLoaderFactory>
           url_loader_factory_override,
@@ -146,7 +144,6 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
           subresource_loader_factories,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       ServiceWorkerMainResourceHandle* service_worker_handle,
-      base::WeakPtr<AppCacheHost> appcache_host,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       scoped_refptr<network::SharedURLLoaderFactory>
           url_loader_factory_override,
@@ -181,13 +178,11 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   std::unique_ptr<network::ResourceRequest> resource_request_;
   CreateAndStartCallback callback_;
 
-  // URLLoader instance backed by a request interceptor (e.g.,
-  // AppCacheRequestHandler) or the network service.
+  // URLLoader instance backed by a request interceptor or the network service.
   std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
 
   // URLLoader instance for handling a response received from the default
-  // network loader. This can be provided by an interceptor. For example,
-  // AppCache's interceptor creates this for AppCache's fallback case.
+  // network loader. This can be provided by an interceptor.
   mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> response_url_loader_receiver_{
       this};

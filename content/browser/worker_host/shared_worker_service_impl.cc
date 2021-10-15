@@ -17,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/task/post_task.h"
-#include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -54,11 +53,9 @@ namespace content {
 
 SharedWorkerServiceImpl::SharedWorkerServiceImpl(
     StoragePartitionImpl* storage_partition,
-    scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-    scoped_refptr<ChromeAppCacheService> appcache_service)
+    scoped_refptr<ServiceWorkerContextWrapper> service_worker_context)
     : storage_partition_(storage_partition),
-      service_worker_context_(std::move(service_worker_context)),
-      appcache_service_(std::move(appcache_service)) {
+      service_worker_context_(std::move(service_worker_context)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -332,14 +329,6 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   DCHECK(insertion_result.second);
   SharedWorkerHost* host = insertion_result.first->get();
 
-  base::WeakPtr<AppCacheHost> appcache_host;
-  if (appcache_service_) {
-    auto appcache_handle = std::make_unique<AppCacheNavigationHandle>(
-        appcache_service_.get(), worker_process_host->GetID());
-    appcache_host = appcache_handle->host()->GetWeakPtr();
-    host->SetAppCacheHandle(std::move(appcache_handle));
-  }
-
   auto service_worker_handle =
       std::make_unique<ServiceWorkerMainResourceHandle>(
           storage_partition_->GetServiceWorkerContext(), base::DoNothing());
@@ -388,10 +377,9 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       credentials_mode, std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kSharedWorker,
       service_worker_context_, service_worker_handle_raw,
-      std::move(appcache_host), std::move(blob_url_loader_factory),
-      url_loader_factory_override_, storage_partition_, storage_domain,
-      host->ukm_source_id(), SharedWorkerDevToolsAgentHost::GetFor(host),
-      host->GetDevToolsToken(),
+      std::move(blob_url_loader_factory), url_loader_factory_override_,
+      storage_partition_, storage_domain, host->ukm_source_id(),
+      SharedWorkerDevToolsAgentHost::GetFor(host), host->GetDevToolsToken(),
       base::BindOnce(&SharedWorkerServiceImpl::StartWorker,
                      weak_factory_.GetWeakPtr(), weak_host, message_port,
                      std::move(cloned_outside_fetch_client_settings_object)));

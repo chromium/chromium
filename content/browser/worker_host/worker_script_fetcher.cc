@@ -170,7 +170,6 @@ void WorkerScriptFetcher::CreateAndStart(
     network::mojom::RequestDestination request_destination,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     ServiceWorkerMainResourceHandle* service_worker_handle,
-    base::WeakPtr<AppCacheHost> appcache_host,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_override,
     StoragePartitionImpl* storage_partition,
@@ -275,7 +274,7 @@ void WorkerScriptFetcher::CreateAndStart(
       std::move(resource_request), std::move(factory_bundle_for_browser),
       std::move(subresource_loader_factories),
       std::move(service_worker_context), service_worker_handle,
-      std::move(appcache_host), std::move(blob_url_loader_factory),
+      std::move(blob_url_loader_factory),
       std::move(url_loader_factory_override), worker_source_id,
       devtools_agent_host, devtools_worker_token, std::move(callback));
 }
@@ -293,7 +292,6 @@ void WorkerScriptFetcher::CreateScriptLoader(
         subresource_loader_factories,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     ServiceWorkerMainResourceHandle* service_worker_handle,
-    base::WeakPtr<AppCacheHost> appcache_host,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_override,
     ukm::SourceId worker_source_id,
@@ -407,9 +405,8 @@ void WorkerScriptFetcher::CreateScriptLoader(
   auto* script_fetcher = new WorkerScriptFetcher(
       std::make_unique<WorkerScriptLoaderFactory>(
           worker_process_id, worker_token, trusted_isolation_info,
-          service_worker_handle, std::move(appcache_host),
-          browser_context_getter, std::move(url_loader_factory),
-          worker_source_id),
+          service_worker_handle, browser_context_getter,
+          std::move(url_loader_factory), worker_source_id),
       std::move(resource_request),
       base::BindOnce(DidCreateScriptLoader, std::move(callback),
                      std::move(subresource_loader_factories),
@@ -563,7 +560,7 @@ void WorkerScriptFetcher::OnStartLoadingResponseBody(
   if (script_loader && script_loader->default_loader_used_) {
     // If the default network loader was used to handle the URL load request we
     // need to see if the request interceptors want to potentially create a new
-    // loader for the response, e.g. AppCache's fallback.
+    // loader for the response, e.g. SXG or WebBundles.
     DCHECK(!response_url_loader_);
     mojo::PendingReceiver<network::mojom::URLLoaderClient>
         response_client_receiver;

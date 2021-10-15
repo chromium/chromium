@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/unguessable_token.h"
-#include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
@@ -45,7 +44,6 @@
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
-#include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
@@ -431,20 +429,6 @@ void SharedWorkerHost::AllowWebLocks(const GURL& url,
       GetRenderFrameIDsForWorker()));
 }
 
-void SharedWorkerHost::CreateAppCacheBackend(
-    mojo::PendingReceiver<blink::mojom::AppCacheBackend> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-      GetProcessHost()->GetStoragePartition());
-  if (!storage_partition_impl)
-    return;
-  auto* appcache_service = storage_partition_impl->GetAppCacheService();
-  if (!appcache_service)
-    return;
-  appcache_service->CreateBackend(GetProcessHost()->GetID(), MSG_ROUTING_NONE,
-                                  std::move(receiver));
-}
-
 void SharedWorkerHost::CreateWebTransportConnector(
     mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -614,12 +598,6 @@ void SharedWorkerHost::AddClient(
 
   // Notify that a new client was added now.
   service_->NotifyClientAdded(token_, client_render_frame_host_id);
-}
-
-void SharedWorkerHost::SetAppCacheHandle(
-    std::unique_ptr<AppCacheNavigationHandle> appcache_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  appcache_handle_ = std::move(appcache_handle);
 }
 
 void SharedWorkerHost::SetServiceWorkerHandle(

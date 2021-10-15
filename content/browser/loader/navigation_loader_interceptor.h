@@ -94,9 +94,9 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   // Returns true if the interceptor creates a loader for the `response_head`
   // and `response_body` passed.  `request` is the latest request whose request
   // URL may include URL fragment.  An example of where this is used is
-  // AppCache, where the handler returns fallback content for the response
-  // passed in. The URLLoader remote is returned in the `loader` parameter. The
-  // mojo::PendingReceiver for the URLLoaderClient is returned in the
+  // WebBundles where the URL is used to check if the content must be
+  // downloaded.  The URLLoader remote is returned in the `loader` parameter.
+  // The mojo::PendingReceiver for the URLLoaderClient is returned in the
   // `client_receiver` parameter.
   // The `url_loader` points to the ThrottlingURLLoader that currently controls
   // the request. It can be optionally consumed to get the current

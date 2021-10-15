@@ -18,8 +18,7 @@ void InjectTestSharedWorkerService(StoragePartition* storage_partition) {
   storage_partition_impl->OverrideSharedWorkerServiceForTesting(
       std::make_unique<TestSharedWorkerServiceImpl>(
           storage_partition_impl,
-          storage_partition_impl->GetServiceWorkerContext(),
-          storage_partition_impl->GetAppCacheService()));
+          storage_partition_impl->GetServiceWorkerContext()));
 }
 
 void TerminateAllSharedWorkers(StoragePartition* storage_partition,

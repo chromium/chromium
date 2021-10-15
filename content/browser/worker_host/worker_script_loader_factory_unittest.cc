@@ -100,8 +100,7 @@ TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
       kProcessId, DedicatedOrSharedWorkerToken(),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
-      service_worker_handle_.get(),
-      /*appcache_host=*/nullptr, browser_context_getter_,
+      service_worker_handle_.get(), browser_context_getter_,
       network_loader_factory_, ukm::kInvalidSourceId);
 
   // Load the script.
@@ -128,8 +127,8 @@ TEST_F(WorkerScriptLoaderFactoryTest, NullServiceWorkerHandle) {
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
       kProcessId, DedicatedOrSharedWorkerToken(),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
-      service_worker_handle_.get(), nullptr /* appcache_host */,
-      browser_context_getter_, network_loader_factory_, ukm::kInvalidSourceId);
+      service_worker_handle_.get(), browser_context_getter_,
+      network_loader_factory_, ukm::kInvalidSourceId);
 
   // Destroy the handle.
   service_worker_handle_.reset();
@@ -154,8 +153,8 @@ TEST_F(WorkerScriptLoaderFactoryTest, NullBrowserContext) {
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
       kProcessId, DedicatedOrSharedWorkerToken(),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
-      service_worker_handle_.get(), nullptr /* appcache_host */,
-      browser_context_getter_, network_loader_factory_, ukm::kInvalidSourceId);
+      service_worker_handle_.get(), browser_context_getter_,
+      network_loader_factory_, ukm::kInvalidSourceId);
 
   // Set a null browser context.
   helper_->context_wrapper()->Shutdown();

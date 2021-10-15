@@ -1196,11 +1196,6 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
   // worker host binders
   // base::Unretained(host) is safe because the map is owned by
   // |SharedWorkerHost::broker_|.
-  if (StoragePartition::IsAppCacheEnabled()) {
-    map->Add<blink::mojom::AppCacheBackend>(base::BindRepeating(
-        &SharedWorkerHost::CreateAppCacheBackend, base::Unretained(host)));
-  }
-
   map->Add<blink::mojom::FileUtilitiesHost>(
       base::BindRepeating(FileUtilitiesHostImpl::Create,
                           host->GetProcessHost()->GetID()),

@@ -13,7 +13,6 @@
 
 namespace content {
 
-class ChromeAppCacheService;
 class ServiceWorkerContextWrapper;
 class StoragePartitionImpl;
 
@@ -22,8 +21,7 @@ class TestSharedWorkerServiceImpl : public SharedWorkerServiceImpl {
  public:
   TestSharedWorkerServiceImpl(
       StoragePartitionImpl* storage_partition,
-      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-      scoped_refptr<ChromeAppCacheService> appcache_service);
+      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
 
   TestSharedWorkerServiceImpl(const TestSharedWorkerServiceImpl&) = delete;
   TestSharedWorkerServiceImpl& operator=(const TestSharedWorkerServiceImpl&) =

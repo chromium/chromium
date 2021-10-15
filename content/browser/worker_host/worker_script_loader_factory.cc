@@ -24,14 +24,12 @@ WorkerScriptLoaderFactory::WorkerScriptLoaderFactory(
     const DedicatedOrSharedWorkerToken& worker_token,
     const net::IsolationInfo& isolation_info,
     ServiceWorkerMainResourceHandle* service_worker_handle,
-    base::WeakPtr<AppCacheHost> appcache_host,
     const BrowserContextGetter& browser_context_getter,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     ukm::SourceId worker_source_id)
     : process_id_(process_id),
       worker_token_(worker_token),
       isolation_info_(isolation_info),
-      appcache_host_(std::move(appcache_host)),
       browser_context_getter_(browser_context_getter),
       loader_factory_(std::move(loader_factory)),
       worker_source_id_(worker_source_id) {
@@ -65,8 +63,8 @@ void WorkerScriptLoaderFactory::CreateLoaderAndStart(
   auto script_loader = std::make_unique<WorkerScriptLoader>(
       process_id_, worker_token_, request_id, options, resource_request,
       isolation_info_, std::move(client), service_worker_handle_,
-      appcache_host_, browser_context_getter_, loader_factory_,
-      traffic_annotation, worker_source_id_);
+      browser_context_getter_, loader_factory_, traffic_annotation,
+      worker_source_id_);
   script_loader_ = script_loader->GetWeakPtr();
   mojo::MakeSelfOwnedReceiver(std::move(script_loader), std::move(receiver));
 }

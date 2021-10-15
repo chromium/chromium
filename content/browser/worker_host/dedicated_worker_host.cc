@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -215,18 +214,6 @@ void DedicatedWorkerHost::StartScriptLoad(
     }
   }
 
-  // A dedicated worker depends on its nearest ancestor's appcache host.
-  AppCacheHost* appcache_host = nullptr;
-  const AppCacheNavigationHandle* appcache_handle =
-      nearest_ancestor_render_frame_host->GetAppCacheNavigationHandle();
-  if (appcache_handle) {
-    auto* appcache_service = storage_partition_impl->GetAppCacheService();
-    if (appcache_service) {
-      appcache_host =
-          appcache_service->GetHost(appcache_handle->appcache_host_id());
-    }
-  }
-
   // Set if the subresource loader factories support file URLs so that we can
   // recreate the factories after Network Service crashes.
   // TODO(nhiroki): Currently this flag is calculated based on the request
@@ -281,10 +268,8 @@ void DedicatedWorkerHost::StartScriptLoad(
       credentials_mode, std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kWorker,
       storage_partition_impl->GetServiceWorkerContext(),
-      service_worker_handle_.get(),
-      appcache_host ? appcache_host->GetWeakPtr() : nullptr,
-      std::move(blob_url_loader_factory), nullptr, storage_partition_impl,
-      partition_domain,
+      service_worker_handle_.get(), std::move(blob_url_loader_factory), nullptr,
+      storage_partition_impl, partition_domain,
       // TODO(crbug.com/1138622): Propagate dedicated worker ukm::SourceId here.
       ukm::kInvalidSourceId,
       // TODO(crbug.com/1143102): pass DevToolsAgentHostImpl for the worker.
@@ -687,8 +672,7 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
           ? RenderFrameHostImpl::FromID(creator_render_frame_host_id_.value())
           : nullptr;
 
-  // Recreate the default URLLoaderFactory. This doesn't support
-  // AppCache-specific factory.
+  // Recreate the default URLLoaderFactory.
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories = WorkerScriptFetcher::CreateFactoryBundle(
           WorkerScriptFetcher::LoaderType::kSubResource,
