@@ -16,6 +16,7 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -86,6 +87,13 @@ const char kTargetEmbeddingSeparators[] = "-.";
 // treat them as public for the purposes of lookalike checks.
 const char* kPrivateRegistriesTreatedAsPublic[] = {"com.de", "com.se"};
 
+Top500DomainsParams* GetTopDomainParams() {
+  static Top500DomainsParams params{
+      top500_domains::kTop500EditDistanceSkeletons,
+      top500_domains::kNumTop500EditDistanceSkeletons};
+  return &params;
+}
+
 bool SkeletonsMatch(const url_formatter::Skeletons& skeletons1,
                     const url_formatter::Skeletons& skeletons2) {
   DCHECK(!skeletons1.empty());
@@ -124,13 +132,13 @@ bool GetSimilarDomainFromTop500(
     const LookalikeTargetAllowlistChecker& target_allowlisted,
     std::string* matched_domain,
     LookalikeUrlMatchType* match_type) {
+  Top500DomainsParams* top_500_domain_params = GetTopDomainParams();
   for (const std::string& navigated_skeleton : navigated_domain.skeletons) {
-    for (const char* const top_domain_skeleton :
-         top500_domains::kTop500EditDistanceSkeletons) {
-      // kTop500EditDistanceSkeletons may include blank entries.
-      if (strlen(top_domain_skeleton) == 0) {
-        continue;
-      }
+    for (size_t i = 0; i < top_500_domain_params->num_edit_distance_skeletons;
+         i++) {
+      const char* const top_domain_skeleton =
+          top_500_domain_params->edit_distance_skeletons[i];
+      DCHECK(strlen(top_domain_skeleton));
       // Check edit distance on skeletons.
       if (IsEditDistanceAtMostOne(base::UTF8ToUTF16(navigated_skeleton),
                                   base::UTF8ToUTF16(top_domain_skeleton))) {
@@ -1096,4 +1104,14 @@ bool HasOneCharacterSwap(const std::u16string& str1,
     return false;
   }
   return has_swap;
+}
+
+void SetTop500DomainsParamsForTesting(const Top500DomainsParams& params) {
+  *GetTopDomainParams() = params;
+}
+
+void ResetTop500DomainsParamsForTesting() {
+  Top500DomainsParams* params = GetTopDomainParams();
+  *params = {top500_domains::kTop500EditDistanceSkeletons,
+             top500_domains::kNumTop500EditDistanceSkeletons};
 }

@@ -99,6 +99,14 @@ enum class NavigationSuggestionEvent {
   kMaxValue = kMatchCharacterSwapTop500,
 };
 
+struct Top500DomainsParams {
+  // Skeletons of top 500 domains. There can be fewer than 500 skeletons in
+  // this array.
+  const char* const* edit_distance_skeletons;
+  // Number of skeletons in `edit_distance_skeletons`.
+  size_t num_edit_distance_skeletons;
+};
+
 struct DomainInfo {
   // The full ASCII hostname, used in detecting target embedding. For
   // "https://www.google.com/mail" this will be "www.google.com".
@@ -220,5 +228,10 @@ void SetEnterpriseAllowlistForTesting(PrefService* pref_service,
 // characters are swapped. E.g. example.com vs exapmle.com.
 bool HasOneCharacterSwap(const std::u16string& str1,
                          const std::u16string& str2);
+
+// Sets information about top 500 domains for testing.
+void SetTop500DomainsParamsForTesting(const Top500DomainsParams& params);
+// Resets information about top 500 domains for testing.
+void ResetTop500DomainsParamsForTesting();
 
 #endif  // COMPONENTS_LOOKALIKES_CORE_LOOKALIKE_URL_UTIL_H_

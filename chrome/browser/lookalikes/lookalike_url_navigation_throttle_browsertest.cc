@@ -20,6 +20,7 @@
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_features.h"
@@ -38,6 +39,7 @@
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/url_formatter/spoof_checks/top_domains/test_top500_domains.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
@@ -195,6 +197,10 @@ void TestInterstitialNotShown(Browser* browser, const GURL& navigated_url) {
   EXPECT_EQ(nullptr, GetCurrentInterstitial(web_contents));
 }
 
+namespace test {
+#include "components/url_formatter/spoof_checks/top_domains/browsertest_domains-trie-inc.cc"
+}
+
 }  // namespace
 
 class LookalikeUrlNavigationThrottleBrowserTest
@@ -254,6 +260,37 @@ class LookalikeUrlNavigationThrottleBrowserTest
     LookalikeUrlService* lookalike_service =
         LookalikeUrlService::Get(browser()->profile());
     lookalike_service->SetClockForTesting(&test_clock_);
+
+    // Use test top domain lists instead of the actual list.
+    url_formatter::IDNSpoofChecker::HuffmanTrieParams trie_params{
+        test::kTopDomainsHuffmanTree, sizeof(test::kTopDomainsHuffmanTree),
+        test::kTopDomainsTrie, test::kTopDomainsTrieBits,
+        test::kTopDomainsRootPosition};
+    url_formatter::IDNSpoofChecker::SetTrieParamsForTesting(trie_params);
+
+    // Use test top 500 domain skeletons instead of the actual list.
+    Top500DomainsParams top500_params{
+        test_top500_domains::kTop500EditDistanceSkeletons,
+        test_top500_domains::kNumTop500EditDistanceSkeletons};
+    SetTop500DomainsParamsForTesting(top500_params);
+
+    // Use test keywords instead of the actual list. This isn't strictly
+    // necessary as this test doesn't use reputation service, but it's good
+    // practice.
+    ReputationService* rep_service =
+        ReputationService::Get(browser()->profile());
+    rep_service->SetSensitiveKeywordsForTesting(
+        test_top500_domains::kTopKeywords,
+        test_top500_domains::kNumTopKeywords);
+  }
+
+  void TearDownOnMainThread() override {
+    url_formatter::IDNSpoofChecker::RestoreTrieParamsForTesting();
+    ResetTop500DomainsParamsForTesting();
+
+    ReputationService* rep_service =
+        ReputationService::Get(browser()->profile());
+    rep_service->ResetSensitiveKeywordsForTesting();
   }
 
   GURL GetURL(const char* hostname) const {

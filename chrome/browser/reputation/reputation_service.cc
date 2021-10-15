@@ -161,6 +161,11 @@ void ReputationService::SetSensitiveKeywordsForTesting(
   num_sensitive_keywords_ = num_new_keywords;
 }
 
+void ReputationService::ResetSensitiveKeywordsForTesting() {
+  sensitive_keywords_ = top500_domains::kTopKeywords;
+  num_sensitive_keywords_ = top500_domains::kNumTopKeywords;
+}
+
 void ReputationService::GetReputationStatusWithEngagedSites(
     const GURL& url,
     bool has_delayed_warning,
