@@ -200,6 +200,9 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
       return "CheckUserAccount";
     case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
       return "UploadEuiccInfo";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_BROWSER_UPLOAD_PUBLIC_KEY:
+      return "BrowserUploadPublicKey";
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";

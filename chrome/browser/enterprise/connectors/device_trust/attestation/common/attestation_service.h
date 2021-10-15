@@ -35,7 +35,7 @@ class AttestationService {
   virtual void StampReport(DeviceTrustReportEvent& report);
 
   // Rotate the key used to sign in challenge response.
-  virtual bool RotateSigningKey();
+  virtual bool RotateSigningKey(const std::string& nonce);
 };
 
 }  // namespace enterprise_connectors

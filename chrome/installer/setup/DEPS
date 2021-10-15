@@ -12,6 +12,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*_unittest\.cc": [
+    "+chrome/browser/enterprise/connectors/device_trust/attestation/desktop/memory_signing_key_pair.h",
     "+chrome/chrome_elf/nt_registry/nt_registry.h",
   ],
 }

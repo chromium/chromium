@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <deque>
 #include <memory>
 #include <vector>
 
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/memory_signing_key_pair.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+
+using BPKUP = enterprise_management::BrowserPublicKeyUploadResponse;
 
 namespace enterprise_connectors {
 
@@ -18,8 +22,13 @@ class SigningKeyPairTest : public testing::Test {
     ppdelegate_ptr->set_force_store_to_fail(force_store_to_fail);
   }
 
-  void set_force_network_to_fail(bool force_network_to_fail) {
-    pndelegate_ptr->set_force_network_to_fail(force_network_to_fail);
+  void push_response_codes(
+      const std::deque<BPKUP::ResponseCode>& response_codes) {
+    pndelegate_ptr->push_response_codes(response_codes);
+  }
+
+  test::InMemorySigningKeyPairNetworkDelegate* network_delegate() {
+    return pndelegate_ptr;
   }
 
  private:
@@ -41,12 +50,14 @@ TEST_F(SigningKeyPairTest, NoKeyPair) {
 
 TEST_F(SigningKeyPairTest, Rotate) {
   // Create a new key and save it.
-  ASSERT_TRUE(key_pair()->RotateWithAdminRights("fake_dm_token"));
+  ASSERT_TRUE(key_pair()->RotateWithAdminRights(GURL("dmserver.com"),
+                                                "fake_dm_token", "nonce"));
 }
 
 TEST_F(SigningKeyPairTest, ExportAndSign) {
   // Create a new key and save it.
-  ASSERT_TRUE(key_pair()->RotateWithAdminRights("fake_dm_token"));
+  ASSERT_TRUE(key_pair()->RotateWithAdminRights(GURL("dmserver.com"),
+                                                "fake_dm_token", "nonce"));
 
   // Extract a pubkey should work now.
   std::vector<uint8_t> pubkey;
@@ -61,7 +72,8 @@ TEST_F(SigningKeyPairTest, ExportAndSign) {
 
 TEST_F(SigningKeyPairTest, Load) {
   // Create a new key and save it.
-  ASSERT_TRUE(key_pair()->RotateWithAdminRights("fake_dm_token"));
+  ASSERT_TRUE(key_pair()->RotateWithAdminRights(GURL("dmserver.com"),
+                                                "fake_dm_token", "nonce"));
 
   // Extract a pubkey should work now.
   std::vector<uint8_t> pubkey;
@@ -79,7 +91,8 @@ TEST_F(SigningKeyPairTest, Load) {
 
 TEST_F(SigningKeyPairTest, FailedSaveKeepsOldKey) {
   // Create a new key and save it.
-  ASSERT_TRUE(key_pair()->RotateWithAdminRights("fake_dm_token"));
+  ASSERT_TRUE(key_pair()->RotateWithAdminRights(GURL("dmserver.com"),
+                                                "fake_dm_token", "nonce"));
 
   // Extract a pubkey should work now.
   std::vector<uint8_t> pubkey;
@@ -88,7 +101,8 @@ TEST_F(SigningKeyPairTest, FailedSaveKeepsOldKey) {
 
   set_force_store_to_fail(true);
 
-  ASSERT_FALSE(key_pair()->RotateWithAdminRights("fake_dm_token"));
+  ASSERT_FALSE(key_pair()->RotateWithAdminRights(GURL("dmserver.com"),
+                                                 "fake_dm_token", "nonce"));
   std::vector<uint8_t> pubkey2;
   ASSERT_TRUE(key_pair()->ExportPublicKey(&pubkey2));
   ASSERT_EQ(pubkey, pubkey2);
@@ -96,19 +110,72 @@ TEST_F(SigningKeyPairTest, FailedSaveKeepsOldKey) {
 
 TEST_F(SigningKeyPairTest, FailedNetworkKeepsOldKey) {
   // Create a new key and save it.
-  ASSERT_TRUE(key_pair()->RotateWithAdminRights("fake_dm_token"));
+  ASSERT_TRUE(key_pair()->RotateWithAdminRights(GURL("dmserver.com"),
+                                                "fake_dm_token", "nonce"));
 
   // Extract a pubkey should work now.
   std::vector<uint8_t> pubkey;
   ASSERT_TRUE(key_pair()->ExportPublicKey(&pubkey));
   ASSERT_GT(pubkey.size(), 0u);
 
-  set_force_network_to_fail(true);
+  push_response_codes({BPKUP::INVALID_SIGNATURE});
 
-  ASSERT_FALSE(key_pair()->RotateWithAdminRights("fake_dm_token"));
+  ASSERT_FALSE(key_pair()->RotateWithAdminRights(GURL("dmserver.com"),
+                                                 "fake_dm_token", "nonce"));
   std::vector<uint8_t> pubkey2;
   ASSERT_TRUE(key_pair()->ExportPublicKey(&pubkey2));
   ASSERT_EQ(pubkey, pubkey2);
+
+  // Send count should be 2: one for the initial rotate that works, and a
+  // second for the rotate that fails.
+  EXPECT_EQ(network_delegate()->send_count(), 2);
+}
+
+TEST_F(SigningKeyPairTest, RetryAndSuccessNetworkKeepsNewKey) {
+  // Create a new key and save it.
+  ASSERT_TRUE(key_pair()->RotateWithAdminRights(GURL("dmserver.com"),
+                                                "fake_dm_token", "nonce"));
+
+  // Extract a pubkey should work now.
+  std::vector<uint8_t> pubkey;
+  ASSERT_TRUE(key_pair()->ExportPublicKey(&pubkey));
+  ASSERT_GT(pubkey.size(), 0u);
+
+  push_response_codes({BPKUP::UNDEFINED, BPKUP::SUCCESS});
+
+  ASSERT_TRUE(key_pair()->RotateWithAdminRights(GURL("dmserver.com"),
+                                                "fake_dm_token", "nonce"));
+  std::vector<uint8_t> pubkey2;
+  ASSERT_TRUE(key_pair()->ExportPublicKey(&pubkey2));
+  ASSERT_NE(pubkey, pubkey2);
+
+  // Send count should be 3: one for the initial rotate that works and two
+  // more for the rotate that fails with retries.
+  EXPECT_EQ(network_delegate()->send_count(), 3);
+}
+
+TEST_F(SigningKeyPairTest, RetryAndFailedNetworkKeepsOldKey) {
+  // Create a new key and save it.
+  ASSERT_TRUE(key_pair()->RotateWithAdminRights(GURL("dmserver.com"),
+                                                "fake_dm_token", "nonce"));
+
+  // Extract a pubkey should work now.
+  std::vector<uint8_t> pubkey;
+  ASSERT_TRUE(key_pair()->ExportPublicKey(&pubkey));
+  ASSERT_GT(pubkey.size(), 0u);
+
+  push_response_codes(
+      {BPKUP::UNDEFINED, BPKUP::UNDEFINED, BPKUP::INVALID_SIGNATURE});
+
+  ASSERT_FALSE(key_pair()->RotateWithAdminRights(GURL("dmserver.com"),
+                                                 "fake_dm_token", "nonce"));
+  std::vector<uint8_t> pubkey2;
+  ASSERT_TRUE(key_pair()->ExportPublicKey(&pubkey2));
+  ASSERT_EQ(pubkey, pubkey2);
+
+  // Send count should be 4: one for the initial rotate that works and three
+  // more for the rotate that fails with retries.
+  EXPECT_EQ(network_delegate()->send_count(), 4);
 }
 
 }  // namespace enterprise_connectors

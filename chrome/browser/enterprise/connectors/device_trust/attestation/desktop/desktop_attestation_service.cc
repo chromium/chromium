@@ -20,8 +20,13 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/common/proto/device_trust_report_event.pb.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/dm_auth.h"
+#include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "crypto/random.h"
 #include "crypto/unexportable_key.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_WIN)
 
@@ -66,8 +71,10 @@ void ConfigureProxyBlanket(IUnknown* interface_pointer) {
 }  // namespace
 
 DesktopAttestationService::DesktopAttestationService(
-    std::unique_ptr<SigningKeyPair> key_pair)
-    : key_pair_(std::move(key_pair)) {
+    std::unique_ptr<SigningKeyPair> key_pair,
+    policy::DeviceManagementService* device_management_service)
+    : key_pair_(std::move(key_pair)),
+      device_management_service_(device_management_service) {
   DCHECK(key_pair_);
 }
 
@@ -115,13 +122,28 @@ void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
       std::move(reply));
 }
 
-bool DesktopAttestationService::RotateSigningKey() {
+bool DesktopAttestationService::RotateSigningKey(const std::string& nonce) {
+  if (!device_management_service_)
+    return false;
+
 #if BUILDFLAG(IS_WIN)
   // Get the CBCM DM token.  This will be needed later to send the new key's
   // public part to the server.
+  auto client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
   auto dm_token = policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
   if (!dm_token.is_valid())
     return false;
+
+  // Get the DM server URL to upload the public key.  Reuse
+  // DMServerJobConfiguration to reuse the URL building steps.
+
+  policy::DMServerJobConfiguration config(
+      device_management_service_,
+      policy::DeviceManagementService::JobConfiguration::
+          TYPE_BROWSER_UPLOAD_PUBLIC_KEY,
+      client_id, true, policy::DMAuth::FromDMToken(dm_token.value()),
+      absl::nullopt, nullptr, base::DoNothing());
+  std::string dm_server_url = config.GetResourceRequest(false, 0)->url.spec();
 
   Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
   HRESULT hr = ::CoCreateInstance(CLSID_GoogleUpdate3WebServiceClass, nullptr,
@@ -176,7 +198,10 @@ bool DesktopAttestationService::RotateSigningKey() {
   VARIANT var;
   VariantInit(&var);
   _variant_t token_var = token_base64.c_str();
-  hr = app_command->execute(token_var, var, var, var, var, var, var, var, var);
+  _variant_t dm_server_url_var = dm_server_url.c_str();
+  _variant_t nonce_var = nonce.c_str();
+  hr = app_command->execute(token_var, dm_server_url_var, nonce_var, var, var,
+                            var, var, var, var);
   if (FAILED(hr))
     return false;
 

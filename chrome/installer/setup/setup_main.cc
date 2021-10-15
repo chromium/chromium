@@ -38,6 +38,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -49,6 +50,7 @@
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -94,6 +96,7 @@
 #include "components/crash/core/app/run_as_crashpad_handler_win.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/installer/util/google_update_util.h"
@@ -1157,7 +1160,20 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     std::wstring token_switch_value = cmd_line.GetSwitchValueNative(
         installer::switches::kRotateDeviceTrustKey);
     auto token = installer::DecodeDMTokenSwitchValue(token_switch_value);
-    *exit_code = token && installer::RotateDeviceTrustKey(*token)
+    GURL dm_server_url(
+        cmd_line.GetSwitchValueASCII(installer::switches::kDmServerUrl));
+    auto nonce = installer::DecodeNonceSwitchValue(
+        cmd_line.GetSwitchValueASCII(installer::switches::kNonce));
+    auto key_pair = enterprise_connectors::SigningKeyPair::Create();
+
+    // RotateDeviceTrustKey() expects a single threaded task runner so
+    // creating one here.
+    base::SingleThreadTaskExecutor executor;
+
+    *exit_code = token && nonce && dm_server_url.is_valid() &&
+                         dm_server_url.SchemeIsHTTPOrHTTPS() &&
+                         installer::RotateDeviceTrustKey(
+                             *key_pair, dm_server_url, *token, *nonce)
                      ? installer::ROTATE_DTKEY_SUCCESS
                      : installer::ROTATE_DTKEY_FAILED;
 #endif

@@ -22,7 +22,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -726,6 +725,24 @@ absl::optional<std::string> DecodeDMTokenSwitchValue(
   return token;
 }
 
+absl::optional<std::string> DecodeNonceSwitchValue(
+    const std::string& encoded_nonce) {
+  if (encoded_nonce.empty()) {
+    // The nonce command line argument is optional.  If none is specified use
+    // an empty string.
+    return std::string();
+  }
+
+  // The nonce passed on the command line is base64-encoded.
+  std::string nonce;
+  if (!base::Base64Decode(encoded_nonce, &nonce)) {
+    LOG(ERROR) << "Nonce passed on the command line is not correctly encoded";
+    return absl::nullopt;
+  }
+
+  return nonce;
+}
+
 bool StoreDMToken(const std::string& token) {
   DCHECK(install_static::IsSystemInstall());
 
@@ -768,7 +785,10 @@ bool StoreDMToken(const std::string& token) {
   return true;
 }
 
-bool RotateDeviceTrustKey(const std::string& dm_token) {
+bool RotateDeviceTrustKey(enterprise_connectors::SigningKeyPair& key_pair,
+                          const GURL& dm_server_url,
+                          const std::string& dm_token,
+                          const std::string& nonce) {
   DCHECK(install_static::IsSystemInstall());
 
   if (dm_token.size() > kMaxDMTokenLength) {
@@ -776,8 +796,7 @@ bool RotateDeviceTrustKey(const std::string& dm_token) {
     return false;
   }
 
-  auto key_pair = enterprise_connectors::SigningKeyPair::Create();
-  return key_pair->RotateWithAdminRights(dm_token);
+  return key_pair.RotateWithAdminRights(dm_server_url, dm_token, nonce);
 }
 
 base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,

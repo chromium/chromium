@@ -11,8 +11,10 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/memory_signing_key_pair.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 #include "components/enterprise/common/proto/device_trust_report_event.pb.h"
+#include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -45,10 +47,11 @@ class DesktopAttestationServiceTest : public testing::Test {
     // Make sure a signing key exists for the tests. This won't actual require
     // admin rights because of MemorySigningKeyPair.
     auto key_pair = test::CreateInMemorySigningKeyPair(nullptr, nullptr);
-    ASSERT_TRUE(key_pair->RotateWithAdminRights("fake_dm_token"));
+    ASSERT_TRUE(key_pair->RotateWithAdminRights(GURL("dmserver.com"),
+                                                "fake_dm_token", "nonce"));
 
-    attestation_service_ =
-        std::make_unique<DesktopAttestationService>(std::move(key_pair));
+    attestation_service_ = std::make_unique<DesktopAttestationService>(
+        std::move(key_pair), &dm_service_);
   }
 
   DesktopAttestationService* attestation_service() {
@@ -57,6 +60,8 @@ class DesktopAttestationServiceTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  testing::StrictMock<policy::MockJobCreationHandler> job_creation_handler_;
+  policy::FakeDeviceManagementService dm_service_{&job_creation_handler_};
   std::unique_ptr<DesktopAttestationService> attestation_service_;
   test::ScopedMemorySigningKeyPairPersistence persistence_scope_;
 };

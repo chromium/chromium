@@ -38,8 +38,11 @@ const char kDeleteOldVersions[] = "delete-old-versions";
 // kUninstall, otherwise it is silently ignored.
 const char kDeleteProfile[] = "delete-profile";
 
-// Disable logging
+// Disable logging.
 const char kDisableLogging[] = "disable-logging";
+
+// Specifies the DM server URL to use with the rotate device key command.
+const char kDmServerUrl[] = "dm-server-url";
 
 // Prevent installer from launching Chrome after a successful first install.
 const char kDoNotLaunchChrome[] = "do-not-launch-chrome";
@@ -95,6 +98,9 @@ const char kMsi[] = "msi";
 // specifies the full path where updated setup.exe will be stored.
 const char kNewSetupExe[] = "new-setup-exe";
 
+// Specifies a nonce to use with the rotate device key command.
+const char kNonce[] = "nonce";
+
 // Notify the installer that the OS has been upgraded.
 const char kOnOsUpgrade[] = "on-os-upgrade";
 
@@ -140,6 +146,9 @@ const char kRemoveChromeRegistration[] = "remove-chrome-registration";
 // to support in-use updates. Also deletes opv key.
 const char kRenameChromeExe[] = "rename-chrome-exe";
 
+// Rotate the stored device trust signing key.
+const char kRotateDeviceTrustKey[] = "rotate-dtkey";
+
 // When we try to relaunch setup.exe as admin on Vista, we append this command
 // line flag so that we try the launch only once.
 const char kRunAsAdmin[] = "run-as-admin";
@@ -150,9 +159,6 @@ const char kSelfDestruct[] = "self-destruct";
 
 // Show the embedded EULA dialog.
 const char kShowEula[] = "show-eula";
-
-// Rotate the stored device trust signing key.
-const char kRotateDeviceTrustKey[] = "rotate-dtkey";
 
 // Saves the specified device management token to the registry.
 const char kStoreDMToken[] = "store-dmtoken";

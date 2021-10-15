@@ -7,10 +7,13 @@
 
 #include <stdint.h>
 
+#include <deque>
 #include <memory>
 #include <vector>
 
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
+#include "components/policy/proto/device_management_backend.pb.h"
+#include "url/gurl.h"
 
 namespace enterprise_connectors {
 
@@ -45,21 +48,28 @@ class InMemorySigningKeyPairNetworkDelegate
   InMemorySigningKeyPairNetworkDelegate();
   ~InMemorySigningKeyPairNetworkDelegate() override;
 
-  std::string SendPublicKeyToDmServerSync(const std::string& url,
+  std::string SendPublicKeyToDmServerSync(const GURL& url,
                                           const std::string& dm_token,
                                           const std::string& body) override;
 
-  void set_force_network_to_fail(bool force_network_to_fail) {
-    force_network_to_fail_ = force_network_to_fail;
+  void push_response_codes(
+      const std::deque<
+          enterprise_management::BrowserPublicKeyUploadResponse::ResponseCode>&
+          rcs) {
+    response_codes_.insert(response_codes_.end(), rcs.begin(), rcs.end());
   }
 
-  const std::string& url() { return url_; }
-  const std::string& dm_token() { return dm_token_; }
-  const std::string& body() { return body_; }
+  int send_count() const { return send_count_; }
+  const GURL& url() const { return url_; }
+  const std::string& dm_token() const { return dm_token_; }
+  const std::string& body() const { return body_; }
 
  private:
-  bool force_network_to_fail_ = false;
-  std::string url_;
+  std::deque<
+      enterprise_management::BrowserPublicKeyUploadResponse::ResponseCode>
+      response_codes_;
+  int send_count_ = 0;
+  GURL url_;
   std::string dm_token_;
   std::string body_;
 };

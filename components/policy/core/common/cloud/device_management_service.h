@@ -220,6 +220,7 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_UPLOAD_ENCRYPTED_REPORT = 27,
       TYPE_CHECK_USER_ACCOUNT = 28,
       TYPE_UPLOAD_EUICC_INFO = 29,
+      TYPE_BROWSER_UPLOAD_PUBLIC_KEY = 30,
     };
 
     // The set of HTTP query parameters of the request.
@@ -354,6 +355,18 @@ class POLICY_EXPORT JobConfigurationBase
   JobConfigurationBase(const JobConfigurationBase&) = delete;
   JobConfigurationBase& operator=(const JobConfigurationBase&) = delete;
 
+  // DeviceManagementService::JobConfiguration:
+  JobType GetType() override;
+  const ParameterMap& GetQueryParams() override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory() override;
+  net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() override;
+  std::unique_ptr<network::ResourceRequest> GetResourceRequest(
+      bool bypass_proxy,
+      int last_error) override;
+  DeviceManagementService::Job::RetryMethod ShouldRetry(
+      int response_code,
+      const std::string& response_body) override;
+
  protected:
   JobConfigurationBase(JobType type,
                        DMAuth auth_data,
@@ -366,18 +379,6 @@ class POLICY_EXPORT JobConfigurationBase
   void AddParameter(const std::string& name, const std::string& value);
 
   const DMAuth& GetAuth() const override;
-
-  // DeviceManagementService::JobConfiguration.
-  JobType GetType() override;
-  const ParameterMap& GetQueryParams() override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory() override;
-  net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() override;
-  std::unique_ptr<network::ResourceRequest> GetResourceRequest(
-      bool bypass_proxy,
-      int last_error) override;
-  DeviceManagementService::Job::RetryMethod ShouldRetry(
-      int response_code,
-      const std::string& response_body) override;
 
   // Derived classes should return the base URL for the request.
   virtual GURL GetURL(int last_error) const = 0;

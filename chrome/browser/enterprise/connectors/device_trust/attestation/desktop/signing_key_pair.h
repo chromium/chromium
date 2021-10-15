@@ -15,6 +15,8 @@
 #include "base/compiler_specific.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
+class GURL;
+
 namespace crypto {
 class UnexportableKeyProvider;
 class UnexportableSigningKey;
@@ -72,7 +74,7 @@ class SigningKeyPair {
     //
     // The return // value is a string that can be parsed into
     // DeviceManagementResponse.
-    virtual std::string SendPublicKeyToDmServerSync(const std::string& url,
+    virtual std::string SendPublicKeyToDmServerSync(const GURL& url,
                                                     const std::string& dm_token,
                                                     const std::string& body);
   };
@@ -99,7 +101,14 @@ class SigningKeyPair {
   // Rotates the key pair.  If no key pair already exists, simply creates a
   // new one.  `dm_token` the DM token to use when sending the new public key to
   // the DM server.  This function will fail if not called with admin rights.
-  bool RotateWithAdminRights(const std::string& dm_token) WARN_UNUSED_RESULT;
+  //
+  // This function makes network requests and will block until those requests
+  // complete successfully or fail (after some retrying).  This function is
+  // not meant to be called from the chrome browser but from a background
+  // utility process that does not block the user in the browser.
+  bool RotateWithAdminRights(const GURL& dm_server_url,
+                             const std::string& dm_token,
+                             const std::string& nonce) WARN_UNUSED_RESULT;
 
  protected:
   SigningKeyPair(std::unique_ptr<PersistenceDelegate> persistence_delegate,

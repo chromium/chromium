@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
+using BPKUP = enterprise_management::BrowserPublicKeyUploadResponse;
 
 namespace enterprise_connectors {
 namespace test {
@@ -51,19 +52,22 @@ InMemorySigningKeyPairNetworkDelegate::
     ~InMemorySigningKeyPairNetworkDelegate() = default;
 
 std::string InMemorySigningKeyPairNetworkDelegate::SendPublicKeyToDmServerSync(
-    const std::string& url,
+    const GURL& url,
     const std::string& dm_token,
     const std::string& body) {
+  ++send_count_;
   url_ = url;
   dm_token_ = dm_token;
   body_ = body;
 
+  auto rc = BPKUP::SUCCESS;
+  if (!response_codes_.empty()) {
+    rc = response_codes_.front();
+    response_codes_.pop_front();
+  }
+
   enterprise_management::DeviceManagementResponse response;
-  response.mutable_browser_public_key_upload_response()->set_response_code(
-      force_network_to_fail_
-          ? enterprise_management::BrowserPublicKeyUploadResponse::
-                INVALID_SIGNATURE
-          : enterprise_management::BrowserPublicKeyUploadResponse::SUCCESS);
+  response.mutable_browser_public_key_upload_response()->set_response_code(rc);
   std::string response_str;
   response.SerializeToString(&response_str);
   return response_str;

@@ -24,7 +24,7 @@ SigningKeyPair::KeyInfo SigningKeyPair::PersistenceDelegate::LoadKeyPair() {
 }
 
 std::string SigningKeyPair::NetworkDelegate::SendPublicKeyToDmServerSync(
-    const std::string& url,
+    const GURL& url,
     const std::string& dm_token,
     const std::string& body) {
   NOTIMPLEMENTED();

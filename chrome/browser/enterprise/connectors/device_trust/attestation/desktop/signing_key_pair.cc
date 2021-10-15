@@ -13,11 +13,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/threading/platform_thread.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/ec_signing_key.h"
 #include "crypto/unexportable_key.h"
+#include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
+using BPKUP = enterprise_management::BrowserPublicKeyUploadResponse;
 
 namespace enterprise_connectors {
 
@@ -133,11 +137,9 @@ bool SigningKeyPair::ExportPublicKey(std::vector<uint8_t>* public_key) {
   return public_key->size() != 0;
 }
 
-bool SigningKeyPair::RotateWithAdminRights(const std::string& dm_token) {
-  // TODO: In followup CL, these will arguments to the function.
-  std::string dm_server_url;
-  std::string nonce;
-
+bool SigningKeyPair::RotateWithAdminRights(const GURL& dm_server_url,
+                                           const std::string& dm_token,
+                                           const std::string& nonce) {
   // Create a new key pair.  First try creating a TPM-backed key.  If that does
   // not work, try a less secure type.
   KeyTrustLevel new_trust_level = BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED;
@@ -176,14 +178,40 @@ bool SigningKeyPair::RotateWithAdminRights(const std::string& dm_token) {
 
   std::string request_str;
   request.SerializeToString(&request_str);
-  std::string response_str = network_delegate_->SendPublicKeyToDmServerSync(
-      dm_server_url, dm_token, request_str);
-  enterprise_management::DeviceManagementResponse response;
-  if (response_str.empty() || !response.ParseFromString(response_str) ||
-      !response.has_browser_public_key_upload_response() ||
-      !response.browser_public_key_upload_response().has_response_code() ||
-      response.browser_public_key_upload_response().response_code() !=
-          enterprise_management::BrowserPublicKeyUploadResponse::SUCCESS) {
+
+  const net::BackoffEntry::Policy kBackoffPolicy{
+      .num_errors_to_ignore = 0,
+      .initial_delay_ms = 1000,
+      .multiply_factor = 2.0,
+      .jitter_factor = 0.1,
+      .maximum_backoff_ms = 5 * 60 * 1000,  // 5 min.
+      .entry_lifetime_ms = -1,
+      .always_use_initial_delay = false};
+
+  const int kMaxRetryCount = 10;
+  auto rc = BPKUP::UNDEFINED;
+  net::BackoffEntry boe(&kBackoffPolicy);
+  for (int i = 0;
+       rc == BPKUP::UNDEFINED && boe.failure_count() < kMaxRetryCount; ++i) {
+    // Wait before trying to send again, if needed.  This will not block on
+    // the first request.
+    if (boe.ShouldRejectRequest())
+      base::PlatformThread::Sleep(boe.GetTimeUntilRelease());
+
+    // Any attempt to reuse a nonce will result in an INVALID_SIGNATURE error
+    // being returned by the server.  This will cause the loop to break early.
+    std::string response_str = network_delegate_->SendPublicKeyToDmServerSync(
+        dm_server_url, dm_token, request_str);
+    enterprise_management::DeviceManagementResponse response;
+    rc = (!response_str.empty() && response.ParseFromString(response_str) &&
+          response.has_browser_public_key_upload_response() &&
+          response.browser_public_key_upload_response().has_response_code())
+             ? response.browser_public_key_upload_response().response_code()
+             : BPKUP::UNDEFINED;
+    boe.InformOfRequest(rc == BPKUP::SUCCESS);
+  }
+
+  if (rc != BPKUP::SUCCESS) {
     // Unable to send to DM server, so restore the old key if there was one.
     if (key_pair_) {
       persistence_delegate_->StoreKeyPair(trust_level_,
@@ -210,11 +238,16 @@ bool SigningKeyPair::BuildUploadPublicKeyRequest(
   std::vector<uint8_t> buffer = pubkey;
   buffer.insert(buffer.end(), nonce.begin(), nonce.end());
 
-  // If there is an existing key, sign the new pubkey with it.  Otherwise sign
-  // it with the new key itself (i.e. the public key is self-signed).
+  // If there is an existing key and the nonce is not empty, sign the new
+  // pubkey with it.  Otherwise sign it with the new key itself (i.e. the
+  // public key is self-signed).  This is done to handle the case of a device
+  // that is enabled for device trust and then un-enrolled server side.  When
+  // the user re-enrolls this device, the first key rotation attempt will use
+  // an empty nonce to signal this is the first public key being uploaded to
+  // DM server.  DM server expects the public key to be self signed.
   absl::optional<std::vector<uint8_t>> signature =
-      key_pair_ ? key_pair_->SignSlowly(buffer)
-                : new_key_pair->SignSlowly(buffer);
+      key_pair_ && !nonce.empty() ? key_pair_->SignSlowly(buffer)
+                                  : new_key_pair->SignSlowly(buffer);
   if (!signature.has_value())
     return false;
 

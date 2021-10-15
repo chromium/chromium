@@ -36,6 +36,7 @@ const char kEnrollmentTokenAuthHeaderPrefix[] = "GoogleEnrollmentToken token=";
 
 // String constants for the device and app type we report to the server.
 const char kValueAppType[] = "Chrome";
+const char kValueBrowserUploadPublicKey[] = "browser_public_key_upload";
 const char kValueDeviceType[] = "2";
 const char kValueRequestAutoEnrollment[] = "enterprise_check";
 const char kValueRequestPsmHasDeviceState[] = "enterprise_psm_check";

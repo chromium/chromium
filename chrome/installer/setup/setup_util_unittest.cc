@@ -24,6 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -32,6 +33,8 @@
 #include "base/win/scoped_handle.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/memory_signing_key_pair.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
@@ -615,6 +618,7 @@ TEST(SetupUtilTest, StoreDMTokenToRegistryShouldFailWhenDMTokenTooLarge) {
 }
 
 TEST(SetupUtilTest, RotateDTKeySuccess) {
+  base::test::TaskEnvironment task_environment;
   install_static::ScopedInstallDetails scoped_install_details(true);
   registry_util::RegistryOverrideManager registry_override_manager;
   ASSERT_NO_FATAL_FAILURE(
@@ -626,7 +630,19 @@ TEST(SetupUtilTest, RotateDTKeySuccess) {
   constexpr DWORD kExpectedSize = sizeof(kTokenData) - 1;
   std::string token(&kTokenData[0], kExpectedSize);
   ASSERT_EQ(token.length(), kExpectedSize);
-  ASSERT_TRUE(installer::RotateDeviceTrustKey(token));
+
+  // Create a signing key pair with a real persistence delegate but with the
+  // testing network delegate used in MemorySigningKeyPair to simulate network
+  // operations.
+  auto key_pair = enterprise_connectors::SigningKeyPair::CreateWithDelegates(
+      std::make_unique<
+          enterprise_connectors::SigningKeyPair::PersistenceDelegate>(),
+      std::make_unique<enterprise_connectors::test::
+                           InMemorySigningKeyPairNetworkDelegate>());
+  ASSERT_TRUE(key_pair);
+
+  ASSERT_TRUE(installer::RotateDeviceTrustKey(*key_pair, GURL("dmserver.com"),
+                                              token, "nonce"));
 
   base::win::RegKey key;
   std::wstring signingkey_name;
@@ -658,7 +674,12 @@ TEST(SetupUtilTest, RotateDTKeyShouldFailWhenDMTokenTooLarge) {
   std::string token_too_large(installer::kMaxDMTokenLength + 1, 'x');
   ASSERT_GT(token_too_large.size(), installer::kMaxDMTokenLength);
 
-  EXPECT_FALSE(installer::RotateDeviceTrustKey(token_too_large));
+  auto key_pair = enterprise_connectors::test::CreateInMemorySigningKeyPair(
+      nullptr, nullptr);
+  ASSERT_TRUE(key_pair);
+
+  EXPECT_FALSE(installer::RotateDeviceTrustKey(*key_pair, GURL("dmserver.com"),
+                                               token_too_large, "nonce"));
 }
 
 namespace installer {

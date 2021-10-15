@@ -17,9 +17,13 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "content/public/browser/browser_context.h"
+
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -54,8 +58,17 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
   std::unique_ptr<AttestationService> attestation_service =
       std::make_unique<AshAttestationService>(profile);
 #else
+  if (!g_browser_process || !g_browser_process->browser_policy_connector() ||
+      !g_browser_process->browser_policy_connector()
+           ->device_management_service()) {
+    return nullptr;
+  }
+
   std::unique_ptr<AttestationService> attestation_service =
-      std::make_unique<DesktopAttestationService>(SigningKeyPair::Create());
+      std::make_unique<DesktopAttestationService>(
+          SigningKeyPair::Create(),
+          g_browser_process->browser_policy_connector()
+              ->device_management_service());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return new DeviceTrustService(

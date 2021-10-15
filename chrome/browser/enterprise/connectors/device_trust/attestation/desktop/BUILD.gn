@@ -16,6 +16,8 @@ source_set("elevated_command_support") {
     "signing_key_pair.cc",
   ]
 
+  deps = [ "//net" ]
+
   public_deps = [
     "//base",
     "//components/policy/proto",
@@ -24,7 +26,11 @@ source_set("elevated_command_support") {
 
   if (is_win) {
     sources += [ "signing_key_pair_win.cc" ]
-    deps = [ "//chrome/installer/util:with_no_strings" ]
+    deps += [
+      "//chrome/installer/util:with_no_strings",
+      "//components/winhttp",
+      "//url",
+    ]
   }
 
   if (is_mac) {
@@ -50,7 +56,9 @@ source_set("test_support") {
 
   public_deps = [
     ":elevated_command_support",
+    "//components/policy/proto",
     "//crypto:test_support",
+    "//url",
   ]
 
   deps = [

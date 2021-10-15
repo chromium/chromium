@@ -12,7 +12,7 @@ void AttestationService::StampReport(DeviceTrustReportEvent& report) {
   // No-op by default.
 }
 
-bool AttestationService::RotateSigningKey() {
+bool AttestationService::RotateSigningKey(const std::string& nonce) {
   return false;
 }
 

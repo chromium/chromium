@@ -375,6 +375,8 @@ void AddEnterpriseDeviceTrustWorkItems(const InstallerState& installer_state,
   base::CommandLine cmd_line(installer_state.GetInstallerDirectory(new_version)
                                  .Append(setup_path.BaseName()));
   cmd_line.AppendSwitchASCII(switches::kRotateDeviceTrustKey, "%1");
+  cmd_line.AppendSwitchASCII(switches::kDmServerUrl, "%2");
+  cmd_line.AppendSwitchASCII(switches::kNonce, "%3");
   cmd_line.AppendSwitch(switches::kSystemLevel);
   cmd_line.AppendSwitch(switches::kVerboseLogging);
   InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
