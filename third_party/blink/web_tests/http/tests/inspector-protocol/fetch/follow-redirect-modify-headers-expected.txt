@@ -1,0 +1,8 @@
+Tests that client can modify headers when continuing following a redirect response.
+Request headers after redirect
+HTTP_X_DEVTOOLSTEST1: This will remain as is
+HTTP_X_DEVTOOLSTEST2: <not set>
+HTTP_X_DEVTOOLSTEST3: replaced with new value
+HTTP_X_DEVTOOLSTEST4: added
+
+
