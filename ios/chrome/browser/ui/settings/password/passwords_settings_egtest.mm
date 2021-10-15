@@ -1661,8 +1661,8 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 }
 
-// Checks the 'Add Password' button is disabled when the enable password toggle
-// is turned off.
+// Checks the 'Add Password' button is enabled when the passwords screen is
+// presented irrespective of the enable password toggle.
 - (void)testToolbarAddPasswordButton {
   SaveExamplePasswordForm();
   OpenPasswordSettings();
@@ -1686,15 +1686,9 @@ void CopyPasswordDetailWithID(int detail_id) {
                                              !expectedState),
         kGREYDirectionUp) assertWithMatcher:grey_sufficientlyVisible()];
 
-    if (!expectedState) {
       // Expect the button to be enabled.
-      [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
-          assertWithMatcher:grey_sufficientlyVisible()];
-    } else {
-      // Expect the button to be disabled.
-      [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
-          assertWithMatcher:grey_not(grey_enabled())];
-    }
+    [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
   }
 }
 
