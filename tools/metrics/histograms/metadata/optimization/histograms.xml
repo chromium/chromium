@@ -314,6 +314,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.MetadataFetchValidation.Result"
+    enum="Boolean" expires_after="M106">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the metadata fetch validation received the hints correctly.
+    Recorded on iOS when the mainframe navigation commits.
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.ModelExecutor.ExecutionLatency.{OptimizationTarget}"
     units="ms" expires_after="M96">
@@ -987,16 +997,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>mcrouse@chromium.org</owner>
   <summary>
     The decision made for whether the page load matches the optimization target.
-  </summary>
-</histogram>
-
-<histogram name="OptimizationGuide.ValidateMetadataFetch.Result" enum="Boolean"
-    expires_after="M106">
-  <owner>robertogden@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records whether the metadata fetch validation received the hints correctly.
-    Recorded on iOS when the mainframe navigation commits.
   </summary>
 </histogram>
 
