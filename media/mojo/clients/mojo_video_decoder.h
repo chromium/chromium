@@ -77,7 +77,6 @@ class MojoVideoDecoder final : public VideoDecoder,
   bool NeedsBitstreamConversion() const final;
   bool CanReadWithoutStalling() const final;
   int GetMaxDecodeRequests() const final;
-  bool IsOptimizedForRTC() const final;
 
   // mojom::VideoDecoderClient implementation.
   void OnVideoFrameDecoded(
