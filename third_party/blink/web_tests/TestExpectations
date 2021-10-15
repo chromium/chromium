@@ -124,7 +124,8 @@ crbug.com/1254937 http/tests/devtools/resource-tree/resource-tree-frame-add.js [
 crbug.com/1254937 http/tests/inspector-protocol/issues/content-security-policy-issue-creation-img.js [ Failure ]
 crbug.com/1254937 http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Failure Timeout ]
 crbug.com/1256612 plugins/focus-change-3-change-blur.html [ Failure Pass ]
-crbug.com/1235685 [ Mac10.14 ] plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
+crbug.com/1235685 [ Mac ] plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
+crbug.com/1235685 [ Linux ] plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
 
 # Timeouts
 crbug.com/1254938 http/tests/doc-write-intervention/doc-write-sync-third-party-script-block.html [ Timeout ]
@@ -6539,7 +6540,6 @@ crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-pr
 crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-remove-credential.js [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-set-aps.js [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-user-verification.js [ Crash Timeout ]
-crbug.com/1201406 [ Mac11.0 ] plugins/focus-change-4-change-focus-and-blur.html [ Failure Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-same-2-yes-port.sub.https.html [ Timeout ]
 
 # Sheriff 2021-06-14
