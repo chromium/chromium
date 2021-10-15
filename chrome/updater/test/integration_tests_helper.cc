@@ -280,6 +280,9 @@ class TersePrinter : public EmptyTestEventListener {
 int IntegrationTestsHelperMain(int argc, char** argv) {
   base::PlatformThread::SetName("IntegrationTestsHelperMain");
   base::CommandLine::Init(argc, argv);
+
+  // `test_suite` must be defined before setting log items.
+  base::TestSuite test_suite(argc, argv);
   logging::SetLogItems(/*enable_process_id=*/true,
                        /*enable_thread_id=*/true,
                        /*enable_timestamp=*/true,
@@ -290,7 +293,6 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
           base::win::ScopedCOMInitializer::kMTA);
 #endif
   chrome::RegisterPathProvider();
-  base::TestSuite test_suite(argc, argv);
   TestEventListeners& listeners = UnitTest::GetInstance()->listeners();
   delete listeners.Release(listeners.default_result_printer());
   listeners.Append(new TersePrinter);
