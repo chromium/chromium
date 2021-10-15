@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
+import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.signin.ui.SigninUtils;
 import org.chromium.chrome.browser.signin.ui.fre.FreUMADialogCoordinator;
 import org.chromium.chrome.browser.signin.ui.fre.SigninFirstRunCoordinator;
@@ -104,6 +105,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     /** Implements {@link SigninFirstRunCoordinator.Listener}. */
     @Override
     public void addAccount() {
+        getPageDelegate().recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
         AccountManagerFacadeProvider.getInstance().createAddAccountIntent(
                 (@Nullable Intent intent) -> {
                     if (intent != null) {

@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -43,8 +42,6 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -98,28 +95,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         }
     }
 
-    /**
-     * This is used for histograms and should therefore be treated as append-only. See
-     * {@code MobileFreProgress} in tools/metrics/histograms/enums.xml.
-     */
-    @VisibleForTesting
-    @IntDef({MobileFreProgress.STARTED, MobileFreProgress.WELCOME_SHOWN,
-            MobileFreProgress.DATA_SAVER_SHOWN, MobileFreProgress.SYNC_CONSENT_SHOWN,
-            MobileFreProgress.COMPLETED_SYNC, MobileFreProgress.COMPLETED_NOT_SYNC,
-            MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN, MobileFreProgress.MAX})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface MobileFreProgress {
-        int STARTED = 0;
-        int WELCOME_SHOWN = 1;
-        int DATA_SAVER_SHOWN = 2;
-        int SYNC_CONSENT_SHOWN = 3;
-        int COMPLETED_SYNC = 4;
-        int COMPLETED_NOT_SYNC = 5;
-        int DEFAULT_SEARCH_ENGINE_SHOWN = 6;
-        int MAX = 7;
-    }
-
-    private BitSet mFreProgressStepsRecorded = new BitSet(MobileFreProgress.MAX);
+    private final BitSet mFreProgressStepsRecorded = new BitSet(MobileFreProgress.MAX);
 
     @Nullable
     private static FirstRunActivityObserver sObserver;
@@ -639,7 +615,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         }
     }
 
-    private void recordFreProgressHistogram(int state) {
+    @Override
+    public void recordFreProgressHistogram(@MobileFreProgress int state) {
         assert 0 <= state && state < MobileFreProgress.MAX;
 
         if (mFreProgressStepsRecorded.get(state)) return;

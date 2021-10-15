@@ -605,12 +605,12 @@ public class FirstRunIntegrationTest {
         waitForActivity(ChromeTabbedActivity.class);
 
         checkRecordedProgressSteps(BitSet.valueOf(new long[] {
-                FirstRunActivity.MobileFreProgress.STARTED,
-                FirstRunActivity.MobileFreProgress.WELCOME_SHOWN,
-                FirstRunActivity.MobileFreProgress.DATA_SAVER_SHOWN,
-                FirstRunActivity.MobileFreProgress.SYNC_CONSENT_SHOWN,
-                FirstRunActivity.MobileFreProgress.COMPLETED_SYNC,
-                FirstRunActivity.MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN,
+                MobileFreProgress.STARTED,
+                MobileFreProgress.WELCOME_SHOWN,
+                MobileFreProgress.DATA_SAVER_SHOWN,
+                MobileFreProgress.SYNC_CONSENT_SHOWN,
+                MobileFreProgress.COMPLETED_SYNC,
+                MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN,
         }));
     }
 
@@ -628,15 +628,14 @@ public class FirstRunIntegrationTest {
         waitForActivity(ChromeTabbedActivity.class);
 
         checkRecordedProgressSteps(BitSet.valueOf(new long[] {
-                FirstRunActivity.MobileFreProgress.STARTED,
-                FirstRunActivity.MobileFreProgress.WELCOME_SHOWN,
-                FirstRunActivity.MobileFreProgress.COMPLETED_NOT_SYNC,
+                MobileFreProgress.STARTED,
+                MobileFreProgress.WELCOME_SHOWN,
+                MobileFreProgress.COMPLETED_NOT_SYNC,
         }));
     }
 
     private void checkRecordedProgressSteps(BitSet bucketsRecorded) {
-        for (int bucket = FirstRunActivity.MobileFreProgress.STARTED;
-                bucket < FirstRunActivity.MobileFreProgress.MAX; ++bucket) {
+        for (int bucket = MobileFreProgress.STARTED; bucket < MobileFreProgress.MAX; ++bucket) {
             int recordedValue = RecordHistogram.getHistogramValueCountForTesting(
                     FRE_PROGRESS_MAIN_INTENT_HISTOGRAM, bucket);
             if (bucketsRecorded.get(bucket)) {

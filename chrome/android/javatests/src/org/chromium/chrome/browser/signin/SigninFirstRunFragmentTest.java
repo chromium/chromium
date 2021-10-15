@@ -56,6 +56,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
+import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -526,6 +527,8 @@ public class SigninFirstRunFragmentTest {
                                 data));
 
         checkFragmentWithSelectedAccount(TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null);
+        verify(mFirstRunPageDelegateMock)
+                .recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
     }
 
     @Test
@@ -544,6 +547,8 @@ public class SigninFirstRunFragmentTest {
                                 data));
 
         checkFragmentWithSelectedAccount(TEST_EMAIL1, /* fullName= */ null, /* givenName= */ null);
+        verify(mFirstRunPageDelegateMock)
+                .recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
     }
 
     @Test

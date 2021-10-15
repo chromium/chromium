@@ -10,6 +10,7 @@ android_library("java") {
     "//base:base_java",
     "//chrome/android/features/start_surface:public_java",
     "//chrome/browser/consent_auditor/android:java",
+    "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",

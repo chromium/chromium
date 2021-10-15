@@ -5,8 +5,10 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/firstrun/FirstRunStatus.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/firstrun/FirstRunStatus.java",
+    "java/src/org/chromium/chrome/browser/firstrun/MobileFreProgress.java",
+  ]
   deps = [
     "//base:base_java",
     "//chrome/browser/preferences:java",

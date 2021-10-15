@@ -77,6 +77,12 @@ public interface FirstRunPageDelegate {
     void showInfoPage(int url);
 
     /**
+     * Records the FRE progress histogram MobileFre.Progress.*.
+     * @param state FRE state to record.
+     */
+    void recordFreProgressHistogram(@MobileFreProgress int state);
+
+    /**
      * The supplier that supplies whether reading policy value is necessary.
      * See {@link PolicyLoadListener} for details.
      */
