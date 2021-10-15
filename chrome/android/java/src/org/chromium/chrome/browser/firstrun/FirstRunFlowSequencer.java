@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.signin.ChildAccountStatus.Status;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -58,8 +59,13 @@ public abstract class FirstRunFlowSequencer  {
      */
     @VisibleForTesting
     public static class FirstRunFlowSequencerDelegate {
-        /** @return true if the sync consent promo page should be shown. */
-        boolean shouldShowSyncConsentPage(Activity activity, List<Account> accounts) {
+        /** Returns true if the sync consent promo page should be shown. */
+        boolean shouldShowSyncConsentPage(
+                Activity activity, List<Account> accounts, @Status int childAccountStatus) {
+            if (ChildAccountStatus.isChild(childAccountStatus)) {
+                // Always show the sync consent page for child account.
+                return true;
+            }
             final IdentityManager identityManager =
                     IdentityServicesProvider.get().getIdentityManager(
                             Profile.getLastUsedRegularProfile());
@@ -170,7 +176,7 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     private boolean shouldShowSyncConsentPage() {
-        return mDelegate.shouldShowSyncConsentPage(mActivity, mGoogleAccounts);
+        return mDelegate.shouldShowSyncConsentPage(mActivity, mGoogleAccounts, mChildAccountStatus);
     }
 
     @VisibleForTesting

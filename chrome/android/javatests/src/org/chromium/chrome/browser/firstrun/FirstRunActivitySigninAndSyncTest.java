@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.firstrun;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
@@ -18,6 +16,7 @@ import android.accounts.Account;
 import android.content.Intent;
 import android.support.test.runner.lifecycle.Stage;
 
+import androidx.annotation.IdRes;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -50,6 +49,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
 public class FirstRunActivitySigninAndSyncTest {
     private static final String TEST_EMAIL = "test.account@gmail.com";
+    private static final String CHILD_EMAIL = "child.account@gmail.com";
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -59,7 +59,9 @@ public class FirstRunActivitySigninAndSyncTest {
                 @Override
                 public void checkChildAccountStatus(
                         Account account, ChildAccountStatusListener listener) {
-                    listener.onStatusReady(ChildAccountStatus.NOT_CHILD);
+                    listener.onStatusReady(account.name.equals(CHILD_EMAIL)
+                                    ? ChildAccountStatus.REGULAR_CHILD
+                                    : ChildAccountStatus.NOT_CHILD);
                 }
             };
 
@@ -86,7 +88,7 @@ public class FirstRunActivitySigninAndSyncTest {
         launchFirstRunActivity();
         onView(withId(R.id.signin_fre_selected_account)).check(matches(not(isDisplayed())));
 
-        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+        clickButton(R.id.signin_fre_dismiss_button);
 
         ensureCurrentPageIs(DataReductionProxyFirstRunFragment.class);
     }
@@ -98,7 +100,7 @@ public class FirstRunActivitySigninAndSyncTest {
         launchFirstRunActivity();
         onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
 
-        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+        clickButton(R.id.signin_fre_dismiss_button);
 
         ensureCurrentPageIs(DataReductionProxyFirstRunFragment.class);
     }
@@ -111,15 +113,30 @@ public class FirstRunActivitySigninAndSyncTest {
         ensureCurrentPageIs(SigninFirstRunFragment.class);
         onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
 
+        clickButton(R.id.signin_fre_continue_button);
+
+        ensureCurrentPageIs(SyncConsentFirstRunFragment.class);
+    }
+
+    @Test
+    @MediumTest
+    public void continueButtonClickShowsSyncConsentPageWithChildAccount() {
+        mAccountManagerTestRule.addAccount(CHILD_EMAIL);
+        launchFirstRunActivity();
+        ensureCurrentPageIs(SigninFirstRunFragment.class);
+        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
+
+        clickButton(R.id.signin_fre_continue_button);
+
+        ensureCurrentPageIs(SyncConsentFirstRunFragment.class);
+    }
+
+    private void clickButton(@IdRes int buttonId) {
         // This helps to reduce flakiness on some marshmallow bots in comparison with
         // espresso click.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFirstRunActivityRule.getActivity()
-                    .findViewById(R.id.signin_fre_continue_button)
-                    .performClick();
+            mFirstRunActivityRule.getActivity().findViewById(buttonId).performClick();
         });
-
-        ensureCurrentPageIs(SyncConsentFirstRunFragment.class);
     }
 
     private <T extends FirstRunFragment> void ensureCurrentPageIs(Class<T> fragmentClass) {

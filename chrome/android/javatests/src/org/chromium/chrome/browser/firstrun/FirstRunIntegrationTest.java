@@ -74,6 +74,7 @@ import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.ChildAccountStatus.Status;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -1480,7 +1481,8 @@ public class FirstRunIntegrationTest {
         }
 
         @Override
-        public boolean shouldShowSyncConsentPage(Activity activity, List<Account> accounts) {
+        public boolean shouldShowSyncConsentPage(
+                Activity activity, List<Account> accounts, @Status int childAccountStatus) {
             return mTestCase.showSigninPromo();
         }
 
