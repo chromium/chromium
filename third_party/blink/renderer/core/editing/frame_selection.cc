@@ -160,16 +160,15 @@ VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated()
   // to caller. See http://crbug.com/590369 for more details.
   Position base = GetSelectionInDOMTree().Base();
   Position extent = GetSelectionInDOMTree().Extent();
-  if (base.ComputeContainerNode() && extent.ComputeContainerNode()) {
-    DisplayLockUtilities::ScopedForcedUpdate force_locks(
+  absl::optional<DisplayLockUtilities::ScopedForcedUpdate> force_locks;
+  if (base != extent && base.ComputeContainerNode() &&
+      extent.ComputeContainerNode()) {
+    force_locks = DisplayLockUtilities::ScopedForcedUpdate(
         MakeGarbageCollected<Range>(GetDocument(), base, extent),
         DisplayLockContext::ForcedPhase::kLayout);
-    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
-    return ComputeVisibleSelectionInDOMTree();
-  } else {
-    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
-    return ComputeVisibleSelectionInDOMTree();
   }
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
+  return ComputeVisibleSelectionInDOMTree();
 }
 
 void FrameSelection::MoveCaretSelection(const IntPoint& point) {

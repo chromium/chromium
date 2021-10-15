@@ -1714,8 +1714,11 @@ void Range::GetBorderAndTextQuads(Vector<FloatQuad>& quads) const {
 }
 
 FloatRect Range::BoundingRect() const {
-  DisplayLockUtilities::ScopedForcedUpdate force_locks(
-      this, DisplayLockContext::ForcedPhase::kLayout);
+  absl::optional<DisplayLockUtilities::ScopedForcedUpdate> force_locks;
+  if (!collapsed()) {
+    force_locks = DisplayLockUtilities::ScopedForcedUpdate(
+        this, DisplayLockContext::ForcedPhase::kLayout);
+  }
   owner_document_->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   Vector<FloatQuad> quads;
