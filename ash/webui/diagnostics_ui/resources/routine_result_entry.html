@@ -20,17 +20,17 @@
   }
 
   .badge-container {
-    align-items: center;
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
-    width: 56px;
+    width: auto;
   }
 
   .entryRow {
     align-items: center;
     column-gap: 16px;
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: minmax(56px, auto) 1fr;
     height: 40px;
   }
 
@@ -40,7 +40,7 @@
 
   .line {
     height: 5px;
-    margin: 2px 0;
+    margin: 2px 16px;
   }
 
   .line-container {
