@@ -71,12 +71,6 @@ void DialMediaRouteProvider::Init(
 
   message_sender_ =
       std::make_unique<BufferedMessageSender>(media_router_.get());
-
-  // TODO(crbug.com/816702): This needs to be set properly according to sinks
-  // discovered.
-  media_router_->OnSinkAvailabilityUpdated(
-      mojom::MediaRouteProviderId::DIAL,
-      mojom::MediaRouter::SinkAvailability::PER_SOURCE);
 }
 
 DialMediaRouteProvider::~DialMediaRouteProvider() {

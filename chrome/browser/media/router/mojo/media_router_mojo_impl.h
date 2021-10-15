@@ -100,9 +100,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   // MediaRouterMojoImplFactory::GetApiForBrowserContext.
   explicit MediaRouterMojoImpl(content::BrowserContext* context);
 
-  // Requests MRPs to update media sinks.  This allows MRPs that only do
-  // discovery on sink queries an opportunity to update discovery results
-  // even if the MRP SinkAvailability is marked UNAVAILABLE.
+  // Requests MRPs to update media sinks.
   void UpdateMediaSinks(const MediaSource::Id& source_id);
 
   // Called when the Mojo pointer for |provider_id| has a connection error.
@@ -272,31 +270,6 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
     base::ObserverList<MediaRoutesObserver>::Unchecked observers_;
   };
 
-  class ProviderSinkAvailability {
-   public:
-    ProviderSinkAvailability();
-    ~ProviderSinkAvailability();
-
-    // Sets the sink availability for |provider_id|. Returns true if
-    // |availability| is different from that already recorded.
-    bool SetAvailabilityForProvider(mojom::MediaRouteProviderId provider_id,
-                                    SinkAvailability availability);
-
-    // Returns true if the availability for the provider is not UNAVAILABLE.
-    bool IsAvailableForProvider(mojom::MediaRouteProviderId provider_id) const;
-
-    // Returns true if there is a provider whose sink availability isn't
-    // UNAVAILABLE.
-    bool IsAvailable() const;
-
-   private:
-    void UpdateOverallAvailability();
-
-    base::flat_map<mojom::MediaRouteProviderId, SinkAvailability>
-        availabilities_;
-    SinkAvailability overall_availability_ = SinkAvailability::UNAVAILABLE;
-  };
-
   // See note in OnDesktopPickerDone().
   struct PendingStreamRequest {
     std::string stream_id;
@@ -325,8 +298,6 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
       const std::vector<MediaRoute>& routes,
       const std::string& media_source,
       const std::vector<std::string>& joinable_route_ids) override;
-  void OnSinkAvailabilityUpdated(mojom::MediaRouteProviderId provider_id,
-                                 SinkAvailability availability) override;
   void OnPresentationConnectionStateChanged(
       const std::string& route_id,
       blink::mojom::PresentationConnectionState state) override;
@@ -428,9 +399,6 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
       base::ObserverList<RouteMessageObserver>::Unchecked;
   base::flat_map<MediaRoute::Id, std::unique_ptr<RouteMessageObserverList>>
       message_observers_;
-
-  // The last reported sink availability from the media route providers.
-  ProviderSinkAvailability sink_availability_;
 
   // Receivers for Mojo remotes to |this| held by media route providers.
   mojo::ReceiverSet<mojom::MediaRouter> receivers_;

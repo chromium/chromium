@@ -249,9 +249,6 @@ TEST_F(WiredDisplayMediaRouteProviderTest, NotifyOnDisplayChange) {
   // Add an external display. MediaRouter should be notified of the sink and the
   // sink availability change.
   provider_->set_all_displays({primary_display_, secondary_display1_});
-  EXPECT_CALL(router_, OnSinkAvailabilityUpdated(
-                           mojom::MediaRouteProviderId::WIRED_DISPLAY,
-                           mojom::MediaRouter::SinkAvailability::PER_SOURCE));
   EXPECT_CALL(router_, OnSinksReceived(
                            mojom::MediaRouteProviderId::WIRED_DISPLAY, _, _, _))
       .WillOnce(
@@ -267,9 +264,6 @@ TEST_F(WiredDisplayMediaRouteProviderTest, NotifyOnDisplayChange) {
   // Remove the external display. MediaRouter should be notified of the lack of
   // sinks.
   provider_->set_all_displays({primary_display_});
-  EXPECT_CALL(router_, OnSinkAvailabilityUpdated(
-                           mojom::MediaRouteProviderId::WIRED_DISPLAY,
-                           mojom::MediaRouter::SinkAvailability::UNAVAILABLE));
   EXPECT_CALL(router_,
               OnSinksReceived(mojom::MediaRouteProviderId::WIRED_DISPLAY, _,
                               IsEmpty(), _));
@@ -279,9 +273,6 @@ TEST_F(WiredDisplayMediaRouteProviderTest, NotifyOnDisplayChange) {
   // Add a display that mirrors the primary display. The sink list should still
   // be empty.
   provider_->set_all_displays({primary_display_, mirror_display_});
-  EXPECT_CALL(router_, OnSinkAvailabilityUpdated(
-                           mojom::MediaRouteProviderId::WIRED_DISPLAY,
-                           mojom::MediaRouter::SinkAvailability::UNAVAILABLE));
   EXPECT_CALL(router_,
               OnSinksReceived(mojom::MediaRouteProviderId::WIRED_DISPLAY, _,
                               IsEmpty(), _));

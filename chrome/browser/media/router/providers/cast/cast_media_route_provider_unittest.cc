@@ -78,7 +78,6 @@ class CastMediaRouteProviderTest : public testing::Test {
                                socket_service_.task_runner()));
     CastSessionTracker::SetInstanceForTest(session_tracker_.get());
 
-    EXPECT_CALL(mock_router_, OnSinkAvailabilityUpdated(_, _));
     provider_ = std::make_unique<CastMediaRouteProvider>(
         provider_remote_.BindNewPipeAndPassReceiver(), std::move(router_remote),
         &media_sink_service_, &app_discovery_service_, &message_handler_,

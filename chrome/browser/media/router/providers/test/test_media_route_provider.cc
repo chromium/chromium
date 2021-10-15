@@ -51,8 +51,6 @@ TestMediaRouteProvider::TestMediaRouteProvider(
     : receiver_(this, std::move(receiver)),
       media_router_(std::move(media_router)) {
   SetSinks();
-  media_router_->OnSinkAvailabilityUpdated(
-      kProviderId, mojom::MediaRouter::SinkAvailability::PER_SOURCE);
 }
 
 TestMediaRouteProvider::~TestMediaRouteProvider() = default;

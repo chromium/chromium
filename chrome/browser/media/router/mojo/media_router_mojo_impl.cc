@@ -106,8 +106,6 @@ DesktopMediaPickerController::Params MakeDesktopPickerParams(
 
 }  // namespace
 
-using SinkAvailability = mojom::MediaRouter::SinkAvailability;
-
 MediaRouterMojoImpl::MediaRoutesQuery::MediaRoutesQuery() = default;
 
 MediaRouterMojoImpl::MediaRoutesQuery::~MediaRoutesQuery() = default;
@@ -549,58 +547,6 @@ bool MediaRouterMojoImpl::MediaRoutesQuery::HasObservers() const {
   return !observers_.empty();
 }
 
-MediaRouterMojoImpl::ProviderSinkAvailability::ProviderSinkAvailability() =
-    default;
-
-MediaRouterMojoImpl::ProviderSinkAvailability::~ProviderSinkAvailability() =
-    default;
-
-bool MediaRouterMojoImpl::ProviderSinkAvailability::SetAvailabilityForProvider(
-    mojom::MediaRouteProviderId provider_id,
-    SinkAvailability availability) {
-  SinkAvailability previous_availability = SinkAvailability::UNAVAILABLE;
-  const auto& availability_for_provider = availabilities_.find(provider_id);
-  if (availability_for_provider != availabilities_.end()) {
-    previous_availability = availability_for_provider->second;
-  }
-  availabilities_[provider_id] = availability;
-  if (availability == previous_availability) {
-    return false;
-  } else {
-    UpdateOverallAvailability();
-    return true;
-  }
-}
-
-bool MediaRouterMojoImpl::ProviderSinkAvailability::IsAvailableForProvider(
-    mojom::MediaRouteProviderId provider_id) const {
-  const auto& it = availabilities_.find(provider_id);
-  return it == availabilities_.end()
-             ? false
-             : it->second != SinkAvailability::UNAVAILABLE;
-}
-
-bool MediaRouterMojoImpl::ProviderSinkAvailability::IsAvailable() const {
-  return overall_availability_ != SinkAvailability::UNAVAILABLE;
-}
-
-void MediaRouterMojoImpl::ProviderSinkAvailability::
-    UpdateOverallAvailability() {
-  overall_availability_ = SinkAvailability::UNAVAILABLE;
-  for (const auto& availability : availabilities_) {
-    switch (availability.second) {
-      case SinkAvailability::UNAVAILABLE:
-        break;
-      case SinkAvailability::PER_SOURCE:
-        overall_availability_ = SinkAvailability::PER_SOURCE;
-        break;
-      case SinkAvailability::AVAILABLE:
-        overall_availability_ = SinkAvailability::AVAILABLE;
-        return;
-    }
-  }
-}
-
 bool MediaRouterMojoImpl::RegisterMediaSinksObserver(
     MediaSinksObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -618,15 +564,12 @@ bool MediaRouterMojoImpl::RegisterMediaSinksObserver(
   }
   sinks_query->AddObserver(observer);
 
-  // If sink availability is UNAVAILABLE or the query isn't new, then there is
-  // no need to call MRPs.
+  // If the query isn't new, then there is no need to call MRPs.
   if (is_new_query) {
     for (const auto& provider : media_route_providers_) {
-      if (sink_availability_.IsAvailableForProvider(provider.first)) {
-        // TODO(crbug.com/1090890): Don't allow MediaSource::ForAnyTab().id() to
-        // be passed here.
-        provider.second->StartObservingMediaSinks(source.id());
-      }
+      // TODO(crbug.com/1090890): Don't allow MediaSource::ForAnyTab().id() to
+      // be passed here.
+      provider.second->StartObservingMediaSinks(source.id());
     }
   }
   return true;
@@ -649,14 +592,10 @@ void MediaRouterMojoImpl::UnregisterMediaSinksObserver(
   // Since all tabs share the tab sinks query, we don't want to delete it
   // here.
   if (!it->second->HasObservers() && !source.IsTabMirroringSource()) {
-    // Only ask MRPs to stop observing media sinks if there are sinks available.
-    // Otherwise, the MRPs would have discarded the queries already.
     for (const auto& provider : media_route_providers_) {
-      if (sink_availability_.IsAvailableForProvider(provider.first)) {
-        // TODO(crbug.com/1090890): Don't allow MediaSource::ForAnyTab().id() to
-        // be passed here.
-        provider.second->StopObservingMediaSinks(source.id());
-      }
+      // TODO(crbug.com/1090890): Don't allow MediaSource::ForAnyTab().id() to
+      // be passed here.
+      provider.second->StopObservingMediaSinks(source.id());
     }
     sinks_queries_.erase(source.id());
   }
@@ -806,28 +745,6 @@ void MediaRouterMojoImpl::OnRouteMessagesReceived(
   }
 }
 
-void MediaRouterMojoImpl::OnSinkAvailabilityUpdated(
-    mojom::MediaRouteProviderId provider_id,
-    SinkAvailability availability) {
-  if (!sink_availability_.SetAvailabilityForProvider(provider_id, availability))
-    return;
-
-  if (availability != SinkAvailability::UNAVAILABLE) {
-    // Sinks are now available. Tell the MRP to start all sink queries again.
-    auto& provider = media_route_providers_[provider_id];
-    for (const auto& source_and_query : sinks_queries_) {
-      // TODO(crbug.com/1090890): Don't allow MediaSource::ForAnyTab().id() to
-      // be passed here.
-      provider->StartObservingMediaSinks(source_and_query.first);
-    }
-  } else if (!sink_availability_.IsAvailable()) {
-    // Sinks are no longer available. MRPs have already removed all sink
-    // queries.
-    for (auto& source_and_query : sinks_queries_)
-      source_and_query.second->Reset();
-  }
-}
-
 void MediaRouterMojoImpl::OnPresentationConnectionStateChanged(
     const std::string& route_id,
     blink::mojom::PresentationConnectionState state) {
@@ -868,12 +785,10 @@ void MediaRouterMojoImpl::SyncStateToMediaRouteProvider(
     mojom::MediaRouteProviderId provider_id) {
   const auto& provider = media_route_providers_[provider_id];
   // Sink queries.
-  if (sink_availability_.IsAvailableForProvider(provider_id)) {
-    for (const auto& it : sinks_queries_) {
-      // TODO(crbug.com/1090890): Don't allow MediaSource::ForAnyTab().id() to
-      // be passed here.
-      provider->StartObservingMediaSinks(it.first);
-    }
+  for (const auto& it : sinks_queries_) {
+    // TODO(crbug.com/1090890): Don't allow MediaSource::ForAnyTab().id() to
+    // be passed here.
+    provider->StartObservingMediaSinks(it.first);
   }
 
   // Route queries.

@@ -166,9 +166,6 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
   // Sends the current list of sinks to each query in |sink_queries_|.
   void NotifySinkObservers();
 
-  // Notifies |media_router_| of the current sink availability.
-  void ReportSinkAvailability(const std::vector<MediaSinkInternal>& sinks);
-
   // Removes the presentation from |presentations_| and notifies route
   // observers.
   void RemovePresentationById(const std::string& presentation_id);

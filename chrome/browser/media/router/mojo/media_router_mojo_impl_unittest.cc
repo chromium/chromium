@@ -170,23 +170,6 @@ class MediaRouterMojoImplTest : public MediaRouterMojoTest {
         new MediaRouterMojoImpl(profile()));
   }
 
-  // Helper methods for interacting with private properties of the MediaRouter.
-  // This is a rather large list of methods. When writing tests that need
-  // additional private access to the Media Router, consider refactoring the
-  // Media Router into more testable classes with more cleanly defined
-  // responsibilities.
-  void SetSinkAvailabilityAvailable() {
-    router()->OnSinkAvailabilityUpdated(
-        mojom::MediaRouteProviderId::CAST,
-        mojom::MediaRouter::SinkAvailability::AVAILABLE);
-  }
-
-  void SetSinkAvailabilityUnavailable() {
-    router()->OnSinkAvailabilityUpdated(
-        mojom::MediaRouteProviderId::CAST,
-        mojom::MediaRouter::SinkAvailability::UNAVAILABLE);
-  }
-
   void ReceiveSinks(mojom::MediaRouteProviderId provider_id,
                     const std::string& media_source,
                     const std::vector<MediaSinkInternal>& sinks) {
@@ -613,7 +596,6 @@ TEST_F(MediaRouterMojoImplTest, HandleIssue) {
 }
 
 TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaSinksObserver) {
-  SetSinkAvailabilityAvailable();
   MediaSource media_source(kSource);
 
   // These should only be called once even if there is more than one observer
@@ -667,7 +649,6 @@ TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaSinksObserver) {
 }
 
 TEST_F(MediaRouterMojoImplTest, TabSinksObserverIsShared) {
-  SetSinkAvailabilityAvailable();
   MediaSource tab_source_one(kTabSourceOne);
   MediaSource tab_source_two(kTabSourceTwo);
 
@@ -733,56 +714,6 @@ TEST_F(MediaRouterMojoImplTest, TabSinksObserverIsShared) {
   second_tab_sinks_observer.reset();
   cached_sinks_observer.reset();
   cached_sinks_observer2.reset();
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(MediaRouterMojoImplTest,
-       RegisterMediaSinksObserverWithAvailabilityChange) {
-  // When availability is UNAVAILABLE, no calls should be made to MRPM.
-  SetSinkAvailabilityUnavailable();
-  MediaSource media_source(kSource);
-  auto sinks_observer = std::make_unique<MockMediaSinksObserver>(
-      router(), media_source, url::Origin::Create(GURL(kOrigin)));
-  EXPECT_CALL(*sinks_observer, OnSinksReceived(IsEmpty()));
-  EXPECT_TRUE(sinks_observer->Init());
-  MediaSource media_source2(kSource2);
-  auto sinks_observer2 = std::make_unique<MockMediaSinksObserver>(
-      router(), media_source2, url::Origin::Create(GURL(kOrigin)));
-  EXPECT_CALL(*sinks_observer2, OnSinksReceived(IsEmpty()));
-  EXPECT_TRUE(sinks_observer2->Init());
-  EXPECT_CALL(mock_cast_provider_, StartObservingMediaSinks(kSource)).Times(0);
-  EXPECT_CALL(mock_cast_provider_, StartObservingMediaSinks(kSource2)).Times(0);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_cast_provider_));
-
-  // When availability transitions AVAILABLE, existing sink queries should be
-  // sent to MRPM.
-  SetSinkAvailabilityAvailable();
-  EXPECT_CALL(mock_cast_provider_, StartObservingMediaSinks(kSource)).Times(1);
-  EXPECT_CALL(mock_cast_provider_, StartObservingMediaSinks(kSource2)).Times(1);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_cast_provider_));
-
-  // No change in availability status; no calls should be made to MRPM.
-  SetSinkAvailabilityAvailable();
-  EXPECT_CALL(mock_cast_provider_, StartObservingMediaSinks(kSource)).Times(0);
-  EXPECT_CALL(mock_cast_provider_, StartObservingMediaSinks(kSource2)).Times(0);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_cast_provider_));
-
-  // When availability is UNAVAILABLE, queries are already removed from MRPM.
-  // Unregistering observer won't result in call to MRPM to remove query.
-  SetSinkAvailabilityUnavailable();
-  EXPECT_CALL(mock_cast_provider_, StopObservingMediaSinks(kSource)).Times(0);
-  sinks_observer.reset();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_cast_provider_));
-
-  // When availability is AVAILABLE, call is made to MRPM to remove query when
-  // observer is unregistered.
-  SetSinkAvailabilityAvailable();
-  EXPECT_CALL(mock_cast_provider_, StopObservingMediaSinks(kSource2));
-  sinks_observer2.reset();
   base::RunLoop().RunUntilIdle();
 }
 

@@ -478,18 +478,6 @@ interface MediaRouteProvider {
 // across media sources, sinks, and issues. The MediaRouter lives in the browser
 // process.
 interface MediaRouter {
-
-  // Represents overall media sink availability states.
-  // UNAVAILABLE - No sinks are available.
-  // PER_SOURCE - Sinks are available, but are only compatible with specific
-  //              media sources.
-  // AVAILABLE - A sink is available regardless of source.
-  enum SinkAvailability {
-    UNAVAILABLE,
-    PER_SOURCE,
-    AVAILABLE
-  };
-
   // Registers a MediaRouteProvider with the MediaRouter.
   RegisterMediaRouteProvider(MediaRouteProviderId provider_id,
       pending_remote<MediaRouteProvider> media_router_provider);
@@ -512,11 +500,6 @@ interface MediaRouter {
                   array<MediaRoute> routes,
                   string media_source,
                   array<string> joinable_route_ids);
-
-  // Called when the availability of media sinks for a MediaRouteProvider has
-  // been updated.
-  OnSinkAvailabilityUpdated(MediaRouteProviderId provider_id,
-                            SinkAvailability availability);
 
   // Called when the state of presentation connected to route |route_id| has
   // changed to |state|.
