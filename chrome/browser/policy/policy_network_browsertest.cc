@@ -695,34 +695,4 @@ IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, ChromeVariations) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// Test that 3DES is disabled by default. Historically, this was a test of the
-// 3DES policy. Now it is an integration test that 3DES is disabled in the
-// browser.
-//
-// TODO(https://crbug.com/1203442): Remove this test after unwinding the 3DES
-// toggles in //net, so that 3DES is always disabled.
-IN_PROC_BROWSER_TEST_F(SSLPolicyTest, TripleDESDisabled) {
-  // Start a server that only supports TLS_RSA_WITH_3DES_EDE_CBC_SHA.
-  net::SSLServerConfig ssl_config;
-  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
-  ssl_config.cipher_suite_for_testing = 0x000a;
-  ASSERT_TRUE(StartTestServer(ssl_config));
-
-  // 3DES should be disabled.
-  LoadResult result = LoadPage("/title1.html");
-  EXPECT_FALSE(result.success);
-  ExpectVersionOrCipherMismatch();
-
-  // Enable the old 3DES policy.
-  PolicyMap policies;
-  SetPolicy(&policies, key::kTripleDESEnabled, base::Value(true));
-  UpdateProviderPolicy(policies);
-  content::FlushNetworkServiceInstanceForTesting();
-
-  // 3DES is still disabled. The policy is now ignored.
-  result = LoadPage("/title2.html");
-  EXPECT_FALSE(result.success);
-  ExpectVersionOrCipherMismatch();
-}
-
 }  // namespace policy

@@ -545,35 +545,6 @@ TEST_F(SSLConnectJobTest, DirectLegacyCryptoFallback) {
   }
 }
 
-// Test that the feature flag disables the legacy crypto fallback.
-TEST_F(SSLConnectJobTest, LegacyCryptoFallbackDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kTLSLegacyCryptoFallbackForMetrics);
-  for (Error error :
-       {ERR_CONNECTION_CLOSED, ERR_CONNECTION_RESET, ERR_SSL_PROTOCOL_ERROR,
-        ERR_SSL_VERSION_OR_CIPHER_MISMATCH}) {
-    SCOPED_TRACE(error);
-
-    StaticSocketDataProvider data;
-    socket_factory_.AddSocketDataProvider(&data);
-    SSLSocketDataProvider ssl(ASYNC, error);
-    socket_factory_.AddSSLSocketDataProvider(&ssl);
-    ssl.expected_disable_legacy_crypto = false;
-
-    TestConnectJobDelegate test_delegate;
-    std::unique_ptr<ConnectJob> ssl_connect_job =
-        CreateConnectJob(&test_delegate);
-
-    test_delegate.StartJobExpectingResult(ssl_connect_job.get(), error,
-                                          /*expect_sync_result=*/false);
-    ConnectionAttempts connection_attempts =
-        ssl_connect_job->GetConnectionAttempts();
-    ASSERT_EQ(1u, connection_attempts.size());
-    EXPECT_THAT(connection_attempts[0].result, test::IsError(error));
-  }
-}
-
 TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
   base::FilePath certs_dir = GetTestCertsDirectory();
 
@@ -599,8 +570,6 @@ TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
 
   // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
   const uint16_t kModernCipher = 0xc02f;
-  // TLS_RSA_WITH_3DES_EDE_CBC_SHA
-  const uint16_t k3DESCipher = 0x000a;
 
   struct HistogramTest {
     SSLLegacyCryptoFallback expected;
@@ -618,16 +587,6 @@ TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
        SSL_SIGN_RSA_PSS_RSAE_SHA256, sha1_leaf},
       {SSLLegacyCryptoFallback::kNoFallback, OK, kModernCipher,
        SSL_SIGN_RSA_PSS_RSAE_SHA256, ok_with_unused_sha1},
-
-      // Connections using 3DES map to kUsed3DES or kSentSHA1CertAndUsed3DES.
-      // Note our only supported 3DES cipher suite does not include a server
-      // signature, so |peer_signature_algorithm| would always be zero.
-      {SSLLegacyCryptoFallback::kUsed3DES, ERR_SSL_PROTOCOL_ERROR, k3DESCipher,
-       0, ok_cert},
-      {SSLLegacyCryptoFallback::kSentSHA1CertAndUsed3DES,
-       ERR_SSL_PROTOCOL_ERROR, k3DESCipher, 0, sha1_leaf},
-      {SSLLegacyCryptoFallback::kSentSHA1CertAndUsed3DES,
-       ERR_SSL_PROTOCOL_ERROR, k3DESCipher, 0, ok_with_unused_sha1},
 
       // Connections using SHA-1 map to kUsedSHA1 or kSentSHA1CertAndUsedSHA1.
       {SSLLegacyCryptoFallback::kUsedSHA1, ERR_SSL_PROTOCOL_ERROR,

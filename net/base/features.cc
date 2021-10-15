@@ -199,9 +199,6 @@ const base::Feature kTurnOffStreamingMediaCachingAlways{
 const base::Feature kSchemefulSameSite{"SchemefulSameSite",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kTLSLegacyCryptoFallbackForMetrics{
-    "TLSLegacyCryptoFallbackForMetrics", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kReportPoorConnectivity{"ReportPoorConnectivity",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 

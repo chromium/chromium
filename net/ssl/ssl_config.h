@@ -84,8 +84,7 @@ struct NET_EXPORT SSLConfig {
   // If true, causes only ECDHE cipher suites to be enabled.
   bool require_ecdhe = false;
 
-  // If true, causes 3DES cipher suites and SHA-1 signature algorithms in
-  // TLS 1.2 to be disabled.
+  // If true, causes SHA-1 signature algorithms in TLS 1.2 to be disabled.
   bool disable_legacy_crypto = false;
 
   // TODO(wtc): move the following members to a new SSLParams structure.  They

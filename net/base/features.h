@@ -299,11 +299,6 @@ NET_EXPORT extern const base::Feature kTurnOffStreamingMediaCachingAlways;
 // account the scheme of the site-for-cookies and the request/response url.
 NET_EXPORT extern const base::Feature kSchemefulSameSite;
 
-// When enabled, TLS connections will initially not offer 3DES and SHA-1 but
-// enable them on fallback. This is used to improve metrics around usage of
-// those algorithms. If disabled, the algorithms will always be offered.
-NET_EXPORT extern const base::Feature kTLSLegacyCryptoFallbackForMetrics;
-
 // When enabled, the Network Quality Estimator (NQE) will notify the operating
 // system whenever it detects that the current default network may have
 // significantly degraded connectivity. Currently only effective on Android.
