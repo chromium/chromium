@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -29,14 +30,9 @@ constexpr int kGridPaddingDp = 25;
 
 }  // namespace
 
-DesksTemplatesGridView::DesksTemplatesGridView(
-    const std::vector<DeskTemplate*>& desk_templates) {
-  DCHECK(!desk_templates.empty());
-  DCHECK_LE(desk_templates.size(), kMaxTemplateCount);
-
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* column_set = layout->AddColumnSet(kColumnSetId);
+DesksTemplatesGridView::DesksTemplatesGridView() {
+  layout_ = SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::ColumnSet* column_set = layout_->AddColumnSet(kColumnSetId);
 
   // Add `kNumColumns` and some padding between each one.
   const float fixed_size = views::GridLayout::kFixedSize;
@@ -50,28 +46,13 @@ DesksTemplatesGridView::DesksTemplatesGridView(
                           views::GridLayout::ColumnSize::kUsePreferred,
                           /*fixed_width=*/0, /*min_width=*/0);
   }
-
-  // Add each of the templates to the grid.
-  for (size_t i = 0; i < desk_templates.size(); ++i) {
-    // Add padding in front of each row except the first one.
-    if (i == 0) {
-      layout->StartRow(fixed_size, kColumnSetId);
-    } else if (i % kNumColumns == 0) {
-      layout->StartRowWithPadding(fixed_size, kColumnSetId, fixed_size,
-                                  kGridPaddingDp);
-    }
-    grid_items_.push_back(layout->AddView(
-        std::make_unique<DesksTemplatesItemView>(desk_templates[i])));
-  }
 }
 
 DesksTemplatesGridView::~DesksTemplatesGridView() = default;
 
 // static
 views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
-    aura::Window* root,
-    const gfx::Rect& grid_bounds,
-    const std::vector<DeskTemplate*>& desk_templates) {
+    aura::Window* root) {
   DCHECK(root);
   DCHECK(root->IsRootWindow());
 
@@ -89,17 +70,41 @@ views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
 
   views::UniqueWidgetPtr widget(
       std::make_unique<views::Widget>(std::move(params)));
-  auto* desks_template_grid_view = widget->SetContentsView(
-      std::make_unique<DesksTemplatesGridView>(desk_templates));
-  gfx::Rect widget_bounds(grid_bounds);
-  widget_bounds.ClampToCenteredSize(
-      desks_template_grid_view->GetPreferredSize());
-  widget->SetBounds(widget_bounds);
+  widget->SetContentsView(std::make_unique<DesksTemplatesGridView>());
 
   // Not opaque since we want to view the contents of the layer behind.
   widget->GetLayer()->SetFillsBoundsOpaquely(false);
 
   return widget;
+}
+
+void DesksTemplatesGridView::UpdateGridUI(
+    const std::vector<DeskTemplate*>& desk_templates,
+    const gfx::Rect& grid_bounds) {
+  grid_items_.clear();
+
+  if (desk_templates.empty())
+    return;
+
+  DCHECK_LE(desk_templates.size(), kMaxTemplateCount);
+
+  // Add each of the templates to the grid.
+  const float fixed_size = views::GridLayout::kFixedSize;
+  for (size_t i = 0; i < desk_templates.size(); ++i) {
+    // Add padding in front of each row except the first one.
+    if (i == 0) {
+      layout_->StartRow(fixed_size, kColumnSetId);
+    } else if (i % kNumColumns == 0) {
+      layout_->StartRowWithPadding(fixed_size, kColumnSetId, fixed_size,
+                                   kGridPaddingDp);
+    }
+    grid_items_.push_back(layout_->AddView(
+        std::make_unique<DesksTemplatesItemView>(desk_templates[i])));
+  }
+
+  gfx::Rect widget_bounds(grid_bounds);
+  widget_bounds.ClampToCenteredSize(GetPreferredSize());
+  GetWidget()->SetBounds(widget_bounds);
 }
 
 void DesksTemplatesGridView::OnMouseEvent(ui::MouseEvent* event) {

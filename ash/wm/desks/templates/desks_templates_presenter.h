@@ -30,7 +30,9 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   DesksTemplatesPresenter& operator=(const DesksTemplatesPresenter&) = delete;
   ~DesksTemplatesPresenter() override;
 
-  const std::vector<DeskTemplate*>& desk_templates() { return desk_templates_; }
+  // Calls the DeskModel to get all the template entries, with a callback to
+  // `OnGetAllEntries`.
+  void GetAllEntries();
 
   // desks_storage::DeskModelObserver:
   // TODO(sammiequon): Implement these once the model starts sending these
@@ -47,7 +49,8 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
  private:
   friend class DesksTemplatesPresenterTestApi;
 
-  // Callback ran after querying the model for a list of entries.
+  // Callback ran after querying the model for a list of entries. This function
+  // also contains logic for updating the UI.
   void OnGetAllEntries(desks_storage::DeskModel::GetAllEntriesStatus status,
                        std::vector<DeskTemplate*> entries);
 
@@ -57,11 +60,6 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   base::ScopedObservation<desks_storage::DeskModel,
                           desks_storage::DeskModelObserver>
       desk_model_observation_{this};
-
-  // TODO(richui): Currently save a local copy of the list of all the templates
-  // we get from the desk model. Remove this later to have the desk model called
-  // directly whenever we want to update the UI.
-  std::vector<DeskTemplate*> desk_templates_;
 
   // Test closure that runs after the UI has been updated async after a call to
   // the model.

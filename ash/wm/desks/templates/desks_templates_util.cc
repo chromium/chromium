@@ -12,7 +12,6 @@
 #include "components/prefs/pref_service.h"
 
 namespace ash {
-
 namespace {
 
 PrefService* GetPrimaryUserPrefService() {

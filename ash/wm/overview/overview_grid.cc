@@ -871,12 +871,10 @@ void OverviewGrid::OnSelectorItemDragStarted(OverviewItem* item) {
     overview_mode_item->OnSelectorItemDragStarted(item);
 }
 
-void OverviewGrid::ShowDesksTemplatesGrid(
-    const std::vector<DeskTemplate*>& desk_templates) {
+void OverviewGrid::ShowDesksTemplatesGrid() {
   if (!desks_templates_grid_widget_) {
     desks_templates_grid_widget_ =
-        DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
-            root_window_, GetGridEffectiveBounds(), desk_templates);
+        DesksTemplatesGridView::CreateDesksTemplatesGridWidget(root_window_);
   }
 
   // Before showing the grid, we need to hide the overview items. However, we

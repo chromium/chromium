@@ -941,7 +941,8 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
 
 void OverviewSession::ShowDesksTemplatesGrids() {
   for (auto& grid : grid_list_)
-    grid->ShowDesksTemplatesGrid(desks_templates_presenter_->desk_templates());
+    grid->ShowDesksTemplatesGrid();
+  desks_templates_presenter_->GetAllEntries();
   UpdateNoWindowsWidgetOnEachGrid();
 }
 

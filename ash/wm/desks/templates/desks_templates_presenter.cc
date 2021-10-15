@@ -9,6 +9,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
@@ -37,12 +38,18 @@ DesksTemplatesPresenter::DesksTemplatesPresenter(
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
 
-  desk_model->GetAllEntries(
-      base::BindOnce(&DesksTemplatesPresenter::OnGetAllEntries,
-                     weak_ptr_factory_.GetWeakPtr()));
+  GetAllEntries();
 }
 
 DesksTemplatesPresenter::~DesksTemplatesPresenter() = default;
+
+void DesksTemplatesPresenter::GetAllEntries() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  GetDeskModel()->GetAllEntries(
+      base::BindOnce(&DesksTemplatesPresenter::OnGetAllEntries,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
 void DesksTemplatesPresenter::OnDeskModelDestroying() {
   desk_model_observation_.Reset();
@@ -56,8 +63,8 @@ void DesksTemplatesPresenter::OnGetAllEntries(
 
   // The desks templates button is invisible if there are no entries to view.
   const bool visible = !entries.empty();
-  for (auto& grid : overview_session_->grid_list()) {
-    const DesksBarView* desks_bar_view = grid->desks_bar_view();
+  for (auto& overview_grid : overview_session_->grid_list()) {
+    const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
     if (desks_bar_view) {
       const bool is_zero_state = desks_bar_view->IsZeroState();
       desks_bar_view->zero_state_desks_templates_button()->SetVisible(
@@ -65,9 +72,20 @@ void DesksTemplatesPresenter::OnGetAllEntries(
       desks_bar_view->expanded_state_desks_templates_button()->SetVisible(
           !is_zero_state && visible);
     }
-  }
 
-  desk_templates_ = entries;
+    if (!visible) {
+      // TODO(richui): When deleting, it is possible to delete the last
+      // template. In this case, close the template grid and go back to
+      // overview.
+    }
+
+    // Populate `DesksTemplatesGridView` with the desk template entries.
+    views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+    if (grid_widget) {
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
+          ->UpdateGridUI(entries, overview_grid->GetGridEffectiveBounds());
+    }
+  }
 
   if (on_update_ui_closure_for_testing_)
     std::move(on_update_ui_closure_for_testing_).Run();

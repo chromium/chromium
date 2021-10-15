@@ -33,7 +33,6 @@ class Widget;
 namespace ash {
 
 class DesksBarView;
-class DeskTemplate;
 class OverviewGridEventHandler;
 class OverviewItem;
 class PresentationTimeRecorder;
@@ -340,7 +339,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   void CommitDeskNameChanges();
 
   // Shows the grid of the desks templates. Creates the widget if needed.
-  void ShowDesksTemplatesGrid(const std::vector<DeskTemplate*>& templates);
+  void ShowDesksTemplatesGrid();
 
   // True if the grid of desks templates is shown.
   bool IsShowingDesksTemplatesGrid() const;
@@ -395,9 +394,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return grid_event_handler_.get();
   }
 
+  views::Widget* desks_templates_grid_widget() const {
+    return desks_templates_grid_widget_.get();
+  }
+
  private:
   class TargetWindowObserver;
-  friend class OverviewGridTestApi;
   friend class OverviewTestBase;
 
   // Struct which holds data required to perform nudges.

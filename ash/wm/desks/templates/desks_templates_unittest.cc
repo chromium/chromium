@@ -76,27 +76,6 @@ class DesksTemplatesPresenterTestApi {
   DesksTemplatesPresenter* const presenter_;
 };
 
-// Wrapper for OverviewGrid that exposes internal state to test
-// functions.
-class OverviewGridTestApi {
- public:
-  explicit OverviewGridTestApi(const OverviewGrid* overview_grid)
-      : overview_grid_(overview_grid) {
-    DCHECK(overview_grid_);
-  }
-  OverviewGridTestApi(const OverviewGridTestApi&) = delete;
-  OverviewGridTestApi& operator=(const OverviewGridTestApi&) = delete;
-  ~OverviewGridTestApi() = default;
-
-  const DesksTemplatesGridView* desks_templates_grid_view() const {
-    return static_cast<DesksTemplatesGridView*>(
-        overview_grid_->desks_templates_grid_widget_->GetContentsView());
-  }
-
- private:
-  const OverviewGrid* overview_grid_;
-};
-
 // Wrapper for DesksTemplatesGridView that exposes internal state to test
 // functions.
 class DesksTemplatesGridViewTestApi {
@@ -479,13 +458,15 @@ TEST_F(DesksTemplatesTest, DesksTemplatesGridItems) {
   ToggleOverview();
   WaitForUI();
   ShowDesksTemplatesGrid();
+  WaitForUI();
 
   // Check that the grid is populated with the correct number of items, as
   // well as with the correct name and timestamp.
   for (auto& overview_grid : GetOverviewGridList()) {
+    views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+    DCHECK(grid_widget);
     const DesksTemplatesGridView* templates_grid_view =
-        OverviewGridTestApi(overview_grid.get()).desks_templates_grid_view();
-
+        static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
     DCHECK(templates_grid_view);
     std::vector<DesksTemplatesItemView*> grid_items =
         DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();

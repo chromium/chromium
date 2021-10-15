@@ -8,6 +8,7 @@
 class PrefRegistrySimple;
 
 namespace ash {
+
 namespace desks_templates_util {
 
 // Registers the per-profile preferences for whether desks templates are
