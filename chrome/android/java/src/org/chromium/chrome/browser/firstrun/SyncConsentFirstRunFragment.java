@@ -9,7 +9,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.signin.SyncConsentFragmentBase;
@@ -43,9 +42,6 @@ public class SyncConsentFirstRunFragment
                 getPageDelegate().getProperties().getInt(CHILD_ACCOUNT_STATUS);
         setArguments(createArguments(SigninAccessPoint.START_PAGE,
                 accounts.isEmpty() ? null : accounts.get(0).name, childAccountStatus));
-        // Records if there are {0, 1, 2+} accounts on device for default/non-default flows.
-        RecordHistogram.recordCountHistogram(
-                "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", Math.min(accounts.size(), 2));
     }
 
     @Override

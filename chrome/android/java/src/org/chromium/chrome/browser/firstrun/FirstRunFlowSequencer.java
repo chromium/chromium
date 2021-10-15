@@ -145,10 +145,13 @@ public abstract class FirstRunFlowSequencer  {
      * Starts determining parameters for the First Run.
      * Once finished, calls onFlowIsKnown().
      */
-    public void start() {
+    void start() {
         long childAccountStatusStart = SystemClock.elapsedRealtime();
         AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
             ChildAccountService.checkChildAccountStatus(accounts, status -> {
+                RecordHistogram.recordCountHistogram(
+                        "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
+                        Math.min(accounts.size(), 2));
                 RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
                         SystemClock.elapsedRealtime() - childAccountStatusStart);
                 initializeSharedState(status, accounts);
@@ -175,14 +178,13 @@ public abstract class FirstRunFlowSequencer  {
         FirstRunSignInProcessor.setFirstRunFlowSignInComplete(true);
     }
 
-    @VisibleForTesting
-    void initializeSharedState(
+    private void initializeSharedState(
             @ChildAccountStatus.Status int childAccountStatus, List<Account> accounts) {
         mChildAccountStatus = childAccountStatus;
         mGoogleAccounts = accounts;
     }
 
-    void processFreEnvironmentPreNative() {
+    private void processFreEnvironmentPreNative() {
         Bundle freProperties = new Bundle();
         freProperties.putInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, mChildAccountStatus);
 
