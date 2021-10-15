@@ -385,7 +385,7 @@ void SerialIoHandlerPosix::OnFileCanWriteWithoutBlocking() {
                                            pending_write_buffer().data(),
                                            pending_write_buffer().size()));
     if (bytes_written < 0) {
-      if (errno == ENXIO) {
+      if (errno == EIO || errno == ENXIO) {
         WriteCompleted(0, mojom::SerialSendError::DISCONNECTED);
         StopWatchingFileWrite();
       } else {
