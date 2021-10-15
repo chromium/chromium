@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_PHONEHUB_FAKE_CAMERA_ROLL_MANAGER_H_
 
 #include "chromeos/components/phonehub/camera_roll_manager.h"
+#include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -18,6 +19,11 @@ class FakeCameraRollManager : public CameraRollManager {
   using CameraRollManager::SetCurrentItems;
 
   using CameraRollManager::ClearCurrentItems;
+
+ private:
+  // CameraRollManager:
+  void DownloadItem(
+      const proto::CameraRollItemMetadata& item_metadata) override;
 };
 
 }  // namespace phonehub

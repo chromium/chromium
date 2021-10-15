@@ -8,6 +8,7 @@
 #include "chromeos/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "chromeos/components/phonehub/browser_tabs_model_controller.h"
 #include "chromeos/components/phonehub/browser_tabs_model_provider.h"
+#include "chromeos/components/phonehub/camera_roll_download_manager.h"
 #include "chromeos/components/phonehub/camera_roll_manager_impl.h"
 #include "chromeos/components/phonehub/connection_scheduler_impl.h"
 #include "chromeos/components/phonehub/cros_state_sender.h"
@@ -49,6 +50,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider,
+    std::unique_ptr<CameraRollDownloadManager> camera_roll_download_manager,
     const base::RepeatingClosure& show_multidevice_setup_dialog_callback)
     : connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
@@ -148,7 +150,9 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
                                ? std::make_unique<CameraRollManagerImpl>(
                                      message_receiver_.get(),
                                      message_sender_.get(),
-                                     multidevice_setup_client)
+                                     multidevice_setup_client,
+                                     connection_manager_.get(),
+                                     std::move(camera_roll_download_manager))
                                : nullptr) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;

@@ -7,6 +7,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -37,6 +38,11 @@ class CameraRollManager {
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Downloads a full-quality photo or video file from the connected Android
+  // device specified by the |item_metadata| to the Downloads folder.
+  virtual void DownloadItem(
+      const proto::CameraRollItemMetadata& item_metadata) = 0;
 
  protected:
   CameraRollManager();

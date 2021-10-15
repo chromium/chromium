@@ -48,7 +48,18 @@ void FakeConnectionManager::RegisterPayloadFile(
     mojom::PayloadFilesPtr payload_files,
     base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
         file_transfer_update_callback,
-    base::OnceCallback<void(bool)> registration_result_callback) {}
+    base::OnceCallback<void(bool)> registration_result_callback) {
+  std::move(registration_result_callback).Run(register_payload_file_result_);
+  if (register_payload_file_result_) {
+    file_transfer_update_callbacks_.emplace(
+        payload_id, std::move(file_transfer_update_callback));
+  }
+}
+
+void FakeConnectionManager::SendFileTransferUpdate(
+    mojom::FileTransferUpdatePtr update) {
+  file_transfer_update_callbacks_.at(update->payload_id).Run(std::move(update));
+}
 
 }  // namespace secure_channel
 }  // namespace chromeos

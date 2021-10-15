@@ -52,10 +52,14 @@ void FakeMessageSender::SendFetchCameraRollItemsRequest(
 }
 
 void FakeMessageSender::SendFetchCameraRollItemDataRequest(
-    const proto::FetchCameraRollItemDataRequest& request) {}
+    const proto::FetchCameraRollItemDataRequest& request) {
+  fetch_camera_roll_item_data_requests_.push_back(request);
+}
 
 void FakeMessageSender::SendInitiateCameraRollItemTransferRequest(
-    const proto::InitiateCameraRollItemTransferRequest& request) {}
+    const proto::InitiateCameraRollItemTransferRequest& request) {
+  initiate_camera_roll_item_transfer_requests_.push_back(request);
+}
 
 size_t FakeMessageSender::GetCrosStateCallCount() const {
   return cros_states_.size();
@@ -83,6 +87,15 @@ size_t FakeMessageSender::GetRingDeviceRequestCallCount() const {
 
 size_t FakeMessageSender::GetFetchCameraRollItemsRequestCallCount() const {
   return fetch_camera_roll_items_requests_.size();
+}
+
+size_t FakeMessageSender::GetFetchCameraRollItemDataRequestCallCount() const {
+  return fetch_camera_roll_item_data_requests_.size();
+}
+
+size_t FakeMessageSender::GetInitiateCameraRollItemTransferRequestCallCount()
+    const {
+  return initiate_camera_roll_item_transfer_requests_.size();
 }
 
 std::pair<bool, bool> FakeMessageSender::GetRecentCrosState() const {
@@ -113,6 +126,16 @@ bool FakeMessageSender::GetRecentRingDeviceRequest() const {
 const proto::FetchCameraRollItemsRequest&
 FakeMessageSender::GetRecentFetchCameraRollItemsRequest() const {
   return fetch_camera_roll_items_requests_.back();
+}
+
+const proto::FetchCameraRollItemDataRequest&
+FakeMessageSender::GetRecentFetchCameraRollItemDataRequest() const {
+  return fetch_camera_roll_item_data_requests_.back();
+}
+
+const proto::InitiateCameraRollItemTransferRequest&
+FakeMessageSender::GetRecentInitiateCameraRollItemTransferRequest() const {
+  return initiate_camera_roll_item_transfer_requests_.back();
 }
 
 }  // namespace phonehub

@@ -32,6 +32,7 @@ namespace phonehub {
 
 class BrowserTabsModelController;
 class BrowserTabsModelProvider;
+class CameraRollDownloadManager;
 class CameraRollManager;
 class CrosStateSender;
 class InvalidConnectionDisconnector;
@@ -52,6 +53,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       chromeos::secure_channel::SecureChannelClient* secure_channel_client,
       std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider,
+      std::unique_ptr<CameraRollDownloadManager> camera_roll_download_manager,
       const base::RepeatingClosure& show_multidevice_setup_dialog_callback);
 
   ~PhoneHubManagerImpl() override;

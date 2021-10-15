@@ -8,11 +8,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/phonehub/camera_roll_item.h"
 #include "chromeos/components/phonehub/camera_roll_thumbnail_decoder_impl.h"
+#include "chromeos/components/phonehub/fake_camera_roll_download_manager.h"
 #include "chromeos/components/phonehub/fake_message_receiver.h"
 #include "chromeos/components/phonehub/fake_message_sender.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -25,6 +28,7 @@ using BatchDecodeResult = CameraRollThumbnailDecoder::BatchDecodeResult;
 using BatchDecodeCallback =
     base::OnceCallback<void(BatchDecodeResult,
                             const std::vector<CameraRollItem>&)>;
+using FileTransferStatus = chromeos::secure_channel::mojom::FileTransferStatus;
 
 class FakeObserver : public CameraRollManager::Observer {
  public:
@@ -115,10 +119,17 @@ class CameraRollManagerImplTest : public testing::Test {
   void SetUp() override {
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
+    std::unique_ptr<FakeCameraRollDownloadManager>
+        fake_camera_roll_download_manager =
+            std::make_unique<FakeCameraRollDownloadManager>();
+    fake_camera_roll_download_manager_ =
+        fake_camera_roll_download_manager.get();
+
     SetCameraRollFeatureSettings(true);
     camera_roll_manager_ = std::make_unique<CameraRollManagerImpl>(
         &fake_message_receiver_, &fake_message_sender_,
-        fake_multidevice_setup_client_.get());
+        fake_multidevice_setup_client_.get(), &fake_connection_manager_,
+        std::move(fake_camera_roll_download_manager));
     camera_roll_manager_->thumbnail_decoder_ =
         std::make_unique<FakeThumbnailDecoder>();
     camera_roll_manager_->AddObserver(&fake_observer_);
@@ -143,6 +154,26 @@ class CameraRollManagerImplTest : public testing::Test {
   const proto::FetchCameraRollItemsRequest& GetSentFetchCameraRollItemsRequest()
       const {
     return fake_message_sender_.GetRecentFetchCameraRollItemsRequest();
+  }
+
+  size_t GetSentFetchCameraRollItemDataRequestCount() const {
+    return fake_message_sender_.GetFetchCameraRollItemDataRequestCallCount();
+  }
+
+  const proto::FetchCameraRollItemDataRequest&
+  GetRecentFetchCameraRollItemDataRequest() const {
+    return fake_message_sender_.GetRecentFetchCameraRollItemDataRequest();
+  }
+
+  size_t GetSentInitiateCameraRollItemTransferRequestCount() const {
+    return fake_message_sender_
+        .GetInitiateCameraRollItemTransferRequestCallCount();
+  }
+
+  const proto::InitiateCameraRollItemTransferRequest&
+  GetRecentInitiateCameraRollItemTransferRequest() const {
+    return fake_message_sender_
+        .GetRecentInitiateCameraRollItemTransferRequest();
   }
 
   // Verifies current items match the list of items in the last received
@@ -178,12 +209,62 @@ class CameraRollManagerImplTest : public testing::Test {
     }
   }
 
+  void SendFetchCameraRollItemDataResponse(
+      const proto::CameraRollItemMetadata& item_metadata,
+      proto::FetchCameraRollItemDataResponse::FileAvailability
+          file_availability,
+      int64_t payload_id) {
+    proto::FetchCameraRollItemDataResponse response;
+    *response.mutable_metadata() = item_metadata;
+    response.set_file_availability(file_availability);
+    response.set_payload_id(payload_id);
+    fake_message_receiver_.NotifyFetchCameraRollItemDataResponseReceived(
+        response);
+  }
+
+  void SendFileTransferUpdate(int64_t payload_id,
+                              FileTransferStatus status,
+                              uint64_t total_bytes,
+                              uint64_t bytes_transferred) {
+    fake_connection_manager_.SendFileTransferUpdate(
+        chromeos::secure_channel::mojom::FileTransferUpdate::New(
+            payload_id, status, total_bytes, bytes_transferred));
+  }
+
+  void VerifyFileTransferProgress(int64_t payload_id,
+                                  FileTransferStatus status,
+                                  uint64_t total_bytes,
+                                  uint64_t bytes_transferred) {
+    const chromeos::secure_channel::mojom::FileTransferUpdatePtr&
+        latest_update = fake_camera_roll_download_manager_
+                            ->GetFileTransferUpdates(payload_id)
+                            .back();
+    EXPECT_EQ(payload_id, latest_update->payload_id);
+    EXPECT_EQ(status, latest_update->status);
+    EXPECT_EQ(total_bytes, latest_update->total_bytes);
+    EXPECT_EQ(bytes_transferred, latest_update->bytes_transferred);
+  }
+
+  CameraRollManager* camera_roll_manager() {
+    return camera_roll_manager_.get();
+  }
+
+  secure_channel::FakeConnectionManager& fake_connection_manager() {
+    return fake_connection_manager_;
+  }
+
+  FakeCameraRollDownloadManager* fake_camera_roll_download_manager() {
+    return fake_camera_roll_download_manager_;
+  }
+
   FakeMessageReceiver fake_message_receiver_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
 
  private:
   FakeMessageSender fake_message_sender_;
+  secure_channel::FakeConnectionManager fake_connection_manager_;
+  FakeCameraRollDownloadManager* fake_camera_roll_download_manager_;
   std::unique_ptr<CameraRollManagerImpl> camera_roll_manager_;
   FakeObserver fake_observer_;
 };
@@ -472,6 +553,115 @@ TEST_F(CameraRollManagerImplTest, OnFeatureOnFeatureStatesChangedToDisabled) {
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
   EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
+}
+
+TEST_F(CameraRollManagerImplTest, DownloadItem) {
+  // Make an item available to CameraRollManager.
+  proto::FetchCameraRollItemsResponse response;
+  PopulateItemProto(response.add_items(), "key1");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  const CameraRollItem& item_to_download =
+      camera_roll_manager()->current_items().back();
+
+  // Request to download the item that was added.
+  camera_roll_manager()->DownloadItem(item_to_download.metadata());
+  EXPECT_EQ(1UL, GetSentFetchCameraRollItemDataRequestCount());
+  EXPECT_EQ("key1", GetRecentFetchCameraRollItemDataRequest().metadata().key());
+
+  // CameraRollManager should initiate transfer of the item after receiving
+  // FetchCameraRollItemDataResponse.
+  SendFetchCameraRollItemDataResponse(
+      item_to_download.metadata(),
+      proto::FetchCameraRollItemDataResponse::AVAILABLE,
+      /*payload_id=*/1234);
+  EXPECT_EQ(1UL, GetSentInitiateCameraRollItemTransferRequestCount());
+  EXPECT_EQ("key1",
+            GetRecentInitiateCameraRollItemTransferRequest().metadata().key());
+  EXPECT_EQ(1234,
+            GetRecentInitiateCameraRollItemTransferRequest().payload_id());
+
+  // Now the CameraRollManager should be ready to receive updates of the item
+  // transfer.
+  SendFileTransferUpdate(/*payload_id=*/1234, FileTransferStatus::kInProgress,
+                         /*total_bytes=*/1000, /*bytes_transferred=*/200);
+  VerifyFileTransferProgress(/*payload_id=*/1234,
+                             FileTransferStatus::kInProgress,
+                             /*total_bytes=*/1000,
+                             /*bytes_transferred=*/200);
+
+  SendFileTransferUpdate(/*payload_id=*/1234, FileTransferStatus::kSuccess,
+                         /*total_bytes=*/1000, /*bytes_transferred=*/1000);
+  VerifyFileTransferProgress(/*payload_id=*/1234, FileTransferStatus::kSuccess,
+                             /*total_bytes=*/1000,
+                             /*bytes_transferred=*/1000);
+}
+
+TEST_F(CameraRollManagerImplTest,
+       DownloadItemWhenFileNoLongerAvailableOnPhone) {
+  // Make an item available to CameraRollManager.
+  proto::FetchCameraRollItemsResponse response;
+  PopulateItemProto(response.add_items(), "key1");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  const CameraRollItem& item_to_download =
+      camera_roll_manager()->current_items().back();
+
+  // Request to download the item that was added.
+  camera_roll_manager()->DownloadItem(item_to_download.metadata());
+  EXPECT_EQ(1UL, GetSentFetchCameraRollItemDataRequestCount());
+  EXPECT_EQ("key1", GetRecentFetchCameraRollItemDataRequest().metadata().key());
+
+  SendFetchCameraRollItemDataResponse(
+      item_to_download.metadata(),
+      proto::FetchCameraRollItemDataResponse::NOT_FOUND,
+      /*payload_id=*/1234);
+  EXPECT_EQ(0UL, GetSentInitiateCameraRollItemTransferRequestCount());
+}
+
+TEST_F(CameraRollManagerImplTest, DownloadItemAndCreatePayloadFilesFail) {
+  // Make an item available to CameraRollManager.
+  proto::FetchCameraRollItemsResponse response;
+  PopulateItemProto(response.add_items(), "key1");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  const CameraRollItem& item_to_download =
+      camera_roll_manager()->current_items().back();
+
+  // Request to download the item that was added.
+  camera_roll_manager()->DownloadItem(item_to_download.metadata());
+  EXPECT_EQ(1UL, GetSentFetchCameraRollItemDataRequestCount());
+  EXPECT_EQ("key1", GetRecentFetchCameraRollItemDataRequest().metadata().key());
+
+  fake_camera_roll_download_manager()->set_should_create_payload_files_succeed(
+      false);
+  SendFetchCameraRollItemDataResponse(
+      item_to_download.metadata(),
+      proto::FetchCameraRollItemDataResponse::AVAILABLE,
+      /*payload_id=*/1234);
+  EXPECT_EQ(0UL, GetSentInitiateCameraRollItemTransferRequestCount());
+}
+
+TEST_F(CameraRollManagerImplTest, DownloadItemAndRegisterPayloadFileFail) {
+  // Make an item available to CameraRollManager.
+  proto::FetchCameraRollItemsResponse response;
+  PopulateItemProto(response.add_items(), "key1");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  const CameraRollItem& item_to_download =
+      camera_roll_manager()->current_items().back();
+
+  // Request to download the item that was added.
+  camera_roll_manager()->DownloadItem(item_to_download.metadata());
+  EXPECT_EQ(1UL, GetSentFetchCameraRollItemDataRequestCount());
+  EXPECT_EQ("key1", GetRecentFetchCameraRollItemDataRequest().metadata().key());
+
+  fake_connection_manager().set_register_payload_file_result(false);
+  SendFetchCameraRollItemDataResponse(
+      item_to_download.metadata(),
+      proto::FetchCameraRollItemDataResponse::AVAILABLE,
+      /*payload_id=*/1234);
+  EXPECT_EQ(0UL, GetSentInitiateCameraRollItemTransferRequestCount());
 }
 
 }  // namespace phonehub

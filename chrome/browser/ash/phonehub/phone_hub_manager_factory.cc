@@ -10,13 +10,16 @@
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/browser_tabs_metadata_fetcher_impl.h"
 #include "chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h"
+#include "chrome/browser/ash/phonehub/camera_roll_download_manager_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chromeos/components/phonehub/multidevice_setup_state_updater.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
@@ -115,6 +118,14 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
           std::make_unique<BrowserTabsMetadataFetcherImpl>(
               HistoryUiFaviconRequestHandlerFactory::GetInstance()
                   ->GetForBrowserContext(context))),
+      features::IsPhoneHubCameraRollEnabled()
+          ? std::make_unique<CameraRollDownloadManagerImpl>(
+                DownloadPrefs::FromDownloadManager(
+                    profile->GetDownloadManager())
+                    ->DownloadPath(),
+                ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+                    profile))
+          : nullptr,
       base::BindRepeating(&multidevice_setup::MultiDeviceSetupDialog::Show));
 
   // Provide |phone_hub_manager| to the system tray so that it can be used by

@@ -176,6 +176,7 @@ static_library("debug") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chromeos/components/phonehub/proto",
   ]
 }
 
@@ -187,6 +188,8 @@ static_library("test_support") {
     "fake_browser_tabs_metadata_fetcher.h",
     "fake_browser_tabs_model_provider.cc",
     "fake_browser_tabs_model_provider.h",
+    "fake_camera_roll_download_manager.cc",
+    "fake_camera_roll_download_manager.h",
     "fake_message_receiver.h",
     "fake_message_sender.cc",
     "fake_message_sender.h",
@@ -202,6 +205,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//chromeos/components/phonehub/proto",
+    "//chromeos/services/secure_channel/public/mojom",
   ]
 }
 
@@ -256,6 +260,7 @@ source_set("unit_tests") {
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/cpp:test_support",
     "//chromeos/services/secure_channel/public/cpp/client:test_support",
+    "//chromeos/services/secure_channel/public/mojom",
     "//components/prefs:test_support",
     "//components/session_manager/core",
     "//device/bluetooth:mocks",

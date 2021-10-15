@@ -48,6 +48,10 @@ class FakeMessageSender : public MessageSender {
   bool GetRecentRingDeviceRequest() const;
   const proto::FetchCameraRollItemsRequest&
   GetRecentFetchCameraRollItemsRequest() const;
+  const proto::FetchCameraRollItemDataRequest&
+  GetRecentFetchCameraRollItemDataRequest() const;
+  const proto::InitiateCameraRollItemTransferRequest&
+  GetRecentInitiateCameraRollItemTransferRequest() const;
 
   size_t GetCrosStateCallCount() const;
 
@@ -67,6 +71,10 @@ class FakeMessageSender : public MessageSender {
 
   size_t GetFetchCameraRollItemsRequestCallCount() const;
 
+  size_t GetFetchCameraRollItemDataRequestCallCount() const;
+
+  size_t GetInitiateCameraRollItemTransferRequestCallCount() const;
+
  private:
   std::vector<std::pair</*is_notifications_setting_enabled*/ bool,
                         /*is_camera_roll_setting_enabled*/ bool>>
@@ -79,6 +87,10 @@ class FakeMessageSender : public MessageSender {
   std::vector<bool> ring_device_requests_;
   std::vector<proto::FetchCameraRollItemsRequest>
       fetch_camera_roll_items_requests_;
+  std::vector<proto::FetchCameraRollItemDataRequest>
+      fetch_camera_roll_item_data_requests_;
+  std::vector<proto::InitiateCameraRollItemTransferRequest>
+      initiate_camera_roll_item_transfer_requests_;
   size_t show_notification_access_setup_count_ = 0;
 };
 
