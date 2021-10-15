@@ -16,6 +16,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/win/atl.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
@@ -430,7 +431,7 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
     ui::TextAttributeMap offset_to_text_attributes;
   };
 
-  BrowserAccessibilityWin* owner_;
+  raw_ptr<BrowserAccessibilityWin> owner_;
 
   std::unique_ptr<WinAttributes> win_attributes_;
 

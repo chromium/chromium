@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/web_package/web_bundle_browsertest_base.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -42,7 +43,7 @@ class InvalidTrustableWebBundleFileUrlBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   web_bundle_browsertest_utils::TestBrowserClient browser_client_;
 };
 

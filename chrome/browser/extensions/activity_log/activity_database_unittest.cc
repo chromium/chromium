@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -149,7 +150,7 @@ class ActivityDatabaseTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  ActivityDatabaseTestPolicy* db_delegate_;
+  raw_ptr<ActivityDatabaseTestPolicy> db_delegate_;
 };
 
 // Check that the database is initialized properly.

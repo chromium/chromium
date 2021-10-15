@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -259,7 +260,7 @@ class TestUDPClientSocket : public MockUDPClientSocket {
   int Connect(const IPEndPoint& endpoint) override;
 
  private:
-  TestSocketFactory* factory_;
+  raw_ptr<TestSocketFactory> factory_;
 };
 
 // Creates TestUDPClientSockets and keeps endpoints reported via OnConnect.
@@ -414,7 +415,7 @@ class TransactionHelper {
  private:
   uint16_t qtype_ = 0;
   std::unique_ptr<DnsTransaction> transaction_;
-  const DnsResponse* response_ = nullptr;
+  raw_ptr<const DnsResponse> response_ = nullptr;
   int expected_answer_count_;
   bool cancel_in_callback_ = false;
   base::RunLoop transaction_complete_run_loop_;
@@ -586,9 +587,9 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
   const int content_length_;
   const char* leftover_data_;
   int leftover_data_len_;
-  SocketDataProvider* data_provider_;
+  raw_ptr<SocketDataProvider> data_provider_;
   const ResponseModifierCallback response_modifier_;
-  IOBuffer* pending_buf_;
+  raw_ptr<IOBuffer> pending_buf_;
   int pending_buf_size_;
 
   base::WeakPtrFactory<URLRequestMockDohJob> weak_factory_{this};
@@ -878,7 +879,7 @@ class DnsTransactionTestBase : public testing::Test {
     }
 
    private:
-    DnsTransactionTestBase* test_;
+    raw_ptr<DnsTransactionTestBase> test_;
   };
 
   void SetResponseModifierCallback(ResponseModifierCallback response_modifier) {

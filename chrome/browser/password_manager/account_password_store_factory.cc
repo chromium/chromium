@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -82,7 +83,7 @@ class UnsyncedCredentialsDeletionNotifierImpl
   base::WeakPtr<UnsyncedCredentialsDeletionNotifier> GetWeakPtr() override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   base::WeakPtrFactory<UnsyncedCredentialsDeletionNotifier> weak_ptr_factory_{
       this};
 };

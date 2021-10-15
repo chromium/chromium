@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -49,7 +50,7 @@ class SendTabToSelfUrlChecker
 
  private:
   const GURL url_;
-  send_tab_to_self::SendTabToSelfSyncService* const service_;
+  const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
 };
 
 // Class that allows waiting until a particular |url| is marked opened by the
@@ -86,7 +87,7 @@ class SendTabToSelfUrlOpenedChecker
 
  private:
   const GURL url_;
-  send_tab_to_self::SendTabToSelfSyncService* const service_;
+  const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
 };
 
 // Class that allows waiting the number of entries in until |service0|
@@ -120,8 +121,8 @@ class SendTabToSelfModelEqualityChecker
       const std::vector<std::string>& guids_removed) override;
 
  private:
-  send_tab_to_self::SendTabToSelfSyncService* const service0_;
-  send_tab_to_self::SendTabToSelfSyncService* const service1_;
+  const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service0_;
+  const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service1_;
 };
 
 // Class that allows waiting until the bridge is ready.
@@ -152,7 +153,7 @@ class SendTabToSelfActiveChecker
       const std::vector<std::string>& guids_removed) override;
 
  private:
-  send_tab_to_self::SendTabToSelfSyncService* const service_;
+  const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
 };
 
 // Class that allows waiting until two devices are ready.
@@ -177,7 +178,7 @@ class SendTabToSelfMultiDeviceActiveChecker
   void OnDeviceInfoChange() override;
 
  private:
-  syncer::DeviceInfoTracker* const tracker_;
+  const raw_ptr<syncer::DeviceInfoTracker> tracker_;
 };
 
 // Class that allows waiting until device has send_tab_to_self disabled.
@@ -196,7 +197,7 @@ class SendTabToSelfDeviceDisabledChecker
   void OnDeviceInfoChange() override;
 
  private:
-  syncer::DeviceInfoTracker* const tracker_;
+  const raw_ptr<syncer::DeviceInfoTracker> tracker_;
   std::string device_guid_;
 };
 
@@ -230,7 +231,7 @@ class SendTabToSelfUrlDeletedChecker
 
  private:
   const GURL url_;
-  send_tab_to_self::SendTabToSelfSyncService* const service_;
+  const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
 };
 
 }  // namespace send_tab_to_self_helper

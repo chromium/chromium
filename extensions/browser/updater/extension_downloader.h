@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
@@ -434,7 +435,7 @@ class ExtensionDownloader {
 
   // The delegate that receives the crx files downloaded by the
   // ExtensionDownloader, and that fills in optional ping and update url data.
-  ExtensionDownloaderDelegate* delegate_;
+  raw_ptr<ExtensionDownloaderDelegate> delegate_;
 
   // The URL loader factory to use for the SimpleURLLoaders.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -468,11 +469,11 @@ class ExtensionDownloader {
   std::map<ExtensionId, ExtensionDownloaderDelegate::PingResult> ping_results_;
 
   // Cache for .crx files.
-  ExtensionCache* extension_cache_;
+  raw_ptr<ExtensionCache> extension_cache_;
 
   // May be used to fetch access tokens for protected download requests. May be
   // null. If non-null, guaranteed to outlive this object.
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // A Webstore download-scoped access token for the |identity_provider_|'s
   // active account, if any.

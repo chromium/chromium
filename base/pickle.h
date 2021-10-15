@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 
@@ -254,7 +255,7 @@ class BASE_EXPORT Pickle {
   }
 
   const char* payload() const {
-    return reinterpret_cast<const char*>(header_) + header_size_;
+    return reinterpret_cast<const char*>(header_.get()) + header_size_;
   }
 
   // Returns the address of the byte immediately following the currently valid
@@ -270,7 +271,7 @@ class BASE_EXPORT Pickle {
   size_t header_size() const { return header_size_; }
 
   char* mutable_payload() {
-    return reinterpret_cast<char*>(header_) + header_size_;
+    return reinterpret_cast<char*>(header_.get()) + header_size_;
   }
 
   size_t capacity_after_header() const {
@@ -312,7 +313,7 @@ class BASE_EXPORT Pickle {
  private:
   friend class PickleIterator;
 
-  Header* header_;
+  raw_ptr<Header> header_;
   size_t header_size_;  // Supports extra data between header and payload.
   // Allocation size of payload (or -1 if allocation is const). Note: this
   // doesn't count the header.

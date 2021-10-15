@@ -30,7 +30,7 @@ DelayBasedTimeSource::DelayBasedTimeSource(
       task_runner_(task_runner),
       tick_closure_(base::BindRepeating(&DelayBasedTimeSource::OnTimerTick,
                                         base::Unretained(this))) {
-  timer_.SetTaskRunner(task_runner_);
+  timer_.SetTaskRunner(task_runner_.get());
 }
 
 DelayBasedTimeSource::~DelayBasedTimeSource() = default;

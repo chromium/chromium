@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 
 #include "base/check.h"
@@ -34,8 +35,8 @@ class AuraWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  const aura::Window* const popup_window_;
-  base::RunLoop* const run_loop_;
+  const raw_ptr<const aura::Window> popup_window_;
+  const raw_ptr<base::RunLoop> run_loop_;
 };
 
 }  // namespace

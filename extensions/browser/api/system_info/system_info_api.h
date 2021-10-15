@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_API_SYSTEM_INFO_SYSTEM_INFO_API_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 
@@ -40,7 +41,7 @@ class SystemInfoAPI : public BrowserContextKeyedAPI,
   static const char* service_name() { return "SystemInfoAPI"; }
   static const bool kServiceIsNULLWhileTesting = true;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace extensions

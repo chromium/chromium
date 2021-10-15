@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -60,16 +61,16 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
   // otp.
   void CreateHiddenProgressView();
 
-  CardUnmaskOtpInputDialogController* controller_ = nullptr;
+  raw_ptr<CardUnmaskOtpInputDialogController> controller_ = nullptr;
 
   // Elements related to the otp part of the view.
-  views::BoxLayoutView* otp_input_view_ = nullptr;
-  views::Textfield* otp_input_textfield_ = nullptr;
+  raw_ptr<views::BoxLayoutView> otp_input_view_ = nullptr;
+  raw_ptr<views::Textfield> otp_input_textfield_ = nullptr;
 
   // Elements related to progress or error when the request is being made.
-  views::BoxLayoutView* progress_view_ = nullptr;
-  views::Label* progress_label_ = nullptr;
-  views::Throbber* progress_throbber_ = nullptr;
+  raw_ptr<views::BoxLayoutView> progress_view_ = nullptr;
+  raw_ptr<views::Label> progress_label_ = nullptr;
+  raw_ptr<views::Throbber> progress_throbber_ = nullptr;
 };
 
 }  // namespace autofill

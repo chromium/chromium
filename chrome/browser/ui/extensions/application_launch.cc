@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -106,9 +107,9 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
 
   void ExtensionEnableFlowAborted(bool user_initiated) override { delete this; }
 
-  ExtensionService* service_;
-  ExtensionRegistry* registry_;
-  Profile* profile_;
+  raw_ptr<ExtensionService> service_;
+  raw_ptr<ExtensionRegistry> registry_;
+  raw_ptr<Profile> profile_;
   std::string extension_id_;
   base::OnceClosure callback_;
   std::unique_ptr<ExtensionEnableFlow> flow_;

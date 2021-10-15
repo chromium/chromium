@@ -6,6 +6,7 @@
 
 #include "apps/saved_files_service.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -82,8 +83,8 @@ class SavedFilesServiceUnitTest : public testing::Test {
   }
 
   extensions::TestExtensionEnvironment env_;
-  const extensions::Extension* extension_;
-  SavedFilesService* service_;
+  raw_ptr<const extensions::Extension> extension_;
+  raw_ptr<SavedFilesService> service_;
   base::FilePath path_;
 };
 

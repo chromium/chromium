@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOCOMPLETE_TAB_MATCHER_DESKTOP_H_
 #define CHROME_BROWSER_AUTOCOMPLETE_TAB_MATCHER_DESKTOP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/tab_matcher.h"
@@ -25,7 +26,7 @@ class TabMatcherDesktop : public TabMatcher {
       content::WebContents* web_contents) const;
 
   const AutocompleteProviderClient& client_;
-  Profile* profile_{};
+  raw_ptr<Profile> profile_{};
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_TAB_MATCHER_DESKTOP_H_

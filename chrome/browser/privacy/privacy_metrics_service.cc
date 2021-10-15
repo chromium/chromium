@@ -34,7 +34,7 @@ PrivacyMetricsService::PrivacyMetricsService(
   // Observe the identity manager regardless of sync state to catch changes to
   // sync level consent (e.g. a user enabling sync).
   if (identity_manager_)
-    identity_manager_observer_.Observe(identity_manager_);
+    identity_manager_observer_.Observe(identity_manager_.get());
 
   // Avoid observing the sync service if sync-the-feature is disabled, events
   // this service is interested in will still be caught by the identity manager
@@ -45,7 +45,7 @@ PrivacyMetricsService::PrivacyMetricsService(
     return;
   }
 
-  sync_service_observer_.Observe(sync_service_);
+  sync_service_observer_.Observe(sync_service_.get());
 
   // While this service is brought up with the profile, and thus practically
   // should capture all sync state changes as the sync service starts up,

@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_COMMON_SCOPED_TESTING_MANIFEST_HANDLER_REGISTRY_H_
 #define EXTENSIONS_COMMON_SCOPED_TESTING_MANIFEST_HANDLER_REGISTRY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace extensions {
@@ -18,7 +19,7 @@ class ScopedTestingManifestHandlerRegistry {
 
  private:
   ManifestHandlerRegistry registry_;
-  ManifestHandlerRegistry* old_registry_;
+  raw_ptr<ManifestHandlerRegistry> old_registry_;
 };
 
 }  // namespace extensions

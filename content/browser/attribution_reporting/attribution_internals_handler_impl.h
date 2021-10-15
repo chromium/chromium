@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_HANDLER_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_HANDLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -52,7 +53,7 @@ class AttributionInternalsHandlerImpl
       std::unique_ptr<AttributionManager::Provider> manager_provider);
 
  private:
-  WebUI* web_ui_;
+  raw_ptr<WebUI> web_ui_;
   std::unique_ptr<AttributionManager::Provider> manager_provider_;
 
   mojo::Receiver<mojom::AttributionInternalsHandler> receiver_;

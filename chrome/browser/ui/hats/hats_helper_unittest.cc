@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/hats/hats_helper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
@@ -50,8 +51,8 @@ class HatsHelperTest : public testing::Test {
   TestingProfile profile_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> web_contents_;
-  MockHatsService* mock_hats_service_;
-  MockTrustSafetySentimentService* mock_sentiment_service_;
+  raw_ptr<MockHatsService> mock_hats_service_;
+  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
 };
 
 TEST_F(HatsHelperTest, SentimentServiceInformed) {

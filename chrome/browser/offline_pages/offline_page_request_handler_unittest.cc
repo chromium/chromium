@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -218,7 +219,7 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
  private:
   void OnMojoDisconnect() {}
 
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
   mojo::ScopedDataPipeConsumerHandle response_body_;
   network::URLLoaderCompletionStatus completion_status_;
@@ -283,7 +284,7 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
   void ReadBody();
   void ReadCompleted(const ResponseInfo& response);
 
-  OfflinePageRequestHandlerTest* test_;
+  raw_ptr<OfflinePageRequestHandlerTest> test_;
   std::unique_ptr<ChromeNavigationUIData> navigation_ui_data_;
   std::unique_ptr<OfflinePageURLLoader> url_loader_;
   std::unique_ptr<TestURLLoaderClient> client_;
@@ -432,10 +433,10 @@ class OfflinePageRequestHandlerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  OfflinePageTabHelper* offline_page_tab_helper_;  // Not owned.
+  raw_ptr<OfflinePageTabHelper> offline_page_tab_helper_;  // Not owned.
   int64_t last_offline_id_;
   ResponseInfo response_;
   bool is_offline_page_set_in_navigation_data_;

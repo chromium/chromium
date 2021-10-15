@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/post_job.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 
@@ -24,7 +25,7 @@ class FileOpeningJob {
     ~FileOpeningTask();
 
     // Non-owning pointer to the request corresponding to the file to open.
-    safe_browsing::FileAnalysisRequest* request = nullptr;
+    raw_ptr<safe_browsing::FileAnalysisRequest> request = nullptr;
 
     // Indicates if this task has been taken and is owned by a thread.
     std::atomic_bool taken{false};

@@ -15,6 +15,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
@@ -251,7 +252,7 @@ class MetricsLog {
 
   // Used to interact with the embedder. Weak pointer; must outlive |this|
   // instance.
-  MetricsServiceClient* const client_;
+  const raw_ptr<MetricsServiceClient> client_;
 
   // The time when the current log was created.
   const base::TimeTicks creation_time_;
@@ -265,10 +266,10 @@ class MetricsLog {
 
   // The clock used to vend Time::Now().  Note that this is not used for
   // the static function MetricsLog::GetCurrentTime().
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // If provided, the NetworkTimeTracker used.  Used for tests.
-  network_time::NetworkTimeTracker* network_clock_for_testing_;
+  raw_ptr<network_time::NetworkTimeTracker> network_clock_for_testing_;
 };
 
 }  // namespace metrics

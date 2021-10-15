@@ -545,7 +545,7 @@ void PasswordAccessoryControllerImpl::FillSelection(
     return;  // Never fill across different origins!
   }
   password_manager::PasswordManagerDriver* driver =
-      driver_supplier_.Run(web_contents_);
+      driver_supplier_.Run(web_contents_.get());
   if (!driver)
     return;
   driver->FillIntoFocusedField(selection.is_obfuscated(),

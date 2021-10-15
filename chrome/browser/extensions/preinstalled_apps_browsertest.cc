@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 
 #include "base/json/json_reader.h"
@@ -260,8 +261,8 @@ class PreinstalledAppsMigrationBrowserTest
   ExtensionRegistry* registry() { return ExtensionRegistry::Get(profile()); }
 
  protected:
-  web_app::TestShortcutManager* shortcut_manager_;
-  web_app::FakeOsIntegrationManager* os_integration_manager_;
+  raw_ptr<web_app::TestShortcutManager> shortcut_manager_;
+  raw_ptr<web_app::FakeOsIntegrationManager> os_integration_manager_;
 
  private:
   std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {

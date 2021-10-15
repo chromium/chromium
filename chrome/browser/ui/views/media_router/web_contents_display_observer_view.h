@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_WEB_CONTENTS_DISPLAY_OBSERVER_VIEW_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/media_router/web_contents_display_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -45,10 +46,10 @@ class WebContentsDisplayObserverView : public WebContentsDisplayObserver,
   // Returns the display that is the closest to |wdiget_|.
   virtual display::Display GetDisplayNearestWidget() const;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The widget containing |web_contents_|.
-  views::Widget* widget_;
+  raw_ptr<views::Widget> widget_;
 
   // The display that |web_contents_| is on.
   display::Display display_;

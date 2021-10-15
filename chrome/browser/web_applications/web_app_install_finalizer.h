@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -200,14 +201,14 @@ class WebAppInstallFinalizer {
       const WebApplicationInfo& web_app_info,
       bool success);
 
-  WebAppRegistrar* registrar_ = nullptr;
-  WebAppSyncBridge* sync_bridge_ = nullptr;
-  WebAppUiManager* ui_manager_ = nullptr;
-  OsIntegrationManager* os_integration_manager_ = nullptr;
+  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
+  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
+  raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
+  raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
 
-  Profile* const profile_;
-  WebAppIconManager* const icon_manager_;
-  WebAppPolicyManager* policy_manager_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<WebAppIconManager> icon_manager_;
+  raw_ptr<WebAppPolicyManager> policy_manager_;
   bool started_ = false;
 
   struct SyncUninstallState {

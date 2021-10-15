@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -66,11 +67,11 @@ class AccountsMutatorImpl : public AccountsMutator {
 #endif
 
  private:
-  ProfileOAuth2TokenService* token_service_;
-  AccountTrackerService* account_tracker_service_;
-  PrimaryAccountManager* primary_account_manager_;
+  raw_ptr<ProfileOAuth2TokenService> token_service_;
+  raw_ptr<AccountTrackerService> account_tracker_service_;
+  raw_ptr<PrimaryAccountManager> primary_account_manager_;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 #endif
 };
 

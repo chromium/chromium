@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 namespace content_settings {
@@ -77,7 +78,7 @@ class ContentSettingsInfo {
   OriginRestriction origin_restriction() const { return origin_restriction_; }
 
  private:
-  const WebsiteSettingsInfo* website_settings_info_;
+  raw_ptr<const WebsiteSettingsInfo> website_settings_info_;
   const std::vector<std::string> allowlisted_schemes_;
   const std::set<ContentSetting> valid_settings_;
   const IncognitoBehavior incognito_behavior_;

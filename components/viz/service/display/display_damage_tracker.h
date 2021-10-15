@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -106,8 +107,8 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   void NotifyPendingSurfacesChanged();
 
   base::ObserverList<Observer>::Unchecked observers_;
-  SurfaceManager* const surface_manager_;
-  SurfaceAggregator* const aggregator_;
+  const raw_ptr<SurfaceManager> surface_manager_;
+  const raw_ptr<SurfaceAggregator> aggregator_;
 
   bool root_frame_missing_ = true;
 

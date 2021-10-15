@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
@@ -56,7 +57,7 @@ class HostResolverMdnsListenerImpl : public HostResolver::MdnsListener,
 
   int initialization_error_ = OK;
   std::unique_ptr<net::MDnsListener> inner_listener_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

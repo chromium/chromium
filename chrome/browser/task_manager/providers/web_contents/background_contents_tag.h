@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_BACKGROUND_CONTENTS_TAG_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_BACKGROUND_CONTENTS_TAG_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/providers/web_contents/background_contents_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
 
@@ -31,7 +32,7 @@ class BackgroundContentsTag : public WebContentsTag {
                         BackgroundContents* background_contents);
 
   // The owning BackgroundContents.
-  BackgroundContents* background_contents_;
+  raw_ptr<BackgroundContents> background_contents_;
 };
 
 }  // namespace task_manager

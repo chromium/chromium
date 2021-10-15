@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_functions.h"
@@ -92,7 +93,7 @@ class IndependentFlattener : public base::HistogramFlattener {
   }
 
  private:
-  MetricsLog* const log_;
+  const raw_ptr<MetricsLog> log_;
 };
 
 // Convenience function to return the given time at a resolution in seconds.
@@ -201,7 +202,7 @@ MetricsLog::MetricsLog(
 
   if (log_type == MetricsLog::ONGOING_LOG) {
     auto* network_clock = network_clock_for_testing_
-                              ? network_clock_for_testing_
+                              ? network_clock_for_testing_.get()
                               : client_->GetNetworkTimeTracker();
     // Don't record the time when creating a log because creating a log happens
     // on startups and setting the timezone requires ICU initialization that is
@@ -490,7 +491,7 @@ void MetricsLog::CloseLog() {
   DCHECK(!closed_);
   if (log_type_ == MetricsLog::ONGOING_LOG) {
     auto* network_clock = network_clock_for_testing_
-                              ? network_clock_for_testing_
+                              ? network_clock_for_testing_.get()
                               : client_->GetNetworkTimeTracker();
     RecordCurrentTime(clock_, network_clock,
                       /*record_time_zone=*/true,

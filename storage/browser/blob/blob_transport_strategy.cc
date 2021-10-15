@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
@@ -346,7 +347,7 @@ class FileTransportStrategy : public BlobTransportStrategy {
 
   struct Request {
     // The BytesProvider to request this particular bit of data from.
-    blink::mojom::BytesProvider* provider;
+    raw_ptr<blink::mojom::BytesProvider> provider;
     // Offset into the BytesProvider of the data to request.
     uint64_t source_offset;
     // Size of the bytes to request.

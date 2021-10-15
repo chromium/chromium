@@ -11,6 +11,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -106,7 +107,7 @@ class FakeSocket : public net::StreamSocket {
   std::string input_data_;
   int input_pos_;
 
-  std::string* written_data_;
+  raw_ptr<std::string> written_data_;
   bool async_write_;
   bool write_pending_;
 

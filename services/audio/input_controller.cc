@@ -15,6 +15,7 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -193,7 +194,7 @@ class InputController::AudioCallback
   }
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  InputController* const controller_;
+  const raw_ptr<InputController> controller_;
   // We do not want any pending posted tasks generated from the callback class
   // to keep the controller object alive longer than it should. So we use
   // a weak ptr whenever we post, we use this weak pointer.

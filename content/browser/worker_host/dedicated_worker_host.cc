@@ -89,7 +89,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
   // `blink::StorageKey`, DCHECK that `storage_key` is consistent with
   // `isolation_info_` here (i.e. their origin and top frame origin match).
 
-  scoped_process_host_observation_.Observe(worker_process_host_);
+  scoped_process_host_observation_.Observe(worker_process_host_.get());
 
   if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
     // This is a workaround to make the worker's COEP have a value when

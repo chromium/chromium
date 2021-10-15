@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_TESTING_PROFILE_KEY_H_
 #define CHROME_TEST_BASE_TESTING_PROFILE_KEY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/test/base/testing_profile.h"
 
@@ -25,7 +26,7 @@ class TestingProfileKey : public ProfileKey {
   leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() override;
 
  private:
-  TestingProfile* testing_profile_ = nullptr;
+  raw_ptr<TestingProfile> testing_profile_ = nullptr;
 };
 
 #endif  // CHROME_TEST_BASE_TESTING_PROFILE_KEY_H_

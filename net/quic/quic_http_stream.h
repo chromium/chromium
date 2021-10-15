@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
@@ -160,20 +161,20 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
 
   // The request to send.
   // Only valid before the response body is read.
-  const HttpRequestInfo* request_info_;
+  raw_ptr<const HttpRequestInfo> request_info_;
 
   // Whether this request can be sent without confirmation.
   bool can_send_early_;
 
   // The request body to send, if any, owned by the caller.
-  UploadDataStream* request_body_stream_;
+  raw_ptr<UploadDataStream> request_body_stream_;
   // Time the request was issued.
   base::Time request_time_;
   // The priority of the request.
   RequestPriority priority_;
   // |response_info_| is the HTTP response data object which is filled in
   // when a the response headers are read.  It is not owned by this stream.
-  HttpResponseInfo* response_info_;
+  raw_ptr<HttpResponseInfo> response_info_;
   bool has_response_status_;  // true if response_status_ as been set.
   // Because response data is buffered, also buffer the response status if the
   // stream is explicitly closed via OnError or OnClose with an error.

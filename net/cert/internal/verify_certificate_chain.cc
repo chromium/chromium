@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "net/cert/internal/cert_error_params.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/common_cert_errors.h"
@@ -575,7 +576,7 @@ class PathVerifier {
   //    certificate.
   size_t max_path_length_;
 
-  VerifyCertificateChainDelegate* delegate_;
+  raw_ptr<VerifyCertificateChainDelegate> delegate_;
 };
 
 void PathVerifier::VerifyPolicies(const ParsedCertificate& cert,

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/native_window_tracker.h"
 #include "content/public/browser/web_contents.h"
@@ -43,7 +44,7 @@ class ExtensionInstallPromptShowParams::WebContentsDestructionObserver
 
  private:
   // Not owned.
-  ExtensionInstallPromptShowParams* params_;
+  raw_ptr<ExtensionInstallPromptShowParams> params_;
 };
 
 ExtensionInstallPromptShowParams::ExtensionInstallPromptShowParams(

@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -128,7 +129,8 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
   DownloadsHandlerTest()
       : download_manager_(new NiceMock<content::MockDownloadManager>()),
         handler_(&profile_) {
-    profile_.SetDownloadManagerForTesting(base::WrapUnique(download_manager_));
+    profile_.SetDownloadManagerForTesting(
+        base::WrapUnique(download_manager_.get()));
     std::unique_ptr<ChromeDownloadManagerDelegate> delegate =
         std::make_unique<ChromeDownloadManagerDelegate>(&profile_);
     chrome_download_manager_delegate_ = delegate.get();
@@ -256,9 +258,10 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
   content::TestWebUI test_web_ui_;
   TestingProfile profile_;
 
-  DownloadCoreService* service_;
-  content::MockDownloadManager* download_manager_;  // Owned by |profile_|.
-  ChromeDownloadManagerDelegate* chrome_download_manager_delegate_;
+  raw_ptr<DownloadCoreService> service_;
+  raw_ptr<content::MockDownloadManager>
+      download_manager_;  // Owned by |profile_|.
+  raw_ptr<ChromeDownloadManagerDelegate> chrome_download_manager_delegate_;
 
   bool connection_policy_enabled_;
   std::string account_name_, account_login_, folder_name_, folder_id_;

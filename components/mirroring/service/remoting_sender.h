@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/cast/sender/frame_sender.h"
@@ -90,7 +91,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   // Callback that is run to notify when a fatal error occurs.
   base::OnceClosure error_callback_;

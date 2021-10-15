@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
@@ -113,12 +114,12 @@ class AuthenticatorRequestSheetView : public views::View {
   void OnThemeChanged() override;
 
   std::unique_ptr<AuthenticatorRequestSheetModel> model_;
-  views::Button* back_arrow_button_ = nullptr;
-  views::ImageButton* back_arrow_ = nullptr;
-  views::View* step_specific_content_ = nullptr;
+  raw_ptr<views::Button> back_arrow_button_ = nullptr;
+  raw_ptr<views::ImageButton> back_arrow_ = nullptr;
+  raw_ptr<views::View> step_specific_content_ = nullptr;
   AutoFocus should_focus_step_specific_content_ = AutoFocus::kNo;
-  NonAccessibleImageView* step_illustration_ = nullptr;
-  views::Label* error_label_ = nullptr;
+  raw_ptr<NonAccessibleImageView> step_illustration_ = nullptr;
+  raw_ptr<views::Label> error_label_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_VIEW_H_

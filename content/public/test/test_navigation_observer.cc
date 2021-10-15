@@ -5,6 +5,7 @@
 #include "content/public/test/test_navigation_observer.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_url_handler.h"
@@ -51,7 +52,7 @@ class TestNavigationObserver::TestWebContentsObserver
     parent_->OnDidFinishNavigation(navigation_handle);
   }
 
-  TestNavigationObserver* parent_;
+  raw_ptr<TestNavigationObserver> parent_;
 
   DISALLOW_COPY_AND_ASSIGN(TestWebContentsObserver);
 };

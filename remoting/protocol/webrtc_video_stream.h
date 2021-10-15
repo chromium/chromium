@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_forward.h"
@@ -129,7 +130,7 @@ class WebrtcVideoStream : public VideoStream,
 
   webrtc::DesktopSize frame_size_;
   webrtc::DesktopVector frame_dpi_;
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 
   WebrtcVideoEncoderSelector encoder_selector_;
 

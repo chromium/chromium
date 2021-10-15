@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -61,7 +62,7 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
  private:
   std::unique_ptr<views::MenuButton> overflow_reference_view_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 class OpenMenuListener : public views::ContextMenuController {
@@ -86,7 +87,7 @@ class OpenMenuListener : public views::ContextMenuController {
   bool opened_menu() const { return opened_menu_; }
 
  private:
-  views::View* view_;
+  raw_ptr<views::View> view_;
 
   bool opened_menu_;
 };

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_H_
 #define COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -109,7 +110,7 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

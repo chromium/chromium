@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_HIGH_PMF_DISCARD_POLICY_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_HIGH_PMF_DISCARD_POLICY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -45,7 +46,7 @@ class HighPMFDiscardPolicy : public GraphOwned,
   const int kInvalidPMFLimitValue = 0;
 
   int pmf_limit_kb_ = kInvalidPMFLimitValue;
-  Graph* graph_ = nullptr;
+  raw_ptr<Graph> graph_ = nullptr;
 
   // Indicates whether or not there's a discard attempt in progress. This could
   // happen if this attempt doesn't complete between 2 calls to

@@ -5,6 +5,7 @@
 #ifndef CONTENT_WEB_TEST_BROWSER_WEB_TEST_COOKIE_MANAGER_H_
 #define CONTENT_WEB_TEST_BROWSER_WEB_TEST_COOKIE_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/cookie_manager/cookie_manager_automation.mojom.h"
 
@@ -28,7 +29,7 @@ class WebTestCookieManager
       override;
 
  private:
-  network::mojom::CookieManager* const cookie_manager_;
+  const raw_ptr<network::mojom::CookieManager> cookie_manager_;
   const GURL& url_;
 };
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/vr/vr_controller.h"
 #include "chrome/browser/vr/input_delegate.h"
 
@@ -43,7 +44,7 @@ class GvrInputDelegate : public InputDelegate {
  private:
   std::unique_ptr<VrController> controller_;
   GestureDetector gesture_detector_;
-  gvr::GvrApi* gvr_api_;
+  raw_ptr<gvr::GvrApi> gvr_api_;
 
   bool was_select_button_down_ = false;
 };

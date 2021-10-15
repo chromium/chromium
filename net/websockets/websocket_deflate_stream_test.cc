@@ -17,6 +17,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
 #include "net/base/io_buffer.h"
@@ -215,8 +216,8 @@ class WebSocketDeflateStreamTest : public ::testing::Test {
     mock_stream_ = new testing::StrictMock<MockWebSocketStream>;
     predictor_ = new WebSocketDeflatePredictorMock;
     deflate_stream_ = std::make_unique<WebSocketDeflateStream>(
-        base::WrapUnique(mock_stream_), parameters,
-        base::WrapUnique(predictor_));
+        base::WrapUnique(mock_stream_.get()), parameters,
+        base::WrapUnique(predictor_.get()));
   }
 
   void AppendTo(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
@@ -245,9 +246,9 @@ class WebSocketDeflateStreamTest : public ::testing::Test {
 
   std::unique_ptr<WebSocketDeflateStream> deflate_stream_;
   // Owned by |deflate_stream_|.
-  MockWebSocketStream* mock_stream_;
+  raw_ptr<MockWebSocketStream> mock_stream_;
   // Owned by |deflate_stream_|.
-  WebSocketDeflatePredictorMock* predictor_;
+  raw_ptr<WebSocketDeflatePredictorMock> predictor_;
 
   // TODO(yoichio): Make this type std::vector<std::string>.
   std::vector<std::unique_ptr<const char[]>> data_buffers;
@@ -326,7 +327,7 @@ class ReadFramesStub {
   int result_;
   CompletionOnceCallback callback_;
   std::vector<std::unique_ptr<WebSocketFrame>> frames_to_output_;
-  std::vector<std::unique_ptr<WebSocketFrame>>* frames_passed_;
+  raw_ptr<std::vector<std::unique_ptr<WebSocketFrame>>> frames_passed_;
 };
 
 // WriteFramesStub is a stub for WebSocketStream::WriteFrames.
@@ -356,7 +357,7 @@ class WriteFramesStub {
   int result_;
   CompletionOnceCallback callback_;
   std::vector<std::unique_ptr<WebSocketFrame>> frames_;
-  WebSocketDeflatePredictorMock* predictor_;
+  raw_ptr<WebSocketDeflatePredictorMock> predictor_;
 };
 
 TEST_F(WebSocketDeflateStreamTest, ReadFailedImmediately) {

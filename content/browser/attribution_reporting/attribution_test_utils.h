@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner_forward.h"
 #include "base/time/time.h"
@@ -159,7 +160,7 @@ class TestManagerProvider : public AttributionManager::Provider {
   AttributionManager* GetManager(WebContents* web_contents) const override;
 
  private:
-  AttributionManager* manager_ = nullptr;
+  raw_ptr<AttributionManager> manager_ = nullptr;
 };
 
 // Test AttributionManager which can be injected into tests to monitor calls to

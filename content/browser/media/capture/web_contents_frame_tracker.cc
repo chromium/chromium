@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -82,7 +83,7 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
   base::ScopedClosureRunner capture_handle_;
 
   // The backing WebContents.
-  WebContents* contents_;
+  raw_ptr<WebContents> contents_;
 };
 
 }  // namespace

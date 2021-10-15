@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/buildflag.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
@@ -278,7 +279,7 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   // ID is empty.
   void RecreateDeviceIdIfNeeded();
 
-  PrefService* user_prefs_;
+  raw_ptr<PrefService> user_prefs_;
 
   std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
 

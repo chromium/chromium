@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
@@ -70,14 +71,14 @@ class WebRtcLocalEventLogManager final {
   // Observer which will be informed whenever a local log file is started or
   // stopped. Through this, the owning WebRtcEventLogManager can be informed,
   // and decide whether it wants to turn notifications from WebRTC on/off.
-  WebRtcLocalEventLogsObserver* const observer_;
+  const raw_ptr<WebRtcLocalEventLogsObserver> observer_;
 
   // For unit tests only, and specifically for unit tests that verify the
   // filename format (derived from the current time as well as the renderer PID
   // and PeerConnection local ID), we want to make sure that the time and date
   // cannot change between the time the clock is read by the unit under test
   // (namely WebRtcEventLogManager) and the time it's read by the test.
-  base::Clock* clock_for_testing_;
+  raw_ptr<base::Clock> clock_for_testing_;
 
   // Currently active peer connections. PeerConnections which have been closed
   // are not considered active, regardless of whether they have been torn down.

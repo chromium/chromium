@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SESSIONS_EXIT_TYPE_SERVICE_H_
 #define CHROME_BROWSER_SESSIONS_EXIT_TYPE_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -57,7 +58,7 @@ class ExitTypeService : public KeyedService {
 
   explicit ExitTypeService(Profile* profile);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   ExitType last_session_exit_type_;
   ExitType current_session_exit_type_;
 };

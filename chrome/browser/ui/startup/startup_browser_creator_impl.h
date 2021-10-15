@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -208,8 +209,8 @@ class StartupBrowserCreatorImpl {
 
   const base::FilePath cur_dir_;
   const base::CommandLine& command_line_;
-  Profile* profile_ = nullptr;
-  StartupBrowserCreator* browser_creator_;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<StartupBrowserCreator> browser_creator_;
   bool is_first_run_;
 };
 

@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -182,7 +183,7 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // be returned to the caller directly then this is NULL.
   std::unique_ptr<webrtc::DesktopFrame> output_frame_;
 
-  const base::TickClock* tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
 
   // Timer used to capture the frame.
   std::unique_ptr<base::OneShotTimer> capture_timer_;

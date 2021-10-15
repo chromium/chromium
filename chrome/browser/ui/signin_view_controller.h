@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -184,11 +185,11 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
   SigninViewControllerDelegate* GetModalDialogDelegateForTesting();
 
   // Browser owning this controller.
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   // |delegate_| owns itself and calls OnModalSigninClosed() before being
   // destroyed.
-  SigninViewControllerDelegate* delegate_ = nullptr;
+  raw_ptr<SigninViewControllerDelegate> delegate_ = nullptr;
   base::ScopedObservation<SigninViewControllerDelegate,
                           SigninViewControllerDelegate::Observer>
       delegate_observation_{this};

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -136,8 +137,8 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   }
 
  private:
-  const gfx::VectorIcon* icon_;
-  OmniboxPopupContentsView* popup_contents_view_;
+  raw_ptr<const gfx::VectorIcon> icon_;
+  raw_ptr<OmniboxPopupContentsView> popup_contents_view_;
   OmniboxPopupSelection selection_;
   absl::optional<SkColor> omnibox_bg_color_;
   SkColor icon_color_;

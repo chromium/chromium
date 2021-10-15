@@ -131,7 +131,7 @@ CartService::CartService(Profile* profile)
           chrome::FindTabbedBrowser(profile, false))),
       coupon_service_(CouponServiceFactory::GetForProfile(profile)) {
   if (history_service_) {
-    history_service_observation_.Observe(history_service_);
+    history_service_observation_.Observe(history_service_.get());
   }
   if (base::GetFieldTrialParamValueByFeature(
           ntp_features::kNtpChromeCartModule,

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
@@ -25,7 +26,7 @@ intptr_t TestTrapFuncTwo(const arch_seccomp_data& data, void* aux) {
 TEST(TestTrapRegistry, TrapIDs) {
   struct {
     TrapRegistry::TrapFnc fnc;
-    const void* aux;
+    raw_ptr<const void> aux;
   } funcs[] = {
       {TestTrapFuncOne, nullptr},
       {TestTrapFuncTwo, nullptr},

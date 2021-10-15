@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/global_media_controls/public/media_item_manager.h"
@@ -71,7 +72,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemManagerImpl
   // single item.
   bool HasOpenDialogForItem();
 
-  MediaDialogDelegate* dialog_delegate_ = nullptr;
+  raw_ptr<MediaDialogDelegate> dialog_delegate_ = nullptr;
 
   // True if the dialog was opened by |SetDialogDelegateForId()|. The
   // value does not indicate whether the MediaDialogView is opened or not.

@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner_forward.h"
@@ -200,7 +201,7 @@ class AttributionManagerImplTest : public testing::Test {
   base::ScopedTempDir dir_;
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<AttributionManagerImpl> attribution_manager_;
-  TestAttributionReporter* test_reporter_ = nullptr;
+  raw_ptr<TestAttributionReporter> test_reporter_ = nullptr;
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
 };
 

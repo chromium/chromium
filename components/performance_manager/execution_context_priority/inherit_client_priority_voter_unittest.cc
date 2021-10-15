@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/execution_context_priority/inherit_client_priority_voter.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/execution_context_priority/root_vote_observer.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
@@ -87,7 +88,7 @@ class InheritClientPriorityVoterTest : public GraphTestHarness {
   VoterId voter_id() { return wrapper_->voter_id(); }
 
  private:
-  GraphOwnedWrapper* wrapper_ = nullptr;
+  raw_ptr<GraphOwnedWrapper> wrapper_ = nullptr;
 };
 
 TEST_F(InheritClientPriorityVoterTest, OneWorker) {

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -56,7 +57,7 @@ class SequenceBoundTest : public ::testing::Test {
     Derived(Value* ptr) : ptr_(ptr) { *ptr_ = kDerivedCtorValue; }
     ~Derived() override { *ptr_ = kDerivedDtorValue; }
     void SetValue(Value value) { *ptr_ = value; }
-    Value* ptr_;
+    raw_ptr<Value> ptr_;
   };
 
   // Another base class, which sets ints to different values.
@@ -65,7 +66,7 @@ class SequenceBoundTest : public ::testing::Test {
     Other(Value* ptr) : ptr_(ptr) { *ptr = kOtherCtorValue; }
     virtual ~Other() { *ptr_ = kOtherDtorValue; }
     void SetValue(Value value) { *ptr_ = value; }
-    Value* ptr_;
+    raw_ptr<Value> ptr_;
   };
 
   class MultiplyDerived : public Other, public Derived {
@@ -459,10 +460,10 @@ class IntArgVoidReturn {
   void set_loop(RunLoop* loop) { loop_ = loop; }
 
  private:
-  int* const method_called_with_;
-  int* const const_method_called_with_;
+  const raw_ptr<int> method_called_with_;
+  const raw_ptr<int> const_method_called_with_;
 
-  RunLoop* loop_ = nullptr;
+  raw_ptr<RunLoop> loop_ = nullptr;
 };
 
 class IntArgIntReturn {
@@ -642,8 +643,8 @@ class IgnoreResultTestHelperWithNoArgs {
   }
 
  private:
-  RunLoop* const loop_ = nullptr;
-  bool* const called_ = nullptr;
+  const raw_ptr<RunLoop> loop_ = nullptr;
+  const raw_ptr<bool> called_ = nullptr;
 };
 
 TEST_F(SequenceBoundTest, AsyncCallIgnoreResultNoArgs) {
@@ -710,7 +711,7 @@ class IgnoreResultTestHelperWithArgs {
   }
 
  private:
-  RunLoop* const loop_ = nullptr;
+  const raw_ptr<RunLoop> loop_ = nullptr;
   int& value_;
 };
 

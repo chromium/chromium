@@ -14,6 +14,7 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/win/scoped_variant.h"
 #include "ui/accessibility/ax_export.h"
@@ -104,7 +105,7 @@ class AX_EXPORT MSAAChildren final {
 
    private:
     LONG index_{0};
-    MSAAChildren* children_{nullptr};
+    raw_ptr<MSAAChildren> children_{nullptr};
   };
 
   Iterator begin() { return {this}; }

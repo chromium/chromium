@@ -7,6 +7,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/semaphore_handle.h"
@@ -50,7 +51,7 @@ class GPU_GLES2_EXPORT ExternalSemaphore {
   SemaphoreHandle handle() { return handle_.Duplicate(); }
 
  private:
-  viz::VulkanContextProvider* context_provider_ = nullptr;
+  raw_ptr<viz::VulkanContextProvider> context_provider_ = nullptr;
   VkSemaphore semaphore_ = VK_NULL_HANDLE;
   SemaphoreHandle handle_;
   unsigned int gl_semaphore_ = 0;

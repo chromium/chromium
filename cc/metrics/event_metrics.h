@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -224,7 +225,7 @@ class CC_EXPORT EventMetrics {
   // the event.
   absl::optional<PinchType> pinch_type_;
 
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   // Timestamps of different stages of event dispatch. Timestamps are set as the
   // event moves forward in the pipeline. In the end, some stages might not have

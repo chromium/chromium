@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner_forward.h"
 #include "base/test/task_environment.h"
@@ -169,7 +170,7 @@ class AliveCheckerTest : public testing::Test {
 
   // Mocks suspend status. Set in CreatePowerObserverHelper, owned by
   // |alive_checker_|.
-  MockPowerObserverHelper* mock_power_observer_helper_;
+  raw_ptr<MockPowerObserverHelper> mock_power_observer_helper_;
 
  private:
   void CreateAliveCheckerOnAliveCheckerThread(
@@ -349,8 +350,9 @@ TEST_F(AliveCheckerTest, DISABLED_SuspendResume_StartBeforeSuspend) {
   NotifyAliveMultipleTimes(10, base::Milliseconds(kNotifyIntervalMs));
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Suspend,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Suspend,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
@@ -359,8 +361,9 @@ TEST_F(AliveCheckerTest, DISABLED_SuspendResume_StartBeforeSuspend) {
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Resume,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Resume,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   WaitUntilDetectedDead();
   EXPECT_TRUE(GetDetectedDead());
@@ -375,8 +378,9 @@ TEST_F(AliveCheckerTest, SuspendResume_StartBetweenSuspendAndResume) {
   ASSERT_TRUE(mock_power_observer_helper_);
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Suspend,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Suspend,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   StartAliveChecker();
 
@@ -387,8 +391,9 @@ TEST_F(AliveCheckerTest, SuspendResume_StartBetweenSuspendAndResume) {
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Resume,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Resume,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   WaitUntilDetectedDead();
   EXPECT_TRUE(GetDetectedDead());
@@ -412,16 +417,18 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyBeforeSuspend) {
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Suspend,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Suspend,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
       base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Resume,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Resume,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
       base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
@@ -450,16 +457,18 @@ TEST_F(AliveCheckerTest,
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Suspend,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Suspend,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
       base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Resume,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Resume,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   WaitUntilDetectedDead();
   EXPECT_TRUE(GetDetectedDead());
@@ -476,8 +485,9 @@ TEST_F(AliveCheckerTest,
   StartAliveChecker();
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Suspend,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Suspend,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   alive_checker_->NotifyAlive();
 
@@ -488,8 +498,9 @@ TEST_F(AliveCheckerTest,
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Resume,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Resume,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
       base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
@@ -506,12 +517,14 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyAfterResume) {
   StartAliveChecker();
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Suspend,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Suspend,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Resume,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Resume,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   alive_checker_->NotifyAlive();
 
@@ -532,8 +545,9 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_DontNotify) {
   StartAliveChecker();
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Suspend,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Suspend,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   // It can take up to the timeout + the check interval until detection. Add a
   // margin to this.
@@ -542,8 +556,9 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_DontNotify) {
   EXPECT_FALSE(GetDetectedDead());
 
   alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Resume,
-                                base::Unretained(mock_power_observer_helper_)));
+      FROM_HERE,
+      base::BindOnce(&MockPowerObserverHelper::Resume,
+                     base::Unretained(mock_power_observer_helper_.get())));
 
   WaitUntilDetectedDead();
   EXPECT_TRUE(GetDetectedDead());

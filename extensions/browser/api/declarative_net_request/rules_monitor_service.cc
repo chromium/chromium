@@ -405,7 +405,7 @@ RulesMonitorService::RulesMonitorService(
       ruleset_manager_(browser_context),
       action_tracker_(browser_context),
       global_rules_tracker_(prefs_, extension_registry_) {
-  registry_observation_.Observe(extension_registry_);
+  registry_observation_.Observe(extension_registry_.get());
 }
 
 RulesMonitorService::~RulesMonitorService() = default;

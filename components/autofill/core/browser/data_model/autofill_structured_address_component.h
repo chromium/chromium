@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -574,7 +575,7 @@ class AddressComponent {
 
   // A pointer to the parent node. It is set to nullptr if the node is the root
   // node of the AddressComponent tree.
-  AddressComponent* const parent_;
+  const raw_ptr<AddressComponent> parent_;
 
   // Defines if and how two components can be merged.
   int merge_mode_;

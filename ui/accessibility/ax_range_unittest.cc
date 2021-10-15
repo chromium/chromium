@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -97,7 +98,7 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
   }
 
  private:
-  TestAXTreeManager* const tree_manager_;
+  const raw_ptr<TestAXTreeManager> tree_manager_;
 };
 
 class AXRangeTest : public ::testing::Test, public TestAXTreeManager {

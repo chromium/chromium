@@ -77,7 +77,7 @@ class TaskManagerViewTest : public InProcessBrowserTest {
   }
 
   views::TableView* GetTable() const {
-    return GetView() ? GetView()->tab_table_ : nullptr;
+    return GetView() ? GetView()->tab_table_.get() : nullptr;
   }
 
   void PressKillButton() { GetView()->Accept(); }

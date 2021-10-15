@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
@@ -137,8 +138,8 @@ class UserScriptListenerTest : public testing::Test {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   UserScriptListener listener_;
-  TestingProfile* profile_ = nullptr;
-  ExtensionService* service_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<ExtensionService> service_ = nullptr;
   bool was_navigation_resumed_ = false;
   std::unique_ptr<content::WebContents> web_contents_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

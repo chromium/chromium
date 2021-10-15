@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
@@ -97,14 +98,14 @@ class BookmarkContextMenuController
   void BookmarkModelChanged() override;
 
   gfx::NativeWindow parent_window_;
-  BookmarkContextMenuControllerDelegate* delegate_;
-  Browser* const browser_;
-  Profile* profile_;
+  raw_ptr<BookmarkContextMenuControllerDelegate> delegate_;
+  const raw_ptr<Browser> browser_;
+  raw_ptr<Profile> profile_;
   base::RepeatingCallback<content::PageNavigator*()> get_navigator_;
   const BookmarkLaunchLocation opened_from_;
-  const bookmarks::BookmarkNode* parent_;
+  raw_ptr<const bookmarks::BookmarkNode> parent_;
   std::vector<const bookmarks::BookmarkNode*> selection_;
-  bookmarks::BookmarkModel* model_;
+  raw_ptr<bookmarks::BookmarkModel> model_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   // Used to detect deletion of |this| executing a command.
   base::WeakPtrFactory<BookmarkContextMenuController> weak_factory_{this};

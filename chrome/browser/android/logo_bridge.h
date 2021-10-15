@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace search_provider_logos {
@@ -43,7 +44,7 @@ class LogoBridge {
  private:
   virtual ~LogoBridge();
 
-  search_provider_logos::LogoService* logo_service_;
+  raw_ptr<search_provider_logos::LogoService> logo_service_;
 
   base::WeakPtrFactory<LogoBridge> weak_ptr_factory_{this};
 };

@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "components/prefs/pref_member.h"
 
@@ -44,7 +45,7 @@ class ProfileInfoWatcher : public ProfileAttributesStorage::Observer {
   void RunCallback();
 
   // Weak reference to the profile this class observes.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Called when the authenticated username changes.
   base::RepeatingClosure callback_;

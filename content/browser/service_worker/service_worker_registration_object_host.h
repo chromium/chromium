@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -145,7 +146,7 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
 
   // |container_host_| is valid throughout lifetime of |this| because it owns
   // |this|.
-  ServiceWorkerContainerHost* container_host_;
+  raw_ptr<ServiceWorkerContainerHost> container_host_;
   base::WeakPtr<ServiceWorkerContextCore> context_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
 

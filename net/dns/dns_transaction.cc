@@ -20,6 +20,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -350,7 +351,7 @@ class DnsUDPAttempt : public DnsAttempt {
 
   // Should be owned by the DnsSession, to which the transaction should own a
   // reference.
-  DnsUdpTracker* const udp_tracker_;
+  const raw_ptr<DnsUdpTracker> udp_tracker_;
 
   std::unique_ptr<DnsResponse> response_;
 
@@ -1642,7 +1643,7 @@ class DnsTransactionImpl : public DnsTransaction,
   scoped_refptr<DnsSession> session_;
   std::string hostname_;
   uint16_t qtype_;
-  const OptRecordRdata* opt_rdata_;
+  raw_ptr<const OptRecordRdata> opt_rdata_;
   const bool secure_;
   const SecureDnsMode secure_dns_mode_;
   // Cleared in DoCallback.

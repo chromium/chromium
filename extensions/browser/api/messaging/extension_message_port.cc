@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -121,7 +122,7 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
 
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       pm_observation_{this};
-  ExtensionMessagePort* port_;  // Owns this FrameTracker.
+  raw_ptr<ExtensionMessagePort> port_;  // Owns this FrameTracker.
 };
 
 // Represents target of an IPC (render frame, ServiceWorker or render process).

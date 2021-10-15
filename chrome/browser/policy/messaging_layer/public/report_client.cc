@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/path_service.h"
@@ -228,7 +229,7 @@ class ReportingClient::ClientInitializingContext
   }
 
   UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
-  ReportingClient* const client_;
+  const raw_ptr<ReportingClient> client_;
 };
 
 ReportQueueProvider::InitializingContext*

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -80,8 +81,8 @@ class AutofillOfferManager : public KeyedService,
   OffersMap CreateCardLinkedOffersMap(
       const GURL& last_committed_url_origin) const;
 
-  PersonalDataManager* personal_data_;
-  CouponServiceDelegate* coupon_service_delegate_;
+  raw_ptr<PersonalDataManager> personal_data_;
+  raw_ptr<CouponServiceDelegate> coupon_service_delegate_;
   std::set<GURL> eligible_merchant_domains_ = {};
 };
 

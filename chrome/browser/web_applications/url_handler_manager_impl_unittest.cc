@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -144,7 +145,7 @@ class UrlHandlerManagerImplTest : public WebAppTest {
  private:
   base::test::ScopedFeatureList features_;
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
-  UrlHandlerManagerImpl* url_handler_manager_;
+  raw_ptr<UrlHandlerManagerImpl> url_handler_manager_;
   ScopedTestingLocalState local_state_;
 };
 

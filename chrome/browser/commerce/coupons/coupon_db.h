@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 
@@ -58,7 +59,7 @@ class CouponDB {
   void OnOperationFinished(bool success);
 
  private:
-  ProfileProtoDB<coupon_db::CouponContentProto>* proto_db_;
+  raw_ptr<ProfileProtoDB<coupon_db::CouponContentProto>> proto_db_;
   base::WeakPtrFactory<CouponDB> weak_ptr_factory_{this};
 };
 

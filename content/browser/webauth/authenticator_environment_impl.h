@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -107,7 +108,7 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
       virtual_authenticator_managers_;
 
 #if defined(OS_WIN)
-  device::WinWebAuthnApi* win_webauthn_api_for_testing_ = nullptr;
+  raw_ptr<device::WinWebAuthnApi> win_webauthn_api_for_testing_ = nullptr;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorEnvironmentImpl);

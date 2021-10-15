@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 
 class PrefService;
 
@@ -33,7 +34,7 @@ class BuiltInBackendToAndroidBackendMigrator {
   // Saves current migration version in 'pref_'.
   void UpdateMigrationVersionInPref();
 
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 };
 
 }  // namespace password_manager

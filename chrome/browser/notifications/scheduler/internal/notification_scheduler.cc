@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/notifications/scheduler/internal/background_task_coordinator.h"
@@ -78,7 +79,7 @@ class InitHelper {
     std::move(callback_).Run(success);
   }
 
-  NotificationSchedulerContext* context_;
+  raw_ptr<NotificationSchedulerContext> context_;
   InitCallback callback_;
 
   base::WeakPtrFactory<InitHelper> weak_ptr_factory_{this};
@@ -187,7 +188,7 @@ class DisplayHelper {
   }
 
   std::set<std::string> guids_;
-  NotificationSchedulerContext* context_;
+  raw_ptr<NotificationSchedulerContext> context_;
   FinishCallback finish_callback_;
   int shown_count_;
   base::WeakPtrFactory<DisplayHelper> weak_ptr_factory_{this};

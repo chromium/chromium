@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-
 
 // Waits until the tokens are loaded and calls the callback. The callback is
 // called immediately if the tokens are already loaded, and called with nullptr
@@ -43,7 +43,7 @@ class TokensLoadedCallbackRunner : public signin::IdentityManager::Observer {
   // signin::IdentityManager::Observer implementation:
   void OnRefreshTokensLoaded() override {
     scoped_identity_manager_observer_.Reset();
-    std::move(callback_).Run(profile_);
+    std::move(callback_).Run(profile_.get());
   }
 
   void OnIdentityManagerShutdown(signin::IdentityManager* manager) override {
@@ -51,8 +51,8 @@ class TokensLoadedCallbackRunner : public signin::IdentityManager::Observer {
     std::move(callback_).Run(nullptr);
   }
 
-  Profile* profile_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       scoped_identity_manager_observer_{this};
@@ -84,7 +84,7 @@ TokensLoadedCallbackRunner::TokensLoadedCallbackRunner(
   DCHECK(identity_manager_);
   DCHECK(callback_);
   DCHECK(!identity_manager_->AreRefreshTokensLoaded());
-  scoped_identity_manager_observer_.Observe(identity_manager_);
+  scoped_identity_manager_observer_.Observe(identity_manager_.get());
 }
 
 DiceSignedInProfileCreator::DiceSignedInProfileCreator(

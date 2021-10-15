@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom-forward.h"
 #include "components/feed/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -38,7 +39,7 @@ class FeedInternalsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<feed_internals::mojom::PageHandler> receiver);
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<FeedV2InternalsPageHandler> v2_page_handler_;
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

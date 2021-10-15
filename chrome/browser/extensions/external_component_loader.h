@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -43,7 +44,7 @@ class ExternalComponentLoader : public ExternalLoader {
 
   // The profile that this loader is associated with. It listens for
   // preference changes for that profile.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace extensions

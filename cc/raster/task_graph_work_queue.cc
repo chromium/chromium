@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 
 namespace cc {
@@ -94,10 +95,10 @@ class DependentIterator {
   operator bool() const { return current_index_ < graph_->edges.size(); }
 
  private:
-  TaskGraph* graph_;
-  const Task* task_;
+  raw_ptr<TaskGraph> graph_;
+  raw_ptr<const Task> task_;
   size_t current_index_;
-  TaskGraph::Node* current_node_;
+  raw_ptr<TaskGraph::Node> current_node_;
 };
 
 }  // namespace

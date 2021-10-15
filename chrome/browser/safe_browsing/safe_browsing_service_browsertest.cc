@@ -6,6 +6,7 @@
 // and a test protocol manager. It is used to test logics in safebrowsing
 // service.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -436,7 +437,7 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
 
   SBThreatType threat_type_;
   std::string threat_hash_;
-  SafeBrowsingService* safe_browsing_service_;
+  raw_ptr<SafeBrowsingService> safe_browsing_service_;
 };
 
 }  // namespace
@@ -457,15 +458,16 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     SafeBrowsingService::RegisterFactory(sb_factory_.get());
 
     store_factory_ = new TestV4StoreFactory();
-    V4Database::RegisterStoreFactoryForTest(base::WrapUnique(store_factory_));
+    V4Database::RegisterStoreFactoryForTest(
+        base::WrapUnique(store_factory_.get()));
 
     v4_db_factory_ = new TestV4DatabaseFactory();
     V4Database::RegisterDatabaseFactoryForTest(
-        base::WrapUnique(v4_db_factory_));
+        base::WrapUnique(v4_db_factory_.get()));
 
     v4_get_hash_factory_ = new TestV4GetHashProtocolManagerFactory();
     V4GetHashProtocolManager::RegisterFactory(
-        base::WrapUnique(v4_get_hash_factory_));
+        base::WrapUnique(v4_get_hash_factory_.get()));
 
     InProcessBrowserTest::SetUp();
   }
@@ -590,11 +592,11 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<TestSafeBrowsingServiceFactory> sb_factory_;
   // Owned by the V4Database.
-  TestV4DatabaseFactory* v4_db_factory_;
+  raw_ptr<TestV4DatabaseFactory> v4_db_factory_;
   // Owned by the V4GetHashProtocolManager.
-  TestV4GetHashProtocolManagerFactory* v4_get_hash_factory_;
+  raw_ptr<TestV4GetHashProtocolManagerFactory> v4_get_hash_factory_;
   // Owned by the V4Database.
-  TestV4StoreFactory* store_factory_;
+  raw_ptr<TestV4StoreFactory> store_factory_;
 
 #if defined(ADDRESS_SANITIZER)
   // TODO(lukasza): https://crbug.com/971820: Disallow renderer crashes once the

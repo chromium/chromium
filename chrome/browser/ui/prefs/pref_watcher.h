@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PREFS_PREF_WATCHER_H_
 #define CHROME_BROWSER_UI_PREFS_PREF_WATCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -37,7 +38,7 @@ class PrefWatcher : public KeyedService {
   void OnWebPrefChanged(const std::string& pref_name);
   void OnLiveCaptionEnabledPrefChanged(const std::string& pref_name);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   PrefChangeRegistrar profile_pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
 

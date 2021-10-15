@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
@@ -198,8 +199,9 @@ class ProfileImpl : public Profile {
 
   base::FilePath download_directory_;
 
-  DownloadDelegate* download_delegate_ = nullptr;
-  GoogleAccountAccessTokenFetchDelegate* access_token_fetch_delegate_ = nullptr;
+  raw_ptr<DownloadDelegate> download_delegate_ = nullptr;
+  raw_ptr<GoogleAccountAccessTokenFetchDelegate> access_token_fetch_delegate_ =
+      nullptr;
 
   base::CallbackListSubscription locale_change_subscription_;
 

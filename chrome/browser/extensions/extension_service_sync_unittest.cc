@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -1896,7 +1897,7 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
   extensions::TestBlocklist& test_blocklist() { return test_blocklist_; }
 
  private:
-  syncer::FakeSyncChangeProcessor* processor_raw_;
+  raw_ptr<syncer::FakeSyncChangeProcessor> processor_raw_;
   scoped_refptr<const Extension> extension_;
   std::string extension_id_;
   extensions::TestBlocklist test_blocklist_;

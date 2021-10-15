@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/presentation/chrome_local_presentation_manager_factory.h"
@@ -250,14 +251,14 @@ class PresentationServiceDelegateImplTest
             profile()));
   }
 
-  MockMediaRouter* router_;
-  PresentationServiceDelegateImpl* delegate_impl_;
+  raw_ptr<MockMediaRouter> router_;
+  raw_ptr<PresentationServiceDelegateImpl> delegate_impl_;
   const GURL presentation_url1_;
   const GURL presentation_url2_;
   std::vector<GURL> presentation_urls_;
   const GURL frame_url_;
   const url::Origin frame_origin_;
-  MockLocalPresentationManager* mock_local_manager_;
+  raw_ptr<MockLocalPresentationManager> mock_local_manager_;
 
   // |source1_| and |source2_| correspond to |presentation_url1_| and
   // |presentation_url2_|, respectively.

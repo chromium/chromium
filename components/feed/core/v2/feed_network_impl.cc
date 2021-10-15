@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -412,12 +413,12 @@ class FeedNetworkImpl::NetworkFetch {
   const std::string request_method_;
   std::string access_token_;
   const std::string request_body_;
-  FeedNetworkImpl::Delegate* delegate_;
-  signin::IdentityManager* const identity_manager_;
+  raw_ptr<FeedNetworkImpl::Delegate> delegate_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   base::OnceCallback<void(RawResponse)> done_callback_;
-  network::SharedURLLoaderFactory* loader_factory_;
+  raw_ptr<network::SharedURLLoaderFactory> loader_factory_;
   const std::string api_key_;
 
   // Set when the NetworkFetch is constructed, before token and article fetch.

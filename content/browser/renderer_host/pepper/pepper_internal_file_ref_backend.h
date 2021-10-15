@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/pepper/pepper_file_ref_host.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
@@ -97,7 +98,7 @@ class PepperInternalFileRefBackend : public PepperFileRefBackend {
 
   scoped_refptr<storage::FileSystemContext> GetFileSystemContext() const;
 
-  ppapi::host::PpapiHost* host_;
+  raw_ptr<ppapi::host::PpapiHost> host_;
   int render_process_id_;
   base::WeakPtr<PepperFileSystemBrowserHost> fs_host_;
   PP_FileSystemType fs_type_;

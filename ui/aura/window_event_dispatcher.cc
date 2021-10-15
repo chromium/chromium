@@ -327,8 +327,8 @@ ui::EventDispatchDetails WindowEventDispatcher::DispatchMouseEnterOrExit(
   // coordinate system.
   if (!target)
     target = window();
-  ui::MouseEvent translated_event(event, target, mouse_moved_handler_, type,
-                                  event.flags() | ui::EF_IS_SYNTHESIZED);
+  ui::MouseEvent translated_event(event, target, mouse_moved_handler_.get(),
+                                  type, event.flags() | ui::EF_IS_SYNTHESIZED);
   return DispatchEvent(mouse_moved_handler_, &translated_event);
 }
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_SCOPED_GPU_MEMORY_BUFFER_TEXTURE_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -37,7 +38,7 @@ class VIZ_SERVICE_EXPORT ScopedGpuMemoryBufferTexture {
 
   // The ContextProvider used to free the texture when this object is destroyed,
   // so it must outlive this object.
-  ContextProvider* context_provider_ = nullptr;
+  raw_ptr<ContextProvider> context_provider_ = nullptr;
   uint32_t gl_id_ = 0;
   uint32_t target_ = 0;
   gfx::Size size_;

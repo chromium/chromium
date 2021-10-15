@@ -11,6 +11,7 @@
 #include "base/atomicops.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 
@@ -118,7 +119,7 @@ class NET_EXPORT DirectoryLister  {
     const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
 
     // Only used on the origin thread.
-    DirectoryLister* lister_;
+    raw_ptr<DirectoryLister> lister_;
 
     // Set to 1 on cancellation. Used both to abort listing files early on the
     // worker pool thread for performance reasons and to ensure |lister_| isn't
@@ -132,7 +133,7 @@ class NET_EXPORT DirectoryLister  {
   void OnListDone(int error);
 
   scoped_refptr<Core> core_;
-  DirectoryListerDelegate* const delegate_;
+  const raw_ptr<DirectoryListerDelegate> delegate_;
 };
 
 }  // namespace net

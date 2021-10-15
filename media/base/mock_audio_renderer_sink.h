@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,7 +48,7 @@ class MockAudioRendererSink : public SwitchableAudioRendererSink {
   ~MockAudioRendererSink() override;
 
  private:
-  RenderCallback* callback_;
+  raw_ptr<RenderCallback> callback_;
   OutputDeviceInfo output_device_info_;
 
   DISALLOW_COPY_AND_ASSIGN(MockAudioRendererSink);

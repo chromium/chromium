@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/browser/url_util.h"
@@ -112,7 +113,7 @@ class POLICY_EXPORT URLBlocklistManager {
  private:
   // Used to track the policies and update the blocklist on changes.
   PrefChangeRegistrar pref_change_registrar_;
-  PrefService* pref_service_;  // Weak.
+  raw_ptr<PrefService> pref_service_;  // Weak.
 
   // Used to post tasks to a background thread.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

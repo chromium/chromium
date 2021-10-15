@@ -167,7 +167,8 @@ const Widget* TestDesktopWidgetDelegate::GetWidget() const {
 }
 
 View* TestDesktopWidgetDelegate::GetContentsView() {
-  return contents_view_ ? contents_view_ : WidgetDelegate::GetContentsView();
+  return contents_view_ ? contents_view_.get()
+                        : WidgetDelegate::GetContentsView();
 }
 
 bool TestDesktopWidgetDelegate::OnCloseRequested(
@@ -185,7 +186,7 @@ TestInitialFocusWidgetDelegate::TestInitialFocusWidgetDelegate(
   params.context = context;
   params.delegate = this;
   GetWidget()->Init(std::move(params));
-  GetWidget()->GetContentsView()->AddChildView(view_);
+  GetWidget()->GetContentsView()->AddChildView(view_.get());
 }
 
 TestInitialFocusWidgetDelegate::~TestInitialFocusWidgetDelegate() = default;
@@ -245,7 +246,7 @@ WidgetVisibleWaiter::~WidgetVisibleWaiter() = default;
 
 void WidgetVisibleWaiter::Wait() {
   if (!widget_->IsVisible()) {
-    widget_observation_.Observe(widget_);
+    widget_observation_.Observe(widget_.get());
     run_loop_.Run();
   }
 }

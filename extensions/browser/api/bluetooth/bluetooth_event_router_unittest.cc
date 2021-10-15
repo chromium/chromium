@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "content/public/test/test_browser_context.h"
@@ -59,7 +60,7 @@ class BluetoothEventRouterTest : public ExtensionsTest {
   }
 
  protected:
-  testing::StrictMock<device::MockBluetoothAdapter>* mock_adapter_;
+  raw_ptr<testing::StrictMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<BluetoothEventRouter> router_;
 };
 

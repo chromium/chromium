@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -247,8 +248,8 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
   void OnConnectionChanged() override {}
 
  private:
-  bool* should_notify_updated_rtt_;
-  bool* rtt_notification_received_;
+  raw_ptr<bool> should_notify_updated_rtt_;
+  raw_ptr<bool> rtt_notification_received_;
 };
 
 class TestSocketPerformanceWatcherFactory
@@ -6853,7 +6854,7 @@ class QuicURLRequestContext : public URLRequestContext {
   MockClientSocketFactory& socket_factory() { return *socket_factory_; }
 
  private:
-  MockClientSocketFactory* socket_factory_;
+  raw_ptr<MockClientSocketFactory> socket_factory_;
   URLRequestContextStorage storage_;
 };
 

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -279,9 +280,9 @@ class InfobarView : public views::View {
 
  private:
   // Info icon image.
-  views::ImageView* info_image_;
+  raw_ptr<views::ImageView> info_image_;
   // The label responsible for rendering the text.
-  views::Label* label_;
+  raw_ptr<views::Label> label_;
 };
 
 BEGIN_METADATA(InfobarView, views::View)
@@ -687,8 +688,9 @@ void CollectedCookiesViews::AddContentException(views::TreeView* tree_view,
   status_changed_ = true;
 
   CookiesTreeViewDrawingProvider* provider =
-      (tree_view == allowed_cookies_tree_) ? allowed_cookies_drawing_provider_
-                                           : blocked_cookies_drawing_provider_;
+      (tree_view == allowed_cookies_tree_)
+          ? allowed_cookies_drawing_provider_.get()
+          : blocked_cookies_drawing_provider_.get();
   provider->AnnotateNode(tree_view->GetSelectedNode(),
                          GetAnnotationTextForSetting(setting));
   tree_view->SchedulePaint();

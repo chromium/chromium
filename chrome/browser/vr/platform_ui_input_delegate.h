@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/macros.h"
 #include "chrome/browser/vr/model/text_input_info.h"
@@ -81,7 +82,7 @@ class VR_BASE_EXPORT PlatformUiInputDelegate {
 
   gfx::Size size_;
 
-  PlatformInputHandler* input_handler_ = nullptr;
+  raw_ptr<PlatformInputHandler> input_handler_ = nullptr;
 };
 
 }  // namespace vr

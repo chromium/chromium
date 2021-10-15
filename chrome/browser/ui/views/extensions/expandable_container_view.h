@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -56,11 +57,11 @@ class ExpandableContainerView : public views::View {
   void ToggleDetailLevel();
 
   // The view that expands or collapses when |details_link_| is clicked.
-  DetailsView* details_view_ = nullptr;
+  raw_ptr<DetailsView> details_view_ = nullptr;
 
   // The 'Show Details' link, which changes to 'Hide Details' when the details
   // section is expanded.
-  views::Link* details_link_ = nullptr;
+  raw_ptr<views::Link> details_link_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXPANDABLE_CONTAINER_VIEW_H_

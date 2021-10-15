@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_INTERNALS_QUERY_TILES_QUERY_TILES_INTERNALS_UI_MESSAGE_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/query_tiles/logger.h"
@@ -44,7 +45,7 @@ class QueryTilesInternalsUIMessageHandler
   void HandlePurgeDb(const base::ListValue* args);
   void HandleSetServerUrl(const base::ListValue* args);
 
-  query_tiles::TileService* tile_service_;
+  raw_ptr<query_tiles::TileService> tile_service_;
 
   base::ScopedObservation<query_tiles::Logger, query_tiles::Logger::Observer>
       logger_observation_{this};
