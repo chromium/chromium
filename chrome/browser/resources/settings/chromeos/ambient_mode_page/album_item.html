@@ -22,8 +22,16 @@
     width: 280px;
   }
 
+  #albumTitle {
+    color: var(--cros-text-color-primary);
+  }
+
+  #albumDescription {
+    color: var(--cros-text-color-secondary);
+  }
+
   #imageContainer {
-    background-color: rgba(var(--google-blue-50-rgb), .8);
+    background-color: var(--cros-highlight-color);
     border-radius: 8px;
     display: block;
     margin: 0 12px;
@@ -45,6 +53,7 @@
   }
 
   #image {
+    border-color: var(--cros-separator-color);
     border-radius: 8px;
     display: block;
     height: 160px;
@@ -117,7 +126,6 @@
   }
 
   :host([checked]) #image {
-    box-shadow: 0 4px 8px rgba(32, 33, 36, 0.17);
     transition: transform 240ms;
   }
 
