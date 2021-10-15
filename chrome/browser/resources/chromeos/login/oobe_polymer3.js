@@ -8,6 +8,7 @@ import 'chrome://oobe/screens/common/fingerprint_setup.m.js';
 import 'chrome://oobe/screens/common/gesture_navigation.m.js';
 import 'chrome://oobe/screens/common/marketing_opt_in.m.js';
 import 'chrome://oobe/screens/common/parental_handoff.m.js';
+import 'chrome://oobe/screens/common/signin_fatal_error.m.js';
 import 'chrome://oobe/screens/common/sync_consent.m.js';
 import 'chrome://oobe/screens/common/tpm_error.m.js';
 import 'chrome://oobe/screens/common/user_creation.m.js';

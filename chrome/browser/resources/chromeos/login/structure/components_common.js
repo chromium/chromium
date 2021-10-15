@@ -8,7 +8,6 @@ function loadCommonComponents() {
 // TODO(crbug.com/1111387) - Remove excessive logging.
   console.warn('loadCommonComponents() : Starting to load common components.');
 // This inclusion is types-only. No actual code to execute.
-// <include src="../components/oobe_types.js">
 
 // <include src="../notification_card.js">
 // <include src="../gaia_dialog.js">
@@ -33,7 +32,6 @@ function loadCommonComponents() {
 // <include src="../security_token_pin.js">
 // <include src="../screen_wrong_hwid.js">
 // <include src="../family_link_notice.js">
-// <include src="../screen_signin_fatal_error.js">
 // <include src="../screen_app_launch_splash.js">
 // <include src="../oobe_screen_autolaunch.js">
 // <include src="../screen_error_message.js">

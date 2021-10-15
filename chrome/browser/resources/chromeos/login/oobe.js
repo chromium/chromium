@@ -9,6 +9,7 @@
 
 // <include src="test_util.js">
 // <include src="components/display_manager_types.js">
+// <include src="components/oobe_types.js">
 // <include src="display_manager.js">
 // <include src="demo_mode_test_helper.js">
 
