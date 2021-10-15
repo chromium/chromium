@@ -1,0 +1,5 @@
+-conformance/rendering/blending.html
+-conformance/extensions/khr-parallel-shader-compile.html
+-conformance/extensions/s3tc-and-rgtc.html
+-conformance/programs/program-handling.html
+-conformance/extensions/angle-instanced-arrays-out-of-bounds.html

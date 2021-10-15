@@ -1333,11 +1333,8 @@ class MetaBuildWrapper(object):
       filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
       abs_filter_file_path = self.ToAbsPath(build_dir, filter_file_path)
 
-      if self.args.use_st:
-        self.CreateOrAppendStableTestFilter(abs_filter_file_path, build_dir,
-                                            target)
-      else:
-        self.Print('No stable filter, using RTS filter')
+      self.CreateOrAppendStableTestFilter(abs_filter_file_path, build_dir,
+                                          target)
 
       if self.Exists(abs_filter_file_path):
         command.append('--test-launcher-filter-file=%s' % filter_file_path)
@@ -1345,26 +1342,36 @@ class MetaBuildWrapper(object):
 
   def CreateOrAppendStableTestFilter(self, abs_filter_file_path, build_dir,
                                      target):
-    stable_filter_file = self.PathJoin(self.chromium_src_dir, 'testing',
-                                       'buildbot', 'filters',
-                                       'stable_test_filters',
-                                       getattr(self.args, 'builder',
-                                               None), target, '.filter')
+    if self.args.use_st:
+      stable_filter_file = self.PathJoin(
+          self.chromium_src_dir, 'testing',
+          'buildbot', 'filters', 'stable_test_filters',
+          getattr(self.args, 'builder', None), target) + '.filter'
+      # The path to the filter file to append
+      abs_stable_filter_file = self.ToAbsPath(build_dir, stable_filter_file)
 
-    # The path to the filter file to append
-    abs_stable_filter_file = self.ToAbsPath(build_dir, stable_filter_file)
-
-    if self.Exists(abs_stable_filter_file):
-      if not self.Exists(abs_filter_file_path):
-        self.Print('No RTS filter found, using stable filter')
-        shutil.copy(abs_stable_filter_file, abs_filter_file_path)
+      if self.Exists(abs_stable_filter_file):
+        # A stable filter exists
+        if not self.args.use_rts:
+          self.Print('RTS disabled, using stable filter')
+          shutil.copy(abs_stable_filter_file, abs_filter_file_path)
+        else:
+          # Rts is enabled and will delete ALL .filter files
+          # only rts filters generated this run should remain
+          if not self.Exists(abs_filter_file_path):
+            self.Print('No RTS filter found, using stable filter')
+            shutil.copy(abs_stable_filter_file, abs_filter_file_path)
+          else:
+            self.Print('Adding stable tests filter to RTS filter')
+            with open(abs_filter_file_path, 'a+') as select_filter_file, open(
+                abs_stable_filter_file, 'r') as stable_filter_file:
+              select_filter_file.write('\n')
+              select_filter_file.write(stable_filter_file.read())
       else:
-        self.Print('Adding stable tests filter to RTS filter')
-        with open(abs_filter_file_path,
-                  'a+') as select_filter_file, open(abs_stable_filter_file,
-                                                    'r') as stable_filter_file:
+        self.Print('No stable filter found at %s' % abs_stable_filter_file)
+    else:
+      self.Print('No stable filter')
 
-          select_filter_file.write(stable_filter_file.read())
     return 0
 
   def PossibleRuntimeDepsPaths(self, vals, ninja_targets, isolate_map):

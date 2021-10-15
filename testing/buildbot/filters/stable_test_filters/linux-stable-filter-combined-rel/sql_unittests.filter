@@ -1,0 +1,10 @@
+-JournalMode/SQLDatabaseTest.CompileError/1
+-JournalMode/SQLDatabaseTest.ExecuteWithErrorCode/1
+-SQLTransactionTest.Rollback
+-JournalMode/SQLDatabaseTest.CompileError/0
+-JournalMode/SQLDatabaseTest.Execute/1
+-JournalMode/SQLDatabaseTest.ScopedIgnoreUntracked/0
+-JournalMode/SQLDatabaseTest.ScopedIgnoreUntracked/1
+-SQLMetaTableTest.RazeIfDeprecated
+-JournalMode/SQLDatabaseTest.ExecuteWithErrorCode/0
+-JournalMode/SQLDatabaseTest.Execute/0
