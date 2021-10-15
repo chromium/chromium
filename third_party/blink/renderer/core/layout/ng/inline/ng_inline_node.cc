@@ -914,7 +914,7 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
 
   // This function runs outside of the layout phase. Prevent purging font cache
   // while shaping.
-  FontCachePurgePreventer fontCachePurgePreventer;
+  FontCachePurgePreventer font_cache_purge_preventer;
 
   String new_text(std::move(new_text_in));
   layout_text->StyleRef().ApplyTextTransform(&new_text,
