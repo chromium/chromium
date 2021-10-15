@@ -6338,8 +6338,6 @@ crbug.com/1208173 [ Mac ] external/wpt/css/css-paint-api/background-image-alpha.
 crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
-crbug.com/1208173 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Failure ]
-crbug.com/1208173 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
@@ -7175,4 +7173,7 @@ crbug.com/1259749 [ Mac11.0 ] http/tests/eventsource/eventsource-cors-non-http.h
 crbug.com/1243568 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-data-url-navigation.html [ Crash ]
 
 # Sheriff 2021-10-15
-crbug.com/crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
+crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
+crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-image.html [ Pass Timeout ]
+crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Pass Timeout ]
+crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Pass Timeout ]
