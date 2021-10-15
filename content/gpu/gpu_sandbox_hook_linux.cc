@@ -212,9 +212,14 @@ void AddDrmGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
 }
 
 void AddAmdGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
-  static const char* const kReadOnlyList[] = {"/etc/ld.so.cache",
-                                              "/usr/lib64/libEGL.so.1",
-                                              "/usr/lib64/libGLESv2.so.2"};
+  static const char* const kReadOnlyList[] = {
+      "/etc/ld.so.cache",
+      "/usr/lib64/libEGL.so.1",
+      "/usr/lib64/libGLESv2.so.2",
+      "/usr/share/vulkan/icd.d",
+      "/usr/share/vulkan/icd.d/radeon_icd.x86_64.json",
+      "/usr/lib64/libvulkan.so.1",
+      "/usr/lib64/libvulkan_radeon.so"};
   for (const char* item : kReadOnlyList)
     permissions->push_back(BrokerFilePermission::ReadOnly(item));
 
