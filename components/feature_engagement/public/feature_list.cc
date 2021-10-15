@@ -78,6 +78,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHVideoTutorialNTPSearchFeature,
     &kIPHVideoTutorialNTPVoiceSearchFeature,
     &kIPHVideoTutorialNTPSummaryFeature,
+    &kIPHVideoTutorialTryNowFeature,
     &kIPHExploreSitesTileFeature,
     &kIPHFeedHeaderMenuFeature,
     &kIPHFeedSwipeRefresh,

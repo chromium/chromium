@@ -108,6 +108,7 @@ extern const base::Feature kIPHVideoTutorialNTPDownloadFeature;
 extern const base::Feature kIPHVideoTutorialNTPSearchFeature;
 extern const base::Feature kIPHVideoTutorialNTPVoiceSearchFeature;
 extern const base::Feature kIPHVideoTutorialNTPSummaryFeature;
+extern const base::Feature kIPHVideoTutorialTryNowFeature;
 extern const base::Feature kIPHExploreSitesTileFeature;
 extern const base::Feature kIPHFeedHeaderMenuFeature;
 extern const base::Feature kIPHFeedSwipeRefresh;

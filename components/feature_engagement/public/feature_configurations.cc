@@ -383,6 +383,25 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHVideoTutorialTryNowFeature.name == feature->name) {
+    // A config that allows the video tutorials Try Now button click to result
+    // in an IPH bubble. This IPH is shown always regardless of session rate or
+    // any other conditions.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("tutorial_try_now_iph_trigger", Comparator(ANY, 0), 90, 90);
+    config->used = EventConfig("try_now", Comparator(ANY, 0), 90, 90);
+
+    SessionRateImpact session_rate_impact;
+    session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->session_rate_impact = session_rate_impact;
+
+    return config;
+  }
+
   if (kIPHStartSurfaceTabSwitcherHomeButton.name == feature->name) {
     // A config that allows the StartSurfaceTabSwitcherHomeButton IPH to be
     // shown:

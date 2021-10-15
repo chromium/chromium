@@ -231,6 +231,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       summary="Video tutorial summary card on NTP"/>
   <variant name="IPH_VideoTutorial_NTP_VoiceSearch"
       summary="Video tutorial card on NTP about voice search in chrome"/>
+  <variant name="IPH_VideoTutorial_TryNow"
+      summary="Video tutorial Try Now feature"/>
   <variant name="IPH_WebFeedFollow"
       summary="proactive Web Feed follow recommendations"/>
   <variant name="IPH_WebFeedPostFollowDialog"

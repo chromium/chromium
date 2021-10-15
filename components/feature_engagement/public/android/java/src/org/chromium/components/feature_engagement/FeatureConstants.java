@@ -219,6 +219,12 @@ public @interface FeatureConstants {
     String VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE = "IPH_VideoTutorial_NTP_Summary";
 
     /**
+     * An IPH feature to show an appropriate help bubble when user clicks on Try Now button on video
+     * tutorial player.
+     */
+    String VIDEO_TUTORIAL_TRY_NOW_FEATURE = "IPH_VideoTutorial_TryNow";
+
+    /**
      * An IPH feature to show on a card menu on the FeedNewTabPage.
      */
     String FEED_CARD_MENU_FEATURE = "IPH_FeedCardMenu";
