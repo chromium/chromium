@@ -12,12 +12,16 @@ import androidx.fragment.app.FragmentActivity;
 import org.chromium.chrome.browser.content_creation.reactions.scene.SceneCoordinator;
 import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarControlsDelegate;
 import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarCoordinator;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.content_creation.reactions.ReactionMetadata;
 import org.chromium.components.content_creation.reactions.ReactionService;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 
 import java.util.List;
 
@@ -27,6 +31,7 @@ import java.util.List;
 public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinator
         implements LightweightReactionsCoordinator, ToolbarControlsDelegate {
     private final ReactionService mReactionService;
+    private final LightweightReactionsMediator mMediator;
     private final LightweightReactionsDialog mDialog;
     private final SceneCoordinator mSceneCoordinator;
 
@@ -51,7 +56,16 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         mReactionService = reactionService;
         mDialog = new LightweightReactionsDialog();
         mSceneCoordinator = new SceneCoordinator(activity);
-        mReactionService.getReactions((reactions) -> { mAvailableReactions = reactions; });
+
+        Profile profile = Profile.fromWebContents(tab.getWebContents());
+        ImageFetcher imageFetcher = ImageFetcherFactory.createImageFetcher(
+                ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey());
+        mMediator = new LightweightReactionsMediator(imageFetcher);
+        mReactionService.getReactions((reactions) -> {
+            mAvailableReactions = reactions;
+            mMediator.getBitmapForUrl(
+                    reactions.get(0).thumbnailUrl, (bitmap) -> { assert bitmap != null; });
+        });
     }
 
     /**
