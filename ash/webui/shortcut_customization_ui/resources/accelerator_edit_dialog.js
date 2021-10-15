@@ -57,13 +57,54 @@ export class AcceleratorEditDialogElement extends PolymerElement {
         type: Number,
         value: 0,
       },
+
+      /** @protected */
+      isAcceleratorCapturing_: {
+        type: Boolean,
+        value: false,
+      },
     }
+  }
+
+  /** @override */
+  constructor() {
+    super();
+
+    /**
+     * Event callback for 'accelerator-capturing-started'.
+     * @private {!Function}
+     */
+    this.onAcceleratorCapturingStarted_ = () => {
+      this.isAcceleratorCapturing_ = true;
+    };
+
+    /**
+     * Event callback for 'accelerator-capturing-ended'.
+     * @private {!Function}
+     */
+    this.onAcceleratorCapturingEnded_ = () => {
+      this.isAcceleratorCapturing_ = false;
+    };
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.$.editDialog.showModal();
+
+    window.addEventListener(
+        'accelerator-capturing-started', this.onAcceleratorCapturingStarted_);
+    window.addEventListener(
+        'accelerator-capturing-ended', this.onAcceleratorCapturingEnded_);
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener(
+        'accelerator-capturing-started', this.onAcceleratorCapturingStarted_);
+    window.removeEventListener(
+        'accelerator-capturing-ended', this.onAcceleratorCapturingEnded_);
   }
 
   /**

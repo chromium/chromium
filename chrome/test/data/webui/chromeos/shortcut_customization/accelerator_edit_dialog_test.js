@@ -116,6 +116,13 @@ export function acceleratorEditDialogTest() {
     addButton.click();
     await flush();
     assertTrue(buttonContainer.hidden);
+    // Expected the dialog's "done" button to be disabled when adding a new
+    // accelerator.
+    const doneButton = dialog.querySelector('#doneButton');
+    assertTrue(doneButton.disabled);
+    const restoreButton = dialog.querySelector('#restoreDefault');
+    assertTrue(restoreButton.hidden);
+
     // Re-query the stamped element.
     pendingAccelerator = dialog.querySelector('#pendingAccelerator');
     assertTrue(!!pendingAccelerator);
@@ -124,6 +131,11 @@ export function acceleratorEditDialogTest() {
     // visible and the pending accelerator to be hidden.
     pendingAccelerator.shadowRoot.querySelector('#cancelButton').click();
     await flush();
+
+    // "done" button should now be enabled.
+    assertFalse(doneButton.disabled);
+    assertFalse(restoreButton.hidden);
+
     assertFalse(buttonContainer.hidden);
     // Re-query the stamped element.
     pendingAccelerator = dialog.querySelector('#pendingAccelerator');

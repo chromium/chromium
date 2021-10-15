@@ -209,6 +209,11 @@ export class AcceleratorViewElement extends PolymerElement {
     // Disable ChromeOS accelerator handler when starting input capture.
     this.pendingAcceleratorInfo_ = CreateEmptyAcceleratorInfo();
     this.isCapturing_ = true;
+
+    this.dispatchEvent(new CustomEvent('accelerator-capturing-started', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /** @private */
@@ -222,6 +227,11 @@ export class AcceleratorViewElement extends PolymerElement {
     this.hasError = false;
     this.isCapturing_ = false;
     this.pendingAcceleratorInfo_ = CreateEmptyAcceleratorInfo();
+
+    this.dispatchEvent(new CustomEvent('accelerator-capturing-ended', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /**

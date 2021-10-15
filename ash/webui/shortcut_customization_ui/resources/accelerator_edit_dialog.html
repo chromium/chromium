@@ -78,13 +78,15 @@
   </div>
   <div slot="button-container">
     <div>
-      <cr-button id="restoreDefault" on-click="onRestoreDefaultButtonClicked_">
+      <cr-button id="restoreDefault" on-click="onRestoreDefaultButtonClicked_"
+          hidden$="[[isAcceleratorCapturing_]]">
         <!-- TODO(jimmyxgong): i18n string -->
         Restore defaults
       </cr-button>
     </div>
     <div>
-      <cr-button id="doneButton" on-click="onDoneButtonClicked_">
+      <cr-button id="doneButton" on-click="onDoneButtonClicked_"
+          disabled="[[isAcceleratorCapturing_]]">
         <!-- TODO(jimmyxgong): Localize this string -->
         Done
       </cr-button>
