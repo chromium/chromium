@@ -43,7 +43,7 @@ class CouponService : public KeyedService,
   virtual void DeleteAllFreeListingCoupons();
 
   // Get the last time that |offer| has shown in infobar bubble.
-  virtual base::Time GetCouponDisplayTimestamp(
+  base::Time GetCouponDisplayTimestamp(
       const autofill::AutofillOfferData& offer);
 
   // Record the last display timestamp of a coupon in the cache layer and
@@ -59,15 +59,12 @@ class CouponService : public KeyedService,
   // Check if CouponService has eligible coupons for |url|.
   bool IsUrlEligible(const GURL& url) override;
 
- protected:
-  // Default constructor for testing purposes only.
-  CouponService();
-
  private:
   friend class CouponServiceFactory;
   friend class CouponServiceTest;
   friend class CartServiceCouponTest;
 
+  CouponService();
   // Use |CouponServiceFactory::GetForProfile(...)| to get an instance of this
   // service.
   explicit CouponService(std::unique_ptr<CouponDB> coupon_db);

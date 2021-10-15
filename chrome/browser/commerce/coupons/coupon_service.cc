@@ -40,6 +40,7 @@ CouponService::CouponService(std::unique_ptr<CouponDB> coupon_db)
   InitializeCouponsMap();
 }
 CouponService::~CouponService() = default;
+CouponService::CouponService() = default;
 
 void CouponService::UpdateFreeListingCoupons(const CouponsMap& coupon_map) {
   coupon_db_->DeleteAllCoupons();
@@ -122,8 +123,6 @@ bool CouponService::IsUrlEligible(const GURL& url) {
     return false;
   return coupon_map_.find(url.DeprecatedGetOriginAsURL()) != coupon_map_.end();
 }
-
-CouponService::CouponService() = default;
 
 CouponDB* CouponService::GetDB() {
   return coupon_db_.get();

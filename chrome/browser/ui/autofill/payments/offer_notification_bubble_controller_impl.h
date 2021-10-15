@@ -12,8 +12,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-class CouponService;
-
 namespace autofill {
 
 struct AutofillOfferData;
@@ -72,7 +70,6 @@ class OfferNotificationBubbleControllerImpl
  private:
   friend class content::WebContentsUserData<
       OfferNotificationBubbleControllerImpl>;
-  friend class OfferNotificationBubbleControllerImplTest;
   friend class OfferNotificationBubbleViewsTestBase;
 
   // Returns whether the web content associated with this controller is active.
@@ -103,9 +100,6 @@ class OfferNotificationBubbleControllerImpl
   // populated when ShowOfferNotificationIfApplicable() is called and is cleared
   // when navigating to a origins outside of this set.
   std::vector<GURL> origins_to_display_bubble_;
-
-  // Used to update coupon last display timestamp.
-  CouponService* coupon_service_;
 
   ObserverForTest* observer_for_testing_ = nullptr;
 

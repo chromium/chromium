@@ -1224,8 +1224,6 @@ class AutofillMetrics {
       bool is_reshow);
   static void LogOfferNotificationBubblePromoCodeButtonClicked(
       AutofillOfferData::OfferType offer_type);
-  static void LogOfferNotificationBubbleSuppressed(
-      AutofillOfferData::OfferType offer_type);
   static void LogOfferNotificationInfoBarDeepLinkClicked();
   static void LogOfferNotificationInfoBarResultMetric(
       OfferNotificationInfoBarResultMetric metric);

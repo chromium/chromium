@@ -80,9 +80,6 @@ class OfferNotificationBubbleViewsTestBase
 
   void ResetEventWaiterForSequence(std::list<DialogEvent> event_sequence);
 
-  void UpdateFreeListingCouponDisplayTime(
-      std::unique_ptr<AutofillOfferData> offer);
-
   void WaitForObservedEvent() { event_waiter_->Wait(); }
 
   PersonalDataManager* personal_data() { return personal_data_; }
