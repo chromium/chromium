@@ -370,8 +370,6 @@ class DownloadProtectionServiceTestBase
                          .AppendASCII("safe_browsing")
                          .AppendASCII("download_protection");
 
-    ASSERT_TRUE(profile()->CreateHistoryService());
-
     // Setup a directory to place test files in.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -421,8 +419,12 @@ class DownloadProtectionServiceTestBase
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactories();
+    TestingProfile::TestingFactories factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+    factories.emplace_back(HistoryServiceFactory::GetInstance(),
+                           HistoryServiceFactory::GetDefaultFactory());
+    return factories;
   }
 
   void EnableFeatures(const std::vector<base::Feature>& features) {
