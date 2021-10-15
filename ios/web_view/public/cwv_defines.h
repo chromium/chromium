@@ -34,4 +34,7 @@
 // based flows.
 #define IOS_WEB_VIEW_SUPPORTS_NEW_CREDIT_CARD_SAVE_APIS 1
 
+// Supports APIs used to implement the iOS credential provider extension.
+#define IOS_WEB_VIEW_SUPPORTS_CREDENTIAL_EXTENSION_PROVIDER_APIS 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
