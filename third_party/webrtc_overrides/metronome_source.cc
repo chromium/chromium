@@ -154,7 +154,8 @@ void MetronomeSource::RemoveListener(
 }
 
 void MetronomeSource::OnMetronomeTick() {
-  TRACE_EVENT0("webrtc", "MetronomeSource::OnMetronomeTick");
+  TRACE_EVENT_INSTANT0("webrtc", "MetronomeSource::OnMetronomeTick",
+                       TRACE_EVENT_SCOPE_PROCESS);
   DCHECK(metronome_task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock auto_lock(lock_);
   for (auto& listener : listeners_) {
