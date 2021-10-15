@@ -12,6 +12,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_ui_selector.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -37,6 +38,7 @@ class InfoBarManager;
 
 namespace permissions {
 class ObjectPermissionContextBase;
+class PermissionActionsHistory;
 class PermissionDecisionAutoBlocker;
 class PermissionManager;
 class PermissionPromptAndroid;
@@ -68,6 +70,8 @@ class PermissionsClient {
       content::BrowserContext* browser_context,
       const GURL& url) = 0;
 
+  virtual PermissionActionsHistory* GetPermissionActionsHistory(
+      content::BrowserContext* browser_context) = 0;
   // Retrieves the PermissionDecisionAutoBlocker for this context. The returned
   // pointer has the same lifetime as |browser_context|.
   virtual PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
@@ -139,6 +143,7 @@ class PermissionsClient {
                                 RequestType request_type,
                                 PermissionAction action,
                                 const GURL& origin,
+                                PermissionPromptDisposition prompt_disposition,
                                 absl::optional<QuietUiReason> quiet_ui_reason);
 
   // Returns true if user has 3 consecutive notifications permission denies,

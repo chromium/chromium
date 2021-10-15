@@ -336,6 +336,12 @@ class PermissionUmaUtil {
   static std::string GetPermissionActionString(
       PermissionAction permission_action);
 
+  static bool IsPromptDispositionQuiet(
+      PermissionPromptDisposition prompt_disposition);
+
+  static bool IsPromptDispositionLoud(
+      PermissionPromptDisposition prompt_disposition);
+
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation
   // condition is met (from ALLOW to something else).
@@ -367,6 +373,7 @@ class PermissionUmaUtil {
 
  private:
   friend class PermissionUmaUtilTest;
+
   // Records UMA and UKM metrics for ContentSettingsTypes that have user facing
   // permission prompts. The passed in `permission` must be such that
   // PermissionUtil::IsPermission(permission) returns true.

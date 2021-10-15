@@ -280,7 +280,7 @@ class PermissionRequestManager
   void OnPermissionUiSelectorDone(size_t selector_index,
                                   const UiDecision& decision);
 
-  PermissionPromptDisposition DetermineCurrentRequestUIDispositionForUMA();
+  PermissionPromptDisposition DetermineCurrentRequestUIDisposition();
   PermissionPromptDispositionReason
   DetermineCurrentRequestUIDispositionReasonForUMA();
 

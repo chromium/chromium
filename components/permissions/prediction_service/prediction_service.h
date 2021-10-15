@@ -51,6 +51,12 @@ class PredictionService : public PredictionServiceBase {
     recalculate_service_url_every_time = true;
   }
 
+  // Returns the ratio rounded to the nearest 10%
+  static float GetRoundedRatio(int numerator, int denominator);
+
+  // Returns the appropriate bucket for `count`.
+  static int BucketizeValue(int count);
+
  private:
   static const GURL GetPredictionServiceUrl(bool recalculate_for_testing);
   std::unique_ptr<network::ResourceRequest> GetResourceRequest();

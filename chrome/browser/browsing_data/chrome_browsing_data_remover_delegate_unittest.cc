@@ -52,7 +52,7 @@
 #include "chrome/browser/lite_video/lite_video_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/permissions/permission_actions_history.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -106,8 +106,10 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/payments/content/mock_payment_manifest_web_data_service.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_enums.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/prefs/testing_pref_service.h"
@@ -3141,16 +3143,23 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   PrefService* prefs = GetProfile()->GetPrefs();
   base::Time first_recorded_time = base::Time::Now();
 
-  auto* action_history = PermissionActionsHistory::GetForProfile(GetProfile());
-  action_history->RecordAction(permissions::PermissionAction::DENIED,
-                               permissions::RequestType::kNotifications);
+  auto* action_history =
+      PermissionActionsHistoryFactory::GetForProfile(GetProfile());
+  action_history->RecordAction(
+      permissions::PermissionAction::DENIED,
+      permissions::RequestType::kNotifications,
+      permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
   task_environment()->AdvanceClock(base::Days(1));
-  action_history->RecordAction(permissions::PermissionAction::DENIED,
-                               permissions::RequestType::kNotifications);
+  action_history->RecordAction(
+      permissions::PermissionAction::DENIED,
+      permissions::RequestType::kNotifications,
+      permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
   task_environment()->AdvanceClock(base::Days(1));
   base::Time third_recorded_time = base::Time::Now();
-  action_history->RecordAction(permissions::PermissionAction::DENIED,
-                               permissions::RequestType::kNotifications);
+  action_history->RecordAction(
+      permissions::PermissionAction::DENIED,
+      permissions::RequestType::kNotifications,
+      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP);
 
   constexpr char kPermissionActionsPrefPath[] =
       "profile.content_settings.permission_actions";

@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "build/chromeos_buildflags.h"
+#include "components/permissions/permission_uma_util.h"
 
 #if !defined(OS_ANDROID)
 #include "ui/gfx/paint_vector_icon.h"
@@ -78,6 +79,7 @@ void PermissionsClient::OnPromptResolved(
     RequestType request_type,
     PermissionAction action,
     const GURL& origin,
+    PermissionPromptDisposition prompt_disposition,
     absl::optional<QuietUiReason> quiet_ui_reason) {}
 
 absl::optional<bool>

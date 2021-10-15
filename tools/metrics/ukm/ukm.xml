@@ -14055,6 +14055,150 @@ be describing additional metrics about the same event.
       An enum of type PermissionSourceUI. The UI surface for this action.
     </summary>
   </metric>
+  <metric name="Stats.AllPrompts.Count">
+    <summary>
+      Total number of prompts shown to the user in the last 28 days. The count
+      is bucketed. The bucket minimums being 20, 15, 12, 10, 9, 8, 7, 6, 5, 4
+      and 0. The correct bucket is the first one that is smaller or equal to the
+      prompt count.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPrompts.DenyRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user deny.
+      Aggregated across all origins, all PermissionTypes and all
+      PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPrompts.DismissRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user dismiss.
+      Aggregated across all origins, all PermissionTypes and all
+      PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPrompts.GrantRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user grant.
+      Aggregated across all origins, all PermissionTypes and all
+      PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPrompts.IgnoreRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user ignore.
+      Aggregated across all origins, all PermissionTypes and all
+      PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPromptsOfType.Count">
+    <summary>
+      Total number of prompts shown to the user in the last 28 days for the
+      currently requested permission type. The count is bucketed. The bucket
+      minimums being 20, 15, 12, 10, 9, 8, 7, 6, 5, 4 and 0. The correct bucket
+      is the first one that is smaller or equal to the prompt count.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPromptsOfType.DenyRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user deny.
+      Aggregated across all origins, the current requested PermissionType and
+      all PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPromptsOfType.DismissRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user dismiss.
+      Aggregated across all origins, the current requested PermissionType and
+      all PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPromptsOfType.GrantRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user grant.
+      Aggregated across all origins, the current requested PermissionType and
+      all PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPromptsOfType.IgnoreRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user ignore.
+      Aggregated across all origins, the current requested PermissionType and
+      all PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPrompts.Count">
+    <summary>
+      Total number of loud UI prompts shown to the user in the last 28 days. The
+      count is bucketed. The bucket minimums being 20, 15, 12, 10, 9, 8, 7, 6, 5
+      ,4 and 0. The correct bucket is the first one that is smaller or equal to
+      the prompt count.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPrompts.DenyRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user deny.
+      Aggregated across all origins, all PermissionTypes and loud UI
+      PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPrompts.DismissRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user dismiss.
+      Aggregated across all origins, all PermissionTypes and loud UI
+      PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPrompts.GrantRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user grant.
+      Aggregated across all origins, all PermissionTypes and loud UI
+      PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPrompts.IgnoreRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user ignore.
+      Aggregated across all origins, all PermissionTypes and loud UI
+      PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPromptsOfType.Count">
+    <summary>
+      Total number of loud UI prompts shown to the user in the last 28 days for
+      the currently requested permission type. The count is bucketed. The bucket
+      minimums being 20, 15, 12, 10, 9, 8, 7, 6, 5, 4 and 0. The correct bucket
+      is the first one that is smaller or equal to the prompt count.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPromptsOfType.DenyRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user deny.
+      Aggregated across all origins, currently requested PermissionType and loud
+      UI PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPromptsOfType.DismissRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user dismiss.
+      Aggregated across all origins, currently requested PermissionType and loud
+      UI PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPromptsOfType.GrantRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user grant.
+      Aggregated across all origins, currently requested PermissionType and loud
+      UI PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPromptsOfType.IgnoreRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user ignore.
+      Aggregated across all origins, currently requested PermissionType and loud
+      UI PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
   <metric name="TimeToDecision">
     <summary>
       Time (in milliseconds) taken by the user to make a decision on a

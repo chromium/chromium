@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/permissions/permission_actions_history.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
@@ -162,13 +163,20 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
 
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
 
-  auto* action_history = PermissionActionsHistory::GetForProfile(profile_);
+  permissions::PermissionActionsHistory* action_history =
+      PermissionActionsHistoryFactory::GetForProfile(profile_);
 
-  auto actions = action_history->GetHistory(cutoff, request->request_type());
-  FillInActionCounts(&features.requested_permission_counts, actions);
+  auto actions = action_history->GetHistory(
+      cutoff, request->request_type(),
+      permissions::PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
+  permissions::PermissionActionsHistory::FillInActionCounts(
+      &features.requested_permission_counts, actions);
 
-  actions = action_history->GetHistory(cutoff);
-  FillInActionCounts(&features.all_permission_counts, actions);
+  actions = action_history->GetHistory(
+      cutoff,
+      permissions::PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
+  permissions::PermissionActionsHistory::FillInActionCounts(
+      &features.all_permission_counts, actions);
 
   return features;
 }
@@ -250,29 +258,4 @@ bool PredictionBasedPermissionUiSelector::IsAllowedToUseAssistedPrompts(
       NOTREACHED();
   }
   return !should_hold_back;
-}
-
-// static
-void PredictionBasedPermissionUiSelector::FillInActionCounts(
-    permissions::PredictionRequestFeatures::ActionCounts* counts,
-    const std::vector<PermissionActionsHistory::Entry>& actions) {
-  for (const auto& entry : actions) {
-    switch (entry.action) {
-      case permissions::PermissionAction::DENIED:
-        counts->denies++;
-        break;
-      case permissions::PermissionAction::GRANTED:
-        counts->grants++;
-        break;
-      case permissions::PermissionAction::DISMISSED:
-        counts->dismissals++;
-        break;
-      case permissions::PermissionAction::IGNORED:
-        counts->ignores++;
-        break;
-      default:
-        // Anything else is ignored.
-        break;
-    }
-  }
 }
