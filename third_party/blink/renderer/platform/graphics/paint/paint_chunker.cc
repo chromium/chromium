@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
 
-#include "cc/base/features.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 
 namespace blink {
@@ -192,10 +191,8 @@ bool PaintChunker::AddHitTestDataToCurrentChunk(const PaintChunk::Id& id,
     chunk.EnsureHitTestData().touch_action_rects.push_back(
         TouchActionRect{rect, touch_action});
   }
-  if (blocking_wheel) {
-    DCHECK(base::FeatureList::IsEnabled(::features::kWheelEventRegions));
+  if (blocking_wheel)
     chunk.EnsureHitTestData().wheel_event_rects.push_back(rect);
-  }
   return created_new_chunk;
 }
 

@@ -32,7 +32,6 @@
 #include "base/auto_reset.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "cc/base/features.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
@@ -3139,14 +3138,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void MarkBlockingWheelEventHandlerChanged();
   void MarkDescendantBlockingWheelEventHandlerChanged();
   bool BlockingWheelEventHandlerChanged() const {
-    // TODO(https://crbug.com/841364): This block is optimized to avoid costly
-    // checks for kWheelEventRegions. It will be simplified once
-    // kWheelEventRegions feature flag is removed.
-    if (!bitfields_.BlockingWheelEventHandlerChanged())
-      return false;
-    return base::FeatureList::IsEnabled(::features::kWheelEventRegions)
-               ? bitfields_.BlockingWheelEventHandlerChanged()
-               : false;
+    return bitfields_.BlockingWheelEventHandlerChanged();
   }
   bool DescendantBlockingWheelEventHandlerChanged() const {
     return bitfields_.DescendantBlockingWheelEventHandlerChanged();

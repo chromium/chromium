@@ -397,8 +397,6 @@ TEST_P(PrePaintTreeWalkTest, EffectiveTouchActionStyleUpdate) {
 }
 
 TEST_P(PrePaintTreeWalkTest, InsideBlockingWheelEventHandlerUpdate) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   SetBodyInnerHTML(R"HTML(
     <div id='ancestor' style='width: 100px; height: 100px;'>
       <div id='handler' style='width: 100px; height: 100px;'>

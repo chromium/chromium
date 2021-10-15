@@ -1846,9 +1846,6 @@ TEST_P(FrameThrottlingTest, ThrottledIframeGetsResizeEvents) {
 }
 
 TEST_P(FrameThrottlingTest, AncestorTouchActionAndWheelEventHandlers) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
-
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest frame_resource("https://example.com/iframe.html", "text/html");
 
@@ -1920,9 +1917,6 @@ TEST_P(FrameThrottlingTest, AncestorTouchActionAndWheelEventHandlers) {
 }
 
 TEST_P(FrameThrottlingTest, DescendantTouchActionAndWheelEventHandlers) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
-
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest frame_resource("https://example.com/iframe.html", "text/html");
 

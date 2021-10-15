@@ -2632,9 +2632,6 @@
       depends_on: ["WebXRARModule"],
       status: "stable",
     },
-    {
-      name: "WheelEventRegions",
-    },
     // Extends window placement functionality for multi-screen devices. Also
     // exposes requisite information about displays connected to the device.
     {

@@ -952,8 +952,6 @@ TEST_P(ScrollingTest, TouchActionChangeWithoutContent) {
 }
 
 TEST_P(ScrollingTest, WheelEventRegion) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   LoadHTML(R"HTML(
     <style>
       #scrollable {
@@ -994,8 +992,6 @@ TEST_P(ScrollingTest, WheelEventRegion) {
 }
 
 TEST_P(ScrollingTest, WheelEventHandlerInvalidation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   LoadHTML(R"HTML(
     <style>
       #scrollable {
@@ -1053,8 +1049,6 @@ TEST_P(ScrollingTest, WheelEventHandlerInvalidation) {
 }
 
 TEST_P(ScrollingTest, WheelEventRegions) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   LoadHTML(R"HTML(
     <style>
       #scrollable {
@@ -1103,8 +1097,6 @@ TEST_P(ScrollingTest, WheelEventRegions) {
 }
 
 TEST_P(ScrollingTest, WheelEventRegionUpdatedOnSubscrollerScrollChange) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   GetWebView()->GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
   LoadHTML(R"HTML(
     <style>
@@ -1156,8 +1148,6 @@ TEST_P(ScrollingTest, WheelEventRegionUpdatedOnSubscrollerScrollChange) {
 
 // Box shadow is not hit testable and should not be included in wheel region.
 TEST_P(ScrollingTest, WheelEventRegionExcludesBoxShadow) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   LoadHTML(R"HTML(
     <style>
       #shadow {
@@ -1182,8 +1172,6 @@ TEST_P(ScrollingTest, WheelEventRegionExcludesBoxShadow) {
 }
 
 TEST_P(ScrollingTest, IframeWindowWheelEventHandler) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   LoadHTML(R"HTML(
     <iframe style="width: 275px; height: 250px; will-change: transform">
     </iframe>
@@ -1217,8 +1205,6 @@ TEST_P(ScrollingTest, IframeWindowWheelEventHandler) {
 }
 
 TEST_P(ScrollingTest, WindowWheelEventHandler) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   LoadHTML(R"HTML(
     <style>
       html { width: 200px; height: 200px; }
@@ -1241,8 +1227,6 @@ TEST_P(ScrollingTest, WindowWheelEventHandler) {
 }
 
 TEST_P(ScrollingTest, WindowWheelEventHandlerInvalidation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   LoadHTML("");
   ForceFullCompositingUpdate();
 
@@ -1271,8 +1255,6 @@ TEST_P(ScrollingTest, WindowWheelEventHandlerInvalidation) {
 }
 
 TEST_P(ScrollingTest, WheelEventHandlerChangeWithoutContent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   LoadHTML(R"HTML(
     <div id="blocking"
         style="will-change: transform; width: 100px; height: 100px;"></div>

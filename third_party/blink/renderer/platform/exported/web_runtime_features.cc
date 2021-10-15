@@ -463,10 +463,6 @@ void WebRuntimeFeatures::EnableWebXRViewportScale(bool enable) {
   RuntimeEnabledFeatures::SetWebXRViewportScaleEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableWheelEventRegions(bool enable) {
-  RuntimeEnabledFeatures::SetWheelEventRegionsEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnablePresentationAPI(bool enable) {
   RuntimeEnabledFeatures::SetPresentationEnabled(enable);
 }

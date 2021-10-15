@@ -1616,8 +1616,6 @@ TEST_F(DisplayLockContextTest, DescendantAllowedTouchAction) {
 }
 
 TEST_F(DisplayLockContextTest, AncestorWheelEventHandler) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   SetHtmlInnerHTML(R"HTML(
     <style>
     #locked {
@@ -1753,8 +1751,6 @@ TEST_F(DisplayLockContextTest, AncestorWheelEventHandler) {
 }
 
 TEST_F(DisplayLockContextTest, DescendantWheelEventHandler) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   SetHtmlInnerHTML(R"HTML(
     <style>
     #locked {

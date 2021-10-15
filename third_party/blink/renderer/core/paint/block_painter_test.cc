@@ -71,8 +71,6 @@ void SetWheelEventListener(const Document& document, const char* element_id) {
 }  // namespace
 
 TEST_P(BlockPainterTest, BlockingWheelRectsWithoutPaint) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   SetBodyInnerHTML(R"HTML(
     <style>
       ::-webkit-scrollbar { display: none; }
@@ -120,8 +118,6 @@ TEST_P(BlockPainterTest, BlockingWheelRectsWithoutPaint) {
 }
 
 TEST_P(BlockPainterTest, BlockingWheelEventRectSubsequenceCaching) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0; }
@@ -184,8 +180,6 @@ TEST_P(BlockPainterTest, BlockingWheelEventRectSubsequenceCaching) {
 }
 
 TEST_P(BlockPainterTest, WheelEventRectPaintCaching) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0; }
@@ -228,8 +222,6 @@ TEST_P(BlockPainterTest, WheelEventRectPaintCaching) {
 }
 
 TEST_P(BlockPainterTest, BlockingWheelRectScrollingContents) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   SetBodyInnerHTML(R"HTML(
     <style>
       ::-webkit-scrollbar { display: none; }
@@ -301,8 +293,6 @@ TEST_P(BlockPainterTest, BlockingWheelRectScrollingContents) {
 }
 
 TEST_P(BlockPainterTest, WheelEventRectPaintChunkChanges) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0; }

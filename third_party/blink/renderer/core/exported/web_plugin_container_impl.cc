@@ -176,8 +176,7 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
   IntRect visual_rect = FrameRect();
   visual_rect.Move(paint_offset);
 
-  if (WantsWheelEvents() &&
-      base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
+  if (WantsWheelEvents()) {
     context.GetPaintController().RecordHitTestData(*GetLayoutEmbeddedContent(),
                                                    ToGfxRect(visual_rect),
                                                    TouchAction::kAuto, true);

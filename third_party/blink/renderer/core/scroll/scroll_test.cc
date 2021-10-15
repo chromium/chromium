@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator.h"
 
 #include "base/test/bind.h"
+#include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"

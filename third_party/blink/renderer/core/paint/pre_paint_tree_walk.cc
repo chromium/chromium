@@ -6,7 +6,6 @@
 
 #include "base/auto_reset.h"
 #include "base/stl_util.h"
-#include "cc/base/features.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -170,10 +169,6 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
       ShowFragmentTree(*view);
     }
 #endif
-
-    is_wheel_event_regions_enabled_ =
-        base::FeatureList::IsEnabled(::features::kWheelEventRegions);
-
     Walk(*view, context, /* pre_paint_info */ nullptr);
 #if DCHECK_IS_ON()
     view->AssertSubtreeClearedPaintInvalidationFlags();
@@ -578,8 +573,7 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   // depends on the effective allowed touch action and blocking wheel event
   // handlers.
   UpdateEffectiveAllowedTouchAction(object, context);
-  if (is_wheel_event_regions_enabled_)
-    UpdateBlockingWheelEventHandler(object, context);
+  UpdateBlockingWheelEventHandler(object, context);
 
   if (paint_invalidator_.InvalidatePaint(
           object, pre_paint_info,

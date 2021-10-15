@@ -239,10 +239,6 @@ class CORE_EXPORT PrePaintTreeWalk final {
   // re-walking any fixedpos objects handled by |pending_fixedpos_missables_|.
   HeapHashSet<Member<const LayoutObject>> walked_fixedpos_;
 
-  // TODO(https://crbug.com/841364): Remove is_wheel_event_regions_enabled
-  // argument once kWheelEventRegions feature flag is removed.
-  bool is_wheel_event_regions_enabled_ = false;
-
   bool needs_invalidate_chrome_client_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(PrePaintTreeWalkTest, ClipRects);
