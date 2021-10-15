@@ -402,8 +402,11 @@ bool ConsumePerspective(CSSParserTokenRange& args,
                         const CSSParserContext& context,
                         CSSFunctionValue*& transform_value,
                         bool use_legacy_parsing) {
-  CSSPrimitiveValue* parsed_value =
+  CSSValue* parsed_value =
       ConsumeLength(args, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+  if (!parsed_value) {
+    parsed_value = ConsumeIdent<CSSValueID::kNone>(args);
+  }
   if (!parsed_value && use_legacy_parsing) {
     double perspective;
     if (!ConsumeNumberRaw(args, context, perspective) || perspective < 0)

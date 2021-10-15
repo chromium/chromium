@@ -93,12 +93,20 @@ InterpolationValue CSSTransformInterpolationType::MaybeConvertValue(
         continue;
       }
       for (const CSSValue* argument : transform_function) {
-        const auto& primitive_value = To<CSSPrimitiveValue>(*argument);
-        if (!primitive_value.IsLength() &&
-            !primitive_value.IsCalculatedPercentageWithLength()) {
+        // perspective(none) is an identifier value rather than a
+        // primitive value, but since it represents infinity and
+        // perspective() interpolates by reciprocals, it interpolates as
+        // 0.
+        const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(argument);
+        DCHECK(primitive_value ||
+               (transform_function.FunctionType() == CSSValueID::kPerspective &&
+                argument->IsIdentifierValue()));
+        if (!primitive_value ||
+            (!primitive_value->IsLength() &&
+             !primitive_value->IsCalculatedPercentageWithLength())) {
           continue;
         }
-        primitive_value.AccumulateLengthUnitTypes(types);
+        primitive_value->AccumulateLengthUnitTypes(types);
       }
     }
     std::unique_ptr<InterpolationType::ConversionChecker> length_units_checker =

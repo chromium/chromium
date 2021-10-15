@@ -286,10 +286,15 @@ void TransformOperations::AppendSkew(SkScalar x, SkScalar y) {
   decomposed_transforms_.clear();
 }
 
-void TransformOperations::AppendPerspective(SkScalar depth) {
+void TransformOperations::AppendPerspective(absl::optional<SkScalar> depth) {
   TransformOperation to_add;
   to_add.type = TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE;
-  to_add.perspective_depth = depth;
+  if (depth) {
+    DCHECK_GE(*depth, 1.0f);
+    to_add.perspective_m43 = -1.0f / *depth;
+  } else {
+    to_add.perspective_m43 = 0.0f;
+  }
   to_add.Bake();
   operations_.push_back(to_add);
   decomposed_transforms_.clear();

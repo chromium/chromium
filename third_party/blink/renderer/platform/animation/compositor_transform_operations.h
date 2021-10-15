@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_TRANSFORM_OPERATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_TRANSFORM_OPERATIONS_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/transform_operations.h"
@@ -33,7 +34,7 @@ class PLATFORM_EXPORT CompositorTransformOperations {
   void AppendSkewX(double x);
   void AppendSkewY(double y);
   void AppendSkew(double x, double y);
-  void AppendPerspective(double depth);
+  void AppendPerspective(absl::optional<double> depth);
   void AppendMatrix(const skia::Matrix44&);
 
   bool IsIdentity() const;

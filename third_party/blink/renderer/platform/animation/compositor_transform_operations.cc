@@ -58,8 +58,14 @@ void CompositorTransformOperations::AppendSkew(double x, double y) {
   transform_operations_.AppendSkew(SkDoubleToScalar(x), SkDoubleToScalar(y));
 }
 
-void CompositorTransformOperations::AppendPerspective(double depth) {
-  transform_operations_.AppendPerspective(SkDoubleToScalar(depth));
+void CompositorTransformOperations::AppendPerspective(
+    absl::optional<double> depth) {
+  if (depth) {
+    transform_operations_.AppendPerspective(
+        SkDoubleToScalar(std::max(*depth, 1.0)));
+  } else {
+    transform_operations_.AppendPerspective(absl::nullopt);
+  }
 }
 
 void CompositorTransformOperations::AppendMatrix(const skia::Matrix44& matrix) {

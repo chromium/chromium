@@ -72,4 +72,19 @@ interpolation_test('skewX(0deg)', 'skewX(180deg)', 'skewX(90deg)');
 interpolation_test('skew(0deg, 0deg)', 'skew(60deg, 60deg)', 'skew(30deg, 30deg)');
 interpolation_test('skew(45deg, 0deg)', 'skew(0deg, 45deg)', 'skew(22.5deg, 22.5deg)');
 
+interpolation_test('perspective(10px)', 'perspective(2.5px)', 'perspective(4px)');
+interpolation_test('perspective(10px)', 'perspective(none)', 'perspective(20px)');
+interpolation_test('perspective(none)', 'perspective(none)', 'perspective(none)');
+
+// A matrix() with just scale and translation.
+interpolation_test('matrix(2, 0, 0, 2, 10, 30)', 'matrix(4, 0, 0, 6, 14, 10)', 'matrix(3, 0, 0, 4, 12, 20)');
+
+// A matrix3d() with just scale and translation.
+interpolation_test('matrix3d(1, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1, 0, 5, 10, 4, 1)', 'matrix3d(3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, -11, 2, 2, 1)', 'matrix3d(2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 0, -3, 6, 3, 1)');
+// A matrix3d() with just perspective.
+interpolation_test('matrix3d(1, 0, 0, 3, 0, 1, 0, 2, 0, 0, 1, 8, 0, 0, 0, 1)', 'matrix3d(1, 0, 0, 5, 0, 1, 0, 8, 0, 0, 1, 14, 0, 0, 0, 1)', 'matrix3d(1, 0, 0, 4, 0, 1, 0, 5, 0, 0, 1, 11, 0, 0, 0, 1)');
+
+// NOTE: New tests added here should also be added in
+// transform-interpolation-inline-value.html.
+
 </script>

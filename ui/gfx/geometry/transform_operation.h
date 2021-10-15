@@ -28,7 +28,9 @@ struct GEOMETRY_SKIA_EXPORT TransformOperation {
   gfx::Transform matrix;
 
   union {
-    SkScalar perspective_depth;
+    // We store the transform matrix component for perspective, which is
+    // -1/depth.  This allows representing infinite distance correctly.
+    SkScalar perspective_m43;
 
     struct {
       SkScalar x, y;

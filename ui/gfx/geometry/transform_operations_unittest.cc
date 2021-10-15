@@ -49,7 +49,7 @@ void ExpectTransformOperationEqual(const TransformOperation& lhs,
       EXPECT_FLOAT_EQ(lhs.skew.y, rhs.skew.y);
       break;
     case TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE:
-      EXPECT_FLOAT_EQ(lhs.perspective_depth, rhs.perspective_depth);
+      EXPECT_FLOAT_EQ(lhs.perspective_m43, rhs.perspective_m43);
       break;
     case TransformOperation::TRANSFORM_OPERATION_MATRIX:
     case TransformOperation::TRANSFORM_OPERATION_IDENTITY:
@@ -1711,9 +1711,9 @@ TEST(TransformOperationsTest, ApproximateEquality) {
   EXPECT_FALSE(lhs.ApproximatelyEqual(rhs, tolerance));
 
   lhs = rhs;
-  lhs.at(6).perspective_depth += noise;
+  lhs.at(6).perspective_m43 += noise;
   EXPECT_TRUE(lhs.ApproximatelyEqual(rhs, tolerance));
-  lhs.at(6).perspective_depth = 801;
+  lhs.at(6).perspective_m43 = -1.0f / 810;
   EXPECT_FALSE(lhs.ApproximatelyEqual(rhs, tolerance));
 }
 

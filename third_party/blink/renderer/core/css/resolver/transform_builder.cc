@@ -140,12 +140,12 @@ TransformOperations TransformBuilder::CreateTransformOperations(
     TransformOperation::OperationType transform_type =
         GetTransformOperationType(transform_value->FunctionType());
 
-    const auto& first_value = To<CSSPrimitiveValue>(transform_value->Item(0));
-
     switch (transform_type) {
       case TransformOperation::kScale:
       case TransformOperation::kScaleX:
       case TransformOperation::kScaleY: {
+        const auto& first_value =
+            To<CSSPrimitiveValue>(transform_value->Item(0));
         double sx = 1.0;
         double sy = 1.0;
         if (transform_type == TransformOperation::kScaleY) {
@@ -168,6 +168,8 @@ TransformOperations TransformBuilder::CreateTransformOperations(
       }
       case TransformOperation::kScaleZ:
       case TransformOperation::kScale3D: {
+        const auto& first_value =
+            To<CSSPrimitiveValue>(transform_value->Item(0));
         double sx = 1.0;
         double sy = 1.0;
         double sz = 1.0;
@@ -185,6 +187,8 @@ TransformOperations TransformBuilder::CreateTransformOperations(
       case TransformOperation::kTranslate:
       case TransformOperation::kTranslateX:
       case TransformOperation::kTranslateY: {
+        const auto& first_value =
+            To<CSSPrimitiveValue>(transform_value->Item(0));
         Length tx = Length::Fixed(0);
         Length ty = Length::Fixed(0);
         if (transform_type == TransformOperation::kTranslateY)
@@ -206,6 +210,8 @@ TransformOperations TransformBuilder::CreateTransformOperations(
       }
       case TransformOperation::kTranslateZ:
       case TransformOperation::kTranslate3D: {
+        const auto& first_value =
+            To<CSSPrimitiveValue>(transform_value->Item(0));
         Length tx = Length::Fixed(0);
         Length ty = Length::Fixed(0);
         double tz = 0;
@@ -227,6 +233,8 @@ TransformOperations TransformBuilder::CreateTransformOperations(
       case TransformOperation::kRotateY:
       case TransformOperation::kRotateZ:
       case TransformOperation::kRotate: {
+        const auto& first_value =
+            To<CSSPrimitiveValue>(transform_value->Item(0));
         double angle = first_value.ComputeDegrees();
         if (transform_value->length() == 1) {
           double x = transform_type == TransformOperation::kRotateX;
@@ -251,6 +259,8 @@ TransformOperations TransformBuilder::CreateTransformOperations(
         break;
       }
       case TransformOperation::kRotate3D: {
+        const auto& first_value =
+            To<CSSPrimitiveValue>(transform_value->Item(0));
         const auto& second_value =
             To<CSSPrimitiveValue>(transform_value->Item(1));
         const auto& third_value =
@@ -268,6 +278,8 @@ TransformOperations TransformBuilder::CreateTransformOperations(
       case TransformOperation::kSkew:
       case TransformOperation::kSkewX:
       case TransformOperation::kSkewY: {
+        const auto& first_value =
+            To<CSSPrimitiveValue>(transform_value->Item(0));
         double angle_x = 0;
         double angle_y = 0;
         double angle = first_value.ComputeDegrees();
@@ -288,7 +300,8 @@ TransformOperations TransformBuilder::CreateTransformOperations(
         break;
       }
       case TransformOperation::kMatrix: {
-        double a = first_value.GetDoubleValue();
+        double a =
+            To<CSSPrimitiveValue>(transform_value->Item(0)).GetDoubleValue();
         double b =
             To<CSSPrimitiveValue>(transform_value->Item(1)).GetDoubleValue();
         double c =
@@ -329,8 +342,18 @@ TransformOperations TransformBuilder::CreateTransformOperations(
         break;
       }
       case TransformOperation::kPerspective: {
-        double p = first_value.ComputeLength<double>(conversion_data);
-        DCHECK_GE(p, 0);
+        absl::optional<double> p;
+        const auto& first_value = transform_value->Item(0);
+        const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(first_value);
+        if (primitive_value) {
+          p = primitive_value->ComputeLength<double>(conversion_data);
+          DCHECK_GE(*p, 0);
+        } else {
+          DCHECK_EQ(To<CSSIdentifierValue>(first_value).GetValueID(),
+                    CSSValueID::kNone);
+          // leave p as nullopt to represent 'none'
+        }
+
         operations.Operations().push_back(
             PerspectiveTransformOperation::Create(p));
         break;

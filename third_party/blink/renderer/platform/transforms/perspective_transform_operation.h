@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_PERSPECTIVE_TRANSFORM_OPERATION_H_
 
 #include <algorithm>
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -35,13 +36,24 @@ namespace blink {
 class PLATFORM_EXPORT PerspectiveTransformOperation final
     : public TransformOperation {
  public:
-  static scoped_refptr<PerspectiveTransformOperation> Create(double p) {
+  static scoped_refptr<PerspectiveTransformOperation> Create(
+      absl::optional<double> p) {
     return base::AdoptRef(new PerspectiveTransformOperation(p));
   }
 
-  double Perspective() const { return p_; }
+  absl::optional<double> Perspective() const { return p_; }
 
-  double UsedPerspective() const { return std::max(1.0, p_); }
+  double UsedPerspective() const {
+    DCHECK(p_.has_value());
+    return std::max(1.0, *p_);
+  }
+
+  double InverseUsedPerspective() const {
+    if (!p_) {
+      return 0.0;
+    }
+    return 1.0 / std::max(1.0, *p_);
+  }
 
   static bool IsMatchingOperationType(OperationType type) {
     return type == kPerspective;
@@ -59,7 +71,9 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
   }
 
   void Apply(TransformationMatrix& transform, const FloatSize&) const override {
-    transform.ApplyPerspective(UsedPerspective());
+    if (Perspective()) {
+      transform.ApplyPerspective(UsedPerspective());
+    }
   }
 
   scoped_refptr<TransformOperation> Accumulate(
@@ -73,9 +87,11 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
   // Perspective does not, by itself, specify a 3D transform.
   bool HasNonTrivial3DComponent() const override { return false; }
 
-  PerspectiveTransformOperation(double p) : p_(p) {}
+  explicit PerspectiveTransformOperation(absl::optional<double> p) : p_(p) {}
 
-  double p_;
+  // !p_.has_value() means the value is `none`, which is equivalent to
+  // infinity.
+  absl::optional<double> p_;
 };
 
 template <>

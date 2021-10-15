@@ -1968,9 +1968,13 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
       const auto& perspective = To<PerspectiveTransformOperation>(operation);
       auto* result =
           MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPerspective);
-      result->Append(*CSSNumericLiteralValue::Create(
-          perspective.Perspective() / zoom,
-          CSSPrimitiveValue::UnitType::kPixels));
+      if (perspective.Perspective()) {
+        result->Append(*CSSNumericLiteralValue::Create(
+            *perspective.Perspective() / zoom,
+            CSSPrimitiveValue::UnitType::kPixels));
+      } else {
+        result->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+      }
       return result;
     }
     case TransformOperation::kMatrix: {

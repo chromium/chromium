@@ -8,6 +8,7 @@
 #include "ui/gfx/geometry/transform_operation.h"
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 #include "base/numerics/ranges.h"
@@ -106,9 +107,12 @@ void TransformOperation::Bake() {
     case TransformOperation::TRANSFORM_OPERATION_SKEW:
       matrix.Skew(skew.x, skew.y);
       break;
-    case TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE:
-      matrix.ApplyPerspectiveDepth(perspective_depth);
+    case TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE: {
+      Transform m;
+      m.matrix().set(3, 2, perspective_m43);
+      matrix.PreconcatTransform(m);
       break;
+    }
     case TransformOperation::TRANSFORM_OPERATION_MATRIX:
     case TransformOperation::TRANSFORM_OPERATION_IDENTITY:
       break;
@@ -147,8 +151,8 @@ bool TransformOperation::ApproximatelyEqual(const TransformOperation& other,
       return base::IsApproximatelyEqual(skew.x, other.skew.x, tolerance) &&
              base::IsApproximatelyEqual(skew.y, other.skew.y, tolerance);
     case TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE:
-      return base::IsApproximatelyEqual(perspective_depth,
-                                        other.perspective_depth, tolerance);
+      return base::IsApproximatelyEqual(perspective_m43, other.perspective_m43,
+                                        tolerance);
     case TransformOperation::TRANSFORM_OPERATION_MATRIX:
       // TODO(vollick): we could expose a tolerance on gfx::Transform, but it's
       // complex since we need a different tolerance per component. Driving this
@@ -245,22 +249,26 @@ bool TransformOperation::BlendTransformOperations(
       break;
     }
     case TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE: {
-      SkScalar from_perspective_depth =
-          IsOperationIdentity(from) ? std::numeric_limits<SkScalar>::max()
-                                    : from->perspective_depth;
-      SkScalar to_perspective_depth = IsOperationIdentity(to)
-                                          ? std::numeric_limits<SkScalar>::max()
-                                          : to->perspective_depth;
-      if (from_perspective_depth == 0.f || to_perspective_depth == 0.f)
-        return false;
+      SkScalar from_perspective_m43;
+      if (IsOperationIdentity(from)) {
+        from_perspective_m43 = 0.f;
+      } else {
+        DCHECK_LE(from->perspective_m43, 0.0f);
+        DCHECK_GE(from->perspective_m43, -1.0f);
+        from_perspective_m43 = from->perspective_m43;
+      }
+      SkScalar to_perspective_m43;
+      if (IsOperationIdentity(to)) {
+        to_perspective_m43 = 0.f;
+      } else {
+        DCHECK_LE(to->perspective_m43, 0.0f);
+        DCHECK_GE(to->perspective_m43, -1.0f);
+        to_perspective_m43 = to->perspective_m43;
+      }
 
-      SkScalar blended_perspective_depth = BlendSkScalars(
-          1.f / from_perspective_depth, 1.f / to_perspective_depth, progress);
-
-      if (blended_perspective_depth == 0.f)
-        return false;
-
-      result->perspective_depth = 1.f / blended_perspective_depth;
+      result->perspective_m43 = base::clamp(
+          BlendSkScalars(from_perspective_m43, to_perspective_m43, progress),
+          -1.0f, 0.0f);
       result->Bake();
       break;
     }
