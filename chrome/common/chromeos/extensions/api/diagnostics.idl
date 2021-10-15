@@ -42,6 +42,7 @@ namespace os.diagnostics {
   };
 
   enum UserMessageType {
+    unknown,
     unplug_ac_power,
     plug_in_ac_power
   };

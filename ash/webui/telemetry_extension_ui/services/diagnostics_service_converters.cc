@@ -119,6 +119,8 @@ std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
 health::mojom::DiagnosticRoutineUserMessageEnum Convert(
     cros_healthd::mojom::DiagnosticRoutineUserMessageEnum input) {
   switch (input) {
+    case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kUnknown:
+      return health::mojom::DiagnosticRoutineUserMessageEnum::kUnknown;
     case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kUnplugACPower:
       return health::mojom::DiagnosticRoutineUserMessageEnum::kUnplugACPower;
     case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kPlugInACPower:

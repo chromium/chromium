@@ -135,6 +135,7 @@ class DiagnosticsProxy {
      * @const
      */
     this.enumToUserMessage_ = new Map([
+      [userMessageEnum.kUnknown, 'unknonwn'],
       [userMessageEnum.kUnplugACPower, 'unplug-ac-power'],
       [userMessageEnum.kPlugInACPower, 'plug-in-ac-power'],
     ]);

@@ -304,6 +304,7 @@ enum DiagnosticRoutineStatusEnum {
 // These messages prompt interaction from the user of the routine.
 [Extensible]
 enum DiagnosticRoutineUserMessageEnum {
+  kUnknown = 2,
   kUnplugACPower = 0,  // The user needs to unplug the AC power cord.
   kPlugInACPower = 1,  // The user needs to plug in the AC power cord.
 };

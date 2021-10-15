@@ -81,8 +81,11 @@ enum DiagnosticRoutineStatusEnum {
 
 // Enumeration of each of the messages a diagnostics routine can pass back.
 // These messages prompt interaction from the user of the routine.
+//
+// NextMinVersion: 1, NextIndex: 3
 [Extensible]
 enum DiagnosticRoutineUserMessageEnum {
+  [Default] kUnknown = 2,
   kUnplugACPower = 0,  // The user needs to unplug the AC power cord.
   kPlugInACPower = 1,  // The user needs to plug in the AC power cord.
 };

@@ -108,6 +108,8 @@ MojoRoutineCommandType ConvertRoutineCommand(RoutineCommandType commandType) {
 RoutineUserMessageType ConvertRoutineUserMessage(
     MojoRoutineUserMessageType userMessage) {
   switch (userMessage) {
+    case MojoRoutineUserMessageType::kUnknown:
+      return RoutineUserMessageType::USER_MESSAGE_TYPE_UNKNOWN;
     case MojoRoutineUserMessageType::kUnplugACPower:
       return RoutineUserMessageType::USER_MESSAGE_TYPE_UNPLUG_AC_POWER;
     case MojoRoutineUserMessageType::kPlugInACPower:
