@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "components/content_settings/renderer/content_settings_agent_impl.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -110,6 +111,9 @@ bool WorkerContentSettingsClient::AllowScriptFromSource(
   bool allow = enabled_per_settings;
   if (allow && content_setting_rules_) {
     GURL top_frame_origin_url = top_frame_origin_.GetURL();
+    // Allow DevTools to run worker scripts.
+    if (top_frame_origin_url.SchemeIs(content::kChromeDevToolsScheme))
+      return true;
     for (const auto& rule : content_setting_rules_->script_rules) {
       if (rule.primary_pattern.Matches(top_frame_origin_url) &&
           rule.secondary_pattern.Matches(script_url)) {
