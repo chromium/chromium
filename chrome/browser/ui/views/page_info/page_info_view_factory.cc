@@ -396,9 +396,8 @@ const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetAboutThisSiteIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      views::kInfoIcon, ui::NativeTheme::kColorId_DefaultIconColor,
-      GetIconSize());
+  return ui::ImageModel::FromVectorIcon(views::kInfoIcon, ui::kColorIcon,
+                                        GetIconSize());
 }
 
 // static
