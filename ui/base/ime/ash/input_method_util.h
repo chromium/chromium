@@ -37,12 +37,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
 
   ~InputMethodUtil();
 
-  // Converts an input method ID to a display name of the IME. Returns
-  // an empty strng when |input_method_id| is unknown.
-  // Examples: "pinyin" => "Pinyin"
-  std::string GetInputMethodDisplayNameFromId(
-      const std::string& input_method_id) const;
-
   std::u16string GetInputMethodMediumName(
       const InputMethodDescriptor& input_method) const;
   std::u16string GetInputMethodLongNameStripped(
@@ -162,18 +156,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
       std::vector<std::string>* out_input_method_ids) const;
 
  private:
-  // Converts a string sent from IBus IME engines, which is written in English,
-  // into Chrome's string ID, then pulls internationalized resource string from
-  // the resource bundle and returns it. These functions are not thread-safe.
-  // Non-UI threads are not allowed to call them.
-  // The english_string to should be a xkb id with "xkb:...:...:..." format.
-  // TODO(shuchen): this method should be removed when finish the wrapping of
-  // xkb to extension.
-  std::u16string TranslateString(const std::string& english_string) const;
-
-  bool TranslateStringInternal(const std::string& english_string,
-                               std::u16string* out_string) const;
-
   // Get long name of the given input method. |short_name| is to specify whether
   // to get the long name for OOBE screen, because OOBE screen displays shorter
   // name (e.g. 'US' instead of 'US keyboard').
