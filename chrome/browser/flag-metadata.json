@@ -5591,11 +5591,6 @@
     "expiry_milestone": 91
   },
   {
-    "name": "webpage-text-accessibility",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "webui-branding-update",
     "owners": [ "dpapad@chromium.org", "johntlee@chromium.org" ],
     "expiry_milestone": 99

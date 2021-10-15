@@ -527,12 +527,6 @@ const char kWebPageDefaultZoomFromDynamicTypeDescription[] =
     "When enabled, the default text zoom level for a website comes from the "
     "current dynamic type setting.";
 
-const char kWebPageTextAccessibilityName[] =
-    "Enable text accessibility in web pages";
-const char kWebPageTextAccessibilityDescription[] =
-    "When enabled, text in web pages will respect the user's Dynamic Type "
-    "setting.";
-
 const char kWebPageAlternativeTextZoomName[] =
     "Use different method for zooming web pages";
 const char kWebPageAlternativeTextZoomDescription[] =

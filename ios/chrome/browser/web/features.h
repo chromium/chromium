@@ -10,9 +10,6 @@
 
 namespace web {
 
-// Used to control the state of the WebPageTextAccessibility feature.
-extern const base::Feature kWebPageTextAccessibility;
-
 // Feature flag to tie the default zoom level for webpages to the current
 // dynamic type setting.
 extern const base::Feature kWebPageDefaultZoomFromDynamicType;

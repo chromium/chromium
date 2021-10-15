@@ -466,10 +466,6 @@ extern const char kEnableNewDownloadAPIDescription[];
 extern const char kWebPageDefaultZoomFromDynamicTypeName[];
 extern const char kWebPageDefaultZoomFromDynamicTypeDescription[];
 
-// Title and description for the flag to enable text accessibility in webpages.
-extern const char kWebPageTextAccessibilityName[];
-extern const char kWebPageTextAccessibilityDescription[];
-
 // Title and description for the flag to enable a different method of zooming
 // web pages.
 extern const char kWebPageAlternativeTextZoomName[];
