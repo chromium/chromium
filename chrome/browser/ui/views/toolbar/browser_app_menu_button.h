@@ -22,7 +22,6 @@ class ToolbarView;
 class BrowserAppMenuButton : public AppMenuButton {
  public:
   METADATA_HEADER(BrowserAppMenuButton);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(BrowserAppMenuButton, kIdentifier);
 
   explicit BrowserAppMenuButton(ToolbarView* toolbar_view);
   BrowserAppMenuButton(const BrowserAppMenuButton&) = delete;

@@ -22,6 +22,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -108,6 +109,15 @@ gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
 // Show `dialog_model` as a modal dialog to `browser`.
 void ShowBrowserModal(Browser* browser,
                       std::unique_ptr<ui::DialogModel> dialog_model);
+
+// Show `dialog_model` as a bubble anchored to `anchor_element` in `browser`.
+// `anchor_element` must refer to an element currently present in `browser`.
+// TODO(pbos): Make utility functions for querying whether an anchor_element is
+// present in `browser` or `browser_window` and then refer to those here so that
+// a call site can provide fallback options for `anchor_element`.
+void ShowBubble(Browser* browser,
+                ui::ElementIdentifier anchor_element,
+                std::unique_ptr<ui::DialogModel> dialog_model);
 
 // Shows the create chrome app shortcut dialog box.
 // |close_callback| may be null.

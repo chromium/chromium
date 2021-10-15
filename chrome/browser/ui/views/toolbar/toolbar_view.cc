@@ -113,7 +113,7 @@
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/signin/signin_global_error_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
-#include "chrome/browser/ui/views/outdated_upgrade_bubble_view.h"
+#include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -939,8 +939,8 @@ void ToolbarView::ShowCriticalNotification() {
 
 void ToolbarView::ShowOutdatedInstallNotification(bool auto_update_enabled) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  OutdatedUpgradeBubbleView::ShowBubble(app_menu_button_, browser_,
-                                        auto_update_enabled);
+  // TODO(pbos): Can this move outside ToolbarView completely?
+  ShowOutdatedUpgradeBubble(browser_, auto_update_enabled);
 #endif
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/outdated_upgrade_bubble_view.h"
+#include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"

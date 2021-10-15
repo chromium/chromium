@@ -13,9 +13,13 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/task_manager_view.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/chooser_controller.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 // This file provides definitions of desktop browser dialog-creation methods for
 // all toolkit-views platforms.
@@ -65,6 +69,31 @@ void ShowBrowserModal(Browser* browser,
                       std::unique_ptr<ui::DialogModel> dialog_model) {
   constrained_window::ShowBrowserModal(std::move(dialog_model),
                                        browser->window()->GetNativeWindow());
+}
+
+// TODO(pbos): Move bubble showing out of this file (like ShowBrowserModal) so
+// that this code can be used for showing bubbles outside Browser too.
+void ShowBubble(Browser* browser,
+                ui::ElementIdentifier anchor_element_id,
+                std::unique_ptr<ui::DialogModel> dialog_model) {
+  // TODO(pbos): ui::ElementIdentifier to views::View lookup should probably
+  // live in a utility function or ElementTrackerViews?
+  ui::TrackedElement* const tracked_element =
+      ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          anchor_element_id,
+          views::ElementTrackerViews::GetInstance()->GetContextForView(
+              BrowserView::GetBrowserViewForBrowser(browser)));
+  DCHECK(tracked_element);
+  // This assumes that the tracked element is actually a View and nothing inside
+  // say WebUI.
+  views::View* const anchor_view =
+      tracked_element->AsA<views::TrackedElementViews>()->view();
+  DCHECK(anchor_view);
+  // TODO(pbos): Add a version of BubbleBorder::Arrow that infers position
+  // automatically based on the anchor's position relative to its widget.
+  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+      std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
 }
 
 }  // namespace chrome

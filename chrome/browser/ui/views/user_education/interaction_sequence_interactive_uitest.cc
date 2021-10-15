@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
@@ -56,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUITest, OpenMainMenuAndViewHelpItem) {
   // the BrowserView hierarcny.
   views::View* const button_view = ElementToView(
       ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-          BrowserAppMenuButton::kIdentifier, context));
+          kAppMenuButtonElementId, context));
   BrowserAppMenuButton* const app_menu_button =
       static_cast<BrowserAppMenuButton*>(button_view);
   DCHECK_EQ(std::string("BrowserAppMenuButton"),
@@ -73,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUITest, OpenMainMenuAndViewHelpItem) {
           .AddStep(
               views::InteractionSequenceViews::WithInitialView(app_menu_button))
           .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetElementID(BrowserAppMenuButton::kIdentifier)
+                       .SetElementID(kAppMenuButtonElementId)
                        .SetType(ui::InteractionSequence::StepType::kActivated)
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()

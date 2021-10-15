@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/outdated_upgrade_bubble_view.h"
+#include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -12,9 +12,9 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -24,11 +24,6 @@
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
-#include "ui/views/bubble/bubble_dialog_model_host.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/style/typography.h"
-#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 #if defined(OS_WIN)
@@ -115,12 +110,7 @@ void OnDialogAccepted(content::PageNavigator* navigator,
 
 }  // namespace
 
-// OutdatedUpgradeBubbleView ---------------------------------------------------
-
-// static
-void OutdatedUpgradeBubbleView::ShowBubble(views::View* anchor_view,
-                                           content::PageNavigator* navigator,
-                                           bool auto_update_enabled) {
+void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled) {
   if (g_upgrade_bubble_is_showing)
     return;
 
@@ -130,7 +120,7 @@ void OutdatedUpgradeBubbleView::ShowBubble(views::View* anchor_view,
       ui::DialogModel::Builder()
           .SetTitle(l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_TITLE))
           .AddOkButton(
-              base::BindOnce(&OnDialogAccepted, navigator, auto_update_enabled,
+              base::BindOnce(&OnDialogAccepted, browser, auto_update_enabled,
                              kUpdateBrowserRedirectUrl),
               l10n_util::GetStringUTF16(auto_update_enabled
                                             ? IDS_REINSTALL_APP
@@ -143,9 +133,7 @@ void OutdatedUpgradeBubbleView::ShowBubble(views::View* anchor_view,
               base::UserMetricsAction("OutdatedUpgradeBubble.Later")))
           .Build();
 
-  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
+  chrome::ShowBubble(browser, kAppMenuButtonElementId, std::move(dialog_model));
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::OUTDATED_UPGRADE);
 

@@ -81,6 +81,8 @@ static_library("ui") {
     "blocked_content/tab_under_navigation_throttle.h",
     "browser_dialogs.cc",
     "browser_dialogs.h",
+    "browser_element_identifiers.cc",
+    "browser_element_identifiers.h",
     "browser_navigator_params.cc",
     "browser_navigator_params.h",
     "browser_ui_prefs.cc",
@@ -4809,10 +4811,10 @@ static_library("ui") {
 
     if (!is_chromeos_ash) {
       sources += [
+        "dialogs/outdated_upgrade_bubble.cc",
+        "dialogs/outdated_upgrade_bubble.h",
         "views/accessibility/accessibility_focus_highlight.cc",
         "views/accessibility/accessibility_focus_highlight.h",
-        "views/outdated_upgrade_bubble_view.cc",
-        "views/outdated_upgrade_bubble_view.h",
         "views/policy/enterprise_startup_dialog_view.cc",
         "views/policy/enterprise_startup_dialog_view.h",
         "views/relaunch_notification/relaunch_notification_controller_platform_impl_desktop.cc",
