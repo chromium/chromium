@@ -3353,26 +3353,77 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
                                opt_fixed_block_size, NGCacheSlot::kMeasure);
 }
 
-void NGGridLayoutAlgorithm::PlaceGridItems(
-    const GridItems& grid_items,
-    const NGGridGeometry& grid_geometry) {
-  const auto& container_space = ConstraintSpace();
-  const auto container_writing_direction =
-      container_space.GetWritingDirection();
+namespace {
 
-  // |grid_items| is in DOM order to ensure proper painting order, but
-  // determining the grid's baseline is prioritized based on grid order. The
-  // baseline of the grid is determined by the first grid item with baseline
-  // alignment in the first row. If no items have baseline alignment, fall back
-  // to the first item in row-major order.
+// Determining the grid's baseline is prioritized based on grid order (as
+// opposed to DOM order). The baseline of the grid is determined by the first
+// grid item with baseline alignment in the first row. If no items have
+// baseline alignment, fall back to the first item in row-major order.
+class BaselineAccumulator {
+  STACK_ALLOCATED();
+
+ public:
+  void Accumulate(const GridItemData& grid_item,
+                  const NGBoxFragment& fragment,
+                  const LayoutUnit block_offset) {
+    // Compares GridArea objects in row-major grid order for baseline
+    // precedence. Returns 'true' if |a| < |b| and 'false' otherwise.
+    auto IsBeforeInGridOrder = [&](const GridArea& a,
+                                   const GridArea& b) -> bool {
+      // Do not consider items that span tracks for container baselines.
+      if (a.rows.IntegerSpan() > 1 || a.columns.IntegerSpan() > 1 ||
+          b.rows.IntegerSpan() > 1 || b.columns.IntegerSpan() > 1) {
+        return false;
+      }
+      return (a.rows < b.rows) || (a.rows == b.rows && (a.columns < b.columns));
+    };
+
+    const LayoutUnit baseline =
+        block_offset + fragment.Baseline().value_or(fragment.BlockSize());
+    if (grid_item.IsBaselineSpecifiedForDirection(kForRows)) {
+      if (!alignment_baseline_ ||
+          IsBeforeInGridOrder(grid_item.resolved_position,
+                              alignment_baseline_->resolved_position)) {
+        alignment_baseline_.emplace(grid_item.resolved_position, baseline);
+      }
+    } else if (!fallback_baseline_ ||
+               IsBeforeInGridOrder(grid_item.resolved_position,
+                                   fallback_baseline_->resolved_position)) {
+      fallback_baseline_.emplace(grid_item.resolved_position, baseline);
+    }
+  }
+
+  absl::optional<LayoutUnit> Baseline() const {
+    if (alignment_baseline_)
+      return alignment_baseline_->baseline;
+    if (fallback_baseline_)
+      return fallback_baseline_->baseline;
+    return absl::nullopt;
+  }
+
+ private:
   struct PositionAndBaseline {
     PositionAndBaseline(const GridArea& resolved_position, LayoutUnit baseline)
         : resolved_position(resolved_position), baseline(baseline) {}
     GridArea resolved_position;
     LayoutUnit baseline;
   };
-  absl::optional<PositionAndBaseline> alignment_baseline;
-  absl::optional<PositionAndBaseline> fallback_baseline;
+
+  absl::optional<PositionAndBaseline> alignment_baseline_;
+  absl::optional<PositionAndBaseline> fallback_baseline_;
+};
+
+}  // namespace
+
+void NGGridLayoutAlgorithm::PlaceGridItems(
+    const GridItems& grid_items,
+    const NGGridGeometry& grid_geometry,
+    Vector<GridItemOffsets>* out_offsets) {
+  const auto& container_space = ConstraintSpace();
+  const auto container_writing_direction =
+      container_space.GetWritingDirection();
+
+  BaselineAccumulator baseline_accumulator;
 
   for (const auto& grid_item : grid_items.item_data) {
     LogicalRect containing_grid_area;
@@ -3434,47 +3485,24 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
           containing_grid_area.size);
     }
 
-    container_builder_.AddResult(*result, containing_grid_area.offset,
-                                 relative_offset);
     NGBlockNode(grid_item.node).StoreMargins(container_space, margins);
 
-    // Compares GridArea objects in row-major grid order for baseline
-    // precedence. Returns 'true' if |a| < |b| and 'false' otherwise.
-    auto IsBeforeInGridOrder = [&](const GridArea& a,
-                                   const GridArea& b) -> bool {
-      // Do not consider items that span tracks for container baselines.
-      if (a.rows.IntegerSpan() > 1 || a.columns.IntegerSpan() > 1 ||
-          b.rows.IntegerSpan() > 1 || b.columns.IntegerSpan() > 1) {
-        return false;
-      }
-      return (a.rows < b.rows) || (a.rows == b.rows && (a.columns < b.columns));
-    };
-
-    LayoutUnit baseline = fragment.Baseline().value_or(fragment.BlockSize()) +
-                          containing_grid_area.offset.block_offset;
-    if (grid_item.IsBaselineSpecifiedForDirection(kForRows)) {
-      if (!alignment_baseline ||
-          IsBeforeInGridOrder(grid_item.resolved_position,
-                              alignment_baseline->resolved_position)) {
-        alignment_baseline.emplace(grid_item.resolved_position, baseline);
-      }
-    } else if (!fallback_baseline ||
-               IsBeforeInGridOrder(grid_item.resolved_position,
-                                   fallback_baseline->resolved_position)) {
-      fallback_baseline.emplace(grid_item.resolved_position, baseline);
+    // If |out_offsets| is present we just want to record the initial position
+    // of all the children for the purposes of fragmentation. Don't add these
+    // to the builder.
+    if (out_offsets) {
+      out_offsets->emplace_back(containing_grid_area.offset, *relative_offset);
+    } else {
+      container_builder_.AddResult(*result, containing_grid_area.offset,
+                                   relative_offset);
+      baseline_accumulator.Accumulate(grid_item, fragment,
+                                      containing_grid_area.offset.block_offset);
     }
   }
 
   // Propagate the baseline from the appropriate child.
-  // TODO(kschmi): Synthesize baseline from alignment context if no grid items.
-  if (!grid_items.IsEmpty()) {
-    if (alignment_baseline) {
-      container_builder_.SetBaseline(alignment_baseline->baseline);
-    } else {
-      DCHECK(fallback_baseline);
-      container_builder_.SetBaseline(fallback_baseline->baseline);
-    }
-  }
+  if (auto baseline = baseline_accumulator.Baseline())
+    container_builder_.SetBaseline(*baseline);
 }
 
 void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(

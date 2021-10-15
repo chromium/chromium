@@ -41,6 +41,15 @@ enum class BaselineType : uint8_t {
   kMinor,
 };
 
+struct GridItemOffsets {
+  GridItemOffsets(const LogicalOffset offset,
+                  const LogicalOffset relative_offset)
+      : offset(offset), relative_offset(relative_offset) {}
+
+  LogicalOffset offset;
+  LogicalOffset relative_offset;
+};
+
 struct GridItemIndices {
   wtf_size_t begin = kNotFound;
   wtf_size_t end = kNotFound;
@@ -395,9 +404,16 @@ struct GridItemIndices {
         GridTrackSizingDirection track_direction,
         absl::optional<LayoutUnit> opt_fixed_block_size = absl::nullopt) const;
 
-    // Layout the |grid_items| based on the offsets provided.
+    // Layout the |grid_items|, and add them to the builder.
+    //
+    // If |out_offsets| is present determine the offset for each of the
+    // |grid_items| but *don't* add the resulting fragment to the builder.
+    //
+    // This is used for fragmentation which requires us to know the final
+    // offset of each item before fragmentation occurs.
     void PlaceGridItems(const GridItems& grid_items,
-                        const NGGridGeometry& grid_geometry);
+                        const NGGridGeometry& grid_geometry,
+                        Vector<GridItemOffsets>* out_offsets = nullptr);
 
     // Computes the static position, grid area and its offset of out of flow
     // elements in the grid.
