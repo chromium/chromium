@@ -522,3 +522,12 @@
 -NetInfoBrowserTest.TwoRenderViewsInOneProcess
 -WebRtcIPPermissionDeniedTest.GatherLocalCandidates
 -WebRtcIPPolicyPublicAndPrivateInterfacesTest.GatherLocalCandidates
+
+# crbug.com/1260245: InterestGroupPrivateNetworkBrowserTest failures
+-InterestGroupPrivateNetworkBrowserTest.BidderOnPrivateNetwork
+-InterestGroupPrivateNetworkBrowserTest.ReportToPrivateNetwork
+-InterestGroupPrivateNetworkBrowserTest.ReportToPublicNetwork
+-InterestGroupPrivateNetworkBrowserTest.SellerOnPrivateNetwork
+
+# crbug.com/1260411: CheckFencedFrameNotNavigatedWithoutOptIn/MPArch failure
+-All/FencedFrameTreeBrowserTest.CheckFencedFrameNotNavigatedWithoutOptIn/MPArch
