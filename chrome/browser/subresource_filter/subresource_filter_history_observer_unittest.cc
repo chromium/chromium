@@ -32,10 +32,15 @@ class SubresourceFilterHistoryObserverTest : public testing::Test {
       const SubresourceFilterHistoryObserverTest&) = delete;
 
   void SetUp() override {
-    ASSERT_TRUE(profile()->CreateHistoryService());
-    settings_manager_ =
-        SubresourceFilterProfileContextFactory::GetForProfile(&testing_profile_)
-            ->settings_manager();
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    testing_profile_ = profile_builder.Build();
+
+    settings_manager_ = SubresourceFilterProfileContextFactory::GetForProfile(
+                            testing_profile_.get())
+                            ->settings_manager();
     settings_manager_->set_should_use_smart_ui_for_testing(true);
   }
 
@@ -44,12 +49,12 @@ class SubresourceFilterHistoryObserverTest : public testing::Test {
     return settings_manager_;
   }
 
-  TestingProfile* profile() { return &testing_profile_; }
+  TestingProfile* profile() { return testing_profile_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingProfile testing_profile_;
+  std::unique_ptr<TestingProfile> testing_profile_;
 
   // Owned by the testing_profile_.
   subresource_filter::SubresourceFilterContentSettingsManager*
