@@ -125,6 +125,18 @@ source_set("platform") {
       ]
     }
 
+    if (is_fuchsia) {
+      sources += [
+        "accessibility_bridge_fuchsia.h",
+        "fuchsia/fuchsia_types.cc",
+        "fuchsia/fuchsia_types.h",
+      ]
+
+      public_deps += [
+        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+      ]
+    }
+
     if (is_mac) {
       sources += [
         "ax_event_intent_mac.h",
