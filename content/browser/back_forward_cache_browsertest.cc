@@ -11910,7 +11910,7 @@ class BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported
 
 // This test is flaky on Linux.
 // See https://crbug.com/1253200
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CacheWhenMediaSessionServiceIsNotUsed \
   DISABLED_CacheWhenMediaSessionServiceIsNotUsed
 #else
