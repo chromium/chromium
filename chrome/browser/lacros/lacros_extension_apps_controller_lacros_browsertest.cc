@@ -6,6 +6,9 @@
 
 #include <unistd.h>
 
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
@@ -158,6 +161,56 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
 
   // Now we must unpin the item to ensure ash-chrome is in consistent state.
   waiter.PinOrUnpinItemInShelf(app_id, /*pin=*/false, &success);
+}
+
+// Test that the default context menu for an extension app has the correct
+// items.
+IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, DefaultContextMenu) {
+  // If ash does not contain the relevant test controller functionality, then
+  // there's nothing to do for this test.
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::TestController::Uuid_) <
+      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                           kGetContextMenuForShelfItemMinVersion)) {
+    LOG(WARNING) << "Unsupported ash version.";
+    return;
+  }
+
+  // Create the controller and publisher.
+  LacrosExtensionAppsPublisher publisher;
+  publisher.Initialize();
+  LacrosExtensionAppsController controller;
+  controller.Initialize(publisher.publisher());
+
+  // No item should exist in the shelf before the window is launched.
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
+  std::string app_id =
+      lacros_extension_apps_utility::MuxId(profile(), extension);
+  browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+
+  // Launch the app via LacrosExtensionAppsController.
+  crosapi::mojom::LaunchParamsPtr launch_params =
+      crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
+  controller.Launch(std::move(launch_params), base::DoNothing());
+
+  // Wait for item to exist in shelf.
+  browser_test_util::WaitForShelfItem(app_id, /*exists=*/true);
+
+  // Get the context menu.
+  crosapi::mojom::TestControllerAsyncWaiter waiter(
+      chromeos::LacrosService::Get()
+          ->GetRemote<crosapi::mojom::TestController>()
+          .get());
+  std::vector<std::string> items;
+  waiter.GetContextMenuForShelfItem(app_id, &items);
+  ASSERT_EQ(4u, items.size());
+  EXPECT_EQ(items[0], "Pin to shelf");
+  EXPECT_EQ(items[1], "Close");
+  EXPECT_EQ(items[2], "Uninstall");
+  EXPECT_EQ(items[3], "App info");
 }
 
 }  // namespace

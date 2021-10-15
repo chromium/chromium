@@ -20,7 +20,10 @@
 class StandaloneBrowserExtensionAppContextMenu
     : public ui::SimpleMenuModel::Delegate {
  public:
-  explicit StandaloneBrowserExtensionAppContextMenu(const std::string& app_id);
+  // Describes the source of the context menu.
+  enum class Source { kShelf, kAppList };
+  StandaloneBrowserExtensionAppContextMenu(const std::string& app_id,
+                                           Source source);
   ~StandaloneBrowserExtensionAppContextMenu() override;
 
   StandaloneBrowserExtensionAppContextMenu(
@@ -41,6 +44,8 @@ class StandaloneBrowserExtensionAppContextMenu
   void OnGetMenuModel(GetMenuModelCallback callback);
 
   const std::string app_id_;
+  const Source source_;
+
   base::WeakPtrFactory<StandaloneBrowserExtensionAppContextMenu>
       weak_ptr_factory_{this};
 };

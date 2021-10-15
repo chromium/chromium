@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_TEST_CONTROLLER_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_TEST_CONTROLLER_ASH_H_
 
+#include <memory>
+
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "ui/base/models/simple_menu_model.h"
 
 namespace crosapi {
 
@@ -36,6 +39,9 @@ class TestControllerAsh : public mojom::TestController,
   void ExitOverviewMode(ExitOverviewModeCallback callback) override;
   void EnterTabletMode(EnterTabletModeCallback callback) override;
   void ExitTabletMode(ExitTabletModeCallback callback) override;
+  void GetContextMenuForShelfItem(
+      const std::string& item_id,
+      GetContextMenuForShelfItemCallback callback) override;
   void GetMinimizeOnBackKeyWindowProperty(
       const std::string& window_id,
       GetMinimizeOnBackKeyWindowPropertyCallback cb) override;
@@ -57,6 +63,11 @@ class TestControllerAsh : public mojom::TestController,
 
   // Called when a waiter has finished waiting for its event.
   void WaiterFinished(OverviewWaiter* waiter);
+
+  // Called when a ShelfItemDelegate returns its context menu.
+  static void OnGetContextMenuForShelfItem(
+      GetContextMenuForShelfItemCallback callback,
+      std::unique_ptr<ui::SimpleMenuModel> model);
 
   // Each call to EnterOverviewMode or ExitOverviewMode spawns a waiter for the
   // corresponding event. The waiters are stored in this struct and deleted once

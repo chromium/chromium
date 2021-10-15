@@ -67,6 +67,11 @@ interface TestController {
   [MinVersion=2]
   ExitTabletMode@5() => ();
 
+  // Gets the context menu for a shelf item. This assumes the item is already in
+  // the shelf.
+  [MinVersion=7]
+  GetContextMenuForShelfItem@13(string item_id) => (array<string> items);
+
   // Returns the value of the ash::kMinimizeOnBackKey property for the given
   // window.
   // This allows the client (eg lacros) to verify assumptions eg whether
@@ -75,7 +80,7 @@ interface TestController {
   // Note: For simplicity, the return callback is called with `true` in case
   // the property is not set, of the window is not found.
   [MinVersion=4]
-  GetMinimizeOnBackKeyWindowProperty@10(string windiow_id)
+  GetMinimizeOnBackKeyWindowProperty@10(string window_id)
       => (OptionalBoolean value);
 
   // Returns the position of a window's top-left corner in global "screen"

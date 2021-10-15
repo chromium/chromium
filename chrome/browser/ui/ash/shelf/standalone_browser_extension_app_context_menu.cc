@@ -8,18 +8,40 @@
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/app_list/app_list_client_impl.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
+#include "net/base/escape.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
 
+namespace {
+
+// Create an appropriately sized ImageModel for a menu item icon.
+ui::ImageModel GetMenuItemIcon(const gfx::VectorIcon& icon) {
+  return ui::ImageModel::FromVectorIcon(icon,
+                                        /*color_id=*/ui::kColorMenuIcon,
+                                        ash::kAppContextMenuIconSize);
+}
+
+}  // namespace
+
 StandaloneBrowserExtensionAppContextMenu::
-    StandaloneBrowserExtensionAppContextMenu(const std::string& app_id)
-    : app_id_(app_id) {}
+    StandaloneBrowserExtensionAppContextMenu(const std::string& app_id,
+                                             Source source)
+    : app_id_(app_id), source_(source) {}
 StandaloneBrowserExtensionAppContextMenu::
     ~StandaloneBrowserExtensionAppContextMenu() = default;
 
@@ -35,32 +57,142 @@ void StandaloneBrowserExtensionAppContextMenu::GetMenuModel(
 
 void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
                                                               int event_flags) {
-  if (command_id == ash::MENU_CLOSE) {
-    // There can only be a single active ash profile when Lacros is running.
-    apps::AppServiceProxyChromeOs* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(
-            ProfileManager::GetPrimaryUserProfile());
-    proxy->StopApp(app_id_);
-    return;
+  ash::ShelfModel* model = ash::ShelfModel::Get();
+  const int item_index = model->ItemIndexByAppID(app_id_);
+  const bool item_in_shelf = item_index >= 0;
+
+  switch (static_cast<ash::CommandId>(command_id)) {
+    case ash::SWAP_WITH_NEXT:
+      if (!item_in_shelf)
+        return;
+      model->Swap(item_index, /*with_next=*/true);
+      return;
+    case ash::SWAP_WITH_PREVIOUS:
+      if (!item_in_shelf)
+        return;
+      model->Swap(item_index, /*with_next=*/false);
+      return;
+    case ash::TOGGLE_PIN:
+      if (item_in_shelf && model->IsAppPinned(app_id_)) {
+        UnpinAppWithIDFromShelf(app_id_);
+      } else {
+        PinAppWithIDToShelf(app_id_);
+      }
+      return;
+    case ash::MENU_CLOSE: {
+      // There can only be a single active ash profile when Lacros is running.
+      apps::AppServiceProxyChromeOs* proxy =
+          apps::AppServiceProxyFactory::GetForProfile(
+              ProfileManager::GetPrimaryUserProfile());
+      proxy->StopApp(app_id_);
+      return;
+    }
+
+    case ash::UNINSTALL: {
+      apps::mojom::UninstallSource uninstall_source =
+          (source_ == Source::kShelf) ? apps::mojom::UninstallSource::kShelf
+                                      : apps::mojom::UninstallSource::kAppList;
+      aura::Window* window =
+          (source_ == Source::kShelf)
+              ? AppListClientImpl::GetInstance()->GetAppListWindow()
+              : nullptr;
+      apps::AppServiceProxyChromeOs* proxy =
+          apps::AppServiceProxyFactory::GetForProfile(
+              ProfileManager::GetPrimaryUserProfile());
+      proxy->Uninstall(app_id_, uninstall_source, /*parent_window=*/window);
+      return;
+    }
+    case ash::SHOW_APP_INFO: {
+      AppManagementEntryPoint entry =
+          (source_ == Source::kShelf)
+              ? AppManagementEntryPoint::kShelfContextMenuAppInfoChromeApp
+              : AppManagementEntryPoint::kAppListContextMenuAppInfoChromeApp;
+
+      // Normally app ids would only contain alphanumerics, but Lacros uses '#'
+      // as a delimiter.
+      std::string escaped_id = net::EscapeAllExceptUnreserved(app_id_);
+      chrome::ShowAppManagementPage(ProfileManager::GetPrimaryUserProfile(),
+                                    escaped_id, entry);
+      return;
+    }
+    default:
+      return;
   }
-  // TODO(https://crbug.com/1225848): Implement all context menu items.
 }
 
 void StandaloneBrowserExtensionAppContextMenu::OnGetMenuModel(
     GetMenuModelCallback callback) {
-  // TODO(https://crbug.com/1225848): Add the correct context menu items, which
-  // are context dependent. These are:
-  // Swap with next/previous (only when a11y enabled)
-  // Pin/Unpin (depends on policy from lacros, and current pinned state)
-  // Close (only if 1+ windows open)
-  // Uninstall (only if allowed by policy)
-  // App Info (only if allowed by app manifest)
-  // Custom items
-  auto model = std::make_unique<ui::SimpleMenuModel>(this);
-  model->AddItemWithStringIdAndIcon(
-      ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
-      ui::ImageModel::FromVectorIcon(views::kCloseIcon,
-                                     /*color_id=*/ui::kColorMenuIcon,
-                                     ash::kAppContextMenuIconSize));
-  std::move(callback).Run(std::move(model));
+  // TODO(https://crbug.com/1225848): These values should come from Lacros.
+  bool lacros_allows_pin_unpin = true;
+  bool allows_uninstall = true;
+  bool allow_app_info = true;
+
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
+
+  ash::ShelfModel* model = ash::ShelfModel::Get();
+  const int item_index = model->ItemIndexByAppID(app_id_);
+  const bool item_in_shelf = item_index >= 0;
+
+  // Only show commands to reorder shelf items when ChromeVox or SwitchAccess
+  // are enabled and the item is in the shelf.
+  ash::AccessibilityManager* manager = ash::AccessibilityManager::Get();
+  bool show_swap = manager &&
+                   (manager->IsSpokenFeedbackEnabled() ||
+                    manager->IsSwitchAccessEnabled()) &&
+                   item_in_shelf;
+  if (show_swap) {
+    if (model->CanSwap(item_index, /*with_next=*/true)) {
+      menu_model->AddItemWithStringId(ash::SWAP_WITH_NEXT,
+                                      IDS_SHELF_CONTEXT_MENU_SWAP_WITH_NEXT);
+    }
+    if (model->CanSwap(item_index, /*with_next=*/false)) {
+      menu_model->AddItemWithStringId(
+          ash::SWAP_WITH_PREVIOUS, IDS_SHELF_CONTEXT_MENU_SWAP_WITH_PREVIOUS);
+    }
+  }
+
+  if (lacros_allows_pin_unpin) {
+    // This context menu is used by both the shelf and app list. We choose to
+    // use the app list IDS string since it's clearer.
+    bool currently_pinned = item_in_shelf && model->IsAppPinned(app_id_);
+    const gfx::VectorIcon& icon =
+        currently_pinned ? views::kUnpinIcon : views::kPinIcon;
+    int ids = currently_pinned ? IDS_APP_LIST_CONTEXT_MENU_UNPIN
+                               : IDS_APP_LIST_CONTEXT_MENU_PIN;
+
+    menu_model->AddItemWithStringIdAndIcon(ash::TOGGLE_PIN, ids,
+                                           GetMenuItemIcon(icon));
+  }
+
+  // Add a close menu item if there is at least one open window.
+  if (item_in_shelf) {
+    ash::ShelfItemDelegate* existing_delegate =
+        ash::ShelfModel::Get()->GetShelfItemDelegate(ash::ShelfID(app_id_));
+    StandaloneBrowserExtensionAppShelfItemController* controller =
+        static_cast<StandaloneBrowserExtensionAppShelfItemController*>(
+            existing_delegate);
+    if (controller->WindowCount() >= 1) {
+      menu_model->AddItemWithStringIdAndIcon(
+          ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
+          GetMenuItemIcon(views::kCloseIcon));
+    }
+  }
+
+  // Add an uninstall menu item.
+  if (allows_uninstall) {
+    menu_model->AddItemWithStringIdAndIcon(
+        ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM,
+        GetMenuItemIcon(views::kUninstallIcon));
+  }
+
+  // Add a show app info menu item.
+  if (allow_app_info) {
+    menu_model->AddItemWithStringIdAndIcon(ash::SHOW_APP_INFO,
+                                           IDS_APP_CONTEXT_MENU_SHOW_INFO,
+                                           GetMenuItemIcon(views::kInfoIcon));
+  }
+
+  // TODO(https://crbug.com/1225848): Custom chrome app context menu items.
+
+  std::move(callback).Run(std::move(menu_model));
 }

@@ -13,6 +13,7 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
@@ -117,6 +118,21 @@ void TestControllerAsh::EnterTabletMode(EnterTabletModeCallback callback) {
 void TestControllerAsh::ExitTabletMode(ExitTabletModeCallback callback) {
   SetTabletModeEnabled(false);
   std::move(callback).Run();
+}
+
+void TestControllerAsh::GetContextMenuForShelfItem(
+    const std::string& item_id,
+    GetContextMenuForShelfItemCallback callback) {
+  ash::ShelfItemDelegate* delegate =
+      ash::ShelfModel::Get()->GetShelfItemDelegate(ash::ShelfID(item_id));
+  if (!delegate) {
+    std::move(callback).Run({});
+    return;
+  }
+  delegate->GetContextMenu(
+      /*display_id=*/0,
+      base::BindOnce(&TestControllerAsh::OnGetContextMenuForShelfItem,
+                     std::move(callback)));
 }
 
 void TestControllerAsh::GetMinimizeOnBackKeyWindowProperty(
@@ -244,6 +260,16 @@ void TestControllerAsh::WaiterFinished(OverviewWaiter* waiter) {
       break;
     }
   }
+}
+
+void TestControllerAsh::OnGetContextMenuForShelfItem(
+    GetContextMenuForShelfItemCallback callback,
+    std::unique_ptr<ui::SimpleMenuModel> model) {
+  std::vector<std::string> items;
+  for (int i = 0; i < model->GetItemCount(); ++i) {
+    items.push_back(base::UTF16ToUTF8(model->GetLabelAt(i)));
+  }
+  std::move(callback).Run(std::move(items));
 }
 
 // This class waits for overview mode to either enter or exit and fires a

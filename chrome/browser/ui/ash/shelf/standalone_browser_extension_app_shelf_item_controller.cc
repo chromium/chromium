@@ -45,7 +45,8 @@ StandaloneBrowserExtensionAppShelfItemController::
           weak_factory_.GetWeakPtr()));
 
   context_menu_ = std::make_unique<StandaloneBrowserExtensionAppContextMenu>(
-      shelf_id.app_id);
+      shelf_id.app_id,
+      StandaloneBrowserExtensionAppContextMenu::Source::kShelf);
 }
 
 StandaloneBrowserExtensionAppShelfItemController::
@@ -202,6 +203,10 @@ void StandaloneBrowserExtensionAppShelfItemController::StartTrackingInstance(
     item.status = ash::STATUS_RUNNING;
     ash::ShelfModel::Get()->Set(index, item);
   }
+}
+
+size_t StandaloneBrowserExtensionAppShelfItemController::WindowCount() {
+  return windows_.size();
 }
 
 void StandaloneBrowserExtensionAppShelfItemController::DidLoadIcon(

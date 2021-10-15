@@ -687,6 +687,8 @@ apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
     app->show_in_search = apps::mojom::OptionalBool::kFalse;
     app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
   }
+  if (disable_for_lacros)
+    app->show_in_management = apps::mojom::OptionalBool::kFalse;
 
   // Add file_handlers.
   base::Extend(app->intent_filters,

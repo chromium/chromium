@@ -77,7 +77,8 @@ AppServiceContextMenu::AppServiceContextMenu(
 
   if (app_type_ == apps::mojom::AppType::kStandaloneBrowserExtension) {
     standalone_browser_extension_menu_ =
-        std::make_unique<StandaloneBrowserExtensionAppContextMenu>(app_id);
+        std::make_unique<StandaloneBrowserExtensionAppContextMenu>(
+            app_id, StandaloneBrowserExtensionAppContextMenu::Source::kAppList);
   }
 }
 

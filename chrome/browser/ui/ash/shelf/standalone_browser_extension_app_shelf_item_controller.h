@@ -75,6 +75,9 @@ class StandaloneBrowserExtensionAppShelfItemController
   // responsible for tracking destruction of that instance.
   void StartTrackingInstance(aura::Window* window);
 
+  // Returns the number of open windows associated with the extension app.
+  size_t WindowCount();
+
  private:
   using ShelfItem = ash::ShelfItem;
 
