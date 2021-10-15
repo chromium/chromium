@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/os_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -95,6 +96,7 @@
 #endif
 
 #if defined(OS_WIN)
+#include "base/test/test_reg_util_win.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/web_applications/web_app_handler_registration_utils_win.h"
 #include "chrome/browser/web_applications/web_app_shortcuts_menu_win.h"
@@ -1748,6 +1750,17 @@ class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
     feature_list_.InitAndEnableFeature(blink::features::kFileHandlingAPI);
   }
 
+ protected:
+#if BUILDFLAG(IS_WIN)
+  void SetUp() override {
+    // Don't pollute Windows registry of machine running tests.
+    registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER);
+    WebAppBrowserTest::SetUp();
+  }
+
+  registry_util::RegistryOverrideManager registry_override_manager_;
+#endif  // BUILDFLAG(IS_WIN)
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1779,27 +1792,35 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, WebAppFileHandler) {
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
 
 #if defined(OS_WIN)
-  std::wstring prog_id =
+  const std::wstring prog_id =
       GetProgIdForApp(browser()->profile()->GetPath(), app_id);
-  ShellUtil::FileAssociationsAndAppName file_associations =
+  const ShellUtil::FileAssociationsAndAppName file_associations =
       ShellUtil::GetFileAssociationsAndAppName(prog_id);
   // Check file association.
-  for (auto& file_extension : file_associations.file_associations) {
+  base::win::RegKey key;
+  std::vector<std::wstring> file_ext_reg_keys;
+  for (const auto& file_extension : file_associations.file_associations) {
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-    std::string extension = converter.to_bytes(file_extension);
+    const std::string extension = converter.to_bytes(file_extension);
     EXPECT_TRUE(std::find(expected_extensions.begin(),
                           expected_extensions.end(),
                           extension) != expected_extensions.end())
         << "Missing file extension: " << extension;
+    const std::wstring reg_key =
+        L"Software\\Classes\\." + file_extension + L"\\OpenWithProgids";
+    file_ext_reg_keys.push_back(reg_key);
+    ASSERT_EQ(ERROR_SUCCESS,
+              key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ));
+    EXPECT_TRUE(key.HasValue(prog_id.data()));
   }
 #elif defined(OS_MAC)
   for (auto extension : expected_extensions) {
-    base::FilePath test_file_path =
+    const base::FilePath test_file_path =
         shortcut_override->chrome_apps_folder.GetPath().AppendASCII("test." +
                                                                     extension);
-    base::File test_file(test_file_path, base::File::FLAG_CREATE_ALWAYS |
-                                             base::File::FLAG_WRITE);
-    GURL test_file_url = net::FilePathToFileURL(test_file_path);
+    const base::File test_file(test_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                                   base::File::FLAG_WRITE);
+    const GURL test_file_url = net::FilePathToFileURL(test_file_path);
     EXPECT_EQ(u"Manifest with file handlers",
               shell_integration::GetApplicationNameForProtocol(test_file_url))
         << "The default app to open the file is wrong. "
@@ -1821,9 +1842,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, WebAppFileHandler) {
 
 #if defined(OS_WIN)
   // Check file association after the web app is uninstalled.
-  ShellUtil::FileAssociationsAndAppName empty_file_associations =
+  const ShellUtil::FileAssociationsAndAppName empty_file_associations =
       ShellUtil::GetFileAssociationsAndAppName(prog_id);
   EXPECT_TRUE(empty_file_associations.file_associations.empty());
+
+  // Check that HKCU/Software Classes/<filext>/ doesn't have the prog id.
+  for (const auto& reg_key : file_ext_reg_keys) {
+    ASSERT_EQ(ERROR_SUCCESS,
+              key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ));
+    EXPECT_FALSE(key.HasValue(prog_id.data()));
+  }
 #endif
 }
 #endif
