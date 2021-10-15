@@ -350,6 +350,8 @@ public abstract class ChromeFeatureList {
     public static final String FORCE_DISABLE_EXTENDED_SYNC_PROMOS =
             "ForceDisableExtendedSyncPromos";
     public static final String FORCE_STARTUP_SIGNIN_PROMO = "ForceStartupSigninPromo";
+    public static final String GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY =
+            "GiveJavaUiThreadDefaultTaskTraitsUserBlockingPriority";
     public static final String GRANT_NOTIFICATIONS_TO_DSE = "GrantNotificationsToDSE";
     public static final String HANDLE_MEDIA_INTENTS = "HandleMediaIntents";
     public static final String HTTPS_FIRST_MODE = "HttpsOnlyMode";
