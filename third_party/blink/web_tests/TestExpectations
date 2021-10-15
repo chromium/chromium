@@ -124,8 +124,7 @@ crbug.com/1254937 http/tests/devtools/resource-tree/resource-tree-frame-add.js [
 crbug.com/1254937 http/tests/inspector-protocol/issues/content-security-policy-issue-creation-img.js [ Failure ]
 crbug.com/1254937 http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Failure Timeout ]
 crbug.com/1256612 plugins/focus-change-3-change-blur.html [ Failure Pass ]
-crbug.com/1235685 [ Mac ] plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
-crbug.com/1235685 [ Linux ] plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
+crbug.com/1235685 plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
 
 # Timeouts
 crbug.com/1254938 http/tests/doc-write-intervention/doc-write-sync-third-party-script-block.html [ Timeout ]
@@ -7002,7 +7001,6 @@ crbug.com/1234619 external/wpt/screen-capture/permissions-policy-audio.https.sub
 crbug.com/1234619 external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Failure ]
 
 # Sheriff 2021-08-02
-crbug.com/1235685 [ Mac11-arm64 ] virtual/scroll-unification/plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Failure Pass ]
 
 # Sheriff 2021-08-04
