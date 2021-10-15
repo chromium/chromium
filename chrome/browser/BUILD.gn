@@ -2183,6 +2183,7 @@ static_library("browser") {
     "//components/reporting/proto:record_proto",
     "//components/reporting/storage:storage_configuration",
     "//components/reporting/storage:storage_module",
+    "//components/reporting/storage:storage_module_interface",
     "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/storage_selector",
     "//components/reporting/util:backoff_settings",

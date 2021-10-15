@@ -196,15 +196,20 @@ class ReportingClient::ClientInitializingContext
 
   // Begins the process of configuring the ReportingClient.
   void OnStart() override {
-    StorageSelector::CreateStorageModule(
+    auto cb = base::BindPostTask(
+        client_->client_sequenced_task_runner_,
+        base::BindOnce(&ClientInitializingContext::OnStorageModuleConfigured,
+                       base::Unretained(this)));
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (StorageSelector::is_use_missive()) {
+      StorageSelector::CreateMissiveStorageModule(std::move(cb));
+      return;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    StorageSelector::CreateLocalStorageModule(
         client_->reporting_path_, client_->verification_key_,
         CompressionInformation::COMPRESSION_SNAPPY,
-        std::move(async_start_upload_cb_),
-        base::BindPostTask(
-            client_->client_sequenced_task_runner_,
-            base::BindOnce(
-                &ClientInitializingContext::OnStorageModuleConfigured,
-                base::Unretained(this))));
+        std::move(async_start_upload_cb_), std::move(cb));
   }
 
   // Handles StorageModuleInterface instantiation for ReportingClient to refer
