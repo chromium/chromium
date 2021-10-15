@@ -501,6 +501,10 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
   // platforms.
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kDisableSiteIsolation);
+  // If --site-per-process was manually appended, remove it; this interferes
+  // with default SiteInstances.
+  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
+      switches::kSitePerProcess);
 
   auto site_instance = SiteInstanceImpl::CreateForUrlInfo(
       &browser_context, UrlInfo::CreateForTesting(GURL("http://foo.com")));
