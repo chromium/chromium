@@ -2007,6 +2007,17 @@ ci.chromiumos_builder(
         short_name = "ful",
     ),
     main_console_view = "main",
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "source_side_spec_path": [
+                "src",
+                "infra",
+                "archive_config",
+                "linux-chromiumos-full.json",
+            ],
+        },
+    },
 )
 
 ci.chromiumos_builder(
