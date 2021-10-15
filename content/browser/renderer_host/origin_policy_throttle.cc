@@ -102,6 +102,13 @@ OriginPolicyThrottle::WillProcessResponse() {
   switch (origin_policy->state) {
     case network::OriginPolicyState::kCannotLoadPolicy:
     case network::OriginPolicyState::kCannotParseHeader:
+      // Don't show an interstitial for iframes or non-primary pages;
+      // Origin-Policy errors in iframes should be treated as normal network
+      // errors.
+      if (!navigation_handle()->IsInPrimaryMainFrame()) {
+        return NavigationThrottle::ThrottleCheckResult(
+            NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT);
+      }
       return NavigationThrottle::ThrottleCheckResult(
           NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
           GetContentClient()->browser()->GetOriginPolicyErrorPage(
