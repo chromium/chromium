@@ -223,6 +223,9 @@ class PartitionAllocTest : public testing::Test {
                             PartitionOptions::BackupRefPtr::kDisabled,
                             PartitionOptions::UseConfigurablePool::kNo});
     test_bucket_index_ = SizeToIndex(kRealAllocSize);
+
+    allocator.root()->UncapEmptySlotSpanMemoryForTesting();
+    aligned_allocator.root()->UncapEmptySlotSpanMemoryForTesting();
   }
 
   size_t SizeToIndex(size_t size) {
@@ -3670,6 +3673,7 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
         base::PartitionOptions::BackupRefPtr::kDisabled,
         base::PartitionOptions::UseConfigurablePool::kIfAvailable,
     });
+    root->UncapEmptySlotSpanMemoryForTesting();
 
     const size_t count = 250;
     std::vector<void*> allocations(count, nullptr);
@@ -3689,6 +3693,65 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
   }
 
 #endif  // defined(ARCH_CPU_64_BITS)
+}
+
+TEST_F(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
+  // Use another root, since the ones from the test harness disable the empty
+  // slot span size cap.
+  PartitionRoot<ThreadSafe> root;
+  root.Init({PartitionOptions::AlignedAlloc::kDisallowed,
+             PartitionOptions::ThreadCache::kDisabled,
+             PartitionOptions::Quarantine::kDisallowed,
+             PartitionOptions::Cookie::kAllowed,
+             PartitionOptions::BackupRefPtr::kDisabled,
+             PartitionOptions::UseConfigurablePool::kNo});
+
+  // Allocate some memory, don't free it to keep committed memory.
+  std::vector<void*> allocated_memory;
+  const size_t size = SystemPageSize();
+  const size_t count = 400;
+  for (size_t i = 0; i < count; i++) {
+    void* ptr = root.Alloc(size, "");
+    allocated_memory.push_back(ptr);
+  }
+  ASSERT_GE(root.total_size_of_committed_pages.load(std::memory_order_relaxed),
+            size * count);
+
+  // To create empty slot spans, allocate from single-slot slot spans, 128kiB at
+  // a time.
+  std::vector<void*> single_slot_allocated_memory;
+  constexpr size_t single_slot_count = 15;
+  static_assert(single_slot_count < kMaxFreeableSpans,
+                "Should do fewer allocations than the ring size.");
+  const size_t single_slot_size = MaxRegularSlotSpanSize() + 1;
+  // Make sure that even with allocation size rounding up, a single allocation
+  // is still below the threshold.
+  ASSERT_LT(MaxRegularSlotSpanSize() * 2,
+            ((count * size) >> root.max_empty_slot_spans_dirty_bytes_shift));
+  for (size_t i = 0; i < single_slot_count; i++) {
+    void* ptr = root.Alloc(single_slot_size, "");
+    single_slot_allocated_memory.push_back(ptr);
+  }
+
+  // Free everything at once, creating as many empty slot spans as there are
+  // allocations (since they are from single-slot slot spans).
+  for (void* ptr : single_slot_allocated_memory)
+    root.Free(ptr);
+
+  // Still have some committed empty slot spans.
+  // TS_UNCHECKED_READ() is not an issue here, since everything is
+  // single-threaded.
+  EXPECT_GT(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes), 0u);
+  // But not all, as the cap triggered.
+  EXPECT_LT(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
+            single_slot_count * single_slot_size);
+
+  // Nothing left after explicit purge.
+  root.PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
+  EXPECT_EQ(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes), 0u);
+
+  for (void* ptr : allocated_memory)
+    root.Free(ptr);
 }
 
 }  // namespace internal
