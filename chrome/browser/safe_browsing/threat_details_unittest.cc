@@ -222,7 +222,6 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    ASSERT_TRUE(profile()->CreateHistoryService());
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
@@ -249,6 +248,11 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
   bool ReportWasSent() { return ui_manager_->ReportWasSent(); }
 
  protected:
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{HistoryServiceFactory::GetInstance(),
+             HistoryServiceFactory::GetDefaultFactory()}};
+  }
+
   void InitResource(SBThreatType threat_type,
                     ThreatSource threat_source,
                     bool is_subresource,
