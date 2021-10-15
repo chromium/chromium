@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/stack_container.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -565,7 +566,8 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
   while (!main_thread_only().delayed_incoming_queue.empty()) {
     Task* task =
         const_cast<Task*>(&main_thread_only().delayed_incoming_queue.top());
-    if (!task->task || task->task.IsCancelled()) {
+    CHECK(task->task);
+    if (task->task.IsCancelled()) {
       main_thread_only().delayed_incoming_queue.pop();
       continue;
     }
@@ -1333,6 +1335,9 @@ TaskQueueImpl::DelayedIncomingQueue::DelayedIncomingQueue() = default;
 TaskQueueImpl::DelayedIncomingQueue::~DelayedIncomingQueue() = default;
 
 void TaskQueueImpl::DelayedIncomingQueue::push(Task&& task) {
+  // TODO(crbug.com/1247285): Remove this once the cause of corrupted tasks in
+  // the queue is understood.
+  CHECK(task.task);
   if (task.is_high_res)
     pending_high_res_tasks_++;
   queue_.push(std::move(task));
