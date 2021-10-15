@@ -13,6 +13,7 @@ goog.provide('OutputRoleInfo');
  * @const {Object<{msgId: string,
  *                 earconId: (string|undefined),
  *                 inherits: (string|undefined),
+ *                 verboseAncestry: (boolean|undefined),
  *                 contextOrder: (OutputContextOrder|undefined),
  *                 ignoreAncestry: (boolean|undefined)}>}
  * msgId: the message id of the role. Each role used requires a speech entry in
@@ -21,6 +22,8 @@ goog.provide('OutputRoleInfo');
  * inherits: inherits rules from this role.
  * contextOrder: where to place the context output.
  * ignoreAncestry: ignores ancestry (context) output for this role.
+ * verboseAncestry: causes ancestry output to not reject duplicated roles. May
+ * be desirable when wanting start and end span-like output.
  */
 const OutputRoleInfo = {
   abbr: {msgId: 'tag_abbr', inherits: 'abstractContainer'},
@@ -37,16 +40,23 @@ const OutputRoleInfo = {
   columnHeader: {msgId: 'role_columnheader', inherits: 'cell'},
   comboBoxMenuButton: {msgId: 'role_combobox', earconId: 'LISTBOX'},
   complementary: {msgId: 'role_complementary', inherits: 'abstractContainer'},
-  comment: {msgId: 'role_comment', inherits: 'abstractSpan'},
+  comment: {
+    msgId: 'role_comment',
+    contextOrder: OutputContextOrder.FIRST_AND_LAST,
+    verboseAncestry: true,
+    inherits: 'abstractSpan'
+  },
   contentDeletion: {
     msgId: 'role_content_deletion',
-    inherits: 'abstractSpan',
-    contextOrder: OutputContextOrder.FIRST
+    contextOrder: OutputContextOrder.FIRST_AND_LAST,
+    verboseAncestry: true,
+    inherits: 'abstractSpan'
   },
   contentInsertion: {
     msgId: 'role_content_insertion',
-    inherits: 'abstractSpan',
-    contextOrder: OutputContextOrder.FIRST
+    contextOrder: OutputContextOrder.FIRST_AND_LAST,
+    verboseAncestry: true,
+    inherits: 'abstractSpan'
   },
   contentInfo: {msgId: 'role_contentinfo', inherits: 'abstractContainer'},
   date: {msgId: 'input_type_date', inherits: 'abstractContainer'},
@@ -145,7 +155,12 @@ const OutputRoleInfo = {
       {msgId: 'role_listitem', earconId: 'LIST_ITEM', inherits: 'abstractItem'},
   log: {msgId: 'role_log', inherits: 'abstractNameFromContents'},
   main: {msgId: 'role_main', inherits: 'abstractContainer'},
-  mark: {msgId: 'role_mark', inherits: 'abstractSpan'},
+  mark: {
+    msgId: 'role_mark',
+    contextOrder: OutputContextOrder.FIRST_AND_LAST,
+    verboseAncestry: true,
+    inherits: 'abstractContainer'
+  },
   marquee: {msgId: 'role_marquee', inherits: 'abstractNameFromContents'},
   math: {msgId: 'role_math', inherits: 'abstractContainer'},
   menu: {
@@ -191,8 +206,9 @@ const OutputRoleInfo = {
   subscript: {msgId: 'role_subscript', inherits: 'abstractSpan'},
   suggestion: {
     msgId: 'role_suggestion',
-    inherits: 'abstractSpan',
-    contextOrder: OutputContextOrder.FIRST
+    contextOrder: OutputContextOrder.FIRST_AND_LAST,
+    verboseAncestry: true,
+    inherits: 'abstractSpan'
   },
   superscript: {msgId: 'role_superscript', inherits: 'abstractSpan'},
   tab: {msgId: 'role_tab'},

@@ -636,15 +636,14 @@ Output = class {
       prevRange = null;
     }
 
-    // Scan unique ancestors to get the value of |contextOrder|.
+    // Scan all ancestors to get the value of |contextOrder|.
     let parent = range.start.node;
     const prevParent = prevRange ? prevRange.start.node : parent;
     if (!parent || !prevParent) {
       return;
     }
-    const uniqueAncestors =
-        AutomationUtil.getUniqueAncestors(prevParent, parent);
-    for (let i = 0; parent = uniqueAncestors[i]; i++) {
+
+    while (parent) {
       if (parent.role === RoleType.WINDOW) {
         break;
       }
@@ -654,6 +653,8 @@ Output = class {
             OutputRoleInfo[parent.role].contextOrder || this.contextOrder_;
         break;
       }
+
+      parent = parent.parent;
     }
 
     if (range.isSubNode()) {
@@ -662,7 +663,9 @@ Output = class {
       this.range_(range, prevRange, type, buff, ruleStr, optionalArgs);
     }
 
-    this.hint_(range, uniqueAncestors, type, buff, ruleStr);
+    this.hint_(
+        range, AutomationUtil.getUniqueAncestors(prevParent, range.start.node),
+        type, buff, ruleStr);
   }
 
   /**
@@ -1631,12 +1634,15 @@ Output = class {
     } else if (!prevRange) {
       return;
     }
-
     const isForward = prevRange.compare(range) === Dir.FORWARD;
     const addContextBefore = this.contextOrder_ === OutputContextOrder.FIRST ||
+        this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST ||
         (this.contextOrder_ === OutputContextOrder.DIRECTED && isForward);
     const addContextAfter = this.contextOrder_ === OutputContextOrder.LAST ||
+        this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST ||
         (this.contextOrder_ === OutputContextOrder.DIRECTED && !isForward);
+    const preferStartOrEndAncestry =
+        this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST;
     let cursor = cursors.Cursor.fromNode(range.start.node);
     let prevNode = prevRange.start.node;
 
@@ -1644,11 +1650,15 @@ Output = class {
       const buff = [];
 
       if (addContextBefore) {
-        this.ancestry_(node, prevNode, type, buff, ruleStr);
+        this.ancestry_(
+            node, prevNode, type, buff, ruleStr,
+            {preferStart: preferStartOrEndAncestry});
       }
       this.node_(node, prevNode, type, buff, ruleStr);
       if (addContextAfter) {
-        this.ancestry_(node, prevNode, type, buff, ruleStr);
+        this.ancestry_(
+            node, prevNode, type, buff, ruleStr,
+            {preferEnd: preferStartOrEndAncestry});
       }
       if (node.location) {
         this.locations_.push(node.location);
@@ -1691,9 +1701,7 @@ Output = class {
       // Since the lca itself needs to be part of the ancestry output, use its
       // first child as a target.
       const target = lca.firstChild || lca;
-      this.ancestry_(
-          target, prevRange.start.node, type, rangeBuff, ruleStr,
-          {suppressStartEndAncestry: true});
+      this.ancestry_(target, prevRange.start.node, type, rangeBuff, ruleStr);
     }
   }
 
@@ -1703,7 +1711,10 @@ Output = class {
    * @param {EventType|OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @param {!OutputRulesStr} ruleStr
-   * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
+   * @param {{suppressStartEndAncestry: (boolean|undefined),
+   *         preferStart: (boolean|undefined),
+   *         preferEnd: (boolean|undefined)
+   *        }} optionalArgs
    * @private
    */
   ancestry_(node, prevNode, type, buff, ruleStr, optionalArgs = {}) {
@@ -1745,26 +1756,31 @@ Output = class {
     }
 
     // Start of, end of ancestry.
-    this.ancestryHelper_({
-      node,
-      prevNode,
-      buff,
-      ruleStr,
-      type,
-      ancestors: info.startAncestors,
-      formatName: 'startOf',
-      excludePreviousAncestors: true
-    });
-    this.ancestryHelper_({
-      node,
-      prevNode,
-      buff,
-      ruleStr,
-      type,
-      ancestors: info.endAncestors,
-      formatName: 'endOf',
-      exclude: [...info.startAncestors].concat(node)
-    });
+    if (!optionalArgs.preferEnd) {
+      this.ancestryHelper_({
+        node,
+        prevNode,
+        buff,
+        ruleStr,
+        type,
+        ancestors: info.startAncestors,
+        formatName: 'startOf',
+        excludePreviousAncestors: true
+      });
+    }
+
+    if (!optionalArgs.preferStart) {
+      this.ancestryHelper_({
+        node,
+        prevNode,
+        buff,
+        ruleStr,
+        type,
+        ancestors: info.endAncestors,
+        formatName: 'endOf',
+        exclude: [...info.startAncestors].concat(node)
+      });
+    }
   }
 
   /**
@@ -1798,13 +1814,15 @@ Output = class {
     const originalBuff = buff;
     for (let j = ancestors.length - 1, formatNode; (formatNode = ancestors[j]);
          j--) {
-      if (excludeRoles.has(formatNode.role) ||
-          (args.excludePreviousAncestors &&
-           this.formattedAncestors_.has(formatNode))) {
+      const roleInfo = OutputRoleInfo[formatNode.role] || {};
+      if (!roleInfo.verboseAncestry &&
+          (excludeRoles.has(formatNode.role) ||
+           (args.excludePreviousAncestors &&
+            this.formattedAncestors_.has(formatNode)))) {
         continue;
       }
 
-      const parentRole = (OutputRoleInfo[formatNode.role] || {}).inherits;
+      const parentRole = roleInfo.inherits;
       if (eventBlock[formatNode.role] &&
           eventBlock[formatNode.role][formatName]) {
         rule.role = formatNode.role;
@@ -1963,8 +1981,10 @@ Output = class {
     }
 
     // Intentionally skip subnode output for OutputContextOrder.DIRECTED.
-    if (this.contextOrder_ === OutputContextOrder.FIRST) {
-      this.ancestry_(node, prevNode, type, buff, ruleStr);
+    if (this.contextOrder_ === OutputContextOrder.FIRST ||
+        (this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST &&
+         range.start.index === 0)) {
+      this.ancestry_(node, prevNode, type, buff, ruleStr, {preferStart: true});
     }
     const earcon = this.findEarcon_(node, prevNode);
     if (earcon) {
@@ -1988,8 +2008,10 @@ Output = class {
     }
     ruleStr.write('subNode_: ' + text + '\n');
 
-    if (this.contextOrder_ === OutputContextOrder.LAST) {
-      this.ancestry_(node, prevNode, type, buff, ruleStr);
+    if (this.contextOrder_ === OutputContextOrder.LAST ||
+        (this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST &&
+         range.end.index === range.end.getText().length)) {
+      this.ancestry_(node, prevNode, type, buff, ruleStr, {preferEnd: true});
     }
 
     range.start.node.boundsForRange(rangeStart, rangeEnd, (loc) => {
@@ -2564,8 +2586,8 @@ Output.RULES = {
           $if($maxValueForRange, @aria_value_max($maxValueForRange))`
     },
     abstractSpan: {
-      enter: `$nameFromNode $role $state $description`,
-      leave: `@exited_container($role)`
+      startOf: `$nameFromNode $role $state $description`,
+      endOf: `@end_of_container($role)`
     },
     alert: {
       enter: `$name $role $state`,

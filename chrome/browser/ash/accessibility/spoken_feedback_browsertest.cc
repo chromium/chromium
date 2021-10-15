@@ -1372,9 +1372,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
 
   // Try to darken screen and check the dialog is shown.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_F7); });
-  sm_.ExpectSpeech("Continue");
-  sm_.ExpectSpeech("default");
-  sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Turn off screen?");
   sm_.ExpectSpeech("Dialog");
   sm_.ExpectSpeech(
@@ -1383,6 +1380,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   sm_.ExpectSpeech(
       "You can always turn the screen back on by pressing Search plus "
       "Brightness up.");
+  sm_.ExpectSpeech("Continue");
+  sm_.ExpectSpeech("default");
+  sm_.ExpectSpeech("Button");
 
   sm_.Call([]() {
     // Accept the dialog and see that the screen is darkened.

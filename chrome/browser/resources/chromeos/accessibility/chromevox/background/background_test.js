@@ -3088,6 +3088,7 @@ TEST_F('ChromeVoxBackgroundTest', 'AriaLeaves', function() {
 });
 
 TEST_F('ChromeVoxBackgroundTest', 'MarkedContent', function() {
+  this.resetContextualOutput();
   const mockFeedback = this.createMockFeedback();
   const site = `
     <p>Start</p>
@@ -3107,35 +3108,36 @@ TEST_F('ChromeVoxBackgroundTest', 'MarkedContent', function() {
         .call(doCmd('nextObject'))
         .expectSpeech('This is ')
         .call(doCmd('nextObject'))
-        .expectSpeech('my', 'Marked content')
-        .expectBraille('my Marked content')
+        .expectSpeech('Marked content', 'my', 'Marked content end')
+        .expectBraille('Marked content my Marked content end')
         .call(doCmd('nextObject'))
-        .expectSpeech(' text.', 'Exited Marked content.')
-        .expectBraille(' text. Exited Marked content.')
-        .call(doCmd('nextObject'))
-        .expectSpeech('This is ')
-        .call(doCmd('nextObject'))
-        .expectSpeech('your', 'Comment')
-        .expectBraille('your Comment')
-        .call(doCmd('nextObject'))
-        .expectSpeech(' text.', 'Exited Comment.')
-        .expectBraille(' text. Exited Comment.')
+        .expectSpeech(' text.')
+        .expectBraille(' text.')
         .call(doCmd('nextObject'))
         .expectSpeech('This is ')
         .call(doCmd('nextObject'))
-        .expectSpeech('their', 'Insert', 'Suggest')
-        .expectBraille('their Insert Suggest')
+        .expectSpeech('Comment', 'your', 'Comment end')
+        .expectBraille('Comment your Comment end')
         .call(doCmd('nextObject'))
-        .expectSpeech(' text.', 'Exited Suggest.', 'Exited Insert.')
-        .expectBraille(' text. Exited Suggest. Exited Insert.')
+        .expectSpeech(' text.')
+        .expectBraille(' text.')
         .call(doCmd('nextObject'))
         .expectSpeech('This is ')
         .call(doCmd('nextObject'))
-        .expectSpeech(`everyone's`, 'Delete', 'Suggest')
-        .expectBraille(`everyone's Delete Suggest`)
+        .expectSpeech('Suggest', 'Insert', 'their', 'Insert end', 'Suggest end')
+        .expectBraille('Suggest Insert their Insert end Suggest end')
         .call(doCmd('nextObject'))
-        .expectSpeech(' text.', 'Exited Suggest.', 'Exited Delete.')
-        .expectBraille(' text. Exited Suggest. Exited Delete.')
+        .expectSpeech(' text.')
+        .expectBraille(' text.')
+        .call(doCmd('nextObject'))
+        .expectSpeech('This is ')
+        .call(doCmd('nextObject'))
+        .expectSpeech(
+            'Suggest', 'Delete', `everyone's`, 'Delete end', 'Suggest end')
+        .expectBraille(`Suggest Delete everyone's Delete end Suggest end`)
+        .call(doCmd('nextObject'))
+        .expectSpeech(' text.')
+        .expectBraille(' text.')
         .replay();
   });
 });

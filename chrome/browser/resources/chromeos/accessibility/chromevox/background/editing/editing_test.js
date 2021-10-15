@@ -1552,20 +1552,18 @@ TEST_F('ChromeVoxEditingTest', 'MarkedContent', function() {
     await this.focusFirstTextField(root);
 
     mockFeedback.call(this.press(KeyCode.DOWN))
-        .expectSpeech(
-            'This is ', 'my', 'Marked content', ' text.',
-            'Exited Marked content.')
+        .expectSpeech('This is ')
+        .expectSpeech('Marked content', 'my', 'Marked content end')
         .call(this.press(KeyCode.DOWN))
-        .expectSpeech(
-            'This is ', 'your', 'Comment', ' text.', 'Exited Comment.')
+        .expectSpeech('This is ')
+        .expectSpeech('Comment', 'your', 'Comment end')
         .call(this.press(KeyCode.DOWN))
-        .expectSpeech(
-            'This is ', 'Suggest', 'Insert', 'their', ' text.',
-            'Exited Insert.', 'Exited Suggest.')
+        .expectSpeech('This is ')
+        .expectSpeech('Suggest', 'Insert', 'their', 'Insert end', 'Suggest end')
         .call(this.press(KeyCode.DOWN))
+        .expectSpeech('This is ')
         .expectSpeech(
-            'This is ', 'Suggest', 'Delete', `everyone's`, ' text.',
-            'Exited Delete.', 'Exited Suggest.')
+            'Suggest', 'Delete', `everyone's`, 'Delete end', 'Suggest end')
         .replay();
   });
 });
@@ -1587,8 +1585,8 @@ TEST_F('ChromeVoxEditingTest', 'NestedInsertionDeletion', function() {
 
     mockFeedback.call(this.press(KeyCode.DOWN))
         .expectSpeech(
-            'I ', 'Suggest', 'Username', 'Insert', 'was', 'Exited Insert.',
-            'Delete', 'am', ' typing', 'Exited Delete.', 'Exited Suggest.')
+            'I ', 'Suggest', 'Username', 'Insert', 'was', 'Insert end',
+            'Delete', 'am', 'Delete end', 'Suggest end', ' typing')
         .call(this.press(KeyCode.DOWN))
         .expectSpeech('End')
         .replay();
@@ -1610,8 +1608,8 @@ TEST_F('ChromeVoxEditingTest', 'MoveByCharSuggestions', function() {
   this.runWithLoadedTree(site, async function(root) {
     await this.focusFirstTextField(root);
 
-    mockFeedback
-        .call(this.press(KeyCode.DOWN))
+    mockFeedback.call(this.press(KeyCode.DOWN))
+        .expectSpeech(' typing')
         // Move forward through line.
         .call(this.press(KeyCode.RIGHT))
         .expectSpeech(' ')
@@ -1621,29 +1619,23 @@ TEST_F('ChromeVoxEditingTest', 'MoveByCharSuggestions', function() {
         .expectSpeech('a')
         .call(this.press(KeyCode.RIGHT))
         .expectSpeech('s')
+        .expectSpeech('Insert end')
         .call(this.press(KeyCode.RIGHT))
-        .expectSpeech('Exited Insert.')
         .call(this.press(KeyCode.RIGHT))
         .expectSpeech('Delete', 'a')
         .call(this.press(KeyCode.RIGHT))
         .expectSpeech('m')
-        .call(this.press(KeyCode.RIGHT))
-        .expectSpeech('Exited Delete.', 'Exited Suggest.')
+        .expectSpeech('Delete end', 'Suggest end')
         // Move backward through the same line.
         .call(this.press(KeyCode.LEFT))
-        .expectSpeech('Suggest', 'Username', 'Delete', 'm')
+        .expectSpeech('Delete', 'a')
+        .call(this.press(KeyCode.LEFT))
+        .call(this.press(KeyCode.LEFT))
+        .expectSpeech('s', 'Insert end')
         .call(this.press(KeyCode.LEFT))
         .expectSpeech('a')
         .call(this.press(KeyCode.LEFT))
-        .expectSpeech('Exited Delete.')
-        .call(this.press(KeyCode.LEFT))
-        .expectSpeech('Insert', 's')
-        .call(this.press(KeyCode.LEFT))
-        .expectSpeech('a')
-        .call(this.press(KeyCode.LEFT))
-        .expectSpeech('w')
-        .call(this.press(KeyCode.LEFT))
-        .expectSpeech('Exited Insert.', 'Exited Suggest.')
+        .expectSpeech('Suggest', 'Insert', 'w')
         .call(this.press(KeyCode.DOWN))
         .expectSpeech('End')
         .replay();
@@ -1665,26 +1657,25 @@ TEST_F('ChromeVoxEditingTest', 'MoveByWordSuggestions', function() {
   this.runWithLoadedTree(site, async function(root) {
     await this.focusFirstTextField(root);
 
-    mockFeedback
-        .call(this.press(KeyCode.DOWN))
+    mockFeedback.call(this.press(KeyCode.DOWN))
+        .expectSpeech(' typing')
         // Move forward through line.
         .call(this.press(KeyCode.RIGHT, {ctrl: true}))
-        .expectSpeech('I ')
+        .expectSpeech('I')
         .call(this.press(KeyCode.RIGHT, {ctrl: true}))
-        .expectSpeech(
-            'Suggest', 'Username', 'Insert', 'was', 'Exited Insert.', 'Delete',
-            'am')
+        .expectSpeech('Suggest', 'Username', 'Insert', 'was', 'Insert end')
         .call(this.press(KeyCode.RIGHT, {ctrl: true}))
-        .expectSpeech(
-            'Exited Insert.', 'Delete', 'am', 'Exited Delete.',
-            'Exited Suggest.', ' typing')
+
+        // TODO(https://crbug.com/1260221):
+        // this should describe just one word "am".
+        .expectSpeech('Delete', 'am', 'Delete end', 'Suggest end', ' typing')
         // Move backward through line.
         .call(this.press(KeyCode.LEFT, {ctrl: true}))
-        .expectSpeech('Suggest', 'Username', 'Delete', 'am')
+        .expectSpeech('Delete', 'am', 'Delete end', 'Suggest end')
         .call(this.press(KeyCode.LEFT, {ctrl: true}))
-        .expectSpeech('Exited Delete.', 'Insert', 'was')
+        .expectSpeech('Suggest', 'Username', 'Insert', 'was')
         .call(this.press(KeyCode.LEFT, {ctrl: true}))
-        .expectSpeech('Exited Insert.', 'Exited Suggest.', 'I')
+        .expectSpeech('I')
         .call(this.press(KeyCode.DOWN))
         .expectSpeech('End')
         .replay();
@@ -1712,7 +1703,7 @@ TEST_F('ChromeVoxEditingTest', 'Separator', function() {
         .call(this.press(KeyCode.DOWN))
         .expectSpeech('-', 'Separator')
         .call(this.press(KeyCode.DOWN))
-        .expectSpeech('World', 'Exited Separator.')
+        .expectSpeech('World')
 
         .call(this.press(KeyCode.LEFT))
         .expectNextSpeechUtteranceIsNot('\n')
@@ -1726,7 +1717,7 @@ TEST_F('ChromeVoxEditingTest', 'Separator', function() {
         .call(this.press(KeyCode.LEFT))
         // Notice this reads the entire line which is generally undesirable
         // except for special cases like this.
-        .expectSpeech('Hello', 'Exited Separator.')
+        .expectSpeech('Hello')
 
         .replay();
   });

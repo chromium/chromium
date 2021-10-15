@@ -71,23 +71,11 @@ OutputAncestryInfo = class {
     }
 
     if (beforeStartNode) {
-      this.startAncestors_ = OutputAncestryInfo.byContextFirst_(
-          AutomationUtil.getUniqueAncestors(beforeStartNode, node));
-    }
-
-    // If there are these types of ancestors, we need to prefer the before start
-    // ancestors.
-    if (this.startAncestors_.length > 0 && this.endAncestors_.length > 0) {
-      const set = new WeakSet();
-      for (let i = 0, item; item = this.startAncestors_[i]; i++) {
-        set.add(item);
-      }
-
-      for (let i = 0, item; item = this.endAncestors_[i]; i++) {
-        if (set.has(item)) {
-          this.endAncestors_.splice(i, 1);
-        }
-      }
+      this.startAncestors_ =
+          OutputAncestryInfo
+              .byContextFirst_(
+                  AutomationUtil.getUniqueAncestors(beforeStartNode, node))
+              .reverse();
     }
   }
 
