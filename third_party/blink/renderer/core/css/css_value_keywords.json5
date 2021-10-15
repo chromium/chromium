@@ -1195,6 +1195,7 @@
     // initial
     // inherit
     "revert",
+    "revert-layer",
     "unset",
 
     // background-image, etc.

@@ -1210,6 +1210,7 @@ source_set("unit_tests") {
     "app_history/app_history_test.cc",
     "clipboard/clipboard_utilities_test.cc",
     "content_capture/content_capture_test.cc",
+    "css/css_revert_layer_value_test.cc",
     "css/css_revert_value_test.cc",
     "css/css_test_helpers.cc",
     "css/css_test_helpers.h",

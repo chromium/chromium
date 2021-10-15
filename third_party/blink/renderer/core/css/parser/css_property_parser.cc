@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
@@ -48,6 +49,9 @@ const CSSValue* MaybeConsumeCSSWideKeyword(CSSParserTokenRange& range) {
     value = cssvalue::CSSUnsetValue::Create();
   if (id == CSSValueID::kRevert)
     value = cssvalue::CSSRevertValue::Create();
+  if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled() &&
+      id == CSSValueID::kRevertLayer)
+    value = cssvalue::CSSRevertLayerValue::Create();
 
   if (value)
     range = local_range;

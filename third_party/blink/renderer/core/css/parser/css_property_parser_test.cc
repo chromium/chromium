@@ -809,4 +809,35 @@ TEST(CSSPropertyParserTest, ParseRevert) {
   EXPECT_TRUE(value->IsRevertValue());
 }
 
+TEST(CSSPropertyParserTest, ParseRevertLayer) {
+  ScopedCSSCascadeLayersForTest enabled(true);
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  String string = " revert-layer";
+  CSSTokenizer tokenizer(string);
+  const auto tokens = tokenizer.TokenizeToEOF();
+
+  const CSSValue* value = CSSPropertyParser::ParseSingleValue(
+      CSSPropertyID::kMarginLeft, CSSParserTokenRange(tokens), context);
+  ASSERT_TRUE(value);
+  EXPECT_TRUE(value->IsRevertLayerValue());
+}
+
+TEST(CSSPropertyParserTest, ParseRevertLayerDisabled) {
+  ScopedCSSCascadeLayersForTest disabled(false);
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  String string = " revert-layer";
+  CSSTokenizer tokenizer(string);
+  const auto tokens = tokenizer.TokenizeToEOF();
+
+  const CSSValue* value = CSSPropertyParser::ParseSingleValue(
+      CSSPropertyID::kMarginLeft, CSSParserTokenRange(tokens), context);
+  EXPECT_FALSE(value);
+}
+
 }  // namespace blink

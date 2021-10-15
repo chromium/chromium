@@ -100,8 +100,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsInitialValue() const { return class_type_ == kInitialClass; }
   bool IsUnsetValue() const { return class_type_ == kUnsetClass; }
   bool IsRevertValue() const { return class_type_ == kRevertClass; }
+  bool IsRevertLayerValue() const { return class_type_ == kRevertLayerClass; }
   bool IsCSSWideKeyword() const {
-    return class_type_ >= kInheritedClass && class_type_ <= kRevertClass;
+    return class_type_ >= kInheritedClass && class_type_ <= kRevertLayerClass;
   }
   bool IsLayoutFunctionValue() const {
     return class_type_ == kLayoutFunctionClass;
@@ -247,6 +248,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kInitialClass,
     kUnsetClass,
     kRevertClass,
+    kRevertLayerClass,
 
     kReflectClass,
     kShadowClass,

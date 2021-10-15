@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
@@ -223,6 +224,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<cssvalue::CSSUnsetValue>(*this, other);
       case kRevertClass:
         return CompareCSSValues<cssvalue::CSSRevertValue>(*this, other);
+      case kRevertLayerClass:
+        return CompareCSSValues<cssvalue::CSSRevertLayerValue>(*this, other);
       case kGridAutoRepeatClass:
         return CompareCSSValues<cssvalue::CSSGridAutoRepeatValue>(*this, other);
       case kGridIntegerRepeatClass:
@@ -357,6 +360,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSUnsetValue>(this)->CustomCSSText();
     case kRevertClass:
       return To<cssvalue::CSSRevertValue>(this)->CustomCSSText();
+    case kRevertLayerClass:
+      return To<cssvalue::CSSRevertLayerValue>(this)->CustomCSSText();
     case kInitialClass:
       return To<CSSInitialValue>(this)->CustomCSSText();
     case kGridAutoRepeatClass:
@@ -515,6 +520,9 @@ void CSSValue::FinalizeGarbageCollectedObject() {
       return;
     case kRevertClass:
       To<cssvalue::CSSRevertValue>(this)->~CSSRevertValue();
+      return;
+    case kRevertLayerClass:
+      To<cssvalue::CSSRevertLayerValue>(this)->~CSSRevertLayerValue();
       return;
     case kGridAutoRepeatClass:
       To<cssvalue::CSSGridAutoRepeatValue>(this)->~CSSGridAutoRepeatValue();
@@ -710,6 +718,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kRevertClass:
       To<cssvalue::CSSRevertValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kRevertLayerClass:
+      To<cssvalue::CSSRevertLayerValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kGridAutoRepeatClass:
       To<cssvalue::CSSGridAutoRepeatValue>(this)->TraceAfterDispatch(visitor);

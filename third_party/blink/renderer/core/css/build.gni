@@ -183,6 +183,8 @@ blink_core_sources_css = [
   "css_reflection_direction.h",
   "css_resolution_units.h",
   "css_resource_fetch_restriction.h",
+  "css_revert_layer_value.cc",
+  "css_revert_layer_value.h",
   "css_revert_value.cc",
   "css_revert_value.h",
   "css_rule.cc",
