@@ -43,6 +43,8 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::policy::SandboxType::kPdfConversion ||
       sandbox_type_ == sandbox::policy::SandboxType::kIconReader ||
       sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm ||
+      sandbox_type_ ==
+          sandbox::policy::SandboxType::kWindowsSystemProxyResolver ||
 #endif
 #if defined(OS_MAC)
       sandbox_type_ == sandbox::policy::SandboxType::kMirroring ||

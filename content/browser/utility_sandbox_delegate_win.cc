@@ -117,7 +117,9 @@ bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
 
   if ((sandbox_type_ == sandbox::policy::SandboxType::kXrCompositing &&
        base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox)) ||
-      sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm) {
+      sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm ||
+      sandbox_type_ ==
+          sandbox::policy::SandboxType::kWindowsSystemProxyResolver) {
     *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
     return true;
   }
@@ -139,6 +141,10 @@ bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
       return true;
     case sandbox::policy::SandboxType::kNetwork:
       // An LPAC specific policy for network service is set elsewhere.
+      return true;
+    case sandbox::policy::SandboxType::kWindowsSystemProxyResolver:
+      // Default policy is disabled for Windows System Proxy Resolver process to
+      // allow the application of specific LPAC sandbox policies.
       return true;
     default:
       return false;
@@ -220,7 +226,9 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
         cmd_line_, sandbox::JOB_UNPROTECTED, 0, policy);
   }
 
-  if (sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm) {
+  if (sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm ||
+      sandbox_type_ ==
+          sandbox::policy::SandboxType::kWindowsSystemProxyResolver) {
     policy->SetTokenLevel(sandbox::USER_UNPROTECTED, sandbox::USER_UNPROTECTED);
   }
 

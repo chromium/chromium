@@ -43,6 +43,7 @@ const char kPdfConversionSandbox[] = "pdf_conversion";
 const char kXrCompositingSandbox[] = "xr_compositing";
 const char kIconReaderSandbox[] = "icon_reader";
 const char kMediaFoundationCdmSandbox[] = "mf_cdm";
+const char kWindowsSystemProxyResolverSandbox[] = "proxy_resolver_win";
 #endif  // OS_WIN
 
 #if defined(OS_MAC)

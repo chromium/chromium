@@ -44,6 +44,7 @@ SANDBOX_POLICY_EXPORT extern const char kPdfConversionSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kXrCompositingSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kIconReaderSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kMediaFoundationCdmSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kWindowsSystemProxyResolverSandbox[];
 #endif  // OS_WIN
 
 #if defined(OS_MAC)

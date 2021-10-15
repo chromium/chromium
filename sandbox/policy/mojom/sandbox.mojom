@@ -97,4 +97,9 @@ enum Sandbox {
   // Like kUtility but allows access to IOSurface on macOS.
   [EnableIf=is_mac]
   kMirroring,
+
+  // Allows LPAC capabilities for WinHttp. This only needs internet access,
+  // policy access, and service access.
+  [EnableIf=is_win]
+  kWindowsSystemProxyResolver,
 };

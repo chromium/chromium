@@ -42,6 +42,9 @@ enum class SandboxType {
 
   // The MediaFoundation CDM service process.
   kMediaFoundationCdm,
+
+  // The proxy resolver process that uses WinHttp APIs.
+  kWindowsSystemProxyResolver,
 #endif
 
   // Renderer or worker process. Most common case.
@@ -162,6 +165,8 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
       return sandbox::policy::SandboxType::kPdfConversion;
     case sandbox::mojom::Sandbox::kXrCompositing:
       return sandbox::policy::SandboxType::kXrCompositing;
+    case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
+      return sandbox::policy::SandboxType::kWindowsSystemProxyResolver;
 #endif  // OS_WIN
 #if defined(OS_MAC)
     case sandbox::mojom::Sandbox::kMirroring:

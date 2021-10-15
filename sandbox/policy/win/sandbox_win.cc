@@ -636,6 +636,9 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
     case SandboxType::kNetwork:
       sandbox_base_name = std::string("cr.sb.net");
       break;
+    case SandboxType::kWindowsSystemProxyResolver:
+      sandbox_base_name = std::string("cr.sb.pxy");
+      break;
     default:
       DCHECK(0);
   }
@@ -657,7 +660,8 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
   if (sandbox_type != SandboxType::kMediaFoundationCdm &&
       sandbox_type != SandboxType::kGpu &&
       sandbox_type != SandboxType::kXrCompositing &&
-      sandbox_type != SandboxType::kNetwork)
+      sandbox_type != SandboxType::kNetwork &&
+      sandbox_type != SandboxType::kWindowsSystemProxyResolver)
     return SBOX_ERROR_UNSUPPORTED;
 
   if (sandbox_type == SandboxType::kGpu &&
@@ -711,6 +715,24 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     }
   }
 
+  if (sandbox_type == SandboxType::kWindowsSystemProxyResolver) {
+    if (!container->AddCapability(
+            sandbox::WellKnownCapabilities::kInternetClient)) {
+      DLOG(ERROR) << "AppContainer::AddCapability() - "
+                  << "SandboxType::kWindowsSystemProxyResolver internet "
+                     "capabilities failed";
+      return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
+    }
+
+    if (!container->AddCapability(L"lpacServicesManagement") ||
+        !container->AddCapability(L"lpacEnterprisePolicyChangeNotifications")) {
+      DLOG(ERROR) << "AppContainer::AddCapability() - "
+                  << "SandboxType::kWindowsSystemProxyResolver lpac "
+                     "capabilities failed";
+      return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
+    }
+  }
+
   std::vector<std::wstring> base_caps = {
       L"lpacChromeInstallFiles",
       L"registryRead",
@@ -759,6 +781,9 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->AddCapability(kMediaFoundationCdmData);
     container->SetEnableLowPrivilegeAppContainer(true);
   }
+
+  if (sandbox_type == SandboxType::kWindowsSystemProxyResolver)
+    container->SetEnableLowPrivilegeAppContainer(true);
 
   return SBOX_ALL_OK;
 }
@@ -939,6 +964,9 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
   if (sandbox_type == SandboxType::kNetwork) {
     return true;
   }
+
+  if (sandbox_type == SandboxType::kWindowsSystemProxyResolver)
+    return true;
 
   return false;
 }
@@ -1261,6 +1289,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(SandboxType sandbox_type) {
       return "Service";
     case SandboxType::kIconReader:
       return "Icon Reader";
+    case SandboxType::kWindowsSystemProxyResolver:
+      return "Windows System Proxy Resolver";
   }
 }
 

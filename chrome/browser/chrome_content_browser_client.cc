@@ -3904,6 +3904,7 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
     case sandbox::policy::SandboxType::kService:
     case sandbox::policy::SandboxType::kIconReader:
     case sandbox::policy::SandboxType::kMediaFoundationCdm:
+    case sandbox::policy::SandboxType::kWindowsSystemProxyResolver:
       // Should never reach here.
       CHECK(0);
       return std::wstring();
@@ -3970,6 +3971,7 @@ bool ChromeContentBrowserClient::PreSpawnChild(
     case sandbox::policy::SandboxType::kService:
     case sandbox::policy::SandboxType::kIconReader:
     case sandbox::policy::SandboxType::kMediaFoundationCdm:
+    case sandbox::policy::SandboxType::kWindowsSystemProxyResolver:
       break;
   }
 

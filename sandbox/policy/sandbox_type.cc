@@ -30,6 +30,7 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
     case SandboxType::kPdfConversion:
     case SandboxType::kIconReader:
     case SandboxType::kMediaFoundationCdm:
+    case SandboxType::kWindowsSystemProxyResolver:
       return false;
 #endif
     case SandboxType::kAudio:
@@ -128,6 +129,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case SandboxType::kPdfConversion:
     case SandboxType::kIconReader:
     case SandboxType::kMediaFoundationCdm:
+    case SandboxType::kWindowsSystemProxyResolver:
 #endif  // defined(OS_WIN)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kIme:
@@ -267,6 +269,8 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
       return switches::kIconReaderSandbox;
     case SandboxType::kMediaFoundationCdm:
       return switches::kMediaFoundationCdmSandbox;
+    case SandboxType::kWindowsSystemProxyResolver:
+      return switches::kWindowsSystemProxyResolverSandbox;
 #endif  // defined(OS_WIN)
 #if defined(OS_MAC)
     case SandboxType::kMirroring:
@@ -341,6 +345,8 @@ SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
     return SandboxType::kIconReader;
   if (sandbox_string == switches::kMediaFoundationCdmSandbox)
     return SandboxType::kMediaFoundationCdm;
+  if (sandbox_string == switches::kWindowsSystemProxyResolverSandbox)
+    return SandboxType::kWindowsSystemProxyResolver;
 #endif
 #if defined(OS_MAC)
   if (sandbox_string == switches::kMirroringSandbox)

@@ -207,7 +207,9 @@ int UtilityMain(const MainFunctionParams& parameters) {
 
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
       sandbox_type != sandbox::policy::SandboxType::kCdm &&
-      sandbox_type != sandbox::policy::SandboxType::kMediaFoundationCdm) {
+      sandbox_type != sandbox::policy::SandboxType::kMediaFoundationCdm &&
+      sandbox_type !=
+          sandbox::policy::SandboxType::kWindowsSystemProxyResolver) {
     if (!g_utility_target_services)
       return false;
     char buffer;
