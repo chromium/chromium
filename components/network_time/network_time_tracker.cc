@@ -51,7 +51,7 @@
 // become inaccurate.
 //
 // After issuing a query, the next check will not happen until
-// |kBackoffMinutes|. This delay is doubled in the event of an error.
+// |kBackoffInterval|. This delay is doubled in the event of an error.
 
 namespace network_time {
 
@@ -71,6 +71,10 @@ namespace {
 // that a "check" is not necessarily a network time query!
 constexpr base::FeatureParam<base::TimeDelta> kCheckTimeInterval{
     &kNetworkTimeServiceQuerying, "CheckTimeInterval", base::Seconds(360)};
+
+// Minimum number of minutes between time queries.
+constexpr base::FeatureParam<base::TimeDelta> kBackoffInterval{
+    &kNetworkTimeServiceQuerying, "BackoffInterval", base::Hours(1)};
 
 // Probability that a check will randomly result in a query. Checks are made
 // every |kCheckTimeInterval|. The default values are chosen with the goal of a
@@ -100,9 +104,6 @@ constexpr base::FeatureParam<NetworkTimeTracker::FetchBehavior>::Option
 constexpr base::FeatureParam<NetworkTimeTracker::FetchBehavior> kFetchBehavior{
     &kNetworkTimeServiceQuerying, "FetchBehavior",
     NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY, &kFetchBehaviorOptions};
-
-// Minimum number of minutes between time queries.
-const uint32_t kBackoffMinutes = 60;
 
 // Number of time measurements performed in a given network time calculation.
 const uint32_t kNumTimeMeasurements = 7;
@@ -173,7 +174,7 @@ NetworkTimeTracker::NetworkTimeTracker(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : server_url_(kTimeServiceURL),
       max_response_size_(1024),
-      backoff_(base::Minutes(kBackoffMinutes)),
+      backoff_(kBackoffInterval.Get()),
       url_loader_factory_(std::move(url_loader_factory)),
       clock_(std::move(clock)),
       tick_clock_(std::move(tick_clock)),
@@ -292,11 +293,15 @@ bool NetworkTimeTracker::QueryTimeServiceForTesting() {
   return time_fetcher_ != nullptr;
 }
 
-void NetworkTimeTracker::WaitForFetchForTesting(uint32_t nonce) {
-  query_signer_->OverrideNonceForTesting(kKeyVersion, nonce);
+void NetworkTimeTracker::WaitForFetch() {
   base::RunLoop run_loop;
   fetch_completion_callbacks_.push_back(run_loop.QuitClosure());
   run_loop.Run();
+}
+
+void NetworkTimeTracker::WaitForFetchForTesting(uint32_t nonce) {
+  query_signer_->OverrideNonceForTesting(kKeyVersion, nonce);  // IN-TEST
+  WaitForFetch();
 }
 
 void NetworkTimeTracker::OverrideNonceForTesting(uint32_t nonce) {
@@ -538,8 +543,52 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   }
   last_fetched_time_ = current_time;
 
+  RecordClockSkewHistograms(current_time, latency);
+
   UpdateNetworkTime(current_time, resolution, latency, tick_clock_->NowTicks());
   return true;
+}
+
+void NetworkTimeTracker::RecordClockSkewHistograms(
+    base::Time current_time,
+    base::TimeDelta fetch_latency) const {
+  // Compute the skew by comparing the reference clock to the system clock. Note
+  // that the server processed our query roughly `fetch_latency/2` units of time
+  // in the past. Adjust the `current_time` accordingly.
+  const base::TimeDelta system_clock_skew =
+      base::Time::NowFromSystemTime() - (current_time + fetch_latency / 2);
+
+  enum class ClockSkewRange {
+    TooSmall = 0,
+    InRange = 1,
+    TooBig = 2,
+    kMaxValue = TooBig,
+  };
+
+  auto DetermineClockSkewRange =
+      [](base::TimeDelta system_clock_skew) -> ClockSkewRange {
+    // These bounds must be updated if/when we switch to a custom "times"
+    // histogram. For now, they are calibrated for `LOCAL_HISTOGRAM_TIMES`.
+    if (system_clock_skew > base::Seconds(10))
+      return ClockSkewRange::TooBig;
+    if (system_clock_skew < base::Milliseconds(1))
+      return ClockSkewRange::TooSmall;
+    return ClockSkewRange::InRange;
+  };
+
+  // Explicitly record clock skew of zero in the "positive" histograms.
+  if (system_clock_skew >= base::TimeDelta()) {
+    LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.ClockSkew.Magnitude.Positive",
+                          system_clock_skew);
+    LOCAL_HISTOGRAM_ENUMERATION("NetworkTimeTracker.ClockSkew.Range.Positive",
+                                DetermineClockSkewRange(system_clock_skew));
+  } else if (system_clock_skew < base::TimeDelta()) {
+    base::TimeDelta magnitude = system_clock_skew.magnitude();
+    LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.ClockSkew.Magnitude.Negative",
+                          magnitude);
+    LOCAL_HISTOGRAM_ENUMERATION("NetworkTimeTracker.ClockSkew.Range.Negative",
+                                DetermineClockSkewRange(magnitude));
+  }
 }
 
 void NetworkTimeTracker::OnURLLoaderComplete(
@@ -557,7 +606,7 @@ void NetworkTimeTracker::OnURLLoaderComplete(
       backoff_ *= 2;
     }
   } else {
-    backoff_ = base::Minutes(kBackoffMinutes);
+    backoff_ = kBackoffInterval.Get();
   }
   QueueCheckTime(backoff_);
   time_fetcher_.reset();
