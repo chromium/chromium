@@ -11,8 +11,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "skia/ext/image_operations.h"
-#include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -51,71 +49,12 @@ void ImageView::SetImage(const ui::ImageModel& image_model) {
   SchedulePaint();
 }
 
-void ImageView::SetImageSize(const gfx::Size& image_size) {
-  image_size_ = image_size;
-  PreferredSizeChanged();
-}
-
-void ImageView::ResetImageSize() {
-  image_size_.reset();
-  PreferredSizeChanged();
-}
-
-gfx::Rect ImageView::GetImageBounds() const {
-  return gfx::Rect(image_origin_, GetImageSize());
-}
-
 gfx::ImageSkia ImageView::GetImage() const {
   return views::GetImageSkiaFromImageModel(image_model_, GetColorProvider());
 }
 
 ui::ImageModel ImageView::GetImageModel() const {
   return image_model_;
-}
-
-void ImageView::SetHorizontalAlignment(Alignment alignment) {
-  if (alignment != horizontal_alignment_) {
-    horizontal_alignment_ = alignment;
-    UpdateImageOrigin();
-    OnPropertyChanged(&horizontal_alignment_, kPropertyEffectsPaint);
-  }
-}
-
-ImageView::Alignment ImageView::GetHorizontalAlignment() const {
-  return horizontal_alignment_;
-}
-
-void ImageView::SetVerticalAlignment(Alignment alignment) {
-  if (alignment != vertical_alignment_) {
-    vertical_alignment_ = alignment;
-    UpdateImageOrigin();
-    OnPropertyChanged(&horizontal_alignment_, kPropertyEffectsPaint);
-  }
-}
-
-ImageView::Alignment ImageView::GetVerticalAlignment() const {
-  return vertical_alignment_;
-}
-
-void ImageView::SetAccessibleName(const std::u16string& accessible_name) {
-  if (accessible_name_ == accessible_name)
-    return;
-
-  accessible_name_ = accessible_name;
-  OnPropertyChanged(&accessible_name_, kPropertyEffectsNone);
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-}
-
-const std::u16string& ImageView::GetAccessibleName() const {
-  return accessible_name_.empty() ? tooltip_text_ : accessible_name_;
-}
-
-void ImageView::SetTooltipText(const std::u16string& tooltip) {
-  tooltip_text_ = tooltip;
-}
-
-const std::u16string& ImageView::GetTooltipText() const {
-  return tooltip_text_;
 }
 
 bool ImageView::IsImageEqual(const ui::ImageModel& image_model) const {
@@ -141,49 +80,6 @@ bool ImageView::IsImageEqual(const ui::ImageModel& image_model) const {
                              last_paint_scale_);
 }
 
-void ImageView::UpdateImageOrigin() {
-  gfx::Size image_size = GetImageSize();
-  gfx::Insets insets = GetInsets();
-
-  int x = 0;
-  // In order to properly handle alignment of images in RTL locales, we need
-  // to flip the meaning of trailing and leading. For example, if the
-  // horizontal alignment is set to trailing, then we'll use left alignment for
-  // the image instead of right alignment if the UI layout is RTL.
-  Alignment actual_horizontal_alignment = horizontal_alignment_;
-  if (base::i18n::IsRTL() && (horizontal_alignment_ != Alignment::kCenter)) {
-    actual_horizontal_alignment = (horizontal_alignment_ == Alignment::kLeading)
-                                      ? Alignment::kTrailing
-                                      : Alignment::kLeading;
-  }
-  switch (actual_horizontal_alignment) {
-    case Alignment::kLeading:
-      x = insets.left();
-      break;
-    case Alignment::kTrailing:
-      x = width() - insets.right() - image_size.width();
-      break;
-    case Alignment::kCenter:
-      x = (width() - insets.width() - image_size.width()) / 2 + insets.left();
-      break;
-  }
-
-  int y = 0;
-  switch (vertical_alignment_) {
-    case Alignment::kLeading:
-      y = insets.top();
-      break;
-    case Alignment::kTrailing:
-      y = height() - insets.bottom() - image_size.height();
-      break;
-    case Alignment::kCenter:
-      y = (height() - insets.height() - image_size.height()) / 2 + insets.top();
-      break;
-  }
-
-  image_origin_ = gfx::Point(x, y);
-}
-
 gfx::Size ImageView::GetImageSize() const {
   return image_size_.value_or(image_model_.Size());
 }
@@ -191,49 +87,6 @@ gfx::Size ImageView::GetImageSize() const {
 void ImageView::OnPaint(gfx::Canvas* canvas) {
   View::OnPaint(canvas);
   OnPaintImage(canvas);
-}
-
-void ImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  const std::u16string& name = GetAccessibleName();
-  if (name.empty()) {
-    node_data->role = ax::mojom::Role::kNone;
-    return;
-  }
-
-  node_data->role = ax::mojom::Role::kImage;
-  node_data->SetName(name);
-}
-
-std::u16string ImageView::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_text_;
-}
-
-gfx::Size ImageView::CalculatePreferredSize() const {
-  gfx::Size size = GetImageSize();
-  size.Enlarge(GetInsets().width(), GetInsets().height());
-  return size;
-}
-
-views::PaintInfo::ScaleType ImageView::GetPaintScaleType() const {
-  // ImageViewBase contains an image which is rastered at the device scale
-  // factor. By default, the paint commands are recorded at a scale factor
-  // slightly different from the device scale factor. Re-rastering the image at
-  // this paint recording scale will result in a distorted image. Paint
-  // recording scale might also not be uniform along the x & y axis, thus
-  // resulting in further distortion in the aspect ratio of the final image.
-  // |kUniformScaling| ensures that the paint recording scale is uniform along
-  // the x & y axis and keeps the scale equal to the device scale factor.
-  // See http://crbug.com/754010 for more details.
-  return views::PaintInfo::ScaleType::kUniformScaling;
-}
-
-void ImageView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  UpdateImageOrigin();
-}
-
-void ImageView::PreferredSizeChanged() {
-  View::PreferredSizeChanged();
-  UpdateImageOrigin();
 }
 
 void ImageView::OnThemeChanged() {
@@ -306,16 +159,7 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
   return scaled_image_;
 }
 
-BEGIN_METADATA(ImageView, View)
-ADD_PROPERTY_METADATA(Alignment, HorizontalAlignment)
-ADD_PROPERTY_METADATA(Alignment, VerticalAlignment)
-ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
-ADD_PROPERTY_METADATA(std::u16string, TooltipText)
+BEGIN_METADATA(ImageView, ImageViewBase)
 END_METADATA
 
 }  // namespace views
-
-DEFINE_ENUM_CONVERTERS(views::ImageView::Alignment,
-                       {views::ImageView::Alignment::kLeading, u"kLeading"},
-                       {views::ImageView::Alignment::kCenter, u"kCenter"},
-                       {views::ImageView::Alignment::kTrailing, u"kTrailing"})
