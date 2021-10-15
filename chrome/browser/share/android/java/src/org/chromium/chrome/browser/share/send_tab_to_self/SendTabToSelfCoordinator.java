@@ -42,9 +42,6 @@ public class SendTabToSelfCoordinator {
                 createBottomSheetContent(mContext, mUrl, mTitle, mNavigationTime, mController,
                         mSettingsLauncher, mIsSyncEnabled),
                 true);
-        // TODO(crbug.com/968246): Remove the need to call this explicitly and instead have it
-        // automatically show since PeekStateEnabled is set to false.
-        mController.expandSheet();
     }
 
     public static BottomSheetContent createBottomSheetContent(Context context, String url,

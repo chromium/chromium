@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.bottomsheet;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
@@ -32,6 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightM
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.internal.R;
+import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.util.AccessibilityUtil;
@@ -614,9 +614,9 @@ class BottomSheet extends FrameLayout
         mSettleAnimator.setInterpolator(mInterpolator);
 
         // When the animation is canceled or ends, reset the handle to null.
-        mSettleAnimator.addListener(new AnimatorListenerAdapter() {
+        mSettleAnimator.addListener(new CancelAwareAnimatorListener() {
             @Override
-            public void onAnimationEnd(Animator animator) {
+            public void onEnd(Animator animator) {
                 if (mIsDestroyed) return;
 
                 mSettleAnimator = null;

@@ -464,7 +464,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     @Override
     public void expandSheet() {
-        if (mBottomSheet == null || mSuppressionTokens.hasTokens()) return;
+        if (mBottomSheet == null || mSuppressionTokens.hasTokens() || mBottomSheet.isHiding()) {
+            return;
+        }
 
         if (mBottomSheet.getCurrentSheetContent() == null) return;
         mBottomSheet.setSheetState(SheetState.HALF, true);
@@ -472,7 +474,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     @Override
     public boolean collapseSheet(boolean animate) {
-        if (mBottomSheet == null || mSuppressionTokens.hasTokens()) return false;
+        if (mBottomSheet == null || mSuppressionTokens.hasTokens() || mBottomSheet.isHiding()) {
+            return false;
+        }
         if (mBottomSheet.isSheetOpen() && mBottomSheet.isPeekStateEnabled()) {
             mBottomSheet.setSheetState(SheetState.PEEK, animate);
             return true;
