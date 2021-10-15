@@ -74,9 +74,11 @@ using TagMemoryRangeIncrementInternalFn = void*(void* ptr, size_t size);
 using TagMemoryRangeRandomlyInternalFn = void*(void* ptr,
                                                size_t size,
                                                uint64_t mask);
-extern TagMemoryRangeRandomlyInternalFn* global_tag_memory_range_randomly_fn;
-extern TagMemoryRangeIncrementInternalFn* global_tag_memory_range_increment_fn;
-extern RemaskPtrInternalFn* global_remask_void_ptr_fn;
+extern BASE_EXPORT TagMemoryRangeRandomlyInternalFn*
+    global_tag_memory_range_randomly_fn;
+extern BASE_EXPORT TagMemoryRangeIncrementInternalFn*
+    global_tag_memory_range_increment_fn;
+extern BASE_EXPORT RemaskPtrInternalFn* global_remask_void_ptr_fn;
 }  // namespace internal
 
 // Increments the tag of the memory range ptr. Useful for provable revocations
