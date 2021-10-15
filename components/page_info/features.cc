@@ -18,7 +18,7 @@ const base::Feature kPageInfoStoreInfo{"PageInfoStoreInfo",
 
 #if !defined(OS_ANDROID)
 const base::Feature kPageInfoV2Desktop{"PageInfoV2Desktop",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 const base::Feature kPageInfoAboutThisSite{"PageInfoAboutThisSite",
