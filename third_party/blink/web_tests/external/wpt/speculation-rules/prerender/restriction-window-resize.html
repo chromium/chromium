@@ -6,6 +6,8 @@
 <body>
 <script>
 
+setup(() => assertSpeculationRulesIsSupported());
+
 // ResizeTo and ResizeBy operations should be ignored.
 // See https://github.com/jeremyroman/alternate-loading-modes/issues/73.
 ['resizeTo', 'resizeBy'].forEach(resizeFunc => {

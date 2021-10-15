@@ -6,6 +6,8 @@
 <body>
 <script>
 
+setup(() => assertSpeculationRulesIsSupported());
+
 // moveTo and moveBy operations should be ignored.
 // See https://github.com/jeremyroman/alternate-loading-modes/issues/73.
 ['moveTo', 'moveBy'].forEach(moveFunc => {
