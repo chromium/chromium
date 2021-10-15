@@ -101,17 +101,11 @@ class CONTENT_EXPORT AttributionReporterImpl
                       ReportComparator>
       report_queue_;
 
-  // Set of all conversion IDs that are currently in |report_queue_| but not yet
+  // Set of all conversion IDs that are currently in |report_queue_| or are
   // being sent by |network_sender_|. The number of concurrent conversion
   // reports being sent at any time is expected to be small, so a `flat_set` is
   // used.
   base::flat_set<AttributionReport::Id> queued_reports_;
-
-  // Set of all conversion IDs that are currently being sent by
-  // |network_sender_|. The number of concurrent conversion
-  // reports being sent at any time is expected to be small, so a `flat_set` is
-  // used.
-  base::flat_set<AttributionReport::Id> reports_being_sent_;
 
   const base::Clock* clock_;
 

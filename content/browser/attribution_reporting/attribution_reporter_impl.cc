@@ -52,8 +52,6 @@ void AttributionReporterImpl::AddReportsToQueue(
   for (AttributionReport& report : reports) {
     DCHECK(report.conversion_id.has_value());
     // If the given report is already being processed, ignore it.
-    if (reports_being_sent_.contains(*report.conversion_id))
-      continue;
     bool inserted = queued_reports_.emplace(*report.conversion_id).second;
     if (inserted)
       report_queue_.push(std::move(report));
@@ -64,13 +62,11 @@ void AttributionReporterImpl::AddReportsToQueue(
 void AttributionReporterImpl::RemoveAllReportsFromQueue() {
   while (!report_queue_.empty()) {
     AttributionReport report = report_queue_.top();
-    DCHECK(report.conversion_id.has_value());
     report_queue_.pop();
     OnReportSent(SentReportInfo(std::move(report),
                                 SentReportInfo::Status::kRemovedFromQueue,
                                 /*http_response_code=*/0));
   }
-  queued_reports_.clear();
 }
 
 void AttributionReporterImpl::SetNetworkSenderForTesting(
@@ -98,10 +94,7 @@ void AttributionReporterImpl::SendNextReport() {
 
   // Send the next report and remove it from the queue.
   AttributionReport report = report_queue_.top();
-  DCHECK(report.conversion_id.has_value());
   report_queue_.pop();
-  size_t num_removed = queued_reports_.erase(*report.conversion_id);
-  DCHECK_EQ(num_removed, 1u);
   if (GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
           partition_->browser_context(),
           ContentBrowserClient::ConversionMeasurementOperation::kReport,
@@ -118,8 +111,6 @@ void AttributionReporterImpl::SendNextReport() {
                                   SentReportInfo::Status::kOffline,
                                   /*http_response_code=*/0));
     } else {
-      bool inserted = reports_being_sent_.emplace(*report.conversion_id).second;
-      DCHECK(inserted);
       network_sender_->SendReport(
           std::move(report),
           base::BindOnce(&AttributionReporterImpl::OnReportSent,
@@ -159,7 +150,8 @@ void AttributionReporterImpl::MaybeScheduleNextReport() {
 
 void AttributionReporterImpl::OnReportSent(SentReportInfo info) {
   DCHECK(info.report.conversion_id.has_value());
-  reports_being_sent_.erase(*info.report.conversion_id);
+  size_t num_removed = queued_reports_.erase(*info.report.conversion_id);
+  DCHECK_EQ(num_removed, 1u);
   callback_.Run(std::move(info));
 }
 
