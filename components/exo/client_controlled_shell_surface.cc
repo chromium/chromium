@@ -214,6 +214,11 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
     return true;
   }
 
+  void ToggleLockedFullscreen(ash::WindowState*) override {
+    // No special handling for locked ARC windows.
+    return;
+  }
+
   void OnDragStarted(int component) override {
     shell_surface_->OnDragStarted(component);
   }

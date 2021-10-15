@@ -468,6 +468,8 @@ void DefaultState::EnterToNextState(WindowState* window_state,
       previous_state_type == WindowStateType::kTrustedPinned) {
     Shell::Get()->screen_pinning_controller()->SetPinnedWindow(
         window_state->window());
+    if (window_state->delegate())
+      window_state->delegate()->ToggleLockedFullscreen(window_state);
   }
 }
 

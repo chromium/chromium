@@ -52,6 +52,7 @@ class TestShellDelegate : public ShellDelegate {
   std::unique_ptr<NearbyShareDelegate> CreateNearbyShareDelegate(
       NearbyShareController* controller) const override;
   bool IsSessionRestoreInProgress() const override;
+  void SetUpEnvironmentForLockedFullscreen(bool locked) override {}
 
   void SetCanGoBack(bool can_go_back);
   void SetShouldWaitForTouchAck(bool should_wait_for_touch_ack);
@@ -61,8 +62,6 @@ class TestShellDelegate : public ShellDelegate {
   void OpenFeedbackPageForPersistentDesksBar() override {}
   std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
       aura::Window* window) const override;
-  void SetPinnedFromExo(aura::Window* window,
-                        chromeos::WindowPinType type) override {}
 
  private:
   // True if the current top window can go back.

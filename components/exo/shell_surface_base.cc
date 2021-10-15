@@ -296,6 +296,14 @@ class CustomWindowStateDelegate : public ash::WindowStateDelegate {
   bool ToggleFullscreen(ash::WindowState* window_state) override {
     return false;
   }
+
+  // Overridden from ash::WindowStateDelegate.
+  void ToggleLockedFullscreen(ash::WindowState* window_state) override {
+    // Sets up the shell environment as appropriate for locked Lacros or Ash
+    // chrome sessions including disabling ARC.
+    ash::Shell::Get()->shell_delegate()->SetUpEnvironmentForLockedFullscreen(
+        window_state->IsPinned());
+  }
 };
 
 void CloseAllShellSurfaceTransientChildren(aura::Window* window) {
@@ -597,9 +605,16 @@ void ShellSurfaceBase::UpdatePinned() {
     return;
   }
   if (current_pinned_state_ != pending_pinned_state_) {
-    ash::ShellDelegate* shell = ash::Shell::Get()->shell_delegate();
     auto* window = widget_->GetNativeWindow();
-    shell->SetPinnedFromExo(window, pending_pinned_state_);
+    if (pending_pinned_state_ == chromeos::WindowPinType::kNone) {
+      ash::WindowState::Get(window)->Restore();
+    } else {
+      bool trusted_pinned =
+          pending_pinned_state_ == chromeos::WindowPinType::kTrustedPinned;
+      ash::window_util::PinWindow(window,
+                                  /*trusted=*/trusted_pinned);
+    }
+
     current_pinned_state_ = pending_pinned_state_;
   }
 }

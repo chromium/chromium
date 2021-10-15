@@ -115,10 +115,8 @@ class ASH_EXPORT ShellDelegate {
   // Returns if window browser sessions are restoring.
   virtual bool IsSessionRestoreInProgress() const = 0;
 
-  // Pin or unpin a window. This is used for Quiz modes and called from another
-  // client (e.g. Lacros) through Exo.
-  virtual void SetPinnedFromExo(aura::Window* window,
-                                chromeos::WindowPinType type) = 0;
+  // Adjust system configuration for a Locked Fullscreen window.
+  virtual void SetUpEnvironmentForLockedFullscreen(bool locked) = 0;
 
   // Ui Dev Tools control.
   virtual bool IsUiDevToolsStarted() const;

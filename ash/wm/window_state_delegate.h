@@ -25,13 +25,18 @@ class ASH_EXPORT WindowStateDelegate {
 
   virtual ~WindowStateDelegate();
 
-  // Invoked when the user uses Shift+F4/F4 to toggle the window fullscreen
-  // state. If the window is not fullscreen and the window supports immersive
-  // fullscreen ToggleFullscreen() should put the window into immersive
-  // fullscreen instead of the default fullscreen type. The caller
-  // (ash::WindowState) falls backs to the default implementation if this
-  // returns false.
+  // Toggles the window into or out of the fullscreen state. If the window is
+  // not fullscreen and the window supports immersive fullscreen
+  // ToggleFullscreen() should put the window into immersive fullscreen instead
+  // of the default fullscreen type. The caller (ash::WindowState) falls backs
+  // to the default implementation if this returns false.
   virtual bool ToggleFullscreen(WindowState* window_state);
+
+  // Toggles the locked fullscreen state, aka Pinned and TrustedPinned, where a
+  // window has exclusive control of the screen. Implementers should implement
+  // restrictions related to the relevant pinned mode for their window in this
+  // function.
+  virtual void ToggleLockedFullscreen(WindowState* window_state);
 
   // Invoked when the user started drag operation. |component| must be
   // a member of ui::HitTestCompat enum and specifies which part of

@@ -9,6 +9,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
@@ -54,6 +55,12 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
       return true;
     chrome::ToggleFullscreenMode(browser_);
     return true;
+  }
+
+  // Overridden from ash::WindowStateDelegate.
+  void ToggleLockedFullscreen(ash::WindowState* window_state) override {
+    ash::Shell::Get()->shell_delegate()->SetUpEnvironmentForLockedFullscreen(
+        window_state->IsPinned());
   }
 
  private:
