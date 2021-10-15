@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

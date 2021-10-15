@@ -8,7 +8,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"

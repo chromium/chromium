@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #include "chrome/updater/update_service.h"
 

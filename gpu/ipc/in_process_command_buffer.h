@@ -22,7 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "components/viz/common/resources/resource_format.h"

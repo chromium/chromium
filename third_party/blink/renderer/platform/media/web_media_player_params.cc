@@ -4,8 +4,8 @@
 
 #include "third_party/blink/public/platform/media/web_media_player_params.h"
 
-#include "base/task/single_thread_task_runner_forward.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/demuxer.h"
 

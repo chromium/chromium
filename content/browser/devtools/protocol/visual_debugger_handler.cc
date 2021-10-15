@@ -8,7 +8,7 @@
 #include <algorithm>
 
 #include "base/json/json_writer.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/protocol/base_string_adapter.h"

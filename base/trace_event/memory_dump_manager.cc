@@ -19,7 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"

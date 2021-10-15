@@ -19,7 +19,7 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/supports_user_data.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"

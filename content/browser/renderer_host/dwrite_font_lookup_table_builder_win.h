@@ -20,7 +20,7 @@
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/atomic_flag.h"
-#include "base/task/deferred_sequenced_task_runner_forward.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

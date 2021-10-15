@@ -9,7 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"

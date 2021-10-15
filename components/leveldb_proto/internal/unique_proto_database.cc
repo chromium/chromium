@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
 

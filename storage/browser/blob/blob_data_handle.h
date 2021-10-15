@@ -15,7 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
-#include "base/task/sequenced_task_runner_helpers_forward.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 
 namespace base {

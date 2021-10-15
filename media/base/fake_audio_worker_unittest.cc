@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"

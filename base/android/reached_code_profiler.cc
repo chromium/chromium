@@ -30,7 +30,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"

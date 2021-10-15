@@ -24,7 +24,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"

@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/simple_task_executor.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 

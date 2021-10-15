@@ -20,7 +20,7 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"

@@ -16,7 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"

@@ -23,7 +23,7 @@
 #include "base/command_line.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"

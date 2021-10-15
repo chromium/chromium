@@ -14,7 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_renderer.h"

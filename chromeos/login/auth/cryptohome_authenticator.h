@@ -13,7 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/login/auth/auth_attempt_state.h"
 #include "chromeos/login/auth/authenticator.h"

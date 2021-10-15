@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/frame/navigator_ua_data.h"
 
 #include "base/compiler_specific.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"

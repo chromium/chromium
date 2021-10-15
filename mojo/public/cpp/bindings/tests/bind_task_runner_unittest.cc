@@ -10,7 +10,7 @@
 #include "base/containers/queue.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"

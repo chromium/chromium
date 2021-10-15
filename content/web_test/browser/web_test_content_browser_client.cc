@@ -17,7 +17,7 @@
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/base/switches.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_context.h"

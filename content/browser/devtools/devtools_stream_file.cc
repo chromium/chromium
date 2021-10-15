@@ -9,7 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

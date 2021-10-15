@@ -27,7 +27,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/nacl/common/nacl_host_messages.h"

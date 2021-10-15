@@ -15,7 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/updateable_sequenced_task_runner_forward.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"

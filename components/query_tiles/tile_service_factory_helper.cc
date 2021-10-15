@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"

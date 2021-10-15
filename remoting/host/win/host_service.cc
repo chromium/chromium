@@ -20,7 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_com_initializer.h"

@@ -9,7 +9,7 @@
 #include <tuple>
 
 #include "base/macros.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"

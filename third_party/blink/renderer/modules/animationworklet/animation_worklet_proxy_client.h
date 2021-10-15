@@ -7,7 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/modules/animationworklet/animation_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

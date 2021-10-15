@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/blob_internals_url_loader.h"

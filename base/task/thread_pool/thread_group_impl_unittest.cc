@@ -27,7 +27,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/task_features.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"

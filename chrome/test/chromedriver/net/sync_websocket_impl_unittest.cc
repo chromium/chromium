@@ -9,7 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"

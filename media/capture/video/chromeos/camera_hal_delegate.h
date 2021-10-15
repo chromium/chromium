@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"

@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/gfx/geometry/vector2d.h"
 

@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chromeos/components/phonehub/camera_roll_download_manager.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"

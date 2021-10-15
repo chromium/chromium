@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/platform/platform.h"

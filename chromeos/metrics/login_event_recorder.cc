@@ -17,7 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"

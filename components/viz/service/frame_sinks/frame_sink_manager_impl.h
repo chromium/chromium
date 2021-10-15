@@ -18,7 +18,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/viz/common/constants.h"

@@ -29,7 +29,7 @@
 #include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"

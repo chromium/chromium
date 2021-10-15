@@ -16,7 +16,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/test_random.h"

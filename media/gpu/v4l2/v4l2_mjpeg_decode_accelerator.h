@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
 #include "media/gpu/media_gpu_export.h"

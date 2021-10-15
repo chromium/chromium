@@ -6,7 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_TASK_RUNNER_H_
 
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/gpu_export.h"
 

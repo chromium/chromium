@@ -6,7 +6,7 @@
 #define MEDIA_GPU_ANDROID_DIRECT_SHARED_IMAGE_VIDEO_PROVIDER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"

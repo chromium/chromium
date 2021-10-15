@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"

@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "net/base/load_flags.h"

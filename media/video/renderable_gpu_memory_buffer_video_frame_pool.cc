@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"

@@ -5,7 +5,7 @@
 #include "chromecast/cast_core/cast_runtime_service.h"
 
 #include "base/no_destructor.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace chromecast {
 

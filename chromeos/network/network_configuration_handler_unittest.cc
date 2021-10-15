@@ -16,7 +16,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_clients.h"

@@ -23,7 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/extensions/api/tabs/tabs_constants.h"

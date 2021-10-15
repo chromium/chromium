@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"

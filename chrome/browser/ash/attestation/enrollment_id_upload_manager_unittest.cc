@@ -14,7 +14,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"
 #include "chrome/browser/ash/attestation/mock_enrollment_certificate_uploader.h"

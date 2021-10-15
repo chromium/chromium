@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor.mojom.h"

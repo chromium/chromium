@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"

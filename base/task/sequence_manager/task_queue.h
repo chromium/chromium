@@ -11,7 +11,7 @@
 #include "base/task/common/checked_lock.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/tasks.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"

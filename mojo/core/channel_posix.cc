@@ -22,7 +22,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/core/core.h"

@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"

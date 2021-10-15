@@ -15,7 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/atomic_flag.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/priority_queue.h"

@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"

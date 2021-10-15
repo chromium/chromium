@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/task/deferred_sequenced_task_runner_forward.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 
 class ChromeBrowserState;

@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/policy_loader_command_line.h"
 
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_bundle.h"

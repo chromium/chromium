@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "base/win/windows_types.h"

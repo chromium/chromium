@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
 #include "base/synchronization/atomic_flag.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/performance_manager/performance_manager_impl.h"

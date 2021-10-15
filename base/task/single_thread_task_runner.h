@@ -6,7 +6,7 @@
 #define BASE_TASK_SINGLE_THREAD_TASK_RUNNER_H_
 
 #include "base/base_export.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 

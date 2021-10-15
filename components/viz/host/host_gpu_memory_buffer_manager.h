@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/viz/host/viz_host_export.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"

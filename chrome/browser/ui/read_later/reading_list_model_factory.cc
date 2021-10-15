@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
-#include "base/task/deferred_sequenced_task_runner_forward.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"

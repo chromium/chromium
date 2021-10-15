@@ -17,7 +17,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner_helpers_forward.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_crypto_context.h"
 #include "media/base/android/media_crypto_context_impl.h"

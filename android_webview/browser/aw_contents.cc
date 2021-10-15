@@ -58,7 +58,7 @@
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/supports_user_data.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"

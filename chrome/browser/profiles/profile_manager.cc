@@ -29,7 +29,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/deferred_sequenced_task_runner_forward.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"

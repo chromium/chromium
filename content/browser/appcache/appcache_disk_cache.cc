@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/cache_type.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_errors.h"

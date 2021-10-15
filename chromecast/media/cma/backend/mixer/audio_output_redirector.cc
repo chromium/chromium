@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/pattern.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/media/audio/audio_fader.h"
 #include "chromecast/media/audio/audio_log.h"

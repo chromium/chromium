@@ -11,7 +11,7 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/media_log.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/platform/media/buffered_data_source_host_impl.h"

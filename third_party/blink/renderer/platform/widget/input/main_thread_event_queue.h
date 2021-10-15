@@ -9,7 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "cc/input/touch_action.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

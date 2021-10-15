@@ -13,7 +13,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/download/public/background_service/download_params.h"
 #include "net/base/mac/url_conversions.h"

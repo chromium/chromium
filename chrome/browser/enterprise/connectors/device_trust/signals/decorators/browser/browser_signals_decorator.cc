@@ -7,7 +7,7 @@
 #include <functional>
 
 #include "base/check.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"

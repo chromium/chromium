@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/webrtc/api/media_stream_interface.h"

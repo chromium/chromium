@@ -17,7 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"

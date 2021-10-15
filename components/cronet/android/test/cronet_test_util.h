@@ -9,7 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace net {
 class URLRequest;

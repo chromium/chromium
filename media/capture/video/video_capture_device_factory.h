@@ -6,7 +6,7 @@
 #define MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_DEVICE_FACTORY_H_
 
 #include "base/macros.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"

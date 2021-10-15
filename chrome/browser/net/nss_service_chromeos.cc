@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_context.h"

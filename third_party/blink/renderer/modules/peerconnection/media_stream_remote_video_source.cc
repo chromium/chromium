@@ -9,7 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/timestamp_constants.h"

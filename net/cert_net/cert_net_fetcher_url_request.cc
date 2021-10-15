@@ -69,7 +69,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "net/base/io_buffer.h"

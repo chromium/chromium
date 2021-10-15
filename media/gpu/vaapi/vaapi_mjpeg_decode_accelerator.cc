@@ -20,7 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"

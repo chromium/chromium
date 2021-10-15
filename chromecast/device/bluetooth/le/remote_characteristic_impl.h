@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 
 namespace chromecast {

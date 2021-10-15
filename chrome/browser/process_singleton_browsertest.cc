@@ -26,7 +26,7 @@
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"

@@ -7,7 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ios/web/public/test/web_test_suite.h"
 
 // Test suite for unit tests.

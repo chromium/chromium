@@ -14,7 +14,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/components/camera_app_ui/document_scanner_service_client.h"
 #include "media/base/video_transformation.h"

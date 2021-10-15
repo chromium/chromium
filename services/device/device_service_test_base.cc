@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/post_task.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "services/device/device_service.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"

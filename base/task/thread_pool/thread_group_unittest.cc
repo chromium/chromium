@@ -13,7 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/can_run_policy_test.h"
 #include "base/task/thread_pool/delayed_task_manager.h"

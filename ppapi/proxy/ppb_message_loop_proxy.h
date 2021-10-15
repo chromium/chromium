@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ppapi/proxy/interface_proxy.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/shared_impl/ppb_message_loop_shared.h"

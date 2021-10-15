@@ -12,7 +12,7 @@
 
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"

@@ -36,7 +36,7 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"

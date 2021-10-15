@@ -19,7 +19,7 @@
 #include "base/strings/string_piece.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source.h"

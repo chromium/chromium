@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "gpu/command_buffer/service/service_utils.h"

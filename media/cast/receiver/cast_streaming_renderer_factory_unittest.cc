@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "media/base/mock_filters.h"

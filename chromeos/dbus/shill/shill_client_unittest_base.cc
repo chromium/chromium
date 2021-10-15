@@ -13,7 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"

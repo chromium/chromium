@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/sequenced_task_runner_helpers_forward.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 
 namespace base {
 class SingleThreadTaskRunner;

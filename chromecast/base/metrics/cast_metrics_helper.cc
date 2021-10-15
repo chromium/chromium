@@ -15,7 +15,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_split.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "chromecast/base/metrics/cast_histograms.h"
 #include "chromecast/base/metrics/grouped_histogram.h"

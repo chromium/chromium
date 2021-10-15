@@ -10,7 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "media/base/buffering_state.h"
 #include "media/base/demuxer_stream.h"

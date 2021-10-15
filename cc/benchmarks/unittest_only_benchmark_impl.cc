@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 
 namespace cc {

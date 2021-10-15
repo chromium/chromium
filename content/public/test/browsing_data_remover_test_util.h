@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 namespace content {

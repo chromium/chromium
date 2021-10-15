@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/policy/core/common/async_policy_provider.h"

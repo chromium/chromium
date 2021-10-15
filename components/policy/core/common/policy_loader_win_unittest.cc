@@ -24,7 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"

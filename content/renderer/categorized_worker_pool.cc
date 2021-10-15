@@ -13,7 +13,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequence_manager/task_time_observer.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/typed_macros.h"

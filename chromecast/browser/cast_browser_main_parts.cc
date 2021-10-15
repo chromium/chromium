@@ -21,7 +21,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/task/current_thread.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"

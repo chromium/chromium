@@ -15,7 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_tokenizer.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"

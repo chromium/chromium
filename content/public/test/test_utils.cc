@@ -17,7 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequence_manager/sequence_manager.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"

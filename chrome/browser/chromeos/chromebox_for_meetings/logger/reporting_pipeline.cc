@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/proto/record_constants.pb.h"

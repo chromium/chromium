@@ -12,7 +12,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
-#include "base/task/task_runner_util_forward.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/leak_detection/single_lookup_response.h"

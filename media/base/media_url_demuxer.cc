@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace media {
 

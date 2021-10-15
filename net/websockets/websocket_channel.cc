@@ -19,7 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"

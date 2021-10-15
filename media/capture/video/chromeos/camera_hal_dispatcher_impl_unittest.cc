@@ -11,7 +11,7 @@
 #include "base/posix/safe_strerror.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_client.mojom.h"

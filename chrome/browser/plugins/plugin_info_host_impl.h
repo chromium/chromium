@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
-#include "base/task/sequenced_task_runner_helpers_forward.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/common/plugin.mojom.h"

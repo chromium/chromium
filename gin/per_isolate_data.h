@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gin/gin_export.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/public/wrapper_info.h"

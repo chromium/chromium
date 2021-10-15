@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"

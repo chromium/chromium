@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"

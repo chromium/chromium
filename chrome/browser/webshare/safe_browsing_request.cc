@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"

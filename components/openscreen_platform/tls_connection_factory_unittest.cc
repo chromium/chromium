@@ -10,7 +10,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/openscreen_platform/network_context.h"
 #include "components/openscreen_platform/task_runner.h"

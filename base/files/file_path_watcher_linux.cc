@@ -35,7 +35,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"

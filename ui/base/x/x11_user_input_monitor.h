@@ -11,7 +11,7 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/task/current_thread.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/events/keyboard_event_counter.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xinput.h"

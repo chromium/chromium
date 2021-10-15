@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"

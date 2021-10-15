@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 
 class PrefService;
 

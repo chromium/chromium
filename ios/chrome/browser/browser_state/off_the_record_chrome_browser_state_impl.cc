@@ -8,7 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/proxy_config/ios/proxy_service_factory.h"

@@ -7,7 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)

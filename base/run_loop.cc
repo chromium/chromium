@@ -9,7 +9,7 @@
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/no_destructor.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"

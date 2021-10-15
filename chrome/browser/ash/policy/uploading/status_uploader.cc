@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/legacy_device_status_collector.h"

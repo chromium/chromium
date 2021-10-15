@@ -28,7 +28,7 @@
 #include "base/task/thread_pool/thread_group.h"
 #include "base/task/thread_pool/thread_group_impl.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/task/updateable_sequenced_task_runner_forward.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "build/build_config.h"
 
 #if defined(OS_POSIX) && !defined(OS_NACL_SFI)

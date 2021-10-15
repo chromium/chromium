@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/features.h"

@@ -20,7 +20,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"

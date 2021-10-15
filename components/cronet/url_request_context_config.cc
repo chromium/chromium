@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/cronet/stale_host_resolver.h"

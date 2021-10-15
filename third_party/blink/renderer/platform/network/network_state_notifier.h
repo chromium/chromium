@@ -29,7 +29,7 @@
 #include <memory>
 
 #include "base/rand_util.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_connection_type.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"

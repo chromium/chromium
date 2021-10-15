@@ -28,7 +28,7 @@
 #include "base/strings/string_number_conversions.h"  // For HexEncode.
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"  // For LowerCaseEqualsASCII.
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/trace_event/trace_event.h"

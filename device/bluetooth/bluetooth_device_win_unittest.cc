@@ -11,7 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "device/bluetooth/bluetooth_service_record_win.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"

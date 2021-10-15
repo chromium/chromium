@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_DUMMY_MODULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_DUMMY_MODULATOR_H_
 
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_request.h"

@@ -11,7 +11,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/browser_prefs.h"

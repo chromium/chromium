@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
 
 namespace password_manager {

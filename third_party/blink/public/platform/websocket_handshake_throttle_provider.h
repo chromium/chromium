@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {

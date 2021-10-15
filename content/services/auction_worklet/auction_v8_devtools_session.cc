@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_inspector_util.h"
 #include "content/services/auction_worklet/debug_command_queue.h"

@@ -26,7 +26,7 @@
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_backend_delegate.h"
 #include "components/favicon/core/favicon_database.h"

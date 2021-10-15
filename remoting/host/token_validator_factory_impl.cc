@@ -17,7 +17,7 @@
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "crypto/random.h"

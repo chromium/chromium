@@ -17,7 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/metrics/perf/cpu_identity.h"
 #include "chrome/browser/metrics/perf/process_type_collector.h"

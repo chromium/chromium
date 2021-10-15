@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/cast/logging/log_event_dispatcher.h"

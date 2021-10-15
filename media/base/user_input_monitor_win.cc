@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/message_window.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "ui/events/keyboard_event_counter.h"

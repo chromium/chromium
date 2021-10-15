@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"

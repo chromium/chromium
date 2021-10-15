@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
 #include "content/public/browser/browser_task_traits.h"

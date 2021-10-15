@@ -20,7 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "base/task/task_runner_util_forward.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"

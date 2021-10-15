@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "net/base/ip_endpoint.h"
 

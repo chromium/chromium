@@ -13,7 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_tick_clock.h"

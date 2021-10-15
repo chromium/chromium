@@ -10,7 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ios/net/cookies/cookie_store_ios_client.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_monster.h"

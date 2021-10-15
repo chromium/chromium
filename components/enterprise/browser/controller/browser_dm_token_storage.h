@@ -17,7 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/system/sys_info.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 
 namespace base {

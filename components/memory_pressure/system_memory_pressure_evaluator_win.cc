@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/object_watcher.h"

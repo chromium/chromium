@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/gpu/command_buffer_helper.h"
 
 namespace media {

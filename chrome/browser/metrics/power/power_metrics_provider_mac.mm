@@ -19,7 +19,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/process/process.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_finder.h"

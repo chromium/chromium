@@ -20,7 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"

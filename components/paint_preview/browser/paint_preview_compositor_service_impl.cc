@@ -5,7 +5,7 @@
 #include "components/paint_preview/browser/paint_preview_compositor_service_impl.h"
 
 #include "base/callback.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "components/paint_preview/browser/compositor_utils.h"
 #include "components/paint_preview/browser/paint_preview_compositor_client_impl.h"
 #include "components/paint_preview/public/paint_preview_compositor_client.h"

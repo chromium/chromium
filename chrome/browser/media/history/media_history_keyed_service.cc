@@ -7,7 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/task/post_task.h"
-#include "base/task/task_runner_util_forward.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"

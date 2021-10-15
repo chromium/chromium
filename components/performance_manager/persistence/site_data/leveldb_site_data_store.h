@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/persistence/site_data/site_data_store.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 

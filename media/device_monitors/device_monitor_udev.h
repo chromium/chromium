@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/media_export.h"
 
 namespace media {

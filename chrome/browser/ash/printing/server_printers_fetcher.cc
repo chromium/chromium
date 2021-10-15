@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/net/system_network_context_manager.h"

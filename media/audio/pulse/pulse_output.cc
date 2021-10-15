@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_manager_base.h"

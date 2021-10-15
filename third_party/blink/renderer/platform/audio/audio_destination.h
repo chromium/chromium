@@ -32,7 +32,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_vector.h"

@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/pattern.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/browser/tracing/tracing_controller_impl.h"

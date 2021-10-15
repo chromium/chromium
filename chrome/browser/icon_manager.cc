@@ -8,7 +8,7 @@
 #include <tuple>
 
 #include "base/bind.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 

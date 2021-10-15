@@ -13,7 +13,7 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/task/task_runner_util_forward.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"

@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "third_party/blink/public/common/features.h"

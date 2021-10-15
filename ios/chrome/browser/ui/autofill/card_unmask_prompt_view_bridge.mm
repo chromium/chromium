@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #include "components/strings/grit/components_strings.h"

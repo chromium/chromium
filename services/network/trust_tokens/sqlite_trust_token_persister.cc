@@ -8,7 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_split.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/proto/storage.pb.h"

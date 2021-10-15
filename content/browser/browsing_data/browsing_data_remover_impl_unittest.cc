@@ -26,7 +26,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"

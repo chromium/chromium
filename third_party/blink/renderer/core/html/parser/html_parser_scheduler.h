@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_SCHEDULER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/core/html/parser/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"

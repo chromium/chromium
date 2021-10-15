@@ -15,7 +15,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

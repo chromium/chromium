@@ -25,7 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_executor.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"

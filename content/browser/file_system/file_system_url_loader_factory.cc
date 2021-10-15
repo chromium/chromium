@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"

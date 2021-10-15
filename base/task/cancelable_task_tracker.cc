@@ -15,8 +15,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
-#include "base/task/sequenced_task_runner_forward.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {

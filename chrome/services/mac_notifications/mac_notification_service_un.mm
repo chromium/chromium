@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"

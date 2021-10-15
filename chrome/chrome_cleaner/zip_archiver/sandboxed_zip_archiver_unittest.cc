@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"

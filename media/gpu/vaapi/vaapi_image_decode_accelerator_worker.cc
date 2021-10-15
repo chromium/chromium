@@ -17,7 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/gpu/macros.h"

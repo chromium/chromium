@@ -4,7 +4,7 @@
 
 #include <bitset>
 
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"

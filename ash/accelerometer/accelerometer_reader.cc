@@ -8,7 +8,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/no_destructor.h"
 #include "base/task/current_thread.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/components/sensors/buildflags.h"
 #if BUILDFLAG(USE_IIOSERVICE)

@@ -7,7 +7,7 @@
 
 #include "base/pending_task.h"
 #include "base/task/sequence_manager/enqueue_order.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 namespace sequence_manager {

@@ -3,7 +3,7 @@ include_rules = [
     "+base/logging.h",
     "+base/gtest_prod_util.h",
     "+base/memory/weak_ptr.h",
-    "+base/task/single_thread_task_runner_forward.h",
+    "+base/task/single_thread_task_runner.h",
     "+base/synchronization/lock.h",
     "+base/threading/thread_checker.h",
     "+build/build_config.h",

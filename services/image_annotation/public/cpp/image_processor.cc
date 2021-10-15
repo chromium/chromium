@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
-#include "base/task/task_runner_util_forward.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "services/image_annotation/image_annotation_metrics.h"
 #include "third_party/skia/include/core/SkCanvas.h"

@@ -20,7 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "components/url_formatter/url_fixer.h"

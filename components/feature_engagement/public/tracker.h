@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 

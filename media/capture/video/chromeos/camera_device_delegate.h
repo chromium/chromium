@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/capture_metadata_dispatcher.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"

@@ -16,7 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace disk_cache {

@@ -9,7 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 

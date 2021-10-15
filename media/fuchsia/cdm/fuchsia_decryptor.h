@@ -7,7 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "media/base/decryptor.h"
 #include "media/fuchsia/cdm/fuchsia_stream_decryptor.h"

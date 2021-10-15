@@ -6,7 +6,7 @@
 
 #include <limits>
 #include "base/metrics/histogram_functions.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"

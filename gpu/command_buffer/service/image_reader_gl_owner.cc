@@ -20,7 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/config/gpu_finch_features.h"

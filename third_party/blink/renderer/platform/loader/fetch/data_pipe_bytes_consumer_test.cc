@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
 
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"

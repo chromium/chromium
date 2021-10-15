@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/power_monitor/power_observer.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/audio_codecs.h"

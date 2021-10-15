@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_H264_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_H264_ENCODER_H_
 
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 
 #if !BUILDFLAG(RTC_USE_H264)

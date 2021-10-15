@@ -15,7 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"

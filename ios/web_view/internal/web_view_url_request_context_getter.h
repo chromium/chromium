@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_job_factory.h"
 

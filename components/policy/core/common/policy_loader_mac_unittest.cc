@@ -15,7 +15,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider_test.h"

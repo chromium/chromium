@@ -10,7 +10,7 @@
 #include "base/files/file.h"
 #include "base/location.h"
 #include "base/numerics/checked_math.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-blink.h"

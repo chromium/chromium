@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/login/users/user_manager_interface.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"

@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ppapi/nacl_irt/manifest_service.h"

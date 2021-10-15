@@ -7,7 +7,7 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_prompt_view_tester.h"

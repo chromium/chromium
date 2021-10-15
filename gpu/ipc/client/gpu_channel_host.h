@@ -16,7 +16,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"

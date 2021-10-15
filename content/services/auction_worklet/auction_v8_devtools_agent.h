@@ -11,7 +11,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/debug_command_queue.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"

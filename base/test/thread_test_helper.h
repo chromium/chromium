@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 

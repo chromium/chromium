@@ -37,7 +37,7 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"

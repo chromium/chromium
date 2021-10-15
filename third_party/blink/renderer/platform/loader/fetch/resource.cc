@@ -31,7 +31,7 @@
 #include <memory>
 
 #include "base/cxx17_backports.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"

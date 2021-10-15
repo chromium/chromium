@@ -10,7 +10,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"

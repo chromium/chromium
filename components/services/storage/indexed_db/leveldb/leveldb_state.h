@@ -11,7 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/filter_policy.h"

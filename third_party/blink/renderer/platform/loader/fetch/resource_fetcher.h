@@ -30,7 +30,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink-forward.h"

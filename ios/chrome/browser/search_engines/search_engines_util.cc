@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/location.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"

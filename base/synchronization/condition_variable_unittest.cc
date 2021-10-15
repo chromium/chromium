@@ -16,7 +16,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/spin_wait.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"

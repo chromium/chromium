@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"

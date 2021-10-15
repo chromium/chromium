@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/gpu/android/codec_image.h"  // For CodecImage::BlockingMode
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

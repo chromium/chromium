@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/initialize_extensions_client.h"
 #include "content/public/browser/browser_task_traits.h"

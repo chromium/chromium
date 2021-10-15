@@ -14,7 +14,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/task/sequence_manager/test/fake_task.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"

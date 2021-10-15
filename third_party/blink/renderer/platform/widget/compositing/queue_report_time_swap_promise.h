@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_QUEUE_REPORT_TIME_SWAP_PROMISE_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/trees/swap_promise.h"
 

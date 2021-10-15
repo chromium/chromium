@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/channel_layout.h"

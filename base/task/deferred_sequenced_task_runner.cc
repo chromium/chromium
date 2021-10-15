@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/task/deferred_sequenced_task_runner_forward.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 
 #include <utility>
 

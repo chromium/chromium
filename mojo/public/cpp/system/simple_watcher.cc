@@ -9,7 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/common/task_annotator.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/trace_event.h"

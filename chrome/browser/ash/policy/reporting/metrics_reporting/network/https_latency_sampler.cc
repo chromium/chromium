@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/net/network_diagnostics/https_latency_routine.h"
 
 namespace reporting {

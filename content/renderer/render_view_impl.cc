@@ -13,7 +13,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/strings/string_piece.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/trees/ukm_manager.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/public/common/content_client.h"

@@ -14,7 +14,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"

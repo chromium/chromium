@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/system/system_monitor.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/media_export.h"
 

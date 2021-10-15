@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "media/audio/alive_checker.h"

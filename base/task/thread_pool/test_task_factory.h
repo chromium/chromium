@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/test_utils.h"
 #include "base/threading/thread_checker_impl.h"

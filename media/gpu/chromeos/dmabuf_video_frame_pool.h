@@ -6,7 +6,7 @@
 #define MEDIA_GPU_CHROMEOS_DMABUF_VIDEO_FRAME_POOL_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/status.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/chromeos_status.h"

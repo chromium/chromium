@@ -9,7 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_log.h"
 #include "base/tracing/perfetto_platform.h"

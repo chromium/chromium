@@ -14,7 +14,7 @@
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "crypto/mac_security_services_lock.h"
 #include "net/base/net_errors.h"

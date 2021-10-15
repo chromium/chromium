@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/connection_group.h"

@@ -10,7 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/task/common/checked_lock.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"

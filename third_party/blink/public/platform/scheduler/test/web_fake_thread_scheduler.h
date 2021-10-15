@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_TEST_WEB_FAKE_THREAD_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_TEST_WEB_FAKE_THREAD_SCHEDULER_H_
 
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 

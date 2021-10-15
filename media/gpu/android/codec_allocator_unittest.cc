@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"

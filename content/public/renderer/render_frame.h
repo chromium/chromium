@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/supports_user_data.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"

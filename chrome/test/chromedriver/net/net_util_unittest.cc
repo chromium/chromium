@@ -15,7 +15,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "chrome/test/chromedriver/net/url_request_context_getter.h"

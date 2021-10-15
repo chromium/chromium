@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "media/base/media_export.h"
 

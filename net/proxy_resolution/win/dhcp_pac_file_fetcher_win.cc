@@ -13,7 +13,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"

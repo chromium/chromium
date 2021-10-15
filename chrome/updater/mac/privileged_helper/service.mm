@@ -21,7 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/privileged_helper/server.h"

@@ -9,7 +9,7 @@
 
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"

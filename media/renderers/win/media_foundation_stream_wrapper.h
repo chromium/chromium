@@ -15,7 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_log.h"

@@ -16,7 +16,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"

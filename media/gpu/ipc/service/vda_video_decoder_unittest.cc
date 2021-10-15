@@ -10,7 +10,7 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"

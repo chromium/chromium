@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/ipc/service/gpu_channel.h"

@@ -10,7 +10,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/image_processor.h"

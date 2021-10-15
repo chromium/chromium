@@ -5,7 +5,7 @@
 #include "media/base/silent_sink_suspender.h"
 
 #include "base/bind.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace media {

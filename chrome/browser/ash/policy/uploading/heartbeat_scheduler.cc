@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/gcm_driver/gcm_driver.h"

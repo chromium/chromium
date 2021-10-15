@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 
 #include "base/run_loop.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"

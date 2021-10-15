@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/display_rotation_observer.h"

@@ -20,7 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"

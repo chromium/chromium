@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "content/public/browser/browser_thread.h"
 

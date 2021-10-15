@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"

@@ -22,7 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/system/system_monitor.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

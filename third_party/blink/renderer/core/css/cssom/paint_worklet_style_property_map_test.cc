@@ -6,7 +6,7 @@
 
 #include <memory>
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"

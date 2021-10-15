@@ -14,7 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/managed_memory_policy.h"

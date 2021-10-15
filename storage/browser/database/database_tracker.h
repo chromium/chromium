@@ -22,7 +22,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"

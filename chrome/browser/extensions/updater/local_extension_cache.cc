@@ -11,7 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/version.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_task_traits.h"

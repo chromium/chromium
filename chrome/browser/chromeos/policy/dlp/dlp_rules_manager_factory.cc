@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"

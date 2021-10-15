@@ -12,7 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/test/chromedriver/net/command_id.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "net/base/net_errors.h"

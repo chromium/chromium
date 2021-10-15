@@ -15,7 +15,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/platform/task_type.h"

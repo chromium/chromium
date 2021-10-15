@@ -16,7 +16,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"

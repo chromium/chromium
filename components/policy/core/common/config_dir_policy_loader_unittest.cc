@@ -13,7 +13,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider_test.h"

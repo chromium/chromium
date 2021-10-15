@@ -38,7 +38,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

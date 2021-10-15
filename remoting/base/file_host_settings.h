@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "remoting/base/host_settings.h"
 
 namespace base {

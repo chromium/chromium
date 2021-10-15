@@ -13,7 +13,7 @@
 #include "base/memory/singleton.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/download/download_prefs.h"

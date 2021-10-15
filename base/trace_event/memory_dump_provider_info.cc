@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 namespace trace_event {

@@ -13,7 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/associated_interface_ptr_state.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"

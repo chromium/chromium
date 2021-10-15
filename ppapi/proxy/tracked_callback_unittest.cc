@@ -9,7 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/c/pp_errors.h"

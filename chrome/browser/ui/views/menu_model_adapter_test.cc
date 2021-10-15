@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"

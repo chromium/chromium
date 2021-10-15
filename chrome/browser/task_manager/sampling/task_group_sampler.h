@@ -15,7 +15,7 @@
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 
 namespace task_manager {

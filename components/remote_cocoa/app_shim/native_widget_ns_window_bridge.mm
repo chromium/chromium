@@ -18,7 +18,7 @@
 #include "base/mac/mac_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #import "components/remote_cocoa/app_shim/certificate_viewer.h"

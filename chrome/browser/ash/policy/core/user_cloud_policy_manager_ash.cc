@@ -19,7 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/syslog_logging.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/helper.h"

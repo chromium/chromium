@@ -15,7 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

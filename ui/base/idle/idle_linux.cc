@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "dbus/bus.h"

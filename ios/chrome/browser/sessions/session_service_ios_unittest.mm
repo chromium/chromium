@@ -12,7 +12,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"

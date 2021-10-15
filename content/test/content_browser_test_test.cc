@@ -13,7 +13,7 @@
 #include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/launcher/test_launcher_test_utils.h"
 #include "base/test/scoped_feature_list.h"

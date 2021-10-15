@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/thread/web_task_traits.h"

@@ -20,7 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/common/service_process_util.h"
 #include "components/version_info/version_info.h"

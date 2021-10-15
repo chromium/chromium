@@ -14,7 +14,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #import "build/branding_buildflags.h"
 #include "components/strings/grit/components_strings.h"

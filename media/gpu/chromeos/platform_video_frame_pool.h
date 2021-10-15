@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"

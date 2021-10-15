@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"

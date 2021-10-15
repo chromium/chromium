@@ -18,7 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/system/sys_info.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"

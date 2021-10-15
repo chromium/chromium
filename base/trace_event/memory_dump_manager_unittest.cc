@@ -19,7 +19,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"

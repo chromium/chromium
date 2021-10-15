@@ -16,7 +16,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

@@ -12,7 +12,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "cc/base/simple_enclosed_region.h"

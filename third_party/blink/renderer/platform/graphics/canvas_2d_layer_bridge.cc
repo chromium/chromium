@@ -30,7 +30,7 @@
 
 #include "base/location.h"
 #include "base/rand_util.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/transferable_resource.h"

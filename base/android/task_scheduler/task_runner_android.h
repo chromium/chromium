@@ -6,7 +6,7 @@
 #define BASE_ANDROID_TASK_SCHEDULER_TASK_RUNNER_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 

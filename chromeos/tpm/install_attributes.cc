@@ -18,7 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/constants/dbus_paths.h"

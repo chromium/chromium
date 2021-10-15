@@ -15,7 +15,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/connection_params.h"

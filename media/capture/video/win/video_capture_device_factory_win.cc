@@ -24,7 +24,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_co_mem.h"

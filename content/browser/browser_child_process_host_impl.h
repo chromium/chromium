@@ -16,7 +16,7 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process.h"
 #include "base/synchronization/waitable_event_watcher.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/tracing/tracing_service_controller.h"

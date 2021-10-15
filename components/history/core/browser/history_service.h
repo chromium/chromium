@@ -27,7 +27,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/favicon_base/favicon_callback.h"

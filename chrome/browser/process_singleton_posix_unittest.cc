@@ -26,7 +26,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/thread_test_helper.h"

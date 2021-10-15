@@ -18,7 +18,7 @@
 #include "base/pickle.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

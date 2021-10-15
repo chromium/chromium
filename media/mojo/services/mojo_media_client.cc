@@ -4,7 +4,7 @@
 
 #include "media/mojo/services/mojo_media_client.h"
 
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_log.h"

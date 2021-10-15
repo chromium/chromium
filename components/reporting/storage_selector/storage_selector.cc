@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
-#include "base/task/bind_post_task_forward.h"
+#include "base/task/bind_post_task.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/reporting/compression/compression_module.h"

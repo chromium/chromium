@@ -12,7 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"

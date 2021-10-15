@@ -22,7 +22,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/associated_group.h"

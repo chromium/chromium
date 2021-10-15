@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/current_thread.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "remoting/base/typed_buffer.h"

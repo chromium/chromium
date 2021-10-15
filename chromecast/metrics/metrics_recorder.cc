@@ -22,7 +22,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/metrics/cast_event_builder.h"

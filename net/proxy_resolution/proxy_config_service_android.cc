@@ -19,7 +19,7 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"

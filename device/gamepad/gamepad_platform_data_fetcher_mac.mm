@@ -10,7 +10,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "device/gamepad/gamepad_blocklist.h"
 #include "device/gamepad/gamepad_device_mac.h"

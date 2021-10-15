@@ -7,7 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
-#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
