@@ -386,7 +386,6 @@ function getTestDeclarationLineNumber() {
 function TEST_F(testFixture, testFunction, testBody, opt_preamble) {
   maybeGenHeader(testFixture);
   const browsePreload = this[testFixture].prototype.browsePreload;
-  const browsePrintPreload = this[testFixture].prototype.browsePrintPreload;
   const testGenPreamble = this[testFixture].prototype.testGenPreamble;
   const testGenPostamble = this[testFixture].prototype.testGenPostamble;
   const typedefCppFixture = this[testFixture].prototype.typedefCppFixture;
@@ -554,11 +553,6 @@ ${testF}(${testFixture}, ${testFunction}) {
   }
   if (browsePreload) {
     output(`  BrowsePreload(GURL("${browsePreload}"));`);
-  }
-  if (browsePrintPreload) {
-    output(`
-  BrowsePrintPreload(GURL(WebUITestDataPathToURL(
-    FILE_PATH_LITERAL("${browsePrintPreload}"))));`);
   }
   output(`
   ${testPredicate}(
