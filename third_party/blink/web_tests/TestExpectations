@@ -7013,6 +7013,9 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shap
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-014.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-image-filter-all.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/scalefactor200withoutzoom/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/split.https.html [ Pass Timeout ]
 
 # mac-arm CI 10-01-2021
