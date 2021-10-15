@@ -23,7 +23,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(b/174811949): Hide behind ChromeOS build flag.
-#include "chrome/browser/ash/web_applications/chrome_camera_app_ui_constants.h"
+#include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -65,7 +65,7 @@
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
-#include "chrome/browser/ash/web_applications/camera_system_web_app_info.h"
+#include "chrome/browser/ash/web_applications/camera_app/camera_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/connectivity_diagnostics_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/crosh_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/diagnostics_system_web_app_info.h"

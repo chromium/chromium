@@ -3274,7 +3274,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/startup_settings_cache_browsertest.cc",
         "../browser/ash/system/device_disabling_browsertest.cc",
         "../browser/ash/system/tray_accessibility_browsertest.cc",
-        "../browser/ash/web_applications/camera_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/camera_app/camera_app_integration_browsertest.cc",
         "../browser/ash/web_applications/diagnostics_app_integration_browsertest.cc",
         "../browser/ash/web_applications/eche_app_integration_browsertest.cc",
         "../browser/ash/web_applications/help_app/help_app_integration_browsertest.cc",
