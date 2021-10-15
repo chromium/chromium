@@ -140,7 +140,6 @@ chrome_ios_eg2_test("ios_chrome_signin_eg2tests_module") {
     "//ios/chrome/browser/ui/authentication/signin:eg2_tests",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin:eg2_tests",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin:eg2_tests",
-    "//ios/chrome/browser/ui/authentication/signin/forced_signin:eg2_tests",
     "//ios/chrome/browser/ui/authentication/signin/user_signin:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
