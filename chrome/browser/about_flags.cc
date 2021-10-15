@@ -1122,6 +1122,12 @@ const FeatureEntry::FeatureParam
         {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
         {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
         {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
+const FeatureEntry::FeatureParam
+    kOmniboxRichAutocompletionConservativeModerate2[] = {
+        {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
+        {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
+        {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+        {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
 const FeatureEntry::FeatureParam kOmniboxRichAutocompletionConservative[] = {
     {"RichAutocompletionAutocompleteTitles", "true"},
     {"RichAutocompletionAutocompleteTitlesMinChar", "3"}};
@@ -1137,6 +1143,10 @@ const FeatureEntry::FeatureVariation
         {"Conservative Moderate - Title, Shortcut Non-Prefix, min 3/5",
          kOmniboxRichAutocompletionConservativeModerate,
          base::size(kOmniboxRichAutocompletionConservativeModerate), nullptr},
+        {"Conservative Moderate 2 - Shortcut Title, Shortcut Non-Prefix, min "
+         "3/5",
+         kOmniboxRichAutocompletionConservativeModerate2,
+         base::size(kOmniboxRichAutocompletionConservativeModerate2), nullptr},
         {"Conservative - Title, min 3", kOmniboxRichAutocompletionConservative,
          base::size(kOmniboxRichAutocompletionConservative), nullptr}};
 
