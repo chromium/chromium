@@ -3579,25 +3579,10 @@ const char kUpdateMenuTypeName[] =
     "Forces the update menu type to a specific type";
 const char kUpdateMenuTypeDescription[] =
     "When set, forces the update type to be a specific one, which impacts "
-    "the app menu badge and menu item for updates. For Inline Update, the "
-    "update available flag is implied. The 'Inline Update: Success' selection "
-    "goes through the whole inline update flow to the end with a successful "
-    "outcome. The other 'Inline Update' options go through the same flow, but "
-    "stop at various stages, see their error type for details.";
+    "the app menu badge and menu item for updates.";
 const char kUpdateMenuTypeNone[] = "None";
 const char kUpdateMenuTypeUpdateAvailable[] = "Update Available";
 const char kUpdateMenuTypeUnsupportedOSVersion[] = "Unsupported OS Version";
-const char kUpdateMenuTypeInlineUpdateSuccess[] = "Inline Update: Success";
-const char kUpdateMenuTypeInlineUpdateDialogCanceled[] =
-    "Inline Update Error: Dialog Canceled";
-const char kUpdateMenuTypeInlineUpdateDialogFailed[] =
-    "Inline Update Error: Dialog Failed";
-const char kUpdateMenuTypeInlineUpdateDownloadFailed[] =
-    "Inline Update Error: Download Failed";
-const char kUpdateMenuTypeInlineUpdateDownloadCanceled[] =
-    "Inline Update Error: Download Canceled";
-const char kUpdateMenuTypeInlineUpdateInstallFailed[] =
-    "Inline Update Error: Install Failed";
 
 extern const char kUseRealColorSpaceForAndroidVideoName[] =
     "Use color space from MediaCodec";
@@ -3630,13 +3615,6 @@ const char kVoiceButtonInTopToolbarName[] = "Voice button in top toolbar";
 const char kVoiceButtonInTopToolbarDescription[] =
     "Enables showing the voice search button in the top toolbar. Enabling "
     "Adaptive Button overrides this.";
-
-const char kInlineUpdateFlowName[] = "Enable Google Play inline update flow";
-const char kInlineUpdateFlowDescription[] =
-    "When this flag is set, instead of taking the user to the Google Play "
-    "Store when an update is available, the user is presented with an inline "
-    "flow where they do not have to leave Chrome until the update is ready "
-    "to install.";
 
 const char kWalletRequiresFirstSyncSetupCompleteName[] =
     "Controls whether Wallet (GPay) integration on Android requires "

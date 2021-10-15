@@ -2106,42 +2106,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Download will start when on Wi-Fi
       </message>
 
-      <!-- Inline Update Infobar -->
-      <message name="IDS_INLINE_UPDATE_INFOBAR_READY_MESSAGE" desc="Text showing that the update process is almost ready.">
-        Almost finished!
-      </message>
-      <message name="IDS_INLINE_UPDATE_INFOBAR_READY_LINK_TEXT" desc="The clickable link letting the user know they can click to restart Chrome.">
-        Restart Chrome
-      </message>
-      <message name="IDS_INLINE_UPDATE_INFOBAR_FAILED_MESSAGE" desc="Text showing that the update process failed.">
-        Couldn’t download the update
-      </message>
-
-      <!-- Inline Update Toast -->
-      <message name="IDS_INLINE_UPDATE_TOAST_DOWNLOADING_MESSAGE" desc="Text showing when the user starts the inline update process in Chrome which lets the user know that the update is downloading.">
-        Downloading Chrome Update…
-      </message>
-
-      <!-- Update Notification-->
-      <message name="IDS_UPDATE_NOTIFICATION_TITLE_DEFAULT" desc="Default title of update notification to remind user to update Chrome.">
-        Update Chrome
-      </message>
-      <message name="IDS_UPDATE_NOTIFICATION_TEXT_BODY_DEFAULT" desc="Default text showing in the update notification body, kindly telling user to update to the latest version of Chrome.">
-        For the best browsing experience, open to update Chrome
-      </message>
-      <message name="IDS_UPDATE_NOTIFICATION_TITLE_EXPERIMENTAL_UPDATE_CHROME" desc="Experimental version A title of update notification to remind user to update Chrome.">
-        Update Chrome
-      </message>
-      <message name="IDS_UPDATE_NOTIFICATION_TEXT_BODY_EXPERIMENTAL_UPDATE_CHROME" desc="Experimental version A text showing in the update notification body, kindly telling user to update to the latest version of Chrome.">
-        To see the web in your language, get the latest version of Chrome
-      </message>
-      <message name="IDS_UPDATE_NOTIFICATION_TITLE_EXPERIMENTAL_TRANSLATE_THE_WEB" desc="Experimental version B title of update notification to remind user to update Chrome.">
-        Translate the Web
-      </message>
-      <message name="IDS_UPDATE_NOTIFICATION_TEXT_BODY_EXPERIMENTAL_TRANSLATE_THE_WEB" desc="Experimental version B text showing in the update notification body, kindly telling user to update to the latest version of Chrome.">
-        Update to get your language in the latest version of Chrome
-      </message>
-
       <message name="IDS_MENU_TRANSLATE" desc="Menu item for triggering a page translation. The word 'Translate' should match the translation in TC ID 1613971242435858090. [CHAR_LIMIT=27]">
         Translate…
       </message>
@@ -3161,18 +3125,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_MENU_UPDATE_UNSUPPORTED_SUMMARY_DEFAULT" desc="Summary string for update menu item explaining that the Android version on the device is unsupported. [CHAR_LIMIT=30]">
         Android version is unsupported
-      </message>
-      <message name="IDS_MENU_INLINE_UPDATE_DOWNLOADING" desc="Menu item for when Chrome is in the process of updating. [CHAR_LIMIT=24]">
-        Downloading…
-      </message>
-      <message name="IDS_MENU_INLINE_UPDATE_FAILED" desc="Menu item for when Chrome failed to download an update. [CHAR_LIMIT=24]">
-        Couldn’t download
-      </message>
-      <message name="IDS_MENU_INLINE_UPDATE_READY" desc="Menu item text that is shown when Chrome has downloaded an update for itself and is ready to be restarted, which will apply the update. [CHAR_LIMIT=24]">
-        Update ready
-      </message>
-      <message name="IDS_MENU_INLINE_UPDATE_READY_SUMMARY" desc="Summary text that is shown when Chrome has downloaded an update for itself and is ready to be restarted, which will apply the update.  This lets the user know the update will restart. [CHAR_LIMIT=24]">
-        Restart Chrome
       </message>
       <message name="IDS_MENU_NEW_WINDOW" desc="Menu item for opening a new window. [CHAR_LIMIT=27]">
         New window

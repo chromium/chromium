@@ -485,24 +485,6 @@
             ]
         }
     ],
-    "AndroidInlineUpdateFlowStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_NoNotification",
-                    "params": {
-                        "flow": "best_effort"
-                    },
-                    "enable_features": [
-                        "InlineUpdateFlow"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidMediaPickerVideoSupport": [
         {
             "platforms": [

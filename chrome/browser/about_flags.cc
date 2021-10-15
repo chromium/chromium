@@ -430,18 +430,6 @@ const FeatureEntry::Choice kForceUpdateMenuTypeChoices[] = {
      switches::kForceUpdateMenuType, "update_available"},
     {flag_descriptions::kUpdateMenuTypeUnsupportedOSVersion,
      switches::kForceUpdateMenuType, "unsupported_os_version"},
-    {flag_descriptions::kUpdateMenuTypeInlineUpdateSuccess,
-     switches::kForceUpdateMenuType, "inline_update_success"},
-    {flag_descriptions::kUpdateMenuTypeInlineUpdateDialogCanceled,
-     switches::kForceUpdateMenuType, "inline_update_dialog_canceled"},
-    {flag_descriptions::kUpdateMenuTypeInlineUpdateDialogFailed,
-     switches::kForceUpdateMenuType, "inline_update_dialog_failed"},
-    {flag_descriptions::kUpdateMenuTypeInlineUpdateDownloadFailed,
-     switches::kForceUpdateMenuType, "inline_update_download_failed"},
-    {flag_descriptions::kUpdateMenuTypeInlineUpdateDownloadCanceled,
-     switches::kForceUpdateMenuType, "inline_update_download_canceled"},
-    {flag_descriptions::kUpdateMenuTypeInlineUpdateInstallFailed,
-     switches::kForceUpdateMenuType, "inline_update_install_failed"},
 };
 #else  // !defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kReaderModeOfferInSettings[] = {
@@ -3974,9 +3962,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"force-update-menu-type", flag_descriptions::kUpdateMenuTypeName,
      flag_descriptions::kUpdateMenuTypeDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kForceUpdateMenuTypeChoices)},
-    {"enable-inline-update-flow", flag_descriptions::kInlineUpdateFlowName,
-     flag_descriptions::kInlineUpdateFlowDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kInlineUpdateFlow)},
     {"update-menu-item-custom-summary",
      flag_descriptions::kUpdateMenuItemCustomSummaryName,
      flag_descriptions::kUpdateMenuItemCustomSummaryDescription, kOsAndroid,

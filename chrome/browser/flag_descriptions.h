@@ -2047,12 +2047,6 @@ extern const char kUpdateMenuTypeDescription[];
 extern const char kUpdateMenuTypeNone[];
 extern const char kUpdateMenuTypeUpdateAvailable[];
 extern const char kUpdateMenuTypeUnsupportedOSVersion[];
-extern const char kUpdateMenuTypeInlineUpdateSuccess[];
-extern const char kUpdateMenuTypeInlineUpdateDialogCanceled[];
-extern const char kUpdateMenuTypeInlineUpdateDialogFailed[];
-extern const char kUpdateMenuTypeInlineUpdateDownloadFailed[];
-extern const char kUpdateMenuTypeInlineUpdateDownloadCanceled[];
-extern const char kUpdateMenuTypeInlineUpdateInstallFailed[];
 
 extern const char kUseRealColorSpaceForAndroidVideoName[];
 extern const char kUseRealColorSpaceForAndroidVideoDescription[];
@@ -2073,9 +2067,6 @@ extern const char kShareButtonInTopToolbarName[];
 extern const char kShareButtonInTopToolbarDescription[];
 extern const char kVoiceButtonInTopToolbarName[];
 extern const char kVoiceButtonInTopToolbarDescription[];
-
-extern const char kInlineUpdateFlowName[];
-extern const char kInlineUpdateFlowDescription[];
 
 extern const char kWalletRequiresFirstSyncSetupCompleteName[];
 extern const char kWalletRequiresFirstSyncSetupCompleteDescription[];

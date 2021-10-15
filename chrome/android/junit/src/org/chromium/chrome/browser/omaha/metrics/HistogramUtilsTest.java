@@ -56,14 +56,6 @@ public class HistogramUtilsTest {
                 "Intent.Infobar");
         validateHistogram(-3, Type.INTENT, Source.FROM_NOTIFICATION, "GoogleUpdate.Result.Unknown",
                 "Intent.Notification");
-        validateHistogram(-3, Type.INLINE, Source.UNKNOWN_SOURCE, "GoogleUpdate.Result.Unknown",
-                "Inline.Unknown");
-        validateHistogram(
-                -3, Type.INLINE, Source.FROM_MENU, "GoogleUpdate.Result.Unknown", "Inline.Menu");
-        validateHistogram(-3, Type.INLINE, Source.FROM_INFOBAR, "GoogleUpdate.Result.Unknown",
-                "Inline.Infobar");
-        validateHistogram(-3, Type.INLINE, Source.FROM_NOTIFICATION, "GoogleUpdate.Result.Unknown",
-                "Inline.Notification");
 
         validateHistogram(AttributionType.SESSION, Type.UNKNOWN_TYPE, Source.UNKNOWN_SOURCE,
                 "GoogleUpdate.Result.Session", "Unknown.Unknown");
@@ -81,14 +73,6 @@ public class HistogramUtilsTest {
                 "GoogleUpdate.Result.Session", "Intent.Infobar");
         validateHistogram(AttributionType.SESSION, Type.INTENT, Source.FROM_NOTIFICATION,
                 "GoogleUpdate.Result.Session", "Intent.Notification");
-        validateHistogram(AttributionType.SESSION, Type.INLINE, Source.UNKNOWN_SOURCE,
-                "GoogleUpdate.Result.Session", "Inline.Unknown");
-        validateHistogram(AttributionType.SESSION, Type.INLINE, Source.FROM_MENU,
-                "GoogleUpdate.Result.Session", "Inline.Menu");
-        validateHistogram(AttributionType.SESSION, Type.INLINE, Source.FROM_INFOBAR,
-                "GoogleUpdate.Result.Session", "Inline.Infobar");
-        validateHistogram(AttributionType.SESSION, Type.INLINE, Source.FROM_NOTIFICATION,
-                "GoogleUpdate.Result.Session", "Inline.Notification");
 
         validateHistogram(AttributionType.TIME_WINDOW, Type.UNKNOWN_TYPE, Source.UNKNOWN_SOURCE,
                 "GoogleUpdate.Result.TimeWindow", "Unknown.Unknown");
@@ -106,14 +90,6 @@ public class HistogramUtilsTest {
                 "GoogleUpdate.Result.TimeWindow", "Intent.Infobar");
         validateHistogram(AttributionType.TIME_WINDOW, Type.INTENT, Source.FROM_NOTIFICATION,
                 "GoogleUpdate.Result.TimeWindow", "Intent.Notification");
-        validateHistogram(AttributionType.TIME_WINDOW, Type.INLINE, Source.UNKNOWN_SOURCE,
-                "GoogleUpdate.Result.TimeWindow", "Inline.Unknown");
-        validateHistogram(AttributionType.TIME_WINDOW, Type.INLINE, Source.FROM_MENU,
-                "GoogleUpdate.Result.TimeWindow", "Inline.Menu");
-        validateHistogram(AttributionType.TIME_WINDOW, Type.INLINE, Source.FROM_INFOBAR,
-                "GoogleUpdate.Result.TimeWindow", "Inline.Infobar");
-        validateHistogram(AttributionType.TIME_WINDOW, Type.INLINE, Source.FROM_NOTIFICATION,
-                "GoogleUpdate.Result.TimeWindow", "Inline.Notification");
     }
 
     private static void validateHistogram(@AttributionType int attributionType, Type type,

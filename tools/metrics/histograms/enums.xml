@@ -43245,8 +43245,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="86" label="NEAR_OOM_REDUCTION_INFOBAR_ANDROID"/>
   <int value="87" label="LITE_PAGE_PREVIEWS_INFOBAR (Obsolete M91)"/>
   <int value="88" label="MODULE_INSTALL_FAILURE_INFOBAR_ANDROID"/>
-  <int value="89" label="INLINE_UPDATE_READY_INFOBAR_ANDROID"/>
-  <int value="90" label="INLINE_UPDATE_FAILED_INFOBAR_ANDROID"/>
+  <int value="89" label="INLINE_UPDATE_READY_INFOBAR_ANDROID (Obsolete)"/>
+  <int value="90" label="INLINE_UPDATE_FAILED_INFOBAR_ANDROID (Obsolete)"/>
   <int value="91" label="FLASH_DEPRECATION_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="92" label="SEND_TAB_TO_SELF_INFOBAR_DELEGATE"/>
   <int value="93" label="TAB_SHARING_INFOBAR_DELEGATE"/>
@@ -43301,6 +43301,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="InlineUpdateAvailability">
+  <obsolete>
+    Inline updates are deprecated as of M97.
+  </obsolete>
   <int value="0" label="Untracked (Not Known to UMA)"/>
   <int value="1" label="Unknown"/>
   <int value="2" label="Update Not Available"/>
@@ -43309,6 +43312,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="InlineUpdateCallFailure">
+  <obsolete>
+    Inline updates are deprecated as of M97.
+  </obsolete>
   <int value="0" label="StartUpdate Failed"/>
   <int value="1" label="StartUpdate Exception"/>
   <int value="2" label="CompleteUpdate Failed"/>
@@ -43316,6 +43322,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="InlineUpdateErrorCodes">
+  <obsolete>
+    Inline updates are deprecated as of M97.
+  </obsolete>
   <int value="0" label="No Error"/>
   <int value="1" label="No Error (Partially Allowed)"/>
   <int value="2" label="Error - Unknown"/>
@@ -43329,6 +43338,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="InlineUpdateInstallStatus">
+  <obsolete>
+    Inline updates are deprecated as of M97.
+  </obsolete>
   <int value="0" label="Untracked (Not Known to UMA)"/>
   <int value="1" label="Unknown"/>
   <int value="2" label="Requires UI Intent"/>

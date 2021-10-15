@@ -22,7 +22,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateInteractionSource;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -158,7 +157,7 @@ public class UpdateMenuItemHelper {
 
                 try {
                     UpdateStatusProvider.getInstance().startIntentUpdate(
-                            activity, UpdateInteractionSource.FROM_MENU, false /* newTask */);
+                            activity, false /* newTask */);
                     recordItemClickedHistogram(ITEM_CLICKED_INTENT_LAUNCHED);
                     getPrefService().setBoolean(Pref.CLICKED_UPDATE_MENU_ITEM, true);
                 } catch (ActivityNotFoundException e) {
@@ -166,21 +165,7 @@ public class UpdateMenuItemHelper {
                     recordItemClickedHistogram(ITEM_CLICKED_INTENT_FAILED);
                 }
                 break;
-            case UpdateState.INLINE_UPDATE_AVAILABLE:
-                UpdateStatusProvider.getInstance().startInlineUpdate(
-                        UpdateInteractionSource.FROM_MENU, activity);
-                break;
-            case UpdateState.INLINE_UPDATE_READY:
-                UpdateStatusProvider.getInstance().finishInlineUpdate(
-                        UpdateInteractionSource.FROM_MENU);
-                break;
-            case UpdateState.INLINE_UPDATE_FAILED:
-                UpdateStatusProvider.getInstance().retryInlineUpdate(
-                        UpdateInteractionSource.FROM_MENU, activity);
-                break;
             case UpdateState.UNSUPPORTED_OS_VERSION:
-            // Intentional fall through.
-            case UpdateState.INLINE_UPDATE_DOWNLOADING:
             // Intentional fall through.
             default:
                 return;
@@ -282,58 +267,6 @@ public class UpdateMenuItemHelper {
                         resources.getString(R.string.menu_update_unsupported_summary_default);
                 mMenuUiState.itemState.icon = R.drawable.ic_error_24dp_filled;
                 mMenuUiState.itemState.enabled = false;
-                break;
-            case UpdateState.INLINE_UPDATE_AVAILABLE:
-                // The badge is hidden if the update menu item has been clicked until there is an
-                // even newer version of Chrome available.
-                showBadge |= !TextUtils.equals(
-                        getPrefService().getString(
-                                Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM),
-                        mStatus.latestUnsupportedVersion);
-
-                if (showBadge) {
-                    mMenuUiState.buttonState = new MenuButtonState();
-                    mMenuUiState.buttonState.menuContentDescription =
-                            R.string.accessibility_toolbar_btn_menu_update;
-                    mMenuUiState.buttonState.darkBadgeIcon = R.drawable.badge_update_dark;
-                    mMenuUiState.buttonState.lightBadgeIcon = R.drawable.badge_update_light;
-                }
-
-                mMenuUiState.itemState = new MenuItemState();
-                mMenuUiState.itemState.title = R.string.menu_update;
-                mMenuUiState.itemState.titleColorId = R.color.default_text_color_blue;
-                mMenuUiState.itemState.summary = UpdateConfigs.getCustomSummary();
-                if (TextUtils.isEmpty(mMenuUiState.itemState.summary)) {
-                    mMenuUiState.itemState.summary =
-                            resources.getString(R.string.menu_update_summary_default);
-                }
-                mMenuUiState.itemState.icon = R.drawable.ic_history_googblue_24dp;
-                mMenuUiState.itemState.iconTintId = R.color.default_icon_color_blue;
-                mMenuUiState.itemState.enabled = true;
-                break;
-            case UpdateState.INLINE_UPDATE_DOWNLOADING:
-                mMenuUiState.itemState = new MenuItemState();
-                mMenuUiState.itemState.title = R.string.menu_inline_update_downloading;
-                mMenuUiState.itemState.titleColorId = R.color.default_text_color_secondary;
-                break;
-            case UpdateState.INLINE_UPDATE_READY:
-                mMenuUiState.itemState = new MenuItemState();
-                mMenuUiState.itemState.title = R.string.menu_inline_update_ready;
-                mMenuUiState.itemState.titleColorId = R.color.default_text_color_blue;
-                mMenuUiState.itemState.summary =
-                        resources.getString(R.string.menu_inline_update_ready_summary);
-                mMenuUiState.itemState.icon = R.drawable.infobar_chrome;
-                mMenuUiState.itemState.iconTintId = R.color.default_icon_color_blue;
-                mMenuUiState.itemState.enabled = true;
-                break;
-            case UpdateState.INLINE_UPDATE_FAILED:
-                mMenuUiState.itemState = new MenuItemState();
-                mMenuUiState.itemState.title = R.string.menu_inline_update_failed;
-                mMenuUiState.itemState.titleColorId = R.color.default_text_color_blue;
-                mMenuUiState.itemState.summary = resources.getString(R.string.try_again);
-                mMenuUiState.itemState.icon = R.drawable.ic_history_googblue_24dp;
-                mMenuUiState.itemState.iconTintId = R.color.default_icon_color_blue;
-                mMenuUiState.itemState.enabled = true;
                 break;
             case UpdateState.NONE:
             // Intentional fall through.

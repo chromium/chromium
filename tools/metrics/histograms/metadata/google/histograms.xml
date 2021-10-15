@@ -40,6 +40,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GoogleUpdate.Inline.AppUpdateInfo.InstallStatus"
     enum="InlineUpdateInstallStatus" expires_after="2020-10-15">
+  <obsolete>
+    Inline updates are deprecated as of M97.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
@@ -50,6 +53,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GoogleUpdate.Inline.AppUpdateInfo.UpdateAvailability"
     enum="InlineUpdateAvailability" expires_after="2020-10-15">
+  <obsolete>
+    Inline updates are deprecated as of M97.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
@@ -60,6 +66,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GoogleUpdate.Inline.CallFailure"
     enum="InlineUpdateCallFailure" expires_after="2020-10-15">
+  <obsolete>
+    Inline updates are deprecated as of M97.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
@@ -69,6 +78,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GoogleUpdate.Inline.StateChange.Error"
     enum="InlineUpdateErrorCodes" expires_after="2020-10-15">
+  <obsolete>
+    Inline updates are deprecated as of M97.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="GoogleUpdate.Inline.InstallStatus" -->
 
   <owner>dtrainor@chromium.org</owner>
@@ -82,6 +94,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GoogleUpdate.Inline.UI.Install.Source"
     enum="UpdateInteractionSource" expires_after="2020-10-15">
+  <obsolete>
+    Inline updates are deprecated as of M97.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
@@ -92,6 +107,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GoogleUpdate.Inline.UI.Retry.Source"
     enum="UpdateInteractionSource" expires_after="2020-10-15">
+  <obsolete>
+    Inline updates are deprecated as of M97.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
@@ -101,6 +119,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GoogleUpdate.Inline.UI.Start.Source"
     enum="UpdateInteractionSource" expires_after="2020-10-15">
+  <obsolete>
+    Inline updates are deprecated as of M97.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>

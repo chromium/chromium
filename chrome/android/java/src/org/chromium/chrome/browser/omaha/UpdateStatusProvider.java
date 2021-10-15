@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omaha;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -17,13 +16,9 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -33,11 +28,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.AsyncTask.Status;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.omaha.inline.InlineUpdateController;
-import org.chromium.chrome.browser.omaha.inline.InlineUpdateControllerFactory;
 import org.chromium.chrome.browser.omaha.metrics.UpdateSuccessMetrics;
-import org.chromium.chrome.browser.omaha.metrics.UpdateSuccessMetrics.UpdateType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -53,38 +44,22 @@ import java.lang.annotation.RetentionPolicy;
  *
  * For manually testing this functionality, see {@link UpdateConfigs}.
  */
-public class UpdateStatusProvider implements ActivityStateListener {
-    /**
-     * Possible sources of user interaction regarding updates.
-     * Treat this as append only as it is used by UMA.
-     */
-    @IntDef({UpdateInteractionSource.FROM_MENU, UpdateInteractionSource.FROM_INFOBAR,
-            UpdateInteractionSource.FROM_NOTIFICATION})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface UpdateInteractionSource {
-        int FROM_MENU = 0;
-        int FROM_INFOBAR = 1;
-        int FROM_NOTIFICATION = 2;
-
-        int NUM_ENTRIES = 3;
-    }
-
+public class UpdateStatusProvider {
     /**
      * Possible update states.
      * Treat this as append only as it is used by UMA.
      */
-    @IntDef({UpdateState.NONE, UpdateState.UPDATE_AVAILABLE, UpdateState.UNSUPPORTED_OS_VERSION,
-            UpdateState.INLINE_UPDATE_AVAILABLE, UpdateState.INLINE_UPDATE_DOWNLOADING,
-            UpdateState.INLINE_UPDATE_READY, UpdateState.INLINE_UPDATE_FAILED})
+    @IntDef({UpdateState.NONE, UpdateState.UPDATE_AVAILABLE, UpdateState.UNSUPPORTED_OS_VERSION})
     @Retention(RetentionPolicy.SOURCE)
     public @interface UpdateState {
         int NONE = 0;
         int UPDATE_AVAILABLE = 1;
         int UNSUPPORTED_OS_VERSION = 2;
-        int INLINE_UPDATE_AVAILABLE = 3;
-        int INLINE_UPDATE_DOWNLOADING = 4;
-        int INLINE_UPDATE_READY = 5;
-        int INLINE_UPDATE_FAILED = 6;
+        // Inline updates are deprecated.
+        // int INLINE_UPDATE_AVAILABLE = 3;
+        // int INLINE_UPDATE_DOWNLOADING = 4;
+        // int INLINE_UPDATE_READY = 5;
+        // int INLINE_UPDATE_FAILED = 6;
 
         int NUM_ENTRIES = 7;
     }
@@ -120,12 +95,6 @@ public class UpdateStatusProvider implements ActivityStateListener {
          */
         private boolean mIsSimulated;
 
-        /**
-         * Whether or not we are currently trying to simulate an inline flow.  Used to allow
-         * overriding Omaha update state, which usually supersedes inline update states.
-         */
-        private boolean mIsInlineSimulated;
-
         public UpdateStatus() {}
 
         UpdateStatus(UpdateStatus other) {
@@ -134,13 +103,11 @@ public class UpdateStatusProvider implements ActivityStateListener {
             latestVersion = other.latestVersion;
             latestUnsupportedVersion = other.latestUnsupportedVersion;
             mIsSimulated = other.mIsSimulated;
-            mIsInlineSimulated = other.mIsInlineSimulated;
         }
     }
 
     private final ObserverList<Callback<UpdateStatus>> mObservers = new ObserverList<>();
 
-    private final InlineUpdateController mInlineController;
     private final UpdateQuery mOmahaQuery;
     private final UpdateSuccessMetrics mMetrics;
     private @Nullable UpdateStatus mStatus;
@@ -209,52 +176,17 @@ public class UpdateStatusProvider implements ActivityStateListener {
     }
 
     /**
-     * Starts the inline update process, if possible.
-     * @source         The source of the action (the UI that caused it).
-     * @param activity An {@link Activity} that will be used to interact with Play.
-     */
-    public void startInlineUpdate(@UpdateInteractionSource int source, Activity activity) {
-        if (mStatus == null || mStatus.updateState != UpdateState.INLINE_UPDATE_AVAILABLE) return;
-        RecordHistogram.recordEnumeratedHistogram(
-                "GoogleUpdate.Inline.UI.Start.Source", source, UpdateInteractionSource.NUM_ENTRIES);
-        mMetrics.startUpdate(UpdateType.INLINE, source);
-        mInlineController.startUpdate(activity);
-    }
-
-    /**
-     * Retries the inline update process, if possible.
-     * @param activity An {@link Activity} that will be used to interact with Play.
-     */
-    public void retryInlineUpdate(@UpdateInteractionSource int source, Activity activity) {
-        if (mStatus == null || mStatus.updateState != UpdateState.INLINE_UPDATE_AVAILABLE) return;
-        RecordHistogram.recordEnumeratedHistogram(
-                "GoogleUpdate.Inline.UI.Retry.Source", source, UpdateInteractionSource.NUM_ENTRIES);
-        mMetrics.startUpdate(UpdateType.INLINE, source);
-        mInlineController.startUpdate(activity);
-    }
-
-    /** Finishes the inline update process, which may involve restarting the app. */
-    public void finishInlineUpdate(@UpdateInteractionSource int source) {
-        if (mStatus == null || mStatus.updateState != UpdateState.INLINE_UPDATE_READY) return;
-        RecordHistogram.recordEnumeratedHistogram("GoogleUpdate.Inline.UI.Install.Source", source,
-                UpdateInteractionSource.NUM_ENTRIES);
-        mInlineController.completeUpdate();
-    }
-
-    /**
      * Starts the intent update process, if possible
      * @param context An {@link Context} that will be used to fire off the update intent.
-     * @param source  The source of the action (the UI that caused it).
      * @param newTask Whether or not to make the intent a new task.
      * @return        Whether or not the update intent was sent and had a valid handler.
      */
-    public boolean startIntentUpdate(
-            Context context, @UpdateInteractionSource int source, boolean newTask) {
+    public boolean startIntentUpdate(Context context, boolean newTask) {
         if (mStatus == null || mStatus.updateState != UpdateState.UPDATE_AVAILABLE) return false;
         if (TextUtils.isEmpty(mStatus.updateUrl)) return false;
 
         try {
-            mMetrics.startUpdate(UpdateType.INTENT, source);
+            mMetrics.startUpdate();
 
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mStatus.updateUrl));
             if (newTask) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -266,29 +198,9 @@ public class UpdateStatusProvider implements ActivityStateListener {
         return true;
     }
 
-    // ApplicationStateListener implementation.
-    @Override
-    public void onActivityStateChange(Activity changedActivity, @ActivityState int newState) {
-        boolean hasActiveActivity = false;
-
-        for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            if (activity == null || !(activity instanceof ChromeActivity)) continue;
-
-            hasActiveActivity |=
-                    ApplicationStatus.getStateForActivity(activity) == ActivityState.RESUMED;
-            if (hasActiveActivity) break;
-        }
-
-        mInlineController.setEnabled(hasActiveActivity);
-    }
-
     private UpdateStatusProvider() {
-        mInlineController = InlineUpdateControllerFactory.create(this::resolveStatus);
         mOmahaQuery = new UpdateQuery(this::resolveStatus);
         mMetrics = new UpdateSuccessMetrics();
-
-        // Note that as a singleton this class never unregisters.
-        ApplicationStatus.registerStateListenerForAllActivities(this);
     }
 
     private void pingObservers() {
@@ -296,63 +208,25 @@ public class UpdateStatusProvider implements ActivityStateListener {
     }
 
     private void resolveStatus() {
-        if (mOmahaQuery.getStatus() != Status.FINISHED || mInlineController.getStatus() == null) {
+        if (mOmahaQuery.getStatus() != Status.FINISHED) {
             return;
         }
 
         // We pull the Omaha result once as it will never change.
         if (mStatus == null) mStatus = new UpdateStatus(mOmahaQuery.getResult());
 
-        if (mStatus.mIsSimulated) {
-            if (mStatus.mIsInlineSimulated) {
-                @UpdateState
-                int inlineState = mInlineController.getStatus();
-
-                if (inlineState == UpdateState.NONE) {
-                    mStatus.updateState = mOmahaQuery.getResult().updateState;
-                } else {
-                    mStatus.updateState = inlineState;
-                }
-            }
-        } else {
-            @UpdateState
-            int omahaState = mOmahaQuery.getResult().updateState;
-            @UpdateState
-            int inlineState = mInlineController.getStatus();
-            mStatus.updateState = resolveOmahaAndInlineStatus(
-                    UpdateConfigs.getConfiguration(), omahaState, inlineState);
+        if (!mStatus.mIsSimulated) {
+            mStatus.updateState = mOmahaQuery.getResult().updateState;
         }
 
         if (!mRecordedInitialStatus) {
             RecordHistogram.recordEnumeratedHistogram(
                     "GoogleUpdate.StartUp.State", mStatus.updateState, UpdateState.NUM_ENTRIES);
-            mMetrics.analyzeFirstStatus(mStatus);
+            mMetrics.analyzeFirstStatus();
             mRecordedInitialStatus = true;
         }
 
         pingObservers();
-    }
-
-    @VisibleForTesting
-    static @UpdateState int resolveOmahaAndInlineStatus(
-            @UpdateConfigs.UpdateFlowConfiguration int configuration, @UpdateState int omahaState,
-            @UpdateState int inlineState) {
-        switch (configuration) {
-            case UpdateConfigs.UpdateFlowConfiguration.NEVER_SHOW:
-                return UpdateState.NONE;
-            case UpdateConfigs.UpdateFlowConfiguration.INLINE_ONLY:
-                if (omahaState != UpdateState.UPDATE_AVAILABLE) return omahaState;
-                if (inlineState == UpdateState.NONE) return UpdateState.NONE;
-                return inlineState;
-            case UpdateConfigs.UpdateFlowConfiguration.BEST_EFFORT:
-                if (omahaState != UpdateState.UPDATE_AVAILABLE) return omahaState;
-                if (inlineState == UpdateState.NONE) return omahaState;
-                return inlineState;
-            case UpdateConfigs.UpdateFlowConfiguration.INTENT_ONLY: // Intentional fall through.
-            default:
-                // Fall back to use Omaha only and use the old flow.
-                return omahaState;
-        }
     }
 
     private static final class LazyHolder {
@@ -395,8 +269,6 @@ public class UpdateStatusProvider implements ActivityStateListener {
 
             status.mIsSimulated = true;
             status.updateState = forcedUpdateState;
-
-            status.mIsInlineSimulated = forcedUpdateState == UpdateState.INLINE_UPDATE_AVAILABLE;
 
             // Push custom configurations for certain update states.
             switch (forcedUpdateState) {
