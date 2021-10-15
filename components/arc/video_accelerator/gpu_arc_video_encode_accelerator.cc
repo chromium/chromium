@@ -8,10 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cpu.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
@@ -37,17 +35,6 @@ namespace {
 // VEAs. Currently this value is selected as 40 instances are enough to pass
 // the CTS tests.
 constexpr size_t kMaxConcurrentClients = 8;
-
-bool IsGeminiLakeModel() {
-  constexpr int kPentiumAndLaterFamily = 0x06;
-  constexpr int kGeminiLakeModelId = 0x7A;
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_gemini_lake =
-      (cpuid->family() == kPentiumAndLaterFamily &&
-       cpuid->model() == kGeminiLakeModelId);
-  return is_gemini_lake;
-}
-
 }  // namespace
 
 // static
@@ -146,18 +133,9 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
     return mojom::VideoEncodeAccelerator::Result::kInsufficientResourcesError;
   }
 
-  // Workaround: Use H264 MAIN profile instead of BASELINE for GeminiLake model.
-  // TODO(b/181863970): Remove the workaround after the issue is resolved.
-  auto workaround_config = config;
-  if (workaround_config.output_profile == media::H264PROFILE_BASELINE &&
-      IsGeminiLakeModel()) {
-    DVLOGF(3) << "Override the profile from H264_BASELINE to H264_MAIN";
-    workaround_config.output_profile = media::H264PROFILE_MAIN;
-  }
-
-  visible_size_ = workaround_config.input_visible_size;
+  visible_size_ = config.input_visible_size;
   accelerator_ = media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
-      workaround_config, this, gpu_preferences_, gpu_workarounds_);
+      config, this, gpu_preferences_, gpu_workarounds_);
   if (accelerator_ == nullptr) {
     DLOG(ERROR) << "Failed to create a VideoEncodeAccelerator.";
     return mojom::VideoEncodeAccelerator::Result::kPlatformFailureError;
