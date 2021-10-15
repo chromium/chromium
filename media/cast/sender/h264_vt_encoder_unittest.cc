@@ -73,6 +73,9 @@ class MetadataRecorder : public base::RefCountedThreadSafe<MetadataRecorder> {
  public:
   MetadataRecorder() : count_frames_delivered_(0) {}
 
+  MetadataRecorder(const MetadataRecorder&) = delete;
+  MetadataRecorder& operator=(const MetadataRecorder&) = delete;
+
   int count_frames_delivered() const { return count_frames_delivered_; }
 
   void PushExpectation(FrameId expected_frame_id,
@@ -118,8 +121,6 @@ class MetadataRecorder : public base::RefCountedThreadSafe<MetadataRecorder> {
     base::TimeTicks expected_reference_time;
   };
   base::queue<Expectation> expectations_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetadataRecorder);
 };
 
 class EndToEndFrameChecker
@@ -137,6 +138,9 @@ class EndToEndFrameChecker
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(decoder_init_result);
   }
+
+  EndToEndFrameChecker(const EndToEndFrameChecker&) = delete;
+  EndToEndFrameChecker& operator=(const EndToEndFrameChecker&) = delete;
 
   void PushExpectation(scoped_refptr<VideoFrame> frame) {
     expectations_.push(std::move(frame));
@@ -169,8 +173,6 @@ class EndToEndFrameChecker
   FFmpegVideoDecoder decoder_;
   base::queue<scoped_refptr<VideoFrame>> expectations_;
   int count_frames_checked_;
-
-  DISALLOW_COPY_AND_ASSIGN(EndToEndFrameChecker);
 };
 
 void CreateFrameAndMemsetPlane(VideoFrameFactory* const video_frame_factory) {
@@ -204,6 +206,11 @@ class TestPowerSource : public base::PowerMonitorSource {
 };
 
 class H264VideoToolboxEncoderTest : public ::testing::Test {
+ public:
+  H264VideoToolboxEncoderTest(const H264VideoToolboxEncoderTest&) = delete;
+  H264VideoToolboxEncoderTest& operator=(const H264VideoToolboxEncoderTest&) =
+      delete;
+
  protected:
   H264VideoToolboxEncoderTest() = default;
 
@@ -257,9 +264,6 @@ class H264VideoToolboxEncoderTest : public ::testing::Test {
   std::unique_ptr<VideoEncoder> encoder_;
   OperationalStatus operational_status_;
   TestPowerSource* power_source_;  // Owned by the power monitor.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(H264VideoToolboxEncoderTest);
 };
 
 // static

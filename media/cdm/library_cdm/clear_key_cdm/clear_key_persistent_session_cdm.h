@@ -34,6 +34,10 @@ class ClearKeyPersistentSessionCdm : public ContentDecryptionModule {
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb);
 
+  ClearKeyPersistentSessionCdm(const ClearKeyPersistentSessionCdm&) = delete;
+  ClearKeyPersistentSessionCdm& operator=(const ClearKeyPersistentSessionCdm&) =
+      delete;
+
   // ContentDecryptionModule implementation.
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
                             std::unique_ptr<SimpleCdmPromise> promise) override;
@@ -118,8 +122,6 @@ class ClearKeyPersistentSessionCdm : public ContentDecryptionModule {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<ClearKeyPersistentSessionCdm> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClearKeyPersistentSessionCdm);
 };
 
 }  // namespace media

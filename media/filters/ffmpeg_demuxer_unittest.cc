@@ -112,6 +112,10 @@ static void EosOnReadDone(bool* got_eos_buffer,
 // Fixture class to facilitate writing tests.  Takes care of setting up the
 // FFmpeg, pipeline and filter host mocks.
 class FFmpegDemuxerTest : public testing::Test {
+ public:
+  FFmpegDemuxerTest(const FFmpegDemuxerTest&) = delete;
+  FFmpegDemuxerTest& operator=(const FFmpegDemuxerTest&) = delete;
+
  protected:
   FFmpegDemuxerTest() = default;
 
@@ -360,8 +364,6 @@ class FFmpegDemuxerTest : public testing::Test {
     data_source_ = std::make_unique<FileDataSource>();
     EXPECT_TRUE(data_source_->Initialize(file_path));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegDemuxerTest);
 };
 
 TEST_F(FFmpegDemuxerTest, Initialize_OpenFails) {

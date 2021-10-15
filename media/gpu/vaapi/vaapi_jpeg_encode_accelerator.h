@@ -67,6 +67,10 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
                   std::unique_ptr<UnalignedSharedMemory> exif_shm,
                   std::unique_ptr<UnalignedSharedMemory> output_shm,
                   int quality);
+
+    EncodeRequest(const EncodeRequest&) = delete;
+    EncodeRequest& operator=(const EncodeRequest&) = delete;
+
     ~EncodeRequest();
 
     int32_t task_id;
@@ -74,8 +78,6 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
     std::unique_ptr<UnalignedSharedMemory> exif_shm;
     std::unique_ptr<UnalignedSharedMemory> output_shm;
     int quality;
-
-    DISALLOW_COPY_AND_ASSIGN(EncodeRequest);
   };
 
   // The Encoder class is a collection of methods that run on

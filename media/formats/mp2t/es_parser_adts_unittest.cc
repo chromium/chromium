@@ -25,11 +25,11 @@ class EsParserAdtsTest : public EsParserTestBase,
  public:
   EsParserAdtsTest();
 
+  EsParserAdtsTest(const EsParserAdtsTest&) = delete;
+  EsParserAdtsTest& operator=(const EsParserAdtsTest&) = delete;
+
  protected:
   bool Process(const std::vector<Packet>& pes_packets, bool sbr_in_mimetype);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EsParserAdtsTest);
 };
 
 EsParserAdtsTest::EsParserAdtsTest() {

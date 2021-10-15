@@ -33,9 +33,15 @@ class VideoCaptureDeviceLinux : public VideoCaptureDevice {
   static VideoPixelFormat V4l2FourCcToChromiumPixelFormat(uint32_t v4l2_fourcc);
   static std::vector<uint32_t> GetListOfUsableFourCCs(bool favour_mjpeg);
 
+  VideoCaptureDeviceLinux() = delete;
+
   explicit VideoCaptureDeviceLinux(
       scoped_refptr<V4L2CaptureDevice> v4l2,
       const VideoCaptureDeviceDescriptor& device_descriptor);
+
+  VideoCaptureDeviceLinux(const VideoCaptureDeviceLinux&) = delete;
+  VideoCaptureDeviceLinux& operator=(const VideoCaptureDeviceLinux&) = delete;
+
   ~VideoCaptureDeviceLinux() override;
 
   // VideoCaptureDevice implementation.
@@ -72,8 +78,6 @@ class VideoCaptureDeviceLinux : public VideoCaptureDevice {
   int rotation_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceLinux);
 };
 
 }  // namespace media

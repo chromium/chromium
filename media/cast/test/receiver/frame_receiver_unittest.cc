@@ -74,6 +74,10 @@ class FakeFrameClient {
 }  // namespace
 
 class FrameReceiverTest : public ::testing::Test {
+ public:
+  FrameReceiverTest(const FrameReceiverTest&) = delete;
+  FrameReceiverTest& operator=(const FrameReceiverTest&) = delete;
+
  protected:
   FrameReceiverTest() {
     testing_clock_.Advance(base::TimeTicks::Now() - base::TimeTicks());
@@ -149,9 +153,6 @@ class FrameReceiverTest : public ::testing::Test {
   // Important for the FrameReceiver to be declared last, since its dependencies
   // must remain alive until after its destruction.
   std::unique_ptr<FrameReceiver> receiver_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameReceiverTest);
 };
 
 TEST_F(FrameReceiverTest, RejectsUnparsablePackets) {

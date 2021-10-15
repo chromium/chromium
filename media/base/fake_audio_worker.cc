@@ -28,6 +28,9 @@ class FakeAudioWorker::Worker
   Worker(const scoped_refptr<base::SingleThreadTaskRunner>& worker_task_runner,
          const AudioParameters& params);
 
+  Worker(const Worker&) = delete;
+  Worker& operator=(const Worker&) = delete;
+
   bool IsStopped();
   void Start(FakeAudioWorker::Callback worker_cb);
   void Stop();
@@ -60,8 +63,6 @@ class FakeAudioWorker::Worker
   base::CancelableRepeatingClosure worker_task_cb_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Worker);
 };
 
 FakeAudioWorker::FakeAudioWorker(

@@ -26,6 +26,9 @@ class MEDIA_GPU_EXPORT VideoFrameConverter {
 
   VideoFrameConverter();
 
+  VideoFrameConverter(const VideoFrameConverter&) = delete;
+  VideoFrameConverter& operator=(const VideoFrameConverter&) = delete;
+
   // Initialize the converter. This method must be called before any
   // ConvertFrame() is called.
   void Initialize(scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
@@ -60,8 +63,6 @@ class MEDIA_GPU_EXPORT VideoFrameConverter {
   friend struct std::default_delete<VideoFrameConverter>;
   // Called by std::default_delete.
   virtual void Destroy();
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameConverter);
 };
 
 }  // namespace media

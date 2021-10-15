@@ -47,6 +47,9 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   static scoped_refptr<CommandBufferHelper> Create(
       gpu::CommandBufferStub* stub);
 
+  CommandBufferHelper(const CommandBufferHelper&) = delete;
+  CommandBufferHelper& operator=(const CommandBufferHelper&) = delete;
+
   // Gets the associated GLContext.
   //
   // Used by DXVAVDA to test for D3D11 support, and by V4L2VDA to create
@@ -152,8 +155,6 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
  private:
   friend class base::DeleteHelper<CommandBufferHelper>;
   friend class base::RefCountedDeleteOnSequence<CommandBufferHelper>;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferHelper);
 };
 
 }  // namespace media

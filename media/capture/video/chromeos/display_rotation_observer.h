@@ -29,6 +29,10 @@ class ScreenObserverDelegate
       DisplayRotationObserver* observer,
       scoped_refptr<base::SingleThreadTaskRunner> display_task_runner);
 
+  ScreenObserverDelegate() = delete;
+  ScreenObserverDelegate(const ScreenObserverDelegate&) = delete;
+  ScreenObserverDelegate& operator=(const ScreenObserverDelegate&) = delete;
+
   // The user must call RemoveObserver() to drop the reference to |observer_| in
   // ScreenObserverDelegate before deleting |observer_|.
   void RemoveObserver();
@@ -60,8 +64,6 @@ class ScreenObserverDelegate
   const scoped_refptr<base::SingleThreadTaskRunner> display_task_runner_;
   // The task runner on which the ScreenObserverDelegate is created.
   const scoped_refptr<base::SingleThreadTaskRunner> delegate_task_runner_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ScreenObserverDelegate);
 };
 
 }  // namespace media

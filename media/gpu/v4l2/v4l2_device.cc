@@ -344,6 +344,10 @@ scoped_refptr<VideoFrame> V4L2Buffer::GetVideoFrame() {
 class V4L2BuffersList : public base::RefCountedThreadSafe<V4L2BuffersList> {
  public:
   V4L2BuffersList() = default;
+
+  V4L2BuffersList(const V4L2BuffersList&) = delete;
+  V4L2BuffersList& operator=(const V4L2BuffersList&) = delete;
+
   // Return a buffer to this list. Also can be called to set the initial pool
   // of buffers.
   // Note that it is illegal to return the same buffer twice.
@@ -361,7 +365,6 @@ class V4L2BuffersList : public base::RefCountedThreadSafe<V4L2BuffersList> {
 
   mutable base::Lock lock_;
   std::set<size_t> free_buffers_ GUARDED_BY(lock_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2BuffersList);
 };
 
 void V4L2BuffersList::ReturnBuffer(size_t buffer_id) {
@@ -2221,6 +2224,9 @@ bool V4L2Device::SetGOPLength(uint32_t gop_length) {
 
 class V4L2Request {
  public:
+  V4L2Request(const V4L2Request&) = delete;
+  V4L2Request& operator=(const V4L2Request&) = delete;
+
   // Apply the passed controls to the request.
   bool ApplyCtrls(struct v4l2_ext_controls* ctrls);
   // Apply the passed buffer to the request..
@@ -2252,7 +2258,6 @@ class V4L2Request {
   int DecRefCounter();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2Request);
 };
 
 void V4L2Request::IncRefCounter() {

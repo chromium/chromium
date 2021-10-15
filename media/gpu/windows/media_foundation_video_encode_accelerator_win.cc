@@ -129,6 +129,9 @@ class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
         temporal_layer_id(temporal_id),
         data_(size) {}
 
+  EncodeOutput(const EncodeOutput&) = delete;
+  EncodeOutput& operator=(const EncodeOutput&) = delete;
+
   uint8_t* memory() { return data_.data(); }
 
   int size() const { return static_cast<int>(data_.size()); }
@@ -139,21 +142,22 @@ class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
 
  private:
   std::vector<uint8_t> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncodeOutput);
 };
 
 struct MediaFoundationVideoEncodeAccelerator::BitstreamBufferRef {
+  BitstreamBufferRef() = delete;
+
   BitstreamBufferRef(int32_t id,
                      base::WritableSharedMemoryMapping mapping,
                      size_t size)
       : id(id), mapping(std::move(mapping)), size(size) {}
+
+  BitstreamBufferRef(const BitstreamBufferRef&) = delete;
+  BitstreamBufferRef& operator=(const BitstreamBufferRef&) = delete;
+
   const int32_t id;
   const base::WritableSharedMemoryMapping mapping;
   const size_t size;
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BitstreamBufferRef);
 };
 
 // TODO(zijiehe): Respect |compatible_with_win7_| in the implementation. Some

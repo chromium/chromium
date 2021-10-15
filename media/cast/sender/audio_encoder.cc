@@ -77,6 +77,9 @@ class AudioEncoder::ImplBase
     }
   }
 
+  ImplBase(const ImplBase&) = delete;
+  ImplBase& operator=(const ImplBase&) = delete;
+
   OperationalStatus InitializationResult() const {
     return operational_status_;
   }
@@ -226,8 +229,6 @@ class AudioEncoder::ImplBase
   // Set to non-zero to indicate the next output frame skipped over audio
   // samples in order to recover from an input underrun.
   int samples_dropped_from_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImplBase);
 };
 
 #if !defined(OS_IOS)
@@ -271,6 +272,9 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
     CHECK_EQ(opus_encoder_ctl(opus_encoder_, OPUS_SET_BITRATE(bitrate)),
              OPUS_OK);
   }
+
+  OpusImpl(const OpusImpl&) = delete;
+  OpusImpl& operator=(const OpusImpl&) = delete;
 
  private:
   ~OpusImpl() final = default;
@@ -324,8 +328,6 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
   // Note: Whereas other RTP implementations do not, the cast library is
   // perfectly capable of transporting larger than MTU-sized audio frames.
   static const int kOpusMaxPayloadSize = 4000;
-
-  DISALLOW_COPY_AND_ASSIGN(OpusImpl);
 };
 #endif
 
@@ -367,6 +369,9 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     }
     ImplBase::operational_status_ = STATUS_INITIALIZED;
   }
+
+  AppleAacImpl(const AppleAacImpl&) = delete;
+  AppleAacImpl& operator=(const AppleAacImpl&) = delete;
 
  private:
   ~AppleAacImpl() override { Teardown(); }
@@ -699,8 +704,6 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
 
   // The number of access units emitted so far by the encoder.
   uint64_t num_access_units_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppleAacImpl);
 };
 #endif  // defined(OS_MAC)
 
@@ -721,6 +724,9 @@ class AudioEncoder::Pcm16Impl final : public AudioEncoder::ImplBase {
       return;
     operational_status_ = STATUS_INITIALIZED;
   }
+
+  Pcm16Impl(const Pcm16Impl&) = delete;
+  Pcm16Impl& operator=(const Pcm16Impl&) = delete;
 
  private:
   ~Pcm16Impl() final = default;
@@ -747,8 +753,6 @@ class AudioEncoder::Pcm16Impl final : public AudioEncoder::ImplBase {
 
  private:
   const std::unique_ptr<int16_t[]> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Pcm16Impl);
 };
 
 AudioEncoder::AudioEncoder(

@@ -67,8 +67,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
     ANDROID_API_2_ACQUIRED_IMAGE_IS_NULL = 9,
   };
 
+  VideoCaptureDeviceAndroid() = delete;
+
   explicit VideoCaptureDeviceAndroid(
       const VideoCaptureDeviceDescriptor& device_descriptor);
+
+  VideoCaptureDeviceAndroid(const VideoCaptureDeviceAndroid&) = delete;
+  VideoCaptureDeviceAndroid& operator=(const VideoCaptureDeviceAndroid&) =
+      delete;
+
   ~VideoCaptureDeviceAndroid() override;
 
   static VideoCaptureDevice* Create(
@@ -207,8 +214,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
   base::android::ScopedJavaLocalRef<jobject> j_capture_;
 
   base::WeakPtrFactory<VideoCaptureDeviceAndroid> weak_ptr_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceAndroid);
 };
 
 }  // namespace media

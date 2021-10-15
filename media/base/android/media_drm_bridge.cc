@@ -165,6 +165,10 @@ CdmKeyInformation::KeyStatus ConvertKeyStatus(KeyStatus key_status,
 class KeySystemManager {
  public:
   KeySystemManager();
+
+  KeySystemManager(const KeySystemManager&) = delete;
+  KeySystemManager& operator=(const KeySystemManager&) = delete;
+
   UUID GetUUID(const std::string& key_system);
   std::vector<std::string> GetPlatformKeySystemNames();
 
@@ -172,8 +176,6 @@ class KeySystemManager {
   using KeySystemUuidMap = MediaDrmBridgeClient::KeySystemUuidMap;
 
   KeySystemUuidMap key_system_uuid_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeySystemManager);
 };
 
 KeySystemManager::KeySystemManager() {

@@ -26,6 +26,9 @@ class VaapiH264Picture : public H264Picture {
  public:
   explicit VaapiH264Picture(scoped_refptr<VASurface> va_surface);
 
+  VaapiH264Picture(const VaapiH264Picture&) = delete;
+  VaapiH264Picture& operator=(const VaapiH264Picture&) = delete;
+
   VaapiH264Picture* AsVaapiH264Picture() override;
 
   scoped_refptr<VASurface> va_surface() const { return va_surface_; }
@@ -36,8 +39,6 @@ class VaapiH264Picture : public H264Picture {
 
  private:
   scoped_refptr<VASurface> va_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiH264Picture);
 };
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
@@ -65,6 +66,9 @@ class VaapiVP8Picture : public VP8Picture {
  public:
   explicit VaapiVP8Picture(scoped_refptr<VASurface> va_surface);
 
+  VaapiVP8Picture(const VaapiVP8Picture&) = delete;
+  VaapiVP8Picture& operator=(const VaapiVP8Picture&) = delete;
+
   VaapiVP8Picture* AsVaapiVP8Picture() override;
 
   scoped_refptr<VASurface> va_surface() const { return va_surface_; }
@@ -75,13 +79,14 @@ class VaapiVP8Picture : public VP8Picture {
 
  private:
   scoped_refptr<VASurface> va_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiVP8Picture);
 };
 
 class VaapiVP9Picture : public VP9Picture {
  public:
   explicit VaapiVP9Picture(scoped_refptr<VASurface> va_surface);
+
+  VaapiVP9Picture(const VaapiVP9Picture&) = delete;
+  VaapiVP9Picture& operator=(const VaapiVP9Picture&) = delete;
 
   VaapiVP9Picture* AsVaapiVP9Picture() override;
 
@@ -95,8 +100,6 @@ class VaapiVP9Picture : public VP9Picture {
   scoped_refptr<VP9Picture> CreateDuplicate() override;
 
   scoped_refptr<VASurface> va_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiVP9Picture);
 };
 
 class VaapiAV1Picture : public AV1Picture {

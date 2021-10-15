@@ -487,6 +487,9 @@ class VADisplayState {
  public:
   static VADisplayState* Get();
 
+  VADisplayState(const VADisplayState&) = delete;
+  VADisplayState& operator=(const VADisplayState&) = delete;
+
   // Initialize static data before sandbox is enabled.
   static void PreSandboxInitialization();
 
@@ -528,8 +531,6 @@ class VADisplayState {
 
   // Enumerated version of vaQueryVendorString(). Valid after Initialize().
   VAImplementation implementation_type_ = VAImplementation::kInvalid;
-
-  DISALLOW_COPY_AND_ASSIGN(VADisplayState);
 };
 
 // static
@@ -937,6 +938,9 @@ class VASupportedProfiles {
   };
   static const VASupportedProfiles& Get();
 
+  VASupportedProfiles(const VASupportedProfiles&) = delete;
+  VASupportedProfiles& operator=(const VASupportedProfiles&) = delete;
+
   // Determines if |mode| supports |va_profile| (and |va_entrypoint| if defined
   // and valid). If so, returns a const pointer to its ProfileInfo, otherwise
   // returns nullptr.
@@ -975,8 +979,6 @@ class VASupportedProfiles {
                 "|supported_profiles_| size is incorrect.");
 
   const ReportErrorToUMACB report_error_to_uma_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(VASupportedProfiles);
 };
 
 // static
@@ -1260,6 +1262,9 @@ class VASupportedImageFormats {
  public:
   static const VASupportedImageFormats& Get();
 
+  VASupportedImageFormats(const VASupportedImageFormats&) = delete;
+  VASupportedImageFormats& operator=(const VASupportedImageFormats&) = delete;
+
   bool IsImageFormatSupported(const VAImageFormat& va_format) const;
 
   const std::vector<VAImageFormat>& GetSupportedImageFormats() const;
@@ -1279,8 +1284,6 @@ class VASupportedImageFormats {
 
   std::vector<VAImageFormat> supported_formats_;
   const ReportErrorToUMACB report_error_to_uma_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(VASupportedImageFormats);
 };
 
 // static

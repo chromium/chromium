@@ -22,6 +22,9 @@ class MEDIA_EXPORT ClocklessAudioSink : public AudioRendererSink {
   ClocklessAudioSink();
   explicit ClocklessAudioSink(const OutputDeviceInfo& device_info);
 
+  ClocklessAudioSink(const ClocklessAudioSink&) = delete;
+  ClocklessAudioSink& operator=(const ClocklessAudioSink&) = delete;
+
   // AudioRendererSink implementation.
   void Initialize(const AudioParameters& params,
                   RenderCallback* callback) override;
@@ -60,8 +63,6 @@ class MEDIA_EXPORT ClocklessAudioSink : public AudioRendererSink {
 
   // Time taken in last set of Render() calls.
   base::TimeDelta playback_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClocklessAudioSink);
 };
 
 }  // namespace media

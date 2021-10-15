@@ -41,6 +41,11 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   explicit MediaFoundationVideoEncodeAccelerator(bool compatible_with_win7,
                                                  bool enable_async_mft);
 
+  MediaFoundationVideoEncodeAccelerator(
+      const MediaFoundationVideoEncodeAccelerator&) = delete;
+  MediaFoundationVideoEncodeAccelerator& operator=(
+      const MediaFoundationVideoEncodeAccelerator&) = delete;
+
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config, Client* client) override;
@@ -203,8 +208,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // other destructors run.
   base::WeakPtrFactory<MediaFoundationVideoEncodeAccelerator>
       encoder_task_weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFoundationVideoEncodeAccelerator);
 };
 
 }  // namespace media

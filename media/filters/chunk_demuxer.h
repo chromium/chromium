@@ -41,7 +41,13 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
  public:
   using BufferQueue = base::circular_deque<scoped_refptr<StreamParserBuffer>>;
 
+  ChunkDemuxerStream() = delete;
+
   ChunkDemuxerStream(Type type, MediaTrack::Id media_track_id);
+
+  ChunkDemuxerStream(const ChunkDemuxerStream&) = delete;
+  ChunkDemuxerStream& operator=(const ChunkDemuxerStream&) = delete;
+
   ~ChunkDemuxerStream() override;
 
   // ChunkDemuxerStream control methods.
@@ -188,8 +194,6 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
   State state_ GUARDED_BY(lock_);
   ReadCB read_cb_ GUARDED_BY(lock_);
   bool is_enabled_ GUARDED_BY(lock_);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ChunkDemuxerStream);
 };
 
 // Demuxer implementation that allows chunks of media data to be passed

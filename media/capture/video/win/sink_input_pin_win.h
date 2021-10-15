@@ -22,7 +22,12 @@ extern const REFERENCE_TIME kSecondsToReferenceTime;
 // Input pin of the SinkFilter.
 class SinkInputPin : public PinBase {
  public:
+  SinkInputPin() = delete;
+
   SinkInputPin(IBaseFilter* filter, SinkFilterObserver* observer);
+
+  SinkInputPin(const SinkInputPin&) = delete;
+  SinkInputPin& operator=(const SinkInputPin&) = delete;
 
   void SetRequestedMediaFormat(VideoPixelFormat pixel_format,
                                float frame_rate,
@@ -43,8 +48,6 @@ class SinkInputPin : public PinBase {
   VideoCaptureFormat resulting_format_;
   bool flip_y_;
   SinkFilterObserver* observer_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SinkInputPin);
 };
 
 }  // namespace media

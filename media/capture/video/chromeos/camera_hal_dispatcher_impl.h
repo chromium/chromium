@@ -133,6 +133,9 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
  public:
   static CameraHalDispatcherImpl* GetInstance();
 
+  CameraHalDispatcherImpl(const CameraHalDispatcherImpl&) = delete;
+  CameraHalDispatcherImpl& operator=(const CameraHalDispatcherImpl&) = delete;
+
   bool Start(MojoMjpegDecodeAcceleratorFactoryCB jda_factory,
              MojoJpegEncodeAcceleratorFactoryCB jea_factory);
 
@@ -293,8 +296,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       privacy_switch_observers_;
 
   base::WeakPtrFactory<CameraHalDispatcherImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CameraHalDispatcherImpl);
 };
 
 }  // namespace media

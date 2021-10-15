@@ -24,6 +24,9 @@ class MockAudioRendererSink : public SwitchableAudioRendererSink {
                         OutputDeviceStatus device_status,
                         const AudioParameters& device_output_params);
 
+  MockAudioRendererSink(const MockAudioRendererSink&) = delete;
+  MockAudioRendererSink& operator=(const MockAudioRendererSink&) = delete;
+
   MOCK_METHOD0(Start, void());
   MOCK_METHOD0(Stop, void());
   MOCK_METHOD0(Flush, void());
@@ -49,8 +52,6 @@ class MockAudioRendererSink : public SwitchableAudioRendererSink {
  private:
   RenderCallback* callback_;
   OutputDeviceInfo output_device_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAudioRendererSink);
 };
 
 }  // namespace media

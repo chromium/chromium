@@ -21,6 +21,9 @@ class H264POCTest : public testing::Test {
     slice_hdr_.nal_ref_idc = 1;
   }
 
+  H264POCTest(const H264POCTest&) = delete;
+  H264POCTest& operator=(const H264POCTest&) = delete;
+
  protected:
   void ComputePOC() {
     poc_ = h264_poc_.ComputePicOrderCnt(&sps_, slice_hdr_);
@@ -48,8 +51,6 @@ class H264POCTest : public testing::Test {
   H264SPS sps_;
   H264SliceHeader slice_hdr_;
   H264POC h264_poc_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264POCTest);
 };
 
 TEST_F(H264POCTest, PicOrderCntType0) {

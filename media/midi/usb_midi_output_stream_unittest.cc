@@ -57,6 +57,10 @@ class MockUsbMidiDevice : public UsbMidiDevice {
 };
 
 class UsbMidiOutputStreamTest : public ::testing::Test {
+ public:
+  UsbMidiOutputStreamTest(const UsbMidiOutputStreamTest&) = delete;
+  UsbMidiOutputStreamTest& operator=(const UsbMidiOutputStreamTest&) = delete;
+
  protected:
   UsbMidiOutputStreamTest() {
     UsbMidiJack jack(&device_, 1, 2, 4);
@@ -65,9 +69,6 @@ class UsbMidiOutputStreamTest : public ::testing::Test {
 
   MockUsbMidiDevice device_;
   std::unique_ptr<UsbMidiOutputStream> stream_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsbMidiOutputStreamTest);
 };
 
 TEST_F(UsbMidiOutputStreamTest, SendEmpty) {

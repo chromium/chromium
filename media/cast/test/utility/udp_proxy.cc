@@ -351,6 +351,9 @@ class InterruptedPoissonProcess::InternalBuffer : public PacketPipe {
   InternalBuffer(base::WeakPtr<InterruptedPoissonProcess> ipp, size_t size)
       : ipp_(ipp), stored_size_(0), stored_limit_(size), clock_(nullptr) {}
 
+  InternalBuffer(const InternalBuffer&) = delete;
+  InternalBuffer& operator=(const InternalBuffer&) = delete;
+
   void Send(std::unique_ptr<Packet> packet) final {
     // Drop if buffer is full.
     if (stored_size_ >= stored_limit_)
@@ -401,8 +404,6 @@ class InterruptedPoissonProcess::InternalBuffer : public PacketPipe {
   base::circular_deque<base::TimeTicks> buffer_time_;
   const base::TickClock* clock_;
   base::WeakPtrFactory<InternalBuffer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InternalBuffer);
 };
 
 InterruptedPoissonProcess::InterruptedPoissonProcess(

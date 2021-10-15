@@ -100,6 +100,9 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
       SecurityLevel security_level,
       CreateFetcherCB create_fetcher_cb);
 
+  MediaDrmBridge(const MediaDrmBridge&) = delete;
+  MediaDrmBridge& operator=(const MediaDrmBridge&) = delete;
+
   // ContentDecryptionModule implementation.
   void SetServerCertificate(
       const std::vector<uint8_t>& certificate,
@@ -343,8 +346,6 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaDrmBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDrmBridge);
 };
 
 }  // namespace media

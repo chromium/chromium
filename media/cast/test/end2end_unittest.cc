@@ -873,6 +873,9 @@ class TransportClient : public CastTransport::Client {
                   End2EndTest* e2e_test)
       : log_event_dispatcher_(log_event_dispatcher), e2e_test_(e2e_test) {}
 
+  TransportClient(const TransportClient&) = delete;
+  TransportClient& operator=(const TransportClient&) = delete;
+
   void OnStatusChanged(media::cast::CastTransportStatus status) final {
     EXPECT_EQ(TRANSPORT_STREAM_INITIALIZED, status);
   }
@@ -890,8 +893,6 @@ class TransportClient : public CastTransport::Client {
  private:
   LogEventDispatcher* const log_event_dispatcher_;  // Not owned by this class.
   End2EndTest* const e2e_test_;                     // Not owned by this class.
-
-  DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };
 
 // Cast E2E tests are not designed to run on official builds, primarily due

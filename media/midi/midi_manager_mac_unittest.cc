@@ -34,6 +34,9 @@ class FakeMidiManagerClient : public MidiManagerClient {
         wait_for_port_(true),
         unexpected_callback_(false) {}
 
+  FakeMidiManagerClient(const FakeMidiManagerClient&) = delete;
+  FakeMidiManagerClient& operator=(const FakeMidiManagerClient&) = delete;
+
   // MidiManagerClient implementation.
   void AddInputPort(const mojom::PortInfo& info) override {}
   void AddOutputPort(const mojom::PortInfo& info) override {
@@ -105,8 +108,6 @@ class FakeMidiManagerClient : public MidiManagerClient {
   mojom::PortInfo info_;
   bool wait_for_port_;
   bool unexpected_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMidiManagerClient);
 };
 
 class MidiManagerMacTest : public ::testing::Test {

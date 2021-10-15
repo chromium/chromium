@@ -46,6 +46,10 @@ RtcpReportBlock GetReportBlock() {
 
 
 class RtcpBuilderTest : public ::testing::Test {
+ public:
+  RtcpBuilderTest(const RtcpBuilderTest&) = delete;
+  RtcpBuilderTest& operator=(const RtcpBuilderTest&) = delete;
+
  protected:
   RtcpBuilderTest()
       : rtcp_builder_(new RtcpBuilder(kSendingSsrc)) {}
@@ -93,8 +97,6 @@ class RtcpBuilderTest : public ::testing::Test {
   }
 
   std::unique_ptr<RtcpBuilder> rtcp_builder_;
-
-  DISALLOW_COPY_AND_ASSIGN(RtcpBuilderTest);
 };
 
 TEST_F(RtcpBuilderTest, RtcpReceiverReport) {

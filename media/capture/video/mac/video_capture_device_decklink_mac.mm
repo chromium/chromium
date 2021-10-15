@@ -52,6 +52,9 @@ class DeckLinkCaptureDelegate
       const media::VideoCaptureDeviceDescriptor& device_descriptor,
       media::VideoCaptureDeviceDeckLinkMac* frame_receiver);
 
+  DeckLinkCaptureDelegate(const DeckLinkCaptureDelegate&) = delete;
+  DeckLinkCaptureDelegate& operator=(const DeckLinkCaptureDelegate&) = delete;
+
   void AllocateAndStart(const media::VideoCaptureParams& params);
   void StopAndDeAllocate();
 
@@ -104,8 +107,6 @@ class DeckLinkCaptureDelegate
   friend class base::RefCountedThreadSafe<DeckLinkCaptureDelegate>;
 
   ~DeckLinkCaptureDelegate() override;
-
-  DISALLOW_COPY_AND_ASSIGN(DeckLinkCaptureDelegate);
 };
 
 static float GetDisplayModeFrameRate(

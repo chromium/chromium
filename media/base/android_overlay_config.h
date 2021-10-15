@@ -48,6 +48,9 @@ struct MEDIA_EXPORT AndroidOverlayConfig {
   // Configuration used to create an overlay.
   AndroidOverlayConfig();
   AndroidOverlayConfig(AndroidOverlayConfig&&);
+
+  AndroidOverlayConfig(const AndroidOverlayConfig&) = delete;
+
   ~AndroidOverlayConfig();
 
   // Initial rectangle for the overlay.  May be changed via ScheduleLayout().
@@ -79,8 +82,6 @@ struct MEDIA_EXPORT AndroidOverlayConfig {
 
   // Optional, may be empty.
   PowerEfficientCB power_cb;
-
-  DISALLOW_COPY(AndroidOverlayConfig);
 };
 
 // Common factory type.

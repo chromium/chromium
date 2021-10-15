@@ -49,6 +49,9 @@ class WebMVideoClientTest : public testing::TestWithParam<CodecTestParams> {
     webm_video_client_.OnUInt(kWebMIdPixelHeight, kCodedSize.height());
   }
 
+  WebMVideoClientTest(const WebMVideoClientTest&) = delete;
+  WebMVideoClientTest& operator=(const WebMVideoClientTest&) = delete;
+
   WebMParserClient* OnListStart(int id) {
     return webm_video_client_.OnListStart(id);
   }
@@ -61,8 +64,6 @@ class WebMVideoClientTest : public testing::TestWithParam<CodecTestParams> {
 
   testing::StrictMock<MockMediaLog> media_log_;
   WebMVideoClient webm_video_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMVideoClientTest);
 };
 
 TEST_P(WebMVideoClientTest, AutodetectVp9Profile2NoDetection) {

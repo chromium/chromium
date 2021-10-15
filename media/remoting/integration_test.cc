@@ -23,14 +23,16 @@ class MediaRemotingIntegrationTest : public testing::Test,
         base::Unretained(this)));
   }
 
+  MediaRemotingIntegrationTest(const MediaRemotingIntegrationTest&) = delete;
+  MediaRemotingIntegrationTest& operator=(const MediaRemotingIntegrationTest&) =
+      delete;
+
  private:
   std::unique_ptr<Renderer> CreateEnd2EndTestRenderer(
       absl::optional<RendererType> renderer_type) {
     return std::make_unique<End2EndTestRenderer>(
         this->CreateDefaultRenderer(renderer_type));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRemotingIntegrationTest);
 };
 
 TEST_F(MediaRemotingIntegrationTest, BasicPlayback) {

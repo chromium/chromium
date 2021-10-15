@@ -290,6 +290,9 @@ class WebMClusterParserTest : public testing::Test {
  public:
   WebMClusterParserTest() : parser_(CreateDefaultParser()) {}
 
+  WebMClusterParserTest(const WebMClusterParserTest&) = delete;
+  WebMClusterParserTest& operator=(const WebMClusterParserTest&) = delete;
+
  protected:
   void ResetParserToHaveDefaultDurations() {
     base::TimeDelta default_audio_duration =
@@ -359,9 +362,6 @@ class WebMClusterParserTest : public testing::Test {
 
   StrictMock<MockMediaLog> media_log_;
   std::unique_ptr<WebMClusterParser> parser_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebMClusterParserTest);
 };
 
 TEST_F(WebMClusterParserTest, HeldBackBufferHoldsBackAllTracks) {

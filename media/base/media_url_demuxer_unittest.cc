@@ -24,6 +24,9 @@ class MediaUrlDemuxerTest : public testing::Test {
       : default_media_url_(GURL("http://example.com/file.mp4")),
         default_first_party_url_(GURL("http://example.com/")) {}
 
+  MediaUrlDemuxerTest(const MediaUrlDemuxerTest&) = delete;
+  MediaUrlDemuxerTest& operator=(const MediaUrlDemuxerTest&) = delete;
+
   void InitializeTest(const GURL& media_url,
                       const GURL& first_party,
                       bool allow_credentials) {
@@ -47,9 +50,6 @@ class MediaUrlDemuxerTest : public testing::Test {
 
   // Necessary, or else base::ThreadTaskRunnerHandle::Get() fails.
   base::test::SingleThreadTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaUrlDemuxerTest);
 };
 
 TEST_F(MediaUrlDemuxerTest, BaseCase) {

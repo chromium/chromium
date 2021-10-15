@@ -58,6 +58,9 @@ class AudioConverterTest
         std::make_unique<FakeAudioRenderCallback>(step, kSampleRate);
   }
 
+  AudioConverterTest(const AudioConverterTest&) = delete;
+  AudioConverterTest& operator=(const AudioConverterTest&) = delete;
+
   // Creates |count| input callbacks to be used for conversion testing.
   void InitializeInputs(int count) {
     // Setup FakeAudioRenderCallback step to compensate for resampling.
@@ -191,8 +194,6 @@ class AudioConverterTest
   // Epsilon value with which to perform comparisons between |audio_bus_| and
   // |expected_audio_bus_|.
   double epsilon_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioConverterTest);
 };
 
 // Ensure the buffer delay provided by AudioConverter is accurate.

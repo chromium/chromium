@@ -38,6 +38,9 @@ class MEDIA_GPU_EXPORT CodecAllocator {
   static CodecAllocator* GetInstance(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  CodecAllocator(const CodecAllocator&) = delete;
+  CodecAllocator& operator=(const CodecAllocator&) = delete;
+
   using CodecFactoryCB =
       base::RepeatingCallback<std::unique_ptr<MediaCodecBridge>(
           const VideoCodecConfig& config)>;
@@ -108,8 +111,6 @@ class MEDIA_GPU_EXPORT CodecAllocator {
 
   // True if only software codec creation is currently allowed due to hangs.
   bool force_sw_codecs_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CodecAllocator);
 };
 
 }  // namespace media

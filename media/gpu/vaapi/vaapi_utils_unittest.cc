@@ -35,6 +35,10 @@ constexpr VAImageFormat kImageFormatI420 = {
 }  // namespace
 
 class VaapiUtilsTest : public testing::Test {
+ public:
+  VaapiUtilsTest(const VaapiUtilsTest&) = delete;
+  VaapiUtilsTest& operator=(const VaapiUtilsTest&) = delete;
+
  protected:
   VaapiUtilsTest() = default;
 
@@ -51,8 +55,6 @@ class VaapiUtilsTest : public testing::Test {
 
  protected:
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiUtilsTest);
 };
 
 TEST_F(VaapiUtilsTest, ScopedVABuffer) {

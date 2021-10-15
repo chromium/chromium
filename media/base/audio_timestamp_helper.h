@@ -38,7 +38,12 @@ class MEDIA_EXPORT AudioTimestampHelper {
   // sample rate (in samples per second).
   static int64_t TimeToFrames(base::TimeDelta time, int samples_per_second);
 
+  AudioTimestampHelper() = delete;
+
   explicit AudioTimestampHelper(int samples_per_second);
+
+  AudioTimestampHelper(const AudioTimestampHelper&) = delete;
+  AudioTimestampHelper& operator=(const AudioTimestampHelper&) = delete;
 
   // Sets the base timestamp to |base_timestamp| and the sets count to 0.
   void SetBaseTimestamp(base::TimeDelta base_timestamp);
@@ -74,8 +79,6 @@ class MEDIA_EXPORT AudioTimestampHelper {
 
   // Number of frames accumulated by AddFrames() calls.
   int64_t frame_count_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AudioTimestampHelper);
 };
 
 }  // namespace media

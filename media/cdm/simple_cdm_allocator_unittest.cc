@@ -21,6 +21,9 @@ class TestCdmBuffer final : public cdm::Buffer {
     return new TestCdmBuffer(capacity);
   }
 
+  TestCdmBuffer(const TestCdmBuffer&) = delete;
+  TestCdmBuffer& operator=(const TestCdmBuffer&) = delete;
+
   // cdm::Buffer implementation.
   void Destroy() override {
     DestroyCalled();
@@ -42,8 +45,6 @@ class TestCdmBuffer final : public cdm::Buffer {
 
   std::vector<uint8_t> buffer_;
   uint32_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCdmBuffer);
 };
 
 class SimpleCdmAllocatorTest : public testing::Test {

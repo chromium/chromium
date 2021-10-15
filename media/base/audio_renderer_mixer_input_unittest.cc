@@ -46,6 +46,10 @@ class AudioRendererMixerInputTest : public testing::Test,
     audio_bus_ = AudioBus::Create(audio_parameters_);
   }
 
+  AudioRendererMixerInputTest(const AudioRendererMixerInputTest&) = delete;
+  AudioRendererMixerInputTest& operator=(const AudioRendererMixerInputTest&) =
+      delete;
+
   void CreateMixerInput(const std::string& device_id) {
     mixer_input_ = new AudioRendererMixerInput(this, kFrameToken, device_id,
                                                AudioLatency::LATENCY_PLAYBACK);
@@ -112,9 +116,6 @@ class AudioRendererMixerInputTest : public testing::Test,
   scoped_refptr<AudioRendererMixerInput> mixer_input_;
   std::unique_ptr<FakeAudioRenderCallback> fake_callback_;
   std::unique_ptr<AudioBus> audio_bus_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererMixerInputTest);
 };
 
 // Test that getting and setting the volume work as expected.  The volume is

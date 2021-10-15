@@ -34,13 +34,21 @@ class CameraDeviceDelegate;
 class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
     : public DisplayRotationObserver {
  public:
+  VideoCaptureDeviceChromeOSDelegate() = delete;
+
   VideoCaptureDeviceChromeOSDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       const VideoCaptureDeviceDescriptor& device_descriptor,
       scoped_refptr<CameraHalDelegate> camera_hal_delegate,
       base::OnceClosure cleanup_callback);
 
+  VideoCaptureDeviceChromeOSDelegate(
+      const VideoCaptureDeviceChromeOSDelegate&) = delete;
+  VideoCaptureDeviceChromeOSDelegate& operator=(
+      const VideoCaptureDeviceChromeOSDelegate&) = delete;
+
   ~VideoCaptureDeviceChromeOSDelegate();
+
   void Shutdown();
   bool HasDeviceClient();
 
@@ -109,8 +117,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
 
   base::WeakPtrFactory<VideoCaptureDeviceChromeOSDelegate> weak_ptr_factory_{
       this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceChromeOSDelegate);
 };
 
 }  // namespace media

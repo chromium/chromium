@@ -29,6 +29,9 @@ class MEDIA_EXPORT AudioOutputProxy : public AudioOutputStream {
   // Caller keeps ownership of |dispatcher|.
   explicit AudioOutputProxy(base::WeakPtr<AudioOutputDispatcher> dispatcher);
 
+  AudioOutputProxy(const AudioOutputProxy&) = delete;
+  AudioOutputProxy& operator=(const AudioOutputProxy&) = delete;
+
   // AudioOutputStream interface.
   bool Open() override;
   void Start(AudioSourceCallback* callback) override;
@@ -62,8 +65,6 @@ class MEDIA_EXPORT AudioOutputProxy : public AudioOutputStream {
   double volume_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputProxy);
 };
 
 }  // namespace media

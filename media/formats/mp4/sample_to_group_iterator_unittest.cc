@@ -39,13 +39,14 @@ class SampleToGroupIteratorTest : public testing::Test {
         new SampleToGroupIterator(sample_to_group_));
   }
 
+  SampleToGroupIteratorTest(const SampleToGroupIteratorTest&) = delete;
+  SampleToGroupIteratorTest& operator=(const SampleToGroupIteratorTest&) =
+      delete;
+
  protected:
   std::vector<uint32_t> sample_to_group_table_;
   SampleToGroup sample_to_group_;
   std::unique_ptr<SampleToGroupIterator> sample_to_group_iterator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SampleToGroupIteratorTest);
 };
 
 TEST_F(SampleToGroupIteratorTest, EmptyTable) {

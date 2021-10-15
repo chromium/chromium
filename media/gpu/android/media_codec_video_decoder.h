@@ -40,14 +40,16 @@ struct PendingDecode {
   static PendingDecode CreateEos();
   PendingDecode(scoped_refptr<DecoderBuffer> buffer,
                 VideoDecoder::DecodeCB decode_cb);
+
+  PendingDecode(const PendingDecode&) = delete;
+  PendingDecode& operator=(const PendingDecode&) = delete;
+
   PendingDecode(PendingDecode&& other);
+
   ~PendingDecode();
 
   scoped_refptr<DecoderBuffer> buffer;
   VideoDecoder::DecodeCB decode_cb;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PendingDecode);
 };
 
 // An Android VideoDecoder that delegates to MediaCodec.

@@ -28,6 +28,12 @@ namespace media {
 class AudioSystemCallbackExpectations {
  public:
   AudioSystemCallbackExpectations() = default;
+
+  AudioSystemCallbackExpectations(const AudioSystemCallbackExpectations&) =
+      delete;
+  AudioSystemCallbackExpectations& operator=(
+      const AudioSystemCallbackExpectations&) = delete;
+
   AudioSystem::OnAudioParamsCallback GetAudioParamsCallback(
       const base::Location& location,
       base::OnceClosure on_cb_received,
@@ -85,7 +91,6 @@ class AudioSystemCallbackExpectations {
                   const absl::optional<std::string>& result_id);
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(AudioSystemCallbackExpectations);
 };
 
 // Template test case to test AudioSystem implementations.

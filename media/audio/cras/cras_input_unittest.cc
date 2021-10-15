@@ -71,6 +71,9 @@ class CrasInputStreamTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  CrasInputStreamTest(const CrasInputStreamTest&) = delete;
+  CrasInputStreamTest& operator=(const CrasInputStreamTest&) = delete;
+
   ~CrasInputStreamTest() override {
     mock_manager_->Shutdown();
     ash::CrasAudioHandler::Shutdown();
@@ -131,9 +134,6 @@ class CrasInputStreamTest : public testing::Test {
 
   base::TestMessageLoop message_loop_;
   std::unique_ptr<StrictMock<MockAudioManagerCrasInput>> mock_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrasInputStreamTest);
 };
 
 const unsigned int CrasInputStreamTest::kTestCaptureDurationMs = 250;

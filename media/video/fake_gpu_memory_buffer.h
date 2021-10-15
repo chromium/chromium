@@ -16,10 +16,15 @@ namespace media {
 // A fake implementation of gfx::GpuMemoryBuffer for testing purposes.
 class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  public:
+  FakeGpuMemoryBuffer() = delete;
+
   FakeGpuMemoryBuffer(const gfx::Size& size, gfx::BufferFormat format);
   FakeGpuMemoryBuffer(const gfx::Size& size,
                       gfx::BufferFormat format,
                       uint64_t modifier);
+
+  FakeGpuMemoryBuffer(const FakeGpuMemoryBuffer&) = delete;
+  FakeGpuMemoryBuffer& operator=(const FakeGpuMemoryBuffer&) = delete;
 
   // gfx::GpuMemoryBuffer implementation.
   ~FakeGpuMemoryBuffer() override;
@@ -46,7 +51,6 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   VideoPixelFormat video_pixel_format_ = PIXEL_FORMAT_UNKNOWN;
   std::vector<uint8_t> data_;
   gfx::GpuMemoryBufferHandle handle_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(FakeGpuMemoryBuffer);
 };
 
 class FakeGpuMemoryBufferSupport : public gpu::GpuMemoryBufferSupport {

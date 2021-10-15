@@ -23,8 +23,14 @@ class USB_MIDI_EXPORT UsbMidiDeviceAndroid : public UsbMidiDevice {
  public:
   static std::unique_ptr<Factory> CreateFactory();
 
+  UsbMidiDeviceAndroid() = delete;
+
   UsbMidiDeviceAndroid(const base::android::JavaRef<jobject>& raw_device,
                        UsbMidiDeviceDelegate* delegate);
+
+  UsbMidiDeviceAndroid(const UsbMidiDeviceAndroid&) = delete;
+  UsbMidiDeviceAndroid& operator=(const UsbMidiDeviceAndroid&) = delete;
+
   ~UsbMidiDeviceAndroid() override;
 
   // UsbMidiDevice implementation.
@@ -53,8 +59,6 @@ class USB_MIDI_EXPORT UsbMidiDeviceAndroid : public UsbMidiDevice {
   std::string manufacturer_;
   std::string product_;
   std::string device_version_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(UsbMidiDeviceAndroid);
 };
 
 }  // namespace midi

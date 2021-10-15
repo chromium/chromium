@@ -65,6 +65,10 @@ class MojoSharedBufferVideoFrame : public VideoFrame {
       std::vector<int32_t> strides,
       base::TimeDelta timestamp);
 
+  MojoSharedBufferVideoFrame(const MojoSharedBufferVideoFrame&) = delete;
+  MojoSharedBufferVideoFrame& operator=(const MojoSharedBufferVideoFrame&) =
+      delete;
+
   // Returns the offsets relative to the start of |shared_buffer| for the
   // |plane| specified.
   size_t PlaneOffset(size_t plane) const;
@@ -105,8 +109,6 @@ class MojoSharedBufferVideoFrame : public VideoFrame {
   size_t shared_buffer_size_;
   size_t offsets_[kMaxPlanes];
   MojoSharedBufferDoneCB mojo_shared_buffer_done_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoSharedBufferVideoFrame);
 };
 
 }  // namespace media

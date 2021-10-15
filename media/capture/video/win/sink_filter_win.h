@@ -61,7 +61,12 @@ class SinkInputPin;
 class __declspec(uuid("88cdbbdc-a73b-4afa-acbf-15d5e2ce12c3")) SinkFilter
     : public FilterBase {
  public:
+  SinkFilter() = delete;
+
   explicit SinkFilter(SinkFilterObserver* observer);
+
+  SinkFilter(const SinkFilter&) = delete;
+  SinkFilter& operator=(const SinkFilter&) = delete;
 
   void SetRequestedMediaFormat(VideoPixelFormat pixel_format,
                                float frame_rate,
@@ -77,8 +82,6 @@ class __declspec(uuid("88cdbbdc-a73b-4afa-acbf-15d5e2ce12c3")) SinkFilter
   ~SinkFilter() override;
 
   scoped_refptr<SinkInputPin> input_pin_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SinkFilter);
 };
 
 }  // namespace media

@@ -43,6 +43,9 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
                const SessionKeysChangeCB& session_keys_change_cb,
                const SessionExpirationUpdateCB& session_expiration_update_cb);
 
+  AesDecryptor(const AesDecryptor&) = delete;
+  AesDecryptor& operator=(const AesDecryptor&) = delete;
+
   // ContentDecryptionModule implementation.
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
                             std::unique_ptr<SimpleCdmPromise> promise) override;
@@ -197,8 +200,6 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
   std::map<std::string, CdmSessionType> open_sessions_;
 
   CallbackRegistry<EventCB::RunType> event_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(AesDecryptor);
 };
 
 }  // namespace media

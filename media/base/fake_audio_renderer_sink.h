@@ -29,6 +29,9 @@ class FakeAudioRendererSink : public AudioRendererSink {
 
   explicit FakeAudioRendererSink(const AudioParameters& hardware_params);
 
+  FakeAudioRendererSink(const FakeAudioRendererSink&) = delete;
+  FakeAudioRendererSink& operator=(const FakeAudioRendererSink&) = delete;
+
   void Initialize(const AudioParameters& params,
                   RenderCallback* callback) override;
   void Start() override;
@@ -67,8 +70,6 @@ class FakeAudioRendererSink : public AudioRendererSink {
   RenderCallback* callback_;
   OutputDeviceInfo output_device_info_;
   bool is_optimized_for_hw_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioRendererSink);
 };
 
 }  // namespace media

@@ -288,6 +288,11 @@ class FFmpegH264ToAnnexBBitstreamConverterTest : public testing::Test {
     test_parameters_.extradata_size = sizeof(kHeaderDataOkWithFieldLen4);
   }
 
+  FFmpegH264ToAnnexBBitstreamConverterTest(
+      const FFmpegH264ToAnnexBBitstreamConverterTest&) = delete;
+  FFmpegH264ToAnnexBBitstreamConverterTest& operator=(
+      const FFmpegH264ToAnnexBBitstreamConverterTest&) = delete;
+
   void CreatePacket(AVPacket* packet, const uint8_t* data, uint32_t data_size) {
     // Create new packet sized of |data_size| from |data|.
     EXPECT_EQ(av_new_packet(packet, data_size), 0);
@@ -296,9 +301,6 @@ class FFmpegH264ToAnnexBBitstreamConverterTest : public testing::Test {
 
   // Variable to hold valid dummy parameters for testing.
   AVCodecParameters test_parameters_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FFmpegH264ToAnnexBBitstreamConverterTest);
 };
 
 TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_Success) {

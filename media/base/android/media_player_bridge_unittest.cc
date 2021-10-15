@@ -42,6 +42,9 @@ class MediaPlayerBridgeTest : public testing::Test {
                 false,
                 false) {}
 
+  MediaPlayerBridgeTest(const MediaPlayerBridgeTest&) = delete;
+  MediaPlayerBridgeTest& operator=(const MediaPlayerBridgeTest&) = delete;
+
  protected:
   void SimulateDurationChange(base::TimeDelta duration) {
     bridge_.PropagateDuration(duration);
@@ -58,8 +61,6 @@ class MediaPlayerBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   StrictMock<MockMediaPlayerBridgeClient> client_;
   MediaPlayerBridge bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerBridgeTest);
 };
 
 TEST_F(MediaPlayerBridgeTest, Client_OnMediaMetadataChanged) {

@@ -50,6 +50,9 @@ class MediaInitializer {
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
   }
 
+  MediaInitializer(const MediaInitializer&) = delete;
+  MediaInitializer& operator=(const MediaInitializer&) = delete;
+
 #if defined(OS_ANDROID)
   void enable_platform_decoder_support() {
     has_platform_decoder_support_ = true;
@@ -66,8 +69,6 @@ class MediaInitializer {
 #if defined(OS_ANDROID)
   bool has_platform_decoder_support_ = false;
 #endif  // defined(OS_ANDROID)
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInitializer);
 };
 
 static MediaInitializer* GetMediaInstance() {

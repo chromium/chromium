@@ -25,6 +25,9 @@ class MEDIA_EXPORT FakeAudioOutputStream : public MuteableAudioOutputStream {
   static AudioOutputStream* MakeFakeStream(AudioManagerBase* manager,
                                            const AudioParameters& params);
 
+  FakeAudioOutputStream(const FakeAudioOutputStream&) = delete;
+  FakeAudioOutputStream& operator=(const FakeAudioOutputStream&) = delete;
+
   // AudioOutputStream implementation.
   bool Open() override;
   void Start(AudioSourceCallback* callback) override;
@@ -48,8 +51,6 @@ class MEDIA_EXPORT FakeAudioOutputStream : public MuteableAudioOutputStream {
   AudioSourceCallback* callback_;
   FakeAudioWorker fake_worker_;
   const std::unique_ptr<AudioBus> audio_bus_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioOutputStream);
 };
 
 }  // namespace media

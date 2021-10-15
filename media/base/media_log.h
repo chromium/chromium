@@ -166,6 +166,9 @@ class MEDIA_EXPORT MediaLog {
   struct ParentLogRecord : base::RefCountedThreadSafe<ParentLogRecord> {
     explicit ParentLogRecord(MediaLog* log);
 
+    ParentLogRecord(const ParentLogRecord&) = delete;
+    ParentLogRecord& operator=(const ParentLogRecord&) = delete;
+
     // A unique (to this process) id for this MediaLog.
     int32_t id;
 
@@ -178,8 +181,6 @@ class MEDIA_EXPORT MediaLog {
    protected:
     friend class base::RefCountedThreadSafe<ParentLogRecord>;
     virtual ~ParentLogRecord();
-
-    DISALLOW_COPY_AND_ASSIGN(ParentLogRecord);
   };
 
  private:

@@ -29,6 +29,9 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
       CodecWrapper::OutputReleasedCB output_buffer_release_cb,
       scoped_refptr<base::SequencedTaskRunner> release_task_runner);
 
+  CodecWrapperImpl(const CodecWrapperImpl&) = delete;
+  CodecWrapperImpl& operator=(const CodecWrapperImpl&) = delete;
+
   using DequeueStatus = CodecWrapper::DequeueStatus;
   using QueueStatus = CodecWrapper::QueueStatus;
 
@@ -102,8 +105,6 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
   // Task runner on which we'll release codec buffers without rendering.  May be
   // null to always do this on the calling task runner.
   scoped_refptr<base::SequencedTaskRunner> release_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CodecWrapperImpl);
 };
 
 CodecOutputBuffer::CodecOutputBuffer(scoped_refptr<CodecWrapperImpl> codec,

@@ -63,6 +63,9 @@ class EsAdapterVideoTest : public testing::Test {
  public:
   EsAdapterVideoTest();
 
+  EsAdapterVideoTest(const EsAdapterVideoTest&) = delete;
+  EsAdapterVideoTest& operator=(const EsAdapterVideoTest&) = delete;
+
  protected:
   // Feed the ES adapter with the buffers from |buffer_queue|.
   // Return the durations computed by the ES adapter as well as
@@ -76,8 +79,6 @@ class EsAdapterVideoTest : public testing::Test {
   EsAdapterVideo es_adapter_;
 
   std::stringstream buffer_descriptors_;
-
-  DISALLOW_COPY_AND_ASSIGN(EsAdapterVideoTest);
 };
 
 EsAdapterVideoTest::EsAdapterVideoTest()

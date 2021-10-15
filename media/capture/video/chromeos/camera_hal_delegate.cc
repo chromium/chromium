@@ -40,12 +40,18 @@ constexpr base::TimeDelta kEventWaitTimeoutSecs = base::Seconds(1);
 
 class LocalCameraClientObserver : public CameraClientObserver {
  public:
+  LocalCameraClientObserver() = delete;
+
   explicit LocalCameraClientObserver(
       scoped_refptr<CameraHalDelegate> camera_hal_delegate,
       cros::mojom::CameraClientType type,
       base::UnguessableToken auth_token)
       : CameraClientObserver(type, std::move(auth_token)),
         camera_hal_delegate_(std::move(camera_hal_delegate)) {}
+
+  LocalCameraClientObserver(const LocalCameraClientObserver&) = delete;
+  LocalCameraClientObserver& operator=(const LocalCameraClientObserver&) =
+      delete;
 
   void OnChannelCreated(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module) override {
@@ -54,7 +60,6 @@ class LocalCameraClientObserver : public CameraClientObserver {
 
  private:
   scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LocalCameraClientObserver);
 };
 
 // chromeos::system::StatisticsProvider::IsRunningOnVM() is not available in

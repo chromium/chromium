@@ -75,6 +75,9 @@ class MEDIA_EXPORT AgcAudioStream : public AudioInterface {
       : agc_is_enabled_(false), max_volume_(0.0), normalized_volume_(0.0) {
   }
 
+  AgcAudioStream(const AgcAudioStream&) = delete;
+  AgcAudioStream& operator=(const AgcAudioStream&) = delete;
+
   virtual ~AgcAudioStream() {
     DCHECK(thread_checker_.CalledOnValidThread());
   }
@@ -192,8 +195,6 @@ class MEDIA_EXPORT AgcAudioStream : public AudioInterface {
   // by not querying the capture volume for each callback. The range is
   // normalized to [0.0, 1.0].
   std::atomic<double> normalized_volume_;
-
-  DISALLOW_COPY_AND_ASSIGN(AgcAudioStream<AudioInterface>);
 };
 
 }  // namespace media

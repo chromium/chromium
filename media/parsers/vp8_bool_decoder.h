@@ -58,6 +58,9 @@ class MEDIA_PARSERS_EXPORT Vp8BoolDecoder {
  public:
   Vp8BoolDecoder();
 
+  Vp8BoolDecoder(const Vp8BoolDecoder&) = delete;
+  Vp8BoolDecoder& operator=(const Vp8BoolDecoder&) = delete;
+
   // Initializes the decoder to start decoding |data|, |size| being size
   // of |data| in bytes. Returns false if |data| is NULL or empty.
   bool Initialize(const uint8_t* data, size_t size);
@@ -125,8 +128,6 @@ class MEDIA_PARSERS_EXPORT Vp8BoolDecoder {
   size_t value_;
   int count_;
   size_t range_;
-
-  DISALLOW_COPY_AND_ASSIGN(Vp8BoolDecoder);
 };
 
 }  // namespace media

@@ -34,11 +34,12 @@ class StubRtcpObserver : public RtcpObserver {
  public:
   StubRtcpObserver() = default;
 
+  StubRtcpObserver(const StubRtcpObserver&) = delete;
+  StubRtcpObserver& operator=(const StubRtcpObserver&) = delete;
+
   void OnReceivedCastMessage(const RtcpCastMessage& cast_message) final {}
   void OnReceivedRtt(base::TimeDelta round_trip_time) final {}
   void OnReceivedPli() final {}
-
-  DISALLOW_COPY_AND_ASSIGN(StubRtcpObserver);
 };
 
 }  // namespace
@@ -46,6 +47,9 @@ class StubRtcpObserver : public RtcpObserver {
 class FakePacketSender : public PacketTransport {
  public:
   FakePacketSender() : paused_(false), packets_sent_(0), bytes_sent_(0) {}
+
+  FakePacketSender(const FakePacketSender&) = delete;
+  FakePacketSender& operator=(const FakePacketSender&) = delete;
 
   bool SendPacket(PacketRef packet, base::OnceClosure cb) final {
     if (paused_) {
@@ -80,8 +84,6 @@ class FakePacketSender : public PacketTransport {
   PacketRef stored_packet_;
   int packets_sent_;
   int64_t bytes_sent_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePacketSender);
 };
 
 class CastTransportImplTest : public ::testing::Test {
@@ -133,6 +135,9 @@ class TransportClient : public CastTransport::Client {
       CastTransportImplTest* cast_transport_sender_impl_test)
       : cast_transport_sender_impl_test_(cast_transport_sender_impl_test) {}
 
+  TransportClient(const TransportClient&) = delete;
+  TransportClient& operator=(const TransportClient&) = delete;
+
   void OnStatusChanged(CastTransportStatus status) final {}
   void OnLoggingEventsReceived(
       std::unique_ptr<std::vector<FrameEvent>> frame_events,
@@ -144,8 +149,6 @@ class TransportClient : public CastTransport::Client {
 
  private:
   CastTransportImplTest* const cast_transport_sender_impl_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };
 
 }  // namespace

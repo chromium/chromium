@@ -144,6 +144,9 @@ class TransportClient : public CastTransport::Client {
       : log_event_dispatcher_(log_event_dispatcher),
         packet_proxy_(packet_proxy) {}
 
+  TransportClient(const TransportClient&) = delete;
+  TransportClient& operator=(const TransportClient&) = delete;
+
   void OnStatusChanged(CastTransportStatus status) final {
     LOG(INFO) << "Cast transport status: " << status;
   }
@@ -162,8 +165,6 @@ class TransportClient : public CastTransport::Client {
  private:
   LogEventDispatcher* const log_event_dispatcher_;  // Not owned by this class.
   PacketProxy* const packet_proxy_;                 // Not owned by this class.
-
-  DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };
 
 // Maintains a queue of encoded video frames.

@@ -119,6 +119,9 @@ class ExternalVideoEncoder::VEAClientImpl final
         requested_bit_rate_(-1),
         allocate_input_buffer_in_progress_(false) {}
 
+  VEAClientImpl(const VEAClientImpl&) = delete;
+  VEAClientImpl& operator=(const VEAClientImpl&) = delete;
+
   base::SingleThreadTaskRunner* task_runner() const {
     return task_runner_.get();
   }
@@ -608,8 +611,6 @@ class ExternalVideoEncoder::VEAClientImpl final
   // Set to true when the allocation of an input buffer is in progress, and
   // reset to false after the allocated buffer is received.
   bool allocate_input_buffer_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(VEAClientImpl);
 };
 
 // static

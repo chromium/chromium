@@ -30,6 +30,10 @@ class MediaServiceThrottlerTest : public testing::Test {
     base_delay_ = throttler_->GetBaseThrottlingRateForTesting();
   }
 
+  MediaServiceThrottlerTest(const MediaServiceThrottlerTest&) = delete;
+  MediaServiceThrottlerTest& operator=(const MediaServiceThrottlerTest&) =
+      delete;
+
   void SimulateCrashes(int number_of_crashes) {
     for (int i = 0; i < number_of_crashes; ++i)
       throttler_->OnMediaServerCrash(false);
@@ -62,9 +66,6 @@ class MediaServiceThrottlerTest : public testing::Test {
 
   // Necessary, or else base::ThreadTaskRunnerHandle::Get() fails.
   base::test::SingleThreadTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaServiceThrottlerTest);
 };
 
 // Canary test case.

@@ -20,6 +20,9 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   explicit FakeCommandBufferHelper(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  FakeCommandBufferHelper(const FakeCommandBufferHelper&) = delete;
+  FakeCommandBufferHelper& operator=(const FakeCommandBufferHelper&) = delete;
+
   // Signal stub destruction. All textures will be deleted.  Listeners will
   // be notified that we have a current context unless one calls ContextLost
   // before this.
@@ -78,8 +81,6 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   std::map<gpu::SyncToken, base::OnceClosure> waits_;
 
   WillDestroyStubCB will_destroy_stub_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCommandBufferHelper);
 };
 
 }  // namespace media

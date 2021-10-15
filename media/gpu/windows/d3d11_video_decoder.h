@@ -67,6 +67,9 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
       SupportedConfigs supported_configs,
       bool is_hdr_supported);
 
+  D3D11VideoDecoder(const D3D11VideoDecoder&) = delete;
+  D3D11VideoDecoder& operator=(const D3D11VideoDecoder&) = delete;
+
   // VideoDecoder implementation:
   VideoDecoderType GetDecoderType() const override;
   void Initialize(const VideoDecoderConfig& config,
@@ -308,8 +311,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   uint8_t bit_depth_ = 8u;
 
   base::WeakPtrFactory<D3D11VideoDecoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(D3D11VideoDecoder);
 };
 
 }  // namespace media

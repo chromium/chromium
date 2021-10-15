@@ -98,6 +98,10 @@ class MEDIA_EXPORT StreamProcessorHelper {
 
   StreamProcessorHelper(fuchsia::media::StreamProcessorPtr processor,
                         Client* client);
+
+  StreamProcessorHelper(const StreamProcessorHelper&) = delete;
+  StreamProcessorHelper& operator=(const StreamProcessorHelper&) = delete;
+
   ~StreamProcessorHelper();
 
   // Process one packet. Caller can reuse the underlying buffer when the
@@ -165,8 +169,6 @@ class MEDIA_EXPORT StreamProcessorHelper {
 
   base::WeakPtr<StreamProcessorHelper> weak_this_;
   base::WeakPtrFactory<StreamProcessorHelper> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamProcessorHelper);
 };
 
 }  // namespace media

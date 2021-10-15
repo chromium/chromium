@@ -144,6 +144,11 @@ class VaapiImageDecodeAcceleratorWorkerTest : public testing::Test {
         new VaapiImageDecodeAcceleratorWorker(std::move(decoders)));
   }
 
+  VaapiImageDecodeAcceleratorWorkerTest(
+      const VaapiImageDecodeAcceleratorWorkerTest&) = delete;
+  VaapiImageDecodeAcceleratorWorkerTest& operator=(
+      const VaapiImageDecodeAcceleratorWorkerTest&) = delete;
+
   MockVaapiImageDecoder* GetJpegDecoder() const {
     auto result =
         worker_->decoders_.find(gpu::ImageDecodeAcceleratorType::kJpeg);
@@ -168,8 +173,6 @@ class VaapiImageDecodeAcceleratorWorkerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<VaapiImageDecodeAcceleratorWorker> worker_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiImageDecodeAcceleratorWorkerTest);
 };
 
 ACTION_P2(ExportAsNativePixmapDmaBufSuccessfully,

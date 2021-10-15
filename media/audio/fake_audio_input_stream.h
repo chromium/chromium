@@ -33,6 +33,9 @@ class MEDIA_EXPORT FakeAudioInputStream : public AudioInputStream {
   static AudioInputStream* MakeFakeStream(AudioManagerBase* manager,
                                           const AudioParameters& params);
 
+  FakeAudioInputStream(const FakeAudioInputStream&) = delete;
+  FakeAudioInputStream& operator=(const FakeAudioInputStream&) = delete;
+
   OpenOutcome Open() override;
   void Start(AudioInputCallback* callback) override;
   void Stop() override;
@@ -82,8 +85,6 @@ class MEDIA_EXPORT FakeAudioInputStream : public AudioInputStream {
   // We will delete the capture thread on the AudioManager worker task runner
   // since the audio thread is the main UI thread on Mac.
   std::unique_ptr<base::Thread, base::OnTaskRunnerDeleter> capture_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioInputStream);
 };
 
 }  // namespace media

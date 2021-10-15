@@ -30,6 +30,9 @@ class EsParserH264Test : public EsParserTestBase,
  public:
   EsParserH264Test() {}
 
+  EsParserH264Test(const EsParserH264Test&) = delete;
+  EsParserH264Test& operator=(const EsParserH264Test&) = delete;
+
  protected:
   void LoadH264Stream(const char* filename);
   void GetPesTimestamps(std::vector<Packet>* pes_packets);
@@ -49,8 +52,6 @@ class EsParserH264Test : public EsParserTestBase,
   // Insert an AUD before each access unit.
   // Update |stream_| and |access_units_| accordingly.
   void InsertAUD();
-
-  DISALLOW_COPY_AND_ASSIGN(EsParserH264Test);
 };
 
 void EsParserH264Test::LoadH264Stream(const char* filename) {

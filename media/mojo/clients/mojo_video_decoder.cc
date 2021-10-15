@@ -73,6 +73,10 @@ class MojoVideoFrameHandleReleaser
             std::move(task_runner));
   }
 
+  MojoVideoFrameHandleReleaser(const MojoVideoFrameHandleReleaser&) = delete;
+  MojoVideoFrameHandleReleaser& operator=(const MojoVideoFrameHandleReleaser&) =
+      delete;
+
   void ReleaseVideoFrame(const base::UnguessableToken& release_token,
                          const gpu::SyncToken& release_sync_token) {
     DVLOG(3) << __func__ << "(" << release_token << ")";
@@ -96,8 +100,6 @@ class MojoVideoFrameHandleReleaser
 
   mojo::SharedRemote<mojom::VideoFrameHandleReleaser>
       video_frame_handle_releaser_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoFrameHandleReleaser);
 };
 
 MojoVideoDecoder::MojoVideoDecoder(

@@ -53,6 +53,10 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
 
+  V4L2ImageProcessorBackend(const V4L2ImageProcessorBackend&) = delete;
+  V4L2ImageProcessorBackend& operator=(const V4L2ImageProcessorBackend&) =
+      delete;
+
   // ImageProcessor implementation.
   void Process(scoped_refptr<VideoFrame> input_frame,
                scoped_refptr<VideoFrame> output_frame,
@@ -191,8 +195,6 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   base::WeakPtrFactory<V4L2ImageProcessorBackend> backend_weak_this_factory_{
       this};
   base::WeakPtrFactory<V4L2ImageProcessorBackend> poll_weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2ImageProcessorBackend);
 };
 
 }  // namespace media

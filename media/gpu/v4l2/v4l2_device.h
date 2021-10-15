@@ -220,6 +220,9 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
 class MEDIA_GPU_EXPORT V4L2ReadableBuffer
     : public base::RefCountedThreadSafe<V4L2ReadableBuffer> {
  public:
+  V4L2ReadableBuffer(const V4L2ReadableBuffer&) = delete;
+  V4L2ReadableBuffer& operator=(const V4L2ReadableBuffer&) = delete;
+
   // Returns whether the V4L2_BUF_FLAG_LAST flag is set for this buffer.
   bool IsLast() const;
   // Returns whether the V4L2_BUF_FLAG_KEYFRAME flag is set for this buffer.
@@ -269,7 +272,6 @@ class MEDIA_GPU_EXPORT V4L2ReadableBuffer
   scoped_refptr<VideoFrame> video_frame_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2ReadableBuffer);
 };
 
 // Shortcut for naming consistency.
@@ -297,6 +299,9 @@ class V4L2Buffer;
 class MEDIA_GPU_EXPORT V4L2Queue
     : public base::RefCountedThreadSafe<V4L2Queue> {
  public:
+  V4L2Queue(const V4L2Queue&) = delete;
+  V4L2Queue& operator=(const V4L2Queue&) = delete;
+
   // Set |fourcc| as the current format on this queue. |size| corresponds to the
   // desired buffer's dimensions (i.e. width and height members of
   // v4l2_pix_format_mplane (if not applicable, pass gfx::Size()).
@@ -482,8 +487,6 @@ class MEDIA_GPU_EXPORT V4L2Queue
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<V4L2Queue> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2Queue);
 };
 
 class V4L2Request;
@@ -493,6 +496,10 @@ class V4L2Request;
 // This class is used to manage requests and not intended to be used
 // directly.
 class MEDIA_GPU_EXPORT V4L2RequestRefBase {
+ public:
+  V4L2RequestRefBase(const V4L2RequestRefBase&) = delete;
+  V4L2RequestRefBase& operator=(const V4L2RequestRefBase&) = delete;
+
  protected:
   V4L2RequestRefBase(V4L2RequestRefBase&& req_base);
   V4L2RequestRefBase(V4L2Request* request);
@@ -501,7 +508,6 @@ class MEDIA_GPU_EXPORT V4L2RequestRefBase {
   V4L2Request* request_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2RequestRefBase);
 };
 
 class V4L2SubmittedRequestRef;
@@ -518,6 +524,10 @@ class MEDIA_GPU_EXPORT V4L2RequestRef : public V4L2RequestRefBase {
  public:
   V4L2RequestRef(V4L2RequestRef&& req_ref) :
     V4L2RequestRefBase(std::move(req_ref)) {}
+
+  V4L2RequestRef(const V4L2RequestRef&) = delete;
+  V4L2RequestRef& operator=(const V4L2RequestRef&) = delete;
+
   // Apply controls to the request.
   bool ApplyCtrls(struct v4l2_ext_controls* ctrls) const;
   // Apply buffer to the request.
@@ -528,8 +538,6 @@ class MEDIA_GPU_EXPORT V4L2RequestRef : public V4L2RequestRefBase {
  private:
   friend class V4L2RequestsQueue;
   V4L2RequestRef(V4L2Request* request) : V4L2RequestRefBase(request) {}
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2RequestRef);
 };
 
 // Interface representing a submitted request.
@@ -542,14 +550,16 @@ class MEDIA_GPU_EXPORT V4L2SubmittedRequestRef : public V4L2RequestRefBase {
  public:
   V4L2SubmittedRequestRef(V4L2SubmittedRequestRef&& req_ref) :
     V4L2RequestRefBase(std::move(req_ref)) {}
+
+  V4L2SubmittedRequestRef(const V4L2SubmittedRequestRef&) = delete;
+  V4L2SubmittedRequestRef& operator=(const V4L2SubmittedRequestRef&) = delete;
+
   // Indicates if the request has completed.
   bool IsCompleted();
 
  private:
   friend class V4L2RequestRef;
   V4L2SubmittedRequestRef(V4L2Request* request) : V4L2RequestRefBase(request) {}
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2SubmittedRequestRef);
 };
 
 // Interface representing a queue of requests. The requests queue manages and
@@ -566,6 +576,9 @@ class MEDIA_GPU_EXPORT V4L2SubmittedRequestRef : public V4L2RequestRefBase {
 //    back to the free request pool described in 1).
 class MEDIA_GPU_EXPORT V4L2RequestsQueue {
  public:
+  V4L2RequestsQueue(const V4L2RequestsQueue&) = delete;
+  V4L2RequestsQueue& operator=(const V4L2RequestsQueue&) = delete;
+
   // Gets a free request. If no request is available, a non-valid request
   // reference will be returned.
   absl::optional<V4L2RequestRef> GetFreeRequest();
@@ -592,7 +605,6 @@ class MEDIA_GPU_EXPORT V4L2RequestsQueue {
   ~V4L2RequestsQueue();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2RequestsQueue);
 };
 
 class MEDIA_GPU_EXPORT V4L2Device

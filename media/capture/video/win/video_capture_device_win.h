@@ -77,9 +77,16 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
   static VideoPixelFormat TranslateMediaSubtypeToPixelFormat(
       const GUID& sub_type);
 
+  VideoCaptureDeviceWin() = delete;
+
   VideoCaptureDeviceWin(const VideoCaptureDeviceDescriptor& device_descriptor,
                         Microsoft::WRL::ComPtr<IBaseFilter> capture_filter);
+
+  VideoCaptureDeviceWin(const VideoCaptureDeviceWin&) = delete;
+  VideoCaptureDeviceWin& operator=(const VideoCaptureDeviceWin&) = delete;
+
   ~VideoCaptureDeviceWin() override;
+
   // Opens the device driver for this device.
   bool Init();
 
@@ -157,8 +164,6 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
   bool enable_get_photo_state_;
 
   absl::optional<int> camera_rotation_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceWin);
 };
 
 }  // namespace media

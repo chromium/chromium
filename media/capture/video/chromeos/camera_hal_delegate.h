@@ -48,6 +48,9 @@ class CAPTURE_EXPORT CameraHalDelegate final
   explicit CameraHalDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
 
+  CameraHalDelegate(const CameraHalDelegate&) = delete;
+  CameraHalDelegate& operator=(const CameraHalDelegate&) = delete;
+
   // Registers the camera client observer to the CameraHalDispatcher instance.
   // Returns true if successful, false if failed (e.g., authentication failure).
   bool RegisterCameraClient();
@@ -222,8 +225,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // A map from camera id to corresponding delegate instance.
   base::flat_map<int, std::unique_ptr<VideoCaptureDeviceChromeOSDelegate>>
       vcd_delegate_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CameraHalDelegate);
 };
 
 }  // namespace media

@@ -61,6 +61,9 @@ class CastTransportImpl::RtcpClient : public RtcpObserver {
         media_type_(media_type),
         cast_transport_impl_(cast_transport_impl) {}
 
+  RtcpClient(const RtcpClient&) = delete;
+  RtcpClient& operator=(const RtcpClient&) = delete;
+
   void OnReceivedCastMessage(const RtcpCastMessage& cast_message) override {
     rtcp_observer_->OnReceivedCastMessage(cast_message);
     cast_transport_impl_->OnReceivedCastMessage(rtp_sender_ssrc_, cast_message);
@@ -81,8 +84,6 @@ class CastTransportImpl::RtcpClient : public RtcpObserver {
   const std::unique_ptr<RtcpObserver> rtcp_observer_;
   const EventMediaType media_type_;
   CastTransportImpl* const cast_transport_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(RtcpClient);
 };
 
 struct CastTransportImpl::RtpStreamSession {

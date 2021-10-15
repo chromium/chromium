@@ -210,6 +210,10 @@ class MEDIA_EXPORT MediaCodecLoop {
                  std::unique_ptr<MediaCodecBridge> media_codec,
                  scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner,
                  bool disable_timer = false);
+
+  MediaCodecLoop(const MediaCodecLoop&) = delete;
+  MediaCodecLoop& operator=(const MediaCodecLoop&) = delete;
+
   ~MediaCodecLoop();
 
   // Optionally set the tick clock used for testing.  It is our caller's
@@ -333,8 +337,6 @@ class MEDIA_EXPORT MediaCodecLoop {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaCodecLoop> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecLoop);
 };
 
 }  // namespace media

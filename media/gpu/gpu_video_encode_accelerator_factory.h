@@ -19,6 +19,12 @@ namespace media {
 
 class MEDIA_GPU_EXPORT GpuVideoEncodeAcceleratorFactory {
  public:
+  GpuVideoEncodeAcceleratorFactory() = delete;
+  GpuVideoEncodeAcceleratorFactory(const GpuVideoEncodeAcceleratorFactory&) =
+      delete;
+  GpuVideoEncodeAcceleratorFactory& operator=(
+      const GpuVideoEncodeAcceleratorFactory&) = delete;
+
   // Creates and Initializes a VideoEncodeAccelerator. Returns nullptr
   // if there is no implementation available on the platform or calling
   // VideoEncodeAccelerator::Initialize() returns false.
@@ -32,9 +38,6 @@ class MEDIA_GPU_EXPORT GpuVideoEncodeAcceleratorFactory {
   static VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(GpuVideoEncodeAcceleratorFactory);
 };
 
 }  // namespace media

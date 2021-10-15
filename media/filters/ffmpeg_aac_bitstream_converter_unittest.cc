@@ -20,6 +20,12 @@ const int kAacLowComplexityProfile = 1;
 
 // Class for testing the FFmpegAACBitstreamConverter.
 class FFmpegAACBitstreamConverterTest : public testing::Test {
+ public:
+  FFmpegAACBitstreamConverterTest(const FFmpegAACBitstreamConverterTest&) =
+      delete;
+  FFmpegAACBitstreamConverterTest& operator=(
+      const FFmpegAACBitstreamConverterTest&) = delete;
+
  protected:
   FFmpegAACBitstreamConverterTest() {
     // Minimal extra data header
@@ -45,8 +51,6 @@ class FFmpegAACBitstreamConverterTest : public testing::Test {
 
  private:
   uint8_t extradata_header_[2];
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegAACBitstreamConverterTest);
 };
 
 TEST_F(FFmpegAACBitstreamConverterTest, Conversion_Success) {

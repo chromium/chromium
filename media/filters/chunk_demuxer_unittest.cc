@@ -184,6 +184,9 @@ class ChunkDemuxerTest : public ::testing::Test {
     CreateNewDemuxer();
   }
 
+  ChunkDemuxerTest(const ChunkDemuxerTest&) = delete;
+  ChunkDemuxerTest& operator=(const ChunkDemuxerTest&) = delete;
+
   void CreateNewDemuxer() {
     base::OnceClosure open_cb = base::BindOnce(&ChunkDemuxerTest::DemuxerOpened,
                                                base::Unretained(this));
@@ -1283,9 +1286,6 @@ class ChunkDemuxerTest : public ::testing::Test {
 
     InitSegmentReceivedMock(tracks);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChunkDemuxerTest);
 };
 
 TEST_F(ChunkDemuxerTest, Init) {
@@ -1776,6 +1776,9 @@ class EndOfStreamHelper {
         audio_read_done_(false),
         video_read_done_(false) {}
 
+  EndOfStreamHelper(const EndOfStreamHelper&) = delete;
+  EndOfStreamHelper& operator=(const EndOfStreamHelper&) = delete;
+
   // Request a read on the audio and video streams.
   void RequestReads() {
     EXPECT_FALSE(audio_read_done_);
@@ -1809,8 +1812,6 @@ class EndOfStreamHelper {
   DemuxerStream* video_stream_;
   bool audio_read_done_;
   bool video_read_done_;
-
-  DISALLOW_COPY_AND_ASSIGN(EndOfStreamHelper);
 };
 
 // Make sure that all pending reads that we don't have media data for get an

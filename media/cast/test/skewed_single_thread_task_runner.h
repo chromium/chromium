@@ -24,6 +24,10 @@ class SkewedSingleThreadTaskRunner final : public base::SingleThreadTaskRunner {
   explicit SkewedSingleThreadTaskRunner(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
 
+  SkewedSingleThreadTaskRunner(const SkewedSingleThreadTaskRunner&) = delete;
+  SkewedSingleThreadTaskRunner& operator=(const SkewedSingleThreadTaskRunner&) =
+      delete;
+
   // Set the delay multiplier to |skew|.
   void SetSkew(double skew);
 
@@ -45,8 +49,6 @@ class SkewedSingleThreadTaskRunner final : public base::SingleThreadTaskRunner {
  private:
   double skew_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkewedSingleThreadTaskRunner);
 };
 
 }  // namespace test

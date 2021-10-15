@@ -26,6 +26,9 @@ class AudioTimestampHelperTest : public ::testing::Test {
     helper_.SetBaseTimestamp(base::TimeDelta());
   }
 
+  AudioTimestampHelperTest(const AudioTimestampHelperTest&) = delete;
+  AudioTimestampHelperTest& operator=(const AudioTimestampHelperTest&) = delete;
+
   // Adds frames to the helper and returns the current timestamp in
   // microseconds.
   int64_t AddFrames(int frames) {
@@ -47,9 +50,6 @@ class AudioTimestampHelperTest : public ::testing::Test {
 
  protected:
   AudioTimestampHelper helper_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioTimestampHelperTest);
 };
 
 TEST_F(AudioTimestampHelperTest, FramesToTime) {

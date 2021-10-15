@@ -13,6 +13,10 @@ namespace media {
 namespace cast {
 
 class FrameBufferTest : public ::testing::Test {
+ public:
+  FrameBufferTest(const FrameBufferTest&) = delete;
+  FrameBufferTest& operator=(const FrameBufferTest&) = delete;
+
  protected:
   FrameBufferTest() {
     payload_.assign(kMaxIpPacketSize, 0);
@@ -25,8 +29,6 @@ class FrameBufferTest : public ::testing::Test {
   FrameBuffer buffer_;
   std::vector<uint8_t> payload_;
   RtpCastHeader rtp_header_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameBufferTest);
 };
 
 TEST_F(FrameBufferTest, OnePacketInsertSanity) {

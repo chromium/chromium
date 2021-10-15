@@ -27,6 +27,9 @@ class AmlV4L2Device : public GenericV4L2Device {
  public:
   AmlV4L2Device();
 
+  AmlV4L2Device(const AmlV4L2Device&) = delete;
+  AmlV4L2Device& operator=(const AmlV4L2Device&) = delete;
+
   // V4L2Device implementation.
   bool Open(Type type, uint32_t v4l2_pixfmt) override;
   int Ioctl(int flags, void* arg) override;
@@ -57,8 +60,6 @@ class AmlV4L2Device : public GenericV4L2Device {
   void* context_ = nullptr;
 
   Type type_ = Type::kEncoder;
-
-  DISALLOW_COPY_AND_ASSIGN(AmlV4L2Device);
 };
 
 }  //  namespace media

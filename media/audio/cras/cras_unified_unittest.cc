@@ -59,6 +59,10 @@ class MockAudioManagerCras : public AudioManagerChromeOS {
 };
 
 class CrasUnifiedStreamTest : public testing::Test {
+ public:
+  CrasUnifiedStreamTest(const CrasUnifiedStreamTest&) = delete;
+  CrasUnifiedStreamTest& operator=(const CrasUnifiedStreamTest&) = delete;
+
  protected:
   CrasUnifiedStreamTest() {
     chromeos::CrasAudioClient::InitializeFake();
@@ -96,9 +100,6 @@ class CrasUnifiedStreamTest : public testing::Test {
 
   base::TestMessageLoop message_loop_;
   std::unique_ptr<StrictMock<MockAudioManagerCras>> mock_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrasUnifiedStreamTest);
 };
 
 const ChannelLayout CrasUnifiedStreamTest::kTestChannelLayout =

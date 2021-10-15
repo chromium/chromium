@@ -21,6 +21,9 @@ class SimpleCdmBuffer final : public cdm::Buffer {
  public:
   static SimpleCdmBuffer* Create(size_t capacity);
 
+  SimpleCdmBuffer(const SimpleCdmBuffer&) = delete;
+  SimpleCdmBuffer& operator=(const SimpleCdmBuffer&) = delete;
+
   // cdm::Buffer implementation.
   void Destroy() override;
   uint32_t Capacity() const override;
@@ -34,8 +37,6 @@ class SimpleCdmBuffer final : public cdm::Buffer {
 
   std::vector<uint8_t> buffer_;
   uint32_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleCdmBuffer);
 };
 
 }  // namespace media

@@ -78,7 +78,9 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
       PickFormatCB out_format_picker,
       ImageProcessor::ErrorCB error_cb);
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ImageProcessorFactory);
+  ImageProcessorFactory() = delete;
+  ImageProcessorFactory(const ImageProcessorFactory&) = delete;
+  ImageProcessorFactory& operator=(const ImageProcessorFactory&) = delete;
 };
 
 }  // namespace media

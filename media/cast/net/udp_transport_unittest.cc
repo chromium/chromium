@@ -31,6 +31,9 @@ class MockPacketReceiver final : public UdpTransportReceiver {
   MockPacketReceiver(const base::RepeatingClosure& callback)
       : packet_callback_(callback) {}
 
+  MockPacketReceiver(const MockPacketReceiver&) = delete;
+  MockPacketReceiver& operator=(const MockPacketReceiver&) = delete;
+
   bool ReceivedPacket(std::unique_ptr<Packet> packet) {
     packet_ = std::move(packet);
     packet_callback_.Run();
@@ -54,8 +57,6 @@ class MockPacketReceiver final : public UdpTransportReceiver {
  private:
   base::RepeatingClosure packet_callback_;
   std::unique_ptr<Packet> packet_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPacketReceiver);
 };
 
 void SendPacket(UdpTransportImpl* transport, Packet packet) {

@@ -22,6 +22,9 @@ class VP9Picture : public CodecPicture {
  public:
   VP9Picture();
 
+  VP9Picture(const VP9Picture&) = delete;
+  VP9Picture& operator=(const VP9Picture&) = delete;
+
   // TODO(tmathmeyer) remove these and just use static casts everywhere.
   virtual V4L2VP9Picture* AsV4L2VP9Picture();
   virtual VaapiVP9Picture* AsVaapiVP9Picture();
@@ -41,8 +44,6 @@ class VP9Picture : public CodecPicture {
  private:
   // Create a duplicate instance.
   virtual scoped_refptr<VP9Picture> CreateDuplicate();
-
-  DISALLOW_COPY_AND_ASSIGN(VP9Picture);
 };
 
 }  // namespace media

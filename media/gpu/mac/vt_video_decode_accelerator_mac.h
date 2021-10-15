@@ -150,6 +150,10 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
     // images.
     PictureInfo();
     PictureInfo(uint32_t client_texture_id, uint32_t service_texture_id);
+
+    PictureInfo(const PictureInfo&) = delete;
+    PictureInfo& operator=(const PictureInfo&) = delete;
+
     ~PictureInfo();
 
     // If true, then |scoped_shared_images| is used and |client_texture_id| and
@@ -166,9 +170,6 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
 
     // The shared image holder that will be passed to the client.
     std::vector<scoped_refptr<Picture::ScopedSharedImage>> scoped_shared_images;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PictureInfo);
   };
 
   struct FrameOrder {

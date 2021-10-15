@@ -47,6 +47,11 @@ class GpuVideoDecodeAccelerator
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
       const AndroidOverlayMojoFactoryCB& factory);
 
+  GpuVideoDecodeAccelerator() = delete;
+  GpuVideoDecodeAccelerator(const GpuVideoDecodeAccelerator&) = delete;
+  GpuVideoDecodeAccelerator& operator=(const GpuVideoDecodeAccelerator&) =
+      delete;
+
   // Static query for the capabilities, which includes the supported profiles.
   // This query calls the appropriate platform-specific version.  The returned
   // capabilities will not contain duplicate supported profile entries.
@@ -159,8 +164,6 @@ class GpuVideoDecodeAccelerator
   // cleared.
   std::map<int32_t, std::vector<scoped_refptr<gpu::gles2::TextureRef>>>
       uncleared_textures_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(GpuVideoDecodeAccelerator);
 };
 
 }  // namespace media

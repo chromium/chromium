@@ -32,6 +32,10 @@ class MEDIA_GPU_EXPORT CodecBufferWaitCoordinator
       scoped_refptr<gpu::TextureOwner> texture_owner,
       scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
+  CodecBufferWaitCoordinator(const CodecBufferWaitCoordinator&) = delete;
+  CodecBufferWaitCoordinator& operator=(const CodecBufferWaitCoordinator&) =
+      delete;
+
   scoped_refptr<gpu::TextureOwner> texture_owner() const {
     DCHECK(texture_owner_);
     return texture_owner_;
@@ -71,8 +75,6 @@ class MEDIA_GPU_EXPORT CodecBufferWaitCoordinator
   Tuneable<base::TimeDelta> max_wait_ = {
       "MediaCodecOutputBufferMaxWaitTime", base::Milliseconds(0),
       base::Milliseconds(5), base::Milliseconds(20)};
-
-  DISALLOW_COPY_AND_ASSIGN(CodecBufferWaitCoordinator);
 };
 
 }  // namespace media

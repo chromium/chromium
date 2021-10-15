@@ -21,6 +21,9 @@ class ReceiverStats {
  public:
   explicit ReceiverStats(const base::TickClock* clock);
 
+  ReceiverStats(const ReceiverStats&) = delete;
+  ReceiverStats& operator=(const ReceiverStats&) = delete;
+
   RtpReceiverStatistics GetStatistics();
   void UpdateStatistics(const RtpCastHeader& header, int rtp_timebase);
 
@@ -40,8 +43,6 @@ class ReceiverStats {
   int interval_min_sequence_number_;
   int interval_number_packets_;
   int interval_wrap_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReceiverStats);
 };
 
 }  // namespace cast

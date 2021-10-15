@@ -22,6 +22,8 @@ class AudioBuffer;
 // Helper class for managing timestamps and discard events around decoding.
 class MEDIA_EXPORT AudioDiscardHelper {
  public:
+  AudioDiscardHelper() = delete;
+
   // |sample_rate| is the sample rate of decoded data which will be handed into
   // the ProcessBuffers() call.
   //
@@ -40,6 +42,10 @@ class MEDIA_EXPORT AudioDiscardHelper {
   AudioDiscardHelper(int sample_rate,
                      size_t decoder_delay,
                      bool delayed_discard);
+
+  AudioDiscardHelper(const AudioDiscardHelper&) = delete;
+  AudioDiscardHelper& operator=(const AudioDiscardHelper&) = delete;
+
   ~AudioDiscardHelper();
 
   // Converts a TimeDelta to a frame count based on the constructed sample rate.
@@ -103,8 +109,6 @@ class MEDIA_EXPORT AudioDiscardHelper {
   // from the next buffer.  The index at which to start discarding is calculated
   // by subtracting |delayed_end_discard_| from |decoder_delay_|.
   size_t delayed_end_discard_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AudioDiscardHelper);
 };
 
 }  // namespace media

@@ -40,6 +40,9 @@ class CameraHalDelegateTest : public ::testing::Test {
  public:
   CameraHalDelegateTest() : hal_delegate_thread_("HalDelegateThread") {}
 
+  CameraHalDelegateTest(const CameraHalDelegateTest&) = delete;
+  CameraHalDelegateTest& operator=(const CameraHalDelegateTest&) = delete;
+
   void SetUp() override {
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
         &mock_gpu_memory_buffer_manager_);
@@ -70,7 +73,6 @@ class CameraHalDelegateTest : public ::testing::Test {
  private:
   base::Thread hal_delegate_thread_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(CameraHalDelegateTest);
 };
 
 TEST_F(CameraHalDelegateTest, GetBuiltinCameraInfo) {

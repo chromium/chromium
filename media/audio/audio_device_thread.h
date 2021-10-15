@@ -32,6 +32,9 @@ class MEDIA_EXPORT AudioDeviceThread : public base::PlatformThread::Delegate {
              uint32_t segment_length,
              uint32_t total_segments);
 
+    Callback(const Callback&) = delete;
+    Callback& operator=(const Callback&) = delete;
+
     // One time initialization for the callback object on the audio thread.
     void InitializeOnAudioThread();
 
@@ -62,9 +65,6 @@ class MEDIA_EXPORT AudioDeviceThread : public base::PlatformThread::Delegate {
     // is called on the audio device thread. Sub-classes can then use it for
     // various thread checking purposes.
     base::ThreadChecker thread_checker_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Callback);
   };
 
   // Creates and automatically starts the audio thread.
@@ -72,6 +72,9 @@ class MEDIA_EXPORT AudioDeviceThread : public base::PlatformThread::Delegate {
                     base::SyncSocket::ScopedHandle socket,
                     const char* thread_name,
                     base::ThreadPriority thread_priority);
+
+  AudioDeviceThread(const AudioDeviceThread&) = delete;
+  AudioDeviceThread& operator=(const AudioDeviceThread&) = delete;
 
   // This tells the audio thread to stop and clean up the data; this is a
   // synchronous process and the thread will stop before the method returns.
@@ -86,8 +89,6 @@ class MEDIA_EXPORT AudioDeviceThread : public base::PlatformThread::Delegate {
   const char* thread_name_;
   base::CancelableSyncSocket socket_;
   base::PlatformThreadHandle thread_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceThread);
 };
 
 }  // namespace media.

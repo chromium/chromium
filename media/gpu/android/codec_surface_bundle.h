@@ -35,6 +35,9 @@ class MEDIA_GPU_EXPORT CodecSurfaceBundle
   explicit CodecSurfaceBundle(scoped_refptr<gpu::TextureOwner> texture_owner,
                               scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
+  CodecSurfaceBundle(const CodecSurfaceBundle&) = delete;
+  CodecSurfaceBundle& operator=(const CodecSurfaceBundle&) = delete;
+
   const base::android::JavaRef<jobject>& GetJavaSurface() const;
 
   // Returns a callback that can be used to position this overlay.  It must be
@@ -68,8 +71,6 @@ class MEDIA_GPU_EXPORT CodecSurfaceBundle
   gfx::Rect layout_rect_;
 
   base::WeakPtrFactory<CodecSurfaceBundle> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CodecSurfaceBundle);
 };
 
 }  // namespace media

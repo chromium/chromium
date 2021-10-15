@@ -31,6 +31,9 @@ class NackFeedbackVerification : public RtpPayloadFeedback {
  public:
   NackFeedbackVerification() : triggered_(false) {}
 
+  NackFeedbackVerification(const NackFeedbackVerification&) = delete;
+  NackFeedbackVerification& operator=(const NackFeedbackVerification&) = delete;
+
   void CastFeedback(const RtcpCastMessage& cast_feedback) final {
     EXPECT_EQ(kSsrc, cast_feedback.remote_ssrc);
 
@@ -77,12 +80,14 @@ class NackFeedbackVerification : public RtpPayloadFeedback {
   bool triggered_;
   MissingPacketsMap missing_packets_;  // Missing packets per frame.
   FrameId last_frame_acked_;
-
-  DISALLOW_COPY_AND_ASSIGN(NackFeedbackVerification);
 };
 }  // namespace
 
 class CastMessageBuilderTest : public ::testing::Test {
+ public:
+  CastMessageBuilderTest(const CastMessageBuilderTest&) = delete;
+  CastMessageBuilderTest& operator=(const CastMessageBuilderTest&) = delete;
+
  protected:
   CastMessageBuilderTest()
       : framer_(&testing_clock_, &feedback_, kSsrc, true, 10),
@@ -132,9 +137,6 @@ class CastMessageBuilderTest : public ::testing::Test {
   std::unique_ptr<CastMessageBuilder> cast_msg_builder_;
   RtpCastHeader rtp_header_;
   base::SimpleTestTickClock testing_clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastMessageBuilderTest);
 };
 
 TEST_F(CastMessageBuilderTest, OneFrameNackList) {

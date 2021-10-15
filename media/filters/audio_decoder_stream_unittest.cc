@@ -72,6 +72,9 @@ class AudioDecoderStreamTest : public testing::Test {
     run_loop.Run();
   }
 
+  AudioDecoderStreamTest(const AudioDecoderStreamTest&) = delete;
+  AudioDecoderStreamTest& operator=(const AudioDecoderStreamTest&) = delete;
+
   MockDemuxerStream* demuxer_stream() { return &demuxer_stream_; }
   MockAudioDecoder* decoder() { return decoder_; }
 
@@ -126,8 +129,6 @@ class AudioDecoderStreamTest : public testing::Test {
   MockAudioDecoder* decoder_ = nullptr;
   AudioDecoder::OutputCB decoder_output_cb_;
   base::TimeDelta last_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderStreamTest);
 };
 
 TEST_F(AudioDecoderStreamTest, FlushOnConfigChange) {

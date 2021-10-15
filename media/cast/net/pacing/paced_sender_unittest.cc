@@ -43,6 +43,9 @@ class TestPacketSender : public PacketTransport {
  public:
   TestPacketSender() : bytes_sent_(0) {}
 
+  TestPacketSender(const TestPacketSender&) = delete;
+  TestPacketSender& operator=(const TestPacketSender&) = delete;
+
   bool SendPacket(PacketRef packet, base::OnceClosure cb) final {
     EXPECT_FALSE(expected_packet_sizes_.empty());
     size_t expected_packet_size = expected_packet_sizes_.front();
@@ -86,11 +89,13 @@ class TestPacketSender : public PacketTransport {
   base::circular_deque<int> expected_packet_sizes_;
   base::circular_deque<uint16_t> expected_packet_ids_;
   int64_t bytes_sent_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPacketSender);
 };
 
 class PacedSenderTest : public ::testing::Test {
+ public:
+  PacedSenderTest(const PacedSenderTest&) = delete;
+  PacedSenderTest& operator=(const PacedSenderTest&) = delete;
+
  protected:
   PacedSenderTest() {
     testing_clock_.Advance(base::Milliseconds(kStartMillisecond));
@@ -168,8 +173,6 @@ class PacedSenderTest : public ::testing::Test {
   TestPacketSender mock_transport_;
   scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
   std::unique_ptr<PacedSender> paced_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(PacedSenderTest);
 };
 
 }  // namespace

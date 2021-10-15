@@ -64,6 +64,10 @@ class MockDelegate : public UsbMidiInputStream::Delegate {
 };
 
 class UsbMidiInputStreamTest : public ::testing::Test {
+ public:
+  UsbMidiInputStreamTest(const UsbMidiInputStreamTest&) = delete;
+  UsbMidiInputStreamTest& operator=(const UsbMidiInputStreamTest&) = delete;
+
  protected:
   UsbMidiInputStreamTest() {
     stream_ = std::make_unique<UsbMidiInputStream>(&delegate_);
@@ -90,9 +94,6 @@ class UsbMidiInputStreamTest : public ::testing::Test {
   TestUsbMidiDevice device2_;
   MockDelegate delegate_;
   std::unique_ptr<UsbMidiInputStream> stream_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsbMidiInputStreamTest);
 };
 
 TEST_F(UsbMidiInputStreamTest, UnknownMessage) {

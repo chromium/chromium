@@ -50,41 +50,50 @@ static CFStringRef VideoCodecProfileToVTProfile(VideoCodecProfile profile) {
 }  // namespace
 
 struct VTVideoEncodeAccelerator::InProgressFrameEncode {
+  InProgressFrameEncode() = delete;
+
   InProgressFrameEncode(base::TimeDelta rtp_timestamp, base::TimeTicks ref_time)
       : timestamp(rtp_timestamp), reference_time(ref_time) {}
+
+  InProgressFrameEncode(const InProgressFrameEncode&) = delete;
+  InProgressFrameEncode& operator=(const InProgressFrameEncode&) = delete;
+
   const base::TimeDelta timestamp;
   const base::TimeTicks reference_time;
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InProgressFrameEncode);
 };
 
 struct VTVideoEncodeAccelerator::EncodeOutput {
+  EncodeOutput() = delete;
+
   EncodeOutput(VTEncodeInfoFlags info_flags,
                CMSampleBufferRef sbuf,
                base::TimeDelta timestamp)
       : info(info_flags),
         sample_buffer(sbuf, base::scoped_policy::RETAIN),
         capture_timestamp(timestamp) {}
+
+  EncodeOutput(const EncodeOutput&) = delete;
+  EncodeOutput& operator=(const EncodeOutput&) = delete;
+
   const VTEncodeInfoFlags info;
   const base::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer;
   const base::TimeDelta capture_timestamp;
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(EncodeOutput);
 };
 
 struct VTVideoEncodeAccelerator::BitstreamBufferRef {
+  BitstreamBufferRef() = delete;
+
   BitstreamBufferRef(int32_t id,
                      base::WritableSharedMemoryMapping mapping,
                      size_t size)
       : id(id), mapping(std::move(mapping)), size(size) {}
+
+  BitstreamBufferRef(const BitstreamBufferRef&) = delete;
+  BitstreamBufferRef& operator=(const BitstreamBufferRef&) = delete;
+
   const int32_t id;
   const base::WritableSharedMemoryMapping mapping;
   const size_t size;
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BitstreamBufferRef);
 };
 
 // .5 is set as a minimum to prevent overcompensating for large temporary

@@ -66,6 +66,9 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
       const SessionExpirationUpdateCB& session_expiration_update_cb,
       CdmCreatedCB cdm_created_cb);
 
+  CdmAdapter(const CdmAdapter&) = delete;
+  CdmAdapter& operator=(const CdmAdapter&) = delete;
+
   // Returns the version of the CDM interface that the created CDM uses. Must
   // only be called after the CDM is successfully initialized.
   int GetInterfaceVersion();
@@ -265,8 +268,6 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<CdmAdapter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CdmAdapter);
 };
 
 }  // namespace media

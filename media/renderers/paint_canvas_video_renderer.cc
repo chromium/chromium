@@ -565,6 +565,8 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
 // Generates an RGB image from a VideoFrame. Convert YUV to RGB plain on GPU.
 class VideoImageGenerator : public cc::PaintImageGenerator {
  public:
+  VideoImageGenerator() = delete;
+
   VideoImageGenerator(scoped_refptr<VideoFrame> frame)
       : cc::PaintImageGenerator(
             SkImageInfo::MakeN32Premul(frame->visible_rect().width(),
@@ -573,6 +575,10 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
         frame_(std::move(frame)) {
     DCHECK(!frame_->HasTextures());
   }
+
+  VideoImageGenerator(const VideoImageGenerator&) = delete;
+  VideoImageGenerator& operator=(const VideoImageGenerator&) = delete;
+
   ~VideoImageGenerator() override = default;
 
   sk_sp<SkData> GetEncodedData() const override { return nullptr; }
@@ -672,8 +678,6 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 
  private:
   scoped_refptr<VideoFrame> frame_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoImageGenerator);
 };
 
 class VideoTextureBacking : public cc::TextureBacking {

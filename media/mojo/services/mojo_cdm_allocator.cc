@@ -48,6 +48,9 @@ class MojoCdmBuffer final : public cdm::Buffer {
         std::move(mapping), std::move(mojo_shared_buffer_done_cb));
   }
 
+  MojoCdmBuffer(const MojoCdmBuffer&) = delete;
+  MojoCdmBuffer& operator=(const MojoCdmBuffer&) = delete;
+
   // cdm::Buffer implementation.
   void Destroy() final {
     // Unmap the memory before returning the handle to |allocator_|.
@@ -102,8 +105,6 @@ class MojoCdmBuffer final : public cdm::Buffer {
   mojo::ScopedSharedBufferMapping mapping_;
   const uint32_t capacity_;
   uint32_t size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoCdmBuffer);
 };
 
 // VideoFrameImpl that is able to create a MojoSharedBufferVideoFrame

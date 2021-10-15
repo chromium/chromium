@@ -24,10 +24,10 @@ class ReadCBHandler {
  public:
   ReadCBHandler() = default;
 
-  MOCK_METHOD1(ReadCB, void(int size));
+  ReadCBHandler(const ReadCBHandler&) = delete;
+  ReadCBHandler& operator=(const ReadCBHandler&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReadCBHandler);
+  MOCK_METHOD1(ReadCB, void(int size));
 };
 
 // Returns a path to the test file which contains the string "0123456789"

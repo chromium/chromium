@@ -235,6 +235,9 @@ class KeySystemsImpl : public KeySystems {
  public:
   static KeySystemsImpl* GetInstance();
 
+  KeySystemsImpl(const KeySystemsImpl&) = delete;
+  KeySystemsImpl& operator=(const KeySystemsImpl&) = delete;
+
   // These two functions are for testing purpose only.
   void AddCodecMaskForTesting(EmeMediaType media_type,
                               const std::string& codec,
@@ -326,8 +329,6 @@ class KeySystemsImpl : public KeySystems {
 
   // Makes sure all methods are called from the same thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeySystemsImpl);
 };
 
 KeySystemsImpl* KeySystemsImpl::GetInstance() {

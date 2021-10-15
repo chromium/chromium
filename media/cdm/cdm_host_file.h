@@ -42,6 +42,9 @@ class MEDIA_EXPORT CdmHostFile {
       const base::FilePath& file_path,
       const base::FilePath& sig_file_path);
 
+  CdmHostFile(const CdmHostFile&) = delete;
+  CdmHostFile& operator=(const CdmHostFile&) = delete;
+
   // Takes the PlatformFile of the |file_| and |sig_file_| and put them in the
   // returned cdm::HostFile. The caller must make sure the PlatformFiles are
   // properly closed after use.
@@ -57,8 +60,6 @@ class MEDIA_EXPORT CdmHostFile {
 
   // The signature file associated with |file_|.
   base::File sig_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmHostFile);
 };
 
 }  // namespace media

@@ -46,6 +46,9 @@ class InProcessReceiver {
     explicit TransportClient(InProcessReceiver* in_process_receiver)
         : in_process_receiver_(in_process_receiver) {}
 
+    TransportClient(const TransportClient&) = delete;
+    TransportClient& operator=(const TransportClient&) = delete;
+
     void OnStatusChanged(CastTransportStatus status) final;
     void OnLoggingEventsReceived(
         std::unique_ptr<std::vector<FrameEvent>> frame_events,
@@ -54,8 +57,6 @@ class InProcessReceiver {
 
    private:
     InProcessReceiver* in_process_receiver_;
-
-    DISALLOW_COPY_AND_ASSIGN(TransportClient);
   };
 
   // Construct a receiver with the given configuration.  |remote_end_point| can
@@ -66,6 +67,9 @@ class InProcessReceiver {
                     const net::IPEndPoint& remote_end_point,
                     const FrameReceiverConfig& audio_config,
                     const FrameReceiverConfig& video_config);
+
+  InProcessReceiver(const InProcessReceiver&) = delete;
+  InProcessReceiver& operator=(const InProcessReceiver&) = delete;
 
   virtual ~InProcessReceiver();
 
@@ -140,8 +144,6 @@ class InProcessReceiver {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<InProcessReceiver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessReceiver);
 };
 
 }  // namespace cast

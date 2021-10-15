@@ -171,6 +171,9 @@ class JobRecordBitstreamBuffer : public V4L2MjpegDecodeAccelerator::JobRecord {
         offset_(bitstream_buffer.offset()),
         out_frame_(video_frame) {}
 
+  JobRecordBitstreamBuffer(const JobRecordBitstreamBuffer&) = delete;
+  JobRecordBitstreamBuffer& operator=(const JobRecordBitstreamBuffer&) = delete;
+
   int32_t task_id() const override { return task_id_; }
   size_t size() const override { return shm_.size(); }
   off_t offset() const override { return offset_; }
@@ -184,8 +187,6 @@ class JobRecordBitstreamBuffer : public V4L2MjpegDecodeAccelerator::JobRecord {
   UnalignedSharedMemory shm_;
   off_t offset_;
   scoped_refptr<VideoFrame> out_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobRecordBitstreamBuffer);
 };
 
 // Job record when the client uses DMA buffer as input in Decode().

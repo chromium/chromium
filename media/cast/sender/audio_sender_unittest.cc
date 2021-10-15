@@ -42,6 +42,9 @@ class TransportClient : public CastTransport::Client {
  public:
   TransportClient() = default;
 
+  TransportClient(const TransportClient&) = delete;
+  TransportClient& operator=(const TransportClient&) = delete;
+
   void OnStatusChanged(CastTransportStatus status) final {
     EXPECT_EQ(TRANSPORT_STREAM_INITIALIZED, status);
   }
@@ -49,8 +52,6 @@ class TransportClient : public CastTransport::Client {
       std::unique_ptr<std::vector<FrameEvent>> frame_events,
       std::unique_ptr<std::vector<PacketEvent>> packet_events) final {}
   void ProcessRtpPacket(std::unique_ptr<Packet> packet) final {}
-
-  DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };
 
 }  // namespace
@@ -58,6 +59,9 @@ class TransportClient : public CastTransport::Client {
 class TestPacketSender : public PacketTransport {
  public:
   TestPacketSender() : number_of_rtp_packets_(0), number_of_rtcp_packets_(0) {}
+
+  TestPacketSender(const TestPacketSender&) = delete;
+  TestPacketSender& operator=(const TestPacketSender&) = delete;
 
   bool SendPacket(PacketRef packet, base::OnceClosure cb) final {
     if (IsRtcpPacket(&packet->data[0], packet->data.size())) {
@@ -87,8 +91,6 @@ class TestPacketSender : public PacketTransport {
  private:
   int number_of_rtp_packets_;
   int number_of_rtcp_packets_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPacketSender);
 };
 
 class AudioSenderTest : public ::testing::Test {

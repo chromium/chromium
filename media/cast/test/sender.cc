@@ -127,6 +127,9 @@ class TransportClient : public media::cast::CastTransport::Client {
       media::cast::LogEventDispatcher* log_event_dispatcher)
       : log_event_dispatcher_(log_event_dispatcher) {}
 
+  TransportClient(const TransportClient&) = delete;
+  TransportClient& operator=(const TransportClient&) = delete;
+
   void OnStatusChanged(media::cast::CastTransportStatus status) final {
     VLOG(1) << "Transport status: " << status;
   }
@@ -143,8 +146,6 @@ class TransportClient : public media::cast::CastTransport::Client {
  private:
   media::cast::LogEventDispatcher* const
       log_event_dispatcher_;  // Not owned by this class.
-
-  DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };
 
 }  // namespace

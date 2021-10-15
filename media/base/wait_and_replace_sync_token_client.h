@@ -20,13 +20,16 @@ class MEDIA_EXPORT WaitAndReplaceSyncTokenClient
     : public VideoFrame::SyncTokenClient {
  public:
   explicit WaitAndReplaceSyncTokenClient(gpu::InterfaceBase* ib);
+
+  WaitAndReplaceSyncTokenClient(const WaitAndReplaceSyncTokenClient&) = delete;
+  WaitAndReplaceSyncTokenClient& operator=(
+      const WaitAndReplaceSyncTokenClient&) = delete;
+
   void GenerateSyncToken(gpu::SyncToken* sync_token) final;
   void WaitSyncToken(const gpu::SyncToken& sync_token) final;
 
  private:
   gpu::InterfaceBase* ib_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitAndReplaceSyncTokenClient);
 };
 
 }  // namespace media

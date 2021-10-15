@@ -74,6 +74,12 @@ void OnLogMessage(const std::string& message) {}
 
 // Test fixture class.
 class AudioLowLatencyInputOutputTest : public testing::Test {
+ public:
+  AudioLowLatencyInputOutputTest(const AudioLowLatencyInputOutputTest&) =
+      delete;
+  AudioLowLatencyInputOutputTest& operator=(
+      const AudioLowLatencyInputOutputTest&) = delete;
+
  protected:
   AudioLowLatencyInputOutputTest() {
     audio_manager_ =
@@ -91,8 +97,6 @@ class AudioLowLatencyInputOutputTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   std::unique_ptr<AudioManager> audio_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioLowLatencyInputOutputTest);
 };
 
 // This audio source/sink implementation should be used for manual tests

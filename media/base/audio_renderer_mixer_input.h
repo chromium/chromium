@@ -41,6 +41,9 @@ class MEDIA_EXPORT AudioRendererMixerInput
                           const std::string& device_id,
                           AudioLatency::LatencyType latency);
 
+  AudioRendererMixerInput(const AudioRendererMixerInput&) = delete;
+  AudioRendererMixerInput& operator=(const AudioRendererMixerInput&) = delete;
+
   // SwitchableAudioRendererSink implementation.
   void Start() override;
   void Stop() override;
@@ -133,8 +136,6 @@ class MEDIA_EXPORT AudioRendererMixerInput
   // the OnDeviceInfoReceived() from the GODIA() call completes.
   std::string pending_device_id_;
   OutputDeviceStatusCB pending_switch_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererMixerInput);
 };
 
 }  // namespace media

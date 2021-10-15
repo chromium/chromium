@@ -18,6 +18,9 @@ class VP8Picture : public CodecPicture {
  public:
   VP8Picture();
 
+  VP8Picture(const VP8Picture&) = delete;
+  VP8Picture& operator=(const VP8Picture&) = delete;
+
   virtual V4L2VP8Picture* AsV4L2VP8Picture();
   virtual VaapiVP8Picture* AsVaapiVP8Picture();
 
@@ -25,9 +28,6 @@ class VP8Picture : public CodecPicture {
 
  protected:
   ~VP8Picture() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VP8Picture);
 };
 
 }  // namespace media

@@ -105,6 +105,10 @@ class MEDIA_EXPORT WebmMuxer {
             bool has_video_,
             bool has_audio_,
             std::unique_ptr<Delegate> delegate);
+
+  WebmMuxer(const WebmMuxer&) = delete;
+  WebmMuxer& operator=(const WebmMuxer&) = delete;
+
   ~WebmMuxer();
 
   // Sets the maximum duration interval to cause data output on
@@ -246,8 +250,6 @@ class MEDIA_EXPORT WebmMuxer {
   base::circular_deque<EncodedFrame> video_frames_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WebmMuxer);
 };
 
 }  // namespace media

@@ -23,10 +23,16 @@ class DataSource;
 // sequenced blocking pool.
 class MEDIA_EXPORT BlockingUrlProtocol : public FFmpegURLProtocol {
  public:
+  BlockingUrlProtocol() = delete;
+
   // Implements FFmpegURLProtocol using the given |data_source|. |error_cb| is
   // fired any time DataSource::Read() returns an error.
   BlockingUrlProtocol(DataSource* data_source,
                       const base::RepeatingClosure& error_cb);
+
+  BlockingUrlProtocol(const BlockingUrlProtocol&) = delete;
+  BlockingUrlProtocol& operator=(const BlockingUrlProtocol&) = delete;
+
   virtual ~BlockingUrlProtocol();
 
   // Aborts any pending reads by returning a read error. After this method
@@ -64,8 +70,6 @@ class MEDIA_EXPORT BlockingUrlProtocol : public FFmpegURLProtocol {
 
   // Cached position within the data source.
   int64_t read_position_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BlockingUrlProtocol);
 };
 
 }  // namespace media

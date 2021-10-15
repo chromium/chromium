@@ -56,6 +56,10 @@ class MEDIA_GPU_EXPORT ImageProcessor {
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner);
 
+  ImageProcessor() = delete;
+  ImageProcessor(const ImageProcessor&) = delete;
+  ImageProcessor& operator=(const ImageProcessor&) = delete;
+
   virtual ~ImageProcessor();
 
   const PortConfig& input_config() const { return backend_->input_config(); }
@@ -147,8 +151,6 @@ class MEDIA_GPU_EXPORT ImageProcessor {
   // The weak pointer of this, bound to |client_task_runner_|.
   base::WeakPtr<ImageProcessor> weak_this_;
   base::WeakPtrFactory<ImageProcessor> weak_this_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ImageProcessor);
 };
 
 }  // namespace media

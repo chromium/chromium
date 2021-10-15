@@ -94,12 +94,17 @@ bool HasCrosCameraTest() {
 
 class MojoCameraClientObserver : public CameraClientObserver {
  public:
+  MojoCameraClientObserver() = delete;
+
   explicit MojoCameraClientObserver(
       mojo::PendingRemote<cros::mojom::CameraHalClient> client,
       cros::mojom::CameraClientType type,
       base::UnguessableToken auth_token)
       : CameraClientObserver(type, std::move(auth_token)),
         client_(std::move(client)) {}
+
+  MojoCameraClientObserver(const MojoCameraClientObserver&) = delete;
+  MojoCameraClientObserver& operator=(const MojoCameraClientObserver&) = delete;
 
   void OnChannelCreated(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module) override {
@@ -110,7 +115,6 @@ class MojoCameraClientObserver : public CameraClientObserver {
 
  private:
   mojo::Remote<cros::mojom::CameraHalClient> client_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(MojoCameraClientObserver);
 };
 
 }  // namespace

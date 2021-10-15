@@ -86,6 +86,9 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
     DCHECK(worker_task_runner_);
   }
 
+  PoolImpl(const PoolImpl&) = delete;
+  PoolImpl& operator=(const PoolImpl&) = delete;
+
   // Takes a software VideoFrame and calls |frame_ready_cb| with a VideoFrame
   // backed by native textures if possible.
   // The data contained in |video_frame| is copied into the returned frame
@@ -259,8 +262,6 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   // in-flight copy, new copies are added at the end.
   base::circular_deque<VideoFrameCopyRequest> frame_copy_requests_;
   bool in_shutdown_;
-
-  DISALLOW_COPY_AND_ASSIGN(PoolImpl);
 };
 
 namespace {

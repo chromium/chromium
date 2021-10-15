@@ -433,6 +433,9 @@ class VideoResourceUpdater::HardwarePlaneResource
         sii->GenUnverifiedSyncToken().GetConstData());
   }
 
+  HardwarePlaneResource(const HardwarePlaneResource&) = delete;
+  HardwarePlaneResource& operator=(const HardwarePlaneResource&) = delete;
+
   ~HardwarePlaneResource() override {
     gpu::SyncToken sync_token;
     ContextGL()->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
@@ -465,8 +468,6 @@ class VideoResourceUpdater::HardwarePlaneResource
   gpu::Mailbox mailbox_;
   GLenum texture_target_ = GL_TEXTURE_2D;
   bool overlay_candidate_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HardwarePlaneResource);
 };
 
 VideoResourceUpdater::SoftwarePlaneResource*

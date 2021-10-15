@@ -40,6 +40,9 @@ class AudioDecoder::ImplBase
     }
   }
 
+  ImplBase(const ImplBase&) = delete;
+  ImplBase& operator=(const ImplBase&) = delete;
+
   OperationalStatus InitializationResult() const { return operational_status_; }
 
   void DecodeFrame(std::unique_ptr<EncodedFrame> encoded_frame,
@@ -99,8 +102,6 @@ class AudioDecoder::ImplBase
 
  private:
   FrameId last_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImplBase);
 };
 
 class AudioDecoder::OpusImpl final : public AudioDecoder::ImplBase {
@@ -127,6 +128,9 @@ class AudioDecoder::OpusImpl final : public AudioDecoder::ImplBase {
     }
     ImplBase::operational_status_ = STATUS_INITIALIZED;
   }
+
+  OpusImpl(const OpusImpl&) = delete;
+  OpusImpl& operator=(const OpusImpl&) = delete;
 
  private:
   ~OpusImpl() final = default;
@@ -168,8 +172,6 @@ class AudioDecoder::OpusImpl final : public AudioDecoder::ImplBase {
   // provide enough space in |buffer_| to contain 120ms of samples.  At 48 kHz,
   // then, that means 5760 samples times the number of channels.
   static const int kOpusMaxFrameDurationMillis = 120;
-
-  DISALLOW_COPY_AND_ASSIGN(OpusImpl);
 };
 
 class AudioDecoder::Pcm16Impl final : public AudioDecoder::ImplBase {
@@ -185,6 +187,9 @@ class AudioDecoder::Pcm16Impl final : public AudioDecoder::ImplBase {
       return;
     ImplBase::operational_status_ = STATUS_INITIALIZED;
   }
+
+  Pcm16Impl(const Pcm16Impl&) = delete;
+  Pcm16Impl& operator=(const Pcm16Impl&) = delete;
 
  private:
   ~Pcm16Impl() final = default;
@@ -207,8 +212,6 @@ class AudioDecoder::Pcm16Impl final : public AudioDecoder::ImplBase {
                                                             num_samples);
     return audio_bus;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(Pcm16Impl);
 };
 
 AudioDecoder::AudioDecoder(

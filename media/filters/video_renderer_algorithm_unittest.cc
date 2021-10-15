@@ -39,6 +39,9 @@ class TickGenerator {
         microseconds_per_tick_(base::Time::kMicrosecondsPerSecond / hertz),
         base_time_(base_timestamp) {}
 
+  TickGenerator(const TickGenerator&) = delete;
+  TickGenerator& operator=(const TickGenerator&) = delete;
+
   base::TimeDelta interval(int tick_count) const {
     return base::Microseconds(tick_count * microseconds_per_tick_);
   }
@@ -64,8 +67,6 @@ class TickGenerator {
   const double hertz_;
   const double microseconds_per_tick_;
   base::TimeTicks base_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(TickGenerator);
 };
 
 class VideoRendererAlgorithmTest : public testing::Test {

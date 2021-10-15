@@ -369,6 +369,10 @@ class MEDIA_EXPORT Vp9Parser {
   // The constructor. See ParseNextFrame() for comments for
   // |parsing_compressed_header|.
   explicit Vp9Parser(bool parsing_compressed_header);
+
+  Vp9Parser(const Vp9Parser&) = delete;
+  Vp9Parser& operator=(const Vp9Parser&) = delete;
+
   ~Vp9Parser();
 
   // Set a new stream buffer to read from, starting at |stream| and of size
@@ -491,8 +495,6 @@ class MEDIA_EXPORT Vp9Parser {
 
   FrameInfo curr_frame_info_;
   Vp9FrameHeader curr_frame_header_;
-
-  DISALLOW_COPY_AND_ASSIGN(Vp9Parser);
 };
 
 }  // namespace media

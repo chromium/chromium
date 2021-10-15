@@ -40,10 +40,15 @@ const std::vector<DeviceCategoryToType>& GetDeviceCategoryToType() {
 // Manages the device notification handles for SystemMessageWindowWin.
 class SystemMessageWindowWin::DeviceNotifications {
  public:
+  DeviceNotifications() = delete;
+
   explicit DeviceNotifications(HWND hwnd)
       : notifications_(base::size(GetDeviceCategoryToType())) {
     Register(hwnd);
   }
+
+  DeviceNotifications(const DeviceNotifications&) = delete;
+  DeviceNotifications& operator=(const DeviceNotifications&) = delete;
 
   ~DeviceNotifications() { Unregister(); }
 
@@ -83,8 +88,6 @@ class SystemMessageWindowWin::DeviceNotifications {
 
  private:
   std::vector<HDEVNOTIFY> notifications_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DeviceNotifications);
 };
 
 SystemMessageWindowWin::SystemMessageWindowWin() {

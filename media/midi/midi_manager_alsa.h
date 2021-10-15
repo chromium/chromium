@@ -96,6 +96,10 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
              const std::string& manufacturer,
              const std::string& version,
              Type type);
+
+    MidiPort(const MidiPort&) = delete;
+    MidiPort& operator=(const MidiPort&) = delete;
+
     ~MidiPort();
 
     // Gets a Value representation of this object, suitable for serialization.
@@ -177,8 +181,6 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
 
     // Port is present in the ALSA system.
     bool connected_ = true;
-
-    DISALLOW_COPY_AND_ASSIGN(MidiPort);
   };
 
   class MidiPortStateBase {

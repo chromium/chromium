@@ -15,6 +15,9 @@ namespace media {
 
 class MEDIA_EXPORT Ac3Util {
  public:
+  Ac3Util(const Ac3Util&) = delete;
+  Ac3Util& operator=(const Ac3Util&) = delete;
+
   // Returns the total number of audio samples in the given buffer, which
   // contains several complete AC3 syncframes.
   static int ParseTotalAc3SampleCount(const uint8_t* data, size_t size);
@@ -22,9 +25,6 @@ class MEDIA_EXPORT Ac3Util {
   // Returns the total number of audio samples in the given buffer, which
   // contains several complete E-AC3 syncframes.
   static int ParseTotalEac3SampleCount(const uint8_t* data, size_t size);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Ac3Util);
 };
 
 }  // namespace media

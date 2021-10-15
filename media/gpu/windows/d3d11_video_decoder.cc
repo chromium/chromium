@@ -53,14 +53,17 @@ struct CommandBufferHelperHolder
       scoped_refptr<base::SequencedTaskRunner> task_runner)
       : base::RefCountedDeleteOnSequence<CommandBufferHelperHolder>(
             std::move(task_runner)) {}
+
+  CommandBufferHelperHolder(const CommandBufferHelperHolder&) = delete;
+  CommandBufferHelperHolder& operator=(const CommandBufferHelperHolder&) =
+      delete;
+
   scoped_refptr<CommandBufferHelper> helper;
 
  private:
   ~CommandBufferHelperHolder() = default;
   friend class base::RefCountedDeleteOnSequence<CommandBufferHelperHolder>;
   friend class base::DeleteHelper<CommandBufferHelperHolder>;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferHelperHolder);
 };
 
 scoped_refptr<CommandBufferHelper> CreateCommandBufferHelper(

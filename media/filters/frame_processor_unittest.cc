@@ -82,6 +82,10 @@ class FrameProcessorTestCallbackHelper {
 };
 
 class FrameProcessorTest : public ::testing::TestWithParam<bool> {
+ public:
+  FrameProcessorTest(const FrameProcessorTest&) = delete;
+  FrameProcessorTest& operator=(const FrameProcessorTest&) = delete;
+
  protected:
   FrameProcessorTest()
       : append_window_end_(kInfiniteDuration),
@@ -426,8 +430,6 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
                               base::Unretained(&callbacks_), type));
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FrameProcessorTest);
 };
 
 TEST_P(FrameProcessorTest, WrongTypeInAppendedBuffer) {

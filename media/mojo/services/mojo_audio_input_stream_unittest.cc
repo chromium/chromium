@@ -100,6 +100,9 @@ class MockClient : public mojom::AudioInputStreamClient {
  public:
   MockClient() = default;
 
+  MockClient(const MockClient&) = delete;
+  MockClient& operator=(const MockClient&) = delete;
+
   void Initialized(mojom::ReadOnlyAudioDataPipePtr data_pipe,
                    bool initially_muted) {
     ASSERT_TRUE(data_pipe->shared_memory.IsValid());
@@ -124,8 +127,6 @@ class MockClient : public mojom::AudioInputStreamClient {
  private:
   base::ReadOnlySharedMemoryRegion region_;
   std::unique_ptr<base::CancelableSyncSocket> socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockClient);
 };
 
 std::unique_ptr<AudioInputDelegate> CreateNoDelegate(
@@ -146,6 +147,9 @@ class MojoAudioInputStreamTest : public Test {
   MojoAudioInputStreamTest()
       : foreign_socket_(std::make_unique<TestCancelableSyncSocket>()),
         client_receiver_(&client_) {}
+
+  MojoAudioInputStreamTest(const MojoAudioInputStreamTest&) = delete;
+  MojoAudioInputStreamTest& operator=(const MojoAudioInputStreamTest&) = delete;
 
   mojo::Remote<mojom::AudioInputStream> CreateAudioInput() {
     mojo::Remote<mojom::AudioInputStream> stream;
@@ -185,8 +189,6 @@ class MojoAudioInputStreamTest : public Test {
   StrictMock<MockClient> client_;
   mojo::Receiver<media::mojom::AudioInputStreamClient> client_receiver_;
   std::unique_ptr<MojoAudioInputStream> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioInputStreamTest);
 };
 
 TEST_F(MojoAudioInputStreamTest, NoDelegate_SignalsError) {

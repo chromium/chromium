@@ -25,6 +25,11 @@ class VideoFrameMetadataStructTraitsTest
  public:
   VideoFrameMetadataStructTraitsTest() = default;
 
+  VideoFrameMetadataStructTraitsTest(
+      const VideoFrameMetadataStructTraitsTest&) = delete;
+  VideoFrameMetadataStructTraitsTest& operator=(
+      const VideoFrameMetadataStructTraitsTest&) = delete;
+
  protected:
   mojo::Remote<mojom::VideoFrameMetadataTraitsTestService>
   GetTraitsTestRemote() {
@@ -48,8 +53,6 @@ class VideoFrameMetadataStructTraitsTest
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<VideoFrameMetadataTraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameMetadataStructTraitsTest);
 };
 
 }  // namespace

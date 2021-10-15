@@ -596,6 +596,9 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest,
  public:
   AudioAndroidInputTest() : audio_input_stream_(nullptr) {}
 
+  AudioAndroidInputTest(const AudioAndroidInputTest&) = delete;
+  AudioAndroidInputTest& operator=(const AudioAndroidInputTest&) = delete;
+
  protected:
   const AudioParameters& audio_input_parameters() {
     return audio_input_parameters_;
@@ -718,9 +721,6 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest,
 
   AudioInputStream* audio_input_stream_;
   AudioParameters audio_input_parameters_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioAndroidInputTest);
 };
 
 // Get the default audio input parameters and log the result.

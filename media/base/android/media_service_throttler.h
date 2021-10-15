@@ -45,6 +45,9 @@ class MEDIA_EXPORT MediaServiceThrottler {
   // calls to OnMediaServerCrash() will be signaled.
   static MediaServiceThrottler* GetInstance();
 
+  MediaServiceThrottler(const MediaServiceThrottler&) = delete;
+  MediaServiceThrottler& operator=(const MediaServiceThrottler&) = delete;
+
   // Returns the delay to wait until a new client is allowed to be created.
   base::TimeDelta GetDelayForClientCreation();
 
@@ -107,8 +110,6 @@ class MEDIA_EXPORT MediaServiceThrottler {
   std::unique_ptr<MediaServerCrashListener> crash_listener_;
 
   scoped_refptr<base::SingleThreadTaskRunner> crash_listener_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaServiceThrottler);
 };
 
 }  // namespace media

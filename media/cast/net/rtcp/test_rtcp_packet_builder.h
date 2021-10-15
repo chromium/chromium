@@ -56,6 +56,9 @@ class TestRtcpPacketBuilder {
  public:
   TestRtcpPacketBuilder();
 
+  TestRtcpPacketBuilder(const TestRtcpPacketBuilder&) = delete;
+  TestRtcpPacketBuilder& operator=(const TestRtcpPacketBuilder&) = delete;
+
   void AddSr(uint32_t remote_ssrc, int number_of_report_blocks);
   void AddSrWithNtp(uint32_t remote_ssrc,
                     uint32_t ntp_high,
@@ -104,8 +107,6 @@ class TestRtcpPacketBuilder {
   char* ptr_of_length_;
   base::BigEndianWriter big_endian_writer_;
   base::BigEndianReader big_endian_reader_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRtcpPacketBuilder);
 };
 
 }  // namespace cast

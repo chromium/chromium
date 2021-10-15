@@ -33,9 +33,15 @@ class FFmpegDecodingLoop;
 
 class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
  public:
+  FFmpegAudioDecoder() = delete;
+
   FFmpegAudioDecoder(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log);
+
+  FFmpegAudioDecoder(const FFmpegAudioDecoder&) = delete;
+  FFmpegAudioDecoder& operator=(const FFmpegAudioDecoder&) = delete;
+
   ~FFmpegAudioDecoder() override;
 
   // AudioDecoder implementation.
@@ -116,8 +122,6 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
   scoped_refptr<AudioBufferMemoryPool> pool_;
 
   std::unique_ptr<FFmpegDecodingLoop> decoding_loop_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(FFmpegAudioDecoder);
 };
 
 }  // namespace media

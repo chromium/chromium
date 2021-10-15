@@ -297,6 +297,9 @@ class DecoderSelectorTest : public ::testing::Test {
       : traits_(TypeParam::CreateStreamTraits(&media_log_)),
         demuxer_stream_(TypeParam::kStreamType) {}
 
+  DecoderSelectorTest(const DecoderSelectorTest&) = delete;
+  DecoderSelectorTest& operator=(const DecoderSelectorTest&) = delete;
+
   void OnWaiting(WaitingReason reason) { NOTREACHED(); }
   void OnOutput(scoped_refptr<Output> output) { NOTREACHED(); }
 
@@ -461,9 +464,6 @@ class DecoderSelectorTest : public ::testing::Test {
 
   bool use_decrypting_decoder_ = false;
   std::vector<MockDecoderArgs> mock_decoders_to_create_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DecoderSelectorTest);
 };
 
 using VideoDecoderSelectorTest =

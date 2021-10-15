@@ -33,6 +33,9 @@ class MEDIA_EXPORT H264BitstreamBuffer
  public:
   H264BitstreamBuffer();
 
+  H264BitstreamBuffer(const H264BitstreamBuffer&) = delete;
+  H264BitstreamBuffer& operator=(const H264BitstreamBuffer&) = delete;
+
   // Discard all data and reset the buffer for reuse.
   void Reset();
 
@@ -137,8 +140,6 @@ class MEDIA_EXPORT H264BitstreamBuffer
 
   // Buffer for stream data.
   uint8_t* data_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264BitstreamBuffer);
 };
 
 }  // namespace media

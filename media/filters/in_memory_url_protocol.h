@@ -20,7 +20,13 @@ namespace media {
 //       this object.
 class MEDIA_EXPORT InMemoryUrlProtocol : public FFmpegURLProtocol {
  public:
+  InMemoryUrlProtocol() = delete;
+
   InMemoryUrlProtocol(const uint8_t* buf, int64_t size, bool streaming);
+
+  InMemoryUrlProtocol(const InMemoryUrlProtocol&) = delete;
+  InMemoryUrlProtocol& operator=(const InMemoryUrlProtocol&) = delete;
+
   virtual ~InMemoryUrlProtocol();
 
   // FFmpegURLProtocol methods.
@@ -35,8 +41,6 @@ class MEDIA_EXPORT InMemoryUrlProtocol : public FFmpegURLProtocol {
   int64_t size_;
   int64_t position_;
   bool streaming_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InMemoryUrlProtocol);
 };
 
 }  // namespace media

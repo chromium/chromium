@@ -56,6 +56,9 @@ class MFPhotoCallback final
                   VideoCaptureFormat format)
       : callback_(std::move(callback)), format_(format) {}
 
+  MFPhotoCallback(const MFPhotoCallback&) = delete;
+  MFPhotoCallback& operator=(const MFPhotoCallback&) = delete;
+
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     if (riid == IID_IUnknown || riid == IID_IMFCaptureEngineOnSampleCallback) {
       AddRef();
@@ -124,8 +127,6 @@ class MFPhotoCallback final
 
   VideoCaptureDevice::TakePhotoCallback callback_;
   const VideoCaptureFormat format_;
-
-  DISALLOW_COPY_AND_ASSIGN(MFPhotoCallback);
 };
 
 // Locks the given buffer using the fastest supported method when constructed,

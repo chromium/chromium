@@ -27,6 +27,9 @@ class MEDIA_GPU_EXPORT CodecPicture
  public:
   CodecPicture();
 
+  CodecPicture(const CodecPicture&) = delete;
+  CodecPicture& operator=(const CodecPicture&) = delete;
+
   int32_t bitstream_id() const { return bitstream_id_; }
   void set_bitstream_id(int32_t bitstream_id) { bitstream_id_ = bitstream_id; }
 
@@ -56,8 +59,6 @@ class MEDIA_GPU_EXPORT CodecPicture
   gfx::Rect visible_rect_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
   VideoColorSpace colorspace_;
-
-  DISALLOW_COPY_AND_ASSIGN(CodecPicture);
 };
 
 }  // namespace media

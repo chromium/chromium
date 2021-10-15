@@ -18,6 +18,10 @@ class FakeSingleThreadTaskRunner final : public base::SingleThreadTaskRunner {
  public:
   explicit FakeSingleThreadTaskRunner(base::SimpleTestTickClock* clock);
 
+  FakeSingleThreadTaskRunner(const FakeSingleThreadTaskRunner&) = delete;
+  FakeSingleThreadTaskRunner& operator=(const FakeSingleThreadTaskRunner&) =
+      delete;
+
   void RunTasks();
 
   // Note: Advances |clock_|.
@@ -52,8 +56,6 @@ class FakeSingleThreadTaskRunner final : public base::SingleThreadTaskRunner {
   std::map<TaskKey, base::OnceClosure> tasks_;
 
   bool fail_on_next_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSingleThreadTaskRunner);
 };
 
 }  // namespace media

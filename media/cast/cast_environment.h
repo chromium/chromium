@@ -35,6 +35,9 @@ class CastEnvironment : public base::RefCountedThreadSafe<CastEnvironment> {
       scoped_refptr<base::SingleThreadTaskRunner> audio_thread_proxy,
       scoped_refptr<base::SingleThreadTaskRunner> video_thread_proxy);
 
+  CastEnvironment(const CastEnvironment&) = delete;
+  CastEnvironment& operator=(const CastEnvironment&) = delete;
+
   // These are the same methods in message_loop.h, but are guaranteed to either
   // get posted to the MessageLoop if it's still alive, or be deleted otherwise.
   // They return true iff the thread existed and the task was posted.  Note that
@@ -76,8 +79,6 @@ class CastEnvironment : public base::RefCountedThreadSafe<CastEnvironment> {
 
  private:
   friend class base::RefCountedThreadSafe<CastEnvironment>;
-
-  DISALLOW_COPY_AND_ASSIGN(CastEnvironment);
 };
 
 }  // namespace cast

@@ -46,6 +46,9 @@ class FuchsiaCdm : public ContentDecryptionModule,
              ReadyCB ready_cb,
              SessionCallbacks callbacks);
 
+  FuchsiaCdm(const FuchsiaCdm&) = delete;
+  FuchsiaCdm& operator=(const FuchsiaCdm&) = delete;
+
   // ContentDecryptionModule implementation:
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
                             std::unique_ptr<SimpleCdmPromise> promise) override;
@@ -118,8 +121,6 @@ class FuchsiaCdm : public ContentDecryptionModule,
       GUARDED_BY(new_key_callbacks_lock_);
 
   CallbackRegistry<EventCB::RunType> event_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuchsiaCdm);
 };
 
 }  // namespace media

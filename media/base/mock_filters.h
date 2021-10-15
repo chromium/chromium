@@ -733,6 +733,9 @@ class MockCdm : public ContentDecryptionModule {
           const SessionKeysChangeCB& session_keys_change_cb,
           const SessionExpirationUpdateCB& session_expiration_update_cb);
 
+  MockCdm(const MockCdm&) = delete;
+  MockCdm& operator=(const MockCdm&) = delete;
+
   void Initialize(
       const std::string& key_system,
       const SessionMessageCB& session_message_cb,
@@ -788,8 +791,6 @@ class MockCdm : public ContentDecryptionModule {
   SessionClosedCB session_closed_cb_;
   SessionKeysChangeCB session_keys_change_cb_;
   SessionExpirationUpdateCB session_expiration_update_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCdm);
 };
 
 class MockCdmFactory : public CdmFactory {

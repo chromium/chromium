@@ -116,10 +116,15 @@ class CAPTURE_EXPORT StreamCaptureInterface {
 class CAPTURE_EXPORT CameraDeviceDelegate final
     : public CaptureMetadataDispatcher::ResultMetadataObserver {
  public:
+  CameraDeviceDelegate() = delete;
+
   CameraDeviceDelegate(
       VideoCaptureDeviceDescriptor device_descriptor,
       scoped_refptr<CameraHalDelegate> camera_hal_delegate,
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
+
+  CameraDeviceDelegate(const CameraDeviceDelegate&) = delete;
+  CameraDeviceDelegate& operator=(const CameraDeviceDelegate&) = delete;
 
   ~CameraDeviceDelegate() final;
 
@@ -301,8 +306,6 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   gfx::Rect active_array_size_;
 
   base::WeakPtrFactory<CameraDeviceDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(CameraDeviceDelegate);
 };
 
 }  // namespace media

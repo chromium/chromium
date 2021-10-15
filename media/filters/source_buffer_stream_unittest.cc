@@ -68,6 +68,10 @@ MATCHER_P(ContainsTrackBufferExhaustionSkipLog, skip_milliseconds, "") {
   { EXPECT_EQ(SourceBufferStreamStatus::status_suffix, stream_->operation); }
 
 class SourceBufferStreamTest : public testing::Test {
+ public:
+  SourceBufferStreamTest(const SourceBufferStreamTest&) = delete;
+  SourceBufferStreamTest& operator=(const SourceBufferStreamTest&) = delete;
+
  protected:
   SourceBufferStreamTest() {
     video_config_ = TestVideoConfig::Normal();
@@ -697,7 +701,6 @@ class SourceBufferStreamTest : public testing::Test {
   int frames_per_second_;
   int keyframes_per_second_;
   base::TimeDelta frame_duration_;
-  DISALLOW_COPY_AND_ASSIGN(SourceBufferStreamTest);
 };
 
 TEST_F(SourceBufferStreamTest, Append_SingleRange) {

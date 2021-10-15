@@ -131,6 +131,10 @@ class MEDIA_EXPORT AudioBuffer
   // is disallowed.
   static scoped_refptr<AudioBuffer> CreateEOSBuffer();
 
+  AudioBuffer() = delete;
+  AudioBuffer(const AudioBuffer&) = delete;
+  AudioBuffer& operator=(const AudioBuffer&) = delete;
+
   // Update sample rate and computed duration.
   // TODO(chcunningham): Remove this upon patching FFmpeg's AAC decoder to
   // provide the correct sample rate at the boundary of an implicit config
@@ -241,8 +245,6 @@ class MEDIA_EXPORT AudioBuffer
 
   // Allows recycling of memory data to avoid repeated allocations.
   scoped_refptr<AudioBufferMemoryPool> pool_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AudioBuffer);
 };
 
 // Basic memory pool for reusing AudioBuffer internal memory to avoid thrashing.
@@ -261,6 +263,9 @@ class MEDIA_EXPORT AudioBufferMemoryPool
  public:
   AudioBufferMemoryPool();
 
+  AudioBufferMemoryPool(const AudioBufferMemoryPool&) = delete;
+  AudioBufferMemoryPool& operator=(const AudioBufferMemoryPool&) = delete;
+
   size_t GetPoolSizeForTesting();
 
  private:
@@ -276,8 +281,6 @@ class MEDIA_EXPORT AudioBufferMemoryPool
   base::Lock entry_lock_;
   using MemoryEntry = std::pair<AudioMemory, size_t>;
   std::list<MemoryEntry> entries_ GUARDED_BY(entry_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioBufferMemoryPool);
 };
 
 }  // namespace media

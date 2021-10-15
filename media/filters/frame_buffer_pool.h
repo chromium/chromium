@@ -32,6 +32,9 @@ class MEDIA_EXPORT FrameBufferPool
  public:
   FrameBufferPool();
 
+  FrameBufferPool(const FrameBufferPool&) = delete;
+  FrameBufferPool& operator=(const FrameBufferPool&) = delete;
+
   // Called when a frame buffer allocation is needed. Upon return |fb_priv| will
   // be set to a private value used to identify the buffer in future calls and a
   // buffer of at least |min_size| will be returned.
@@ -99,8 +102,6 @@ class MEDIA_EXPORT FrameBufferPool
   const base::TickClock* tick_clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FrameBufferPool);
 };
 
 }  // namespace media

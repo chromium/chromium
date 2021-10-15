@@ -17,12 +17,13 @@ class MockCodecImage : public CodecImage {
  public:
   MockCodecImage(const gfx::Size& coded_size);
 
+  MockCodecImage(const MockCodecImage&) = delete;
+  MockCodecImage& operator=(const MockCodecImage&) = delete;
+
   MOCK_METHOD0(ReleaseCodecBuffer, void());
 
  protected:
   ~MockCodecImage() override;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCodecImage);
 };
 
 }  // namespace media

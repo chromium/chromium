@@ -36,6 +36,9 @@ class VideoDecoder::ImplBase
         codec_(codec),
         operational_status_(STATUS_UNINITIALIZED) {}
 
+  ImplBase(const ImplBase&) = delete;
+  ImplBase& operator=(const ImplBase&) = delete;
+
   OperationalStatus InitializationResult() const { return operational_status_; }
 
   void DecodeFrame(std::unique_ptr<EncodedFrame> encoded_frame,
@@ -98,8 +101,6 @@ class VideoDecoder::ImplBase
 
  private:
   FrameId last_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImplBase);
 };
 
 class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
@@ -122,6 +123,9 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
     }
     ImplBase::operational_status_ = STATUS_INITIALIZED;
   }
+
+  Vp8Impl(const Vp8Impl&) = delete;
+  Vp8Impl& operator=(const Vp8Impl&) = delete;
 
  private:
   ~Vp8Impl() final {
@@ -170,8 +174,6 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
 
   // VPX decoder context (i.e., an instantiation).
   vpx_codec_ctx_t context_;
-
-  DISALLOW_COPY_AND_ASSIGN(Vp8Impl);
 };
 
 #ifndef OFFICIAL_BUILD
@@ -184,6 +186,9 @@ class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
       return;
     ImplBase::operational_status_ = STATUS_INITIALIZED;
   }
+
+  FakeImpl(const FakeImpl&) = delete;
+  FakeImpl& operator=(const FakeImpl&) = delete;
 
  private:
   ~FakeImpl() final = default;
@@ -204,8 +209,6 @@ class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
   }
 
   int last_decoded_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeImpl);
 };
 #endif
 

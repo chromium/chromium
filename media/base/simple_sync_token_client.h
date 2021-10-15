@@ -15,13 +15,15 @@ namespace media {
 class MEDIA_EXPORT SimpleSyncTokenClient : public VideoFrame::SyncTokenClient {
  public:
   explicit SimpleSyncTokenClient(const gpu::SyncToken& sync_token);
+
+  SimpleSyncTokenClient(const SimpleSyncTokenClient&) = delete;
+  SimpleSyncTokenClient& operator=(const SimpleSyncTokenClient&) = delete;
+
   void GenerateSyncToken(gpu::SyncToken* sync_token) final;
   void WaitSyncToken(const gpu::SyncToken& sync_token) final;
 
  private:
   gpu::SyncToken sync_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleSyncTokenClient);
 };
 
 }  // namespace media

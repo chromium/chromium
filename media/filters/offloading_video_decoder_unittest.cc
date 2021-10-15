@@ -71,6 +71,10 @@ class OffloadingVideoDecoderTest : public testing::Test {
             base::test::TaskEnvironment::MainThreadType::DEFAULT,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
+  OffloadingVideoDecoderTest(const OffloadingVideoDecoderTest&) = delete;
+  OffloadingVideoDecoderTest& operator=(const OffloadingVideoDecoderTest&) =
+      delete;
+
   void CreateWrapper(int offload_width, VideoCodec codec) {
     decoder_ = new testing::StrictMock<MockOffloadableVideoDecoder>();
     offloading_decoder_ = std::make_unique<OffloadingVideoDecoder>(
@@ -198,9 +202,6 @@ class OffloadingVideoDecoderTest : public testing::Test {
   std::unique_ptr<OffloadingVideoDecoder> offloading_decoder_;
   testing::StrictMock<MockOffloadableVideoDecoder>* decoder_ =
       nullptr;  // Owned by |offloading_decoder_|.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OffloadingVideoDecoderTest);
 };
 
 TEST_F(OffloadingVideoDecoderTest, NoOffloadingTooSmall) {

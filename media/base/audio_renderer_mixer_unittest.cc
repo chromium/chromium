@@ -86,6 +86,9 @@ class AudioRendererMixerTest
         step, output_parameters_.sample_rate());
   }
 
+  AudioRendererMixerTest(const AudioRendererMixerTest&) = delete;
+  AudioRendererMixerTest& operator=(const AudioRendererMixerTest&) = delete;
+
   AudioRendererMixer* GetMixer(const base::UnguessableToken& owner_token,
                                const AudioParameters& params,
                                AudioLatency::LatencyType latency,
@@ -359,9 +362,6 @@ class AudioRendererMixerTest
   std::unique_ptr<FakeAudioRenderCallback> expected_callback_;
   double epsilon_;
   bool half_fill_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererMixerTest);
 };
 
 class AudioRendererMixerBehavioralTest : public AudioRendererMixerTest {};

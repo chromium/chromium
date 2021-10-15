@@ -32,6 +32,9 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   // Assumes valid data of size |buffer_size|.
   DataBuffer(std::unique_ptr<uint8_t[]> buffer, int buffer_size);
 
+  DataBuffer(const DataBuffer&) = delete;
+  DataBuffer& operator=(const DataBuffer&) = delete;
+
   // Create a DataBuffer whose |data_| is copied from |data|.
   //
   // |data| must not be null and |size| must be >= 0.
@@ -108,8 +111,6 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   std::unique_ptr<uint8_t[]> data_;
   int buffer_size_;
   int data_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataBuffer);
 };
 
 }  // namespace media

@@ -71,6 +71,11 @@ class DeferredDestroyUniqueReceiverSet {
 
   DeferredDestroyUniqueReceiverSet() {}
 
+  DeferredDestroyUniqueReceiverSet(const DeferredDestroyUniqueReceiverSet&) =
+      delete;
+  DeferredDestroyUniqueReceiverSet& operator=(
+      const DeferredDestroyUniqueReceiverSet&) = delete;
+
   void AddReceiver(std::unique_ptr<DeferredDestroy<Interface>> impl,
                    mojo::PendingReceiver<Interface> receiver) {
     // Wrap the pointer into a unique_ptr with a deleter.
@@ -130,8 +135,6 @@ class DeferredDestroyUniqueReceiverSet {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DeferredDestroyUniqueReceiverSet> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeferredDestroyUniqueReceiverSet);
 };
 
 }  // namespace media

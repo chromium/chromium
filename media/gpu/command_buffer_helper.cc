@@ -54,6 +54,9 @@ class CommandBufferHelperImpl
     decoder_helper_ = GLES2DecoderHelper::Create(stub_->decoder_context());
   }
 
+  CommandBufferHelperImpl(const CommandBufferHelperImpl&) = delete;
+  CommandBufferHelperImpl& operator=(const CommandBufferHelperImpl&) = delete;
+
   gl::GLContext* GetGLContext() override {
     DVLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -313,7 +316,6 @@ class CommandBufferHelperImpl
   gpu::MemoryTypeTracker memory_type_tracker_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferHelperImpl);
 };
 
 }  // namespace

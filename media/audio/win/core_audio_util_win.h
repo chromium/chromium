@@ -59,6 +59,10 @@ class MEDIA_EXPORT CoreAudioUtil {
     WAVEFORMATEX* ptr_;
   };
 
+  CoreAudioUtil() = delete;
+  CoreAudioUtil(const CoreAudioUtil&) = delete;
+  CoreAudioUtil& operator=(const CoreAudioUtil&) = delete;
+
   // Returns true if Windows Core Audio is supported.
   // Always verify that this method returns true before using any of the
   // methods in this class.
@@ -245,12 +249,8 @@ class MEDIA_EXPORT CoreAudioUtil {
   // IAudioClient given by |client| and a corresponding IAudioRenderClient
   // given by |render_client|.
   static bool FillRenderEndpointBufferWithSilence(
-      IAudioClient* client, IAudioRenderClient* render_client);
-
- private:
-  CoreAudioUtil() {}
-  ~CoreAudioUtil() {}
-  DISALLOW_COPY_AND_ASSIGN(CoreAudioUtil);
+      IAudioClient* client,
+      IAudioRenderClient* render_client);
 };
 
 // The special audio session identifier we use when opening up the default

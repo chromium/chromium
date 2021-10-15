@@ -24,6 +24,10 @@ class StandaloneCastEnvironment : public CastEnvironment,
  public:
   StandaloneCastEnvironment();
 
+  StandaloneCastEnvironment(const StandaloneCastEnvironment&) = delete;
+  StandaloneCastEnvironment& operator=(const StandaloneCastEnvironment&) =
+      delete;
+
   // Stops all threads backing the task runners, blocking the caller until
   // complete.
   void Shutdown();
@@ -34,8 +38,6 @@ class StandaloneCastEnvironment : public CastEnvironment,
   base::Thread main_thread_;
   base::Thread audio_thread_;
   base::Thread video_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(StandaloneCastEnvironment);
 };
 
 }  // namespace cast

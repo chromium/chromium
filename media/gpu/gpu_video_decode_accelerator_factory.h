@@ -38,6 +38,12 @@ class MediaLog;
 
 class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
  public:
+  GpuVideoDecodeAcceleratorFactory() = delete;
+  GpuVideoDecodeAcceleratorFactory(const GpuVideoDecodeAcceleratorFactory&) =
+      delete;
+  GpuVideoDecodeAcceleratorFactory& operator=(
+      const GpuVideoDecodeAcceleratorFactory&) = delete;
+
   ~GpuVideoDecodeAcceleratorFactory();
 
   // Return current GLContext.
@@ -119,8 +125,6 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
   const GpuVideoDecodeGLClient gl_client_;
   const AndroidOverlayMojoFactoryCB overlay_factory_cb_;
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(GpuVideoDecodeAcceleratorFactory);
 };
 
 }  // namespace media

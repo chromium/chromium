@@ -26,6 +26,10 @@ static const int64_t kStartMillisecond = INT64_C(12345678900000);
 static const double kTargetEmptyBufferFraction = 0.9;
 
 class CongestionControlTest : public ::testing::Test {
+ public:
+  CongestionControlTest(const CongestionControlTest&) = delete;
+  CongestionControlTest& operator=(const CongestionControlTest&) = delete;
+
  protected:
   CongestionControlTest()
       : task_runner_(new FakeSingleThreadTaskRunner(&testing_clock_)) {
@@ -66,8 +70,6 @@ class CongestionControlTest : public ::testing::Test {
   std::unique_ptr<CongestionControl> congestion_control_;
   scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
   FrameId frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CongestionControlTest);
 };
 
 // Tests that AdaptiveCongestionControl returns reasonable bitrates based on

@@ -36,6 +36,10 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
 
+  LibYUVImageProcessorBackend(const LibYUVImageProcessorBackend&) = delete;
+  LibYUVImageProcessorBackend& operator=(const LibYUVImageProcessorBackend&) =
+      delete;
+
   // ImageProcessorBackend override
   void Process(scoped_refptr<VideoFrame> input_frame,
                scoped_refptr<VideoFrame> output_frame,
@@ -68,8 +72,6 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
   // A VideoFrame for intermediate format conversion when there is no direct
   // conversion method in libyuv, e.g., RGBA -> I420 (pivot) -> NV12.
   scoped_refptr<VideoFrame> intermediate_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(LibYUVImageProcessorBackend);
 };
 
 }  // namespace media

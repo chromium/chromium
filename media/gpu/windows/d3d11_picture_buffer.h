@@ -67,6 +67,9 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
                    const GUID& decoder_guid,
                    std::unique_ptr<MediaLog> media_log);
 
+  D3D11PictureBuffer(const D3D11PictureBuffer&) = delete;
+  D3D11PictureBuffer& operator=(const D3D11PictureBuffer&) = delete;
+
   // Set the contents of a mailbox holder array, return true if successful.
   // |input_color_space| is the color space of our input texture, and
   // |output_color_space| will be set, on success, to the color space that the
@@ -117,8 +120,6 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   size_t picture_index_;
 
   ComD3D11VideoDecoderOutputView output_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(D3D11PictureBuffer);
 };
 
 }  // namespace media

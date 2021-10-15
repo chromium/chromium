@@ -25,6 +25,10 @@ static const uint32_t kUnknownSsrc = 0xDEAD;
 static const base::TimeDelta kTargetDelay = base::Milliseconds(100);
 
 class RtcpParserTest : public ::testing::Test {
+ public:
+  RtcpParserTest(const RtcpParserTest&) = delete;
+  RtcpParserTest& operator=(const RtcpParserTest&) = delete;
+
  protected:
   RtcpParserTest()
       : testing_clock_(new base::SimpleTestTickClock()),
@@ -133,9 +137,6 @@ class RtcpParserTest : public ::testing::Test {
 
   std::unique_ptr<base::SimpleTestTickClock> testing_clock_;
   scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RtcpParserTest);
 };
 
 TEST_F(RtcpParserTest, BrokenPacketIsIgnored) {

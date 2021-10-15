@@ -61,6 +61,11 @@ class MediaFoundationRendererIntegrationTest
         base::Unretained(this)));
   }
 
+  MediaFoundationRendererIntegrationTest(
+      const MediaFoundationRendererIntegrationTest&) = delete;
+  MediaFoundationRendererIntegrationTest& operator=(
+      const MediaFoundationRendererIntegrationTest&) = delete;
+
  private:
   std::unique_ptr<Renderer> CreateMediaFoundationRenderer(
       absl::optional<RendererType> /*renderer_type*/) {
@@ -70,8 +75,6 @@ class MediaFoundationRendererIntegrationTest
         /*force_dcomp_mode_for_testing=*/true);
     return renderer;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFoundationRendererIntegrationTest);
 };
 
 TEST_F(MediaFoundationRendererIntegrationTest, BasicPlayback) {

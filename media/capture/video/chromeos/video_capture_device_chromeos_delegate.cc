@@ -31,6 +31,9 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
  public:
   PowerManagerClientProxy() = default;
 
+  PowerManagerClientProxy(const PowerManagerClientProxy&) = delete;
+  PowerManagerClientProxy& operator=(const PowerManagerClientProxy&) = delete;
+
   void Init(base::WeakPtr<VideoCaptureDeviceChromeOSDelegate> device,
             scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
             scoped_refptr<base::SingleThreadTaskRunner> dbus_task_runner) {
@@ -98,8 +101,6 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
   base::WeakPtr<VideoCaptureDeviceChromeOSDelegate> device_;
   scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> dbus_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerManagerClientProxy);
 };
 
 VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(

@@ -69,6 +69,8 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
   enum Purpose : int8_t { kUserInput, kLoopback };
   enum class DeadStreamDetection : bool { kDisabled = false, kEnabled = true };
 
+  AudioInputDevice() = delete;
+
   // NOTE: Clients must call Initialize() before using.
   // |enable_uma| controls logging of UMA stats. It is used to ensure that
   // stats are not logged for mirroring service streams.
@@ -76,6 +78,9 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
   AudioInputDevice(std::unique_ptr<AudioInputIPC> ipc,
                    Purpose purpose,
                    DeadStreamDetection detect_dead_stream);
+
+  AudioInputDevice(const AudioInputDevice&) = delete;
+  AudioInputDevice& operator=(const AudioInputDevice&) = delete;
 
   // AudioCapturerSource implementation.
   void Initialize(const AudioParameters& params,
@@ -161,8 +166,6 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
   // Cache the output device used for AEC in case it's called before the stream
   // is created.
   absl::optional<std::string> output_device_id_for_aec_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AudioInputDevice);
 };
 
 }  // namespace media

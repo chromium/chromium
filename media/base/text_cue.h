@@ -18,11 +18,16 @@ namespace media {
 class MEDIA_EXPORT TextCue
     : public base::RefCountedThreadSafe<TextCue> {
  public:
+  TextCue() = delete;
+
   TextCue(const base::TimeDelta& timestamp,
           const base::TimeDelta& duration,
           const std::string& id,
           const std::string& settings,
           const std::string& text);
+
+  TextCue(const TextCue&) = delete;
+  TextCue& operator=(const TextCue&) = delete;
 
   // Access to constructor parameters.
   base::TimeDelta timestamp() const { return timestamp_; }
@@ -40,8 +45,6 @@ class MEDIA_EXPORT TextCue
   std::string id_;
   std::string settings_;
   std::string text_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TextCue);
 };
 
 }  // namespace media

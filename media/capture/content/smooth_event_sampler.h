@@ -16,6 +16,9 @@ class CAPTURE_EXPORT SmoothEventSampler {
  public:
   explicit SmoothEventSampler(base::TimeDelta min_capture_period);
 
+  SmoothEventSampler(const SmoothEventSampler&) = delete;
+  SmoothEventSampler& operator=(const SmoothEventSampler&) = delete;
+
   // Get/Set minimum capture period. When setting a new value, the state of the
   // sampler is retained so that sampling will continue smoothly.
   base::TimeDelta min_capture_period() const { return min_capture_period_; }
@@ -45,8 +48,6 @@ class CAPTURE_EXPORT SmoothEventSampler {
   base::TimeTicks current_event_;
   base::TimeTicks last_sample_;
   base::TimeDelta token_bucket_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmoothEventSampler);
 };
 
 }  // namespace media

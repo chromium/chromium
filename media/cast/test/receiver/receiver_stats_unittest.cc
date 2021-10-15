@@ -20,6 +20,10 @@ static const int64_t kStartMillisecond = INT64_C(12345678900000);
 static const uint32_t kStdTimeIncrementMs = 33;
 
 class ReceiverStatsTest : public ::testing::Test {
+ public:
+  ReceiverStatsTest(const ReceiverStatsTest&) = delete;
+  ReceiverStatsTest& operator=(const ReceiverStatsTest&) = delete;
+
  protected:
   ReceiverStatsTest() : stats_(&testing_clock_) {
     testing_clock_.Advance(base::Milliseconds(kStartMillisecond));
@@ -44,9 +48,6 @@ class ReceiverStatsTest : public ::testing::Test {
   base::SimpleTestTickClock testing_clock_;
   base::TimeTicks start_time_;
   base::TimeDelta delta_increments_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReceiverStatsTest);
 };
 
 TEST_F(ReceiverStatsTest, ResetState) {

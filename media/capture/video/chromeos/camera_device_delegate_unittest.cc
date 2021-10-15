@@ -138,6 +138,9 @@ class CameraDeviceDelegateTest : public ::testing::Test {
         device_delegate_thread_("DeviceDelegateThread"),
         hal_delegate_thread_("HalDelegateThread") {}
 
+  CameraDeviceDelegateTest(const CameraDeviceDelegateTest&) = delete;
+  CameraDeviceDelegateTest& operator=(const CameraDeviceDelegateTest&) = delete;
+
   void SetUp() override {
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
         &mock_gpu_memory_buffer_manager_);
@@ -532,7 +535,6 @@ class CameraDeviceDelegateTest : public ::testing::Test {
  private:
   base::Thread hal_delegate_thread_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(CameraDeviceDelegateTest);
 };
 
 // Test the complete capture flow: initialize, configure stream, capture one

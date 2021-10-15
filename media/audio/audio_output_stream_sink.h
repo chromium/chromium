@@ -31,6 +31,9 @@ class MEDIA_EXPORT AudioOutputStreamSink
  public:
   AudioOutputStreamSink();
 
+  AudioOutputStreamSink(const AudioOutputStreamSink&) = delete;
+  AudioOutputStreamSink& operator=(const AudioOutputStreamSink&) = delete;
+
   // RestartableAudioRendererSink implementation.
   void Initialize(const AudioParameters& params,
                   RenderCallback* callback) override;
@@ -87,8 +90,6 @@ class MEDIA_EXPORT AudioOutputStreamSink
 
   // The actual AudioOutputStream, must only be accessed on the audio thread.
   AudioOutputStream* stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputStreamSink);
 };
 
 }  // namespace media

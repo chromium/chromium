@@ -61,6 +61,9 @@ class AliveCheckerTest : public testing::Test {
     alive_checker_thread_.StartAndWaitForTesting();
   }
 
+  AliveCheckerTest(const AliveCheckerTest&) = delete;
+  AliveCheckerTest& operator=(const AliveCheckerTest&) = delete;
+
   void OnDetectedDead() {
     EXPECT_TRUE(alive_checker_thread_.task_runner()->BelongsToCurrentThread());
     detected_dead_event_.Signal();
@@ -212,8 +215,6 @@ class AliveCheckerTest : public testing::Test {
 
   // Event to signal that we got a dead detection callback.
   base::WaitableEvent detected_dead_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(AliveCheckerTest);
 };
 
 // Start and Stop the checker, verify that we get no dead detection.

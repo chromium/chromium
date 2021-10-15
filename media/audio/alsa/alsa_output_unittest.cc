@@ -78,6 +78,10 @@ class MockAudioManagerAlsa : public AudioManagerAlsa {
 };
 
 class AlsaPcmOutputStreamTest : public testing::Test {
+ public:
+  AlsaPcmOutputStreamTest(const AlsaPcmOutputStreamTest&) = delete;
+  AlsaPcmOutputStreamTest& operator=(const AlsaPcmOutputStreamTest&) = delete;
+
  protected:
   AlsaPcmOutputStreamTest() {
     mock_manager_ = std::make_unique<StrictMock<MockAudioManagerAlsa>>();
@@ -145,9 +149,6 @@ class AlsaPcmOutputStreamTest : public testing::Test {
   StrictMock<MockAlsaWrapper> mock_alsa_wrapper_;
   std::unique_ptr<StrictMock<MockAudioManagerAlsa>> mock_manager_;
   scoped_refptr<DataBuffer> packet_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AlsaPcmOutputStreamTest);
 };
 
 const ChannelLayout AlsaPcmOutputStreamTest::kTestChannelLayout =

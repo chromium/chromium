@@ -23,12 +23,14 @@ class EsParserMpeg1AudioTest : public EsParserTestBase,
  public:
   EsParserMpeg1AudioTest();
 
+  EsParserMpeg1AudioTest(const EsParserMpeg1AudioTest&) = delete;
+  EsParserMpeg1AudioTest& operator=(const EsParserMpeg1AudioTest&) = delete;
+
  protected:
   bool Process(const std::vector<Packet>& pes_packets, bool force_timing);
 
  private:
   NullMediaLog media_log_;
-  DISALLOW_COPY_AND_ASSIGN(EsParserMpeg1AudioTest);
 };
 
 EsParserMpeg1AudioTest::EsParserMpeg1AudioTest() {

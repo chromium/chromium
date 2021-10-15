@@ -86,13 +86,14 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
                   VideoDecoder::DecodeCB cb,
                   int32_t id);
 
+    DecodeRequest(const DecodeRequest&) = delete;
+    DecodeRequest& operator=(const DecodeRequest&) = delete;
+
     // Allow move, but not copy
     DecodeRequest(DecodeRequest&&);
     DecodeRequest& operator=(DecodeRequest&&);
 
     ~DecodeRequest();
-
-    DISALLOW_COPY_AND_ASSIGN(DecodeRequest);
   };
 
   // The reason the decoding is paused.

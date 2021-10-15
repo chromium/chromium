@@ -56,6 +56,9 @@ class H264VideoToolboxEncoder::VideoFrameFactoryImpl final
                         const scoped_refptr<CastEnvironment>& cast_environment)
       : encoder_(encoder), cast_environment_(cast_environment) {}
 
+  VideoFrameFactoryImpl(const VideoFrameFactoryImpl&) = delete;
+  VideoFrameFactoryImpl& operator=(const VideoFrameFactoryImpl&) = delete;
+
   scoped_refptr<VideoFrame> MaybeCreateFrame(
       const gfx::Size& frame_size,
       base::TimeDelta timestamp) override {
@@ -118,8 +121,6 @@ class H264VideoToolboxEncoder::VideoFrameFactoryImpl final
   // message the encoder when the frame size changes.
   const base::WeakPtr<H264VideoToolboxEncoder> encoder_;
   const scoped_refptr<CastEnvironment> cast_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameFactoryImpl);
 };
 
 class H264VideoToolboxEncoder::VideoFrameFactoryImpl::Proxy final
@@ -131,6 +132,9 @@ class H264VideoToolboxEncoder::VideoFrameFactoryImpl::Proxy final
     DCHECK(video_frame_factory_);
   }
 
+  Proxy(const Proxy&) = delete;
+  Proxy& operator=(const Proxy&) = delete;
+
   scoped_refptr<VideoFrame> MaybeCreateFrame(
       const gfx::Size& frame_size,
       base::TimeDelta timestamp) override {
@@ -141,8 +145,6 @@ class H264VideoToolboxEncoder::VideoFrameFactoryImpl::Proxy final
   ~Proxy() override {}
 
   const scoped_refptr<VideoFrameFactoryImpl> video_frame_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(Proxy);
 };
 
 // static

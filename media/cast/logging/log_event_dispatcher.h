@@ -54,6 +54,9 @@ class LogEventDispatcher {
    public:
     Impl();
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
     void DispatchFrameEvent(std::unique_ptr<FrameEvent> event) const;
     void DispatchPacketEvent(std::unique_ptr<PacketEvent> event) const;
     void DispatchBatchOfEvents(
@@ -68,8 +71,6 @@ class LogEventDispatcher {
     ~Impl();
 
     std::vector<RawEventSubscriber*> subscribers_;
-
-    DISALLOW_COPY_AND_ASSIGN(Impl);
   };
 
   CastEnvironment* const env_;  // Owner of this instance.

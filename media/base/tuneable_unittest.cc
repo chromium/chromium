@@ -15,6 +15,9 @@ class TuneableTest : public ::testing::Test {
  public:
   TuneableTest() = default;
 
+  TuneableTest(const TuneableTest&) = delete;
+  TuneableTest& operator=(const TuneableTest&) = delete;
+
   void SetUp() override {
     // Note that we might need to call value() to cache `tuneable_cached_` here.
     // We don't currently, since it's not needed.
@@ -64,8 +67,6 @@ class TuneableTest : public ::testing::Test {
   static constexpr const char* kTuneableInt5 = "t_int_5";
   static constexpr const char* kTuneableInt10 = "t_int_10";
   static constexpr const char* kTuneableTimeDeltaFiveSeconds = "t_time_5s";
-
-  DISALLOW_COPY_AND_ASSIGN(TuneableTest);
 };
 
 TEST_F(TuneableTest, IntTuneableCached) {

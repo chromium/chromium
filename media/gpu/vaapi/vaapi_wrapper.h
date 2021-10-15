@@ -162,6 +162,9 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       EncryptionScheme encryption_scheme,
       const ReportErrorToUMACB& report_error_to_uma_cb);
 
+  VaapiWrapper(const VaapiWrapper&) = delete;
+  VaapiWrapper& operator=(const VaapiWrapper&) = delete;
+
   // Returns the supported SVC scalability modes for specified profile.
   static std::vector<SVCScalabilityMode> GetSupportedScalabilityModes(
       VideoCodecProfile media_profile,
@@ -609,8 +612,6 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Called to report codec errors to UMA. Errors to clients are reported via
   // return values from public methods.
   ReportErrorToUMACB report_error_to_uma_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiWrapper);
 };
 
 }  // namespace media

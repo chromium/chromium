@@ -26,6 +26,9 @@ class CancellationHelper {
       : cancellation_flag_(std::make_unique<base::AtomicFlag>()),
         decoder_(std::move(decoder)) {}
 
+  CancellationHelper(const CancellationHelper&) = delete;
+  CancellationHelper& operator=(const CancellationHelper&) = delete;
+
   // Safe to call from any thread.
   void Cancel() { cancellation_flag_->Set(); }
 
@@ -54,8 +57,6 @@ class CancellationHelper {
  private:
   std::unique_ptr<base::AtomicFlag> cancellation_flag_;
   std::unique_ptr<OffloadableVideoDecoder> decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(CancellationHelper);
 };
 
 OffloadingVideoDecoder::OffloadingVideoDecoder(

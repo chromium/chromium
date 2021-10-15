@@ -86,15 +86,16 @@ struct AudioManagerBase::DispatcherParams {
       : input_params(input),
         output_params(output),
         output_device_id(output_device_id) {}
+
+  DispatcherParams(const DispatcherParams&) = delete;
+  DispatcherParams& operator=(const DispatcherParams&) = delete;
+
   ~DispatcherParams() = default;
 
   const AudioParameters input_params;
   const AudioParameters output_params;
   const std::string output_device_id;
   std::unique_ptr<AudioOutputDispatcher> dispatcher;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DispatcherParams);
 };
 
 class AudioManagerBase::CompareByParams {

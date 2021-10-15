@@ -15,6 +15,12 @@
 namespace media {
 
 class H264ToAnnexBBitstreamConverterTest : public testing::Test {
+ public:
+  H264ToAnnexBBitstreamConverterTest(
+      const H264ToAnnexBBitstreamConverterTest&) = delete;
+  H264ToAnnexBBitstreamConverterTest& operator=(
+      const H264ToAnnexBBitstreamConverterTest&) = delete;
+
  protected:
   H264ToAnnexBBitstreamConverterTest() = default;
 
@@ -22,9 +28,6 @@ class H264ToAnnexBBitstreamConverterTest : public testing::Test {
 
  protected:
   mp4::AVCDecoderConfigurationRecord avc_config_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(H264ToAnnexBBitstreamConverterTest);
 };
 
 static const uint8_t kHeaderDataOkWithFieldLen4[] = {

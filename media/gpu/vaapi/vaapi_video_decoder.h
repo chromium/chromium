@@ -54,6 +54,9 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
 
+  VaapiVideoDecoder(const VaapiVideoDecoder&) = delete;
+  VaapiVideoDecoder& operator=(const VaapiVideoDecoder&) = delete;
+
   static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
 
   // VideoDecoderMixin implementation, VideoDecoder part.
@@ -87,13 +90,18 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
     DecodeTask(scoped_refptr<DecoderBuffer> buffer,
                int32_t buffer_id,
                DecodeCB decode_done_cb);
-    ~DecodeTask();
+
+    DecodeTask(const DecodeTask&) = delete;
+    DecodeTask& operator=(const DecodeTask&) = delete;
+
     DecodeTask(DecodeTask&&);
     DecodeTask& operator=(DecodeTask&&) = default;
+
+    ~DecodeTask();
+
     scoped_refptr<DecoderBuffer> buffer_;
     int32_t buffer_id_ = -1;
     DecodeCB decode_done_cb_;
-    DISALLOW_COPY_AND_ASSIGN(DecodeTask);
   };
 
   enum class State {
@@ -248,8 +256,6 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
 
   base::WeakPtr<VaapiVideoDecoder> weak_this_;
   base::WeakPtrFactory<VaapiVideoDecoder> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiVideoDecoder);
 };
 
 }  // namespace media
