@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Sobre o Chromium</translation>
 <translation id="1257458525759135959">Para salvar imagens, toque em "Configurações" e permita que o Chromium adicione às suas fotos</translation>
 <translation id="1289216811211435351">Mudar para o Chromium</translation>
+<translation id="1354592789402432496">Seu administrador exige que você faça login usando uma conta da organização. As contas restritas pelo administrador ficam ocultas.</translation>
 <translation id="1361748954329991663">O Chromium está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja compatível com novas versões do Chromium.</translation>
 <translation id="1370204544543370355">Para aproveitar o Chromium ao máximo, faça login na sua Conta do Google</translation>
 <translation id="1431818719585918472">Permita que o Chromium bloqueie suas guias anônimas.</translation>
@@ -51,6 +52,7 @@
 <translation id="5171868502429358653">Faça login no Chromium</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>
+<translation id="5324242752415821224">Sua organização exige que você faça login para usar o Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Definir o Chromium como padrão?</translation>
 <translation id="5521125884468363740">Para ver suas guias em qualquer lugar onde você usar o Chromium, faça login e ative a sincronização</translation>
 <translation id="5573014823074921752">Dica do Chromium. Para ver mais opções de guia, toque no botão "Mostrar guias" na barra de ferramentas localizada na parte superior ou inferior da tela e mantenha-o pressionado.</translation>
@@ -64,6 +66,7 @@
 2. Toque em 'App do navegador padrão".
 3. Selecione o Chromium.</translation>
 <translation id="6155422572367400359">Faça login neste site, na sua Conta do Google e no Chromium. É possível ativar a sincronização mais tarde.</translation>
+<translation id="6183442264225539303">Faça login neste site e no Chromium. É possível ativar a sincronização mais tarde.</translation>
 <translation id="6268381023930128611">Sair do Chromium?</translation>
 <translation id="632825460376924298">Permitir login no Chromium</translation>
 <translation id="6337530241089703714">Você quer apagar ou manter os dados do Chromium neste dispositivo?</translation>

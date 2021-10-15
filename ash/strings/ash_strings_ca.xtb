@@ -23,6 +23,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1104621072296271835">Els teus dispositius funcionen encara millor junts</translation>
 <translation id="1119348796022671382">El mode de color temàtic utilitza colors extrets del fons de pantalla per acolorir lleugerament la interfície.</translation>
 <translation id="112308213915226829">Amaga el prestatge automàticament</translation>
+<translation id="1142002900084379065">Fotos recents</translation>
 <translation id="1148499908455722006">Obre el quadre de diàleg d'informació per a <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendari</translation>
 <translation id="1153356358378277386">Dispositius vinculats</translation>
@@ -179,6 +180,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2298170939937364391">La lupa de pantalla completa està activada. Torna a prémer Ctrl+Cerca+M per desactivar-la.</translation>
 <translation id="2302092602801625023">Family Link gestiona aquest compte</translation>
 <translation id="2303600792989757991">Commuta la visió general de la finestra</translation>
+<translation id="2318576281648121272">Avui (<ph name="TODAY_DATE" />)</translation>
 <translation id="2322173485024759474">Enrere per lletra</translation>
 <translation id="2339073806695260576">Toca el botó del llapis òptic al prestatge per escriure una nota, fer una captura de pantalla o bé utilitzar-lo com a punter làser o lupa.</translation>
 <translation id="2341729377289034582">Bloquejada en vertical</translation>
@@ -200,6 +202,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
 <translation id="24452542372838207">Desplega la notificació</translation>
 <translation id="2450205753526923158">Mode de captura de pantalla</translation>
+<translation id="2456008742792828469">Calendari, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Confirma la resolució</translation>
 <translation id="2475982808118771221">S'ha produït un error</translation>
 <translation id="2482878487686419369">Notificacions</translation>
@@ -278,6 +281,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3100274880412651815">Ignora el mode de captura</translation>
 <translation id="3105917916468784889">Fes una captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Suprimeix el suggeriment</translation>
 <translation id="3126069444801937830">Reinicia per actualitzar</translation>
 <translation id="3139942575505304791">Escriptori 1</translation>
 <translation id="315116470104423982">Dades mòbils</translation>
@@ -504,6 +508,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4642092649622328492">Fes una captura de pantalla parcial</translation>
 <translation id="4659419629803378708">S'ha activat ChromeVox</translation>
 <translation id="4665114317261903604">Activa o desactiva el mode No molestis. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">S'està baixant <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
 <translation id="4702647871202761252">La pantalla de privadesa està desactivada</translation>
 <translation id="4706121060329443414">La baixada s'intentarà més tard. Per ara, la parla s'enviarà a Google perquè la processi.</translation>
@@ -641,6 +646,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5744083938413354016">Tocar i arrossegar</translation>
 <translation id="5745612484876805746">La funció Llum nocturna s'activa automàticament al vespre</translation>
 <translation id="5750765938512549687">El Bluetooth està desactivat</translation>
+<translation id="576341972084747908">Baixa el fitxer perillós <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">La funció Llum nocturna està activada.</translation>
 <translation id="5769373120130404283">Pantalla de privadesa</translation>
 <translation id="5777841717266010279">Vols aturar la compartició de pantalla?</translation>
@@ -782,6 +788,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6852052252232534364">Clic per activar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígit}other{Falten # dígits}}</translation>
+<translation id="6867938213751067702">La baixada del fitxer <ph name="FILENAME" /> s'ha posat en pausa</translation>
 <translation id="6878400149835617132">S'ha desactivat la drecera</translation>
 <translation id="6886172995547742638">És possible que el rendiment del teu dispositiu <ph name="DEVICE_TYPE" /> es vegi disminuït. Utilitza un adaptador de corrent USB-C certificat de <ph name="PREFERRED_MINIMUM_POWER" /> W o superior.</translation>
 <translation id="688631446150864480">Prem la tecla de fletxa avall per canviar de finestra</translation>

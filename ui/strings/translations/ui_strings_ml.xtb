@@ -30,6 +30,7 @@
 <translation id="1710340000377843106">ഇപ്പോള്‍</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{ഒരു മിനിറ്റ്}other{# മിനിറ്റ്}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
+<translation id="1770726142253415363"><ph name="ROW_NUMBER" />-ാം വരിയിലെ <ph name="COLUMN_NUMBER" />-ാം കോളത്തിലേക്ക് നീക്കി.</translation>
 <translation id="1801827354178857021">കാലയളവ്</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{ഒരു മാസം}other{# മാസം}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>

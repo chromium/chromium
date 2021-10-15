@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1113173431709655881">Kameramodus</translation>
 <translation id="1175958423215084756">Link erkannt. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galeriebilder</translation>
 <translation id="1300209025925956156">Dokument scannen</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">Aufnahme starten</translation>
 <translation id="2599796128805996109">Kamera auf der Rückseite</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
+<translation id="2761536921376153655">Scantyp</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ist angeschlossen.</translation>
 <translation id="2968794441791257519">Mit der Kamera aufgenommene Fotos und Videos werden in den Ordner "Downloads" verschoben. Sie können sie in der App "Dateien" ansehen.
 
@@ -99,9 +101,11 @@ Falls sich Ihr Feedback auf die Bild- oder Videoqualität bezieht, hängen Sie b
 <translation id="698156982839284926">3 Sekunden</translation>
 <translation id="712848772518857951">Möchten Sie <ph name="COUNT" /> Elemente wirklich entfernen?</translation>
 <translation id="7134221860976209830">10-Sekunden-Timer</translation>
+<translation id="7191890674911603392">Aufnahmetyp</translation>
 <translation id="7243947652761655814">Videoauflösung</translation>
 <translation id="7337660886763914220">Fehler im Dateisystem.</translation>
 <translation id="7450541714075000668">Text kopiert</translation>
+<translation id="7476762461674917065">Option zur Aufnahme von GIFs anzeigen</translation>
 <translation id="7488619942230388918">GIF-Video aufzeichnen</translation>
 <translation id="7557677699350329807">Zur nächsten Kamera wechseln</translation>
 <translation id="7607002721634913082">Angehalten</translation>

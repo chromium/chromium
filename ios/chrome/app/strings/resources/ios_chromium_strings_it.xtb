@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
 <translation id="1257458525759135959">Per salvare le immagini, tocca Impostazioni e consenti a Chromium di aggiungere le tue foto</translation>
 <translation id="1289216811211435351">Passa a Chromium</translation>
+<translation id="1354592789402432496">Il tuo amministratore richiede l'accesso con un account dell'organizzazione. Gli account limitati dal tuo amministratore sono nascosti.</translation>
 <translation id="1361748954329991663">Chromium non è aggiornato. Se non sono disponibili aggiornamenti nell'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, è possibile che il dispositivo non supporti più le nuove versioni di Chromium.</translation>
 <translation id="1370204544543370355">Accedi con il tuo Account Google a Chromium per usare al meglio questo browser</translation>
 <translation id="1431818719585918472">Consenti a Chromium di bloccare le schede di navigazione in incognito.</translation>
@@ -51,6 +52,7 @@
 <translation id="5171868502429358653">Accedi a Chromium</translation>
 <translation id="5224391634244552924">Nessuna password salvata. Chromium può controllare le password quando le salvi.</translation>
 <translation id="5308226104666789935">Chromium non può controllare la disponibilità di aggiornamenti</translation>
+<translation id="5324242752415821224">La tua organizzazione richiede l'accesso per usare Chromium. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Impostare Chromium come browser predefinito?</translation>
 <translation id="5521125884468363740">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chromium e attiva la sincronizzazione per visualizzare le tue schede</translation>
 <translation id="5573014823074921752">Suggerimento per Chromium. Per vedere più opzioni sulla scheda, tocca e tieni premuto il pulsante Mostra schede della barra degli strumenti, che si trova nella parte inferiore o superiore della schermata.</translation>
@@ -64,6 +66,7 @@
 2. Tocca App browser predefinita.
 3. Seleziona Chromium.</translation>
 <translation id="6155422572367400359">Accedi a questo sito, al tuo Account Google e a Chromium. Puoi attivare la sincronizzazione in un secondo momento.</translation>
+<translation id="6183442264225539303">Accedi a questo sito e a Chromium. Puoi attivare la sincronizzazione in un secondo momento.</translation>
 <translation id="6268381023930128611">Uscire da Chromium?</translation>
 <translation id="632825460376924298">Consenti l'accesso a Chromium</translation>
 <translation id="6337530241089703714">Scegli se cancellare i tuoi dati di Chromium da questo dispositivo o se conservarli</translation>

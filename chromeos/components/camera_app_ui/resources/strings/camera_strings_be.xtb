@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1113173431709655881">Рэжым камеры</translation>
 <translation id="1175958423215084756">Выяўлена спасылка. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Відарысы ў галерэі</translation>
 <translation id="1300209025925956156">Сканіраванне дакумента</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">Пачаць запіс</translation>
 <translation id="2599796128805996109">Задняя камера</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> с</translation>
+<translation id="2761536921376153655">Тып праверкі</translation>
 <translation id="2879583609344924966">Камера "<ph name="CAMERA" />" падключана.</translation>
 <translation id="2968794441791257519">Фота і відэа, знятыя на камеру, будуць перамешчаны ў папку "Спампоўкі". Іх можна знайсці ў Файлах.
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">3 секунды</translation>
 <translation id="712848772518857951">Сапраўды выдаліць элементы (<ph name="COUNT" />)?</translation>
 <translation id="7134221860976209830">Таймер на 10 секунд</translation>
+<translation id="7191890674911603392">Тып запісу</translation>
 <translation id="7243947652761655814">Раздзяляльнасць відэа</translation>
 <translation id="7337660886763914220">Памылкі ў файлавай сістэме.</translation>
 <translation id="7450541714075000668">Тэкст скапіраваны</translation>
+<translation id="7476762461674917065">Паказаць варыянт запісу файла GIF</translation>
 <translation id="7488619942230388918">Запісаць відэа ў фармаце GIF</translation>
 <translation id="7557677699350329807">Пераключыцца на наступную камеру</translation>
 <translation id="7607002721634913082">Прыпынена</translation>

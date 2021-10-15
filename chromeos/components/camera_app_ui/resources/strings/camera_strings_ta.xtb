@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="1113173431709655881">கேமரா பயன்முறை</translation>
 <translation id="1175958423215084756">இணைப்பு கண்டறியப்பட்டது. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">கேலரி படங்கள்</translation>
 <translation id="1300209025925956156">ஆவணத்தை ஸ்கேன் செய்யுங்கள்</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">பதிவுசெய்யத் தொடங்கு</translation>
 <translation id="2599796128805996109">பின்பக்கக் கேமரா</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />வி</translation>
+<translation id="2761536921376153655">ஸ்கேன் வகை</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> இணைக்கப்பட்டது.</translation>
 <translation id="2968794441791257519">கேமராவில் எடுக்கப்படும் படங்களும் வீடியோக்களும் ‘பதிவிறக்கங்கள்’ ஃபோல்டருக்கு நகர்த்தப்படும். அவற்றை Filesஸில் பார்க்கலாம்.
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">3 வினாடிகள்</translation>
 <translation id="712848772518857951"><ph name="COUNT" /> உள்ளடக்கங்களை நிச்சயமாக அகற்ற விரும்புகிறீர்களா?</translation>
 <translation id="7134221860976209830">10 வினாடிகள் டைமர்</translation>
+<translation id="7191890674911603392">ரெக்கார்டு வகை</translation>
 <translation id="7243947652761655814">வீடியோ தெளிவுத்திறன்</translation>
 <translation id="7337660886763914220">ஃபைல் அமைப்புப் பிழைகள்.</translation>
 <translation id="7450541714075000668">உரை நகலெடுக்கப்பட்டது</translation>
+<translation id="7476762461674917065">GIF ரெக்கார்டிங் விருப்பத்தேர்வைக் காட்டு</translation>
 <translation id="7488619942230388918">GIF வீடியோவை ரெக்கார்டு செய்யும்</translation>
 <translation id="7557677699350329807">அடுத்த கேமராவுக்கு மாறு</translation>
 <translation id="7607002721634913082">இடைநிறுத்தப்பட்டது</translation>

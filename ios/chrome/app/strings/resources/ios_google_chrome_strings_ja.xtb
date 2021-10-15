@@ -3,6 +3,7 @@
 <translationbundle lang="ja">
 <translation id="1096883626080133124">シンプル、安全で、さらに高速になった Google Chrome をご活用ください</translation>
 <translation id="1282031177488366470">Chrome の機能と動作の改善に協力する</translation>
+<translation id="1354592789402432496">管理者が、組織アカウントでログインすることを求めています。管理者によって制限されているアカウントは非表示になっています。</translation>
 <translation id="1479202195792305274">Google アカウントでログインすると、Chrome でパスワードを確認できるようになります。</translation>
 <translation id="1493827051843127077">Chrome を既定に設定すると、タブ、パスワード、お支払い情報をすべてのデバイスで同期できるようになります</translation>
 <translation id="1504372625950710826">Chrome でアップデートを確認できませんでした。インターネット接続を確認してみてください。</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
 <translation id="4099578267706723511">使用統計情報と障害レポートを Google に送信して、Chrome の品質向上にご協力ください。</translation>
 <translation id="417201473131094001">Chrome Canary ではサポートされていません</translation>
+<translation id="4214277427269650960">このサイトと Chrome にログインしてください。同期は後でオンにできます。</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="4249068189593983585">Chrome の使い方のヒント: タブのオプションをさらに表示するには、画面の下部または上部のツールバーにある [タブを表示] を長押しします。</translation>
 <translation id="4523886039239821078">アドオンが原因でChromeがクラッシュしました。次をアンインストールしてください:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">オフラインのため Chrome でアップデートを確認できません</translation>
 <translation id="5716154293141027663">他のアプリでタップしたリンクを Chrome で開くことができます</translation>
+<translation id="572883588166315317">組織が、Chrome を使用するにはログインすることを求めています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Chrome の使い方のヒント: 戻る、進む、検索など一部のボタンは画面の下部に表示されるようになりました。</translation>
 <translation id="5876773482963502140">Chrome に位置情報の利用を許可すると、許可を与えたサイトに位置情報が提供されます。また、サイトで付近の店舗やニュースなどの地域情報を表示できる場合に位置情報を要求されることがあります。</translation>
 <translation id="5998675059699164418">Chrome を使用するためにログインするよう、組織が求めています。</translation>

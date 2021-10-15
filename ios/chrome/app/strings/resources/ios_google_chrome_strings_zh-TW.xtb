@@ -3,6 +3,7 @@
 <translationbundle lang="zh-TW">
 <translation id="1096883626080133124">運用簡便、安全且速度遠勝以往的 Google Chrome 讓你事半功倍</translation>
 <translation id="1282031177488366470">協助改善 Chrome 的功能與效能</translation>
+<translation id="1354592789402432496">你的管理員要求你使用機構帳戶登入。系統已隱藏受管理員限制登入的帳戶。</translation>
 <translation id="1479202195792305274">如果你使用 Google 帳戶登入，Chrome 可以檢查你的密碼。</translation>
 <translation id="1493827051843127077">將 Chrome 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
 <translation id="1504372625950710826">Chrome 無法檢查更新，請查看網際網路連線狀態。</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
 <translation id="4099578267706723511">將使用統計資料及當機報告傳送給 Google，助我們一臂之力，讓 Chrome 更臻完美。</translation>
 <translation id="417201473131094001">Chrome Canary 不支援這項功能</translation>
+<translation id="4214277427269650960">登入這個網站和 Chrome。你可以稍後再開啟同步功能。</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4249068189593983585">Chrome 提示。如需更多分頁選項，請輕觸並按住工具列 (位於畫面底部或頂端) 中的 [顯示分頁] 按鈕。</translation>
 <translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">目前處於離線狀態，因此 Chrome 無法檢查更新</translation>
 <translation id="5716154293141027663">只要輕觸其他應用程式中的連結，即可透過 Chrome 開啟</translation>
+<translation id="572883588166315317">根據貴機構的政策規定，你必須先登入才能使用 Chrome。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />。</translation>
 <translation id="5854621639439811139">Chrome 提示。部分按鈕 (例如 [返回]、[往前] 和 [搜尋]) 現在位於畫面底部。</translation>
 <translation id="5876773482963502140">如果允許 Chrome 取得位置資訊，Chrome 會將這項資訊傳送至你允許存取該資訊的網站。當網站要向你顯示當地資訊時 (例如附近商家或新聞)，可能會要求你提供位置資訊。</translation>
 <translation id="5998675059699164418">貴機構要求你先登入才能使用 Chrome。</translation>

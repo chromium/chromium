@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Giới thiệu về Chromium</translation>
 <translation id="1257458525759135959">Để lưu hình ảnh, hãy nhấn vào Cài đặt để cho phép Chromium thêm vào ảnh của bạn</translation>
 <translation id="1289216811211435351">Chuyển sang Chromium</translation>
+<translation id="1354592789402432496">Quản trị viên của bạn yêu cầu bạn đăng nhập bằng tài khoản tổ chức. Các tài khoản mà quản trị viên của bạn hạn chế đã bị ẩn.</translation>
 <translation id="1361748954329991663">Chromium đã lỗi thời. Nếu không có bản cập nhật nào trong <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, thì có khả năng thiết bị của bạn không hỗ trợ các phiên bản Chromium mới nữa.</translation>
 <translation id="1370204544543370355">Để khai thác tối đa Chromium, hãy đăng nhập vào Chromium bằng Tài khoản Google của bạn</translation>
 <translation id="1431818719585918472">Để Chromium khóa các thẻ Ẩn danh của bạn.</translation>
@@ -51,6 +52,7 @@
 <translation id="5171868502429358653">Đăng nhập vào Chromium</translation>
 <translation id="5224391634244552924">Bạn chưa lưu mật khẩu nào. Chromium có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
 <translation id="5308226104666789935">Chromium không thể kiểm tra xem có bản cập nhật mới nào không</translation>
+<translation id="5324242752415821224">Theo yêu cầu của tổ chức của bạn, bạn phải đăng nhập mới có thể sử dụng Chromium. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Đặt Chromium làm trình duyệt mặc định?</translation>
 <translation id="5521125884468363740">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="5573014823074921752">Mẹo sử dụng Chromium. Để xem thêm các tùy chọn về thẻ, hãy chạm và giữ nút Hiển thị thẻ trên thanh công cụ ở đầu hoặc cuối màn hình.</translation>
@@ -64,6 +66,7 @@
 2. Nhấn vào Ứng dụng trình duyệt mặc định
 3. Chọn Chromium.</translation>
 <translation id="6155422572367400359">Đăng nhập vào trang web này, Tài khoản Google của bạn và Chromium. Bạn có thể bật tính năng đồng bộ hóa sau.</translation>
+<translation id="6183442264225539303">Đăng nhập vào trang web này và Chromium. Bạn có thể bật tính năng đồng bộ hóa sau.</translation>
 <translation id="6268381023930128611">Đăng xuất khỏi Chromium?</translation>
 <translation id="632825460376924298">Cho phép đăng nhập vào Chromium</translation>
 <translation id="6337530241089703714">Chọn xem bạn muốn xóa dữ liệu của mình trên Chromium khỏi thiết bị này hay giữ lại dữ liệu đó</translation>

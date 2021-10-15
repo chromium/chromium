@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
+<translation id="1113173431709655881">ကင်မရာမုဒ်</translation>
 <translation id="1175958423215084756">လင့်ခ်တွေ့ရှိသည်။ <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ပြခန်းပုံများ</translation>
 <translation id="1300209025925956156">သင့်မှတ်တမ်းဖိုင်ကို စကင်ဖတ်ခြင်း</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">စတင်ရိုက်ကူးရန်</translation>
 <translation id="2599796128805996109">အနောက်ကင်မရာ</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />s</translation>
+<translation id="2761536921376153655">ရှာဖွေမှုပုံစံ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ကို ပလတ်တပ်ထားသည်။</translation>
 <translation id="2968794441791257519">ကင်မရာဖြင့်ရိုက်ကူးထားသော ဓာတ်ပုံနှင့် ဗီဒီယိုများကို 'ဒေါင်းလုဒ်များ' ဖိုင်တွဲသို့ ရွှေ့ပါမည်။ ၎င်းတို့ကို Files ထဲတွင် ဝင်သုံးနိုင်ပါသည်။
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">၃ စက္ကန့်</translation>
 <translation id="712848772518857951"><ph name="COUNT" /> ခုကို ဖယ်ရှားလိုသည်မှာ သေချာပါသလား။</translation>
 <translation id="7134221860976209830">၁၀ စက္ကန့် အချိန်တိုင်းစက်</translation>
+<translation id="7191890674911603392">ဖမ်းယူမှုပုံစံ</translation>
 <translation id="7243947652761655814">ဗီဒီယို ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="7337660886763914220">ဖိုင်စနစ် အမှားများ။</translation>
 <translation id="7450541714075000668">စာသားကူးယူပြီးပါပြီ</translation>
+<translation id="7476762461674917065">GIF ဖမ်းယူနည်း ပြပါ</translation>
 <translation id="7488619942230388918">GIF ဗီဒီယို ရိုက်ကူးရန်</translation>
 <translation id="7557677699350329807">ကင်မရာနောက်တစ်ခုသို့ ပြောင်းရန်</translation>
 <translation id="7607002721634913082">ဆိုင်းငံ့ထား</translation>

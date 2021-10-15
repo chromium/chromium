@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">Не ўдалося атрымаць IP-адрас</translation>
 <translation id="1887850431809612466">Версія апаратнага забеспячэння</translation>
+<translation id="1901646112321215184">DNS-серверы не наладжаны</translation>
 <translation id="1905710495812624430">Перавышана максімальная колькасць спроб.</translation>
 <translation id="1908234395526491708">Збоі запытаў UDP</translation>
 <translation id="1930797645656624981">Сэрвіс метадаў уводу Chrome OS</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">У ЧАРЗЕ</translation>
 <translation id="2161394479394250669">Скасаваць заданне друку</translation>
+<translation id="2180197493692062006">Нешта пайшло не так. Паспрабуйце адкрыць праграму паўторна.</translation>
 <translation id="2209788852729124853">Скінуць лічыльнікі трафіка</translation>
 <translation id="2212733584906323460">Пераўтварэнне імён</translation>
 <translation id="2217935453350629363">Бягучая хуткасць</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">Адправіць справаздачу з водгукам</translation>
 <translation id="2407209115954268704">Стан блакіроўкі SIM-карты</translation>
 <translation id="2418150275289244458">Адкрыць у наладах</translation>
+<translation id="2421798028054665193">Відарыс <ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Дакладнасць выкарыстання нефіксаванай коскі</translation>
 <translation id="2448312741937722512">Тып</translation>
 <translation id="2461822463642141190">Цяпер</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">Палажыце чарговую старонку ў сканер</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
 <translation id="2878387241690264070">Разраджана: <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
+<translation id="2927511423571448384">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTP (порт 80) з прылады Android</translation>
 <translation id="3008341117444806826">АБНАВІЦЬ</translation>
 <translation id="3009958530611748826">Выберыце папку для захавання</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
 <translation id="3056720590588772262">Канцавы пункт</translation>
 <translation id="3069085583900247081">Праверка не пройдзена</translation>
+<translation id="3076387335132326640">Вы карыстаецеся адкрытай сеткай</translation>
 <translation id="3083667275341675831">Дыягностыка падключэння</translation>
 <translation id="3091839911843451378">Збой: работа спынена</translation>
 <translation id="3102119246920354026">Кэш</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930">Магутнасць акумулятара: <ph name="CHARGE_VALUE" /> мА·г</translation>
 <translation id="4561801978359312462">SIM-карта разблакіравана</translation>
 <translation id="4562494484721939086">Не абслугоўваецца</translation>
+<translation id="4567024731344774461">Не ўдалося ажыццявіць DNS-пераўтварэнне з прылады Android</translation>
 <translation id="458794348635939462">Не ўдалося супаставіць усе хосты</translation>
 <translation id="4593212453765072419">Патрабуецца аўтэнтыфікацыя проксі-сервера</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Каб скасаваць заданне друку, націсніце Enter.</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">(Android) DNS-пераўтварэнне</translation>
 <translation id="4848429997038228357">ВЫКОНВАЕЦЦА</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}many{<ph name="ERROR_MESSAGE" /> Засталося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}}</translation>
+<translation id="4871137769558798671">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTPS (порт 443)</translation>
 <translation id="4880328057631981605">Назва пункта доступу</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Неадкладна задайце новы</translation>
@@ -258,6 +265,7 @@
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Перамясціць акно на працоўны стол</translation>
+<translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Ідэнтыфікатар</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5318334351163689047">Збоі запытаў TCP</translation>
@@ -279,6 +287,8 @@
 <translation id="5502931783115429516">Android не працуе</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">Нізкая магутнасць сігналу. Паспрабуйце перамясціцца бліжэй да пункта доступу.</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Сканіраваць паўторна</translation>
 <translation id="5669267381087807207">Ідзе актывацыя</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -319,6 +329,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Ёмістасць акумулятара зніжаецца па меры яго выкарыстання</translation>
 <translation id="6191293864534840972">Серверы даменных імён маюць няправільны фармат</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Няма даступных сканераў</translation>
 <translation id="6232017090690406397">Акумулятар</translation>
 <translation id="6243280677745499710">Цяпер зададзеныя</translation>
@@ -328,6 +339,7 @@
 <translation id="636850387210749493">Рэгістрацыя для арганізацый</translation>
 <translation id="6379086450106841622">Сэнсарны экран</translation>
 <translation id="6388847657025262518">Заела прыстасаванне сканера для падачы дакументаў. Праверце прыстасаванне і паўтарыце спробу.</translation>
+<translation id="6395640744968320699">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTP (порт 80)</translation>
 <translation id="641081527798843608">Супадзенне суб'екта</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Добры</translation>
@@ -335,6 +347,7 @@
 <translation id="6472207088655375767">Аднаразовы пароль</translation>
 <translation id="6480327114083866287">Кіруе <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Спынена: захрасла папера</translation>
+<translation id="6498608540383876992">Не ўдалося звязацца са шлюзам</translation>
 <translation id="6516990319416533844">Каб праверыць хуткасць зарадкі, пачакайце крыху, пакуль акумулятар дастаткова не разрадзіцца</translation>
 <translation id="6517239166834772319">Агляд</translation>
 <translation id="6527081081771465939">Невядомы пратакол сістэмы бяспекі Wi-Fi</translation>
@@ -382,6 +395,7 @@
 <translation id="7271040990581020067">Сканер зараз выкарыстоўваецца. Паўтарыце спробу пазней.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Калекцыі шпалер</translation>
+<translation id="7292680402155138244">Вялікая затрымка на вэб-сайтах HTTPS (порт 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -432,12 +446,15 @@
 <translation id="7994702968232966508">Метад EAP</translation>
 <translation id="8020238979854764615">Узнікла памылка. Выберыце іншы відарыс і паўтарыце спробу.</translation>
 <translation id="802154636333426148">Збой спампоўкі</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>
 <translation id="8075838845814659848">Узровень зараду акумулятара</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="811820734797650957">(Android) Можна выканаць праверку ping для шлюза</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Запытаць лічыльнікі трафіка</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">Не ўдалося ажыццявіць DNS-пераўтварэнне</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>
 <translation id="8208861521865154048">Бонусы</translation>
 <translation id="8230672074305416752">Не ўдалося праверыць сувязь са стандартным сеткавым шлюзам</translation>
@@ -449,6 +466,7 @@
 <translation id="8297006494302853456">Слабы</translation>
 <translation id="8302368968391049045">Брандмаўар HTTPS</translation>
 <translation id="8318753676953949627">Няма відарысаў</translation>
+<translation id="8346875532700229909">Не ўдалося звязацца са шлюзам з прылады Android</translation>
 <translation id="8347227221149377169">Заданні друку</translation>
 <translation id="8352772353338965963">Дадайце ўліковы запіс для функцыі ўваходу ў некалькі ўліковых запісаў. Гэта функцыя дае магчымасць пераключацца паміж уліковымі запісамі, у якія выкананы ўваход, без уводу пароля. Таму выкарыстоўвайце яе толькі для ўліковых запісаў, якім давяраеце.</translation>
 <translation id="8364946094152050673">Поле сервераў даменных імён пустое</translation>
@@ -480,6 +498,7 @@
 <translation id="8747900814994928677">Пацвярджэнне змен</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">Гэта сетка можа мець партал узаемадзеяння</translation>
 <translation id="8798099450830957504">Стандартна</translation>
 <translation id="8798441408945964110">Назва пастаўшчыка</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
@@ -503,6 +522,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Адсканіраваць}=1{Адсканіраваць старонку {NUMBER_OF_PAGES}}one{Адсканіраваць старонку {NUMBER_OF_PAGES}}few{Адсканіраваць старонку {NUMBER_OF_PAGES}}many{Адсканіраваць старонку {NUMBER_OF_PAGES}}other{Адсканіраваць старонку {NUMBER_OF_PAGES}}}</translation>
 <translation id="9003704114456258138">Частата</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">DNS-пераўтварэнне мае вялікую затрымку</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Бягучае выкарыстанне</translation>

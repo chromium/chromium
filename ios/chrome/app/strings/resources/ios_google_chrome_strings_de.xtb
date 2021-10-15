@@ -3,6 +3,7 @@
 <translationbundle lang="de">
 <translation id="1096883626080133124">Jetzt mit dem neuen ultraschnellen Google Chrome ganz einfach und sicherer noch mehr erledigen</translation>
 <translation id="1282031177488366470">Helfen, die Funktionen und die Leistung von Chrome zu verbessern</translation>
+<translation id="1354592789402432496">Ihr Administrator verlangt, dass Sie sich mit einem Organisationskonto anmelden. Konten, die Ihr Administrator eingeschränkt hat, sind ausgeblendet.</translation>
 <translation id="1479202195792305274">Chrome kann Ihre Passwörter prüfen, wenn Sie sich mit Ihrem Google-Konto anmelden.</translation>
 <translation id="1493827051843127077">Sie können Chrome als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen Ihren Geräten zu synchronisieren</translation>
 <translation id="1504372625950710826">Chrome konnte nicht nach Updates suchen. Prüfen Sie Ihre Internetverbindung.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Chrome hat keinen Zugriff auf Ihre Fotos und Videos. Aktivieren Sie den Zugriff unter "iOS-Einstellungen &gt; Datenschutz &gt; Fotos".</translation>
 <translation id="4099578267706723511">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chrome an Google senden</translation>
 <translation id="417201473131094001">Wird von Chrome Canary nicht unterstützt</translation>
+<translation id="4214277427269650960">Melden Sie sich bei dieser Website und in Chrome an. Sie können die Synchronisierung später aktivieren.</translation>
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4249068189593983585">Chrome-Tipp: Wenn Sie weitere Tab-Optionen sehen möchten, berühren und halten Sie die Schaltfläche "Tabs anzeigen" in der Symbolleiste. Sie befindet sich unten oder oben auf dem Bildschirm.</translation>
 <translation id="4523886039239821078">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstallieren Sie:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline, Chrome kann nicht nach Aktualisierungen suchen</translation>
 <translation id="5716154293141027663">Chrome immer öffnen, wenn Sie auf Links in anderen Apps tippen</translation>
+<translation id="572883588166315317">Ihre Organisation verlangt, dass Sie sich für die Verwendung von Chrome anmelden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Chrome-Tipp: Manche Schaltflächen wie "Zurück", "Weiter" und "Suche" befinden sich jetzt unten auf dem Bildschirm.</translation>
 <translation id="5876773482963502140">Wenn Sie zulassen, dass Chrome Ihren Standort ermittelt, sendet der Browser diesen an Websites, für die Sie die Berechtigung dazu erteilen. Möglicherweise fragen Websites nach Ihrem Standort, wenn sie lokale Informationen wie Geschäfte in der Nähe oder Nachrichten für Sie haben.</translation>
 <translation id="5998675059699164418">Ihre Organisation verlangt, dass Sie sich für die Verwendung von Chrome anmelden.</translation>
