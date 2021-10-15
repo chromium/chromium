@@ -267,6 +267,28 @@ promise_test(async () => {
 }, 'Subresource loading with urn:uuid: URL of a \'b2\' bundle with scopes attribute');
 
 promise_test(async () => {
+  const url = 'uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720';
+  const element = createWebBundleElement(
+      '../resources/wbn/uuid-in-package.wbn',
+      [url]);
+  document.body.appendChild(element);
+  assert_equals(await loadScriptAndWaitReport(url), 'OK');
+  document.body.removeChild(element);
+}, 'Subresource loading with uuid-in-package: URL with resources attribute');
+
+promise_test(async () => {
+  const url = 'uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720';
+  const element = createWebBundleElement(
+      '../resources/wbn/uuid-in-package.wbn',
+      [],
+      {scopes: ['uuid-in-package:']});
+  document.body.appendChild(element);
+  assert_equals(await loadScriptAndWaitReport(url), 'OK');
+  document.body.removeChild(element);
+}, 'Subresource loading with uuid-in-package: URL with scopes attribute');
+
+
+promise_test(async () => {
   const wbn_url = 'https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/subresource.wbn?test-resources-update';
   const resource_url = 'https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/submodule.js';
   const element = await addWebBundleElementAndWaitForLoad(wbn_url, /*resources=*/[]);

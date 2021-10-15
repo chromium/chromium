@@ -769,9 +769,11 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
     return parent ? parent->GetLastCommittedOrigin() : url::Origin();
   }
 
-  // urn: subframes from WebBundles have opaque origins derived from the
-  // Bundle's origin.
-  if (common_params.url.SchemeIs(url::kUrnScheme) &&
+  // Uuid-in-package: and urn: subframes from WebBundles have opaque origins
+  // derived from the Bundle's origin.
+  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
+  if ((common_params.url.SchemeIs(url::kUrnScheme) ||
+       common_params.url.SchemeIs(url::kUuidInPackageScheme)) &&
       navigation_request->GetWebBundleURL().is_valid()) {
     return url::Origin::Resolve(
         common_params.url,
@@ -4253,11 +4255,15 @@ void NavigationRequest::CommitNavigation() {
 
   AddOldPageInfoToCommitParamsIfNeeded();
 
-  // For urn: resources served from WebBundles, use the Bundle's origin.
-  url::Origin origin = (common_params_->url.SchemeIs(url::kUrnScheme) &&
-                        GetWebBundleURL().is_valid())
-                           ? url::Origin::Create(GetWebBundleURL())
-                           : GetOriginToCommit();
+  // For uuid-in-package: and urn: resources served from WebBundles, use the
+  // Bundle's origin.
+  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
+  url::Origin origin =
+      ((common_params_->url.SchemeIs(url::kUrnScheme) ||
+        common_params_->url.SchemeIs(url::kUuidInPackageScheme)) &&
+       GetWebBundleURL().is_valid())
+          ? url::Origin::Create(GetWebBundleURL())
+          : GetOriginToCommit();
   // TODO(crbug.com/979296): Consider changing this code to copy an origin
   // instead of creating one from a URL which lacks opacity information.
   isolation_info_for_subresources_ =
@@ -4667,10 +4673,12 @@ bool NavigationRequest::IsAllowedByCSPDirective(
     GURL::Replacements replacements;
     replacements.SetSchemeStr(url::kHttpScheme);
     url = common_params_->url.ReplaceComponents(replacements);
-  } else if (common_params_->url.SchemeIs(url::kUrnScheme) &&
+  } else if ((common_params_->url.SchemeIs(url::kUrnScheme) ||
+              common_params_->url.SchemeIs(url::kUuidInPackageScheme)) &&
              begin_params_->web_bundle_token.has_value()) {
-    // When navigating to a urn:uuid resource in a web bundle, we check the
-    // bundle URL instead of the urn:uuid URL.
+    // When navigating to a uuid-in-package: / urn: resource in a web bundle, we
+    // check the bundle URL instead of the uuid-in-package: URL.
+    // TODO(https://crbug.com/1257045): Remove urn: scheme support.
     url = begin_params_->web_bundle_token->bundle_url;
   } else {
     url = common_params_->url;

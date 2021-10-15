@@ -247,9 +247,12 @@ bool DoesURLMatchOriginForNavigation(
   if (!origin)
     return true;
 
-  if (url.SchemeIs(url::kUrnScheme) && subresource_web_bundle_navigation_info) {
-    // Urn: subframe from WebBundle has an opaque origin derived from the
-    // Bundle's origin.
+  // Urn: and uuid-in-package: subframe from WebBundle has an opaque origin
+  // derived from the Bundle's origin.
+  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
+  if ((url.SchemeIs(url::kUrnScheme) ||
+       url.SchemeIs(url::kUuidInPackageScheme)) &&
+      subresource_web_bundle_navigation_info) {
     return origin->CanBeDerivedFrom(
         subresource_web_bundle_navigation_info->bundle_url());
   }

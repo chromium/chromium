@@ -158,3 +158,8 @@ gen-bundle \
   -version b2 \
   -har cross-origin-no-cors.har \
   -o wbn/no-cors/cross-origin-b2.wbn
+
+gen-bundle \
+  -version b2 \
+  -har uuid-in-package.har \
+  -o wbn/uuid-in-package.wbn

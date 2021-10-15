@@ -78,3 +78,14 @@ gen-bundle \
 (cat cross_origin.wbn.mock-http-headers; \
  echo Content-Length: `wc -c <urn-uuid.wbn`) \
     > urn-uuid.wbn.mock-http-headers
+
+# Generate a WBN which includes uuid-in-package resources.
+gen-bundle \
+  -version b2 \
+  -har uuid-in-package.har \
+  -o uuid-in-package.wbn
+
+# Update Content-Length header in uuid-in-package.wbn.mock-http-headers.
+(cat cross_origin.wbn.mock-http-headers; \
+ echo Content-Length: `wc -c <uuid-in-package.wbn`) \
+    > uuid-in-package.wbn.mock-http-headers

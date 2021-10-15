@@ -3496,9 +3496,12 @@ void RenderFrameHostImpl::DidNavigate(
   navigation_request->frame_tree_node()->SetCurrentURL(params.url);
   SetLastCommittedOrigin(params.origin);
 
-  // For urn: resources served from WebBundles, use the Bundle's origin.
+  // For uuid-in-package: and urn: resources served from WebBundles, use the
+  // Bundle's origin.
+  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   url::Origin origin =
-      (params.url.SchemeIs(url::kUrnScheme) &&
+      ((params.url.SchemeIs(url::kUrnScheme) ||
+        params.url.SchemeIs(url::kUuidInPackageScheme)) &&
        navigation_request->GetWebBundleURL().is_valid())
           ? url::Origin::Create(navigation_request->GetWebBundleURL())
           : GetLastCommittedOrigin();
@@ -6979,10 +6982,12 @@ void RenderFrameHostImpl::BeginNavigation(
     }
   }
 
-  // Only urn: URL is allowed for navigation to a resource in
-  // <link rel="webbundle">.
+  // Only uuid-in-package: or urn: URL are allowed for navigation to a resource
+  // in Subresource WebBundles.
+  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   if (begin_params->web_bundle_token &&
-      !common_params->url.SchemeIs(url::kUrnScheme)) {
+      !(common_params->url.SchemeIs(url::kUrnScheme) ||
+        common_params->url.SchemeIs(url::kUuidInPackageScheme))) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::WEB_BUNDLE_INVALID_NAVIGATION_URL);
     return;

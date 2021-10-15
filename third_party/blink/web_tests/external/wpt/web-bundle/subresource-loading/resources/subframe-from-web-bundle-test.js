@@ -1,20 +1,32 @@
-const frame_url = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';
-
 promise_test(async (t) => {
-    const iframe = await createWebBundleElementAndIframe(t);
-    // The urn:uuid URL iframe is cross-origin. So accessing
-    // iframe.contentWindow.location should throws a SecurityError.
+    const bundle_url = '../resources/wbn/urn-uuid.wbn';
+    const frame_url = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';
+    const iframe = await createWebBundleElementAndIframe(t, bundle_url, frame_url);
+    // The iframe is cross-origin. So accessing iframe.contentWindow.location
+    // should throw a SecurityError.
     assert_throws_dom(
       "SecurityError",
       () => { iframe.contentWindow.location.href; });
   }, 'The urn:uuid URL iframe must be cross-origin.');
 
-urn_uuid_iframe_test(
-  'location.href',
-  frame_url,
-  'location.href in urn uuid iframe.');
+promise_test(async (t) => {
+    const bundle_url = '../resources/wbn/uuid-in-package.wbn';
+    const frame_url = 'uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae';
+    const iframe = await createWebBundleElementAndIframe(t, bundle_url, frame_url);
+    // The iframe is cross-origin. So accessing iframe.contentWindow.location
+    // should throw a SecurityError.
+    assert_throws_dom(
+      "SecurityError",
+      () => { iframe.contentWindow.location.href; });
+  }, 'The uuid-in-package: URL iframe must be cross-origin.');
 
-urn_uuid_iframe_test(
+uuid_iframe_test(
+  'location.href',
+  ['urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae',
+   'uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae'],
+  'location.href in opaque-origin iframe.');
+
+uuid_iframe_test(
   '(' + (() => {
     try {
       let result = window.localStorage;
@@ -26,7 +38,7 @@ urn_uuid_iframe_test(
   'SecurityError',
   'Accesing window.localStorage should throw a SecurityError.');
 
-urn_uuid_iframe_test(
+uuid_iframe_test(
   '(' + (() => {
     try {
       let result = window.sessionStorage;
@@ -38,7 +50,7 @@ urn_uuid_iframe_test(
   'SecurityError',
   'Accesing window.sessionStorage should throw a SecurityError.');
 
-urn_uuid_iframe_test(
+uuid_iframe_test(
   '(' + (() => {
     try {
       let result = document.cookie;
@@ -50,7 +62,7 @@ urn_uuid_iframe_test(
   'SecurityError',
   'Accesing document.cookie should throw a SecurityError.');
 
-urn_uuid_iframe_test(
+uuid_iframe_test(
   '(' + (() => {
     try {
       let request = window.indexedDB.open("db");
@@ -62,22 +74,32 @@ urn_uuid_iframe_test(
   'SecurityError',
   'Opening an indexedDB should throw a SecurityError.');
 
-urn_uuid_iframe_test(
+uuid_iframe_test(
   'window.caches === undefined',
   true,
   'window.caches should be undefined.');
 
-function urn_uuid_iframe_test(code, expected, name) {
+function uuid_iframe_test(code, expected, name) {
+  if (!Array.isArray(expected)) {
+    expected = [expected, expected];
+  }
   promise_test(async (t) => {
-    const iframe = await createWebBundleElementAndIframe(t);
-    assert_equals(await evalInIframe(iframe, code), expected);
-  }, name);
+    const bundle_url = '../resources/wbn/urn-uuid.wbn';
+    const frame_url = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';
+    const iframe = await createWebBundleElementAndIframe(t, bundle_url, frame_url);
+    assert_equals(await evalInIframe(iframe, code), expected[0]);
+  }, name + '(urn:uuid)');
+
+  promise_test(async (t) => {
+    const bundle_url = '../resources/wbn/uuid-in-package.wbn';
+    const frame_url = 'uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae';
+    const iframe = await createWebBundleElementAndIframe(t, bundle_url, frame_url);
+    assert_equals(await evalInIframe(iframe, code), expected[1]);
+  }, name + 'uuid-in-package');
 }
 
-async function createWebBundleElementAndIframe(t) {
-  const element = createWebBundleElement(
-      '../resources/wbn/urn-uuid.wbn',
-      [frame_url]);
+async function createWebBundleElementAndIframe(t, bundle_url, frame_url) {
+  const element = createWebBundleElement(bundle_url, [frame_url]);
   document.body.appendChild(element);
   const iframe = document.createElement('iframe');
   t.add_cleanup(() => {

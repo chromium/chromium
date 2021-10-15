@@ -293,12 +293,14 @@ GURL ParseExchangeURL(base::StringPiece str, const GURL& base_url) {
   if (url.has_ref() || url.has_username() || url.has_password())
     return GURL();
 
-  // For now, we allow only http:, https: and urn:uuid URLs in Web Bundles.
+  // For now, we allow only http:, https:, urn:uuid and uuid-in-package: URLs in
+  // Web Bundles.
   // TODO(crbug.com/966753): Revisit this once
   // https://github.com/WICG/webpackage/issues/468 is resolved.
-  if (!url.SchemeIsHTTPOrHTTPS() && !IsValidUrnUuidURL(url))
+  if (!url.SchemeIsHTTPOrHTTPS() && !IsValidUrnUuidURL(url) &&
+      !IsValidUuidInPackageURL(url)) {
     return GURL();
-
+  }
   return url;
 }
 

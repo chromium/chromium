@@ -793,9 +793,10 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
           ? CSPDisposition::DO_NOT_CHECK
           : CSPDisposition::CHECK;
 
-  // If this is a subframe load to a urn: URL, allow loading from a Web Bundle
-  // attached to the parent document.
-  if (url.Protocol() == "urn") {
+  // If this is a subframe load to a urn: / uuid-in-package: URL, allow loading
+  // from a Web Bundle attached to the parent document.
+  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
+  if (url.Protocol() == "urn" || url.Protocol() == "uuid-in-package") {
     auto* parent_local_frame = DynamicTo<LocalFrame>(frame_->Tree().Parent());
     if (parent_local_frame &&
         parent_local_frame->DomWindow() == origin_window &&

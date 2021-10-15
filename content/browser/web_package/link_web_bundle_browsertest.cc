@@ -35,6 +35,10 @@ namespace {
 
 const char kUrnUuidURL[] = "urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae";
 const char kUrnUuidURL2[] = "urn:uuid:e219d992-b7f7-4da7-9722-481bc40cfda1";
+const char kUuidInPackageURL[] =
+    "uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae";
+const char kUuidInPackageURL2[] =
+    "uuid-in-package:e219d992-b7f7-4da7-9722-481bc40cfda1";
 
 class TestBrowserClient : public ContentBrowserClient {
  public:
@@ -107,9 +111,24 @@ FrameTreeNode* GetFirstChild(WebContents* web_contents) {
       ->child_at(0);
 }
 
+enum UuidScheme { UrnUuid, UuidInPackage };
+
 }  // namespace
 
-class LinkWebBundleBrowserTest : public ContentBrowserTest {
+class LinkWebBundleBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<UuidScheme> {
+ public:
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    switch (info.param) {
+      case UrnUuid:
+        return "UrnUuid";
+      case UuidInPackage:
+        return "UuidInPackage";
+    }
+  }
+
  protected:
   LinkWebBundleBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
@@ -149,6 +168,30 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
   void TearDownInProcessBrowserTestFixture() override {
     ContentBrowserTest::TearDownInProcessBrowserTestFixture();
     mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  const char* GetUuidURLPrefix() {
+    return GetParam() == UrnUuid ? "urn:uuid:" : "uuid-in-package:";
+  }
+
+  GURL GetUuidURL() {
+    return GetParam() == UrnUuid ? GURL(kUrnUuidURL) : GURL(kUuidInPackageURL);
+  }
+
+  GURL GetUuidURL2() {
+    return GetParam() == UrnUuid ? GURL(kUrnUuidURL2)
+                                 : GURL(kUuidInPackageURL2);
+  }
+
+  const char* GetUuidTestBundlePath() {
+    return GetParam() == UrnUuid ? "/web_bundle/urn-uuid.wbn"
+                                 : "/web_bundle/uuid-in-package.wbn";
+  }
+
+  const char* GetUuidTestPagePath() {
+    return GetParam() == UrnUuid
+               ? "/web_bundle/link_web_bundle_urn_uuid.html"
+               : "/web_bundle/link_web_bundle_uuid_in_package.html";
   }
 
   void CreateIframeAndWaitForOnload(const std::string& url) {
@@ -216,7 +259,7 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
       net::EmbeddedTestServer::Type::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, ChangeLinkElementHref) {
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, ChangeLinkElementHref) {
   GURL url(https_server()->GetURL("/web_bundle/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -263,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, ChangeLinkElementHref) {
   EXPECT_EQ("\"webbundle loaded after change\"", message);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, RemoveLinkElement) {
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, RemoveLinkElement) {
   GURL url(https_server()->GetURL("/web_bundle/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -304,52 +347,58 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, RemoveLinkElement) {
   EXPECT_EQ("\"webbundle loaded\"", message);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoad) {
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, SubframeLoad) {
   base::HistogramTester histogram_tester;
-  GURL url(https_server()->GetURL("/web_bundle/link_web_bundle.html"));
+  GURL url(https_server()->GetURL(GetUuidTestPagePath()));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  // Create an iframe with a urn:uuid resource in a bundle.
+  // Create an iframe with a uuid-in-package resource in a bundle.
   base::RunLoop run_loop;
   FinishNavigationObserver finish_navigation_observer(
-      shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
+      shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
   ExecuteScriptAsync(
       shell(),
-      "let iframe = document.createElement('iframe');"
-      "iframe.src = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';"
-      "document.body.appendChild(iframe);");
+      base::StringPrintf("let iframe = document.createElement('iframe');"
+                         "iframe.src = '%s';"
+                         "document.body.appendChild(iframe);",
+                         GetUuidURL().spec().c_str()));
+
   run_loop.Run();
   EXPECT_EQ(net::OK, *finish_navigation_observer.error_code());
 
   // Check the metrics recorded in the network process.
   FetchHistogramsFromChildProcesses();
   int64_t web_bundle_size = GetTestDataFileSize(
-      FILE_PATH_LITERAL("content/test/data/web_bundle/urn-uuid.wbn"));
+      GetParam() == UrnUuid
+          ? FILE_PATH_LITERAL("content/test/data/web_bundle/urn-uuid.wbn")
+          : FILE_PATH_LITERAL(
+                "content/test/data/web_bundle/uuid-in-package.wbn"));
   histogram_tester.ExpectUniqueSample("SubresourceWebBundles.ReceivedSize",
                                       web_bundle_size, 1);
   histogram_tester.ExpectUniqueSample("SubresourceWebBundles.ContentLength",
                                       web_bundle_size, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoadError) {
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, SubframeLoadError) {
   GURL url(https_server()->GetURL("/web_bundle/invalid_web_bundle.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Attempt to create an iframe with a resource in a broken WebBundle.
   base::RunLoop run_loop;
   FinishNavigationObserver finish_navigation_observer(
-      shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
+      shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
   ExecuteScriptAsync(
       shell(),
-      "let iframe = document.createElement('iframe');"
-      "iframe.src = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';"
-      "document.body.appendChild(iframe);");
+      base::StringPrintf("let iframe = document.createElement('iframe');"
+                         "iframe.src = '%s';"
+                         "document.body.appendChild(iframe);",
+                         GetUuidURL().spec().c_str()));
   run_loop.Run();
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
             *finish_navigation_observer.error_code());
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, BundleFetchError) {
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, BundleFetchError) {
   base::HistogramTester histogram_tester;
 
   GURL url(https_server()->GetURL("/web_bundle/empty.html"));
@@ -378,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, BundleFetchError) {
       -net::ERR_INVALID_HTTP_RESPONSE, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, BundleRedirectionIsForbidden) {
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, BundleRedirectionIsForbidden) {
   GURL url(https_server()->GetURL("/web_bundle/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -416,61 +465,61 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, BundleRedirectionIsForbidden) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, FollowLink) {
-  GURL url(https_server()->GetURL("/web_bundle/link_web_bundle.html"));
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, FollowLink) {
+  GURL url(https_server()->GetURL(GetUuidTestPagePath()));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  // Clicking a link to a urn:uuid resource in a bundle should not be loaded
-  // from the bundle.
+  // Clicking a link to a uuid-in-package resource in a bundle should not be
+  // loaded from the bundle.
   base::RunLoop run_loop;
   FinishNavigationObserver finish_navigation_observer(
-      shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
+      shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
   EXPECT_TRUE(ExecJs(shell()->web_contents(),
                      "document.getElementById('link').click();"));
   run_loop.Run();
   EXPECT_EQ(net::ERR_ABORTED, *finish_navigation_observer.error_code());
-  EXPECT_EQ(GURL(kUrnUuidURL), GetObservedUnknownSchemeUrl());
+  EXPECT_EQ(GetUuidURL(), GetObservedUnknownSchemeUrl());
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, IframeChangeSource) {
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, IframeChangeSource) {
   GURL main_url(https_server()->GetURL("/simple_page.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Create an iframe whose document has <link rel="webbundle">.
-  CreateIframeAndWaitForOnload("/web_bundle/link_web_bundle.html");
+  CreateIframeAndWaitForOnload(GetUuidTestPagePath());
 
   // Attempt to navigate the iframe to a bundled resource.
   base::RunLoop run_loop;
   FinishNavigationObserver finish_navigation_observer(
-      shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
-  ExecuteScriptAsync(
-      shell(), "iframe.src = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';");
+      shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
+  ExecuteScriptAsync(shell(), base::StringPrintf("iframe.src = '%s';",
+                                                 GetUuidURL().spec().c_str()));
   run_loop.Run();
   EXPECT_EQ(net::ERR_ABORTED, *finish_navigation_observer.error_code());
-  EXPECT_EQ(GURL(kUrnUuidURL), GetObservedUnknownSchemeUrl());
+  EXPECT_EQ(GetUuidURL(), GetObservedUnknownSchemeUrl());
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, IframeFollowLink) {
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, IframeFollowLink) {
   GURL main_url(https_server()->GetURL("/simple_page.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Create an iframe whose document has <link rel="webbundle">.
-  CreateIframeAndWaitForOnload("/web_bundle/link_web_bundle.html");
+  CreateIframeAndWaitForOnload(GetUuidTestPagePath());
 
   // Click a link inside the iframe. The resource should not be loaded from
   // the bundle.
   base::RunLoop run_loop;
   FinishNavigationObserver finish_navigation_observer(
-      shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
+      shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
   ExecuteScriptAsync(shell(),
                      "iframe.contentDocument.getElementById('link').click();");
   run_loop.Run();
   EXPECT_EQ(net::ERR_ABORTED, *finish_navigation_observer.error_code());
-  EXPECT_EQ(GURL(kUrnUuidURL), GetObservedUnknownSchemeUrl());
+  EXPECT_EQ(GetUuidURL(), GetObservedUnknownSchemeUrl());
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, NavigationFromSiblingFrame) {
-  GURL main_url(https_server()->GetURL("/web_bundle/link_web_bundle.html"));
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, NavigationFromSiblingFrame) {
+  GURL main_url(https_server()->GetURL(GetUuidTestPagePath()));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Create an iframe and wait for the initial load.
@@ -499,49 +548,53 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, NavigationFromSiblingFrame) {
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
   EXPECT_EQ("\"iframe2.onload\"", message);
 
-  // Navigate iframe2 to a urn:uuid URL by clicking a link in iframe1, which
-  // should not be loaded from the WebBundle associated with the parent
+  // Navigate iframe2 to a uuid-in-package URL by clicking a link in iframe1,
+  // which should not be loaded from the WebBundle associated with the parent
   // document.
   base::RunLoop run_loop;
   FinishNavigationObserver finish_navigation_observer(
-      shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
-  ExecuteScriptAsync(shell(),
-                     "let a = iframe1.contentDocument.createElement('a');"
-                     "a.href = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';"
-                     "a.target = 'iframe2';"
-                     "iframe1.contentDocument.body.appendChild(a);"
-                     "a.click();");
-  run_loop.Run();
-  EXPECT_EQ(net::ERR_ABORTED, *finish_navigation_observer.error_code());
-  EXPECT_EQ(GURL(kUrnUuidURL), GetObservedUnknownSchemeUrl());
-}
-
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest,
-                       GrandChildShouldNotBeLoadedFromBundle) {
-  GURL main_url(https_server()->GetURL("/web_bundle/link_web_bundle.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  // Create an iframe with a urn:uuid resource, which has a nested iframe with
-  // another urn:uuid resource in the bundle. The resource for the nested should
-  // iframe not be loaded from the bundle.
-  base::RunLoop run_loop;
-  FinishNavigationObserver finish_navigation_observer(
-      shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
+      shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
   ExecuteScriptAsync(
       shell(),
-      "let iframe = document.createElement('iframe');"
-      "iframe.src = 'urn:uuid:1084e1fc-2122-4155-a4dd-28efb2e8ccb1';"
-      "document.body.appendChild(iframe);");
+      base::StringPrintf("let a = iframe1.contentDocument.createElement('a');"
+                         "a.href = '%s';"
+                         "a.target = 'iframe2';"
+                         "iframe1.contentDocument.body.appendChild(a);"
+                         "a.click();",
+                         GetUuidURL().spec().c_str()));
   run_loop.Run();
   EXPECT_EQ(net::ERR_ABORTED, *finish_navigation_observer.error_code());
-  EXPECT_EQ(GURL(kUrnUuidURL), GetObservedUnknownSchemeUrl());
+  EXPECT_EQ(GetUuidURL(), GetObservedUnknownSchemeUrl());
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, NetworkIsolationKey) {
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest,
+                       GrandChildShouldNotBeLoadedFromBundle) {
+  GURL main_url(https_server()->GetURL(GetUuidTestPagePath()));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create an iframe with a uuid-in-package resource, which has a nested iframe
+  // with another uuid-in-package resource in the bundle. The resource for the
+  // nested should iframe not be loaded from the bundle.
+  base::RunLoop run_loop;
+  FinishNavigationObserver finish_navigation_observer(
+      shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
+  ExecuteScriptAsync(
+      shell(), base::StringPrintf(
+                   "let iframe = document.createElement('iframe');"
+                   "iframe.src = '%s1084e1fc-2122-4155-a4dd-28efb2e8ccb1';"
+                   "document.body.appendChild(iframe);",
+                   GetUuidURLPrefix()));
+  run_loop.Run();
+  EXPECT_EQ(net::ERR_ABORTED, *finish_navigation_observer.error_code());
+  EXPECT_EQ(GetUuidURL(), GetObservedUnknownSchemeUrl());
+}
+
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, NetworkIsolationKey) {
   GURL bundle_url(
-      https_server()->GetURL("bundle.test", "/web_bundle/urn-uuid.wbn"));
+      https_server()->GetURL("bundle.test", GetUuidTestBundlePath()));
   GURL page_url(https_server()->GetURL(
-      "page.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
+      "page.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec() +
+                       "&frame=" + GetUuidURL().spec().c_str()));
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
   std::u16string expected_title(u"OK");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
@@ -553,56 +606,58 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, NetworkIsolationKey) {
             urn_frame->GetNetworkIsolationKey().ToString());
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, ReloadSubframe) {
-  GURL url(https_server()->GetURL("/web_bundle/link_web_bundle.html"));
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, ReloadSubframe) {
+  GURL url(https_server()->GetURL(GetUuidTestPagePath()));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  // Create an iframe with a urn:uuid resource in a bundle.
+  // Create an iframe with a uuid-in-package resource in a bundle.
   {
     base::RunLoop run_loop;
     FinishNavigationObserver finish_navigation_observer(
-        shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
+        shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
     ExecuteScriptAsync(
         shell(),
-        "let iframe = document.createElement('iframe');"
-        "iframe.src = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';"
-        "document.body.appendChild(iframe);");
+        base::StringPrintf("let iframe = document.createElement('iframe');"
+                           "iframe.src = '%s';"
+                           "document.body.appendChild(iframe);",
+                           GetUuidURL().spec().c_str()));
     run_loop.Run();
     EXPECT_EQ(net::OK, *finish_navigation_observer.error_code());
   }
   FrameTreeNode* iframe_node = GetFirstChild(shell()->web_contents());
-  EXPECT_EQ(iframe_node->current_url(), GURL(kUrnUuidURL));
+  EXPECT_EQ(iframe_node->current_url(), GetUuidURL());
 
   // Reload the iframe.
   {
     base::RunLoop run_loop;
     FinishNavigationObserver finish_navigation_observer(
-        shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
+        shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
     iframe_node->current_frame_host()->Reload();
     run_loop.Run();
     EXPECT_EQ(net::OK, *finish_navigation_observer.error_code());
   }
 }
 
-IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeHistoryNavigation) {
-  GURL url(https_server()->GetURL("/web_bundle/link_web_bundle.html"));
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, SubframeHistoryNavigation) {
+  GURL url(https_server()->GetURL(GetUuidTestPagePath()));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  // Create an iframe with a urn:uuid resource in a bundle.
+  // Create an iframe with a uuid-in-package resource in a bundle.
   {
     base::RunLoop run_loop;
     FinishNavigationObserver finish_navigation_observer(
-        shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
+        shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
     ExecuteScriptAsync(
         shell(),
-        "let iframe = document.createElement('iframe');"
-        "iframe.src = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';"
-        "document.body.appendChild(iframe);");
+        base::StringPrintf("let iframe = document.createElement('iframe');"
+                           "iframe.src = '%s';"
+                           "document.body.appendChild(iframe);",
+                           GetUuidURL().spec().c_str()));
     run_loop.Run();
     EXPECT_EQ(net::OK, *finish_navigation_observer.error_code());
   }
   FrameTreeNode* iframe_node = GetFirstChild(shell()->web_contents());
-  EXPECT_EQ(iframe_node->current_url(), GURL(kUrnUuidURL));
+  EXPECT_EQ(iframe_node->current_url(), GetUuidURL());
 
   // Navigate the iframe to a page outside the bundle.
   {
@@ -618,53 +673,54 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeHistoryNavigation) {
     EXPECT_EQ(iframe_node->current_url(), another_page_url);
   }
 
-  // Back navigate the iframe to the urn:uuid resource in the bundle.
+  // Back navigate the iframe to the uuid-in-package resource in the bundle.
   {
     base::RunLoop run_loop;
     FinishNavigationObserver finish_navigation_observer(
-        shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
+        shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
     EXPECT_TRUE(ExecJs(iframe_node, "history.back()"));
     run_loop.Run();
     EXPECT_EQ(net::OK, *finish_navigation_observer.error_code());
-    EXPECT_EQ(iframe_node->current_url(), GURL(kUrnUuidURL));
+    EXPECT_EQ(iframe_node->current_url(), GetUuidURL());
   }
 
-  // Navigate the iframe to another urn:uuid resource in the bundle, by changing
-  // iframe.src attribute.
+  // Navigate the iframe to another uuid-in-package resource in the bundle, by
+  // changing iframe.src attribute.
   {
     base::RunLoop run_loop;
     FinishNavigationObserver finish_navigation_observer(
-        shell()->web_contents(), GURL(kUrnUuidURL2), run_loop.QuitClosure());
-    ExecuteScriptAsync(shell(),
-                       base::StringPrintf("iframe.src = '%s';", kUrnUuidURL2));
+        shell()->web_contents(), GetUuidURL2(), run_loop.QuitClosure());
+    ExecuteScriptAsync(
+        shell(),
+        base::StringPrintf("iframe.src = '%s';", GetUuidURL2().spec().c_str()));
     run_loop.Run();
     EXPECT_EQ(net::OK, *finish_navigation_observer.error_code());
-    EXPECT_EQ(iframe_node->current_url(), GURL(kUrnUuidURL2));
+    EXPECT_EQ(iframe_node->current_url(), GetUuidURL2());
   }
 
-  // Back navigate the iframe to the first urn:uuid resource.
+  // Back navigate the iframe to the first uuid-in-package resource.
   {
     base::RunLoop run_loop;
     FinishNavigationObserver finish_navigation_observer(
-        shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
+        shell()->web_contents(), GetUuidURL(), run_loop.QuitClosure());
     EXPECT_TRUE(ExecJs(iframe_node, "history.back()"));
     run_loop.Run();
     EXPECT_EQ(net::OK, *finish_navigation_observer.error_code());
-    EXPECT_EQ(iframe_node->current_url(), GURL(kUrnUuidURL));
+    EXPECT_EQ(iframe_node->current_url(), GetUuidURL());
   }
 
-  // Forward navigate the iframe to the second urn:uuid resource.
+  // Forward navigate the iframe to the second uuid-in-package resource.
   {
     base::RunLoop run_loop;
     FinishNavigationObserver finish_navigation_observer(
-        shell()->web_contents(), GURL(kUrnUuidURL2), run_loop.QuitClosure());
+        shell()->web_contents(), GetUuidURL2(), run_loop.QuitClosure());
     EXPECT_TRUE(ExecJs(iframe_node, "history.forward()"));
     run_loop.Run();
     EXPECT_EQ(net::OK, *finish_navigation_observer.error_code());
-    EXPECT_EQ(iframe_node->current_url(), GURL(kUrnUuidURL2));
+    EXPECT_EQ(iframe_node->current_url(), GetUuidURL2());
   }
 
-  GURL url_with_hash(std::string(kUrnUuidURL2) + "#hash");
+  GURL url_with_hash(GetUuidURL2().spec() + "#hash");
   // Same document navigation.
   {
     base::RunLoop run_loop;
@@ -680,11 +736,11 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeHistoryNavigation) {
   {
     base::RunLoop run_loop;
     FinishNavigationObserver finish_navigation_observer(
-        shell()->web_contents(), GURL(kUrnUuidURL2), run_loop.QuitClosure());
+        shell()->web_contents(), GetUuidURL2(), run_loop.QuitClosure());
     EXPECT_TRUE(ExecJs(iframe_node, "history.back()"));
     run_loop.Run();
     EXPECT_EQ(net::OK, *finish_navigation_observer.error_code());
-    EXPECT_EQ(iframe_node->current_url(), GURL(kUrnUuidURL2));
+    EXPECT_EQ(iframe_node->current_url(), GetUuidURL2());
   }
 
   // Forward navigate to #hash.
@@ -698,5 +754,10 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeHistoryNavigation) {
     EXPECT_EQ(iframe_node->current_url(), url_with_hash);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(LinkWebBundleBrowserTest,
+                         LinkWebBundleBrowserTest,
+                         testing::Values(UrnUuid, UuidInPackage),
+                         LinkWebBundleBrowserTest::DescribeParams);
 
 }  // namespace content

@@ -5488,7 +5488,9 @@ String Document::cookie(ExceptionState& exception_state) const {
           "Cookies are disabled inside 'data:' URLs.");
     } else {
       exception_state.ThrowSecurityError("Access is denied for this document.");
-      if (Url().ProtocolIs("urn")) {
+      // Count cookie accesses in opaque-origin documents from WebBundles.
+      // TODO(https://crbug.com/1257045): Remove urn: scheme support.
+      if (Url().ProtocolIs("urn") || Url().ProtocolIs("uuid-in-package")) {
         CountUse(WebFeature::kUrnDocumentAccessedCookies);
       }
     }
@@ -5516,7 +5518,9 @@ void Document::setCookie(const String& value, ExceptionState& exception_state) {
           "Cookies are disabled inside 'data:' URLs.");
     } else {
       exception_state.ThrowSecurityError("Access is denied for this document.");
-      if (Url().ProtocolIs("urn")) {
+      // Count cookie accesses in opaque-origin documents from WebBundles.
+      // TODO(https://crbug.com/1257045): Remove urn: scheme support.
+      if (Url().ProtocolIs("urn") || Url().ProtocolIs("uuid-in-package")) {
         CountUse(WebFeature::kUrnDocumentAccessedCookies);
       }
     }
