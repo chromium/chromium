@@ -542,7 +542,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore.Subframe.{Navigation}{Window}.Gap{Gap}.Max{MaxWindowSize}"
-    units="scorex10" expires_after="M97">
+    units="scorex10" expires_after="2022-09-29">
   <owner>hbsong@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2433,7 +2433,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.{Bfcache}{Window}.Gap{Gap}.Max{MaxWindowSize}"
-    units="scorex10" expires_after="2021-12-29">
+    units="scorex10" expires_after="2022-09-29">
   <owner>hbsong@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
