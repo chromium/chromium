@@ -46,9 +46,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableSuggestedLocalFiles;
 // Enables the Assistant search redirection in the app list.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAssistantSearch;
 
-// Enables ghosting in any AppsGridView (folder or root) when dragging an item.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppGridGhost;
-
 // Enables hashed recording of a app list launches.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppListLaunchRecording;
 
@@ -91,7 +88,6 @@ bool ASH_PUBLIC_EXPORT IsAppReinstallZeroStateEnabled();
 bool ASH_PUBLIC_EXPORT IsSuggestedFilesEnabled();
 bool ASH_PUBLIC_EXPORT IsSuggestedLocalFilesEnabled();
 bool ASH_PUBLIC_EXPORT IsAssistantSearchEnabled();
-bool ASH_PUBLIC_EXPORT IsAppGridGhostEnabled();
 bool ASH_PUBLIC_EXPORT IsAppListLaunchRecordingEnabled();
 bool ASH_PUBLIC_EXPORT IsFuzzyAppSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsExactMatchForNonLatinLocaleEnabled();

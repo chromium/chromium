@@ -868,7 +868,7 @@ void AppsGridView::ViewHierarchyChanged(
     if (selected_view_ == details.child)
       selected_view_ = nullptr;
 
-    if (app_list_features::IsAppGridGhostEnabled()) {
+    if (features::IsProductivityLauncherEnabled()) {
       if (current_ghost_view_ == details.child)
         current_ghost_view_ = nullptr;
       if (last_ghost_view_ == details.child)
@@ -2493,7 +2493,7 @@ void AppsGridView::AnnounceReorder(const GridIndex& target_index) {
 }
 
 void AppsGridView::CreateGhostImageView() {
-  if (!app_list_features::IsAppGridGhostEnabled())
+  if (!features::IsProductivityLauncherEnabled())
     return;
   if (!drag_item_)
     return;
@@ -2538,7 +2538,7 @@ void AppsGridView::CreateGhostImageView() {
 }
 
 void AppsGridView::BeginHideCurrentGhostImageView() {
-  if (!app_list_features::IsAppGridGhostEnabled())
+  if (!features::IsProductivityLauncherEnabled())
     return;
 
   current_ghost_location_ = GridIndex();

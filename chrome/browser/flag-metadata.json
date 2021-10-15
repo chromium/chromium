@@ -1385,11 +1385,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-app-grid-ghost",
-    "owners": [ "mmourgos" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "enable-arc-unified-audio-focus",
     "owners": [ "beccahughes", "media-dev" ],
     "expiry_milestone": 82

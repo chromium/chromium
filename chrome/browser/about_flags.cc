@@ -5303,12 +5303,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableProcessReuseDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kDisableProcessReuse)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-app-grid-ghost", flag_descriptions::kEnableAppGridGhostName,
-     flag_descriptions::kEnableAppGridGhostDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(app_list_features::kEnableAppGridGhost)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if !defined(OS_ANDROID)
     {"enable-accessibility-live-caption",
      flag_descriptions::kEnableAccessibilityLiveCaptionName,

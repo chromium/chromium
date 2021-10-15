@@ -4384,10 +4384,6 @@ const char kEnableAppReinstallZeroStateDescription[] =
     "Enable Zero State App Reinstall Suggestions feature in launcher, which "
     "will show app reinstall recommendations at end of zero state list.";
 
-const char kEnableAppGridGhostName[] = "App Grid Ghosting";
-const char kEnableAppGridGhostDescription[] =
-    "Enables ghosting during an item drag in launcher.";
-
 const char kEnableArcUnifiedAudioFocusName[] =
     "Enable unified audio focus on ARC";
 const char kEnableArcUnifiedAudioFocusDescription[] =

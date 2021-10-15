@@ -2494,9 +2494,6 @@ extern const char kQuickSettingsPWANotificationsDescription[];
 extern const char kDriveFsBidirectionalNativeMessagingName[];
 extern const char kDriveFsBidirectionalNativeMessagingDescription[];
 
-extern const char kEnableAppGridGhostName[];
-extern const char kEnableAppGridGhostDescription[];
-
 extern const char kCrOSEnforceSystemAecName[];
 extern const char kCrOSEnforceSystemAecDescription[];
 
