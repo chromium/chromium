@@ -91,8 +91,11 @@ enum DiagnosticRoutineUserMessageEnum {
 };
 
 // Enumeration of the possible commands to send a diagnostics routine.
+//
+// NextMinVersion: 1, NextIndex: 5
 [Extensible]
 enum DiagnosticRoutineCommandEnum {
+  [Default] kUnknown = 4,
   kContinue = 0,  // Resume a routine that is waiting.
   kCancel = 1,  // Cancelled routines must still be removed before the routine
                 // is destroyed.
