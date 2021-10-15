@@ -237,7 +237,7 @@ class WebAppInstallTaskTest : public WebAppTest {
     DCHECK(data_retriever_);
 
     data_retriever_->SetIconsDownloadedResult(
-        icons_map.empty() ? IconsDownloadedResult::kCancelled
+        icons_map.empty() ? IconsDownloadedResult::kPrimaryPageChanged
                           : IconsDownloadedResult::kCompleted);
 
     // Uses `icons_map` to infer HTTP_OK for each icon.

@@ -367,7 +367,7 @@ TEST_F(WebAppIconDownloaderTest, PageNavigates) {
   EXPECT_EQ(0u, downloader.pending_requests());
   EXPECT_TRUE(downloader.icons_map().empty());
   EXPECT_EQ(downloader.icons_download_result(),
-            IconsDownloadedResult::kCancelled);
+            IconsDownloadedResult::kPrimaryPageChanged);
 }
 
 TEST_F(WebAppIconDownloaderTest, PageNavigatesAfterDownload) {
@@ -463,7 +463,7 @@ TEST_F(WebAppIconDownloaderPrerenderTest, PrerenderedPageNavigates) {
   EXPECT_EQ(0u, downloader.pending_requests());
   EXPECT_TRUE(downloader.icons_map().empty());
   EXPECT_EQ(downloader.icons_download_result(),
-            IconsDownloadedResult::kCancelled);
+            IconsDownloadedResult::kPrimaryPageChanged);
 }
 
 }  // namespace web_app

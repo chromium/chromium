@@ -226,7 +226,7 @@ void WebAppDataRetriever::CallCallbackOnError() {
              /*is_installable=*/false);
   } else if (get_icons_callback_) {
     std::move(get_icons_callback_)
-        .Run(IconsDownloadedResult::kCancelled, IconsMap{},
+        .Run(IconsDownloadedResult::kPrimaryPageChanged, IconsMap{},
              DownloadedIconsHttpResults{});
   }
 }

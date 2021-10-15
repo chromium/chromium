@@ -110,18 +110,20 @@ void WebAppIconDownloader::DidDownloadFavicon(
   if (in_progress_requests_.erase(id) == 0)
     return;
 
-  if (fail_all_if_any_fail_ && bitmaps.empty()) {
-    CancelDownloads();
-    return;
-  }
-
-  icons_map_[image_url] = bitmaps;
-
   if (http_status_code != 0) {
     DCHECK_LE(100, http_status_code);
     DCHECK_GT(600, http_status_code);
     icons_http_results_[image_url] = http_status_code;
   }
+
+  if (fail_all_if_any_fail_ && bitmaps.empty()) {
+    // Reports http status code for the failure.
+    CancelDownloads(IconsDownloadedResult::kAbortedDueToFailure,
+                    std::move(icons_http_results_));
+    return;
+  }
+
+  icons_map_[image_url] = bitmaps;
 
   // Once all requests have been resolved, perform post-download tasks.
   if (in_progress_requests_.empty() && !need_favicon_urls_)
@@ -129,7 +131,8 @@ void WebAppIconDownloader::DidDownloadFavicon(
 }
 
 void WebAppIconDownloader::PrimaryPageChanged(content::Page& page) {
-  CancelDownloads();
+  CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
+                  DownloadedIconsHttpResults{});
 }
 
 void WebAppIconDownloader::DidUpdateFaviconURL(
@@ -152,14 +155,17 @@ void WebAppIconDownloader::CompleteCallback() {
                      std::move(icons_map_), std::move(icons_http_results_)));
 }
 
-void WebAppIconDownloader::CancelDownloads() {
+void WebAppIconDownloader::CancelDownloads(
+    IconsDownloadedResult result,
+    DownloadedIconsHttpResults icons_http_results) {
+  DCHECK_NE(result, IconsDownloadedResult::kCompleted);
+
   in_progress_requests_.clear();
   icons_map_.clear();
   icons_http_results_.clear();
 
   if (callback_) {
-    std::move(callback_).Run(IconsDownloadedResult::kCancelled, IconsMap{},
-                             DownloadedIconsHttpResults{});
+    std::move(callback_).Run(result, IconsMap{}, std::move(icons_http_results));
   }
 }
 

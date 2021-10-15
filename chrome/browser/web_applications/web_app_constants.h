@@ -286,16 +286,19 @@ using LaunchHandler = blink::Manifest::LaunchHandler;
 
 // A result how `WebAppIconDownloader` processed the list of icon urls.
 enum class IconsDownloadedResult {
-  // At least one (or all if `WebAppIconDownloader::FailAllIfAnyFail()`
-  // was called) icon urls were downloaded into the given `icons_map`.
+  // All the requested icon urls have been processed and `icons_map` populated
+  // for successful http responses. `icons_http_results` contains success and
+  // failure codes. `icons_map` can be empty if every icon url failed,
   kCompleted,
-  // There was an error downloading the icons, and `icons_map` is empty.
-  // Errors can include:
-  // * All icon downloads failed.
-  // * At least one icon download failed and
-  //  `WebAppIconDownloader::FailAllIfAnyFail()` was called.
-  // * Unexpected navigations or state changes on the `web_contents`.
-  kCancelled,
+  //
+  // There was an error downloading the icons, `icons_map` is empty:
+  //
+  // Unexpected navigations or state changes on the `web_contents`.
+  kPrimaryPageChanged,
+  // At least one icon download failed and
+  // `WebAppIconDownloader::FailAllIfAnyFail()` flag was specified.
+  // `icons_http_results` contains the failed url and http status code.
+  kAbortedDueToFailure,
 };
 
 // Generic result enumeration to be used for operations that can fail. If more
