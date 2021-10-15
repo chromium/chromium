@@ -134,7 +134,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // Internally-used property.
 @property(nonatomic, readonly) NSPoint origin;
 
-@property(nonatomic, readonly) NSString* accessKey;
 @property(nonatomic, readonly) NSNumber* ariaPosInSet;
 @property(nonatomic, readonly) NSNumber* ariaSetSize;
 @property(nonatomic, readonly) NSArray* children;

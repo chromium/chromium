@@ -26,11 +26,14 @@ AXAnnouncementSpec::~AXAnnouncementSpec() = default;
 namespace {
 
 // Private WebKit accessibility attributes.
+NSString* const NSAccessibilityAccessKeyAttribute = @"AXAccessKey";
 NSString* const NSAccessibilityARIAAtomicAttribute = @"AXARIAAtomic";
 NSString* const NSAccessibilityARIABusyAttribute = @"AXARIABusy";
 NSString* const NSAccessibilityARIACurrentAttribute = @"AXARIACurrent";
 NSString* const NSAccessibilityARIALiveAttribute = @"AXARIALive";
 NSString* const NSAccessibilityARIARelevantAttribute = @"AXARIARelevant";
+NSString* const NSAccessibilityAutocompleteValueAttribute =
+    @"AXAutocompleteValue";
 
 // Same length as web content/WebKit.
 static int kLiveRegionDebounceMillis = 20;
@@ -663,6 +666,18 @@ bool IsAXSetter(SEL selector) {
   if (_node->HasIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState))
     [axAttributes addObject:NSAccessibilityARIACurrentAttribute];
 
+  // Focusable element or a control element.
+  if (_node->HasIntAttribute(ax::mojom::IntAttribute::kRestriction) ||
+      _node->HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) ||
+      _node->HasState(ax::mojom::State::kFocusable)) {
+    [axAttributes addObjectsFromArray:@[
+      NSAccessibilityAccessKeyAttribute,
+    ]];
+  }
+
+  if (_node->HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete))
+    [axAttributes addObject:NSAccessibilityAutocompleteValueAttribute];
+
   return axAttributes.autorelease();
 }
 
@@ -713,6 +728,13 @@ bool IsAXSetter(SEL selector) {
 
 // NSAccessibility attributes. Order them according to
 // NSAccessibilityConstants.h, or see https://crbug.com/678898.
+
+- (NSString*)AXAccessKey {
+  if (![self instanceActive])
+    return nil;
+
+  return [self getStringAttribute:ax::mojom::StringAttribute::kAccessKey];
+}
 
 - (NSNumber*)AXARIAAtomic {
   if (![self instanceActive])
@@ -773,6 +795,13 @@ bool IsAXSetter(SEL selector) {
     return nil;
 
   return [self getStringAttribute:ax::mojom::StringAttribute::kLiveRelevant];
+}
+
+- (NSString*)AXAutocompleteValue {
+  if (![self instanceActive])
+    return nil;
+
+  return [self getStringAttribute:ax::mojom::StringAttribute::kAutoComplete];
 }
 
 - (NSString*)AXRole {

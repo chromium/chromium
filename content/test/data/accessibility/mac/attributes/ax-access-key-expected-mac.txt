@@ -1,0 +1,4 @@
+focusable.AXAccessKey='s'
+restriction.AXAccessKey='s'
+invalid.AXAccessKey='s'
+not_applicable.AXAccessKey=ERROR:FAILED_TO_PARSE

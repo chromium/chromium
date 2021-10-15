@@ -177,6 +177,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPressButton) {
   RunMacActionTest(FILE_PATH_LITERAL("ax-press-button.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXAccessKey) {
+  RunMacAttributesTest(FILE_PATH_LITERAL("ax-access-key.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIAAtomic) {
   RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-atomic.html"));
 }
@@ -195,6 +199,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIALive) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIARelevant) {
   RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-relevant.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXAutocompleteValue) {
+  RunMacAttributesTest(FILE_PATH_LITERAL("ax-autocomplete-value.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {

@@ -68,9 +68,6 @@ NSString* const NSAccessibilityARIAPosInSetAttribute = @"AXARIAPosInSet";
 NSString* const NSAccessibilityARIARowCountAttribute = @"AXARIARowCount";
 NSString* const NSAccessibilityARIARowIndexAttribute = @"AXARIARowIndex";
 NSString* const NSAccessibilityARIASetSizeAttribute = @"AXARIASetSize";
-NSString* const NSAccessibilityAccessKeyAttribute = @"AXAccessKey";
-NSString* const NSAccessibilityAutocompleteValueAttribute =
-    @"AXAutocompleteValue";
 NSString* const NSAccessibilityBlockQuoteLevelAttribute = @"AXBlockQuoteLevel";
 NSString* const NSAccessibilityDetailsElementsAttribute = @"AXDetailsElements";
 NSString* const NSAccessibilityDOMClassList = @"AXDOMClassList";
@@ -807,8 +804,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityARIARowCountAttribute, @"ariaRowCount"},
       {NSAccessibilityARIARowIndexAttribute, @"ariaRowIndex"},
       {NSAccessibilityARIASetSizeAttribute, @"ariaSetSize"},
-      {NSAccessibilityAccessKeyAttribute, @"accessKey"},
-      {NSAccessibilityAutocompleteValueAttribute, @"autocompleteValue"},
       {NSAccessibilityBlockQuoteLevelAttribute, @"blockQuoteLevel"},
       {NSAccessibilityChildrenAttribute, @"children"},
       {NSAccessibilityIdentifierChromeAttribute, @"internalId"},
@@ -925,13 +920,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   [super detach];
 }
 
-- (NSString*)accessKey {
-  if (![self instanceActive])
-    return nil;
-  return NSStringForStringAttribute(_owner,
-                                    ax::mojom::StringAttribute::kAccessKey);
-}
-
 - (NSNumber*)ariaColumnCount {
   if (![self instanceActive])
     return nil;
@@ -984,13 +972,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (!setSize)
     return nil;
   return @(*setSize);
-}
-
-- (NSString*)autocompleteValue {
-  if (![self instanceActive])
-    return nil;
-  return NSStringForStringAttribute(_owner,
-                                    ax::mojom::StringAttribute::kAutoComplete);
 }
 
 - (id)blockQuoteLevel {
@@ -3624,7 +3605,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       _owner->HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) ||
       _owner->HasState(ax::mojom::State::kFocusable)) {
     [ret addObjectsFromArray:@[
-      NSAccessibilityAccessKeyAttribute,
       NSAccessibilityInvalidAttribute,
       @"AXRequired",
     ]];
@@ -3655,8 +3635,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
            .empty()) {
     [ret addObject:NSAccessibilityDetailsElementsAttribute];
   }
-  if (_owner->HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete))
-    [ret addObject:NSAccessibilityAutocompleteValueAttribute];
 
   if ([self shouldExposeTitleUIElement])
     [ret addObject:NSAccessibilityTitleUIElementAttribute];
