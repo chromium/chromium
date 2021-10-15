@@ -7,13 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/geolocation/geoposition.h"
 #include "ash/components/timezone/timezone_provider.h"
 #include "ash/components/timezone/timezone_resolver.h"
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/geolocation/geoposition.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -50,7 +50,7 @@ struct SimpleRequest {
     position.accuracy = 1;
     position.error_code = 0;
     position.timestamp = base::Time::FromTimeT(1331161200);
-    position.status = chromeos::Geoposition::STATUS_NONE;
+    position.status = ash::Geoposition::STATUS_NONE;
     EXPECT_EQ(
         "latitude=39.603481, longitude=-119.682251, accuracy=1.000000, "
         "error_code=0, error_message='', status=0 (NONE)",
@@ -70,7 +70,7 @@ struct SimpleRequest {
   }
 
   GURL url;
-  chromeos::Geoposition position;
+  ash::Geoposition position;
   std::string http_response;
   ash::TimeZoneResponseData timezone;
 };

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/components/geolocation/simple_geolocation_provider.h"
 #include "ash/components/timezone/timezone_request.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -86,7 +87,6 @@
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/dbus/userdataauth/fake_install_attributes_client.h"
-#include "chromeos/geolocation/simple_geolocation_provider.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/settings/timezone_settings.h"
@@ -644,7 +644,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
         NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
   }
 
-  chromeos::SimpleGeolocationProvider* GetGeolocationProvider() {
+  SimpleGeolocationProvider* GetGeolocationProvider() {
     return WizardController::default_controller()->geolocation_provider_.get();
   }
 

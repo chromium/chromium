@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/geolocation/simple_geolocation_provider.h"
+#include "ash/components/geolocation/simple_geolocation_provider.h"
 
 #include <algorithm>
 #include <iterator>
 #include <memory>
 
+#include "ash/components/geolocation/geoposition.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/geolocation/geoposition.h"
 #include "chromeos/network/geolocation_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -101,4 +101,4 @@ void SimpleGeolocationProvider::OnGeolocationResponse(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

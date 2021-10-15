@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/geolocation/simple_geolocation_request.h"
+#include "ash/components/geolocation/simple_geolocation_request.h"
 
 #include <stddef.h>
 
@@ -11,6 +11,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/geolocation/simple_geolocation_provider.h"
+#include "ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -20,8 +22,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/geolocation/simple_geolocation_provider.h"
-#include "chromeos/geolocation/simple_geolocation_request_test_monitor.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
@@ -37,7 +37,7 @@
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
                              base::Minutes(2), 50)
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -561,4 +561,4 @@ void SimpleGeolocationRequest::OnTimeout() {
   // "this" is already destroyed here.
 }
 
-}  // namespace chromeos
+}  // namespace ash

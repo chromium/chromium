@@ -15,8 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/geolocation/geoposition.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -24,6 +22,8 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace ash {
+
+struct Geoposition;
 
 // This class implements Google TimeZone API.
 //

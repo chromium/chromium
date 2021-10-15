@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/components/geolocation/simple_geolocation_provider.h"
 #include "ash/components/timezone/timezone_provider.h"
 #include "ash/components/timezone/timezone_request.h"
 #include "ash/constants/ash_features.h"
@@ -173,7 +174,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/geolocation/simple_geolocation_provider.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state.h"

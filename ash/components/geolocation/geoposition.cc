@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/geolocation/geoposition.h"
+#include "ash/components/geolocation/geoposition.h"
 
 #include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
@@ -15,7 +15,7 @@ const int kBadAccuracy = -1;  // Accuracy must be non-negative.
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 Geoposition::Geoposition()
     : latitude(kBadLatitudeLongitude),
@@ -48,4 +48,4 @@ std::string Geoposition::ToString() const {
       (status < base::size(status2string) ? status2string[status] : "unknown"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

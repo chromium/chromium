@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/components/geolocation/simple_geolocation_provider.h"
+#include "ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -13,8 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/geolocation/simple_geolocation_provider.h"
-#include "chromeos/geolocation/simple_geolocation_request_test_monitor.h"
 #include "chromeos/network/geolocation_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "net/http/http_response_headers.h"
@@ -75,7 +75,7 @@ constexpr char kWiFiAP1MacAddress[] = "01:00:00:00:00:00";
 constexpr char kCellTower1MNC[] = "101";
 }  // anonymous namespace
 
-namespace chromeos {
+namespace ash {
 
 // This implements fake Google MAPS Geolocation API remote endpoint.
 class TestGeolocationAPILoaderFactory : public network::TestURLLoaderFactory {
@@ -509,4 +509,4 @@ TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

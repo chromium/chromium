@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/components/geolocation/geoposition.h"
+#include "ash/components/geolocation/simple_geolocation_provider.h"
 #include "ash/components/timezone/timezone_provider.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -21,8 +23,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/geolocation/geoposition.h"
-#include "chromeos/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

@@ -4837,6 +4837,7 @@ static_library("browser") {
     deps += [
       "//ash",
       "//ash/components/account_manager",
+      "//ash/components/geolocation",
       "//ash/components/quick_answers",
       "//ash/public/cpp",
       "//ash/public/cpp/external_arc",
@@ -4872,7 +4873,6 @@ static_library("browser") {
       "//chromeos/dbus/image_loader",
       "//chromeos/dbus/session_manager",
       "//chromeos/dbus/update_engine",
-      "//chromeos/geolocation",
       "//chromeos/login/login_state",
       "//chromeos/login/session",
       "//chromeos/memory",

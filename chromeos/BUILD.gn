@@ -171,7 +171,6 @@ test("chromeos_unittests") {
       "//chromeos/dbus:unit_tests",
       "//chromeos/dbus/services:unit_tests",
       "//chromeos/disks:unit_tests",
-      "//chromeos/geolocation:unit_tests",
       "//chromeos/language/language_packs:unit_tests",
       "//chromeos/login/auth:unit_tests",
       "//chromeos/login/login_state:unit_tests",

@@ -57,10 +57,6 @@
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/geolocation/geoposition.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/geolocation/simple_geolocation_provider.h"
 #include "components/account_id/account_id.h"
 
 class PrefService;
@@ -69,6 +65,8 @@ namespace ash {
 class BaseScreen;
 class DemoSetupController;
 class ErrorScreen;
+struct Geoposition;
+class SimpleGeolocationProvider;
 class TimeZoneProvider;
 struct TimeZoneResponseData;
 enum class KioskAppType;

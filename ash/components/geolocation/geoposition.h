@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_GEOLOCATION_GEOPOSITION_H_
-#define CHROMEOS_GEOLOCATION_GEOPOSITION_H_
+#ifndef ASH_COMPONENTS_GEOLOCATION_GEOPOSITION_H_
+#define ASH_COMPONENTS_GEOLOCATION_GEOPOSITION_H_
 
 #include <string>
 
 #include "base/component_export.h"
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 
 // This structure represents Google Maps Geolocation response.
 // Based on device/geolocation/geoposition.h .
-struct COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) Geoposition {
+struct COMPONENT_EXPORT(ASH_GEOLOCATION) Geoposition {
   // Geolocation API client status.
   // (Server status is reported in "error_code" field.)
   enum Status {
@@ -61,12 +61,6 @@ struct COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) Geoposition {
   Status status;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::Geoposition;
-}
-
-#endif  // CHROMEOS_GEOLOCATION_GEOPOSITION_H_
+#endif  // ASH_COMPONENTS_GEOLOCATION_GEOPOSITION_H_

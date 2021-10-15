@@ -161,4 +161,12 @@ std::string TranslateShillTypeToONC(const std::string& type);
 }  // namespace network_util
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when move to ash.
+namespace ash {
+using ::chromeos::CellTower;
+using ::chromeos::CellTowerVector;
+using ::chromeos::WifiAccessPoint;
+using ::chromeos::WifiAccessPointVector;
+}  // namespace ash
+
 #endif  // CHROMEOS_NETWORK_NETWORK_UTIL_H_

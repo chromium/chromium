@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_TEST_MONITOR_H_
-#define CHROMEOS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_TEST_MONITOR_H_
+#ifndef ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_TEST_MONITOR_H_
+#define ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_TEST_MONITOR_H_
 
 #include "base/component_export.h"
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 
 class SimpleGeolocationRequest;
 
 // This is global hook, that allows to monitor SimpleGeolocationRequest
 // in tests.
 //
-// Note: we need COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) for tests.
-class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION)
+// Note: we need COMPONENT_EXPORT(ASH_GEOLOCATION) for tests.
+class COMPONENT_EXPORT(ASH_GEOLOCATION)
     SimpleGeolocationRequestTestMonitor {
  public:
   SimpleGeolocationRequestTestMonitor();
@@ -31,6 +31,6 @@ class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION)
   virtual void OnStart(SimpleGeolocationRequest* request);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_TEST_MONITOR_H_
+#endif  // ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_TEST_MONITOR_H_

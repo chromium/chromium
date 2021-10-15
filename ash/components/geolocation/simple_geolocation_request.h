@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
-#define CHROMEOS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
+#ifndef ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
+#define ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
 
 #include <memory>
 
+#include "ash/components/geolocation/geoposition.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
@@ -14,16 +15,15 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
-#include "chromeos/geolocation/geoposition.h"
 #include "chromeos/network/network_util.h"
 #include "url/gurl.h"
 
 namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
-namespace chromeos {
+namespace ash {
 
 class SimpleGeolocationRequestTestMonitor;
 
@@ -37,8 +37,8 @@ class SimpleGeolocationRequestTestMonitor;
 // - If request is destroyed while callback has not beed called yet, request
 // is silently cancelled.
 //
-// Note: we need COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) for tests.
-class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) SimpleGeolocationRequest {
+// Note: we need COMPONENT_EXPORT(ASH_GEOLOCATION) for tests.
+class COMPONENT_EXPORT(ASH_GEOLOCATION) SimpleGeolocationRequest {
  public:
   // Called when a new geo geolocation information is available.
   // The second argument indicates whether there was a server error or not.
@@ -142,6 +142,6 @@ class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) SimpleGeolocationRequest {
   base::ThreadChecker thread_checker_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
+#endif  // ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_

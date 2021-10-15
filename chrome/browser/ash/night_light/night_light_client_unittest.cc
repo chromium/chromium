@@ -93,7 +93,7 @@ class FakeNightLightClient : public NightLightClient,
     fake_now_ticks_ = now_ticks;
   }
 
-  void set_position_to_send(const chromeos::Geoposition& position) {
+  void set_position_to_send(const ash::Geoposition& position) {
     position_to_send_ = position;
   }
 
@@ -111,7 +111,7 @@ class FakeNightLightClient : public NightLightClient,
 
   // The position to send to the controller the next time OnGeoposition is
   // invoked.
-  chromeos::Geoposition position_to_send_;
+  ash::Geoposition position_to_send_;
 
   // The number of new geoposition requests that have been triggered.
   int geoposition_requests_num_ = 0;
@@ -163,10 +163,10 @@ TEST_F(NightLightClientTest,
 // Test that client only pushes valid positions.
 TEST_F(NightLightClientTest, TestInvalidPositions) {
   EXPECT_EQ(0, controller_.position_pushes_num());
-  chromeos::Geoposition position;
+  ash::Geoposition position;
   position.latitude = 32.0;
   position.longitude = 31.0;
-  position.status = chromeos::Geoposition::STATUS_TIMEOUT;
+  position.status = ash::Geoposition::STATUS_TIMEOUT;
   position.accuracy = 10;
   position.timestamp = base::Time::Now();
   client_.set_position_to_send(position);
@@ -182,10 +182,10 @@ TEST_F(NightLightClientTest, TestRepeatedScheduleTypeChanges) {
   // Start with a valid position, and expect it to be delivered to the
   // controller.
   EXPECT_EQ(0, controller_.position_pushes_num());
-  chromeos::Geoposition position1;
+  ash::Geoposition position1;
   position1.latitude = 32.0;
   position1.longitude = 31.0;
-  position1.status = chromeos::Geoposition::STATUS_OK;
+  position1.status = ash::Geoposition::STATUS_OK;
   position1.accuracy = 10;
   position1.timestamp = base::Time::Now();
   client_.set_position_to_send(position1);
@@ -198,10 +198,10 @@ TEST_F(NightLightClientTest, TestRepeatedScheduleTypeChanges) {
   // A new different position just for the sake of comparison with position1 to
   // make sure that no new requests are triggered and the same old position will
   // be resent to the controller.
-  chromeos::Geoposition position2;
+  ash::Geoposition position2;
   position2.latitude = 100.0;
   position2.longitude = 200.0;
-  position2.status = chromeos::Geoposition::STATUS_OK;
+  position2.status = ash::Geoposition::STATUS_OK;
   position2.accuracy = 10;
   position2.timestamp = base::Time::Now();
   client_.set_position_to_send(position2);
@@ -244,10 +244,10 @@ TEST_P(NightLightClientTest, TestTimezoneChanges) {
   EXPECT_EQ(GetTimezoneId(*timezone), client_.current_timezone_id());
 
   // Prepare a valid geoposition.
-  chromeos::Geoposition position;
+  ash::Geoposition position;
   position.latitude = 32.0;
   position.longitude = 31.0;
-  position.status = chromeos::Geoposition::STATUS_OK;
+  position.status = ash::Geoposition::STATUS_OK;
   position.accuracy = 10;
   position.timestamp = base::Time::Now();
   client_.set_position_to_send(position);

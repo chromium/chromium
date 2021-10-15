@@ -29,7 +29,7 @@ NightLightClient::NightLightClient(
     scoped_refptr<network::SharedURLLoaderFactory> factory)
     : provider_(
           std::move(factory),
-          chromeos::SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
+          ash::SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
       night_light_controller_(ash::NightLightController::GetInstance()),
       backoff_delay_(kMinimumDelayAfterFailure),
       timer_(std::make_unique<base::OneShotTimer>()) {}
@@ -108,7 +108,7 @@ void NightLightClient::SetCurrentTimezoneIdForTesting(
   current_timezone_id_ = timezone_id;
 }
 
-void NightLightClient::OnGeoposition(const chromeos::Geoposition& position,
+void NightLightClient::OnGeoposition(const ash::Geoposition& position,
                                      bool server_error,
                                      const base::TimeDelta elapsed) {
   if (!using_geoposition_) {

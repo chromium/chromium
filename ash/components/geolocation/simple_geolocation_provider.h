@@ -2,27 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
-#define CHROMEOS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
+#ifndef ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
+#define ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
 
 #include <memory>
 #include <vector>
 
+#include "ash/components/geolocation/simple_geolocation_request.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "chromeos/geolocation/simple_geolocation_request.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/geolocation_handler.h"
 #include "url/gurl.h"
 
 namespace network {
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
-namespace chromeos {
-class GeolocationHandler;
+namespace ash {
 
 // This class implements Google Maps Geolocation API.
 //
@@ -31,7 +32,7 @@ class GeolocationHandler;
 // Note: this should probably be a singleton to monitor requests rate.
 // But as it is used only diring ChromeOS Out-of-Box, it can be owned by
 // WizardController for now.
-class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) SimpleGeolocationProvider {
+class COMPONENT_EXPORT(ASH_GEOLOCATION) SimpleGeolocationProvider {
  public:
   SimpleGeolocationProvider(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
@@ -88,12 +89,6 @@ class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) SimpleGeolocationProvider {
   base::ThreadChecker thread_checker_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::SimpleGeolocationProvider;
-}
-
-#endif  // CHROMEOS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
+#endif  // ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_

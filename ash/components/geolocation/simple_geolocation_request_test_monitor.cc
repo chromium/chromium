@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/geolocation/simple_geolocation_request_test_monitor.h"
+#include "ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 
-namespace chromeos {
+namespace ash {
 
 SimpleGeolocationRequestTestMonitor::SimpleGeolocationRequestTestMonitor() =
     default;
@@ -18,4 +18,4 @@ void SimpleGeolocationRequestTestMonitor::OnRequestCreated(
 void SimpleGeolocationRequestTestMonitor::OnStart(
     SimpleGeolocationRequest* request) {}
 
-}  // namespace chromeos
+}  // namespace ash
