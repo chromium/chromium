@@ -1664,6 +1664,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.Policies.SourceConflicts" enum="PolicyAtomicGroups"
     expires_after="2021-11-01">
+  <obsolete>
+    Removed in Oct 2021.
+  </obsolete>
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
