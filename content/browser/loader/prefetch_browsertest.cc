@@ -828,8 +828,14 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, CrossOriginWithPreloadAnonymous) {
 // Variants of this test:
 // - PrefetchBrowserTest.CrossOriginWithPreloadAnonymous
 // - PrefetchBrowserTest.CrossOriginWithPreloadCredentialled
+// Disabling due to flakiness, see https://crbug.com/1257939
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
+#define MAYBE_CrossOriginWithPreloadCredentialled DISABLED_CrossOriginWithPreloadCredentialled
+#else
+#define MAYBE_CrossOriginWithPreloadCredentialled CrossOriginWithPreloadCredentialled
+#endif
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
-                       CrossOriginWithPreloadCredentialled) {
+                       MAYBE_CrossOriginWithPreloadCredentialled) {
   const char target_path[] = "/target.html";
   const char preload_path[] = "/preload.js";
   RegisterResponse(
