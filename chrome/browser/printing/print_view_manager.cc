@@ -274,18 +274,15 @@ bool PrintViewManager::PrintPreview(
   if (IsCrashed())
     return false;
 
-  // The observers are used in tests, so trigger them before calls to the
-  // renderer. This makes it less likely for problems caused by the renderer
-  // to affect the tests (see crbug.com/1258561).
-  for (auto& observer : GetObservers())
-    observer.OnPrintPreview(rfh);
-
   GetPrintRenderFrame(rfh)->InitiatePrintPreview(std::move(print_renderer),
                                                  has_selection);
 
   DCHECK(!print_preview_rfh_);
   print_preview_rfh_ = rfh;
   print_preview_state_ = USER_INITIATED_PREVIEW;
+
+  for (auto& observer : GetObservers())
+    observer.OnPrintPreview(print_preview_rfh_);
 
   return true;
 }
