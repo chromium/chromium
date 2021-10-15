@@ -922,8 +922,8 @@ void ServiceWorkerContextCore::NotifyAllRegistrationsDeletedForStorageKey(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   observer_list_->Notify(
       FROM_HERE,
-      &ServiceWorkerContextCoreObserver::OnAllRegistrationsDeletedForOrigin,
-      key.origin());
+      &ServiceWorkerContextCoreObserver::OnAllRegistrationsDeletedForStorageKey,
+      key);
 }
 
 void ServiceWorkerContextCore::OnStorageWiped() {

@@ -1415,9 +1415,13 @@ void PrefetchProxyTabHelper::CheckEligibilityOfURL(
   content::ServiceWorkerContext* service_worker_context_ =
       GetServiceWorkerContext(profile);
 
+  // This service worker check assumes that the prefetch will only ever be
+  // performed in a first-party context (main frame prefetch). At the moment
+  // that is true but if it ever changes then the StorageKey will need to be
+  // constructed with the top-level site to ensure correct partitioning.
   bool site_has_service_worker =
-      service_worker_context_->MaybeHasRegistrationForOrigin(
-          url::Origin::Create(url));
+      service_worker_context_->MaybeHasRegistrationForStorageKey(
+          blink::StorageKey(url::Origin::Create(url)));
   if (site_has_service_worker) {
     std::move(result_callback)
         .Run(url, false,

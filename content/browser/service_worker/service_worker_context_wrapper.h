@@ -28,14 +28,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
 class FilePath;
-}
-
-namespace blink {
-class StorageKey;
-}  // namespace blink
+}  // namespace base
 
 namespace storage {
 class QuotaManagerProxy;
@@ -118,7 +115,8 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void OnRegistrationStored(int64_t registration_id,
                             const GURL& scope,
                             const blink::StorageKey& key) override;
-  void OnAllRegistrationsDeletedForOrigin(const url::Origin& origin) override;
+  void OnAllRegistrationsDeletedForStorageKey(
+      const blink::StorageKey& key) override;
   void OnErrorReported(
       int64_t version_id,
       const GURL& scope,
@@ -171,7 +169,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       int64_t service_worker_version_id,
       const std::string& request_uuid) override;
   size_t CountExternalRequestsForTest(const blink::StorageKey& key) override;
-  bool MaybeHasRegistrationForOrigin(const url::Origin& origin) override;
+  bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key) override;
   void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
   void DeleteForStorageKey(const blink::StorageKey& key,
                            ResultCallback callback) override;
@@ -539,11 +537,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   base::flat_map<int64_t /* version_id */, ServiceWorkerRunningInfo>
       running_service_workers_;
 
-  // A set of origins that have at least one registration. See
-  // HasRegistrationForOrigin() for details.
+  // A set of StorageKeys that have at least one registration.
   // TODO(http://crbug.com/824858): This can be removed when service workers are
   // fully converted to running on the UI thread.
-  std::set<url::Origin> registered_origins_;
+  std::set<blink::StorageKey> registered_storage_keys_;
   bool registrations_initialized_ = false;
   base::OnceClosure on_registrations_initialized_;
 

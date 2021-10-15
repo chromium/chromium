@@ -56,7 +56,6 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace content {
@@ -311,16 +310,16 @@ void ServiceWorkerContextWrapper::OnRegistrationStored(
     const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  registered_origins_.insert(url::Origin::Create(scope));
+  registered_storage_keys_.insert(key);
 
   for (auto& observer : observer_list_)
     observer.OnRegistrationStored(registration_id, scope);
 }
 
-void ServiceWorkerContextWrapper::OnAllRegistrationsDeletedForOrigin(
-    const url::Origin& origin) {
+void ServiceWorkerContextWrapper::OnAllRegistrationsDeletedForStorageKey(
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  registered_origins_.erase(origin);
+  registered_storage_keys_.erase(key);
 }
 
 void ServiceWorkerContextWrapper::OnErrorReported(
@@ -550,13 +549,13 @@ size_t ServiceWorkerContextWrapper::CountExternalRequestsForTest(
   return 0u;
 }
 
-bool ServiceWorkerContextWrapper::MaybeHasRegistrationForOrigin(
-    const url::Origin& origin) {
+bool ServiceWorkerContextWrapper::MaybeHasRegistrationForStorageKey(
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!registrations_initialized_) {
     return true;
   }
-  if (registered_origins_.find(origin) != registered_origins_.end()) {
+  if (registered_storage_keys_.find(key) != registered_storage_keys_.end()) {
     return true;
   }
   return false;
@@ -1568,7 +1567,7 @@ void ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys(
     const std::vector<blink::StorageKey>& storage_keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const blink::StorageKey& storage_key : storage_keys)
-    registered_origins_.insert(storage_key.origin());
+    registered_storage_keys_.insert(storage_key);
   registrations_initialized_ = true;
   if (on_registrations_initialized_)
     std::move(on_registrations_initialized_).Run();

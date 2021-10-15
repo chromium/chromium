@@ -154,14 +154,13 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // specified `key`.
   virtual size_t CountExternalRequestsForTest(const blink::StorageKey& key) = 0;
 
-  // Whether `origin` has any registrations. Uninstalling and uninstalled
+  // Whether `key` has any registrations. Uninstalling and uninstalled
   // registrations do not cause this to return true, that is, only registrations
   // with status ServiceWorkerRegistration::Status::kIntact are considered, such
   // as even if the corresponding live registrations may still exist. Also,
   // returns true if it doesn't know (registrations are not yet initialized).
-  // TODO(crbug.com/1199077): Refactor to use StorageKey once
-  // ServiceWorkerContextWrapper::registered_origins_ is refactored.
-  virtual bool MaybeHasRegistrationForOrigin(const url::Origin& origin) = 0;
+  virtual bool MaybeHasRegistrationForStorageKey(
+      const blink::StorageKey& key) = 0;
 
   // TODO(crbug.com/1199077): Update name when StorageUsageInfo uses StorageKey.
   virtual void GetAllOriginsInfo(GetUsageInfoCallback callback) = 0;

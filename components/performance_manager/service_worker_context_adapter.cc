@@ -139,8 +139,8 @@ size_t ServiceWorkerContextAdapter::CountExternalRequestsForTest(
   return 0u;
 }
 
-bool ServiceWorkerContextAdapter::MaybeHasRegistrationForOrigin(
-    const url::Origin& origin) {
+bool ServiceWorkerContextAdapter::MaybeHasRegistrationForStorageKey(
+    const blink::StorageKey& key) {
   NOTIMPLEMENTED();
   return false;
 }

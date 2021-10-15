@@ -58,9 +58,9 @@ size_t FakeServiceWorkerContext::CountExternalRequestsForTest(
   NOTREACHED();
   return 0u;
 }
-bool FakeServiceWorkerContext::MaybeHasRegistrationForOrigin(
-    const url::Origin& origin) {
-  return registered_origins_.find(origin) != registered_origins_.end();
+bool FakeServiceWorkerContext::MaybeHasRegistrationForStorageKey(
+    const blink::StorageKey& key) {
+  return registered_storage_keys_.find(key) != registered_storage_keys_.end();
 }
 void FakeServiceWorkerContext::GetAllOriginsInfo(
     GetUsageInfoCallback callback) {
@@ -148,9 +148,9 @@ void FakeServiceWorkerContext::NotifyObserversOnNoControllees(
     observer.OnNoControllees(version_id, scope);
 }
 
-void FakeServiceWorkerContext::AddRegistrationToRegisteredOrigins(
-    const url::Origin& origin) {
-  registered_origins_.insert(origin);
+void FakeServiceWorkerContext::AddRegistrationToRegisteredStorageKeys(
+    const blink::StorageKey& key) {
+  registered_storage_keys_.insert(key);
 }
 
 }  // namespace content

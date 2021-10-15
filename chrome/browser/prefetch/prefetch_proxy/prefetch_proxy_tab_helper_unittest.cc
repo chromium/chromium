@@ -51,6 +51,7 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -1225,8 +1226,8 @@ TEST_F(PrefetchProxyTabHelperTest, ServiceWorkerRegistered) {
   GURL doc_url("https://www.google.com/search?q=cats");
   GURL prediction_url("https://www.cat-food.com/");
 
-  service_worker_context_.AddRegistrationToRegisteredOrigins(
-      url::Origin::Create(prediction_url));
+  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+      blink::StorageKey(url::Origin::Create(prediction_url)));
 
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
@@ -1251,8 +1252,8 @@ TEST_F(PrefetchProxyTabHelperTest, ServiceWorkerNotRegistered) {
   GURL prediction_url("https://www.cat-food.com/");
   GURL service_worker_registration("https://www.service-worker.com/");
 
-  service_worker_context_.AddRegistrationToRegisteredOrigins(
-      url::Origin::Create(service_worker_registration));
+  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+      blink::StorageKey(url::Origin::Create(service_worker_registration)));
 
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
@@ -1326,8 +1327,8 @@ TEST_F(PrefetchProxyTabHelperWithDecoyTest, ServiceWorkerRegistered) {
   GURL doc_url("https://www.google.com/search?q=cats");
   GURL prediction_url("https://www.cat-food.com/");
 
-  service_worker_context_.AddRegistrationToRegisteredOrigins(
-      url::Origin::Create(prediction_url));
+  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+      blink::StorageKey(url::Origin::Create(prediction_url)));
 
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
@@ -1840,8 +1841,8 @@ TEST_F(PrefetchProxyTabHelperRedirectWithDecoyTest, ServiceWorkerRegistered) {
   GURL prediction_url("https://www.cat-food.com/");
   GURL redirect_url("https://www.kitty-krunch.com/");
 
-  service_worker_context_.AddRegistrationToRegisteredOrigins(
-      url::Origin::Create(prediction_url));
+  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+      blink::StorageKey(url::Origin::Create(prediction_url)));
 
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
@@ -1881,8 +1882,8 @@ TEST_F(PrefetchProxyTabHelperRedirectWithDecoyTest,
   GURL doc_url("https://www.google.com/search?q=cats");
   GURL prediction_url("https://www.cat-food.com/");
 
-  service_worker_context_.AddRegistrationToRegisteredOrigins(
-      url::Origin::Create(prediction_url));
+  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+      blink::StorageKey(url::Origin::Create(prediction_url)));
 
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
@@ -2026,8 +2027,8 @@ TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_ServiceWorker) {
 
   GURL site_with_worker("https://service-worker.com");
 
-  service_worker_context_.AddRegistrationToRegisteredOrigins(
-      url::Origin::Create(site_with_worker));
+  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+      blink::StorageKey(url::Origin::Create(site_with_worker)));
 
   RunNoRedirectTest(site_with_worker);
 
