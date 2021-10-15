@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
@@ -157,6 +158,8 @@ public class MainSettingsFragmentTest {
         }
         SharedPreferencesManager.getInstance().removeKey(
                 SigninPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
     }
 
     @Test
@@ -401,12 +404,21 @@ public class MainSettingsFragmentTest {
     @Test
     @MediumTest
     public void testSyncPromoShownIsNotOverCounted() {
+        int promoShowCount = SharedPreferencesManager.getInstance().readInt(
+                SigninPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
+        Assert.assertEquals(0, promoShowCount);
+        Assert.assertEquals(0,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
         launchSettingsActivity();
         onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
 
-        int promoShowCount = SharedPreferencesManager.getInstance().readInt(
+        promoShowCount = SharedPreferencesManager.getInstance().readInt(
                 SigninPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
-        Assert.assertEquals("Promo shown count should only be increased by 1", 1, promoShowCount);
+        Assert.assertEquals(1, promoShowCount);
+        Assert.assertEquals(1,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
     }
 
     private void launchSettingsActivity() {

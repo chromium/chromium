@@ -208,13 +208,11 @@ public class SigninPromoController {
     public static String getPromoShowCountPreferenceName(@AccessPoint int accessPoint) {
         switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
-                return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(BOOKMARKS);
+                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(BOOKMARKS);
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
-                return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(NTP);
-            case SigninAccessPoint.RECENT_TABS:
-                return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(RECENT_TABS);
+                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(NTP);
             case SigninAccessPoint.SETTINGS:
-                return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(SETTINGS);
+                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(SETTINGS);
             default:
                 throw new IllegalArgumentException(
                         "Unexpected value for access point: " + accessPoint);
@@ -426,8 +424,12 @@ public class SigninPromoController {
 
     /** Increases promo show count by one. */
     public void increasePromoShowCount() {
+        if (mAccessPoint != SigninAccessPoint.RECENT_TABS) {
+            SharedPreferencesManager.getInstance().incrementInt(
+                    getPromoShowCountPreferenceName(mAccessPoint));
+        }
         SharedPreferencesManager.getInstance().incrementInt(
-                getPromoShowCountPreferenceName(mAccessPoint));
+                ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
 
         if (mAccessPoint == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
             final long currentTime = System.currentTimeMillis();
