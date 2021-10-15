@@ -893,12 +893,11 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(Page& page);
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
     WebContents* web_contents);
 
-// Executes the WebUI resource test runner injecting each resource ID in
-// |js_resource_ids| prior to executing the tests.
+// Executes the WebUI resource tests. Injects the test runner script prior to
+// executing the tests.
 //
 // Returns true if tests ran successfully, false otherwise.
-bool ExecuteWebUIResourceTest(WebContents* web_contents,
-                              const std::vector<int>& js_resource_ids);
+bool ExecuteWebUIResourceTest(WebContents* web_contents);
 
 // Returns the serialized cookie string for the given url. Uses an inclusive
 // SameSiteCookieContext by default, which gets cookies regardless of their

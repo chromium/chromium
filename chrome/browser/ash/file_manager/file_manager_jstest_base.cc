@@ -237,7 +237,7 @@ void FileManagerJsTestBase::RunTestImpl(const GURL& url) {
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents, {}));
+  EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents));
 }
 
 void FileManagerJsTestBase::SetUpOnMainThread() {

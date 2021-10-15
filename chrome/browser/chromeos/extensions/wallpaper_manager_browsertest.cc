@@ -86,8 +86,7 @@ class WallpaperManagerJsTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
 
-    const std::vector<int> empty_libraries;
-    EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents, empty_libraries));
+    EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents));
   }
 };
 

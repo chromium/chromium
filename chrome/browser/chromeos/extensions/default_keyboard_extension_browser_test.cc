@@ -5,8 +5,6 @@
  */
 #include "chrome/browser/chromeos/extensions/default_keyboard_extension_browser_test.h"
 
-#include <vector>
-
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -87,8 +85,7 @@ void DefaultKeyboardExtensionBrowserTest::RunTest(
   ASSERT_TRUE(content::ExecuteScript(web_contents, utf8_content_));
 
   // Inject DOM-automation test harness and run tests.
-  std::vector<int> resource_ids;
-  EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents, resource_ids));
+  EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents));
 }
 
 content::WebContents*

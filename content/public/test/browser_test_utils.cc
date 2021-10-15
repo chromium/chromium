@@ -1892,26 +1892,19 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
   return visited_frames;
 }
 
-bool ExecuteWebUIResourceTest(WebContents* web_contents,
-                              const std::vector<int>& js_resource_ids) {
-  // Inject WebUI test runner script first prior to other scripts required to
-  // run the test as scripts may depend on it being declared.
-  std::vector<int> ids;
-  ids.push_back(IDR_WEBUI_JS_WEBUI_RESOURCE_TEST_JS);
-  ids.insert(ids.end(), js_resource_ids.begin(), js_resource_ids.end());
-
+bool ExecuteWebUIResourceTest(WebContents* web_contents) {
+  // Inject WebUI test runner script.
   std::string script;
-  for (int id : ids) {
-    scoped_refptr<base::RefCountedMemory> bytes =
-        ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(id);
+  scoped_refptr<base::RefCountedMemory> bytes =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+          IDR_WEBUI_JS_WEBUI_RESOURCE_TEST_JS);
 
-    if (HasGzipHeader(*bytes))
-      AppendGzippedResource(*bytes, &script);
-    else
-      script.append(bytes->front_as<char>(), bytes->size());
+  if (HasGzipHeader(*bytes))
+    AppendGzippedResource(*bytes, &script);
+  else
+    script.append(bytes->front_as<char>(), bytes->size());
 
-    script.append("\n");
-  }
+  script.append("\n");
   ExecuteScriptAsync(web_contents, script);
 
   DOMMessageQueue message_queue;
