@@ -104,7 +104,7 @@ DetachedResourceRequest::DetachedResourceRequest(
             }
             policy {
               cookies_allowed: YES
-              cookie_store: "user"
+              cookies_store: "user"
               policy_exception_justification: "Identical to a resource fetch."
             })");
 

@@ -22,8 +22,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         semantics {
           sender: "Autofill Assistant"
           description:
-            "Chromium posts requests to autofill assistant server to get
-            scripts for a URL."
+            "Chromium posts requests to autofill assistant server to get "
+            "scripts for a URL."
           trigger:
             "Matching URL."
           data: "None."

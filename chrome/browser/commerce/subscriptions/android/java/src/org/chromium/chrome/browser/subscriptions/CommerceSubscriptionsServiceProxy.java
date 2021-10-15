@@ -86,7 +86,7 @@ public class CommerceSubscriptionsServiceProxy {
      */
     public void get(@CommerceSubscription.CommerceSubscriptionType String type,
             Callback<List<CommerceSubscription>> callback) {
-        // TODO(crbug.com/995852): Replace NO_TRAFFIC_ANNOTATION_YET with a real traffic
+        // TODO(crbug.com/995852): Replace MISSING_TRAFFIC_ANNOTATION with a real traffic
         // annotation.
         EndpointFetcher.fetchUsingOAuth(
                 (response)
@@ -97,11 +97,11 @@ public class CommerceSubscriptionsServiceProxy {
                 CommerceSubscriptionsServiceConfig.getDefaultServiceUrl()
                         + String.format(GET_SUBSCRIPTIONS_QUERY_PARAMS_TEMPLATE, type),
                 GET_HTTPS_METHOD, CONTENT_TYPE, OAUTH_SCOPE, EMPTY_POST_DATA,
-                HTTPS_REQUEST_TIMEOUT_MS, NetworkTrafficAnnotationTag.NO_TRAFFIC_ANNOTATION_YET);
+                HTTPS_REQUEST_TIMEOUT_MS, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
     }
 
     private void manageSubscriptions(JSONObject requestPayload, Callback<Boolean> callback) {
-        // TODO(crbug.com/995852): Replace NO_TRAFFIC_ANNOTATION_YET with a real traffic
+        // TODO(crbug.com/995852): Replace MISSING_TRAFFIC_ANNOTATION with a real traffic
         // annotation.
         EndpointFetcher.fetchUsingOAuth(
                 (response)
@@ -111,7 +111,7 @@ public class CommerceSubscriptionsServiceProxy {
                 },
                 mProfile, OAUTH_NAME, CommerceSubscriptionsServiceConfig.getDefaultServiceUrl(),
                 POST_HTTPS_METHOD, CONTENT_TYPE, OAUTH_SCOPE, requestPayload.toString(),
-                HTTPS_REQUEST_TIMEOUT_MS, NetworkTrafficAnnotationTag.NO_TRAFFIC_ANNOTATION_YET);
+                HTTPS_REQUEST_TIMEOUT_MS, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
     }
 
     private boolean didManageSubscriptionCallSucceed(String responseString) {

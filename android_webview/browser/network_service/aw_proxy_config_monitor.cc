@@ -58,7 +58,8 @@ void AwProxyConfigMonitor::AddProxyToNetworkContextParams(
     }
 
     network_context_params->initial_proxy_config =
-        net::ProxyConfigWithAnnotation(proxy_config, NO_TRAFFIC_ANNOTATION_YET);
+        net::ProxyConfigWithAnnotation(proxy_config,
+                                       MISSING_TRAFFIC_ANNOTATION);
   } else {
     mojo::PendingRemote<network::mojom::ProxyConfigClient> proxy_config_client;
     network_context_params->proxy_config_client_receiver =

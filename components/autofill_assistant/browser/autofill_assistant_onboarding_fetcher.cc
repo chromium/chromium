@@ -90,6 +90,8 @@ void AutofillAssistantOnboardingFetcher::StartFetch(const std::string& locale,
           }
           policy {
             cookies_allowed: NO
+            policy_exception_justification:
+              "TODO(crbug.com/1231780): Add this field."
           }
       )");
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),

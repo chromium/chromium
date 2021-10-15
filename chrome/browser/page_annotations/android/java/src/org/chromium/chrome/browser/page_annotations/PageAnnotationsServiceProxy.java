@@ -58,7 +58,7 @@ public class PageAnnotationsServiceProxy {
             return;
         }
 
-        // TODO(crbug.com/995852): Replace NO_TRAFFIC_ANNOTATION_YET with a real traffic
+        // TODO(crbug.com/995852): Replace MISSING_TRAFFIC_ANNOTATION with a real traffic
         // annotation.
         EndpointFetcher.fetchUsingChromeAPIKey(
                 (endpointResponse)
@@ -69,7 +69,7 @@ public class PageAnnotationsServiceProxy {
                         UrlUtilities.escapeQueryParamValue(url.getSpec(), false)),
                 HTTPS_METHOD, CONTENT_TYPE, EMPTY_POST_DATA, TIMEOUT_MS,
                 new String[] {ACCEPT_LANGUAGE_KEY, LocaleUtils.getDefaultLocaleListString()},
-                NetworkTrafficAnnotationTag.NO_TRAFFIC_ANNOTATION_YET);
+                NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
     }
 
     private void fetchCallback(EndpointResponse response,

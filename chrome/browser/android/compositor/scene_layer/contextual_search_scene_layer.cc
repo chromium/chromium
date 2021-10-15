@@ -224,7 +224,7 @@ void ContextualSearchSceneLayer::FetchThumbnail(
           ->GetURLLoaderFactoryForBrowserProcess()
           .get();
   fetcher_ =
-      std::make_unique<BitmapFetcher>(gurl, this, NO_TRAFFIC_ANNOTATION_YET);
+      std::make_unique<BitmapFetcher>(gurl, this, MISSING_TRAFFIC_ANNOTATION);
   fetcher_->Init(
       std::string(),
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,

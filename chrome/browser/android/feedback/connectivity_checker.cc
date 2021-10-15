@@ -135,7 +135,7 @@ void ConnectivityChecker::StartAsyncCheck() {
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   request->load_flags = net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   url_loader_ = network::SimpleURLLoader::Create(std::move(request),
-                                                 NO_TRAFFIC_ANNOTATION_YET);
+                                                 MISSING_TRAFFIC_ANNOTATION);
   url_loader_->DownloadHeadersOnly(
       shared_url_loader_factory_.get(),
       base::BindOnce(&ConnectivityChecker::OnURLLoadComplete,

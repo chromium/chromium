@@ -153,7 +153,7 @@ void GetLatestProxyConfigInternal(const GetPropertyCallback& get_property,
   proxy_config.set_from_system(true);
   if (GetProxyRules(get_property, &proxy_config.proxy_rules())) {
     *config =
-        ProxyConfigWithAnnotation(proxy_config, NO_TRAFFIC_ANNOTATION_YET);
+        ProxyConfigWithAnnotation(proxy_config, MISSING_TRAFFIC_ANNOTATION);
   } else {
     *config = ProxyConfigWithAnnotation::CreateDirect();
   }
@@ -180,7 +180,7 @@ void CreateStaticProxyConfig(const std::string& host,
     proxy_config.set_pac_url(GURL(pac_url));
     proxy_config.set_pac_mandatory(false);
     *config =
-        ProxyConfigWithAnnotation(proxy_config, NO_TRAFFIC_ANNOTATION_YET);
+        ProxyConfigWithAnnotation(proxy_config, MISSING_TRAFFIC_ANNOTATION);
   } else if (port != 0) {
     std::string rules = base::StringPrintf("%s:%d", host.c_str(), port);
     proxy_config.proxy_rules().ParseFromString(rules);
@@ -195,7 +195,7 @@ void CreateStaticProxyConfig(const std::string& host,
       proxy_config.proxy_rules().bypass_rules.AddRuleFromString(pattern);
     }
     *config =
-        ProxyConfigWithAnnotation(proxy_config, NO_TRAFFIC_ANNOTATION_YET);
+        ProxyConfigWithAnnotation(proxy_config, MISSING_TRAFFIC_ANNOTATION);
   } else {
     *config = ProxyConfigWithAnnotation::CreateDirect();
   }
@@ -267,7 +267,7 @@ std::string CreateOverrideProxyConfig(
       return "Invalid bypass rule " + bypass_rule;
     }
   }
-  *config = ProxyConfigWithAnnotation(proxy_config, NO_TRAFFIC_ANNOTATION_YET);
+  *config = ProxyConfigWithAnnotation(proxy_config, MISSING_TRAFFIC_ANNOTATION);
   return "";
 }
 

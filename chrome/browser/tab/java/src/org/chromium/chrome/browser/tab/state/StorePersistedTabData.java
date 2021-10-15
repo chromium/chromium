@@ -278,7 +278,7 @@ public class StorePersistedTabData extends PersistedTabData {
      * @param callback {@link Callback} {@link StorePersistedTabData is passed back in}
      */
     public static void from(Tab tab, Callback<StorePersistedTabData> callback) {
-        // TODO(crbug.com/995852): Replace NO_TRAFFIC_ANNOTATION_YET with a real traffic
+        // TODO(crbug.com/995852): Replace MISSING_TRAFFIC_ANNOTATION with a real traffic
         // annotation.
         PersistedTabData.from(tab,
                 (data, storage, id)
@@ -294,7 +294,7 @@ public class StorePersistedTabData extends PersistedTabData {
                             Profile.getLastUsedRegularProfile(), PERSISTED_TAB_DATA_ID,
                             String.format(Locale.US, ENDPOINT, tab.getUrl().getSpec()),
                             HTTPS_METHOD, CONTENT_TYPE, SCOPES, EMPTY_POST_DATA, TIMEOUT_MS,
-                            NetworkTrafficAnnotationTag.NO_TRAFFIC_ANNOTATION_YET);
+                            NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
                 },
                 StorePersistedTabData.class, callback);
     }

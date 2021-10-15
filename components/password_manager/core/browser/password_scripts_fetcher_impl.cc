@@ -193,6 +193,8 @@ void PasswordScriptsFetcherImpl::StartFetch() {
           setting:
             "The user can enable or disable automatic password leak checks in "
             "Chrome's security settings. The feature is enabled by default."
+          policy_exception_justification:
+            "TODO(crbug.com/1231780): Add this field."
         })");
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);

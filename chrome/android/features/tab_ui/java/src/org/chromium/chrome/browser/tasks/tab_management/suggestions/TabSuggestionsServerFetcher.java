@@ -79,14 +79,14 @@ public class TabSuggestionsServerFetcher implements TabSuggestionsFetcher {
                     return;
                 }
             }
-            // TODO(crbug.com/995852): Replace NO_TRAFFIC_ANNOTATION_YET with a real traffic
+            // TODO(crbug.com/995852): Replace MISSING_TRAFFIC_ANNOTATION with a real traffic
             // annotation.
             EndpointFetcher.fetchUsingChromeAPIKey(res
                     -> { fetchCallback(res, callback, tabContext); },
                     mProfileForTesting == null ? Profile.getLastUsedRegularProfile()
                                                : mProfileForTesting,
                     ENDPOINT, METHOD, CONTENT_TYPE, getTabContextJson(tabContext), TIMEOUT_MS,
-                    new String[] {}, NetworkTrafficAnnotationTag.NO_TRAFFIC_ANNOTATION_YET);
+                    new String[] {}, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
         } catch (JSONException e) {
             // Soft failure for now so we don't crash the app and fall back on client side
             // providers.
