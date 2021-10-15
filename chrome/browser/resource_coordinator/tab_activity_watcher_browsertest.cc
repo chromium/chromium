@@ -803,7 +803,6 @@ class TabActivityWatcherPrerenderingTest : public TabActivityWatcherTest {
 IN_PROC_BROWSER_TEST_F(TabActivityWatcherPrerenderingTest,
                        SwitchTabsWithPrerendering) {
   ukm::SourceId ukm_source_id_for_tab_0 = 0;
-  ukm::SourceId ukm_source_id_for_tab_1 = 0;
   ukm::SourceId ukm_source_id_for_activated_page = 0;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_urls_[0]));
@@ -834,8 +833,8 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherPrerenderingTest,
     ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, test_urls_[1],
                                        kBasicMetricValues);
 
-    ukm_source_id_for_tab_1 = ExpectNewEntryWithSourceId(
-        test_urls_[1], kTabMetricsEntryName, 2, kBasicMetricValues);
+    ExpectNewEntryWithSourceId(test_urls_[1], kTabMetricsEntryName, 2,
+                               kBasicMetricValues);
 
     ExpectNewEntryWithSourceId(
         test_urls_[0], kFOCEntryName, 1,
