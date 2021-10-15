@@ -49,7 +49,7 @@ CSSMathExpressionNode* CSSMathInvert::ToCalcExpressionNode() const {
     return nullptr;
   return CSSMathExpressionBinaryOperation::Create(
       CSSMathExpressionNumericLiteral::Create(
-          1, CSSPrimitiveValue::UnitType::kNumber, false),
+          1, CSSPrimitiveValue::UnitType::kNumber),
       right_side, CSSMathOperator::kDivide);
 }
 

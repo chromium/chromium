@@ -15,6 +15,7 @@ namespace blink {
 
 struct SameSizeAsCSSMathFunctionValue : CSSPrimitiveValue {
   Member<void*> expression;
+  ValueRange value_range_in_target_context_;
 };
 ASSERT_SIZE(CSSMathFunctionValue, SameSizeAsCSSMathFunctionValue);
 
@@ -26,10 +27,9 @@ void CSSMathFunctionValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 CSSMathFunctionValue::CSSMathFunctionValue(
     const CSSMathExpressionNode* expression,
     CSSPrimitiveValue::ValueRange range)
-    : CSSPrimitiveValue(kMathFunctionClass), expression_(expression) {
-  is_non_negative_math_function_ =
-      range == CSSPrimitiveValue::ValueRange::kNonNegative;
-}
+    : CSSPrimitiveValue(kMathFunctionClass),
+      expression_(expression),
+      value_range_in_target_context_(range) {}
 
 // static
 CSSMathFunctionValue* CSSMathFunctionValue::Create(
@@ -122,7 +122,16 @@ bool CSSMathFunctionValue::Equals(const CSSMathFunctionValue& other) const {
 }
 
 double CSSMathFunctionValue::ClampToPermittedRange(double value) const {
-  return IsNonNegative() && value < 0 ? 0 : value;
+  switch (PermittedValueRange()) {
+    case CSSPrimitiveValue::ValueRange::kInteger:
+      return RoundHalfTowardsPositiveInfinity(value);
+    case CSSPrimitiveValue::ValueRange::kPositiveInteger:
+      return RoundHalfTowardsPositiveInfinity(std::max(value, 1.0));
+    case CSSPrimitiveValue::ValueRange::kNonNegative:
+      return std::max(value, 0.0);
+    case CSSPrimitiveValue::ValueRange::kAll:
+      return value;
+  }
 }
 
 bool CSSMathFunctionValue::IsZero() const {
@@ -143,6 +152,10 @@ bool CSSMathFunctionValue::IsComputationallyIndependent() const {
 
 scoped_refptr<const CalculationValue> CSSMathFunctionValue::ToCalcValue(
     const CSSToLengthConversionData& conversion_data) const {
+  DCHECK_NE(value_range_in_target_context_,
+            CSSPrimitiveValue::ValueRange::kInteger);
+  DCHECK_NE(value_range_in_target_context_,
+            CSSPrimitiveValue::ValueRange::kPositiveInteger);
   return expression_->ToCalcValue(
       conversion_data,
       CSSPrimitiveValue::ConversionToLengthValueRange(PermittedValueRange()),

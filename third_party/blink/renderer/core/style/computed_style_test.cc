@@ -802,11 +802,9 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
   style->SetEffectiveZoom(1.5);
   state.SetStyle(style);
 
-  auto* calc_value =
-      CSSMathFunctionValue::Create(CSSMathExpressionNumericLiteral::Create(
-          CSSNumericLiteralValue::Create(10,
-                                         CSSPrimitiveValue::UnitType::kNumber),
-          true));
+  auto* calc_value = CSSMathFunctionValue::Create(
+      CSSMathExpressionNumericLiteral::Create(CSSNumericLiteralValue::Create(
+          10, CSSPrimitiveValue::UnitType::kNumber)));
 
   To<Longhand>(GetCSSPropertyStrokeWidth()).ApplyValue(state, *calc_value);
   auto* computed_value = To<Longhand>(GetCSSPropertyStrokeWidth())

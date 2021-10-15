@@ -10,7 +10,7 @@ function assertParsedValue(property, input, expected) {
 
 test(function() {
   assertParsedValue('-webkit-box-ordinal-group', 'calc(6 + 4)', '10');
-  assertParsedValue('-webkit-box-ordinal-group', 'calc(0)', '');
+  assertParsedValue('-webkit-box-ordinal-group', 'calc(0)', '0');
   assertParsedValue('-webkit-column-span', 'calc(2 - 1)', '');
   assertParsedValue('-webkit-column-span', 'calc(1 + 2)', '');
   assertParsedValue('-webkit-column-width', 'calc(1em - 1px)', 'calc(1em - 1px)');

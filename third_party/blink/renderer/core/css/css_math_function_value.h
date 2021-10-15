@@ -38,10 +38,8 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
 
   bool IsPx() const;
 
-  bool IsInt() const { return expression_->IsInteger(); }
-  bool IsNegative() const { return expression_->DoubleValue() < 0; }
   ValueRange PermittedValueRange() const {
-    return IsNonNegative() ? ValueRange::kNonNegative : ValueRange::kAll;
+    return value_range_in_target_context_;
   }
 
   // When |false|, comparisons between percentage values can be resolved without
@@ -93,11 +91,10 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   void TraceAfterDispatch(blink::Visitor* visitor) const;
 
  private:
-  bool IsNonNegative() const { return is_non_negative_math_function_; }
-
   double ClampToPermittedRange(double) const;
 
   Member<const CSSMathExpressionNode> expression_;
+  ValueRange value_range_in_target_context_;
 };
 
 template <>

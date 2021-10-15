@@ -74,6 +74,7 @@ Length::ValueRange CSSPrimitiveValue::ConversionToLengthValueRange(
       return Length::ValueRange::kAll;
     default:
       NOTREACHED();
+      return Length::ValueRange::kAll;
   }
 }
 
@@ -84,8 +85,6 @@ CSSPrimitiveValue::ValueRange CSSPrimitiveValue::ValueRangeForLengthValueRange(
       return ValueRange::kNonNegative;
     case Length::ValueRange::kAll:
       return ValueRange::kAll;
-    default:
-      NOTREACHED();
   }
 }
 
@@ -171,9 +170,16 @@ bool CSSPrimitiveValue::IsNumber() const {
 }
 
 bool CSSPrimitiveValue::IsInteger() const {
-  // TODO(crbug.com/931216): Support integer math functions properly.
-  return IsNumericLiteralValue() &&
-         To<CSSNumericLiteralValue>(this)->IsInteger();
+  // Integer target context can take calc() function
+  // which resolves to number type.
+  // So we don't have to track whether cals type is integer,
+  // and we can answer to IsInteger() question asked from a context
+  // in which requires integer type
+  // (e.g. CSSPrimitiveValue::IsInteger() check in MediaQueryExp::Create)
+  // here.
+  if (IsNumericLiteralValue())
+    return To<CSSNumericLiteralValue>(this)->IsInteger();
+  return To<CSSMathFunctionValue>(this)->IsNumber();
 }
 
 bool CSSPrimitiveValue::IsPercentage() const {

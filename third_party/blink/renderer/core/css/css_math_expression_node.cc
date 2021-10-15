@@ -174,29 +174,24 @@ absl::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
 
 // static
 CSSMathExpressionNumericLiteral* CSSMathExpressionNumericLiteral::Create(
-    const CSSNumericLiteralValue* value,
-    bool is_integer) {
-  return MakeGarbageCollected<CSSMathExpressionNumericLiteral>(value,
-                                                               is_integer);
+    const CSSNumericLiteralValue* value) {
+  return MakeGarbageCollected<CSSMathExpressionNumericLiteral>(value);
 }
 
 // static
 CSSMathExpressionNumericLiteral* CSSMathExpressionNumericLiteral::Create(
     double value,
-    CSSPrimitiveValue::UnitType type,
-    bool is_integer) {
+    CSSPrimitiveValue::UnitType type) {
   if (!RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() &&
       (std::isnan(value) || std::isinf(value)))
     return nullptr;
   return MakeGarbageCollected<CSSMathExpressionNumericLiteral>(
-      CSSNumericLiteralValue::Create(value, type), is_integer);
+      CSSNumericLiteralValue::Create(value, type));
 }
 
 CSSMathExpressionNumericLiteral::CSSMathExpressionNumericLiteral(
-    const CSSNumericLiteralValue* value,
-    bool is_integer)
+    const CSSNumericLiteralValue* value)
     : CSSMathExpressionNode(UnitCategory(value->GetType()),
-                            is_integer,
                             false /* has_comparisons*/),
       value_(value) {}
 
@@ -398,16 +393,6 @@ static CalculationCategory DetermineCategory(
   return kCalcOther;
 }
 
-static bool IsIntegerResult(const CSSMathExpressionNode* left_side,
-                            const CSSMathExpressionNode* right_side,
-                            CSSMathOperator op) {
-  // Not testing for actual integer values.
-  // Performs W3C spec's type checking for calc integers.
-  // http://www.w3.org/TR/css3-values/#calc-type-checking
-  return op != CSSMathOperator::kDivide && left_side->IsInteger() &&
-         right_side->IsInteger();
-}
-
 // ------ Start of CSSMathExpressionBinaryOperation member functions ------
 
 // static
@@ -440,14 +425,12 @@ CSSMathExpressionNode* CSSMathExpressionBinaryOperation::CreateSimplified(
   DCHECK_NE(left_category, kCalcOther);
   DCHECK_NE(right_category, kCalcOther);
 
-  bool is_integer = IsIntegerResult(left_side, right_side, op);
-
   // Simplify numbers.
   if (left_category == kCalcNumber && right_category == kCalcNumber) {
     return CSSMathExpressionNumericLiteral::Create(
         EvaluateOperator(left_side->DoubleValue(), right_side->DoubleValue(),
                          op),
-        CSSPrimitiveValue::UnitType::kNumber, is_integer);
+        CSSPrimitiveValue::UnitType::kNumber);
   }
 
   // Simplify addition and subtraction between same types.
@@ -460,7 +443,7 @@ CSSMathExpressionNode* CSSMathExpressionBinaryOperation::CreateSimplified(
           return CSSMathExpressionNumericLiteral::Create(
               EvaluateOperator(left_side->DoubleValue(),
                                right_side->DoubleValue(), op),
-              left_type, is_integer);
+              left_type);
         }
         CSSPrimitiveValue::UnitCategory left_unit_category =
             CSSPrimitiveValue::UnitTypeToUnitCategory(left_type);
@@ -480,8 +463,7 @@ CSSMathExpressionNode* CSSMathExpressionBinaryOperation::CreateSimplified(
                 CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
                     right_type));
             return CSSMathExpressionNumericLiteral::Create(
-                EvaluateOperator(left_value, right_value, op), canonical_type,
-                is_integer);
+                EvaluateOperator(left_value, right_value, op), canonical_type);
           }
         }
       }
@@ -510,8 +492,7 @@ CSSMathExpressionNode* CSSMathExpressionBinaryOperation::CreateSimplified(
     CSSPrimitiveValue::UnitType other_type = other_side->ResolvedUnitType();
     if (HasDoubleValue(other_type)) {
       return CSSMathExpressionNumericLiteral::Create(
-          EvaluateOperator(other_side->DoubleValue(), number, op), other_type,
-          is_integer);
+          EvaluateOperator(other_side->DoubleValue(), number, op), other_type);
     }
   }
 
@@ -525,7 +506,6 @@ CSSMathExpressionBinaryOperation::CSSMathExpressionBinaryOperation(
     CalculationCategory category)
     : CSSMathExpressionNode(
           category,
-          IsIntegerResult(left_side, right_side, op),
           left_side->HasComparisons() || right_side->HasComparisons()),
       left_side_(left_side),
       right_side_(right_side),
@@ -851,32 +831,25 @@ CSSMathExpressionVariadicOperation* CSSMathExpressionVariadicOperation::Create(
   DCHECK(operands.size());
   bool is_first = true;
   CalculationCategory category;
-  bool is_integer;
   for (const auto& operand : operands) {
-    if (is_first) {
+    if (is_first)
       category = operand->Category();
-      is_integer = operand->IsInteger();
-    } else {
+    else
       category = kAddSubtractResult[category][operand->Category()];
-      if (!operand->IsInteger())
-        is_integer = false;
-    }
+
     is_first = false;
     if (category == kCalcOther)
       return nullptr;
   }
   return MakeGarbageCollected<CSSMathExpressionVariadicOperation>(
-      category, is_integer, std::move(operands), op);
+      category, std::move(operands), op);
 }
 
 CSSMathExpressionVariadicOperation::CSSMathExpressionVariadicOperation(
     CalculationCategory category,
-    bool is_integer_result,
     Operands&& operands,
     CSSMathOperator op)
-    : CSSMathExpressionNode(category,
-                            is_integer_result,
-                            true /* has_comparisons */),
+    : CSSMathExpressionNode(category, true /* has_comparisons */),
       operands_(std::move(operands)),
       operator_(op) {}
 
@@ -1159,17 +1132,17 @@ class CSSMathExpressionNodeParser {
       if (token.Id() == CSSValueID::kInfinity) {
         return CSSMathExpressionNumericLiteral::Create(
             std::numeric_limits<double>::infinity(),
-            CSSPrimitiveValue::UnitType::kNumber, false);
+            CSSPrimitiveValue::UnitType::kNumber);
       }
       if (token.Id() == CSSValueID::kNegativeInfinity) {
         return CSSMathExpressionNumericLiteral::Create(
             -std::numeric_limits<double>::infinity(),
-            CSSPrimitiveValue::UnitType::kNumber, false);
+            CSSPrimitiveValue::UnitType::kNumber);
       }
       if (token.Id() == CSSValueID::kNan) {
         return CSSMathExpressionNumericLiteral::Create(
             std::numeric_limits<double>::quiet_NaN(),
-            CSSPrimitiveValue::UnitType::kNumber, false);
+            CSSPrimitiveValue::UnitType::kNumber);
       }
     }
     if (!(token.GetType() == kNumberToken ||
@@ -1182,8 +1155,7 @@ class CSSMathExpressionNodeParser {
       return nullptr;
 
     return CSSMathExpressionNumericLiteral::Create(
-        CSSNumericLiteralValue::Create(token.NumericValue(), type),
-        token.GetNumericValueType() == kIntegerValueType);
+        CSSNumericLiteralValue::Create(token.NumericValue(), type));
   }
 
   CSSMathExpressionNode* ParseValueTerm(CSSParserTokenRange& tokens,
@@ -1353,14 +1325,10 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(PixelsAndPercent value) {
     op = CSSMathOperator::kSubtract;
   }
   return CSSMathExpressionBinaryOperation::Create(
-      CSSMathExpressionNumericLiteral::Create(
-          CSSNumericLiteralValue::Create(
-              percent, CSSPrimitiveValue::UnitType::kPercentage),
-          percent == trunc(percent)),
-      CSSMathExpressionNumericLiteral::Create(
-          CSSNumericLiteralValue::Create(pixels,
-                                         CSSPrimitiveValue::UnitType::kPixels),
-          pixels == trunc(pixels)),
+      CSSMathExpressionNumericLiteral::Create(CSSNumericLiteralValue::Create(
+          percent, CSSPrimitiveValue::UnitType::kPercentage)),
+      CSSMathExpressionNumericLiteral::Create(CSSNumericLiteralValue::Create(
+          pixels, CSSPrimitiveValue::UnitType::kPixels)),
       op);
 }
 
@@ -1378,10 +1346,8 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
     double factor = multiplication.GetFactor();
     return CSSMathExpressionBinaryOperation::Create(
         Create(multiplication.GetChild()),
-        CSSMathExpressionNumericLiteral::Create(
-            CSSNumericLiteralValue::Create(
-                factor, CSSPrimitiveValue::UnitType::kNumber),
-            factor == trunc(factor)),
+        CSSMathExpressionNumericLiteral::Create(CSSNumericLiteralValue::Create(
+            factor, CSSPrimitiveValue::UnitType::kNumber)),
         CSSMathOperator::kMultiply);
   }
 

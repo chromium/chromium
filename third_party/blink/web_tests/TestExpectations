@@ -2768,7 +2768,6 @@ crbug.com/641245 external/wpt/css/motion/offset-path-ray-contain-005.html [ Fail
 
 # Various css-values WPT failures
 crbug.com/1053965 external/wpt/css/css-values/ex-unit-004.html [ Failure ]
-crbug.com/931216 external/wpt/css/css-values/calc-positive-fraction-001.html [ Failure ]
 crbug.com/759914 external/wpt/css/css-values/ch-unit-011.html [ Failure ]
 crbug.com/965366 external/wpt/css/css-values/ch-unit-017.html [ Failure ]
 crbug.com/937101 external/wpt/css/css-values/ic-unit-010.html [ Failure ]

@@ -44,7 +44,7 @@ CSSMathExpressionNode* CSSMathNegate::ToCalcExpressionNode() const {
     return nullptr;
   return CSSMathExpressionBinaryOperation::CreateSimplified(
       CSSMathExpressionNumericLiteral::Create(
-          -1, CSSPrimitiveValue::UnitType::kNumber, false),
+          -1, CSSPrimitiveValue::UnitType::kNumber),
       right_side, CSSMathOperator::kMultiply);
 }
 

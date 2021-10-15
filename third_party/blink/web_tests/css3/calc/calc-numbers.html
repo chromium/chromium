@@ -3,14 +3,14 @@
 .int {
     tab-size: calc(2 * 4);
 }
-.int-non-neg-invalid {
+.int-non-neg-clamp {
     tab-size: 12345;
     tab-size: calc(2 * -4);
 }
 .float {
     opacity: calc(2 / 4);
 }
-.float-invalid {
+.float-round {
     position: absolute;
     z-index: 12345;
     z-index: calc(2 / 4);
@@ -32,9 +32,9 @@
 }
 </style>
 <div class="default int"></div>
-<div class="default int-non-neg-invalid"></div>
+<div class="default int-non-neg-clamp"></div>
 <div class="default float"></div>
-<div class="default float-invalid"></div>
+<div class="default float-round"></div>
 <div class="default px-invalid"></div>
 <div class="default num-length-invalid"></div>
 <div class="default px-valid"></div>
@@ -48,9 +48,9 @@ function getComputedValue(selector, property) {
 }
 
 shouldBe('getComputedValue(".int", "tabSize")', '"8"');
-shouldBe('getComputedValue(".int-non-neg-invalid", "tabSize")', '"12345"');
+shouldBe('getComputedValue(".int-non-neg-clamp", "tabSize")', '"0"');
 shouldBeCloseTo('Number(getComputedValue(".float", "opacity"))', 0.5, .0001);
-shouldBe('getComputedValue(".float-invalid", "zIndex")', '"12345"');
+shouldBe('getComputedValue(".float-round", "zIndex")', '"1"');
 shouldBeCloseTo('Number(getComputedValue(".px-invalid", "opacity"))', 0.9, .0001);
 shouldBe('getComputedValue(".num-length-invalid", "tabSize")', '"12345"');
 shouldBe('getComputedValue(".px-valid", "tabSize")', '"10px"');

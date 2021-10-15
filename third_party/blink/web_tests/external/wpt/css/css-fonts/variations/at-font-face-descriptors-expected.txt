@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 84 tests; 69 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 84 tests; 64 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS font-weight(valid): 'normal' keyword: normal
 PASS font-weight(valid): 'bold' keyword: bold
 FAIL font-weight(invalid): 'lighter' keyword iside @font-face: lighter assert_equals: No properties should be set. expected "" but got "lighter"
@@ -13,18 +13,18 @@ PASS font-weight(invalid): Values below zero should be rejected: -100
 PASS font-weight(valid): Maximum allowed value should be parsed successfully: 1000
 PASS font-weight(invalid): Values above maximum should be rejected: 1000.001
 PASS font-weight(invalid): Extra content after value: 100 a
-PASS font-weight(valid): Simple calc value: calc(100.5)
+FAIL font-weight(valid): Simple calc value: calc(100.5) assert_equals: Unexpected resulting value. expected "100.5" but got "calc(100.5)"
 FAIL font-weight(valid): Out-of-range simple calc value (should be clamped): calc(1001) assert_not_equals: Valid value should be accepted. got disallowed value ""
-PASS font-weight(valid): Valid calc expression: calc(100.5*3 + 50.5)
+FAIL font-weight(valid): Valid calc expression: calc(100.5*3 + 50.5) assert_equals: Unexpected resulting value. expected "352" but got "calc(352)"
 FAIL font-weight(valid): Valid calc expression with out-of-range value (should be clamped): calc(100.5*3 + 800) assert_not_equals: Valid value should be accepted. got disallowed value ""
 PASS font-weight(invalid): Valid calc expression with units: calc(100.5px + 50.5px)
 PASS font-weight(valid): Simple range: 100 900
 FAIL font-weight(valid): Simple range with equal upper and lower bounds: 500 500 assert_equals: Unexpected resulting value. expected "500" but got "500 500"
 PASS font-weight(invalid): Lower bound out of range: 0.9 100
 PASS font-weight(invalid): Upper bound out of range: 100 1001
-PASS font-weight(valid): Lower bound calc(): calc(100 + 100) 400
-PASS font-weight(valid): Upper bound calc(): 200 calc(200 + 200)
-PASS font-weight(valid): Both bounds are calc(): calc(100 + 100) calc(200 + 200)
+FAIL font-weight(valid): Lower bound calc(): calc(100 + 100) 400 assert_equals: Unexpected resulting value. expected "200 400" but got "calc(200) 400"
+FAIL font-weight(valid): Upper bound calc(): 200 calc(200 + 200) assert_equals: Unexpected resulting value. expected "200 400" but got "200 calc(400)"
+FAIL font-weight(valid): Both bounds are calc(): calc(100 + 100) calc(200 + 200) assert_equals: Unexpected resulting value. expected "200 400" but got "calc(200) calc(400)"
 PASS font-weight(valid): Bounds out of order are valid: 400 200
 PASS font-weight(invalid): Extra content after upper bound: 100 200 300
 PASS font-stretch(valid): 'ultra-condensed' keyword: ultra-condensed

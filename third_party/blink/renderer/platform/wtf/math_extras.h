@@ -127,6 +127,14 @@ constexpr float Grad2turn(float g) {
   return g * (1.0f / 400.0f);
 }
 
+constexpr double RoundHalfTowardsPositiveInfinity(double value) {
+  return std::floor(value + 0.5);
+}
+
+constexpr float RoundHalfTowardsPositiveInfinity(float value) {
+  return std::floor(value + 0.5f);
+}
+
 // ClampTo() is implemented by templated helper classes (to allow for partial
 // template specialization) as well as several helper functions.
 
