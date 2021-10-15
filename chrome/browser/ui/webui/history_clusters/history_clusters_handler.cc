@@ -138,7 +138,8 @@ mojom::QueryResultPtr QueryClustersResultToMojom(Profile* profile,
         // (duplicate) visits are always considered below the fold.
         const auto& top_visit_mojom = cluster_mojom->visit;
         visit_mojom->below_the_fold =
-            (top_visit_mojom->related_visits.size() > 3 && visit.score < 0.5) ||
+            (top_visit_mojom->related_visits.size() >= 3 &&
+             visit.score < 0.5) ||
             visit.score == 0.0;
         top_visit_mojom->related_visits.push_back(std::move(visit_mojom));
       }
