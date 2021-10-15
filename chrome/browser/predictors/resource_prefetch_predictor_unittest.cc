@@ -152,8 +152,7 @@ class ResourcePrefetchPredictorTest : public testing::Test {
 };
 
 ResourcePrefetchPredictorTest::ResourcePrefetchPredictorTest()
-    : profile_(std::make_unique<TestingProfile>()),
-      db_task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
+    : db_task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
       mock_tables_(
           base::MakeRefCounted<StrictMock<MockResourcePrefetchPredictorTables>>(
               db_task_runner_)) {}
@@ -163,7 +162,11 @@ ResourcePrefetchPredictorTest::~ResourcePrefetchPredictorTest() = default;
 void ResourcePrefetchPredictorTest::SetUp() {
   InitializeSampleData();
 
-  CHECK(profile_->CreateHistoryService());
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                                    HistoryServiceFactory::GetDefaultFactory());
+  profile_ = profile_builder.Build();
+
   profile_->BlockUntilHistoryProcessesPendingRequests();
   CHECK(HistoryServiceFactory::GetForProfile(
       profile_.get(), ServiceAccessType::EXPLICIT_ACCESS));
