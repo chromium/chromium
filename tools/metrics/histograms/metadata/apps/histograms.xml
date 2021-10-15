@@ -1941,17 +1941,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name=".FromFullRestore" summary="From full restore."/>
     <variant name=".FromInstalledNotification"
         summary="From installed notification."/>
+    <variant name=".FromIntentUrl" summary="From Intent Url."/>
     <variant name=".FromKeyboard" summary="From keyboard shortcut."/>
+    <variant name=".FromKiosk" summary="From Kiosk."/>
     <variant name=".FromLink" summary="From Link."/>
+    <variant name=".FromManagementApi" summary="From management API."/>
     <variant name=".FromMenu" summary="From menu."/>
+    <variant name=".FromNewTabPage" summary="From new tab page."/>
     <variant name=".FromOmnibox" summary="From Omnibox."/>
+    <variant name=".FromOsLogin" summary="Run on OS login."/>
     <variant name=".FromOtherApp" summary="From another app."/>
+    <variant name=".FromProtocolHandler" summary="From protocol handler."/>
     <variant name=".FromReleaseNotesNotification"
         summary="From Release Notes notification."/>
     <variant name=".FromSharesheet" summary="From sharesheet."/>
     <variant name=".FromShelf" summary="From shelf."/>
     <variant name=".FromSmartTextContextMenu"
         summary="From Smart text selection context menu."/>
+    <variant name=".FromUrlHandler" summary="From URL hanlder."/>
   </token>
 </histogram>
 

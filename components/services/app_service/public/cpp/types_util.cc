@@ -43,11 +43,20 @@ bool IsHumanLaunch(apps::mojom::LaunchSource launch_source) {
     case apps::mojom::LaunchSource::kFromFullRestore:
     case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
     case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
+    case apps::mojom::LaunchSource::kFromCommandLine:
       return true;
     case apps::mojom::LaunchSource::kUnknown:
     case apps::mojom::LaunchSource::kFromChromeInternal:
     case apps::mojom::LaunchSource::kFromTest:
     case apps::mojom::LaunchSource::kFromArc:
+    case apps::mojom::LaunchSource::kFromManagementApi:
+    case apps::mojom::LaunchSource::kFromKiosk:
+    case apps::mojom::LaunchSource::kFromBackgroundMode:
+    case apps::mojom::LaunchSource::kFromNewTabPage:
+    case apps::mojom::LaunchSource::kFromIntentUrl:
+    case apps::mojom::LaunchSource::kFromOsLogin:
+    case apps::mojom::LaunchSource::kFromProtocolHandler:
+    case apps::mojom::LaunchSource::kFromUrlHandler:
       return false;
   }
   NOTREACHED();

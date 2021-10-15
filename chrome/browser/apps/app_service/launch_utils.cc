@@ -142,6 +142,24 @@ apps::mojom::AppLaunchSource GetAppLaunchSource(
       return apps::mojom::AppLaunchSource::kSourceTest;
     case apps::mojom::LaunchSource::kFromArc:
       return apps::mojom::AppLaunchSource::kSourceArc;
+    case apps::mojom::LaunchSource::kFromManagementApi:
+      return apps::mojom::AppLaunchSource::kSourceManagementApi;
+    case apps::mojom::LaunchSource::kFromKiosk:
+      return apps::mojom::AppLaunchSource::kSourceKiosk;
+    case apps::mojom::LaunchSource::kFromCommandLine:
+      return apps::mojom::AppLaunchSource::kSourceCommandLine;
+    case apps::mojom::LaunchSource::kFromBackgroundMode:
+      return apps::mojom::AppLaunchSource::kSourceBackground;
+    case apps::mojom::LaunchSource::kFromNewTabPage:
+      return apps::mojom::AppLaunchSource::kSourceNewTabPage;
+    case apps::mojom::LaunchSource::kFromIntentUrl:
+      return apps::mojom::AppLaunchSource::kSourceIntentUrl;
+    case apps::mojom::LaunchSource::kFromOsLogin:
+      return apps::mojom::AppLaunchSource::kSourceRunOnOsLogin;
+    case apps::mojom::LaunchSource::kFromProtocolHandler:
+      return apps::mojom::AppLaunchSource::kSourceProtocolHandler;
+    case apps::mojom::LaunchSource::kFromUrlHandler:
+      return apps::mojom::AppLaunchSource::kSourceUrlHandler;
   }
 }
 
@@ -153,25 +171,31 @@ apps::mojom::LaunchSource GetLaunchSource(
       return apps::mojom::LaunchSource::kUnknown;
     case apps::mojom::AppLaunchSource::kSourceAppLauncher:
       return apps::mojom::LaunchSource::kFromAppListGrid;
+    case apps::mojom::AppLaunchSource::kSourceBackground:
+      return apps::mojom::LaunchSource::kFromBackgroundMode;
     case apps::mojom::AppLaunchSource::kSourceNewTabPage:
+      return apps::mojom::LaunchSource::kFromNewTabPage;
     case apps::mojom::AppLaunchSource::kSourceReload:
     case apps::mojom::AppLaunchSource::kSourceRestart:
     case apps::mojom::AppLaunchSource::kSourceLoadAndLaunch:
-    case apps::mojom::AppLaunchSource::kSourceCommandLine:
       return apps::mojom::LaunchSource::kFromChromeInternal;
+    case apps::mojom::AppLaunchSource::kSourceCommandLine:
+      return apps::mojom::LaunchSource::kFromCommandLine;
     case apps::mojom::AppLaunchSource::kSourceFileHandler:
       return apps::mojom::LaunchSource::kFromFileManager;
     case apps::mojom::AppLaunchSource::kSourceUrlHandler:
+      return apps::mojom::LaunchSource::kFromUrlHandler;
     case apps::mojom::AppLaunchSource::kSourceSystemTray:
     case apps::mojom::AppLaunchSource::kSourceAboutPage:
       return apps::mojom::LaunchSource::kFromChromeInternal;
     case apps::mojom::AppLaunchSource::kSourceKeyboard:
       return apps::mojom::LaunchSource::kFromKeyboard;
-    case apps::mojom::AppLaunchSource::kSourceExtensionsPage:
-    case apps::mojom::AppLaunchSource::kSourceManagementApi:
-    case apps::mojom::AppLaunchSource::kSourceEphemeralAppDeprecated:
-    case apps::mojom::AppLaunchSource::kSourceBackground:
     case apps::mojom::AppLaunchSource::kSourceKiosk:
+      return apps::mojom::LaunchSource::kFromKiosk;
+    case apps::mojom::AppLaunchSource::kSourceManagementApi:
+      return apps::mojom::LaunchSource::kFromManagementApi;
+    case apps::mojom::AppLaunchSource::kSourceExtensionsPage:
+    case apps::mojom::AppLaunchSource::kSourceEphemeralAppDeprecated:
     case apps::mojom::AppLaunchSource::kSourceChromeInternal:
       return apps::mojom::LaunchSource::kFromChromeInternal;
     case apps::mojom::AppLaunchSource::kSourceTest:
@@ -183,9 +207,11 @@ apps::mojom::LaunchSource GetLaunchSource(
     case apps::mojom::AppLaunchSource::kSourceArc:
       return apps::mojom::LaunchSource::kFromArc;
     case apps::mojom::AppLaunchSource::kSourceIntentUrl:
+      return apps::mojom::LaunchSource::kFromIntentUrl;
     case apps::mojom::AppLaunchSource::kSourceRunOnOsLogin:
+      return apps::mojom::LaunchSource::kFromOsLogin;
     case apps::mojom::AppLaunchSource::kSourceProtocolHandler:
-      return apps::mojom::LaunchSource::kFromChromeInternal;
+      return apps::mojom::LaunchSource::kFromProtocolHandler;
   }
 }
 

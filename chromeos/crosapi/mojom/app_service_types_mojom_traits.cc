@@ -749,6 +749,24 @@ EnumTraits<crosapi::mojom::LaunchSource, apps::mojom::LaunchSource>::ToMojom(
       return crosapi::mojom::LaunchSource::kFromSmartTextContextMenu;
     case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
       return crosapi::mojom::LaunchSource::kFromDiscoverTabNotification;
+    case apps::mojom::LaunchSource::kFromManagementApi:
+      return crosapi::mojom::LaunchSource::kFromManagementApi;
+    case apps::mojom::LaunchSource::kFromKiosk:
+      return crosapi::mojom::LaunchSource::kFromKiosk;
+    case apps::mojom::LaunchSource::kFromNewTabPage:
+      return crosapi::mojom::LaunchSource::kFromNewTabPage;
+    case apps::mojom::LaunchSource::kFromIntentUrl:
+      return crosapi::mojom::LaunchSource::kFromIntentUrl;
+    case apps::mojom::LaunchSource::kFromOsLogin:
+      return crosapi::mojom::LaunchSource::kFromOsLogin;
+    case apps::mojom::LaunchSource::kFromProtocolHandler:
+      return crosapi::mojom::LaunchSource::kFromProtocolHandler;
+    case apps::mojom::LaunchSource::kFromUrlHandler:
+      return crosapi::mojom::LaunchSource::kFromUrlHandler;
+    case apps::mojom::LaunchSource::kFromCommandLine:
+    case apps::mojom::LaunchSource::kFromBackgroundMode:
+      NOTREACHED();
+      return crosapi::mojom::LaunchSource::kUnknown;
   }
   NOTREACHED();
 }
@@ -825,6 +843,27 @@ bool EnumTraits<crosapi::mojom::LaunchSource, apps::mojom::LaunchSource>::
       return true;
     case crosapi::mojom::LaunchSource::kFromDiscoverTabNotification:
       *output = apps::mojom::LaunchSource::kFromDiscoverTabNotification;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromManagementApi:
+      *output = apps::mojom::LaunchSource::kFromManagementApi;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromKiosk:
+      *output = apps::mojom::LaunchSource::kFromKiosk;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromNewTabPage:
+      *output = apps::mojom::LaunchSource::kFromNewTabPage;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromIntentUrl:
+      *output = apps::mojom::LaunchSource::kFromIntentUrl;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromOsLogin:
+      *output = apps::mojom::LaunchSource::kFromOsLogin;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromProtocolHandler:
+      *output = apps::mojom::LaunchSource::kFromProtocolHandler;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromUrlHandler:
+      *output = apps::mojom::LaunchSource::kFromUrlHandler;
       return true;
   }
 

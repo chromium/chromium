@@ -46544,6 +46544,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="20" label="Full restore"/>
   <int value="21" label="Smart text selection context menu"/>
   <int value="22" label="Discover Tab Notification"/>
+  <int value="23" label="Management API"/>
+  <int value="24" label="Kiosk"/>
+  <int value="25" label="CommandLine"/>
+  <int value="26" label="Background mode"/>
+  <int value="27" label="New tab page"/>
+  <int value="28" label="Intent Url"/>
+  <int value="29" label="Run on OS login"/>
+  <int value="30" label="Protocol handler"/>
+  <int value="31" label="URL handler"/>
 </enum>
 
 <enum name="LaunchType">

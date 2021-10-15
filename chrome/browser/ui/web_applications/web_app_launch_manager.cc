@@ -537,6 +537,12 @@ void WebAppLaunchManager::LaunchApplication(
 
   apps::mojom::AppLaunchSource launch_source =
       apps::mojom::AppLaunchSource::kSourceCommandLine;
+
+  if (url_handler_launch_url.has_value())
+    launch_source = apps::mojom::AppLaunchSource::kSourceUrlHandler;
+  else if (!launch_files.empty())
+    launch_source = apps::mojom::AppLaunchSource::kSourceFileHandler;
+
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
       command_line.HasSwitch(switches::kAppRunOnOsLoginMode)) {
     launch_source = apps::mojom::AppLaunchSource::kSourceRunOnOsLogin;

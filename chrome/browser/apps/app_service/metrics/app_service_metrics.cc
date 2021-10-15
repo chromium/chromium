@@ -113,6 +113,38 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
           "Apps.DefaultAppLaunch.FromDiscoverTabNotification",
           default_app_name);
       break;
+    case apps::mojom::LaunchSource::kFromManagementApi:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromManagementApi",
+                                    default_app_name);
+      break;
+    case apps::mojom::LaunchSource::kFromKiosk:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromKiosk",
+                                    default_app_name);
+      break;
+    case apps::mojom::LaunchSource::kFromNewTabPage:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromNewTabPage",
+                                    default_app_name);
+      break;
+    case apps::mojom::LaunchSource::kFromIntentUrl:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromIntentUrl",
+                                    default_app_name);
+      break;
+    case apps::mojom::LaunchSource::kFromOsLogin:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromOsLogin",
+                                    default_app_name);
+      break;
+    case apps::mojom::LaunchSource::kFromProtocolHandler:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromProtocolHandler",
+                                    default_app_name);
+      break;
+    case apps::mojom::LaunchSource::kFromUrlHandler:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromUrlHandler",
+                                    default_app_name);
+      break;
+    case apps::mojom::LaunchSource::kFromCommandLine:
+    case apps::mojom::LaunchSource::kFromBackgroundMode:
+      NOTREACHED();
+      break;
   }
 }
 
@@ -149,6 +181,15 @@ void RecordBuiltInAppLaunch(apps::BuiltInAppName built_in_app_name,
     case apps::mojom::LaunchSource::kFromFullRestore:
     case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
     case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
+    case apps::mojom::LaunchSource::kFromManagementApi:
+    case apps::mojom::LaunchSource::kFromKiosk:
+    case apps::mojom::LaunchSource::kFromCommandLine:
+    case apps::mojom::LaunchSource::kFromBackgroundMode:
+    case apps::mojom::LaunchSource::kFromNewTabPage:
+    case apps::mojom::LaunchSource::kFromIntentUrl:
+    case apps::mojom::LaunchSource::kFromOsLogin:
+    case apps::mojom::LaunchSource::kFromProtocolHandler:
+    case apps::mojom::LaunchSource::kFromUrlHandler:
       break;
   }
 }

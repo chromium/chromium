@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 module crosapi.mojom;
 
@@ -353,6 +353,13 @@ enum LaunchSource {
   kFromFullRestore,              // Full restore.
   kFromSmartTextContextMenu,     // Smart text selection context menu.
   kFromDiscoverTabNotification,  // Discover Tab Notification.
+  [MinVersion=10] kFromManagementApi,            // Management API.
+  [MinVersion=10] kFromKiosk,                    // Kiosk.
+  [MinVersion=10] kFromNewTabPage,               // New tab page.
+  [MinVersion=10] kFromIntentUrl,                // Intent Url.
+  [MinVersion=10] kFromOsLogin,                  // Run on OS login.
+  [MinVersion=10] kFromProtocolHandler,          // Protocol handler.
+  [MinVersion=10] kFromUrlHandler,               // Url handler.
 };
 
 [Stable]

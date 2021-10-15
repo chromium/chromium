@@ -272,6 +272,15 @@ enum LaunchSource {
   kFromFullRestore = 20,              // Full restore.
   kFromSmartTextContextMenu = 21,     // Smart text selection context menu.
   kFromDiscoverTabNotification = 22,  // Discover Tab Notification.
+  kFromManagementApi = 23,            // Management API.
+  kFromKiosk = 24,                    // Kiosk.
+  kFromCommandLine = 25,              // Command line.
+  kFromBackgroundMode = 26,           // Background mode.
+  kFromNewTabPage = 27,               // New tab page.
+  kFromIntentUrl = 28,                // Intent URL.
+  kFromOsLogin = 29,                  // Run on OS login.
+  kFromProtocolHandler = 30,          // Protocol handler.
+  kFromUrlHandler = 31,               // Url handler.
 };
 
 enum TriState {

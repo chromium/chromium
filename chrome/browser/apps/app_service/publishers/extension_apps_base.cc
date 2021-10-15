@@ -109,6 +109,15 @@ ash::ShelfLaunchSource ConvertLaunchSource(
     case apps::mojom::LaunchSource::kFromFullRestore:
     case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
     case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
+    case apps::mojom::LaunchSource::kFromManagementApi:
+    case apps::mojom::LaunchSource::kFromKiosk:
+    case apps::mojom::LaunchSource::kFromCommandLine:
+    case apps::mojom::LaunchSource::kFromBackgroundMode:
+    case apps::mojom::LaunchSource::kFromNewTabPage:
+    case apps::mojom::LaunchSource::kFromIntentUrl:
+    case apps::mojom::LaunchSource::kFromOsLogin:
+    case apps::mojom::LaunchSource::kFromProtocolHandler:
+    case apps::mojom::LaunchSource::kFromUrlHandler:
       return ash::LAUNCH_FROM_UNKNOWN;
   }
 }
@@ -382,6 +391,15 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
     case apps::mojom::LaunchSource::kFromFullRestore:
     case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
     case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
+    case apps::mojom::LaunchSource::kFromManagementApi:
+    case apps::mojom::LaunchSource::kFromKiosk:
+    case apps::mojom::LaunchSource::kFromCommandLine:
+    case apps::mojom::LaunchSource::kFromBackgroundMode:
+    case apps::mojom::LaunchSource::kFromNewTabPage:
+    case apps::mojom::LaunchSource::kFromIntentUrl:
+    case apps::mojom::LaunchSource::kFromOsLogin:
+    case apps::mojom::LaunchSource::kFromProtocolHandler:
+    case apps::mojom::LaunchSource::kFromUrlHandler:
       break;
   }
 
