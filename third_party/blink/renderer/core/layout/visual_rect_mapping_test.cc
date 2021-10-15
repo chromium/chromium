@@ -1301,8 +1301,6 @@ TEST_P(VisualRectMappingTest, InclusiveIntersect) {
 }
 
 TEST_P(VisualRectMappingTest, Perspective) {
-  ScopedTransformInteropForTest enabled(true);
-
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   SetBodyInnerHTML(R"HTML(
     <style>body { margin:0; }</style>
@@ -1323,8 +1321,6 @@ TEST_P(VisualRectMappingTest, Perspective) {
 }
 
 TEST_P(VisualRectMappingTest, PerspectiveWithAnonymousTable) {
-  ScopedTransformInteropForTest enabled(true);
-
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   SetBodyInnerHTML(R"HTML(
     <style>body { margin:0; }</style>

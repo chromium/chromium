@@ -1981,13 +1981,8 @@ bool LayoutBox::MapVisualRectToContainer(
     VisualRectFlags visual_rect_flags,
     TransformState& transform_state) const {
   NOT_DESTROYED();
-  // TODO(dbaron): When TransformInteropEnabled is false, this doesn't
-  // really match rendering.  It needs to consider
-  // PaintPropertyTreeBuilder::NeedsTransform().
-  bool container_preserve_3d =
-      container_object->StyleRef().Preserves3D() &&
-      (!RuntimeEnabledFeatures::TransformInteropEnabled() ||
-       container_object == NearestAncestorForElement());
+  bool container_preserve_3d = container_object->StyleRef().Preserves3D() &&
+                               container_object == NearestAncestorForElement();
 
   TransformState::TransformAccumulation accumulation =
       container_preserve_3d ? TransformState::kAccumulateTransform
@@ -2022,8 +2017,8 @@ bool LayoutBox::MapVisualRectToContainer(
   // the desired subpixel accumulation at this point, and the transform may
   // include a scale. This only makes sense for non-preserve3D.
   //
-  // TODO(dbaron): With the TransformInterop feature enabled, does the
-  // flattening here need to be done for the early return case above as well?
+  // TODO(dbaron): Does the flattening here need to be done for the
+  // early return case above as well?
   // (Why is this flattening needed in addition to the flattening done by
   // using TransformState::kAccumulateTransform?)
   if (!StyleRef().Preserves3D()) {
@@ -2053,9 +2048,7 @@ bool LayoutBox::MapVisualRectToContainer(
   bool has_perspective = container_object && container_object->HasLayer() &&
                          container_object->StyleRef().HasPerspective();
   if (has_perspective && container_object != NearestAncestorForElement()) {
-    if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
-      has_perspective = false;
-    }
+    has_perspective = false;
 
     if (StyleRef().Preserves3D() || transform.M13() != 0.0 ||
         transform.M23() != 0.0 || transform.M43() != 0.0) {

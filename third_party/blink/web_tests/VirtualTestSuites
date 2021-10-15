@@ -818,22 +818,13 @@
     "args": [ "--disable-blink-features=SubresourceWebBundles" ]
   },
   {
-    "prefix": "transform-interop-disabled",
-    "bases": [ "external/wpt/css/css-transforms",
-               "transforms/",
-               "compositing/geometry/",
-               "compositing/overflow/",
-               "paint/invalidation/" ],
-    "args": [ "--disable-features=TransformInterop" ]
-  },
-  {
     "prefix": "backface-visibility-interop",
     "bases": [ "external/wpt/css/css-transforms",
                "transforms/",
                "compositing/geometry/",
                "compositing/overflow/",
                "paint/invalidation/" ],
-    "args": [ "--enable-features=TransformInterop,BackfaceVisibilityInterop" ]
+    "args": [ "--enable-features=BackfaceVisibilityInterop" ]
   },
   {
     "prefix": "portals",

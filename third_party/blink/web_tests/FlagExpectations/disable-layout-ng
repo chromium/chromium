@@ -1261,8 +1261,6 @@ crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/canvas-composite-video-shadow
 crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/canvas-composite-video.html [ Failure ]
 crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html [ Failure ]
 crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/patternfill-repeat.html [ Failure ]
-crbug.com/591099 virtual/transform-interop-disabled/paint/invalidation/svg/tspan-pattern-update.html [ Failure ]
-crbug.com/591099 virtual/transform-interop-disabled/transforms/3d/general/perspective-units.html [ Failure ]
 crbug.com/591099 wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Failure ]
 crbug.com/591099 wpt_internal/webcodecs/temporal_svc.https.any.html [ Failure ]
 crbug.com/591099 wpt_internal/webcodecs/temporal_svc.https.any.worker.html [ Failure ]

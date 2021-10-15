@@ -832,7 +832,6 @@ TEST_P(PaintPropertyTreeBuilderTest, WillChangeContents) {
 
 TEST_P(PaintPropertyTreeBuilderTest,
        BackfaceVisibilityWithPseudoStacking3DChildren) {
-  ScopedTransformInteropForTest ti_enabled(true);
   ScopedBackfaceVisibilityInteropForTest bfi_enabled(true);
   // TODO(chrishtr, dbaron): implement for CAP. This entails computing
   // has_backface_invisible_ancestor_in_same_3d_context in the pre-paint tree
@@ -3026,8 +3025,6 @@ TEST_P(PaintPropertyTreeBuilderTest, Preserve3DCreatesSharedRenderingContext) {
 
 TEST_P(PaintPropertyTreeBuilderTest,
        IntermediateElementPreventsSharedRenderingContext) {
-  ScopedTransformInteropForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <div id='parent' style='transform-style: preserve-3d'>
       <div>
@@ -3070,8 +3067,6 @@ TEST_P(PaintPropertyTreeBuilderTest,
 
 TEST_P(PaintPropertyTreeBuilderTest,
        IntermediateElementWithPropertiesPreventsSharedRenderingContext) {
-  ScopedTransformInteropForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <div id='parent' style='transform-style: preserve-3d'>
       <div style="overflow: hidden">

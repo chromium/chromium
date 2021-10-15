@@ -176,8 +176,8 @@ void PaintPropertyTreeBuilder::SetupContextForFrame(
 
   PaintPropertyTreeBuilderFragmentContext& context = full_context.fragments[0];
   context.current.paint_offset += PhysicalOffset(frame_view.Location());
-  context.current.rendering_context_id = 0;
-  context.current.should_flatten_inherited_transform = true;
+  context.rendering_context_id = 0;
+  context.should_flatten_inherited_transform = true;
   context.absolute_position = context.current;
   full_context.container_for_absolute_position = nullptr;
   full_context.container_for_fixed_position = nullptr;
@@ -659,8 +659,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
     TransformPaintPropertyNode::State state{
         gfx::Vector2dF(ToGfxVector2d(*paint_offset_translation))};
     state.flags.flattens_inherited_transform =
-        context_.current.should_flatten_inherited_transform;
-    state.rendering_context_id = context_.current.rendering_context_id;
+        context_.should_flatten_inherited_transform;
+    state.rendering_context_id = context_.rendering_context_id;
     state.direct_compositing_reasons =
         full_context_.direct_compositing_reasons &
         CompositingReason::kDirectReasonsForPaintOffsetTranslationProperty;
@@ -715,9 +715,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
       state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
           box_model.UniqueId(),
           CompositorElementIdNamespace::kStickyTranslation);
-      state.rendering_context_id = context_.current.rendering_context_id;
+      state.rendering_context_id = context_.rendering_context_id;
       state.flags.flattens_inherited_transform =
-          context_.current.should_flatten_inherited_transform;
+          context_.should_flatten_inherited_transform;
 
       auto* layer = box_model.Layer();
       const auto* scroller_properties = layer->AncestorScrollContainerLayer()
@@ -906,8 +906,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
       state.direct_compositing_reasons =
           direct_compositing_reasons & CompositingReasonsForTransformProperty();
       state.flags.flattens_inherited_transform =
-          context_.current.should_flatten_inherited_transform;
-      state.rendering_context_id = context_.current.rendering_context_id;
+          context_.should_flatten_inherited_transform;
+      state.rendering_context_id = context_.rendering_context_id;
       state.flags.is_for_svg_child = true;
       state.compositor_element_id = GetCompositorElementId(
           CompositorElementIdNamespace::kPrimaryTransform);
@@ -939,8 +939,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
 
   if (properties_->Transform()) {
     context_.current.transform = properties_->Transform();
-    context_.current.should_flatten_inherited_transform = false;
-    context_.current.rendering_context_id = 0;
+    context_.should_flatten_inherited_transform = false;
+    context_.rendering_context_id = 0;
   }
 }
 
@@ -1053,7 +1053,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
         // !matrix.Is2dTransform() or !matrix.IsFlat(); we're interested
         // *only* in things that cause this element to have a nonzero z
         // position within the 3-D scene.
-        if (context_.current.rendering_context_id &&
+        if (context_.rendering_context_id &&
             (matrix.M13() != 0.0 || matrix.M23() != 0.0 ||
              matrix.M43() != 0.0)) {
           UseCounter::Count(object_.GetDocument(),
@@ -1064,7 +1064,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
         // PaintLayer is created. If a node with transform-style: preserve-3d
         // does not exist in an existing rendering context, it establishes a
         // new one.
-        state.rendering_context_id = context_.current.rendering_context_id;
+        state.rendering_context_id = context_.rendering_context_id;
         if (style.Preserves3D() && !state.rendering_context_id) {
           state.rendering_context_id =
               PtrHash<const LayoutObject>::GetHash(&object_);
@@ -1082,7 +1082,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
           full_context_.direct_compositing_reasons &
           CompositingReasonsForTransformProperty();
       state.flags.flattens_inherited_transform =
-          context_.current.should_flatten_inherited_transform;
+          context_.should_flatten_inherited_transform;
       state.backface_visibility =
           object_.HasHiddenBackface()
               ? TransformPaintPropertyNode::BackfaceVisibility::kHidden
@@ -1121,23 +1121,21 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
   if (const auto* transform = properties_->Transform()) {
     context_.current.transform = transform;
     if (object_.StyleRef().Preserves3D()) {
-      context_.current.rendering_context_id = transform->RenderingContextId();
-      context_.current.should_flatten_inherited_transform = false;
+      context_.rendering_context_id = transform->RenderingContextId();
+      context_.should_flatten_inherited_transform = false;
     } else {
-      context_.current.rendering_context_id = 0;
-      context_.current.should_flatten_inherited_transform = true;
+      context_.rendering_context_id = 0;
+      context_.should_flatten_inherited_transform = true;
     }
     if (transform->IsIdentityOr2DTranslation()) {
       context_.translation_2d_to_layout_shift_root_delta +=
           FloatSize(transform->Translation2D());
     }
-  } else if (RuntimeEnabledFeatures::TransformInteropEnabled() &&
-             object_.IsForElement()) {
-    // With kTransformInterop enabled, 3D rendering contexts follow the
-    // DOM ancestor chain, so flattening should apply regardless of
-    // presence of transform.
-    context_.current.rendering_context_id = 0;
-    context_.current.should_flatten_inherited_transform = true;
+  } else if (object_.IsForElement()) {
+    // 3D rendering contexts follow the DOM ancestor chain, so
+    // flattening should apply regardless of presence of transform.
+    context_.rendering_context_id = 0;
+    context_.should_flatten_inherited_transform = true;
   }
 }
 
@@ -2012,8 +2010,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePerspective() {
               PerspectiveOrigin(To<LayoutBox>(object_)) +
                   FloatSize(context_.current.paint_offset))};
       state.flags.flattens_inherited_transform =
-          context_.current.should_flatten_inherited_transform;
-      state.rendering_context_id = context_.current.rendering_context_id;
+          context_.should_flatten_inherited_transform;
+      state.rendering_context_id = context_.rendering_context_id;
       OnUpdate(properties_->UpdatePerspective(*context_.current.transform,
                                               std::move(state)));
     } else {
@@ -2023,7 +2021,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePerspective() {
 
   if (properties_->Perspective()) {
     context_.current.transform = properties_->Perspective();
-    context_.current.should_flatten_inherited_transform = false;
+    context_.should_flatten_inherited_transform = false;
   }
 }
 
@@ -2045,8 +2043,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
       TransformPaintPropertyNode::State state;
       SetTransformNodeStateFromAffineTransform(state, content_to_parent_space);
       state.flags.flattens_inherited_transform =
-          context_.current.should_flatten_inherited_transform;
-      state.rendering_context_id = context_.current.rendering_context_id;
+          context_.should_flatten_inherited_transform;
+      state.rendering_context_id = context_.rendering_context_id;
       OnUpdate(properties_->UpdateReplacedContentTransform(
           *context_.current.transform, std::move(state)));
     } else {
@@ -2068,8 +2066,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
       context_.current.transform = properties_->ReplacedContentTransform();
       // TODO(pdr): SVG does not support 3D transforms so this should be
       // should_flatten_inherited_transform = true.
-      context_.current.should_flatten_inherited_transform = false;
-      context_.current.rendering_context_id = 0;
+      context_.should_flatten_inherited_transform = false;
+      context_.rendering_context_id = 0;
     }
   }
 }
@@ -2222,8 +2220,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         box.GetScrollableArea()->ClearPendingScrollAnchorAdjustment();
       }
       state.flags.flattens_inherited_transform =
-          context_.current.should_flatten_inherited_transform;
-      state.rendering_context_id = context_.current.rendering_context_id;
+          context_.should_flatten_inherited_transform;
+      state.rendering_context_id = context_.rendering_context_id;
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
           CompositingReason::kDirectReasonsForScrollTranslationProperty;
@@ -2549,28 +2547,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       !context_.current.paint_offset_root->PaintingLayer()
            ->EnclosingPaginationLayer()) {
     if (object_.StyleRef().GetPosition() == EPosition::kAbsolute) {
-      if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
-        // FIXME(dbaron): When the TransformInteropEnabled flag is removed
-        // because it's always enabled, we should move these variables from
-        // PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext to
-        // PaintPropertyTreeBuilderFragmentContext.
-        context_.absolute_position.should_flatten_inherited_transform =
-            context_.current.should_flatten_inherited_transform;
-        context_.absolute_position.rendering_context_id =
-            context_.current.rendering_context_id;
-      }
       context_.current = context_.absolute_position;
     } else if (object_.StyleRef().GetPosition() == EPosition::kFixed) {
-      if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
-        // FIXME(dbaron): When the TransformInteropEnabled flag is removed
-        // because it's always enabled, we should move these variables from
-        // PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext to
-        // PaintPropertyTreeBuilderFragmentContext.
-        context_.fixed_position.should_flatten_inherited_transform =
-            context_.current.should_flatten_inherited_transform;
-        context_.fixed_position.rendering_context_id =
-            context_.current.rendering_context_id;
-      }
       context_.current = context_.fixed_position;
     }
 
@@ -2622,16 +2600,6 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
                     box_model_object.Container());
         }
 #endif
-        if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
-          // FIXME(dbaron): When the TransformInteropEnabled flag is removed
-          // because it's always enabled, we should move these variables from
-          // PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext
-          // to PaintPropertyTreeBuilderFragmentContext.
-          context_.absolute_position.should_flatten_inherited_transform =
-              context_.current.should_flatten_inherited_transform;
-          context_.absolute_position.rendering_context_id =
-              context_.current.rendering_context_id;
-        }
         SwitchToOOFContext(context_.absolute_position);
 
         // Absolutely positioned content in an inline should be positioned
@@ -2656,16 +2624,6 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
                     box_model_object.Container());
         }
 #endif
-        if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
-          // FIXME(dbaron): When the TransformInteropEnabled flag is removed
-          // because it's always enabled, we should move these variables from
-          // PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext
-          // to PaintPropertyTreeBuilderFragmentContext.
-          context_.fixed_position.should_flatten_inherited_transform =
-              context_.current.should_flatten_inherited_transform;
-          context_.fixed_position.rendering_context_id =
-              context_.current.rendering_context_id;
-        }
         SwitchToOOFContext(context_.fixed_position);
         // Fixed-position elements that are fixed to the viewport have a
         // transform above the scroll of the LayoutView. Child content is
@@ -2923,13 +2881,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     UpdateCssClip();
     UpdateFilter();
     UpdateOverflowControlsClip();
-  } else if (RuntimeEnabledFeatures::TransformInteropEnabled() &&
-             object_.IsForElement()) {
-    // With kTransformInterop enabled, 3D rendering contexts follow the
-    // DOM ancestor chain, so flattening should apply regardless of
-    // presence of transform.
-    context_.current.rendering_context_id = 0;
-    context_.current.should_flatten_inherited_transform = true;
+  } else if (object_.IsForElement()) {
+    // 3D rendering contexts follow the DOM ancestor chain, so
+    // flattening should apply regardless of presence of transform.
+    context_.rendering_context_id = 0;
+    context_.should_flatten_inherited_transform = true;
   }
   UpdateLocalBorderBoxContext();
   UpdateLayoutShiftRootChanged(IsLayoutShiftRoot(object_, fragment_data_));

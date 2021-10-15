@@ -2209,12 +2209,6 @@
       origin_trial_feature_name: "RTCInsertableStreams",
       implied_by: ["RTCInsertableStreams"],
     },
-    // When enabled, enforces new interoperable semantics for 3D transforms.
-    // See crbug.com/1008483.
-    {
-      name: "TransformInterop",
-      status: "stable",
-    },
     // This is conditionally set if the platform supports translation.
     {
       name: "TranslateService"

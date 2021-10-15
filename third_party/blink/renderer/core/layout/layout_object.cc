@@ -1596,7 +1596,10 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
     return true;
   // https://www.w3.org/TR/css-transforms-1/#containing-block-for-all-descendants
 
-  if (style->HasTransformRelatedProperty()) {
+  // For transform-style specifically, we want to consider the computed
+  // value rather than the used value.
+  if (style->HasTransformRelatedProperty() ||
+      style->TransformStyle3D() == ETransformStyle3D::kPreserve3d) {
     if (!IsInline() || IsAtomicInlineLevel())
       return true;
   }
@@ -1606,21 +1609,6 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
        ShouldApplyLayoutContainment(*style) ||
        style->WillChangeProperties().Contains(CSSPropertyID::kContain)))
     return true;
-
-  // We intend to change behavior to set containing block based on computed
-  // rather than used style of transform-style. HasTransformRelatedProperty
-  // above will return true if the *used* value of transform-style is
-  // preserve-3d, so to estimate compat we need to count if the line below is
-  // reached.
-  if (style->TransformStyle3D() == ETransformStyle3D::kPreserve3d &&
-      (!IsInline() || IsAtomicInlineLevel())) {
-    UseCounter::Count(
-        GetDocument(),
-        WebFeature::kTransformStyleContainingBlockComputedUsedMismatch);
-    if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
-      return true;
-    }
-  }
 
   return false;
 }
@@ -3321,17 +3309,11 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   // them.
   bool use_transforms = !(mode & kIgnoreTransforms);
 
-  const bool container_preserves_3d =
-      container->StyleRef().Preserves3D() ||
-      (!RuntimeEnabledFeatures::TransformInteropEnabled() &&
-       !PaintPropertyTreeBuilder::NeedsTransform(*container,
-                                                 CompositingReasons()));
+  const bool container_preserves_3d = container->StyleRef().Preserves3D();
   // Just because container and this have preserve-3d doesn't mean all
   // the DOM elements between them do.  (We know they don't have a
   // transform, though, since otherwise they'd be the container.)
-  const bool path_preserves_3d =
-      !RuntimeEnabledFeatures::TransformInteropEnabled() ||
-      container == NearestAncestorForElement();
+  const bool path_preserves_3d = container == NearestAncestorForElement();
   const bool preserve3d = use_transforms && container_preserves_3d &&
                           !container->IsText() && path_preserves_3d;
 
@@ -3388,16 +3370,11 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
   // Just because container and this have preserve-3d doesn't mean all
   // the DOM elements between them do.  (We know they don't have a
   // transform, though, since otherwise they'd be the container.)
-  if (RuntimeEnabledFeatures::TransformInteropEnabled() &&
-      container != NearestAncestorForElement()) {
+  if (container != NearestAncestorForElement()) {
     transform_state.Move(PhysicalOffset(), TransformState::kFlattenTransform);
   }
 
-  const bool preserve3d =
-      use_transforms && (StyleRef().Preserves3D() ||
-                         (!RuntimeEnabledFeatures::TransformInteropEnabled() &&
-                          !PaintPropertyTreeBuilder::NeedsTransform(
-                              *this, CompositingReasons())));
+  const bool preserve3d = use_transforms && StyleRef().Preserves3D();
   if (use_transforms && ShouldUseTransformFromContainer(container)) {
     TransformationMatrix t;
     GetTransformFromContainer(container, container_offset, t);
@@ -3462,9 +3439,7 @@ void LayoutObject::GetTransformFromContainer(
   bool has_perspective = container_object && container_object->HasLayer() &&
                          container_object->StyleRef().HasPerspective();
   if (has_perspective && container_object != NearestAncestorForElement()) {
-    if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
-      has_perspective = false;
-    }
+    has_perspective = false;
 
     if (StyleRef().Preserves3D() || transform.M13() != 0.0 ||
         transform.M23() != 0.0 || transform.M43() != 0.0) {

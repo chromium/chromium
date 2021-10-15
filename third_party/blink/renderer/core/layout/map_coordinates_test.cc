@@ -1746,53 +1746,6 @@ TEST_F(MapCoordinatesTest, LocalToAbsoluteTransformFlattens) {
 }
 
 TEST_F(MapCoordinatesTest, Transform3DWithOffset) {
-  ScopedTransformInteropForTest disabled(false);
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      body { margin: 0; }
-    </style>
-    <div style="perspective: 400px; width: 0; height: 0">
-      <div>
-        <div style="height: 100px"></div>
-        <div style="transform-style: preserve-3d; transform: rotateY(0deg)">
-          <div id="target" style="width: 100px; height: 100px;
-                                  transform: translateZ(200px)">
-          </div>
-        </div>
-      </div>
-    </div>
-  )HTML");
-
-  auto* target = GetLayoutObjectByElementId("target");
-  EXPECT_EQ(FloatRect(0, 200, 200, 200),
-            MapLocalToAncestor(target, nullptr, FloatRect(0, 0, 100, 100)));
-}
-
-TEST_F(MapCoordinatesTest, Transform3DWithOffset2) {
-  ScopedTransformInteropForTest disabled(false);
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      body { margin: 0; }
-    </style>
-    <div style="perspective: 400px; width: 0; height: 0">
-      <div style="transform-style: preserve-3d">
-        <div style="height: 100px"></div>
-        <div style="transform-style: preserve-3d; transform: rotateY(0deg)">
-          <div id="target" style="width: 100px; height: 100px;
-                                  transform: translateZ(200px)">
-          </div>
-        </div>
-      </div>
-    </div>
-  )HTML");
-
-  auto* target = GetLayoutObjectByElementId("target");
-  EXPECT_EQ(FloatRect(0, 200, 200, 200),
-            MapLocalToAncestor(target, nullptr, FloatRect(0, 0, 100, 100)));
-}
-
-TEST_F(MapCoordinatesTest, Transform3DWithOffsetTransformInterop) {
-  ScopedTransformInteropForTest enabled(true);
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0; }
@@ -1814,8 +1767,7 @@ TEST_F(MapCoordinatesTest, Transform3DWithOffsetTransformInterop) {
             MapLocalToAncestor(target, nullptr, FloatRect(0, 0, 100, 100)));
 }
 
-TEST_F(MapCoordinatesTest, Transform3DWithOffset2TransformInterop) {
-  ScopedTransformInteropForTest enabled(true);
+TEST_F(MapCoordinatesTest, Transform3DWithOffset2) {
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0; }

@@ -2004,7 +2004,6 @@ HitTestingTransformState PaintLayer::CreateLocalTransformState(
                                      FloatQuad(FloatRect(recursion_data.rect)));
 
   if (container_transform_state &&
-      RuntimeEnabledFeatures::TransformInteropEnabled() &&
       (!container_layer || &container_layer->GetLayoutObject() !=
                                GetLayoutObject().NearestAncestorForElement())) {
     // Our parent *layer* is preserve-3d, but that preserve-3d doesn't

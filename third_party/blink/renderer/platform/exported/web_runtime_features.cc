@@ -639,10 +639,6 @@ void WebRuntimeFeatures::EnableInstalledApp(bool enable) {
   RuntimeEnabledFeatures::SetInstalledAppEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableTransformInterop(bool enable) {
-  RuntimeEnabledFeatures::SetTransformInteropEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableBackfaceVisibilityInterop(bool enable) {
   RuntimeEnabledFeatures::SetBackfaceVisibilityInteropEnabled(enable);
 }

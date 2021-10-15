@@ -87,11 +87,6 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
     // The PaintLayer corresponding to the origin of |paint_offset|.
     Member<const LayoutObject> paint_offset_root;
-    // Whether newly created children should flatten their inherited transform
-    // (equivalently, draw into the plane of their parent). Should generally
-    // be updated whenever |transform| is; flattening only needs to happen
-    // to immediate children.
-    bool should_flatten_inherited_transform = false;
 
     // True if any fixed-position children within this context are fixed to the
     // root of the FrameView (and hence above its scroll).
@@ -104,9 +99,6 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
     bool is_in_block_fragmentation = false;
 
-    // Rendering context for 3D sorting. See
-    // TransformPaintPropertyNode::renderingContextId.
-    unsigned rendering_context_id = 0;
     // The clip node describes the accumulated raster clip for the current
     // subtree.  Note that the computed raster region in canvas space for a clip
     // node is independent from the transform and paint offset above. Also the
@@ -151,6 +143,15 @@ struct PaintPropertyTreeBuilderFragmentContext {
   // generate the effect tree from a DOM-order traversal.
   const EffectPaintPropertyNodeOrAlias* current_effect;
   bool this_or_ancestor_opacity_is_zero = false;
+
+  // Whether newly created children should flatten their inherited transform
+  // (equivalently, draw into the plane of their parent). Should generally
+  // be updated whenever |transform| is; flattening only needs to happen
+  // to immediate children.
+  bool should_flatten_inherited_transform = false;
+  // Rendering context for 3D sorting. See
+  // TransformPaintPropertyNode::renderingContextId.
+  unsigned rendering_context_id = 0;
 
   // If the object is a flow thread, this records the clip rect for this
   // fragment.
