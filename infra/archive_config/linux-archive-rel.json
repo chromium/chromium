@@ -31,7 +31,11 @@
             "dirs": ["ClearKeyCdm", "locales", "resources"],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Linux_x64/{%position%}/chrome-linux.zip",
-            "archive_type": "ARCHIVE_TYPE_ZIP"
+            "archive_type": "ARCHIVE_TYPE_ZIP",
+            "latest_upload": {
+                "gcs_path": "experimental/Linux_x64/LAST_CHANGE",
+                "gcs_file_content": "{%position%}"
+            }
         },
         {
             "files": [

@@ -4,7 +4,11 @@
             "dirs": ["Chromium.app"],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Mac/{%position%}/chrome-mac.zip",
-            "archive_type": "ARCHIVE_TYPE_ZIP"
+            "archive_type": "ARCHIVE_TYPE_ZIP",
+            "latest_upload": {
+                "gcs_path": "experimental/Mac/LAST_CHANGE",
+                "gcs_file_content": "{%position%}"
+            }
         },
         {
             "files": [
