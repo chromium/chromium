@@ -11,7 +11,12 @@ struct OverflowMenuView: View {
 
   @EnvironmentObject var model: OverflowMenuModel
   var body: some View {
-    Group {
+    VStack(
+      alignment: .leading,
+      // Leave no spaces above or below Divider, the two other sections will
+      // include proper spacing.
+      spacing: 0
+    ) {
       OverflowMenuDestinationList(destinations: model.destinations)
         .frame(height: Dimensions.destinationListHeight)
       Divider()

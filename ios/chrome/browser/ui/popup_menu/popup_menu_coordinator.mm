@@ -297,6 +297,7 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
       UISheetPresentationController* sheetPC = menu.sheetPresentationController;
       if (sheetPC) {
         sheetPC.delegate = self;
+        sheetPC.prefersGrabberVisible = YES;
         sheetPC.detents = @[
           [UISheetPresentationControllerDetent mediumDetent],
           [UISheetPresentationControllerDetent largeDetent]

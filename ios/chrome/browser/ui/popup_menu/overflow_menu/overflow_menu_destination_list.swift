@@ -13,7 +13,7 @@ struct OverflowMenuDestinationList: View {
     ScrollView(.horizontal, showsIndicators: false) {
       LazyHStack(spacing: 0) {
         ForEach(destinations) { destination in
-          OverflowMenuDestinationView(destination: destination, iconSpacing: 13)
+          OverflowMenuDestinationView(destination: destination, iconSpacing: 16)
         }
       }
     }
