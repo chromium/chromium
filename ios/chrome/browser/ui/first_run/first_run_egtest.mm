@@ -536,12 +536,6 @@ GREYLayoutConstraint* BelowConstraint() {
   [[EarlGrey selectElementWithMatcher:GetTurnSyncOnButton()]
       performAction:grey_tap()];
 
-  // Dismiss the location prompt.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT))]
-      performAction:grey_tap()];
-
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }
@@ -567,12 +561,6 @@ GREYLayoutConstraint* BelowConstraint() {
 
   // Verify that the user is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-
-  // Dismiss the location prompt.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT))]
-      performAction:grey_tap()];
 
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:NO];
@@ -616,12 +604,6 @@ GREYLayoutConstraint* BelowConstraint() {
   // Verify that the user is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
-  // Dismiss the location prompt.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT))]
-      performAction:grey_tap()];
-
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:NO];
 }
@@ -664,12 +646,6 @@ GREYLayoutConstraint* BelowConstraint() {
   // Check sync did start.
   GREYAssertTrue([FirstRunAppInterface isSyncFirstSetupComplete],
                  @"Sync should start when turning on sync in FRE.");
-
-  // Dismiss the location prompt.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT))]
-      performAction:grey_tap()];
 
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];

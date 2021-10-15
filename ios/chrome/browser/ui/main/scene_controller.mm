@@ -1559,11 +1559,7 @@ bool IsSigninForcedByPolicy() {
 
 - (void)showLocationPermissionsFromViewController:
     (UIViewController*)baseViewController {
-  self.locationPermissionsCoordinator = [[LocationPermissionsCoordinator alloc]
-      initWithBaseViewController:baseViewController
-                         browser:self.mainInterface.browser];
-  self.locationPermissionsCoordinator.handler = self;
-  [self.locationPermissionsCoordinator start];
+  // TODO(crbug.com/1258089): Remove all location permission related code.
 }
 
 - (void)dismissLocationPermissionsExplanationModal {
