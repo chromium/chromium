@@ -20,6 +20,7 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
@@ -36,6 +37,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Time updates happen in two ways. First, other components may call
 // UpdateNetworkTime() if they happen to obtain the time securely. This will
@@ -281,7 +283,7 @@ void NetworkTimeTracker::SetMaxResponseSizeForTesting(size_t limit) {
   max_response_size_ = limit;
 }
 
-void NetworkTimeTracker::SetPublicKeyForTesting(const base::StringPiece& key) {
+void NetworkTimeTracker::SetPublicKeyForTesting(base::StringPiece key) {
   query_signer_ = client_update_protocol::Ecdsa::Create(kKeyVersion, key);
 }
 
@@ -487,17 +489,17 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
     return false;
   }
 
-  std::string data = *response_body.get();
+  base::StringPiece response(*response_body);
 
   DCHECK(query_signer_);
   if (!query_signer_->ValidateResponse(
-          data, GetServerProof(time_fetcher_->ResponseInfo()->headers))) {
+          response, GetServerProof(time_fetcher_->ResponseInfo()->headers))) {
     DVLOG(1) << "invalid signature";
     RecordFetchValidHistogram(false);
     return false;
   }
-  data = data.substr(5);  // Skips leading )]}'\n
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(data);
+  response.remove_prefix(5);  // Skips leading )]}'\n
+  absl::optional<base::Value> value = base::JSONReader::Read(response);
   if (!value) {
     DVLOG(1) << "bad JSON";
     RecordFetchValidHistogram(false);

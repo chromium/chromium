@@ -147,7 +147,7 @@ class NetworkTimeTracker {
 
   void SetMaxResponseSizeForTesting(size_t limit);
 
-  void SetPublicKeyForTesting(const base::StringPiece& key);
+  void SetPublicKeyForTesting(base::StringPiece key);
 
   void SetTimeServerURLForTesting(const GURL& url);
 
