@@ -161,9 +161,12 @@
   // If advancedSettingsSigninCoordinator wasn't dismissed yet (which can
   // happen when closing the scene), try to call -interruptWithAction: to
   // properly cleanup the coordinator.
+  SigninCoordinator* signinCoordiantor = self.advancedSettingsSigninCoordinator;
   [self.advancedSettingsSigninCoordinator
       interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
-               completion:nil];
+               completion:^() {
+                 [signinCoordiantor stop];
+               }];
   [self.advancedSettingsSigninCoordinator stop];
   self.advancedSettingsSigninCoordinator = nil;
 }

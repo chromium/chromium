@@ -150,7 +150,15 @@
   self.mediator = nil;
   [self.identityChooserCoordinator stop];
   self.identityChooserCoordinator = nil;
-  [self.addAccountSigninCoordinator stop];
+  // If advancedSettingsSigninCoordinator wasn't dismissed yet (which can
+  // happen when closing the scene), try to call -interruptWithAction: to
+  // properly cleanup the coordinator.
+  SigninCoordinator* signinCoordiantor = self.addAccountSigninCoordinator;
+  [self.addAccountSigninCoordinator
+      interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+               completion:^() {
+                 [signinCoordiantor stop];
+               }];
   self.addAccountSigninCoordinator = nil;
   [self.policySignoutPromptCoordinator stop];
   self.policySignoutPromptCoordinator = nil;
