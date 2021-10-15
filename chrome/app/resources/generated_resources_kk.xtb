@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">Жаңа шарттарды қарап шығыңыз.</translation>
 <translation id="103279545524624934">Android қолданбаларын орнату үшін дискіде орын босатыңыз.</translation>
 <translation id="1033780634303702874">Сериялық құрылғыларыңызға кіру</translation>
+<translation id="1034484273907870301">Планшет режиміндегі нобай қойындылары жолағы</translation>
 <translation id="1036348656032585052">Өшіру</translation>
 <translation id="1036511912703768636">Осы USB құрылғыларының кел келгеніне кіру</translation>
 <translation id="1036982837258183574">Толық экран режимінен шығу үшін |<ph name="ACCELERATOR" />| пернесін басыңыз</translation>
@@ -358,6 +359,7 @@
 <translation id="1378613616312864539">Бұл параметрді <ph name="NAME" /> басқарады</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ұрланған құпия сөздер жоқ.}=1{1 құпия сөз ұрланды.}other{{NUM_COMPROMISED} құпия сөз ұрланды.}}</translation>
 <translation id="1380028686461971526">Желіге автоматты қосылу</translation>
+<translation id="1381567580865186407">Мына тілдегі сөз өңдеу үшін Google-ға жіберілді: <ph name="LANGUAGE" />.</translation>
 <translation id="1383597849754832576">Автоматты субтитр файлдары жүктеп алынбады. Кейінірек қайталап көріңіз.</translation>
 <translation id="1383861834909034572">Аяқталғанда ашу</translation>
 <translation id="1383876407941801731">Іздеу</translation>
@@ -1144,6 +1146,7 @@
 <translation id="2173302385160625112">Интернет байланысын тексеріңіз</translation>
 <translation id="2173801458090845390">Осы құрылғыға сұрау идентификаторын енгізу</translation>
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" /> басқаратын аккаунт. Құрылғыдағы негізгі аккаунтдан шығу үшін экрандағы уақытты басыңыз. Мәзірден "Шығу" опциясын таңдаңыз.</translation>
+<translation id="2175384018164129879">&amp;Іздеу жүйелерін және сайттан іздеу әрекетін басқару</translation>
 <translation id="2175607476662778685">Жылдам іске қосу жолағы</translation>
 <translation id="217576141146192373">Принтер енгізілмеді. Принтердің конфигурациясын тексеріп, қайталап көріңіз.</translation>
 <translation id="2175927920773552910">QR коды</translation>
@@ -3843,6 +3846,7 @@
 <translation id="5040823038948176460">Қосымша мазмұн параметрлері</translation>
 <translation id="5043440033854483429">Атау әріптерден, сандардан және сызықшадан (-) тұруы мүмкін және ұзындығы 1-15 таңба аралығында болуы тиіс.</translation>
 <translation id="5043913660911154449">Немесе принтер үшін PPD файлын көрсетіңіз <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">Бұл қадам қайта көрсетілмесін</translation>
 <translation id="5045550434625856497">Құпия сөз дұрыс емес</translation>
 <translation id="504561833207953641">Бұрыннан бар браузер сеансында ашылуда.</translation>
 <translation id="5047421709274785093">Сайттардың қозғалыс және жарық датчиктерін пайдалануына тыйым салу</translation>
@@ -5293,6 +5297,7 @@
 <translation id="6619801788773578757">Киоск қолданбасын қосу</translation>
 <translation id="6619990499523117484">PIN кодын растаңыз</translation>
 <translation id="6622980291894852883">Кескін бөгеуді жалғастыру</translation>
+<translation id="6624036901798307345">Планшет режимінде әр қойындының нобайларын көрсететін жаңа қойындылар жолағын ашу үшін құралдар тақтасындағы қойынды саны түймесін түртіңіз.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> файлында құпия не қауіпті мазмұн бар. Иесінен бұл мәселені шешуін сұраңыз.</translation>
 <translation id="6624687053722465643">Тәтті</translation>
 <translation id="6628328486509726751">Жүктеп салынған <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -5598,6 +5603,7 @@
 <translation id="6955893174999506273">Тағы 1 ауыстырғыш тағайындау</translation>
 <translation id="6957044667612803194">Қауіпсіздік кілті PIN кодтарын қолдамайды.</translation>
 <translation id="6960507406838246615">Linux жүйесін жаңарту қажет.</translation>
+<translation id="6960648667961844909">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынбады. Жүктеп алу кейінірек қайталанады. Жүктеп алу аяқталғанша, айтылған сөз оны өңдеу үшін Google-ға жіберілді.</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> құрылғысындағы барлық пайдаланушының файлдары мен жергілікті деректері біржола жойылды.</translation>
 <translation id="6964390816189577014">Қаһарман</translation>
 <translation id="6964760285928603117">Топтан өшіру</translation>
@@ -6203,6 +6209,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (қате коды <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Компьютерді қайта іске қосу</translation>
 <translation id="7599527631045201165">Құрылғының атауы тым ұзын. Қысқасын енгізіп, қайта көріңіз.</translation>
+<translation id="7600054753482800821">&amp;Іздеу жүйелерін және сайттан іздеу әрекетін басқару</translation>
 <translation id="7600965453749440009">Ешқашан <ph name="LANGUAGE" /> тіліне аудармау</translation>
 <translation id="760197030861754408">Қосылу үшін өтіңіз: <ph name="LANDING_PAGE" />.</translation>
 <translation id="7602079150116086782">Басқа құрылғылардан қойындылар жоқ</translation>
@@ -6868,6 +6875,7 @@
 <translation id="8244514732452879619">Ұйықтайтын уақыт жақындады</translation>
 <translation id="8246776524656196770">Қауіпсіздік кілтіңізді PIN (жеке сәйкестендіру нөмірі) кодымен қорғаңыз.</translation>
 <translation id="8248050856337841185">&amp;Қою</translation>
+<translation id="8248887045858762645">Chrome кеңесі</translation>
 <translation id="8249048954461686687">OEM қалтасы</translation>
 <translation id="8249615410597138718">Құрылғыларға жіберу</translation>
 <translation id="8249672078237421304">Сіз оқитын тілден басқа тілдегі беттерді аударуды ұсынады</translation>
@@ -7341,6 +7349,7 @@
 <translation id="8763927697961133303">USB құрылғысы</translation>
 <translation id="87646919272181953">Google Photos альбомы</translation>
 <translation id="8767621466733104912">Chrome браузерін барлық пайдаланушылар үшін автоматты жаңарту</translation>
+<translation id="8767765348545497220">Қалқымалы анықтаманы жабу</translation>
 <translation id="8770406935328356739">Кеңейтімнің түбір каталогы:</translation>
 <translation id="8771300903067484968">Бастау бетінің фондық режимі әдепкі фонға қайтарылды.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> сақтау</translation>

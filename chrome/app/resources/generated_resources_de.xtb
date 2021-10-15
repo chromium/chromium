@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">Bitte lesen Sie sich die neue Fassung durch</translation>
 <translation id="103279545524624934">Geben Sie Speicherplatz frei, um Android-Apps starten zu können.</translation>
 <translation id="1033780634303702874">Auf Ihre seriellen Geräte zugreifen</translation>
+<translation id="1034484273907870301">Tableiste mit Miniaturansichten für Tablet-Modus</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1036511912703768636">Auf alle diese USB-Geräte zugreifen</translation>
 <translation id="1036982837258183574">Zum Beenden des Vollbildmodus |<ph name="ACCELERATOR" />| drücken</translation>
@@ -358,6 +359,7 @@
 <translation id="1378613616312864539">Diese Einstellung wird von <ph name="NAME" /> gesteuert</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Keine gehackten Passwörter}=1{1 gehacktes Passwort}other{{NUM_COMPROMISED} gehackte Passwörter}}</translation>
 <translation id="1380028686461971526">Verbindung mit Netzwerk automatisch herstellen</translation>
+<translation id="1381567580865186407">Sprachaufnahmen auf <ph name="LANGUAGE" /> werden zur Verarbeitung an Google gesendet</translation>
 <translation id="1383597849754832576">Sprachdateien können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
 <translation id="1383861834909034572">Nach Download öffnen</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
@@ -1144,6 +1146,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2173302385160625112">Bitte überprüfen Sie Ihre Internetverbindung</translation>
 <translation id="2173801458090845390">Diesem Gerät eine Anforderungs-ID hinzufügen</translation>
 <translation id="2174948148799307353">Konto wird von <ph name="PARENT_EMAIL" /> verwaltet. Wenn Sie sich auf diesem Gerät aus dem primären Konto abmelden möchten, klicken Sie auf dem Bildschirm auf die Uhrzeit. Wählen Sie dann im eingeblendeten Menü "Abmelden" aus.</translation>
+<translation id="2175384018164129879">Suchmaschinen und die Websitesuche verwalten</translation>
 <translation id="2175607476662778685">Schnellstartleiste</translation>
 <translation id="217576141146192373">Drucker kann nicht hinzugefügt werden. Prüfen Sie bitte die Konfiguration des Druckers und versuchen Sie es noch einmal.</translation>
 <translation id="2175927920773552910">QR-Code</translation>
@@ -3842,6 +3845,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5040823038948176460">Zusätzliche Inhaltseinstellungen</translation>
 <translation id="5043440033854483429">Der Name darf aus Buchstaben, Ziffern und Bindestrichen (-) bestehen und muss zwischen 1 und 15 Zeichen (insgesamt) umfassen.</translation>
 <translation id="5043913660911154449">Oder wählen Sie die PPD für den Drucker <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">Diesen Schritt nicht mehr anzeigen</translation>
 <translation id="5045550434625856497">Falsches Passwort</translation>
 <translation id="504561833207953641">Wird in einer aktuellen Browsersitzung geöffnet.</translation>
 <translation id="5047421709274785093">Verwendung von Bewegungs- und Lichtsensoren für Websites blockieren</translation>
@@ -5292,6 +5296,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6619801788773578757">Kioskanwendung hinzufügen</translation>
 <translation id="6619990499523117484">PIN bestätigen</translation>
 <translation id="6622980291894852883">Bilder weiterhin blockieren</translation>
+<translation id="6624036901798307345">Tippen Sie im Tablet-Modus auf die Tab-Zähler-Schaltfläche in der Symbolleiste, um die neue Tableiste zu öffnen, die Miniaturansichten der einzelnen Tabs anzeigt.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> enthält vertrauliche oder schädliche Inhalte. Bitten Sie den Inhaber, das Problem zu beheben.</translation>
 <translation id="6624687053722465643">Törtchen</translation>
 <translation id="6628328486509726751">Hochgeladen am <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -5597,6 +5602,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6955893174999506273">1 weiteren Schalter zuweisen</translation>
 <translation id="6957044667612803194">Der Sicherheitsschlüssel unterstützt keine PINs</translation>
 <translation id="6960507406838246615">Linux-Update erforderlich</translation>
+<translation id="6960648667961844909">Sprachdateien auf <ph name="LANGUAGE" /> konnten nicht heruntergeladen werden. Der Download wird später versucht. Sprachaufnahmen werden zur Verarbeitung an Google gesendet, bis der Download abgeschlossen ist.</translation>
 <translation id="696103774840402661">Alle Dateien und lokalen Daten für alle Nutzer auf diesem <ph name="DEVICE_TYPE" /> wurden dauerhaft gelöscht.</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Aus Gruppe entfernen</translation>
@@ -6202,6 +6208,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (Fehlercode <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Computer neu starten</translation>
 <translation id="7599527631045201165">Der Gerätename ist zu lang. Geben Sie einen kürzeren Namen ein und versuchen Sie es noch einmal.</translation>
+<translation id="7600054753482800821">Suchmaschinen und die Websitesuche verwalten</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
 <translation id="760197030861754408">Zum Verbinden <ph name="LANDING_PAGE" /> aufrufen.</translation>
 <translation id="7602079150116086782">Keine Tabs von anderen Geräten</translation>
@@ -6868,6 +6875,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8244514732452879619">Zeit, das Licht auszumachen</translation>
 <translation id="8246776524656196770">Sie können Ihren Sicherheitsschlüssel mit einer persönlichen Identifikationsnummer (PIN) schützen</translation>
 <translation id="8248050856337841185">&amp;Einfügen</translation>
+<translation id="8248887045858762645">Chrome-Tipp</translation>
 <translation id="8249048954461686687">OEM-Ordner</translation>
 <translation id="8249615410597138718">An meine Geräte senden</translation>
 <translation id="8249672078237421304">Übersetzung von fremdsprachigen Seiten anbieten</translation>
@@ -7341,6 +7349,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8763927697961133303">USB-Gerät</translation>
 <translation id="87646919272181953">Google Fotos-Album</translation>
 <translation id="8767621466733104912">Chrome automatisch für alle Nutzer aktualisieren</translation>
+<translation id="8767765348545497220">Infofeld schließen</translation>
 <translation id="8770406935328356739">Stammverzeichnis der Erweiterung</translation>
 <translation id="8771300903067484968">Der Hintergrund der Startseite wurde auf den standardmäßigen Hintergrund zurückgesetzt.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> speichern</translation>
