@@ -43,7 +43,7 @@ TEST_F(V8ElementTest, SetAttributeOperationCallback) {
 
 #if DCHECK_IS_ON()
   AtomicString test_attribute("test-attribute");
-  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 16u);
+  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 14u);
   AtomicString test_value("test-value");
   EXPECT_EQ(test_value.Impl()->RefCountChangeCountForTesting(), 11u);
 #endif
