@@ -2724,24 +2724,20 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
       }
     }
 
-    if (is_win11_menu) {
-      // Make sure the menu doesn't exceed the monitor bounds while cancelling
-      // out the border and shadow at the top and bottom.
-      menu_size.set_height(std::min(
-          menu_size.height(),
-          monitor_bounds.height() + border_and_shadow_insets.height()));
-      y = item_bounds.y() - border_and_shadow_insets.top();
-      y = base::clamp(y, monitor_bounds.y() - border_and_shadow_insets.top(),
-                      monitor_bounds.bottom() +
-                          border_and_shadow_insets.bottom() -
-                          menu_size.height());
-    } else {
-      y = item_bounds.y() - border_and_shadow_insets.top() -
-          menu_config.vertical_touchable_menu_item_padding;
-      y = base::clamp(y, monitor_bounds.y() - border_and_shadow_insets.top(),
-                      monitor_bounds.bottom() - menu_size.height() +
-                          border_and_shadow_insets.top());
-    }
+    // Make sure the menu doesn't exceed the monitor bounds while cancelling
+    // out the border and shadow at the top and bottom.
+    menu_size.set_height(
+        std::min(menu_size.height(),
+                 monitor_bounds.height() + border_and_shadow_insets.height()));
+    y = item_bounds.y() - border_and_shadow_insets.top() -
+        (is_win11_menu ? 0 : menu_config.vertical_touchable_menu_item_padding);
+    auto y_min = monitor_bounds.y() - border_and_shadow_insets.top();
+    auto y_max = is_win11_menu ? monitor_bounds.bottom() +
+                                     border_and_shadow_insets.bottom() -
+                                     menu_size.height()
+                               : monitor_bounds.bottom() - menu_size.height() +
+                                     border_and_shadow_insets.top();
+    y = base::clamp(y, y_min, y_max);
   }
 
   auto menu_bounds = gfx::Rect(x, y, menu_size.width(), menu_size.height());
