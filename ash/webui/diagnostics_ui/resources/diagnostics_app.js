@@ -64,6 +64,16 @@ Polymer({
       value: loadTimeData.getBoolean('isInputEnabled'),
     },
 
+    /**
+     * Whether a user is logged in or not.
+     * Note: A guest session is considered a logged-in state.
+     * @protected {boolean}
+     */
+    isLoggedIn_: {
+      type: Boolean,
+      value: loadTimeData.getBoolean('isLoggedIn'),
+    },
+
     /** @private {string} */
     toastText_: {
       type: String,
