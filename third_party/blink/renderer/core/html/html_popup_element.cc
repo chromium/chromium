@@ -48,8 +48,7 @@ void HTMLPopupElement::hide() {
     return;
   open_ = false;
   invoker_ = nullptr;
-  if (!isConnected())
-    return;
+  DCHECK(isConnected());
   GetDocument().HideAllPopupsUntil(this);
   PopPopupElement(this);
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
@@ -163,19 +162,38 @@ void HTMLPopupElement::SetFocus() {
   doc.TopDocument().FinalizeAutofocus();
 }
 
+namespace {
+void ShowInitiallyOpenPopup(HTMLPopupElement* popup) {
+  // If a <popup> has the initiallyopen attribute upon page
+  // load, and it is the first such popup, show it.
+  if (popup && popup->isConnected() && !popup->GetDocument().PopupShowing()) {
+    popup->show();
+  }
+}
+}  // namespace
+
 Node::InsertionNotificationRequest HTMLPopupElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
 
   if (had_initiallyopen_when_parsed_) {
-    DCHECK(isConnected()) << "This should be being inserted by the parser";
-    // If a <popup> has the initiallyopen attribute upon page
-    // load, and it is the first such popup, show it.
-    if (!GetDocument().PopupShowing())
-      show();
+    DCHECK(isConnected());
     had_initiallyopen_when_parsed_ = false;
+    GetDocument()
+        .GetTaskRunner(TaskType::kDOMManipulation)
+        ->PostTask(FROM_HERE, WTF::Bind(&ShowInitiallyOpenPopup,
+                                        WrapWeakPersistent(this)));
   }
   return kInsertionDone;
+}
+
+void HTMLPopupElement::RemovedFrom(ContainerNode& insertion_point) {
+  // If a popup is removed from the document, make sure it gets
+  // removed from the popup element stack and the top layer.
+  if (insertion_point.isConnected()) {
+    insertion_point.GetDocument().HidePopupIfShowing(this);
+  }
+  HTMLElement::RemovedFrom(insertion_point);
 }
 
 void HTMLPopupElement::ParserDidSetAttributes() {

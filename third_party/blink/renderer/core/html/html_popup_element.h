@@ -59,6 +59,7 @@ class HTMLPopupElement final : public HTMLElement {
 
   Node::InsertionNotificationRequest InsertedInto(
       ContainerNode& insertion_point) override;
+  void RemovedFrom(ContainerNode&) override;
   void ParserDidSetAttributes() override;
 
   // TODO(crbug.com/1197720): The popup position should be provided by the new

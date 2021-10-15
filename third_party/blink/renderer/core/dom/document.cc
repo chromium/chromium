@@ -7109,6 +7109,15 @@ void Document::HideAllPopupsUntil(const HTMLPopupElement* endpoint) {
     popup_element_stack_.back()->hide();
   }
 }
+void Document::HidePopupIfShowing(const HTMLPopupElement* popup) {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+  if (!popup_element_stack_.Contains(popup))
+    return;
+  HideAllPopupsUntil(popup);
+  DCHECK(!popup_element_stack_.IsEmpty() &&
+         popup_element_stack_.back() == popup);
+  HideTopmostPopupElement();
+}
 
 void Document::exitPointerLock() {
   if (!GetPage())
