@@ -228,9 +228,6 @@ void BuildWebAppInternalsJson(
     Profile* profile,
     base::OnceCallback<void(base::Value root)> callback) {
   auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-  if (!provider)
-    return std::move(callback).Run(
-        base::Value("Web app system not enabled for profile."));
 
   base::Value root(base::Value::Type::LIST);
   root.Append(BuildIndexJson());
@@ -245,6 +242,19 @@ void BuildWebAppInternalsJson(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson, profile, std::move(root)),
       std::move(callback));
+}
+
+void BuildResponse(Profile* profile,
+                   base::OnceCallback<void(base::Value root)> callback) {
+  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
+  if (!provider) {
+    return std::move(callback).Run(
+        base::Value("Web app system not enabled for profile."));
+  }
+
+  provider->on_registry_ready().Post(
+      FROM_HERE,
+      base::BindOnce(&BuildWebAppInternalsJson, profile, std::move(callback)));
 }
 
 void ConvertValueToJsonData(content::URLDataSource::GotDataCallback callback,
@@ -272,6 +282,6 @@ void WebAppInternalsSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  BuildWebAppInternalsJson(
-      profile_, base::BindOnce(&ConvertValueToJsonData, std::move(callback)));
+  BuildResponse(profile_,
+                base::BindOnce(&ConvertValueToJsonData, std::move(callback)));
 }
