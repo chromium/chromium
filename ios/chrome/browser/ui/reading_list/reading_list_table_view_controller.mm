@@ -163,6 +163,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   self.selectedUnreadItemCount = 0;
   self.selectedReadItemCount = 0;
   if (!editing) {
+    [self reloadDataIfNeededAndNotEditing];
     self.markConfirmationSheet = nil;
     self.editingWithToolbarButtons = NO;
     [self removeEmptySections];
@@ -459,7 +460,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 - (void)dataSourceChanged {
   // If the model is updated when the UI is already making a change, set a flag
   // to reload the data at the end of the editing.
-  if (self.numberOfBatchOperationInProgress) {
+  if (self.numberOfBatchOperationInProgress || self.isEditing) {
     self.dataSourceModifiedWhileEditing = YES;
   } else {
     [self reloadData];
@@ -839,6 +840,9 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 // section from the collection.
 - (void)moveItemsFromSection:(SectionIdentifier)fromSection
                    toSection:(SectionIdentifier)toSection {
+  if (![self.tableViewModel hasSectionForSectionIdentifier:fromSection]) {
+    return;
+  }
   NSInteger sourceSection =
       [self.tableViewModel sectionForSectionIdentifier:fromSection];
   NSInteger itemCount =
@@ -1064,8 +1068,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 // Cleanup function called in the completion block of editing operations.
 - (void)batchEditDidFinish {
   // Reload the items if the datasource was modified during the edit.
-  if (self.dataSourceModifiedWhileEditing)
-    [self reloadData];
+  [self reloadDataIfNeededAndNotEditing];
+
   // Remove any newly emptied sections.
   [self removeEmptySections];
 }
@@ -1163,6 +1167,17 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 - (BOOL)accessibilityPerformEscape {
   [self.delegate dismissReadingListListViewController:self];
   return YES;
+}
+
+#pragma mark - Private
+
+// Reloads the data if source change during the edit mode and if it is now safe
+// to do so (local edits are done).
+- (void)reloadDataIfNeededAndNotEditing {
+  if (self.dataSourceModifiedWhileEditing &&
+      self.numberOfBatchOperationInProgress == 0 && !self.editing) {
+    [self reloadData];
+  }
 }
 
 @end
