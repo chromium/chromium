@@ -135,8 +135,17 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   Profile* profile_;
   base::CallbackListSubscription adb_sideloading_device_policy_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
-  // weak_ptr_factory_ should always be last member.
-  base::WeakPtrFactory<CrostiniHandler> weak_ptr_factory_{this};
+
+  // |handler_weak_ptr_factory_| is used for callbacks handling messages from
+  // the WebUI page, and certain observers. These callbacks usually have the
+  // same lifecycle as CrostiniHandler.
+  base::WeakPtrFactory<CrostiniHandler> handler_weak_ptr_factory_{this};
+  // |callback_weak_ptr_factory_| is used for callbacks passed into crostini
+  // functions, which run JS functions/callbacks. However, running JS after
+  // being disallowed (i.e. after the user closes the WebUI page) results in a
+  // CHECK-fail. To avoid CHECK failing, the WeakPtrs are invalidated in
+  // OnJavascriptDisallowed().
+  base::WeakPtrFactory<CrostiniHandler> callback_weak_ptr_factory_{this};
 };
 
 }  // namespace settings

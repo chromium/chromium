@@ -56,100 +56,100 @@ void CrostiniHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "requestCrostiniInstallerView",
       base::BindRepeating(&CrostiniHandler::HandleRequestCrostiniInstallerView,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestRemoveCrostini",
       base::BindRepeating(&CrostiniHandler::HandleRequestRemoveCrostini,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "exportCrostiniContainer",
       base::BindRepeating(&CrostiniHandler::HandleExportCrostiniContainer,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "importCrostiniContainer",
       base::BindRepeating(&CrostiniHandler::HandleImportCrostiniContainer,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestCrostiniInstallerStatus",
       base::BindRepeating(
           &CrostiniHandler::HandleCrostiniInstallerStatusRequest,
-          weak_ptr_factory_.GetWeakPtr()));
+          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestCrostiniExportImportOperationStatus",
       base::BindRepeating(
           &CrostiniHandler::HandleCrostiniExportImportOperationStatusRequest,
-          weak_ptr_factory_.GetWeakPtr()));
+          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestArcAdbSideloadStatus",
       base::BindRepeating(&CrostiniHandler::HandleQueryArcAdbRequest,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "getCanChangeArcAdbSideloading",
       base::BindRepeating(
           &CrostiniHandler::HandleCanChangeArcAdbSideloadingRequest,
-          weak_ptr_factory_.GetWeakPtr()));
+          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "enableArcAdbSideload",
       base::BindRepeating(&CrostiniHandler::HandleEnableArcAdbRequest,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "disableArcAdbSideload",
       base::BindRepeating(&CrostiniHandler::HandleDisableArcAdbRequest,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestCrostiniContainerUpgradeView",
       base::BindRepeating(&CrostiniHandler::HandleRequestContainerUpgradeView,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestCrostiniUpgraderDialogStatus",
       base::BindRepeating(
           &CrostiniHandler::HandleCrostiniUpgraderDialogStatusRequest,
-          weak_ptr_factory_.GetWeakPtr()));
+          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestCrostiniContainerUpgradeAvailable",
       base::BindRepeating(
           &CrostiniHandler::HandleCrostiniContainerUpgradeAvailableRequest,
-          weak_ptr_factory_.GetWeakPtr()));
+          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "addCrostiniPortForward",
       base::BindRepeating(&CrostiniHandler::HandleAddCrostiniPortForward,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "getCrostiniDiskInfo",
       base::BindRepeating(&CrostiniHandler::HandleGetCrostiniDiskInfo,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "resizeCrostiniDisk",
       base::BindRepeating(&CrostiniHandler::HandleResizeCrostiniDisk,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "removeCrostiniPortForward",
       base::BindRepeating(&CrostiniHandler::HandleRemoveCrostiniPortForward,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "removeAllCrostiniPortForwards",
       base::BindRepeating(&CrostiniHandler::HandleRemoveAllCrostiniPortForwards,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "activateCrostiniPortForward",
       base::BindRepeating(&CrostiniHandler::HandleActivateCrostiniPortForward,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "deactivateCrostiniPortForward",
       base::BindRepeating(&CrostiniHandler::HandleDeactivateCrostiniPortForward,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "getCrostiniActivePorts",
       base::BindRepeating(&CrostiniHandler::HandleGetCrostiniActivePorts,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "checkCrostiniIsRunning",
       base::BindRepeating(&CrostiniHandler::HandleCheckCrostiniIsRunning,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "shutdownCrostini",
       base::BindRepeating(&CrostiniHandler::HandleShutdownCrostini,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniHandler::OnJavascriptAllowed() {
@@ -166,14 +166,14 @@ void CrostiniHandler::OnJavascriptAllowed() {
       chromeos::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kDeviceCrostiniArcAdbSideloadingAllowed,
           base::BindRepeating(&CrostiniHandler::FetchCanChangeAdbSideloading,
-                              weak_ptr_factory_.GetWeakPtr()));
+                              handler_weak_ptr_factory_.GetWeakPtr()));
 
   // Observe ADB sideloading user policy and react to its changes
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       crostini::prefs::kCrostiniArcAdbSideloadingUserPref,
       base::BindRepeating(&CrostiniHandler::FetchCanChangeAdbSideloading,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniHandler::OnJavascriptDisallowed() {
@@ -188,6 +188,7 @@ void CrostiniHandler::OnJavascriptDisallowed() {
 
   adb_sideloading_device_policy_subscription_ = {};
   pref_change_registrar_.RemoveAll();
+  callback_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void CrostiniHandler::HandleRequestCrostiniInstallerView(
@@ -323,7 +324,7 @@ void CrostiniHandler::HandleEnableArcAdbRequest(
 
   crostini::CrostiniFeatures::Get()->CanChangeAdbSideloading(
       profile_, base::BindOnce(&CrostiniHandler::OnCanEnableArcAdbSideloading,
-                               weak_ptr_factory_.GetWeakPtr()));
+                               handler_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniHandler::OnCanEnableArcAdbSideloading(
@@ -346,7 +347,7 @@ void CrostiniHandler::HandleDisableArcAdbRequest(
 
   crostini::CrostiniFeatures::Get()->CanChangeAdbSideloading(
       profile_, base::BindOnce(&CrostiniHandler::OnCanDisableArcAdbSideloading,
-                               weak_ptr_factory_.GetWeakPtr()));
+                               handler_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniHandler::OnCanDisableArcAdbSideloading(
@@ -376,7 +377,7 @@ void CrostiniHandler::HandleRequestContainerUpgradeView(
   chromeos::CrostiniUpgraderDialog::Show(
       profile_,
       base::BindOnce(&CrostiniHandler::LaunchTerminal,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     handler_weak_ptr_factory_.GetWeakPtr()),
       // If the user cancels the upgrade, we won't need to restart Crostini and
       // we don't want to run the launch closure which would launch Terminal.
       /*only_run_launch_closure_on_restart=*/true);
@@ -396,8 +397,9 @@ void CrostiniHandler::HandleQueryArcAdbRequest(
 
   chromeos::SessionManagerClient* client =
       chromeos::SessionManagerClient::Get();
-  client->QueryAdbSideload(base::BindOnce(&CrostiniHandler::OnQueryAdbSideload,
-                                          weak_ptr_factory_.GetWeakPtr()));
+  client->QueryAdbSideload(
+      base::BindOnce(&CrostiniHandler::OnQueryAdbSideload,
+                     handler_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniHandler::HandleCanChangeArcAdbSideloadingRequest(
@@ -411,7 +413,7 @@ void CrostiniHandler::HandleCanChangeArcAdbSideloadingRequest(
 void CrostiniHandler::FetchCanChangeAdbSideloading() {
   crostini::CrostiniFeatures::Get()->CanChangeAdbSideloading(
       profile_, base::BindOnce(&CrostiniHandler::OnCanChangeArcAdbSideloading,
-                               weak_ptr_factory_.GetWeakPtr()));
+                               handler_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniHandler::OnCanChangeArcAdbSideloading(
@@ -465,7 +467,8 @@ void CrostiniHandler::HandleAddCrostiniPortForward(
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       std::move(label),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)));
 }
 
 void CrostiniHandler::HandleRemoveCrostiniPortForward(
@@ -488,7 +491,8 @@ void CrostiniHandler::HandleRemoveCrostiniPortForward(
       port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)));
 }
 
 void CrostiniHandler::HandleRemoveAllCrostiniPortForwards(
@@ -527,7 +531,8 @@ void CrostiniHandler::HandleActivateCrostiniPortForward(
       port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)));
 }
 
 void CrostiniHandler::HandleDeactivateCrostiniPortForward(
@@ -551,7 +556,8 @@ void CrostiniHandler::HandleDeactivateCrostiniPortForward(
       port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)));
 }
 
 void CrostiniHandler::OnPortForwardComplete(std::string callback_id,
@@ -575,7 +581,8 @@ void CrostiniHandler::HandleGetCrostiniDiskInfo(
   bool full_info = args[2].GetBool();
   crostini::disk::GetDiskInfo(
       base::BindOnce(&CrostiniHandler::ResolveGetCrostiniDiskInfoCallback,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)),
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)),
       profile_, std::move(vm_name), full_info);
 }
 
@@ -588,7 +595,8 @@ void CrostiniHandler::HandleResizeCrostiniDisk(
   crostini::disk::ResizeCrostiniDisk(
       profile_, std::move(vm_name), bytes,
       base::BindOnce(&CrostiniHandler::ResolveResizeCrostiniDiskCallback,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)));
 }
 
 void CrostiniHandler::ResolveResizeCrostiniDiskCallback(
