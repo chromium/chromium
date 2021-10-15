@@ -35,7 +35,13 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 @interface OverflowMenuMediator ()
 
 @property(nonatomic, strong) OverflowMenuDestination* bookmarksDestination;
+@property(nonatomic, strong) OverflowMenuDestination* downloadsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* historyDestination;
+@property(nonatomic, strong) OverflowMenuDestination* passwordsDestination;
+@property(nonatomic, strong) OverflowMenuDestination* readingListDestination;
+@property(nonatomic, strong) OverflowMenuDestination* recentTabsDestination;
+@property(nonatomic, strong) OverflowMenuDestination* settingsDestination;
+@property(nonatomic, strong) OverflowMenuDestination* siteInfoDestination;
 
 @property(nonatomic, strong) OverflowMenuAction* reloadAction;
 @property(nonatomic, strong) OverflowMenuAction* openIncognitoTabAction;
@@ -57,8 +63,22 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 - (OverflowMenuModel*)createModel {
   self.bookmarksDestination = CreateOverflowMenuDestination(
       IDS_IOS_TOOLS_MENU_BOOKMARKS, @"overflow_menu_destination_bookmarks");
+  self.downloadsDestination = CreateOverflowMenuDestination(
+      IDS_IOS_TOOLS_MENU_DOWNLOADS, @"overflow_menu_destination_downloads");
   self.historyDestination = CreateOverflowMenuDestination(
       IDS_IOS_TOOLS_MENU_HISTORY, @"overflow_menu_destination_history");
+  self.passwordsDestination = CreateOverflowMenuDestination(
+      IDS_IOS_TOOLS_MENU_PASSWORDS, @"overflow_menu_destination_passwords");
+  self.readingListDestination =
+      CreateOverflowMenuDestination(IDS_IOS_TOOLS_MENU_READING_LIST,
+                                    @"overflow_menu_destination_reading_list");
+  self.recentTabsDestination = CreateOverflowMenuDestination(
+      IDS_IOS_TOOLS_MENU_RECENT_TABS, @"overflow_menu_destination_recent_tabs");
+  self.settingsDestination = CreateOverflowMenuDestination(
+      IDS_IOS_TOOLS_MENU_SETTINGS, @"overflow_menu_destination_settings");
+  self.siteInfoDestination =
+      CreateOverflowMenuDestination(IDS_IOS_TOOLS_MENU_SITE_INFORMATION,
+                                    @"overflow_menu_destination_site_info");
 
   self.reloadAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
                                                @"overflow_menu_action_reload");
@@ -82,7 +102,14 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                                  ]];
 
   return [[OverflowMenuModel alloc] initWithDestinations:@[
-    self.bookmarksDestination, self.historyDestination
+    self.bookmarksDestination,
+    self.historyDestination,
+    self.readingListDestination,
+    self.passwordsDestination,
+    self.downloadsDestination,
+    self.recentTabsDestination,
+    self.siteInfoDestination,
+    self.settingsDestination,
   ]
                                             actionGroups:@[
                                               appActionsGroup,
