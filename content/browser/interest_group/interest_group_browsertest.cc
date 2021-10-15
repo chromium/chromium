@@ -3182,7 +3182,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       https_server_->GetURL("b.test", "/interest_group/bidding_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("b.test", "/echo")));
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
-      /*owner=*/url::Origin::Create(bidder_url.GetOrigin()),
+      /*owner=*/url::Origin::Create(bidder_url),
       /*name=*/"Cthulhu", bidder_url,
       /*ads=*/MakeAdsArg({GURL("https://example.com/render")})));
   URLLoaderMonitor url_loader_monitor;
@@ -3224,7 +3224,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
-      /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+      /*owner=*/url::Origin::Create(test_url),
       /*name=*/"Cthulhu",
       /*bidding_url=*/
       remote_test_server_.GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -3267,7 +3267,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   ;
 
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
-      /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+      /*owner=*/url::Origin::Create(test_url),
       /*name=*/bidder_report_to_url.spec(),
       /*bidding_url=*/
       remote_test_server_.GetURL(
@@ -3347,7 +3347,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
           /*expiry=*/base::Time(),
-          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*owner=*/url::Origin::Create(test_url),
           /*name=*/bidder_report_to_url.spec(), bidder_url,
           /*update_url=*/absl::nullopt, trusted_bidding_signals_url,
           /*trusted_bidding_signals_keys=*/absl::nullopt,
@@ -3368,7 +3368,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   sellerSignals: {reportTo: $3},
 }
           )",
-          url::Origin::Create(test_url.GetOrigin()),
+          url::Origin::Create(test_url),
           remote_test_server_.GetURL(
               "a.test",
               "/interest_group/decision_logic_report_to_seller_signals.js"),

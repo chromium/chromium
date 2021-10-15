@@ -205,11 +205,6 @@ class COMPONENT_EXPORT(URL) GURL {
   // from the source (e.g. RenderFrameHost::GetLastCommittedOrigin).
   GURL DeprecatedGetOriginAsURL() const;
 
-  // TODO(512374): Remove this alias.
-  GURL GetOrigin() const {
-    return DeprecatedGetOriginAsURL();
-  }
-
   // A helper function to return a GURL stripped from the elements that are not
   // supposed to be sent as HTTP referrer: username, password and ref fragment.
   // For invalid URLs or URLs that no valid referrers, an empty URL will be

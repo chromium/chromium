@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   // permission.
   InstallFileHandlingPWA();
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  const GURL origin = GetSecureAppURL().GetOrigin();
+  const GURL origin = GetSecureAppURL().DeprecatedGetOriginAsURL();
 
   if (UsesPermissions()) {
     EXPECT_EQ(CONTENT_SETTING_ASK,

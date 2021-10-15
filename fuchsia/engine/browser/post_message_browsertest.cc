@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, SendData) {
   message.set_data(base::MemBufferFromString(kPage1Path, "test"));
   base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
   frame->PostMessage(
-      post_message_url.GetOrigin().spec(), std::move(message),
+      post_message_url.DeprecatedGetOriginAsURL().spec(), std::move(message),
       cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
   ASSERT_TRUE(post_result.Wait());
 
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, PassMessagePort) {
   {
     base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
     frame->PostMessage(
-        post_message_url.GetOrigin().spec(),
+        post_message_url.DeprecatedGetOriginAsURL().spec(),
         cr_fuchsia::CreateWebMessageWithMessagePortRequest(
             message_port.NewRequest(), base::MemBufferFromString("hi", "test")),
         cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(PostMessageTest, MessagePortDisconnected) {
   {
     base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
     frame->PostMessage(
-        post_message_url.GetOrigin().spec(),
+        post_message_url.DeprecatedGetOriginAsURL().spec(),
         cr_fuchsia::CreateWebMessageWithMessagePortRequest(
             message_port.NewRequest(), base::MemBufferFromString("hi", "test")),
         cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
