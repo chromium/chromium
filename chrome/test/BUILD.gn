@@ -4692,6 +4692,7 @@ test("unit_tests") {
     "../browser/subresource_redirect/litepages_service_bypass_decider_unittest.cc",
     "../browser/subresource_redirect/origin_robots_rules_unittest.cc",
     "../browser/subresource_redirect/subresource_redirect_util_unit_test.cc",
+    "../browser/support_tool/support_tool_handler_unittest.cc",
     "../browser/ui/autofill/payments/offer_notification_helper_unittest.cc",
 
     # TODO(hashimoto): those tests should be componentized and moved to
