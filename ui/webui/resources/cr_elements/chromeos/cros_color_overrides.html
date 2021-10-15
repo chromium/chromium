@@ -40,6 +40,10 @@ To get Chrome OS System Colors, an element must:
       :host-context([cros]) .primary-toggle[checked] {
         color: var(--cros-text-color-prominent);
       }
+
+      :host-context([cros]) paper-spinner-lite {
+        --paper-spinner-color: var(--cros-icon-color-prominent);
+      }
     </style>
   </template>
 </dom-module>
