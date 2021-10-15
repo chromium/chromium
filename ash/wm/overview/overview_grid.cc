@@ -28,6 +28,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
+#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
@@ -323,6 +324,20 @@ bool ShouldExcludeItemFromGridLayout(
     OverviewItem* item,
     const base::flat_set<OverviewItem*>& ignored_items) {
   return item->animating_to_close() || ignored_items.contains(item);
+}
+
+// Apply the property that makes windows visible in the desk mini view,
+// recursively. Windows that have been updated are added to the vector.
+void SetForceVisibleInMiniView(
+    aura::Window* window,
+    std::vector<aura::Window*>* out_updated_windows) {
+  if (!window->GetProperty(kForceVisibleInMiniViewKey)) {
+    window->SetProperty(kForceVisibleInMiniViewKey, true);
+    out_updated_windows->push_back(window);
+  }
+
+  for (aura::Window* child : window->children())
+    SetForceVisibleInMiniView(child, out_updated_windows);
 }
 
 }  // namespace
@@ -863,6 +878,27 @@ void OverviewGrid::ShowDesksTemplatesGrid(
         DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
             root_window_, GetGridEffectiveBounds(), desk_templates);
   }
+
+  // Before showing the grid, we need to hide the overview items. However, we
+  // don't want to affect the desk preview. To do this, we temporarily set a
+  // window property that will keep them visible.
+  if (DeskMiniView* desk_mini_view = desks_bar_view_->FindMiniViewForDesk(
+          DesksController::Get()->GetTargetActiveDesk())) {
+    std::vector<aura::Window*> updated_windows;
+    SetForceVisibleInMiniView(desk_mini_view->GetDeskContainer(),
+                              &updated_windows);
+
+    // This makes the desk preview pick up on the window property change.
+    desk_mini_view->desk_preview()->RecreateDeskContentsMirrorLayers();
+
+    // Remove the property that was temporarily applied.
+    for (aura::Window* window : updated_windows)
+      window->ClearProperty(kForceVisibleInMiniViewKey);
+  }
+
+  // We can now hide the overview mode items.
+  for (auto& overview_mode_item : window_list_)
+    overview_mode_item->HideForDesksTemplatesGrid();
 
   desks_templates_grid_widget_->Show();
   desks_bar_view_->UpdateButtonsAfterShowingDesksTemplatesGrid();

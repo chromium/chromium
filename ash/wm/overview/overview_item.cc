@@ -207,6 +207,15 @@ bool OverviewItem::Contains(const aura::Window* target) const {
   return transform_window_.Contains(target);
 }
 
+void OverviewItem::HideForDesksTemplatesGrid() {
+  transform_window_.window()->layer()->SetOpacity(0.0f);
+  item_widget_->GetLayer()->SetOpacity(0.0f);
+
+  item_widget_event_blocker_ =
+      std::make_unique<aura::ScopedWindowEventTargetingBlocker>(
+          item_widget_->GetNativeWindow());
+}
+
 void OverviewItem::OnMovingWindowToAnotherDesk() {
   is_moving_to_another_desk_ = true;
   // Restore the dragged item window, so that its transform is reset to

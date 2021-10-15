@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -74,6 +75,10 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // Restores stacking of window captions above the windows, then fades out.
   void Shutdown();
+
+  // Hides the overview item. This is used to hide any overview items that may
+  // be present when entering the desk templates UI.
+  void HideForDesksTemplatesGrid();
 
   // Dispatched before beginning window overview. This will do any necessary
   // one time actions such as restoring minimized windows.
@@ -430,6 +435,11 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   // Cached values of the item bounds so that they do not have to be calculated
   // on each scroll update. Will be nullopt unless a grid scroll is underway.
   absl::optional<gfx::RectF> scrolling_bounds_ = absl::nullopt;
+
+  // Used to block events from reaching the item widget when the overview item
+  // has been hidden.
+  std::unique_ptr<aura::ScopedWindowEventTargetingBlocker>
+      item_widget_event_blocker_;
 
   base::WeakPtrFactory<OverviewItem> weak_ptr_factory_{this};
 };

@@ -31,6 +31,7 @@
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -398,6 +399,32 @@ TEST_F(DesksTemplatesTest, NoWindowsLabelOnTemplateGridShow) {
   ShowDesksTemplatesGrid();
   EXPECT_FALSE(grid_list[0]->no_windows_widget());
   EXPECT_FALSE(grid_list[1]->no_windows_widget());
+}
+
+// Tests that overview items are hidden when the desk templates grid is shown.
+TEST_F(DesksTemplatesTest, HideOverviewItemsOnTemplateGridShow) {
+  UpdateDisplay("800x600,800x600");
+
+  const base::GUID uuid_1 = base::GUID::GenerateRandomV4();
+  const std::string name_1 = "template_1";
+  base::Time time_1 = base::Time::Now();
+  AddEntry(uuid_1, name_1, time_1);
+
+  auto test_window = CreateTestWindow();
+
+  // Start overview mode. The window is visible in the overview mode.
+  ToggleOverview();
+  WaitForUI();
+  ASSERT_TRUE(GetOverviewSession());
+  EXPECT_EQ(1.0f, test_window->layer()->opacity());
+
+  // Open the desk templates grid. This should hide the window.
+  GetOverviewSession()->ShowDesksTemplatesGrids();
+  EXPECT_EQ(0.0f, test_window->layer()->opacity());
+
+  // Exit overview mode. The window is restored and visible again.
+  ToggleOverview();
+  EXPECT_EQ(1.0f, test_window->layer()->opacity());
 }
 
 // Tests the modality of the dialogs shown in desks templates.

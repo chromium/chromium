@@ -194,6 +194,10 @@ class ASH_EXPORT DesksBarView : public views::View,
   // and the `zero_state_default_desk_button_`.
   void UpdateButtonsAfterShowingDesksTemplatesGrid();
 
+  // Returns the mini_view associated with `desk` or nullptr if no mini_view
+  // has been created for it yet.
+  DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;
+
  private:
   friend class DesksBarScrollViewLayout;
   friend class DesksTestApi;
@@ -207,10 +211,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   // scroll. Return true if the scroll is triggered. Return false if the scroll
   // is ended.
   bool MaybeScrollByDraggedDesk();
-
-  // Returns the mini_view associated with |desk| or nullptr if no mini_view
-  // has been created for it yet.
-  DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;
 
   // Returns the X offset of the first mini_view on the left (if there's one),
   // or the X offset of this view's center point when there are no mini_views.

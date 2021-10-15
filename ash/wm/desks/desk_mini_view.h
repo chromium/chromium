@@ -62,6 +62,7 @@ class ASH_EXPORT DeskMiniView
 
   DesksBarView* owner_bar() { return owner_bar_; }
   const DeskPreviewView* desk_preview() const { return desk_preview_; }
+  DeskPreviewView* desk_preview() { return desk_preview_; }
 
   gfx::Rect GetPreviewBoundsInScreen() const;
 

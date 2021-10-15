@@ -968,6 +968,15 @@ void DesksBarView::UpdateButtonsAfterShowingDesksTemplatesGrid() {
   expanded_state_desks_templates_button_->UpdateBorderColor();
 }
 
+DeskMiniView* DesksBarView::FindMiniViewForDesk(const Desk* desk) const {
+  for (auto* mini_view : mini_views_) {
+    if (mini_view->desk() == desk)
+      return mini_view;
+  }
+
+  return nullptr;
+}
+
 int DesksBarView::DetermineMoveIndex(int location_screen_x) const {
   const int views_size = static_cast<int>(mini_views_.size());
 
@@ -1015,15 +1024,6 @@ bool DesksBarView::MaybeScrollByDraggedDesk() {
   }
 
   return false;
-}
-
-DeskMiniView* DesksBarView::FindMiniViewForDesk(const Desk* desk) const {
-  for (auto* mini_view : mini_views_) {
-    if (mini_view->desk() == desk)
-      return mini_view;
-  }
-
-  return nullptr;
 }
 
 int DesksBarView::GetFirstMiniViewXOffset() const {
