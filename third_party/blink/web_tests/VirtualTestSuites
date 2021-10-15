@@ -858,6 +858,11 @@
     "args": [ "--enable-features=InterestCohortAPIOriginTrial" ]
   },
   {
+    "prefix": "third-party-storage-partitioning",
+    "bases":[ "external/wpt/service-workers/service-worker/partitioned-service-worker.tentative.https.html" ],
+    "args": [ "--enable-features=ThirdPartyStoragePartitioning" ]
+  },
+  {
     "prefix": "threaded-composited-iframes",
     "bases": ["external/wpt/is-input-pending"],
     "args": ["--enable-threaded-compositing",
