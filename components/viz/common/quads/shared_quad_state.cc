@@ -59,6 +59,9 @@ void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetBoolean("are_contents_opaque", are_contents_opaque);
   value->SetDouble("opacity", opacity);
   value->SetString("blend_mode", SkBlendMode_Name(blend_mode));
+  value->SetInteger("sorting_context_id", sorting_context_id);
+  value->SetBoolean("is_fast_rounded_corner", is_fast_rounded_corner);
+  value->SetDouble("de_jelly_delta_y", de_jelly_delta_y);
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "viz::SharedQuadState",
       this);
