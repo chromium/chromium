@@ -105,9 +105,6 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
                      ChildSpawnFlags flags) override;
 #endif
   std::string GetAcceptLangs(BrowserContext* context) override;
-  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
-                                 const url::Origin& top_frame_origin,
-                                 const GURL& api_url) override;
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
 

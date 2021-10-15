@@ -4,22 +4,12 @@
 
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 
-#include "base/strings/strcat.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
-
-std::string DebuggableAuctionWorklet::Title() const {
-  if (absl::holds_alternative<auction_worklet::mojom::BidderWorklet*>(
-          worklet_)) {
-    return base::StrCat({"FLEDGE bidder worklet for ", url_.spec()});
-  } else {
-    return base::StrCat({"FLEDGE seller worklet for ", url_.spec()});
-  }
-}
 
 void DebuggableAuctionWorklet::ConnectDevToolsAgent(
     mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) {
