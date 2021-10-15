@@ -41,6 +41,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.BottomSheetOpenedSource;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator.OmniboxIconController;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
@@ -494,6 +495,8 @@ public class MerchantTrustSignalsCoordinatorTest {
     public void testOnMessagePrimaryAction() {
         mCoordinator.onMessagePrimaryAction(mDummyMerchantTrustSignals, FAKE_URL);
         verify(mMockMetrics, times(1)).recordMetricsForMessageTapped();
+        verify(mMockMetrics, times(1))
+                .recordMetricsForBottomSheetOpenedSource(eq(BottomSheetOpenedSource.FROM_MESSAGE));
         verify(mMockDetailsTabCoordinator, times(1))
                 .requestOpenSheet(any(GURL.class), any(String.class),
                         mOnBottomSheetDismissedCaptor.capture());
@@ -507,6 +510,9 @@ public class MerchantTrustSignalsCoordinatorTest {
         TrackerFactory.setTrackerForTests(mMockTracker);
 
         mCoordinator.onStoreInfoClicked(mDummyMerchantTrustSignals);
+        verify(mMockMetrics, times(1))
+                .recordMetricsForBottomSheetOpenedSource(
+                        eq(BottomSheetOpenedSource.FROM_PAGE_INFO));
         verify(mMockDetailsTabCoordinator, times(1))
                 .requestOpenSheet(any(GURL.class), any(String.class),
                         mOnBottomSheetDismissedCaptor.capture());

@@ -10630,14 +10630,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MerchantTrust.BottomSheet.OpenSource"
+    enum="MerchantTrustBottomSheetOpenedSource" expires_after="M102">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records which ui the bottom sheet is opened from. Recorded when the bottom
+    sheet is opened. Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram name="MerchantTrust.Message.ClearReason"
     enum="MerchantTrustMessageClearReason" expires_after="M102">
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
-    Records the reason that the merchant trust message is cleared in the
-    MessageDispatcher queue. Right now we only record message being cleared when
-    user navigates away from current page. Implemented for Android.
+    Records why the prepared merchant trust message is cleared. Recorded when
+    the prepared message is cleared. Implemented for Android. In M96 and later
+    this includes MESSAGE_CONTEXT_NO_LONGER_VALID and
+    SWITCH_TO_DIFFERENT_WEBCONTENTS.
   </summary>
 </histogram>
 
@@ -10656,8 +10667,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
-    Records the duration in milliseconds that the merchant trust message is in
-    the MessageDispatcher queue. Implemented for Android.
+    Records the duration in milliseconds from the merchant trust message being
+    prepared to it being shown or cleared. Implemented for Android.
   </summary>
 </histogram>
 
@@ -10668,6 +10679,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records the duration in milliseconds that the merchant trust message is
     shown. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="MerchantTrust.PageInfo.IsStoreInfoVisible"
+    enum="BooleanVisible" expires_after="M102">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the store info row is visible in page info. Recorded when
+    the page info is opened. Implemented for Android.
   </summary>
 </histogram>
 

@@ -56496,6 +56496,8 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Unknown"/>
   <int value="1" label="Navigate to same domain"/>
   <int value="2" label="Navigate to different domain"/>
+  <int value="3" label="Message context is no longer valid"/>
+  <int value="4" label="Switch to different webcontents"/>
 </enum>
 
 <enum name="MessageDismissReason">

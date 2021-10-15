@@ -103,15 +103,16 @@ public class MerchantTrustMessageSchedulerTest {
         int callCount = callbackHelper.getCallCount();
         scheduler.schedule(
                 mockPropteryModel, mockMessagesContext, 2000, callbackHelper::notifyCalled);
-
         callbackHelper.waitForCallback(callCount);
+
         Assert.assertNotNull(callbackHelper.getResult());
+        verify(mMockMetrics, times(1)).recordMetricsForMessagePrepared();
         verify(mMockHandler, times(1)).postDelayed(any(Runnable.class), eq(2000L));
         verify(mMockMessageDispatcher, times(1))
                 .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
                         eq(MessageScopeType.NAVIGATION), eq(false));
-        verify(mMockMetrics, times(1)).recordMetricsForMessagePrepared();
         verify(mMockMetrics, times(1)).recordMetricsForMessageShown();
+        Assert.assertNull(scheduler.getScheduledMessageContext());
     }
 
     @Test
@@ -135,11 +136,14 @@ public class MerchantTrustMessageSchedulerTest {
         callbackHelper.waitForCallback(callCount);
 
         Assert.assertNull(callbackHelper.getResult());
-        Assert.assertNull(scheduler.getScheduledMessageContext());
-
+        verify(mMockMetrics, times(1)).recordMetricsForMessagePrepared();
+        verify(mMockMetrics, times(1))
+                .recordMetricsForMessageCleared(
+                        eq(MessageClearReason.MESSAGE_CONTEXT_NO_LONGER_VALID));
         verify(mMockMessageDispatcher, never())
                 .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
                         eq(MessageScopeType.NAVIGATION), eq(false));
+        Assert.assertNull(scheduler.getScheduledMessageContext());
     }
 
     @Test
@@ -163,11 +167,45 @@ public class MerchantTrustMessageSchedulerTest {
         callbackHelper.waitForCallback(callCount);
 
         Assert.assertNull(callbackHelper.getResult());
-        Assert.assertNull(scheduler.getScheduledMessageContext());
-
+        verify(mMockMetrics, times(1)).recordMetricsForMessagePrepared();
+        verify(mMockMetrics, times(1))
+                .recordMetricsForMessageCleared(
+                        eq(MessageClearReason.SWITCH_TO_DIFFERENT_WEBCONTENTS));
         verify(mMockMessageDispatcher, never())
                 .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
                         eq(MessageScopeType.NAVIGATION), eq(false));
+        Assert.assertNull(scheduler.getScheduledMessageContext());
+    }
+
+    @Test
+    public void testScheduleUnknownClearReason() throws TimeoutException {
+        MerchantTrustSignalsCallbackHelper callbackHelper =
+                new MerchantTrustSignalsCallbackHelper();
+        MerchantTrustMessageScheduler scheduler = getSchedulerUnderTest();
+        PropertyModel mockPropteryModel = mock(PropertyModel.class);
+        doReturn(false).when(mMockWebContents).isDestroyed();
+
+        MerchantTrustMessageContext mockMessagesContext = mock(MerchantTrustMessageContext.class);
+        doReturn(true).when(mockMessagesContext).isValid();
+        doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
+        doReturn(mMockWebContents).when(mMockTab).getWebContents();
+        doReturn(false).when(mMockTabProvider).hasValue();
+
+        scheduler.setHandlerForTesting(mMockHandler);
+
+        int callCount = callbackHelper.getCallCount();
+        scheduler.schedule(
+                mockPropteryModel, mockMessagesContext, 2000, callbackHelper::notifyCalled);
+        callbackHelper.waitForCallback(callCount);
+
+        Assert.assertNull(callbackHelper.getResult());
+        verify(mMockMetrics, times(1)).recordMetricsForMessagePrepared();
+        verify(mMockMetrics, times(1))
+                .recordMetricsForMessageCleared(eq(MessageClearReason.UNKNOWN));
+        verify(mMockMessageDispatcher, never())
+                .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
+                        eq(MessageScopeType.NAVIGATION), eq(false));
+        Assert.assertNull(scheduler.getScheduledMessageContext());
     }
 
     @Test
