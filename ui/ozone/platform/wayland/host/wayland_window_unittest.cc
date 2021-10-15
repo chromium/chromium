@@ -35,6 +35,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
@@ -144,6 +145,9 @@ class WaylandWindowTest : public WaylandTest {
   WaylandWindowTest& operator=(const WaylandWindowTest&) = delete;
 
   void SetUp() override {
+    disabled_features_.push_back(
+        ui::kWaylandSurfaceSubmissionInPixelCoordinates);
+
     WaylandTest::SetUp();
 
     xdg_surface_ = surface_->xdg_surface();

@@ -980,8 +980,9 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   // Start a window drag session.
   SendPointerEnter(window_.get(), &delegate_);
   SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
-  SendPointerMotion(window_.get(), &delegate_, {10, 10});
-  EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
+  gfx::Point p0{10, 10};
+  SendPointerMotion(window_.get(), &delegate_, p0);
+  EXPECT_EQ(p0, screen_->GetCursorScreenPoint());
 
   auto* wayland_extension = GetWaylandExtension(*window_);
   wayland_extension->StartWindowDraggingSessionIfNeeded();
@@ -992,12 +993,18 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   auto test = [](WaylandWindowDragControllerTest* self, WaylandScreen* screen,
                  wl::TestWaylandServerThread* server, WaylandWindow* window,
                  std::vector<wl::TestOutput*>* outputs,
-                 WmMoveLoopHandler* move_loop_handler) {
+                 WmMoveLoopHandler* move_loop_handler,
+                 bool in_pixel_coordinates) {
     for (auto* output : *outputs) {
       // Resetting cursor to the initial position.
-      self->SendDndMotion({10, 10});
+      gfx::Point p0{10, 10};
+      self->SendDndMotion(p0);
       self->Sync();
-      EXPECT_EQ(gfx::Point(10, 10), screen->GetCursorScreenPoint());
+      gfx::Point expected_point =
+          in_pixel_coordinates
+              ? gfx::ScaleToRoundedPoint(p0, 1.0f / window->window_scale())
+              : p0;
+      EXPECT_EQ(expected_point, screen->GetCursorScreenPoint());
 
       // Send the window to |output|.
       wl::MockSurface* surface = server->GetObject<wl::MockSurface>(
@@ -1007,12 +1014,15 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
       self->Sync();
       EXPECT_EQ(output->GetScale(), window->window_scale());
 
-      self->SendDndMotion({20, 20});
+      gfx::Point p1{20, 20};
+      self->SendDndMotion(p1);
       self->Sync();
 
-      // GetCursorScreenPoint should return the same value regardless of buffer
-      // scale.
-      EXPECT_EQ(gfx::Point(20, 20), screen->GetCursorScreenPoint());
+      expected_point =
+          in_pixel_coordinates
+              ? gfx::ScaleToRoundedPoint(p1, 1.0f / window->window_scale())
+              : p1;
+      EXPECT_EQ(expected_point, screen->GetCursorScreenPoint());
       wl_surface_send_leave(surface->resource(), output->resource());
     }
 
@@ -1022,7 +1032,8 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   ScheduleTestTask(base::BindOnce(
       test, base::Unretained(this), base::Unretained(screen_.get()),
       base::Unretained(&server_), base::Unretained(window_.get()),
-      base::Unretained(&outputs), base::Unretained(move_loop_handler)));
+      base::Unretained(&outputs), base::Unretained(move_loop_handler),
+      connection_->surface_submission_in_pixel_coordinates()));
   EXPECT_CALL(delegate(), DispatchEvent(_)).Times(::testing::AtLeast(1));
   move_loop_handler->RunMoveLoop({});
 }

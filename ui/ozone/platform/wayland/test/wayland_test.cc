@@ -50,7 +50,7 @@ WaylandTest::WaylandTest()
 WaylandTest::~WaylandTest() {}
 
 void WaylandTest::SetUp() {
-  feature_list_.InitWithFeatures({ui::kWaylandOverlayDelegation}, {});
+  feature_list_.InitWithFeatures(enabled_features_, disabled_features_);
 
   if (DeviceDataManager::HasInstance()) {
     // Another instance may have already been set before.
