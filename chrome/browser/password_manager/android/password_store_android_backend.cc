@@ -174,7 +174,7 @@ FieldInfoStore* PasswordStoreAndroidBackend::GetFieldInfoStore() {
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-PasswordStoreAndroidBackend::CreateSyncControllerDelegateFactory() {
+PasswordStoreAndroidBackend::CreateSyncControllerDelegate() {
   return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
       base::SequencedTaskRunnerHandle::Get(),
       base::BindRepeating(

@@ -152,7 +152,7 @@ class PasswordStoreAndroidBackend
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-  CreateSyncControllerDelegateFactory() override;
+  CreateSyncControllerDelegate() override;
 
   // Implements PasswordStoreAndroidBackendBridge::Consumer interface.
   void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::JobId job_id,
