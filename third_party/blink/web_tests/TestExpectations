@@ -7173,3 +7173,6 @@ crbug.com/1259749 [ Mac11.0 ] http/tests/eventsource/eventsource-cors-non-http.h
 
 # Data URL navigation within Fenced Frames currently crashed in the MPArch implementation.
 crbug.com/1243568 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-data-url-navigation.html [ Crash ]
+
+# Sheriff 2021-10-15
+crbug.com/crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
