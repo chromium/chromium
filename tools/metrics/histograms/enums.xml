@@ -66672,6 +66672,19 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Permission denied"/>
 </enum>
 
+<enum name="PersistentProtoReadStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Missing"/>
+  <int value="2" label="Read error"/>
+  <int value="3" label="Parse error"/>
+</enum>
+
+<enum name="PersistentProtoWriteStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Write error"/>
+  <int value="2" label="Serialization error"/>
+</enum>
+
 <enum name="PhoneCollectionState">
   <int value="0" label="Phone Not Collected, WebOTP Not Used, OTC Not Used"/>
   <int value="1" label="Phone Not Collected, WebOTP Not Used, OTC Used"/>

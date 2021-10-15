@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner_forward.h"
@@ -30,6 +31,7 @@ enum class ReadStatus {
   kMissing = 1,
   kReadError = 2,
   kParseError = 3,
+  kMaxValue = kParseError,
 };
 
 // The result of writing a backing file to disk. These values persist to logs.
@@ -38,6 +40,7 @@ enum class WriteStatus {
   kOk = 0,
   kWriteError = 1,
   kSerializationError = 2,
+  kMaxValue = kSerializationError,
 };
 
 namespace {
@@ -209,6 +212,8 @@ class PersistentProto {
 
  private:
   void OnReadComplete(std::pair<ReadStatus, std::unique_ptr<T>> result) {
+    base::UmaHistogramEnumeration("Apps.AppList.PersistentProto.ReadStatus",
+                                  result.first);
     if (result.first == ReadStatus::kOk) {
       proto_ = std::move(result.second);
     } else {
@@ -227,7 +232,11 @@ class PersistentProto {
     std::move(on_read_).Run(result.first);
   }
 
-  void OnWriteComplete(const WriteStatus status) { on_write_.Run(status); }
+  void OnWriteComplete(const WriteStatus status) {
+    base::UmaHistogramEnumeration("Apps.AppList.PersistentProto.WriteStatus",
+                                  status);
+    on_write_.Run(status);
+  }
 
   void OnQueueWrite() {
     // Reset the queued flag before posting the task. Last-moment updates to

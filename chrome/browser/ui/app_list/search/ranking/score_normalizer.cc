@@ -247,8 +247,6 @@ double ScoreNormalizer::UpdateAndNormalize(const std::string& name,
 void ScoreNormalizer::OnProtoRead(ReadStatus status) {
   DCHECK(proto_.initialized());
 
-  // TODO(crbug.com/1199206): Add error metrics based on |status|.
-
   if ((proto_->has_model_version() &&
        proto_->model_version() != kModelVersion) ||
       (proto_->has_parameter_version() &&
