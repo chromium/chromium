@@ -379,6 +379,19 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
 
 #if defined(V8_VIRTUAL_MEMORY_CAGE)
   if (v8_cage_is_initialized) {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused. This should match enum
+    // V8VirtualMemoryCageMode in \tools\metrics\histograms\enums.xml
+    enum class VirtualMemoryCageMode {
+      kSecure = 0,
+      kInsecure = 1,
+      kMaxValue = kInsecure,
+    };
+    base::UmaHistogramEnumeration("V8.VirtualMemoryCageMode",
+                                  v8::V8::IsUsingSecureVirtualMemoryCage()
+                                      ? VirtualMemoryCageMode::kSecure
+                                      : VirtualMemoryCageMode::kInsecure);
+
     // When the virtual memory cage is enabled, ArrayBuffers must be located
     // inside the cage. To achieve that, PA's ConfigurablePool is created inside
     // the cage and Blink will create the ArrayBuffer partition inside that

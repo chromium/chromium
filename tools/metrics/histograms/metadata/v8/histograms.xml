@@ -1395,6 +1395,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="V8.VirtualMemoryCageMode" enum="V8VirtualMemoryCageMode"
+    expires_after="2022-09-30">
+  <owner>saelo@chromium.org</owner>
+  <owner>ishell@chromium.org</owner>
+  <summary>
+    Mode of operation of V8's virtual memory cage.
+
+    V8's virtual memory cage can operate in two different modes: the normal,
+    secure mode, and an insecure fallback mode, used if a normal cage can, for
+    whatever reason, not be created. The insecure mode does not have the desired
+    security properties but allows V8 to otherwise operate normally. The mode of
+    the cage is recorded as enum value during the initialization of V8, after
+    the virtual memory cage has been initialized.
+  </summary>
+</histogram>
+
 <histogram name="V8.VirtualMemoryCageSizeGB" units="GB"
     expires_after="2022-09-30">
   <owner>saelo@chromium.org</owner>

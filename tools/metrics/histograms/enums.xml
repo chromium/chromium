@@ -86206,6 +86206,11 @@ Full version information for the fingerprint enum values:
   <int value="3" label="FAILED_OTHER">Failed for other reason</int>
 </enum>
 
+<enum name="V8VirtualMemoryCageMode">
+  <int value="0" label="kSecure">Using a normal, secure cage</int>
+  <int value="1" label="kInsecure">Using a fallback, insecure cage</int>
+</enum>
+
 <enum name="VaapiFunctions">
   <int value="0" label="vaBeginPicture()"/>
   <int value="1" label="vaCreateBuffer()"/>
