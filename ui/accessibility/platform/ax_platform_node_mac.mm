@@ -63,15 +63,16 @@ AXPlatformNode* AXPlatformNode::FromNativeViewAccessible(
   return nullptr;
 }
 
-AXPlatformNodeMac::AXPlatformNodeMac() {
-}
+AXPlatformNodeMac::AXPlatformNodeMac() = default;
 
-AXPlatformNodeMac::~AXPlatformNodeMac() {
-}
+AXPlatformNodeMac::~AXPlatformNodeMac() = default;
 
 void AXPlatformNodeMac::Destroy() {
-  if (native_node_)
+  if (native_node_) {
     [native_node_ detach];
+    // Also, nullify smart pointer to make accidental use-after-free impossible.
+    native_node_.reset();
+  }
   AXPlatformNodeBase::Destroy();
 }
 

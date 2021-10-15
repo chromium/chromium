@@ -45,6 +45,7 @@ class AX_EXPORT AXPlatformNode {
   // Return the AXPlatformNode at the root of the tree for a native window.
   static AXPlatformNode* FromNativeWindow(gfx::NativeWindow native_window);
 
+  virtual ~AXPlatformNode();
   AXPlatformNode(const AXPlatformNode&) = delete;
   AXPlatformNode& operator=(const AXPlatformNode&) = delete;
 
@@ -123,7 +124,6 @@ class AX_EXPORT AXPlatformNode {
 
  protected:
   AXPlatformNode();
-  virtual ~AXPlatformNode();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AtkUtilAuraLinuxTest, KeySnooping);

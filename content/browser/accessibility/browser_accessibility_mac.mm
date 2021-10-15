@@ -22,7 +22,8 @@ BrowserAccessibilityMac::BrowserAccessibilityMac() : platform_node_(nullptr) {}
 
 BrowserAccessibilityMac::~BrowserAccessibilityMac() {
   if (platform_node_) {
-    platform_node_->Destroy();
+    platform_node_->Destroy();  // `Destroy()` also deletes the object.
+    platform_node_ = nullptr;
   }
 }
 

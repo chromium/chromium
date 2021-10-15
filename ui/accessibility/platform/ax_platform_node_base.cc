@@ -286,9 +286,7 @@ absl::optional<int> AXPlatformNodeBase::CompareTo(AXPlatformNodeBase& other) {
 
 void AXPlatformNodeBase::Destroy() {
   g_unique_id_map.Get().erase(GetUniqueId());
-
   AXPlatformNode::Destroy();
-
   delegate_ = nullptr;
   Dispose();
 }

@@ -61,11 +61,9 @@ struct AX_EXPORT AXLegacyHypertext {
 class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
  public:
   AXPlatformNodeBase();
-
+  ~AXPlatformNodeBase() override;
   AXPlatformNodeBase(const AXPlatformNodeBase&) = delete;
   AXPlatformNodeBase& operator=(const AXPlatformNodeBase&) = delete;
-
-  ~AXPlatformNodeBase() override;
 
   virtual void Init(AXPlatformNodeDelegate* delegate);
 
