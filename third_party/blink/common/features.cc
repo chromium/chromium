@@ -168,14 +168,7 @@ const base::Feature kPlzDedicatedWorker{"PlzDedicatedWorker",
 // Note that default enabling this does not expose the portal
 // element on its own, but does allow its use with an origin trial. This was the
 // case for the M85 Android only origin trial (https://crbug.com/1040212).
-const base::Feature kPortals {
-  "Portals",
-#if defined(OS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kPortals{"Portals", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When kPortals is enabled, allow portals to load content that is third-party
 // (cross-origin) to the hosting page. Otherwise has no effect.
