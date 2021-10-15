@@ -358,10 +358,12 @@ def _RevisionNumberColumns(data, prefix):
       # branch in the chromium/src repo.
       revision_supplemental_columns[prefix + 'commit_pos'] = revision
   except ValueError:
+    logging.warn('Revision has non-integer value: "%s".', data['rev'])
     # The dashboard requires ordered integer revision numbers. If the revision
-    # is not an integer, assume it's a git hash and send a timestamp.
+    # is not an integer or None, assume it's a git hash and send a timestamp.
     revision = _GetTimestamp()
-    revision_supplemental_columns[prefix + 'chromium'] = data['rev']
+    if data['rev'] != None:
+      revision_supplemental_columns[prefix + 'chromium'] = data['rev']
 
   # An explicit data['point_id'] overrides the default behavior.
   if 'point_id' in data:
