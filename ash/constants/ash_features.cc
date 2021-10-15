@@ -1195,7 +1195,7 @@ const base::Feature kWebApkGenerator{"WebApkGenerator",
 // indicators in tablet mode, etc. The functionality is behind a flag right now
 // since it is under development.
 const base::Feature kWebUITabStripTabDragIntegration{
-    "WebUITabStripTabDragIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebUITabStripTabDragIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable the syncing of deletes of Wi-Fi configurations.
 // This only controls sending delete events to the Chrome Sync server.
