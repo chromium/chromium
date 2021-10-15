@@ -369,10 +369,14 @@ bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
   // go in `ReleasePrintJob()`.
 
   SetPrintingRFH(rfh);
-  GetPrintRenderFrame(rfh)->PrintRequestedPages();
 
+  // The observers are used in tests, so trigger them before calls to the
+  // renderer. This makes it less likely for problems caused by the renderer
+  // to affect the tests (see crbug.com/1258561).
   for (auto& observer : GetObservers())
     observer.OnPrintNow(rfh);
+
+  GetPrintRenderFrame(rfh)->PrintRequestedPages();
 
   return true;
 }
