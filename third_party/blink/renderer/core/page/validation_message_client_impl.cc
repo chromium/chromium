@@ -82,7 +82,9 @@ void ValidationMessageClientImpl::ShowValidationMessage(
   auto delegate = std::make_unique<ValidationMessageOverlayDelegate>(
       *page_, anchor, message_, message_dir, sub_message, sub_message_dir);
   overlay_delegate_ = delegate.get();
-  overlay_ = std::make_unique<FrameOverlay>(target_frame, std::move(delegate));
+  DCHECK(!overlay_);
+  overlay_ =
+      MakeGarbageCollected<FrameOverlay>(target_frame, std::move(delegate));
   overlay_delegate_->CreatePage(*overlay_);
   bool success = target_frame->View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kOverlay);
@@ -134,7 +136,8 @@ void ValidationMessageClientImpl::Reset(TimerBase*) {
   current_anchor_ = nullptr;
   message_ = String();
   finish_time_ = base::TimeTicks();
-  overlay_ = nullptr;
+  if (overlay_)
+    overlay_.Release()->Destroy();
   overlay_delegate_ = nullptr;
   page_->GetChromeClient().UnregisterPopupOpeningObserver(this);
   ValidationMessageVisibilityChanged(anchor);
@@ -222,6 +225,7 @@ void ValidationMessageClientImpl::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
   visitor->Trace(current_anchor_);
   visitor->Trace(timer_);
+  visitor->Trace(overlay_);
   ValidationMessageClient::Trace(visitor);
 }
 

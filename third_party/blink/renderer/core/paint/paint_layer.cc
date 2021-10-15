@@ -175,6 +175,8 @@ PaintLayerRareData::~PaintLayerRareData() = default;
 
 void PaintLayerRareData::Trace(Visitor* visitor) const {
   visitor->Trace(enclosing_pagination_layer);
+  visitor->Trace(composited_layer_mapping);
+  visitor->Trace(grouped_mapping);
   visitor->Trace(resource_info);
 }
 
@@ -3090,7 +3092,7 @@ bool PaintLayer::IsAllowedToQueryCompositingInputs() const {
 
 CompositedLayerMapping* PaintLayer::GetCompositedLayerMapping() const {
   DCHECK(IsAllowedToQueryCompositingState());
-  return rare_data_ ? rare_data_->composited_layer_mapping.get() : nullptr;
+  return rare_data_ ? rare_data_->composited_layer_mapping : nullptr;
 }
 
 GraphicsLayer* PaintLayer::GraphicsLayerBacking(const LayoutObject* obj) const {
@@ -3112,7 +3114,7 @@ void PaintLayer::EnsureCompositedLayerMapping() {
     return;
 
   EnsureRareData().composited_layer_mapping =
-      std::make_unique<CompositedLayerMapping>(*this);
+      MakeGarbageCollected<CompositedLayerMapping>(*this);
   rare_data_->composited_layer_mapping->SetNeedsGraphicsLayerUpdate(
       kGraphicsLayerUpdateSubtree);
 }
@@ -3133,7 +3135,7 @@ void PaintLayer::ClearCompositedLayerMapping(bool layer_being_destroyed) {
           ->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
   }
   DCHECK(rare_data_);
-  rare_data_->composited_layer_mapping.reset();
+  rare_data_->composited_layer_mapping.Release()->Destroy();
 }
 
 void PaintLayer::SetGroupedMapping(CompositedLayerMapping* grouped_mapping,
