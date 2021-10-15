@@ -145,20 +145,20 @@ class DlpContentManager : public DlpContentObserver,
   friend class DlpContentTabHelper;
   friend class MockDlpContentManager;
 
-  // Structure to keep track of running screen captures.
-  struct ScreenCaptureInfo {
-    ScreenCaptureInfo();
-    ScreenCaptureInfo(
+  // Structure to keep track of running screen shares.
+  struct ScreenShareInfo {
+    ScreenShareInfo();
+    ScreenShareInfo(
         const std::string& label,
         const content::DesktopMediaID& media_id,
         const std::u16string& application_title,
         content::MediaStreamUI::StateChangeCallback state_change_callback);
-    ScreenCaptureInfo(const ScreenCaptureInfo& other);
-    ScreenCaptureInfo& operator=(const ScreenCaptureInfo& other);
-    ~ScreenCaptureInfo();
+    ScreenShareInfo(const ScreenShareInfo& other);
+    ScreenShareInfo& operator=(const ScreenShareInfo& other);
+    ~ScreenShareInfo();
 
-    bool operator==(const ScreenCaptureInfo& other) const;
-    bool operator!=(const ScreenCaptureInfo& other) const;
+    bool operator==(const ScreenShareInfo& other) const;
+    bool operator!=(const ScreenShareInfo& other) const;
 
     std::string label;
     content::DesktopMediaID media_id;
@@ -236,13 +236,13 @@ class DlpContentManager : public DlpContentObserver,
   // in the corresponding areas.
   void CheckRunningVideoCapture();
 
-  // Checks whether screen capture paused/resumed notification should be shown
+  // Checks whether screen share paused/resumed notification should be shown
   // or hidden.
-  void MaybeUpdateScreenCaptureNotification();
+  void MaybeUpdateScreenShareNotification();
 
-  // Checks and stops the running screen captures if restricted content appeared
+  // Checks and stops the running screen shares if restricted content appeared
   // in the corresponding areas.
-  void CheckRunningScreenCaptures();
+  void CheckRunningScreenShares();
 
   // Get the delay before switching privacy screen off.
   static base::TimeDelta GetPrivacyScreenOffDelayForTesting();
@@ -282,8 +282,8 @@ class DlpContentManager : public DlpContentObserver,
   // Information about the currently running video capture area if any.
   absl::optional<VideoCaptureInfo> running_video_capture_info_;
 
-  // List of the currently running screen captures.
-  std::vector<ScreenCaptureInfo> running_screen_captures_;
+  // List of the currently running screen shares.
+  std::vector<ScreenShareInfo> running_screen_shares_;
 
   // Keeps track of user's selection after being shown a warning modal
   // dialog, to avoid showing the dialog multiple times during the same capture

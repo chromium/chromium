@@ -264,28 +264,29 @@ void DlpContentManager::OnScreenCaptureStarted(
     const std::u16string& application_title,
     content::MediaStreamUI::StateChangeCallback state_change_callback) {
   for (const content::DesktopMediaID& id : screen_capture_ids) {
-    ScreenCaptureInfo capture_info(label, id, application_title,
-                                   state_change_callback);
-    DCHECK(!base::Contains(running_screen_captures_, capture_info));
-    running_screen_captures_.push_back(capture_info);
+    ScreenShareInfo screen_share_info(label, id, application_title,
+                                      state_change_callback);
+    DCHECK(!base::Contains(running_screen_shares_, screen_share_info));
+    running_screen_shares_.push_back(screen_share_info);
   }
-  CheckRunningScreenCaptures();
+  CheckRunningScreenShares();
 }
 
 void DlpContentManager::OnScreenCaptureStopped(
     const std::string& label,
     const content::DesktopMediaID& media_id) {
-  base::EraseIf(running_screen_captures_,
-                [=](const ScreenCaptureInfo& capture) -> bool {
-                  const bool erased =
-                      capture.label == label && capture.media_id == media_id;
-                  if (erased && capture.showing_paused_notification)
-                    HideDlpScreenCapturePausedNotification(capture.label);
-                  if (erased && capture.showing_resumed_notification)
-                    HideDlpScreenCaptureResumedNotification(capture.label);
-                  return erased;
-                });
-  MaybeUpdateScreenCaptureNotification();
+  base::EraseIf(
+      running_screen_shares_,
+      [=](const ScreenShareInfo& screen_share_info) -> bool {
+        const bool erased = screen_share_info.label == label &&
+                            screen_share_info.media_id == media_id;
+        if (erased && screen_share_info.showing_paused_notification)
+          HideDlpScreenSharePausedNotification(screen_share_info.label);
+        if (erased && screen_share_info.showing_resumed_notification)
+          HideDlpScreenShareResumedNotification(screen_share_info.label);
+        return erased;
+      });
+  MaybeUpdateScreenShareNotification();
 }
 
 void DlpContentManager::ResetCaptureModeAllowance() {
@@ -305,8 +306,8 @@ void DlpContentManager::ResetDlpContentManagerForTesting() {
   g_dlp_content_manager = nullptr;
 }
 
-DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo() = default;
-DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo(
+DlpContentManager::ScreenShareInfo::ScreenShareInfo() = default;
+DlpContentManager::ScreenShareInfo::ScreenShareInfo(
     const std::string& label,
     const content::DesktopMediaID& media_id,
     const std::u16string& application_title,
@@ -315,20 +316,20 @@ DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo(
       media_id(media_id),
       application_title(application_title),
       state_change_callback(state_change_callback) {}
-DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo(
-    const DlpContentManager::ScreenCaptureInfo& other) = default;
-DlpContentManager::ScreenCaptureInfo&
-DlpContentManager::ScreenCaptureInfo::operator=(
-    const DlpContentManager::ScreenCaptureInfo& other) = default;
-DlpContentManager::ScreenCaptureInfo::~ScreenCaptureInfo() = default;
+DlpContentManager::ScreenShareInfo::ScreenShareInfo(
+    const DlpContentManager::ScreenShareInfo& other) = default;
+DlpContentManager::ScreenShareInfo&
+DlpContentManager::ScreenShareInfo::operator=(
+    const DlpContentManager::ScreenShareInfo& other) = default;
+DlpContentManager::ScreenShareInfo::~ScreenShareInfo() = default;
 
-bool DlpContentManager::ScreenCaptureInfo::operator==(
-    const DlpContentManager::ScreenCaptureInfo& other) const {
+bool DlpContentManager::ScreenShareInfo::operator==(
+    const DlpContentManager::ScreenShareInfo& other) const {
   return label == other.label && media_id == other.media_id;
 }
 
-bool DlpContentManager::ScreenCaptureInfo::operator!=(
-    const DlpContentManager::ScreenCaptureInfo& other) const {
+bool DlpContentManager::ScreenShareInfo::operator!=(
+    const DlpContentManager::ScreenShareInfo& other) const {
   return !(*this == other);
 }
 
@@ -361,7 +362,7 @@ void DlpContentManager::OnConfidentialityChanged(
       MaybeChangeOnScreenRestrictions();
     }
   }
-  CheckRunningScreenCaptures();
+  CheckRunningScreenShares();
 }
 
 void DlpContentManager::OnWebContentsDestroyed(
@@ -432,7 +433,7 @@ void DlpContentManager::MaybeChangeOnScreenRestrictions() {
     OnScreenRestrictionsChanged(added_restrictions, removed_restrictions);
   }
   CheckRunningVideoCapture();
-  CheckRunningScreenCaptures();
+  CheckRunningScreenShares();
 }
 
 void DlpContentManager::OnScreenRestrictionsChanged(
@@ -632,55 +633,55 @@ void DlpContentManager::CheckRunningVideoCapture() {
   }
 }
 
-void DlpContentManager::MaybeUpdateScreenCaptureNotification() {
-  for (auto& capture : running_screen_captures_) {
-    // If the capture was paused and a "paused" notification was shown, but the
-    // capture is resumed - hide the "paused" notification.
-    if (capture.showing_paused_notification && capture.is_running) {
-      HideDlpScreenCapturePausedNotification(capture.label);
-      capture.showing_paused_notification = false;
-      // If the capture was paused and later resumed - show a "resumed"
+void DlpContentManager::MaybeUpdateScreenShareNotification() {
+  for (auto& screen_share : running_screen_shares_) {
+    // If the screen share was paused and a "paused" notification was shown, but
+    // the share is resumed - hide the "paused" notification.
+    if (screen_share.showing_paused_notification && screen_share.is_running) {
+      HideDlpScreenSharePausedNotification(screen_share.label);
+      screen_share.showing_paused_notification = false;
+      // If the screen share was paused and later resumed - show a "resumed"
       // notification if not yet shown.
-      if (!capture.showing_resumed_notification) {
-        ShowDlpScreenCaptureResumedNotification(capture.label,
-                                                capture.application_title);
-        capture.showing_resumed_notification = true;
+      if (!screen_share.showing_resumed_notification) {
+        ShowDlpScreenShareResumedNotification(screen_share.label,
+                                              screen_share.application_title);
+        screen_share.showing_resumed_notification = true;
       }
     }
-    // If the capture was resumed and "resumed" notification was shown, but the
-    // capture is not running anymore - hide the "resumed" notification.
-    if (capture.showing_resumed_notification && !capture.is_running) {
-      HideDlpScreenCaptureResumedNotification(capture.label);
-      capture.showing_resumed_notification = false;
+    // If the screen share was resumed and "resumed" notification was shown, but
+    // the share is not running anymore - hide the "resumed" notification.
+    if (screen_share.showing_resumed_notification && !screen_share.is_running) {
+      HideDlpScreenShareResumedNotification(screen_share.label);
+      screen_share.showing_resumed_notification = false;
     }
-    // If the capture was paused, but no notification is yet shown - show a
+    // If the screen share was paused, but no notification is yet shown - show a
     // "paused" notification.
-    if (!capture.showing_paused_notification && !capture.is_running) {
-      ShowDlpScreenCapturePausedNotification(capture.label,
-                                             capture.application_title);
-      capture.showing_paused_notification = true;
+    if (!screen_share.showing_paused_notification && !screen_share.is_running) {
+      ShowDlpScreenSharePausedNotification(screen_share.label,
+                                           screen_share.application_title);
+      screen_share.showing_paused_notification = true;
     }
   }
 }
 
-void DlpContentManager::CheckRunningScreenCaptures() {
-  for (auto& capture : running_screen_captures_) {
+void DlpContentManager::CheckRunningScreenShares() {
+  for (auto& screen_share : running_screen_shares_) {
     const RestrictionLevelAndUrl restriction_info =
-        GetScreenCaptureRestrictionInfo(capture.media_id);
+        GetScreenCaptureRestrictionInfo(screen_share.media_id);
     const bool is_allowed =
         restriction_info.level != DlpRulesManager::Level::kBlock;
-    if (is_allowed != capture.is_running) {
-      if (capture.is_running) {
+    if (is_allowed != screen_share.is_running) {
+      if (screen_share.is_running) {
         MaybeReportEvent(restriction_info,
                          DlpRulesManager::Restriction::kScreenShare);
       }
       DlpBooleanHistogram(dlp::kScreenSharePausedOrResumedUMA, !is_allowed);
-      capture.state_change_callback.Run(
-          capture.media_id, capture.is_running
-                                ? blink::mojom::MediaStreamStateChange::PAUSE
-                                : blink::mojom::MediaStreamStateChange::PLAY);
-      capture.is_running = is_allowed;
-      MaybeUpdateScreenCaptureNotification();
+      screen_share.state_change_callback.Run(
+          screen_share.media_id,
+          screen_share.is_running ? blink::mojom::MediaStreamStateChange::PAUSE
+                                  : blink::mojom::MediaStreamStateChange::PLAY);
+      screen_share.is_running = is_allowed;
+      MaybeUpdateScreenShareNotification();
     }
   }
 }

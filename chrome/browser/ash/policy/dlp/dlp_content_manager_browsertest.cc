@@ -79,10 +79,10 @@ const DlpContentRestrictionSet kScreenShareRestricted(
     DlpContentRestriction::kScreenShare,
     DlpRulesManager::Level::kBlock);
 
-constexpr char kScreenCapturePausedNotificationId[] =
-    "screen_capture_dlp_paused-label";
-constexpr char kScreenCaptureResumedNotificationId[] =
-    "screen_capture_dlp_resumed-label";
+constexpr char kScreenSharePausedNotificationId[] =
+    "screen_share_dlp_paused-label";
+constexpr char kScreenShareResumedNotificationId[] =
+    "screen_share_dlp_resumed-label";
 constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
 
 constexpr char kExampleUrl[] = "https://example.com";
@@ -549,8 +549,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
               DlpRulesManager::Level::kBlock, 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
-                       ScreenCaptureNotification) {
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareNotification) {
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
   DlpContentManager* manager = helper_.GetContentManager();
@@ -565,10 +564,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   manager->OnScreenCaptureStarted("label", {media_id}, u"example.com",
                                   base::DoNothing());
 
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kScreenSharePausedNotificationId));
   EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCapturePausedNotificationId));
-  EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCaptureResumedNotificationId));
+      kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 0);
   histogram_tester_.ExpectBucketCount(
@@ -578,10 +577,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kBlock, 1u);
-  EXPECT_TRUE(display_service_tester.GetNotification(
-      kScreenCapturePausedNotificationId));
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kScreenSharePausedNotificationId));
   EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCaptureResumedNotificationId));
+      kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
   histogram_tester_.ExpectBucketCount(
@@ -589,10 +588,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   helper_.ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
 
-  EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCapturePausedNotificationId));
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kScreenSharePausedNotificationId));
   EXPECT_TRUE(display_service_tester.GetNotification(
-      kScreenCaptureResumedNotificationId));
+      kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
   histogram_tester_.ExpectBucketCount(
@@ -600,10 +599,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   manager->OnScreenCaptureStopped("label", media_id);
 
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kScreenSharePausedNotificationId));
   EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCapturePausedNotificationId));
-  EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCaptureResumedNotificationId));
+      kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
   histogram_tester_.ExpectBucketCount(

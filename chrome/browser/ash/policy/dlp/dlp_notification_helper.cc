@@ -24,10 +24,10 @@ namespace policy {
 namespace {
 
 constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
-constexpr char kScreenCapturePausedNotificationPrefix[] =
-    "screen_capture_dlp_paused-";
-constexpr char kScreenCaptureResumedNotificationPrefix[] =
-    "screen_capture_dlp_resumed-";
+constexpr char kScreenSharePausedNotificationPrefix[] =
+    "screen_share_dlp_paused-";
+constexpr char kScreenShareResumedNotificationPrefix[] =
+    "screen_share_dlp_resumed-";
 constexpr char kScreenCaptureBlockedNotificationId[] =
     "screen_capture_dlp_blocked";
 constexpr char kVideoCaptureStoppedNotificationId[] =
@@ -65,12 +65,12 @@ void ShowDlpNotification(const std::string& id,
                 /*metadata=*/nullptr);
 }
 
-std::string GetCapturePausedNotificationId(const std::string& capture_id) {
-  return kScreenCapturePausedNotificationPrefix + capture_id;
+std::string GetScreenSharePausedNotificationId(const std::string& share_id) {
+  return kScreenSharePausedNotificationPrefix + share_id;
 }
 
-std::string GetCaptureResumedNotificationId(const std::string& capture_id) {
-  return kScreenCaptureResumedNotificationPrefix + capture_id;
+std::string GetScreenShareResumedNotificationId(const std::string& share_id) {
+  return kScreenShareResumedNotificationPrefix + share_id;
 }
 
 }  // namespace
@@ -82,35 +82,35 @@ void ShowDlpPrintDisabledNotification() {
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_BLOCKED_MESSAGE));
 }
 
-void HideDlpScreenCapturePausedNotification(const std::string& capture_id) {
+void HideDlpScreenSharePausedNotification(const std::string& share_id) {
   NotificationDisplayService::GetForProfile(
       ProfileManager::GetActiveUserProfile())
       ->Close(NotificationHandler::Type::TRANSIENT,
-              GetCapturePausedNotificationId(capture_id));
+              GetScreenSharePausedNotificationId(share_id));
 }
 
-void ShowDlpScreenCapturePausedNotification(const std::string& capture_id,
-                                            const std::u16string& app_title) {
+void ShowDlpScreenSharePausedNotification(const std::string& share_id,
+                                          const std::u16string& app_title) {
   ShowDlpNotification(
-      GetCapturePausedNotificationId(capture_id),
-      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_PAUSED_TITLE),
-      l10n_util::GetStringFUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_PAUSED_MESSAGE,
+      GetScreenSharePausedNotificationId(share_id),
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_PAUSED_TITLE),
+      l10n_util::GetStringFUTF16(IDS_POLICY_DLP_SCREEN_SHARE_PAUSED_MESSAGE,
                                  app_title));
 }
 
-void HideDlpScreenCaptureResumedNotification(const std::string& capture_id) {
+void HideDlpScreenShareResumedNotification(const std::string& share_id) {
   NotificationDisplayService::GetForProfile(
       ProfileManager::GetActiveUserProfile())
       ->Close(NotificationHandler::Type::TRANSIENT,
-              GetCaptureResumedNotificationId(capture_id));
+              GetScreenShareResumedNotificationId(share_id));
 }
 
-void ShowDlpScreenCaptureResumedNotification(const std::string& capture_id,
-                                             const std::u16string& app_title) {
+void ShowDlpScreenShareResumedNotification(const std::string& share_id,
+                                           const std::u16string& app_title) {
   ShowDlpNotification(
-      GetCaptureResumedNotificationId(capture_id),
-      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_TITLE),
-      l10n_util::GetStringFUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_MESSAGE,
+      GetScreenShareResumedNotificationId(share_id),
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_RESUMED_TITLE),
+      l10n_util::GetStringFUTF16(IDS_POLICY_DLP_SCREEN_SHARE_RESUMED_MESSAGE,
                                  app_title));
 }
 
