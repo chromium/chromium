@@ -27,52 +27,44 @@ export const ListPropertyUpdateMixin = dedupingMixin(
         updateList<T>(
             propertyPath: string, identityGetter: (item: T) => (T | string),
             updatedList: T[], identityBasedUpdate: boolean = false): boolean {
-          return updateListProperty(
-              this, propertyPath, identityGetter, updatedList,
-              identityBasedUpdate);
+          const list = this.get(propertyPath);
+          const splices = calculateSplices(
+              updatedList.map(item => identityGetter(item)),
+              list.map(identityGetter));
+
+          splices.forEach(splice => {
+            const index = splice.index;
+            const deleteCount = splice.removed.length;
+            // Transform splices to the expected format of notifySplices().
+            // Convert !Array<string> to !Array<!Object>.
+            splice.removed = list.slice(index, index + deleteCount);
+            splice.object = list;
+            splice.type = 'splice';
+
+            const added = updatedList.slice(index, index + splice.addedCount);
+            const spliceParams = [index, deleteCount].concat(added);
+            list.splice.apply(list, spliceParams);
+          });
+
+          let updated = splices.length > 0;
+          if (!identityBasedUpdate) {
+            list.forEach((item: object, index: number) => {
+              const updatedItem = updatedList[index];
+              if (JSON.stringify(item) !== JSON.stringify(updatedItem)) {
+                this.set([propertyPath, index], updatedItem);
+                updated = true;
+              }
+            });
+          }
+
+          if (splices.length > 0) {
+            this.notifySplices(propertyPath, splices);
+          }
+          return updated;
         }
       }
       return ListPropertyUpdateMixin;
     });
-
-export function updateListProperty<T>(
-    instance: ListPropertyUpdateMixinInterface&PolymerElement,
-    propertyPath: string, identityGetter: (item: T) => (T | string),
-    updatedList: T[], identityBasedUpdate: boolean = false): boolean {
-  const list = instance.get(propertyPath);
-  const splices = calculateSplices(
-      updatedList.map(item => identityGetter(item)), list.map(identityGetter));
-
-  splices.forEach(splice => {
-    const index = splice.index;
-    const deleteCount = splice.removed.length;
-    // Transform splices to the expected format of notifySplices().
-    // Convert !Array<string> to !Array<!Object>.
-    splice.removed = list.slice(index, index + deleteCount);
-    splice.object = list;
-    splice.type = 'splice';
-
-    const added = updatedList.slice(index, index + splice.addedCount);
-    const spliceParams = [index, deleteCount].concat(added);
-    list.splice.apply(list, spliceParams);
-  });
-
-  let updated = splices.length > 0;
-  if (!identityBasedUpdate) {
-    list.forEach((item: object, index: number) => {
-      const updatedItem = updatedList[index];
-      if (JSON.stringify(item) !== JSON.stringify(updatedItem)) {
-        instance.set([propertyPath, index], updatedItem);
-        updated = true;
-      }
-    });
-  }
-
-  if (splices.length > 0) {
-    instance.notifySplices(propertyPath, splices);
-  }
-  return updated;
-}
 
 export interface ListPropertyUpdateMixinInterface {
   /** @return Whether notifySplices was called. */

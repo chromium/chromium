@@ -4,7 +4,7 @@
 
 /** @fileoverview Suite of tests for the ListPropertyUpdateBehavior.  */
 
-import {ListPropertyUpdateBehavior, updateListProperty} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('ListPropertyUpdateBehavior', function() {
@@ -306,28 +306,25 @@ suite('ListPropertyUpdateBehavior', function() {
     assertDeepEquals(['apricot'], testElement.complexArray[0].words);
   });
 
-  test('updateListProperty() function triggers notifySplices()', () => {
+  test('updateList() function triggers notifySplices()', () => {
     // Ensure that the array is updated when an element is removed from the
     // end.
     let elementRemoved = testElement.complexArray.slice(0, 2);
-    updateListProperty(
-        testElement, 'complexArray', obj => obj, elementRemoved, true);
+    testElement.updateList('complexArray', obj => obj, elementRemoved, true);
     assertComplexArrayEquals(testElement.complexArray, elementRemoved);
 
     // Ensure that the array is updated when an element is removed from the
     // beginning.
     testElement.resetComplexArray();
     elementRemoved = testElement.complexArray.slice(1);
-    updateListProperty(
-        testElement, 'complexArray', obj => obj, elementRemoved, true);
+    testElement.updateList('complexArray', obj => obj, elementRemoved, true);
     assertComplexArrayEquals(testElement.complexArray, elementRemoved);
 
     // Ensure that the array is updated when an element is added to the end.
     testElement.resetComplexArray();
     let elementAdded = testElement.complexArray.slice();
     elementAdded.push({letter: 'd', words: ['door', 'dice']});
-    updateListProperty(
-        testElement, 'complexArray', obj => obj, elementAdded, true);
+    testElement.updateList('complexArray', obj => obj, elementAdded, true);
     assertComplexArrayEquals(testElement.complexArray, elementAdded);
 
     // Ensure that the array is updated when an element is added to the
@@ -335,8 +332,7 @@ suite('ListPropertyUpdateBehavior', function() {
     testElement.resetComplexArray();
     elementAdded = [{letter: 'A', words: ['Alphabet']}];
     elementAdded.push(...testElement.complexArray);
-    updateListProperty(
-        testElement, 'complexArray', obj => obj, elementAdded, true);
+    testElement.updateList('complexArray', obj => obj, elementAdded, true);
     assertComplexArrayEquals(testElement.complexArray, elementAdded);
 
     // Ensure that the array is updated when the entire array is different.
@@ -346,7 +342,7 @@ suite('ListPropertyUpdateBehavior', function() {
       {letter: 'x', words: ['xylophone']}, {letter: 'y', words: ['yo-yo']},
       {letter: 'z', words: ['zebra', 'zephyr']}
     ];
-    updateListProperty(testElement, 'complexArray', obj => obj, newArray, true);
+    testElement.updateList('complexArray', obj => obj, newArray, true);
     assertComplexArrayEquals(testElement.complexArray, newArray);
   });
 });
