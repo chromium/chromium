@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -569,9 +570,27 @@ bool SubmenuView::OnScroll(float dx, float dy) {
   float y_f = vis_bounds.y() - dy - roundoff_error_;
   int y = base::ClampRound(y_f);
   roundoff_error_ = y - y_f;
-  // clamp y to [0, full_height - vis_height)
-  y = std::min(y, full_bounds.height() - vis_bounds.height() - 1);
-  y = std::max(y, 0);
+
+  // Ensure that we never try to scroll outside the actual child view.
+  // Note: the old code here was effectively:
+  //   base::clamp(y, 0, full_bounds.height() - vis_bounds.height() - 1)
+  // but the -1 there prevented fully scrolling to the bottom here. As a
+  // worked example, suppose that:
+  //   full_bounds = { x = 0, y = 0, w = 100, h = 1000 }
+  //   vis_bounds = { x = 0, y = 450, w = 100, h = 500 }
+  // and dy = 50. It should be the case that the new vis_bounds are:
+  //   new_vis_bounds = { x = 0, y = 500, w = 100, h = 500 }
+  // because full_bounds.height() - vis_bounds.height() == 500. Intuitively,
+  // this makes sense - the bottom 500 pixels of this view, starting with y =
+  // 500, are shown.
+  //
+  // With the clamp set to full_bounds.height() - vis_bounds.height() - 1,
+  // this code path instead would produce:
+  //   new_vis_bounds = { x = 0, y = 499, w = 100, h = 500 }
+  // so pixels y=499 through y=998 of this view are drawn, and pixel y=999 is
+  // hidden - oops.
+  y = base::clamp(y, 0, full_bounds.height() - vis_bounds.height());
+
   gfx::Rect new_vis_bounds(x, y, vis_bounds.width(), vis_bounds.height());
   if (new_vis_bounds != vis_bounds) {
     ScrollRectToVisible(new_vis_bounds);
