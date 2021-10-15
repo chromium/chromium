@@ -148,8 +148,8 @@ class ShellControllerImpl : public mojom::ShellController {
   void ShutDown() override { Shell::Shutdown(); }
 };
 
-// https://crbug.com/1219642 consider not needing VariationsServiceClient just
-// to use VariationsFieldTrialCreator.
+// TODO(crbug/1219642): Consider not needing VariationsServiceClient just to use
+// VariationsFieldTrialCreator.
 class ShellVariationsServiceClient
     : public variations::VariationsServiceClient {
  public:
@@ -596,6 +596,9 @@ bool ShellContentBrowserClient::HasErrorPage(int http_status_code) {
 void ShellContentBrowserClient::CreateFeatureListAndFieldTrials() {
   local_state_ = CreateLocalState();
   SetUpFieldTrials();
+  // Schedule a Local State write since the above function resulted in some
+  // prefs being updated.
+  local_state_->CommitPendingWrite();
 }
 
 std::unique_ptr<PrefService> ShellContentBrowserClient::CreateLocalState() {

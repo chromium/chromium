@@ -307,6 +307,7 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     WriteBeaconFile(exited_cleanly);
   } else {
     local_state_->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
+    local_state_->CommitPendingWrite();  // Schedule a write.
     if (group_name == kSignalAndWriteViaFileUtilGroup) {
       // Clients in this group write to the Variations Safe Mode file whenever
       // |kStabilityExitedCleanly| is updated. The file is kept in sync with the
@@ -314,7 +315,6 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
       WriteBeaconFile(exited_cleanly);
     }
   }
-  local_state_->CommitPendingWrite();  // Schedule a write.
 
 #if defined(OS_WIN)
   base::win::RegKey regkey;
