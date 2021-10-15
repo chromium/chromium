@@ -24063,7 +24063,6 @@
           "--num-retries=3"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [

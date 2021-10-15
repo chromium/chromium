@@ -514,9 +514,6 @@
           'shards': 20,
         },
       },
-      'mac11-arm64-rel-tests': {
-        'experiment_percentage': 100,
-      },
       'mac11.0-blink-rel-dummy': {
         'swarming': {
           'shards': 12,
