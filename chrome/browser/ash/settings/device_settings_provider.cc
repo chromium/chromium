@@ -173,6 +173,9 @@ const char* const kKnownSettings[] = {
     kVirtualMachinesAllowed,
 };
 
+constexpr char InvalidCombinationsOfAllowedUsersPoliciesHistogram[] =
+    "Login.InvalidCombinationsOfAllowedUsersPolicies";
+
 // Re-use the DecodeJsonStringAndNormalize from device_policy_decoder.h
 // here to decode the json string and validate it against |policy_name|'s
 // schema. If the json string is valid, the decoded base::Value will be stored
@@ -199,6 +202,16 @@ void SetSettingWithValidatingRegex(const std::string& policy_name,
   if (RE2::FullMatch(policy_value, pattern))
     pref_value_map->SetString(policy_name, policy_value);
 }
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AllowedUsersPoliciesInvalidState {
+  AllowlistNotPresentAndAllowNewUsersTrue = 0,
+  AllowlistNotPresentAndAllowNewUsersFalse = 1,
+  AllowlistEmptyAndAllowNewUsersNotPresent = 2,
+  AllowlistNonEmptyAndAllowNewUsersNotPresent = 3,
+  kMaxValue = AllowlistNonEmptyAndAllowNewUsersNotPresent
+};
 
 // Returns the value of the allow_new_users (DeviceAllowNewUsers) device
 // policy or an empty absl::optional if the policy was not set.
@@ -259,7 +272,25 @@ void DecodeAllowedUsers(const em::ChromeDeviceSettingsProto& policy,
     // If for some reason we encounter a combination other than
     // the 5 above, we simply default to allowing everyone to sign in
     new_values_cache->SetBoolean(kAccountsPrefAllowNewUser, true);
-    NOTREACHED();
+
+    // Record which of the 4 invalid states we received
+    if (!is_empty_allowlist.has_value() && allow_new_users.has_value()) {
+      base::UmaHistogramEnumeration(
+          InvalidCombinationsOfAllowedUsersPoliciesHistogram,
+          allow_new_users.value()
+              ? AllowedUsersPoliciesInvalidState::
+                    AllowlistNotPresentAndAllowNewUsersTrue
+              : AllowedUsersPoliciesInvalidState::
+                    AllowlistNotPresentAndAllowNewUsersFalse);
+    } else if (is_empty_allowlist.has_value() && !allow_new_users.has_value()) {
+      base::UmaHistogramEnumeration(
+          InvalidCombinationsOfAllowedUsersPoliciesHistogram,
+          is_empty_allowlist.value()
+              ? AllowedUsersPoliciesInvalidState::
+                    AllowlistEmptyAndAllowNewUsersNotPresent
+              : AllowedUsersPoliciesInvalidState::
+                    AllowlistNonEmptyAndAllowNewUsersNotPresent);
+    }
   }
 
   new_values_cache->SetBoolean(
