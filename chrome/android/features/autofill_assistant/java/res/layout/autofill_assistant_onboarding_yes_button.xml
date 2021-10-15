@@ -13,4 +13,4 @@
     android:gravity="center"
     android:text="@string/init_ok"
     android:contentDescription="@string/init_ok"
-    style="FilledButton.Flat" />
+    style="@style/FilledButton.Flat" />
