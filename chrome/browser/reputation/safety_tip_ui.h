@@ -41,9 +41,11 @@ enum class SafetyTipInteraction {
   // bubble closing.
   kCloseTab = 8,
   kSwitchTab = 9,
+  // It is deprecated in favor of kChangePrimaryPage.
   kStartNewNavigation = 10,
+  kChangePrimaryPage = 11,
 
-  kMaxValue = kStartNewNavigation,
+  kMaxValue = kChangePrimaryPage,
 };
 
 // Shows Safety Tip UI using the specified information if it is not already

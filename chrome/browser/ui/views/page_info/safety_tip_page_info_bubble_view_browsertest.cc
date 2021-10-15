@@ -1148,7 +1148,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                   WindowOpenDisposition::CURRENT_TAB);
     histogram_tester.ExpectBucketCount(
         kHistogramPrefix + "SafetyTip_BadReputation",
-        SafetyTipInteraction::kStartNewNavigation, 1);
+        SafetyTipInteraction::kChangePrimaryPage, 1);
   }
 }
 
@@ -1175,7 +1175,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
     NavigateToURL(browser(), GURL("about:blank"),
                   WindowOpenDisposition::CURRENT_TAB);
     auto samples = histograms.GetAllSamples(
-        "Security.SafetyTips.OpenTime.StartNewNavigation.SafetyTip_"
+        "Security.SafetyTips.OpenTime.ChangePrimaryPage.SafetyTip_"
         "BadReputation");
     ASSERT_EQ(1u, samples.size());
     EXPECT_LE(kMinWarningTime.InMilliseconds(), samples.front().min);

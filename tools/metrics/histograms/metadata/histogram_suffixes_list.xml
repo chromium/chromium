@@ -15020,6 +15020,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Security.PageInfo.TimeOpen.Action"/>
   <affected-histogram name="Security.PageInfo.TimeOpen.NoAction"/>
   <affected-histogram name="Security.SafetyTips.Interaction"/>
+  <affected-histogram name="Security.SafetyTips.OpenTime.ChangePrimaryPage"/>
   <affected-histogram name="Security.SafetyTips.OpenTime.CloseTab"/>
   <affected-histogram name="Security.SafetyTips.OpenTime.Dismiss"/>
   <affected-histogram name="Security.SafetyTips.OpenTime.DismissWithClose"/>

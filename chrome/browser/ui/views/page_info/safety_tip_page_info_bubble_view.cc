@@ -240,7 +240,7 @@ void SafetyTipPageInfoBubbleView::OnVisibilityChanged(
 
 void SafetyTipPageInfoBubbleView::PrimaryPageChanged(content::Page& page) {
   if (action_taken_ == SafetyTipInteraction::kNoAction) {
-    action_taken_ = SafetyTipInteraction::kStartNewNavigation;
+    action_taken_ = SafetyTipInteraction::kChangePrimaryPage;
   }
 
   // There's no great ClosedReason for this, so we use kUnspecified to signal
