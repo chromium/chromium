@@ -46,7 +46,7 @@ class FileAnalyzer {
 
     // For archive files, whether the archive is valid. Has unspecified contents
     // for non-archive files.
-    ArchiveValid archive_is_valid;
+    ArchiveValid archive_is_valid = ArchiveValid::UNSET;
 
     // For archive files, whether the archive contains an executable. Has
     // unspecified contents for non-archive files.
