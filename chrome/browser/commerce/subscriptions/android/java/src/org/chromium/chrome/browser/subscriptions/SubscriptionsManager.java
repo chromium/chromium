@@ -55,4 +55,24 @@ public interface SubscriptionsManager {
      */
     void getSubscriptions(@CommerceSubscription.CommerceSubscriptionType String type,
             boolean forceFetch, Callback<List<CommerceSubscription>> callback);
+
+    /**
+     * Checks if the given subscription is subscribed to updates.
+     *
+     * @param subscrition The subscription to check.
+     * @param callback The callback to receive the result.
+     */
+    default void isSubscribed(CommerceSubscription subscription, Callback<Boolean> callback) {
+        getSubscriptions(
+                subscription.getType(), /* forceFetch= */ false, (existingSubscriptions) -> {
+                    for (CommerceSubscription existingSubscription : existingSubscriptions) {
+                        if (existingSubscription.equals(subscription)) {
+                            callback.onResult(true);
+                            return;
+                        }
+                    }
+
+                    callback.onResult(false);
+                });
+    }
 }

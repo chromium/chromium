@@ -15,22 +15,36 @@ import android.widget.TextView;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
+import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.commerce.PriceTracking.ProductPrice;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.ui.widget.ChipView;
+
+import java.util.Locale;
 
 /** A row view that shows shopping info in the bookmarks UI. */
 public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     private static final long MICRO_CURRENCY_QUOTIENT = 1000000;
 
     private ImageFetcher mImageFetcher;
+    private BookmarkModel mBookmarkModel;
+    private SubscriptionsManager mSubscriptionsManager;
 
     private final int mDesiredImageSize;
     private boolean mIsPriceTrackingEnabled;
     private CurrencyFormatter mCurrencyFormatter;
+    private CommerceSubscription mSubscription;
+    private boolean mSubscriptionChangeInProgress;
 
     /**
      * Constructor for inflating from XML.
@@ -44,17 +58,34 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     /**
      * Initialize properties for the item row.
      * @param imageFetcher {@link ImageFetcher} used to fetch shopping images.
+     * @param bookmarkModel The {@link BookmarkModel} used to query power bookmark metadata.
+     * @param subscriptionsManager Used to manage the price-tracking subscriptions.
      */
-    void init(ImageFetcher imageFetcher) {
+    void init(ImageFetcher imageFetcher, BookmarkModel bookmarkModel,
+            SubscriptionsManager subscriptionsManager) {
         mImageFetcher = imageFetcher;
+        mBookmarkModel = bookmarkModel;
+        mSubscriptionsManager = subscriptionsManager;
     }
 
     // BookmarkItemRow overrides:
     @Override
     BookmarkItem setBookmarkId(BookmarkId bookmarkId, @Location int location) {
         BookmarkItem bookmarkItem = super.setBookmarkId(bookmarkId, location);
-        // TODO(crbug.com/1243383): Retrieve power bookmark data and use it to populate fields.
-        // TODO(crbug.com/1243383): Create the currency formatter according to the currency code.
+        PowerBookmarkMeta meta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
+        // TODO(crbug.com/1243383): Pull price updates once they're available.
+        // TODO(crbug.com/1243383): Use the cluster_id instead when that's ready.
+        ProductPrice currentPrice = meta.getShoppingSpecifics().getCurrentPrice();
+        mSubscription = new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
+                Long.toString(meta.getShoppingSpecifics().getOfferId()),
+                SubscriptionManagementType.USER_MANAGED, TrackingIdType.OFFER_ID);
+
+        mCurrencyFormatter =
+                new CurrencyFormatter(currentPrice.getCurrencyCode(), Locale.getDefault());
+        mSubscriptionsManager.isSubscribed(mSubscription, (subscribed) -> {
+            initPriceTrackingUI(meta.getLeadImage().getUrl(), subscribed,
+                    currentPrice.getAmountMicros(), currentPrice.getAmountMicros());
+        });
         return bookmarkItem;
     }
 
@@ -116,16 +147,30 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     private void setPriceTrackingButton(boolean priceTrackingEnabled) {
         mIsPriceTrackingEnabled = priceTrackingEnabled;
         mEndStartButtonView.setVisibility(View.VISIBLE);
+        updatePriceTrackingImageForCurrentState();
+        Callback<Integer> subscriptionCallback = (status) -> {
+            mSubscriptionChangeInProgress = false;
+            // TODO(crbug.com/1243383): Consult UX on a fallback if this fails.
+            if (status != SubscriptionsManager.StatusCode.OK) return;
+            mIsPriceTrackingEnabled = !mIsPriceTrackingEnabled;
+            updatePriceTrackingImageForCurrentState();
+        };
+        mEndStartButtonView.setOnClickListener((v) -> {
+            if (mSubscriptionChangeInProgress) return;
+            mSubscriptionChangeInProgress = true;
+
+            if (mIsPriceTrackingEnabled) {
+                mSubscriptionsManager.unsubscribe(mSubscription, subscriptionCallback);
+            } else {
+                mSubscriptionsManager.subscribe(mSubscription, subscriptionCallback);
+            }
+        });
+    }
+
+    private void updatePriceTrackingImageForCurrentState() {
         mEndStartButtonView.setImageResource(mIsPriceTrackingEnabled
                         ? R.drawable.price_tracking_enabled
                         : R.drawable.price_tracking_disabled);
-        mEndStartButtonView.setOnClickListener((v) -> {
-            mIsPriceTrackingEnabled = !mIsPriceTrackingEnabled;
-            mEndStartButtonView.setImageResource(mIsPriceTrackingEnabled
-                            ? R.drawable.price_tracking_enabled
-                            : R.drawable.price_tracking_disabled);
-            // TODO(crbug.com/1243383): Flip the price-tracking bit once available.
-        });
     }
 
     private String getFormattedCurrencyStringForPrice(long price) {

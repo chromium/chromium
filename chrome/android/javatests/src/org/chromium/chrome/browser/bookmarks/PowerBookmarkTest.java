@@ -30,6 +30,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -57,6 +58,10 @@ public class PowerBookmarkTest extends DummyUiChromeActivityTestCase {
     private ImageFetcher mImageFetcher;
     @Mock
     private CurrencyFormatter mCurrencyFormatter;
+    @Mock
+    private SubscriptionsManager mSubscriptionsManager;
+    @Mock
+    private BookmarkModel mBookmarkModel;
 
     private Bitmap mBitmap;
     private PowerBookmarkShoppingItemRow mPowerBookmarkShoppingItemRow;
@@ -111,7 +116,8 @@ public class PowerBookmarkTest extends DummyUiChromeActivityTestCase {
                     .setText("Test Bookmark");
             ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.description))
                     .setText("http://google.com");
-            mPowerBookmarkShoppingItemRow.init(mImageFetcher);
+            mPowerBookmarkShoppingItemRow.init(
+                    mImageFetcher, mBookmarkModel, mSubscriptionsManager);
             mPowerBookmarkShoppingItemRow.setCurrencyFormatterForTesting(mCurrencyFormatter);
         });
     }

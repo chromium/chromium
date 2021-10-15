@@ -10,6 +10,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -73,9 +75,15 @@ final class BookmarkListEntry {
      * Create an entry presenting a bookmark folder or bookmark.
      * @param bookmarkItem The data object created from the bookmark backend.
      */
-    static BookmarkListEntry createBookmarkEntry(@Nonnull BookmarkItem bookmarkItem) {
-        return new BookmarkListEntry(bookmarkItem.isFolder() ? ViewType.FOLDER : ViewType.BOOKMARK,
-                bookmarkItem, /*sectionHeaderData=*/null);
+    static BookmarkListEntry createBookmarkEntry(
+            @Nonnull BookmarkItem bookmarkItem, @Nullable PowerBookmarkMeta meta) {
+        @ViewType
+        int viewType = bookmarkItem.isFolder() ? ViewType.FOLDER : ViewType.BOOKMARK;
+        if (meta != null && meta.getType() == PowerBookmarkType.SHOPPING) {
+            viewType = ViewType.SHOPPING_POWER_BOOKMARK;
+        }
+
+        return new BookmarkListEntry(viewType, bookmarkItem, /*sectionHeaderData=*/null);
     }
 
     /**
