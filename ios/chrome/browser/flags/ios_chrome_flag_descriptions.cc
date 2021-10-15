@@ -407,12 +407,6 @@ const char kReadingListMessagesDescription[] =
     "When enabled, a Messages prompt may be presented to allow the user to "
     "save the current page to Reading List";
 
-const char kRestoreGaiaCookiesOnUserActionName[] =
-    "Restore GAIA cookies on user action";
-const char kRestoreGaiaCookiesOnUserActionDescription[] =
-    "When enabled, will restore GAIA cookies for signed-in Chrome users if "
-    "the user explicitly requests a Google service.";
-
 const char kSafeBrowsingAvailableName[] = "Make Safe Browsing available";
 const char kSafeBrowsingAvailableDescription[] =
     "When enabled, navigation URLs are compared to Safe Browsing blocklists, "

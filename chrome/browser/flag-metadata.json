@@ -4680,16 +4680,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "restore-gaia-cookies-if-deleted",
-    "owners": [ "fernandex", "chrome-signin-team" ],
-    "expiry_milestone": 99
-  },
-  {
-    "name": "restore-gaia-cookies-on-user-action",
-    "owners": ["fernandex", "chrome-signin-team" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "restore-session-from-cache",
     "owners": [ "justincohen", "gambard", "bling-flags@google.com" ],
     // Needed for manual testing of native session restore flow on iOS.

@@ -168,8 +168,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowRequest(
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL url = net::GURLWithNSURL(request.URL);
-  if (base::FeatureList::IsEnabled(signin::kRestoreGaiaCookiesOnUserAction) &&
-      signin::IsUrlEligibleForMirrorCookie(url) &&
+  if (signin::IsUrlEligibleForMirrorCookie(url) &&
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // CHROME_CONNECTED cookies are added asynchronously on google.com and
     // youtube.com domains when Chrome detects that the user is signed-in. By
@@ -246,19 +245,15 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
       if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
         LogIOSGaiaCookiesState(GaiaCookieStateOnSignedInNavigation::
                                    kGaiaCookieAbsentOnAddSessionNavigation);
-        if (base::FeatureList::IsEnabled(
-                signin::kRestoreGaiaCookiesOnUserAction)) {
-          GURL continue_url = GURL(params.continue_url);
-          DLOG_IF(ERROR,
-                  !params.continue_url.empty() && !continue_url.is_valid())
-              << "Invalid continuation URL: \"" << continue_url << "\"";
-          if (account_consistency_service_->RestoreGaiaCookies(base::BindOnce(
-                  &AccountConsistencyHandler::HandleAddAccountRequest,
-                  weak_ptr_factory_.GetWeakPtr(), continue_url))) {
-            // Continue URL will be processed in a callback once Gaia cookies
-            // have been restored.
-            return;
-          }
+        GURL continue_url = GURL(params.continue_url);
+        DLOG_IF(ERROR, !params.continue_url.empty() && !continue_url.is_valid())
+            << "Invalid continuation URL: \"" << continue_url << "\"";
+        if (account_consistency_service_->RestoreGaiaCookies(base::BindOnce(
+                &AccountConsistencyHandler::HandleAddAccountRequest,
+                weak_ptr_factory_.GetWeakPtr(), continue_url))) {
+          // Continue URL will be processed in a callback once Gaia cookies
+          // have been restored.
+          return;
         }
       } else if (!identity_manager_->GetAccountsWithRefreshTokens().empty()) {
         show_consistency_promo_ = true;

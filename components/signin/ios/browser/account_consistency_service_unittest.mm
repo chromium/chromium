@@ -14,7 +14,6 @@
 #include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -22,7 +21,6 @@
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
-#include "components/signin/ios/browser/features.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -767,9 +765,6 @@ TEST_F(AccountConsistencyServiceTest,
 }
 
 TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateBeforeDelay) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kRestoreGaiaCookiesOnUserAction);
-
   SignIn();
 
   NSDictionary* headers =
@@ -793,9 +788,6 @@ TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateBeforeDelay) {
 }
 
 TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateAfterDelay) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kRestoreGaiaCookiesOnUserAction);
-
   SignIn();
 
   NSDictionary* headers =

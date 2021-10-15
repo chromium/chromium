@@ -530,11 +530,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillUseRendererIDsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUseUniqueRendererIDsOnIOS)},
-    {"restore-gaia-cookies-on-user-action",
-     flag_descriptions::kRestoreGaiaCookiesOnUserActionName,
-     flag_descriptions::kRestoreGaiaCookiesOnUserActionDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(signin::kRestoreGaiaCookiesOnUserAction)},
     {"minutes-delay-to-restore-gaia-cookies-if-deleted",
      flag_descriptions::kDelayThresholdMinutesToUpdateGaiaCookieName,
      flag_descriptions::kDelayThresholdMinutesToUpdateGaiaCookieDescription,
