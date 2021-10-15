@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -20,7 +21,7 @@ namespace blink {
 // in which its display items are created during painting. After the document
 // cycle, a pointer/reference to DisplayItemClient should be no longer
 // dereferenced unless we can make sure the client is still alive.
-class PLATFORM_EXPORT DisplayItemClient {
+class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
  public:
   DisplayItemClient()
       : paint_invalidation_reason_(

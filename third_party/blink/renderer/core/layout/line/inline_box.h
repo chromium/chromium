@@ -72,7 +72,7 @@ class CORE_EXPORT InlineBox : public GarbageCollected<InlineBox>,
 
   InlineBox(const InlineBox&) = delete;
   InlineBox& operator=(const InlineBox&) = delete;
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   virtual void Destroy();
 

@@ -3939,6 +3939,7 @@ void PaintLayer::Trace(Visitor* visitor) const {
   visitor->Trace(scrollable_area_);
   visitor->Trace(stacking_node_);
   visitor->Trace(rare_data_);
+  DisplayItemClient::Trace(visitor);
 }
 
 void PaintLayer::AncestorDependentCompositingInputs::Trace(

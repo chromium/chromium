@@ -83,6 +83,7 @@ void Scrollbar::Trace(Visitor* visitor) const {
   visitor->Trace(scrollable_area_);
   visitor->Trace(scroll_timer_);
   visitor->Trace(style_source_);
+  DisplayItemClient::Trace(visitor);
 }
 
 void Scrollbar::SetFrameRect(const IntRect& frame_rect) {

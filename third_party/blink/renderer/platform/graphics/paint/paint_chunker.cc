@@ -34,7 +34,7 @@ bool PaintChunker::IsInInitialState() const {
 #endif
 
 void PaintChunker::StartMarkingClientsForValidation(
-    Vector<const DisplayItemClient*>& clients_to_validate) {
+    HeapVector<Member<const DisplayItemClient>>& clients_to_validate) {
 #if DCHECK_IS_ON()
   DCHECK(IsInInitialState());
 #endif
