@@ -5473,6 +5473,19 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
     ASSERT_TRUE(https_server()->Start());
 
     original_client_ = SetBrowserClientForTesting(&browser_client_);
+
+    // The custom ContentBrowserClient above typically ensures that this test
+    // runs without strict site isolation, but it's still possible to
+    // inadvertently override this when running with --site-per-process on the
+    // command line. This might happen on try bots, so these tests take this
+    // into account to prevent failures, but this is not an intended
+    // configuration for these tests, since with strict site isolation COOP
+    // doesn't need to dynamically isolate any sites.
+    if (AreAllSitesIsolatedForTesting()) {
+      LOG(WARNING) << "This test should be run without --site-per-process, "
+                   << "as it's designed to exercise code paths when strict "
+                   << "site isolation is turned off.";
+    }
   }
 
   void TearDownOnMainThread() override {
@@ -5504,6 +5517,9 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
 // gesture) triggers isolation for that site within the current
 // BrowsingInstance.
 IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOrigin) {
+  if (AreAllSitesIsolatedForTesting())
+    return;
+
   GURL no_coop_url = https_server()->GetURL("a.com", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), no_coop_url));
   EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
@@ -5568,6 +5584,9 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOrigin) {
 // Verify that the same-origin-allow-popups COOP header value triggers
 // isolation, and that this behaves sanely with window.open().
 IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOriginAllowPopups) {
+  if (AreAllSitesIsolatedForTesting())
+    return;
+
   // Navigate to a coop.com URL with COOP.
   GURL coop_url = https_server()->GetURL(
       "coop.com",
@@ -5646,6 +5665,9 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOriginAllowPopups) {
 // (*) In the future, COOP may disallow document.domain, in which case we may
 // need to revisit this.  See https://github.com/whatwg/html/issues/6177.
 IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SiteGranularity) {
+  if (AreAllSitesIsolatedForTesting())
+    return;
+
   // Navigate to a URL with COOP, where the origin doesn't match the site.
   GURL coop_url = https_server()->GetURL(
       "foo.bar.coop.com",
@@ -5886,6 +5908,9 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SiteAlreadyRequiresDedicatedProcess) {
 // of that document's site in future BrowsingInstances, but doesn't affect any
 // existing BrowsingInstances.
 IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivation) {
+  if (AreAllSitesIsolatedForTesting())
+    return;
+
   GURL coop_url = https_server()->GetURL(
       "b.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
   EXPECT_TRUE(NavigateToURL(shell(), coop_url));
@@ -5984,6 +6009,9 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivation) {
 // subframe also triggers isolation of a COOP site in the main frame for future
 // BrowsingInstances.
 IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivationInSubframe) {
+  if (AreAllSitesIsolatedForTesting())
+    return;
+
   GURL coop_url = https_server()->GetURL(
       "b.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
   EXPECT_TRUE(NavigateToURL(shell(), coop_url));
@@ -6170,6 +6198,12 @@ IN_PROC_BROWSER_TEST_P(JITIsolationTest, MainFrameTest) {
 }
 
 IN_PROC_BROWSER_TEST_P(JITIsolationTest, DefaultSiteTest) {
+  // Skip the test if --site-per-process is used on the command line, as the
+  // test needs to run without strict site isolation (see
+  // ScopedBrowserClientOverride below).
+  if (AreAllSitesIsolatedForTesting())
+    return;
+
   bool jit_disabled_by_default = GetParam();
   ScopedBrowserClientOverride policy(
       jit_disabled_by_default, /* disable_site_isolation_entirely */ true);
