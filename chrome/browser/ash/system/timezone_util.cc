@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/timezone/timezone_request.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
@@ -29,7 +30,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/settings/timezone_settings.h"
-#include "chromeos/timezone/timezone_request.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"

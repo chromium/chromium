@@ -26,6 +26,7 @@ class ChromeUserManager;
 class InSessionPasswordChangeManager;
 class KernelFeatureManager;
 class ProfileHelper;
+class TimeZoneResolver;
 
 namespace system {
 class AutomaticRebootManager;
@@ -38,7 +39,6 @@ class SystemClock;
 
 namespace chromeos {
 class SchedulerConfigurationManager;
-class TimeZoneResolver;
 }  // namespace chromeos
 
 namespace policy {
@@ -128,7 +128,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   ash::system::TimeZoneResolverManager* GetTimezoneResolverManager();
 
-  chromeos::TimeZoneResolver* GetTimezoneResolver();
+  ash::TimeZoneResolver* GetTimezoneResolver();
 
   // Overridden from BrowserProcessPlatformPartBase:
   void StartTearDown() override;
@@ -187,7 +187,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   std::unique_ptr<ash::system::TimeZoneResolverManager>
       timezone_resolver_manager_;
-  std::unique_ptr<chromeos::TimeZoneResolver> timezone_resolver_;
+  std::unique_ptr<ash::TimeZoneResolver> timezone_resolver_;
 
   std::unique_ptr<ash::system::SystemClock> system_clock_;
 

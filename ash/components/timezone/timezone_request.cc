@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/timezone/timezone_request.h"
+#include "ash/components/timezone/timezone_request.h"
 
 #include <stddef.h>
 #include <string>
@@ -26,7 +26,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -441,4 +441,4 @@ std::string TimeZoneResponseData::ToStringForDebug() const {
       (status < base::size(status2string) ? status2string[status] : "unknown"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

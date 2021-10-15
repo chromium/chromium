@@ -61,10 +61,6 @@
 #include "chromeos/geolocation/geoposition.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/geolocation/simple_geolocation_provider.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/timezone/timezone_provider.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/timezone/timezone_request.h"
 #include "components/account_id/account_id.h"
 
 class PrefService;
@@ -73,6 +69,8 @@ namespace ash {
 class BaseScreen;
 class DemoSetupController;
 class ErrorScreen;
+class TimeZoneProvider;
+struct TimeZoneResponseData;
 enum class KioskAppType;
 
 namespace login {

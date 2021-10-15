@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_TIMEZONE_TIMEZONE_RESOLVER_H_
-#define CHROMEOS_TIMEZONE_TIMEZONE_RESOLVER_H_
+#ifndef ASH_COMPONENTS_TIMEZONE_TIMEZONE_RESOLVER_H_
+#define ASH_COMPONENTS_TIMEZONE_TIMEZONE_RESOLVER_H_
 
 #include <memory>
 
@@ -20,12 +20,12 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 
 struct TimeZoneResponseData;
 
 // This class implements periodic timezone synchronization.
-class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneResolver {
+class COMPONENT_EXPORT(ASH_TIMEZONE) TimeZoneResolver {
  public:
   class TimeZoneResolverImpl;
 
@@ -116,11 +116,11 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneResolver {
   base::ThreadChecker thread_checker_;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::TimeZoneResolver;
 }  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::TimeZoneResolver;
-}
-
-#endif  // CHROMEOS_TIMEZONE_TIMEZONE_RESOLVER_H_
+#endif  // ASH_COMPONENTS_TIMEZONE_TIMEZONE_RESOLVER_H_

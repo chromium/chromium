@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/components/timezone/timezone_request.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
@@ -92,7 +93,6 @@
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/test/chromeos_test_utils.h"
-#include "chromeos/timezone/timezone_request.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -678,7 +678,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
                                                  kGeolocationResponseBody);
           } else if (base::StartsWith(
                          request.url.spec(),
-                         chromeos::DefaultTimezoneProviderURL().spec(),
+                         DefaultTimezoneProviderURL().spec(),
                          base::CompareCase::SENSITIVE)) {
             test_url_loader_factory_.AddResponse(request.url.spec(),
                                                  kTimezoneResponseBody);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/timezone/timezone_provider.h"
+#include "ash/components/timezone/timezone_provider.h"
 
 #include <algorithm>
 #include <iterator>
@@ -14,7 +14,7 @@
 #include "chromeos/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 TimeZoneProvider::TimeZoneProvider(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
@@ -60,4 +60,4 @@ void TimeZoneProvider::OnTimezoneResponse(
   std::move(callback).Run(std::move(timezone), server_error);
 }
 
-}  // namespace chromeos
+}  // namespace ash

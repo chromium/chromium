@@ -7,13 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/timezone/timezone_provider.h"
+#include "ash/components/timezone/timezone_resolver.h"
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/geolocation/geoposition.h"
-#include "chromeos/timezone/timezone_provider.h"
-#include "chromeos/timezone/timezone_resolver.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -61,7 +61,7 @@ struct SimpleRequest {
     timezone.timeZoneId = "America/Los_Angeles";
     timezone.timeZoneName = "Pacific Standard Time";
     timezone.error_message.erase();
-    timezone.status = chromeos::TimeZoneResponseData::OK;
+    timezone.status = ash::TimeZoneResponseData::OK;
     EXPECT_EQ(
         "dstOffset=0.000000, rawOffset=-28800.000000, "
         "timeZoneId='America/Los_Angeles', timeZoneName='Pacific Standard "
@@ -72,12 +72,12 @@ struct SimpleRequest {
   GURL url;
   chromeos::Geoposition position;
   std::string http_response;
-  chromeos::TimeZoneResponseData timezone;
+  ash::TimeZoneResponseData timezone;
 };
 
 }  // anonymous namespace
 
-namespace chromeos {
+namespace ash {
 
 // This implements fake TimeZone API remote endpoint.
 class TestTimeZoneAPILoaderFactory : public network::TestURLLoaderFactory {
@@ -267,4 +267,4 @@ TEST(TimeZoneResolverTest, CheckIntervals) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

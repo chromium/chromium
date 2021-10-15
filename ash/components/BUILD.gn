@@ -19,6 +19,7 @@ source_set("unit_tests") {
     "//ash/components/quick_answers:unit_tests",
     "//ash/components/security_token_pin:unit_tests",
     "//ash/components/smbfs:unit_tests",
+    "//ash/components/timezone:unit_tests",
   ]
 
   data_deps = [

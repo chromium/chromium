@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/components/timezone/timezone_resolver.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
@@ -47,7 +48,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/geolocation/simple_geolocation_provider.h"
-#include "chromeos/timezone/timezone_resolver.h"
 #include "components/app_restore/features.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/arc/enterprise/snapshot_hours_policy_service.h"
@@ -353,9 +353,9 @@ BrowserProcessPlatformPart::GetTimezoneResolverManager() {
   return timezone_resolver_manager_.get();
 }
 
-chromeos::TimeZoneResolver* BrowserProcessPlatformPart::GetTimezoneResolver() {
+ash::TimeZoneResolver* BrowserProcessPlatformPart::GetTimezoneResolver() {
   if (!timezone_resolver_.get()) {
-    timezone_resolver_ = std::make_unique<chromeos::TimeZoneResolver>(
+    timezone_resolver_ = std::make_unique<ash::TimeZoneResolver>(
         GetTimezoneResolverManager(),
         g_browser_process->shared_url_loader_factory(),
         chromeos::SimpleGeolocationProvider::DefaultGeolocationProviderURL(),

@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_TIMEZONE_RESOLVER_MANAGER_H_
 #define CHROME_BROWSER_ASH_SYSTEM_TIMEZONE_RESOLVER_MANAGER_H_
 
+#include "ash/components/timezone/timezone_resolver.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/timezone/timezone_resolver.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;

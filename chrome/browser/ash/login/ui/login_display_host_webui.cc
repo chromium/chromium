@@ -10,6 +10,7 @@
 
 #include "ash/accessibility/ui/focus_ring_controller.h"
 #include "ash/components/audio/sounds.h"
+#include "ash/components/timezone/timezone_resolver.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
@@ -82,7 +83,6 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "chromeos/settings/timezone_settings.h"
-#include "chromeos/timezone/timezone_resolver.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"

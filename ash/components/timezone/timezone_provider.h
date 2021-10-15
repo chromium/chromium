@@ -2,34 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_TIMEZONE_TIMEZONE_PROVIDER_H_
-#define CHROMEOS_TIMEZONE_TIMEZONE_PROVIDER_H_
+#ifndef ASH_COMPONENTS_TIMEZONE_TIMEZONE_PROVIDER_H_
+#define ASH_COMPONENTS_TIMEZONE_TIMEZONE_PROVIDER_H_
 
 #include <memory>
 #include <vector>
 
+#include "ash/components/timezone/timezone_request.h"
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "chromeos/timezone/timezone_request.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/geolocation/geoposition.h"
 #include "url/gurl.h"
 
 namespace network {
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
-namespace chromeos {
-
-struct Geoposition;
+namespace ash {
 
 // This class implements Google TimeZone API.
 //
 // Note: this should probably be a singleton to monitor requests rate.
 // But as it is used only from WizardController, it can be owned by it for now.
-class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneProvider {
+class COMPONENT_EXPORT(ASH_TIMEZONE) TimeZoneProvider {
  public:
   TimeZoneProvider(scoped_refptr<network::SharedURLLoaderFactory> factory,
                    const GURL& url);
@@ -64,12 +64,6 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneProvider {
   base::ThreadChecker thread_checker_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::TimeZoneProvider;
-}
-
-#endif  // CHROMEOS_TIMEZONE_TIMEZONE_PROVIDER_H_
+#endif  // ASH_COMPONENTS_TIMEZONE_TIMEZONE_PROVIDER_H_

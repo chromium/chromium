@@ -8,10 +8,6 @@
 #include <memory>
 #include <string>
 
-// TODO(https://crbug.com/1164001): move TimeZoneResponseData to forward
-// declaration when moved to chrome/browser/ash/.
-#include "chromeos/timezone/timezone_request.h"
-
 class Profile;
 
 namespace base {
@@ -23,6 +19,9 @@ class User;
 }
 
 namespace ash {
+
+struct TimeZoneResponseData;
+
 namespace system {
 
 // Gets the current timezone's display name.

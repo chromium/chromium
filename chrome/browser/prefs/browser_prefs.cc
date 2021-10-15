@@ -272,6 +272,7 @@
 #include "ash/components/audio/audio_devices_pref_handler_impl.h"
 #include "ash/components/device_activity/device_activity_controller.h"
 #include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "ash/components/timezone/timezone_resolver.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
@@ -378,7 +379,6 @@
 #include "chromeos/services/bluetooth_config/device_name_manager_impl.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
-#include "chromeos/timezone/timezone_resolver.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/arc/arc_prefs.h"
 #include "components/onc/onc_pref_names.h"
@@ -1032,7 +1032,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::StartupUtils::RegisterPrefs(registry);
   ash::StatsReportingController::RegisterLocalStatePrefs(registry);
   ash::system::AutomaticRebootManager::RegisterPrefs(registry);
-  chromeos::TimeZoneResolver::RegisterPrefs(registry);
+  ash::TimeZoneResolver::RegisterPrefs(registry);
   ash::UserImageManager::RegisterPrefs(registry);
   ash::UserSessionManager::RegisterPrefs(registry);
   ash::WebKioskAppManager::RegisterPrefs(registry);
