@@ -439,7 +439,7 @@ void BackgroundModeManager::LaunchBackgroundApplication(
       ->BrowserAppLauncher()
       ->LaunchAppWithParams(CreateAppLaunchParamsUserContainer(
           profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::AppLaunchSource::kSourceBackground));
+          apps::mojom::LaunchSource::kFromBackgroundMode));
 }
 
 // static

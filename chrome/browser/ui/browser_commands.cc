@@ -707,7 +707,7 @@ void NewWindow(Browser* browser) {
     DCHECK(!extension->from_bookmark());
     const auto app_launch_params = CreateAppLaunchParamsUserContainer(
         profile, extension, WindowOpenDisposition::NEW_WINDOW,
-        extensions::AppLaunchSource::kSourceKeyboard);
+        apps::mojom::LaunchSource::kFromKeyboard);
     OpenApplicationWindow(
         profile, app_launch_params,
         extensions::AppLaunchInfo::GetLaunchWebURL(extension));

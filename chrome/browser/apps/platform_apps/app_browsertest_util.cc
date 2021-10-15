@@ -172,7 +172,7 @@ void PlatformAppBrowserTest::LaunchHostedApp(const Extension* extension) {
       ->LaunchAppWithParams(CreateAppLaunchParamsUserContainer(
           browser()->profile(), extension,
           WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::AppLaunchSource::kSourceCommandLine));
+          apps::mojom::LaunchSource::kFromCommandLine));
 }
 
 WebContents* PlatformAppBrowserTest::GetFirstAppWindowWebContents() {

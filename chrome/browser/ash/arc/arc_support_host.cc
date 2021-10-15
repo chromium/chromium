@@ -143,7 +143,7 @@ void RequestOpenApp(Profile* profile) {
       ->BrowserAppLauncher()
       ->LaunchAppWithParams(CreateAppLaunchParamsUserContainer(
           profile, extension, WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceChromeInternal));
+          apps::mojom::LaunchSource::kFromChromeInternal));
 }
 
 std::ostream& operator<<(std::ostream& os, ArcSupportHost::UIPage ui_page) {
