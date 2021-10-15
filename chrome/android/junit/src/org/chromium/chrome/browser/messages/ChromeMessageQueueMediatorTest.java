@@ -28,6 +28,8 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -62,6 +64,9 @@ public class ChromeMessageQueueMediatorTest {
     private ActivityTabProvider mActivityTabProvider;
 
     @Mock
+    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+
+    @Mock
     private Handler mQueueHandler;
 
     private ChromeMessageQueueMediator mMediator;
@@ -81,7 +86,8 @@ public class ChromeMessageQueueMediatorTest {
                 new ObservableSupplierImpl<>();
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                 mMessageContainerCoordinator, mActivityTabProvider,
-                layoutStateProviderOneShotSupplier, modalDialogManagerSupplier, mMessageDispatcher);
+                layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
+                mActivityLifecycleDispatcher, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
         modalDialogManagerSupplier.set(mModalDialogManager);
         mMediator.setQueueHandlerForTesting(mQueueHandler);
@@ -118,6 +124,21 @@ public class ChromeMessageQueueMediatorTest {
     }
 
     /**
+     * Test the queue can be suspended and resumed correctly when app is paused and resumed.
+     */
+    @Test
+    public void testActivityStateChange() {
+        final ArgumentCaptor<PauseResumeWithNativeObserver> observer =
+                ArgumentCaptor.forClass(PauseResumeWithNativeObserver.class);
+        doNothing().when(mActivityLifecycleDispatcher).register(observer.capture());
+        initMediator();
+        observer.getValue().onPauseWithNative();
+        verify(mMessageDispatcher).suspend();
+        observer.getValue().onResumeWithNative();
+        verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
+    }
+
+    /**
      * Test NPE is not thrown when supplier offers a null value.
      */
     @Test
@@ -130,7 +151,8 @@ public class ChromeMessageQueueMediatorTest {
                 new ObservableSupplierImpl<>();
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                 mMessageContainerCoordinator, mActivityTabProvider,
-                layoutStateProviderOneShotSupplier, modalDialogManagerSupplier, mMessageDispatcher);
+                layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
+                mActivityLifecycleDispatcher, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
         // To offer a null value, we have to offer a value other than null first.
         modalDialogManagerSupplier.set(mModalDialogManager);
