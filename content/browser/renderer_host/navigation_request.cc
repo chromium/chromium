@@ -1352,9 +1352,8 @@ NavigationRequest::NavigationRequest(
           rfh_restored_from_back_forward_cache),
       is_back_forward_cache_restore_(!!rfh_restored_from_back_forward_cache),
       // Store the old RenderFrameHost id at request creation to be used later.
-      previous_render_frame_host_id_(GlobalRenderFrameHostId(
-          frame_tree_node->current_frame_host()->GetProcess()->GetID(),
-          frame_tree_node->current_frame_host()->GetRoutingID())),
+      previous_render_frame_host_id_(
+          frame_tree_node->current_frame_host()->GetGlobalId()),
       initiator_frame_token_(begin_params_->initiator_frame_token),
       initiator_process_id_(initiator_process_id),
       was_opener_suppressed_(was_opener_suppressed),
