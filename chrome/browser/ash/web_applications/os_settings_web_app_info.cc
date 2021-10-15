@@ -47,6 +47,7 @@ CreateWebAppInfoForOSSettingsSystemWebApp() {
   info->theme_color = GetBgColor(/*use_dark_mode=*/false);
   info->dark_mode_theme_color = GetBgColor(/*use_dark_mode=*/true);
   info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   return info;
