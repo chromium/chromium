@@ -1908,7 +1908,8 @@ void WebContentsImpl::SetWasDiscarded(bool was_discarded) {
 base::ScopedClosureRunner WebContentsImpl::IncrementCapturerCount(
     const gfx::Size& capture_size,
     bool stay_hidden,
-    bool stay_awake) {
+    bool stay_awake,
+    bool is_activity) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::IncrementCapturerCount");
   DCHECK(!IsBeingDestroyed());
   if (stay_hidden) {
@@ -1943,11 +1944,11 @@ base::ScopedClosureRunner WebContentsImpl::IncrementCapturerCount(
   if (capture_wake_lock_)
     capture_wake_lock_->RequestWakeLock();
 
-  UpdateVisibilityAndNotifyPageAndView(GetVisibility());
+  UpdateVisibilityAndNotifyPageAndView(GetVisibility(), is_activity);
 
-  return base::ScopedClosureRunner(
-      base::BindOnce(&WebContentsImpl::DecrementCapturerCount,
-                     weak_factory_.GetWeakPtr(), stay_hidden, stay_awake));
+  return base::ScopedClosureRunner(base::BindOnce(
+      &WebContentsImpl::DecrementCapturerCount, weak_factory_.GetWeakPtr(),
+      stay_hidden, stay_awake, is_activity));
 }
 
 const blink::mojom::CaptureHandleConfig&
@@ -3413,7 +3414,8 @@ PageVisibilityState WebContentsImpl::GetPageVisibilityState() const {
 }
 
 void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
-    Visibility new_visibility) {
+    Visibility new_visibility,
+    bool is_activity) {
   PageVisibilityState page_visibility =
       CalculatePageVisibilityState(new_visibility);
 
@@ -3472,7 +3474,9 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
   // Make sure to call SetVisibilityAndNotifyObservers(VISIBLE) before notifying
   // the CrossProcessFrameConnector.
   if (new_visibility == Visibility::VISIBLE) {
-    last_active_time_ = base::TimeTicks::Now();
+    if (is_activity) {
+      last_active_time_ = base::TimeTicks::Now();
+    }
     SetVisibilityAndNotifyObservers(new_visibility);
   }
 
@@ -8973,7 +8977,8 @@ void WebContentsImpl::RenderFrameHostStateChanged(
 }
 
 void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,
-                                             bool stay_awake) {
+                                             bool stay_awake,
+                                             bool is_activity) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DecrementCapturerCount");
   if (stay_hidden)
     --hidden_capturer_count_;
@@ -8998,7 +9003,7 @@ void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,
   if (capture_wake_lock_ && (!is_being_captured || !stay_awake_capturer_count_))
     capture_wake_lock_->CancelWakeLock();
 
-  UpdateVisibilityAndNotifyPageAndView(GetVisibility());
+  UpdateVisibilityAndNotifyPageAndView(GetVisibility(), is_activity);
 }
 
 void WebContentsImpl::NotifyPrimaryMainFrameProcessIsAlive() {

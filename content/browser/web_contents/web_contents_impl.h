@@ -388,7 +388,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   base::ScopedClosureRunner IncrementCapturerCount(
       const gfx::Size& capture_size,
       bool stay_hidden,
-      bool stay_awake) override WARN_UNUSED_RESULT;
+      bool stay_awake,
+      bool is_activity = true) override WARN_UNUSED_RESULT;
   const blink::mojom::CaptureHandleConfig& GetCaptureHandleConfig() override;
   bool IsBeingCaptured() override;
   bool IsBeingVisiblyCaptured() override;
@@ -1307,6 +1308,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, PendingContentsDestroyed);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, PendingContentsShown);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, FrameTreeShape);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
+                           NonActivityCaptureDoesNotCountAsActivity);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, GetLastActiveTime);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
                            LoadResourceFromMemoryCacheWithBadSecurityInfo);
@@ -1731,9 +1734,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Sets the visibility to |new_visibility| and propagates this to the
   // renderer side, taking into account the current capture state. This
-  // can be called with the current visibility to effect capturing
+  // can be called with the current visibility to affect capturing
   // changes.
-  void UpdateVisibilityAndNotifyPageAndView(Visibility new_visibility);
+  // |is_activity| controls whether a change to |visible| affects
+  // the value returned by GetLastActiveTime().
+  void UpdateVisibilityAndNotifyPageAndView(Visibility new_visibility,
+                                            bool is_activity = true);
 
   // Returns UKM source id for the currently displayed page.
   // Intentionally kept private, prefer using
@@ -1764,7 +1770,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Called when the base::ScopedClosureRunner returned by
   // IncrementCapturerCount() is destructed.
-  void DecrementCapturerCount(bool stay_hidden, bool stay_awake);
+  void DecrementCapturerCount(bool stay_hidden,
+                              bool stay_awake,
+                              bool is_activity = true);
 
   // Calculates the PageVisibilityState for |visibility|, taking the capturing
   // state into account.

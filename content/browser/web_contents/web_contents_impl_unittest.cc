@@ -2066,13 +2066,40 @@ TEST_F(WebContentsImplTest, HiddenCapture) {
   EXPECT_FALSE(rwhv->is_showing());
 }
 
+TEST_F(WebContentsImplTest, NonActivityCaptureDoesNotCountAsActivity) {
+  TestRenderWidgetHostView* rwhv = static_cast<TestRenderWidgetHostView*>(
+      contents()->GetRenderWidgetHostView());
+
+  contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  ASSERT_EQ(Visibility::VISIBLE, contents()->GetVisibility());
+
+  // Reset the last active time to a known value.
+  // This is done because the clock in these tests is frozen,
+  // so recording the value and comparing against it later is meaningless.
+  contents()->last_active_time_ = base::TimeTicks();
+
+  auto handle = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/true,
+      /*stay_awake=*/true, /*is_activity=*/false);
+  ASSERT_TRUE(rwhv->is_showing());
+
+  // The value returned by GetLastActiveTime() should not have been updated.
+  EXPECT_TRUE(contents()->GetLastActiveTime().is_null());
+}
+
 // Tests that GetLastActiveTime starts with a real, non-zero time and updates
 // on activity.
 TEST_F(WebContentsImplTest, GetLastActiveTime) {
   // The WebContents starts with a valid creation time.
   EXPECT_FALSE(contents()->GetLastActiveTime().is_null());
 
+  contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
+  ASSERT_EQ(Visibility::HIDDEN, contents()->GetVisibility());
+
   // Reset the last active time to a known-bad value.
+  // This is done because the clock in these tests is frozen,
+  // so recording the value and comparing against it later is meaningless.
   contents()->last_active_time_ = base::TimeTicks();
   ASSERT_TRUE(contents()->GetLastActiveTime().is_null());
 

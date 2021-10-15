@@ -650,10 +650,14 @@ class WebContents : public PageNavigator,
   // are user-visible while being captured.
   //
   // |stay_awake| will cause a WakeLock to be held which prevents system sleep.
+  //
+  // |is_activity| means the capture will cause the last active time to be
+  // updated.
   virtual base::ScopedClosureRunner IncrementCapturerCount(
       const gfx::Size& capture_size,
       bool stay_hidden,
-      bool stay_awake) WARN_UNUSED_RESULT = 0;
+      bool stay_awake,
+      bool is_activity = true) WARN_UNUSED_RESULT = 0;
 
   // Getter for the capture handle, which allows a captured application to
   // opt-in to exposing information to its capturer(s).
