@@ -57,6 +57,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE, true)
                     .put(ChromeFeatureList.EARLY_LIBRARY_LOAD, false)
                     .put(ChromeFeatureList.ELASTIC_OVERSCROLL, true)
+                    .put(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP, false)
                     .put(ChromeFeatureList
                                     .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY,
                             false)

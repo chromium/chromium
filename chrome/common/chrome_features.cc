@@ -378,6 +378,13 @@ const base::Feature kEarlyLibraryLoad{"EarlyLibraryLoad",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_ANDROID)
+// Under this flag tab preloading at startup will be elided (i.e., not
+// performed).
+const base::Feature kElideTabPreloadAtStartup = {
+    "ElideTabPreloadAtStartup", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables all registered system web apps, regardless of their respective
 // feature flags.
 const base::Feature kEnableAllSystemWebApps{"EnableAllSystemWebApps",
