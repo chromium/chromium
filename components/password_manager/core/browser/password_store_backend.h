@@ -113,7 +113,7 @@ class PasswordStoreBackend {
   // For sync codebase only: instantiates a proxy controller delegate to
   // react to sync events.
   virtual std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-  CreateSyncControllerDelegateFactory() = 0;
+  CreateSyncControllerDelegate() = 0;
 
   // Factory function for creating the backend. The Local backend requires the
   // provided `login_db` for storage and Android backend for migration purposes.

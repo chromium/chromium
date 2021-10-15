@@ -62,7 +62,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-  CreateSyncControllerDelegateFactory() override;
+  CreateSyncControllerDelegate() override;
 
   PasswordStoreBackend* const main_backend_;
   PasswordStoreBackend* const shadow_backend_;

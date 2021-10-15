@@ -135,8 +135,8 @@ FieldInfoStore* PasswordStoreProxyBackend::GetFieldInfoStore() {
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-PasswordStoreProxyBackend::CreateSyncControllerDelegateFactory() {
-  return main_backend_->CreateSyncControllerDelegateFactory();
+PasswordStoreProxyBackend::CreateSyncControllerDelegate() {
+  return main_backend_->CreateSyncControllerDelegate();
 }
 
 }  // namespace password_manager

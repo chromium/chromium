@@ -118,7 +118,7 @@ FieldInfoStore* FakePasswordStoreBackend::GetFieldInfoStore() {
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-FakePasswordStoreBackend::CreateSyncControllerDelegateFactory() {
+FakePasswordStoreBackend::CreateSyncControllerDelegate() {
   NOTIMPLEMENTED();
   return nullptr;
 }

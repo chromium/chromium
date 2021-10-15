@@ -247,7 +247,7 @@ FieldInfoStore* TestPasswordStore::GetFieldInfoStore() {
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-TestPasswordStore::CreateSyncControllerDelegateFactory() {
+TestPasswordStore::CreateSyncControllerDelegate() {
   NOTIMPLEMENTED();
   return nullptr;
 }

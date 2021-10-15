@@ -72,7 +72,7 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-  CreateSyncControllerDelegateFactory() override;
+  CreateSyncControllerDelegate() override;
 
   // Creates 'migrator_' and starts migration process.
   void StartMigration();

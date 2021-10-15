@@ -268,9 +268,9 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToGetFieldInfoStore) {
 }
 
 TEST_F(PasswordStoreProxyBackendTest,
-       UseMainBackendToCreateSyncControllerDelegateFactory) {
-  EXPECT_CALL(main_backend(), CreateSyncControllerDelegateFactory);
-  proxy_backend().CreateSyncControllerDelegateFactory();
+       UseMainBackendToCreateSyncControllerDelegate) {
+  EXPECT_CALL(main_backend(), CreateSyncControllerDelegate);
+  proxy_backend().CreateSyncControllerDelegate();
 }
 
 }  // namespace password_manager

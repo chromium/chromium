@@ -149,8 +149,8 @@ FieldInfoStore* PasswordStoreBackendMigrationDecorator::GetFieldInfoStore() {
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegateFactory() {
-  return active_backend_->CreateSyncControllerDelegateFactory();
+PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
+  return active_backend_->CreateSyncControllerDelegate();
 }
 
 void PasswordStoreBackendMigrationDecorator::StartMigration() {

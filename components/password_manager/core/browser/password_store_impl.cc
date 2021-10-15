@@ -401,7 +401,7 @@ FieldInfoStore* PasswordStoreImpl::GetFieldInfoStore() {
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-PasswordStoreImpl::CreateSyncControllerDelegateFactory() {
+PasswordStoreImpl::CreateSyncControllerDelegate() {
   DCHECK(!was_shutdown_);
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   // Note that a callback is bound for
