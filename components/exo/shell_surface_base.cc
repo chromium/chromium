@@ -1259,10 +1259,8 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
         ui::AcceleratorManager::kNormalPriority, this);
   }
   // Show widget next time Commit() is called.
-  if (show_state != ui::SHOW_STATE_MINIMIZED) {
+  if (show_state != ui::SHOW_STATE_MINIMIZED)
     pending_show_widget_ = true;
-    widget_->GetNativeWindow()->ClearProperty(exo::kSurfacePendingCommitKey);
-  }
 
   UpdateDisplayOnTree();
 
@@ -1564,10 +1562,6 @@ void ShellSurfaceBase::CommitWidget() {
 
     if (container_ == ash::kShellWindowId_SystemModalContainer)
       UpdateSystemModal();
-
-    // Notify observers that the first 'commit' is performed.
-    widget_->GetNativeWindow()->SetProperty(exo::kSurfacePendingCommitKey,
-                                            true);
   }
 
   if (size_constraint_changed)

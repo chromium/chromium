@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
-#include "components/exo/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 
@@ -38,15 +37,11 @@ void CrosapiNewWindowDelegate::WindowObserver::OnExoWindowCreated(
   observed_windows_.AddObservation(new_window);
 }
 
-void CrosapiNewWindowDelegate::WindowObserver::OnWindowPropertyChanged(
+void CrosapiNewWindowDelegate::WindowObserver::OnWindowVisibilityChanged(
     aura::Window* window,
-    const void* key,
-    intptr_t old) {
-  if (!window || key != exo::kSurfacePendingCommitKey ||
-      !window->GetProperty(exo::kSurfacePendingCommitKey) ||
-      closure_.is_null()) {
+    bool visible) {
+  if (!window || !visible || closure_.is_null())
     return;
-  }
 
   // In case the |window_id_| has not been set yet, record the all window for
   // future iteration.
