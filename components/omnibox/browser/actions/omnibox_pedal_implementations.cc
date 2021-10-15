@@ -30,10 +30,6 @@
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
 
-// This is the blue for some pedals that refer to settings pages,
-// taken to match existing icons e.g. the blue chrome://settings gear.
-constexpr SkColor kChromePagesBlue = SkColorSetARGB(255, 60, 115, 229);
-
 // =============================================================================
 
 class OmniboxPedalClearBrowsingData : public OmniboxPedal {
@@ -1158,14 +1154,6 @@ class OmniboxPedalManageChromeSettings : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS),
             GURL()) {}
 
-#if SUPPORTS_DESKTOP_ICONS
-  const gfx::VectorIcon& GetVectorIcon() const override {
-    return vector_icons::kSettingsIcon;
-  }
-#endif
-
-  SkColor GetVectorIconColor() const override { return kChromePagesBlue; }
-
  protected:
   ~OmniboxPedalManageChromeSettings() override = default;
 };
@@ -1184,14 +1172,6 @@ class OmniboxPedalManageChromeDownloads : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS),
             GURL()) {}
 
-#if SUPPORTS_DESKTOP_ICONS
-  const gfx::VectorIcon& GetVectorIcon() const override {
-    return vector_icons::kFileDownloadIcon;
-  }
-#endif
-
-  SkColor GetVectorIconColor() const override { return kChromePagesBlue; }
-
  protected:
   ~OmniboxPedalManageChromeDownloads() override = default;
 };
@@ -1209,14 +1189,6 @@ class OmniboxPedalViewChromeHistory : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY),
             GURL()) {}
-
-#if SUPPORTS_DESKTOP_ICONS
-  const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kClockIcon;
-  }
-#endif
-
-  SkColor GetVectorIconColor() const override { return kChromePagesBlue; }
 
  protected:
   ~OmniboxPedalViewChromeHistory() override = default;
@@ -1285,14 +1257,6 @@ class OmniboxPedalManageChromeAccessibility : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY),
             GURL()) {}
 
-#if SUPPORTS_DESKTOP_ICONS
-  const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kAccessibilityIcon;
-  }
-#endif
-
-  SkColor GetVectorIconColor() const override { return kChromePagesBlue; }
-
  protected:
   ~OmniboxPedalManageChromeAccessibility() override = default;
 };
@@ -1310,14 +1274,6 @@ class OmniboxPedalManageChromeOSAccessibility : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY),
             GURL()) {}
-
-#if SUPPORTS_DESKTOP_ICONS
-  const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kAccessibilityIcon;
-  }
-#endif
-
-  SkColor GetVectorIconColor() const override { return kChromePagesBlue; }
 
   OmniboxPedalId GetMetricsId() const override {
     return OmniboxPedalId::MANAGE_CHROME_ACCESSIBILITY;

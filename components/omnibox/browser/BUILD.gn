@@ -22,7 +22,6 @@ aggregate_vector_icons("omnibox_vector_icons") {
   icon_directory = "vector_icons"
 
   sources = [
-    "accessibility.icon",
     "answer_calculator.icon",
     "answer_currency.icon",
     "answer_default.icon",

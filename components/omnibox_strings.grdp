@@ -443,7 +443,7 @@
     <ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to play the Dino Run game in Chrome
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME" desc="Announcement when pedal action button is focused, PLAY_CHROME_DINO_GAME">
-    Play Dino Run button, press Enter to play the Dino Run game in Chrome
+    Play Chrome Dino game button, press Enter to play the Dino Run game in Chrome
   </message>
 
   <message name="IDS_OMNIBOX_PEDAL_FIND_MY_PHONE_HINT" desc="The button text contents to suggest pedal action, FIND_MY_PHONE">
@@ -473,7 +473,7 @@
   </message>
 
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_HINT" desc="The button text contents to suggest pedal action, MANAGE_CHROME_SETTINGS">
-    Manage Chrome settings
+    Manage settings
   </message>
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, MANAGE_CHROME_SETTINGS">
     Manage your Chrome settings
@@ -512,16 +512,16 @@
   </message>
 
   <message name="IDS_OMNIBOX_PEDAL_SHARE_THIS_PAGE_HINT" desc="The button text contents to suggest pedal action, SHARE_THIS_PAGE">
-    Share this page
+    Share this tab
   </message>
   <message name="IDS_OMNIBOX_PEDAL_SHARE_THIS_PAGE_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, SHARE_THIS_PAGE">
-    Share this page by sharing the link, creating a QR code, casting, and more.
+    Share this tab by sharing the link, creating a QR code, casting, and more.
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_SHARE_THIS_PAGE_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to SHARE_THIS_PAGE.">
-    <ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to share this page, with options to share the link, create a QR code, cast, and more.
+    <ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to share this tab by sharing the link, creating a QR code, casting, and more.
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_SHARE_THIS_PAGE" desc="Announcement when pedal action button is focused, SHARE_THIS_PAGE">
-    Share this page button, press Enter to share this page with options to share the link, create a QR code, cast, and more.
+    Share this tab button, press Enter to share this tab by sharing the link, creating a QR code, casting, and more.
   </message>
 
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_HINT" desc="The button text contents to suggest pedal action, MANAGE_CHROME_ACCESSIBILITY">
@@ -551,7 +551,7 @@
   </message>
 
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_HINT" desc="The button text contents to suggest pedal action, MANAGE_CHROME_THEMES">
-    Customize appearance
+    Customize Chrome
   </message>
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, MANAGE_CHROME_THEMES">
     Customize the look of your browser
@@ -560,20 +560,20 @@
     <ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to customize the look of your browser.
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES" desc="Announcement when pedal action button is focused, MANAGE_CHROME_THEMES">
-    Manage Chrome appearance button, press Enter to customize the look of your browser with themes.
+    Customize Chrome button, press Enter to customize the look of your browser.
   </message>
 
   <message name="IDS_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_HINT" desc="The button text contents to suggest pedal action, CUSTOMIZE_SEARCH_ENGINES">
-    Manage site search
+    Manage search engines
   </message>
   <message name="IDS_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, CUSTOMIZE_SEARCH_ENGINES">
-    Manage site search and your default search engine
+    Manage your default search engine and site search
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to CUSTOMIZE_SEARCH_ENGINES.">
     <ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to manage site search and your default search engine
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES" desc="Announcement when pedal action button is focused, CUSTOMIZE_SEARCH_ENGINES">
-    Manage site search button, press Enter to manage site search and your default search engine
+    Manage search engines button, press Enter to manage your default search engine and site search
   </message>
 
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_HINT" desc="The button text contents to suggest pedal action, MANAGE_CHROMEOS_ACCESSIBILITY">
