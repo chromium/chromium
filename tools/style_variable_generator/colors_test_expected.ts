@@ -7,7 +7,7 @@
  *  colors_test_palette.json5
  */
 
-import {css} from 'lit-element';
+import {css} from 'lit';
 
 export const GOOGLE_GREY_900 = css`var(--google-grey-900)`;
 export const TEXT_COLOR_PRIMARY = css`var(--cros-text-color-primary)`;

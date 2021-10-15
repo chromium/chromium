@@ -7,7 +7,7 @@
  *  colors_test_palette.json5
  */
 
-import {css} from 'lit-element';
+import {css} from 'lit';
 /* SAFETY_BOILERPLATE */
 
 export interface GetColorsCSSOptions {
