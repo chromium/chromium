@@ -40,6 +40,24 @@ class DlpContentObserver {
 
   // Called when |web_contents| becomes visible or not.
   virtual void OnVisibilityChanged(content::WebContents* web_contents) = 0;
+
+ private:
+  friend class ScopedDlpContentObserverForTesting;
+
+  static void SetDlpContentObserverForTesting(
+      DlpContentObserver* dlp_content_observer);
+  static void ResetDlpContentObserverForTesting();
+};
+
+// Helper class to call SetDlpContentObserverForTesting and
+// ResetDlpContentObserverForTesting automatically.
+// The caller (test) should manage `test_dlp_content_observer` lifetime.
+// This class does not own it.
+class ScopedDlpContentObserverForTesting {
+ public:
+  explicit ScopedDlpContentObserverForTesting(
+      DlpContentObserver* test_dlp_content_observer);
+  ~ScopedDlpContentObserverForTesting();
 };
 
 }  // namespace policy

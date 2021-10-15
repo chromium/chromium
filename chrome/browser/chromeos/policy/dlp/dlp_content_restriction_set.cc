@@ -56,7 +56,7 @@ RestrictionLevelAndUrl DlpContentRestrictionSet::GetRestrictionLevelAndUrl(
 }
 
 bool DlpContentRestrictionSet::IsEmpty() const {
-  for (int i = 0; i < restrictions_.size(); ++i) {
+  for (size_t i = 0; i < restrictions_.size(); ++i) {
     if (restrictions_[i].level != DlpRulesManager::Level::kNotSet)
       return false;
   }
@@ -65,7 +65,7 @@ bool DlpContentRestrictionSet::IsEmpty() const {
 
 void DlpContentRestrictionSet::UnionWith(
     const DlpContentRestrictionSet& other) {
-  for (int i = 0; i < restrictions_.size(); ++i) {
+  for (size_t i = 0; i < restrictions_.size(); ++i) {
     if (other.restrictions_[i].level > restrictions_[i].level) {
       restrictions_[i] = other.restrictions_[i];
     }
@@ -76,7 +76,7 @@ DlpContentRestrictionSet DlpContentRestrictionSet::DifferenceWith(
     const DlpContentRestrictionSet& other) const {
   // Leave only the restrictions that are present in |this|, but not in |other|.
   DlpContentRestrictionSet result;
-  for (int i = 0; i < restrictions_.size(); ++i) {
+  for (size_t i = 0; i < restrictions_.size(); ++i) {
     if (restrictions_[i].level > other.restrictions_[i].level) {
       result.restrictions_[i] = restrictions_[i];
     }

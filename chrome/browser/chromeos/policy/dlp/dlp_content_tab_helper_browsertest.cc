@@ -6,7 +6,8 @@
 
 #include "base/path_service.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
-#include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -37,7 +38,7 @@ class DlpContentTabHelperBrowserTest
     : public extensions::PlatformAppBrowserTest {
  public:
   DlpContentTabHelperBrowserTest()
-      : scoped_dlp_content_manager_(&mock_dlp_content_manager_),
+      : scoped_dlp_content_observer_(&mock_dlp_content_observer_),
         ignore_dlp_rules_manager_(
             DlpContentTabHelper::IgnoreDlpRulesManagerForTesting()) {}
 
@@ -46,8 +47,8 @@ class DlpContentTabHelperBrowserTest
 
   void TearDown() override { extensions::PlatformAppBrowserTest::TearDown(); }
 
-  MockDlpContentManager mock_dlp_content_manager_;
-  ScopedDlpContentManagerForTesting scoped_dlp_content_manager_;
+  MockDlpContentObserver mock_dlp_content_observer_;
+  ScopedDlpContentObserverForTesting scoped_dlp_content_observer_;
   DlpContentTabHelper::ScopedIgnoreDlpRulesManager ignore_dlp_rules_manager_;
 };
 
@@ -64,16 +65,15 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBrowserTest, PlatformApp) {
 
   // Restrict screenshot for Platform App
   GURL kUrl = GURL("chrome-extension://" + extension->id() + "/index.html");
-  EXPECT_CALL(mock_dlp_content_manager_, GetRestrictionSetForURL(GURL()))
+  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(GURL()))
       .Times(1)
       .WillOnce(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_, GetRestrictionSetForURL(kUrl))
+  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(kUrl))
       .Times(1)
       .WillOnce(Return(kScreenshotRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kScreenshotRestrictionSet))
       .Times(1);
-  EXPECT_CALL(mock_dlp_content_manager_, OnVisibilityChanged(_)).Times(1);
 
   // Launch Platform App
   LaunchPlatformApp(extension);
@@ -84,16 +84,16 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBrowserTest, PlatformApp) {
   EXPECT_TRUE(web_contents);
   EXPECT_NE(nullptr,
             policy::DlpContentTabHelper::FromWebContents(web_contents));
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kEmptyRestrictionSet))
       .Times(1);
-  EXPECT_CALL(mock_dlp_content_manager_, OnWebContentsDestroyed(_)).Times(2);
+  EXPECT_CALL(mock_dlp_content_observer_, OnWebContentsDestroyed(_)).Times(2);
 }
 
 class DlpContentTabHelperBFCacheBrowserTest : public InProcessBrowserTest {
  public:
   DlpContentTabHelperBFCacheBrowserTest()
-      : scoped_dlp_content_manager_(&mock_dlp_content_manager_),
+      : scoped_dlp_content_observer_(&mock_dlp_content_observer_),
         ignore_dlp_rules_manager_(
             DlpContentTabHelper::IgnoreDlpRulesManagerForTesting()) {
     bfcache_feature_list_.InitWithFeatures(
@@ -109,10 +109,10 @@ class DlpContentTabHelperBFCacheBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  MockDlpContentManager mock_dlp_content_manager_;
+  MockDlpContentObserver mock_dlp_content_observer_;
 
  private:
-  ScopedDlpContentManagerForTesting scoped_dlp_content_manager_;
+  ScopedDlpContentObserverForTesting scoped_dlp_content_observer_;
   DlpContentTabHelper::ScopedIgnoreDlpRulesManager ignore_dlp_rules_manager_;
   base::test::ScopedFeatureList bfcache_feature_list_;
 };
@@ -126,12 +126,12 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBFCacheBrowserTest,
       embedded_test_server()->GetURL("restricted.com", "/title1.html");
   GURL kUrlUnrestricted =
       embedded_test_server()->GetURL("unrestricted.com", "/title1.html");
-  EXPECT_CALL(mock_dlp_content_manager_, GetRestrictionSetForURL(GURL()))
+  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(GURL()))
       .WillRepeatedly(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               GetRestrictionSetForURL(kUrlRestricted))
       .WillRepeatedly(Return(kScreenshotRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               GetRestrictionSetForURL(kUrlUnrestricted))
       .WillRepeatedly(Return(kEmptyRestrictionSet));
 
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBFCacheBrowserTest,
   EXPECT_TRUE(web_contents);
 
   // 1) navigate to restricted.com
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kScreenshotRestrictionSet))
       .Times(1);
   EXPECT_TRUE(content::NavigateToURL(web_contents, kUrlRestricted));
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBFCacheBrowserTest,
   content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) navigate to unrestricted.com
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kEmptyRestrictionSet))
       .Times(1);
   EXPECT_TRUE(content::NavigateToURL(web_contents, kUrlUnrestricted));
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBFCacheBrowserTest,
       << "Expected rfh_a to be in BackForwardCache";
 
   // 3) Navigate back to restricted.com
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kScreenshotRestrictionSet))
       .Times(1);
   web_contents->GetController().GoBack();
@@ -168,14 +168,14 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBFCacheBrowserTest,
       << "Expected rfh_b to be in BackForwardCache";
 
   // 4) Navigate forward to unrestricted.com
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kEmptyRestrictionSet))
       .Times(1);
   web_contents->GetController().GoForward();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   EXPECT_TRUE(policy::DlpContentTabHelper::FromWebContents(web_contents));
-  EXPECT_CALL(mock_dlp_content_manager_, OnWebContentsDestroyed(_)).Times(1);
+  EXPECT_CALL(mock_dlp_content_observer_, OnWebContentsDestroyed(_)).Times(1);
 }
 
 }  // namespace policy

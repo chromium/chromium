@@ -26,11 +26,14 @@ void DlpContentTabHelper::MaybeCreateForWebContents(
   if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
     return;
   }
-  // Do not observer non-managed users.
+  // TODO(crbug.com/1254326): Check on LaCros once DlpRulesManager is available.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Do not observe non-managed users.
   if (!g_ignore_rules_manager_for_testing_ &&
       !DlpRulesManagerFactory::GetForPrimaryProfile()) {
     return;
   }
+#endif
   DlpContentTabHelper::CreateForWebContents(web_contents);
 }
 

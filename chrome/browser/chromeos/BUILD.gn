@@ -4497,6 +4497,8 @@ source_set("unit_tests") {
     "policy/dlp/dlp_rules_manager_impl_unittest.cc",
     "policy/dlp/dlp_rules_manager_test_utils.cc",
     "policy/dlp/dlp_rules_manager_test_utils.h",
+    "policy/dlp/mock_dlp_content_observer.cc",
+    "policy/dlp/mock_dlp_content_observer.h",
     "policy/dlp/mock_dlp_rules_manager.cc",
     "policy/dlp/mock_dlp_rules_manager.h",
     "printing/cups_printer_status_creator_unittest.cc",
