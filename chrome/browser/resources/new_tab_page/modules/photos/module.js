@@ -62,7 +62,7 @@ class PhotosModuleElement extends mixinBehaviors
     super.ready();
     this.addEventListener('detect-impression', e => {
       chrome.metricsPrivate.recordBoolean(
-          'NewTabPage.Photos.ModuleShownWithOptInScreen', this.showOptInScreen);
+          'NewTabPage.Photos.ModuleShown', this.showOptInScreen);
     });
   }
 

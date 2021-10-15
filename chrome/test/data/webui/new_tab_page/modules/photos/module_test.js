@@ -48,9 +48,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
-    assertEquals(
-        0,
-        metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', false));
+    assertEquals(0, metrics.count('NewTabPage.Photos.ModuleShown', false));
     module.dispatchEvent(new Event('detect-impression'));
 
     // Assert.
@@ -63,9 +61,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
         'Title 1', items[0].querySelector('.memory-title').textContent);
     assertEquals(
         'Title 2', items[1].querySelector('.memory-title').textContent);
-    assertEquals(
-        1,
-        metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', false));
+    assertEquals(1, metrics.count('NewTabPage.Photos.ModuleShown', false));
   });
 
   test('module does not show without data', async () => {
@@ -271,14 +267,12 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
-    assertEquals(
-        0, metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', true));
+    assertEquals(0, metrics.count('NewTabPage.Photos.ModuleShown', true));
     module.dispatchEvent(new Event('detect-impression'));
 
     // Asserts.
     assertTrue(!!$$(module, '#optInCard'));
-    assertEquals(
-        1, metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', true));
+    assertEquals(1, metrics.count('NewTabPage.Photos.ModuleShown', true));
 
     // Act.
     const disable = {event: null};
@@ -312,14 +306,12 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
-    assertEquals(
-        0, metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', true));
+    assertEquals(0, metrics.count('NewTabPage.Photos.ModuleShown', true));
     module.dispatchEvent(new Event('detect-impression'));
 
     // Asserts.
     assertTrue(!!$$(module, '#optInCard'));
-    assertEquals(
-        1, metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', true));
+    assertEquals(1, metrics.count('NewTabPage.Photos.ModuleShown', true));
 
     // Act.
     $$(module, '#optInButton').click();
