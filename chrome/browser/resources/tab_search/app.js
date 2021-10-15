@@ -635,14 +635,12 @@ export class TabSearchAppElement extends PolymerElement {
               a.tab.lastActiveTimeTicks.internalValue) :
           0;
     });
-
     const filteredOpenTabs =
         fuzzySearch(this.searchText_, this.openTabs_, this.fuzzySearchOptions_);
-    let filteredRecentlyClosedItems = fuzzySearch(
-        this.searchText_,
-        this.recentlyClosedTabs_.concat(this.recentlyClosedTabGroups_),
-        this.fuzzySearchOptions_);
-    filteredRecentlyClosedItems.sort((a, b) => {
+
+    const recentlyClosedItems =
+        this.recentlyClosedTabs_.concat(this.recentlyClosedTabGroups_);
+    recentlyClosedItems.sort((a, b) => {
       const aTime = this.getRecentlyClosedItemLastActiveTime_(a);
       const bTime = this.getRecentlyClosedItemLastActiveTime_(b);
 
@@ -650,6 +648,8 @@ export class TabSearchAppElement extends PolymerElement {
           Number(bTime.internalValue - aTime.internalValue) :
           0;
     });
+    let filteredRecentlyClosedItems = fuzzySearch(
+        this.searchText_, recentlyClosedItems, this.fuzzySearchOptions_);
 
     // Limit the number of recently closed items to the default display count
     // when no search text has been specified. Filter out recently closed tabs
