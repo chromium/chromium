@@ -4592,8 +4592,8 @@ bool Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,
     // (e.g. if the only reason was a table, and that table is removed, we'll
     // still be using legacy layout).
     if (new_style.InsideNGFragmentationContext()) {
-      ForceLegacyLayoutInFragmentationContext(new_style);
-      needs_reattach = true;
+      if (ForceLegacyLayoutInFragmentationContext(new_style))
+        needs_reattach = true;
     }
   } else if (old_force) {
     // TODO(mstensho): If we have ancestors that got legacy layout just because
@@ -4634,7 +4634,7 @@ bool Element::ForceLegacyLayoutInFormattingContext(
   return needs_reattach;
 }
 
-void Element::ForceLegacyLayoutInFragmentationContext(
+bool Element::ForceLegacyLayoutInFragmentationContext(
     const ComputedStyle& new_style) {
   // This element cannot be laid out natively by LayoutNG. We now need to switch
   // all enclosing block fragmentation contexts over to using legacy
@@ -4645,29 +4645,35 @@ void Element::ForceLegacyLayoutInFragmentationContext(
   // block of the table is on the outside of the fragmentation context, we're
   // still going to fall back to legacy.
 
+  bool needs_reattach = false;
+  Element* parent;
+  for (Element* walker = this; walker; walker = parent) {
+    parent = DynamicTo<Element>(LayoutTreeBuilderTraversal::Parent(*walker));
+    if (walker->ShouldForceLegacyLayoutForChild())
+      return needs_reattach;
+
+    if (!walker->GetComputedStyle()->SpecifiesColumns())
+      continue;
+    // Found an element that establishes a fragmentation context. Force it to do
+    // legacy layout. Keep looking for outer fragmentation contexts, since we
+    // need to force them over to legacy as well.
+    walker->SetShouldForceLegacyLayoutForChild(true);
+    walker->SetNeedsReattachLayoutTree();
+    needs_reattach = true;
+    if (parent && !parent->GetComputedStyle()->InsideNGFragmentationContext())
+      return needs_reattach;
+  }
+
   if (GetDocument().Printing()) {
     // Force legacy layout on the entire document, since we're printing, and
     // there's some fragmentable box that needs legacy layout inside somewhere.
     Element* root = GetDocument().documentElement();
     root->SetShouldForceLegacyLayoutForChild(true);
     root->SetNeedsReattachLayoutTree();
-    return;
+    needs_reattach = true;
   }
 
-  Element* parent;
-  for (Element* walker = this; walker; walker = parent) {
-    parent = DynamicTo<Element>(LayoutTreeBuilderTraversal::Parent(*walker));
-    if (!walker->GetComputedStyle()->SpecifiesColumns())
-      continue;
-
-    // Found an element that establishes a fragmentation context. Force it to do
-    // legacy layout. Keep looking for outer fragmentation contexts, since we
-    // need to force them over to legacy as well.
-    walker->SetShouldForceLegacyLayoutForChild(true);
-    walker->SetNeedsReattachLayoutTree();
-    if (parent && !parent->GetComputedStyle()->InsideNGFragmentationContext())
-      return;
-  }
+  return needs_reattach;
 }
 
 bool Element::IsFocusedElementInDocument() const {
