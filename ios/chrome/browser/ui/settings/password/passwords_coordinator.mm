@@ -232,7 +232,8 @@
          self.addPasswordCoordinator == coordinator);
   [self passwordDetailsTableViewControllerDidFinish:coordinator];
   [self showDetailedViewForForm:password];
-  [self.passwordDetailsCoordinator showPasswordDetailsWithoutAuthentication];
+  [self.passwordDetailsCoordinator
+          showPasswordDetailsInEditModeWithoutAuthentication];
 }
 
 #pragma mark Private

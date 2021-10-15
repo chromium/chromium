@@ -118,6 +118,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 // Yes, when the message for top-level domain missing is shown.
 @property(nonatomic, assign) BOOL isTLDMissingMessageShown;
 
+// If YES, the password details are shown without requiring any authentication.
+@property(nonatomic, assign) BOOL showPasswordWithoutAuth;
+
 @end
 
 @implementation PasswordDetailsTableViewController
@@ -130,6 +133,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     _credentialType = credentialType;
     _isDuplicatedCredential = NO;
     _shouldEnableSave = NO;
+    _showPasswordWithoutAuth = NO;
     _isTLDMissingMessageShown = NO;
   }
   return self;
@@ -815,9 +819,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 // Shows reauthentication dialog if needed. If the reauthentication is
 // successful reveals the password.
 - (void)attemptToShowPasswordFor:(ReauthenticationReason)reason {
-  // If password was already shown (before editing or copying) we don't need to
-  // request reauth again.
-  if (self.isPasswordShown) {
+  // If password was already shown (before editing or copying) or the flag to
+  // override auth is YES, we don't need to request reauth again.
+  if (self.isPasswordShown || self.showPasswordWithoutAuth) {
     [self showPasswordFor:reason];
     return;
   }
@@ -1211,8 +1215,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   [self reloadData];
 }
 
-- (void)showPasswordWithoutAuthentication {
-  [self showPasswordFor:ReauthenticationReasonShow];
+- (void)showEditViewWithoutAuthentication {
+  self.showPasswordWithoutAuth = YES;
+  [self editButtonPressed];
 }
 
 @end

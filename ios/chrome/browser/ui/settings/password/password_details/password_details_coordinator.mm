@@ -218,8 +218,8 @@
   [self.actionSheetCoordinator start];
 }
 
-- (void)showPasswordDetailsWithoutAuthentication {
-  [self.viewController showPasswordWithoutAuthentication];
+- (void)showPasswordDetailsInEditModeWithoutAuthentication {
+  [self.viewController showEditViewWithoutAuthentication];
 }
 
 #pragma mark - Private
