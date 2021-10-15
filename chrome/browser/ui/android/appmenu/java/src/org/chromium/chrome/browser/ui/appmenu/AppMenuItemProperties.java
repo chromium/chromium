@@ -47,6 +47,9 @@ public class AppMenuItemProperties {
     public static final WritableObjectPropertyKey<Drawable> ICON =
             new WritableObjectPropertyKey<>();
 
+    /** The menu item icon's color resource value. */
+    public static final WritableIntPropertyKey ICON_COLOR_RES = new WritableIntPropertyKey();
+
     /** The the menu item's position in the menu. */
     static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey();
 
@@ -70,6 +73,6 @@ public class AppMenuItemProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {MENU_ITEM_ID, TITLE,
-            TITLE_CONDENSED, ENABLED, HIGHLIGHTED, CHECKABLE, CHECKED, ICON, POSITION,
-            SUPPORT_ENTER_ANIMATION, CLICK_HANDLER, SUBMENU};
+            TITLE_CONDENSED, ENABLED, HIGHLIGHTED, CHECKABLE, CHECKED, ICON, ICON_COLOR_RES,
+            POSITION, SUPPORT_ENTER_ANIMATION, CLICK_HANDLER, SUBMENU};
 }

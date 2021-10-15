@@ -359,6 +359,26 @@ public class TabbedAppMenuTest {
                 getListView().getChildAt(requestDesktopSiteIndex), "request_mobile_site_check");
     }
 
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "RenderTest"})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:add_bookmark_in_app_menu/true"})
+    public void
+    testAddBookmarkMenuItem() throws IOException {
+        PropertyModel bookmarkStarPropertyModel = AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.add_bookmark_menu_id);
+        Assert.assertEquals("Add Bookmark item should be tint blue.",
+                R.color.default_icon_color_blue,
+                bookmarkStarPropertyModel.get(AppMenuItemProperties.ICON_COLOR_RES));
+
+        int addBookmarkMenuItemIndex = findIndexOfMenuItemById(R.id.add_bookmark_menu_id);
+        Assert.assertNotEquals("No add bookmark menu item found.", -1, addBookmarkMenuItemIndex);
+        mRenderTestRule.render(getListView().getChildAt(addBookmarkMenuItemIndex), "add_bookmark");
+    }
+
     private void showAppMenuAndAssertMenuShown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);

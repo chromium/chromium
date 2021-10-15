@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.ColorRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -60,6 +61,16 @@ class AppMenuItemViewBinder {
             ChromeImageView imageView = (ChromeImageView) view.findViewById(R.id.menu_item_icon);
             imageView.setImageDrawable(icon);
             imageView.setVisibility(icon == null ? View.GONE : View.VISIBLE);
+
+            // tint the icon
+            @ColorRes
+            int colorResId = model.get(AppMenuItemProperties.ICON_COLOR_RES);
+            if (colorResId == 0) {
+                // If there is no color assigned to the icon, use the default color.
+                colorResId = R.color.default_icon_color_secondary_tint_list;
+            }
+            ApiCompatibilityUtils.setImageTintList(imageView,
+                    AppCompatResources.getColorStateList(imageView.getContext(), colorResId));
         } else if (key == AppMenuItemProperties.CLICK_HANDLER) {
             view.setOnClickListener(
                     v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
