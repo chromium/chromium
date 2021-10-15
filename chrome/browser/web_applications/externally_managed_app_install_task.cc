@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_application_info.h"
@@ -244,7 +245,8 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
   web_app_info.user_display_mode = install_options_.user_display_mode;
 
   WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
+  options.install_source = ConvertExternalInstallSourceToInstallSource(
+      install_options_.install_source);
   options.overwrite_existing_manifest_fields = false;
 
   install_finalizer_->FinalizeInstall(
