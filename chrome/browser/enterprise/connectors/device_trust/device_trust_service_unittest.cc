@@ -4,12 +4,16 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 
+#include <tuple>
+
 #include "base/barrier_closure.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/mock_attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/mock_signals_service.h"
 #include "components/enterprise/common/proto/device_trust_report_event.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -36,12 +40,21 @@ using test::MockAttestationService;
 using test::MockSignalsService;
 using AttestationCallback = DeviceTrustService::AttestationCallback;
 
-class DeviceTrustServiceTest : public testing::Test {
+class DeviceTrustServiceTest
+    : public testing::Test,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
-  void SetUp() override { RegisterProfilePrefs(prefs_.registry()); }
+  void SetUp() override {
+    RegisterProfilePrefs(prefs_.registry());
 
-  void ClearServicePolicy() {
-    prefs_.RemoveUserPref(kContextAwareAccessSignalsAllowlistPref);
+    feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
+                                       is_flag_enabled());
+
+    if (is_policy_enabled()) {
+      EnableServicePolicy();
+    } else {
+      DisableServicePolicy();
+    }
   }
 
   void EnableServicePolicy() {
@@ -75,47 +88,72 @@ class DeviceTrustServiceTest : public testing::Test {
         std::move(mock_signals_service));
   }
 
+  bool is_attestation_flow_enabled() {
+    return is_flag_enabled() && is_policy_enabled();
+  }
+
+  bool is_flag_enabled() { return std::get<0>(GetParam()); }
+  bool is_policy_enabled() { return std::get<1>(GetParam()); }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   MockAttestationService* mock_attestation_service_;
   MockSignalsService* mock_signals_service_;
 };
 
-// Tests that IsEnabled returns the right value when the policy has some URLs.
-TEST_F(DeviceTrustServiceTest, IsEnabled_True) {
-  EnableServicePolicy();
+// Tests that IsEnabled returns true only when the feature flag is enabled and
+// the policy has some URLs.
+TEST_P(DeviceTrustServiceTest, IsEnabled) {
   auto device_trust_service = CreateService();
-  EXPECT_TRUE(device_trust_service->IsEnabled());
-}
-
-// Tests that IsEnabled returns the right value when the policy has no URLs.
-TEST_F(DeviceTrustServiceTest, IsEnabled_False) {
-  DisableServicePolicy();
-  auto device_trust_service = CreateService();
-  EXPECT_FALSE(device_trust_service->IsEnabled());
+  EXPECT_EQ(is_attestation_flow_enabled(), device_trust_service->IsEnabled());
 }
 
 // Tests that callbacks get invoked when added and when the policy changes.
-TEST_F(DeviceTrustServiceTest, PolicyValueCallbacks) {
+TEST_P(DeviceTrustServiceTest, PolicyValueCallbacks) {
   const base::ListValue* captured_policy_urls;
-  auto callback = base::BindLambdaForTesting(
-      [&](const base::ListValue& urls) { captured_policy_urls = &urls; });
+  int callback_invoked_counter = 0;
+  base::RepeatingCallback<void(const base::ListValue&)> callback =
+      base::BindLambdaForTesting(
+          [&captured_policy_urls,
+           &callback_invoked_counter](const base::ListValue& urls) {
+            ++callback_invoked_counter;
+            captured_policy_urls = &urls;
+          });
 
-  EnableServicePolicy();
   auto device_trust_service = CreateService();
+  auto sub =
+      device_trust_service->RegisterTrustedUrlPatternsChangedCallback(callback);
 
-  device_trust_service->RegisterTrustedUrlPatternsChangedCallback(callback);
-
-  EXPECT_EQ(captured_policy_urls->GetList().size(), 2U);
+  if (is_attestation_flow_enabled()) {
+    EXPECT_EQ(callback_invoked_counter, 1);
+    EXPECT_EQ(captured_policy_urls->GetList().size(), 2U);
+  } else {
+    // The callback was registered, but not invoked immediately.
+    EXPECT_EQ(callback_invoked_counter, 0);
+  }
 
   UpdateServicePolicy();
 
-  EXPECT_EQ(captured_policy_urls->GetList().size(), 3U);
+  ASSERT_EQ(device_trust_service->IsEnabled(), is_flag_enabled());
+
+  if (is_flag_enabled()) {
+    if (is_attestation_flow_enabled()) {
+      // If the policy was already set at the beginning of the test, then the
+      // callback will have been called a total of two times.
+      EXPECT_EQ(callback_invoked_counter, 2);
+    } else {
+      EXPECT_EQ(callback_invoked_counter, 1);
+    }
+    EXPECT_EQ(captured_policy_urls->GetList().size(), 3U);
+  } else {
+    // If the flag is disabled, registered callbacks will still not get updated.
+    EXPECT_EQ(callback_invoked_counter, 0);
+  }
 }
 
 // Tests that the service kicks off the attestation flow properly.
-TEST_F(DeviceTrustServiceTest, BuildChallengeResponse) {
-  EnableServicePolicy();
+TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
   auto device_trust_service = CreateService();
 
   std::string fake_device_id = "fake_device_id";
@@ -142,5 +180,9 @@ TEST_F(DeviceTrustServiceTest, BuildChallengeResponse) {
       fake_challenge,
       /*callback=*/base::BindOnce([](const std::string& response) {}));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeviceTrustServiceTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace enterprise_connectors

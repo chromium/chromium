@@ -9,6 +9,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service.h"
 #include "components/prefs/pref_service.h"
 
@@ -26,6 +27,10 @@ const base::ListValue& GetTrustedUrlPatterns(PrefService* prefs) {
 
 // static
 bool DeviceTrustService::IsEnabled(PrefService* prefs) {
+  if (!base::FeatureList::IsEnabled(kDeviceTrustConnectorEnabled)) {
+    return false;
+  }
+
   const auto& list = GetTrustedUrlPatterns(prefs);
   return !list.GetList().empty();
 }
@@ -37,12 +42,10 @@ DeviceTrustService::DeviceTrustService(
     : profile_prefs_(profile_prefs),
       attestation_service_(std::move(attestation_service)),
       signals_service_(std::move(signals_service)) {
-  // Using Unretained is ok here because pref_observer_ is owned by this class,
-  // and we Remove() this path from pref_observer_ in Shutdown().
   pref_observer_.Init(profile_prefs_);
   pref_observer_.Add(kContextAwareAccessSignalsAllowlistPref,
                      base::BindRepeating(&DeviceTrustService::OnPolicyUpdated,
-                                         base::Unretained(this)));
+                                         weak_factory_.GetWeakPtr()));
 }
 
 DeviceTrustService::DeviceTrustService(PrefService* profile_prefs)
