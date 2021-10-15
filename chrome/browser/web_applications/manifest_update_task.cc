@@ -414,7 +414,6 @@ void ManifestUpdateTask::LoadAndCheckIconContents() {
       GetValidIconUrlsToDownload(*web_application_info_);
   icon_downloader_.emplace(
       web_contents(), std::move(icon_urls),
-      WebAppIconDownloader::Histogram::kForUpdate,
       base::BindOnce(&ManifestUpdateTask::OnIconsDownloaded, AsWeakPtr()));
   icon_downloader_->SkipPageFavicons();
   icon_downloader_->FailAllIfAnyFail();
@@ -431,8 +430,14 @@ void ManifestUpdateTask::OnIconsDownloaded(
     DestroySelf(ManifestUpdateResult::kIconDownloadFailed);
     return;
   }
+
   // TODO(crbug.com/1238622): Report `result` and `DownloadedIconsHttpResults`in
   // UMA and internals.
+  // TODO(crbug.com/1240660): ManifestUpdateTask should download icons and pass
+  // to WebAppInstallManager. See the duplicate recording in
+  // `WebAppInstallTask::OnIconsRetrievedFinalizeUpdate()`.
+  RecordDownloadedIconsHttpResultsCodeClass(
+      "WebApp.Icon.HttpStatusCodeClassOnUpdate", result, icons_http_results);
 
   stage_ = Stage::kPendingIconReadFromDisk;
   icon_manager_.ReadAllIcons(

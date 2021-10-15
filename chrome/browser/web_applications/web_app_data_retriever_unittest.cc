@@ -331,7 +331,6 @@ TEST_F(WebAppDataRetrieverTest, GetIcons_WebContentsDestroyed) {
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
   retriever.GetIcons(web_contents(), icon_urls, skip_page_favicons,
-                     WebAppIconDownloader::Histogram::kForCreate,
                      base::BindLambdaForTesting(
                          [&](IconsDownloadedResult result, IconsMap icons_map,
                              DownloadedIconsHttpResults icons_http_results) {

@@ -33,7 +33,7 @@ class SkBitmap;
 // A map of icon urls to the bitmaps provided by that url.
 using IconsMap = std::map<GURL, std::vector<SkBitmap>>;
 
-// A map of icon urls to http status results.
+// A map of icon urls to http status results. `http_status_code` is never 0.
 using DownloadedIconsHttpResults = std::map<GURL, int /*http_status_code*/>;
 
 using SquareSizePx = int;

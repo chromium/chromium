@@ -14,7 +14,9 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -578,6 +580,24 @@ void RecordAppBanner(content::WebContents* contents, const GURL& app_url) {
       contents, app_url, app_url.spec(),
       webapps::AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
       base::Time::Now());
+}
+
+void RecordDownloadedIconsHttpResultsCodeClass(
+    base::StringPiece histogram_name,
+    IconsDownloadedResult result,
+    const DownloadedIconsHttpResults& icons_http_results) {
+  if (result != IconsDownloadedResult::kCompleted)
+    return;
+
+  for (const auto& url_and_http_status_code : icons_http_results) {
+    int http_status_code = url_and_http_status_code.second;
+    if (http_status_code != 0) {
+      DCHECK_LE(100, http_status_code);
+      DCHECK_GT(600, http_status_code);
+      base::UmaHistogramExactLinear(histogram_name.data(),
+                                    http_status_code / 100, 5);
+    }
+  }
 }
 
 webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(

@@ -9,8 +9,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
@@ -45,22 +43,19 @@ void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
 void FakeDataRetriever::GetIcons(content::WebContents* web_contents,
                                  const std::vector<GURL>& icon_urls,
                                  bool skip_page_favicons,
-                                 WebAppIconDownloader::Histogram histogram,
                                  GetIconsCallback callback) {
-  // TODO(crbug.com/907296): Add test API for `IconsDownloadedResult` and
-  // `DownloadedIconsHttpResults`. Use them in unit tests for UMA reporting.
-
   if (get_icons_delegate_) {
     icons_map_ =
         get_icons_delegate_.Run(web_contents, icon_urls, skip_page_favicons);
   }
 
   completion_callback_ =
-      base::BindOnce(std::move(callback), IconsDownloadedResult::kCompleted,
-                     std::move(icons_map_), DownloadedIconsHttpResults{});
+      base::BindOnce(std::move(callback), icons_downloaded_result_,
+                     std::move(icons_map_), std::move(icons_http_results_));
   ScheduleCompletionCallback();
 
   icons_map_.clear();
+  icons_http_results_.clear();
 }
 
 void FakeDataRetriever::SetRendererWebApplicationInfo(
@@ -89,6 +84,15 @@ void FakeDataRetriever::SetGetIconsDelegate(
     GetIconsDelegate get_icons_delegate) {
   DCHECK(icons_map_.empty());
   get_icons_delegate_ = std::move(get_icons_delegate);
+}
+
+void FakeDataRetriever::SetIconsDownloadedResult(IconsDownloadedResult result) {
+  icons_downloaded_result_ = result;
+}
+
+void FakeDataRetriever::SetDownloadedIconsHttpResults(
+    DownloadedIconsHttpResults icons_http_results) {
+  icons_http_results_ = std::move(icons_http_results);
 }
 
 void FakeDataRetriever::SetDestructionCallback(base::OnceClosure callback) {

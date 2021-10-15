@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/strings/string_piece_forward.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -72,6 +73,13 @@ void PopulateProductIcons(WebApplicationInfo* web_app_info,
 // Record an app banner added to homescreen event to ensure banners are not
 // shown for this app.
 void RecordAppBanner(content::WebContents* contents, const GURL& app_url);
+
+// Records the class of http status code (2XX, 3XX, 4XX, 5XX) for each processed
+// icon url.
+void RecordDownloadedIconsHttpResultsCodeClass(
+    base::StringPiece histogram_name,
+    IconsDownloadedResult result,
+    const DownloadedIconsHttpResults& icons_http_results);
 
 webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
     ExternalInstallSource external_install_source);

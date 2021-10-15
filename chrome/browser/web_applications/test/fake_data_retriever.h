@@ -9,12 +9,12 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
-
-struct WebApplicationInfo;
 
 namespace web_app {
 
@@ -37,7 +37,6 @@ class FakeDataRetriever : public WebAppDataRetriever {
   void GetIcons(content::WebContents* web_contents,
                 const std::vector<GURL>& icon_urls,
                 bool skip_page_favicons,
-                WebAppIconDownloader::Histogram histogram,
                 GetIconsCallback callback) override;
 
   // Set info to respond on |GetWebApplicationInfo|.
@@ -55,6 +54,12 @@ class FakeDataRetriever : public WebAppDataRetriever {
                                        const std::vector<GURL>& icon_urls,
                                        bool skip_page_favicons)>;
   void SetGetIconsDelegate(GetIconsDelegate get_icons_delegate);
+
+  // Sets `IconsDownloadedResult` to respond on `GetIcons`.
+  void SetIconsDownloadedResult(IconsDownloadedResult result);
+  // Sets `DownloadedIconsHttpResults` to respond on `GetIcons`.
+  void SetDownloadedIconsHttpResults(
+      DownloadedIconsHttpResults icons_http_results);
 
   void SetDestructionCallback(base::OnceClosure callback);
 
@@ -78,6 +83,10 @@ class FakeDataRetriever : public WebAppDataRetriever {
 
   IconsMap icons_map_;
   GetIconsDelegate get_icons_delegate_;
+
+  IconsDownloadedResult icons_downloaded_result_ =
+      IconsDownloadedResult::kCompleted;
+  DownloadedIconsHttpResults icons_http_results_;
 
   base::OnceClosure destruction_callback_;
 

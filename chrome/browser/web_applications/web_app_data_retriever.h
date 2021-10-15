@@ -75,7 +75,6 @@ class WebAppDataRetriever : content::WebContentsObserver {
   virtual void GetIcons(content::WebContents* web_contents,
                         const std::vector<GURL>& icon_urls,
                         bool skip_page_favicons,
-                        WebAppIconDownloader::Histogram histogram,
                         GetIconsCallback callback);
 
   // WebContentsObserver:

@@ -5,9 +5,6 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/web_applications/web_app_install_task.h"
-#include "chrome/browser/web_applications/web_app_system_web_app_data.h"
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -21,9 +18,11 @@
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
@@ -291,7 +290,7 @@ void WebAppInstallTask::UpdateWebAppFromInfo(
 
   data_retriever_->GetIcons(
       web_contents, std::move(icon_urls),
-      /*skip_page_favicons=*/true, WebAppIconDownloader::Histogram::kForUpdate,
+      /*skip_page_favicons=*/true,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrievedFinalizeUpdate,
                      base::Unretained(this), std::move(web_application_info),
                      update_product_icons));
@@ -653,9 +652,6 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStore(
 
   data_retriever_->GetIcons(
       web_contents(), icon_urls, skip_page_favicons,
-      install_source_ == webapps::WebappInstallSource::SYNC
-          ? WebAppIconDownloader::Histogram::kForSync
-          : WebAppIconDownloader::Histogram::kForCreate,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrievedShowDialog,
                      base::Unretained(this), std::move(web_app_info),
                      for_installable_site));
@@ -681,10 +677,7 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
 
   // Skip downloading the page favicons as everything in is the URL list.
   data_retriever_->GetIcons(
-      web_contents, icon_urls, /*skip_page_fav_icons=*/true,
-      install_source_ == webapps::WebappInstallSource::SYNC
-          ? WebAppIconDownloader::Histogram::kForSync
-          : WebAppIconDownloader::Histogram::kForCreate,
+      web_contents, icon_urls, /*skip_page_favicons=*/true,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrieved,
                      base::Unretained(this), std::move(web_application_info),
                      finalize_options));
@@ -703,6 +696,8 @@ void WebAppInstallTask::OnIconsRetrieved(
 
   // TODO(crbug.com/1238622): Report `IconsDownloadedResult`and
   // `DownloadedIconsHttpResults` in UMA and debug internals.
+  RecordDownloadedIconsHttpResultsCodeClassForSyncOrCreate(result,
+                                                           icons_http_results);
 
   DCHECK(web_app_info);
 
@@ -725,6 +720,8 @@ void WebAppInstallTask::OnIconsRetrievedShowDialog(
 
   // TODO(crbug.com/1238622): Report `IconsDownloadedResult`and
   // `DownloadedIconsHttpResults` in UMA and debug internals.
+  RecordDownloadedIconsHttpResultsCodeClassForSyncOrCreate(result,
+                                                           icons_http_results);
 
   DCHECK(web_app_info);
 
@@ -755,6 +752,11 @@ void WebAppInstallTask::OnIconsRetrievedFinalizeUpdate(
 
   // TODO(crbug.com/1238622): Report `IconsDownloadedResult`and
   // `DownloadedIconsHttpResults` in UMA and debug internals.
+  // TODO(crbug.com/1240660): ManifestUpdateTask should download icons and pass
+  // to WebAppInstallManager. See the duplicate histogram in
+  // `ManifestUpdateTask::OnIconsDownloaded()`.
+  RecordDownloadedIconsHttpResultsCodeClass(
+      "WebApp.Icon.HttpStatusCodeClassOnUpdate", result, icons_http_results);
 
   DCHECK(web_app_info);
 
@@ -918,6 +920,17 @@ void WebAppInstallTask::OnOsHooksCreated(DisplayMode user_display_mode,
     }
   }
   CallInstallCallback(app_id, InstallResultCode::kSuccessNewInstall);
+}
+
+void WebAppInstallTask::
+    RecordDownloadedIconsHttpResultsCodeClassForSyncOrCreate(
+        IconsDownloadedResult result,
+        const DownloadedIconsHttpResults& icons_http_results) {
+  RecordDownloadedIconsHttpResultsCodeClass(
+      (install_source_ == webapps::WebappInstallSource::SYNC
+           ? "WebApp.Icon.HttpStatusCodeClassOnSync"
+           : "WebApp.Icon.HttpStatusCodeClassOnCreate"),
+      result, icons_http_results);
 }
 
 }  // namespace web_app

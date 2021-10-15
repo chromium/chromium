@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
@@ -53,6 +54,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -229,8 +231,23 @@ class WebAppInstallTaskTest : public WebAppTest {
     return *fake_install_finalizer_;
   }
 
+  // Sets IconsMap, IconsDownloadedResult and corresponding HTTP_OK
+  // DownloadedIconsHttpResults.
   void SetIconsMapToRetrieve(IconsMap icons_map) {
     DCHECK(data_retriever_);
+
+    data_retriever_->SetIconsDownloadedResult(
+        icons_map.empty() ? IconsDownloadedResult::kCancelled
+                          : IconsDownloadedResult::kCompleted);
+
+    // Uses `icons_map` to infer HTTP_OK for each icon.
+    DownloadedIconsHttpResults http_results;
+    for (const auto& url_and_bitmap : icons_map)
+      http_results[url_and_bitmap.first] = net::HttpStatusCode::HTTP_OK;
+
+    data_retriever_->SetDownloadedIconsHttpResults(std::move(http_results));
+
+    // Moves `icons_map` last.
     data_retriever_->SetIcons(std::move(icons_map));
   }
 
@@ -351,10 +368,15 @@ class WebAppInstallTaskTest : public WebAppTest {
   std::unique_ptr<arc::FakeIntentHelperInstance> fake_intent_helper_instance_;
 #endif
 
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
  private:
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
   FakeInstallFinalizer* fake_install_finalizer_ = nullptr;
+  base::HistogramTester histogram_tester_;
 };
 
 class WebAppInstallTaskWithRunOnOsLoginTest : public WebAppInstallTaskTest {
@@ -632,6 +654,12 @@ TEST_F(WebAppInstallTaskTest, GetIcons) {
 
   // Generated icons are not considered part of the manifest shortcut icons.
   EXPECT_TRUE(web_app_info->shortcuts_menu_item_infos.empty());
+
+  const int http_code_class_ok = 2;  // HTTP_OK is 200.
+  histogram_tester().ExpectUniqueSample(
+      "WebApp.Icon.HttpStatusCodeClassOnCreate", http_code_class_ok, 1);
+  histogram_tester().ExpectTotalCount("WebApp.Icon.HttpStatusCodeClassOnSync",
+                                      0);
 }
 
 TEST_F(WebAppInstallTaskTest, GetIcons_NoIconsProvided) {
@@ -657,6 +685,11 @@ TEST_F(WebAppInstallTaskTest, GetIcons_NoIconsProvided) {
 
   // Generated icons are not considered part of the manifest shortcut icons.
   EXPECT_TRUE(web_app_info->shortcuts_menu_item_infos.empty());
+
+  histogram_tester().ExpectTotalCount("WebApp.Icon.HttpStatusCodeClassOnCreate",
+                                      0);
+  histogram_tester().ExpectTotalCount("WebApp.Icon.HttpStatusCodeClassOnSync",
+                                      0);
 }
 
 TEST_F(WebAppInstallTaskTest, WriteDataToDisk) {

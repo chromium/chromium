@@ -251,6 +251,10 @@ class WebAppInstallTask : content::WebContentsObserver {
                         const AppId& app_id,
                         const OsHooksErrors os_hook_errors);
 
+  void RecordDownloadedIconsHttpResultsCodeClassForSyncOrCreate(
+      IconsDownloadedResult result,
+      const DownloadedIconsHttpResults& icons_http_results);
+
   // Whether the install task has been 'initiated' by calling one of the public
   // methods.
   bool initiated_ = false;
@@ -282,7 +286,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   WebAppRegistrar* registrar_;
 
   base::WeakPtrFactory<WebAppInstallTask> weak_ptr_factory_{this};
-
 };
 
 }  // namespace web_app
