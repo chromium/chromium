@@ -378,6 +378,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   _managementNoticeTextView.delegate = self;
   _managementNoticeTextView.adjustsFontForContentSizeCategory = YES;
   _managementNoticeTextView.translatesAutoresizingMaskIntoConstraints = NO;
+  _managementNoticeTextView.backgroundColor = UIColor.clearColor;
 
   NSString* fullText =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_LEARN_MORE);

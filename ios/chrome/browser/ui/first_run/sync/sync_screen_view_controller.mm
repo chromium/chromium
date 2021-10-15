@@ -158,6 +158,7 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
     _learnMoreTextView.adjustsFontForContentSizeCategory = YES;
     _learnMoreTextView.accessibilityIdentifier =
         kLearnMoreTextViewAccessibilityIdentifier;
+    _learnMoreTextView.backgroundColor = UIColor.clearColor;
 
     _learnMoreTextView.linkTextAttributes =
         @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
