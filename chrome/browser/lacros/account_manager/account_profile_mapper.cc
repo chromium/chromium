@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "components/account_manager_core/account.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
@@ -42,7 +41,6 @@ AccountProfileMapper::AccountProfileMapper(
     ProfileAttributesStorage* storage)
     : account_manager_facade_(facade), profile_attributes_storage_(storage) {
   DCHECK(profile_attributes_storage_);
-  DCHECK(base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
   account_manager_facade_observation_.Observe(account_manager_facade_);
   account_manager_facade_->GetAccounts(
       base::BindOnce(&AccountProfileMapper::OnGetAccountsCompleted,
