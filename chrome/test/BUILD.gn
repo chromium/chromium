@@ -1809,6 +1809,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/serial/chrome_serial_browsertest.cc",
       "../browser/sessions/better_session_restore_browsertest.cc",
       "../browser/sessions/closed_tab_cache_browsertest.cc",
+      "../browser/sessions/exit_type_service_browsertest.cc",
       "../browser/sessions/session_restore_browsertest.cc",
       "../browser/sessions/session_restore_observer_browsertest.cc",
       "../browser/sessions/session_service_log_browsertest.cc",
