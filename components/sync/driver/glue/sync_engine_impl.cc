@@ -160,9 +160,6 @@ void SyncEngineImpl::Initialize(InitParams params) {
   const SyncTransportDataStartupState state =
       ValidateSyncTransportData(*prefs_, params.authenticated_account_info);
 
-  base::UmaHistogramEnumeration("Sync.LocalSyncTransportDataStartupState",
-                                state);
-
   if (state != SyncTransportDataStartupState::kValidData) {
     // The local data is either uninitialized or corrupt, so let's throw
     // everything away and start from scratch with a new cache GUID, which also
