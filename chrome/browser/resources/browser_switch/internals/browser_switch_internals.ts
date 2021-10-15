@@ -1,9 +1,17 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import '../strings.m.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
+
+type Decision = {
+  action: 'stay' | 'go';
+  matching_rule?: string;
+  reason: 'globally_disabled' | 'protocol' | 'sitelist' | 'greylist' | 'default';
+};
 
 type RuleSet = {
   sitelist: Array<string>;
@@ -102,6 +110,62 @@ function updateTables(rulesets: RuleSetList) {
   }
 }
 
+/**
+ * Gets the English name of the alternate browser.
+ */
+function getAltBrowserName(): string {
+  return loadTimeData.getString('browserName');
+}
+
+/**
+ * Takes the json from the url checker and makes it readable.
+ */
+function urlOutputText(decision: Decision): Array<string> {
+  let opensIn = '';
+  const altBrowserName = getAltBrowserName();
+
+  switch (decision.action) {
+    case 'stay':
+      // TODO(crbug.com/1258133): Make it show the name of the browser.
+        opensIn = 'Opens in: This browser\n';
+        break;
+    case 'go':
+        opensIn = `Opens in: ${altBrowserName}\n`;
+        break;
+  }
+
+  let reason = '';
+  if (decision.matching_rule) {
+    if (decision.matching_rule.startsWith('!')) {
+      reason += `Reason: The inverted rule ${JSON.stringify(decision.matching_rule)} was found in `;
+    } else {
+      reason += `Reason: ${JSON.stringify(decision.matching_rule)} was found in `;
+    }
+  }
+  // if undefined - add nothing to the output
+
+  switch (decision.reason) {
+    case 'globally_disabled':
+        reason += 'Reason: The BrowserSwitcherEnabled policy is false.\n';
+        break;
+    case 'protocol':
+        reason += 'Reason: LBS only supports http://, https://, and file:// URLs.\n';
+        break;
+    case 'sitelist':
+        reason += 'the sitelist.\n';
+        break;
+    case 'greylist':
+        reason += 'the greylist.\n';
+        break;
+    case 'default' :
+      // TODO(crbug.com/1258133): Make it show the name of the browser.
+        reason += 'Reason: LBS stays in Google Chrome by default.\n';
+        break;
+  }
+
+  return [opensIn, reason];
+}
+
 function checkUrl() {
   let url = ($('url-checker-input') as HTMLInputElement).value;
   if (!url) {
@@ -112,12 +176,15 @@ function checkUrl() {
     url = 'http://' + url;
   }
   sendWithPromise('getDecision', url)
-      .then(decision => {
+      .then((decision) => {
         // URL is valid.
-        $('output').innerText = JSON.stringify(decision, null, 2);
+        const [output, reason] = urlOutputText(decision);
+        $('output').innerText = output;
+        $('reason').innerText = reason;
       })
-      .catch(() => {
+      .catch((errorMessage) => {
         // URL is invalid.
+        console.warn(errorMessage);
         $('output').innerText =
             'Invalid URL. Make sure it is formatted properly.';
       });
