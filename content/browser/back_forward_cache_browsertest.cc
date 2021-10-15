@@ -3840,6 +3840,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
               static_cast<int>(
                   blink::EventPageShowPersisted::
                       kYesInBrowser_BackForwardCache_RestoreEntry_Succeed),
+              1),
+          base::Bucket(
+              static_cast<int>(
+                  blink::EventPageShowPersisted::
+                      kYesInBrowser_RenderFrameHostManager_CommitPending),
               1)));
 }
 

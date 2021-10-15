@@ -28,11 +28,11 @@ enum class EventPageShowPersisted {
   kYesInBrowser_BackForwardCache_WillCommitNavigationToCachedEntry = 3,
   kYesInBrowser_BackForwardCache_RestoreEntry_Attempt = 4,
   kYesInBrowser_BackForwardCache_RestoreEntry_Succeed = 5,
-
+  kYesInBrowser_RenderFrameHostManager_CommitPending = 6,
   // There is not kNoInBrowser as we don't have to compare the counts of
   // pageshow events without persisted between browser and renderer so far.
 
-  kMaxValue = kYesInBrowser_BackForwardCache_RestoreEntry_Succeed,
+  kMaxValue = kYesInBrowser_RenderFrameHostManager_CommitPending,
 };
 
 BLINK_COMMON_EXPORT void RecordUMAEventPageShowPersisted(

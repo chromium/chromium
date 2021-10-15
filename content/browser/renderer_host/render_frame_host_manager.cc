@@ -69,6 +69,7 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -3326,6 +3327,9 @@ void RenderFrameHostManager::CommitPending(
         std::move(pending_stored_page->render_view_hosts);
     if (prev_state ==
         RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache) {
+      blink::RecordUMAEventPageShowPersisted(
+          blink::EventPageShowPersisted::
+              kYesInBrowser_RenderFrameHostManager_CommitPending);
       for (RenderViewHostImpl* rvh : render_view_hosts_to_restore) {
         rvh->LeaveBackForwardCache(
             pending_stored_page->page_restore_params.Clone());

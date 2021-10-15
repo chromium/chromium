@@ -27153,6 +27153,7 @@ Called by update_document_policy_enum.py.-->
       label="Yes in browser BackForwardCacheImpl::RestoreEntry attempt"/>
   <int value="5"
       label="Yes in browser BackForwardCacheImpl::RestoreEntry succeed"/>
+  <int value="6" label="Yes in browser RenderFrameHostManager::CommitPending"/>
 </enum>
 
 <enum name="EventPreFilterResult">
