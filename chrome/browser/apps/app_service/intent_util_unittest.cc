@@ -518,6 +518,38 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ConvertsSimpleGlobToPrefix) {
   }
 }
 
+TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHosts) {
+  const char* kPackageName = "com.foo.bar";
+  const char* kPath = "/";
+  const char* kScheme = "https";
+  const char* kHost1 = "www.a.com";
+  const char* kHost2 = "www.b.com";
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities;
+  authorities.emplace_back(kHost1, 0);
+  authorities.emplace_back(kHost2, 0);
+  authorities.emplace_back(kHost2, 0);
+  authorities.emplace_back(kHost1, 0);
+
+  std::vector<arc::IntentFilter::PatternMatcher> patterns;
+  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+
+  arc::IntentFilter arc_filter(kPackageName, {arc::kIntentActionView},
+                               std::move(authorities), std::move(patterns),
+                               {kScheme}, {});
+
+  IntentFilterPtr app_service_filter =
+      apps_util::ConvertArcToAppServiceIntentFilter(arc_filter);
+
+  for (auto& condition : app_service_filter->conditions) {
+    if (condition->condition_type == apps::mojom::ConditionType::kHost) {
+      ASSERT_EQ(2u, condition->condition_values.size());
+      ASSERT_EQ(kHost1, condition->condition_values[0]->value);
+      ASSERT_EQ(kHost2, condition->condition_values[1]->value);
+    }
+  }
+}
+
 #if defined(OS_CHROMEOS)
 TEST_F(IntentUtilsTest, CrosapiIntentConversion) {
   apps::mojom::IntentPtr original_intent =

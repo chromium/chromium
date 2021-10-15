@@ -635,6 +635,13 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
         authority.host(), apps::mojom::PatternMatchType::kNone));
   }
   if (!host_condition_values.empty()) {
+    // It's common for Android apps to include duplicate host conditions, we can
+    // de-duplicate these to reduce time/space usage down the line.
+    std::sort(host_condition_values.begin(), host_condition_values.end());
+    host_condition_values.erase(
+        std::unique(host_condition_values.begin(), host_condition_values.end()),
+        host_condition_values.end());
+
     auto host_condition = apps_util::MakeCondition(
         apps::mojom::ConditionType::kHost, std::move(host_condition_values));
     intent_filter->conditions.push_back(std::move(host_condition));
