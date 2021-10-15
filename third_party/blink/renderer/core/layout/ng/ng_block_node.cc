@@ -304,9 +304,8 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
                                  style.PaddingEnd().IsPercentOrCalc()))
     return false;
 
-  if (!style.AspectRatio().IsAuto() &&
-      (style.LogicalMinHeight().IsPercentOrCalc() ||
-       style.LogicalMaxHeight().IsPercentOrCalc()))
+  if (node.HasAspectRatio() && (style.LogicalMinHeight().IsPercentOrCalc() ||
+                                style.LogicalMaxHeight().IsPercentOrCalc()))
     return false;
 
   if (node.IsNGTableCell() && To<LayoutNGTableCell>(node.GetLayoutBox())
