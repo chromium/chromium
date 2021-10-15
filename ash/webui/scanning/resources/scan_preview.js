@@ -61,15 +61,6 @@ Polymer({
   /** @private {number} */
   actionToolbarWidth_: 0,
 
-  /**
-   * Stores the y value of the bottom of each scanned image in the preview div.
-   * The values are stored in the array in scanned image order so the value at
-   * [0] refers to the first scanned image, the value at [1] the second scanned
-   * image, etc.
-   * @private {!Array<number>}
-   */
-  scrollingIntervals_: [],
-
   properties: {
     /** @type {!AppState} */
     appState: {
@@ -347,7 +338,7 @@ Polymer({
     }
 
     // If the current page in view stays the same, do nothing.
-    const pageIndexInView = this.getCurrentPageInView_();
+    const pageIndexInView = this.getCurrentPageInView_(scannedImages);
     if (pageIndexInView === this.currentPageIndexInView_) {
       return;
     }
@@ -356,32 +347,28 @@ Polymer({
   },
 
   /**
-   * Calculates the index of the current page in view based on where the current
-   * position of the scroll bar is found in |scrollingIntervals_|.
+   * Calculates the current page in view. Returns the page index of the highest
+   * page in the viewport unless that page is scrolled halfway outside the
+   * viewport, then it'll return the following page number. Assumes each scanned
+   * image is the same height.
+   * @param {!HTMLCollection} scannedImages
    * @return {number}
    * @private
    */
-  getCurrentPageInView_() {
+  getCurrentPageInView_(scannedImages) {
     assert(this.isMultiPageScan);
 
-    if (this.objectUrls.length === 1) {
+    const imageHeight = scannedImages[0].height;
+    const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight * .5);
+
+    // This is a special case for the first page since there is no margin or
+    // previous page above it.
+    if (scrollTop < 0) {
       return 0;
     }
 
-    // |scrollTop| is a height value that ranges from 0 to the height at the
-    // bottom of div with all the scanned images. The height intervals in
-    // |scrollingIntervals_| are in order so the value at [0] refers to the
-    // first scanned image, at [1] the second scanned image, etc.
-    const scrollTop = this.$$('#previewDiv').scrollTop;
-    for (let i = 0; i < this.scrollingIntervals_.length; i++) {
-      // TODO(gavinwill): Convert from linear search to binary search.
-      if (scrollTop <= this.scrollingIntervals_[i]) {
-        return i;
-      }
-    }
-
-    // The last image is the catch-all interval.
-    return this.objectUrls.length - 1;
+    return 1 +
+        Math.floor(scrollTop / (imageHeight + SCANNED_IMG_MARGIN_BOTTOM_PX));
   },
 
   /**
@@ -438,7 +425,8 @@ Polymer({
 
     const scannedImages =
         this.$$('#scannedImages').getElementsByClassName('scanned-image');
-    this.setFocusedScannedImage_(scannedImages, this.getCurrentPageInView_());
+    this.setFocusedScannedImage_(
+        scannedImages, this.getCurrentPageInView_(scannedImages));
 
     this.updatePreviewElements_();
 
@@ -650,7 +638,6 @@ Polymer({
    * @private
    */
   updatePreviewElements_() {
-    this.buildScrollingIntervals_();
     this.setMultiPageScanProgressHeight_();
     this.setActionToolbarPosition_();
   },
@@ -688,35 +675,5 @@ Polymer({
   getScannedImageAriaLabel_(index) {
     return this.i18n(
         'multiPageImageAriaLabel', index + 1, this.objectUrls.length);
-  },
-
-  /**
-   * Divides the total scroll area of the scanned images into proportionate
-   * intervals based on each individual image's height. These intervals are used
-   * to determine which image should be focused on based on the position of the
-   * scroll bar.
-   * @private
-   */
-  buildScrollingIntervals_() {
-    const scannedImages =
-        this.$$('#scannedImages').getElementsByClassName('scanned-image');
-    if (scannedImages.length === 0) {
-      return;
-    }
-
-    const totalImagesHeight = this.$$('#previewDiv').scrollHeight;
-    const maxScrollTop =
-        totalImagesHeight - this.$$('#previewDiv').offsetHeight;
-    this.scrollingIntervals_ = [];
-    let currentIntervalHeight = 0;
-
-    // Only the first n - 1 images require intervals since the last image is the
-    // catch-all interval.
-    for (let i = 0; i < scannedImages.length - 1; i++) {
-      const scrollHeightProportion =
-          scannedImages[i].offsetHeight / totalImagesHeight;
-      currentIntervalHeight += maxScrollTop * scrollHeightProportion;
-      this.scrollingIntervals_.push(currentIntervalHeight);
-    }
   },
 });
