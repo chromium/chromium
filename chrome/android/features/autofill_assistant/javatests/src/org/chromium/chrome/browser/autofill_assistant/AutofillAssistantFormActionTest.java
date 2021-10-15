@@ -78,7 +78,9 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -524,5 +526,69 @@ public class AutofillAssistantFormActionTest {
         waitUntilViewMatchesCondition(withText("Finish"), isCompletelyDisplayed());
         onView(withText("Info label")).check(matches(not(isDisplayed())));
         onView(withId(R.id.info_button)).check(matches(not(isDisplayed())));
+    }
+
+    private void startTestCounterExpansion(boolean accessibilityEnabled) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(
+                                accessibilityEnabled));
+
+        FormProto.Builder formProto =
+                FormProto.newBuilder().addInputs(FormInputProto.newBuilder().setCounter(
+                        CounterInputProto.newBuilder()
+                                .addCounters(CounterInputProto.Counter.newBuilder()
+                                                     .setLabel("Counter 1")
+                                                     .setDescriptionLine1("$34.00 per item"))
+                                .addCounters(CounterInputProto.Counter.newBuilder()
+                                                     .setLabel("Counter 2")
+                                                     .setDescriptionLine1("$387.00 per item"))
+                                .setMinimizedCount(1)
+                                .setMinCountersSum(2)
+                                .setMinimizeText("Minimize")
+                                .setExpandText("Expand")));
+
+        // FormAction.
+        List<ActionProto> list = Collections.singletonList(
+                ActionProto.newBuilder()
+                        .setShowForm(ShowFormProto.newBuilder()
+                                             .setChip(ChipProto.newBuilder()
+                                                              .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                              .setText("Continue"))
+                                             .setForm(formProto))
+                        .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Autostart")))
+                        .build(),
+                list);
+
+        startAutofillAssistant(mTestRule.getActivity(),
+                new AutofillAssistantTestService(Collections.singletonList(script)));
+    }
+
+    @Test
+    @MediumTest
+    @DisableIf.Build(sdk_is_less_than = 21)
+    public void testCounterExpandEnabledWithoutAccessibility() {
+        startTestCounterExpansion(false);
+
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
+        // Expand label is visible when accessibility is disabled.
+        onView(withId(R.id.expand_label)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @DisableIf.Build(sdk_is_less_than = 21)
+    public void testCounterExpandDisabledWithAccessibility() {
+        startTestCounterExpansion(true);
+
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
+        // Expand label is hidden when accessibility is enabled.
+        onView(withId(R.id.expand_label)).check(matches(not(isDisplayed())));
     }
 }
