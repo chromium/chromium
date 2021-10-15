@@ -69,7 +69,6 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
           return result;
         }));
 #endif
-    ASSERT_TRUE(profile()->CreateHistoryService());
     history_service_ = HistoryServiceFactory::GetForProfile(
         profile(), ServiceAccessType::IMPLICIT_ACCESS);
     ASSERT_TRUE(history_service_);
@@ -80,6 +79,11 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
         history::SOURCE_BROWSED, /*did_replace_entry=*/false,
         /*floc_allowed=*/true);
     HistoryTabHelper::CreateForWebContents(web_contents());
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{HistoryServiceFactory::GetInstance(),
+             HistoryServiceFactory::GetDefaultFactory()}};
   }
 
   HistoryTabHelper* history_tab_helper() {
