@@ -30,18 +30,6 @@
 namespace extensions {
 namespace image_util {
 
-bool ParseCssColorString(const std::string& color_string, SkColor* result) {
-  return content::ParseCssColorString(color_string, result);
-}
-
-bool ParseHexColorString(const std::string& color_string, SkColor* result) {
-  return content::ParseHexColorString(color_string, result);
-}
-
-bool ParseRgbColorString(const std::string& color_string, SkColor* result) {
-  return content::ParseRgbColorString(color_string, result);
-}
-
 bool IsIconSufficientlyVisible(const SkBitmap& bitmap) {
   // TODO(crbug.com/805600): Currently, we only consider if there are enough
   // visible pixels that it won't be difficult for the user to see. Future

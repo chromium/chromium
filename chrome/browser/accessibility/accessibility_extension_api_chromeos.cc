@@ -38,10 +38,10 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/common/color_parser.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
-#include "extensions/common/image_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -119,15 +119,14 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
     const std::string id = accessibility_manager->GetFocusRingId(
         extension_id(), focus_ring_info.id ? *(focus_ring_info.id) : "");
 
-    if (!extensions::image_util::ParseHexColorString(focus_ring_info.color,
-                                                     &(focus_ring->color))) {
+    if (!content::ParseHexColorString(focus_ring_info.color,
+                                      &(focus_ring->color))) {
       return RespondNow(Error("Could not parse hex color"));
     }
 
     if (focus_ring_info.secondary_color &&
-        !extensions::image_util::ParseHexColorString(
-            *(focus_ring_info.secondary_color),
-            &(focus_ring->secondary_color))) {
+        !content::ParseHexColorString(*(focus_ring_info.secondary_color),
+                                      &(focus_ring->secondary_color))) {
       return RespondNow(Error("Could not parse secondary hex color"));
     }
 
@@ -163,9 +162,8 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
     }
 
     if (focus_ring_info.background_color &&
-        !extensions::image_util::ParseHexColorString(
-            *(focus_ring_info.background_color),
-            &(focus_ring->background_color))) {
+        !content::ParseHexColorString(*(focus_ring_info.background_color),
+                                      &(focus_ring->background_color))) {
       return RespondNow(Error("Could not parse background hex color"));
     }
 
@@ -197,7 +195,7 @@ AccessibilityPrivateSetHighlightsFunction::Run() {
   }
 
   SkColor color;
-  if (!extensions::image_util::ParseHexColorString(params->color, &color))
+  if (!content::ParseHexColorString(params->color, &color))
     return RespondNow(Error("Could not parse hex color"));
 
   // Set the highlights to cover all of these rects.

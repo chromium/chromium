@@ -21,6 +21,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/color_parser.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_client.h"
@@ -599,9 +600,8 @@ bool AppWindowCreateFunction::GetFrameOptions(
       return false;
     }
 
-    if (!image_util::ParseHexColorString(
-            *options.frame->as_frame_options->color,
-            &create_params->active_frame_color)) {
+    if (!content::ParseHexColorString(*options.frame->as_frame_options->color,
+                                      &create_params->active_frame_color)) {
       *error = app_window_constants::kInvalidColorSpecification;
       return false;
     }
@@ -610,7 +610,7 @@ bool AppWindowCreateFunction::GetFrameOptions(
     create_params->inactive_frame_color = create_params->active_frame_color;
 
     if (options.frame->as_frame_options->inactive_color.get()) {
-      if (!image_util::ParseHexColorString(
+      if (!content::ParseHexColorString(
               *options.frame->as_frame_options->inactive_color,
               &create_params->inactive_frame_color)) {
         *error = app_window_constants::kInvalidColorSpecification;

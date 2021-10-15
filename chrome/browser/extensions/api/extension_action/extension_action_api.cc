@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/common/color_parser.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/event_router.h"
@@ -492,7 +493,7 @@ ExtensionActionSetBadgeBackgroundColorFunction::RunExtensionAction() {
                            color_array[1], color_array[2]);
   } else if (color_value->is_string()) {
     std::string color_string = color_value->GetString();
-    if (!image_util::ParseCssColorString(color_string, &color))
+    if (!content::ParseCssColorString(color_string, &color))
       return RespondNow(Error(kInvalidColorError));
   }
 

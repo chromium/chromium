@@ -17,7 +17,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "extensions/common/image_util.h"
+#include "content/public/common/color_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -236,8 +236,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
       }
     } else {
       SkColor color = result_view->GetColor(OmniboxPart::RESULTS_BACKGROUND);
-      extensions::image_util::ParseHexColorString(match.image_dominant_color,
-                                                  &color);
+      content::ParseHexColorString(match.image_dominant_color, &color);
       color = SkColorSetA(color, 0x40);  // 25% transparency (arbitrary).
       constexpr gfx::Size size(kEntityImageSize, kEntityImageSize);
       answer_image_view_->SetImageSize(size);

@@ -10,7 +10,7 @@
 #include "chromecast/common/extensions_api/accessibility_private.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_frame_host.h"
-#include "extensions/common/image_util.h"
+#include "content/public/common/color_parser.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -63,8 +63,7 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
 
     if (focus_ring_info.color.length() > 0) {
       SkColor color;
-      if (!extensions::image_util::ParseHexColorString(focus_ring_info.color,
-                                                       &color))
+      if (!content::ParseHexColorString(focus_ring_info.color, &color))
         return RespondNow(Error("Could not parse hex color"));
       accessibility_manager->SetFocusRingColor(color);
     } else {
@@ -102,7 +101,7 @@ AccessibilityPrivateSetHighlightsFunction::Run() {
   }
 
   SkColor color;
-  if (!extensions::image_util::ParseHexColorString(params->color, &color))
+  if (!content::ParseHexColorString(params->color, &color))
     return RespondNow(Error("Could not parse hex color"));
 
   // Set the highlights to cover all of these rects.

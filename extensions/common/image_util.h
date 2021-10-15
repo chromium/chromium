@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_COMMON_IMAGE_UTIL_H_
 #define EXTENSIONS_COMMON_IMAGE_UTIL_H_
 
-#include <string>
-
 class SkBitmap;
 
 typedef unsigned int SkColor;
@@ -18,17 +16,6 @@ class FilePath;
 // This file contains various utility functions for extension images and colors.
 namespace extensions {
 namespace image_util {
-
-// Parses a CSS-style color string from hex (3- or 6-digit) or HSL(A) format.
-// Returns true on success.
-bool ParseCssColorString(const std::string& color_string, SkColor* result);
-
-// Parses a RGB or RGBA string like #FF9982CC, #FF9982, #EEEE, or #EEE to a
-// color. Returns true for success.
-bool ParseHexColorString(const std::string& color_string, SkColor* result);
-
-// Parses rgb() or rgba() string to a color. Returns true for success.
-bool ParseRgbColorString(const std::string& color_string, SkColor* result);
 
 // Returns whether an icon image is considered to be visible in its display
 // context.
