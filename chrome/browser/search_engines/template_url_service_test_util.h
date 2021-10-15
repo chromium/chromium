@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -19,7 +20,6 @@
 
 class KeywordWebDataService;
 class TemplateURLService;
-class TestingProfile;
 
 // Sets the managed preferences for the default search provider.
 // enabled arg enables/disables use of managed engine by DefaultSearchManager.
@@ -44,6 +44,8 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
 class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
  public:
   TemplateURLServiceTestUtil();
+  explicit TemplateURLServiceTestUtil(
+      const TestingProfile::TestingFactories& testing_factories);
 
   TemplateURLServiceTestUtil(const TemplateURLServiceTestUtil&) = delete;
   TemplateURLServiceTestUtil& operator=(const TemplateURLServiceTestUtil&) =
@@ -100,7 +102,6 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
 
  private:
   std::unique_ptr<TestingProfile> profile_;
-  base::ScopedTempDir temp_dir_;
   int changed_count_ = 0;
   std::u16string search_term_;
   int dsp_set_to_google_callback_count_ = 0;
