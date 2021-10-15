@@ -69,9 +69,9 @@ class InstrumentedPackageBuilder(object):
         product_dir, 'instrumented_libraries', 'sources', self._package)
 
     self._cflags = unescape_flags(args.cflags)
-    if args.sanitizer_blacklist:
-      blacklist_file = real_path(args.sanitizer_blacklist)
-      self._cflags += ' -fsanitize-blacklist=%s' % blacklist_file
+    if args.sanitizer_ignorelist:
+      ignorelist_file = real_path(args.sanitizer_ignorelist)
+      self._cflags += ' -fsanitize-blacklist=%s' % ignorelist_file  # nocheck
 
     self._ldflags = unescape_flags(args.ldflags)
 
@@ -496,7 +496,7 @@ def main():
   # This will be run after applying the patches above.
   parser.add_argument('--pre-build', default='')
   parser.add_argument('--build-method', default='destdir')
-  parser.add_argument('--sanitizer-blacklist', default='')
+  parser.add_argument('--sanitizer-ignorelist', default='')
   # The LIBDIR argument to configure/make.
   parser.add_argument('--libdir', default='lib')
 

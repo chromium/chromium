@@ -99,7 +99,7 @@ Now we're ready to build the libraries. A clean build takes a little over 8
 minutes on a 72-thread machine.
 
 ```shell
-third_party/instrumented_libraries/scripts/build_and_package.py --parallel -j $(nproc) all
+third_party/instrumented_libraries/scripts/build_and_package.py --parallel -j $(nproc) all xenial
 ```
 
 ## Uploading the libraries
@@ -115,8 +115,7 @@ exit
 mv *.tgz third_party/instrumented_libraries/binaries
 
 # Upload.
-upload_to_google_storage.py -b chromium-instrumented-libraries third_party/instrumented_libraries/binaries/msan-chained-origins-xenial.tgz
-upload_to_google_storage.py -b chromium-instrumented-libraries third_party/instrumented_libraries/binaries/msan-no-origins-xenial.tgz
+upload_to_google_storage.py -b chromium-instrumented-libraries third_party/instrumented_libraries/binaries/msan*.tgz
 ```
 
 ## Testing and uploading a CL

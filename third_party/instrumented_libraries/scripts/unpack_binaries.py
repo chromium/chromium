@@ -12,8 +12,7 @@ import sys
 
 
 def get_archive_name(archive_prefix):
-  release = 'xenial'
-  return '%s-%s.tgz' % (archive_prefix, release)
+  return archive_prefix + '.tgz'
 
 
 def main(archive_prefix, archive_dir, target_dir, stamp_dir=None):
