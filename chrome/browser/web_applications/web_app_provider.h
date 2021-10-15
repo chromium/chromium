@@ -100,6 +100,7 @@ class WebAppProvider : public KeyedService {
 
   // The app registry model.
   WebAppRegistrar& registrar();
+  const WebAppRegistrar& registrar() const;
   // The app registry controller.
   WebAppSyncBridge& sync_bridge();
   // UIs can use WebAppInstallManager for user-initiated Web Apps install.

@@ -252,7 +252,7 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!contents)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(
+  const WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(
       Profile::FromBrowserContext(contents->GetBrowserContext()));
   if (!provider)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
@@ -275,7 +275,7 @@ BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!render_process_host)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(
+  const WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(
       Profile::FromBrowserContext(render_process_host->GetBrowserContext()));
   if (!provider)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};

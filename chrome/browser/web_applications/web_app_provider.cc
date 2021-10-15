@@ -130,6 +130,11 @@ WebAppRegistrar& WebAppProvider::registrar() {
   return *registrar_;
 }
 
+const WebAppRegistrar& WebAppProvider::registrar() const {
+  CheckIsConnected();
+  return *registrar_;
+}
+
 WebAppSyncBridge& WebAppProvider::sync_bridge() {
   CheckIsConnected();
   return *sync_bridge_;
