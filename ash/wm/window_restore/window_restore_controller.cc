@@ -464,6 +464,10 @@ void WindowRestoreController::SaveWindowImpl(
   DCHECK(window_state);
   aura::Window* window = window_state->window();
 
+  // Skip saving ARC PIP window.
+  if (window_state->IsPip() && IsArcWindow(window))
+    return;
+
   // Only apps whose parent is a certain container can be saved.
   if (!window->parent() ||
       !base::Contains(kAppParentContainers, window->parent()->GetId())) {
