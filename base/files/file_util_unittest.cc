@@ -4189,14 +4189,13 @@ TEST_F(FileUtilTest, PreReadFile_InexistentFile) {
 // Test that temp files obtained racily are all unique (no interference between
 // threads). Mimics file operations in DoLaunchChildTestProcess() to rule out
 // thread-safety issues @ https://crbug.com/826408#c17.
+TEST(FileUtilMultiThreadedTest, MultiThreadedTempFiles) {
 #if defined(OS_FUCHSIA)
-// TODO(crbug.com/844416): Too slow to run on infra due to QEMU overloads.
-#define MAYBE_MultiThreadedTempFiles DISABLED_MultiThreadedTempFiles
+  // TODO(crbug.com/844416): Too slow to run on infra due to QEMU overhead.
+  constexpr int kNumThreads = 8;
 #else
-#define MAYBE_MultiThreadedTempFiles MultiThreadedTempFiles
-#endif
-TEST(FileUtilMultiThreadedTest, MAYBE_MultiThreadedTempFiles) {
   constexpr int kNumThreads = 64;
+#endif
   constexpr int kNumWritesPerThread = 32;
 
   std::unique_ptr<Thread> threads[kNumThreads];
