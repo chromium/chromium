@@ -1383,6 +1383,7 @@ TEST_P(AppsGridViewDragTest, ItemViewsDontHaveLayerAfterDrag) {
 TEST_P(AppsGridViewDragTest, MouseDragItemIntoFolder) {
   size_t kTotalItems = 3;
   model_->PopulateApps(kTotalItems);
+  UpdateLayout();
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
                                      apps_grid_view_);
 
@@ -1412,6 +1413,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemIntoFolder) {
 TEST_P(AppsGridViewDragTest, MouseDragSecondItemIntoFolder) {
   AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
   model_->PopulateApps(1);
+  UpdateLayout();
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
                                      apps_grid_view_);
 
@@ -1638,6 +1640,7 @@ TEST_P(AppsGridViewDragTest, MouseDragMaxItemsInFolder) {
   ASSERT_FALSE(folder_item->IsFolderFull());
   // Create and add another item.
   model_->PopulateAppWithId(kTotalItems);
+  UpdateLayout();
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
                                      apps_grid_view_);
 
@@ -2359,6 +2362,7 @@ TEST_F(AppsGridViewTest, ControlArrowDownOrRightRemovesPage) {
 TEST_F(AppsGridViewTest, ControlShiftArrowFoldersItemBasic) {
   base::HistogramTester histogram_tester;
   model_->PopulateApps(GetTilesPerPage(0));
+  UpdateLayout();
   // Select the first item in the grid, folder it with the item to the right.
   AppListItemView* first_item = GetItemViewInTopLevelGrid(0);
   const std::string first_item_id = first_item->item()->id();
@@ -2424,6 +2428,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFoldersItemBasic) {
 // Tests that foldering an item that is on a different page fails.
 TEST_F(AppsGridViewTest, ControlShiftArrowFailsToFolderAcrossPages) {
   model_->PopulateApps(2 * GetTilesPerPage(0));
+  UpdateLayout();
 
   // For every item on the last row of the first page, test that foldering to
   // the next page fails.
@@ -2482,6 +2487,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFailsToFolderAcrossPages) {
 TEST_F(AppsGridViewTest, ControlShiftArrowFolderLastItemOnPage) {
   const int kNumberOfApps = 4;
   model_->PopulateApps(kNumberOfApps);
+  UpdateLayout();
   // Select the second to last item in the grid, folder it with the item to the
   // right.
   AppListItemView* moving_item = GetItemViewInTopLevelGrid(kNumberOfApps - 2);

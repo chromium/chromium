@@ -1993,6 +1993,15 @@ bool AppsGridView::IsPointWithinDragBuffer(const gfx::Point& point) const {
   return rect.Contains(point);
 }
 
+void AppsGridView::ScheduleLayout(const gfx::Size& previous_grid_size) {
+  if (GetTileGridSize() != previous_grid_size) {
+    PreferredSizeChanged();  // Calls InvalidateLayout() internally.
+  } else {
+    InvalidateLayout();
+  }
+  DCHECK(needs_layout());
+}
+
 void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
   const gfx::Size initial_grid_size = GetTileGridSize();
 
@@ -2022,11 +2031,8 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
     UpdatePulsingBlockViews();
   }
 
-  // TODO(https://crbug.com/1260018): Investigate removing Layout() to improve
-  // performance.
-  Layout();
-  if (GetTileGridSize() != initial_grid_size)
-    PreferredSizeChanged();
+  // Schedule a layout, since the grid items may need their bounds updated.
+  ScheduleLayout(initial_grid_size);
 }
 
 void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
@@ -2048,11 +2054,8 @@ void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
     UpdatePulsingBlockViews();
   }
 
-  // TODO(https://crbug.com/1260018): Investigate removing Layout() to improve
-  // performance.
-  Layout();
-  if (GetTileGridSize() != initial_grid_size)
-    PreferredSizeChanged();
+  // Schedule a layout, since the grid items may need their bounds updated.
+  ScheduleLayout(initial_grid_size);
 }
 
 void AppsGridView::OnListItemMoved(size_t from_index,

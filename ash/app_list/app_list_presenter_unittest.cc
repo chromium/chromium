@@ -478,6 +478,17 @@ class PopulatedAppListTest : public AshTestBase,
         std::make_unique<test::AppsGridViewTestApi>(apps_grid_view_);
   }
 
+  void PopulateApps(int n) {
+    app_list_test_model_->PopulateApps(n);
+    app_list_view_->GetWidget()->LayoutRootViewIfNecessary();
+  }
+
+  AppListFolderItem* CreateAndPopulateFolderWithApps(int n) {
+    auto* folder = app_list_test_model_->CreateAndPopulateFolderWithApps(n);
+    app_list_view_->GetWidget()->LayoutRootViewIfNecessary();
+    return folder;
+  }
+
   gfx::Rect GetItemRectOnCurrentPageAt(int row, int col) const {
     DCHECK_GT(app_list_test_model_->top_level_item_list()->item_count(), 0u);
     return apps_grid_test_api_->GetItemTileRectOnCurrentPageAt(row, col);
@@ -1026,7 +1037,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
 // be handled by AppList.
 TEST_P(PopulatedAppListTest, MouseDragAppsGridViewHandledByAppList) {
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(2);
+  PopulateApps(2);
 
   // Calculate the drag start/end points.
   gfx::Point drag_start_point = apps_grid_view_->GetBoundsInScreen().origin();
@@ -1051,7 +1062,7 @@ TEST_P(PopulatedAppListTest, MouseDragAppsGridViewHandledByAppList) {
 TEST_P(PopulatedAppListTest,
        MouseDragAppsGridViewHandledByPaginationController) {
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
+  PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
   EXPECT_EQ(2, apps_grid_view_->pagination_model()->total_pages());
 
   // Calculate the drag start/end points. |drag_start_point| is between the
@@ -1083,7 +1094,7 @@ TEST_P(PopulatedAppListTest,
 // (e.g. on screen rotation).
 TEST_P(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
+  PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -1117,7 +1128,7 @@ TEST_P(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
 // deleted.
 TEST_P(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(4);
+  PopulateApps(4);
 
   // Start dragging a view.
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
@@ -1152,10 +1163,9 @@ TEST_P(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
 // item gets deleted.
 TEST_P(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(2);
-  AppListFolderItem* folder =
-      app_list_test_model_->CreateAndPopulateFolderWithApps(3);
-  app_list_test_model_->PopulateApps(3);
+  PopulateApps(2);
+  AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
+  PopulateApps(3);
 
   // Tap the folder item to show it.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1199,10 +1209,9 @@ TEST_P(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
 // the dragged app list item gets deleted.
 TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(2);
-  AppListFolderItem* folder =
-      app_list_test_model_->CreateAndPopulateFolderWithApps(3);
-  app_list_test_model_->PopulateApps(3);
+  PopulateApps(2);
+  AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
+  PopulateApps(3);
 
   // Tap the folder item to show it.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1259,9 +1268,9 @@ TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
 TEST_P(PopulatedAppListTest,
        CancelFolderItemReparentDragOnDragItemAndFolderDeletion) {
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(2);
-  app_list_test_model_->CreateAndPopulateFolderWithApps(2);
-  app_list_test_model_->PopulateApps(3);
+  PopulateApps(2);
+  CreateAndPopulateFolderWithApps(2);
+  PopulateApps(3);
 
   // Tap the folder item to show it.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1321,7 +1330,7 @@ TEST_P(PopulatedAppListTest,
        ItemLayersNotDestroyedDuringBoundsAnimationAfterDrag) {
   InitializeAppsGrid();
   const int kItemCount = 5;
-  app_list_test_model_->PopulateApps(kItemCount);
+  PopulateApps(kItemCount);
 
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -1369,7 +1378,7 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
+  PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -1415,7 +1424,7 @@ TEST_P(PopulatedAppListTest,
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
+  PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -1457,10 +1466,9 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(2);
-  AppListFolderItem* folder =
-      app_list_test_model_->CreateAndPopulateFolderWithApps(3);
-  app_list_test_model_->PopulateApps(10);
+  PopulateApps(2);
+  AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
+  PopulateApps(10);
 
   // Tap the folder item to show it.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1508,10 +1516,9 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(2);
-  AppListFolderItem* folder =
-      app_list_test_model_->CreateAndPopulateFolderWithApps(3);
-  app_list_test_model_->PopulateApps(10);
+  PopulateApps(2);
+  AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
+  PopulateApps(10);
 
   // Tap the folder item to show it.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1571,6 +1578,7 @@ TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
   app_list_test_model_->PopulateApps(10);
   EnableTabletMode(tablet_mode_param());
   EnsureLauncherShown();
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // Tap the folder item to show it.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1618,7 +1626,7 @@ TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
 TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   InitializeAppsGrid();
   const int kItemCount = 5;
-  app_list_test_model_->PopulateApps(kItemCount);
+  PopulateApps(kItemCount);
 
   // Dragging the item with index 4.
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(4);
@@ -1683,7 +1691,7 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
 TEST_P(PopulatedAppListWithVKEnabledTest,
        TappingAppsGridClosesVirtualKeyboard) {
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(2);
+  PopulateApps(2);
   gfx::Point between_apps = GetItemRectOnCurrentPageAt(0, 0).right_center();
   gfx::Point empty_space = GetItemRectOnCurrentPageAt(0, 2).CenterPoint();
 
@@ -1725,9 +1733,8 @@ TEST_P(PopulatedAppListWithVKEnabledTest,
 // the apps grid crashes (See http://crbug.com/1100011).
 TEST_P(PopulatedAppListTest, FolderItemDroppedRemovesBlankPage) {
   InitializeAppsGrid();
-  AppListFolderItem* folder_item =
-      app_list_test_model_->CreateAndPopulateFolderWithApps(3);
-  app_list_test_model_->PopulateApps(2);
+  AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(3);
+  PopulateApps(2);
   ASSERT_EQ(1, apps_grid_view_->pagination_model()->total_pages());
 
   // Tap the folder item to show its contents.
@@ -3642,8 +3649,7 @@ TEST_P(AppListPresenterTest,
 TEST_P(PopulatedAppListTest, TouchSelectionMenu) {
   InitializeAppsGrid();
 
-  AppListFolderItem* folder_item =
-      app_list_test_model_->CreateAndPopulateFolderWithApps(4);
+  AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(4);
   EXPECT_TRUE(folder_item->is_folder());
   EXPECT_EQ(1u, app_list_test_model_->top_level_item_list()->item_count());
   EXPECT_EQ(

@@ -629,6 +629,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // buffer area surrounding it that can trigger drop target change.
   bool IsPointWithinDragBuffer(const gfx::Point& point) const;
 
+  // Schedules a Layout() call. If `previous_grid_size` is different from the
+  // current grid size, calls PreferredSizeChanged().
+  void ScheduleLayout(const gfx::Size& previous_grid_size);
+
   // Overridden from AppListItemListObserver:
   void OnListItemAdded(size_t index, AppListItem* item) override;
   void OnListItemRemoved(size_t index, AppListItem* item) override;
