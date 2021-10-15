@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_histogram_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 
 #include <string>
 

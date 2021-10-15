@@ -2378,11 +2378,8 @@ source_set("chromeos") {
     "../ash/policy/dlp/dlp_confidential_contents.h",
     "../ash/policy/dlp/dlp_content_manager.cc",
     "../ash/policy/dlp/dlp_content_manager.h",
-    "../ash/policy/dlp/dlp_histogram_helper.cc",
-    "../ash/policy/dlp/dlp_histogram_helper.h",
     "../ash/policy/dlp/dlp_notification_helper.cc",
     "../ash/policy/dlp/dlp_notification_helper.h",
-    "../ash/policy/dlp/dlp_policy_constants.h",
     "../ash/policy/dlp/dlp_warn_dialog.cc",
     "../ash/policy/dlp/dlp_warn_dialog.h",
     "../ash/policy/dlp/dlp_window_observer.cc",
@@ -3229,6 +3226,9 @@ source_set("chromeos") {
     "policy/dlp/dlp_data_transfer_notifier.h",
     "policy/dlp/dlp_drag_drop_notifier.cc",
     "policy/dlp/dlp_drag_drop_notifier.h",
+    "policy/dlp/dlp_histogram_helper.cc",
+    "policy/dlp/dlp_histogram_helper.h",
+    "policy/dlp/dlp_policy_constants.h",
     "policy/dlp/dlp_reporting_manager.cc",
     "policy/dlp/dlp_reporting_manager.h",
     "policy/dlp/dlp_rules_manager.h",
@@ -4750,7 +4750,7 @@ proto_library("device_configuration_proto") {
 }
 
 proto_library("dlp_policy_event_proto") {
-  sources = [ "../ash/policy/dlp/dlp_policy_event.proto" ]
+  sources = [ "policy/dlp/dlp_policy_event.proto" ]
 }
 
 proto_library("key_permissions_proto") {

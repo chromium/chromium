@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/policy/dlp/dlp_policy_event.pb.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "components/reporting/client/mock_report_queue.h"
