@@ -198,6 +198,18 @@ export class LocalImages extends WithPersonalizationStore {
   }
 
   /**
+   * @param {!mojoBase.mojom.FilePath} image
+   * @return {string}
+   * @private
+   */
+   getAriaLabel_(image) {
+    if (!image || !image.path)
+      return '';
+    const path = image.path;
+    return path.substring(path.lastIndexOf('/')+1);
+  }
+
+  /**
    * @param {mojoBase.mojom.FilePath} image
    * @param {Object<string, boolean>} imageDataLoading
    * @return {boolean}
