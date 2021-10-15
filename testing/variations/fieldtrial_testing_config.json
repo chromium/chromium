@@ -7319,7 +7319,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20211014",
+                    "name": "Enabled",
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:sharing_hub_link_toggle_triggered;comparator:<5;window:360;storage:360",
