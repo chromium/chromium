@@ -6422,6 +6422,7 @@ test("unit_tests") {
       "../browser/nearby_sharing/webrtc_signaling_messenger_unittest.cc",
       "../browser/notifications/chrome_ash_message_center_client_unittest.cc",
       "../browser/notifications/web_page_notifier_controller_unittest.cc",
+      "../browser/sharesheet/share_action/share_action_unittest.cc",
       "../browser/speech/tts_chromeos_unittest.cc",
       "../browser/speech/tts_controller_delegate_impl_unittest.cc",
       "../browser/sync/sync_error_notifier_ash_unittest.cc",
