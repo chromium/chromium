@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_DEBUGGABLE_AUCTION_WORKLET_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_DEBUGGABLE_AUCTION_WORKLET_H_
 
+#include <string>
+
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom-forward.h"
@@ -26,10 +28,14 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   DebuggableAuctionWorklet& operator=(const DebuggableAuctionWorklet&) = delete;
 
   const GURL& url() const { return url_; }
+  RenderFrameHostImpl* owning_frame() const { return owning_frame_; }
+
+  // Human-readable description of the worklet. (For English-speaking humans,
+  // anyway).
+  std::string Title() const;
+
   void ConnectDevToolsAgent(
       mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent);
-
-  RenderFrameHostImpl* owning_frame() const { return owning_frame_; }
 
  private:
   friend class AuctionRunner;

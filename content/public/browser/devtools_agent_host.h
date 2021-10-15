@@ -53,6 +53,7 @@ class CONTENT_EXPORT DevToolsAgentHost
   static const char kTypeBrowser[];
   static const char kTypeGuest[];
   static const char kTypeOther[];
+  static const char kTypeAuctionWorklet[];
 
   // Latest DevTools protocol version supported.
   static std::string GetProtocolVersion();

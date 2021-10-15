@@ -595,6 +595,13 @@ std::string WebTestContentBrowserClient::GetAcceptLangs(
   return content::GetShellLanguage();
 }
 
+bool WebTestContentBrowserClient::IsInterestGroupAPIAllowed(
+    content::BrowserContext* browser_context,
+    const url::Origin& top_frame_origin,
+    const GURL& api_url) {
+  return true;
+}
+
 void WebTestContentBrowserClient::GetHyphenationDictionary(
     base::OnceCallback<void(const base::FilePath&)> callback) {
   // Use the dictionaries in the runtime deps instead of the repository. The
