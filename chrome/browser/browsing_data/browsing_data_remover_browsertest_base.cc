@@ -425,8 +425,6 @@ BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModel(Profile* profile) {
       base::MakeRefCounted<browsing_data::DatabaseHelper>(profile),
       base::MakeRefCounted<browsing_data::LocalStorageHelper>(profile),
       /*session_storage_helper=*/nullptr,
-      base::MakeRefCounted<browsing_data::AppCacheHelper>(
-          storage_partition->GetAppCacheService()),
       base::MakeRefCounted<browsing_data::IndexedDBHelper>(storage_partition),
       base::MakeRefCounted<browsing_data::FileSystemHelper>(
           file_system_context,

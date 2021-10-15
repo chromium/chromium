@@ -459,9 +459,6 @@ class PageSpecificContentSettings
         content::NavigationHandle* navigation_handle) override;
     void DidFinishNavigation(
         content::NavigationHandle* navigation_handle) override;
-    // TODO(carlscab): Change interface to pass target RenderFrameHost
-    void AppCacheAccessed(const GURL& manifest_url,
-                          bool blocked_by_policy) override;
     void OnCookiesAccessed(
         content::NavigationHandle* navigation,
         const content::CookieAccessDetails& details) override;
@@ -504,8 +501,6 @@ class PageSpecificContentSettings
       content::RenderFrameHost* rfh,
       PageSpecificContentSettings::WebContentsHandler& handler,
       Delegate* delegate);
-
-  void AppCacheAccessed(const GURL& manifest_url, bool blocked_by_policy);
 
   // content_settings::Observer implementation.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,

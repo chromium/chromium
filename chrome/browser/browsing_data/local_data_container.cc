@@ -19,7 +19,6 @@ LocalDataContainer::LocalDataContainer(
     scoped_refptr<browsing_data::DatabaseHelper> database_helper,
     scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
     scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
-    scoped_refptr<browsing_data::AppCacheHelper> appcache_helper,
     scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper,
     scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
     scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
@@ -27,8 +26,7 @@ LocalDataContainer::LocalDataContainer(
     scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
     scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper,
     scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper)
-    : appcache_helper_(std::move(appcache_helper)),
-      cookie_helper_(std::move(cookie_helper)),
+    : cookie_helper_(std::move(cookie_helper)),
       database_helper_(std::move(database_helper)),
       local_storage_helper_(std::move(local_storage_helper)),
       session_storage_helper_(std::move(session_storage_helper)),
@@ -72,15 +70,6 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
     batches_started_++;
     session_storage_helper_->StartFetching(
         base::BindOnce(&LocalDataContainer::OnSessionStorageModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  // TODO(michaeln): When all of the UI implementations have been updated, make
-  // this a required parameter.
-  if (appcache_helper_.get()) {
-    batches_started_++;
-    appcache_helper_->StartFetching(
-        base::BindOnce(&LocalDataContainer::OnAppCacheModelInfoLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -134,13 +123,6 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
   }
 
   model_->SetBatchExpectation(batches_started_, true);
-}
-
-void LocalDataContainer::OnAppCacheModelInfoLoaded(
-    const AppCacheInfoList& info_list) {
-  appcache_info_list_ = info_list;
-  DCHECK(model_);
-  model_->PopulateAppCacheInfo(this);
 }
 
 void LocalDataContainer::OnCookiesModelInfoLoaded(

@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/browsing_data/content/mock_appcache_helper.h"
 #include "components/browsing_data/content/mock_cache_storage_helper.h"
 #include "components/browsing_data/content/mock_cookie_helper.h"
 #include "components/browsing_data/content/mock_database_helper.h"
@@ -44,8 +43,6 @@ class SiteDataSizeCollectorTest : public testing::Test {
     mock_browsing_data_local_storage_helper_ =
         base::MakeRefCounted<browsing_data::MockLocalStorageHelper>(
             profile_.get());
-    mock_browsing_data_appcache_helper_ =
-        base::MakeRefCounted<browsing_data::MockAppCacheHelper>(profile_.get());
     mock_browsing_data_indexed_db_helper_ =
         base::MakeRefCounted<browsing_data::MockIndexedDBHelper>(
             profile_.get());
@@ -70,7 +67,6 @@ class SiteDataSizeCollectorTest : public testing::Test {
     mock_browsing_data_cache_storage_helper_ = nullptr;
     mock_browsing_data_file_system_helper_ = nullptr;
     mock_browsing_data_indexed_db_helper_ = nullptr;
-    mock_browsing_data_appcache_helper_ = nullptr;
     mock_browsing_data_session_storage_helper_ = nullptr;
     mock_browsing_data_local_storage_helper_ = nullptr;
     mock_browsing_data_database_helper_ = nullptr;
@@ -94,8 +90,6 @@ class SiteDataSizeCollectorTest : public testing::Test {
       mock_browsing_data_local_storage_helper_;
   scoped_refptr<browsing_data::MockLocalStorageHelper>
       mock_browsing_data_session_storage_helper_;
-  scoped_refptr<browsing_data::MockAppCacheHelper>
-      mock_browsing_data_appcache_helper_;
   scoped_refptr<browsing_data::MockIndexedDBHelper>
       mock_browsing_data_indexed_db_helper_;
   scoped_refptr<browsing_data::MockFileSystemHelper>
@@ -109,7 +103,7 @@ class SiteDataSizeCollectorTest : public testing::Test {
 TEST_F(SiteDataSizeCollectorTest, FetchCookie) {
   SiteDataSizeCollector collector(
       profile_->GetPath(), mock_browsing_data_cookie_helper_.get(), nullptr,
-      nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+      nullptr, nullptr, nullptr, nullptr, nullptr);
 
   base::RunLoop run_loop;
   collector.Fetch(base::BindOnce(&SiteDataSizeCollectorTest::FetchCallback,
@@ -128,7 +122,7 @@ TEST_F(SiteDataSizeCollectorTest, FetchCookie) {
 TEST_F(SiteDataSizeCollectorTest, FetchCookieWithoutEntry) {
   SiteDataSizeCollector collector(
       profile_->GetPath(), mock_browsing_data_cookie_helper_.get(), nullptr,
-      nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+      nullptr, nullptr, nullptr, nullptr, nullptr);
 
   // Fetched size should be 0 if there are no cookies.
   collector.Fetch(base::BindOnce(&SiteDataSizeCollectorTest::FetchCallback,
@@ -138,9 +132,9 @@ TEST_F(SiteDataSizeCollectorTest, FetchCookieWithoutEntry) {
 }
 
 TEST_F(SiteDataSizeCollectorTest, FetchDatabase) {
-  SiteDataSizeCollector collector(
-      profile_->GetPath(), nullptr, mock_browsing_data_database_helper_.get(),
-      nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  SiteDataSizeCollector collector(profile_->GetPath(), nullptr,
+                                  mock_browsing_data_database_helper_.get(),
+                                  nullptr, nullptr, nullptr, nullptr, nullptr);
 
   collector.Fetch(base::BindOnce(&SiteDataSizeCollectorTest::FetchCallback,
                                  base::Unretained(this), base::OnceClosure()));
@@ -153,7 +147,7 @@ TEST_F(SiteDataSizeCollectorTest, FetchLocalStorage) {
   SiteDataSizeCollector collector(
       profile_->GetPath(), nullptr, nullptr,
       mock_browsing_data_local_storage_helper_.get(), nullptr, nullptr, nullptr,
-      nullptr, nullptr);
+      nullptr);
 
   collector.Fetch(base::BindOnce(&SiteDataSizeCollectorTest::FetchCallback,
                                  base::Unretained(this), base::OnceClosure()));
@@ -162,22 +156,9 @@ TEST_F(SiteDataSizeCollectorTest, FetchLocalStorage) {
   EXPECT_EQ(3, fetched_size_);
 }
 
-TEST_F(SiteDataSizeCollectorTest, FetchAppCache) {
-  SiteDataSizeCollector collector(profile_->GetPath(), nullptr, nullptr,
-                                  nullptr,
-                                  mock_browsing_data_appcache_helper_.get(),
-                                  nullptr, nullptr, nullptr, nullptr);
-
-  collector.Fetch(base::BindOnce(&SiteDataSizeCollectorTest::FetchCallback,
-                                 base::Unretained(this), base::OnceClosure()));
-  mock_browsing_data_appcache_helper_->AddAppCacheSamples();
-  mock_browsing_data_appcache_helper_->Notify();
-  EXPECT_EQ(6, fetched_size_);
-}
-
 TEST_F(SiteDataSizeCollectorTest, FetchIndexedDB) {
   SiteDataSizeCollector collector(
-      profile_->GetPath(), nullptr, nullptr, nullptr, nullptr,
+      profile_->GetPath(), nullptr, nullptr, nullptr,
       mock_browsing_data_indexed_db_helper_.get(), nullptr, nullptr, nullptr);
 
   collector.Fetch(base::BindOnce(&SiteDataSizeCollectorTest::FetchCallback,
@@ -189,7 +170,7 @@ TEST_F(SiteDataSizeCollectorTest, FetchIndexedDB) {
 
 TEST_F(SiteDataSizeCollectorTest, FetchFileSystem) {
   SiteDataSizeCollector collector(
-      profile_->GetPath(), nullptr, nullptr, nullptr, nullptr, nullptr,
+      profile_->GetPath(), nullptr, nullptr, nullptr, nullptr,
       mock_browsing_data_file_system_helper_.get(), nullptr, nullptr);
 
   collector.Fetch(base::BindOnce(&SiteDataSizeCollectorTest::FetchCallback,
@@ -201,7 +182,7 @@ TEST_F(SiteDataSizeCollectorTest, FetchFileSystem) {
 
 TEST_F(SiteDataSizeCollectorTest, FetchServiceWorker) {
   SiteDataSizeCollector collector(
-      profile_->GetPath(), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+      profile_->GetPath(), nullptr, nullptr, nullptr, nullptr, nullptr,
       mock_browsing_data_service_worker_helper_.get(), nullptr);
 
   collector.Fetch(base::BindOnce(&SiteDataSizeCollectorTest::FetchCallback,
@@ -214,7 +195,7 @@ TEST_F(SiteDataSizeCollectorTest, FetchServiceWorker) {
 TEST_F(SiteDataSizeCollectorTest, FetchCacheStorage) {
   SiteDataSizeCollector collector(
       profile_->GetPath(), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-      nullptr, mock_browsing_data_cache_storage_helper_.get());
+      mock_browsing_data_cache_storage_helper_.get());
 
   collector.Fetch(base::BindOnce(&SiteDataSizeCollectorTest::FetchCallback,
                                  base::Unretained(this), base::OnceClosure()));
@@ -225,7 +206,7 @@ TEST_F(SiteDataSizeCollectorTest, FetchCacheStorage) {
 
 TEST_F(SiteDataSizeCollectorTest, FetchMultiple) {
   SiteDataSizeCollector collector(
-      profile_->GetPath(), nullptr, nullptr, nullptr, nullptr,
+      profile_->GetPath(), nullptr, nullptr, nullptr,
       mock_browsing_data_indexed_db_helper_.get(), nullptr,
       mock_browsing_data_service_worker_helper_.get(), nullptr);
 

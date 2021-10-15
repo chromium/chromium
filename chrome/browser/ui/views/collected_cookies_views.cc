@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/cookie_info_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/browsing_data/content/appcache_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/database_helper.h"
 #include "components/browsing_data/content/file_system_helper.h"
@@ -110,10 +109,9 @@ std::unique_ptr<CookiesTreeModel> CreateCookiesTreeModel(
   auto container = std::make_unique<LocalDataContainer>(
       shared_objects.cookies(), shared_objects.databases(),
       shared_objects.local_storages(), shared_objects.session_storages(),
-      shared_objects.appcaches(), shared_objects.indexed_dbs(),
-      shared_objects.file_systems(), nullptr, shared_objects.service_workers(),
-      shared_objects.shared_workers(), shared_objects.cache_storages(),
-      nullptr);
+      shared_objects.indexed_dbs(), shared_objects.file_systems(), nullptr,
+      shared_objects.service_workers(), shared_objects.shared_workers(),
+      shared_objects.cache_storages(), nullptr);
 
   return std::make_unique<CookiesTreeModel>(std::move(container), nullptr);
 }

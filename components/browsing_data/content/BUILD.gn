@@ -4,8 +4,6 @@
 
 static_library("content") {
   sources = [
-    "appcache_helper.cc",
-    "appcache_helper.h",
     "browsing_data_helper.cc",
     "browsing_data_helper.h",
     "cache_storage_helper.cc",
@@ -74,8 +72,6 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "mock_appcache_helper.cc",
-    "mock_appcache_helper.h",
     "mock_cache_storage_helper.cc",
     "mock_cache_storage_helper.h",
     "mock_cookie_helper.cc",

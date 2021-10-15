@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/browsing_data/content/appcache_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/database_helper.h"
@@ -244,15 +243,6 @@ void PageSpecificContentSettings::WebContentsHandler::DidFinishNavigation(
 
   if (navigation_handle->IsInPrimaryMainFrame())
     delegate_->UpdateLocationBar();
-}
-
-void PageSpecificContentSettings::WebContentsHandler::AppCacheAccessed(
-    const GURL& manifest_url,
-    bool blocked_by_policy) {
-  auto* pscs = PageSpecificContentSettings::GetForCurrentDocument(
-      web_contents()->GetMainFrame());
-  if (pscs)
-    pscs->AppCacheAccessed(manifest_url, blocked_by_policy);
 }
 
 void PageSpecificContentSettings::WebContentsHandler::AddSiteDataObserver(
@@ -870,19 +860,6 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     return;
 
   MaybeSendRendererContentSettingsRules(&render_frame_host(), map_, delegate_);
-}
-
-void PageSpecificContentSettings::AppCacheAccessed(const GURL& manifest_url,
-                                                   bool blocked_by_policy) {
-  if (blocked_by_policy) {
-    blocked_local_shared_objects_.appcaches()->Add(
-        url::Origin::Create(manifest_url));
-    OnContentBlocked(ContentSettingsType::COOKIES);
-  } else {
-    allowed_local_shared_objects_.appcaches()->Add(
-        url::Origin::Create(manifest_url));
-    OnContentAllowed(ContentSettingsType::COOKIES);
-  }
 }
 
 void PageSpecificContentSettings::ClearContentSettingsChangedViaPageInfo() {

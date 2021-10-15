@@ -11,7 +11,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
-#include "components/browsing_data/content/appcache_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/canonical_cookie_hash.h"
 #include "components/browsing_data/content/cookie_helper.h"
@@ -46,9 +45,7 @@ LocalSharedObjectsContainer::LocalSharedObjectsContainer(
     content::BrowserContext* browser_context,
     const std::vector<storage::FileSystemType>& additional_file_system_types,
     browsing_data::CookieHelper::IsDeletionDisabledCallback callback)
-    : appcaches_(base::MakeRefCounted<CannedAppCacheHelper>(
-          browser_context->GetDefaultStoragePartition()->GetAppCacheService())),
-      cookies_(base::MakeRefCounted<CannedCookieHelper>(
+    : cookies_(base::MakeRefCounted<CannedCookieHelper>(
           browser_context->GetDefaultStoragePartition(),
           std::move(callback))),
       databases_(base::MakeRefCounted<CannedDatabaseHelper>(browser_context)),
@@ -74,7 +71,6 @@ LocalSharedObjectsContainer::~LocalSharedObjectsContainer() = default;
 
 size_t LocalSharedObjectsContainer::GetObjectCount() const {
   size_t count = 0;
-  count += appcaches()->GetCount();
   count += cookies()->GetCookieCount();
   count += databases()->GetCount();
   count += file_systems()->GetCount();
@@ -161,12 +157,6 @@ size_t LocalSharedObjectsContainer::GetObjectCountForDomain(
       ++count;
   }
 
-  // Count the AppCache manifest files for the domain of the given |origin|.
-  for (const auto& storage_origin : appcaches()->GetOrigins()) {
-    if (SameDomainOrHost(origin, storage_origin.GetURL()))
-      ++count;
-  }
-
   return count;
 }
 
@@ -207,9 +197,6 @@ size_t LocalSharedObjectsContainer::GetDomainCount() const {
   for (const auto& origin : databases()->GetOrigins())
     hosts.insert(origin.host());
 
-  for (const auto& origin : appcaches()->GetOrigins())
-    hosts.insert(origin.host());
-
   std::set<std::string> domains;
   for (const base::StringPiece& host : hosts) {
     std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
@@ -223,7 +210,6 @@ size_t LocalSharedObjectsContainer::GetDomainCount() const {
 }
 
 void LocalSharedObjectsContainer::Reset() {
-  appcaches_->Reset();
   cookies_->Reset();
   databases_->Reset();
   file_systems_->Reset();

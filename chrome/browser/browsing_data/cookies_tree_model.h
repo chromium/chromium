@@ -20,8 +20,6 @@
 
 class AccessContextAuditService;
 class CookiesTreeModel;
-class CookieTreeAppCacheNode;
-class CookieTreeAppCachesNode;
 class CookieTreeCacheStorageNode;
 class CookieTreeCacheStoragesNode;
 class CookieTreeCookieNode;
@@ -81,8 +79,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
       TYPE_LOCAL_STORAGE,     // This is used for CookieTreeLocalStorageNode.
       TYPE_SESSION_STORAGES,  // This is used for CookieTreeSessionStoragesNode.
       TYPE_SESSION_STORAGE,   // This is used for CookieTreeSessionStorageNode.
-      TYPE_APPCACHES,         // This is used for CookieTreeAppCachesNode.
-      TYPE_APPCACHE,          // This is used for CookieTreeAppCacheNode.
       TYPE_INDEXED_DBS,       // This is used for CookieTreeIndexedDBsNode.
       TYPE_INDEXED_DB,        // This is used for CookieTreeIndexedDBNode.
       TYPE_FILE_SYSTEMS,      // This is used for CookieTreeFileSystemsNode.
@@ -111,8 +107,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
         const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitSessionStorage(
         const content::StorageUsageInfo* storage_usage_info);
-    DetailedInfo& InitAppCache(
-        const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitIndexedDB(
         const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitFileSystem(
@@ -131,7 +125,7 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     NodeType node_type;
     url::Origin origin;
     const net::CanonicalCookie* cookie = nullptr;
-    // Used for AppCache, Database (WebSQL), IndexedDB, Service Worker, and
+    // Used for Database (WebSQL), IndexedDB, Service Worker, and
     // Cache Storage node types.
     const content::StorageUsageInfo* usage_info = nullptr;
     const browsing_data::FileSystemHelper::FileSystemInfo* file_system_info =
@@ -224,7 +218,6 @@ class CookieTreeHostNode : public CookieTreeNode {
   CookieTreeDatabasesNode* GetOrCreateDatabasesNode();
   CookieTreeLocalStoragesNode* GetOrCreateLocalStoragesNode();
   CookieTreeSessionStoragesNode* GetOrCreateSessionStoragesNode();
-  CookieTreeAppCachesNode* GetOrCreateAppCachesNode();
   CookieTreeIndexedDBsNode* GetOrCreateIndexedDBsNode();
   CookieTreeFileSystemsNode* GetOrCreateFileSystemsNode();
   CookieTreeServiceWorkersNode* GetOrCreateServiceWorkersNode();
@@ -249,16 +242,15 @@ class CookieTreeHostNode : public CookieTreeNode {
   void UpdateHostUrl(const GURL& url);
 
  private:
-  // Pointers to the cookies, databases, local and session storage and appcache
-  // nodes.  When we build up the tree we need to quickly get a reference to
+  // Pointers to the cookies, databases, local and session storage nodes.
+  // When we build up the tree we need to quickly get a reference to
   // the COOKIES node to add children. Checking each child and interrogating
-  // them to see if they are a COOKIES, APPCACHES, DATABASES etc node seems
+  // them to see if they are a COOKIES, DATABASES, etc node seems
   // less preferable than storing an extra pointer per origin.
   CookieTreeCookiesNode* cookies_child_ = nullptr;
   CookieTreeDatabasesNode* databases_child_ = nullptr;
   CookieTreeLocalStoragesNode* local_storages_child_ = nullptr;
   CookieTreeSessionStoragesNode* session_storages_child_ = nullptr;
-  CookieTreeAppCachesNode* appcaches_child_ = nullptr;
   CookieTreeIndexedDBsNode* indexed_dbs_child_ = nullptr;
   CookieTreeFileSystemsNode* file_systems_child_ = nullptr;
   CookieTreeQuotaNode* quota_child_ = nullptr;
@@ -296,8 +288,8 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
 
   // Because non-cookie nodes are fetched in a background thread, they are not
   // present at the time the Model is created. The Model then notifies its
-  // observers for every item added from databases, local storage, and
-  // appcache. We extend the Observer interface to add notifications before and
+  // observers for every item added from databases and local storage.
+  // We extend the Observer interface to add notifications before and
   // after these batch inserts.
   class Observer : public ui::TreeModelObserver {
    public:
@@ -360,7 +352,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
 
   // Methods that update the model based on the data retrieved by the browsing
   // data helpers.
-  void PopulateAppCacheInfo(LocalDataContainer* container);
   void PopulateCookieInfo(LocalDataContainer* container);
   void PopulateDatabaseInfo(LocalDataContainer* container);
   void PopulateLocalStorageInfo(LocalDataContainer* container);
@@ -413,9 +404,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   // batches have finished processing.
   void MaybeNotifyBatchesEnded();
 
-  void PopulateAppCacheInfoWithFilter(LocalDataContainer* container,
-                                      ScopedBatchUpdateNotifier* notifier,
-                                      const std::u16string& filter);
   void PopulateCookieInfoWithFilter(LocalDataContainer* container,
                                     ScopedBatchUpdateNotifier* notifier,
                                     const std::u16string& filter);

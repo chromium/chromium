@@ -21,7 +21,6 @@ class BrowserContext;
 }
 
 namespace browsing_data {
-class CannedAppCacheHelper;
 class CannedCacheStorageHelper;
 class CannedCookieHelper;
 class CannedDatabaseHelper;
@@ -56,7 +55,6 @@ class LocalSharedObjectsContainer {
   // Empties the container.
   void Reset();
 
-  CannedAppCacheHelper* appcaches() const { return appcaches_.get(); }
   CannedCookieHelper* cookies() const { return cookies_.get(); }
   CannedDatabaseHelper* databases() const { return databases_.get(); }
   CannedFileSystemHelper* file_systems() const { return file_systems_.get(); }
@@ -78,7 +76,6 @@ class LocalSharedObjectsContainer {
   }
 
  private:
-  scoped_refptr<CannedAppCacheHelper> appcaches_;
   scoped_refptr<CannedCookieHelper> cookies_;
   scoped_refptr<CannedDatabaseHelper> databases_;
   scoped_refptr<CannedFileSystemHelper> file_systems_;

@@ -31,13 +31,11 @@ SiteDataSizeCollector::SiteDataSizeCollector(
     scoped_refptr<browsing_data::CookieHelper> cookie_helper,
     scoped_refptr<browsing_data::DatabaseHelper> database_helper,
     scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
-    scoped_refptr<browsing_data::AppCacheHelper> appcache_helper,
     scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper,
     scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
     scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
     scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper)
     : default_storage_partition_path_(default_storage_partition_path),
-      appcache_helper_(std::move(appcache_helper)),
       cookie_helper_(std::move(cookie_helper)),
       database_helper_(std::move(database_helper)),
       local_storage_helper_(std::move(local_storage_helper)),
@@ -59,12 +57,6 @@ void SiteDataSizeCollector::Fetch(FetchCallback callback) {
   total_bytes_ = 0;
   in_flight_operations_ = 0;
 
-  if (appcache_helper_.get()) {
-    appcache_helper_->StartFetching(
-        base::BindOnce(&SiteDataSizeCollector::OnAppCacheModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-    in_flight_operations_++;
-  }
   if (cookie_helper_.get()) {
     cookie_helper_->StartFetching(
         base::BindOnce(&SiteDataSizeCollector::OnCookiesModelInfoLoaded,
@@ -109,15 +101,6 @@ void SiteDataSizeCollector::Fetch(FetchCallback callback) {
   }
   // TODO(fukino): SITE_USAGE_DATA and WEB_APP_DATA should be counted too.
   // All data types included in REMOVE_SITE_USAGE_DATA should be counted.
-}
-
-void SiteDataSizeCollector::OnAppCacheModelInfoLoaded(
-    const std::list<content::StorageUsageInfo>& info_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  int64_t total_size = 0;
-  for (const auto& info : info_list)
-    total_size += info.total_size_bytes;
-  OnStorageSizeFetched(total_size);
 }
 
 void SiteDataSizeCollector::OnCookiesModelInfoLoaded(

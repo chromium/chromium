@@ -50,11 +50,6 @@ int GetCategoryLabelID(CookieTreeNode::DetailedInfo::NodeType node_type) {
       {CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE,
        IDS_SETTINGS_COOKIES_LOCAL_STORAGE},
 
-      {CookieTreeNode::DetailedInfo::TYPE_APPCACHES,
-       IDS_SETTINGS_COOKIES_APPLICATION_CACHE},
-      {CookieTreeNode::DetailedInfo::TYPE_APPCACHE,
-       IDS_SETTINGS_COOKIES_APPLICATION_CACHE},
-
       {CookieTreeNode::DetailedInfo::TYPE_INDEXED_DBS,
        IDS_SETTINGS_COOKIES_DATABASE_STORAGE},
       {CookieTreeNode::DetailedInfo::TYPE_INDEXED_DB,

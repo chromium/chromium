@@ -22,7 +22,6 @@
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/storage_manager/arc_storage_manager.h"
-#include "components/browsing_data/content/appcache_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/conditional_cache_counting_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
@@ -176,8 +175,6 @@ void BrowsingDataSizeCalculator::PerformCalculation() {
                                         base::NullCallback()),
         new browsing_data::DatabaseHelper(profile_),
         new browsing_data::LocalStorageHelper(profile_),
-        new browsing_data::AppCacheHelper(
-            storage_partition->GetAppCacheService()),
         new browsing_data::IndexedDBHelper(storage_partition),
         base::MakeRefCounted<browsing_data::FileSystemHelper>(
             storage_partition->GetFileSystemContext(),

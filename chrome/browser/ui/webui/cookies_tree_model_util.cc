@@ -151,20 +151,6 @@ bool CookiesTreeModelUtil::GetCookieTreeNodeDictionary(
 
       break;
     }
-    case CookieTreeNode::DetailedInfo::TYPE_APPCACHE: {
-      dict->SetStringKey(kKeyType, "app_cache");
-
-      const content::StorageUsageInfo& usage_info =
-          *node.GetDetailedInfo().usage_info;
-
-      dict->SetStringKey(kKeyOrigin, usage_info.origin.Serialize());
-      dict->SetStringKey(kKeySize,
-                         ui::FormatBytes(usage_info.total_size_bytes));
-      dict->SetStringKey(kKeyModified,
-                         base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(
-                             usage_info.last_modified)));
-      break;
-    }
     case CookieTreeNode::DetailedInfo::TYPE_INDEXED_DB: {
       dict->SetStringKey(kKeyType, "indexed_db");
 
