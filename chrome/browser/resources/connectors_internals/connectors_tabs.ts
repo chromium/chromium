@@ -5,6 +5,8 @@
 import './strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
 import {ZeroTrustConnectorElement} from './zero_trust_connector.js';
 
 interface ConnectorTab {
@@ -14,12 +16,19 @@ interface ConnectorTab {
   // Directive used to render the tab's custom element, but is used also as the
   // URL hash when selecting that tab and tab element's ID.
   directive: string;
+
+  // Whether the connector is enabled or not. Only show the tab if the connector
+  // is enabled.
+  isEnabled: boolean;
 }
 
 // Set of all connector tabs. Adding a new entry here will make it automatically
 // show in the UI.
-const connectorTabs: ConnectorTab[] =
-    [{title: 'Zero Trust', directive: ZeroTrustConnectorElement.is}];
+const connectorTabs: ConnectorTab[] = [{
+  title: 'Zero Trust',
+  directive: ZeroTrustConnectorElement.is,
+  isEnabled: loadTimeData.getBoolean('zeroTrustConnectorEnabled')
+}];
 
 export class ConnectorsTabsElement extends CustomElement {
   static get is() {
@@ -38,8 +47,21 @@ export class ConnectorsTabsElement extends CustomElement {
     return this.$all('.content > div');
   }
 
+  private get noConnectorsMessage(): HTMLElement {
+    return this.$('#no-connectors-message') as HTMLElement;
+  }
+
+  private readonly enabledTabs: ConnectorTab[] =
+      connectorTabs.filter(x => x.isEnabled);
+
   constructor() {
     super();
+
+    // Exit early if no connectors are enabled.
+    if (!this.enabledTabs.length) {
+      this.showElement(this.noConnectorsMessage);
+      return;
+    }
 
     // Add tabs dynamically.
     const headersRoot = this.$('.tabs');
@@ -49,8 +71,10 @@ export class ConnectorsTabsElement extends CustomElement {
       return;
     }
 
-    for (const tab of connectorTabs) {
-      this.addTab(headersRoot, contentRoot, tab);
+    for (const tab of this.enabledTabs) {
+      if (tab.isEnabled) {
+        this.addTab(headersRoot, contentRoot, tab);
+      }
     }
 
     window.onhashchange = () => {
@@ -62,8 +86,9 @@ export class ConnectorsTabsElement extends CustomElement {
   private urlHashChanged(hash: string) {
     hash = (hash || '').split('#').pop() || '';
 
-    const tab = connectorTabs.find(t => t.directive === hash.toLowerCase()) ||
-        connectorTabs[0];
+    const tab =
+        this.enabledTabs.find(t => t.directive === hash.toLowerCase()) ||
+        this.enabledTabs[0];
     if (tab) {
       this.showTab(tab);
     } else {
@@ -78,18 +103,18 @@ export class ConnectorsTabsElement extends CustomElement {
   }
 
   private showTab(tab: ConnectorTab) {
-    const index = connectorTabs.findIndex(x => x === tab);
+    const index = this.enabledTabs.findIndex(x => x === tab);
     if (index < 0) {
-      console.error(
-          `Tab ${tab.directive} was not found in connectorTabs array.`);
+      console.error(`Tab ${
+          tab.directive} was not found in the array of enabled connectors.`);
       return;
     }
 
     this.tabHeaders.forEach(h => (h as Element).classList.remove('active'));
     (this.tabHeaders.item(index) as Element).classList.add('active');
 
-    this.tabContents.forEach(c => (c as HTMLElement).style.display = 'none');
-    (this.tabContents.item(index) as HTMLElement).style.display = 'block';
+    this.tabContents.forEach(c => this.hideElement(c as HTMLElement));
+    this.showElement(this.tabContents.item(index) as HTMLElement);
   }
 
   private addTab(
@@ -105,6 +130,14 @@ export class ConnectorsTabsElement extends CustomElement {
     contentElement.id = tab.directive;
     contentElement.innerHTML = `<${tab.directive}></${tab.directive}>`;
     contentRoot.appendChild(contentElement);
+  }
+
+  private showElement(element: Element) {
+    element?.classList.remove('hidden');
+  }
+
+  private hideElement(element: HTMLElement) {
+    element?.classList.add('hidden');
   }
 }
 

@@ -5,8 +5,9 @@
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_page_handler.h"
@@ -28,6 +29,9 @@ ConnectorsInternalsUI::ConnectorsInternalsUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
 
   source->AddBoolean("isOtr", profile->IsOffTheRecord());
+  source->AddBoolean(
+      "zeroTrustConnectorEnabled",
+      base::FeatureList::IsEnabled(kDeviceTrustConnectorEnabled));
 
   webui::SetupWebUIDataSource(
       source,
@@ -35,7 +39,6 @@ ConnectorsInternalsUI::ConnectorsInternalsUI(content::WebUI* web_ui)
                       kConnectorsInternalsResourcesSize),
       IDR_CONNECTORS_INTERNALS_INDEX_HTML);
 
-  device_trust_service_ = DeviceTrustServiceFactory::GetForProfile(profile);
   content::WebUIDataSource::Add(profile, source);
 }
 
@@ -46,7 +49,7 @@ ConnectorsInternalsUI::~ConnectorsInternalsUI() = default;
 void ConnectorsInternalsUI::BindInterface(
     mojo::PendingReceiver<connectors_internals::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<ConnectorsInternalsPageHandler>(
-      std::move(receiver), device_trust_service_, Profile::FromWebUI(web_ui()));
+      std::move(receiver), Profile::FromWebUI(web_ui()));
 }
 
 }  // namespace enterprise_connectors

@@ -668,6 +668,7 @@ static_library("ui") {
     ]
 
     deps += [
+      "//chrome/browser/enterprise/connectors/device_trust:features",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
       "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
     ]
