@@ -925,13 +925,13 @@ static_library("headless_shell_lib") {
 if (is_fuchsia) {
   cr_fuchsia_package("headless_shell_pkg") {
     binary = ":headless_shell"
-    package_name_override = "headless_shell"
+    package_name = "headless_shell"
     manifest = "//build/config/fuchsia/test/minimum_capabilities.test-cmx"
   }
 
-  fuchsia_package_runner("headless_shell_fuchsia") {
+  fuchsia_package_installer("headless_shell_fuchsia") {
     package = ":headless_shell_pkg"
-    package_name_override = "headless_shell"
+    package_name = "headless_shell"
   }
 }
 

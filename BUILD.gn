@@ -910,13 +910,13 @@ if (is_fuchsia) {
     testonly = true
     binary = "//v8:d8"
     manifest = "//v8/gni/v8.cmx"
-    package_name_override = "d8"
+    package_name = "d8"
   }
 
-  fuchsia_package_runner("d8_fuchsia") {
+  fuchsia_package_installer("d8_fuchsia") {
     testonly = true
     package = ":d8_fuchsia_pkg"
-    package_name_override = "d8"
+    package_name = "d8"
   }
 }
 
@@ -1158,7 +1158,12 @@ if (!is_ios) {
     }
 
     if (is_fuchsia) {
-      data_deps += [ "//content/shell:content_shell_fuchsia" ]
+      data_deps += [
+        "//build/config/fuchsia:deployment_resources",
+        "//content/shell:content_shell_fuchsia",
+        "//content/shell:content_shell_pkg__archive-manifest",
+        "//content/shell:content_shell_pkg__archive-metadata",
+      ]
     }
 
     data = [

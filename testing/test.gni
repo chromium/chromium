@@ -398,39 +398,43 @@ template("test") {
     # |target_name| refers to the package-runner rule, so that building
     # "base_unittests" will build not only the executable, component, and
     # package, but also the script required to run them.
-    fuchsia_package_runner(target_name) {
-      is_test_exe = true
+    fuchsia_test_runner(target_name) {
       forward_variables_from(invoker,
                              [
-                               "use_run_test_component",
-                               "use_test_server",
+                               "data",
+                               "data_deps",
                                "package_deps",
-                               "visibility",
+                               "use_test_server",
                              ])
-      runner_script = "//build/fuchsia/test_runner.py"
+
       package = ":$_pkg_target"
-      package_name_override = _output_name
+      package_name = _output_name
 
-      if (tests_have_location_tags) {
-        data = [ "//testing/location_tags.json" ]
+      if (!defined(deps)) {
+        deps = []
       }
-      data_deps = [ "//testing/buildbot/filters:fuchsia_filters" ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
 
+      if (!defined(data)) {
+        data = []
+      }
+      if (tests_have_location_tags) {
+        data += [ "//testing/location_tags.json" ]
+      }
+
+      if (!defined(data_deps)) {
+        data_deps = []
+      }
       if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+        data_deps += [ ":${target_name}__rts_filters" ]
       }
     }
 
     executable(_exec_target) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       output_name = _exec_target
-
-      if (use_rts) {
-        if (!defined(data_deps)) {
-          data_deps = []
-        }
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
-      }
     }
   } else if (is_ios) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)

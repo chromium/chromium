@@ -183,10 +183,10 @@ class DeviceTarget(target.Target):
       name_host_pairs = [x.strip().split(' ') for x in output]
 
       if len(name_host_pairs) > 1:
-        logging.info('More than one device was discovered on the network. '
-                     'Use --node-name <name> to specify the device to use.')
-        logging.info('List of devices:')
-        logging.info(output)
+        logging.warning('More than one device was discovered on the network. '
+                        'Use --node-name <name> to specify the device to use.')
+        logging.warning('List of devices:')
+        logging.warning(output)
         raise Exception('Ambiguous target device specification.')
       assert len(name_host_pairs) == 1
       # Check if device has both address and name.

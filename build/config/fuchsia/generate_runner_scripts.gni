@@ -32,28 +32,38 @@ declare_args() {
   fuchsia_additional_boot_images = []
 }
 
-# Generates a script which deploys and optionally executes a package on a
-# device.
+# Generates a wrapper script under root_build_dir/bin that performs an
+# operation, such as deployment or execution, using a package and its
+# dependencies.
 #
 # Parameters:
-#   package: The package() target which will be run.
-#   package_name_override: Specifies the name of the generated package, if its
-#       name is different than the |package| target name. This value must match
-#       package_name_override in the |package| target.
-#   package_deps: An array of [package, package_name_override] array pairs
+#   output_name_format: The format string for the generated script's filename.
+#                       The placeholder string %package% will be substituted
+#                       with |package| (or |package_name|, if set).
+#                       Examples: "run_%package%", "install_%package%"
+#   package: The package() target to run.
+#   package_name: Specifies the name of the generated package, if its
+#       filename is different than the |package| target name. This value must
+#       match package_name in the |package| target.
+#   package_deps: An array of [package, package_name] array pairs
 #       which specify additional dependency packages to be installed
 #       prior to execution.
-#   runner_script: The runner script implementation to use, relative to
-#       "build/fuchsia". Defaults to "test_runner.py".
-#   install_only: If true, executing the script will only install the package
-#       on the device, but not run it.
-#   is_test_exe: If true, the generated script will run the command under
-#       test_env.py and add arguments expected to be passed to test exes.
-template("fuchsia_package_runner") {
-  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "runner_script" ])
-
-  if (defined(invoker.package_name_override)) {
-    _pkg_shortname = invoker.package_name_override
+#   executable: The underlying script to be called by the script.
+#   executable_args: The list of arguments to pass to |executable|.
+#                    Runtime commandline arguments can be passed to
+#                    |executable| using the placeholder %args%.
+#
+#                    In addition, the script is passed the following
+#                    executable_args:
+#                      --package - the path to a .FAR package to install.
+#                      --package_name - the name of the package to use as an
+#                                       entry point.
+#   include_fuchsia_build_dir: If true, adds
+#                              |default_fuchsia_build_dir_for_installation|
+#                              to executable_args (when set in GN args).
+template("fuchsia_run_script_with_packages") {
+  if (defined(invoker.package_name)) {
+    _pkg_shortname = invoker.package_name
   } else {
     _pkg_shortname = get_label_info(invoker.package, "name")
   }
@@ -62,122 +72,37 @@ template("fuchsia_package_runner") {
              "/" + _pkg_shortname
   _package_path = "$_pkg_dir/${_pkg_shortname}.far"
 
-  generated_run_pkg_script_path = "$root_build_dir/bin/run_${_pkg_shortname}"
-  generated_install_pkg_script_path =
-      "$root_build_dir/bin/install_$_pkg_shortname"
+  _generated_script_path =
+      "$root_build_dir/bin/" +
+      string_replace(invoker.output_name_format, "%package%", _pkg_shortname)
 
-  _generate_runner_target = "${target_name}__generate_runner"
-  _generate_installer_target = "${target_name}__generate_installer"
+  generate_wrapper(target_name) {
+    forward_variables_from(invoker,
+                           TESTONLY_AND_VISIBILITY + [
+                                 "executable",
+                                 "executable_args",
+                                 "data",
+                                 "include_fuchsia_build_dir",
+                                 "target",
+                               ])
 
-  # Generates a script which installs and runs a test.
-  generate_wrapper(_generate_runner_target) {
-    forward_variables_from(invoker, [ "target" ])
+    wrapper_script = _generated_script_path
 
-    _is_test_exe = defined(invoker.is_test_exe) && invoker.is_test_exe
-
-    if (defined(runner_script)) {
-      _runner_script = runner_script
-    } else {
-      _runner_script = "//build/fuchsia/test_runner.py"
-    }
-
-    if (_is_test_exe) {
-      executable = "//testing/test_env.py"
-      executable_args =
-          [ "@WrappedPath(" + rebase_path(_runner_script, root_out_dir) + ")" ]
-      data = [
-        _runner_script,
-        "//.vpython",
-      ]
-      data_deps = [ "//testing:test_scripts_shared" ]
-    } else {
-      executable = rebase_path(_runner_script)
-      executable_args = []
-      data = []
-      data_deps = []
-    }
-
-    if (defined(invoker.data)) {
-      data += invoker.data
-    }
-
-    wrapper_script = generated_run_pkg_script_path
-
-    data_deps += [
-      invoker.package,
-
-      # Runner scripts require access to "ids.txt" for symbolization, and to
-      # the "package" from which to get the name & version to deploy, which
-      # are outputs of the archive manifest generation action.
-      "${invoker.package}__archive-manifest",
-
-      # Runner scripts require access to "meta.far" from which to calculate the
-      # expected Merkle root for the package, to verify it has been cached.
-      "${invoker.package}__archive-metadata",
-    ]
+    deps = [ invoker.package ]
+    data_deps = [ invoker.package ]
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
     }
 
-    # Declares the files that are needed for test execution on the
-    # swarming test client.
-    data += [
-      "//build/fuchsia/",
-      "//build/util/lib/",
-      "//third_party/fuchsia-sdk/sdk/.build-id/",
-      "//third_party/fuchsia-sdk/sdk/bin/fpave.sh",
-      "//third_party/fuchsia-sdk/sdk/bin/fuchsia-common.sh",
-      "//third_party/fuchsia-sdk/sdk/meta/manifest.json",
-    ]
-
-    # TODO(crbug.com/1137662): Remove checkout_fuchsia_for_arm64_host from
-    # gclient_gn_args in //DEPS as well as this condition when builders have
-    # test_host_cpu set correctly.
-    if (checkout_fuchsia_for_arm64_host) {
-      test_host_cpu = "arm64"
-    }
-
-    if (test_host_cpu == "x64") {
-      data_deps +=
-          [ "//build/config/clang:llvm-symbolizer_data($host_toolchain)" ]
-    }
-
-    data += [
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/device-finder",
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx",
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm",
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/merkleroot",
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/pm",
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/symbolizer",
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/zbi",
-    ]
-
-    if (test_isolate_uses_emulator) {
-      data += [
-        "${boot_image_root}/qemu/qemu-kernel.kernel",
-        "${boot_image_root}/qemu/storage-full.blk",
-        "${boot_image_root}/qemu/zircon-a.zbi",
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvdl",
-        "//third_party/qemu-${host_os}-${test_host_cpu}/",
-        "${aemu_root}/",
-      ]
-    }
-
-    foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
-      data += [ "${fuchsia_additional_boot_image}/" ]
-    }
-
+    # Compute the list of full paths to package files, including dependencies.
     package_paths = [ rebase_path(_package_path, root_build_dir) ]
     if (defined(invoker.package_deps)) {
       foreach(package_dep, invoker.package_deps) {
         package_dep_target = package_dep[0]
         package_dep_name = package_dep[1]
 
-        data_deps += [
-          package_dep_target,
-          package_dep_target + "__archive-manifest",
-          package_dep_target + "__archive-metadata",
-        ]
+        deps += [ package_dep_target ]
+        data_deps += [ package_dep_target ]
         package_dep_path = rebase_path(
                 get_label_info(package_dep_target, "target_gen_dir") + "/" +
                     package_dep_name + "/" + package_dep_name + ".far",
@@ -186,20 +111,75 @@ template("fuchsia_package_runner") {
       }
     }
 
+    # Include package information inside the wrapper script.
+    if (!defined(executable_args)) {
+      executable_args = []
+    }
     foreach(package_path, package_paths) {
       executable_args += [
         "--package",
         "@WrappedPath(${package_path})",
+        "--package-name",
+        _pkg_shortname,
       ]
     }
 
+    if (defined(include_fuchsia_build_dir) && include_fuchsia_build_dir &&
+        default_fuchsia_build_dir_for_installation != "") {
+      executable_args += [
+        "--fuchsia-out-dir",
+        default_fuchsia_build_dir_for_installation,
+      ]
+    }
+  }
+}
+
+# Generates a script which deploys a package to the TUF repo of a Fuchsia
+# build output directory.
+template("fuchsia_package_installer") {
+  fuchsia_run_script_with_packages(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "runner_script",
+                             "executable_args",
+                           ])
+
+    executable = rebase_path("//build/fuchsia/deploy_to_pkg_repo.py")
+    output_name_format = "deploy_%package%"
+    include_fuchsia_build_dir = true
+  }
+}
+
+# Generates scripts for installing and running test packages.
+# See fuchsia_run_script_with_packages() for the full list of parameters.
+template("fuchsia_test_runner") {
+  _run_target = "${target_name}__runner"
+  _install_target = "${target_name}__installer"
+
+  fuchsia_run_script_with_packages(_run_target) {
+    forward_variables_from(invoker,
+                           [
+                             "data",
+                             "data_deps",
+                             "package",
+                             "package_name",
+                             "package_deps",
+                           ])
+    testonly = true
+
+    executable = "//testing/test_env.py"
+    _test_runner_py = "//build/fuchsia/test_runner.py"
+    executable_args =
+        [ "@WrappedPath(" + rebase_path(_test_runner_py, root_out_dir) + ")" ]
+    output_name_format = "run_%package%"
+
+    # Populate the arguments used by the test runner, defined at build-time.
     executable_args += [
       "--out-dir",
       "@WrappedPath(.)",
       "--target-cpu",
       target_cpu,
-      "--package-name",
-      _pkg_shortname,
     ]
 
     if (defined(invoker.use_run_test_component) &&
@@ -211,69 +191,96 @@ template("fuchsia_package_runner") {
       executable_args += [ "--enable-test-server" ]
     }
 
-    if (default_fuchsia_build_dir_for_installation != "") {
-      executable_args += [
-        "--fuchsia-out-dir",
-        default_fuchsia_build_dir_for_installation,
-      ]
-    }
-
     if (default_fuchsia_device_node_name != "") {
       executable_args += [
         "--node-name",
         default_fuchsia_device_node_name,
       ]
     }
-  }
 
-  # Produces a script which installs a package and its dependencies into the
-  # package repository of a pre-existing Fuchsia build directory.
-  generate_wrapper(_generate_installer_target) {
-    executable = rebase_path("//build/fuchsia/deploy_to_pkg_repo.py")
-    wrapper_script = generated_install_pkg_script_path
-
-    data_deps = [ invoker.package ]
-    if (defined(invoker.data_deps)) {
-      data_deps += invoker.data_deps
+    # Declare the files that are needed for test execution on LUCI swarming
+    # test clients, both directly (via data) or indirectly (via data_deps).
+    if (!defined(data)) {
+      data = []
     }
+    data += [ _test_runner_py ]
 
-    # Build a list of all packages to install, and pass the list to the runner
-    # script.
-    package_paths = [ rebase_path(_package_path, root_build_dir) ]
+    if (!defined(data_deps)) {
+      data_deps = []
+    }
+    data_deps += [
+      "//build/config/fuchsia:deployment_resources",
+      "//testing:test_scripts_shared",
+      "//testing/buildbot/filters:fuchsia_filters",
+
+      # Runner scripts require access to "ids.txt" for symbolization, and to
+      # the "package" from which to get the name & version to deploy, which
+      # are outputs of the archive manifest generation action.
+      "${invoker.package}__archive-manifest",
+
+      # Runner scripts require access to "meta.far" from which to calculate the
+      # expected Merkle root for the package, to verify it has been cached.
+      "${invoker.package}__archive-metadata",
+    ]
+
+    _combined_package_list = [ invoker.package ]
     if (defined(invoker.package_deps)) {
       foreach(package_dep, invoker.package_deps) {
-        package_dep_target = package_dep[0]
-        package_dep_name = package_dep[1]
-
-        data_deps += [ package_dep_target ]
-        package_dep_path = rebase_path(
-                get_label_info(package_dep_target, "target_gen_dir") + "/" +
-                    package_dep_name + "/" + package_dep_name + ".far",
-                root_build_dir)
-        package_paths += [ package_dep_path ]
+        _combined_package_list += [ package_dep[0] ]
       }
     }
-    executable_args = []
-    foreach(package_path, package_paths) {
-      executable_args += [
-        "--package",
-        "@WrappedPath(${package_path})",
+    foreach(package_dep, _combined_package_list) {
+      data_deps += [
+        package_dep,
+        package_dep + "__archive-manifest",
+        package_dep + "__archive-metadata",
       ]
-
-      if (default_fuchsia_build_dir_for_installation != "") {
-        executable_args += [
-          "--fuchsia-out-dir",
-          default_fuchsia_build_dir_for_installation,
-        ]
-      }
     }
+
+    # TODO(crbug.com/1256870): Remove this once all out-of-tree references
+    # to "package_name_override" are migrated to "package_name".
+    if (defined(invoker.package_name_override)) {
+      package_name = invoker.package_name_override
+    }
+  }
+
+  fuchsia_package_installer(_install_target) {
+    forward_variables_from(invoker,
+                           TESTONLY_AND_VISIBILITY + [
+                                 "package",
+                                 "package_name",
+                               ])
+    testonly = invoker.testonly
+    include_fuchsia_build_dir = true
   }
 
   group(target_name) {
-    deps = [ ":${_generate_installer_target}" ]
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    deps = [
+      ":${_install_target}",
+      ":${_run_target}",
+    ]
+  }
+}
 
-    if (!defined(invoker.install_only) || invoker.install_only == false) {
-      deps += [ ":${_generate_runner_target}" ]
+# Transitional target that aliases "fuchsia_package_runner" to an installer
+# target. Used for migrating out-of-tree users of fuchsia_package_runner.
+template("fuchsia_package_runner") {
+  if (defined(invoker.install_only) && invoker.install_only) {
+    fuchsia_package_installer(target_name) {
+      forward_variables_from(invoker, "*", [ "install_only" ])
+
+      if (defined(invoker.package_name_override)) {
+        package_name = invoker.package_name_override
+      }
+    }
+  } else {
+    fuchsia_test_runner(target_name) {
+      forward_variables_from(invoker, "*", [ "package_name_override" ])
+
+      if (defined(invoker.package_name_override)) {
+        package_name = invoker.package_name_override
+      }
     }
   }
 }

@@ -152,7 +152,7 @@ if (!is_component_build && !fuchsia_code_coverage) {
 
 cr_fuchsia_package("cast_runner_pkg") {
   binary = ":cast_runner_exe"
-  package_name_override = "cast_runner"
+  package_name = "cast_runner"
   manifest = "cast/cast_runner.cmx"
 
   # Required by web_instance_host.
@@ -160,10 +160,9 @@ cr_fuchsia_package("cast_runner_pkg") {
   excluded_files = _web_instance_host_deps_files_to_exclude
 }
 
-fuchsia_package_runner("cast_runner") {
+fuchsia_package_installer("cast_runner") {
   package = ":cast_runner_pkg"
-  package_name_override = "cast_runner"
-  install_only = true
+  package_name = "cast_runner"
   package_deps = [ [
         "//fuchsia/engine:web_engine",
         "web_engine",
@@ -180,8 +179,8 @@ source_set("cast_runner_test_core") {
   ]
   deps = [ ":cast_runner_core" ]
   public_deps = [
-    "//base",
     "./cast/fidl",
+    "//base",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
     "//url",
   ]
@@ -285,7 +284,7 @@ executable("web_runner_exe") {
 
 cr_fuchsia_package("web_runner_pkg") {
   binary = ":web_runner_exe"
-  package_name_override = "web_runner"
+  package_name = "web_runner"
   manifest = "web/web_runner.cmx"
 
   # Required by web_instance_host.
@@ -293,10 +292,9 @@ cr_fuchsia_package("web_runner_pkg") {
   excluded_files = _web_instance_host_deps_files_to_exclude
 }
 
-fuchsia_package_runner("web_runner") {
+fuchsia_package_installer("web_runner") {
   package = ":web_runner_pkg"
-  package_name_override = "web_runner"
-  install_only = true
+  package_name = "web_runner"
   package_deps = [ [
         "//fuchsia/engine:web_engine",
         "web_engine",

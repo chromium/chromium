@@ -558,14 +558,14 @@ if (is_android) {
     cr_fuchsia_package("content_shell_pkg") {
       testonly = true
       binary = ":content_shell"
-      package_name_override = "content_shell"
+      package_name = "content_shell"
       manifest = "fuchsia/content_shell.cmx"
     }
 
-    fuchsia_package_runner("content_shell_fuchsia") {
+    fuchsia_package_installer("content_shell_fuchsia") {
       testonly = true
       package = ":content_shell_pkg"
-      package_name_override = "content_shell"
+      package_name = "content_shell"
     }
   }
 }

@@ -379,9 +379,8 @@ fuchsia_package("web_engine") {
   excluded_files = _web_engine_excluded_files
 }
 
-fuchsia_package_runner("web_engine_installer") {
+fuchsia_package_installer("web_engine_installer") {
   package = ":web_engine"
-  install_only = true
 }
 
 # Definitions for a variant of the web_engine package that bundles the WebUI
@@ -417,9 +416,8 @@ fuchsia_package("web_engine_with_webui") {
   excluded_files = _web_engine_excluded_files
 }
 
-fuchsia_package_runner("web_engine_with_webui_installer") {
+fuchsia_package_installer("web_engine_with_webui_installer") {
   package = ":web_engine_with_webui"
-  install_only = true
 }
 
 source_set("browsertest_core") {
@@ -654,13 +652,13 @@ cr_fuchsia_package("web_engine_shell_pkg") {
   testonly = true
   manifest = "test/web_engine_shell.cmx"
   binary = ":web_engine_shell_exec"
-  package_name_override = "web_engine_shell"
+  package_name = "web_engine_shell"
 }
 
-fuchsia_package_runner("web_engine_shell") {
+fuchsia_package_installer("web_engine_shell") {
   testonly = true
   package = ":web_engine_shell_pkg"
-  package_name_override = "web_engine_shell"
+  package_name = "web_engine_shell"
   package_deps = [
     [
       ":web_engine",

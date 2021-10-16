@@ -11,7 +11,7 @@ import("//third_party/fuchsia-sdk/sdk/build/package.gni")
 # Creates a Fuchsia .far package file containing a Fuchsia component.
 #
 # Parameters are:
-# package_name_override: Specifies the name of the package to generate,
+# package_name: Specifies the name of the package to generate,
 #     if different than |target_name|.
 # binary: The executable target which should be launched.
 # manifest: A path to the manifest that will be used.
@@ -31,7 +31,9 @@ import("//third_party/fuchsia-sdk/sdk/build/package.gni")
 template("cr_fuchsia_package") {
   assert(defined(invoker.binary))
 
-  if (defined(invoker.package_name_override)) {
+  if (defined(invoker.package_name)) {
+    _package_name = invoker.package_name
+  } else if (defined(invoker.package_name_override)) {
     _package_name = invoker.package_name_override
   } else {
     _package_name = invoker.target_name

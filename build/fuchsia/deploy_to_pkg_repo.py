@@ -45,7 +45,7 @@ def main():
                       'Setting the GN arg '
                       '"default_fuchsia_build_dir_for_installation" '
                       'will cause it to be passed here.')
-  args = parser.parse_args()
+  args, _ = parser.parse_known_args()
   assert args.package
 
   fuchsia_out_dir = os.path.expanduser(args.fuchsia_out_dir)
