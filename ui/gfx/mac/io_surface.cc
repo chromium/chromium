@@ -42,6 +42,15 @@ int32_t BytesPerElement(gfx::BufferFormat format, int plane) {
     case gfx::BufferFormat::R_8:
       DCHECK_EQ(plane, 0);
       return 1;
+    case gfx::BufferFormat::R_16:
+      DCHECK_EQ(plane, 0);
+      return 2;
+    case gfx::BufferFormat::RG_88:
+      DCHECK_EQ(plane, 0);
+      return 2;
+    case gfx::BufferFormat::RG_1616:
+      DCHECK_EQ(plane, 0);
+      return 4;
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:
     case gfx::BufferFormat::RGBA_8888:
@@ -61,8 +70,6 @@ int32_t BytesPerElement(gfx::BufferFormat format, int plane) {
       DCHECK_LT(static_cast<size_t>(plane), base::size(bytes_per_element));
       return bytes_per_element[plane];
     }
-    case gfx::BufferFormat::R_16:
-    case gfx::BufferFormat::RG_88:
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBX_8888:
@@ -82,6 +89,12 @@ uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::R_8:
       return 'L008';
+    case gfx::BufferFormat::RG_88:
+      return '2C08';
+    case gfx::BufferFormat::R_16:
+      return 'L016';
+    case gfx::BufferFormat::RG_1616:
+      return '2C16';
     case gfx::BufferFormat::BGRA_1010102:
       return 'l10r';  // little-endian ARGB2101010 full-range ARGB
     case gfx::BufferFormat::BGRA_8888:
@@ -94,8 +107,6 @@ uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format) {
       return '420v';
     case gfx::BufferFormat::P010:
       return 'x420';
-    case gfx::BufferFormat::R_16:
-    case gfx::BufferFormat::RG_88:
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBX_8888:

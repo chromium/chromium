@@ -17,6 +17,8 @@ unsigned BufferFormatToGLInternalFormat(gfx::BufferFormat format) {
       return GL_R16_EXT;
     case gfx::BufferFormat::RG_88:
       return GL_RG_EXT;
+    case gfx::BufferFormat::RG_1616:
+      return GL_RG16_EXT;
     case gfx::BufferFormat::BGR_565:
       return GL_RGB;
     case gfx::BufferFormat::RGBA_4444:
@@ -57,6 +59,7 @@ unsigned BufferFormatToGLDataType(gfx::BufferFormat format) {
     case gfx::BufferFormat::BGRA_8888:
       return GL_UNSIGNED_BYTE;
     case gfx::BufferFormat::R_16:
+    case gfx::BufferFormat::RG_1616:
       return GL_UNSIGNED_SHORT;
     case gfx::BufferFormat::BGR_565:
       return GL_UNSIGNED_SHORT_5_6_5;

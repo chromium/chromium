@@ -33,6 +33,7 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
     case gfx::BufferFormat::R_8:
     case gfx::BufferFormat::R_16:
     case gfx::BufferFormat::RG_88:
+    case gfx::BufferFormat::RG_1616:
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBA_8888:
@@ -98,14 +99,10 @@ gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
       NOTREACHED();
       break;
     case gfx::BufferPlane::UV:
-      if (format == gfx::BufferFormat::YUV_420_BIPLANAR) {
+      if (format == gfx::BufferFormat::YUV_420_BIPLANAR)
         return gfx::BufferFormat::RG_88;
-      }
-      if (format == gfx::BufferFormat::P010) {
-        // There does not yet exist a gfx::BufferFormat::RG_16, which would be
-        // required for P010.
-        NOTIMPLEMENTED();
-      }
+      if (format == gfx::BufferFormat::P010)
+        return gfx::BufferFormat::RG_1616;
       break;
     case gfx::BufferPlane::U:
       if (format == gfx::BufferFormat::YVU_420)

@@ -93,6 +93,16 @@ void GLImageTestSupport::SetBufferDataToColor(int width,
         }
       }
       return;
+    case gfx::BufferFormat::RG_1616:
+      DCHECK_EQ(0, plane);
+      for (int y = 0; y < height; ++y) {
+        uint16_t* row = reinterpret_cast<uint16_t*>(data + y * stride);
+        for (int x = 0; x < width; ++x) {
+          row[2 * x + 0] = static_cast<uint16_t>(color[0] << 8);
+          row[2 * x + 1] = static_cast<uint16_t>(color[1] << 8);
+        }
+      }
+      return;
     case gfx::BufferFormat::RGBA_4444:
       DCHECK_EQ(0, plane);
       for (int y = 0; y < height; ++y) {

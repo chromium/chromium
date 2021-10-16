@@ -66,6 +66,8 @@ GLenum TextureFormat(gfx::BufferFormat format) {
       return GL_R16_EXT;
     case gfx::BufferFormat::RG_88:
       return GL_RG;
+    case gfx::BufferFormat::RG_1616:
+      return GL_RG16_EXT;
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:  // See https://crbug.com/595948.
     case gfx::BufferFormat::RGBA_8888:
@@ -97,6 +99,8 @@ GLenum DataFormat(gfx::BufferFormat format) {
       return GL_R16_EXT;
     case gfx::BufferFormat::RG_88:
       return GL_RG;
+    case gfx::BufferFormat::RG_1616:
+      return GL_RG16_EXT;
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:
     case gfx::BufferFormat::RGBA_8888:  // See https://crbug.com/533677#c6.
@@ -125,6 +129,7 @@ GLenum DataType(gfx::BufferFormat format) {
     case gfx::BufferFormat::RG_88:
       return GL_UNSIGNED_BYTE;
     case gfx::BufferFormat::R_16:
+    case gfx::BufferFormat::RG_1616:
       return GL_UNSIGNED_SHORT;
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:
@@ -513,6 +518,8 @@ bool GLImageIOSurface::ValidFormat(gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::R_8:
     case gfx::BufferFormat::RG_88:
+    case gfx::BufferFormat::R_16:
+    case gfx::BufferFormat::RG_1616:
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:
     case gfx::BufferFormat::RGBA_8888:
@@ -521,7 +528,6 @@ bool GLImageIOSurface::ValidFormat(gfx::BufferFormat format) {
     case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::P010:
       return true;
-    case gfx::BufferFormat::R_16:
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBX_8888:

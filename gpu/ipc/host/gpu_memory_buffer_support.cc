@@ -24,13 +24,21 @@ GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations(
     return configurations;
 #endif
   const gfx::BufferFormat kBufferFormats[] = {
-      gfx::BufferFormat::R_8,          gfx::BufferFormat::R_16,
-      gfx::BufferFormat::RG_88,        gfx::BufferFormat::BGR_565,
-      gfx::BufferFormat::RGBA_4444,    gfx::BufferFormat::RGBX_8888,
-      gfx::BufferFormat::RGBA_8888,    gfx::BufferFormat::BGRX_8888,
-      gfx::BufferFormat::BGRA_1010102, gfx::BufferFormat::RGBA_1010102,
-      gfx::BufferFormat::BGRA_8888,    gfx::BufferFormat::RGBA_F16,
-      gfx::BufferFormat::YVU_420,      gfx::BufferFormat::YUV_420_BIPLANAR,
+      gfx::BufferFormat::R_8,
+      gfx::BufferFormat::R_16,
+      gfx::BufferFormat::RG_88,
+      gfx::BufferFormat::RG_1616,
+      gfx::BufferFormat::BGR_565,
+      gfx::BufferFormat::RGBA_4444,
+      gfx::BufferFormat::RGBX_8888,
+      gfx::BufferFormat::RGBA_8888,
+      gfx::BufferFormat::BGRX_8888,
+      gfx::BufferFormat::BGRA_1010102,
+      gfx::BufferFormat::RGBA_1010102,
+      gfx::BufferFormat::BGRA_8888,
+      gfx::BufferFormat::RGBA_F16,
+      gfx::BufferFormat::YVU_420,
+      gfx::BufferFormat::YUV_420_BIPLANAR,
       gfx::BufferFormat::P010};
 
   const gfx::BufferUsage kUsages[] = {

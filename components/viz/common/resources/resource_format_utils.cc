@@ -308,6 +308,8 @@ gfx::BufferFormat BufferFormat(ResourceFormat format) {
       return gfx::BufferFormat::R_8;
     case R16_EXT:
       return gfx::BufferFormat::R_16;
+    case RG16_EXT:
+      return gfx::BufferFormat::RG_1616;
     case RGBA_4444:
       return gfx::BufferFormat::RGBA_4444;
     case RGBA_8888:
@@ -337,7 +339,6 @@ gfx::BufferFormat BufferFormat(ResourceFormat format) {
     case LUMINANCE_8:
     case RGB_565:
     case LUMINANCE_F16:
-    case RG16_EXT:
       // These types not allowed by IsGpuMemoryBufferFormatSupported(), so
       // give a default value that will not be used.
       break;
@@ -465,6 +466,8 @@ ResourceFormat GetResourceFormat(gfx::BufferFormat format) {
       return RED_8;
     case gfx::BufferFormat::R_16:
       return R16_EXT;
+    case gfx::BufferFormat::RG_1616:
+      return RG16_EXT;
     case gfx::BufferFormat::RGBA_4444:
       return RGBA_4444;
     case gfx::BufferFormat::RGBA_8888:
