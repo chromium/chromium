@@ -64,6 +64,7 @@ resource_sizes_trichrome_google,"agrieve@chromium.org, jbudorick@chromium.org",B
 speedometer,hablich@chromium.org,Blink>JavaScript,,
 speedometer-future,hablich@chromium.org,Blink>JavaScript,,
 speedometer2,hablich@chromium.org,Blink>JavaScript,,
+speedometer2-chrome-health,hablich@chromium.org,Blink>JavaScript,,
 speedometer2-future,hablich@chromium.org,Blink>JavaScript,,
 speedometer2-pcscan,tmrts@chromium.org,Blink>JavaScript,,
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,

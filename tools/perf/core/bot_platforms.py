@@ -223,9 +223,11 @@ OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig(b.Name()) for b in OFFICIAL_BENCHMARKS])
 # power.mobile requires special hardware.
 # only run blink_perf.sanitizer-api on linux-perf.
+# speedometer2-chrome-health is only for use with the Chrome Health pipeline
 OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'power.mobile',
     'blink_perf.sanitizer-api',
+    'speedometer2-chrome-health',
 ])
 # TODO(crbug.com/965158): Remove OFFICIAL_BENCHMARK_NAMES once sharding
 # scripts are no longer using it.
