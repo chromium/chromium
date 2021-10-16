@@ -14,6 +14,7 @@ namespace prefs {
 const char kQuickAnswersNoticed[] = "settings.quick_answers.consented";
 
 // A preference that indicates the user has enabled the Quick Answers services.
+// This preference can be overridden by the administrator policy.
 const char kQuickAnswersEnabled[] = "settings.quick_answers.enabled";
 
 // A preference that indicates the user consent status for the Quick
@@ -23,16 +24,19 @@ const char kQuickAnswersConsentStatus[] =
 
 // A preference that indicates the user has enabled the Quick Answers definition
 // services.
+// This preference can be overridden by the administrator policy.
 const char kQuickAnswersDefinitionEnabled[] =
     "settings.quick_answers.definition.enabled";
 
 // A preference that indicates the user has enabled the Quick Answers
 // translation services.
+// This preference can be overridden by the administrator policy.
 const char kQuickAnswersTranslationEnabled[] =
     "settings.quick_answers.translation.enabled";
 
 // A preference that indicates the user has enabled the Quick Answers unit
 // conversion services.
+// This preference can be overridden by the administrator policy.
 const char kQuickAnswersUnitConverstionEnabled[] =
     "settings.quick_answers.unit_conversion.enabled";
 

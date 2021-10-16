@@ -12687,6 +12687,146 @@
   "VoiceInteractionQuickAnswersEnabled": {
     "reason_for_missing_test": "Policy was removed"
   },
+  "QuickAnswersEnabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.quick_answers.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersEnabled": false
+        },
+        "prefs": {
+          "settings.quick_answers.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersEnabled": true
+        },
+        "prefs": {
+          "settings.quick_answers.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  "QuickAnswersDefinitionEnabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.quick_answers.definition.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersDefinitionEnabled": false
+        },
+        "prefs": {
+          "settings.quick_answers.definition.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersDefinitionEnabled": true
+        },
+        "prefs": {
+          "settings.quick_answers.definition.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  "QuickAnswersTranslationEnabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.quick_answers.translation.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersTranslationEnabled": false
+        },
+        "prefs": {
+          "settings.quick_answers.translation.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersTranslationEnabled": true
+        },
+        "prefs": {
+          "settings.quick_answers.translation.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  "QuickAnswersUnitConverstionEnabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.quick_answers.unit_conversion.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersUnitConverstionEnabled": false
+        },
+        "prefs": {
+          "settings.quick_answers.unit_conversion.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersUnitConverstionEnabled": true
+        },
+        "prefs": {
+          "settings.quick_answers.unit_conversion.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
   "DeviceRebootOnUserSignout": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },

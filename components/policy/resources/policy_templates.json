@@ -1218,6 +1218,18 @@
       ]
     },
     {
+      'name': 'QuickAnswers',
+      'type': 'group',
+      'caption': '''Quick Answers''',
+      'desc': '''Controls settings for Quick Answers.''',
+      'policies': [
+        'QuickAnswersEnabled',
+        'QuickAnswersDefinitionEnabled',
+        'QuickAnswersTranslationEnabled',
+        'QuickAnswersUnitConverstionEnabled',
+      ]
+    },
+    {
       'name': 'WilcoDtc',
       'type': 'group',
       'caption': '''Wilco DTC''',
@@ -22600,6 +22612,127 @@
       If the policy is not set, users can decide whether to allow Quick Answers to access selected content.''',
     },
     {
+      'name': 'QuickAnswersEnabled',
+      'owners': ['updowndota@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:97-'],
+      'tags' : ['google-sharing'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Quick Answers',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Quick Answers',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 917,
+      'caption': '''Enable Quick Answers''',
+      'desc': '''This policy gives Quick Answers permission to access selected content and send the info to the server.
+
+      If the policy is enabled, Quick Answers will be enabled.
+      If the policy is disabled, Quick Answers will be disabled.
+      If the policy is not set, users can decide whether to enable or disable Quick Answers.''',
+    },
+    {
+      'name': 'QuickAnswersDefinitionEnabled',
+      'owners': ['updowndota@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:97-'],
+      'tags' : ['google-sharing'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Quick Answers Definition',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Quick Answers Definition',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 918,
+      'caption': '''Enable Quick Answers Definition''',
+      'desc': '''This policy gives Quick Answers permission to access selected content and send the info to the server to get definition results.
+
+      If the policy is enabled or not set, Quick Answers Definition will be enabled.
+      If the policy is disabled, Quick Answers Definition will be disabled.''',
+    },
+    {
+      'name': 'QuickAnswersTranslationEnabled',
+      'owners': ['updowndota@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:97-'],
+      'tags' : ['google-sharing'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Quick Answers Translation',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Quick Answers Translation',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 919,
+      'caption': '''Enable Quick Answers Translation''',
+      'desc': '''This policy gives Quick Answers permission to access selected content and send the info to the server to get translation results.
+
+      If the policy is enabled or not set, Quick Answers translation will be enabled.
+      If the policy is disabled, Quick Answers translation will be disabled.''',
+    },
+    {
+      'name': 'QuickAnswersUnitConverstionEnabled',
+      'owners': ['updowndota@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:97-'],
+      'tags' : ['google-sharing'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Quick Answers Unit Conversion',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Quick Answers Unit Conversion',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 920,
+      'caption': '''Enable Quick Answers Unit Conversion''',
+      'desc': '''This policy gives Quick Answers permission to access selected content and send the info to the server to get unit conversion results.
+
+      If the policy is enabled or not set, Quick Answers unit conversion will be enabled.
+      If the policy is disabled, Quick Answers unit conversion will be disabled.''',
+    },
+    {
       'name': 'DeviceWilcoDtcAllowed',
       'owners': ['pbond@chromium.org', 'lamzin@google.com'],
       'type': 'main',
@@ -29416,6 +29549,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 916,
+  'highest_id_currently_used': 920,
   'highest_atomic_group_id_currently_used': 41
 }

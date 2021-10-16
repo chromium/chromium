@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
@@ -1265,6 +1266,18 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { key::kDeskTemplatesEnabled,
     ash::prefs::kDeskTemplatesEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kQuickAnswersEnabled,
+    ash::quick_answers::prefs::kQuickAnswersEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kQuickAnswersDefinitionEnabled,
+    ash::quick_answers::prefs::kQuickAnswersDefinitionEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kQuickAnswersTranslationEnabled,
+    ash::quick_answers::prefs::kQuickAnswersTranslationEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kQuickAnswersUnitConverstionEnabled,
+    ash::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled,
     base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
