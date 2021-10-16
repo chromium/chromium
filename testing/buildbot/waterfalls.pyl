@@ -938,23 +938,6 @@
         },
         'os_type': 'android',
       },
-      'android-lollipop-arm-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'hammerhead',
-          'lollipop',
-        ],
-        'additional_compile_targets': [
-          'chrome_nocompile_tests',
-          'cronet_test_instrumentation_apk',
-          'monochrome_static_initializers',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_android_gtests',
-          'junit_tests': 'android_build_junit_tests',
-        },
-        'os_type': 'android',
-      },
       'android-marshmallow-arm64-rel': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -963,6 +946,8 @@
           'marshmallow',
         ],
         'additional_compile_targets': [
+          'cronet_test_instrumentation_apk',
+          'chrome_nocompile_tests',
           'monochrome_static_initializers',
           'weblayer_shell',
         ],
@@ -1677,6 +1662,7 @@
         ],
       },
       'ToTAndroid': {
+        # TODO(crbug/1255748): Move to Pie/Pixel2.
         'mixins': [
           'has_native_resultdb_integration',
           'lollipop',

@@ -365,17 +365,6 @@ try_.chromium_android_builder(
 )
 
 try_.chromium_android_builder(
-    name = "android-lollipop-arm-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_main,
-    cores = 16 if settings.is_main else 8,
-    goma_jobs = goma.jobs.J150,
-    main_list_view = "try",
-    # TODO(crbug/1202741)
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
-)
-
-try_.chromium_android_builder(
     name = "android-marshmallow-arm64-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,

@@ -24,10 +24,6 @@
 # the bots behave similarly.
 {
   'android_browsertests': {
-    'remove_from': [
-      # Remove from CQ bots due to capacity.
-      'android-lollipop-arm-rel',
-    ],
     'modifications': {
       'android-11-x86-rel': {
         'swarming': {
@@ -68,14 +64,9 @@
    'remove_from': [
       # Remove from CQ bots due to capacity.
       'android-marshmallow-arm64-rel',
-      'android-lollipop-arm-rel',
    ],
   },
   'android_webview_unittests': {
-    'remove_from': [
-      # On chromium.android, these do not need to run prior to M.
-      'android-lollipop-arm-rel',
-    ],
   },
   'angle_end2end_tests': {
     'remove_from': [
@@ -129,12 +120,6 @@
       'linux-lacros-tester-fyi-rel',
       'linux-lacros-dbg-tests-fyi',
     ],
-    'modifications': {
-      # https://crbug.com/1248257
-      'android-lollipop-arm-rel': {
-        'ci_only': True,
-      },
-    },
   },
   'angle_white_box_tests': {
     'modifications': {
@@ -835,7 +820,6 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
-      'android-lollipop-arm-rel', # https://crbug.com/1060245
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
     'modifications': {
@@ -990,7 +974,6 @@
       'Lollipop Phone Tester',
       'Lollipop Tablet Tester',
       'Marshmallow Tablet Tester',
-      'android-lollipop-arm-rel',
 
       'android-pie-arm64-rel', # https://crbug.com/1010211
       'ToTAndroid',
@@ -1069,7 +1052,7 @@
   },
   'components_unittests': {
     'remove_from': [
-      # https://crbug.com/1147531 - covered on lollipop
+      # https://crbug.com/1147531 - covered on marshmallow emulator.
       'android-marshmallow-arm64-rel',
     ],
     'modifications': {
@@ -1134,7 +1117,6 @@
   'content_browsertests': {
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
-      'android-lollipop-arm-rel', # crbug.com/1133002
       'android-marshmallow-arm64-rel', # http://crbug.com/1060245#c30: due to low utility and capacity.
     ],
     'modifications': {
@@ -1355,7 +1337,6 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
-      'android-lollipop-arm-rel', # Not enough capacity. https://crbug.com/1248257
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
     'modifications': {
@@ -1657,10 +1638,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.gl_tests.filter',
         ],
-      },
-      # https://crbug.com/1248257
-      'android-lollipop-arm-rel': {
-        'ci_only': True,
       },
       'android-marshmallow-x86-rel': {
         'args': [
@@ -1974,9 +1951,6 @@
     },
   },
   'media_unittests': {
-    'remove_from': [
-      'android-lollipop-arm-rel', # Not enough capacity. https://crbug.com/1248257
-    ],
     'modifications': {
       'android-11-x86-rel': {
         'args': [
@@ -2160,9 +2134,6 @@
     ],
   },
   'net_unittests': {
-    'remove_from': [
-      'android-lollipop-arm-rel', # Not enough capacity. https://crbug.com/1248257
-    ],
     'modifications': {
       'CrWinAsan': {
         # TODO(crbug.com/794372): net_unittests is slow under ASan.
@@ -2367,7 +2338,6 @@
       'android-asan',
       'android-code-coverage',
       'android-code-coverage-native',
-      'android-lollipop-arm-rel',
       'android-marshmallow-arm64-rel',
       'android-marshmallow-x86-rel-non-cq',
       'android-nougat-arm64-rel',
@@ -2540,11 +2510,6 @@
   'sandbox_linux_unittests': {
     'modifications': {
       'Lollipop Phone Tester': {
-        'args': [
-          '--shard-timeout=300',
-        ],
-      },
-      'android-lollipop-arm-rel': {
         'args': [
           '--shard-timeout=300',
         ],
@@ -2895,6 +2860,7 @@
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1084352
       # There's no need to run telemetry_perf_unittests on both lollipop and
       # marshmallow on the CQ. https://crbug.com/1026487.
+      # TODO(crbug/1260494): Test suite isn't running on android. 
       'android-marshmallow-arm64-rel',
       'android-nougat-arm64-rel', # crbug.com/1108124
       'android-pie-arm64-rel',
@@ -3098,21 +3064,10 @@
       },
     },
   },
-  'vr_android_unittests': {
-    'remove_from': [
-      'android-lollipop-arm-rel',
-    ],
-  },
   'vr_common_unittests': {
     'remove_from': [
       'android-pie-x86-rel',
     ],
-    'modifications': {
-      # https://crbug.com/1248257
-      'android-lollipop-arm-rel': {
-        'ci_only': True,
-      },
-    },
   },
   'vr_pixeltests': {
     'remove_from': [
@@ -3278,7 +3233,6 @@
       # Flakily fails on Win7. https://crbug.com/943372.
       'Win7 Tests (1)',
       'Win 7 Tests x64 (1)',
-      'android-lollipop-arm-rel', # crbug.com/1133002#c6
       # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
       'android-marshmallow-arm64-rel',
       'android-marshmallow-x86-rel-non-cq',
@@ -3443,7 +3397,6 @@
   'webview_instrumentation_test_apk': {
     'remove_from': [
       # This test frequently fails on Android, https://crbug.com/824959
-      'android-lollipop-arm-rel',
       # matching android builders, the test fails on these.
       'ToTAndroid',
       'android-asan',  # https://crbug.com/964562
