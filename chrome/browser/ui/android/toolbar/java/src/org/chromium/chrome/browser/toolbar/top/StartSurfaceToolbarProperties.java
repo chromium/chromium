@@ -74,12 +74,8 @@ class StartSurfaceToolbarProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IDENTITY_DISC_AT_START =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    /**
-     * This is a hacky workaround for {@link IncognitoSwitchProperties#IS_VISIBLE}.
-     * TODO(crbug.com/1042997): control the visibility through IncognitoSwitchCoordinator.
-     */
-    public static final PropertyModel.WritableObjectPropertyKey INCOGNITO_SWITCHER_VISIBLE =
-            new PropertyModel.WritableObjectPropertyKey(true);
+    public static final PropertyModel.WritableBooleanPropertyKey INCOGNITO_SWITCHER_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyModel.WritableFloatPropertyKey TRANSLATION_Y =
             new PropertyModel.WritableFloatPropertyKey();

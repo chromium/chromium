@@ -1153,7 +1153,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    public void setShowingTabSwitcher() {
+    public void setSecondaryTasksSurfaceVisibilityWhenShowingTabSwitcher() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
