@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed;
+package org.chromium.chrome.browser.feed.v2;
 
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 
+import static com.google.common.truth.Truth.assertThat;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,6 +41,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -57,7 +59,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
-import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
+import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
@@ -75,6 +80,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.ShadowGURL;
 
@@ -137,8 +143,6 @@ public class FeedStreamTest {
     private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
     @Mock
     private BookmarkBridge mBookmarkBridge;
-    @Mock
-    private FeedActionDelegate mActionDelegate;
 
     @Captor
     private ArgumentCaptor<Map<String, String>> mMapCaptor;
@@ -172,11 +176,10 @@ public class FeedStreamTest {
                 .thenReturn(LOAD_MORE_TRIGGER_LOOKAHEAD);
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerScrollDistanceDp())
                 .thenReturn(LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP);
-        mFeedStream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
-                /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ true,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+        mFeedStream = new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
+                mBottomSheetController, /* isPlaceholderShown= */ false, mWindowAndroid,
+                mShareDelegateSupplier, /* isInterestFeed= */ true,
+                /* FeedAutoplaySettingsDelegate= */ null, mBookmarkBridge);
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
@@ -572,29 +575,39 @@ public class FeedStreamTest {
     @Test
     @SmallTest
     public void testNavigateTab() {
+        MetricsUtils.HistogramDelta actionOpenedSnippetDelta = new MetricsUtils.HistogramDelta(
+                "NewTabPage.ActionAndroid2", NewTabPageUma.ACTION_OPENED_SNIPPET);
+        when(mPageNavigationDelegate.openUrl(anyInt(), any())).thenReturn(new MockTab(1, false));
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
         handler.navigateTab(TEST_URL, null);
-        verify(mActionDelegate)
-                .openSuggestionUrl(eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
-                        any(), any(), any());
+        verify(mPageNavigationDelegate)
+                .openUrl(ArgumentMatchers.eq(
+                                 org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
+                        any());
+
+        assertEquals(1, actionOpenedSnippetDelta.getDelta());
     }
 
     @Test
     @SmallTest
     public void testNavigateNewTab() {
+        MetricsUtils.HistogramDelta actionOpenedSnippetDelta = new MetricsUtils.HistogramDelta(
+                "NewTabPage.ActionAndroid2", NewTabPageUma.ACTION_OPENED_SNIPPET);
+        when(mPageNavigationDelegate.openUrl(anyInt(), any())).thenReturn(new MockTab(1, false));
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
 
         handler.navigateNewTab(TEST_URL, null);
-        verify(mActionDelegate)
-                .openSuggestionUrl(
-                        eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB), any(),
-                        any(), any());
+        verify(mPageNavigationDelegate)
+                .openUrl(ArgumentMatchers.eq(
+                                 org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB),
+                        any());
+        assertEquals(1, actionOpenedSnippetDelta.getDelta());
     }
 
     @Test
@@ -608,9 +621,11 @@ public class FeedStreamTest {
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
         handler.navigateIncognitoTab(TEST_URL);
-        verify(mActionDelegate)
-                .openSuggestionUrl(eq(org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD),
-                        any(), any(), any());
+        verify(mPageNavigationDelegate)
+                .openUrl(ArgumentMatchers.eq(
+                                 org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD),
+                        any());
+        assertEquals(1, actionOpenedSnippetDelta.getDelta());
     }
 
     @Test
@@ -650,7 +665,8 @@ public class FeedStreamTest {
         verify(mFeedStreamJniMock)
                 .reportOtherUserAction(anyLong(), any(FeedStream.class),
                         eq(FeedUserActionType.TAPPED_ADD_TO_READING_LIST));
-        verify(mActionDelegate).addToReadingList(eq("title"), eq(TEST_URL));
+        verify(mBookmarkBridge).finishLoadingBookmarkModel(any());
+        verify(mBookmarkBridge).addToReadingList(eq("title"), eq(new GURL(TEST_URL)));
     }
 
     @Test
@@ -682,8 +698,8 @@ public class FeedStreamTest {
                         mMapCaptor.capture());
 
         // Check that the map contents are as expected.
-        assertThat(mMapCaptor.getValue(), hasEntry(cardUrl, testUrl));
-        assertThat(mMapCaptor.getValue(), hasEntry(cardTitle, testTitle));
+        assertThat(mMapCaptor.getValue()).containsEntry(cardUrl, testUrl);
+        assertThat(mMapCaptor.getValue()).containsEntry(cardTitle, testTitle);
     }
 
     @Test
