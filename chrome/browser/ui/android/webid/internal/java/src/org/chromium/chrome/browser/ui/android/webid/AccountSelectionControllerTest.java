@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.A
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.Avatar;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AutoSignInCancelButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -331,9 +332,9 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(
                 TEST_URL, Arrays.asList(ANA), IDP_METADATA, CLIENT_ID_METADATA, false);
         assertEquals("Incorrectly hidden", true, mMediator.isVisible());
-        assertNotNull(mSheetItems.get(1).model.get(AccountProperties.ON_CLICK_LISTENER));
+        assertNotNull(mSheetItems.get(2).model.get(ContinueButtonProperties.ON_CLICK_LISTENER));
 
-        mSheetItems.get(1).model.get(AccountProperties.ON_CLICK_LISTENER).onResult(ANA);
+        mSheetItems.get(2).model.get(ContinueButtonProperties.ON_CLICK_LISTENER).onResult(ANA);
         verify(mMockDelegate).onAccountSelected(ANA);
         assertEquals("Incorrectly visible", false, mMediator.isVisible());
     }

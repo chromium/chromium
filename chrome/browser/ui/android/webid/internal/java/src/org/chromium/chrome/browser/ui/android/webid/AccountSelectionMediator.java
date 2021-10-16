@@ -113,20 +113,17 @@ class AccountSelectionMediator {
                         .build()));
     }
 
-    void addAccounts(List<Account> accounts) {
+    void addAccounts(List<Account> accounts, boolean areAccountsClickable) {
         for (Account account : accounts) {
-            final PropertyModel model = createAccountItem(account);
+            final PropertyModel model = createAccountItem(account, areAccountsClickable);
             mSheetItems.add(new ListItem(ItemType.ACCOUNT, model));
             requestIconOrFallbackImage(model);
             requestAvatarImage(model);
         }
     }
 
-    void addButtons(List<Account> accounts, IdentityProviderMetadata idpMetadata,
+    void addButton(Account account, IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata, boolean isAutoSignIn) {
-        if (accounts.size() != 1) return;
-
-        Account account = accounts.get(0);
         if (isAutoSignIn) {
             assert account.isSignIn();
             final PropertyModel cancelBtnModel = createAutoSignInCancelBtnItem();
@@ -154,8 +151,11 @@ class AccountSelectionMediator {
             ClientIdMetadata clientMetadata, boolean isAutoSignIn) {
         mSheetItems.clear();
         addHeader(url, accounts);
-        addAccounts(accounts);
-        addButtons(accounts, idpMetadata, clientMetadata, isAutoSignIn);
+        boolean hasSingleAccount = (accounts.size() == 1);
+        addAccounts(accounts, /*areAccountsClickable=*/!hasSingleAccount);
+        if (hasSingleAccount) {
+            addButton(accounts.get(0), idpMetadata, clientMetadata, isAutoSignIn);
+        }
 
         showContent();
     }
@@ -234,11 +234,13 @@ class AccountSelectionMediator {
         mDelegate.onAutoSignInCancelled();
     }
 
-    private PropertyModel createAccountItem(Account account) {
-        return new PropertyModel.Builder(AccountProperties.ALL_KEYS)
-                .with(AccountProperties.ACCOUNT, account)
-                .with(AccountProperties.ON_CLICK_LISTENER, this::onAccountSelected)
-                .build();
+    private PropertyModel createAccountItem(Account account, boolean isAccountClickable) {
+        PropertyModel.Builder modelBuilder = new PropertyModel.Builder(AccountProperties.ALL_KEYS)
+                                                     .with(AccountProperties.ACCOUNT, account);
+        if (isAccountClickable) {
+            modelBuilder.with(AccountProperties.ON_CLICK_LISTENER, this::onAccountSelected);
+        }
+        return modelBuilder.build();
     }
 
     private PropertyModel createContinueBtnItem(
