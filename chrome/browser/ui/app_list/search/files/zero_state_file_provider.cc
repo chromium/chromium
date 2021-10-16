@@ -150,7 +150,12 @@ void ZeroStateFileProvider::SetSearchResults(
         kZeroStateFileSchema, filepath_score.first,
         ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,
         profile_);
-    result->RequestThumbnail(&thumbnail_loader_);
+    // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher is
+    // enabled. We should implement new thumbnail logic for Continue results if
+    // necessary.
+    if (result->display_type() == ash::SearchResultDisplayType::kList) {
+      result->RequestThumbnail(&thumbnail_loader_);
+    }
     new_results.push_back(std::move(result));
 
     // Add suggestion chip file results
