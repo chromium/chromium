@@ -12,7 +12,9 @@
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_constants.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/query_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/callback_utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client_v1.h"
@@ -55,6 +57,36 @@ bool AssistantClientImpl::StartGrpcServices() {
   return grpc_services_.Start();
 }
 
+void AssistantClientImpl::AddDeviceStateEventObserver(
+    GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {
+  grpc_services_.AddObserver(observer);
+}
+
+void AssistantClientImpl::SendVoicelessInteraction(
+    const ::assistant::api::Interaction& interaction,
+    const std::string& description,
+    const ::assistant::api::VoicelessOptions& options,
+    base::OnceCallback<void(bool)> on_done) {
+  constexpr int kMaxRPCRetries = 5;
+  constexpr int kAssistantInteractionDefaultTimeoutMs = 20000;
+  StateConfig state_config;
+  state_config.max_retries = kMaxRPCRetries;
+  state_config.timeout_in_ms = kAssistantInteractionDefaultTimeoutMs;
+
+  ::assistant::api::SendQueryRequest request;
+  PopulateSendQueryRequest(interaction, description, options, &request);
+
+  client_.CallServiceMethod(
+      request,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> on_done, const grpc::Status& status,
+             const ::assistant::api::SendQueryResponse& response) {
+            std::move(on_done).Run(response.success());
+          },
+          std::move(on_done)),
+      state_config);
+}
+
 void AssistantClientImpl::RegisterActionModule(
     assistant_client::ActionModule* action_module) {
   grpc_services_.GetActionService()->RegisterActionModule(action_module);
@@ -76,11 +108,6 @@ void AssistantClientImpl::OnServicesStatusChanged(ServicesStatus status) {
       // No action needed.
       break;
   }
-}
-
-void AssistantClientImpl::AddDeviceStateEventObserver(
-    GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {
-  grpc_services_.AddObserver(observer);
 }
 
 // static

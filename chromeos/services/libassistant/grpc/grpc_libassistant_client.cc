@@ -35,6 +35,13 @@ GetLibassistGrpcMethodName<::assistant::api::RegisterEventHandlerRequest>() {
 }
 
 template <>
+std::string GetLibassistGrpcMethodName<::assistant::api::SendQueryRequest>() {
+  // QueryService handles queries sent from libassistant customers.
+  return chromeos::assistant::GetLibassistGrpcMethodName("QueryService",
+                                                         "SendQuery");
+}
+
+template <>
 std::string
 GetLibassistGrpcMethodName<::assistant::api::RegisterActionModuleRequest>() {
   // QueryService handles RegisterActionModule sent from

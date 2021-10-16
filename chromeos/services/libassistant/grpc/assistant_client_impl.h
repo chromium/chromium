@@ -36,14 +36,18 @@ class AssistantClientImpl : public AssistantClientV1,
   // chromeos::libassistant::AssistantClientV1 overrides:
   void StartServices(base::OnceClosure services_ready_callback) override;
   bool StartGrpcServices() override;
+  void AddDeviceStateEventObserver(
+      GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
+  void SendVoicelessInteraction(
+      const ::assistant::api::Interaction& interaction,
+      const std::string& description,
+      const ::assistant::api::VoicelessOptions& options,
+      base::OnceCallback<void(bool)> on_done) override;
   void RegisterActionModule(
       assistant_client::ActionModule* action_module) override;
 
   // ServicesStatusObserver overrides:
   void OnServicesStatusChanged(ServicesStatus status) override;
-
-  void AddDeviceStateEventObserver(
-      GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
 
  private:
   chromeos::libassistant::GrpcServicesInitializer grpc_services_;
