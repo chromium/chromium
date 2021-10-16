@@ -802,6 +802,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">O administrador bloqueou a aplicación</translation>
 <translation id="3608932978122581043">Orientación da alimentación</translation>
+<translation id="3611395257124510155">Tarxeta virtual para <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Tamaño 2</translation>
 <translation id="361438452008624280">Entrada da lista "<ph name="LANGUAGE_ID" />": idioma descoñecido ou non compatible.</translation>
 <translation id="3615877443314183785">Introduce unha data de caducidade válida</translation>
@@ -1621,6 +1622,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6272383483618007430">Actualización de Google</translation>
 <translation id="6276112860590028508">As páxinas da túa lista de lectura aparecen aquí</translation>
 <translation id="627746635834430766">Para pagar máis rápido a próxima vez, garda a túa tarxeta e o enderezo de facturación na conta de Google.</translation>
+<translation id="6279098320682980337">Non se autocompletou o número da tarxeta virtual? Para copialo, fai clic nos detalles da tarxeta</translation>
 <translation id="6280223929691119688">Non se pode realizar a entrega neste enderezo. Selecciona un diferente.</translation>
 <translation id="6282194474023008486">Código postal</translation>
 <translation id="6289939620939689042">Cor das páxinas</translation>

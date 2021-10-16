@@ -816,6 +816,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8840513115188359703">Non se pechará sesión na túa conta de Google.</translation>
+<translation id="8843129975935593190">A túa organización limita o que podes sincronizar.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} pestana}other{{count} pestanas}}</translation>
 <translation id="8870413625673593573">Pechados recentemente</translation>
 <translation id="8876882697946675716">Mantén sincronizados os teus dispositivos</translation>
