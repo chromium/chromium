@@ -38,6 +38,26 @@ class ArcInputOverlayManagerTest : public aura::test::AuraTestBase {
     return arc_test_input_overlay_manager_->is_text_input_active_;
   }
 
+  int EnabledWindows() {
+    return arc_test_input_overlay_manager_->input_overlay_enabled_windows_
+        .size();
+  }
+
+  TouchInjector* GetTouchInjector(aura::Window* window) {
+    auto it =
+        arc_test_input_overlay_manager_->input_overlay_enabled_windows_.find(
+            window);
+    if (it !=
+        arc_test_input_overlay_manager_->input_overlay_enabled_windows_.end()) {
+      return it->second.get();
+    }
+    return nullptr;
+  }
+
+  aura::Window* GetRegisteredWindow() {
+    return arc_test_input_overlay_manager_->registered_window_;
+  }
+
  protected:
   std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
 
@@ -99,6 +119,32 @@ TEST_F(ArcInputOverlayManagerTest, TestInputMethodObsever) {
   input_method->SetFocusedTextInputClient(&dummy_text_none_input_client);
   EXPECT_FALSE(IsTextInputActive());
   input_method->SetFocusedTextInputClient(nullptr);
+}
+
+TEST_F(ArcInputOverlayManagerTest, TestWindowFocusChange) {
+  auto arc_window = CreateFakeArcWindow(11, root_window());
+  arc_window->SetProperty(
+      ash::kArcPackageNameKey,
+      new std::string("org.chromium.arc.testapp.inputoverlay"));
+  auto arc_window_no_data = CreateFakeArcWindow(22, nullptr);
+  EXPECT_FALSE(IsInputOverlayEnabled(arc_window_no_data.get()));
+  arc_window_no_data->SetProperty(
+      ash::kArcPackageNameKey,
+      new std::string("org.chromium.arc.testapp.inputoverlay_no_data"));
+  EXPECT_EQ(1, EnabledWindows());
+
+  auto* injector = GetTouchInjector(arc_window.get());
+  EXPECT_TRUE(injector);
+  // The action number should be adjusted with the data in the
+  // org.chromium.arc.testapp.inputoverlay.json.
+  EXPECT_EQ(2, (int)injector->actions().size());
+
+  EXPECT_TRUE(!GetRegisteredWindow());
+  arc_test_input_overlay_manager_->OnWindowFocused(arc_window.get(), nullptr);
+  EXPECT_EQ(arc_window.get(), GetRegisteredWindow());
+  arc_test_input_overlay_manager_->OnWindowFocused(arc_window_no_data.get(),
+                                                   arc_window.get());
+  EXPECT_TRUE(!GetRegisteredWindow());
 }
 
 }  // namespace arc

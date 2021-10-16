@@ -11,6 +11,8 @@
 #include "components/arc/ime/arc_ime_bridge.h"
 #include "components/arc/input_overlay/touch_injector.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "ui/aura/client/focus_change_observer.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -29,7 +31,8 @@ class ArcBridgeService;
 // for touch-only apps.
 class ArcInputOverlayManager : public KeyedService,
                                public aura::EnvObserver,
-                               public aura::WindowObserver {
+                               public aura::WindowObserver,
+                               public aura::client::FocusChangeObserver {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -54,6 +57,10 @@ class ArcInputOverlayManager : public KeyedService,
   // KeyedService overrides:
   void Shutdown() override;
 
+  // aura::client::FocusChangeObserver:
+  void OnWindowFocused(aura::Window* gained_focus,
+                       aura::Window* lost_focus) override;
+
  private:
   friend class ArcInputOverlayManagerTest;
 
@@ -62,14 +69,21 @@ class ArcInputOverlayManager : public KeyedService,
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
+  base::ScopedObservation<aura::client::FocusClient,
+                          aura::client::FocusChangeObserver>
+      focus_observation_{this};
   base::flat_map<aura::Window*, std::unique_ptr<TouchInjector>>
       input_overlay_enabled_windows_;
   bool is_text_input_active_ = false;
   ui::InputMethod* input_method_ = nullptr;
   std::unique_ptr<InputMethodObserver> input_method_observer_;
+  // Only one window is registered since there is only one window can be focused
+  // each time.
+  aura::Window* registered_window_ = nullptr;
 
   void ReadData(const std::string& package_name,
                 aura::Window* top_level_window);
+  void NotifyTextInputState();
 
   base::WeakPtrFactory<ArcInputOverlayManager> weak_ptr_factory_{this};
 };

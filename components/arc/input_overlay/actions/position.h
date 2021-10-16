@@ -36,6 +36,8 @@ class Position {
   const gfx::Vector2dF& anchor_to_target() const { return anchor_to_target_; }
 
  private:
+  friend class PositionTest;
+
   // Default anchor_ is (0, 0). Anchor is the point position where the UI
   // position is relative to. For example, a UI may be always relative to the
   // left-bottom.

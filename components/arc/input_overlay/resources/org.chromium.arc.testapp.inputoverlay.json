@@ -3,5 +3,40 @@
 // found in the LICENSE file.
 
 {
-  "test_key": "test_value"
+  "tap": {
+    "keyboard": [
+      {
+        "name": "TestA",
+        "key": "KeyA",
+        "location": {
+          "position": [
+            {
+              "anchor_to_target": [
+                0.5,
+                0.5
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "TestB",
+        "key": "KeyB",
+        "location": {
+          "position": [
+            {
+              "anchor": [
+                1,
+                1
+              ],
+              "anchor_to_target": [
+                -0.1,
+                -0.1
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

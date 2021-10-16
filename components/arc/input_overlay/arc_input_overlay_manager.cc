@@ -7,12 +7,13 @@
 #include <utility>
 
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/input_overlay/resources/input_overlay_resources_util.h"
-#include "components/exo/wm_helper.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/ime/text_input_client.h"
@@ -57,6 +58,7 @@ class ArcInputOverlayManager::InputMethodObserver
     owner_->is_text_input_active_ =
         client && client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE &&
         client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NULL;
+    owner_->NotifyTextInputState();
   }
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {
     owner_->input_method_ = nullptr;
@@ -79,6 +81,10 @@ ArcInputOverlayManager::ArcInputOverlayManager(
     : input_method_observer_(std::make_unique<InputMethodObserver>(this)) {
   if (aura::Env::HasInstance())
     env_observation_.Observe(aura::Env::GetInstance());
+  if (ash::Shell::HasInstance() && ash::Shell::GetPrimaryRootWindow()) {
+    focus_observation_.Observe(
+        aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow()));
+  }
 }
 
 ArcInputOverlayManager::~ArcInputOverlayManager() = default;
@@ -107,6 +113,12 @@ void ArcInputOverlayManager::ReadData(const std::string& package_name,
       std::make_unique<TouchInjector>(top_level_window);
   injector->ParseActions(root);
   input_overlay_enabled_windows_.emplace(top_level_window, std::move(injector));
+}
+
+void ArcInputOverlayManager::NotifyTextInputState() {
+  auto it = input_overlay_enabled_windows_.find(registered_window_);
+  if (it != input_overlay_enabled_windows_.end())
+    it->second->NotifyTextInputState(is_text_input_active_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -157,6 +169,37 @@ void ArcInputOverlayManager::Shutdown() {
   if (input_method_) {
     input_method_->RemoveObserver(input_method_observer_.get());
     input_method_ = nullptr;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// aura::client::FocusChangeObserver:
+void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
+                                             aura::Window* lost_focus) {
+  aura::Window* lost_focus_top_level_window = nullptr;
+  aura::Window* gained_focus_top_level_window = nullptr;
+
+  if (lost_focus)
+    lost_focus_top_level_window = lost_focus->GetToplevelWindow();
+
+  if (gained_focus)
+    gained_focus_top_level_window = gained_focus->GetToplevelWindow();
+  else
+    registered_window_ = nullptr;
+
+  if (lost_focus_top_level_window == gained_focus_top_level_window)
+    return;
+
+  auto it = input_overlay_enabled_windows_.find(lost_focus_top_level_window);
+  if (it != input_overlay_enabled_windows_.end()) {
+    it->second->UnRegisterEventRewriter();
+    registered_window_ = nullptr;
+  }
+
+  it = input_overlay_enabled_windows_.find(gained_focus_top_level_window);
+  if (it != input_overlay_enabled_windows_.end()) {
+    it->second->RegisterEventRewriter();
+    registered_window_ = gained_focus_top_level_window;
   }
 }
 
