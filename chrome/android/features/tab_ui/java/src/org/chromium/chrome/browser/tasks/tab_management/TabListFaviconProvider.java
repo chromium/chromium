@@ -86,6 +86,11 @@ public class TabListFaviconProvider {
     private static TabFavicon sRoundedGlobeFaviconForStrip;
     private static TabFavicon sRoundedChromeFaviconForStrip;
 
+    private final @ColorInt int mDefaultIconColor;
+    private final @ColorInt int mSelectedIconColor;
+    private final @ColorInt int mIncognitoIconColor;
+    private final @ColorInt int mIncognitoSelectedIconColor;
+
     private final int mStripFaviconSize;
     private final int mDefaultFaviconSize;
     private final int mFaviconSize;
@@ -114,68 +119,56 @@ public class TabListFaviconProvider {
                 context.getResources().getDimensionPixelSize(R.dimen.tab_strip_favicon_inset));
         mIsTabStrip = isTabStrip;
 
-        if (sRoundedGlobeFavicon == null || sRoundedChromeFavicon == null
-                || sRoundedComposedDefaultFavicon == null) {
-            @ColorInt
-            int defaultIconColor =
-                    TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, false, false);
-            @ColorInt
-            int selectedIconColor =
-                    TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, false, true);
+        mDefaultIconColor =
+                TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, false, false);
+        mSelectedIconColor =
+                TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, false, true);
+        mIncognitoIconColor =
+                TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, true, false);
+        mIncognitoSelectedIconColor =
+                TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, true, true);
 
-            if (sRoundedGlobeFavicon == null) {
-                // TODO(crbug.com/1066709): From Android Developer Documentation, we should avoid
-                //  resizing vector drawable.
-                Bitmap globeBitmap = getResizedBitmapFromDrawable(
-                        AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp),
-                        mDefaultFaviconSize);
-                sRoundedGlobeFavicon = createChromeOwnedTabFavicon(
-                        globeBitmap, defaultIconColor, selectedIconColor);
-            }
-            if (sRoundedChromeFavicon == null) {
-                Bitmap chromeBitmap = BitmapFactory.decodeResource(
-                        mContext.getResources(), R.drawable.chromelogo16);
-                sRoundedChromeFavicon = createChromeOwnedTabFavicon(
-                        chromeBitmap, defaultIconColor, selectedIconColor);
-            }
-            if (sRoundedComposedDefaultFavicon == null) {
-                Bitmap composedBitmap = getResizedBitmapFromDrawable(
-                        AppCompatResources.getDrawable(context, R.drawable.ic_group_icon_16dp),
-                        mDefaultFaviconSize);
-                sRoundedComposedDefaultFavicon = createChromeOwnedTabFavicon(
-                        composedBitmap, defaultIconColor, selectedIconColor);
-            }
+        if (sRoundedGlobeFavicon == null) {
+            // TODO(crbug.com/1066709): From Android Developer Documentation, we should avoid
+            //  resizing vector drawable.
+            Bitmap globeBitmap = getResizedBitmapFromDrawable(
+                    AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp),
+                    mDefaultFaviconSize);
+            sRoundedGlobeFavicon =
+                    createChromeOwnedTabFavicon(globeBitmap, mDefaultIconColor, mSelectedIconColor);
         }
-
-        if (sRoundedGlobeFaviconIncognito == null || sRoundedChromeFaviconIncognito == null
-                || sRoundedComposedDefaultFaviconIncognito == null) {
-            @ColorInt
-            int incognitoIconColor =
-                    TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, true, false);
-            @ColorInt
-            int incognitoSelectedIconColor =
-                    TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, true, true);
-
-            if (sRoundedGlobeFaviconIncognito == null) {
-                Bitmap globeBitmap = getResizedBitmapFromDrawable(
-                        AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp),
-                        mDefaultFaviconSize);
-                sRoundedGlobeFaviconIncognito = createChromeOwnedTabFavicon(
-                        globeBitmap, incognitoIconColor, incognitoSelectedIconColor);
-            }
-            if (sRoundedChromeFaviconIncognito == null) {
-                Bitmap chromeBitmap = BitmapFactory.decodeResource(
-                        mContext.getResources(), R.drawable.chromelogo16);
-                sRoundedChromeFaviconIncognito = createChromeOwnedTabFavicon(
-                        chromeBitmap, incognitoIconColor, incognitoSelectedIconColor);
-            }
-            if (sRoundedComposedDefaultFaviconIncognito == null) {
-                Bitmap composedBitmap = getResizedBitmapFromDrawable(
-                        AppCompatResources.getDrawable(context, R.drawable.ic_group_icon_16dp),
-                        mDefaultFaviconSize);
-                sRoundedComposedDefaultFaviconIncognito = createChromeOwnedTabFavicon(
-                        composedBitmap, incognitoIconColor, incognitoSelectedIconColor);
-            }
+        if (sRoundedChromeFavicon == null) {
+            Bitmap chromeBitmap =
+                    BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chromelogo16);
+            sRoundedChromeFavicon = createChromeOwnedTabFavicon(
+                    chromeBitmap, mDefaultIconColor, mSelectedIconColor);
+        }
+        if (sRoundedComposedDefaultFavicon == null) {
+            Bitmap composedBitmap = getResizedBitmapFromDrawable(
+                    AppCompatResources.getDrawable(context, R.drawable.ic_group_icon_16dp),
+                    mDefaultFaviconSize);
+            sRoundedComposedDefaultFavicon = createChromeOwnedTabFavicon(
+                    composedBitmap, mDefaultIconColor, mSelectedIconColor);
+        }
+        if (sRoundedGlobeFaviconIncognito == null) {
+            Bitmap globeBitmap = getResizedBitmapFromDrawable(
+                    AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp),
+                    mDefaultFaviconSize);
+            sRoundedGlobeFaviconIncognito = createChromeOwnedTabFavicon(
+                    globeBitmap, mIncognitoIconColor, mIncognitoSelectedIconColor);
+        }
+        if (sRoundedChromeFaviconIncognito == null) {
+            Bitmap chromeBitmap =
+                    BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chromelogo16);
+            sRoundedChromeFaviconIncognito = createChromeOwnedTabFavicon(
+                    chromeBitmap, mIncognitoIconColor, mIncognitoSelectedIconColor);
+        }
+        if (sRoundedComposedDefaultFaviconIncognito == null) {
+            Bitmap composedBitmap = getResizedBitmapFromDrawable(
+                    AppCompatResources.getDrawable(context, R.drawable.ic_group_icon_16dp),
+                    mDefaultFaviconSize);
+            sRoundedComposedDefaultFaviconIncognito = createChromeOwnedTabFavicon(
+                    composedBitmap, mIncognitoIconColor, mIncognitoSelectedIconColor);
         }
 
         // Tab strip favicons do not recolor when selected.
@@ -269,12 +262,21 @@ public class TabListFaviconProvider {
         } else {
             mFaviconHelper.getLocalFaviconImageForURL(
                     mProfile, url, mFaviconSize, (image, iconUrl) -> {
+                        TabFavicon favicon;
                         if (image == null) {
-                            faviconCallback.onResult(getRoundedGlobeFavicon(isIncognito));
+                            favicon = getRoundedGlobeFavicon(isIncognito);
+                        } else if (UrlUtilities.isInternalScheme(url) && !mIsTabStrip) {
+                            Bitmap resizedFavicon = getResizedBitmapFromDrawable(
+                                    processBitmap(image, false), mDefaultFaviconSize);
+                            favicon = isIncognito
+                                    ? createChromeOwnedTabFavicon(
+                                            resizedFavicon, mDefaultIconColor, mSelectedIconColor)
+                                    : createChromeOwnedTabFavicon(resizedFavicon,
+                                            mIncognitoIconColor, mIncognitoSelectedIconColor);
                         } else {
-                            faviconCallback.onResult(
-                                    new TabFavicon(processBitmap(image, mIsTabStrip)));
+                            favicon = new TabFavicon(processBitmap(image, mIsTabStrip));
                         }
+                        faviconCallback.onResult(favicon);
                     });
         }
     }
