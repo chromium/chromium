@@ -384,6 +384,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3284510035090979597">Proaktív segítség</translation>
 <translation id="3285080554353377245">Videók a Chrome használatával kapcsolatban</translation>
+<translation id="3285850955330478827">Olvasólista szerkesztése</translation>
 <translation id="3288003805934695103">Az oldal frissítése</translation>
 <translation id="32895400574683172">Értesítések engedélyezve</translation>
 <translation id="3290991969712132877">Adja hozzá ezt az oldalt a kezdőképernyőhöz a További lehetőségek gomb segítségével, hogy gyorsabban megnyithassa.</translation>
@@ -405,6 +406,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3398320232533725830">A Könyvjelzőkezelő megnyitása</translation>
 <translation id="3414952576877147120">Méret:</translation>
 <translation id="3429160811076349561">A próbafunkciók ki vannak kapcsolva</translation>
+<translation id="3435465986463792564">Több ablak is meg van nyitva Önnél? Itt kezelheti őket.</translation>
 <translation id="3440975416244667276">Nyomva tartással további releváns információkhoz juthat</translation>
 <translation id="3443221991560634068">Az aktuális oldal újratöltése</translation>
 <translation id="3444179773590444986">Megosztja velünk véleményét a webhelyeknél használt sötét témával kapcsolatban?</translation>
@@ -1343,6 +1345,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8942627711005830162">Megnyitás másik ablakban</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Ezt a nyelvet nem lehetett letölteni. Próbálja újra később.</translation>
 <translation id="8951232171465285730">A Chrome <ph name="MEGABYTES" /> MB-ot spórolt meg Önnek</translation>
+<translation id="895518431932062177">Felvétel olvasólistára <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="8955719471735800169">Vissza az oldal tetejére</translation>
 <translation id="8965591936373831584">függőben</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitó és <ph name="TAB_COUNT_ONE" /> további lap lesz bezárva}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitó és <ph name="TAB_COUNT_MANY" /> további lap lesz bezárva}}</translation>

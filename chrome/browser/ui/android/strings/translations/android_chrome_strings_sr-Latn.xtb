@@ -384,6 +384,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3282568296779691940">Prijavljivanje u Chrome</translation>
 <translation id="3284510035090979597">Proaktivna pomoć</translation>
 <translation id="3285080554353377245">Video snimci o tome kako da koristite Chrome</translation>
+<translation id="3285850955330478827">Izmenite listu za čitanje</translation>
 <translation id="3288003805934695103">da ponovo učitate stranicu</translation>
 <translation id="32895400574683172">Obaveštenja su dozvoljena</translation>
 <translation id="3290991969712132877">Da brže pristupali ovoj stranici, dodajte je na početni ekran pomoću dugmeta Još opcija</translation>
@@ -405,6 +406,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3398320232533725830">Otvaranje Menadžera obeleživača</translation>
 <translation id="3414952576877147120">Veličina:</translation>
 <translation id="3429160811076349561">Probne funkcije su isključene</translation>
+<translation id="3435465986463792564">Imate mnogo prozora? Njima možete da upravljate odavde.</translation>
 <translation id="3440975416244667276">Dodirnite i zadržite da biste videli relevantnije informacije</translation>
 <translation id="3443221991560634068">Ponovno učitavanje aktuelne stranice</translation>
 <translation id="3444179773590444986">Želite da delite povratne informacije o tamnoj temi za sajtove?</translation>
@@ -1343,6 +1345,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8942627711005830162">Otvori u drugom prozoru</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Preuzimanje ovog jezika nije uspelo. Probajte ponovo kasnije.</translation>
 <translation id="8951232171465285730">Chrome vam je uštedeo <ph name="MEGABYTES" /> MB</translation>
+<translation id="895518431932062177">Dodaj na listu za čitanje <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="8955719471735800169">Nazad na vrh</translation>
 <translation id="8965591936373831584">na čekanju</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_ONE" /> kartica će biti zatvorene}one{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartica će biti zatvorene}few{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartice će biti zatvorene}other{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartica će biti zatvorene}}</translation>

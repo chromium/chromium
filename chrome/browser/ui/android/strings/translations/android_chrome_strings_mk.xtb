@@ -384,6 +384,7 @@
 <translation id="3282568296779691940">Најави се на Chrome</translation>
 <translation id="3284510035090979597">Проактивна помош</translation>
 <translation id="3285080554353377245">Видеа за користењето на Chrome</translation>
+<translation id="3285850955330478827">Измени список за читање</translation>
 <translation id="3288003805934695103">Повторно да ја вчитате страницата</translation>
 <translation id="32895400574683172">Известувањата се дозволени</translation>
 <translation id="3290991969712132877">За побрз пристап до страницава, додајте ја на почетниот екран преку копчето „Повеќе опции“</translation>
@@ -405,6 +406,7 @@
 <translation id="3398320232533725830">Отворете го управникот на обележувачи</translation>
 <translation id="3414952576877147120">Големина:</translation>
 <translation id="3429160811076349561">Пробните функции се исклучени</translation>
+<translation id="3435465986463792564">Имате многу прозорци? Може да управувате со нив оттука</translation>
 <translation id="3440975416244667276">Допрете и задржете за порелевантни информации</translation>
 <translation id="3443221991560634068">Вчитајте ја тековната страница</translation>
 <translation id="3444179773590444986">Сакате да споделите повратни информации за темната тема за сајтови?</translation>
@@ -1343,6 +1345,7 @@
 <translation id="8942627711005830162">Отвори во друг прозорец</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Овој јазик не можеше да се преземе. Обидете се повторно подоцна.</translation>
 <translation id="8951232171465285730">Chrome ви заштеди <ph name="MEGABYTES" /> MB</translation>
+<translation id="895518431932062177">Додај во список за читање <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="8955719471735800169">Назад на почеток</translation>
 <translation id="8965591936373831584">чека на ред</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_ONE" /> картичка ќе се затворат}one{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картичка ќе се затворат}other{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картички ќе се затворат}}</translation>

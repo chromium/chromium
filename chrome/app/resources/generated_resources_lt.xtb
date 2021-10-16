@@ -2081,6 +2081,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="310671807099593501">Svetainė naudoja „Bluetooth“</translation>
 <translation id="3108931485517391283">Nepavyko gauti</translation>
 <translation id="3109724472072898302">Suskleista</translation>
+<translation id="311214366526552035">Vis tiek atsisiųsti</translation>
 <translation id="311394601889664316">Neleisti svetainėms redaguoti failų ar aplankų jūsų įrenginyje</translation>
 <translation id="3115147772012638511">Laukiama talpyklos...</translation>
 <translation id="3115580024857770654">Sutraukti viską</translation>
@@ -2360,6 +2361,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3429160811076349561">Bandomosios funkcijos išjungtos</translation>
 <translation id="3429271624041785769">Žiniatinklio turinio kalbos</translation>
 <translation id="3429275422858276529">Pažymėkite šį puslapį, kad galėtumėte lengvai jį rasti vėliau</translation>
+<translation id="343115368966109153">Atsisiųsti „<ph name="FILE_NAME" />“? Jį galės peržiūrėti visi, kas naudojasi įrenginiu.</translation>
 <translation id="3432227430032737297">Pašalinti visus rodomus</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Deja, sistemai vykdant įrenginio diegimo laiko atributų fiksavimą įvyko klaida.</translation>
@@ -2701,6 +2703,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3777806571986431400">Plėtinys įgalintas</translation>
 <translation id="3778152852029592020">Atsisiuntimas atšauktas.</translation>
 <translation id="3778208826288864398">Saugos raktas užblokuotas, nes per daug kartų įvestas neteisingas PIN kodas. Turėsite nustatyti saugos raktą iš naujo.</translation>
+<translation id="3778369586810509692">Šis failas bus išsaugotas įrenginyje ir visi galės jį peržiūrėti.</translation>
 <translation id="3778740492972734840">&amp;Kūrėjo įrankiai</translation>
 <translation id="3778868487658107119">Užduokite klausimų. Nurodykite atlikti užduotis. Tai jūsų asmeninė „Google“, kuri visada pasiruošusi padėti.</translation>
 <translation id="3781742599892759500">„Linux“ prieiga prie mikrofono</translation>
@@ -4716,6 +4719,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="597235323114979258">Žr. daugiau paskirties vietų</translation>
 <translation id="5972666587303800813">Neveikianti paslauga</translation>
 <translation id="5972708806901999743">Perkelti į viršų</translation>
+<translation id="5972801171078377748">Neberodyti</translation>
 <translation id="5972826969634861500">Paleisti „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="5973041996755340290">„<ph name="CLIENT_NAME" />“ pradėjo derinti šią naršyklę</translation>
 <translation id="5973605538625120605">PIN kodo keitimas</translation>

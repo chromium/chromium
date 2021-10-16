@@ -2065,6 +2065,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="310671807099593501">Vietne izmanto Bluetooth savienojumu.</translation>
 <translation id="3108931485517391283">Nevar saņemt saturu</translation>
 <translation id="3109724472072898302">Sakļauts</translation>
+<translation id="311214366526552035">Jā, lejupielādēt</translation>
 <translation id="311394601889664316">Neļaut vietnēm rediģēt failus vai mapes jūsu ierīcē</translation>
 <translation id="3115147772012638511">Gaida krtuvi...</translation>
 <translation id="3115580024857770654">Sakļaut visu</translation>
@@ -2344,6 +2345,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3429160811076349561">Izmēģinājuma versijas funkcijas ir izslēgtas</translation>
 <translation id="3429271624041785769">Tīmekļa satura valodas</translation>
 <translation id="3429275422858276529">Saglabājiet šo lapu kā grāmatzīmi, lai vēlāk varētu to viegli atrast</translation>
+<translation id="343115368966109153">Vai lejupielādēt <ph name="FILE_NAME" />? To varēs redzēt visi ierīces lietotāji.</translation>
 <translation id="3432227430032737297">Noņemt visu parādīto</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Hmm... Sistēma nevarēja iestatīt ierīces instalēšanas laika atribūta bloķēšanu.</translation>
@@ -2685,6 +2687,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3777806571986431400">Paplašinājums iespējots</translation>
 <translation id="3778152852029592020">Lejupielāde tika atcelta.</translation>
 <translation id="3778208826288864398">Šī drošības atslēga ir bloķēta, jo pārāk daudz reižu ievadīts nepareizs PIN. Jums būs jāatiestata drošības atslēga.</translation>
+<translation id="3778369586810509692">Šis fails tiks glabāts ierīcē, un visi lietotāji to varēs redzēt.</translation>
 <translation id="3778740492972734840">Izstrā&amp;dātāja rīki</translation>
 <translation id="3778868487658107119">Uzdodiet tam jautājumus. Lieciet tam veikt darbības. Pakalpojums Google darbojas jūsu labā — vienmēr gatavs palīdzēt.</translation>
 <translation id="3781742599892759500">Linux piekļuve mikrofonam</translation>
@@ -4698,6 +4701,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="597235323114979258">Skatīt citus galamērķus</translation>
 <translation id="5972666587303800813">Pakalpojums, kas nedarbojas</translation>
 <translation id="5972708806901999743">Pārvietot uz augšu</translation>
+<translation id="5972801171078377748">Vairs nerādīt</translation>
 <translation id="5972826969634861500">Sākt <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">“<ph name="CLIENT_NAME" />” sāka šīs pārlūkprogrammas atkļūdošanu.</translation>
 <translation id="5973605538625120605">Mainīt PIN</translation>

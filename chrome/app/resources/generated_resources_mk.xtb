@@ -2079,6 +2079,7 @@
 <translation id="310671807099593501">Сајтот користи Bluetooth</translation>
 <translation id="3108931485517391283">Не може да се прими</translation>
 <translation id="3109724472072898302">Собрано</translation>
+<translation id="311214366526552035">Сепак преземи</translation>
 <translation id="311394601889664316">Не им дозволувај на сајтовите да изменуваат датотеки или папки на уредот</translation>
 <translation id="3115147772012638511">Се чека кешот...</translation>
 <translation id="3115580024857770654">Собери ги сите</translation>
@@ -2358,6 +2359,7 @@
 <translation id="3429160811076349561">Пробните функции се исклучени</translation>
 <translation id="3429271624041785769">Јазици за содржини од интернет</translation>
 <translation id="3429275422858276529">Обележете ја страницава за полесно да ја најдете подоцна</translation>
+<translation id="343115368966109153">Да се преземе <ph name="FILE_NAME" />? Секој што го користи уредот ќе може да ја види.</translation>
 <translation id="3432227430032737297">Отстрани ги сите прикажани</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Уф! Системот не успеа да воспостави заклучување на уредот за атрибути за време на инсталацијата.</translation>
@@ -2699,6 +2701,7 @@
 <translation id="3777806571986431400">Наставката е овозможена</translation>
 <translation id="3778152852029592020">Преземањето се откажа.</translation>
 <translation id="3778208826288864398">Безбедносниот клуч е заклучен бидејќи внесовте погрешен PIN премногу пати. Ќе треба да го ресетирате безбедносниот клуч.</translation>
+<translation id="3778369586810509692">Датотекава ќе се зачува на уредот и секој ќе може да ја види.</translation>
 <translation id="3778740492972734840">&amp;Програмерски алатки</translation>
 <translation id="3778868487658107119">Поставувајте му прашања. Кажувајте му што да направи. Тој е вашиот личен Google, секогаш подготвен да помогне.</translation>
 <translation id="3781742599892759500">Пристап до микрофонот на Linux</translation>
@@ -4713,6 +4716,7 @@
 <translation id="597235323114979258">Видете повеќе дестинации</translation>
 <translation id="5972666587303800813">Услугата не работи</translation>
 <translation id="5972708806901999743">Премести на врвот</translation>
+<translation id="5972801171078377748">Не прикажувај повторно</translation>
 <translation id="5972826969634861500">Стартувај <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">„<ph name="CLIENT_NAME" />“ започна да отстранува грешки од прелистувачов</translation>
 <translation id="5973605538625120605">Променете го PIN-кодот</translation>
