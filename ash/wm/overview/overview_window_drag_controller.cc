@@ -78,13 +78,8 @@ void UnpauseOcclusionTracker() {
 }
 
 bool GetVirtualDesksBarEnabled(OverviewItem* item) {
-  // If |kDragWindowToNewDesk| is enabled, we will allow drag and drop a window
-  // to a new desk even if the desks bar view is at zero state. Therefore no
-  // need to check |overview_grid()->IsDesksBarViewActive()| here.
-  if (features::IsDragWindowToNewDeskEnabled())
-    return desks_util::ShouldDesksBarBeCreated();
   return desks_util::ShouldDesksBarBeCreated() &&
-         item->overview_grid()->IsDesksBarViewActive();
+         item->overview_grid()->desks_bar_view();
 }
 
 // Returns whether |item|'s window is visible on all desks.
@@ -304,11 +299,9 @@ void OverviewWindowDragController::StartNormalDragMode(
       OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW);
   original_scaled_size_ = item_->target_bounds().size();
   auto* overview_grid = item_->overview_grid();
-  // If |kDragWindowToNewDesk| is enabled, we need to transform desks bar view
-  // to expanded state if it's at zero state to make user be able to drop the
-  // dragged window on the expanded state new desk button.
-  if (features::IsDragWindowToNewDeskEnabled())
-    overview_grid->MaybeExpandDesksBarView();
+  // We need to transform desks bar view to expanded state if it's at zero state
+  // when dragging starts.
+  overview_grid->MaybeExpandDesksBarView();
   overview_grid->AddDropTargetForDraggingFromThisGrid(item_);
 
   if (should_allow_split_view_) {
