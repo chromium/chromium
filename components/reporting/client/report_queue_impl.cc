@@ -33,11 +33,12 @@
 
 namespace reporting {
 
-std::unique_ptr<ReportQueueImpl> ReportQueueImpl::Create(
+void ReportQueueImpl::Create(
     std::unique_ptr<ReportQueueConfiguration> config,
-    scoped_refptr<StorageModuleInterface> storage) {
-  return base::WrapUnique<ReportQueueImpl>(
-      new ReportQueueImpl(std::move(config), storage));
+    scoped_refptr<StorageModuleInterface> storage,
+    base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)> cb) {
+  std::move(cb).Run(base::WrapUnique<ReportQueueImpl>(
+      new ReportQueueImpl(std::move(config), storage)));
 }
 
 ReportQueueImpl::~ReportQueueImpl() = default;

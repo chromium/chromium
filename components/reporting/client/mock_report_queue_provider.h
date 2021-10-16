@@ -21,19 +21,16 @@ class MockReportQueueProvider : public ReportQueueProvider {
   MockReportQueueProvider& operator=(const MockReportQueueProvider&) = delete;
   ~MockReportQueueProvider() override;
 
-  InitializingContext* InstantiateInitializingContext(
-      InitCompleteCallback init_complete_cb,
-      scoped_refptr<InitializationStateTracker> init_state_tracker) override;
-
   // This method will make sure - by mocking - that CreateQueue on the provider
   // always returns a new std::unique_ptr<MockReportQueue> to simulate the
   // original behaviour. Note times is also added to be expected so you should
   // know how often you expect this method to be called.
   void ExpectCreateNewQueueAndReturnNewMockQueue(int times);
 
-  MOCK_METHOD(StatusOr<std::unique_ptr<ReportQueue>>,
+  MOCK_METHOD(void,
               CreateNewQueue,
-              (std::unique_ptr<ReportQueueConfiguration> config),
+              (std::unique_ptr<ReportQueueConfiguration> config,
+               CreateReportQueueCallback cb),
               (override));
 
   MOCK_METHOD(
@@ -42,27 +39,9 @@ class MockReportQueueProvider : public ReportQueueProvider {
       (),
       (override));
 
-  MOCK_METHOD(void, InitOnCompletedCalled, (), (const));
+  MOCK_METHOD(void, OnInitCompleted, (), ());
 
  private:
-  // Mock initialization class.
-  class MockInitializingContext
-      : public ReportQueueProvider::InitializingContext {
-   public:
-    MockInitializingContext(
-        InitCompleteCallback init_complete_cb,
-        scoped_refptr<InitializationStateTracker> init_state_tracker,
-        MockReportQueueProvider* provider);
-
-   private:
-    ~MockInitializingContext() override;
-
-    void OnCompleted() override;
-    void OnStart() override;
-
-    MockReportQueueProvider* const provider_;
-  };
-
   scoped_refptr<StorageModuleInterface> storage_;
 };
 

@@ -63,10 +63,10 @@ class ReportQueueImplTest : public testing::Test {
 
     ASSERT_TRUE(config_result.ok());
 
-    StatusOr<std::unique_ptr<ReportQueue>> report_queue_result =
-        ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
-                                storage_module_);
-
+    test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
+    ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                            storage_module_, report_queue_event.cb());
+    auto report_queue_result = report_queue_event.result();
     ASSERT_TRUE(report_queue_result.ok());
 
     report_queue_ = std::move(report_queue_result.ValueOrDie());

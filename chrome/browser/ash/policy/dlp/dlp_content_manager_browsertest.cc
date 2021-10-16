@@ -36,6 +36,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/reporting/client/report_queue_impl.h"
 #include "components/reporting/storage/test_storage_module.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/test/browser_test.h"
@@ -679,9 +680,13 @@ class DlpContentManagerReportingBrowserTest
 
     ASSERT_TRUE(config_result.ok());
 
-    reporting::StatusOr<std::unique_ptr<reporting::ReportQueue>>
-        report_queue_result = reporting::ReportQueueImpl::Create(
-            std::move(config_result.ValueOrDie()), storage_module_);
+    reporting::test::TestEvent<
+        reporting::StatusOr<std::unique_ptr<reporting::ReportQueue>>>
+        report_queue_event;
+    reporting::ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                                       storage_module_,
+                                       report_queue_event.cb());
+    auto report_queue_result = report_queue_event.result();
 
     ASSERT_TRUE(report_queue_result.ok());
 

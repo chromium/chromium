@@ -41,9 +41,10 @@ namespace reporting {
 class ReportQueueImpl : public ReportQueue {
  public:
   // Factory
-  static std::unique_ptr<ReportQueueImpl> Create(
+  static void Create(
       std::unique_ptr<ReportQueueConfiguration> config,
-      scoped_refptr<StorageModuleInterface> storage);
+      scoped_refptr<StorageModuleInterface> storage,
+      base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)> cb);
 
   ~ReportQueueImpl() override;
   ReportQueueImpl(const ReportQueueImpl& other) = delete;

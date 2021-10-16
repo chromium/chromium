@@ -69,7 +69,7 @@ TEST_F(ReportQueueFactoryTest, CreateAndGetQueue) {
   EXPECT_FALSE(consumer_->GetReportQueue());
   reporting::ReportQueueFactory::Create(dm_token_, destination_,
                                         consumer_->GetReportQueueSetter());
-  EXPECT_CALL(*provider_.get(), InitOnCompletedCalled()).Times(1);
+  EXPECT_CALL(*provider_.get(), OnInitCompleted()).Times(1);
   provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
   task_environment_.RunUntilIdle();
   // we expect the report queue to be existing in the consumer.
@@ -81,7 +81,7 @@ TEST_F(ReportQueueFactoryTest, EmptyDmToken) {
   EXPECT_FALSE(consumer_->GetReportQueue());
   reporting::ReportQueueFactory::Create("", destination_,
                                         consumer_->GetReportQueueSetter());
-  EXPECT_CALL(*provider_.get(), InitOnCompletedCalled()).Times(1);
+  EXPECT_CALL(*provider_.get(), OnInitCompleted()).Times(1);
   provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
   task_environment_.RunUntilIdle();
   // we expect the report queue to be existing in the consumer.
@@ -98,7 +98,7 @@ TEST_F(ReportQueueFactoryTest, SameProviderForMultipleThreads) {
                                         consumer_->GetReportQueueSetter());
   reporting::ReportQueueFactory::Create(dmToken2, destination_,
                                         consumer2->GetReportQueueSetter());
-  EXPECT_CALL(*provider_.get(), InitOnCompletedCalled()).Times(1);
+  EXPECT_CALL(*provider_.get(), OnInitCompleted()).Times(1);
   provider_->ExpectCreateNewQueueAndReturnNewMockQueue(2);
   task_environment_.RunUntilIdle();
   // we expect the report queue to be existing in the consumer.

@@ -10,7 +10,9 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/proto/record_constants.pb.h"
@@ -18,7 +20,6 @@
 #include "components/reporting/util/shared_queue.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
-#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace reporting {
 
@@ -88,7 +89,14 @@ class ReportQueueProvider {
   using CreateReportQueueCallback =
       base::OnceCallback<void(CreateReportQueueResponse)>;
 
-  ReportQueueProvider();
+  using InitCompleteCallback = base::OnceCallback<void(Status)>;
+
+  using OnStorageModuleCreatedCallback =
+      base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>;
+  using StorageModuleCreateCallback =
+      base::RepeatingCallback<void(OnStorageModuleCreatedCallback)>;
+
+  explicit ReportQueueProvider(StorageModuleCreateCallback storage_create_cb);
   virtual ~ReportQueueProvider();
 
   ReportQueueProvider(const ReportQueueProvider& other) = delete;
@@ -118,7 +126,9 @@ class ReportQueueProvider {
   static const base::Feature kEncryptedReportingPipeline;
 
  protected:
+  // Accessors.
   scoped_refptr<StorageModuleInterface> storage();
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner();
 
   class InitializationStateTracker
       : public base::RefCountedThreadSafe<InitializationStateTracker> {
@@ -166,128 +176,6 @@ class ReportQueueProvider {
     SEQUENCE_CHECKER(sequence_checker_);
   };
 
-  // Context of a single initialization of the ReportQueueProvider.
-  // Constructed by |ReportQueueProvider|::|CreateInitializingContext|
-  // (for non-trivial initialization needs to be subclassed).
-  // Once Start is called, it can post an arbitrary set of callbacks
-  // to appropriate threads, and then collects the result back.
-  // Once the result is collected, needs to make a call to |Complete|
-  // passing resulting status (if status is OK, |OnCompleted| will be
-  // called, and it may update the |ReportQueueProvider|).
-  // In order to substitute the context, override
-  // |ReportQueueProvider::InstantiateInitializingContext|
-  //
-  // Example:
-  //   InitializingContext* InstantiateInitializingContext(
-  //       InitCompleteCallback init_complete_cb,
-  //       scoped_refptr<InitializationStateTracker> init_state_tracker,
-  //       ...more parameters as needed...) override {
-  //     return new InitializingContextImpl(std::move(init_complete_cb),
-  //                                        init_state_tracker,
-  //                                        ...more parameters as needed...,
-  //                                        this);
-  //   }
-  //   class InitializingContextImpl
-  //       : public ReportQueueProvider::InitializingContext {
-  //    public:
-  //     InitializingContextImpl(
-  //         InitCompleteCallback init_complete_cb,
-  //         scoped_refptr<InitializationStateTracker> init_state_tracker,
-  //         ...more parameters as needed...,
-  //         ReportQueueProviderImpl* provider)
-  //         : InitializingContext(std::move(init_complete_cb),
-  //                               init_state_tracker),
-  //           ...saving parameters to the context,
-  //           provider_(provider) {
-  //       DCHECK(provider_ != nullptr);
-  //     }
-  //
-  //    private:
-  //     ~InitializingContextImpl() override = default;
-  //
-  //     void OnStart() override {
-  //       ...do work, update state if needed
-  //       // Post first callback task
-  //       base::ThreadPool::PostTask(
-  //           FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-  //           base::BindOnce(&InitializingContext::Stage1,
-  //           base::Unretained(this),
-  //                          Status::StatusOK()));
-  //     }
-  //
-  //     void Stage1() {
-  //       ...do work, update state if needed
-  //       // Post next callback task
-  //       base::ThreadPool::PostTask(
-  //           FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-  //           base::BindOnce(&InitializingContext::Stage2,
-  //           base::Unretained(this),
-  //                          Status::StatusOK()));
-  //     }
-  //
-  //     ... more stages as needed
-  //
-  //     void LastStage() {
-  //       ...do the rest of the work, update state if needed
-  //       // Post completion task.
-  //       base::ThreadPool::PostTask(
-  //           FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-  //           base::BindOnce(&InitializingContext::Complete,
-  //           base::Unretained(this),
-  //                          Status::StatusOK()));
-  //     }
-  //
-  //     void OnCompleted() override {
-  //       // Hand over all required state to the provider.
-  //       provider_->... = std::move(...);
-  //     }
-  //
-  //     ... state
-  //     ReportQueueProviderImpl* const provider_;
-  //   };
-  using InitCompleteCallback = base::OnceCallback<void(Status)>;
-  class InitializingContext {
-   public:
-    InitializingContext(
-        InitCompleteCallback init_complete_cb,
-        scoped_refptr<InitializationStateTracker> init_state_tracker);
-
-    // Start initialization.
-    void Start();
-
-    // Initialization is done, responds with status and self-destructs.
-    void Complete(Status status);
-
-   protected:
-    // Destructor only called from Complete().
-    // The class runs a series of callbacks each of which may invoke
-    // either the next callback or Complete(). Thus eventually Complete()
-    // is always called and InitializingContext instance is self-destruct.
-    virtual ~InitializingContext();
-
-    // Called if |Complete| got a success.
-    // Needs to be overridden to update the provider.
-    virtual void OnCompleted() = 0;
-
-   private:
-    // Called Upon leader promotion: OK means we are a leader and initialization
-    // can start by calling OnStart. ALREADY_EXIST means abother leader has been
-    // assigned already. Any other code indicates an initialization error.
-    void OnLeaderPromotionResult(
-        StatusOr<InitializationStateTracker::ReleaseLeaderCallback>
-            promo_result);
-
-    // OnStart will begin the process of configuring the ReportQueueProvider.
-    // Must be implemented by a subclass, and call Complete to finish
-    // initialization.
-    virtual void OnStart() = 0;
-
-    InitializationStateTracker::ReleaseLeaderCallback release_leader_cb_;
-    scoped_refptr<InitializationStateTracker> init_state_tracker_;
-
-    InitCompleteCallback init_complete_cb_;
-  };
-
  private:
   // Holds the creation request for a ReportQueue.
   class CreateReportQueueRequest {
@@ -304,18 +192,16 @@ class ReportQueueProvider {
     std::unique_ptr<ReportQueueConfiguration> config_;
     CreateReportQueueCallback create_cb_;
   };
+  class InitializingContext;
 
-  // Instantiate InitializationContext subclass for the provider.
-  // Result owned by itself (passed to InitializingContext::Start and
-  // self-destructs upon InitializingContext::Complete call).
-  virtual InitializingContext* InstantiateInitializingContext(
-      InitCompleteCallback init_complete_cb,
-      scoped_refptr<InitializationStateTracker> init_state_tracker) = 0;
+  // Finalizes provider, if the initialization process succeeded.
+  // May to be overridden by subclass to make more updates to the provider.
+  virtual void OnInitCompleted();
 
   // Creates and initializes queue implementation. Returns status in case of
   // error.
-  virtual CreateReportQueueResponse CreateNewQueue(
-      std::unique_ptr<ReportQueueConfiguration> config) = 0;
+  virtual void CreateNewQueue(std::unique_ptr<ReportQueueConfiguration> config,
+                              CreateReportQueueCallback cb) = 0;
   virtual StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
   CreateNewSpeculativeQueue() = 0;
 
@@ -330,6 +216,17 @@ class ReportQueueProvider {
   // initializing.
   scoped_refptr<SharedQueue<CreateReportQueueRequest>> create_request_queue_;
   scoped_refptr<InitializationStateTracker> init_state_tracker_;
+
+  // Storage module creator.
+  const StorageModuleCreateCallback storage_create_cb_;
+
+  // Storage module associated with the provider. It serves all queues created
+  // by it. Protected by sequenced_task_runner_.
+  scoped_refptr<StorageModuleInterface> storage_;
+
+  // Task runner used for guarding the provider elements.
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace reporting
