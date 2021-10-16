@@ -12,5 +12,6 @@ FakeFwupdClient::FakeFwupdClient() = default;
 FakeFwupdClient::~FakeFwupdClient() = default;
 void FakeFwupdClient::Init(dbus::Bus* bus) {}
 void FakeFwupdClient::GetUpgrades(std::string device_id) {}
+void FakeFwupdClient::GetDevices() {}
 
 }  // namespace chromeos

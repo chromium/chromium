@@ -71,6 +71,10 @@ class FwupdClientTest : public testing::Test {
     return fwupd_client_->get_upgrades_callback_call_count_for_testing_;
   }
 
+  int GetGetDevicesCallbackCallCount() {
+    return fwupd_client_->get_devices_callback_call_count_for_testing_;
+  }
+
   void OnMethodCalled(dbus::MethodCall* method_call,
                       int timeout_ms,
                       dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
@@ -156,6 +160,21 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1, GetGetUpgradesCallbackCallCount());
+}
+
+// TODO (swifton): Rewrite this test with an observer when it's available.
+TEST_F(FwupdClientTest, RequestDevices) {
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  AddDbusMethodCallResultSimulation(std::move(response), nullptr);
+
+  fwupd_client_->GetDevices();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, GetGetDevicesCallbackCallCount());
 }
 
 }  // namespace chromeos

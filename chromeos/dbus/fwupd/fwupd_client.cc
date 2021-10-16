@@ -24,6 +24,7 @@ const char kFwupdServicePath[] = "/";
 const char kFwupdServiceInterface[] = "org.freedesktop.fwupd";
 const char kFwupdDeviceAddedSignalName[] = "DeviceAdded";
 const char kFwupdGetUpgradesMethodName[] = "GetUpgrades";
+const char kFwupdGetDevicesMethodName[] = "GetDevices";
 
 }  // namespace
 
@@ -61,6 +62,15 @@ class FwupdClientImpl : public FwupdClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void GetDevices() override {
+    dbus::MethodCall method_call(kFwupdServiceInterface,
+                                 kFwupdGetDevicesMethodName);
+    proxy_->CallMethodWithErrorResponse(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&FwupdClientImpl::GetDevicesCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
  private:
   void GetUpgradesCallback(dbus::Response* response,
                            dbus::ErrorResponse* error_response) {
@@ -72,6 +82,18 @@ class FwupdClientImpl : public FwupdClient {
     // TODO(swifton): This is a stub implementation. Replace this with a
     // callback call for FirmwareUpdateHandler when it's implemented.
     ++get_upgrades_callback_call_count_for_testing_;
+  }
+
+  void GetDevicesCallback(dbus::Response* response,
+                          dbus::ErrorResponse* error_response) {
+    if (!response) {
+      LOG(ERROR) << "No Dbus response received from fwupd.";
+      return;
+    }
+
+    // TODO(swifton): This is a stub implementation. Replace this with a
+    // callback call for FirmwareUpdateHandler when it's implemented.
+    ++get_devices_callback_call_count_for_testing_;
   }
 
   void OnSignalConnected(const std::string& interface_name,
