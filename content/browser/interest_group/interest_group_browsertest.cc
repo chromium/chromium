@@ -398,17 +398,39 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       const std::string& auction_config_json,
       const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
       WARN_UNUSED_RESULT {
-    return EvalJs(execution_target ? *execution_target : shell(),
-                  base::StringPrintf(
-                      R"(
+    // This is currently overly complicated to unambiguously distinguish the
+    // returns null case from the RunLoop unexpectedly quit case, as part of
+    // investigating issue https://crbug.com/1259733. RunLoop() should print out
+    // something to the console when it quits the message loop, anyways, but
+    // want to be completely sure that a null is really being returned.
+    //
+    // TODO(https://crbug.com/1259733): Once issue https://crbug.com/1259733 has
+    // been fixed, return this to its original, simpler form.
+    auto result = EvalJs(execution_target ? *execution_target : shell(),
+                         base::StringPrintf(
+                             R"(
 (async function() {
+  let result;
   try {
-    return await navigator.runAdAuction(%s);
+    result = await navigator.runAdAuction(%s);
   } catch (e) {
-    return e.toString();
+    result = e.toString();
   }
-})())",
-                      auction_config_json.c_str()));
+  if (result === null)
+    return 'result is indeed null';
+  return result;
+})();
+                             )",
+                             auction_config_json.c_str()));
+    if (!result.value.is_string()) {
+      ADD_FAILURE() << "Result should always be a string, but is: "
+                    << result.value;
+      return result;
+    }
+    if (result.value.GetString() == "result is indeed null") {
+      return content::EvalJsResult(base::Value(), /*error=*/std::string());
+    }
+    return result;
   }
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
@@ -1880,17 +1902,40 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
   }
 }
 
+// Sets an AuctionCompleteCallback that watches for auction completion, adding a
+// failure on errors. Clears the callback on destruction.
+//
+// TODO(https://crbug.com/1259733): Remove once issue 1259733 has been fixed.
+class ScopedWatchAuctionsForTesting {
+ public:
+  ScopedWatchAuctionsForTesting() {
+    AdAuctionServiceImpl::SetOnAuctionCompleteCallbackForTesting(
+        base::BindRepeating([](const std::vector<std::string>& errors) {
+          LOG(WARNING) << "Auction completed";
+          for (const auto& error : errors) {
+            ADD_FAILURE() << "Error: " << error;
+          }
+        }));
+  }
+
+  ~ScopedWatchAuctionsForTesting() {
+    AdAuctionServiceImpl::SetOnAuctionCompleteCallbackForTesting(
+        AdAuctionServiceImpl::AuctionCompleteCallback());
+  }
+};
+
 // Make sure correct topFrameHostname is passed in. Check auctions from top
 // frames, and iframes of various depth. Also test running auctions in
 // cross-site iframes, and loading them into those iframes' fenced frames.
 //
 // TODO(https://crbug.com/1259733): Figure out why this is flaky and fix it.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
-                       DISABLED_TopFrameHostname) {
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, TopFrameHostname) {
   // Buyer, seller, and iframe all use the same host.
   const char kOtherHost[] = "b.test";
   // Top frame host is unique.
   const char kTopFrameHost[] = "a.test";
+
+  ScopedWatchAuctionsForTesting watch_auctions_for_testing;
 
   // Navigate to bidder site, and add an interest group.
   GURL other_url = https_server_->GetURL(kOtherHost, "/echo");
