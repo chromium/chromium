@@ -274,6 +274,7 @@ class MockVideoDecoder : public VideoDecoder {
   MOCK_CONST_METHOD0(GetMaxDecodeRequests, int());
   MOCK_CONST_METHOD0(CanReadWithoutStalling, bool());
   MOCK_CONST_METHOD0(NeedsBitstreamConversion, bool());
+  MOCK_CONST_METHOD0(IsOptimizedForRTC, bool());
 
  private:
   const bool is_platform_decoder_;

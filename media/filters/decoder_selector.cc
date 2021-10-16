@@ -33,9 +33,25 @@ namespace {
 
 const char kSelectDecoderTrace[] = "DecoderSelector::SelectDecoder";
 
+bool SkipDecoderForRTC(const AudioDecoderConfig& /*config*/,
+                       const AudioDecoder& /*decoder*/) {
+  return false;
+}
+
+bool SkipDecoderForRTC(const VideoDecoderConfig& config,
+                       const VideoDecoder& decoder) {
+  // For now, we assume that RTC decoders are able to decode non-RTC streams,
+  // presumably by configuring themselves based on the config's rtc bit.  Since
+  // no decoders take any action at all based on it, this is as good as any.
+  return config.is_rtc() && !decoder.IsOptimizedForRTC();
+}
+
 template <typename ConfigT, typename DecoderT>
 DecoderPriority NormalDecoderPriority(const ConfigT& config,
                                       const DecoderT& decoder) {
+  if (SkipDecoderForRTC(config, decoder))
+    return DecoderPriority::kSkipped;
+
   return DecoderPriority::kNormal;
 }
 
@@ -49,6 +65,9 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
   constexpr auto kSoftwareDecoderHeightCutoff = 720;
 #endif
 
+  if (SkipDecoderForRTC(config, decoder))
+    return DecoderPriority::kSkipped;
+
   // We only do a height check to err on the side of prioritizing platform
   // decoders.
   const auto at_or_above_software_cutoff =
@@ -61,19 +80,12 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
              : DecoderPriority::kDeprioritized;
 }
 
-DecoderPriority UnifiedDecoderPriority(const VideoDecoderConfig& config,
-                                       const VideoDecoder& decoder) {
-  if (config.is_rtc() ||
-      base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority)) {
-    return ResolutionBasedDecoderPriority(config, decoder);
-  } else {
-    return NormalDecoderPriority(config, decoder);
-  }
-}
-
 template <typename ConfigT, typename DecoderT>
 DecoderPriority SkipNonPlatformDecoders(const ConfigT& config,
                                         const DecoderT& decoder) {
+  if (SkipDecoderForRTC(config, decoder))
+    return DecoderPriority::kSkipped;
+
   return decoder.IsPlatformDecoder() ? DecoderPriority::kNormal
                                      : DecoderPriority::kSkipped;
 }
@@ -82,8 +94,11 @@ void SetDefaultDecoderPriorityCB(VideoDecoderSelector::DecoderPriorityCB* out) {
   if (base::FeatureList::IsEnabled(kForceHardwareVideoDecoders)) {
     *out = base::BindRepeating(
         SkipNonPlatformDecoders<VideoDecoderConfig, VideoDecoder>);
+  } else if (base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority)) {
+    *out = base::BindRepeating(ResolutionBasedDecoderPriority);
   } else {
-    *out = base::BindRepeating(UnifiedDecoderPriority);
+    *out = base::BindRepeating(
+        NormalDecoderPriority<VideoDecoderConfig, VideoDecoder>);
   }
 }
 
