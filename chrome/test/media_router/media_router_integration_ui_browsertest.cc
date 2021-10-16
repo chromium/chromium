@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
   std::string issue_title = test_ui_->GetIssueTextForSink(receiver_);
   // TODO(imcheng): Fix host name for file schemes (crbug.com/560576).
   ASSERT_EQ(l10n_util::GetStringFUTF8(
-                IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT, u"file:///"),
+                IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT, u"file://"),
             issue_title);
 
   ASSERT_EQ(test_ui_->GetRouteIdForSink(receiver_), "");
