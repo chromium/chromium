@@ -539,9 +539,15 @@ const base::Feature kHappinessTrackingSurveysForDesktopNtpModules{
 #endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables or disables the Happiness Tracking System for the device.
+// Enables or disables the Happiness Tracking System for the General survey.
 const base::Feature kHappinessTrackingSystem{"HappinessTrackingSystem",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables the Happiness Tracking System for the Stability survey.
+const base::Feature kHappinessTrackingSystemStability{
+    "HappinessTrackingSystemStability", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables the Happiness Tracking System for the Performance survey.
+const base::Feature kHappinessTrackingSystemPerformance{
+    "HappinessTrackingSystemPerformance", base::FEATURE_DISABLED_BY_DEFAULT};
 // Enables or disables the Happiness Tracking System for Onboarding Experience.
 const base::Feature kHappinessTrackingSystemOnboarding{
     "HappinessTrackingOnboardingExperience", base::FEATURE_DISABLED_BY_DEFAULT};

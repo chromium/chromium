@@ -349,6 +349,12 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHappinessTrackingSystem;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHappinessTrackingSystemStability;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHappinessTrackingSystemPerformance;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHappinessTrackingSystemOnboarding;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

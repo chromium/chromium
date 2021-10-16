@@ -35,6 +35,24 @@ const HatsConfig kHatsGeneralSurvey = {
     prefs::kHatsSurveyCycleEndTimestamp,  // cycle_end_timestamp_pref_name
 };
 
+// Stability Survey -- shown after login, along with the General Survey
+const HatsConfig kHatsStabilitySurvey = {
+    ::features::kHappinessTrackingSystemStability,  // feature
+    "Browser.ChromeOS.HatsSatisfaction.Stability",  // histogram_name
+    base::Days(7),                                  // new_device_threshold
+    prefs::kHatsStabilityDeviceIsSelected,          // is_selected_pref_name
+    prefs::kHatsStabilitySurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
+// Performance Survey -- shown after login, along with the General Survey
+const HatsConfig kHatsPerformanceSurvey = {
+    ::features::kHappinessTrackingSystemPerformance,  // feature
+    "Browser.ChromeOS.HatsSatisfaction.Performance",  // histogram_name
+    base::Days(7),                                    // new_device_threshold
+    prefs::kHatsPerformanceDeviceIsSelected,          // is_selected_pref_name
+    prefs::kHatsPerformanceSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
 // Onboarding Experience Survey -- shown after completing the Onboarding Dialog
 const HatsConfig kHatsOnboardingSurvey = {
     ::features::kHappinessTrackingSystemOnboarding,            // feature

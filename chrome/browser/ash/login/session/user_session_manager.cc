@@ -2259,6 +2259,14 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
           profile, kHatsGeneralSurvey)) {
     hats_notification_controller_ =
         new HatsNotificationController(profile, kHatsGeneralSurvey);
+  } else if (HatsNotificationController::ShouldShowSurveyToProfile(
+                 profile, kHatsStabilitySurvey)) {
+    hats_notification_controller_ =
+        new HatsNotificationController(profile, kHatsStabilitySurvey);
+  } else if (HatsNotificationController::ShouldShowSurveyToProfile(
+                 profile, kHatsPerformanceSurvey)) {
+    hats_notification_controller_ =
+        new HatsNotificationController(profile, kHatsPerformanceSurvey);
   }
 
   base::OnceClosure login_host_finalized_callback = base::BindOnce(
