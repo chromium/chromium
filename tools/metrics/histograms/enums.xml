@@ -17951,6 +17951,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="3" label="TPM Bound To Pcr"/>
   <int value="4" label="TPM Not Bound To Pcr"/>
   <int value="5" label="Lib Scrypt Compat"/>
+  <int value="6" label="Cryptohome Recovery"/>
+  <int value="7" label="TPM ECC"/>
 </enum>
 
 <enum name="CryptohomeChecksumStatus">
