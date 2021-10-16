@@ -10,6 +10,7 @@
 
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/ash_export.h"
+#include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -37,6 +38,9 @@ class ASH_EXPORT AppListBubbleSearchPage
   // SearchResultContainerView::Delegate:
   void OnSearchResultContainerResultsChanging() override;
   void OnSearchResultContainerResultsChanged() override;
+
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Returns true if there are search results that can be keyboard selected.
   bool CanSelectSearchResults();
@@ -80,6 +84,9 @@ class ASH_EXPORT AppListBubbleSearchPage
 
   SearchBoxView* const search_box_view_;
 
+  // The search model for which the results are displayed.
+  SearchModel* const search_model_;
+
   // Whether changes in search result containers are hidden from the
   // accessibility framework.
   bool ignore_result_changes_for_a11y_ = false;
@@ -91,6 +98,12 @@ class ASH_EXPORT AppListBubbleSearchPage
 
   // Handles search result selection.
   std::unique_ptr<ResultSelectionController> result_selection_controller_;
+
+  // Timer used to delay calls to NotifyA11yResultsChanged().
+  base::OneShotTimer notify_a11y_results_changed_timer_;
+
+  // The last reported number of search results shown by all containers.
+  int last_search_result_count_ = 0;
 };
 
 }  // namespace ash

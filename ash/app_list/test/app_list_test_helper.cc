@@ -187,4 +187,8 @@ AppListBubbleAssistantPage* AppListTestHelper::GetBubbleAssistantPage() {
       ->assistant_page_;
 }
 
+SearchModel::SearchResults* AppListTestHelper::GetSearchResults() {
+  return Shell::Get()->app_list_controller()->GetSearchModel()->results();
+}
+
 }  // namespace ash

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/test_app_list_client.h"
 
 namespace ash {
@@ -105,6 +106,7 @@ class AppListTestHelper {
   ScrollableAppsGridView* GetScrollableAppsGridView();
   AppListBubbleSearchPage* GetBubbleSearchPage();
   AppListBubbleAssistantPage* GetBubbleAssistantPage();
+  SearchModel::SearchResults* GetSearchResults();
 
   TestAppListClient* app_list_client() { return app_list_client_.get(); }
 
