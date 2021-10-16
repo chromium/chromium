@@ -17,23 +17,14 @@ import test_util
 # - check the checkbox. If history deletion is disabled, then the check
 #   box has attribute 'disabled';
 
-
 # TODO(crbug.com/986444): move those helper methods into test_util.py once
-# it's moved from CELab into Chromium.
-def getShadowRoot(driver, element):
-  return driver.execute_script("return arguments[0].shadowRoot", element)
-
-
-def getShadowDom(driver, root, selector):
-  el = root.find_element_by_css_selector(selector)
-  return getShadowRoot(driver, el)
-
-
-def getNestedShadowDom(driver, selectors):
-  el = driver
-  for selector in selectors:
-    el = getShadowDom(driver, el, selector)
-  return el
+def getElementFromShadowRoot(driver, element, selector):
+  if element is None:
+    return None
+  else:
+    return driver.execute_script(
+        "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
+        selector)
 
 
 def main(argv):
@@ -49,13 +40,13 @@ def main(argv):
         expected_conditions.visibility_of_element_located((By.TAG_NAME,
                                                            'history-app')))
 
-    histroy_list = getNestedShadowDom(driver, ["history-app", "history-list"])
-
+    history_app = driver.find_element_by_css_selector("history-app")
+    histroy_list = getElementFromShadowRoot(driver, history_app, "history-list")
     # get the checkbox of the first history item
-    histroy_item = histroy_list.find_elements_by_css_selector('history-item')[0]
-    checkbox = getShadowRoot(driver, histroy_item).find_element_by_css_selector(
-        '#main-container cr-checkbox')
-
+    histroy_item = getElementFromShadowRoot(driver, histroy_list,
+                                            'history-item')
+    checkbox = getElementFromShadowRoot(driver, histroy_item,
+                                        '#main-container cr-checkbox')
     disabled = checkbox.get_attribute('disabled')
     if disabled == 'true':
       print('DISABLED')
