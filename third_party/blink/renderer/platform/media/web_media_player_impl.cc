@@ -1383,7 +1383,7 @@ WebMediaPlayerImpl::GetPaintCanvasVideoRenderer() {
 bool WebMediaPlayerImpl::WouldTaintOrigin() const {
   if (demuxer_found_hls_) {
     // HLS manifests might pull segments from a different origin. We can't know
-    // for sure, so we conservatively say no here.
+    // for sure, so we conservatively say yes here.
     return true;
   }
 
