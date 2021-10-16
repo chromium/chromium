@@ -302,7 +302,7 @@ void HistoryTabHelper::DidActivatePortal(
 void HistoryTabHelper::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (render_frame_host->GetParent())
+  if (!render_frame_host->IsInPrimaryMainFrame())
     return;
 
   is_loading_ = false;

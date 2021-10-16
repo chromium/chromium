@@ -49,6 +49,8 @@ class HistoryTabHelper : public content::WebContentsObserver,
                            CreateAddPageArgsHasOpenerWebContentsFirstPage);
   FRIEND_TEST_ALL_PREFIXES(HistoryTabHelperTest,
                            CreateAddPageArgsHasOpenerWebContentseNotFirstPage);
+  FRIEND_TEST_ALL_PREFIXES(HistoryFencedFrameBrowserTest,
+                           FencedFrameDoesNotAffectLoadingState);
 
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(

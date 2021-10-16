@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -819,9 +821,24 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReplaceStateSamePageIsNotRecorded) {
   EXPECT_EQ(1u, url_result.visits.size());
 }
 
+// MPArch means Multiple Page Architecture, each WebContents may have additional
+// FrameTrees which will have their own associated Page.
+class HistoryMPArchBrowserTest : public HistoryBrowserTest {
+ public:
+  HistoryMPArchBrowserTest() = default;
+  ~HistoryMPArchBrowserTest() override = default;
+
+  HistoryMPArchBrowserTest(const HistoryMPArchBrowserTest&) = delete;
+  HistoryMPArchBrowserTest& operator=(const HistoryMPArchBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+};
+
 // For tests which use prerender.
-class HistoryPrerenderBrowserTest : public HistoryBrowserTest {
- protected:
+class HistoryPrerenderBrowserTest : public HistoryMPArchBrowserTest {
+ public:
   HistoryPrerenderBrowserTest()
       : prerender_helper_(
             base::BindRepeating(&HistoryPrerenderBrowserTest::web_contents,
@@ -829,17 +846,18 @@ class HistoryPrerenderBrowserTest : public HistoryBrowserTest {
 
   void SetUp() override {
     prerender_helper_.SetUp(embedded_test_server());
-    HistoryBrowserTest::SetUp();
+    HistoryMPArchBrowserTest::SetUp();
   }
 
-  void SetUpOnMainThread() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
   }
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+ private:
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
@@ -854,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Start a prerender, but we don't activate it.
-  const int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  const int host_id = prerender_helper().AddPrerender(prerendering_url);
   ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   // The prerendered page should not be recorded.
@@ -872,11 +890,11 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Start a prerender.
-  const int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  const int host_id = prerender_helper().AddPrerender(prerendering_url);
   ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   // Activate.
-  prerender_helper_.NavigatePrimaryPage(prerendering_url);
+  prerender_helper().NavigatePrimaryPage(prerendering_url);
   ASSERT_EQ(prerendering_url, web_contents()->GetLastCommittedURL());
 
   // The prerendered page should be recorded.
@@ -897,19 +915,74 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Start a prerender.
-  const int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  const int host_id = prerender_helper().AddPrerender(prerendering_url);
   ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   // Do a fragment navigation in the prerendered page.
-  prerender_helper_.NavigatePrerenderedPage(host_id, prerendering_fragment_url);
-  prerender_helper_.WaitForPrerenderLoadCompletion(host_id);
+  prerender_helper().NavigatePrerenderedPage(host_id,
+                                             prerendering_fragment_url);
+  prerender_helper().WaitForPrerenderLoadCompletion(host_id);
 
   // Activate.
-  prerender_helper_.NavigatePrimaryPage(prerendering_url);
+  prerender_helper().NavigatePrimaryPage(prerendering_url);
   ASSERT_EQ(prerendering_fragment_url, web_contents()->GetLastCommittedURL());
 
   // The last committed URL of the prerendering page, instead of the original
   // prerendering URL, should be recorded.
   EXPECT_THAT(GetHistoryContents(),
               testing::ElementsAre(prerendering_fragment_url, initial_url));
+}
+
+// For tests which use fenced frame.
+class HistoryFencedFrameBrowserTest : public HistoryMPArchBrowserTest {
+ public:
+  HistoryFencedFrameBrowserTest() = default;
+  ~HistoryFencedFrameBrowserTest() override = default;
+  HistoryFencedFrameBrowserTest(const HistoryFencedFrameBrowserTest&) = delete;
+
+  HistoryFencedFrameBrowserTest& operator=(
+      const HistoryFencedFrameBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(HistoryFencedFrameBrowserTest,
+                       FencedFrameDoesNotAffectLoadingState) {
+  HistoryTabHelper* history_tab_helper =
+      HistoryTabHelper::FromWebContents(web_contents());
+  ASSERT_TRUE(history_tab_helper);
+  base::TimeTicks last_load_completion_before_navigation =
+      history_tab_helper->last_load_completion_;
+
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  // |last_load_completion_| should be updated after finishing the normal
+  // navigation.
+  EXPECT_NE(last_load_completion_before_navigation,
+            history_tab_helper->last_load_completion_);
+
+  // Create a fenced frame.
+  GURL fenced_frame_url = embedded_test_server()->GetURL("/title1.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+
+  // Navigate the fenced frame.
+  last_load_completion_before_navigation =
+      history_tab_helper->last_load_completion_;
+  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
+                                                            fenced_frame_url);
+  // |last_load_completion_| should not be updated after finishing the
+  // navigation of the fenced frame.
+  EXPECT_EQ(last_load_completion_before_navigation,
+            history_tab_helper->last_load_completion_);
 }
