@@ -956,11 +956,8 @@ static FloatPoint3D TransformOrigin(const ComputedStyle& style,
       style.TransformOriginZ());
 }
 
-}  // namespace
-
-bool PaintPropertyTreeBuilder::NeedsTransform(
-    const LayoutObject& object,
-    CompositingReasons direct_compositing_reasons) {
+static bool NeedsTransform(const LayoutObject& object,
+                           CompositingReasons direct_compositing_reasons) {
   if (object.IsText())
     return false;
 
@@ -978,8 +975,6 @@ bool PaintPropertyTreeBuilder::NeedsTransform(
 
   return false;
 }
-
-namespace {
 
 static bool UpdateBoxSizeAndCheckActiveAnimationAxisAlignment(
     const LayoutBox& object,
@@ -1010,8 +1005,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
     // direct compositing reason. The latter is required because this is the
     // only way to represent compositing both an element and its stacking
     // descendants.
-    if (PaintPropertyTreeBuilder::NeedsTransform(
-            object_, full_context_.direct_compositing_reasons)) {
+    if (NeedsTransform(object_, full_context_.direct_compositing_reasons)) {
       TransformPaintPropertyNode::State state;
 
       if (object_.IsBox()) {

@@ -339,9 +339,6 @@ class PaintPropertyTreeBuilder {
   // Returns whether any paint property of the object has changed.
   PaintPropertyChangeType UpdateForChildren();
 
-  static bool NeedsTransform(const LayoutObject& object,
-                             CompositingReasons direct_compositing_reasons);
-
  private:
   ALWAYS_INLINE void InitFragmentPaintProperties(
       FragmentData&,
