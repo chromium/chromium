@@ -3513,7 +3513,7 @@ IN_PROC_BROWSER_TEST_F(
                 "kPartyContextMaxSize should have value 20.");
 
   base::test::ScopedRunLoopTimeout increased_timeout(FROM_HERE,
-                                                     base::Seconds(60));
+                                                     base::Seconds(180));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   GURL b_url = embedded_test_server()->GetURL("b.com", "/");
