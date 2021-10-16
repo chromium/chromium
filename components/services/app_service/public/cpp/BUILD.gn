@@ -59,6 +59,8 @@ component("app_update") {
     "app_update.h",
     "capability_access_update.cc",
     "capability_access_update.h",
+    "icon_types.cc",
+    "icon_types.h",
   ]
 
   defines = [ "IS_APP_UPDATE_IMPL" ]
@@ -68,7 +70,10 @@ component("app_update") {
     "//components/services/app_service/public/mojom",
   ]
 
-  deps = [ ":intents" ]
+  deps = [
+    ":intents",
+    "//ui/gfx",
+  ]
 }
 
 source_set("app_url_handling") {
