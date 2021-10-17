@@ -138,6 +138,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_view_manager.h"
+#include "ui/base/ui_base_types.h"
 #else
 #include "chrome/browser/printing/print_view_manager_basic.h"
 #endif
@@ -1631,6 +1632,21 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PrintCommand) {
 
   PrintObserver print_observer(guest_contents, frame);
   chrome::Print(browser());
+  print_observer.WaitForPrintPreview();
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, ContextMenuPrintCommand) {
+  content::WebContents* guest_contents =
+      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
+  ASSERT_TRUE(plugin_frame);
+
+  // Executes the print command as soon as the context menu is shown.
+  ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
+
+  PrintObserver print_observer(guest_contents, plugin_frame);
+  guest_contents->GetMainFrame()->GetRenderWidgetHost()->ShowContextMenuAtPoint(
+      {1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitForPrintPreview();
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)

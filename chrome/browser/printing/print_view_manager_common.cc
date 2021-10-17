@@ -28,14 +28,24 @@
 namespace printing {
 
 namespace {
+// Returns true if `contents` is a full page MimeHandlerViewGuest plugin.
+bool IsFullPagePlugin(content::WebContents* contents) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Stores |guest_contents| in |result| and returns true if |guest_contents| is a
-// full page MimeHandlerViewGuest plugin. Otherwise, returns false.
+  auto* guest_view =
+      extensions::MimeHandlerViewGuest::FromWebContents(contents);
+  if (guest_view && guest_view->is_full_page_plugin())
+    return true;
+#endif
+  return false;
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Stores `guest_contents` in `result` and returns true if
+// `IsFullPagePlugin(guest_contents)`. Otherwise, returns false and `result`
+// remains unchanged.
 bool StoreFullPagePlugin(content::WebContents** result,
                          content::WebContents* guest_contents) {
-  auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(guest_contents);
-  if (guest_view && guest_view->is_full_page_plugin()) {
+  if (IsFullPagePlugin(guest_contents)) {
     *result = guest_contents;
     return true;
   }
@@ -43,20 +53,19 @@ bool StoreFullPagePlugin(content::WebContents** result,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// Pick the right RenderFrameHost based on the WebContentses.
+// Pick the right RenderFrameHost based on the WebContents.
 content::RenderFrameHost* GetRenderFrameHostToUse(
-    content::WebContents* original_contents,
-    content::WebContents* contents_to_use) {
-  if (original_contents == contents_to_use)
-    return GetFrameToPrint(contents_to_use);
+    content::WebContents* contents) {
+  if (!IsFullPagePlugin(contents))
+    return GetFrameToPrint(contents);
 
 #if BUILDFLAG(ENABLE_PDF)
   content::RenderFrameHost* pdf_rfh =
-      pdf_frame_util::FindPdfChildFrame(contents_to_use->GetMainFrame());
+      pdf_frame_util::FindPdfChildFrame(contents->GetMainFrame());
   if (pdf_rfh)
     return pdf_rfh;
 #endif
-  return contents_to_use->GetMainFrame();
+  return contents->GetMainFrame();
 }
 
 }  // namespace
@@ -79,7 +88,7 @@ void StartPrint(
     return;
 
   content::RenderFrameHost* rfh_to_use =
-      GetRenderFrameHostToUse(contents, contents_to_use);
+      GetRenderFrameHostToUse(contents_to_use);
   if (!rfh_to_use)
     return;
 
@@ -107,7 +116,7 @@ void StartBasicPrint(content::WebContents* contents) {
     return;
 
   content::RenderFrameHost* rfh_to_use =
-      GetRenderFrameHostToUse(contents, contents_to_use);
+      GetRenderFrameHostToUse(contents_to_use);
   if (!rfh_to_use)
     return;
 
