@@ -3168,7 +3168,6 @@ crbug.com/626703 [ Linux ] virtual/backface-visibility-interop/external/wpt/css/
 crbug.com/626703 [ Mac11-arm64 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-list-separation/svg-transform-list-separations-008.html [ Crash ]
 crbug.com/626703 [ Linux ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/matrix/svg-matrix-042.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/matrix/svg-matrix-042.html [ Crash ]
-crbug.com/626703 [ Linux ] virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/image-src-change.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/image-src-change.html [ Crash ]
 crbug.com/626703 [ Linux ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/popups/opener-no-openee-yes-same.sub.https.html [ Crash Failure ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/popups/opener-no-openee-yes-same.sub.https.html [ Crash Failure ]

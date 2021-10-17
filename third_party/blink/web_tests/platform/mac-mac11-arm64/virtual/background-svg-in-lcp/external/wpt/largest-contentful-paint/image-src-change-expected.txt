@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Largest Contentful Paint: changing src causes a new entry to be dispatched. assert_between_exclusive: loadTime should occur between the lower bound and the renderTime expected a number greater than 21.200000002980232 and less than 21.799 but got 21.2
+Harness: the test ran to completion.
+
