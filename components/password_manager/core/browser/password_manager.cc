@@ -244,9 +244,6 @@ void PasswordManager::RegisterProfilePrefs(
 #if defined(OS_ANDROID)
   registry->RegisterIntegerPref(
       prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
-
-  registry->RegisterBooleanPref(prefs::kIsEligibleForGmsPasswordsManagement,
-                                false);
 #endif
 }
 

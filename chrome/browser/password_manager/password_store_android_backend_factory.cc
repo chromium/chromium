@@ -11,18 +11,9 @@
 #include "components/password_manager/core/browser/password_store_backend_migration_decorator.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace password_manager {
-
-namespace {
-bool ShouldRecordShadowTraffic(PrefService* prefs) {
-  return prefs->GetBoolean(prefs::kIsEligibleForGmsPasswordsManagement) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kUnifiedPasswordManagerShadowAndroid);
-}
-}  // namespace
 
 std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
     std::unique_ptr<LoginDatabase> login_db,
@@ -32,7 +23,8 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
     return std::make_unique<PasswordStoreAndroidBackend>(
         PasswordStoreAndroidBackendBridge::Create());
   }
-  if (ShouldRecordShadowTraffic(prefs)) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerShadowAndroid)) {
     return std::make_unique<PasswordStoreBackendMigrationDecorator>(
         std::make_unique<PasswordStoreImpl>(std::move(login_db)),
         std::make_unique<PasswordStoreAndroidBackend>(
