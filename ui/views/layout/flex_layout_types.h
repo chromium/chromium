@@ -21,9 +21,6 @@ namespace views {
 
 class View;
 
-// Describes how elements should be aligned within a layout.
-enum class LayoutAlignment { kStart, kCenter, kEnd, kStretch };
-
 // Specifies whether flex space is allocated in the same order as the children
 // in the host view, or in reverse order. Reverse order is useful when you want
 // child views to drop out from left to right instead of right to left if there

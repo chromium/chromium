@@ -16,6 +16,11 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/layout_manager.h"
 
+// DEPRECATED - Prefer other solutions as follows:
+// * For true table- and grid-like layouts, use TableLayout.
+// * For aligning a few objects and other cases, use nested FlexLayouts and/or
+//   BoxLayouts.
+//
 // GridLayout is a LayoutManager that positions child Views in a grid. You
 // define the structure of the Grid first, then add the Views.
 // The following creates a trivial grid with two columns separated by

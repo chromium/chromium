@@ -11,10 +11,10 @@
 #include "ui/views/layout/flex_layout_types.h"
 
 #if !defined(USE_AURA)
-// aura_constants.cc also declared the bool and int[32_t]
-// ClassProperty type.
+// aura_constants.cc also defines these types.
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, bool)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, int)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, gfx::Size*)
 #endif
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, gfx::Insets*)
@@ -42,6 +42,11 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(FlexSpecification, kFlexBehaviorKey, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayoutAlignment,
                                    kCrossAxisAlignmentKey,
                                    nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Size, kTableColAndRowSpanKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayoutAlignment,
+                                   kTableHorizAlignKey,
+                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayoutAlignment, kTableVertAlignKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kViewIgnoredByLayoutKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::ElementIdentifier,
                              kElementIdentifierKey,

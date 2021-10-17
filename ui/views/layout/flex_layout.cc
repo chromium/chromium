@@ -610,7 +610,8 @@ void FlexLayout::CalculateChildBounds(const SizeBounds& size_bounds,
       start.set_main(start.main() + excess_main);
       break;
     case LayoutAlignment::kStretch:
-      NOTIMPLEMENTED() << "Main axis stretch/justify is not yet supported.";
+    case LayoutAlignment::kBaseline:
+      NOTIMPLEMENTED();
       break;
   }
 

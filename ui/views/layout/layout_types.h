@@ -18,6 +18,11 @@
 
 namespace views {
 
+// Describes how elements should be aligned within a layout.  Baseline alignment
+// only makes sense on the vertical axis and is unsupported by most layout
+// managers.
+enum class LayoutAlignment { kStart, kCenter, kEnd, kStretch, kBaseline };
+
 // Whether a layout is oriented horizontally or vertically.
 enum class LayoutOrientation {
   kHorizontal,
