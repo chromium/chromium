@@ -1136,9 +1136,8 @@ TEST_F(PartitionAllocTest, Realloc) {
   // Single-slot slot spans...
   // Test that growing an allocation with realloc() copies everything from the
   // old allocation.
-  size = 300000;
-  ASSERT_GT(size, MaxRegularSlotSpanSize());
-  ASSERT_LE(size, kMaxBucketed);
+  size = MaxRegularSlotSpanSize() + 1;
+  ASSERT_LE(2 * size, kMaxBucketed);  // should be in single-slot span range
   // Confirm size doesn't fill the entire slot.
   ASSERT_LT(size, allocator.root()->AllocationCapacityFromRequestedSize(size));
   ptr = allocator.root()->Alloc(size, type_name);
@@ -1151,28 +1150,32 @@ TEST_F(PartitionAllocTest, Realloc) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
   EXPECT_EQ(kUninitializedByte, static_cast<unsigned char>(char_ptr2[size]));
 #endif
+  allocator.root()->Free(ptr2);
 
   // Test that shrinking an allocation with realloc() also copies everything
   // from the old allocation.
-  ptr = allocator.root()->Realloc(ptr2, size / 2, type_name);
-  EXPECT_PNE(ptr2, ptr);
-  char_ptr = static_cast<char*>(ptr);
-  EXPECT_EQ('A', char_ptr[0]);
-  EXPECT_EQ('A', char_ptr[size / 2 - 1]);
+  size = 2 * (MaxRegularSlotSpanSize() + 1);
+  ASSERT_GT(size / 2, MaxRegularSlotSpanSize());  // in single-slot span range
+  ptr = allocator.root()->Alloc(size, type_name);
+  memset(ptr, 'A', size);
+  ptr2 = allocator.root()->Realloc(ptr2, size / 2, type_name);
+  EXPECT_PNE(ptr, ptr2);
+  char_ptr2 = static_cast<char*>(ptr2);
+  EXPECT_EQ('A', char_ptr2[0]);
+  EXPECT_EQ('A', char_ptr2[size / 2 - 1]);
 #if DCHECK_IS_ON()
   // For single-slot slot spans, the cookie is always placed immediately after
   // the allocation.
-  EXPECT_EQ(kCookieValue[0], static_cast<unsigned char>(char_ptr[size / 2]));
+  EXPECT_EQ(kCookieValue[0], static_cast<unsigned char>(char_ptr2[size / 2]));
 #endif
-
-  allocator.root()->Free(ptr);
+  allocator.root()->Free(ptr2);
 
   // Test that shrinking a direct mapped allocation happens in-place.
   // Pick a large size so that Realloc doesn't think it's worthwhile to
   // downsize even if one less super page is used (due to high granularity on
   // 64-bit systems).
   size = 10 * kSuperPageSize + SystemPageSize() - 42;
-  ASSERT_GT(size, kMaxBucketed);
+  ASSERT_GT(size - 32 * SystemPageSize(), kMaxBucketed);
   ptr = allocator.root()->Alloc(size, type_name);
   size_t actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   ptr2 = allocator.root()->Realloc(ptr, size - SystemPageSize(), type_name);
