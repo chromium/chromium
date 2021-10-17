@@ -1712,14 +1712,9 @@ void ArcBluetoothBridge::ReadGattCharacteristic(
                device::BluetoothGattService::GATT_ERROR_FAILED, /*result=*/{});
     return;
   }
-  if (!(characteristic->GetPermissions() & kGattReadPermission)) {
-    // TODO(b/201737474): Investigate in what case this could happen.
-    LOG(ERROR) << "Requested GATT characteristic does not have read permission";
-    OnGattRead(std::move(callback),
-               device::BluetoothGattService::GATT_ERROR_NOT_PERMITTED,
-               /*result=*/{});
-    return;
-  }
+
+  // TODO(b/186866646#comment54): Investigate why
+  // characteristic->GetPermissions() may not have kGattReadPermission here.
 
   characteristic->ReadRemoteCharacteristic(
       base::BindOnce(&OnGattRead, std::move(callback)));
