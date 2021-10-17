@@ -1280,13 +1280,8 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
   allocator.root()->Free(ptr2);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// Bulk-disabled on mac-arm64 for bot stabilization: https://crbug.com/1154345
-#define MAYBE_PartialPageFreelists DISABLED_PartialPageFreelists
-#else
-#define MAYBE_PartialPageFreelists PartialPageFreelists
-#endif
-TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
+// Tests the handing out of freelists for partial slot spans.
+TEST_F(PartitionAllocTest, PartialPageFreelists) {
   size_t big_size = SystemPageSize() - kExtraAllocSize;
   size_t bucket_index = SizeToIndex(big_size + kExtraAllocSize);
   PartitionRoot<ThreadSafe>::Bucket* bucket =
@@ -1350,8 +1345,8 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
   EXPECT_TRUE(slot_span2->freelist_head);
   EXPECT_EQ(0, slot_span2->num_allocated_slots);
 
-  // Size that doesn't divide the system page size.
-  size_t non_dividing_size = 2100 - kExtraAllocSize;
+  // Size that's just above half a page.
+  size_t non_dividing_size = SystemPageSize() / 2 + 1 - kExtraAllocSize;
   bucket_index = SizeToIndex(non_dividing_size + kExtraAllocSize);
   bucket = &allocator.root()->buckets[bucket_index];
   EXPECT_EQ(nullptr, bucket->empty_slot_spans_head);
@@ -1374,6 +1369,9 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
   EXPECT_TRUE(ptr2);
   EXPECT_TRUE(slot_span->freelist_head);
   EXPECT_EQ(2, slot_span->num_allocated_slots);
+  // 2 slots got provisioned: the first one fills the rest of the first (already
+  // provision page) and exceeds it by just a tad, thus leading to provisioning
+  // a new page, and the second one fully fits within that new page.
   EXPECT_EQ(expected_slots - 3, slot_span->num_unprovisioned_slots);
 
   ptr3 = allocator.root()->Alloc(non_dividing_size, type_name);
