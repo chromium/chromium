@@ -17,7 +17,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module.h"
-#include "components/reporting/storage/storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
@@ -115,21 +114,4 @@ void StorageSelector::CreateMissiveStorageModule(
   return;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// static
-void StorageSelector::CreateLocalStorageModule(
-    const base::FilePath& local_reporting_path,
-    base::StringPiece verification_key,
-    CompressionInformation::CompressionAlgorithm compression_algorithm,
-    UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
-    base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
-        cb) {
-  LOG(WARNING) << "Store reporting data locally";
-  StorageModule::Create(
-      StorageOptions()
-          .set_directory(local_reporting_path)
-          .set_signature_verification_public_key(verification_key),
-      std::move(async_start_upload_cb), EncryptionModule::Create(),
-      CompressionModule::Create(512, compression_algorithm), std::move(cb));
-}
 }  // namespace reporting

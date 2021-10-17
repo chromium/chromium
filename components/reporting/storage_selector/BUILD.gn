@@ -32,14 +32,6 @@ source_set("storage_selector") {
     deps += [
       "//chromeos/dbus/missive",
       "//components/reporting/storage:missive_storage_module",
-
-      # Storage module included too, because feature instructs
-      # report client to attach missive or local storage module.
-      # If we switch to only connect to missive, this dependence
-      # will no longer be needed.
-      "//components/reporting/storage:storage_module",
     ]
-  } else {
-    deps += [ "//components/reporting/storage:storage_module" ]
   }
 }

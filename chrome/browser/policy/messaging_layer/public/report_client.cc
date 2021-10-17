@@ -50,6 +50,21 @@ namespace {
 const base::FilePath::CharType kReportingDirectory[] =
     FILE_PATH_LITERAL("reporting");
 
+void CreateLocalStorageModule(
+    const base::FilePath& local_reporting_path,
+    base::StringPiece verification_key,
+    CompressionInformation::CompressionAlgorithm compression_algorithm,
+    UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
+    base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
+        cb) {
+  LOG(WARNING) << "Store reporting data locally";
+  StorageModule::Create(
+      StorageOptions()
+          .set_directory(local_reporting_path)
+          .set_signature_verification_public_key(verification_key),
+      std::move(async_start_upload_cb), EncryptionModule::Create(),
+      CompressionModule::Create(512, compression_algorithm), std::move(cb));
+}
 }  // namespace
 
 // Uploader is passed to Storage in order to upload messages using the
@@ -176,8 +191,7 @@ void ReportingClient::Uploader::Helper::Completed(Status final_status) {
 
 ReportingClient::ReportingClient()
     : ReportQueueProvider(base::BindRepeating(
-          [](ReportingClient* client,
-             base::OnceCallback<void(
+          [](base::OnceCallback<void(
                  StatusOr<scoped_refptr<StorageModuleInterface>>)>
                  storage_created_cb) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -187,24 +201,24 @@ ReportingClient::ReportingClient()
               return;
             }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-            StorageSelector::CreateLocalStorageModule(
-                client->reporting_path_, client->verification_key_,
+
+            // Storage location in the local file system (if local storage is
+            // enabled).
+            base::FilePath reporting_path;
+            const auto res =
+                base::PathService::Get(chrome::DIR_USER_DATA, &reporting_path);
+            DCHECK(res) << "Could not retrieve base path";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+            reporting_path = reporting_path.Append("user");
+#endif
+            reporting_path = reporting_path.Append(kReportingDirectory);
+            CreateLocalStorageModule(
+                reporting_path, SignatureVerifier::VerificationKey(),
                 CompressionInformation::COMPRESSION_SNAPPY,
                 base::BindRepeating(&ReportingClient::AsyncStartUploader),
                 std::move(storage_created_cb));
-          },
-          this)),
-      verification_key_(SignatureVerifier::VerificationKey()),
+          })),
       build_cloud_policy_client_cb_(GetCloudPolicyClientCb()) {
-  // Storage location in the local file system (if local storage is enabled).
-  base::FilePath user_data_dir;
-  const auto res =
-      base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  DCHECK(res) << "Could not retrieve base path";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_data_dir = user_data_dir.Append("user");
-#endif
-  reporting_path_ = user_data_dir.Append(kReportingDirectory);
 }
 
 ReportingClient::~ReportingClient() = default;
@@ -220,25 +234,6 @@ ReportQueueProvider* ReportQueueProvider::GetInstance() {
   // base::Singleton<ReportingClient>::get() cannot be called
   // outside ReportingClient class.
   return ReportingClient::GetInstance();
-}
-
-void ReportingClient::CreateNewQueue(
-    std::unique_ptr<ReportQueueConfiguration> config,
-    CreateReportQueueCallback cb) {
-  sequenced_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](ReportingClient* client,
-                        std::unique_ptr<ReportQueueConfiguration> config,
-                        CreateReportQueueCallback cb) {
-                       ReportQueueImpl::Create(
-                           std::move(config), client->storage(), std::move(cb));
-                     },
-                     this, std::move(config), std::move(cb)));
-}
-
-StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
-ReportingClient::CreateNewSpeculativeQueue() {
-  return SpeculativeReportQueueImpl::Create();
 }
 
 // static
@@ -313,11 +308,23 @@ ReportingClient::TestEnvironment::TestEnvironment(
     const base::FilePath& reporting_path,
     base::StringPiece verification_key,
     policy::CloudPolicyClient* client)
-    : saved_build_cloud_policy_client_cb_(std::move(
+    : saved_storage_create_cb_(
+          std::move(ReportingClient::GetInstance()->storage_create_cb_)),
+      saved_build_cloud_policy_client_cb_(std::move(
           ReportingClient::GetInstance()->build_cloud_policy_client_cb_)) {
-  ReportingClient::GetInstance()->reporting_path_ = reporting_path;
-  ReportingClient::GetInstance()->verification_key_.assign(
-      verification_key.data(), verification_key.size());
+  ReportingClient::GetInstance()->storage_create_cb_ = base::BindRepeating(
+      [](const base::FilePath& reporting_path,
+         base::StringPiece verification_key,
+         base::OnceCallback<void(
+             StatusOr<scoped_refptr<StorageModuleInterface>>)>
+             storage_created_cb) {
+        CreateLocalStorageModule(
+            reporting_path, verification_key,
+            CompressionInformation::COMPRESSION_SNAPPY,
+            base::BindRepeating(&ReportingClient::AsyncStartUploader),
+            std::move(storage_created_cb));
+      },
+      reporting_path, verification_key);
   ReportingClient::GetInstance()->build_cloud_policy_client_cb_ =
       base::BindRepeating(
           [](policy::CloudPolicyClient* client,
@@ -328,6 +335,8 @@ ReportingClient::TestEnvironment::TestEnvironment(
 }
 
 ReportingClient::TestEnvironment::~TestEnvironment() {
+  ReportingClient::GetInstance()->storage_create_cb_ =
+      std::move(saved_storage_create_cb_);
   ReportingClient::GetInstance()->build_cloud_policy_client_cb_ =
       std::move(saved_build_cloud_policy_client_cb_);
   base::Singleton<ReportingClient>::OnExit(nullptr);

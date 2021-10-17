@@ -97,10 +97,9 @@ class ReportQueueProvider {
       base::RepeatingCallback<void(OnStorageModuleCreatedCallback)>;
 
   explicit ReportQueueProvider(StorageModuleCreateCallback storage_create_cb);
-  virtual ~ReportQueueProvider();
-
   ReportQueueProvider(const ReportQueueProvider& other) = delete;
   ReportQueueProvider& operator=(const ReportQueueProvider& other) = delete;
+  virtual ~ReportQueueProvider();
 
   // Asynchronously creates a queue based on the configuration. In the process
   // singleton ReportQueueProvider is potentially created and retrieved
@@ -176,6 +175,10 @@ class ReportQueueProvider {
     SEQUENCE_CHECKER(sequence_checker_);
   };
 
+ protected:
+  // Storage module creator (can be substituted for testing purposes).
+  StorageModuleCreateCallback storage_create_cb_;
+
  private:
   // Holds the creation request for a ReportQueue.
   class CreateReportQueueRequest {
@@ -201,9 +204,9 @@ class ReportQueueProvider {
   // Creates and initializes queue implementation. Returns status in case of
   // error.
   virtual void CreateNewQueue(std::unique_ptr<ReportQueueConfiguration> config,
-                              CreateReportQueueCallback cb) = 0;
+                              CreateReportQueueCallback cb);
   virtual StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
-  CreateNewSpeculativeQueue() = 0;
+  CreateNewSpeculativeQueue();
 
   void OnPushComplete();
   void OnInitState(bool provider_configured);
@@ -216,9 +219,6 @@ class ReportQueueProvider {
   // initializing.
   scoped_refptr<SharedQueue<CreateReportQueueRequest>> create_request_queue_;
   scoped_refptr<InitializationStateTracker> init_state_tracker_;
-
-  // Storage module creator.
-  const StorageModuleCreateCallback storage_create_cb_;
 
   // Storage module associated with the provider. It serves all queues created
   // by it. Protected by sequenced_task_runner_.

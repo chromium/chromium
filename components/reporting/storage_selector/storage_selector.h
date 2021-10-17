@@ -35,13 +35,6 @@ class StorageSelector {
   static bool is_use_missive();
   static bool is_uploader_required();
 
-  static void CreateLocalStorageModule(
-      const base::FilePath& local_reporting_path,
-      base::StringPiece verification_key,
-      CompressionInformation::CompressionAlgorithm compression_algorithm,
-      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
-      base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
-          cb);
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   static void CreateMissiveStorageModule(
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>

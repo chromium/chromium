@@ -9,6 +9,7 @@
 #include <queue>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
@@ -31,15 +32,8 @@ namespace reporting {
 class ReportingClient : public ReportQueueProvider {
  public:
   using CreateReportQueueResponse = StatusOr<std::unique_ptr<ReportQueue>>;
-
   using CreateReportQueueCallback =
       base::OnceCallback<void(CreateReportQueueResponse)>;
-
-  void CreateNewQueue(std::unique_ptr<ReportQueueConfiguration> config,
-                      CreateReportQueueCallback cb) override;
-
-  StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
-  CreateNewSpeculativeQueue() override;
 
   // RAII class for testing ReportingClient - substitutes reporting files
   // location, signature verification public key and a cloud policy client
@@ -54,6 +48,7 @@ class ReportingClient : public ReportQueueProvider {
     ~TestEnvironment();
 
    private:
+    StorageModuleCreateCallback saved_storage_create_cb_;
     GetCloudPolicyClientCallback saved_build_cloud_policy_client_cb_;
     std::unique_ptr<EncryptedReportingUploadProvider> saved_upload_provider_;
   };
@@ -92,10 +87,6 @@ class ReportingClient : public ReportQueueProvider {
   // Returns default upload provider for the client.
   std::unique_ptr<EncryptedReportingUploadProvider> GetDefaultUploadProvider(
       GetCloudPolicyClientCallback build_cloud_policy_client_cb);
-
-  // Local storage parameters.
-  base::FilePath reporting_path_;
-  std::string verification_key_;
 
   // Cloud policy client (set by constructor, may only be changed for tests).
   GetCloudPolicyClientCallback build_cloud_policy_client_cb_;

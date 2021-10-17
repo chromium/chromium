@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/client/report_queue_impl.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage_selector/storage_selector.h"
@@ -85,16 +86,36 @@ class ReportQueueProvider::InitializingContext {
 
 ReportQueueProvider::ReportQueueProvider(
     StorageModuleCreateCallback storage_create_cb)
-    : create_request_queue_(SharedQueue<CreateReportQueueRequest>::Create()),
+    : storage_create_cb_(storage_create_cb),
+      create_request_queue_(SharedQueue<CreateReportQueueRequest>::Create()),
       init_state_tracker_(
           ReportQueueProvider::InitializationStateTracker::Create()),
-      storage_create_cb_(storage_create_cb),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 ReportQueueProvider::~ReportQueueProvider() = default;
+
+void ReportQueueProvider::CreateNewQueue(
+    std::unique_ptr<ReportQueueConfiguration> config,
+    CreateReportQueueCallback cb) {
+  sequenced_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](ReportQueueProvider* provider,
+                        std::unique_ptr<ReportQueueConfiguration> config,
+                        CreateReportQueueCallback cb) {
+                       ReportQueueImpl::Create(std::move(config),
+                                               provider->storage(),
+                                               std::move(cb));
+                     },
+                     this, std::move(config), std::move(cb)));
+}
+
+StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
+ReportQueueProvider::CreateNewSpeculativeQueue() {
+  return SpeculativeReportQueueImpl::Create();
+}
 
 void ReportQueueProvider::OnInitCompleted() {}
 
