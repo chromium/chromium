@@ -314,15 +314,6 @@ class VIEWS_EXPORT ColumnSet {
 
   ~ColumnSet();
 
-  // Adds a column for padding. When adding views, padding columns are
-  // automatically skipped. For example, if you create a column set with
-  // two columns separated by a padding column, the second AddView automatically
-  // skips past the padding column. That is, to add two views, do:
-  // layout->AddView(v1); layout->AddView(v2);, not:
-  // layout->AddView(v1); layout->SkipColumns(1); layout->AddView(v2);
-  // See class description for details on |resize_percent|.
-  void AddPaddingColumn(float resize_percent, int width);
-
   // Adds a column. The alignment gives the default alignment for views added
   // with no explicit alignment. fixed_width gives a specific width for the
   // column, and is only used if size_type == FIXED. min_width gives the
@@ -339,6 +330,15 @@ class VIEWS_EXPORT ColumnSet {
                  GridLayout::ColumnSize size_type,
                  int fixed_width,
                  int min_width);
+
+  // Adds a column for padding. When adding views, padding columns are
+  // automatically skipped. For example, if you create a column set with
+  // two columns separated by a padding column, the second AddView automatically
+  // skips past the padding column. That is, to add two views, do:
+  // layout->AddView(v1); layout->AddView(v2);, not:
+  // layout->AddView(v1); layout->SkipColumns(1); layout->AddView(v2);
+  // See class description for details on |resize_percent|.
+  void AddPaddingColumn(float resize_percent, int width);
 
   // Forces the specified columns to have the same size. The size of
   // linked columns is that of the max of the specified columns.
@@ -357,6 +357,10 @@ class VIEWS_EXPORT ColumnSet {
   int num_columns() const { return static_cast<int>(columns_.size()); }
 
  private:
+  enum class SizeCalculationType {
+    kPreferred,
+    kMinimum,
+  };
   friend class GridLayout;
 
   explicit ColumnSet(int id);
@@ -395,11 +399,6 @@ class VIEWS_EXPORT ColumnSet {
   // Updates the x coordinate of each column from the previous ones.
   // NOTE: this doesn't include the insets.
   void ResetColumnXCoordinates();
-
-  enum class SizeCalculationType {
-    kPreferred,
-    kMinimum,
-  };
 
   // Calculate the preferred width of each view in this column set, as well
   // as updating the remaining_width.
