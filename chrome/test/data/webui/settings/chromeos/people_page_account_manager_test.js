@@ -181,24 +181,15 @@ cr.define('settings_people_page_account_manager', function() {
     test('AccountListIsPopulatedAtStartup', async function() {
       await browserProxy.whenCalled('getAccounts');
       Polymer.dom.flush();
-      if (accountManager.isAccountManagementFlowsV2Enabled_) {
         // 1 device account + 3 secondary accounts were added in
         // |getAccounts()| mock above.
         assertEquals(3, accountList.items.length);
-      } else {
-        // 4 accounts were added in |getAccounts()| mock above.
-        assertEquals(4, accountList.items.length);
-      }
     });
 
     test('AddAccount', function() {
       assertFalse(accountManager.$$('#add-account-button').disabled);
-      if (accountManager.isAccountManagementFlowsV2Enabled_) {
         assertTrue(
             accountManager.$$('.secondary-accounts-disabled-tooltip') === null);
-      } else {
-        assertTrue(accountManager.$$('#settings-box-user-message').hidden);
-      }
       accountManager.$$('#add-account-button').click();
       assertEquals(1, browserProxy.getCallCount('addAccount'));
     });
@@ -282,17 +273,10 @@ cr.define('settings_people_page_account_manager', function() {
       await browserProxy.whenCalled('getAccounts');
       Polymer.dom.flush();
 
-      if (accountManager.isAccountManagementFlowsV2Enabled_) {
         const managedBadge = accountManager.root.querySelector(
             '.device-account-icon .managed-badge');
         // Managed badge should be shown for managed accounts.
         assertFalse(managedBadge.hidden);
-      } else {
-        const managementLabel =
-            accountManager.root.querySelectorAll('.management-status')[0]
-                .innerHTML.trim();
-        assertEquals('Managed by Family Link', managementLabel);
-      }
     });
   });
 
@@ -326,17 +310,10 @@ cr.define('settings_people_page_account_manager', function() {
       await browserProxy.whenCalled('getAccounts');
       Polymer.dom.flush();
 
-      if (accountManager.isAccountManagementFlowsV2Enabled_) {
         const managedBadge = accountManager.root.querySelector(
             '.device-account-icon .managed-badge');
         // Managed badge should not be shown for unmanaged accounts.
         assertEquals(null, managedBadge);
-      } else {
-        const managementLabel =
-            accountManager.root.querySelectorAll('.management-status')[0]
-                .innerHTML.trim();
-        assertEquals('Primary account', managementLabel);
-      }
     });
   });
 
@@ -370,27 +347,16 @@ cr.define('settings_people_page_account_manager', function() {
 
     test('AddAccountCanBeDisabledByPolicy', function() {
       assertTrue(accountManager.$$('#add-account-button').disabled);
-      if (accountManager.isAccountManagementFlowsV2Enabled_) {
         assertFalse(
             accountManager.$$('.secondary-accounts-disabled-tooltip') === null);
-      } else {
-        assertFalse(accountManager.$$('#settings-box-user-message').hidden);
-      }
     });
 
     test('UserMessageSetForAccountType', function() {
-      if (accountManager.isAccountManagementFlowsV2Enabled_) {
         assertEquals(
             loadTimeData.getString(
                 'accountManagerSecondaryAccountsDisabledText'),
             accountManager.$$('.secondary-accounts-disabled-tooltip')
                 .tooltipText);
-      } else {
-        assertEquals(
-            loadTimeData.getString(
-                'accountManagerSecondaryAccountsDisabledText'),
-            accountManager.$$('#user-message-text').textContent.trim());
-      }
     });
   });
 
@@ -423,18 +389,11 @@ cr.define('settings_people_page_account_manager', function() {
     });
 
     test('UserMessageSetForAccountType', function() {
-      if (accountManager.isAccountManagementFlowsV2Enabled_) {
         assertEquals(
             loadTimeData.getString(
                 'accountManagerSecondaryAccountsDisabledChildText'),
             accountManager.$$('.secondary-accounts-disabled-tooltip')
                 .tooltipText);
-      } else {
-        assertEquals(
-            loadTimeData.getString(
-                'accountManagerSecondaryAccountsDisabledChildText'),
-            accountManager.$$('#user-message-text').textContent.trim());
-      }
     });
   });
 
@@ -465,10 +424,6 @@ cr.define('settings_people_page_account_manager', function() {
     });
 
     test('FamilyLinkIcon', function() {
-      if (!accountManager.isAccountManagementFlowsV2Enabled_) {
-        return;
-      }
-
       const icon = accountManager.$$('.managed-message cr-icon-button');
       assertTrue(!!icon, 'Could not find the managed icon');
 

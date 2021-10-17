@@ -404,8 +404,7 @@ suite('settings-fingerprint-list', function() {
   });
 
   test('Deep link to add fingerprint', async () => {
-    const settingId =
-        fingerprintList.isAccountManagementFlowsV2Enabled_ ? '1111' : '313';
+    const settingId = '1111';
 
     browserProxy.setFingerprints(['Label 1', 'Label 2']);
     fingerprintList.updateFingerprintsList_();
@@ -426,8 +425,7 @@ suite('settings-fingerprint-list', function() {
   });
 
   test('Deep link to remove fingerprint', async () => {
-    const settingId =
-        fingerprintList.isAccountManagementFlowsV2Enabled_ ? '1112' : '314';
+    const settingId = '1112';
 
     browserProxy.setFingerprints(['Label 1', 'Label 2']);
     fingerprintList.updateFingerprintsList_();

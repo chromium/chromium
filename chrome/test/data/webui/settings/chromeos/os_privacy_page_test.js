@@ -154,6 +154,39 @@ suite('PrivacyPageTests', function() {
         'Verified access toggle should be focused for settingId=1101.');
   });
 
+  test('Deep link to guest browsing on users page', async () => {
+    const params = new URLSearchParams;
+    params.append('settingId', '1104');
+    settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = privacyPage.$$('settings-users-page')
+                                .shadowRoot.querySelector('#allowGuestBrowsing')
+                                .shadowRoot.querySelector('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Allow guest browsing should be focused for settingId=1104.');
+  });
+
+  test('Deep link to show usernames on sign in on users page', async () => {
+    const params = new URLSearchParams;
+    params.append('settingId', '1105');
+    settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement =
+        privacyPage.$$('settings-users-page')
+            .shadowRoot.querySelector('#showUserNamesOnSignIn')
+            .shadowRoot.querySelector('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Allow guest browsing should be focused for settingId=1105.');
+  });
+
   test('Fingerprint dialog closes when token expires', async () => {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,
@@ -163,10 +196,6 @@ suite('PrivacyPageTests', function() {
     document.body.appendChild(privacyPage);
 
     await test_util.waitAfterNextRender(privacyPage);
-
-    if (!privacyPage.isAccountManagementFlowsV2Enabled_) {
-      return;
-    }
 
     const quickUnlockPrivateApi = new settings.FakeQuickUnlockPrivate();
     privacyPage.authToken_ = quickUnlockPrivateApi.getFakeToken();

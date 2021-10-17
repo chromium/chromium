@@ -111,17 +111,6 @@ cr.define('settings', function() {
             r.SYNC, mojom.SYNC_DEPRECATED_ADVANCED_SUBPAGE_PATH,
             Subpage.kSyncDeprecatedAdvanced);
       }
-      if (!loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled')) {
-        r.LOCK_SCREEN = createSubpage(
-            r.OS_PEOPLE, mojom.SECURITY_AND_SIGN_IN_SUBPAGE_PATH,
-            Subpage.kSecurityAndSignIn);
-        r.FINGERPRINT = createSubpage(
-            r.LOCK_SCREEN, mojom.FINGERPRINT_SUBPAGE_PATH,
-            Subpage.kFingerprint);
-        r.ACCOUNTS = createSubpage(
-            r.OS_PEOPLE, mojom.MANAGE_OTHER_PEOPLE_SUBPAGE_PATH,
-            Subpage.kManageOtherPeople);
-      }
     }
 
     // Kerberos section.
@@ -242,25 +231,18 @@ cr.define('settings', function() {
         r.DATETIME, mojom.TIME_ZONE_SUBPAGE_PATH, Subpage.kTimeZone);
 
     // Privacy and Security section.
-
-    if (loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled')) {
-      r.OS_PRIVACY = createSection(
-          r.BASIC, mojom.PRIVACY_AND_SECURITY_SECTION_PATH,
-          Section.kPrivacyAndSecurity);
-      r.LOCK_SCREEN = createSubpage(
-          r.OS_PRIVACY, mojom.SECURITY_AND_SIGN_IN_SUBPAGE_PATH_V2,
-          Subpage.kSecurityAndSignInV2);
-      r.FINGERPRINT = createSubpage(
-          r.LOCK_SCREEN, mojom.FINGERPRINT_SUBPAGE_PATH_V2,
-          Subpage.kFingerprintV2);
-      r.ACCOUNTS = createSubpage(
-          r.OS_PRIVACY, mojom.MANAGE_OTHER_PEOPLE_SUBPAGE_PATH_V2,
-          Subpage.kManageOtherPeopleV2);
-    } else {
-      r.OS_PRIVACY = createSection(
-          r.ADVANCED, mojom.PRIVACY_AND_SECURITY_SECTION_PATH,
-          Section.kPrivacyAndSecurity);
-    }
+    r.OS_PRIVACY = createSection(
+        r.BASIC, mojom.PRIVACY_AND_SECURITY_SECTION_PATH,
+        Section.kPrivacyAndSecurity);
+    r.LOCK_SCREEN = createSubpage(
+        r.OS_PRIVACY, mojom.SECURITY_AND_SIGN_IN_SUBPAGE_PATH_V2,
+        Subpage.kSecurityAndSignInV2);
+    r.FINGERPRINT = createSubpage(
+        r.LOCK_SCREEN, mojom.FINGERPRINT_SUBPAGE_PATH_V2,
+        Subpage.kFingerprintV2);
+    r.ACCOUNTS = createSubpage(
+        r.OS_PRIVACY, mojom.MANAGE_OTHER_PEOPLE_SUBPAGE_PATH_V2,
+        Subpage.kManageOtherPeopleV2);
 
     // Languages and Input section.
     r.OS_LANGUAGES = createSection(

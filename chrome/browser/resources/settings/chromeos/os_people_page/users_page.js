@@ -64,18 +64,6 @@ Polymer({
         chromeos.settings.mojom.Setting.kRemoveFromUserAllowlistV2,
       ]),
     },
-
-    /**
-     * True if redesign of account management flows is enabled.
-     * @private
-     */
-    isAccountManagementFlowsV2Enabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
-      },
-      readOnly: true,
-    },
   },
 
   listeners: {'all-managed-users-removed': 'focusAddUserButton_'},

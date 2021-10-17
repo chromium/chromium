@@ -121,7 +121,6 @@ suite('OsSettingsPageTests', function() {
 
   test('Check os-settings-privacy-page exists', async () => {
     init();
-    settingsPage.isAccountManagementFlowsV2Enabled_ = false;
     const osSettingsPrivacyPage = settingsPage.$$('os-settings-privacy-page');
     assert(!!osSettingsPrivacyPage);
     Polymer.dom.flush();

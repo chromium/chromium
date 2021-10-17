@@ -115,34 +115,16 @@
         </div>
 
         <cr-link-row id="sync-setup"
-            start-icon="[[getSyncSetupIcon_(
-                            isAccountManagementFlowsV2Enabled_)]]"
+            start-icon="cr:sync"
             label="[[getSyncRowLabel_()]]"
             sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
             on-click="onSyncTap_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
 
-        <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
-          <cr-link-row id="lock-screen-subpage-trigger" class="hr"
-              on-click="onConfigureLockTap_"
-              label="[[selectLockScreenTitleString(hasPinLogin)]]"
-              sub-label="[[getPasswordState_(hasPin,
-                  prefs.settings.enable_screen_lock.value)]]"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-
         <template is="dom-if" if="[[showParentalControls_]]">
           <settings-parental-controls-page>
           </settings-parental-controls-page>
-        </template>
-
-        <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
-          <cr-link-row id="manage-other-people-subpage-trigger"
-              label="$i18n{manageOtherPeople}" on-click="onManageOtherPeople_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
         </template>
 
       </div>
@@ -186,35 +168,6 @@
         </template>
       </template>
 
-      <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
-        <template is="dom-if" route-path="/lockScreen">
-          <settings-subpage
-              page-title="[[selectLockScreenTitleString(hasPinLogin)]]">
-            <settings-lock-screen id="lock-screen" set-modes="[[setModes_]]"
-                prefs="{{prefs}}" auth-token="[[authToken_]]"
-                on-invalidate-auth-token-requested="onInvalidateTokenRequested_"
-                on-password-requested="onPasswordRequested_">
-            </settings-lock-screen>
-          </settings-subpage>
-        </template>
-        <template is="dom-if" if="[[fingerprintUnlockEnabled_]]">
-          <template is="dom-if" route-path="/lockScreen/fingerprint">
-            <settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
-              <settings-fingerprint-list id="fingerprint-list"
-                  auth-token="[[authToken_.token]]"
-                  set-modes="[[setModes_]]"
-                  on-password-requested="onPasswordRequested_">
-              </settings-fingerprint-list>
-            </settings-subpage>
-          </template>
-        </template>
-        <template is="dom-if" route-path="/accounts">
-          <settings-subpage page-title="$i18n{manageOtherPeople}">
-            <settings-users-page prefs="{{prefs}}">
-            </settings-users-page>
-          </settings-subpage>
-        </template>
-      </template>
       <template is="dom-if" route-path="/accountManager">
         <settings-subpage page-title="$i18n{accountManagerPageTitle}">
           <settings-account-manager prefs="[[prefs]]">
@@ -222,16 +175,6 @@
         </settings-subpage>
       </template>
     </settings-animated-pages>
-
-    <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
-      <template is="dom-if" if="[[showPasswordPromptDialog_]]" restamp>
-        <settings-lock-screen-password-prompt-dialog
-            id="passwordDialog"
-            on-close="onPasswordPromptDialogClose_"
-            on-auth-token-obtained="onAuthTokenObtained_">
-        </settings-lock-screen-password-prompt-dialog>
-      </template>
-    </template>
 
     <template is="dom-if" if="[[showSignoutDialog_]]" restamp>
       <settings-signout-dialog sync-status="[[syncStatus]]"

@@ -63,18 +63,6 @@ Polymer({
     },
 
     /**
-     * True if redesign of account management flows is enabled.
-     * @private
-     */
-    isAccountManagementFlowsV2Enabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
-      },
-      readOnly: true,
-    },
-
-    /**
      * @return {boolean} True if secondary account sign-ins are allowed, false
      *    otherwise.
      * @private
@@ -138,15 +126,6 @@ Polymer({
   },
 
   /**
-   * @return {boolean} whether the additional messages for child user should be
-   *     shown.
-   * @private
-   */
-  showChildMessage_() {
-    return this.isChildUser_ && !this.isAccountManagementFlowsV2Enabled_;
-  },
-
-  /**
    * @return {string} account manager 'add account' label.
    * @private
    */
@@ -163,10 +142,9 @@ Polymer({
    * @private
    */
   getAccountListHeader_() {
-    if (this.isAccountManagementFlowsV2Enabled_ && this.isChildUser_) {
-      return loadTimeData.getString('accountListHeaderChild');
-    }
-    return loadTimeData.getString('accountListHeader');
+    return this.isChildUser_ ?
+        loadTimeData.getString('accountListHeaderChild') :
+        loadTimeData.getString('accountListHeader');
   },
 
   /**
@@ -177,16 +155,6 @@ Polymer({
     return this.isChildUser_ ?
         loadTimeData.getString('accountListChildDescription') :
         loadTimeData.getString('accountListDescription');
-  },
-
-  /**
-   * @return {boolean} whether 'Secondary Accounts disabled' tooltip should be
-   *     shown.
-   * @private
-   */
-  showSecondaryAccountsDisabledTooltip_() {
-    return this.isAccountManagementFlowsV2Enabled_ &&
-        !this.isSecondaryGoogleAccountSigninAllowed_;
   },
 
   /**
@@ -250,15 +218,6 @@ Polymer({
     // invalidation) and we do not have a mechanism to change the cryptohome
     // password in-session.
     return !account.isDeviceAccount && !account.isSignedIn;
-  },
-
-  /**
-   * @return {boolean} True if 'School account' label should be displayed for
-   *     secondary accounts.
-   * @private
-   */
-  shouldDisplayEduSecondaryAccountLabel_() {
-    return this.isChildUser_ && !this.isAccountManagementFlowsV2Enabled_;
   },
 
   /**
@@ -369,25 +328,7 @@ Polymer({
    */
   getAccounts_() {
     // TODO(crbug.com/1152711): rename the method to `getSecondaryAccounts_`.
-    if (this.isAccountManagementFlowsV2Enabled_) {
-      // Return only secondary accounts.
-      return this.accounts_.filter(account => !account.isDeviceAccount);
-    }
-
-    return this.accounts_;
-  },
-
-
-  /**
-   * @param {string} classList existing class list.
-   * @return {string} new class list.
-   * @private
-   */
-  getAccountManagerDescriptionClassList_(classList) {
-    if (this.isAccountManagementFlowsV2Enabled_) {
-      return classList + ' full-width';
-    }
-    return classList;
+    return this.accounts_.filter(account => !account.isDeviceAccount);
   },
 
   /**

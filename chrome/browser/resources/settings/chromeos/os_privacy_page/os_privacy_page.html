@@ -14,22 +14,20 @@
     focus-config="[[focusConfig_]]">
 
   <div route-path="default">
-    <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
-      <template is="dom-if" if="[[!isGuestMode_]]" restamp>
-        <cr-link-row id="lockScreenSubpageTrigger"
-            on-click="onConfigureLockTap_"
-            label="[[selectLockScreenTitleString_(hasPinLogin)]]"
-            sub-label="[[getPasswordState_(hasPin,
-                prefs.settings.enable_screen_lock.value)]]"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-        <cr-link-row id="manageOtherPeopleSubpageTrigger" class="hr"
-            label="$i18n{manageOtherPeople}"
-            on-click="onManageOtherPeople_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-        <div class="hr"></div>
-      </template>
+    <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+      <cr-link-row id="lockScreenSubpageTrigger"
+          on-click="onConfigureLockTap_"
+          label="[[selectLockScreenTitleString_(hasPinLogin)]]"
+          sub-label="[[getPasswordState_(hasPin,
+              prefs.settings.enable_screen_lock.value)]]"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <cr-link-row id="manageOtherPeopleSubpageTrigger" class="hr"
+          label="$i18n{manageOtherPeople}"
+          on-click="onManageOtherPeople_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
     </template>
 
 <if expr="_google_chrome">
@@ -108,7 +106,7 @@
     </template>
   </div>
 
-  <template is="dom-if" if="[[shouldShowSubsections_]]" restamp>
+  <template is="dom-if" if="[[!isGuestMode_]]" restamp>
     <template is="dom-if" route-path="/osPrivacy/lockScreen">
       <settings-subpage page-title="[[selectLockScreenTitleString_(hasPinLogin)]]">
         <settings-lock-screen id="lockScreen" set-modes="[[setModes_]]"
@@ -139,14 +137,12 @@
 
 </settings-animated-pages>
 
-<template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
-  <template is="dom-if" if="[[showPasswordPromptDialog_]]" restamp>
-    <settings-lock-screen-password-prompt-dialog
-        id="passwordDialog"
-        on-close="onPasswordPromptDialogClose_"
-        on-auth-token-obtained="onAuthTokenObtained_">
-    </settings-lock-screen-password-prompt-dialog>
-  </template>
+<template is="dom-if" if="[[showPasswordPromptDialog_]]" restamp>
+  <settings-lock-screen-password-prompt-dialog
+      id="passwordDialog"
+      on-close="onPasswordPromptDialogClose_"
+      on-auth-token-obtained="onAuthTokenObtained_">
+  </settings-lock-screen-password-prompt-dialog>
 </template>
 
 <template is="dom-if" if="[[showDisableProtectionDialog_]]" restamp>

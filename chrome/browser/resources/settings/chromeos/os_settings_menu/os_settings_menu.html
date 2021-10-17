@@ -173,12 +173,10 @@
     <iron-icon icon="cr:search"></iron-icon>
     $i18n{osSearchPageTitle}
   </a>
-  <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
-    <a href="/osPrivacy" class="item">
-      <iron-icon icon="cr:security"></iron-icon>
-      $i18n{privacyPageTitle}
-    </a>
-  </template>
+  <a href="/osPrivacy" class="item">
+    <iron-icon icon="cr:security"></iron-icon>
+    $i18n{privacyPageTitle}
+  </a>
   <a href="/apps" class="item">
     <iron-icon icon="os-settings:apps"></iron-icon>
     $i18n{appsPageTitle}
@@ -197,12 +195,6 @@
         <iron-icon icon="os-settings:access-time"></iron-icon>
         $i18n{dateTimePageTitle}
       </a>
-      <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
-        <a href="/osPrivacy" class="item">
-          <iron-icon icon="cr:security"></iron-icon>
-          $i18n{privacyPageTitle}
-        </a>
-      </template>
       <a href="/osLanguages" class="item">
         <iron-icon icon="os-settings:language"></iron-icon>
         $i18n{osLanguagesPageTitle}

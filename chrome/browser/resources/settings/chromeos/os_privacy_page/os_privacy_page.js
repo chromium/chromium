@@ -118,18 +118,6 @@ Polymer({
     },
 
     /**
-     * True if redesign of account management flows is enabled.
-     * @private
-     */
-    isAccountManagementFlowsV2Enabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
-      },
-      readOnly: true,
-    },
-
-    /**
      * True if Pciguard UI is enabled.
      * @private
      */
@@ -182,13 +170,6 @@ Polymer({
     dataAccessShiftTabPressed_: {
       type: Boolean,
       value: false,
-    },
-
-    /** @private */
-    shouldShowSubsections_: {
-      type: Boolean,
-      computed: 'computeShouldShowSubsections_(' +
-          'isAccountManagementFlowsV2Enabled_, isGuestMode_)',
     },
 
     /**
@@ -442,15 +423,6 @@ Polymer({
             });
           });
     }
-  },
-
-  /**
-   * @return {boolean} whether 'accounts' and 'lock screen' subsections should
-   * be shown.
-   * @private
-   */
-  computeShouldShowSubsections_() {
-    return this.isAccountManagementFlowsV2Enabled_ && !this.isGuestMode_;
   },
 
   /**

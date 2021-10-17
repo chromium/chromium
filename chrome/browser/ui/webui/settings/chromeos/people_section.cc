@@ -687,9 +687,6 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   // Toggles the Chrome OS Account Manager submenu in the People section.
   html_source->AddBoolean("isAccountManagerEnabled",
                           account_manager_facade_ != nullptr);
-  // TODO(crbug.com/1152711): Stop sending this and remove usages from JS/HTML
-  // files.
-  html_source->AddBoolean("isAccountManagementFlowsV2Enabled", true);
   html_source->AddBoolean(
       "isDeviceAccountManaged",
       user->IsActiveDirectoryUser() ||

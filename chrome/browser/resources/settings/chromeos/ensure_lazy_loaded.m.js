@@ -20,9 +20,6 @@ export function ensureLazyLoaded() {
       'os-settings-printing-page',
       'os-settings-reset-page',
     ];
-    if (!loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled')) {
-      lazyLoadPages.push('os-settings-privacy-page');
-    }
 
     lazyLoadPromise = Promise.all(
         lazyLoadPages.map(name => customElements.whenDefined(name)));

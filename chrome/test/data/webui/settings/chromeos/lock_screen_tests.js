@@ -26,9 +26,7 @@ suite('LockScreenPage', function() {
   });
 
   test('Deep link to Lock screen', async () => {
-    const settingId =
-        loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled') ? '1109' :
-                                                                       '303';
+    const settingId = '1109';
 
     const params = new URLSearchParams;
     params.append('settingId', settingId);
