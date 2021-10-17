@@ -49,10 +49,6 @@ android_resources("cast_shell_android_resources") {
               "apk/res/drawable-xxhdpi/ic_settings_cast.png",
               "apk/res/drawable-xxxhdpi/ic_settings_cast.png",
               "apk/res/layout/cast_web_contents_activity.xml",
-              "apk/res/mipmap-hdpi/app_icon.png",
-              "apk/res/mipmap-mdpi/app_icon.png",
-              "apk/res/mipmap-xhdpi/app_icon.png",
-              "apk/res/mipmap-xxhdpi/app_icon.png",
             ]
 }
 

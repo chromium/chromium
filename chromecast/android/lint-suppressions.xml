@@ -30,8 +30,6 @@
     <ignore regexp="chromecast/internal"/>
   </issue>
   <issue id="IconDuplicates" severity="Error">
-    <!-- mipmap version is used for app launcher only. drawables used for notifications -->
-    <ignore regexp="chromecast/browser/android/apk/res/mipmap-.*/app_icon.png"/>
     <ignore regexp="chromecast/internal"/>
   </issue>
   <issue id="IconDuplicatesConfig" severity="Error">
