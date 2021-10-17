@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +66,7 @@ void EnsureRepresentationsLoaded(gfx::ImageSkia& output_image_skia) {
 void LoadDefaultIcon(gfx::ImageSkia& output_image_skia) {
   base::RunLoop run_loop;
   apps::LoadIconFromResource(
-      apps::mojom::IconType::kUncompressed, kSizeInDip, IDR_APP_DEFAULT_ICON,
+      apps::IconType::kUncompressed, kSizeInDip, IDR_APP_DEFAULT_ICON,
       false /* is_placeholder_icon */, apps::IconEffects::kNone,
       base::BindOnce(
           [](gfx::ImageSkia* image, base::OnceClosure load_app_icon_callback,
@@ -127,8 +128,7 @@ class AppIconFactoryTest : public testing::Test {
     *fallback_called = false;
 
     apps::LoadIconFromFileWithFallback(
-        apps::mojom::IconType::kUncompressed, 200, GetPath(),
-        apps::IconEffects::kNone,
+        apps::IconType::kUncompressed, 200, GetPath(), apps::IconEffects::kNone,
         base::BindOnce(
             [](bool* called, apps::mojom::IconValuePtr* result,
                base::OnceClosure quit, apps::mojom::IconValuePtr icon) {
@@ -164,7 +164,7 @@ class AppIconFactoryTest : public testing::Test {
   }
 
   void RunLoadIconFromCompressedData(const std::string png_data_as_string,
-                                     apps::mojom::IconType icon_type,
+                                     apps::IconType icon_type,
                                      apps::IconEffects icon_effects,
                                      apps::mojom::IconValuePtr& output_icon) {
     apps::LoadIconFromCompressedData(
@@ -180,7 +180,8 @@ class AppIconFactoryTest : public testing::Test {
     run_loop_.Run();
 
     ASSERT_FALSE(output_icon.is_null());
-    ASSERT_EQ(icon_type, output_icon->icon_type);
+    ASSERT_EQ(icon_type,
+              apps::ConvertMojomIconTypeToIconType(output_icon->icon_type));
     ASSERT_FALSE(output_icon->is_placeholder_icon);
     ASSERT_FALSE(output_icon->uncompressed.isNull());
 
@@ -205,7 +206,7 @@ class AppIconFactoryTest : public testing::Test {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void RunLoadIconFromResource(apps::mojom::IconType icon_type,
+  void RunLoadIconFromResource(apps::IconType icon_type,
                                apps::IconEffects icon_effects,
                                apps::mojom::IconValuePtr& output_icon) {
     bool is_placeholder_icon = false;
@@ -299,8 +300,7 @@ TEST_F(AppIconFactoryTest, LoadFromFileFallbackDoesNotReturn) {
   bool callback_called = false, fallback_called = false;
 
   apps::LoadIconFromFileWithFallback(
-      apps::mojom::IconType::kUncompressed, 200, GetPath(),
-      apps::IconEffects::kNone,
+      apps::IconType::kUncompressed, 200, GetPath(), apps::IconEffects::kNone,
       base::BindOnce(
           [](bool* called, apps::mojom::IconValuePtr* result,
              base::OnceClosure quit, apps::mojom::IconValuePtr icon) {
@@ -327,7 +327,7 @@ TEST_F(AppIconFactoryTest, LoadFromFileFallbackDoesNotReturn) {
 TEST_F(AppIconFactoryTest, LoadIconFromCompressedData) {
   std::string png_data_as_string = GetPngData("icon_100p.png");
 
-  auto icon_type = apps::mojom::IconType::kStandard;
+  auto icon_type = apps::IconType::kStandard;
   auto icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
   apps::mojom::IconValuePtr result;
@@ -348,16 +348,14 @@ TEST_F(AppIconFactoryTest, LoadIconFromCompressedData) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AppIconFactoryTest, LoadCrostiniPenguinIcon) {
-  auto icon_type = apps::mojom::IconType::kUncompressed;
-  auto icon_effects = apps::IconEffects::kNone;
-  icon_type = apps::mojom::IconType::kStandard;
-  icon_effects = apps::IconEffects::kCrOsStandardIcon;
+  auto icon_type = apps::IconType::kStandard;
+  auto icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
   apps::mojom::IconValuePtr result;
   RunLoadIconFromResource(icon_type, icon_effects, result);
 
   EXPECT_FALSE(result.is_null());
-  EXPECT_EQ(icon_type, result->icon_type);
+  EXPECT_EQ(icon_type, apps::ConvertMojomIconTypeToIconType(result->icon_type));
   EXPECT_FALSE(result->is_placeholder_icon);
 
   EnsureRepresentationsLoaded(result->uncompressed);
@@ -373,8 +371,7 @@ TEST_F(AppIconFactoryTest, LoadCrostiniPenguinCompressedIcon) {
   icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
   apps::mojom::IconValuePtr result;
-  RunLoadIconFromResource(apps::mojom::IconType::kCompressed, icon_effects,
-                          result);
+  RunLoadIconFromResource(apps::IconType::kCompressed, icon_effects, result);
 
   std::vector<uint8_t> src_data;
   GenerateCrostiniPenguinCompressedIcon(src_data);
@@ -631,9 +628,9 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
                           gfx::ImageSkia& output_image_skia) {
     base::RunLoop run_loop;
 
-    auto icon_type = apps::mojom::IconType::kUncompressed;
+    auto icon_type = apps::IconType::kUncompressed;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    icon_type = apps::mojom::IconType::kStandard;
+    icon_type = apps::IconType::kStandard;
 #endif
 
     apps::LoadIconFromWebApp(
@@ -656,8 +653,8 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
       apps::mojom::IconValuePtr& output_data) {
     base::RunLoop run_loop;
 
-    apps::LoadIconFromWebApp(profile(), apps::mojom::IconType::kCompressed,
-                             kSizeInDip, app_id, icon_effects,
+    apps::LoadIconFromWebApp(profile(), apps::IconType::kCompressed, kSizeInDip,
+                             app_id, icon_effects,
                              base::BindOnce(
                                  [](apps::mojom::IconValuePtr* result,
                                     base::OnceClosure load_app_icon_callback,

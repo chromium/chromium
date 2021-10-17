@@ -40,6 +40,7 @@
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/clear_site_data_utils.h"
@@ -336,7 +337,8 @@ void ExtensionAppsBase::LoadIcon(const std::string& app_id,
                                  bool allow_placeholder_icon,
                                  LoadIconCallback callback) {
   if (icon_key) {
-    LoadIconFromExtension(icon_type, size_hint_in_dip, profile_, app_id,
+    LoadIconFromExtension(ConvertMojomIconTypeToIconType(icon_type),
+                          size_hint_in_dip, profile_, app_id,
                           static_cast<IconEffects>(icon_key->icon_effects),
                           std::move(callback));
     return;

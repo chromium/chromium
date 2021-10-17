@@ -50,6 +50,7 @@
 #include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -1388,8 +1389,9 @@ void ArcApps::LoadPlayStoreIcon(apps::mojom::IconType icon_type,
   int resource_id = (size_hint_in_px <= 32) ? IDR_ARC_SUPPORT_ICON_32
                                             : IDR_ARC_SUPPORT_ICON_192;
   constexpr bool is_placeholder_icon = false;
-  LoadIconFromResource(icon_type, size_hint_in_dip, resource_id,
-                       is_placeholder_icon, icon_effects, std::move(callback));
+  LoadIconFromResource(ConvertMojomIconTypeToIconType(icon_type),
+                       size_hint_in_dip, resource_id, is_placeholder_icon,
+                       icon_effects, std::move(callback));
 }
 
 apps::mojom::InstallReason GetInstallReason(

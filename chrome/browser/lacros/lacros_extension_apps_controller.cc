@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -115,7 +116,8 @@ void LacrosExtensionAppsController::LoadIcon(const std::string& app_id,
       lacros_extension_apps_utility::DemuxId(app_id, &profile, &extension);
   if (success && icon_key) {
     LoadIconFromExtension(
-        icon_type, size_hint_in_dip, profile, extension->id(),
+        apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
+        profile, extension->id(),
         static_cast<apps::IconEffects>(icon_key->icon_effects),
         std::move(callback));
     return;

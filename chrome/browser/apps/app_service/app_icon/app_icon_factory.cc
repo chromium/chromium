@@ -426,7 +426,7 @@ void ApplyIconEffects(IconEffects icon_effects,
   icon_loader->ApplyIconEffects(icon_effects, std::move(iv));
 }
 
-void LoadIconFromExtension(apps::mojom::IconType icon_type,
+void LoadIconFromExtension(IconType icon_type,
                            int size_hint_in_dip,
                            content::BrowserContext* context,
                            const std::string& extension_id,
@@ -446,7 +446,7 @@ void LoadIconFromExtension(apps::mojom::IconType icon_type,
 }
 
 void LoadIconFromWebApp(content::BrowserContext* context,
-                        apps::mojom::IconType icon_type,
+                        IconType icon_type,
                         int size_hint_in_dip,
                         const std::string& web_app_id,
                         IconEffects icon_effects,
@@ -469,7 +469,7 @@ void LoadIconFromWebApp(content::BrowserContext* context,
 }
 
 void LoadIconFromFileWithFallback(
-    apps::mojom::IconType icon_type,
+    IconType icon_type,
     int size_hint_in_dip,
     const base::FilePath& path,
     IconEffects icon_effects,
@@ -487,7 +487,7 @@ void LoadIconFromFileWithFallback(
 }
 
 void LoadIconFromCompressedData(
-    apps::mojom::IconType icon_type,
+    IconType icon_type,
     int size_hint_in_dip,
     IconEffects icon_effects,
     const std::string& compressed_icon_data,
@@ -502,7 +502,7 @@ void LoadIconFromCompressedData(
   icon_loader->LoadIconFromCompressedData(compressed_icon_data);
 }
 
-void LoadIconFromResource(apps::mojom::IconType icon_type,
+void LoadIconFromResource(IconType icon_type,
                           int size_hint_in_dip,
                           int resource_id,
                           bool is_placeholder_icon,

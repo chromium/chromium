@@ -595,7 +595,7 @@ TEST_F(ExtensionAppTest, LoadCompressedIcon) {
   base::RunLoop run_loop;
   apps::mojom::IconValuePtr dst_icon;
   apps::LoadIconFromExtension(
-      apps::mojom::IconType::kCompressed,
+      apps::IconType::kCompressed,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       profile(), kPackagedApp1Id, icon_effects,
       base::BindOnce(

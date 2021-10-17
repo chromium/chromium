@@ -233,7 +233,7 @@ apps::mojom::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
 
 namespace apps {
 
-AppIconLoader::AppIconLoader(apps::mojom::IconType icon_type,
+AppIconLoader::AppIconLoader(IconType icon_type,
                              int size_hint_in_dip,
                              bool is_placeholder_icon,
                              apps::IconEffects icon_effects,
@@ -249,7 +249,7 @@ AppIconLoader::AppIconLoader(apps::mojom::IconType icon_type,
           std::move(callback)) {}
 
 AppIconLoader::AppIconLoader(
-    apps::mojom::IconType icon_type,
+    IconType icon_type,
     int size_hint_in_dip,
     bool is_placeholder_icon,
     apps::IconEffects icon_effects,
@@ -392,7 +392,7 @@ void AppIconLoader::LoadWebAppIcon(
   }
 
   switch (icon_type_) {
-    case apps::mojom::IconType::kCompressed:
+    case IconType::kCompressed:
       if (icon_effects_ == apps::IconEffects::kNone &&
           *icon_purpose_to_read == IconPurpose::ANY) {
         // Only read IconPurpose::ANY icons compressed as other purposes would
@@ -404,8 +404,8 @@ void AppIconLoader::LoadWebAppIcon(
         return;
       }
       FALLTHROUGH;
-    case apps::mojom::IconType::kUncompressed:
-      if (icon_type_ == apps::mojom::IconType::kUncompressed) {
+    case IconType::kUncompressed:
+      if (icon_type_ == apps::IconType::kUncompressed) {
         // For uncompressed icon, apply the resize and pad effect.
         icon_effects_ |= apps::IconEffects::kResizeAndPad;
 
@@ -415,7 +415,7 @@ void AppIconLoader::LoadWebAppIcon(
         icon_effects_ &= ~apps::IconEffects::kCrOsStandardMask;
       }
       FALLTHROUGH;
-    case apps::mojom::IconType::kStandard: {
+    case IconType::kStandard: {
       // If |icon_effects| are requested, we must always load the
       // uncompressed image to apply the icon effects, and then re-encode the
       // image if the compressed icon is requested.
@@ -441,7 +441,7 @@ void AppIconLoader::LoadWebAppIcon(
 
       return;
     }
-    case apps::mojom::IconType::kUnknown:
+    case IconType::kUnknown:
       MaybeLoadFallbackOrCompleteEmpty();
       return;
   }
@@ -461,7 +461,7 @@ void AppIconLoader::LoadExtensionIcon(const extensions::Extension* extension,
       extensions::AppLaunchInfo::GetFullLaunchURL(extension);
   profile_ = Profile::FromBrowserContext(context);
   switch (icon_type_) {
-    case apps::mojom::IconType::kCompressed:
+    case IconType::kCompressed:
       // For compressed icons with no |icon_effects|, serve the
       // already-compressed bytes.
       if (icon_effects_ == apps::IconEffects::kNone) {
@@ -478,9 +478,9 @@ void AppIconLoader::LoadExtensionIcon(const extensions::Extension* extension,
         return;
       }
       FALLTHROUGH;
-    case apps::mojom::IconType::kUncompressed:
+    case IconType::kUncompressed:
       FALLTHROUGH;
-    case apps::mojom::IconType::kStandard:
+    case IconType::kStandard:
       // If |icon_effects| are requested, we must always load the
       // uncompressed image to apply the icon effects, and then re-encode
       // the image if the compressed icon is requested.
@@ -490,7 +490,7 @@ void AppIconLoader::LoadExtensionIcon(const extensions::Extension* extension,
               base::BindOnce(&AppIconLoader::MaybeApplyEffectsAndComplete,
                              base::WrapRefCounted(this))));
       return;
-    case apps::mojom::IconType::kUnknown:
+    case IconType::kUnknown:
       break;
   }
 
@@ -555,7 +555,7 @@ void AppIconLoader::LoadIconFromResource(int icon_resource) {
   }
 
   switch (icon_type_) {
-    case apps::mojom::IconType::kCompressed:
+    case IconType::kCompressed:
       // For compressed icons with no |icon_effects|, serve the
       // already-compressed bytes.
       if (icon_effects_ == apps::IconEffects::kNone) {
@@ -566,9 +566,9 @@ void AppIconLoader::LoadIconFromResource(int icon_resource) {
         return;
       }
       FALLTHROUGH;
-    case apps::mojom::IconType::kUncompressed:
+    case IconType::kUncompressed:
       FALLTHROUGH;
-    case apps::mojom::IconType::kStandard: {
+    case IconType::kStandard: {
       // For compressed icons with |icon_effects|, or for uncompressed
       // icons, we load the uncompressed image, apply the icon effects, and
       // then re-encode the image if necessary.
@@ -598,7 +598,7 @@ void AppIconLoader::LoadIconFromResource(int icon_resource) {
       MaybeApplyEffectsAndComplete(scaled);
       return;
     }
-    case apps::mojom::IconType::kUnknown:
+    case IconType::kUnknown:
       break;
   }
   MaybeLoadFallbackOrCompleteEmpty();
@@ -724,7 +724,7 @@ void AppIconLoader::MaybeApplyEffectsAndComplete(const gfx::ImageSkia image) {
   }
 
   apps::mojom::IconValuePtr iv = apps::mojom::IconValue::New();
-  iv->icon_type = icon_type_;
+  iv->icon_type = ConvertIconTypeToMojomIconType(icon_type_);
   iv->uncompressed = image;
   iv->is_placeholder_icon = is_placeholder_icon_;
 
@@ -742,7 +742,7 @@ void AppIconLoader::MaybeApplyEffectsAndComplete(const gfx::ImageSkia image) {
 }
 
 void AppIconLoader::CompleteWithCompressed(std::vector<uint8_t> data) {
-  DCHECK_EQ(icon_type_, apps::mojom::IconType::kCompressed);
+  DCHECK_EQ(icon_type_, IconType::kCompressed);
   if (data.empty()) {
     MaybeLoadFallbackOrCompleteEmpty();
     return;
@@ -755,8 +755,8 @@ void AppIconLoader::CompleteWithCompressed(std::vector<uint8_t> data) {
 }
 
 void AppIconLoader::CompleteWithUncompressed(apps::mojom::IconValuePtr iv) {
-  DCHECK_NE(icon_type_, apps::mojom::IconType::kCompressed);
-  DCHECK_NE(icon_type_, apps::mojom::IconType::kUnknown);
+  DCHECK_NE(icon_type_, IconType::kCompressed);
+  DCHECK_NE(icon_type_, IconType::kUnknown);
   if (iv->uncompressed.isNull()) {
     MaybeLoadFallbackOrCompleteEmpty();
     return;
@@ -765,8 +765,8 @@ void AppIconLoader::CompleteWithUncompressed(apps::mojom::IconValuePtr iv) {
 }
 
 void AppIconLoader::CompleteWithIconValue(apps::mojom::IconValuePtr iv) {
-  if (icon_type_ == apps::mojom::IconType::kUncompressed ||
-      icon_type_ == apps::mojom::IconType::kStandard) {
+  if (icon_type_ == IconType::kUncompressed ||
+      icon_type_ == IconType::kStandard) {
     CompleteWithUncompressed(std::move(iv));
     return;
   }

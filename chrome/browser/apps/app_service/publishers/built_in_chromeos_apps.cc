@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -113,7 +114,8 @@ void BuiltInChromeOsApps::LoadIcon(const std::string& app_id,
   if (icon_key &&
       (icon_key->resource_id != apps::mojom::IconKey::kInvalidResourceId)) {
     LoadIconFromResource(
-        icon_type, size_hint_in_dip, icon_key->resource_id, is_placeholder_icon,
+        ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
+        icon_key->resource_id, is_placeholder_icon,
         static_cast<IconEffects>(icon_key->icon_effects), std::move(callback));
     return;
   }

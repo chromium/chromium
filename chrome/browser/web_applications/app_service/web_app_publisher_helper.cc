@@ -34,6 +34,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
@@ -525,9 +526,10 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
   DCHECK(provider_);
 
   if (icon_key) {
-    LoadIconFromWebApp(profile_, icon_type, size_hint_in_dip, app_id,
-                       static_cast<IconEffects>(icon_key->icon_effects),
-                       std::move(callback));
+    LoadIconFromWebApp(
+        profile_, apps::ConvertMojomIconTypeToIconType(icon_type),
+        size_hint_in_dip, app_id,
+        static_cast<IconEffects>(icon_key->icon_effects), std::move(callback));
     return;
   }
   // On failure, we still run the callback, with the zero IconValue.

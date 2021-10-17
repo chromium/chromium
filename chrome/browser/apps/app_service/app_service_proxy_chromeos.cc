@@ -34,6 +34,7 @@
 #include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user.h"
 #include "extensions/common/constants.h"
@@ -426,9 +427,9 @@ void AppServiceProxyChromeOs::LoadIconForDialog(
 
   // Load the family link kite logo icon for the app pause dialog or the app
   // block dialog for the child profile.
-  LoadIconFromResource(icon_type, kIconSize, IDR_SUPERVISED_USER_ICON,
-                       kAllowPlaceholderIcon, IconEffects::kNone,
-                       std::move(callback));
+  LoadIconFromResource(ConvertMojomIconTypeToIconType(icon_type), kIconSize,
+                       IDR_SUPERVISED_USER_ICON, kAllowPlaceholderIcon,
+                       IconEffects::kNone, std::move(callback));
 }
 
 void AppServiceProxyChromeOs::OnLoadIconForBlockDialog(

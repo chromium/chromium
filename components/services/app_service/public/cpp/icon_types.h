@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -91,6 +92,14 @@ struct COMPONENT_EXPORT(APP_UPDATE) IconValue {
   // a placeholder if the real icon can not be provided quickly.
   bool is_placeholder_icon = false;
 };
+
+// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
+// AppService.
+COMPONENT_EXPORT(APP_UPDATE)
+apps::mojom::IconType ConvertIconTypeToMojomIconType(IconType icon_type);
+
+COMPONENT_EXPORT(APP_UPDATE)
+IconType ConvertMojomIconTypeToIconType(apps::mojom::IconType mojom_icon_type);
 
 }  // namespace apps
 

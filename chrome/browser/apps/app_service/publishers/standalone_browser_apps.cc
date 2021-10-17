@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/views/widget/widget.h"
@@ -101,7 +102,8 @@ void StandaloneBrowserApps::LoadIcon(const std::string& app_id,
                                      LoadIconCallback callback) {
   if (icon_key &&
       icon_key->resource_id != apps::mojom::IconKey::kInvalidResourceId) {
-    LoadIconFromResource(icon_type, size_hint_in_dip, icon_key->resource_id,
+    LoadIconFromResource(ConvertMojomIconTypeToIconType(icon_type),
+                         size_hint_in_dip, icon_key->resource_id,
                          /*is_placeholder_icon=*/false,
                          static_cast<IconEffects>(icon_key->icon_effects),
                          std::move(callback));

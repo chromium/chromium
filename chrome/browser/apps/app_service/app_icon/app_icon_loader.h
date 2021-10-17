@@ -15,6 +15,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/gfx/image/image_skia.h"
@@ -55,7 +56,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   static const int kFaviconFallbackImagePx =
       extension_misc::EXTENSION_ICON_BITTY;
 
-  AppIconLoader(apps::mojom::IconType icon_type,
+  AppIconLoader(IconType icon_type,
                 int size_hint_in_dip,
                 bool is_placeholder_icon,
                 apps::IconEffects icon_effects,
@@ -63,7 +64,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
                 apps::mojom::Publisher::LoadIconCallback callback);
 
   AppIconLoader(
-      apps::mojom::IconType icon_type,
+      IconType icon_type,
       int size_hint_in_dip,
       bool is_placeholder_icon,
       apps::IconEffects icon_effects,
@@ -148,7 +149,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void MaybeLoadFallbackOrCompleteEmpty();
 
-  apps::mojom::IconType icon_type_;
+  IconType icon_type_;
 
   int size_hint_in_dip_ = 0;
   int icon_size_in_px_ = 0;

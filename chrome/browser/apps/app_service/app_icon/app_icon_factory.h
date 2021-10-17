@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_application_info.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/image/image_skia.h"
@@ -135,7 +136,7 @@ void ApplyIconEffects(IconEffects icon_effects,
                       apps::mojom::Publisher::LoadIconCallback callback);
 
 // Loads an icon from an extension.
-void LoadIconFromExtension(apps::mojom::IconType icon_type,
+void LoadIconFromExtension(IconType icon_type,
                            int size_hint_in_dip,
                            content::BrowserContext* context,
                            const std::string& extension_id,
@@ -144,7 +145,7 @@ void LoadIconFromExtension(apps::mojom::IconType icon_type,
 
 // Loads an icon from a web app.
 void LoadIconFromWebApp(content::BrowserContext* context,
-                        apps::mojom::IconType icon_type,
+                        IconType icon_type,
                         int size_hint_in_dip,
                         const std::string& web_app_id,
                         IconEffects icon_effects,
@@ -160,7 +161,7 @@ void LoadIconFromWebApp(content::BrowserContext* context,
 // failure. A failure should be indicated by passing nullptr, in which case the
 // pipeline will use a generic fallback icon.
 void LoadIconFromFileWithFallback(
-    apps::mojom::IconType icon_type,
+    IconType icon_type,
     int size_hint_in_dip,
     const base::FilePath& path,
     IconEffects icon_effects,
@@ -170,7 +171,7 @@ void LoadIconFromFileWithFallback(
 
 // Creates an icon with the specified effects from |compressed_icon_data|.
 void LoadIconFromCompressedData(
-    apps::mojom::IconType icon_type,
+    IconType icon_type,
     int size_hint_in_dip,
     IconEffects icon_effects,
     const std::string& compressed_icon_data,
@@ -178,7 +179,7 @@ void LoadIconFromCompressedData(
 
 // Loads an icon from a compiled-into-the-binary resource, with a resource_id
 // named IDR_XXX, for some value of XXX.
-void LoadIconFromResource(apps::mojom::IconType icon_type,
+void LoadIconFromResource(IconType icon_type,
                           int size_hint_in_dip,
                           int resource_id,
                           bool is_placeholder_icon,
