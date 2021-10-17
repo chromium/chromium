@@ -486,6 +486,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.TimeToGenerateEccAuthValue" units="ms"
+    expires_after="2022-04-04">
+  <owner>yich@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The amount of time (ms) for the ECC auth value generating process. It should
+    perform within a certain window: faster than the RSA implementation, but not
+    too fast (less than 100ms) to brute force. This metrics would be recorded
+    when user trying to login to the Chrome OS with the TPM ECC auth block and
+    only available on TPM2.0 devices.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.TimeToInitPkcs11" units="ms"
     expires_after="2021-10-24">
   <owner>apronin@chromium.org</owner>
