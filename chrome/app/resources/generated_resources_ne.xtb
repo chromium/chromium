@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">कृपया नयाँ सर्तहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="103279545524624934">Android एप सुरु गर्न डिस्कमा ठाउँ खाली गर्नुहोस्।</translation>
 <translation id="1033780634303702874">आफ्नो धारावाहिक यन्त्रहरू पहुँच गर्नुहोस्</translation>
+<translation id="1034484273907870301">ट्याब्लेट मोडमा उपलब्ध थम्बनेल ट्याब स्ट्रिप</translation>
 <translation id="1036348656032585052">निस्कृय पार्नुहोस्</translation>
 <translation id="1036511912703768636">यी कुनै USB उपकरणहरूको पहुँच गर्नुहोस्</translation>
 <translation id="1036982837258183574">पूर्ण स्क्रिनबाट बाहिर निस्कनका लागि <ph name="ACCELERATOR" /> लाई थिच्नुहोस्</translation>
@@ -356,6 +357,7 @@
 <translation id="1378613616312864539"><ph name="NAME" /> ले यस सेटिङलाई नियन्त्रण गर्दैछ</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{अरूले कुनै पनि पासवर्ड देखेका छैनन्}=1{अरूले देखेका एउटा पासवर्ड फेला पर्‍यो}other{अरूले देखेका {NUM_COMPROMISED} वटा पासवर्ड फेला परे}}</translation>
 <translation id="1380028686461971526">नेटवर्कमा स्वतः कनेक्ट गर्नुहोस्</translation>
+<translation id="1381567580865186407">प्रोसेस गर्ने प्रयोजनका लागि <ph name="LANGUAGE" /> भाषाको बोली Google मा पठाइन्छ</translation>
 <translation id="1383597849754832576">बोलीसम्बन्धी फाइलहरू डाउनलोड गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1383861834909034572">पूरा भएपछि खुल्ने</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
@@ -1144,6 +1146,7 @@
 <translation id="2173302385160625112">आफ्नो इन्टरनेट जडानको जाँच गर्नुहोस्</translation>
 <translation id="2173801458090845390">यो डिभाइसमा माग ID थप्नुहोस्‌</translation>
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" /> ले व्यवस्थापन गरेको खाता। यो डिभाइसमा साइन इन गरिएको प्राथमिक खाताबाट साइन आउट गर्न आफ्नो स्क्रिनमा देखिने समयमा क्लिक गर्नुहोस्। त्यसपछि देखिने मेनुमा "साइन आउट गर्नुहोस्" नामक बटनमा क्लिक गर्नुहोस्।</translation>
+<translation id="2175384018164129879">&amp;साइटमा भएको कुरा खोज्ने सुविधा र सर्च इन्जिनहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2175607476662778685">द्रुत सुरुवात पट्टी</translation>
 <translation id="217576141146192373">प्रिन्टर थप्न सकिएन। कृपया आफ्नो प्रिन्टरको कन्फिगुरेसन जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2175927920773552910">QR कोड</translation>
@@ -3844,6 +3847,7 @@
 <translation id="5040823038948176460">सामग्रीका अतिरिक्त सेटिङहरू</translation>
 <translation id="5043440033854483429">नाममा अक्षर, सङ्ख्या र हाइफन चिन्ह (-) प्रयोग गर्न मिल्छ र १ देखि १५ वटा वर्ण प्रयोग गरिनु पर्छ।</translation>
 <translation id="5043913660911154449">वा आफ्नो प्रिन्टरको PPD तोक्नुहोस् <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">यो चरण फेरि नदेखाइयोस्</translation>
 <translation id="5045550434625856497">गलत पासवर्ड</translation>
 <translation id="504561833207953641">विद्यमान ब्राउजर सत्रमा खोल्दै।</translation>
 <translation id="5047421709274785093">साइटहरूलाई चाल र प्रकाशसम्बन्धी सेन्सरहरू प्रयोग गर्नबाट रोक लगाउनुहोस्</translation>
@@ -5293,6 +5297,7 @@
 <translation id="6619801788773578757">kiosk एप थप्नुहोस्</translation>
 <translation id="6619990499523117484">आफ्नो PIN को पुष्टि गर्नुहोस्</translation>
 <translation id="6622980291894852883">तस्वीरहरूलाई ब्लक गर्न जारी राख्नुहोस्</translation>
+<translation id="6624036901798307345">ट्याब्लेट मोडमा भएका बेला प्रत्येक ट्याबको थम्बनेल देखाउने नयाँ ट्याब स्ट्रिप खोल्न ट्याबको सङ्ख्या गन्ने टुलबारको बटनमा ट्याप गर्नुहोस्।</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> मा संवेदनशील वा खतरनाक सामग्री छ। यसका मालिकलाई उक्त समस्या समाधान गर्न लगाउनुहोस्।</translation>
 <translation id="6624687053722465643">मिठास</translation>
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> लाई अपलोड गरियो</translation>
@@ -5598,6 +5603,7 @@
 <translation id="6955893174999506273">अरू एउटा स्विच असाइन गर्नुहोस्</translation>
 <translation id="6957044667612803194">यस सुरक्षा साँचोमा PIN हरू सेट गर्न मिल्दैन</translation>
 <translation id="6960507406838246615">Linux अपडेट गर्न आवश्यक छ</translation>
+<translation id="6960648667961844909"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गर्न सकिएन। पछि डाउनलोड गर्ने प्रयास गरिने छ। डाउनलोड गर्ने कार्य पूरा नहुँदासम्म बोलिएको कुरा प्रोसेस गर्नका निम्ति Google मा पठाइन्छ।</translation>
 <translation id="696103774840402661">यो <ph name="DEVICE_TYPE" /> का सबै प्रयोगकर्ताका सबै फाइल तथा स्थानीय डेटा सदाका लागि मेटाइएका छन्।</translation>
 <translation id="6964390816189577014">नायक</translation>
 <translation id="6964760285928603117">समूहबाट हटाउनुहोस्</translation>
@@ -6203,6 +6209,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (त्रुटि कोड <ph name="ERROR_CODE" />)।</translation>
 <translation id="7598466960084663009">कम्प्युटर पुनः सुरु गर्नुहोस्</translation>
 <translation id="7599527631045201165">डिभाइसको नाम निकै लामो छ। फेरि प्रयास गर्न छोटो नाम प्रविष्टि गर्नुहोस्।</translation>
+<translation id="7600054753482800821">&amp;साइटमा भएको कुरा खोज्ने सुविधा र सर्च इन्जिनहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="760197030861754408">जडान गर्न <ph name="LANDING_PAGE" /> मा जानुहोस्।</translation>
 <translation id="7602079150116086782">अन्य यन्त्रहरूका कुनै ट्याबहरू छैनन्</translation>
@@ -6869,6 +6876,7 @@
 <translation id="8244514732452879619">बत्ती निभ्ने बेला भयो</translation>
 <translation id="8246776524656196770">कुनै PIN (व्यक्तिगत पहिचान नम्बर) प्रयोग गरी आफ्नो सुरक्षा साँचो सेभ गर्नुहोस्</translation>
 <translation id="8248050856337841185">&amp;टाँस्नुहोस्</translation>
+<translation id="8248887045858762645">Chrome सम्बन्धी सुझाव</translation>
 <translation id="8249048954461686687">OEM फोल्डर</translation>
 <translation id="8249615410597138718">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
 <translation id="8249672078237421304">तपाईंले पढ्नुहुने भाषामा नरहेका पृष्ठहरूलाई अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
@@ -7342,6 +7350,7 @@
 <translation id="8763927697961133303">USB यन्त्र</translation>
 <translation id="87646919272181953">Google Photos को एल्बम</translation>
 <translation id="8767621466733104912">सबै प्रयोगकर्ताहरूको Chrome स्वतः अपडेट गर्नुहोस्</translation>
+<translation id="8767765348545497220">मद्दतसम्बन्धी बबल बन्द गर्नुहोस्</translation>
 <translation id="8770406935328356739">विस्तारको मूल निर्देशिका</translation>
 <translation id="8771300903067484968">सुरुको पृष्ठको पृष्ठभूमिलाई डिफल्ट पृष्ठभूमिका रूपमा पुनः सेट गरिएको छ।</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> सेभ गर्नुहोस्</translation>
