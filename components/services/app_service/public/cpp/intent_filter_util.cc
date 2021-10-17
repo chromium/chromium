@@ -258,7 +258,11 @@ std::set<std::string> AppManagementGetSupportedLinks(
   std::set<std::string> supported_links;
   for (auto& host : hosts) {
     for (auto& path : paths) {
-      supported_links.insert(host + path);
+      if (path.front() == '/') {
+        supported_links.insert(host + path);
+      } else {
+        supported_links.insert(host + "/" + path);
+      }
     }
   }
 
