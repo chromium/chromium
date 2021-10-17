@@ -725,6 +725,36 @@ TEST_F(PartitionAllocPCScanTest, TwoDanglingPointersToSameObject) {
   EXPECT_EQ(slot_span_metadata->bucket->slot_size, quarantine.current_size);
 }
 
+TEST_F(PartitionAllocPCScanTest, DanglingPointerToInaccessibleArea) {
+  static const size_t kObjectSizeForSlotSpanConsistingOfMultiplePartitionPages =
+      static_cast<size_t>(PartitionPageSize() * 1.25);
+
+  FullSlotSpanAllocation full_slot_span = GetFullSlotSpan(
+      root(), root().AdjustSizeForExtrasSubtract(
+                  kObjectSizeForSlotSpanConsistingOfMultiplePartitionPages));
+
+  // Assert that number of allocatable bytes for this bucket is smaller than all
+  // allocated partition pages.
+  auto* bucket = full_slot_span.slot_span->bucket;
+  ASSERT_LT(bucket->get_bytes_per_span(),
+            bucket->get_pages_per_slot_span() * PartitionPageSize());
+
+  // Let the first object point past the end of the last one + some random
+  // offset.
+  static constexpr size_t kOffsetPastEnd = 7;
+  *reinterpret_cast<uint8_t**>(full_slot_span.first) =
+      reinterpret_cast<uint8_t*>(full_slot_span.last) +
+      kObjectSizeForSlotSpanConsistingOfMultiplePartitionPages + kOffsetPastEnd;
+
+  // Destroy the last object and put it in quarantine.
+  root().Free(full_slot_span.last);
+  EXPECT_TRUE(IsInQuarantine(full_slot_span.last));
+
+  // Run PCScan. After it, the quarantined object should not be promoted.
+  RunPCScan();
+  EXPECT_FALSE(IsInQuarantine(full_slot_span.last));
+}
+
 }  // namespace internal
 }  // namespace base
 

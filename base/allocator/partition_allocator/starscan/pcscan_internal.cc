@@ -206,9 +206,8 @@ ALWAYS_INLINE uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_inner_ptr,
                                   slot_span->bucket->get_pages_per_slot_span() *
                                   PartitionPageSize()));
   // Slot span size in bytes is not necessarily multiple of partition page.
-  if (ptr_offset >=
-      static_cast<ptrdiff_t>(slot_span->bucket->get_bytes_per_span()))
-    return 0;
+  // Don't check if the pointer points outside of usable area, since checking
+  // the quarantine bit will anyway return false in this case.
   const size_t slot_size = slot_span->bucket->slot_size;
   const size_t slot_number = slot_span->bucket->GetSlotNumber(ptr_offset);
   char* const result = slot_span_begin + (slot_number * slot_size);
