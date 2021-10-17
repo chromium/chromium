@@ -450,11 +450,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.Notification.UserAction"
-    enum="FileManagerNotificationUserAction" expires_after="M98">
+    enum="FileManagerNotificationUserAction" expires_after="M108">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Chrome OS File Browser: User actions responding to a notification.
+    Chrome OS File Browser: The action a user takes when shown a notification.
   </summary>
 </histogram>
 
