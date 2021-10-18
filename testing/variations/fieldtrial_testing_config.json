@@ -463,28 +463,6 @@
             ]
         }
     ],
-    "AndroidInProductHelpToolbarButtons": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Default_20210520",
-                    "params": {
-                        "availability": ">=14",
-                        "event_trigger": "name:tab_switcher_iph_triggered;comparator:==0;window:90;storage:90",
-                        "event_used": "name:tab_switcher_button_clicked;comparator:==0;window:14;storage:90",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_TabSwitcherButton",
-                        "ToolbarIphAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidMediaPickerVideoSupport": [
         {
             "platforms": [
