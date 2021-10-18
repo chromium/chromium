@@ -948,7 +948,7 @@ bool WebUITabStripContainerView::SetPaneFocusAndFocusDefault() {
   return received_focus;
 }
 
-void WebUITabStripContainerView::RenderProcessGone(
+void WebUITabStripContainerView::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   // Since all WebUI tab strips are sharing the same render process, if the
   // render process has crashed, we close the container. When users click on

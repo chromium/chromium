@@ -62,7 +62,7 @@ void ResourceCoordinatorTabHelper::DidStopLoading() {
   TabLoadTracker::Get()->DidStopLoading(web_contents());
 }
 
-void ResourceCoordinatorTabHelper::RenderProcessGone(
+void ResourceCoordinatorTabHelper::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   // TODO(siggi): Looks like this can be acquired in a more timely manner from
   //    the RenderProcessHostObserver.

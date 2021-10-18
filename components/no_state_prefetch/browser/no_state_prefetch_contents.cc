@@ -324,7 +324,7 @@ bool NoStatePrefetchContents::Matches(
   return base::Contains(alias_urls_, url);
 }
 
-void NoStatePrefetchContents::RenderProcessGone(
+void NoStatePrefetchContents::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   if (status == base::TERMINATION_STATUS_STILL_RUNNING) {
     // The renderer process is being killed because of the browser/test

@@ -56,7 +56,8 @@ class OomInterventionTabHelper
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;

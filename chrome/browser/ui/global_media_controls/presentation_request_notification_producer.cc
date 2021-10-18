@@ -67,7 +67,8 @@ class PresentationRequestNotificationProducer::
     notification_producer_->DeleteItemForPresentationRequest("Dialog closed.");
   }
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     notification_producer_->DeleteItemForPresentationRequest("Dialog closed.");
   }
 

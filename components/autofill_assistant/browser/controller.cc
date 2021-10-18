@@ -2149,7 +2149,8 @@ void Controller::DocumentAvailableInMainFrame(
   OnUrlChange();
 }
 
-void Controller::RenderProcessGone(base::TerminationStatus status) {
+void Controller::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   client_->Shutdown(Metrics::DropOutReason::RENDER_PROCESS_GONE);
 }
 

@@ -94,7 +94,8 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
   bool IsNeverComposited(content::WebContents* web_contents) override;
 
   // content::WebContentsObserver implementation:
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
  protected:
   // Exposed for testing.

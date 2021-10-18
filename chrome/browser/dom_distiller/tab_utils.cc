@@ -56,7 +56,8 @@ class SelfDeletingRequestDelegate : public ViewRequestDelegate,
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
 
   // Takes ownership of the ViewerHandle to keep distillation alive until |this|
@@ -82,7 +83,7 @@ void SelfDeletingRequestDelegate::DidFinishNavigation(
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
 }
 
-void SelfDeletingRequestDelegate::RenderProcessGone(
+void SelfDeletingRequestDelegate::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   Observe(NULL);
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);

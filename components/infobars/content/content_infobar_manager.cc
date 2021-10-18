@@ -61,7 +61,8 @@ int ContentInfoBarManager::GetActiveEntryID() {
   return active_entry ? active_entry->GetUniqueID() : 0;
 }
 
-void ContentInfoBarManager::RenderProcessGone(base::TerminationStatus status) {
+void ContentInfoBarManager::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   RemoveAllInfoBars(true);
 }
 

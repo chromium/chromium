@@ -131,7 +131,8 @@ class WebDragSourceAura : public content::WebContentsObserver {
       : WebContentsObserver(contents), window_(window) {}
 
   // content::WebContentsObserver
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     CancelDrag();
   }
 

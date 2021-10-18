@@ -77,7 +77,8 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   // WebContentsObserver implementation
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   // Overloaded to avoid conflict with RenderProcessGone(int).
-  void RenderProcessGone(base::TerminationStatus status) override {}
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {}
 
   void set_was_recently_audible_for_testing(bool value) {
     indicator_is_on_ = value;

@@ -90,7 +90,7 @@ void WebContentsObserverProxy::RenderViewReady() {
   Java_WebContentsObserverProxy_renderViewReady(env, java_observer_);
 }
 
-void WebContentsObserverProxy::RenderProcessGone(
+void WebContentsObserverProxy::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus termination_status) {
   JNIEnv* env = AttachCurrentThread();
   jboolean was_oom_protected =

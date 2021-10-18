@@ -108,7 +108,8 @@ DownloadsDOMHandler::~DownloadsDOMHandler() {
   FinalizeRemovals();
 }
 
-void DownloadsDOMHandler::RenderProcessGone(base::TerminationStatus status) {
+void DownloadsDOMHandler::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   // TODO(dbeam): WebUI + WebUIMessageHandler should do this automatically.
   // http://crbug.com/610450
   render_process_gone_ = true;

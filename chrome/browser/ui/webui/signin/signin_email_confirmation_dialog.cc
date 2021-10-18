@@ -59,7 +59,8 @@ class SigninEmailConfirmationDialog::DialogWebContentsObserver
     signin_email_confirmation_dialog_->ResetDialogObserver();
   }
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     signin_email_confirmation_dialog_->CloseDialog();
   }
 

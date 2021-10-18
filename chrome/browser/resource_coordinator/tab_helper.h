@@ -32,7 +32,8 @@ class ResourceCoordinatorTabHelper
 
   // WebContentsObserver overrides.
   void DidStopLoading() override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
 

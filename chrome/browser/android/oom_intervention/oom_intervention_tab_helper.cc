@@ -117,7 +117,7 @@ void OomInterventionTabHelper::WebContentsDestroyed() {
   StopMonitoring();
 }
 
-void OomInterventionTabHelper::RenderProcessGone(
+void OomInterventionTabHelper::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   ResetInterfaces();
 

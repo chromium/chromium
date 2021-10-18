@@ -209,7 +209,8 @@ void ExtensionHost::OnExtensionUnloaded(
   }
 }
 
-void ExtensionHost::RenderProcessGone(base::TerminationStatus status) {
+void ExtensionHost::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   // During browser shutdown, we may use sudden termination on an extension
   // process, so it is expected to lose our connection to the render view.
   // Do nothing.

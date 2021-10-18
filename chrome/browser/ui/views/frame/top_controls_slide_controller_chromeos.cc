@@ -180,7 +180,8 @@ class TopControlsSlideTabObserver
   }
 
   // content::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     // There is no renderer to communicate with, so just ensure top-chrome
     // is shown. Also the render may have crashed before resetting the gesture
     // in progress bit.

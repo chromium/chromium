@@ -595,7 +595,8 @@ class DevToolsUIBindings::FrontendWebContentsObserver
 
  private:
   // contents::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DocumentOnLoadCompletedInMainFrame(
@@ -639,8 +640,8 @@ bool DevToolsUIBindings::IsValidRemoteFrontendURL(const GURL& url) {
              .spec() == url.spec();
 }
 
-void DevToolsUIBindings::FrontendWebContentsObserver::RenderProcessGone(
-    base::TerminationStatus status) {
+void DevToolsUIBindings::FrontendWebContentsObserver::
+    PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) {
   bool crashed = true;
   switch (status) {
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:

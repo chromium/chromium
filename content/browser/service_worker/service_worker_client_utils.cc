@@ -89,7 +89,8 @@ class OpenURLObserver : public WebContentsObserver {
     RunCallback(render_frame_host->GetGlobalId());
   }
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     RunCallback(GlobalRenderFrameHostId());
   }
 

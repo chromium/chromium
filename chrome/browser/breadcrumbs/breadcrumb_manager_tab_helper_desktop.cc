@@ -93,7 +93,7 @@ void BreadcrumbManagerTabHelperDesktop::DidChangeVisibleSecurityState() {
                                    security_style_authentication_broken);
 }
 
-void BreadcrumbManagerTabHelperDesktop::RenderProcessGone(
+void BreadcrumbManagerTabHelperDesktop::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   LogRenderProcessGone();
 }

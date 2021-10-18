@@ -76,7 +76,7 @@ TEST_F(WebUITabStripContainerViewTest, ButtonsPresentInToolbar) {
 
 TEST_F(WebUITabStripContainerViewTest, CloseContainerOnRendererCrash) {
   auto* webui_tab_strip = browser_view()->webui_tab_strip();
-  webui_tab_strip->RenderProcessGone(
+  webui_tab_strip->PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus::TERMINATION_STATUS_PROCESS_CRASHED);
   EXPECT_EQ(false, webui_tab_strip->GetVisible());
   webui_tab_strip->SetVisibleForTesting(true);

@@ -1245,7 +1245,8 @@ class DOMMessageQueue : public NotificationObserver,
                const NotificationDetails& details) override;
 
   // Overridden WebContentsObserver methods.
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
  private:

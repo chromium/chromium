@@ -89,7 +89,8 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   void FinishAnimationForTesting();
 
   // content::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
  private:
   class AutoCloser;

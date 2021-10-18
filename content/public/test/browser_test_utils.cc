@@ -2555,7 +2555,8 @@ void DOMMessageQueue::Observe(int type,
     std::move(quit_closure_).Run();
 }
 
-void DOMMessageQueue::RenderProcessGone(base::TerminationStatus status) {
+void DOMMessageQueue::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   VLOG(0) << "DOMMessageQueue::RenderProcessGone " << status;
   switch (status) {
     case base::TERMINATION_STATUS_NORMAL_TERMINATION:

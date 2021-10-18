@@ -65,7 +65,8 @@ void SadTabHelper::DidFinishNavigation(
   }
 }
 
-void SadTabHelper::RenderProcessGone(base::TerminationStatus status) {
+void SadTabHelper::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   // Only show the sad tab if we're not in browser shutdown, so that WebContents
   // objects that are not in a browser (e.g., HTML dialogs) and thus are
   // visible do not flash a sad tab page.

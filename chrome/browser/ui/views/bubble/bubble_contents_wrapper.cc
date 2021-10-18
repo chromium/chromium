@@ -116,7 +116,8 @@ void BubbleContentsWrapper::RenderViewHostChanged(
                                             gfx::Size(INT_MAX, INT_MAX));
 }
 
-void BubbleContentsWrapper::RenderProcessGone(base::TerminationStatus status) {
+void BubbleContentsWrapper::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   CloseUI();
 }
 

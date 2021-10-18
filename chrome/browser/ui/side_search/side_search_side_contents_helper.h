@@ -60,7 +60,8 @@ class SideSearchSideContentsHelper
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   // content::WebContentsDelegate:
   bool CanDragEnter(content::WebContents* source,

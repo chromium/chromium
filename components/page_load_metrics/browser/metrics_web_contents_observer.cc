@@ -840,7 +840,7 @@ void MetricsWebContentsObserver::OnVisibilityChanged(
 // This will occur when the process for the main RenderFrameHost exits, either
 // normally or from a crash. We eagerly log data from the last committed load if
 // we have one.
-void MetricsWebContentsObserver::RenderProcessGone(
+void MetricsWebContentsObserver::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   // Other code paths will be run for normal renderer shutdown. Note that we
   // sometimes get the STILL_RUNNING value on fast shutdown.

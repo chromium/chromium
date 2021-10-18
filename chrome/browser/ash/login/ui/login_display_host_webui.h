@@ -122,7 +122,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   class KeyboardDrivenOobeKeyHandler;
 
   // content::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   // chromeos::SessionManagerClient::Observer:
   void EmitLoginPromptVisibleCalled() override;

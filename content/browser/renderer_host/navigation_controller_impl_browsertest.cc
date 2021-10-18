@@ -10447,7 +10447,8 @@ class RenderProcessKilledObserver : public WebContentsObserver {
       : WebContentsObserver(web_contents) {}
   ~RenderProcessKilledObserver() override {}
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     CHECK_NE(status,
              base::TerminationStatus::TERMINATION_STATUS_PROCESS_WAS_KILLED);
   }

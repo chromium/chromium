@@ -61,7 +61,8 @@ class DomDistillerViewerSource::RequestViewerHandle
   // content::WebContentsObserver implementation:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
 
@@ -141,8 +142,8 @@ void DomDistillerViewerSource::RequestViewerHandle::DidFinishNavigation(
   Cancel();
 }
 
-void DomDistillerViewerSource::RequestViewerHandle::RenderProcessGone(
-    base::TerminationStatus status) {
+void DomDistillerViewerSource::RequestViewerHandle::
+    PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) {
   Cancel();
 }
 

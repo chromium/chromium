@@ -48,7 +48,8 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   ~DownloadsDOMHandler() override;
 
   // WebContentsObserver implementation.
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   // downloads::mojom::PageHandler:
   void GetDownloads(const std::vector<std::string>& search_terms) override;

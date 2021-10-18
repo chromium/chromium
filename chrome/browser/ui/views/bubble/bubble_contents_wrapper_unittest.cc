@@ -175,7 +175,7 @@ TEST_F(BubbleContentsWrapperTest, ClosesHostOnWebContentsCrash) {
   contents_wrapper()->SetHost(host.GetWeakPtr());
   EXPECT_EQ(0, host.close_ui_called());
 
-  contents_wrapper()->RenderProcessGone(
+  contents_wrapper()->PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus::TERMINATION_STATUS_PROCESS_CRASHED);
 
   EXPECT_EQ(1, host.close_ui_called());

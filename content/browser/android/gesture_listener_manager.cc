@@ -76,7 +76,8 @@ class GestureListenerManager::ResetScrollObserver : public WebContentsObserver {
                       GestureListenerManager* manager);
 
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
  private:
   GestureListenerManager* const manager_;
@@ -93,8 +94,8 @@ void GestureListenerManager::ResetScrollObserver::DidFinishNavigation(
   manager_->OnNavigationFinished(navigation_handle);
 }
 
-void GestureListenerManager::ResetScrollObserver::RenderProcessGone(
-    base::TerminationStatus status) {
+void GestureListenerManager::ResetScrollObserver::
+    PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) {
   manager_->OnRenderProcessGone();
 }
 

@@ -87,7 +87,8 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
     Destroy();
   }
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     if (destroyed_)
       return;
     // If the embedder process is destroyed, then destroy the guest.

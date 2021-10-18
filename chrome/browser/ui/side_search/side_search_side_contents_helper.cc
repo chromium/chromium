@@ -119,7 +119,7 @@ void SideSearchSideContentsHelper::DidFinishNavigation(
   ++navigation_within_side_search_count_;
 }
 
-void SideSearchSideContentsHelper::RenderProcessGone(
+void SideSearchSideContentsHelper::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   DCHECK(delegate_);
   return delegate_->SidePanelProcessGone();

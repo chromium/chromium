@@ -314,7 +314,7 @@ void NavigationControllerImpl::DidFinishLoad(
   OnNavigationEntryChanged();
 }
 
-void NavigationControllerImpl::RenderProcessGone(
+void NavigationControllerImpl::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   // If the current RenderProcess terminates then trigger a NavigationState
   // change to let the caller know that something is wrong.

@@ -30,7 +30,8 @@ class BackgroundPrintingManager::Observer
   Observer(BackgroundPrintingManager* manager, WebContents* web_contents);
 
  private:
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   BackgroundPrintingManager* manager_;
 };
@@ -41,7 +42,7 @@ BackgroundPrintingManager::Observer::Observer(
       manager_(manager) {
 }
 
-void BackgroundPrintingManager::Observer::RenderProcessGone(
+void BackgroundPrintingManager::Observer::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   manager_->DeletePreviewContents(web_contents());
 }

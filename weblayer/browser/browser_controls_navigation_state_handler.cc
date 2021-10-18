@@ -104,7 +104,7 @@ void BrowserControlsNavigationStateHandler::DidChangeVisibleSecurityState() {
   UpdateState();
 }
 
-void BrowserControlsNavigationStateHandler::RenderProcessGone(
+void BrowserControlsNavigationStateHandler::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   is_crashed_ = true;
   UpdateState();

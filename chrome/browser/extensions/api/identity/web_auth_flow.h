@@ -117,7 +117,8 @@ class WebAuthFlow : public content::WebContentsObserver,
   void DidStopLoading() override;
   void InnerWebContentsCreated(
       content::WebContents* inner_web_contents) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;

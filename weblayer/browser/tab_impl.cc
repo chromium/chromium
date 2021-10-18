@@ -1264,7 +1264,8 @@ void TabImpl::FindMatchRectsReply(content::WebContents* web_contents,
 }
 #endif
 
-void TabImpl::RenderProcessGone(base::TerminationStatus status) {
+void TabImpl::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
 #if defined(OS_ANDROID)
   // If a renderer process is lost when the tab is not visible, indicate to the
   // WebContents that it should automatically reload the next time it becomes

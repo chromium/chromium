@@ -109,7 +109,8 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   void PrimaryPageChanged(content::Page& page) override {
     tracker_->PrimaryPageChanged(web_contents());
   }
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     tracker_->RenderProcessGone(web_contents(), status);
   }
 

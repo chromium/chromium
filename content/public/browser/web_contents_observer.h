@@ -225,7 +225,8 @@ class CONTENT_EXPORT WebContentsObserver {
   // RenderProcessHostObserver::RenderProcessExited(); for code that doesn't
   // otherwise need to be a WebContentsObserver, that API is probably a better
   // choice.
-  virtual void RenderProcessGone(base::TerminationStatus status) {}
+  virtual void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) {}
 
   // This method is invoked when a WebContents swaps its visible RenderViewHost
   // with another one, possibly changing processes. The RenderViewHost that has

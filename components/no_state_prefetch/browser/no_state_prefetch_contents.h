@@ -158,7 +158,8 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   // Checks that a URL may be prerendered, for one of the many redirections. If
   // the URL can not be prerendered - for example, it's an ftp URL - |this| will

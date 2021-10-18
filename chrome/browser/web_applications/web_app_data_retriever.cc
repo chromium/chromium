@@ -137,7 +137,8 @@ void WebAppDataRetriever::WebContentsDestroyed() {
   CallCallbackOnError();
 }
 
-void WebAppDataRetriever::RenderProcessGone(base::TerminationStatus status) {
+void WebAppDataRetriever::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   CallCallbackOnError();
 }
 

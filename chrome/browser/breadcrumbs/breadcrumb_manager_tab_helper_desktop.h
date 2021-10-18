@@ -46,7 +46,8 @@ class BreadcrumbManagerTabHelperDesktop
                    const GURL& validated_url,
                    int error_code) override;
   void DidChangeVisibleSecurityState() override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
 
   // The WebContents associated with this tab helper.

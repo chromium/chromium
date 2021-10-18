@@ -600,7 +600,7 @@ TEST_F(BackgroundLoaderOfflinerTest, ReturnsOnRenderCrash) {
                           kUserRequested);
   EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
                                       progress_callback()));
-  offliner()->RenderProcessGone(
+  offliner()->PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus::TERMINATION_STATUS_PROCESS_CRASHED);
 
   EXPECT_TRUE(completion_callback_called());
@@ -613,7 +613,7 @@ TEST_F(BackgroundLoaderOfflinerTest, ReturnsOnRenderKilled) {
                           kUserRequested);
   EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
                                       progress_callback()));
-  offliner()->RenderProcessGone(
+  offliner()->PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus::TERMINATION_STATUS_PROCESS_WAS_KILLED);
 
   EXPECT_TRUE(completion_callback_called());

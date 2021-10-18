@@ -79,7 +79,8 @@ class WebAppDataRetriever : content::WebContentsObserver {
 
   // WebContentsObserver:
   void WebContentsDestroyed() override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
  private:
   void OnGetWebPageMetadata(

@@ -7089,12 +7089,14 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
 
   SetPrimaryMainFrameProcessStatus(status, error_code);
 
-  TRACE_EVENT0("content",
-               "Dispatching WebContentsObserver::RenderViewTerminated");
-  // Some observers might destroy WebContents in RenderViewTerminated.
+  TRACE_EVENT0(
+      "content",
+      "Dispatching WebContentsObserver::PrimaryMainFrameRenderProcessGone");
+  // Some observers might destroy WebContents in
+  // PrimaryMainFrameRenderProcessGone.
   base::WeakPtr<WebContentsImpl> weak_ptr = weak_factory_.GetWeakPtr();
   for (auto& observer : observers_.observer_list()) {
-    observer.RenderProcessGone(status);
+    observer.PrimaryMainFrameRenderProcessGone(status);
     if (!weak_ptr)
       return;
   }

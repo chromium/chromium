@@ -107,7 +107,8 @@ class TreeWalkingWebContentsLogger : public WebContentsObserver {
     LogWhatHappened("RenderFrameDeleted", render_frame_host);
   }
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     LogWhatHappened("RenderProcessGone");
   }
 

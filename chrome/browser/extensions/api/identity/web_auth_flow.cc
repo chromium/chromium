@@ -206,7 +206,8 @@ void WebAuthFlow::InnerWebContentsCreated(
   WebContentsObserver::Observe(inner_web_contents);
 }
 
-void WebAuthFlow::RenderProcessGone(base::TerminationStatus status) {
+void WebAuthFlow::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   if (delegate_)
     delegate_->OnAuthFlowFailure(WebAuthFlow::WINDOW_CLOSED);
 }

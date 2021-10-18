@@ -329,7 +329,8 @@ class TabImpl : public Tab,
 #endif
 
   // content::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void DidChangeVisibleSecurityState() override;
 
   // find_in_page::FindResultObserver:

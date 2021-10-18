@@ -709,7 +709,8 @@ content::WebContents* LoginDisplayHostWebUI::GetOobeWebContents() const {
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, WebContentsObserver:
 
-void LoginDisplayHostWebUI::RenderProcessGone(base::TerminationStatus status) {
+void LoginDisplayHostWebUI::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   // Do not try to restore on shutdown
   if (browser_shutdown::HasShutdownStarted())
     return;

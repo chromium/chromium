@@ -589,7 +589,8 @@ class WindowDestroyer : public content::WebContentsObserver {
   // Wait for the browser window to be destroyed.
   void Wait() { ui_test_utils::WaitForBrowserToClose(); }
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     tab_strip_model_->CloseAllTabs();
   }
 

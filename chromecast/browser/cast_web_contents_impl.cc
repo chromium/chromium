@@ -636,7 +636,8 @@ bool CastWebContentsImpl::OnPortConnected(
   return true;
 }
 
-void CastWebContentsImpl::RenderProcessGone(base::TerminationStatus status) {
+void CastWebContentsImpl::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO) << "Render process for main frame exited unexpectedly.";
   Stop(net::ERR_UNEXPECTED);

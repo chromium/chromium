@@ -969,7 +969,8 @@ void WebViewGuest::DidRedirectNavigation(
       webview::kEventLoadRedirect, std::move(args)));
 }
 
-void WebViewGuest::RenderProcessGone(base::TerminationStatus status) {
+void WebViewGuest::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   // Cancel all find sessions in progress.
   find_helper_.CancelAllFindSessions();
 
