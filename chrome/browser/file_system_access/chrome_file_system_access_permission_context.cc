@@ -1165,9 +1165,14 @@ void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
     // Don't evict the default ID.
     if (entry.first == kDefaultLastPickedDirectoryKey)
       continue;
-    entries.emplace_back(base::ValueToTime(entry.second.FindKey(kTimestampKey))
-                             .value_or(base::Time::Min()),
-                         entry.first);
+    // If the data is corrupted and `entry.second` is for some reason not a
+    // dict, it should be first in line for eviction.
+    auto timestamp = base::Time::Min();
+    if (entry.second.is_dict()) {
+      timestamp = base::ValueToTime(entry.second.FindKey(kTimestampKey))
+                      .value_or(base::Time::Min());
+    }
+    entries.emplace_back(timestamp, entry.first);
   }
 
   if (entries.size() <= max_ids_per_origin_)
