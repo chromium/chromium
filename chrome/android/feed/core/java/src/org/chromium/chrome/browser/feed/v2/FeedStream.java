@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed;
+package org.chromium.chrome.browser.feed.v2;
 
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -32,17 +32,38 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.feed.CardMenuBottomSheetContent;
+import org.chromium.chrome.browser.feed.FeedAutoplaySettingsDelegate;
+import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.FeedSliceViewTracker;
+import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
+import org.chromium.chrome.browser.feed.FeedUma;
+import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.feed.sections.SectionType;
+import org.chromium.chrome.browser.feed.shared.ScrollTracker;
+import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feed.sort_ui.SortChipProperties;
 import org.chromium.chrome.browser.feed.sort_ui.SortView;
 import org.chromium.chrome.browser.feed.sort_ui.SortViewBinder;
-import org.chromium.chrome.browser.feed.v2.ContentOrder;
-import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.ntp.NewTabPageUma;
+import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
+import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.suggestions.NavigationRecorder;
+import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
@@ -58,13 +79,13 @@ import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -87,18 +108,14 @@ public class FeedStream implements Stream {
      */
     @VisibleForTesting
     class FeedSurfaceActionsHandler implements SurfaceActionsHandler {
-        FeedActionDelegate mActionDelegate;
-        FeedSurfaceActionsHandler(FeedActionDelegate actionDelegate) {
-            mActionDelegate = actionDelegate;
-        }
-
         @Override
         public void navigateTab(String url, View actionSourceView) {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().reportOpenAction(mNativeFeedStream, FeedStream.this,
                     mMakeGURL.apply(url), getSliceIdFromView(actionSourceView));
+            NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_SNIPPET);
 
-            openSuggestionUrl(url, WindowOpenDisposition.CURRENT_TAB);
+            openUrl(url, org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB);
 
             // Attempts to load more content if needed.
             maybeLoadMore();
@@ -109,8 +126,9 @@ public class FeedStream implements Stream {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().reportOpenInNewTabAction(mNativeFeedStream, FeedStream.this,
                     mMakeGURL.apply(url), getSliceIdFromView(actionSourceView));
+            NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_SNIPPET);
 
-            openSuggestionUrl(url, WindowOpenDisposition.NEW_BACKGROUND_TAB);
+            openUrl(url, org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB);
 
             // Attempts to load more content if needed.
             maybeLoadMore();
@@ -121,8 +139,9 @@ public class FeedStream implements Stream {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
                     FeedUserActionType.TAPPED_OPEN_IN_NEW_INCOGNITO_TAB);
+            NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_SNIPPET);
 
-            openSuggestionUrl(url, WindowOpenDisposition.OFF_THE_RECORD);
+            openUrl(url, org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD);
 
             // Attempts to load more content if needed.
             maybeLoadMore();
@@ -133,7 +152,9 @@ public class FeedStream implements Stream {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().reportOtherUserAction(
                     mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_DOWNLOAD);
-            mActionDelegate.downloadPage(url);
+            RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
+                    .savePageLater(url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE,
+                            true /* user requested*/);
         }
 
         @Override
@@ -141,7 +162,12 @@ public class FeedStream implements Stream {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
                     FeedUserActionType.TAPPED_ADD_TO_READING_LIST);
-            mActionDelegate.addToReadingList(title, url);
+
+            mBookmarkBridge.finishLoadingBookmarkModel(() -> {
+                assert ThreadUtils.runningOnUiThread();
+                BookmarkUtils.addToReadingList(
+                        new GURL(url), title, mSnackManager, mBookmarkBridge, mActivity);
+            });
         }
 
         @Override
@@ -210,20 +236,31 @@ public class FeedStream implements Stream {
             }
         }
 
-        private void openSuggestionUrl(String url, int disposition) {
-            boolean inNewTab = (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
-                    || disposition == WindowOpenDisposition.OFF_THE_RECORD);
+        private void openUrl(String url, int disposition) {
             // This postTask is necessary so that other click-handlers have a chance
             // to run before we begin navigating. On start surface, navigation immediately
             // triggers unbind, which can break event handling.
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-                mActionDelegate.openSuggestionUrl(disposition,
-                        new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK),
-                        ()
-                                -> FeedStreamJni.get().reportPageLoaded(
-                                        mNativeFeedStream, FeedStream.this, inNewTab),
-                        visitResult
-                        -> FeedServiceBridge.reportOpenVisitComplete(visitResult.visitTimeMs));
+                LoadUrlParams params = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
+                params.setReferrer(new Referrer(
+                        SuggestionsConfig.getReferrerUrl(ChromeFeatureList.INTEREST_FEED_V2),
+                        // WARNING: ReferrerPolicy.ALWAYS is assumed by other Chrome code for NTP
+                        // tiles to set consider_for_ntp_most_visited.
+                        org.chromium.network.mojom.ReferrerPolicy.ALWAYS));
+                Tab tab = mNavigationDelegate.openUrl(disposition, params);
+
+                boolean inNewTab = (disposition
+                                == org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB
+                        || disposition
+                                == org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD);
+
+                if (tab != null) {
+                    tab.addObserver(new FeedTabNavigationObserver(inNewTab));
+                    NavigationRecorder.record(tab,
+                            visitData
+                            -> FeedServiceBridge.reportOpenVisitComplete(visitData.duration));
+                }
+                ReturnToChromeExperimentsUtil.onFeedCardOpened();
             });
         }
     }
@@ -390,6 +427,7 @@ public class FeedStream implements Stream {
     private final long mNativeFeedStream;
     private final ObserverList<ContentChangedListener> mContentChangedListeners =
             new ObserverList<>();
+    private final NativePageNavigationDelegate mNavigationDelegate;
     private final boolean mIsInterestFeed;
     // Various helpers/controllers.
     private ShareHelperWrapper mShareHelper;
@@ -398,6 +436,7 @@ public class FeedStream implements Stream {
     private WindowAndroid mWindowAndroid;
     private final FeedAutoplaySettingsDelegate mFeedAutoplaySettingsDelegate;
     private UnreadContentObserver mUnreadContentObserver;
+    private BookmarkBridge mBookmarkBridge;
 
     // For loading more content.
     private int mAccumulatedDySinceLastLoadMore;
@@ -418,7 +457,7 @@ public class FeedStream implements Stream {
     private @Nullable NtpListContentManager mContentManager;
     private @Nullable SurfaceScope mSurfaceScope;
     private @Nullable HybridListRenderer mRenderer;
-    private FeedScrollState mScrollStateToRestore;
+    private FeedSurfaceMediator.ScrollState mScrollStateToRestore;
     private int mHeaderCount;
     private boolean mIsPlaceholderShown;
     private long mLastFetchTimeMs;
@@ -439,20 +478,21 @@ public class FeedStream implements Stream {
      * Creates a new Feed Stream.
      * @param activity {@link Activity} that this is bound to.
      * @param snackbarManager {@link SnackbarManager} for showing snackbars.
+     * @param nativePageNavigationDelegate {@link NativePageNavigationDelegate} for navigations.
      * @param bottomSheetController {@link BottomSheetController} for menus.
      * @param isPlaceholderShown Whether the placeholder is shown initially.
      * @param windowAndroid The {@link WindowAndroid} this is shown on.
      * @param shareDelegateSupplier The supplier for {@link ShareDelegate} for sharing actions.
      * @param isInterestFeed Whether this stream is for interest feed (true) or web feed (false).
      * @param feedAutoplaySettingsDelegate The delegate to invoke autoplay settings.
-     * @param actionDelegate Implements some Feed actions.
-     * @param helpAndFeedbackLauncher A HelpAndFeedbackLauncher.
+     * @param bookmarkBridge Used to add feed items to the reading list.
      */
     public FeedStream(Activity activity, SnackbarManager snackbarManager,
+            NativePageNavigationDelegate nativePageNavigationDelegate,
             BottomSheetController bottomSheetController, boolean isPlaceholderShown,
             WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier,
             boolean isInterestFeed, FeedAutoplaySettingsDelegate feedAutoplaySettingsDelegate,
-            FeedActionDelegate actionDelegate, HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+            BookmarkBridge bookmarkBridge) {
         this.mActivity = activity;
         mIsInterestFeed = isInterestFeed;
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
@@ -460,16 +500,18 @@ public class FeedStream implements Stream {
                 this, isInterestFeed, mReliabilityLoggingBridge.getNativePtr());
 
         mBottomSheetController = bottomSheetController;
+        mNavigationDelegate = nativePageNavigationDelegate;
         mShareHelper = new ShareHelperWrapper(windowAndroid, shareDelegateSupplier);
         mSnackManager = snackbarManager;
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+        mHelpAndFeedbackLauncher = HelpAndFeedbackLauncherImpl.getInstance();
         mIsPlaceholderShown = isPlaceholderShown;
         mWindowAndroid = windowAndroid;
         mFeedAutoplaySettingsDelegate = feedAutoplaySettingsDelegate;
         mRotationObserver = new RotationObserver();
+        mBookmarkBridge = bookmarkBridge;
 
         mHandlersMap = new HashMap<>();
-        mHandlersMap.put(SurfaceActionsHandler.KEY, new FeedSurfaceActionsHandler(actionDelegate));
+        mHandlersMap.put(SurfaceActionsHandler.KEY, new FeedSurfaceActionsHandler());
         mHandlersMap.put(FeedActionsHandler.KEY, new FeedActionsHandlerImpl());
 
         this.mLoadMoreTriggerScrollDistanceDp =
@@ -541,6 +583,7 @@ public class FeedStream implements Stream {
             mUnreadContentObserver.destroy();
         }
         mReliabilityLoggingBridge.destroy();
+        mBookmarkBridge.destroy();
     }
 
     @Override
@@ -556,7 +599,7 @@ public class FeedStream implements Stream {
 
     @Override
     public void bind(RecyclerView rootView, NtpListContentManager manager,
-            FeedScrollState savedInstanceState, SurfaceScope surfaceScope,
+            FeedSurfaceMediator.ScrollState savedInstanceState, SurfaceScope surfaceScope,
             HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger,
             int headerCount) {
         launchReliabilityLogger.sendPendingEvents(
@@ -592,7 +635,7 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public void restoreSavedInstanceState(FeedScrollState scrollState) {
+    public void restoreSavedInstanceState(FeedSurfaceMediator.ScrollState scrollState) {
         if (!restoreScrollState(scrollState)) {
             mScrollStateToRestore = scrollState;
         }
@@ -918,16 +961,16 @@ public class FeedStream implements Stream {
                         getLateralPaddingsPx(), sliceId, R.layout.feed_placeholder_layout);
             }
             return new NtpListContentManager.NativeViewContent(
-                    getLateralPaddingsPx(), sliceId, R.layout.feed_spinner);
+                    getLateralPaddingsPx(), sliceId, org.chromium.chrome.R.layout.feed_spinner);
         }
         assert slice.hasZeroStateSlice();
         if (!mIsInterestFeed) {
-            return new NtpListContentManager.NativeViewContent(
-                    getLateralPaddingsPx(), sliceId, R.layout.following_empty_state);
+            return new NtpListContentManager.NativeViewContent(getLateralPaddingsPx(), sliceId,
+                    org.chromium.chrome.R.layout.following_empty_state);
         }
         if (slice.getZeroStateSlice().getType() == FeedUiProto.ZeroStateSlice.Type.CANT_REFRESH) {
             return new NtpListContentManager.NativeViewContent(
-                    getLateralPaddingsPx(), sliceId, R.layout.no_connection);
+                    getLateralPaddingsPx(), sliceId, org.chromium.chrome.R.layout.no_connection);
         }
         // TODO(crbug/1152592): Add new UI for NO_WEB_FEED_SUBSCRIPTIONS.
         assert slice.getZeroStateSlice().getType()
@@ -935,7 +978,7 @@ public class FeedStream implements Stream {
                 || slice.getZeroStateSlice().getType()
                         == FeedUiProto.ZeroStateSlice.Type.NO_WEB_FEED_SUBSCRIPTIONS;
         return new NtpListContentManager.NativeViewContent(
-                getLateralPaddingsPx(), sliceId, R.layout.no_content_v2);
+                getLateralPaddingsPx(), sliceId, org.chromium.chrome.R.layout.no_content_v2);
     }
 
     private void updateContentsInPlace(
@@ -1005,7 +1048,7 @@ public class FeedStream implements Stream {
      * false if we need to wait until more items are added to the recycler view to make it
      * scrollable.
      */
-    private boolean restoreScrollState(FeedScrollState state) {
+    private boolean restoreScrollState(FeedSurfaceMediator.ScrollState state) {
         assert (mRecyclerView != null);
         if (state == null || state.lastPosition < 0 || state.position < 0) return true;
 
@@ -1097,6 +1140,41 @@ public class FeedStream implements Stream {
             ShareParams params = new ShareParams.Builder(mWindowAndroid, title, url).build();
             mShareDelegateSupplier.get().share(params, new ChromeShareExtras.Builder().build(),
                     ShareDelegate.ShareOrigin.FEED);
+        }
+    }
+
+    /**
+     * A {@link TabObserver} that observes navigation related events that originate from Feed
+     * interactions. Calls reportPageLoaded when navigation completes.
+     */
+    private class FeedTabNavigationObserver extends EmptyTabObserver {
+        private final boolean mInNewTab;
+
+        FeedTabNavigationObserver(boolean inNewTab) {
+            mInNewTab = inNewTab;
+        }
+
+        @Override
+        public void onPageLoadFinished(Tab tab, GURL url) {
+            // TODO(jianli): onPageLoadFinished is called on successful load, and if a user manually
+            // stops the page load. We should only capture successful page loads.
+            FeedStreamJni.get().reportPageLoaded(mNativeFeedStream, FeedStream.this, mInNewTab);
+            tab.removeObserver(this);
+        }
+
+        @Override
+        public void onPageLoadFailed(Tab tab, int errorCode) {
+            tab.removeObserver(this);
+        }
+
+        @Override
+        public void onCrash(Tab tab) {
+            tab.removeObserver(this);
+        }
+
+        @Override
+        public void onDestroyed(Tab tab) {
+            tab.removeObserver(this);
         }
     }
 

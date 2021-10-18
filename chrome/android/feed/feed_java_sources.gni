@@ -21,6 +21,7 @@ feed_deps = [
 
 feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/BackToTopBubble.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedAutoplaySettingsDelegate.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedLaunchReliabilityLoggingState.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedStreamViewResizer.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinator.java",
@@ -31,8 +32,14 @@ feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedFeatures.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceDelegate.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceProvider.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/ScrollTracker.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/stream/Stream.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/ui/MaterialSpinnerView.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/sort_ui/SortChipProperties.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/sort_ui/SortView.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/sort_ui/SortViewBinder.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedServiceBridgeDelegateImpl.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStream.java",
 ]
 
 feed_srcjar_deps = []
@@ -40,6 +47,8 @@ feed_srcjar_deps = []
 feed_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/feed/FeedSurfaceMediatorTest.java",
+  "junit/src/org/chromium/chrome/browser/feed/v2/FakeLinearLayoutManager.java",
+  "junit/src/org/chromium/chrome/browser/feed/v2/FeedStreamTest.java",
 ]
 
 feed_test_java_sources = [

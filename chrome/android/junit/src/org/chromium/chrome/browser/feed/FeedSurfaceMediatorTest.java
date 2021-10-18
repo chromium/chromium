@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderProperties;
 import org.chromium.chrome.browser.feed.sections.ViewVisibility;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
+import org.chromium.chrome.browser.feed.v2.FeedStream;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
@@ -167,14 +168,15 @@ public class FeedSurfaceMediatorTest {
 
     @Test
     public void testSerializeScrollState() {
-        FeedScrollState state = new FeedScrollState();
+        FeedSurfaceMediator.ScrollState state = new FeedSurfaceMediator.ScrollState();
         state.tabId = 5;
         state.position = 2;
         state.lastPosition = 4;
         state.offset = 50;
         state.feedContentState = "foo";
 
-        FeedScrollState deserializedState = FeedScrollState.fromJson(state.toJson());
+        FeedSurfaceMediator.ScrollState deserializedState =
+                FeedSurfaceMediator.ScrollState.fromJson(state.toJson());
 
         assertEquals(2, deserializedState.position);
         assertEquals(4, deserializedState.lastPosition);
@@ -186,9 +188,10 @@ public class FeedSurfaceMediatorTest {
 
     @Test
     public void testSerializeScrollStateAllFieldsUnset() {
-        FeedScrollState state = new FeedScrollState();
+        FeedSurfaceMediator.ScrollState state = new FeedSurfaceMediator.ScrollState();
 
-        FeedScrollState deserializedState = FeedScrollState.fromJson(state.toJson());
+        FeedSurfaceMediator.ScrollState deserializedState =
+                FeedSurfaceMediator.ScrollState.fromJson(state.toJson());
 
         assertEquals(state.position, deserializedState.position);
         assertEquals(state.lastPosition, deserializedState.lastPosition);
@@ -200,7 +203,7 @@ public class FeedSurfaceMediatorTest {
 
     @Test
     public void testScrollStateFromInvalidJson() {
-        assertEquals(null, FeedScrollState.fromJson("{{=xcg"));
+        assertEquals(null, FeedSurfaceMediator.ScrollState.fromJson("{{=xcg"));
     }
 
     @Test
@@ -553,7 +556,7 @@ public class FeedSurfaceMediatorTest {
 
     private FeedSurfaceMediator createMediator(
             @FeedSurfaceCoordinator.StreamTabId int tabId, PropertyModel sectionHeaderModel) {
-        return new FeedSurfaceMediator(mFeedSurfaceCoordinator, mActivity, null, sectionHeaderModel,
-                tabId, /*actionDelegate=*/null);
+        return new FeedSurfaceMediator(mFeedSurfaceCoordinator, mActivity, null,
+                mPageNavigationDelegate, sectionHeaderModel, tabId);
     }
 }

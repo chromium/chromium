@@ -36,6 +36,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
@@ -44,10 +45,12 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderViewBinder;
 import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
+import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feed.v2.FeedServiceBridgeDelegateImpl;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feed.v2.FeedStream;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
@@ -113,8 +116,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     private final Handler mHandler;
     private final boolean mOverScrollDisabled;
     private final ObserverList<SurfaceCoordinator.Observer> mObservers = new ObserverList<>();
-    private final FeedActionDelegate mActionDelegate;
-    private final HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
@@ -129,6 +130,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
 
     // Used when Feed is enabled.
     private @Nullable Profile mProfile;
+    private @Nullable NativePageNavigationDelegate mPageNavigationDelegate;
     private @Nullable FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     private @Nullable View mSigninPromoView;
     private @Nullable FeedStreamViewResizer mStreamViewResizer;
@@ -173,6 +175,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     private FeedSwipeRefreshLayout mSwipeRefreshLayout;
 
     private BackToTopBubble mBackToTopBubble;
+    private final BookmarkBridge mBookmarkBridge;
 
     @IntDef({StreamTabId.DEFAULT, StreamTabId.FOR_YOU, StreamTabId.FOLLOWING})
     public @interface StreamTabId {
@@ -266,6 +269,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
      *   view.
      * @param showDarkBackground Whether is shown on dark background.
      * @param delegate The constructing {@link FeedSurfaceDelegate}.
+     * @param pageNavigationDelegate The {@link NativePageNavigationDelegate}
+     *                               that handles page navigation.
      * @param profile The current user profile.
      * @param isPlaceholderShownInitially Whether the placeholder is shown initially.
      * @param bottomSheetController The bottom sheet controller.
@@ -278,14 +283,14 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
      * @param overScrollDisabled Whether the overscroll effect is disabled.
      * @param viewportView The view that should be used as a container for viewport measurement
      *   purposes, or |null| if the view returned by HybridListRenderer is to be used.
-     * @param actionDelegate Implements some Feed actions.
-     * @param helpAndFeedbackLauncher A HelpAndFeedbackLauncher.
+     * @param bookmarkBridge Allows interacting with bookmarks.
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, @Nullable SnapScrollHelper snapScrollHelper,
             @Nullable View ntpHeader, @Px int toolbarHeight, boolean showDarkBackground,
-            FeedSurfaceDelegate delegate, Profile profile, boolean isPlaceholderShownInitially,
-            BottomSheetController bottomSheetController,
+            FeedSurfaceDelegate delegate,
+            @Nullable NativePageNavigationDelegate pageNavigationDelegate, Profile profile,
+            boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable ScrollableContainerDelegate externalScrollableContainerDelegate,
             @NewTabPageLaunchOrigin int launchOrigin,
@@ -293,8 +298,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             @NonNull Supplier<Toolbar> toolbarSupplier,
             FeedLaunchReliabilityLoggingState launchReliabilityLoggingState,
             @Nullable FeedSwipeRefreshLayout swipeRefreshLayout, boolean overScrollDisabled,
-            @Nullable ViewGroup viewportView, FeedActionDelegate actionDelegate,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+            @Nullable ViewGroup viewportView, @NonNull BookmarkBridge bookmarkBridge) {
         FeedSurfaceTracker.getInstance().initServiceBridge(new FeedServiceBridgeDelegateImpl());
         mActivity = activity;
         mSnackbarManager = snackbarManager;
@@ -302,6 +306,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         mShowDarkBackground = showDarkBackground;
         mIsPlaceholderShownInitially = isPlaceholderShownInitially;
         mDelegate = delegate;
+        mPageNavigationDelegate = pageNavigationDelegate;
         mBottomSheetController = bottomSheetController;
         mProfile = profile;
         mWindowAndroid = windowAndroid;
@@ -313,8 +318,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         mSwipeRefreshLayout = swipeRefreshLayout;
         mOverScrollDisabled = overScrollDisabled;
         mViewportView = viewportView;
-        mActionDelegate = actionDelegate;
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+        mBookmarkBridge = bookmarkBridge;
 
         Resources resources = mActivity.getResources();
         mDefaultMarginPixels = mActivity.getResources().getDimensionPixelSize(
@@ -353,8 +357,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
                 .addObserver(mSectionHeaderListModelChangeProcessor);
 
         // Mediator should be created before any Stream changes.
-        mMediator = new FeedSurfaceMediator(this, mActivity, snapScrollHelper, mSectionHeaderModel,
-                getTabIdFromLaunchOrigin(launchOrigin), actionDelegate);
+        mMediator =
+                new FeedSurfaceMediator(this, mActivity, snapScrollHelper, mPageNavigationDelegate,
+                        mSectionHeaderModel, getTabIdFromLaunchOrigin(launchOrigin));
 
         FeedSurfaceTracker.getInstance().trackSurface(this);
 
@@ -700,9 +705,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
      * @return The FeedStream created.
      */
     FeedStream createFeedStream(boolean isInterestFeed) {
-        return new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
-                mIsPlaceholderShownInitially, mWindowAndroid, mShareSupplier, isInterestFeed, this,
-                mActionDelegate, mHelpAndFeedbackLauncher);
+        return new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
+                mBottomSheetController, mIsPlaceholderShownInitially, mWindowAndroid,
+                mShareSupplier, isInterestFeed, this, mBookmarkBridge);
     }
 
     private void setHeaders(List<View> headerViews) {
