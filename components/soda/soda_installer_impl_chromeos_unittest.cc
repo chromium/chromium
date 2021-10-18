@@ -37,6 +37,8 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
         ash::prefs::kAccessibilityDictationEnabled, true);
     pref_service_->registry()->RegisterBooleanPref(prefs::kLiveCaptionEnabled,
                                                    true);
+    pref_service_->registry()->RegisterBooleanPref(
+        ash::prefs::kProjectorCreationFlowEnabled, true);
     pref_service_->registry()->RegisterStringPref(
         prefs::kLiveCaptionLanguageCode, kUsEnglishLocale);
 
@@ -103,6 +105,11 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
 
   void SetLiveCaptionEnabled(bool enabled) {
     pref_service_->SetManagedPref(prefs::kLiveCaptionEnabled,
+                                  std::make_unique<base::Value>(enabled));
+  }
+
+  void SetProjectorCreationFlowEnabled(bool enabled) {
+    pref_service_->SetManagedPref(ash::prefs::kProjectorCreationFlowEnabled,
                                   std::make_unique<base::Value>(enabled));
   }
 
@@ -235,6 +242,7 @@ TEST_F(SodaInstallerImplChromeOSTest, UninstallSodaAfterThirtyDays) {
   // Turn off features that use SODA so that the uninstall timer can be set.
   SetDictationEnabled(false);
   SetLiveCaptionEnabled(false);
+  SetProjectorCreationFlowEnabled(false);
   SetUninstallTimer();
   ASSERT_TRUE(IsSodaInstalled());
   // If 30 days pass without the uninstall time being pushed, SODA will be
@@ -256,6 +264,7 @@ TEST_F(SodaInstallerImplChromeOSTest, ReinstallSoda) {
   // Turn off features that use SODA so that the uninstall timer can be set.
   SetDictationEnabled(false);
   SetLiveCaptionEnabled(false);
+  SetProjectorCreationFlowEnabled(false);
   SetUninstallTimer();
   ASSERT_TRUE(IsSodaInstalled());
   // If 30 days pass without the uninstall time being pushed, SODA will be

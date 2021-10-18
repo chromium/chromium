@@ -194,6 +194,7 @@
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
+#include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1375,6 +1376,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   borealis::prefs::RegisterProfilePrefs(registry);
   ash::ChromeScanningAppDelegate::RegisterProfilePrefs(registry);
   policy::PolicyCertService::RegisterProfilePrefs(registry);
+  ProjectorAppClientImpl::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

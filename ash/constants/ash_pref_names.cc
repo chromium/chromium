@@ -857,6 +857,11 @@ const char kDeskTemplatesEnabled[] = "ash.desk_templates_enabled";
 // predefined Desks templates configured by policy administrators.
 const char kPreconfiguredDeskTemplates[] = "ash.preconfigured_desk_templates";
 
+// A boolean pref that tracks whether the user has enabled Projector creation
+// flow during onboarding.
+const char kProjectorCreationFlowEnabled[] =
+    "ash.projector.creationFlowEnabled";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

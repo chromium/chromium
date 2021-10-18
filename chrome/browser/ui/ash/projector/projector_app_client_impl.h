@@ -14,9 +14,15 @@ class URLLoaderFactory;
 }
 }  // namespace network
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 // Implements the interface for Projector App.
 class ProjectorAppClientImpl : public chromeos::ProjectorAppClient {
  public:
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
   ProjectorAppClientImpl();
   ProjectorAppClientImpl(const ProjectorAppClientImpl&) = delete;
   ProjectorAppClientImpl& operator=(const ProjectorAppClientImpl&) = delete;

@@ -4,12 +4,22 @@
 
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
+
+// static
+void ProjectorAppClientImpl::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(
+      ash::prefs::kProjectorCreationFlowEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+}
 
 ProjectorAppClientImpl::ProjectorAppClientImpl() = default;
 ProjectorAppClientImpl::~ProjectorAppClientImpl() = default;

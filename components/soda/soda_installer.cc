@@ -82,6 +82,8 @@ void SodaInstaller::Init(PrefService* profile_prefs,
 
   if (IsAnyFeatureUsingSodaEnabled(profile_prefs)) {
     soda_installer_initialized_ = true;
+    // Set the SODA uninstaller time to NULL time so that it doesn't get
+    // uninstalled when features are using it.
     global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
     SodaInstaller::GetInstance()->InstallSoda(global_prefs);
 
@@ -267,9 +269,9 @@ bool SodaInstaller::IsSodaDownloading(LanguageCode language_code) const {
 
 bool SodaInstaller::IsAnyFeatureUsingSodaEnabled(PrefService* prefs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1165437): Add Projector feature.
   return prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
-         prefs->GetBoolean(ash::prefs::kAccessibilityDictationEnabled);
+         prefs->GetBoolean(ash::prefs::kAccessibilityDictationEnabled) ||
+         prefs->GetBoolean(ash::prefs::kProjectorCreationFlowEnabled);
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   return prefs->GetBoolean(prefs::kLiveCaptionEnabled);
 #endif

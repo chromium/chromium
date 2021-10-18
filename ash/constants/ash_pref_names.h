@@ -387,6 +387,9 @@ extern const char kFastPairEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDeskTemplatesEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPreconfiguredDeskTemplates[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kProjectorCreationFlowEnabled[];
+
 }  // namespace prefs
 }  // namespace ash
 
