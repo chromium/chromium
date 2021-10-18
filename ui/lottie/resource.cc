@@ -4,80 +4,57 @@
 
 #include "ui/lottie/resource.h"
 
-#include <map>
+#include <memory>
+#include <vector>
 
-#include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
-#include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "base/memory/ref_counted_memory.h"
 #include "cc/paint/skottie_wrapper.h"
-#include "third_party/zlib/google/compression_utils.h"
-#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
 #include "ui/lottie/animation.h"
 
-#if defined(OS_WIN)
-#include "ui/display/win/dpi.h"
-#endif
-
-namespace lottie {
 namespace {
 
-// Cached vector graphics. Each resource is loaded and unzipped only once.
-// TODO(malaykeshav): Investigate if this needs to be an MRU cache with a size
-// limit as the usage increases.
-using VectorAssetCache = std::map<int, scoped_refptr<cc::SkottieWrapper>>;
-VectorAssetCache& GetVectorAssetCache() {
-  static base::NoDestructor<VectorAssetCache> vector_graphic_cache;
-  return *vector_graphic_cache;
-}
+// A descendant of |gfx::ImageSkiaSource| that uses a |lottie::Animation| for a
+// still image. Used as a utility class, not for |gfx::ImageSkia|'s backend.
+class LottieImageSource : public gfx::CanvasImageSource {
+ public:
+  LottieImageSource(std::unique_ptr<lottie::Animation> content,
+                    const gfx::Size& size)
+      : gfx::CanvasImageSource(size), content_(std::move(content)) {
+    DCHECK(content_);
+    DCHECK(content_->skottie());
+    DCHECK(content_->skottie()->is_valid());
+  }
+  LottieImageSource(const LottieImageSource&) = delete;
+  LottieImageSource& operator=(const LottieImageSource&) = delete;
+  ~LottieImageSource() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    content_->PaintFrame(canvas, 0.f, size_);
+  }
+
+ private:
+  std::unique_ptr<lottie::Animation> content_;
+};
 
 }  // namespace
 
-std::unique_ptr<Animation> GetVectorAnimationNamed(int resource_id) {
-  auto found = GetVectorAssetCache().find(resource_id);
-  if (found != GetVectorAssetCache().end())
-    return std::make_unique<Animation>(found->second);
+namespace lottie {
 
-  auto& rb = ui::ResourceBundle::GetSharedInstance();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ui::ResourceScaleFactor scale_factor_to_load = rb.GetMaxResourceScaleFactor();
-#elif defined(OS_WIN)
-  ui::ResourceScaleFactor scale_factor_to_load =
-      display::win::GetDPIScale() > 1.25 ? rb.GetMaxResourceScaleFactor()
-                                         : ui::k100Percent;
-#else
-  ui::ResourceScaleFactor scale_factor_to_load = ui::k100Percent;
-#endif
-  // Clamp the scale factor to 2x. At most we will only be needing 2 versions
-  // for a given file.
-  if (scale_factor_to_load > ui::k200Percent)
-    scale_factor_to_load = ui::k200Percent;
-
-  auto compressed_raw_data =
-      rb.GetRawDataResourceForScale(resource_id, scale_factor_to_load);
-  std::vector<uint8_t> uncompressed_bytes(
-      compression::GetUncompressedSize(compressed_raw_data));
-  base::StringPiece uncompressed_str_piece(
-      reinterpret_cast<char*>(uncompressed_bytes.data()),
-      uncompressed_bytes.size());
-
-  TRACE_EVENT1("ui", "GetVectorAnimationNamed uncompress and parse",
-               "zip size bytes", uncompressed_bytes.size());
-  base::TimeTicks start_timestamp = base::TimeTicks::Now();
-  CHECK(
-      compression::GzipUncompress(compressed_raw_data, uncompressed_str_piece));
-
-  auto skottie =
-      cc::SkottieWrapper::CreateSerializable(std::move(uncompressed_bytes));
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "UncompressAndParseSkiaVectorAsset",
-      base::TimeTicks::Now() - start_timestamp, base::Microseconds(1),
-      base::Milliseconds(50), 100);
-  auto inserted = GetVectorAssetCache().emplace(resource_id, skottie);
-  DCHECK(inserted.second);
-  return std::make_unique<Animation>(inserted.first->second);
+gfx::ImageSkiaRep ParseLottieAsStillImage(
+    const base::RefCountedString& bytes_string,
+    float scale) {
+  const uint8_t* bytes_pointer = bytes_string.front_as<uint8_t>();
+  std::unique_ptr<lottie::Animation> content =
+      std::make_unique<lottie::Animation>(
+          cc::SkottieWrapper::CreateSerializable(std::vector<uint8_t>(
+              bytes_pointer, bytes_pointer + bytes_string.size())));
+  const gfx::Size size = content->GetOriginalSize();
+  return LottieImageSource(std::move(content), size).GetImageForScale(scale);
 }
 
 }  // namespace lottie

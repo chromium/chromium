@@ -5,18 +5,23 @@
 #ifndef UI_LOTTIE_RESOURCE_H_
 #define UI_LOTTIE_RESOURCE_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 
-namespace lottie {
-class Animation;
+namespace base {
+class RefCountedString;
+}
 
-// Gets a vector graphic resource specified by |resource_id| from the current
-// module data and returns it as an |Animation| object. This expects the
-// resource to be gzipped.
+namespace gfx {
+class ImageSkiaRep;
+}
+
+namespace lottie {
+
+// Used for loading a Lottie asset intended as a still image (not animated).
 COMPONENT_EXPORT(UI_LOTTIE)
-std::unique_ptr<Animation> GetVectorAnimationNamed(int resource_id);
+gfx::ImageSkiaRep ParseLottieAsStillImage(
+    const base::RefCountedString& bytes_string,
+    float scale);
 
 }  // namespace lottie
 

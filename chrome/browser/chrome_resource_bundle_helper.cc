@@ -29,6 +29,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/common/pref_names.h"
+#include "ui/lottie/resource.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -85,6 +86,11 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
 #else
   preferred_locale =
       local_state->GetString(language::prefs::kApplicationLocale);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ui::ResourceBundle::SetParseLottieAsStillImage(
+      &lottie::ParseLottieAsStillImage);
 #endif
 
   TRACE_EVENT0("startup",

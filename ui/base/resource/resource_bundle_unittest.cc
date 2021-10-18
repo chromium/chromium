@@ -28,7 +28,9 @@
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 #if defined(OS_WIN)
 #include "ui/display/win/dpi.h"
@@ -54,6 +56,24 @@ const unsigned char kPngIHDRChunkType[4] = { 'I', 'H', 'D', 'R' };
 const unsigned char kPngScaleChunk[12] = { 0x00, 0x00, 0x00, 0x00,
                                            'c', 's', 'C', 'l',
                                            0xc1, 0x30, 0x60, 0x4d };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// A string with the "LOTTIE" prefix that GRIT adds to Lottie assets.
+constexpr char kLottieData[] = "LOTTIEtest";
+
+// Mock of |lottie::ParseLottieAsStillImage|. Checks that |kLottieData| is
+// properly stripped of the "LOTTIE" prefix.
+gfx::ImageSkiaRep ParseLottieAsStillImageForTesting(
+    const base::RefCountedString& bytes_string,
+    float scale) {
+  auto expected_bytes_string = base::MakeRefCounted<base::RefCountedString>();
+  expected_bytes_string->data() = "test";
+  CHECK(bytes_string.Equals(expected_bytes_string));
+
+  const int dimension = static_cast<int>(16 * scale);
+  return gfx::ImageSkiaRep(gfx::Size(dimension, dimension), scale);
+}
+#endif
 
 // Returns |bitmap_data| with |custom_chunk| inserted after the IHDR chunk.
 void AddCustomChunk(const base::StringPiece& custom_chunk,
@@ -667,5 +687,58 @@ TEST_F(ResourceBundleImageTest, FallbackToNone) {
   EXPECT_EQ(ui::k100Percent, GetSupportedResourceScaleFactor(
                                  image_skia->image_reps()[0].scale()));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ResourceBundleImageTest, Lottie) {
+  ui::ResourceBundle::SetParseLottieAsStillImage(
+      &ParseLottieAsStillImageForTesting);
+  test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      {k100Percent, k200Percent});
+  base::FilePath data_1x_path = dir_path().AppendASCII("sample_1x.pak");
+  base::FilePath data_2x_path = dir_path().AppendASCII("sample_2x.pak");
+
+  // Create the pak files.
+  const std::map<uint16_t, base::StringPiece> resources = {
+      std::make_pair(3u, kLottieData)};
+  DataPack::WritePack(data_1x_path, resources, ui::DataPack::BINARY);
+  DataPack::WritePack(data_2x_path, resources, ui::DataPack::BINARY);
+
+  // Load the regular and 2x pak files.
+  ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
+  resource_bundle->AddDataPackFromPath(data_1x_path, k100Percent);
+  resource_bundle->AddDataPackFromPath(data_2x_path, k200Percent);
+
+  EXPECT_EQ(k200Percent, resource_bundle->GetMaxResourceScaleFactor());
+
+  gfx::ImageSkia* image_skia = resource_bundle->GetImageSkiaNamed(3);
+
+  // ChromeOS loads the highest scale factor first.
+  EXPECT_EQ(ui::k200Percent, GetSupportedResourceScaleFactor(
+                                 image_skia->image_reps()[0].scale()));
+
+  // Resource ID 3 exists in both 1x and 2x paks. Image reps should be
+  // available for both scale factors in |image_skia|.
+  gfx::ImageSkiaRep image_rep = image_skia->GetRepresentation(
+      GetScaleForResourceScaleFactor(ui::k100Percent));
+  EXPECT_EQ(ui::k100Percent,
+            GetSupportedResourceScaleFactor(image_rep.scale()));
+  image_rep = image_skia->GetRepresentation(
+      GetScaleForResourceScaleFactor(ui::k200Percent));
+  EXPECT_EQ(ui::k200Percent,
+            GetSupportedResourceScaleFactor(image_rep.scale()));
+
+  // Requesting the 1.4x resource should return either the 1x or the 2x
+  // resource.
+  image_rep = image_skia->GetRepresentation(1.4f);
+  ResourceScaleFactor scale_factor =
+      GetSupportedResourceScaleFactor(image_rep.scale());
+  EXPECT_TRUE(scale_factor == ui::k100Percent ||
+              scale_factor == ui::k200Percent);
+
+  // ImageSkia scales image if the one for the requested scale factor is not
+  // available.
+  EXPECT_EQ(1.4f, image_skia->GetRepresentation(1.4f).scale());
+}
+#endif
 
 }  // namespace ui

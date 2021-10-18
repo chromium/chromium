@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -28,7 +29,6 @@
 #include "base/synchronization/lock.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/filter/gzip_header.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/brotli/include/brotli/decode.h"
@@ -79,6 +79,17 @@ const unsigned char kPngDataChunkType[4] = { 'I', 'D', 'A', 'T' };
 
 #if !defined(OS_APPLE)
 const char kPakFileExtension[] = ".pak";
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// The prefix that GRIT prepends to Lottie assets, after compression if any.
+// See: tools/grit/grit/node/structure.py
+constexpr char kLottiePrefix[6] = {'L', 'O', 'T', 'T', 'I', 'E'};
+
+// Points to |lottie::ParseLottieAsStillImage| so that certain dependencies do
+// not need to be included directly in ui/base.
+ResourceBundle::LottieImageParseFunction g_parse_lottie_as_still_image_ =
+    nullptr;
 #endif
 
 ResourceBundle* g_shared_instance_ = nullptr;
@@ -172,13 +183,14 @@ void DecompressIfNeeded(base::StringPiece data, std::string* output) {
 
 }  // namespace
 
-// An ImageSkiaSource that loads bitmaps for the requested scale factor from
-// ResourceBundle on demand for a given |resource_id|. If the bitmap for the
-// requested scale factor does not exist, it will return the 1x bitmap scaled
-// by the scale factor. This may lead to broken UI if the correct size of the
-// scaled image is not exactly |scale_factor| * the size of the 1x resource.
-// When --highlight-missing-scaled-resources flag is specified, scaled 1x images
-// are higlighted by blending them with red.
+// A descendant of |gfx::ImageSkiaSource| that loads an image (bitmap or vector
+// graphic) for the requested scale factor from |ResourceBundle| on demand for a
+// given |resource_id|. For bitmap assets, if the bitmap for the requested scale
+// factor does not exist, it will return the 1x bitmap scaled by the scale
+// factor. This may lead to broken UI if the correct size of the scaled image is
+// not exactly |scale_factor| * the size of the 1x bitmap. When
+// --highlight-missing-scaled-resources flag is specified, scaled 1x bitmaps are
+// highlighted by blending them with red.
 class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
  public:
   ResourceBundleImageSource(ResourceBundle* rb, int resource_id)
@@ -192,9 +204,18 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
 
   // gfx::ImageSkiaSource overrides:
   gfx::ImageSkiaRep GetImageForScale(float scale) override {
+    ResourceScaleFactor scale_factor = GetSupportedResourceScaleFactor(scale);
+
+    // TODO(https://crbug.com/1128684): Consolidate |LoadBitmap| and
+    // |LoadLottie|.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    gfx::ImageSkiaRep rep_from_lottie;
+    if (rb_->LoadLottie(resource_id_, scale_factor, &rep_from_lottie))
+      return rep_from_lottie;
+#endif
+
     SkBitmap image;
     bool fell_back_to_1x = false;
-    ResourceScaleFactor scale_factor = GetSupportedResourceScaleFactor(scale);
     bool found = rb_->LoadBitmap(resource_id_, &scale_factor,
                                  &image, &fell_back_to_1x);
     if (!found) {
@@ -309,6 +330,14 @@ ResourceBundle& ResourceBundle::GetSharedInstance() {
   CHECK(g_shared_instance_ != nullptr);
   return *g_shared_instance_;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
+void ResourceBundle::SetParseLottieAsStillImage(
+    ResourceBundle::LottieImageParseFunction parse_lottie_as_still_image) {
+  g_parse_lottie_as_still_image_ = parse_lottie_as_still_image;
+}
+#endif
 
 void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
     base::File pak_file,
@@ -1130,5 +1159,23 @@ bool ResourceBundle::DecodePNG(const unsigned char* buf,
   *fell_back_to_1x = PNGContainsFallbackMarker(buf, size);
   return gfx::PNGCodec::Decode(buf, size, bitmap);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool ResourceBundle::LoadLottie(int resource_id,
+                                ResourceScaleFactor scale_factor,
+                                gfx::ImageSkiaRep* rep) const {
+  const base::StringPiece potential_lottie =
+      GetRawDataResourceForScale(resource_id, scale_factor);
+  if (potential_lottie.substr(0u, base::size(kLottiePrefix)) != kLottiePrefix)
+    return false;
+
+  auto bytes_string = base::MakeRefCounted<base::RefCountedString>();
+  DecompressIfNeeded(potential_lottie.substr(base::size(kLottiePrefix)),
+                     &(bytes_string->data()));
+  *rep = (*g_parse_lottie_as_still_image_)(
+      *bytes_string, GetScaleForResourceScaleFactor(scale_factor));
+  return true;
+}
+#endif
 
 }  // namespace ui

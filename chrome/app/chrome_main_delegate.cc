@@ -130,6 +130,7 @@
 #include "chromeos/memory/kstaled.h"
 #include "chromeos/memory/memory.h"
 #include "chromeos/memory/swap_configuration.h"
+#include "ui/lottie/resource.h"  // nogncheck
 #endif
 
 #if defined(OS_ANDROID)
@@ -1087,6 +1088,9 @@ void ChromeMainDelegate::PreSandboxStartup() {
       // See comment at ReadAppLocale() for why we do this.
       locale = chromeos::startup_settings_cache::ReadAppLocale();
     }
+
+    ui::ResourceBundle::SetParseLottieAsStillImage(
+        &lottie::ParseLottieAsStillImage);
 #endif
 #if defined(OS_ANDROID)
     // The renderer sandbox prevents us from accessing our .pak files directly.

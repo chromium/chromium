@@ -153,6 +153,7 @@ static_library("test_support") {
     "//ui/base",
     "//v8:v8_headers",
   ]
+  public_deps = []
 
   if (!is_fuchsia) {
     # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
@@ -188,6 +189,7 @@ static_library("test_support") {
       "//chromeos",
       "//chromeos/memory:memory",
     ]
+    public_deps += [ "//ui/lottie" ]
   }
 
   if (is_chromeos_lacros) {

@@ -2491,6 +2491,7 @@ static_library("browser") {
       "//components/session_manager/core",
       "//device/vr/public/mojom:isolated_xr_service",
     ]
+    public_deps += [ "//ui/lottie" ]
     if (!is_official_build) {
       deps += [
         "//ash/webui/demo_mode_app_ui",
