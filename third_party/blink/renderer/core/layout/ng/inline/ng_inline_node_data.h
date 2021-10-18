@@ -22,9 +22,7 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
     return static_cast<TextDirection>(base_direction_);
   }
 
-  bool HasLineEvenIfEmpty() const { return has_line_even_if_empty_; }
   bool HasRuby() const { return has_ruby_; }
-  bool IsEmptyInline() const { return is_empty_inline_; }
 
   bool IsBlockLevel() const { return is_block_level_; }
 
@@ -61,18 +59,8 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
   unsigned is_bidi_enabled_ : 1;
   unsigned base_direction_ : 1;  // TextDirection
 
-  // True if there are no inline item items and the associated block is root
-  // editable element or having "-internal-empty-line-height:fabricated",
-  // e.g. <div contenteditable></div>, <input type=button value="">
-  unsigned has_line_even_if_empty_ : 1;
-
   // The node contains <ruby>.
   unsigned has_ruby_ : 1;
-
-  // We use this flag to determine if the inline node is empty, and will
-  // produce a single zero block-size line box. If the node has text, atomic
-  // inlines, open/close tags with margins/border/padding this will be false.
-  unsigned is_empty_inline_ : 1;
 
   // We use this flag to determine if we have *only* floats, and OOF-positioned
   // children. If so we consider them block-level, and run the

@@ -94,14 +94,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   bool IsBidiEnabled() const { return Data().is_bidi_enabled_; }
   TextDirection BaseDirection() const { return Data().BaseDirection(); }
 
-  bool HasLineEvenIfEmpty() const {
-    return EnsureData().has_line_even_if_empty_;
-  }
   bool HasRuby() const { return Data().has_ruby_; }
-
-  bool IsEmptyInline() const {
-    return !HasLineEvenIfEmpty() && EnsureData().is_empty_inline_;
-  }
 
   bool IsBlockLevel() { return EnsureData().is_block_level_; }
 

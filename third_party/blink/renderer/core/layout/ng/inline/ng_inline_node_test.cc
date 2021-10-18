@@ -51,7 +51,6 @@ class NGInlineNodeForTest : public NGInlineNode {
     data->text_content = data->text_content + text;
     data->items.push_back(NGInlineItem(NGInlineItem::kText, start,
                                        start + text.length(), layout_object));
-    data->is_empty_inline_ = false;
   }
 
   void Append(UChar character) {
@@ -61,14 +60,12 @@ class NGInlineNodeForTest : public NGInlineNode {
     data->items.push_back(
         NGInlineItem(NGInlineItem::kBidiControl, end - 1, end, nullptr));
     data->is_bidi_enabled_ = true;
-    data->is_empty_inline_ = false;
   }
 
   void ClearText() {
     NGInlineNodeData* data = MutableData();
     data->text_content = String();
     data->items.clear();
-    data->is_empty_inline_ = true;
   }
 
   void SegmentText() {

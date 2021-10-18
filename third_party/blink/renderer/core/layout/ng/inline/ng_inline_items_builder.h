@@ -63,10 +63,6 @@ class NGInlineItemsBuilderTemplate {
   // Returns whether the items contain any Bidi controls.
   bool HasBidiControls() const { return has_bidi_controls_; }
 
-  // Returns if the inline node has no content. For example:
-  // <span></span> or <span><float></float></span>.
-  bool IsEmptyInline() const { return is_empty_inline_; }
-
   bool IsBlockLevel() const { return is_block_level_; }
 
   // True if there were any `unicode-bidi: plaintext`. In this case, changes to
@@ -198,7 +194,6 @@ class NGInlineItemsBuilderTemplate {
   const bool is_text_combine_;
   bool has_bidi_controls_ = false;
   bool has_ruby_ = false;
-  bool is_empty_inline_ = true;
   bool is_block_level_ = true;
   bool has_unicode_bidi_plain_text_ = false;
 
