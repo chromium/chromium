@@ -304,7 +304,11 @@ IN_PROC_BROWSER_TEST_F(
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::OptimizationGuide::kEntryName);
-  EXPECT_EQ(0u, entries.size());
+  for (const auto* entry : entries) {
+    EXPECT_FALSE(ukm_recorder.EntryHasMetric(
+        entry,
+        ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
