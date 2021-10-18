@@ -15,5 +15,7 @@ struct OverflowMenuActionRow: View {
       Spacer()
       action.image
     }
+    .contentShape(Rectangle())
+    .onTapGesture(perform: action.handler)
   }
 }

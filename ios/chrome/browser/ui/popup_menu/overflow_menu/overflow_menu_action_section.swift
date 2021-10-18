@@ -14,6 +14,5 @@ struct OverflowMenuActionSection: View {
         OverflowMenuActionRow(action: action)
       }
     }
-    .background(Color.white)
   }
 }

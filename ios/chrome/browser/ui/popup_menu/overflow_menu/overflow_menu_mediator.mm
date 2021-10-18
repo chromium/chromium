@@ -15,19 +15,26 @@
 
 namespace {
 
-OverflowMenuAction* CreateOverflowMenuAction(int nameID, NSString* imageName) {
+typedef void (^Handler)(void);
+
+OverflowMenuAction* CreateOverflowMenuAction(int nameID,
+                                             NSString* imageName,
+                                             Handler handler) {
   NSString* name = l10n_util::GetNSString(nameID);
   return [[OverflowMenuAction alloc] initWithName:name
                                         imageName:imageName
-                               enterpriseDisabled:NO];
+                               enterpriseDisabled:NO
+                                          handler:handler];
 }
 
 OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
-                                                       NSString* imageName) {
+                                                       NSString* imageName,
+                                                       Handler handler) {
   NSString* name = l10n_util::GetNSString(nameID);
   return [[OverflowMenuDestination alloc] initWithName:name
                                              imageName:imageName
-                                    enterpriseDisabled:NO];
+                                    enterpriseDisabled:NO
+                                               handler:handler];
 }
 
 }  // namespace
@@ -62,28 +69,48 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 
 - (OverflowMenuModel*)createModel {
   self.bookmarksDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_BOOKMARKS, @"overflow_menu_destination_bookmarks");
+      IDS_IOS_TOOLS_MENU_BOOKMARKS, @"overflow_menu_destination_bookmarks",
+      ^{
+      });
   self.downloadsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_DOWNLOADS, @"overflow_menu_destination_downloads");
+      IDS_IOS_TOOLS_MENU_DOWNLOADS, @"overflow_menu_destination_downloads",
+      ^{
+      });
   self.historyDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_HISTORY, @"overflow_menu_destination_history");
+      IDS_IOS_TOOLS_MENU_HISTORY, @"overflow_menu_destination_history",
+      ^{
+      });
   self.passwordsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_PASSWORDS, @"overflow_menu_destination_passwords");
+      IDS_IOS_TOOLS_MENU_PASSWORDS, @"overflow_menu_destination_passwords",
+      ^{
+      });
   self.readingListDestination =
       CreateOverflowMenuDestination(IDS_IOS_TOOLS_MENU_READING_LIST,
-                                    @"overflow_menu_destination_reading_list");
+                                    @"overflow_menu_destination_reading_list",
+                                    ^{
+                                    });
   self.recentTabsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_RECENT_TABS, @"overflow_menu_destination_recent_tabs");
+      IDS_IOS_TOOLS_MENU_RECENT_TABS, @"overflow_menu_destination_recent_tabs",
+      ^{
+      });
   self.settingsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_SETTINGS, @"overflow_menu_destination_settings");
+      IDS_IOS_TOOLS_MENU_SETTINGS, @"overflow_menu_destination_settings",
+      ^{
+      });
   self.siteInfoDestination =
       CreateOverflowMenuDestination(IDS_IOS_TOOLS_MENU_SITE_INFORMATION,
-                                    @"overflow_menu_destination_site_info");
+                                    @"overflow_menu_destination_site_info",
+                                    ^{
+                                    });
 
   self.reloadAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
-                                               @"overflow_menu_action_reload");
+                                               @"overflow_menu_action_reload",
+                                               ^{
+                                               });
   self.openIncognitoTabAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, @"overflow_menu_action_incognito");
+      IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, @"overflow_menu_action_incognito",
+      ^{
+      });
 
   OverflowMenuActionGroup* appActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"app_actions"
@@ -93,7 +120,9 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                                  ]];
 
   self.bookmarkAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark");
+      IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark",
+      ^{
+      });
 
   OverflowMenuActionGroup* pageActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"page_actions"
