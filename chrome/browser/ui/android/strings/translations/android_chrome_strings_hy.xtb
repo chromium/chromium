@@ -384,6 +384,7 @@
 <translation id="3282568296779691940">Մուտք գործել Chrome</translation>
 <translation id="3284510035090979597">Օգնություն՝ անհրաժեշտ պահին</translation>
 <translation id="3285080554353377245">Տեսանյութեր Chrome-ի օգտագործման մասին</translation>
+<translation id="3285850955330478827">Փոխել ընթերցանության ցանկը</translation>
 <translation id="3288003805934695103">Վերաբեռնել էջը</translation>
 <translation id="32895400574683172">Ծանուցումները թույլատրված են</translation>
 <translation id="3290991969712132877">Այս էջն ավելի արագ բացելու համար ավելացրեք այն հիմնական էկրանին «Այլ ընտրանքներ» կոճակի օգնությամբ։</translation>
@@ -405,6 +406,7 @@
 <translation id="3398320232533725830">Բացել էջանիշների կառավարիչը</translation>
 <translation id="3414952576877147120">Չափը՝</translation>
 <translation id="3429160811076349561">Փորձնական գործառույթներն անջատված են</translation>
+<translation id="3435465986463792564">Շատ պատուհաննե՞ր եք բացել։ Դրանք կարող եք կառավարել այստեղ</translation>
 <translation id="3440975416244667276">Հպեք և պահեք՝ ավելի շատ կարևոր տեղեկություններ տեսնելու համար</translation>
 <translation id="3443221991560634068">Վերաբեռնել ընթացիկ էջը</translation>
 <translation id="3444179773590444986">Կարծիք հայտնե՞լ կայքերի մուգ թեմայի մասին</translation>
@@ -1343,6 +1345,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8942627711005830162">Բացել նոր պատուհանում</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> լեզուն հնարավոր չէ ներբեռնել։ Փորձեք ավելի ուշ։</translation>
 <translation id="8951232171465285730">Chrome-ը խնայել է <ph name="MEGABYTES" /> ՄԲ տարածք</translation>
+<translation id="895518431932062177">Ավելացնել ընթերցանության ցանկում <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="8955719471735800169">Հետ դեպի վերև</translation>
 <translation id="8965591936373831584">սպասում է</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_ONE" /> այլ ներդիր կփակվեն}one{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիր կփակվեն}other{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիրներ կփակվեն}}</translation>

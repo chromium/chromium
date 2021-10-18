@@ -2065,6 +2065,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="310671807099593501">Web používa Bluetooth</translation>
 <translation id="3108931485517391283">Nedá sa prijať</translation>
 <translation id="3109724472072898302">Zbalené</translation>
+<translation id="311214366526552035">Napriek tomu stiahnuť</translation>
 <translation id="311394601889664316">Nepovoliť webom upravovať súbory alebo priečinky v zariadení</translation>
 <translation id="3115147772012638511">Čakanie na vyrovnávaciu pamäť...</translation>
 <translation id="3115580024857770654">Zbaliť všetko</translation>
@@ -2344,6 +2345,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3429160811076349561">Skúšobné funkcie sú vypnuté</translation>
 <translation id="3429271624041785769">Jazyky internetového obsahu</translation>
 <translation id="3429275422858276529">Uložte si túto stránku ako záložku, aby ste ju neskôr ľahko našli</translation>
+<translation id="343115368966109153">Chcete stiahnuť súbor <ph name="FILE_NAME" />? Uvidia ho všetci používatelia zariadenia.</translation>
 <translation id="3432227430032737297">Odstrániť všetky zobrazené</translation>
 <translation id="3432762828853624962">Zdieľaní pracovníci</translation>
 <translation id="3433621910545056227">Ojoj! Systému sa nepodarilo nastaviť zámku pre inštaláciu atribútov v zariadení.</translation>
@@ -2685,6 +2687,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3777806571986431400">Povolenie rozšírenia</translation>
 <translation id="3778152852029592020">Sťahovanie bolo zrušené.</translation>
 <translation id="3778208826288864398">Bezpečnostný kľúč je uzamknutý, pretože bol príliš veľakrát zadaný nesprávny PIN. Musíte resetovať bezpečnostný kľúč.</translation>
+<translation id="3778369586810509692">Tento súbor bude uložený v zariadení a uvidia ho všetci.</translation>
 <translation id="3778740492972734840">&amp;Nástroje pre vývojárov</translation>
 <translation id="3778868487658107119">Môžete mu klásť otázky. Môžete mu zadávať príkazy. Je to váš osobný Google, ktorý je vždy pripravený pomôcť.</translation>
 <translation id="3781742599892759500">Prístup k mikrofónu v systéme Linux</translation>
@@ -4698,6 +4701,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="597235323114979258">Zobraziť ďalšie cieľové tlačiarne</translation>
 <translation id="5972666587303800813">Neprevádzkovaná služba</translation>
 <translation id="5972708806901999743">Presunúť na začiatok</translation>
+<translation id="5972801171078377748">Túto správu znova nezobrazovať</translation>
 <translation id="5972826969634861500">Spustiť <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">Klient <ph name="CLIENT_NAME" /> začal ladiť tento prehliadač</translation>
 <translation id="5973605538625120605">Zmena kódu PIN</translation>
