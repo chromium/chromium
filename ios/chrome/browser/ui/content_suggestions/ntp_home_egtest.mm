@@ -223,6 +223,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that when loading an invalid URL, the NTP is still displayed.
 // Prevents regressions from https://crbug.com/1063154 .
 - (void)testInvalidURL {
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled for iPad, because key '-' could not be "
+                            @"found on the keyboard.");
+  }
+#endif  // !TARGET_IPHONE_SIMULATOR
   NSString* URL = @"app-settings://test/";
 
   // The URL needs to be typed to trigger the bug.
