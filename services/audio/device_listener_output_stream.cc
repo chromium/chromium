@@ -34,7 +34,8 @@ bool DeviceListenerOutputStream::Open() {
   return stream_->Open();
 }
 
-void DeviceListenerOutputStream::Start(AudioSourceCallback* source_callback) {
+void DeviceListenerOutputStream::Start(
+    media::AudioOutputStream::AudioSourceCallback* source_callback) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!source_callback_);
   DCHECK(source_callback);

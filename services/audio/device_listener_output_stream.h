@@ -34,7 +34,8 @@ class DeviceListenerOutputStream final
 
   // AudioOutputStream implementation
   bool Open() final;
-  void Start(AudioSourceCallback* source_callback) final;
+  void Start(
+      media::AudioOutputStream::AudioSourceCallback* source_callback) final;
   void Stop() final;
   void SetVolume(double volume) final;
   void GetVolume(double* volume) final;
