@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
@@ -66,16 +67,10 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         final View view = inflater.inflate(R.layout.signin_first_run_view, container, false);
         mSigninFirstRunCoordinator =
                 new SigninFirstRunCoordinator(requireContext(), view, mModalDialogManager, this);
-        mAllowCrashUpload = true;
         notifyCoordinatorWhenNativeAndPolicyAreLoaded();
-        final NoUnderlineClickableSpan footerLinkSpan =
-                new NoUnderlineClickableSpan(getResources(), this::onFooterLinkClicked);
-        final SpannableString footerString = SpanApplier.applySpans(
-                getString(R.string.signin_fre_footer),
-                new SpanApplier.SpanInfo(FOOTER_LINK_OPEN, FOOTER_LINK_CLOSE, footerLinkSpan));
-        TextViewWithClickableSpans footerView = view.findViewById(R.id.signin_fre_footer);
-        footerView.setText(footerString);
-        footerView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        mAllowCrashUpload = true;
+        setUpFooter(view.findViewById(R.id.signin_fre_footer));
         return view;
     }
 
@@ -150,7 +145,17 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         }
     }
 
-    private void onFooterLinkClicked(View view) {
-        new FreUMADialogCoordinator(requireContext(), mModalDialogManager, this);
+    private void setUpFooter(TextViewWithClickableSpans footerView) {
+        final Callback<View> onFooterLinkClickListener = view -> {
+            new FreUMADialogCoordinator(
+                    requireContext(), mModalDialogManager, this, mAllowCrashUpload);
+        };
+        final NoUnderlineClickableSpan footerLinkSpan =
+                new NoUnderlineClickableSpan(getResources(), onFooterLinkClickListener);
+        final SpannableString footerString = SpanApplier.applySpans(
+                getString(R.string.signin_fre_footer),
+                new SpanApplier.SpanInfo(FOOTER_LINK_OPEN, FOOTER_LINK_CLOSE, footerLinkSpan));
+        footerView.setText(footerString);
+        footerView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }

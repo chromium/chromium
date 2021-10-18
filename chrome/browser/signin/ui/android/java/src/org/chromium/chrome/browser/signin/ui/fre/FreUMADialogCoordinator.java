@@ -40,38 +40,25 @@ public class FreUMADialogCoordinator {
      * Constructs the coordinator and shows the dialog.
      */
     @MainThread
-    public FreUMADialogCoordinator(
-            Context context, ModalDialogManager modalDialogManager, Listener listener) {
-        mView = inflateFreFooterDialogView(context, listener);
+    public FreUMADialogCoordinator(Context context, ModalDialogManager modalDialogManager,
+            Listener listener, boolean allowCrashUpload) {
+        mView = LayoutInflater.from(context).inflate(R.layout.fre_uma_dialog, null);
         mDialogManager = modalDialogManager;
         mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                          .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                          .with(ModalDialogProperties.CUSTOM_VIEW, mView)
                          .with(ModalDialogProperties.CONTROLLER, createController())
                          .build();
-        mDialogManager.showDialog(mModel, ModalDialogType.APP);
-    }
 
-    private Controller createController() {
-        return new Controller() {
-            @Override
-            public void onClick(PropertyModel model, int buttonType) {}
-
-            @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {}
-        };
-    }
-
-    private View inflateFreFooterDialogView(Context context, Listener listener) {
-        View view = LayoutInflater.from(context).inflate(R.layout.fre_uma_dialog, null);
-        view.findViewById(R.id.fre_uma_dialog_dismiss_button)
-                .setOnClickListener(v
-                        -> mDialogManager.dismissDialog(
-                                mModel, DialogDismissalCause.ACTION_ON_CONTENT));
-        Switch umaSwitch = view.findViewById(R.id.fre_uma_dialog_switch);
+        mView.findViewById(R.id.fre_uma_dialog_dismiss_button).setOnClickListener(v -> {
+            mDialogManager.dismissDialog(mModel, DialogDismissalCause.ACTION_ON_CONTENT);
+        });
+        final Switch umaSwitch = mView.findViewById(R.id.fre_uma_dialog_switch);
+        umaSwitch.setChecked(allowCrashUpload);
         umaSwitch.setOnCheckedChangeListener(
                 (compoundButton, isChecked) -> listener.onAllowCrashUploadChecked(isChecked));
-        return view;
+
+        mDialogManager.showDialog(mModel, ModalDialogType.APP);
     }
 
     @VisibleForTesting
@@ -82,5 +69,15 @@ public class FreUMADialogCoordinator {
     @VisibleForTesting
     View getDialogViewForTesting() {
         return mView;
+    }
+
+    private static Controller createController() {
+        return new Controller() {
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {}
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {}
+        };
     }
 }

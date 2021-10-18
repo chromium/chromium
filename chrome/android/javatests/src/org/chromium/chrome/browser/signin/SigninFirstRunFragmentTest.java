@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -489,6 +490,26 @@ public class SigninFirstRunFragmentTest {
 
         CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
+    }
+
+    @Test
+    @MediumTest
+    public void testUMADialogSwitchIsOffWhenAllowCrashUploadWasTurnedOffBefore() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+        onView(withId(R.id.fre_uma_dialog_switch)).check(matches(isChecked())).perform(click());
+        onView(withText(R.string.done)).perform(click());
+
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+
+        onView(withId(R.id.fre_uma_dialog_switch))
+                .check(matches(not(isChecked())))
+                .perform(click());
+        onView(withText(R.string.done)).perform(click());
+        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+        CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
     }
 
     @Test
