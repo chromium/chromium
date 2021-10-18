@@ -816,6 +816,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmark</translation>
 <translation id="8840513115188359703">Anda tidak akan keluar dari Akun Google.</translation>
+<translation id="8843129975935593190">Organisasi membatasi apa saja yang dapat Anda sinkronkan.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} Tab}other{{count} Tab}}</translation>
 <translation id="8870413625673593573">Baru Saja Ditutup</translation>
 <translation id="8876882697946675716">Jaga Perangkat Anda Tetap Sinkron</translation>

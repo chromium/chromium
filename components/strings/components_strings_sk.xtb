@@ -797,6 +797,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplikácia bola zablokovaná vaším správcom</translation>
 <translation id="3608932978122581043">Orientácia zásobníka</translation>
+<translation id="3611395257124510155">Virtuálna karta pre <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Veľkosť 2</translation>
 <translation id="361438452008624280">Položka zoznamu „<ph name="LANGUAGE_ID" />“: neznámy alebo nepodporovaný jazyk.</translation>
 <translation id="3615877443314183785">Zadajte správny dátum vypršania platnosti</translation>
@@ -1609,6 +1610,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6272383483618007430">Aktualizácie Google</translation>
 <translation id="6276112860590028508">Tu nájdete stránky z čitateľského zoznamu</translation>
 <translation id="627746635834430766">Ak chcete nabudúce zaplatiť rýchlejšie, uložte si kartu a fakturačnú adresu do účtu Google.</translation>
+<translation id="6279098320682980337">Nebolo vyplnené číslo virtuálnej karty? Skopírujte podrobnosti karty tak, že na ne kliknete.</translation>
 <translation id="6280223929691119688">Doručenie na túto adresu nie je možné. Vyberte inú adresu.</translation>
 <translation id="6282194474023008486">Poštové smerovacie číslo</translation>
 <translation id="6289939620939689042">Farba stránky</translation>

@@ -47,6 +47,7 @@
 <translation id="2121284319307530122">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="2123055963409958220">Contribuie la îmbunătățirea browserului Chrome raportând <ph name="BEGIN_LINK" />setările actuale<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Repornește Chrome acum</translation>
+<translation id="2189289170880510015">Personalizează unele dintre cele mai importante opțiuni de confidențialitate din Chrome</translation>
 <translation id="2290014774651636340">Lipsesc chei pentru API-ul Google. Unele funcționalități Google Chrome vor fi dezactivate.</translation>
 <translation id="2290095356545025170">Sigur vrei să dezinstalezi Google Chrome?</translation>
 <translation id="2309047409763057870">Aceasta este o instalare secundară a browserului Google Chrome și nu poate fi setat ca browser prestabilit.</translation>
@@ -108,6 +109,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare}=1{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="3622797965165704966">Acum este mai ușor să folosiți Chrome cu Contul Google și pe computerele utilizate în comun.</translation>
 <translation id="3673813398384385993">Chrome a descoperit că <ph name="EXTENSION_NAME" /> conține programe malware</translation>
+<translation id="3678552270983184277">Setările prestabilite se potrivesc celor mai mulți utilizatori, dar le poți personaliza pentru a le adapta modului în care vrei să folosești Chrome</translation>
 <translation id="3718181793972440140">Astfel, se va șterge 1 element de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Extensia „<ph name="EXTENSION_NAME" />” a modificat ce pagină se afișează când pornești Chrome.</translation>
 <translation id="3779473566290487688">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de OS X 10.11 sau o versiune ulterioară. Acest computer folosește OS X 10.10.</translation>

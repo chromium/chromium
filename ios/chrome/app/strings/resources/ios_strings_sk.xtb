@@ -817,6 +817,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="8840513115188359703">Neodhlásime vás z účtu Google.</translation>
+<translation id="8843129975935593190">Vaša organizácia obmedzuje, čo môžete synchronizovať.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} karta}few{{count} karty}many{{count} Tabs}other{{count} kariet}}</translation>
 <translation id="8870413625673593573">Nedávno zatvorené</translation>
 <translation id="8876882697946675716">Udržiavajte svoje zariadenia synchronizované</translation>

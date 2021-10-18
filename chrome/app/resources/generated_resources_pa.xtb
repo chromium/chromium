@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">ਕਿਰਪਾ ਕਰਕੇ ਨਵੇਂ ਨਿਯਮਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="103279545524624934">Android ਐਪਾਂ ਨੂੰ ਲਾਂਚ ਕਰਨ ਲਈ ਡਿਸਕ ਜਗ੍ਹਾ ਨੂੰ ਖਾਲੀ ਕਰੋ।</translation>
 <translation id="1033780634303702874">ਆਪਣੀਆਂ ਸੀਰੀਅਲ ਡਿਵਾਈਸਾਂ ਤੇ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="1034484273907870301">ਟੈਬਲੈੱਟ ਮੋਡ ਲਈ ਲਘੂ-ਚਿੱਤਰ ਟੈਬ ਪੱਟੀ</translation>
 <translation id="1036348656032585052">ਬੰਦ ਕਰੋ</translation>
 <translation id="1036511912703768636">ਇਹਨਾਂ ਵਿੱਚੋਂ ਕਿਸੇ ਵੀ USB ਡਿਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1036982837258183574">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ |<ph name="ACCELERATOR" />| ਦਬਾਓ</translation>
@@ -361,6 +362,7 @@
 <translation id="1378613616312864539"><ph name="NAME" /> ਵੱਲੋਂ ਇਸ ਸੈਟਿੰਗ ਦਾ ਕੰਟਰੋਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ਕਿਸੇ ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਨਹੀਂ ਹੋਈ}=1{1 ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}other{{NUM_COMPROMISED} ਪਾਸਵਰਡਾਂ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}}</translation>
 <translation id="1380028686461971526">ਨੈੱਟਵਰਕ ਨਾਲ ਸਵੈ-ਕਨੈਕਟ ਕਰੋ</translation>
+<translation id="1381567580865186407">ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਲਈ <ph name="LANGUAGE" /> ਬੋਲੀ Google ਨੂੰ ਭੇਜੀ ਗਈ ਹੈ</translation>
 <translation id="1383597849754832576">ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1383861834909034572">ਪੂਰਾ ਹੋਣ ਤੇ ਖੁੱਲ੍ਹੇਗੀ</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
@@ -1160,6 +1162,7 @@
 <translation id="2173302385160625112">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="2173801458090845390">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਬੇਨਤੀ ਆਈ.ਡੀ. ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" /> ਵੱਲੋਂ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਪ੍ਰਾਇਮਰੀ ਖਾਤੇ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਹੋਣ ਲਈ, ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਸਮੇਂ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਦਿਸਣ ਵਾਲੇ ਮੀਨੂ ਵਿੱਚ, "ਸਾਈਨ-ਆਊਟ ਕਰੋ" 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
+<translation id="2175384018164129879">ਖੋਜ ਇੰਜਣਾਂ ਅਤੇ ਸਾਈਟ ਖੋਜ ਦਾ &amp;ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2175607476662778685">ਤਤਕਾਲ ਲਾਂਚ ਬਾਰ</translation>
 <translation id="217576141146192373">ਪ੍ਰਿੰਟਰ ਨੂੰ ਜੋੜਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਿੰਟਰ ਦੇ ਸੰਰੂਪਣ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2175927920773552910">QR ਕੋਡ</translation>
@@ -3863,6 +3866,7 @@
 <translation id="5040823038948176460">ਵਧੀਕ ਸਮੱਗਰੀ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5043440033854483429">ਨਾਮ ਵਿੱਚ ਅੱਖਰਾਂ, ਸੰਖਿਆਵਾਂ ਅਤੇ ਹਾਈਫਨਾਂ (-) ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ, ਅਤੇ ਇਹ 1 ਤੋਂ 15 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦੇ ਵਿਚਕਾਰ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="5043913660911154449">ਜਾਂ ਆਪਣਾ ਪ੍ਰਿੰਟਰ PPD ਨਿਰਧਾਰਤ ਕਰੋ <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">ਇਹ ਪੜਾਅ ਦੁਬਾਰਾ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="5045550434625856497">ਗਲਤ ਪਾਸਵਰਡ</translation>
 <translation id="504561833207953641">ਮੌਜੂਦਾ ਬ੍ਰਾਊਜ਼ਰ ਸੈਸ਼ਨ ਵਿੱਚ ਖੋਲ੍ਹੀ ਜਾ ਰਹੀ ਹੈ।</translation>
 <translation id="5047421709274785093">ਸਾਈਟਾਂ ਨੂੰ ਮੋਸ਼ਨ ਅਤੇ ਲਾਈਟ ਸੈਂਸਰ ਵਰਤਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
@@ -5313,6 +5317,7 @@
 <translation id="6619801788773578757">ਕਿਓਸਕ ਐਪਲੀਕੇਸ਼ਨ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6619990499523117484">ਆਪਣੇ PIN ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="6622980291894852883">ਚਿੱਤਰ ਬਲੌਕ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="6624036901798307345">ਟੈਬਲੈੱਟ ਮੋਡ ਵਿੱਚ, ਹਰੇਕ ਟੈਬ ਦਾ ਲਘੂ-ਚਿੱਤਰ ਦਿਖਾਉਣ ਵਾਲੀ ਨਵੀਂ ਟੈਬ ਪੱਟੀ ਖੋਲ੍ਹਣ ਲਈ ਟੈਬ ਕਾਊਂਟਰ ਟੂਲਬਾਰ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> ਵਿੱਚ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਖਤਰਨਾਕ ਸਮੱਗਰੀ ਹੈ। ਇਸ ਦੇ ਮਾਲਕ ਨੂੰ ਸਹੀ ਕਰਨ ਲਈ ਕਹੋ।</translation>
 <translation id="6624687053722465643">ਮਿੱਠਾ</translation>
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> ਅਪਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
@@ -5619,6 +5624,7 @@
 <translation id="6955893174999506273">1 ਹੋਰ ਸਵਿੱਚ ਜ਼ਿੰਮੇ ਲਗਾਓ</translation>
 <translation id="6957044667612803194">ਇਸ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਿੱਚ ਪਿੰਨ ਦੀ ਸੁਵਿਧਾ ਨਹੀਂ ਹੈ</translation>
 <translation id="6960507406838246615">Linux ਦਾ ਅੱਪਡੇਟ ਲੋੜੀਂਦਾ ਹੈ</translation>
+<translation id="6960648667961844909"><ph name="LANGUAGE" /> ਦੀਆਂ ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਬਾਅਦ ਵਿੱਚ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾਵੇਗੀ। ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਣ ਤੱਕ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਲਈ ਬੋਲੀ Google ਨੂੰ ਭੇਜੀ ਗਈ ਹੈ।</translation>
 <translation id="696103774840402661">ਇਸ <ph name="DEVICE_TYPE" /> ਦੇ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਦੀਆਂ ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਸਥਾਈ ਤੌਰ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="6964390816189577014">ਹੀਰੋ</translation>
 <translation id="6964760285928603117">ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
@@ -6224,6 +6230,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (ਗੜਬੜ ਕੋਡ <ph name="ERROR_CODE" />)।</translation>
 <translation id="7598466960084663009">ਕੰਪਿਊਟਰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7599527631045201165">ਡੀਵਾਈਸ ਦਾ ਨਾਮ ਬਹੁਤ ਹੀ ਵੱਡਾ ਹੈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਇੱਕ ਛੋਟਾ ਨਾਮ ਦਾਖਲ ਕਰੋ।</translation>
+<translation id="7600054753482800821">ਖੋਜ ਇੰਜਣਾਂ ਅਤੇ ਸਾਈਟ ਖੋਜ ਦਾ &amp;ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ਦਾ ਕਦੇ ਵੀ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
 <translation id="760197030861754408">ਕਨੈਕਟ ਕਰਨ ਲਈ <ph name="LANDING_PAGE" /> ਤੇ ਜਾਓ।</translation>
 <translation id="7602079150116086782">ਹੋਰਾਂ ਡਿਵਾਈਸਾਂ ਤੋਂ ਕੋਈ ਟੈਬਸ ਨਹੀਂ</translation>
@@ -6889,6 +6896,7 @@
 <translation id="8244514732452879619">ਲਾਈਟ ਜਲਦ ਬੰਦ ਹੋ ਜਾਵੇਗੀ</translation>
 <translation id="8246776524656196770">ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਕਿਸੇ ਪਿੰਨ ਨਾਲ ਸੁਰੱਖਿਅਤ ਕਰੋ (ਨਿੱਜੀ ਪਛਾਣ ਨੰਬਰ)</translation>
 <translation id="8248050856337841185">&amp;ਪੇਸਟ ਕਰੋ</translation>
+<translation id="8248887045858762645">Chrome ਲਈ ਨੁਕਤਾ</translation>
 <translation id="8249048954461686687">OEM ਫੋਲਡਰ</translation>
 <translation id="8249615410597138718">ਆਪਣੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="8249672078237421304">ਉਹਨਾਂ ਪੰਨਿਆਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰੋ, ਜੋ ਤੁਹਾਡੇ ਵੱਲੋਂ ਪੜ੍ਹੀ ਜਾਣ ਵਾਲੀ ਭਾਸ਼ਾ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
@@ -7362,6 +7370,7 @@
 <translation id="8763927697961133303">USB ਡੀਵਾਈਸ</translation>
 <translation id="87646919272181953">Google Photos ਐਲਬਮ</translation>
 <translation id="8767621466733104912">Chrome ਨੂੰ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ</translation>
+<translation id="8767765348545497220">ਮਦਦ ਬੁਲਬੁਲਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="8770406935328356739">ਐਕਸਟੈਂਸ਼ਨ ਰੂਟ ਡਾਇਰੈਕਟਰੀ</translation>
 <translation id="8771300903067484968">ਸ਼ੁਰੂਆਤੀ ਪੰਨੇ ਦੇ ਬੈਕਗ੍ਰਾਊਂਡ ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬੈਕਗ੍ਰਾਊਂਡ ਵਜੋਂ ਰੀਸੈੱਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>

@@ -384,6 +384,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
 <translation id="3284510035090979597">Ajutor proactiv</translation>
 <translation id="3285080554353377245">Videoclipuri despre folosirea browserului Chrome</translation>
+<translation id="3285850955330478827">Editează Lista de lecturi</translation>
 <translation id="3288003805934695103">să reîncarci pagina;</translation>
 <translation id="32895400574683172">Notificările sunt permise</translation>
 <translation id="3290991969712132877">Pentru a o accesa mai ușor, adaugă pagina pe ecranul de pornire, folosind butonul Mai multe opțiuni</translation>
@@ -405,6 +406,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3398320232533725830">Deschide managerul de marcaje</translation>
 <translation id="3414952576877147120">Dimensiune:</translation>
 <translation id="3429160811076349561">Funcțiile de încercare sunt dezactivate</translation>
+<translation id="3435465986463792564">Ai deschis multe ferestre? Gestionează-le de aici</translation>
 <translation id="3440975416244667276">Atinge lung pentru mai multe informații relevante</translation>
 <translation id="3443221991560634068">Reîncarcă pagina curentă</translation>
 <translation id="3444179773590444986">Trimiți feedback despre tema întunecată pentru site-uri?</translation>
@@ -1343,6 +1345,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8942627711005830162">Deschide în altă fereastră</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Limba nu a putut fi descărcată. Încearcă din nou mai târziu.</translation>
 <translation id="8951232171465285730">Chrome a economisit <ph name="MEGABYTES" /> MB</translation>
+<translation id="895518431932062177">Adaugă la Lista de lecturi <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="8955719471735800169">Înapoi sus</translation>
 <translation id="8965591936373831584">în așteptare</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> filă incognito și încă <ph name="TAB_COUNT_ONE" /> filă vor fi închise}few{<ph name="INCOGNITO_TAB_COUNT" /> filă incognito și încă <ph name="TAB_COUNT_MANY" /> file vor fi închise}other{<ph name="INCOGNITO_TAB_COUNT" /> filă incognito și încă <ph name="TAB_COUNT_MANY" /> de file vor fi închise}}</translation>

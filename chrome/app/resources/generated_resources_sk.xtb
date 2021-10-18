@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">Prečítajte si nové zmluvné podmienky</translation>
 <translation id="103279545524624934">Ak chcete spúšťať aplikácie pre Android, uvoľnite miesto na disku.</translation>
 <translation id="1033780634303702874">Mať prístup k zariadeniam pripojeným cez sériový port</translation>
+<translation id="1034484273907870301">Panel kariet s miniatúrami pre režim tabletu</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1036511912703768636">Prístup ku ktorýmkoľvek z týchto zariadení USB</translation>
 <translation id="1036982837258183574">Režim celej obrazovky ukončíte stlačením klávesa |<ph name="ACCELERATOR" />|</translation>
@@ -360,6 +361,7 @@
 <translation id="1378613616312864539">Toto nastavenie je ovládané rozšírením <ph name="NAME" /></translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Žiadne odhalené heslá}=1{1 odhalené heslo}few{{NUM_COMPROMISED} odhalené heslá}many{{NUM_COMPROMISED} compromised passwords}other{{NUM_COMPROMISED} odhalených hesiel}}</translation>
 <translation id="1380028686461971526">Automaticky pripojiť k sieti</translation>
+<translation id="1381567580865186407">Reč v jazyku <ph name="LANGUAGE" /> sa odosiela na spracovanie Googlu</translation>
 <translation id="1383597849754832576">Súbory s balíkmi reči sa nedajú stiahnuť. Skúste to neskôr.</translation>
 <translation id="1383861834909034572">Otvoriť po prebratí</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
@@ -1149,6 +1151,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2173302385160625112">Skontrolujte svoje internetové pripojenie</translation>
 <translation id="2173801458090845390">Pridať do tohto zariadenia ID rekvizície</translation>
 <translation id="2174948148799307353">Účet spravuje <ph name="PARENT_EMAIL" />. Ak sa chcete odhlásiť z primárneho účtu v tomto zariadení, kliknite na čas na obrazovke. V zobrazenej ponuke kliknite na Odhlásiť sa.</translation>
+<translation id="2175384018164129879">&amp;Spravovať vyhľadávače a vyhľadávanie na webe</translation>
 <translation id="2175607476662778685">Panel Rýchle spustenie</translation>
 <translation id="217576141146192373">Tlačiareň sa nepodarilo pridať. Skontrolujte jej konfiguráciu a skúste to znova.</translation>
 <translation id="2175927920773552910">QR kód</translation>
@@ -3852,6 +3855,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5040823038948176460">Ďalšie nastavenia obsahu</translation>
 <translation id="5043440033854483429">Názov môže obsahovať písmená, čísla a spojovníky (-). Musí mať 1 až 15 znakov (vrátane týchto hodnôt).</translation>
 <translation id="5043913660911154449">Prípadne špecifikuje PPD svojej tlačiarne <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">Tento krok už nezobrazovať</translation>
 <translation id="5045550434625856497">Nesprávne heslo</translation>
 <translation id="504561833207953641">Otvára sa v existujúcej relácii prehliadača.</translation>
 <translation id="5047421709274785093">Brániť webom používať senzory pohybu a svetla</translation>
@@ -5302,6 +5306,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6619801788773578757">Pridať aplikáciu pre režim kiosku</translation>
 <translation id="6619990499523117484">Potvrďte kód PIN</translation>
 <translation id="6622980291894852883">Pokračovať v blokovaní obrázkov</translation>
+<translation id="6624036901798307345">V režime tabletu klepnite na paneli s nástrojmi na tlačidlo počítadla kariet a otvorte tak nový panel kariet s miniatúrami všetkých kariet.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> má citlivý alebo nebezpečný obsah. Požiadajte vlastníka o nápravu.</translation>
 <translation id="6624687053722465643">Sladkosť</translation>
 <translation id="6628328486509726751">Nahrané <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -5607,6 +5612,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6955893174999506273">Prideliť jeden ďalší prepínač</translation>
 <translation id="6957044667612803194">Tento bezpečnostný kľúč nepodporuje kódy PIN</translation>
 <translation id="6960507406838246615">Vyžaduje sa aktualizácia systému Linux</translation>
+<translation id="6960648667961844909">Súbory s balíkmi reči <ph name="LANGUAGE" /> sa nepodarilo stiahnuť. K pokusu o stiahnutie dôjde neskôr. Než sa sťahovanie dokončí, reč sa odosiela na spracovanie Googlu.</translation>
 <translation id="696103774840402661">Všetky súbory a miestne údaje všetkých používateľov v tomto zariadení <ph name="DEVICE_TYPE" /> boli natrvalo odstránené.</translation>
 <translation id="6964390816189577014">Hrdina</translation>
 <translation id="6964760285928603117">Odstrániť zo skupiny</translation>
@@ -6212,6 +6218,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (kód chyby <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Reštartovať počítač</translation>
 <translation id="7599527631045201165">Názov zariadenia je príliš dlhý. Zadajte kratší názov a skúste to znova.</translation>
+<translation id="7600054753482800821">&amp;Spravovať vyhľadávače a vyhľadávanie na webe</translation>
 <translation id="7600965453749440009">Nikdy neprekladať jazyk <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">Prejdite na vstupnú stránku <ph name="LANDING_PAGE" /> a pripojte sa.</translation>
 <translation id="7602079150116086782">Žiadne karty z iných zariadení</translation>
@@ -6878,6 +6885,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8244514732452879619">Blíži sa večierka</translation>
 <translation id="8246776524656196770">Ochráňte svoj bezpečnostný kľúč kódom PIN (osobným identifikačným číslom)</translation>
 <translation id="8248050856337841185">&amp;Prilepiť</translation>
+<translation id="8248887045858762645">Tip pre Chrome</translation>
 <translation id="8249048954461686687">Priečinok OEM</translation>
 <translation id="8249615410597138718">Odoslať do zariadení</translation>
 <translation id="8249672078237421304">Ponúkať preklad stránok, ktorým by ste nemuseli rozumieť</translation>
@@ -7351,6 +7359,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8763927697961133303">Zariadenie USB</translation>
 <translation id="87646919272181953">Album Fotiek Google</translation>
 <translation id="8767621466733104912">Automaticky aktualizovať Chrome pre všetkých používateľov</translation>
+<translation id="8767765348545497220">Zavrieť bublinu pomocníka</translation>
 <translation id="8770406935328356739">Koreňový adresár rozšírenia</translation>
 <translation id="8771300903067484968">Pozadie úvodnej stránky bolo resetované na predvolené.</translation>
 <translation id="8773302562181397928">Uložiť <ph name="PRINTER_NAME" /></translation>
