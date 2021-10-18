@@ -68,7 +68,7 @@ styles.innerHTML = `
       filter: grayscale(100%);
       opacity: 0.3;
     }
-    .photo-inner-container.photo-empty {
+    .photo-inner-container.photo-empty:not([selectable]) {
       cursor: default;
     }
     @keyframes ripple {

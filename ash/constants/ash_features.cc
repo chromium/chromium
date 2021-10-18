@@ -1726,6 +1726,11 @@ bool IsWallpaperFullScreenPreviewEnabled() {
          base::FeatureList::IsEnabled(kWallpaperFullScreenPreview);
 }
 
+bool IsWallpaperGooglePhotosIntegrationEnabled() {
+  return IsWallpaperWebUIEnabled() &&
+         base::FeatureList::IsEnabled(kWallpaperGooglePhotosIntegration);
+}
+
 bool IsWebUITabStripTabDragIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kWebUITabStripTabDragIntegration);
 }

@@ -90,6 +90,8 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
         const collection =
             collections.find(collection => collection.id === collectionId);
         return collection ? collection.name : '';
+      case Paths.GooglePhotosCollection:
+        return this.i18n('googlePhotosLabel');
       case Paths.LocalCollection:
         return this.i18n('myImagesLabel');
       default:

@@ -7,7 +7,7 @@ import './setup.js';
 import './styles.js';
 import {afterNextRender, html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
-import {selectCollection, selectLocalCollection, validateReceivedData} from '../common/iframe_api.js';
+import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../common/iframe_api.js';
 import {getLoadingPlaceholderAnimationDelay, isSelectionEvent} from '../common/utils.js';
 
 /**
@@ -15,6 +15,7 @@ import {getLoadingPlaceholderAnimationDelay, isSelectionEvent} from '../common/u
  * input and responds with |SelectCollectionEvent| when an image is selected.
  */
 
+const kGooglePhotosCollectionId = 'google_photos_';
 const kLocalCollectionId = 'local_';
 
 /** Width in pixels of when the app switches from 3 to 4 tiles wide. */
@@ -84,6 +85,20 @@ function getCountText(x) {
       }
       return loadTimeData.getStringF('multipleImages', x);
   }
+}
+
+/**
+ * Returns the tile to display for the Google Photos collection.
+ * @return {!ImageTile}
+ */
+function getGooglePhotosTile() {
+  return {
+    name: loadTimeData.getString('googlePhotosLabel'),
+    id: kGooglePhotosCollectionId,
+    count: getCountText(0),
+    preview: [],
+    type: TileType.image,
+  };
 }
 
 /**
@@ -288,6 +303,11 @@ export class CollectionsGrid extends PolymerElement {
         });
       }
     });
+
+    // TODO(dmblack): Remove and respond to live data updates.
+    if (loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled')) {
+      this.set('tiles_.1', getGooglePhotosTile());
+    }
   }
 
   /**
@@ -380,15 +400,21 @@ export class CollectionsGrid extends PolymerElement {
    * @param {!Event} e
    */
   onCollectionSelected_(e) {
-    if (!isSelectionEvent(e)) {
+    const tile = e.model.item;
+    if (!isSelectionEvent(e) || !this.isSelectableTile_(tile)) {
       return;
     }
-    const id = e.currentTarget.dataset.id;
-    if (id === kLocalCollectionId) {
-      selectLocalCollection(window.parent);
-      return;
+    switch (tile.id) {
+      case kGooglePhotosCollectionId:
+        selectGooglePhotosCollection(window.parent);
+        return;
+      case kLocalCollectionId:
+        selectLocalCollection(window.parent);
+        return;
+      default:
+        selectCollection(window.parent, tile.id);
+        return;
     }
-    selectCollection(window.parent, id);
   }
 
   /**
@@ -428,12 +454,30 @@ export class CollectionsGrid extends PolymerElement {
   }
 
   /**
+   * @param {?Tile} item
+   * @return {boolean}
+   * @private
+   */
+  isGooglePhotosTile_(item) {
+    return item?.id === kGooglePhotosCollectionId;
+  }
+
+  /**
    * @private
    * @param {?Tile} item
    * @return {boolean}
    */
   isImageTile_(item) {
     return item?.type === TileType.image && !this.isEmptyTile_(item);
+  }
+
+  /**
+   * @param {?Tile} item
+   * @return {boolean}
+   * @private
+   */
+  isSelectableTile_(item) {
+    return this.isGooglePhotosTile_(item) || this.isImageTile_(item);
   }
 
   /**

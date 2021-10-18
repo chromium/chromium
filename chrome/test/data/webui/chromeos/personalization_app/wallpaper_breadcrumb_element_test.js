@@ -6,8 +6,11 @@
 
 import {Paths} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {WallpaperBreadcrumb} from 'chrome://personalization/trusted/wallpaper_breadcrumb_element.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
+
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -68,6 +71,22 @@ export function WallpaperBreadcrumbTest() {
         wallpaperBreadcrumbElement.shadowRoot.getElementById('pageLabel');
     assertTrue(!!label && !label.hidden);
     assertEquals(collection.name, label.textContent.trim());
+  });
+
+  test('show label when Google Photos subpage is loaded', async () => {
+    // The `googlePhotosLabel` string is only supplied when the Google Photos
+    // integration feature flag is enabled.
+    loadTimeData.overrideValues({'googlePhotosLabel': 'Google Photos'});
+
+    wallpaperBreadcrumbElement = initElement(
+        WallpaperBreadcrumb.is, {'path': Paths.GooglePhotosCollection});
+
+    const label =
+        wallpaperBreadcrumbElement.shadowRoot.getElementById('pageLabel');
+    assertTrue(!!label && !label.hidden);
+    assertEquals(
+        wallpaperBreadcrumbElement.i18n('googlePhotosLabel'),
+        label.textContent.trim());
   });
 
   test('show label when local images subpage is loaded', async () => {

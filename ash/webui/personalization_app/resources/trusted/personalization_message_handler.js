@@ -30,6 +30,9 @@ export function onMessageReceived(event) {
       const selectedCollection = validateReceivedSelection(event, collections);
       PersonalizationRouter.instance().selectCollection(selectedCollection);
       break;
+    case EventType.SELECT_GOOGLE_PHOTOS_COLLECTION:
+      PersonalizationRouter.instance().selectGooglePhotosCollection();
+      break;
     case EventType.SELECT_LOCAL_COLLECTION:
       PersonalizationRouter.instance().selectLocalCollection();
       break;

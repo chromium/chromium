@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '/assert.m.js';
-import {EventType, SelectCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendCurrentWallpaperAssetIdEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendPendingWallpaperAssetIdEvent, SendVisibleEvent, trustedOrigin, untrustedOrigin} from './constants.js';
+import {EventType, SelectCollectionEvent, SelectGooglePhotosCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendCurrentWallpaperAssetIdEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendPendingWallpaperAssetIdEvent, SendVisibleEvent, trustedOrigin, untrustedOrigin} from './constants.js';
 import {isNonEmptyArray} from './utils.js';
 
 /**
@@ -158,6 +158,20 @@ export function selectCollection(target, collectionId) {
   target.postMessage(event, trustedOrigin);
 }
 
+/**
+ * Select the Google Photos collection. Sent from untrusted to trusted.
+ * @param {!Object} target the window object to post the message to.
+ */
+export function selectGooglePhotosCollection(target) {
+  /** @type {!SelectGooglePhotosCollectionEvent} */
+  const event = {type: EventType.SELECT_GOOGLE_PHOTOS_COLLECTION};
+  target.postMessage(event, trustedOrigin);
+}
+
+/**
+ * Select the local collection. Sent from untrusted to trusted.
+ * @param {!Object} target the window object to post the message to.
+ */
 export function selectLocalCollection(target) {
   /** @type {!SelectLocalCollectionEvent} */
   const event = {type: EventType.SELECT_LOCAL_COLLECTION};

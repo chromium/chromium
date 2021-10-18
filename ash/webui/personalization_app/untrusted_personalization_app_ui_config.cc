@@ -34,6 +34,12 @@ void AddStrings(content::WebUIDataSource* source) {
       {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES},
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING}};
   source->AddLocalizedStrings(kLocalizedStrings);
+
+  if (ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
+    source->AddLocalizedString("googlePhotosLabel",
+                               IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS);
+  }
+
   // Add load_time_data manually because it is not available at
   // chrome-untrusted://resources/load_time_data.js. Specifically add
   // load_time_data.js and not load_time_data.m.js because StringsJs will fail
@@ -43,9 +49,9 @@ void AddStrings(content::WebUIDataSource* source) {
 }
 
 void AddBooleans(content::WebUIDataSource* source) {
-  source->AddBoolean("isGooglePhotosIntegrationEnabled",
-                     base::FeatureList::IsEnabled(
-                         ash::features::kWallpaperGooglePhotosIntegration));
+  source->AddBoolean(
+      "isGooglePhotosIntegrationEnabled",
+      ash::features::IsWallpaperGooglePhotosIntegrationEnabled());
 }
 
 void AddCrosColors(content::WebUIDataSource* source) {

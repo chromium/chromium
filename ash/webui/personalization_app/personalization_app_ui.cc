@@ -81,6 +81,12 @@ void AddStrings(content::WebUIDataSource* source) {
       {"exitFullscreen", IDS_PERSONALIZATION_APP_EXIT_FULL_SCREEN},
       {"setAsWallpaper", IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER}};
   source->AddLocalizedStrings(kLocalizedStrings);
+
+  if (ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
+    source->AddLocalizedString("googlePhotosLabel",
+                               IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS);
+  }
+
   source->UseStringsJs();
 }
 

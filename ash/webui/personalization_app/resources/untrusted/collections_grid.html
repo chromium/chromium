@@ -30,8 +30,9 @@
       </div>
       </template>
       <template is="dom-if" if="[[isEmptyTile_(item)]]">
-        <div tabindex$="[[tabIndex]]" role="button" aria-disabled="true"
-            class="photo-inner-container photo-empty">
+        <div tabindex$="[[tabIndex]]" role="button" aria-disabled="[[!isSelectableTile_(item)]]"
+            class="photo-inner-container photo-empty" selectable$="[[isSelectableTile_(item)]]"
+            on-click="onCollectionSelected_" on-keypress="onCollectionSelected_">
           <div class$="[[getClassForImagesContainer_(item)]]">
             <img src="//personalization/common/no_images.svg" aria-hidden="true">
           </div>
@@ -42,9 +43,8 @@
         </div>
       </template>
       <template is="dom-if" if="[[isImageTile_(item)]]">
-        <div class="photo-inner-container" data-id$="[[item.id]]"
-            on-click="onCollectionSelected_" on-keypress="onCollectionSelected_"
-            tabindex$="[[tabIndex]]" role="button">
+        <div class="photo-inner-container" on-click="onCollectionSelected_"
+            on-keypress="onCollectionSelected_" tabindex$="[[tabIndex]]" role="button">
           <div class$="[[getClassForImagesContainer_(item)]]">
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
               <img src="[[preview.url]]" aria-hidden="true"

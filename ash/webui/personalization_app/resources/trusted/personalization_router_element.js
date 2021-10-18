@@ -15,6 +15,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 export const Paths = {
   CollectionImages: '/collection',
   Collections: '/',
+  GooglePhotosCollection: '/google-photos',
   LocalCollection: '/local',
 };
 
@@ -73,6 +74,13 @@ export class PersonalizationRouter extends PolymerElement {
     document.title = collection.name;
     this.setProperties(
         {path_: Paths.CollectionImages, queryParams_: {id: collection.id}});
+  }
+
+  /**
+   * Navigate to the Google Photos collection page.
+   */
+  selectGooglePhotosCollection() {
+    this.setProperties({path_: Paths.GooglePhotosCollection, query_: ''});
   }
 
   /**
