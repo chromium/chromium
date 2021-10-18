@@ -374,12 +374,11 @@ FeaturePromoControllerViews::GetBaseCreateParams(
 
   if (params.allow_snooze) {
     create_params.timeout_no_interaction =
-        params.timeout_no_interaction ? params.timeout_no_interaction
-                                      : snooze_service_->kTimeoutNoInteraction;
+        params.timeout_no_interaction.value_or(
+            FeaturePromoSnoozeService::kTimeoutNoInteraction);
     create_params.timeout_after_interaction =
-        params.timeout_after_interaction
-            ? params.timeout_after_interaction
-            : snooze_service_->kTimeoutAfterInteraction;
+        params.timeout_after_interaction.value_or(
+            FeaturePromoSnoozeService::kTimeoutAfterInteraction);
   } else {
     create_params.timeout_no_interaction = params.timeout_no_interaction;
     create_params.timeout_after_interaction = params.timeout_after_interaction;

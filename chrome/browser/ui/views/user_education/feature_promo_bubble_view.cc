@@ -249,21 +249,16 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
 
   // Bubble will not auto-dismiss if there's buttons.
   if (params.buttons.empty()) {
-    timeout_no_interaction_ = params.timeout_no_interaction
-                                  ? *params.timeout_no_interaction
-                                  : kDelayDefault;
-    timeout_after_interaction_ = params.timeout_after_interaction
-                                     ? *params.timeout_after_interaction
-                                     : kDelayShort;
+    timeout_no_interaction_ =
+        params.timeout_no_interaction.value_or(kDelayDefault);
+    timeout_after_interaction_ =
+        params.timeout_after_interaction.value_or(kDelayShort);
     timeout_callback_ = std::move(params.timeout_callback);
   }
 
-  const std::u16string body_text = std::move(params.body_text);
-
-  if (params.screenreader_text)
-    accessible_name_ = std::move(*params.screenreader_text);
-  else
-    accessible_name_ = body_text;
+  accessible_name_ = params.screenreader_text.empty()
+                         ? params.body_text
+                         : params.screenreader_text;
 
   // Since we don't have any controls for the user to interact with (we're just
   // an information bubble), override our role to kAlert.
@@ -340,36 +335,31 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
         (top_row_container ? top_row_container : bubble_body_container)
             ->AddChildView(std::make_unique<ClosePromoButton>(
                 close_string_id,
-                base::BindRepeating(
-                    close_bubble_and_run_callback, base::Unretained(this),
-                    params.dismiss_callback.has_value()
-                        ? std::move(params.dismiss_callback.value())
-                        : base::DoNothing())));
+                base::BindRepeating(close_bubble_and_run_callback,
+                                    base::Unretained(this),
+                                    std::move(params.dismiss_callback))));
   }
 
   views::View* const label_parent = text_container ? text_container : this;
-
+  std::vector<views::Label*> labels;
   // Add title label.
-  views::Label* title_label = nullptr;
-  if (params.title_text.has_value()) {
-    title_label = label_parent->AddChildView(std::make_unique<views::Label>(
-        std::move(*params.title_text),
-        ChromeTextContext::CONTEXT_IPH_BUBBLE_TITLE));
-    title_label->SetBackgroundColor(background_color);
-    title_label->SetEnabledColor(text_color);
-    title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    title_label->SetMultiLine(true);
-    title_label->SetElideBehavior(gfx::NO_ELIDE);
+  if (!params.title_text.empty()) {
+    labels.push_back(label_parent->AddChildView(std::make_unique<views::Label>(
+        params.title_text, ChromeTextContext::CONTEXT_IPH_BUBBLE_TITLE)));
   }
 
   // Add body label.
-  auto* const body_label = label_parent->AddChildView(
-      std::make_unique<views::Label>(body_text, CONTEXT_IPH_BUBBLE_BODY));
-  body_label->SetBackgroundColor(background_color);
-  body_label->SetEnabledColor(text_color);
-  body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  body_label->SetMultiLine(true);
-  body_label->SetElideBehavior(gfx::NO_ELIDE);
+  labels.push_back(label_parent->AddChildView(std::make_unique<views::Label>(
+      params.body_text, CONTEXT_IPH_BUBBLE_BODY)));
+
+  // Set common label properties.
+  for (views::Label* label : labels) {
+    label->SetBackgroundColor(background_color);
+    label->SetEnabledColor(text_color);
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    label->SetMultiLine(true);
+    label->SetElideBehavior(gfx::NO_ELIDE);
+  }
 
   // Add other buttons.
   views::View* button_container = nullptr;
@@ -381,7 +371,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
               base::BindRepeating(close_bubble_and_run_callback,
                                   base::Unretained(this),
                                   std::move(button_params.callback)),
-              std::move(button_params.text), button_params.has_border));
+              button_params.text, button_params.has_border));
       buttons_.push_back(button);
       button->SetMinSize(gfx::Size(0, 0));
       button->SetCustomPadding(kBubbleButtonPadding);
@@ -448,9 +438,9 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
       views::MaximumFlexSizeRule::kPreferred,
       /* adjust_height_for_width = */ true,
       views::MinimumFlexSizeRule::kScaleToMinimum);
-  body_label->SetProperty(views::kFlexBehaviorKey, text_flex);
-  if (title_label)
-    title_label->SetProperty(views::kFlexBehaviorKey, text_flex);
+
+  for (views::Label* label : labels)
+    label->SetProperty(views::kFlexBehaviorKey, text_flex);
 
   if (bubble_body_container) {
     auto& outer_layout =
