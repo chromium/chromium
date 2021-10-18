@@ -61,8 +61,8 @@ struct PasswordFormFillData {
   // An URL consisting of the scheme, host, port and path; the rest is stripped.
   GURL url;
 
-  // The action target of the form; like |url| URL consists of the scheme,
-  // host, port and path; the rest is stripped.
+  // The action target of the form; like |url|, consists of the scheme, host,
+  // port and path; the rest is stripped.
   GURL action;
 
   // Username and password input fields in the form.

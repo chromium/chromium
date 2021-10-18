@@ -258,10 +258,7 @@ bool PasswordForm::IsInsecureCredential(InsecureType insecure_type) const {
 
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
                                     const PasswordForm& right) {
-  return (left.signon_realm == right.signon_realm && left.url == right.url &&
-          left.username_element == right.username_element &&
-          left.username_value == right.username_value &&
-          left.password_element == right.password_element);
+  return PasswordFormUniqueKey(left) == PasswordFormUniqueKey(right);
 }
 
 bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {

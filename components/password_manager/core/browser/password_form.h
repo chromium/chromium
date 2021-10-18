@@ -141,9 +141,9 @@ struct PasswordForm {
   // This should not be empty except for Android based credentials.
   GURL url;
 
-  // The action target of the form; like |origin| URL consists of the scheme,
-  // host, port and path; the rest is stripped. This is the primary data used by
-  // the PasswordManager for form autofill; that is, the action of the saved
+  // The action target of the form; like |url|, consists of the scheme, host,
+  // port and path; the rest is stripped. This is the primary data used by the
+  // PasswordManager for form autofill; that is, the action of the saved
   // credentials must match the action of the form on the page to be autofilled.
   // If this is empty / not available, it will result in a "restricted" IE-like
   // autofill policy, where we wait for the user to type in their username
@@ -420,7 +420,11 @@ struct PasswordForm {
 };
 
 // True if the unique keys for the forms are the same. The unique key is
-// (origin, username_element, username_value, password_element, signon_realm).
+// (url, username_element, username_value, password_element, signon_realm).
+inline auto PasswordFormUniqueKey(const PasswordForm& f) {
+  return std::tie(f.signon_realm, f.url, f.username_element, f.username_value,
+                  f.password_element);
+}
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
                                     const PasswordForm& right);
 

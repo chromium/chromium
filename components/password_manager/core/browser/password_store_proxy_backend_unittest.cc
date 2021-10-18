@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "components/password_manager/core/browser/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
@@ -131,6 +132,10 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToGetAllLoginsAsync) {
   EXPECT_CALL(mock_reply,
               Run(UnorderedPasswordFormElementsAre(&expected_logins)));
   EXPECT_CALL(main_backend(), GetAllLoginsAsync)
+      .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
+        std::move(reply).Run(CreateTestLogins());
+      })));
+  EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
@@ -272,5 +277,156 @@ TEST_F(PasswordStoreProxyBackendTest,
   EXPECT_CALL(main_backend(), CreateSyncControllerDelegate);
   proxy_backend().CreateSyncControllerDelegate();
 }
+
+// Holds the main and shadow backend's logins and the expected number of common
+// and different logins.
+struct LoginsMetricsParam {
+  struct Entry {
+    std::unique_ptr<PasswordForm> ToPasswordForm() const {
+      return CreateEntry(username, password, GURL(origin),
+                         /*is_psl_match=*/false,
+                         /*is_affiliation_based_match=*/false);
+    }
+
+    std::string username;
+    std::string password;
+    std::string origin;
+  };
+
+  std::vector<std::unique_ptr<PasswordForm>> GetMainLogins() const {
+    std::vector<std::unique_ptr<PasswordForm>> v;
+    base::ranges::transform(main_logins, std::back_inserter(v),
+                            &Entry::ToPasswordForm);
+    return v;
+  }
+
+  std::vector<std::unique_ptr<PasswordForm>> GetShadowLogins() const {
+    std::vector<std::unique_ptr<PasswordForm>> v;
+    base::ranges::transform(shadow_logins, std::back_inserter(v),
+                            &Entry::ToPasswordForm);
+    return v;
+  }
+
+  std::vector<Entry> main_logins;
+  std::vector<Entry> shadow_logins;
+  size_t in_common;     // Cardinality of `main_logins ∩ shadow_logins`.
+  size_t in_main;       // Cardinality of `main_logins \ shadow_logins`.
+  size_t in_shadow;     // Cardinality of `shadow_logins \ main_logins`.
+  size_t inconsistent;  // Number of common logins that diffen in the passwords.
+};
+
+class PasswordStoreProxyBackendTestWithLoginsParams
+    : public PasswordStoreProxyBackendTest,
+      public testing::WithParamInterface<LoginsMetricsParam> {};
+
+// Tests the metrics of GetAllLoginsAsync().
+TEST_P(PasswordStoreProxyBackendTestWithLoginsParams,
+       GetAllLoginsAsyncMetrics) {
+  const LoginsMetricsParam& p = GetParam();
+  base::HistogramTester histogram_tester;
+  base::MockCallback<LoginsReply> mock_reply;
+  {
+    EXPECT_CALL(mock_reply, Run(_));
+    EXPECT_CALL(main_backend(), GetAllLoginsAsync)
+        .WillOnce(WithArg<0>(Invoke([&p](LoginsReply reply) -> void {
+          std::move(reply).Run(p.GetMainLogins());
+        })));
+    EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
+        .WillOnce(WithArg<0>(Invoke([&p](LoginsReply reply) -> void {
+          std::move(reply).Run(p.GetShadowLogins());
+        })));
+    proxy_backend().GetAllLoginsAsync(mock_reply.Get());
+  }
+
+  std::string prefix =
+      "PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.";
+
+  histogram_tester.ExpectUniqueSample(prefix + "Diff.Abs",
+                                      p.in_main + p.in_shadow, 1);
+  histogram_tester.ExpectUniqueSample(prefix + "MainMinusShadow.Abs", p.in_main,
+                                      1);
+  histogram_tester.ExpectUniqueSample(prefix + "ShadowMinusMain.Abs",
+                                      p.in_shadow, 1);
+  histogram_tester.ExpectUniqueSample(prefix + "InconsistentPasswords.Abs",
+                                      p.inconsistent, 1);
+
+  // Returns ⌈nominator/denominator⌉.
+  auto percentage = [](size_t nominator, size_t denominator) {
+    return static_cast<size_t>(std::ceil(static_cast<double>(nominator) /
+                                         static_cast<double>(denominator) *
+                                         100.0l));
+  };
+
+  size_t total = p.in_common + p.in_main + p.in_shadow;
+  if (total != 0) {
+    histogram_tester.ExpectUniqueSample(
+        prefix + "Diff.Rel", percentage(p.in_main + p.in_shadow, total), 1);
+    histogram_tester.ExpectUniqueSample(prefix + "MainMinusShadow.Rel",
+                                        percentage(p.in_main, total), 1);
+    histogram_tester.ExpectUniqueSample(prefix + "ShadowMinusMain.Rel",
+                                        percentage(p.in_shadow, total), 1);
+  } else {
+    histogram_tester.ExpectTotalCount(prefix + "Diff.Rel", 0);
+    histogram_tester.ExpectTotalCount(prefix + "MainMinusShadow.Rel", 0);
+    histogram_tester.ExpectTotalCount(prefix + "ShadowMinusMain.Rel", 0);
+  }
+
+  if (p.in_common != 0) {
+    histogram_tester.ExpectUniqueSample(prefix + "InconsistentPasswords.Rel",
+                                        percentage(p.inconsistent, p.in_common),
+                                        1);
+  } else {
+    histogram_tester.ExpectTotalCount(prefix + "InconsistentPasswords.Rel", 0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PasswordStoreProxyBackendTest,
+    PasswordStoreProxyBackendTestWithLoginsParams,
+    testing::Values(LoginsMetricsParam{.main_logins = {},
+                                       .shadow_logins = {},
+                                       .in_common = 0,
+                                       .in_main = 0,
+                                       .in_shadow = 0,
+                                       .inconsistent = 0},
+                    LoginsMetricsParam{
+                        .main_logins = {{"user1", "pswd1", "https://a.com/"}},
+                        .shadow_logins = {{"user1", "pswd1", "https://a.com/"}},
+                        .in_common = 1,
+                        .in_main = 0,
+                        .in_shadow = 0,
+                        .inconsistent = 0},
+                    LoginsMetricsParam{
+                        .main_logins = {{"user1", "pswd1", "https://a.com/"}},
+                        .shadow_logins = {{"user1", "pswdX", "https://a.com/"}},
+                        .in_common = 1,
+                        .in_main = 0,
+                        .in_shadow = 0,
+                        .inconsistent = 1},
+                    LoginsMetricsParam{
+                        .main_logins = {{"user1", "pswd1", "https://a.com/"}},
+                        .shadow_logins = {},
+                        .in_common = 0,
+                        .in_main = 1,
+                        .in_shadow = 0,
+                        .inconsistent = 0},
+                    LoginsMetricsParam{
+                        .main_logins = {},
+                        .shadow_logins = {{"user1", "pswd1", "https://a.com/"}},
+                        .in_common = 0,
+                        .in_main = 0,
+                        .in_shadow = 1,
+                        .inconsistent = 0},
+                    LoginsMetricsParam{
+                        .main_logins = {{"user4", "pswd4", "https://d.com/"},
+                                        {"user2", "pswd2", "https://b.com/"},
+                                        {"user1", "pswd1", "https://a.com/"}},
+                        .shadow_logins = {{"user1", "pswd1", "https://a.com/"},
+                                          {"user3", "pswd3", "https://c.com/"},
+                                          {"user4", "pswdX", "https://d.com/"}},
+                        .in_common = 2,
+                        .in_main = 1,
+                        .in_shadow = 1,
+                        .inconsistent = 1}));
 
 }  // namespace password_manager
