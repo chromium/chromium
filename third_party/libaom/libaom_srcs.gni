@@ -157,6 +157,8 @@ aom_av1_decoder_sources = [
   "//third_party/libaom/source/libaom/av1/decoder/detokenize.c",
   "//third_party/libaom/source/libaom/av1/decoder/detokenize.h",
   "//third_party/libaom/source/libaom/av1/decoder/dthread.h",
+  "//third_party/libaom/source/libaom/av1/decoder/grain_synthesis.c",
+  "//third_party/libaom/source/libaom/av1/decoder/grain_synthesis.h",
   "//third_party/libaom/source/libaom/av1/decoder/obu.c",
   "//third_party/libaom/source/libaom/av1/decoder/obu.h",
 ]
@@ -487,6 +489,7 @@ aom_dsp_common_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/entcode.h",
   "//third_party/libaom/source/libaom/aom_dsp/fft.c",
   "//third_party/libaom/source/libaom/aom_dsp/fft_common.h",
+  "//third_party/libaom/source/libaom/aom_dsp/grain_params.h",
   "//third_party/libaom/source/libaom/aom_dsp/intrapred.c",
   "//third_party/libaom/source/libaom/aom_dsp/intrapred_common.h",
   "//third_party/libaom/source/libaom/aom_dsp/loopfilter.c",
@@ -512,8 +515,6 @@ aom_dsp_decoder_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/bitreader.h",
   "//third_party/libaom/source/libaom/aom_dsp/entdec.c",
   "//third_party/libaom/source/libaom/aom_dsp/entdec.h",
-  "//third_party/libaom/source/libaom/aom_dsp/grain_synthesis.c",
-  "//third_party/libaom/source/libaom/aom_dsp/grain_synthesis.h",
 ]
 
 aom_dsp_encoder_asm_sse2 = [

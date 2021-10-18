@@ -1719,7 +1719,26 @@ void av1_quantize_lp_c(const int16_t* coeff_ptr,
                        uint16_t* eob_ptr,
                        const int16_t* scan,
                        const int16_t* iscan);
-#define av1_quantize_lp av1_quantize_lp_c
+void av1_quantize_lp_neon(const int16_t* coeff_ptr,
+                          intptr_t n_coeffs,
+                          const int16_t* round_ptr,
+                          const int16_t* quant_ptr,
+                          int16_t* qcoeff_ptr,
+                          int16_t* dqcoeff_ptr,
+                          const int16_t* dequant_ptr,
+                          uint16_t* eob_ptr,
+                          const int16_t* scan,
+                          const int16_t* iscan);
+RTCD_EXTERN void (*av1_quantize_lp)(const int16_t* coeff_ptr,
+                                    intptr_t n_coeffs,
+                                    const int16_t* round_ptr,
+                                    const int16_t* quant_ptr,
+                                    int16_t* qcoeff_ptr,
+                                    int16_t* dqcoeff_ptr,
+                                    const int16_t* dequant_ptr,
+                                    uint16_t* eob_ptr,
+                                    const int16_t* scan,
+                                    const int16_t* iscan);
 
 void av1_resize_and_extend_frame_c(const YV12_BUFFER_CONFIG* src,
                                    YV12_BUFFER_CONFIG* dst,
@@ -2153,6 +2172,9 @@ static void setup_rtcd_internal(void) {
   av1_quantize_fp_64x64 = av1_quantize_fp_64x64_c;
   if (flags & HAS_NEON)
     av1_quantize_fp_64x64 = av1_quantize_fp_64x64_neon;
+  av1_quantize_lp = av1_quantize_lp_c;
+  if (flags & HAS_NEON)
+    av1_quantize_lp = av1_quantize_lp_neon;
   av1_resize_and_extend_frame = av1_resize_and_extend_frame_c;
   if (flags & HAS_NEON)
     av1_resize_and_extend_frame = av1_resize_and_extend_frame_neon;

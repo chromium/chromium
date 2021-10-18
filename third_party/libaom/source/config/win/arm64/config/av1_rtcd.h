@@ -1363,7 +1363,17 @@ void av1_quantize_lp_c(const int16_t* coeff_ptr,
                        uint16_t* eob_ptr,
                        const int16_t* scan,
                        const int16_t* iscan);
-#define av1_quantize_lp av1_quantize_lp_c
+void av1_quantize_lp_neon(const int16_t* coeff_ptr,
+                          intptr_t n_coeffs,
+                          const int16_t* round_ptr,
+                          const int16_t* quant_ptr,
+                          int16_t* qcoeff_ptr,
+                          int16_t* dqcoeff_ptr,
+                          const int16_t* dequant_ptr,
+                          uint16_t* eob_ptr,
+                          const int16_t* scan,
+                          const int16_t* iscan);
+#define av1_quantize_lp av1_quantize_lp_neon
 
 void av1_resize_and_extend_frame_c(const YV12_BUFFER_CONFIG* src,
                                    YV12_BUFFER_CONFIG* dst,
