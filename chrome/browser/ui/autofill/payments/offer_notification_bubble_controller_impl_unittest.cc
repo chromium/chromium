@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/commerce/commerce_feature_list.h"
+#include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -64,6 +67,10 @@ class OfferNotificationBubbleControllerImplTest
     BrowserWithTestWindowTest::SetUp();
     AddTab(GURL("about:blank"));
     TestOfferNotificationBubbleControllerImpl::CreateForTesting(web_contents());
+    static_cast<TestOfferNotificationBubbleControllerImpl*>(
+        TestOfferNotificationBubbleControllerImpl::FromWebContents(
+            web_contents()))
+        ->coupon_service_ = &mock_coupon_service_;
   }
 
   content::WebContents* web_contents() {
@@ -75,6 +82,14 @@ class OfferNotificationBubbleControllerImplTest
   }
 
  protected:
+  class MockCouponService : public CouponService {
+   public:
+    MOCK_METHOD1(RecordCouponDisplayTimestamp,
+                 void(const autofill::AutofillOfferData& offer));
+    MOCK_METHOD1(GetCouponDisplayTimestamp,
+                 base::Time(const autofill::AutofillOfferData& offer));
+  };
+
   void ShowBubble(const AutofillOfferData* offer) {
     controller()->ShowOfferNotificationIfApplicable(offer, &card_);
   }
@@ -94,6 +109,7 @@ class OfferNotificationBubbleControllerImplTest
     // Only adding what the tests need to pass. Feel free to add more populated
     // fields as necessary.
     AutofillOfferData offer;
+    offer.offer_id = 1357;
     offer.merchant_origins = merchant_origins;
     return offer;
   }
@@ -103,6 +119,14 @@ class OfferNotificationBubbleControllerImplTest
         TestOfferNotificationBubbleControllerImpl::FromWebContents(
             web_contents()));
   }
+
+  void SetCouponServiceForController(
+      TestOfferNotificationBubbleControllerImpl* controller,
+      CouponService* coupon_service) {
+    controller->coupon_service_ = coupon_service;
+  }
+
+  MockCouponService mock_coupon_service_;
 
  private:
   CreditCard card_ = test::GetCreditCard();
@@ -153,6 +177,50 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
   ShowBubble(&offer);
 
   EXPECT_EQ(&offer, controller()->GetOffer());
+}
+
+TEST_F(OfferNotificationBubbleControllerImplTest,
+       FreeListing_NotShownWithinTimeGap) {
+  base::HistogramTester histogram_tester;
+  AutofillOfferData offer = CreateTestOfferWithOrigins(
+      {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL()});
+  offer.promo_code = "FREEFALL1234";
+  // Try to show a FreeListing coupon whose last shown timestamp is within time
+  // gap.
+  EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp(offer))
+      .Times(1)
+      .WillOnce(::testing::Return(base::Time::Now()));
+  EXPECT_CALL(mock_coupon_service_, RecordCouponDisplayTimestamp(offer))
+      .Times(0);
+
+  ShowBubble(&offer);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OfferNotificationBubbleSuppressed.FreeListingCouponOffer", 1);
+  EXPECT_FALSE(controller()->GetOfferNotificationBubbleView());
+}
+
+TEST_F(OfferNotificationBubbleControllerImplTest,
+       FreeListing_ShownBeyondTimeGap) {
+  base::HistogramTester histogram_tester;
+  AutofillOfferData offer = CreateTestOfferWithOrigins(
+      {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL()});
+  offer.promo_code = "FREEFALL1234";
+  // Try to show a FreeListing coupon whose last shown timestamp is beyond time
+  // gap.
+  EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp(offer))
+      .Times(1)
+      .WillOnce(::testing::Return(base::Time::Now() -
+                                  commerce::kCouponDisplayInterval.Get() -
+                                  base::Seconds(1)));
+  EXPECT_CALL(mock_coupon_service_, RecordCouponDisplayTimestamp(offer))
+      .Times(1);
+
+  ShowBubble(&offer);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OfferNotificationBubbleSuppressed.FreeListingCouponOffer", 0);
+  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 }
 
 class OfferNotificationBubbleControllerImplPrerenderTest

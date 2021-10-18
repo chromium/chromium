@@ -17,6 +17,10 @@ extern const base::Feature kShoppingList;
 extern const base::Feature kRetailCoupons;
 extern const base::Feature kCommerceDeveloper;
 
+// Interval that controls the frequency of showing coupons in infobar bubbles.
+constexpr base::FeatureParam<base::TimeDelta> kCouponDisplayInterval{
+    &commerce::kRetailCoupons, "coupon_display_interval", base::Hours(18)};
+
 // Check if a URL belongs to a partner merchant of coupon discount.
 bool IsCouponDiscountPartnerMerchant(const GURL& url);
 }  // namespace commerce
