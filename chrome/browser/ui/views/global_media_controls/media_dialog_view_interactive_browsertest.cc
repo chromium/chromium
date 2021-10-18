@@ -1195,4 +1195,50 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
   EXPECT_TRUE(IsDialogVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
+                       CacheTwiceAndGoBack) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url1(embedded_test_server()->GetURL(
+      "a.test", "/media/session/video-with-metadata.html"));
+  GURL url2(embedded_test_server()->GetURL(
+      "b.test", "/media/session/video-with-metadata.html"));
+  GURL url3(embedded_test_server()->GetURL(
+      "c.test", "/media/session/video-with-metadata.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  content::RenderFrameHost* rfh1 = GetMainFrame();
+
+  StartPlayback();
+  WaitForStart();
+
+  // Open the media dialog.
+  EXPECT_TRUE(WaitForToolbarIconShown());
+  ClickToolbarIcon();
+  EXPECT_TRUE(WaitForDialogOpened());
+  EXPECT_TRUE(IsDialogVisible());
+
+  // Navigate to another page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+  EXPECT_EQ(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh1->GetLifecycleState());
+  EXPECT_TRUE(WaitForToolbarIconHidden());
+  EXPECT_FALSE(IsDialogVisible());
+  content::RenderFrameHost* rfh2 = GetMainFrame();
+
+  StartPlayback();
+  WaitForStart();
+
+  // Navigate to yet another page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url3));
+  EXPECT_EQ(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh2->GetLifecycleState());
+  EXPECT_TRUE(WaitForToolbarIconHidden());
+  EXPECT_FALSE(IsDialogVisible());
+
+  // Go back.
+  GetActiveWebContents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(GetActiveWebContents()));
+  EXPECT_NE(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh2->GetLifecycleState());
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

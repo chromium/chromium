@@ -416,8 +416,10 @@ void MediaSessionImpl::RenderFrameHostStateChanged(
       if (player.first.observer->render_frame_host() != host) {
         continue;
       }
-      hidden_players_.insert(player.first);
+      // RemovePlayer removes the player from not only |normal_players_| but
+      // also |hidden_players_|. Call RemovePlayer first.
       RemovePlayer(player.first.observer, player.first.player_id);
+      hidden_players_.insert(player.first);
     }
     return;
   }
@@ -514,6 +516,7 @@ void MediaSessionImpl::RemovePlayer(MediaSessionPlayerObserver* observer,
   normal_players_.erase(identifier);
   pepper_players_.erase(identifier);
   one_shot_players_.erase(identifier);
+  hidden_players_.erase(identifier);
 
   if (guarding_player_id_ && *guarding_player_id_ == identifier)
     ResetDurationUpdateGuard();
