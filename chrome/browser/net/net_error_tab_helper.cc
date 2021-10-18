@@ -99,9 +99,9 @@ void NetErrorTabHelper::set_state_for_testing(TestingState state) {
 
 void NetErrorTabHelper::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  // Ignore subframe creation - only main frame error pages can link to the
-  // platform's network diagnostics dialog.
-  if (render_frame_host->GetParent())
+  // Ignore subframe and fencedframe creation - only primary frame error pages
+  // can link to the platform's network diagnostics dialog.
+  if (render_frame_host->GetParentOrOuterDocument())
     return;
 
   mojo::AssociatedRemote<chrome::mojom::NetworkDiagnosticsClient> client;

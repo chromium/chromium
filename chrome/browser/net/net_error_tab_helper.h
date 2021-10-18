@@ -45,8 +45,8 @@ class NetErrorTabHelper
     TESTING_FORCE_ENABLED
   };
 
-  typedef base::RepeatingCallback<void(error_page::DnsProbeStatus)>
-      DnsProbeStatusSnoopCallback;
+  using DnsProbeStatusSnoopCallback =
+      base::RepeatingCallback<void(error_page::DnsProbeStatus)>;
 
   NetErrorTabHelper(const NetErrorTabHelper&) = delete;
   NetErrorTabHelper& operator=(const NetErrorTabHelper&) = delete;
