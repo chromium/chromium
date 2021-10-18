@@ -14,7 +14,6 @@ import 'chrome://oobe/screens/login/active_directory_password_change.m.js';
 import 'chrome://oobe/screens/login/management_transition.m.js';
 import 'chrome://oobe/screens/oobe/auto_enrollment_check.m.js';
 import 'chrome://oobe/screens/oobe/hid_detection.m.js';
-import 'chrome://oobe/screens/oobe/oobe_eula.m.js';
 import 'chrome://oobe/screens/oobe/packaged_license.m.js';
 
 import {Oobe} from './cr_ui.m.js';
