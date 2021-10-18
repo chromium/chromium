@@ -580,7 +580,7 @@ export function makeInfoView(browserBridge) {
           infoEl.classList.add('feature-green');
           infoEl.textContent = infoString;
 
-          if (infoString == '[Supported Extensions]') {
+          if (infoString == '[Supported Features]') {
             inProcessingToggles = false;
           } else {
             inProcessingToggles = true;
