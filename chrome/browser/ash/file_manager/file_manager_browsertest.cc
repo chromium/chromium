@@ -670,10 +670,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("directoryTreeExpandHorizontalScroll"),
         TestCase("directoryTreeExpandHorizontalScrollRTL"),
         TestCase("directoryTreeVerticalScroll"),
-// TODO(crbug.com/1259959): Determine failure reason and enable this test.
-#if !defined(MEMORY_SANITIZER) && !defined(OS_CHROMEOS)
         TestCase("directoryTreeExpandFolder"),
-#endif
         TestCase(
             "directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff"),
         TestCase(
