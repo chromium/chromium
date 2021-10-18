@@ -89,20 +89,10 @@ class VaapiVideoEncoderDelegate {
 
     ~EncodeJob();
 
-    // Schedules a callback to be run immediately before this job is executed.
-    // Can be called multiple times to schedule multiple callbacks, and all
-    // of them will be run, in order added.
-    // Callbacks can be used to e.g. set up hardware parameters before the job
-    // is executed.
-    void AddSetupCallback(base::OnceClosure cb);
-
     // Adds |ref_pic| to the list of pictures to be used as reference pictures
     // for this frame, to ensure they remain valid until the job is executed
     // (or discarded).
     void AddReferencePicture(scoped_refptr<CodecPicture> ref_pic);
-
-    // Runs all setup callbacks previously scheduled, if any, in order added.
-    void ExecuteSetupCallbacks();
 
     // Requests this job to produce a keyframe; requesting a keyframe may not
     // always result in one being produced by the encoder (e.g. if it would
@@ -138,10 +128,6 @@ class VaapiVideoEncoderDelegate {
     const scoped_refptr<CodecPicture> picture_;
     // Buffer that will contain the output bitstream data for this frame.
     const std::unique_ptr<ScopedVABuffer> coded_buffer_;
-
-    // Callbacks to be run (in the same order as the order of AddSetupCallback()
-    // calls) to set up the job.
-    base::queue<base::OnceClosure> setup_callbacks_;
 
     // Reference pictures required for this job.
     std::vector<scoped_refptr<CodecPicture>> reference_pictures_;

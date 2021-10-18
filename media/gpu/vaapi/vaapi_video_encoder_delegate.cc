@@ -44,23 +44,10 @@ VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
 
 VaapiVideoEncoderDelegate::EncodeJob::~EncodeJob() = default;
 
-void VaapiVideoEncoderDelegate::EncodeJob::AddSetupCallback(
-    base::OnceClosure cb) {
-  DCHECK(!cb.is_null());
-  setup_callbacks_.push(std::move(cb));
-}
-
 void VaapiVideoEncoderDelegate::EncodeJob::AddReferencePicture(
     scoped_refptr<CodecPicture> ref_pic) {
   DCHECK(ref_pic);
   reference_pictures_.push_back(ref_pic);
-}
-
-void VaapiVideoEncoderDelegate::EncodeJob::ExecuteSetupCallbacks() {
-  while (!setup_callbacks_.empty()) {
-    std::move(setup_callbacks_.front()).Run();
-    setup_callbacks_.pop();
-  }
 }
 
 const scoped_refptr<VideoFrame>&
@@ -145,8 +132,6 @@ VaapiVideoEncoderDelegate::Encode(std::unique_ptr<EncodeJob> encode_job) {
     VLOGF(1) << "Failed to upload frame";
     return nullptr;
   }
-
-  encode_job->ExecuteSetupCallbacks();
 
   if (!vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(va_surface_id)) {
     VLOGF(1) << "Failed to execute encode";
