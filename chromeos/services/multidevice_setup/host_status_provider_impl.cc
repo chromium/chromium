@@ -6,8 +6,10 @@
 
 #include <algorithm>
 
+#include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/multidevice_setup/eligible_host_devices_provider.h"
 
@@ -17,9 +19,7 @@ namespace multidevice_setup {
 
 namespace {
 
-static void RecordMultiDeviceHostStatus(mojom::HostStatus host_status) {
-  UMA_HISTOGRAM_ENUMERATION("MultiDevice.Setup.HostStatus", host_status);
-}
+constexpr base::TimeDelta kHostStatusLoggingPeriod = base::Minutes(30);
 
 }  // namespace
 
@@ -69,7 +69,12 @@ HostStatusProviderImpl::HostStatusProviderImpl(
 
   CheckForUpdatedStatusAndNotifyIfChanged(
       /*force_notify_host_status_change=*/false);
-  RecordMultiDeviceHostStatus(current_status_and_device_.host_status());
+
+  RecordMultiDeviceHostStatus();
+  host_status_metric_timer_.Start(
+      FROM_HERE, kHostStatusLoggingPeriod,
+      base::BindRepeating(&HostStatusProviderImpl::RecordMultiDeviceHostStatus,
+                          base::Unretained(this)));
 }
 
 HostStatusProviderImpl::~HostStatusProviderImpl() {
@@ -131,7 +136,7 @@ void HostStatusProviderImpl::CheckForUpdatedStatusAndNotifyIfChanged(
   current_status_and_device_ = current_status_and_device;
   NotifyHostStatusChange(current_status_and_device_.host_status(),
                          current_status_and_device_.host_device());
-  RecordMultiDeviceHostStatus(current_status_and_device_.host_status());
+  RecordMultiDeviceHostStatus();
 }
 
 HostStatusProvider::HostStatusWithDevice
@@ -164,6 +169,11 @@ HostStatusProviderImpl::GetCurrentStatus() {
 
   return HostStatusWithDevice(mojom::HostStatus::kNoEligibleHosts,
                               absl::nullopt /* host_device */);
+}
+
+void HostStatusProviderImpl::RecordMultiDeviceHostStatus() {
+  base::UmaHistogramEnumeration("MultiDevice.Setup.HostStatus",
+                                current_status_and_device_.host_status());
 }
 
 }  // namespace multidevice_setup

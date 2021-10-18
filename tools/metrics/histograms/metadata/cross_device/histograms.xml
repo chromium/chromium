@@ -73,8 +73,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>better-together-dev@google.com</owner>
   <summary>
     Indicates the feature state of the Messages feature. This metric is emitted
-    to at the creation of the user session (when the user logs in), and when
-    feature state updates occur.
+    to at the creation of the user session (when the user logs in), when any
+    multi-device feature state changes, and every 30 minutes.
   </summary>
 </histogram>
 
@@ -1460,8 +1460,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>better-together-dev@google.com</owner>
   <summary>
     Indicates the feature state of the Instant Tethering feature. This metric is
-    emitted to at the creation of the user session (when the user logs in), and
-    when feature state updates occur.
+    emitted to at the creation of the user session (when the user logs in), when
+    any multi-device feature state changes, and every 30 minutes.
   </summary>
 </histogram>
 
@@ -1596,7 +1596,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Indicates the feature state of the Better Together Suite feature. This
     metric is emitted to at the creation of the user session (when the user logs
-    in), and when feature state updates occur.
+    in), when any multi-device feature state changes, and every 30 minutes.
   </summary>
 </histogram>
 
@@ -1948,8 +1948,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>better-together-dev@google.com</owner>
   <summary>
     Breaks down percentages of host statuses. This metric is emitted to at the
-    creation of the user session (when the user logs in), and when host status
-    updates occur.
+    creation of the user session (when the user logs in), when host status
+    updates occur, and every 30 minutes.
   </summary>
 </histogram>
 
@@ -2270,8 +2270,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>better-together-dev@google.com</owner>
   <summary>
     Indicates the feature state of the SmartLock feature. This metric is emitted
-    to at the creation of the user session (when the user logs in), and when
-    feature state updates occur.
+    to at the creation of the user session (when the user logs in), when any
+    multi-device feature state changes, and every 30 minutes.
   </summary>
 </histogram>
 
@@ -2374,8 +2374,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>better-together-dev@google.com</owner>
   <summary>
     Indicates the feature state of the Wifi Sync V2 feature. This metric is
-    emitted to at the creation of the user session (when the user logs in), and
-    when feature state updates occur.
+    emitted to at the creation of the user session (when the user logs in), when
+    any multi-device feature state changes, and every 30 minutes.
   </summary>
 </histogram>
 

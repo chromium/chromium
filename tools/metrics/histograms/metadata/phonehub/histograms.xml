@@ -142,8 +142,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Indicates the feature state of Phone Hub features. This metric is emitted to
-    at the creation of the user session (when the user logs in), and when
-    feature state updates occur. {PhoneHubFeature}
+    at the creation of the user session (when the user logs in), when any
+    multi-device feature state changes, and every 30 minutes. {PhoneHubFeature}
   </summary>
   <token key="PhoneHubFeature">
     <variant name="">

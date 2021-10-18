@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/macros.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/fake_feature_state_manager.h"
@@ -244,6 +245,8 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
+
   multidevice::RemoteDeviceRef test_local_device_;
   multidevice::RemoteDeviceRef test_host_device_;
 
@@ -547,7 +550,7 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, SmartLock) {
 TEST_F(MultiDeviceSetupFeatureStateManagerImplTest,
        PhoneHubBluetoothAddressNotSynced) {
   SetupFeatureStateManager(/*is_secondary_user=*/false,
-                           /*empty_bluetooth_address=*/true);
+                           /*empty_mac_address=*/true);
 
   const std::vector<mojom::Feature> kAllPhoneHubFeatures{
       mojom::Feature::kPhoneHub, mojom::Feature::kPhoneHubCameraRoll,

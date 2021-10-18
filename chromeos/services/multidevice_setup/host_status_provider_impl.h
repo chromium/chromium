@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_STATUS_PROVIDER_IMPL_H_
 
 #include "base/macros.h"
+#include "base/timer/timer.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/host_backend_delegate.h"
@@ -74,12 +75,16 @@ class HostStatusProviderImpl : public HostStatusProvider,
 
   HostStatusWithDevice GetCurrentStatus();
 
+  // Record the host status on sign-in, on status change, and every 30 minutes.
+  // The latter is necessary to capture users who stay logged in for days.
+  void RecordMultiDeviceHostStatus();
+
   EligibleHostDevicesProvider* eligible_host_devices_provider_;
   HostBackendDelegate* host_backend_delegate_;
   HostVerifier* host_verifier_;
   device_sync::DeviceSyncClient* device_sync_client_;
-
   HostStatusWithDevice current_status_and_device_;
+  base::RepeatingTimer host_status_metric_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(HostStatusProviderImpl);
 };

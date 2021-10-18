@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/fake_eligible_host_devices_provider.h"
@@ -97,6 +98,8 @@ class MultiDeviceSetupHostStatusProviderImplTest : public testing::Test {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
+
   multidevice::RemoteDeviceRefList test_devices_;
 
   std::unique_ptr<FakeEligibleHostDevicesProvider>

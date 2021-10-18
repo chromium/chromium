@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/software_feature.h"
@@ -25,6 +25,8 @@ namespace chromeos {
 namespace multidevice_setup {
 
 namespace {
+
+constexpr base::TimeDelta kFeatureStateLoggingPeriod = base::Minutes(30);
 
 constexpr std::array<mojom::Feature, 4> kPhoneHubSubFeatures{
     mojom::Feature::kPhoneHubNotifications, mojom::Feature::kPhoneHubCameraRoll,
@@ -183,92 +185,6 @@ void ProcessSuiteEdgeCases(
   }
 }
 
-bool HasFeatureStateChanged(
-    const absl::optional<FeatureStateManager::FeatureStatesMap>&
-        previous_states,
-    const FeatureStateManager::FeatureStatesMap& new_states,
-    mojom::Feature feature) {
-  if (!previous_states)
-    return true;
-  return previous_states->find(feature)->second !=
-         new_states.find(feature)->second;
-}
-
-void LogFeatureStates(
-    const absl::optional<FeatureStateManager::FeatureStatesMap>&
-        previous_states,
-    const FeatureStateManager::FeatureStatesMap& new_states) {
-  if (HasFeatureStateChanged(previous_states, new_states,
-                             mojom::Feature::kBetterTogetherSuite)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState",
-        new_states.find(mojom::Feature::kBetterTogetherSuite)->second);
-  }
-
-  if (HasFeatureStateChanged(previous_states, new_states,
-                             mojom::Feature::kInstantTethering)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "InstantTethering.MultiDeviceFeatureState",
-        new_states.find(mojom::Feature::kInstantTethering)->second);
-  }
-
-  if (HasFeatureStateChanged(previous_states, new_states,
-                             mojom::Feature::kMessages)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "AndroidSms.MultiDeviceFeatureState",
-        new_states.find(mojom::Feature::kMessages)->second);
-  }
-
-  if (HasFeatureStateChanged(previous_states, new_states,
-                             mojom::Feature::kSmartLock)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "SmartLock.MultiDeviceFeatureState",
-        new_states.find(mojom::Feature::kSmartLock)->second);
-  }
-
-  if (HasFeatureStateChanged(previous_states, new_states,
-                             mojom::Feature::kPhoneHub)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "PhoneHub.MultiDeviceFeatureState.TopLevelFeature",
-        new_states.find(mojom::Feature::kPhoneHub)->second);
-  }
-
-  if (HasFeatureStateChanged(previous_states, new_states,
-                             mojom::Feature::kPhoneHubCameraRoll)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "PhoneHub.MultiDeviceFeatureState.CameraRoll",
-        new_states.find(mojom::Feature::kPhoneHubCameraRoll)->second);
-  }
-
-  if (HasFeatureStateChanged(previous_states, new_states,
-                             mojom::Feature::kPhoneHubNotifications)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "PhoneHub.MultiDeviceFeatureState.Notifications",
-        new_states.find(mojom::Feature::kPhoneHubNotifications)->second);
-  }
-
-  if (HasFeatureStateChanged(previous_states, new_states,
-                             mojom::Feature::kPhoneHubTaskContinuation)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "PhoneHub.MultiDeviceFeatureState.TaskContinuation",
-        new_states.find(mojom::Feature::kPhoneHubTaskContinuation)->second);
-  }
-
-  if (HasFeatureStateChanged(previous_states, new_states,
-                             mojom::Feature::kWifiSync)) {
-    base::UmaHistogramEnumeration(
-        "WifiSync.MultiDeviceFeatureState",
-        new_states.find(mojom::Feature::kWifiSync)->second);
-  }
-
-  if (HasFeatureStateChanged(previous_states, new_states,
-                             mojom::Feature::kEche)) {
-    base::UmaHistogramEnumeration(
-        "Eche.MultiDeviceFeatureState",
-        new_states.find(mojom::Feature::kEche)->second);
-  }
-}
-
 }  // namespace
 
 // static
@@ -348,8 +264,11 @@ FeatureStateManagerImpl::FeatureStateManagerImpl(
   // notified.
   UpdateFeatureStateCache(false /* notify_observers_of_changes */);
 
-  LogFeatureStates(absl::nullopt /* previous_states */,
-                   cached_feature_state_map_ /* new_states */);
+  LogFeatureStates();
+  feature_state_metric_timer_.Start(
+      FROM_HERE, kFeatureStateLoggingPeriod,
+      base::BindRepeating(&FeatureStateManagerImpl::LogFeatureStates,
+                          base::Unretained(this)));
 }
 
 FeatureStateManagerImpl::~FeatureStateManagerImpl() {
@@ -423,8 +342,7 @@ void FeatureStateManagerImpl::UpdateFeatureStateCache(
   PA_LOG(INFO) << "Feature states map changed. Old map: "
                << previous_cached_feature_state_map
                << ", new map: " << cached_feature_state_map_;
-  LogFeatureStates(previous_cached_feature_state_map /* previous_states */,
-                   cached_feature_state_map_ /* new_states */);
+  LogFeatureStates();
   NotifyFeatureStatesChange(cached_feature_state_map_);
 }
 
@@ -627,6 +545,44 @@ mojom::FeatureState FeatureStateManagerImpl::GetEnabledOrDisabledState(
   return pref_service_->GetBoolean(feature_to_enabled_pref_name_map_[feature])
              ? mojom::FeatureState::kEnabledByUser
              : mojom::FeatureState::kDisabledByUser;
+}
+
+void FeatureStateManagerImpl::LogFeatureStates() const {
+  base::UmaHistogramEnumeration(
+      "MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState",
+      cached_feature_state_map_.find(mojom::Feature::kBetterTogetherSuite)
+          ->second);
+  base::UmaHistogramEnumeration(
+      "InstantTethering.MultiDeviceFeatureState",
+      cached_feature_state_map_.find(mojom::Feature::kInstantTethering)
+          ->second);
+  base::UmaHistogramEnumeration(
+      "AndroidSms.MultiDeviceFeatureState",
+      cached_feature_state_map_.find(mojom::Feature::kMessages)->second);
+  base::UmaHistogramEnumeration(
+      "SmartLock.MultiDeviceFeatureState",
+      cached_feature_state_map_.find(mojom::Feature::kSmartLock)->second);
+  base::UmaHistogramEnumeration(
+      "PhoneHub.MultiDeviceFeatureState.TopLevelFeature",
+      cached_feature_state_map_.find(mojom::Feature::kPhoneHub)->second);
+  base::UmaHistogramEnumeration(
+      "PhoneHub.MultiDeviceFeatureState.CameraRoll",
+      cached_feature_state_map_.find(mojom::Feature::kPhoneHubCameraRoll)
+          ->second);
+  base::UmaHistogramEnumeration(
+      "PhoneHub.MultiDeviceFeatureState.Notifications",
+      cached_feature_state_map_.find(mojom::Feature::kPhoneHubNotifications)
+          ->second);
+  base::UmaHistogramEnumeration(
+      "PhoneHub.MultiDeviceFeatureState.TaskContinuation",
+      cached_feature_state_map_.find(mojom::Feature::kPhoneHubTaskContinuation)
+          ->second);
+  base::UmaHistogramEnumeration(
+      "WifiSync.MultiDeviceFeatureState",
+      cached_feature_state_map_.find(mojom::Feature::kWifiSync)->second);
+  base::UmaHistogramEnumeration(
+      "Eche.MultiDeviceFeatureState",
+      cached_feature_state_map_.find(mojom::Feature::kEche)->second);
 }
 
 }  // namespace multidevice_setup
