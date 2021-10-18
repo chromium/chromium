@@ -2077,6 +2077,7 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
 
 void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
   commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
+  probe::LayerTreePainted(LocalRootImpl()->GetFrame());
 }
 
 void WebFrameWidgetImpl::EndCommitCompositorFrame(

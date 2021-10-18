@@ -269,20 +269,11 @@ void InspectorLayerTreeAgent::Restore() {
 
 Response InspectorLayerTreeAgent::enable() {
   instrumenting_agents_->AddInspectorLayerTreeAgent(this);
-  Document* document = inspected_frames_->Root()->GetDocument();
-  if (!document)
-    return Response::ServerError("The root frame doesn't have document");
-
-  inspected_frames_->Root()->View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kInspector);
-
-  if (auto* root_layer = RootLayer())
-    root_layer->layer_tree_host()->UpdateLayers();
-
-  LayerTreePainted();
-  LayerTreeDidChange();
-
-  return Response::Success();
+  if (auto* view = inspected_frames_->Root()->View()) {
+    view->ScheduleAnimation();
+    return Response::Success();
+  }
+  return Response::ServerError("The root frame doesn't have a view");
 }
 
 Response InspectorLayerTreeAgent::disable() {

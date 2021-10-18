@@ -3160,7 +3160,6 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
       std::move(document_transition_requests));
 
   CreatePaintTimelineEvents();
-  probe::LayerTreePainted(&GetFrame());
 }
 
 void LocalFrameView::AppendDocumentTransitionRequests(
