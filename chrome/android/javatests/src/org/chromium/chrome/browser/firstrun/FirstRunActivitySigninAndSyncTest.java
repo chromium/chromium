@@ -131,6 +131,20 @@ public class FirstRunActivitySigninAndSyncTest {
         ensureCurrentPageIs(SyncConsentFirstRunFragment.class);
     }
 
+    @Test
+    @MediumTest
+    public void continueButtonClickSkipsSyncConsentPageWhenCannotUseGooglePlayServices() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
+        launchFirstRunActivity();
+        ensureCurrentPageIs(SigninFirstRunFragment.class);
+        onView(withId(R.id.signin_fre_selected_account)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+
+        clickButton(R.id.signin_fre_continue_button);
+
+        ensureCurrentPageIs(DataReductionProxyFirstRunFragment.class);
+    }
+
     private void clickButton(@IdRes int buttonId) {
         // This helps to reduce flakiness on some marshmallow bots in comparison with
         // espresso click.
