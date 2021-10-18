@@ -224,17 +224,6 @@ class FakeSubscriber : public apps::mojom::Subscriber {
     receivers_.Add(this, std::move(receiver));
   }
 
-  void OnPreferredAppSet(const std::string& app_id,
-                         apps::mojom::IntentFilterPtr intent_filter) override {
-    preferred_apps_.AddPreferredApp(app_id, intent_filter);
-  }
-
-  void OnPreferredAppRemoved(
-      const std::string& app_id,
-      apps::mojom::IntentFilterPtr intent_filter) override {
-    preferred_apps_.DeletePreferredApp(app_id, intent_filter);
-  }
-
   void OnPreferredAppsChanged(
       apps::mojom::PreferredAppChangesPtr changes) override {
     preferred_apps_.ApplyBulkUpdate(std::move(changes));
@@ -611,8 +600,90 @@ TEST_F(AppServiceMojomImplTest, PreferredAppsSetSupportedLinks) {
                                GURL("https://www.c.com/")));
 }
 
-// Test that app with overlapped supported links works properly.
+// Test that app with overlapped works properly.
 TEST_F(AppServiceMojomImplTest, PreferredAppsOverlap) {
+  // Test Initialize.
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  AppServiceMojomImpl impl(temp_dir_.GetPath());
+  impl.GetPreferredAppsForTesting().Init();
+
+  const char kAppId1[] = "abcdefg";
+  const char kAppId2[] = "hijklmn";
+
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  GURL filter_url_2 = GURL("http://www.google.com.au/abc");
+  GURL filter_url_3 = GURL("https://www.abc.com/abc");
+
+  auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kScheme, filter_url_2.scheme(),
+      apps::mojom::PatternMatchType::kNone, intent_filter_1);
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kHost, filter_url_2.host(),
+      apps::mojom::PatternMatchType::kNone, intent_filter_1);
+
+  auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_3);
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kScheme, filter_url_2.scheme(),
+      apps::mojom::PatternMatchType::kNone, intent_filter_2);
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kHost, filter_url_2.host(),
+      apps::mojom::PatternMatchType::kNone, intent_filter_2);
+
+  auto intent_filter_3 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+
+  FakeSubscriber sub0(&impl);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(absl::nullopt,
+            sub0.PreferredApps().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(absl::nullopt,
+            sub0.PreferredApps().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(absl::nullopt,
+            sub0.PreferredApps().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(0U, impl.GetPreferredAppsForTesting().GetEntrySize());
+  EXPECT_EQ(0U, sub0.PreferredApps().GetEntrySize());
+
+  impl.AddPreferredApp(
+      apps::mojom::AppType::kArc, kAppId1, intent_filter_1->Clone(),
+      apps_util::CreateIntentFromUrl(filter_url_1), /*from_publisher=*/true);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(kAppId1, sub0.PreferredApps().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1, sub0.PreferredApps().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(absl::nullopt,
+            sub0.PreferredApps().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(1U, impl.GetPreferredAppsForTesting().GetEntrySize());
+  EXPECT_EQ(1U, sub0.PreferredApps().GetEntrySize());
+
+  // Add preferred app with intent filter overlap with existing entry for
+  // another app will reset the preferred app setting for the other app.
+  impl.AddPreferredApp(
+      apps::mojom::AppType::kArc, kAppId2, intent_filter_2->Clone(),
+      apps_util::CreateIntentFromUrl(filter_url_1), /*from_publisher=*/true);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(absl::nullopt,
+            sub0.PreferredApps().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId2, sub0.PreferredApps().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId2, sub0.PreferredApps().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(1U, impl.GetPreferredAppsForTesting().GetEntrySize());
+  EXPECT_EQ(1U, sub0.PreferredApps().GetEntrySize());
+
+  // Test that can remove entry with overlapped filter.
+  impl.RemovePreferredAppForFilter(apps::mojom::AppType::kArc, kAppId2,
+                                   intent_filter_1->Clone());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(absl::nullopt,
+            sub0.PreferredApps().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(absl::nullopt,
+            sub0.PreferredApps().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(absl::nullopt,
+            sub0.PreferredApps().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(0U, impl.GetPreferredAppsForTesting().GetEntrySize());
+  EXPECT_EQ(0U, sub0.PreferredApps().GetEntrySize());
+}
+
+// Test that app with overlapped supported links works properly.
+TEST_F(AppServiceMojomImplTest, PreferredAppsOverlapSupportedLink) {
   // Test Initialize.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   AppServiceMojomImpl impl(temp_dir_.GetPath());

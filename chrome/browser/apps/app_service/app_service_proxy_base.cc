@@ -607,18 +607,6 @@ void AppServiceProxyBase::Clone(
   receivers_.Add(this, std::move(receiver));
 }
 
-void AppServiceProxyBase::OnPreferredAppSet(
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter) {
-  preferred_apps_.AddPreferredApp(app_id, intent_filter);
-}
-
-void AppServiceProxyBase::OnPreferredAppRemoved(
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter) {
-  preferred_apps_.DeletePreferredApp(app_id, intent_filter);
-}
-
 void AppServiceProxyBase::OnPreferredAppsChanged(
     apps::mojom::PreferredAppChangesPtr changes) {
   preferred_apps_.ApplyBulkUpdate(std::move(changes));

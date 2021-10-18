@@ -289,17 +289,6 @@ interface Subscriber {
   // See https://groups.google.com/a/chromium.org/d/msg/chromium-mojo/nFhBzGsb5Pg/V7t_8kNRAgAJ
   Clone(pending_receiver<Subscriber> receiver);
 
-  // Indicates that the app identified by |app_id| has been set as a preferred
-  // app for |intent_fitler|. This method is used by the App Service to sync
-  // the change from one subscriber to the others.
-  OnPreferredAppSet(string app_id,
-                    IntentFilter intent_filter);
-
-  // Indicates that the app identified by |app_id| is no longer a preferred
-  // app for |intent_filter|. This method is used by the App Service to sync
-  // the change to all subscribers.
-  OnPreferredAppRemoved(string app_id, IntentFilter intent_filter);
-
   // Indicates that a changes have been made by App Service to the preferred
   // apps list. All of the changes should be applied to the subscriber's copy of
   // the list using PreferredAppsList::ApplyBulkUpdate.

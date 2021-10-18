@@ -89,9 +89,10 @@ class PreferredAppsList {
       const apps::mojom::IntentFilterPtr& intent_filter);
 
   // Delete a preferred app for an |intent_filter| with the same |app_id|.
-  // Returns |true| if |app_id| was found in the list of preferred apps.
-  bool DeletePreferredApp(const std::string& app_id,
-                          const apps::mojom::IntentFilterPtr& intent_filter);
+  // Returns the deleted filters, if any.
+  std::vector<apps::mojom::IntentFilterPtr> DeletePreferredApp(
+      const std::string& app_id,
+      const apps::mojom::IntentFilterPtr& intent_filter);
 
   // Delete all settings for an |app_id|. Returns the deleted filters, if any.
   std::vector<apps::mojom::IntentFilterPtr> DeleteAppId(

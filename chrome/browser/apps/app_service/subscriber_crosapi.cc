@@ -74,18 +74,6 @@ void SubscriberCrosapi::Clone(
   receivers_.Add(this, std::move(receiver));
 }
 
-void SubscriberCrosapi::OnPreferredAppSet(
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter) {
-  NOTIMPLEMENTED();
-}
-
-void SubscriberCrosapi::OnPreferredAppRemoved(
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter) {
-  NOTIMPLEMENTED();
-}
-
 void SubscriberCrosapi::OnPreferredAppsChanged(
     apps::mojom::PreferredAppChangesPtr changes) {
   NOTIMPLEMENTED();

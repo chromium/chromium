@@ -25,6 +25,7 @@
 #include "components/services/app_service/public/cpp/preferred_apps_converter.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 
 namespace {
 
@@ -345,15 +346,20 @@ void AppServiceMojomImpl::AddPreferredApp(
     return;
   }
 
-  apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences =
+  apps::mojom::ReplacedAppPreferencesPtr replaced_apps =
       preferred_apps_.AddPreferredApp(app_id, intent_filter);
 
   LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kAdd);
 
   WriteToJSON(profile_dir_, preferred_apps_);
 
+  auto changes = apps::mojom::PreferredAppChanges::New();
+
+  changes->added_filters[app_id].push_back(intent_filter->Clone());
+  changes->removed_filters = Clone(replaced_apps->replaced_preference);
+
   for (auto& subscriber : subscribers_) {
-    subscriber->OnPreferredAppSet(app_id, intent_filter->Clone());
+    subscriber->OnPreferredAppsChanged(changes->Clone());
   }
 
   if (from_publisher || !intent) {
@@ -368,8 +374,7 @@ void AppServiceMojomImpl::AddPreferredApp(
   // updating the storage structure.
   for (const auto& iter : publishers_) {
     iter.second->OnPreferredAppSet(app_id, intent_filter->Clone(),
-                                   intent->Clone(),
-                                   replaced_app_preferences->Clone());
+                                   intent->Clone(), replaced_apps->Clone());
   }
 }
 
@@ -412,11 +417,16 @@ void AppServiceMojomImpl::RemovePreferredAppForFilter(
     return;
   }
 
-  if (preferred_apps_.DeletePreferredApp(app_id, intent_filter)) {
+  std::vector<apps::mojom::IntentFilterPtr> removed_filters =
+      preferred_apps_.DeletePreferredApp(app_id, intent_filter);
+
+  if (!removed_filters.empty()) {
     WriteToJSON(profile_dir_, preferred_apps_);
 
+    auto changes = apps::mojom::PreferredAppChanges::New();
+    changes->removed_filters.emplace(app_id, std::move(removed_filters));
     for (auto& subscriber : subscribers_) {
-      subscriber->OnPreferredAppRemoved(app_id, intent_filter->Clone());
+      subscriber->OnPreferredAppsChanged(changes->Clone());
     }
   }
 
