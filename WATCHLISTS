@@ -679,7 +679,7 @@
     },
     'chrome_camera_app': {
       'filepath': # Exclude string translation .xtb files.
-                  'chromeos/components/camera_app_ui/.*$(?<!\.xtb)'\
+                  'ash/webui/camera_app_ui/.*$(?<!\.xtb)'\
                   '|chrome/browser/ash/web_applications/camera_app'\
                   '|components/arc/intent_helper/control_camera_app_delegate.h'\
                   '|components/arc/mojom/camera_intent.mojom'\
