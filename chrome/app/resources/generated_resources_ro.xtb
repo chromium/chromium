@@ -2064,6 +2064,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="310671807099593501">Site-ul folosește Bluetooth</translation>
 <translation id="3108931485517391283">Nu se poate primi</translation>
 <translation id="3109724472072898302">Restrâns</translation>
+<translation id="311214366526552035">Descarcă oricum</translation>
 <translation id="311394601889664316">Nu permite site-urilor să modifice fișierele sau dosarele de pe dispozitiv</translation>
 <translation id="3115147772012638511">Se așteaptă cache-ul...</translation>
 <translation id="3115580024857770654">Restrânge tot</translation>
@@ -2343,6 +2344,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3429160811076349561">Funcțiile de încercare sunt dezactivate</translation>
 <translation id="3429271624041785769">Limbile conținutului web</translation>
 <translation id="3429275422858276529">Marchează această pagină pentru a o găsi ușor mai târziu</translation>
+<translation id="343115368966109153">Descarci fișierul <ph name="FILE_NAME" />? Oricine folosește dispozitivul îl poate vedea.</translation>
 <translation id="3432227430032737297">Elimină-le pe cele afișate</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Hopa! Sistemul nu a reușit să blocheze atributele la instalarea pe gadget.</translation>
@@ -2684,6 +2686,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3777806571986431400">Extensie activată</translation>
 <translation id="3778152852029592020">Descărcarea a fost anulată.</translation>
 <translation id="3778208826288864398">Cheia de securitate este blocată deoarece codul PIN a fost introdus greșit de prea multe ori. Trebuie să resetezi cheia de securitate.</translation>
+<translation id="3778369586810509692">Fișierul va fi stocat pe dispozitiv și toți utilizatorii îl vor putea vedea.</translation>
 <translation id="3778740492972734840">Instrumente pentru &amp;dezvoltatori</translation>
 <translation id="3778868487658107119">Pune-i întrebări. Spune-i să facă diverse lucruri. Este serviciul tău Google personal, gata oricând să te ajute.</translation>
 <translation id="3781742599892759500">Accesul la microfon în Linux</translation>
@@ -4697,6 +4700,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="597235323114979258">Vezi mai multe destinații</translation>
 <translation id="5972666587303800813">Serviciu no-op</translation>
 <translation id="5972708806901999743">Mută în partea de sus</translation>
+<translation id="5972801171078377748">Nu mai afișa</translation>
 <translation id="5972826969634861500">Pornește <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">„<ph name="CLIENT_NAME" />” a început să remedieze erorile din acest browser</translation>
 <translation id="5973605538625120605">Modifică un cod PIN</translation>
