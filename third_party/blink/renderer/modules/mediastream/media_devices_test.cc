@@ -790,7 +790,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
   WTF::String result;
   tester.Value().ToString(result);
   EXPECT_TRUE(result.ContainsOnlyASCIIOrEmpty());
-  EXPECT_EQ(32u, result.length());
+  EXPECT_TRUE(base::GUID::ParseLowercase(result.Ascii()).is_valid());
 }
 
 }  // namespace blink

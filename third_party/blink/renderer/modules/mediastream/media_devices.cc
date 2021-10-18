@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/region_capture_crop_id.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -349,11 +350,13 @@ ScriptPromise MediaDevices::produceCropId(
       element_union->IsHTMLDivElement()
           ? static_cast<Element*>(element_union->GetAsHTMLDivElement())
           : static_cast<Element*>(element_union->GetAsHTMLIFrameElement());
-  const RegionCaptureCropId crop_id = element->MarkWithRegionCaptureCropId();
-  DCHECK(!crop_id->is_zero());
+  const base::GUID crop_id = element->MarkWithRegionCaptureCropId();
+  DCHECK(crop_id.is_valid());
+  // Guaranteed because the empty Token is not a valid UUID-v4.
+  DCHECK_NE(crop_id, blink::TokenToGUID(base::Token()));
 
   // TODO(crbug.com/1247761): Delay resolution until ack from Viz received.
-  const std::string serialized_crop_id = crop_id->ToString();
+  const std::string& serialized_crop_id = crop_id.AsLowercaseString();
   resolver->Resolve(
       WTF::String(serialized_crop_id.c_str(), serialized_crop_id.length()));
   return promise;

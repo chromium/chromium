@@ -32,6 +32,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/guid.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -91,6 +92,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/region_capture_crop_id.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
@@ -3625,19 +3627,33 @@ void Element::SetNeedsCompositingUpdate() {
     layout_object->Layer()->SetNeedsRepaint();
 }
 
-RegionCaptureCropId Element::MarkWithRegionCaptureCropId() {
-  if (!GetRegionCaptureCropId()) {
-    EnsureElementRareData().SetRegionCaptureCropId(
-        std::make_unique<RegionCaptureCropId>(base::Token::CreateRandom()));
+base::GUID Element::MarkWithRegionCaptureCropId() {
+  ElementRareData& rare_data = EnsureElementRareData();
 
-    // The crop ID needs to be propagated to the paint system by the time that
-    // capture begins. The API requires the implementation to propagate the
-    // token right away, so we force invalidate here.
-    if (GetLayoutObject()) {
-      GetLayoutObject()->SetShouldDoFullPaintInvalidation();
-    }
+  const RegionCaptureCropId* const region_capture_id =
+      rare_data.GetRegionCaptureCropId();
+  if (region_capture_id) {
+    // Convert the pre-existing crop-ID back into its GUID-form.
+    // This is the less efficient string-based form that we avoid propagating
+    // through the rendering pipeline, but which the Web-application expects.
+    return TokenToGUID(region_capture_id->value());
   }
-  return *GetRegionCaptureCropId();
+
+  // Produce a new crop-ID.
+  const base::GUID guid = base::GUID::GenerateRandomV4();
+
+  // Propagate efficient form through the rendering pipeline.
+  rare_data.SetRegionCaptureCropId(
+      std::make_unique<RegionCaptureCropId>(GUIDToToken(guid)));
+
+  // The crop ID needs to be propagated to the paint system by the time that
+  // capture begins. The API requires the implementation to propagate the
+  // token right away, so we force invalidate here.
+  if (GetLayoutObject()) {
+    GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+  }
+
+  return guid;
 }
 
 RegionCaptureCropId* Element::GetRegionCaptureCropId() const {
