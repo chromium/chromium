@@ -7529,10 +7529,6 @@
     "SyncTrustedVaultPassphraseRecovery": [
         {
             "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows",
                 "ios"
             ],
             "experiments": [
