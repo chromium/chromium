@@ -23,11 +23,14 @@ class CardUnmaskOtpInputDialogView {
       CardUnmaskOtpInputDialogController* controller,
       content::WebContents* web_contents);
 
-  // Pending state is shown once the user submits a valid OTP.
+  // Pending state is shown once the user submits a possible valid OTP.
   virtual void ShowPendingState() = 0;
 
-  // Show an error message when OTP verification fails.
-  virtual void ShowErrorMessage(std::u16string error_message) = 0;
+  // Invalid state is shown if the user submits an incorrect or expired OTP. The
+  // view will automatically hide invalid state once the contents of the
+  // textfield are changed. Once the contents are changed and invalid state is
+  // hidden, the OK button might still be disabled due to not being a valid OTP.
+  virtual void ShowInvalidState(const std::u16string& invalid_label_text) = 0;
 
   // Method to safely close this dialog when the controller is destroyed by
   // unlinking the controller and closing the widget that owns this dialog.

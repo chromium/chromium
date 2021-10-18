@@ -7,6 +7,7 @@
 #include <string>
 
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
+#include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -101,6 +102,27 @@ CardUnmaskOtpInputDialogControllerImpl::GetDialogViewForTesting() {
 CardUnmaskOtpInputDialogControllerImpl::CardUnmaskOtpInputDialogControllerImpl(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
+
+void CardUnmaskOtpInputDialogControllerImpl::ShowInvalidState(
+    OtpUnmaskResult otp_unmask_result) {
+  if (!dialog_view_)
+    return;
+
+  switch (otp_unmask_result) {
+    case OtpUnmaskResult::kOtpExpired:
+      dialog_view_->ShowInvalidState(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_VERIFICATION_CODE_EXPIRED_LABEL));
+      break;
+    case OtpUnmaskResult::kOtpMismatch:
+      dialog_view_->ShowInvalidState(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_ENTER_CORRECT_CODE_LABEL));
+      break;
+    case OtpUnmaskResult::kSuccess:
+    case OtpUnmaskResult::kPermanentFailure:
+    case OtpUnmaskResult::kUnknownType:
+      NOTREACHED();
+  }
+}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CardUnmaskOtpInputDialogControllerImpl);
 

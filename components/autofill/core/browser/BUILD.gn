@@ -250,6 +250,7 @@ static_library("browser") {
     "payments/full_card_request.h",
     "payments/legal_message_line.cc",
     "payments/legal_message_line.h",
+    "payments/otp_unmask_result.h",
     "payments/payments_client.cc",
     "payments/payments_client.h",
     "payments/payments_customer_data.h",
