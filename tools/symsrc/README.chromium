@@ -35,3 +35,8 @@ using this command:
 pdbstr can be found in this directory:
 
     C:\Program Files (x86)\Windows Kits\10\Debuggers\x86\srcsrv
+
+In Chrome official builds this script is invoked in the official symbols step by
+  recipes\recipe_modules\chrome\resources\official_utils.py
+which calls UpdatePDB. official_utils.py is found in
+  https://chrome-internal.googlesource.com/chrome/tools/release/scripts
