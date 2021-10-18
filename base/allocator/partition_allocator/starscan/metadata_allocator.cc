@@ -17,7 +17,8 @@ constexpr PartitionOptions kConfig{PartitionOptions::AlignedAlloc::kDisallowed,
                                    PartitionOptions::Quarantine::kDisallowed,
                                    PartitionOptions::Cookie::kAllowed,
                                    PartitionOptions::BackupRefPtr::kDisabled,
-                                   PartitionOptions::UseConfigurablePool::kNo};
+                                   PartitionOptions::UseConfigurablePool::kNo,
+                                   PartitionOptions::LazyCommit::kEnabled};
 }
 
 ThreadSafePartitionRoot& PCScanMetadataAllocator() {

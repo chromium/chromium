@@ -7,10 +7,12 @@
 #include <stdlib.h>
 
 #include "base/allocator/buildflags.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif
 
@@ -50,6 +52,10 @@ void NonScannableAllocatorImpl<Quarantinable>::Free(void* ptr) {
 
 template <bool Quarantinable>
 void NonScannableAllocatorImpl<Quarantinable>::NotifyPCScanEnabled() {
+  base::PartitionOptions::LazyCommit lazy_commit =
+      base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit)
+          ? base::PartitionOptions::LazyCommit::kEnabled
+          : base::PartitionOptions::LazyCommit::kDisabled;
   allocator_.reset(MakePCScanMetadata<base::PartitionAllocator>());
   allocator_->init(PartitionOptions(
       PartitionOptions::AlignedAlloc::kDisallowed,
@@ -58,7 +64,7 @@ void NonScannableAllocatorImpl<Quarantinable>::NotifyPCScanEnabled() {
                     : PartitionOptions::Quarantine::kDisallowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo));
+      PartitionOptions::UseConfigurablePool::kNo, lazy_commit));
   if (Quarantinable)
     PCScan::RegisterNonScannableRoot(allocator_->root());
   pcscan_enabled_.store(true, std::memory_order_release);

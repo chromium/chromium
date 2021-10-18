@@ -348,7 +348,8 @@ TestDriver::TestDriver()
                              base::PartitionOptions::Quarantine::kDisallowed,
                              base::PartitionOptions::Cookie::kAllowed,
                              base::PartitionOptions::BackupRefPtr::kDisabled,
-                             base::PartitionOptions::UseConfigurablePool::kNo});
+                             base::PartitionOptions::UseConfigurablePool::kNo,
+                             base::PartitionOptions::LazyCommit::kEnabled});
 }
 TestDriver::~TestDriver() {
   base::PartitionAllocGlobalUninitForTesting();

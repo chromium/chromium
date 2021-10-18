@@ -169,7 +169,7 @@ BASE_EXPORT void InitializeAllocatorShim();
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 
-BASE_EXPORT void ReconfigurePartitionAllocLazyCommit();
+BASE_EXPORT void ReconfigurePartitionAllocLazyCommit(bool enabled);
 #endif
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)

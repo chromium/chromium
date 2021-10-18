@@ -79,7 +79,8 @@ ThreadSafePartitionRoot* CreatePartitionRoot() {
         PartitionOptions::Quarantine::kAllowed,
         PartitionOptions::Cookie::kDisallowed,
         PartitionOptions::BackupRefPtr::kDisabled,
-        PartitionOptions::UseConfigurablePool::kNo
+        PartitionOptions::UseConfigurablePool::kNo,
+        PartitionOptions::LazyCommit::kEnabled
   });
 
   root->UncapEmptySlotSpanMemoryForTesting();
@@ -260,7 +261,8 @@ TEST_F(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
                                 PartitionOptions::Quarantine::kAllowed,
                                 PartitionOptions::Cookie::kDisallowed,
                                 PartitionOptions::BackupRefPtr::kDisabled,
-                                PartitionOptions::UseConfigurablePool::kNo}};
+                                PartitionOptions::UseConfigurablePool::kNo,
+                                PartitionOptions::LazyCommit::kEnabled}};
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);
   void* ptr = root.Alloc(kSmallSize, "");

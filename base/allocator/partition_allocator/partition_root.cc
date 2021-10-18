@@ -12,7 +12,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
@@ -20,7 +19,6 @@
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/bits.h"
-#include "base/feature_list.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/tagging.h"
 #include "build/build_config.h"
@@ -663,16 +661,13 @@ void PartitionRoot<thread_safe>::EnableThreadCacheIfSupported() {
 }
 
 template <bool thread_safe>
-void PartitionRoot<thread_safe>::ConfigureLazyCommit() {
+void PartitionRoot<thread_safe>::ConfigureLazyCommit(bool enabled) {
 #if defined(OS_WIN)
-  bool new_value =
-      base::FeatureList::IsEnabled(features::kPartitionAllocLazyCommit);
-
   internal::ScopedGuard<thread_safe> guard{lock_};
-  if (use_lazy_commit != new_value) {
+  if (use_lazy_commit != enabled) {
     // Lazy commit can be turned off, but turning on isn't supported.
     PA_DCHECK(use_lazy_commit);
-    use_lazy_commit = new_value;
+    use_lazy_commit = enabled;
 
     for (auto* super_page_extent = first_extent; super_page_extent;
          super_page_extent = super_page_extent->next) {

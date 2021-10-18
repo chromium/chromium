@@ -8,8 +8,8 @@
 
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
@@ -222,7 +222,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  base::allocator::ReconfigurePartitionAllocLazyCommit();
+  base::allocator::ReconfigurePartitionAllocLazyCommit(
+      base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   // Don't enable PCScan if BRP is enabled.

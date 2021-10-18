@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_alloc_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cpu.h"

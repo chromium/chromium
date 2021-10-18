@@ -4,4 +4,5 @@ wfh@chromium.org
 
 per-file allocator.gni=bartekn@chromium.org
 per-file allocator_shim_default_dispatch_to_partition_alloc*=bartekn@chromium.org
+per-file partition_alloc*=bartekn@chromium.org
 per-file BUILD.gn=bartekn@chromium.org

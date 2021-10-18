@@ -31,18 +31,19 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -86,6 +87,10 @@ bool Partitions::InitializeOnce() {
 #else
       false;
 #endif
+  base::PartitionOptions::LazyCommit lazy_commit =
+      base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit)
+          ? base::PartitionOptions::LazyCommit::kEnabled
+          : base::PartitionOptions::LazyCommit::kDisabled;
 
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   static base::NoDestructor<base::PartitionAllocator> fast_malloc_allocator{};
@@ -96,7 +101,7 @@ bool Partitions::InitializeOnce() {
        base::PartitionOptions::Cookie::kAllowed,
        (enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
                    : base::PartitionOptions::BackupRefPtr::kDisabled),
-       base::PartitionOptions::UseConfigurablePool::kNo});
+       base::PartitionOptions::UseConfigurablePool::kNo, lazy_commit});
 
   fast_malloc_root_ = fast_malloc_allocator->root();
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -114,7 +119,7 @@ bool Partitions::InitializeOnce() {
        base::PartitionOptions::Cookie::kAllowed,
        (enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
                    : base::PartitionOptions::BackupRefPtr::kDisabled),
-       base::PartitionOptions::UseConfigurablePool::kNo});
+       base::PartitionOptions::UseConfigurablePool::kNo, lazy_commit});
   // RefCount disallowed because layout code will be excluded from raw_ptr<T>
   // rewrite due to performance.
   layout_allocator->init({base::PartitionOptions::AlignedAlloc::kDisallowed,
@@ -122,7 +127,8 @@ bool Partitions::InitializeOnce() {
                           base::PartitionOptions::Quarantine::kAllowed,
                           base::PartitionOptions::Cookie::kAllowed,
                           base::PartitionOptions::BackupRefPtr::kDisabled,
-                          base::PartitionOptions::UseConfigurablePool::kNo});
+                          base::PartitionOptions::UseConfigurablePool::kNo,
+                          lazy_commit});
 
   buffer_root_ = buffer_allocator->root();
   layout_root_ = layout_allocator->root();
@@ -147,6 +153,11 @@ void Partitions::InitializeArrayBufferPartition() {
 
   static base::NoDestructor<base::PartitionAllocator> array_buffer_allocator{};
 
+  base::PartitionOptions::LazyCommit lazy_commit =
+      base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit)
+          ? base::PartitionOptions::LazyCommit::kEnabled
+          : base::PartitionOptions::LazyCommit::kDisabled;
+
   // BackupRefPtr disallowed because it will prevent allocations from being 16B
   // aligned as required by ArrayBufferContents.
   array_buffer_allocator->init(
@@ -161,7 +172,7 @@ void Partitions::InitializeArrayBufferPartition() {
        // need to do is indicate that we'd like to use that Pool if it has been
        // created by now (if it hasn't been created, the cage isn't enabled, and
        // so we'll use the default Pool).
-       base::PartitionOptions::UseConfigurablePool::kIfAvailable});
+       base::PartitionOptions::UseConfigurablePool::kIfAvailable, lazy_commit});
 
   array_buffer_root_ = array_buffer_allocator->root();
 

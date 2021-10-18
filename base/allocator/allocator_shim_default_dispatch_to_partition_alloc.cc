@@ -153,6 +153,7 @@ class MainPartitionConstructor {
         base::PartitionOptions::Cookie::kAllowed,
         base::PartitionOptions::BackupRefPtr::kDisabled,
         base::PartitionOptions::UseConfigurablePool::kNo,
+        base::PartitionOptions::LazyCommit::kEnabled,
     });
 
     return new_root;
@@ -435,17 +436,17 @@ void EnablePartitionAllocMemoryReclaimer() {
   }
 }
 
-void ReconfigurePartitionAllocLazyCommit() {
+void ReconfigurePartitionAllocLazyCommit(bool enabled) {
   // Unlike other partitions, Allocator() and AlignedAllocator() do not
   // configure lazy commit upfront, because it uses base::Feature, which in turn
   // allocates memory. Thus, lazy commit configuration has to be done after
   // base::FeatureList is initialized.
   // TODO(bartekn): Aligned allocator can use the regular initialization path.
-  Allocator()->ConfigureLazyCommit();
+  Allocator()->ConfigureLazyCommit(enabled);
   auto* original_root = OriginalAllocator();
   if (original_root)
-    original_root->ConfigureLazyCommit();
-  AlignedAllocator()->ConfigureLazyCommit();
+    original_root->ConfigureLazyCommit(enabled);
+  AlignedAllocator()->ConfigureLazyCommit(enabled);
 }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -500,6 +501,7 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
           base::PartitionOptions::Cookie::kAllowed,
           base::PartitionOptions::BackupRefPtr::kEnabled,
           base::PartitionOptions::UseConfigurablePool::kNo,
+          base::PartitionOptions::LazyCommit::kEnabled,
       });
   g_root.Replace(new_root);
   // g_original_root has to be set after g_root, because other code doesn't
@@ -524,6 +526,7 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
               base::PartitionOptions::Cookie::kAllowed,
               base::PartitionOptions::BackupRefPtr::kDisabled,
               base::PartitionOptions::UseConfigurablePool::kNo,
+              base::PartitionOptions::LazyCommit::kEnabled,
           });
   PA_DCHECK(!allow_aligned_alloc_in_main_root);
   PA_CHECK(current_aligned_root == g_original_root);

@@ -43,7 +43,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
@@ -136,19 +135,26 @@ struct PartitionOptions {
     kIfAvailable,
   };
 
+  enum class LazyCommit : uint8_t {
+    kDisabled,
+    kEnabled,
+  };
+
   // Constructor to suppress aggregate initialization.
   constexpr PartitionOptions(AlignedAlloc aligned_alloc,
                              ThreadCache thread_cache,
                              Quarantine quarantine,
                              Cookie cookie,
                              BackupRefPtr backup_ref_ptr,
-                             UseConfigurablePool use_configurable_pool)
+                             UseConfigurablePool use_configurable_pool,
+                             LazyCommit lazy_commit)
       : aligned_alloc(aligned_alloc),
         thread_cache(thread_cache),
         quarantine(quarantine),
         cookie(cookie),
         backup_ref_ptr(backup_ref_ptr),
-        use_configurable_pool(use_configurable_pool) {}
+        use_configurable_pool(use_configurable_pool),
+        lazy_commit(lazy_commit) {}
 
   AlignedAlloc aligned_alloc;
   ThreadCache thread_cache;
@@ -156,6 +162,7 @@ struct PartitionOptions {
   Cookie cookie;
   BackupRefPtr backup_ref_ptr;
   UseConfigurablePool use_configurable_pool;
+  LazyCommit lazy_commit;
 };
 
 namespace internal {
@@ -357,7 +364,7 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   void Init(PartitionOptions);
 
   void EnableThreadCacheIfSupported();
-  void ConfigureLazyCommit();
+  void ConfigureLazyCommit(bool enabled);
 
   ALWAYS_INLINE static bool IsValidSlotSpan(SlotSpan* slot_span);
   ALWAYS_INLINE static PartitionRoot* FromSlotSpan(SlotSpan* slot_span);

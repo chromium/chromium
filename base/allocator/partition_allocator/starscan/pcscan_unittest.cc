@@ -8,7 +8,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/logging.h"
@@ -59,8 +58,8 @@ class PartitionAllocPCScanTest : public testing::Test {
                      PartitionOptions::Quarantine::kAllowed,
                      PartitionOptions::Cookie::kDisallowed,
                      PartitionOptions::BackupRefPtr::kDisabled,
-                     PartitionOptions::UseConfigurablePool::kNo});
-
+                     PartitionOptions::UseConfigurablePool::kNo,
+                     PartitionOptions::LazyCommit::kEnabled});
     allocator_.root()->UncapEmptySlotSpanMemoryForTesting();
 
     PCScan::RegisterScannableRoot(allocator_.root());
@@ -458,7 +457,8 @@ TEST_F(PartitionAllocPCScanTest, DanglingInterPartitionReference) {
        PartitionOptions::Quarantine::kAllowed,
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
-       PartitionOptions::UseConfigurablePool::kNo});
+       PartitionOptions::UseConfigurablePool::kNo,
+       PartitionOptions::LazyCommit::kEnabled});
   source_root.UncapEmptySlotSpanMemoryForTesting();
   ThreadSafePartitionRoot value_root(
       {PartitionOptions::AlignedAlloc::kDisallowed,
@@ -466,7 +466,8 @@ TEST_F(PartitionAllocPCScanTest, DanglingInterPartitionReference) {
        PartitionOptions::Quarantine::kAllowed,
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
-       PartitionOptions::UseConfigurablePool::kNo});
+       PartitionOptions::UseConfigurablePool::kNo,
+       PartitionOptions::LazyCommit::kEnabled});
   value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterScannableRoot(&source_root);
@@ -489,7 +490,8 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceToNonScannablePartition) {
        PartitionOptions::Quarantine::kAllowed,
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
-       PartitionOptions::UseConfigurablePool::kNo});
+       PartitionOptions::UseConfigurablePool::kNo,
+       PartitionOptions::LazyCommit::kEnabled});
   source_root.UncapEmptySlotSpanMemoryForTesting();
   ThreadSafePartitionRoot value_root(
       {PartitionOptions::AlignedAlloc::kDisallowed,
@@ -497,7 +499,8 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceToNonScannablePartition) {
        PartitionOptions::Quarantine::kAllowed,
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
-       PartitionOptions::UseConfigurablePool::kNo});
+       PartitionOptions::UseConfigurablePool::kNo,
+       PartitionOptions::LazyCommit::kEnabled});
   value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterScannableRoot(&source_root);
@@ -520,7 +523,8 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
        PartitionOptions::Quarantine::kAllowed,
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
-       PartitionOptions::UseConfigurablePool::kNo});
+       PartitionOptions::UseConfigurablePool::kNo,
+       PartitionOptions::LazyCommit::kEnabled});
   source_root.UncapEmptySlotSpanMemoryForTesting();
   ThreadSafePartitionRoot value_root(
       {PartitionOptions::AlignedAlloc::kDisallowed,
@@ -528,7 +532,8 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
        PartitionOptions::Quarantine::kAllowed,
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
-       PartitionOptions::UseConfigurablePool::kNo});
+       PartitionOptions::UseConfigurablePool::kNo,
+       PartitionOptions::LazyCommit::kEnabled});
   value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterNonScannableRoot(&source_root);

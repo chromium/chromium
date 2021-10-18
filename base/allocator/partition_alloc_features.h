@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -48,4 +48,4 @@ extern const BASE_EXPORT Feature kPartitionAllocLazyCommit;
 }  // namespace features
 }  // namespace base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_

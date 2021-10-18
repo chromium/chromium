@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/bind.h"
 #include "base/command_line.h"

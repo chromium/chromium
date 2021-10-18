@@ -18,7 +18,6 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
 #include "base/allocator/partition_allocator/partition_page.h"
@@ -32,7 +31,6 @@
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -214,14 +212,16 @@ class PartitionAllocTest : public testing::Test {
 #else
           PartitionOptions::BackupRefPtr::kDisabled,
 #endif
-          PartitionOptions::UseConfigurablePool::kNo
+          PartitionOptions::UseConfigurablePool::kNo,
+          PartitionOptions::LazyCommit::kEnabled
     });
     aligned_allocator.init({PartitionOptions::AlignedAlloc::kAllowed,
                             PartitionOptions::ThreadCache::kDisabled,
                             PartitionOptions::Quarantine::kDisallowed,
                             PartitionOptions::Cookie::kDisallowed,
                             PartitionOptions::BackupRefPtr::kDisabled,
-                            PartitionOptions::UseConfigurablePool::kNo});
+                            PartitionOptions::UseConfigurablePool::kNo,
+                            PartitionOptions::LazyCommit::kEnabled});
     test_bucket_index_ = SizeToIndex(kRealAllocSize);
 
     allocator.root()->UncapEmptySlotSpanMemoryForTesting();
@@ -386,7 +386,6 @@ class PartitionAllocTest : public testing::Test {
 
   NOINLINE void Free(void* ptr) { allocator.root()->Free(ptr); }
 
-  base::test::ScopedFeatureList scoped_feature_list;
   PartitionAllocator<base::internal::ThreadSafe> allocator;
   PartitionAllocator<base::internal::ThreadSafe> aligned_allocator;
   size_t test_bucket_index_;
@@ -3458,14 +3457,14 @@ TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
                                 PartitionPurgeDiscardUnusedSystemPages);
 
   // Create a new root
-  auto* new_root = new base::PartitionRoot<base::internal::ThreadSafe>({
-      base::PartitionOptions::AlignedAlloc::kDisallowed,
-      base::PartitionOptions::ThreadCache::kDisabled,
-      base::PartitionOptions::Quarantine::kDisallowed,
-      base::PartitionOptions::Cookie::kAllowed,
-      base::PartitionOptions::BackupRefPtr::kDisabled,
-      base::PartitionOptions::UseConfigurablePool::kNo,
-  });
+  auto* new_root = new base::PartitionRoot<base::internal::ThreadSafe>(
+      {base::PartitionOptions::AlignedAlloc::kDisallowed,
+       base::PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::Quarantine::kDisallowed,
+       base::PartitionOptions::Cookie::kAllowed,
+       base::PartitionOptions::BackupRefPtr::kDisabled,
+       base::PartitionOptions::UseConfigurablePool::kNo,
+       base::PartitionOptions::LazyCommit::kEnabled});
 
   // Realloc from |allocator.root()| into |new_root|.
   void* ptr2 = new_root->ReallocFlags(PartitionAllocReturnNull, ptr,
@@ -3673,6 +3672,7 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
         base::PartitionOptions::Cookie::kAllowed,
         base::PartitionOptions::BackupRefPtr::kDisabled,
         base::PartitionOptions::UseConfigurablePool::kIfAvailable,
+        base::PartitionOptions::LazyCommit::kEnabled,
     });
     root->UncapEmptySlotSpanMemoryForTesting();
 
@@ -3705,7 +3705,8 @@ TEST_F(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
              PartitionOptions::Quarantine::kDisallowed,
              PartitionOptions::Cookie::kAllowed,
              PartitionOptions::BackupRefPtr::kDisabled,
-             PartitionOptions::UseConfigurablePool::kNo});
+             PartitionOptions::UseConfigurablePool::kNo,
+             PartitionOptions::LazyCommit::kEnabled});
 
   // Allocate some memory, don't free it to keep committed memory.
   std::vector<void*> allocated_memory;

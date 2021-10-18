@@ -13,14 +13,12 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/bits.h"
 #include "base/dcheck_is_on.h"
-#include "base/feature_list.h"
 
 namespace base {
 namespace internal {

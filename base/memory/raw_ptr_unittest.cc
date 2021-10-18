@@ -728,7 +728,8 @@ static constexpr PartitionOptions kOpts = {
     PartitionOptions::Quarantine::kDisallowed,
     PartitionOptions::Cookie::kAllowed,
     PartitionOptions::BackupRefPtr::kEnabled,
-    PartitionOptions::UseConfigurablePool::kNo};
+    PartitionOptions::UseConfigurablePool::kNo,
+    PartitionOptions::LazyCommit::kEnabled};
 
 TEST(BackupRefPtrImpl, Basic) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
