@@ -16,7 +16,9 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -31,6 +33,19 @@ const char kCupsPrintJobNotificationId[] =
     "chrome://settings/printing/cups-print-job-notification";
 
 const int64_t kSuccessTimeoutSeconds = 8;
+
+std::u16string GetNotificationTitleForFailure(
+    const base::WeakPtr<CupsPrintJob>& print_job) {
+  DCHECK_EQ(CupsPrintJob::State::STATE_FAILED, print_job->state());
+
+  switch (print_job->error_code()) {
+    case PrinterErrorCode::CLIENT_UNAUTHORIZED:
+      return l10n_util::GetStringUTF16(
+          IDS_PRINT_JOB_AUTHORIZATION_ERROR_NOTIFICATION_TITLE);
+    default:
+      return l10n_util::GetStringUTF16(IDS_PRINT_JOB_ERROR_NOTIFICATION_TITLE);
+  }
+}
 
 std::u16string GetNotificationTitleForError(
     const base::WeakPtr<CupsPrintJob>& print_job) {
@@ -189,7 +204,7 @@ void CupsPrintJobNotification::UpdateNotificationTitle() {
       break;
     case CupsPrintJob::State::STATE_CANCELLED:
     case CupsPrintJob::State::STATE_FAILED:
-      title = l10n_util::GetStringUTF16(IDS_PRINT_JOB_ERROR_NOTIFICATION_TITLE);
+      title = GetNotificationTitleForFailure(print_job_);
       break;
     case CupsPrintJob::State::STATE_ERROR:
       title = GetNotificationTitleForError(print_job_);
@@ -230,17 +245,39 @@ void CupsPrintJobNotification::UpdateNotificationIcon() {
 void CupsPrintJobNotification::UpdateNotificationBodyMessage() {
   if (!print_job_)
     return;
+
   std::u16string message;
-  if (print_job_->total_page_number() > 1) {
-    message = l10n_util::GetStringFUTF16(
-        IDS_PRINT_JOB_NOTIFICATION_MESSAGE,
-        base::NumberToString16(print_job_->total_page_number()),
-        base::UTF8ToUTF16(print_job_->printer().display_name()));
-  } else {
-    message = l10n_util::GetStringFUTF16(
-        IDS_PRINT_JOB_NOTIFICATION_SINGLE_PAGE_MESSAGE,
-        base::UTF8ToUTF16(print_job_->printer().display_name()));
+  switch (print_job_->error_code()) {
+    case PrinterErrorCode::CLIENT_UNAUTHORIZED: {
+      bool send_username_and_filename_policy_enabled =
+          profile_->GetPrefs()->GetBoolean(
+              prefs::kPrintingSendUsernameAndFilenameEnabled);
+      if (send_username_and_filename_policy_enabled) {
+        message = l10n_util::GetStringFUTF16(
+            IDS_PRINT_JOB_NOTIFICATION_CLIENT_UNAUTHORIZED_MESSAGE,
+            base::UTF8ToUTF16(profile_->GetProfileUserName()),
+            base::UTF8ToUTF16(print_job_->printer().display_name()));
+      } else {
+        message = l10n_util::GetStringFUTF16(
+            IDS_PRINT_JOB_NOTIFICATION_IDENTIFICATION_REQUIRED_MESSAGE,
+            base::UTF8ToUTF16(print_job_->printer().display_name()));
+      }
+      break;
+    }
+    default: {
+      if (print_job_->total_page_number() > 1) {
+        message = l10n_util::GetStringFUTF16(
+            IDS_PRINT_JOB_NOTIFICATION_MESSAGE,
+            base::NumberToString16(print_job_->total_page_number()),
+            base::UTF8ToUTF16(print_job_->printer().display_name()));
+      } else {
+        message = l10n_util::GetStringFUTF16(
+            IDS_PRINT_JOB_NOTIFICATION_SINGLE_PAGE_MESSAGE,
+            base::UTF8ToUTF16(print_job_->printer().display_name()));
+      }
+    }
   }
+  DCHECK(!message.empty());
   notification_->set_message(message);
 }
 

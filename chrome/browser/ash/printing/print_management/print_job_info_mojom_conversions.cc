@@ -88,6 +88,8 @@ mojom::PrinterErrorCode PrinterErrorCodeProtoToMojom(
       return mojom::PrinterErrorCode::kFilterFailed;
     case proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR:
       return mojom::PrinterErrorCode::kUnknownError;
+    case proto::PrintJobInfo_PrinterErrorCode_CLIENT_UNAUTHORIZED:
+      return mojom::PrinterErrorCode::kClientUnauthorized;
     case proto::
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case proto::
@@ -122,6 +124,8 @@ mojom::PrinterErrorCode PrinterErrorCodeToMojom(PrinterErrorCode error_code) {
       return mojom::PrinterErrorCode::kFilterFailed;
     case PrinterErrorCode::UNKNOWN_ERROR:
       return mojom::PrinterErrorCode::kUnknownError;
+    case PrinterErrorCode::CLIENT_UNAUTHORIZED:
+      return mojom::PrinterErrorCode::kClientUnauthorized;
   }
   return mojom::PrinterErrorCode::kUnknownError;
 }

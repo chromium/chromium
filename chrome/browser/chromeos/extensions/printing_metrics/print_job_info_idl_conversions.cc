@@ -137,6 +137,7 @@ api::printing::PrinterStatus PrinterErrorCodeToIdl(
       return api::printing::PRINTER_STATUS_STOPPED;
     case proto::PrintJobInfo_PrinterErrorCode_FILTER_FAILED:
     case proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR:
+    case proto::PrintJobInfo_PrinterErrorCode_CLIENT_UNAUTHORIZED:
       return api::printing::PRINTER_STATUS_GENERIC_ISSUE;
     case proto::
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MIN_SENTINEL_DO_NOT_USE_:

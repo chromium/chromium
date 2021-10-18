@@ -4137,6 +4137,9 @@
   <message name="IDS_PRINT_JOB_ERROR_NOTIFICATION_TITLE" desc="Title of the error printing notification.">
     Couldn't print. Check printer and try again.
   </message>
+  <message name="IDS_PRINT_JOB_AUTHORIZATION_ERROR_NOTIFICATION_TITLE" desc="Title of the authorization error printing notification.">
+    Authorization Failed
+  </message>
   <message name="IDS_PRINT_JOB_PAPER_JAM_NOTIFICATION_TITLE" desc="Title of the error printing notification.">
     Paper is jammed
   </message>
@@ -4163,6 +4166,12 @@
   </message>
   <message name="IDS_PRINT_JOB_NOTIFICATION_MESSAGE" desc="Message of the print job notification.">
     <ph name="PAGE_NUMBER">$1<ex>5</ex></ph> pages to <ph name="PRINTER_NAME">$2<ex>printer</ex></ph>
+  </message>
+  <message name="IDS_PRINT_JOB_NOTIFICATION_CLIENT_UNAUTHORIZED_MESSAGE" desc="Message of the print job notification when client is unauthorized.">
+    <ph name="PROFILE_USERNAME">$1</ph> is not authorized to print to <ph name="PRINTER_NAME">$2<ex>printer</ex></ph>. Please contact your administrator.
+  </message>
+  <message name="IDS_PRINT_JOB_NOTIFICATION_IDENTIFICATION_REQUIRED_MESSAGE" desc="Message of the print job notification when credentials is not sent to the printer.">
+    Identification required to print to <ph name="PRINTER_NAME">$1<ex>printer</ex></ph>. Please contact your administrator.
   </message>
   <message name="IDS_PRINT_JOB_NOTIFICATION_SINGLE_PAGE_MESSAGE" desc="Message of the print job notification for a single page.">
     1 page to <ph name="PRINTER_NAME">$1<ex>printer</ex></ph>

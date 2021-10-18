@@ -11,6 +11,7 @@ struct PrinterStatus;
 
 namespace chromeos {
 
+// PrinterErrorCode can be derived either from PrinterStatus or JobStateReason.
 enum class PrinterErrorCode {
   NO_ERROR,
   PAPER_JAM,
@@ -23,6 +24,7 @@ enum class PrinterErrorCode {
   STOPPED,
   FILTER_FAILED,
   UNKNOWN_ERROR,
+  CLIENT_UNAUTHORIZED,
 };
 
 // Extracts an PrinterErrorCode from PrinterStatus#reasons. Returns NO_ERROR if

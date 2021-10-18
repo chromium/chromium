@@ -119,6 +119,8 @@ proto::PrintJobInfo_PrinterErrorCode PrinterErrorCodeToProto(
       return proto::PrintJobInfo_PrinterErrorCode_FILTER_FAILED;
     case PrinterErrorCode::UNKNOWN_ERROR:
       return proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR;
+    case PrinterErrorCode::CLIENT_UNAUTHORIZED:
+      return proto::PrintJobInfo_PrinterErrorCode_CLIENT_UNAUTHORIZED;
     default:
       // Be sure to update the above case statements whenever a new printer
       // error is introduced.

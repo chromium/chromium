@@ -68855,6 +68855,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Cancelled by printer"/>
   <int value="4" label="Lost track of job"/>
   <int value="5" label="Filter failed"/>
+  <int value="6" label="Cancelled due to client unauthorized"/>
 </enum>
 
 <enum name="PrintManagementAppEntryPoint">

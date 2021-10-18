@@ -64,6 +64,7 @@ constexpr char kIppEverywhere[] = "ipp-everywhere";
 
 // job state reason values
 constexpr char kJobCompletedWithErrors[] = "job-completed-with-errors";
+constexpr char kCupsHeldForAuthentication[] = "cups-held-for-authentication";
 
 // printer state severities
 constexpr char kSeverityReport[] = "report";
@@ -127,6 +128,8 @@ constexpr base::StringPiece ToJobStateReasonString(
   switch (stateReason) {
     case CupsJob::JobStateReason::kJobCompletedWithErrors:
       return kJobCompletedWithErrors;
+    case CupsJob::JobStateReason::kCupsHeldForAuthentication:
+      return kCupsHeldForAuthentication;
   }
   return "";
 }

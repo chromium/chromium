@@ -18,8 +18,7 @@ import './print_management_shared_css.js';
 import './printing_manager.mojom-lite.js';
 import './strings.m.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -61,8 +60,8 @@ function convertMojoTimeToJS(mojoTime) {
 function isToday(date) {
   const today_date = new Date();
   return date.getDate() === today_date.getDate() &&
-         date.getMonth() === today_date.getMonth() &&
-         date.getFullYear() === today_date.getFullYear();
+      date.getMonth() === today_date.getMonth() &&
+      date.getFullYear() === today_date.getFullYear();
 };
 
 /**
@@ -246,17 +245,15 @@ Polymer({
    * @private
    */
   printJobEntryDataChanged_() {
-    Array.from(this.shadowRoot.querySelectorAll('.overflow-ellipsis')).forEach(
-      (/** @type {HTMLElement} */ e) => {
-        // Checks if text is truncated
-        if (e.offsetWidth < e.scrollWidth) {
-          e.setAttribute("title", e.textContent);
-        }
-        else {
-          e.removeAttribute("title");
-        }
-      }
-                                                                              )
+    Array.from(this.shadowRoot.querySelectorAll('.overflow-ellipsis'))
+        .forEach((/** @type {HTMLElement} */ e) => {
+          // Checks if text is truncated
+          if (e.offsetWidth < e.scrollWidth) {
+            e.setAttribute('title', e.textContent);
+          } else {
+            e.removeAttribute('title');
+          }
+        })
   },
 
   /** @private */
@@ -304,16 +301,18 @@ Polymer({
       return '';
     }
 
-    return loadTimeData.getStringF('printedPagesFraction',
+    return loadTimeData.getStringF(
+        'printedPagesFraction',
         this.jobEntry.activePrintJobInfo.printedPages.toString(),
         this.jobEntry.numberOfPages.toString());
   },
 
   /** @private */
   onCancelPrintJobClicked_() {
-    this.mojoInterfaceProvider_.cancelPrintJob(this.jobEntry.id).then(
-      (/** @param {{attemptedCancel: boolean}} response */(response) =>
-          this.onPrintJobCanceled_(response.attemptedCancel)));
+    this.mojoInterfaceProvider_.cancelPrintJob(this.jobEntry.id)
+        .then(
+            (/** @param {{attemptedCancel: boolean}} response */ (response) =>
+                 this.onPrintJobCanceled_(response.attemptedCancel)));
   },
 
   /**
@@ -323,9 +322,9 @@ Polymer({
   onPrintJobCanceled_(attemptedCancel) {
     // TODO(crbug/1093527): Handle error case in which attempted cancellation
     // failed. Need to discuss with UX on error states.
-    this.fire('iron-announce', {
-      text: loadTimeData.getStringF('cancelledPrintJob', this.jobTitle_)
-    });
+    this.fire(
+        'iron-announce',
+        {text: loadTimeData.getStringF('cancelledPrintJob', this.jobTitle_)});
     this.fire('remove-print-job', this.jobEntry.id);
   },
 
@@ -351,11 +350,12 @@ Polymer({
     // Date() is constructed with the current time in UTC. If the Date() matches
     // |jsDate|'s date, display the 12hour time of the current date.
     if (isToday(jsDate)) {
-      return jsDate.toLocaleTimeString(/*locales=*/undefined,
-          {hour: 'numeric', minute: 'numeric'});
+      return jsDate.toLocaleTimeString(
+          /*locales=*/ undefined, {hour: 'numeric', minute: 'numeric'});
     }
     // Remove the day of the week from the date.
-    return jsDate.toLocaleDateString(/*locales=*/undefined,
+    return jsDate.toLocaleDateString(
+        /*locales=*/ undefined,
         {month: 'short', day: 'numeric', year: 'numeric'});
   },
 
@@ -369,8 +369,7 @@ Polymer({
   convertStatusToString_(mojoCompletionStatus) {
     switch (mojoCompletionStatus) {
       case ash.printing.printingManager.mojom.PrintJobCompletionStatus.kFailed:
-        return this.getFailedStatusString_(
-            this.jobEntry.printerErrorCode);
+        return this.getFailedStatusString_(this.jobEntry.printerErrorCode);
       case ash.printing.printingManager.mojom.PrintJobCompletionStatus
           .kCanceled:
         return loadTimeData.getString('completionStatusCanceled');
@@ -406,20 +405,23 @@ Polymer({
     // exclusive and one of which has to be non-null. Assert that if
     // |completionStatus_| is non-null that |jobEntry.activePrintJobInfo| is
     // null and vice-versa.
-    assert(this.completionStatus_ ?
-        !this.jobEntry.activePrintJobInfo : this.jobEntry.activePrintJobInfo);
+    assert(
+        this.completionStatus_ ? !this.jobEntry.activePrintJobInfo :
+                                 this.jobEntry.activePrintJobInfo);
 
     if (this.isCompletedPrintJob_()) {
-      return loadTimeData.getStringF('completePrintJobLabel', this.jobTitle_,
-          this.printerName_, this.creationTime_, this.completionStatus_);
+      return loadTimeData.getStringF(
+          'completePrintJobLabel', this.jobTitle_, this.printerName_,
+          this.creationTime_, this.completionStatus_);
     }
     if (this.ongoingErrorStatus_) {
-      return loadTimeData.getStringF('stoppedOngoingPrintJobLabel',
-          this.jobTitle_, this.printerName_, this.creationTime_,
-          this.ongoingErrorStatus_);
+      return loadTimeData.getStringF(
+          'stoppedOngoingPrintJobLabel', this.jobTitle_, this.printerName_,
+          this.creationTime_, this.ongoingErrorStatus_);
     }
-    return loadTimeData.getStringF('ongoingPrintJobLabel', this.jobTitle_,
-        this.printerName_, this.creationTime_,
+    return loadTimeData.getStringF(
+        'ongoingPrintJobLabel', this.jobTitle_, this.printerName_,
+        this.creationTime_,
         this.jobEntry.activePrintJobInfo.printedPages.toString(),
         this.jobEntry.numberOfPages.toString());
   },
@@ -495,6 +497,9 @@ Polymer({
         return loadTimeData.getString('filterFailed');
       case ash.printing.printingManager.mojom.PrinterErrorCode.kUnknownError:
         return loadTimeData.getString('unknownPrinterError');
+      case ash.printing.printingManager.mojom.PrinterErrorCode
+          .kClientUnauthorized:
+        return loadTimeData.getString('clientUnauthorized');
       default:
         assertNotReached();
         return loadTimeData.getString('unknownPrinterError');
@@ -533,6 +538,9 @@ Polymer({
         return loadTimeData.getString('filterFailed');
       case ash.printing.printingManager.mojom.PrinterErrorCode.kUnknownError:
         return loadTimeData.getString('unknownPrinterErrorStopped');
+      case ash.printing.printingManager.mojom.PrinterErrorCode
+          .kClientUnauthorized:
+        return loadTimeData.getString('clientUnauthorized');
       case ash.printing.printingManager.mojom.PrinterErrorCode
           .kPrinterUnreachable:
         assertNotReached();

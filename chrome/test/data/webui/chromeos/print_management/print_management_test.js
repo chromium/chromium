@@ -36,6 +36,8 @@ const PrinterErrorCode = {
       ash.printing.printingManager.mojom.PrinterErrorCode.kFilterFailed,
   UNKNOWN_ERROR:
       ash.printing.printingManager.mojom.PrinterErrorCode.kUnknownError,
+  CLIENT_UNAUTHORIZED:
+      ash.printing.printingManager.mojom.PrinterErrorCode.kClientUnauthorized,
 };
 
 /**

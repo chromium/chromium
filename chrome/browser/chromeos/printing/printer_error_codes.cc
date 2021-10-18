@@ -51,7 +51,9 @@ STATIC_ASSERT_ENUM(
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::UNKNOWN_ERROR,
     ash::printing::printing_manager::mojom::PrinterErrorCode::kUnknownError);
-
+STATIC_ASSERT_ENUM(PrinterErrorCode::CLIENT_UNAUTHORIZED,
+                   ash::printing::printing_manager::mojom::PrinterErrorCode::
+                       kClientUnauthorized);
 }  // namespace
 
 using PrinterReason = ::printing::PrinterStatus::PrinterReason;
