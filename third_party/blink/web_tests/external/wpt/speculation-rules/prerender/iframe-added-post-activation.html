@@ -10,6 +10,9 @@ document.prerendering false.
 <script src="resources/utils.js"></script>
 <body>
 <script>
+
+setup(() => assertSpeculationRulesIsSupported());
+
 promise_test(async t => {
   const channel = new BroadcastChannel('test-channel');
   const messageQueue = new BroadcastMessageQueue(channel);
@@ -23,5 +26,6 @@ promise_test(async t => {
   const msg = await messageQueue.nextMessage();
   assert_equals(msg, 'PASS');
 }, 'iframe added after activation has false document.prerendering');
+
 </script>
 </body>
