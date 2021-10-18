@@ -18774,7 +18774,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.base_unittests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter"
         ],
         "merge": {
           "args": [
@@ -19055,7 +19055,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.blink_unittests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter"
         ],
         "merge": {
           "args": [
