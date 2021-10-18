@@ -2369,20 +2369,6 @@
     'name': 'chromium.dev',
     'mixins': ['chromium-tester-dev-service-account'],
     'machines': {
-      'android-lollipop-arm-rel-swarming': {
-        'mixins': [
-          'lollipop',
-          'hammerhead',
-          'has_native_resultdb_integration',
-        ],
-        'test_suites': {
-           'gtest_tests': 'chromium_swarm_android_gtests',
-        },
-        'swarming': {
-          'expiration': 10800,
-        },
-        'os_type': 'android',
-      },
       'android-marshmallow-arm64-rel-swarming': {
         'mixins': [
           'has_native_resultdb_integration',

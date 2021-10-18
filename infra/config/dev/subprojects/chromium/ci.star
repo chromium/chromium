@@ -69,10 +69,6 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
     )
 
 ci_builder(
-    name = "android-lollipop-arm-rel-swarming",
-)
-
-ci_builder(
     name = "android-marshmallow-arm64-rel-swarming",
 )
 

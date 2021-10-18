@@ -886,11 +886,6 @@
           'shards': 25,
         },
       },
-      'android-lollipop-arm-rel-swarming': {
-        'swarming': {
-          'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
-        },
-      },
       'android-marshmallow-arm64-rel-swarming': {
         'swarming': {
           'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
@@ -3428,7 +3423,6 @@
 
       # On chromium.swarm, this should possibly be being run (or removed
       # from android-marshmallow-arm64-rel-swarming).
-      'android-lollipop-arm-rel-swarming',
       # https://crbug.com/1147531 - covered on pie
       'android-marshmallow-arm64-rel',
     ],
