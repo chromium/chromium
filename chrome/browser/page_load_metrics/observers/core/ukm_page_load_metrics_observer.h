@@ -29,20 +29,6 @@ class PageLoad;
 }
 }  // namespace ukm
 
-// This enum represents the type of page load: abort, non-abort, or neither.
-// A page is of type NEVER_FOREGROUND if it was never in the foreground.
-// A page is of type ABORT if it was in the foreground at some point but did not
-// reach FCP. A page is of type REACHED_FCP if it was in the foreground at some
-// point and reached FCP. These values are persisted to logs. Entries should not
-// be renumbered and numeric values should never be reused. For any additions,
-// also update the corresponding enum in enums.xml.
-enum class PageLoadType {
-  kNeverForegrounded = 0,
-  kAborted = 1,
-  kReachedFCP = 2,
-  kMaxValue = kReachedFCP,
-};
-
 // If URL-Keyed-Metrics (UKM) is enabled in the system, this is used to
 // populate it with top-level page-load metrics.
 class UkmPageLoadMetricsObserver

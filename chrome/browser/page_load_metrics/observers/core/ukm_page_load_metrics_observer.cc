@@ -38,6 +38,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/protocol_util.h"
+#include "components/page_load_metrics/common/page_load_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -61,6 +62,8 @@
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #endif
+
+using page_load_metrics::PageLoadType;
 
 namespace {
 

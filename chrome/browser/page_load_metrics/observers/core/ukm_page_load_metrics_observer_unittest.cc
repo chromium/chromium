@@ -38,6 +38,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "components/page_load_metrics/common/page_load_type.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -56,6 +57,7 @@
 using content::NavigationSimulator;
 using content::RenderFrameHost;
 using content::RenderFrameHostTester;
+using page_load_metrics::PageLoadType;
 using testing::AnyNumber;
 using testing::Mock;
 using testing::Return;
