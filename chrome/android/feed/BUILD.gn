@@ -8,8 +8,6 @@ import("//components/feed/features.gni")
 
 android_resources("chrome_feed_java_resources") {
   sources = [
-    "core/java/res/layout/feed_spinner.xml",
-    "core/java/res/layout/following_empty_state.xml",
     "core/java/res/values-night/colors.xml",
     "core/java/res/values/attrs.xml",
     "core/java/res/values/colors.xml",

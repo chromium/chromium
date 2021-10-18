@@ -160,13 +160,13 @@
         android:taskAffinity=""
         android:theme="@android:style/Theme.NoDisplay">
     </activity>  # DIFF-ANCHOR: 76686af9
-    <activity  # DIFF-ANCHOR: 9af505d2
-        android:name="org.chromium.chrome.browser.app.feedmanagement.FeedManagementActivity"
+    <activity  # DIFF-ANCHOR: 3d32d400
+        android:name="org.chromium.chrome.browser.app.feed.feedmanagement.FeedManagementActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:exported="false"
         android:theme="@style/Theme.Chromium.Settings"
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-    </activity>  # DIFF-ANCHOR: 9af505d2
+    </activity>  # DIFF-ANCHOR: 3d32d400
     <activity  # DIFF-ANCHOR: 78326aaf
         android:name="org.chromium.chrome.browser.app.followmanagement.FollowManagementActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
