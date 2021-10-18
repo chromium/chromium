@@ -1,0 +1,56 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_OTP_VERIFICATION_DIALOG_VIEW_ANDROID_H_
+#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_OTP_VERIFICATION_DIALOG_VIEW_ANDROID_H_
+
+#include <jni.h>
+#include <stddef.h>
+
+#include "base/android/scoped_java_ref.h"
+#include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
+#include "ui/android/window_android.h"
+
+using base::android::JavaParamRef;
+
+namespace autofill {
+
+class CardUnmaskOtpInputDialogController;
+
+// Android implementation of the OtpVerificationDialogView. This view deletes
+// itself when either the dialog is dismissed or its corresponding controller is
+// destroyed.
+class OtpVerificationDialogViewAndroid : public CardUnmaskOtpInputDialogView {
+ public:
+  explicit OtpVerificationDialogViewAndroid(
+      CardUnmaskOtpInputDialogController* controller);
+  OtpVerificationDialogViewAndroid(const OtpVerificationDialogViewAndroid&) =
+      delete;
+  OtpVerificationDialogViewAndroid& operator=(
+      const OtpVerificationDialogViewAndroid&) = delete;
+  ~OtpVerificationDialogViewAndroid() override;
+
+  // CardUnmaskOtpInputDialogView.
+  void ShowPendingState() override;
+  void ShowErrorMessage(const std::u16string error_message) override;
+  void OnControllerDestroying() override;
+
+  // Called by the Java code when the error dialog is dismissed.
+  void OnDialogDismissed(JNIEnv* env);
+  // Called by the Java code when the user submits an OTP.
+  void OnConfirm(JNIEnv* env, const JavaParamRef<jstring>& otp);
+  // Called by the Java code when the user requests for a new OTP.
+  void OnNewOtpRequested(JNIEnv* env);
+
+  bool ShowDialog(ui::WindowAndroid* windowAndroid);
+
+ private:
+  CardUnmaskOtpInputDialogController* controller_;
+  // The corresponding java object.
+  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_OTP_VERIFICATION_DIALOG_VIEW_ANDROID_H_

@@ -160,6 +160,11 @@ public class OtpVerificationDialog {
         mOtpErrorMessageTextView.setText(errorMessage);
     }
 
+    /** Dismiss the dialog if is already showing. */
+    public void dismissDialog() {
+        mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+    }
+
     private void showProgressBarOverlay() {
         mProgressBarOverlayView.setVisibility(View.VISIBLE);
         mProgressBarOverlayView.setAlpha(0f);

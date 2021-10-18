@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "build/build_config.h"
+
 namespace autofill {
 
 struct FooterText {
@@ -30,6 +32,12 @@ class CardUnmaskOtpInputDialogController {
   // This placeholder text lets the user know how many digits need to be entered
   // for the OTP, and it can change based on OTP length.
   virtual std::u16string GetTextfieldPlaceholderText() const = 0;
+
+#if defined(OS_ANDROID)
+  // The length of the OTP that the user is expected to fill into the text
+  // field.
+  virtual int GetExpectedOtpLength() const = 0;
+#endif  // OS_ANDROID
 
   // Checks if the given text is a possible valid OTP before sending a request
   // to the backend to see if the otp is correct.

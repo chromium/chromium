@@ -16,6 +16,7 @@ class CardUnmaskOtpInputDialogController;
 // Interface that exposes the view to CardUnmaskOtpInputDialogControllerImpl.
 class CardUnmaskOtpInputDialogView {
  public:
+  virtual ~CardUnmaskOtpInputDialogView() = default;
   // Creates a dialog and displays it as a modal on top of the web contents of
   // CardUnmaskOtpInputDialogController.
   static CardUnmaskOtpInputDialogView* CreateAndShow(
@@ -24,6 +25,9 @@ class CardUnmaskOtpInputDialogView {
 
   // Pending state is shown once the user submits a valid OTP.
   virtual void ShowPendingState() = 0;
+
+  // Show an error message when OTP verification fails.
+  virtual void ShowErrorMessage(std::u16string error_message) = 0;
 
   // Method to safely close this dialog when the controller is destroyed by
   // unlinking the controller and closing the widget that owns this dialog.

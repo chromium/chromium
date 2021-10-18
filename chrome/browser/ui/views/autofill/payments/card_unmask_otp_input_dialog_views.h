@@ -34,6 +34,7 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
 
   // CardUnmaskOtpInputDialogView:
   void ShowPendingState() override;
+  void ShowErrorMessage(const std::u16string error_message) override;
   void OnControllerDestroying() override;
 
   // views::DialogDelegateView:

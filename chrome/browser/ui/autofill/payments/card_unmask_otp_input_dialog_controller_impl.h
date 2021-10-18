@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
 #include "content/public/browser/web_contents.h"
@@ -33,6 +34,9 @@ class CardUnmaskOtpInputDialogControllerImpl
   void OnDialogClosed() override;
   std::u16string GetWindowTitle() const override;
   std::u16string GetTextfieldPlaceholderText() const override;
+#if defined(OS_ANDROID)
+  int GetExpectedOtpLength() const override;
+#endif  // OS_ANDROID
   bool IsValidOtp(const std::u16string& otp) const override;
   FooterText GetFooterText(const std::u16string& link_text) const override;
   std::u16string GetNewCodeLinkText() const override;
