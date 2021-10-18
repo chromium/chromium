@@ -7,6 +7,8 @@
 <body>
 <script>
 
+setup(() => assertSpeculationRulesIsSupported());
+
 promise_test(async t => {
   const bc = new BroadcastChannel('prerender-channel');
 
@@ -34,7 +36,6 @@ promise_test(async t => {
   await caches.delete(cacheName);
 
   bc.close();
-
 }, 'prerendering page should be able to access cache storage')
 
 </script>

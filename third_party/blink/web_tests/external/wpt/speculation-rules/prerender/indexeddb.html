@@ -8,6 +8,8 @@
 <body>
 <script>
 
+setup(() => assertSpeculationRulesIsSupported());
+
 promise_test(async t => {
   const bc = new BroadcastChannel('prerender-channel');
 
@@ -36,7 +38,7 @@ promise_test(async t => {
     'prerendering page should be able to write to Indexed DataBase');
   db.close();
   bc.close();
-
 }, 'prerendering page should be able to access Indexed DataBase')
+
 </script>
 </body>
