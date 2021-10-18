@@ -125,6 +125,8 @@ void CheckCppEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
 void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullCycle& event,
     ContextId context_id) {
+  if (!IsMainThread())
+    return;
   CheckCppEvents(event);
   // Report throughput metrics:
   UMA_HISTOGRAM_TIMES(
@@ -253,6 +255,8 @@ void ReportCppIncrementalLatencyEvent(int64_t duration_us) {
 void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullMainThreadIncrementalMark& event,
     ContextId context_id) {
+  if (!IsMainThread())
+    return;
   if (event.cpp_wall_clock_duration_in_us != -1) {
     // This is only a latency event.
     UMA_HISTOGRAM_TIMES(
@@ -274,6 +278,8 @@ void V8MetricsRecorder::AddMainThreadEvent(
 void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullMainThreadIncrementalSweep& event,
     ContextId context_id) {
+  if (!IsMainThread())
+    return;
   if (event.cpp_wall_clock_duration_in_us != -1) {
     // This is only a latency event.
     UMA_HISTOGRAM_TIMES(
@@ -297,34 +303,25 @@ void V8MetricsRecorder::NotifyIsolateDisposal() {
   isolate_ = nullptr;
 }
 
-Document* V8MetricsRecorder::GetDocument(
+absl::optional<V8MetricsRecorder::UkmRecorderAndSourceId>
+V8MetricsRecorder::GetUkmRecorderAndSourceId(
     v8::metrics::Recorder::ContextId context_id) {
   if (!isolate_)
-    return nullptr;
+    return absl::optional<UkmRecorderAndSourceId>();
   v8::HandleScope handle_scope(isolate_);
   v8::MaybeLocal<v8::Context> maybe_context =
       v8::metrics::Recorder::GetContext(isolate_, context_id);
   if (maybe_context.IsEmpty())
-    return nullptr;
-  return To<LocalDOMWindow>(
-             ExecutionContext::From(maybe_context.ToLocalChecked()))
-      ->document();
-}
-
-absl::optional<V8MetricsRecorder::UkmRecorderAndSourceId>
-V8MetricsRecorder::GetUkmRecorderAndSourceId(
-    v8::metrics::Recorder::ContextId context_id) {
-  DCHECK(IsMainThread());
-  if (!isolate_)
     return absl::optional<UkmRecorderAndSourceId>();
-  Document* document = GetDocument(context_id);
-  if (!document)
+  ExecutionContext* context =
+      ExecutionContext::From(maybe_context.ToLocalChecked());
+  if (!context)
     return absl::optional<UkmRecorderAndSourceId>();
-  ukm::UkmRecorder* ukm_recorder = document->UkmRecorder();
+  ukm::UkmRecorder* ukm_recorder = context->UkmRecorder();
   if (!ukm_recorder)
     return absl::optional<UkmRecorderAndSourceId>();
   return absl::optional<UkmRecorderAndSourceId>(absl::in_place, ukm_recorder,
-                                                document->UkmSourceID());
+                                                context->UkmSourceID());
 }
 
 }  // namespace blink

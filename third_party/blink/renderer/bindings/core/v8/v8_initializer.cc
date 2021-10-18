@@ -669,6 +669,7 @@ static void InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetHostImportModuleDynamicallyCallback(HostImportModuleDynamically);
   isolate->SetHostInitializeImportMetaObjectCallback(
       HostGetImportMetaProperties);
+  isolate->SetMetricsRecorder(std::make_shared<V8MetricsRecorder>(isolate));
 
   V8ContextSnapshot::EnsureInterfaceTemplates(isolate);
 
@@ -794,8 +795,6 @@ void V8Initializer::InitializeMainThread(
   }
 
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInMainThread);
-
-  isolate->SetMetricsRecorder(std::make_shared<V8MetricsRecorder>(isolate));
 
   V8PerIsolateData::From(isolate)->SetThreadDebugger(
       std::make_unique<MainThreadDebugger>(isolate));
