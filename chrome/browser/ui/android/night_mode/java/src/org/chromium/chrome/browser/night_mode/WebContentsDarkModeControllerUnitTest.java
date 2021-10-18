@@ -286,7 +286,7 @@ public class WebContentsDarkModeControllerUnitTest {
 
     private void assertAutoDarkModeChangeSourceRecorded(
             @AutoDarkSettingsChangeSource int source, boolean enabled, int expectedCounts) {
-        String histogramName = "Android.DarkTheme.AutoDark.SettingsChangeSource."
+        String histogramName = "Android.DarkTheme.AutoDarkMode.SettingsChangeSource."
                 + (enabled ? "Enabled" : "Disabled");
         int actualCount = RecordHistogram.getHistogramValueCountForTesting(histogramName, source);
         Assert.assertEquals("Histogram <" + histogramName + "> for sample <" + source
