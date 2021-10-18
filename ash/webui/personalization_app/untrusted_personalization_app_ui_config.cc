@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/personalization_app/untrusted_personalization_app_ui_config.h"
+#include "ash/webui/personalization_app/untrusted_personalization_app_ui_config.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/grit/ash_personalization_app_resources.h"
+#include "ash/grit/ash_personalization_app_resources_map.h"
+#include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "base/strings/string_util.h"
-#include "chromeos/components/personalization_app/personalization_app_url_constants.h"
-#include "chromeos/grit/chromeos_personalization_app_resources.h"
-#include "chromeos/grit/chromeos_personalization_app_resources_map.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -70,9 +70,8 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
     AddStrings(source.get());
     AddBooleans(source.get());
 
-    const auto resources =
-        base::make_span(kChromeosPersonalizationAppResources,
-                        kChromeosPersonalizationAppResourcesSize);
+    const auto resources = base::make_span(kAshPersonalizationAppResources,
+                                           kAshPersonalizationAppResourcesSize);
 
     for (const auto& resource : resources) {
       if (base::StartsWith(resource.path, "untrusted") ||
@@ -109,7 +108,7 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
     // page to avoid crashing. We crash when DCHECKs are on to make it clearer
     // that a resource path was not property specified.
     source->SetDefaultResource(
-        IDR_CHROMEOS_PERSONALIZATION_APP_UNTRUSTED_COLLECTIONS_HTML);
+        IDR_ASH_PERSONALIZATION_APP_UNTRUSTED_COLLECTIONS_HTML);
 #endif  // !DCHECK_IS_ON()
 
     // TODO(crbug/1169829) set up trusted types properly to allow Polymer to

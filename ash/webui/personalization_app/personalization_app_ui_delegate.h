@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#ifndef ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_DELEGATE_H_
+#define ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_DELEGATE_H_
 
-#ifndef CHROMEOS_COMPONENTS_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_DELEGATE_H_
-#define CHROMEOS_COMPONENTS_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_DELEGATE_H_
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 // Handles calling |backdrop_wallpaper_handler| code in //chrome to pass to the
 // Personalization App SWA.
@@ -19,4 +19,4 @@ class PersonalizationAppUiDelegate
           receiver) = 0;
 };
 
-#endif  // CHROMEOS_COMPONENTS_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_DELEGATE_H_
+#endif  // ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_DELEGATE_H_

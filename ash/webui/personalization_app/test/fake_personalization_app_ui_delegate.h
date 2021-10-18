@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_UI_DELEGATE_H_
-#define CHROMEOS_COMPONENTS_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_UI_DELEGATE_H_
+#ifndef ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_UI_DELEGATE_H_
+#define ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_UI_DELEGATE_H_
 
-#include "chromeos/components/personalization_app/personalization_app_ui_delegate.h"
+#include "ash/webui/personalization_app/personalization_app_ui_delegate.h"
 
 #include <stdint.h>
 
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/unguessable_token.h"
-#include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -79,4 +79,4 @@ class FakePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
       wallpaper_receiver_{this};
 };
 
-#endif  // CHROMEOS_COMPONENTS_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_UI_DELEGATE_H_
+#endif  // ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_UI_DELEGATE_H_

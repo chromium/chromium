@@ -21,7 +21,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/trusted/manifest.json",
     "$target_gen_dir/untrusted/manifest.json",
   ]
-  grd_prefix = "chromeos_personalization_app"
+  grd_prefix = "ash_personalization_app"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
 

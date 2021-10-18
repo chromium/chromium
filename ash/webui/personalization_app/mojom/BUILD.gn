@@ -36,7 +36,7 @@ mojom("mojom") {
       traits_sources = [ "personalization_app_mojom_traits.cc" ]
       traits_public_deps = [
         "//ash/public/cpp",
-        "//chromeos/components/personalization_app/proto",
+        "//ash/webui/personalization_app/proto",
         "//skia",
       ]
     },

@@ -512,7 +512,7 @@
     "META": {"sizes": {"includes": [120],}},
     "includes": [3320],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/personalization_app/resources/chromeos_personalization_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/personalization_app/resources/ash_personalization_app_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [3340],
   },

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_INFO_H_
 
+#include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
-#include "chromeos/components/personalization_app/personalization_app_url_constants.h"
 struct WebApplicationInfo;
 
 class PersonalizationSystemAppDelegate : public web_app::SystemWebAppDelegate {

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/personalization_app/personalization_app_ui.h"
+#include "ash/webui/personalization_app/personalization_app_ui.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/grit/ash_personalization_app_resources.h"
+#include "ash/grit/ash_personalization_app_resources_map.h"
+#include "ash/webui/personalization_app/personalization_app_ui_delegate.h"
+#include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "base/strings/strcat.h"
-#include "chromeos/components/personalization_app/personalization_app_ui_delegate.h"
-#include "chromeos/components/personalization_app/personalization_app_url_constants.h"
-#include "chromeos/grit/chromeos_personalization_app_resources.h"
-#include "chromeos/grit/chromeos_personalization_app_resources_map.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -25,16 +25,14 @@ namespace {
 bool ShouldIncludeResource(const webui::ResourcePath& resource) {
   return base::StartsWith(resource.path, "trusted") ||
          base::StartsWith(resource.path, "common") ||
-         resource.id == IDR_CHROMEOS_PERSONALIZATION_APP_ICON_192_PNG;
+         resource.id == IDR_ASH_PERSONALIZATION_APP_ICON_192_PNG;
 }
 
 void AddResources(content::WebUIDataSource* source) {
-  source->AddResourcePath("",
-                          IDR_CHROMEOS_PERSONALIZATION_APP_TRUSTED_INDEX_HTML);
+  source->AddResourcePath("", IDR_ASH_PERSONALIZATION_APP_TRUSTED_INDEX_HTML);
 
-  const auto resources =
-      base::make_span(kChromeosPersonalizationAppResources,
-                      kChromeosPersonalizationAppResourcesSize);
+  const auto resources = base::make_span(kAshPersonalizationAppResources,
+                                         kAshPersonalizationAppResourcesSize);
 
   for (const auto& resource : resources) {
     if (ShouldIncludeResource(resource))
@@ -51,8 +49,7 @@ void AddResources(content::WebUIDataSource* source) {
 
 #if !DCHECK_IS_ON()
   // Add a default path to avoid crash when not debugging.
-  source->SetDefaultResource(
-      IDR_CHROMEOS_PERSONALIZATION_APP_TRUSTED_INDEX_HTML);
+  source->SetDefaultResource(IDR_ASH_PERSONALIZATION_APP_TRUSTED_INDEX_HTML);
 #endif  // !DCHECK_IS_ON()
 }
 

@@ -2318,9 +2318,9 @@ if (!is_android && !is_fuchsia) {
         deps += [
           "//ash/webui/help_app_ui:browser_tests_js",
           "//ash/webui/media_app_ui:browser_tests_js",
+          "//ash/webui/personalization_app:browser_tests_js",
           "//chrome/browser/resources/gaia_auth_host:browser_tests",
           "//chromeos/components/eche_app_ui:browser_tests_js",
-          "//chromeos/components/personalization_app:browser_tests_js",
           "//chromeos/components/system_apps:browser_tests",
         ]
 

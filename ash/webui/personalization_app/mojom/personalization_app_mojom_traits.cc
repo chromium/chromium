@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/personalization_app/mojom/personalization_app_mojom_traits.h"
+#include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
+#include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
-#include "chromeos/components/personalization_app/mojom/personalization_app.mojom-shared.h"
-#include "chromeos/components/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef ASH_WEBUI_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_
+#define ASH_WEBUI_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_
+
 #include <memory>
 
 #include "chrome/test/base/mojo_web_ui_browser_test.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
-
-#ifndef CHROMEOS_COMPONENTS_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_
-#define CHROMEOS_COMPONENTS_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_
 
 class TestPersonalizationAppWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
@@ -38,4 +38,4 @@ class PersonalizationAppBrowserTestFixture : public MojoWebUIBrowserTest {
       scoped_controller_factory_registration_{&test_factory_};
 };
 
-#endif  // CHROMEOS_COMPONENTS_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_
+#endif  // ASH_WEBUI_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_

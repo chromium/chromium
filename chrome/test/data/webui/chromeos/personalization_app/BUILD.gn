@@ -8,7 +8,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
                     "language_in=ECMASCRIPT_2020",
-                    "browser_resolver_prefix_replacements=\"chrome://personalization/=../../chromeos/components/personalization_app/resources/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://personalization/=../../ash/webui/personalization_app/resources/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
@@ -34,7 +34,7 @@ js_library("local_images_element_test") {
     ":test_personalization_store",
     "../..:chai_assert",
     "../..:test_util",
-    "//chromeos/components/personalization_app/resources/trusted:local_images_element",
+    "//ash/webui/personalization_app/resources/trusted:local_images_element",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -42,7 +42,7 @@ js_library("local_images_element_test") {
 js_library("personalization_toast_element_test") {
   deps = [
     ":test_personalization_store",
-    "//chromeos/components/personalization_app/resources/trusted:personalization_toast_element",
+    "//ash/webui/personalization_app/resources/trusted:personalization_toast_element",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -52,8 +52,8 @@ js_library("personalization_app_test_utils") {
     ":test_mojo_interface_provider",
     ":test_personalization_store",
     "../..:chai_assert",
-    "//chromeos/components/personalization_app/resources/trusted:mojo_interface_provider",
-    "//chromeos/components/personalization_app/resources/trusted:personalization_actions",
+    "//ash/webui/personalization_app/resources/trusted:mojo_interface_provider",
+    "//ash/webui/personalization_app/resources/trusted:personalization_actions",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -72,15 +72,15 @@ js_library("personalization_app_component_test") {
 js_library("personalization_app_controller_test") {
   deps = [
     ":test_mojo_interface_provider",
-    "//chromeos/components/personalization_app/resources/trusted:personalization_store",
+    "//ash/webui/personalization_app/resources/trusted:personalization_store",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("test_personalization_store") {
   deps = [
-    "//chromeos/components/personalization_app/resources/trusted:personalization_reducers",
-    "//chromeos/components/personalization_app/resources/trusted:personalization_store",
+    "//ash/webui/personalization_app/resources/trusted:personalization_reducers",
+    "//ash/webui/personalization_app/resources/trusted:personalization_store",
   ]
 }
 
@@ -88,7 +88,7 @@ js_library("test_mojo_interface_provider") {
   deps = [
     "../..:chai_assert",
     "../..:test_browser_proxy",
-    "//chromeos/components/personalization_app/mojom:mojom_js_library_for_compile",
+    "//ash/webui/personalization_app/mojom:mojom_js_library_for_compile",
   ]
 }
 
@@ -99,8 +99,8 @@ js_library("wallpaper_breadcrumb_element_test") {
     ":test_personalization_store",
     "../..:chai_assert",
     "../..:test_util",
-    "//chromeos/components/personalization_app/resources/trusted:personalization_router_element",
-    "//chromeos/components/personalization_app/resources/trusted:wallpaper_breadcrumb_element",
+    "//ash/webui/personalization_app/resources/trusted:personalization_router_element",
+    "//ash/webui/personalization_app/resources/trusted:wallpaper_breadcrumb_element",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -111,8 +111,8 @@ js_library("wallpaper_collections_element_test") {
     ":test_mojo_interface_provider",
     "../..:chai_assert",
     "../..:test_util",
-    "//chromeos/components/personalization_app/resources/common:iframe_api",
-    "//chromeos/components/personalization_app/resources/trusted:wallpaper_collections_element",
+    "//ash/webui/personalization_app/resources/common:iframe_api",
+    "//ash/webui/personalization_app/resources/trusted:wallpaper_collections_element",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -124,8 +124,8 @@ js_library("wallpaper_fullscreen_element_test") {
     ":test_mojo_interface_provider",
     "../..:chai_assert",
     "../..:test_util",
-    "//chromeos/components/personalization_app/resources/common:iframe_api",
-    "//chromeos/components/personalization_app/resources/trusted:wallpaper_fullscreen_element",
+    "//ash/webui/personalization_app/resources/common:iframe_api",
+    "//ash/webui/personalization_app/resources/trusted:wallpaper_fullscreen_element",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -137,8 +137,8 @@ js_library("wallpaper_images_element_test") {
     ":test_mojo_interface_provider",
     "../..:chai_assert",
     "../..:test_util",
-    "//chromeos/components/personalization_app/resources/common:iframe_api",
-    "//chromeos/components/personalization_app/resources/trusted:wallpaper_images_element",
+    "//ash/webui/personalization_app/resources/common:iframe_api",
+    "//ash/webui/personalization_app/resources/trusted:wallpaper_images_element",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -151,7 +151,7 @@ js_library("wallpaper_selected_element_test") {
     ":test_personalization_store",
     "../..:chai_assert",
     "../..:test_util",
-    "//chromeos/components/personalization_app/resources/trusted:wallpaper_selected_element",
+    "//ash/webui/personalization_app/resources/trusted:wallpaper_selected_element",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

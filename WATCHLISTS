@@ -168,8 +168,8 @@
                   '|ash/public/cpp/assistant/'\
                   '|ash/public/cpp/wallpaper/'\
                   '|ash/wallpaper/'\
+                  '|ash/webui/personalization_app/'\
                   '|chromeos/assistant/'\
-                  '|chromeos/components/personalization_app/'\
                   '|chromeos/services/assistant/'\
                   '|chromeos/services/libassistant/'\
                   '|chrome/browser/ash/web_applications/personalization_app/'\

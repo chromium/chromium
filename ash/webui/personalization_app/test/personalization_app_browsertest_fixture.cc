@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/personalization_app/test/personalization_app_browsertest_fixture.h"
+#include "ash/webui/personalization_app/test/personalization_app_browsertest_fixture.h"
 
 #include <memory>
 
+#include "ash/webui/personalization_app/personalization_app_ui.h"
+#include "ash/webui/personalization_app/personalization_app_url_constants.h"
+#include "ash/webui/personalization_app/test/fake_personalization_app_ui_delegate.h"
 #include "chrome/test/base/mojo_web_ui_browser_test.h"
-#include "chromeos/components/personalization_app/personalization_app_ui.h"
-#include "chromeos/components/personalization_app/personalization_app_url_constants.h"
-#include "chromeos/components/personalization_app/test/fake_personalization_app_ui_delegate.h"
 
 std::unique_ptr<content::WebUIController>
 TestPersonalizationAppWebUIProvider::NewWebUI(content::WebUI* web_ui,

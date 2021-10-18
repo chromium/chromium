@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/personalization_app/test/fake_personalization_app_ui_delegate.h"
+#include "ash/webui/personalization_app/test/fake_personalization_app_ui_delegate.h"
 
 #include <stdint.h>
 #include <vector>
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/check_op.h"
 #include "base/unguessable_token.h"
-#include "chromeos/components/personalization_app/mojom/personalization_app.mojom-forward.h"
-#include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
-#include "chromeos/components/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

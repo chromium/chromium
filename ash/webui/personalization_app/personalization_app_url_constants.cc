@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/personalization_app/personalization_app_url_constants.h"
+#include "ash/webui/personalization_app/personalization_app_url_constants.h"
 
 namespace chromeos {
 

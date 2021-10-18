@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
-#define CHROMEOS_COMPONENTS_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
+#ifndef ASH_WEBUI_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
+#define ASH_WEBUI_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
+#include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/unguessable_token.h"
-#include "chromeos/components/personalization_app/mojom/personalization_app.mojom-shared.h"
-#include "chromeos/components/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -65,4 +65,4 @@ struct StructTraits<
 
 }  // namespace mojo
 
-#endif  // CHROMEOS_COMPONENTS_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
+#endif  // ASH_WEBUI_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_

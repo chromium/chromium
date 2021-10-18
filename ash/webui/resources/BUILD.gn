@@ -54,6 +54,12 @@ ash_generated_grit("shimless_rma_resources") {
   deps = [ "//ash/webui/shimless_rma/resources:build_grd" ]
 }
 
+# Resources used by chrome://personalization SWA.
+ash_generated_grit("personalization_app_resources") {
+  source = "$root_gen_dir/ash/webui/personalization_app/resources/ash_personalization_app_resources.grd"
+  deps = [ "//ash/webui/personalization_app/resources:build_grd" ]
+}
+
 if (!is_official_build) {
   # Resources used by chrome://demo-mode-app
   ash_generated_grit("demo_mode_app_resources") {

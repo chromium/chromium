@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_UI_DELEGATE_H_
 
-#include "chromeos/components/personalization_app/personalization_app_ui_delegate.h"
+#include "ash/webui/personalization_app/personalization_app_ui_delegate.h"
 
 #include <stdint.h>
 
@@ -17,10 +17,10 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

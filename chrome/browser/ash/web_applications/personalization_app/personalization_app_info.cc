@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/grit/ash_personalization_app_resources.h"
+#include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
-#include "chromeos/components/personalization_app/personalization_app_url_constants.h"
-#include "chromeos/grit/chromeos_personalization_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,8 +23,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPersonalizationApp() {
   info->title = l10n_util::GetStringUTF16(IDS_PERSONALIZATION_APP_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
-      {{"app_icon_192.png", 192,
-        IDR_CHROMEOS_PERSONALIZATION_APP_ICON_192_PNG}},
+      {{"app_icon_192.png", 192, IDR_ASH_PERSONALIZATION_APP_ICON_192_PNG}},
       *info);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;

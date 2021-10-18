@@ -20,9 +20,9 @@ static_library("personalization_app") {
   deps = [
     "//ash/constants:constants",
     "//ash/public/cpp",
-    "//chromeos/components/personalization_app/mojom",
-    "//chromeos/components/personalization_app/proto",
-    "//chromeos/resources:personalization_app_resources",
+    "//ash/webui/personalization_app/mojom",
+    "//ash/webui/personalization_app/proto",
+    "//ash/webui/resources:personalization_app_resources",
     "//chromeos/strings",
     "//content/public/browser",
     "//ui/chromeos/styles:cros_styles_views_generator",
@@ -60,9 +60,9 @@ source_set("browser_test_support") {
   deps = [
     ":personalization_app",
     "//ash/public/cpp",
+    "//ash/webui/personalization_app/mojom",
+    "//ash/webui/personalization_app/proto",
     "//chrome/test:test_support_ui",
-    "//chromeos/components/personalization_app/mojom",
-    "//chromeos/components/personalization_app/proto",
     "//chromeos/components/web_applications/test:test_support",
   ]
 
