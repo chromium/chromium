@@ -65,6 +65,11 @@ class HistoryClusterElement extends PolymerElement {
   constructor() {
     super();
     this.callbackRouter_ = BrowserProxyImpl.getInstance().callbackRouter;
+
+    // This element receives a tabindex, because it's an iron-list item.
+    // However, what we really want to do is to pass that focus onto an
+    // eligible child, so we set `delegatesFocus` to true.
+    this.attachShadow({mode: 'open', delegatesFocus: true});
   }
 
   connectedCallback() {

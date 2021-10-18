@@ -22,10 +22,13 @@
 <iron-list id="clusters"
     items="[[result_.clusters]]"
     on-remove-visits="onRemoveVisits_">
+  <!-- We must have a tabindex on these history-cluster elements, because
+       iron-list gets very confused handling arrow keys without them. Moreover,
+       we can't allow Tab to traverse all list elements because:
+       https://github.com/PolymerElements/iron-list/issues/546 -->
   <template>
     <history-cluster cluster="[[item]]" index="[[index]]"
-        tabindex$="[[tabIndex]]"
-        on-remove-cluster="onRemoveCluster_">
+        tabindex$="[[tabIndex]]" on-remove-cluster="onRemoveCluster_">
     </history-cluster>
   </template>
 </iron-list>
