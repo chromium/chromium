@@ -75,16 +75,13 @@ def _GetDashboardJson(options):
 
 
 def _GetDashboardHistogramData(options):
-  if options.got_revision_cp:
-    revisions = {
-        '--chromium_commit_positions':
-        _CommitPositionNumber(options.got_revision_cp),
-        '--chromium_revisions':
-        options.git_revision
-    }
-  else:
-    revisions = {}
+  revisions = {}
 
+  if options.got_revision_cp:
+    revisions['--chromium_commit_positions'] = \
+        _CommitPositionNumber(options.got_revision_cp)
+  if options.git_revision:
+    revisions['--chromium_revisions'] = options.git_revision
   if options.got_webrtc_revision:
     revisions['--webrtc_revisions'] = options.got_webrtc_revision
   if options.got_v8_revision:

@@ -111,9 +111,9 @@ def _upload_perf_results(json_to_upload, name, configuration_name,
       '--buildbucket', buildbucket['build'].get('bucket'),
     ]
 
-  if build_properties.get('git_revision'):
+  if build_properties.get('got_revision'):
     args.append('--git-revision')
-    args.append(build_properties['git_revision'])
+    args.append(build_properties['got_revision'])
   if _is_histogram(json_to_upload):
     args.append('--send-as-histograms')
 
