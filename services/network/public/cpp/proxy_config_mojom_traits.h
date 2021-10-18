@@ -5,9 +5,13 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_PROXY_CONFIG_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_PROXY_CONFIG_MOJOM_TRAITS_H_
 
+#include <string>
+#include <vector>
+
 #include "base/component_export.h"
-#include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/cpp/base/big_string_mojom_traits.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
@@ -19,7 +23,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     StructTraits<network::mojom::ProxyBypassRulesDataView,
                  net::ProxyBypassRules> {
  public:
@@ -29,7 +33,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 };
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     StructTraits<network::mojom::ProxyListDataView, net::ProxyList> {
  public:
   static std::vector<std::string> proxies(const net::ProxyList& r);
@@ -38,7 +42,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 };
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     EnumTraits<network::mojom::ProxyRulesType,
                net::ProxyConfig::ProxyRules::Type> {
  public:
@@ -49,7 +53,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 };
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     StructTraits<network::mojom::ProxyRulesDataView,
                  net::ProxyConfig::ProxyRules> {
  public:
@@ -89,9 +93,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
                    net::ProxyConfig::ProxyRules* out_proxy_rules);
 };
 
-
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     StructTraits<network::mojom::ProxyConfigDataView, net::ProxyConfig> {
  public:
   static bool auto_detect(const net::ProxyConfig& r) { return r.auto_detect(); }

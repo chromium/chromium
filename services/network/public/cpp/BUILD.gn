@@ -224,6 +224,23 @@ component("network_param_mojom_support") {
   defines = [ "IS_NETWORK_CPP_NETWORK_PARAM_IMPL" ]
 }
 
+component("proxy_config_mojom_support") {
+  sources = [
+    "mutable_network_traffic_annotation_tag_mojom_traits.h",
+    "mutable_partial_network_traffic_annotation_tag_mojom_traits.h",
+    "proxy_config_mojom_traits.cc",
+    "proxy_config_mojom_traits.h",
+    "proxy_config_with_annotation_mojom_traits.cc",
+    "proxy_config_with_annotation_mojom_traits.h",
+  ]
+  deps = [
+    "//mojo/public/mojom/base",
+    "//net",
+    "//services/network/public/mojom:mojom_proxy_config_shared",
+  ]
+  defines = [ "IS_NETWORK_CPP_PROXY_CONFIG_IMPL" ]
+}
+
 # This component is separate from cpp_base as it is a dependency of
 # //services/network/public/mojom:url_loader_base.
 component("cross_origin_embedder_policy") {
@@ -280,8 +297,6 @@ component("cpp_base") {
     "isolation_info_mojom_traits.h",
     "load_timing_info_mojom_traits.cc",
     "load_timing_info_mojom_traits.h",
-    "mutable_network_traffic_annotation_tag_mojom_traits.h",
-    "mutable_partial_network_traffic_annotation_tag_mojom_traits.h",
     "network_interface_mojom_traits.cc",
     "network_interface_mojom_traits.h",
     "network_ipc_param_traits.cc",
@@ -292,10 +307,6 @@ component("cpp_base") {
     "optional_trust_token_params.h",
     "origin_policy.cc",
     "origin_policy.h",
-    "proxy_config_mojom_traits.cc",
-    "proxy_config_mojom_traits.h",
-    "proxy_config_with_annotation_mojom_traits.cc",
-    "proxy_config_with_annotation_mojom_traits.h",
     "resource_request.cc",
     "resource_request.h",
     "resource_request_body.cc",
@@ -321,6 +332,7 @@ component("cpp_base") {
     ":cross_origin_embedder_policy",
     ":ip_address_mojom_support",
     ":network_param_mojom_support",
+    ":proxy_config_mojom_support",
     ":schemeful_site_mojom_support",
     "//services/network/public/mojom:url_loader_base",
     "//url/ipc:url_ipc",

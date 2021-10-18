@@ -178,7 +178,10 @@ mojom("mojom_proxy_config") {
         },
       ]
       traits_headers = [ "//services/network/public/cpp/mutable_network_traffic_annotation_tag_mojom_traits.h" ]
-      traits_public_deps = [ "//net/traffic_annotation" ]
+      traits_public_deps = [
+        "//net/traffic_annotation",
+        "//services/network/public/cpp:proxy_config_mojom_support",
+      ]
     },
   ]
 
@@ -191,7 +194,10 @@ mojom("mojom_proxy_config") {
         },
       ]
       traits_headers = [ "//services/network/public/cpp/mutable_partial_network_traffic_annotation_tag_mojom_traits.h" ]
-      traits_public_deps = [ "//net/traffic_annotation" ]
+      traits_public_deps = [
+        "//net/traffic_annotation",
+        "//services/network/public/cpp:proxy_config_mojom_support",
+      ]
     },
     {
       types = [
@@ -218,7 +224,10 @@ mojom("mojom_proxy_config") {
       ]
       traits_headers =
           [ "//services/network/public/cpp/proxy_config_mojom_traits.h" ]
-      traits_public_deps = [ "//net" ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:proxy_config_mojom_support",
+      ]
     },
     {
       types = [
@@ -228,7 +237,10 @@ mojom("mojom_proxy_config") {
         },
       ]
       traits_headers = [ "//services/network/public/cpp/proxy_config_with_annotation_mojom_traits.h" ]
-      traits_public_deps = [ "//net" ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:proxy_config_mojom_support",
+      ]
     },
   ]
 

@@ -6,7 +6,6 @@
 
 #include "net/base/proxy_string_util.h"
 #include "url/gurl.h"
-#include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
 
