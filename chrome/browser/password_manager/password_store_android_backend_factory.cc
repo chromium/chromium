@@ -23,15 +23,11 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
     return std::make_unique<PasswordStoreAndroidBackend>(
         PasswordStoreAndroidBackendBridge::Create());
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerShadowAndroid)) {
-    return std::make_unique<PasswordStoreBackendMigrationDecorator>(
-        std::make_unique<PasswordStoreImpl>(std::move(login_db)),
-        std::make_unique<PasswordStoreAndroidBackend>(
-            PasswordStoreAndroidBackendBridge::Create()),
-        prefs);
-  }
-  return std::make_unique<PasswordStoreImpl>(std::move(login_db));
+  return std::make_unique<PasswordStoreBackendMigrationDecorator>(
+      std::make_unique<PasswordStoreImpl>(std::move(login_db)),
+      std::make_unique<PasswordStoreAndroidBackend>(
+          PasswordStoreAndroidBackendBridge::Create()),
+      prefs);
 }
 
 }  // namespace password_manager

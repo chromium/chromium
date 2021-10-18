@@ -123,6 +123,11 @@ FakePasswordStoreBackend::CreateSyncControllerDelegate() {
   return nullptr;
 }
 
+void FakePasswordStoreBackend::GetSyncStatus(
+    base::OnceCallback<void(bool)> callback) {
+  NOTIMPLEMENTED();
+}
+
 LoginsResult FakePasswordStoreBackend::GetAllLoginsInternal() {
   LoginsResult result;
   for (const auto& elements : stored_passwords_) {

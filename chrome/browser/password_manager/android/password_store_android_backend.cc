@@ -182,6 +182,11 @@ PasswordStoreAndroidBackend::CreateSyncControllerDelegate() {
           base::Unretained(this)));
 }
 
+void PasswordStoreAndroidBackend::GetSyncStatus(
+    base::OnceCallback<void(bool)> callback) {
+  NOTREACHED();
+}
+
 void PasswordStoreAndroidBackend::OnCompleteWithLogins(
     JobId job_id,
     std::vector<PasswordForm> passwords) {

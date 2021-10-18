@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/password_manager/core/browser/field_info_table.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
 namespace password_manager {
@@ -126,6 +127,14 @@ class GetAllLoginsAsyncMetricsRecorder
   absl::optional<LoginsResult> first_result_;
 };
 
+void InvokeCallbackIfShadowingAllowed(base::OnceClosure callback,
+                                      bool sync_enabled) {
+  if (sync_enabled && base::FeatureList::IsEnabled(
+                          features::kUnifiedPasswordManagerShadowAndroid)) {
+    std::move(callback).Run();
+  }
+}
+
 }  // namespace
 
 PasswordStoreProxyBackend::PasswordStoreProxyBackend(
@@ -165,8 +174,15 @@ void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsReply callback) {
       base::BindOnce(&GetAllLoginsAsyncMetricsRecorder::RecordMainResult,
                      handler)
           .Then(std::move(callback)));
-  shadow_backend_->GetAllLoginsAsync(base::BindOnce(
-      &GetAllLoginsAsyncMetricsRecorder::RecordShadowResult, handler));
+
+  auto sync_status_callback = base::BindOnce(
+      &PasswordStoreBackend::GetAllLoginsAsync,
+      base::Unretained(shadow_backend_),
+      base::BindOnce(&GetAllLoginsAsyncMetricsRecorder::RecordShadowResult,
+                     handler));
+
+  GetSyncStatus(base::BindOnce(&InvokeCallbackIfShadowingAllowed,
+                               std::move(sync_status_callback)));
 }
 
 void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
@@ -245,6 +261,11 @@ FieldInfoStore* PasswordStoreProxyBackend::GetFieldInfoStore() {
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreProxyBackend::CreateSyncControllerDelegate() {
   return main_backend_->CreateSyncControllerDelegate();
+}
+
+void PasswordStoreProxyBackend::GetSyncStatus(
+    base::OnceCallback<void(bool)> callback) {
+  return main_backend_->GetSyncStatus(std::move(callback));
 }
 
 }  // namespace password_manager
