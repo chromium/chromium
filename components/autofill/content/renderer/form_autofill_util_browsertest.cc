@@ -1130,6 +1130,28 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
   }
 }
 
+// Tests `GetTopmostAncestorFormElement(element)`.
+TEST_F(FormAutofillUtilsTest, GetTopmostAncestorFormElement) {
+  LoadHTML(R"(
+      <body>
+        <iframe id=unowned></iframe>
+        <form id=topmost_form>
+          <iframe id=owned></iframe>
+          <form id=inner_form>
+            <iframe id=nested></iframe>
+          </form>
+        </form>
+      </body>)");
+
+  WebDocument doc = GetMainFrame()->GetDocument();
+  EXPECT_EQ(GetTopmostAncestorFormElement(GetElementById(doc, "unowned")),
+            WebFormElement());
+  EXPECT_EQ(GetTopmostAncestorFormElement(GetElementById(doc, "owned")),
+            GetFormElementById(doc, "topmost_form"));
+  EXPECT_EQ(GetTopmostAncestorFormElement(GetElementById(doc, "nested")),
+            GetFormElementById(doc, "topmost_form"));
+}
+
 // Tests that `IsDomPredecessor(lhs, rhs, common_ancestor)` holds iff a DOM
 // traversal visits the DOM element with ID |lhs| before the one with ID |rhs|,
 // where |common_ancestor| is the ID of an ancestor DOM node.

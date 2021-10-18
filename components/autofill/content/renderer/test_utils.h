@@ -11,12 +11,19 @@
 namespace blink {
 class WebFormControlElement;
 class WebDocument;
+class WebElement;
 class WebFormElement;
 }  // namespace blink
 
 namespace autofill {
 
 using AllowNull = base::StrongAlias<struct AllowNullTag, bool>;
+
+// Returns the element by its id attribute. May return an empty
+// WebFormControlElement if |allow_null| is set.
+blink::WebElement GetElementById(const blink::WebDocument& doc,
+                                 base::StringPiece id,
+                                 AllowNull allow_null = AllowNull(false));
 
 // Returns the form control element by its id attribute. May return an empty
 // WebFormControlElement if |allow_null| is set.
