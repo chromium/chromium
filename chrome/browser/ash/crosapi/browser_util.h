@@ -275,8 +275,7 @@ base::Version GetRootfsLacrosVersionMayBlock(
 // switch.
 void CacheLacrosLaunchSwitch(const policy::PolicyMap& map);
 
-// Returns the ComponentInfo associated with the currently active Lacros based
-// on the lacros stability switch selection.
+// Returns the ComponentInfo associated with the stateful lacros instance.
 ComponentInfo GetLacrosComponentInfo();
 
 // Returns the update channel associated with the given loaded lacros selection.

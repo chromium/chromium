@@ -379,18 +379,31 @@ bool IsDataWipeRequiredInternal(base::Version data_version,
   return true;
 }
 
-Channel GetChannelFromString(const std::string channel_str) {
-  if (channel_str == browser_util::kLacrosStabilityChannelCanary)
-    return Channel::CANARY;
-  if (channel_str == browser_util::kLacrosStabilityChannelDev)
-    return Channel::DEV;
-  if (channel_str == browser_util::kLacrosStabilityChannelBeta)
-    return Channel::BETA;
-  if (channel_str == browser_util::kLacrosStabilityChannelStable)
-    return Channel::STABLE;
+// Returns the string value for the kLacrosStabilitySwitch if present.
+absl::optional<std::string> GetLacrosStabilitySwitchValue() {
+  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  return cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)
+             ? absl::optional<std::string>(cmdline->GetSwitchValueASCII(
+                   browser_util::kLacrosStabilitySwitch))
+             : absl::nullopt;
+}
 
-  NOTREACHED();
-  return Channel::UNKNOWN;
+// Resolves the Lacros stateful channel in the following order:
+//   1. From the kLacrosStabilitySwitch command line flag if present.
+//   2. From the current ash channel.
+Channel GetStatefulLacrosChannel() {
+  static const auto kStabilitySwitchToChannelMap =
+      base::MakeFixedFlatMap<base::StringPiece, Channel>({
+          {browser_util::kLacrosStabilityChannelCanary, Channel::CANARY},
+          {browser_util::kLacrosStabilityChannelDev, Channel::DEV},
+          {browser_util::kLacrosStabilityChannelBeta, Channel::BETA},
+          {browser_util::kLacrosStabilityChannelStable, Channel::STABLE},
+      });
+  auto stability_switch_value = GetLacrosStabilitySwitchValue();
+  return stability_switch_value && base::Contains(kStabilitySwitchToChannelMap,
+                                                  *stability_switch_value)
+             ? kStabilitySwitchToChannelMap.at(*stability_switch_value)
+             : chrome::GetChannel();
 }
 
 static_assert(
@@ -411,14 +424,6 @@ const ComponentInfo kLacrosDogfoodBetaInfo = {
     "lacros-dogfood-beta", "hnfmbeciphpghlfgpjfbcdifbknombnk"};
 const ComponentInfo kLacrosDogfoodStableInfo = {
     "lacros-dogfood-stable", "ehpjbaiafkpkmhjocnenjbbhmecnfcjb"};
-
-const auto lacros_stability_channel_to_component_info =
-    base::MakeFixedFlatMap<std::string, const ComponentInfo*>({
-        {kLacrosStabilityChannelCanary, &kLacrosDogfoodCanaryInfo},
-        {kLacrosStabilityChannelDev, &kLacrosDogfoodDevInfo},
-        {kLacrosStabilityChannelBeta, &kLacrosDogfoodBetaInfo},
-        {kLacrosStabilityChannelStable, &kLacrosDogfoodStableInfo},
-    });
 
 // When this feature is enabled, Lacros will be available on stable channel.
 const base::Feature kLacrosAllowOnStableChannel{
@@ -995,26 +1000,17 @@ void CacheLacrosLaunchSwitch(const policy::PolicyMap& map) {
   g_lacros_launch_switch_cache = result;
 }
 
-Channel GetStatefulLacrosChannel() {
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)) {
-    std::string value =
-        cmdline->GetSwitchValueASCII(browser_util::kLacrosStabilitySwitch);
-    return GetChannelFromString(value);
-  }
-
-  return Channel::UNKNOWN;
-}
-
 ComponentInfo GetLacrosComponentInfo() {
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)) {
-    std::string value =
-        cmdline->GetSwitchValueASCII(browser_util::kLacrosStabilitySwitch);
-    return *lacros_stability_channel_to_component_info.at(value);
-  }
-  // Use once a week / Dev style updates by default.
-  return kLacrosDogfoodDevInfo;
+  // We default to the Dev component for UNKNOWN channels.
+  static const auto kChannelToComponentInfoMap =
+      base::MakeFixedFlatMap<Channel, const ComponentInfo*>({
+          {Channel::UNKNOWN, &kLacrosDogfoodDevInfo},
+          {Channel::CANARY, &kLacrosDogfoodCanaryInfo},
+          {Channel::DEV, &kLacrosDogfoodDevInfo},
+          {Channel::BETA, &kLacrosDogfoodBetaInfo},
+          {Channel::STABLE, &kLacrosDogfoodStableInfo},
+      });
+  return *kChannelToComponentInfoMap.at(GetStatefulLacrosChannel());
 }
 
 Channel GetLacrosSelectionUpdateChannel(LacrosSelection selection) {
