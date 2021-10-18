@@ -914,7 +914,9 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
 
 void CreditCardAccessManager::FetchVirtualCard() {
   is_authentication_in_progress_ = true;
-  // TODO(crbug.com/1243475): Show pending dialog when the request is ongoing.
+  client_->ShowAutofillProgressDialog(
+      base::BindOnce(&CreditCardAccessManager::OnVirtualCardUnmaskCancelled,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   // Send a risk-based unmasking request to server to attempt to fetch the card.
   absl::optional<GURL> last_committed_url_origin =
@@ -953,9 +955,12 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
     AutofillClient::PaymentsRpcResult result,
     payments::PaymentsClient::UnmaskResponseDetails& response_details) {
   virtual_card_unmask_response_details_ = response_details;
-  // TODO(crbug.com/1243475): Dismiss the pending dialog.
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     if (!response_details.real_pan.empty()) {
+      // Show confirmation on the progress dialog and then dismiss it.
+      client_->CloseAutofillProgressDialog(
+          /*show_confirmation_before_closing=*/true);
+
       // If the real pan is not empty, then complete card information has been
       // fetched from the server (this is ensured in Payments Client). Pass the
       // unmasked card to |accessor_| and end the session.
@@ -976,6 +981,9 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
 
     // Otherwise further authentication is required to unmask the card.
     DCHECK(!response_details.context_token.empty());
+    // Close the progress dialog without showing the confirmation.
+    client_->CloseAutofillProgressDialog(
+        /*show_confirmation_before_closing=*/false);
     GetAuthenticationType(
         IsFidoAuthEnabled(response_details.fido_request_options.has_value()));
     return;
@@ -985,6 +993,9 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
   // dialog. If RPC result is kVcnRetrievalPermanentFailure we show VCN
   // permanent error dialog, and for all other cases we show VCN temporary
   // error dialog.
+  // Close the progress dialog without showing the confirmation.
+  client_->CloseAutofillProgressDialog(
+      /*show_confirmation_before_closing=*/false);
   accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
   client_->ShowVirtualCardErrorDialog(
       result ==
@@ -1024,7 +1035,13 @@ void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
   OnDidGetAuthenticationType(selected_authentication_type);
 }
 
+void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
+  // TODO(crbug.com/1243475): Add metrics for user cancellation.
+  Reset();
+}
+
 void CreditCardAccessManager::Reset() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
   is_authentication_in_progress_ = false;
   preflight_call_timestamp_ = absl::nullopt;

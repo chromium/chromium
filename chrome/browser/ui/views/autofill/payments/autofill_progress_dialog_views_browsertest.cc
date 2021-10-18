@@ -28,7 +28,9 @@ class AutofillProgressDialogViewsBrowserTest : public DialogBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
-  void ShowUi(const std::string& name) override { controller()->ShowDialog(); }
+  void ShowUi(const std::string& name) override {
+    controller()->ShowDialog(base::DoNothing());
+  }
 
   AutofillProgressDialogViews* GetDialogViews() {
     DCHECK(controller());

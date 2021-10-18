@@ -27,8 +27,7 @@ class AutofillProgressDialogViews : public AutofillProgressDialogView,
   ~AutofillProgressDialogViews() override;
 
   // AutofillProgressDialogView:
-  void Dismiss() override;
-  void ShowConfirmation() override;
+  void Dismiss(bool show_confirmation_before_closing) override;
 
   // DialogDelegate:
   void AddedToWidget() override;
@@ -36,6 +35,9 @@ class AutofillProgressDialogViews : public AutofillProgressDialogView,
   std::u16string GetWindowTitle() const override;
 
  private:
+  // Close the widget of this view, and notify controller.
+  void CloseWidget();
+
   AutofillProgressDialogController* controller_ = nullptr;
   views::Label* label_ = nullptr;
   views::Throbber* progress_throbber_ = nullptr;

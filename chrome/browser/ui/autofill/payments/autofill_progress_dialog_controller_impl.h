@@ -29,8 +29,8 @@ class AutofillProgressDialogControllerImpl
 
   ~AutofillProgressDialogControllerImpl() override;
 
-  void ShowDialog();
-  void ShowConfirmation();
+  void ShowDialog(base::OnceClosure cancel_callback);
+  void DismissDialog(bool show_confirmation_before_closing);
 
   // AutofillProgressDialogController.
   void OnDismissed() override;
@@ -46,12 +46,13 @@ class AutofillProgressDialogControllerImpl
   }
 
  private:
-  // Dismiss the progress bar dialog if showing.
-  void Dismiss();
-
   content::WebContents* web_contents_;
+
   // View that displays the error dialog.
   AutofillProgressDialogView* autofill_progress_dialog_view_ = nullptr;
+
+  // Callback function invoked when the cancel button is clicked.
+  base::OnceClosure cancel_callback_;
 };
 
 }  // namespace autofill

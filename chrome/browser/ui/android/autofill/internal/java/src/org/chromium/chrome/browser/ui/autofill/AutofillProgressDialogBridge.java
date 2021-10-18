@@ -111,6 +111,8 @@ public class AutofillProgressDialogBridge {
                     .setVisibility(View.VISIBLE);
             ((TextView) mProgressDialogContentView.findViewById(R.id.message))
                     .setText(confirmationMessage);
+            // TODO(crbug.com/1243475): Dismiss the Java View after some delay if confirmation has
+            // been shown.
         }
         Runnable dismissRunnable = () -> dismiss();
         new Handler().postDelayed(dismissRunnable, SUCCESS_VIEW_DURATION_MILLIS);

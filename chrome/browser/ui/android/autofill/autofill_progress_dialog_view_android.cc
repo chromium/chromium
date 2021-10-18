@@ -39,7 +39,13 @@ AutofillProgressDialogView* AutofillProgressDialogView::CreateAndShow(
   return dialog_view;
 }
 
-void AutofillProgressDialogViewAndroid::Dismiss() {
+void AutofillProgressDialogViewAndroid::Dismiss(
+    bool show_confirmation_before_closing) {
+  if (show_confirmation_before_closing) {
+    ShowConfirmation();
+    return;
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!java_object_.is_null()) {
     Java_AutofillProgressDialogBridge_dismiss(env, java_object_);
