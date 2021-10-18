@@ -25,6 +25,12 @@
 promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
     const scroller = animation.timeline.scrollSource;
+
+    // Ensure we have a valid animation frame time before continuing the test.
+    // This is so that we can properly determine frame advancement after the
+    // style change.
+    await waitForNextFrame();
+
     // Make the scroll timeline inactive.
     scroller.style.overflow = 'visible';
     // Wait for new animation frame which allows the timeline to compute new
@@ -48,6 +54,9 @@ promise_test(async t => {
 promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
     const scroller = animation.timeline.scrollSource;
+
+    await waitForNextFrame();
+
     // Make the scroll timeline inactive.
     scroller.style.overflow = 'visible';
     // Wait for new animation frame which allows the timeline to compute new
@@ -73,6 +82,9 @@ promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
     const scroller = animation.timeline.scrollSource;
     const target = animation.effect.target;
+
+    await waitForNextFrame();
+
     // Make the scroll timeline inactive.
     scroller.style.overflow = 'visible';
     scroller.scrollTop;
@@ -109,6 +121,9 @@ promise_test(async t => {
     const scroller = animation.timeline.scrollSource;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     const target = animation.effect.target;
+
+    await waitForNextFrame();
+
     // Advance the scroller.
     scroller.scrollTop = 0.2 * maxScroll;
 
