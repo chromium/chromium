@@ -2774,6 +2774,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySvgWithNonLinkAnchors) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-with-non-link-anchors.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilitySvgSymbolWithRole) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-symbol-with-role.html"));
 }

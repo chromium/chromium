@@ -112,6 +112,7 @@
 #include "third_party/blink/renderer/core/svg/svg_desc_element.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_symbol_element.h"
+#include "third_party/blink/renderer/core/svg/svg_text_element.h"
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
@@ -909,6 +910,17 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     // click event listener.
     if (GetNode()->IsLink() || IsClickable())
       return ax::mojom::blink::Role::kLink;
+
+    // According to the SVG-AAM, a non-link 'a' element should be exposed like
+    // a 'g' if it does not descend from a 'text' element and like a 'tspan'
+    // if it does. This is consistent with the SVG spec which states that an
+    // 'a' within 'text' acts as an inline element, whereas it otherwise acts
+    // as a container element.
+    if (IsA<SVGAElement>(GetNode()) &&
+        !Traversal<SVGTextElement>::FirstAncestor(*GetNode())) {
+      return ax::mojom::blink::Role::kGroup;
+    }
+
     return ax::mojom::blink::Role::kGenericContainer;
   }
 
