@@ -27,10 +27,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -407,6 +409,73 @@ void ExpectUpdateSequence(UpdaterScope scope,
                               from_version.GetString().c_str())),
        request_matcher_scope},
       ")]}'\n");
+}
+
+// Runs multiple cycles of instantiating the update service, calling
+// `GetVersion()`, then releasing the service interface.
+// TODO(crbug.com/1260471) - enable the scope after removing the implicit
+// dependency of `CreateUpdateService()` on the command line.
+void StressUpdateService(UpdaterScope /*scope*/) {
+  base::RunLoop loop;
+
+  // Number of times to run the cycle of instantiating the service.
+  int n = 10;
+
+  // Delay in milliseconds between successive cycles.
+  const int kDelayBetweenLoopsMS = 50;
+
+  // Runs on the main sequence.
+  auto loop_closure = [&]() {
+    if (--n)
+      return false;
+    loop.Quit();
+    return true;
+  };
+
+  // Creates a task runner, and runs the service instance on it.
+  using LoopClosure = decltype(loop_closure);
+  auto stress_runner = [loop_closure]() {
+    // `task_runner` is always bound on the main sequence.
+    struct Local {
+      static void GetVersion(
+          scoped_refptr<base::SequencedTaskRunner> task_runner,
+          LoopClosure loop_closure) {
+        auto service_task_runner =
+            base::ThreadPool::CreateSingleThreadTaskRunner(
+                {}, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+        service_task_runner->PostDelayedTask(
+            FROM_HERE,
+            base::BindLambdaForTesting([task_runner, loop_closure]() {
+              auto update_service = CreateUpdateService();
+              update_service->GetVersion(
+                  base::BindOnce(GetVersionCallback, update_service,
+                                 task_runner, loop_closure));
+            }),
+            base::Milliseconds(kDelayBetweenLoopsMS));
+      }
+
+      static void GetVersionCallback(
+          scoped_refptr<UpdateService> /*update_service*/,
+          scoped_refptr<base::SequencedTaskRunner> task_runner,
+          LoopClosure loop_closure,
+          const base::Version& version) {
+        EXPECT_EQ(version, base::Version(kUpdaterVersion));
+        task_runner->PostTask(
+            FROM_HERE,
+            base::BindLambdaForTesting([task_runner, loop_closure]() {
+              if (loop_closure()) {
+                return;
+              }
+              GetVersion(task_runner, loop_closure);
+            }));
+      }
+    };
+
+    Local::GetVersion(base::SequencedTaskRunnerHandle::Get(), loop_closure);
+  };
+
+  stress_runner();
+  loop.Run();
 }
 
 }  // namespace test

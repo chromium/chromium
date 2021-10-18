@@ -14,6 +14,7 @@
 class GURL;
 
 namespace base {
+class FilePath;
 class Version;
 }
 
@@ -66,6 +67,7 @@ class IntegrationTestCommands
   virtual void SetUpTestService() const = 0;
   virtual void TearDownTestService() const = 0;
 #endif  // OS_WIN
+  virtual void StressUpdateService() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<IntegrationTestCommands>;

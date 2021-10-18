@@ -150,7 +150,6 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void SetUpTestService() const override {}
 
   void TearDownTestService() const override {}
-
 #endif  // OS_WIN
 
   base::FilePath GetDifferentUserPath() const override {
@@ -161,6 +160,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     NOTREACHED() << __func__ << ": not implemented.";
     return base::FilePath();
 #endif
+  }
+
+  void StressUpdateService() const override {
+    updater::test::StressUpdateService(kUpdaterScope);
   }
 
  private:

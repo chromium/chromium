@@ -218,6 +218,8 @@ class IntegrationTest : public ::testing::Test {
                                          to_version);
   }
 
+  void StressUpdateService() { test_commands_->StressUpdateService(); }
+
   scoped_refptr<IntegrationTestCommands> test_commands_;
 
  private:
@@ -486,6 +488,13 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
   Uninstall();
 }
 #endif  // defined(OS_MAC)
+
+TEST_F(IntegrationTest, UpdateServiceStress) {
+  Install();
+  ExpectInstalled();
+  StressUpdateService();
+  Uninstall();
+}
 
 #endif  // defined(OS_WIN) || !defined(COMPONENT_BUILD)
 

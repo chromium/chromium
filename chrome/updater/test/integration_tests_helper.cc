@@ -219,6 +219,7 @@ void AppTestHelper::FirstTaskRun() {
          WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
         {"set_first_registration_counter",
          WithSwitch("value", WithSystemScope(Wrap(&SetServerStarts)))},
+        {"stress_update_service", WithSystemScope(Wrap(&StressUpdateService))},
         {"uninstall", WithSystemScope(Wrap(&Uninstall))},
       };
 

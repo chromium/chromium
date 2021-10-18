@@ -171,6 +171,8 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           const base::Version& from_version,
                           const base::Version& to_version);
 
+void StressUpdateService(UpdaterScope scope);
+
 }  // namespace test
 }  // namespace updater
 
