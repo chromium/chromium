@@ -2385,13 +2385,15 @@ TEST_P(AnimationCompositorAnimationsTest, Fragmented) {
   Element* target = GetDocument().getElementById("target");
   const Animation& animation =
       *target->GetElementAnimations()->Animations().begin()->key;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
+      RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
     EXPECT_TRUE(target->GetLayoutObject()->FirstFragment().NextFragment());
     EXPECT_EQ(CompositorAnimations::kTargetHasInvalidCompositingState,
               animation.CheckCanStartAnimationOnCompositor(
                   GetDocument().View()->GetPaintArtifactCompositor()));
   } else {
-    // In pre-CAP we don't fragment composited layers.
+    // In pre-CAP + legacy block fragmentation we don't fragment composited
+    // layers.
     EXPECT_FALSE(target->GetLayoutObject()->FirstFragment().NextFragment());
     EXPECT_EQ(CompositorAnimations::kNoFailure,
               animation.CheckCanStartAnimationOnCompositor(
