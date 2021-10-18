@@ -2184,6 +2184,20 @@ Output = class {
       ret.push({text: node.placeholder});
     }
 
+    // Invalid text.
+    /** @type {AutomationNode|undefined} */
+    const invalidAncestor = uniqueAncestors.find(
+        /** @type {function(?) : boolean} */ (AutomationPredicate.ariaInvalid));
+
+    if (invalidAncestor) {
+      if (invalidAncestor.ariaInvalidValue === 'grammar') {
+        ret.push({msgId: 'hint_invalid_grammar'});
+      }
+      if (invalidAncestor.ariaInvalidValue === 'spelling') {
+        ret.push({msgId: 'hint_invalid_spelling'});
+      }
+    }
+
     // Only include tooltip as a hint as a last alternative. It may have been
     // included as the name or description previously. As a rule of thumb,
     // only include it if there's no name and no description.

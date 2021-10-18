@@ -2069,6 +2069,94 @@ TEST_F('ChromeVoxBackgroundTest', 'SimilarItemNavigation', function() {
   });
 });
 
+TEST_F('ChromeVoxBackgroundTest', 'InvalidItemNavigation', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <h3><a href="#a">inner</a></h3>
+    <p aria-invalid="spelling">some txet</p>
+    <button>button A</button>
+    <p>no error text 1</P>
+    <p aria-invalid=false>no error text 2</P>
+    <p aria-invalid="grammar">this are a text</p>
+    <p aria-invalid="unknown">error is this</p>
+    <a href="#b">outer1</a>
+    <h3>outer2</h3>
+  `;
+
+  this.runWithLoadedTree(site, function(root) {
+    assertEquals(
+        RoleType.LINK, ChromeVoxState.instance.currentRange.start.node.role);
+    assertEquals('inner', ChromeVoxState.instance.currentRange.start.node.name);
+    mockFeedback.call(doCmd('nextInvalidItem'))
+        .expectSpeech('some txet', 'misspelled')
+        .call(doCmd('nextInvalidItem'))
+        .expectSpeech('this are a text', 'grammatical mistake')
+        .call(doCmd('nextInvalidItem'))
+        .expectSpeech('error is this')
+        // Ensure wrap.
+        .call(doCmd('nextInvalidItem'))
+        .expectSpeech('some txet')
+        // Wrap backward.
+        .call(doCmd('previousInvalidItem'))
+        .expectSpeech('error is this')
+        .call(doCmd('previousInvalidItem'))
+        .expectSpeech('this are a text', 'grammatical mistake');
+
+    mockFeedback.replay();
+  });
+});
+
+// TODO(https://crbug.com/1259555): aria-invalid = true is not correctly
+// processed. Update this test after it's fixed.
+TEST_F(
+    'ChromeVoxBackgroundTest', 'InvalidItemNavigationAriaInvalidTrue',
+    function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
+    <h3><a href="#a">inner</a></h3>
+    <p aria-invalid="true">some txet</p>
+    <button>button A</button>
+    <p>no error text 1</P>
+    <p aria-invalid=false>no error text 2</P>
+    <a href="#b">outer1</a>
+    <h3>outer2</h3>
+  `;
+
+      this.runWithLoadedTree(site, function(root) {
+        assertEquals(
+            RoleType.LINK,
+            ChromeVoxState.instance.currentRange.start.node.role);
+        assertEquals(
+            'inner', ChromeVoxState.instance.currentRange.start.node.name);
+        mockFeedback.call(doCmd('nextInvalidItem'))
+            .expectSpeech('No invalid item');
+
+        mockFeedback.replay();
+      });
+    });
+
+TEST_F('ChromeVoxBackgroundTest', 'InvalidItemNavigationNoItem', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <h3><a href="#a">inner</a></h3>
+    <p>some text</p>
+    <button>some other text</button>
+    <a href="#b">outer1</a>
+    <h3>outer2</h3>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    assertEquals(
+        RoleType.LINK, ChromeVoxState.instance.currentRange.start.node.role);
+    assertEquals('inner', ChromeVoxState.instance.currentRange.start.node.name);
+    mockFeedback.call(doCmd('nextInvalidItem'))
+        .expectSpeech('No invalid item')
+        .call(doCmd('previousInvalidItem'))
+        .expectSpeech('No invalid item');
+
+    mockFeedback.replay();
+  });
+});
+
 TEST_F('ChromeVoxBackgroundTest', 'TableWithAriaRowCol', function() {
   const mockFeedback = this.createMockFeedback();
   const site = `

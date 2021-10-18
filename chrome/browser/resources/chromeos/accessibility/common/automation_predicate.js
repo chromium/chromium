@@ -205,6 +205,17 @@ AutomationPredicate = class {
   }
 
   /**
+   * Returns true if this node is marked as aria-invalid.
+   * @param {!AutomationNode} node
+   * @return {boolean}
+   */
+  static ariaInvalid(node) {
+    return node.ariaInvalidValue !== undefined &&
+        node.ariaInvalidValue !== 'false';
+  }
+
+
+  /**
    * @param {!AutomationNode} node
    * @return {boolean}
    */

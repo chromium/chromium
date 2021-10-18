@@ -634,6 +634,17 @@ CommandHandler.onCommand = function(command) {
       const useNode = node || originalNode;
       pred = AutomationPredicate.roles([node.role]);
     } break;
+    case 'previousInvalidItem': {
+      dir = Dir.BACKWARD;
+      rootPred = AutomationPredicate.root;
+      pred = AutomationPredicate.ariaInvalid;
+      predErrorMsg = 'no_invalid_item';
+    } break;
+    case 'nextInvalidItem': {
+      pred = AutomationPredicate.ariaInvalid;
+      rootPred = AutomationPredicate.root;
+      predErrorMsg = 'no_invalid_item';
+    } break;
     case 'nextList':
       pred = AutomationPredicate.makeListPredicate(current.start.node);
       predErrorMsg = 'no_next_list';
@@ -1280,7 +1291,6 @@ CommandHandler.onCommand = function(command) {
     if (current.wrapped) {
       ChromeVox.earcons.playEarcon(Earcon.WRAP);
     }
-
 
     ChromeVoxState.instance.navigateToRange(
         current, undefined, speechProps, shouldSetSelection);
