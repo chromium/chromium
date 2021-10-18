@@ -15,7 +15,6 @@ import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 // <if expr="not chromeos">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
-
 // </if>
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -25,17 +24,13 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
+
+import {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
 import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
-
-// TODO(crbug.com/1234307): Remove when signout_dialog.js is migrated to
-// TypeScript.
-interface SettingsSignoutDialogElement extends HTMLElement {
-  wasConfirmed(): boolean;
-}
 
 export interface SettingsPersonalizationOptionsElement {
   $: {

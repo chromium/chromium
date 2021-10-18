@@ -23,7 +23,6 @@ export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
   constructor(entry: chrome.passwordsPrivate.PasswordUiEntry) {
     super();
 
-    /** @type {!MultiStorePasswordUiEntry.Contents} */
     this.contents_ = MultiStorePasswordUiEntry.getContents_(entry);
 
     this.setId(entry.id, entry.fromAccountStore);

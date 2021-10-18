@@ -38,7 +38,6 @@ export interface SettingsResetProfileDialogElement {
 
 const SettingsResetProfileDialogElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class SettingsResetProfileDialogElement extends
     SettingsResetProfileDialogElementBase {
   static get is() {

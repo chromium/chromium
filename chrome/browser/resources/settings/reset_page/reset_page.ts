@@ -40,7 +40,6 @@ const SettingsResetPageElementBase =
     RouteObserverMixin(BaseMixin(PolymerElement)) as
     {new (): PolymerElement & RouteObserverMixinInterface};
 
-/** @polymer */
 class SettingsResetPageElement extends SettingsResetPageElementBase {
   static get is() {
     return 'settings-reset-page';
@@ -56,7 +55,6 @@ class SettingsResetPageElement extends SettingsResetPageElementBase {
       prefs: Object,
 
       // <if expr="_google_chrome and is_win">
-      /** @private */
       showIncompatibleApplications_: {
         type: Boolean,
         value() {
@@ -67,9 +65,12 @@ class SettingsResetPageElement extends SettingsResetPageElementBase {
     };
   }
 
+  // <if expr="_google_chrome and is_win">
+  private showIncompatibleApplications_: boolean;
+  // </if>
+
   /**
    * RouteObserverMixin
-   * @override
    */
   currentRouteChanged(route: Route) {
     const lazyRender = this.$.resetProfileDialog;

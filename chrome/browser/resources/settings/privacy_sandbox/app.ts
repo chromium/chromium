@@ -18,7 +18,6 @@ import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyIm
 
 const PrivacySandboxAppElementBase = PrefsMixin(PolymerElement);
 
-/** @polymer */
 export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   static get is() {
     return 'privacy-sandbox-app';
@@ -44,7 +43,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
 
-  /** @override */
   ready() {
     super.ready();
 

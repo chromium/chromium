@@ -43,7 +43,7 @@ export function prefToString(pref: chrome.settingsPrivate.PrefObject): string {
       return pref.value.toString();
     case chrome.settingsPrivate.PrefType.STRING:
     case chrome.settingsPrivate.PrefType.URL:
-      return /** @type {string} */ (pref.value);
+      return pref.value;
     default:
       assertNotReached('No conversion from ' + pref.type + ' pref to string');
       return '';

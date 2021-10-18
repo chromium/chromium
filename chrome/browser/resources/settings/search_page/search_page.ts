@@ -30,7 +30,6 @@ import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, 
 
 const SettingsSearchPageElementBase = BaseMixin(I18nMixin(PolymerElement));
 
-/** @polymer */
 export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   static get is() {
     return 'settings-search-page';
@@ -80,7 +79,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
-  /** @override */
   ready() {
     super.ready();
 

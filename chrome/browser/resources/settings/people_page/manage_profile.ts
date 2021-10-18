@@ -34,7 +34,6 @@ const SettingsManageProfileElementBase =
       RouteObserverMixinInterface
     };
 
-/** @polymer */
 class SettingsManageProfileElement extends SettingsManageProfileElementBase {
   static get is() {
     return 'settings-manage-profile';
@@ -50,7 +49,6 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
        * The newly selected avatar. Populated only if the user manually changes
        * the avatar selection. The observer ensures that the changes are
        * propagated to the C++.
-       * @private
        */
       profileAvatar_: {
         type: Object,
@@ -69,7 +67,6 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
 
       /**
        * The available icons for selection.
-       * @type {!Array<!AvatarIcon>}
        */
       availableIcons: {
         type: Array,
@@ -80,7 +77,6 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
 
       /**
        * The current sync status.
-       * @type {?SyncStatus}
        */
       syncStatus: Object,
 
@@ -94,7 +90,6 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
        * of the code is deleted. Because of "\" being a special character in a
        * JS string, can't satisfy both Polymer2 and Polymer3 at the same time
        * from the HTML file.
-       * @private
        */
       pattern_: {
         type: String,
@@ -113,7 +108,6 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
   private browserProxy_: ManageProfileBrowserProxy =
       ManageProfileBrowserProxyImpl.getInstance();
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -125,7 +119,6 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
     this.browserProxy_.getAvailableIcons().then(setIcons);
   }
 
-  /** @protected */
   currentRouteChanged() {
     if (Router.getInstance().getCurrentRoute() === routes.MANAGE_PROFILE) {
       if (this.profileName) {

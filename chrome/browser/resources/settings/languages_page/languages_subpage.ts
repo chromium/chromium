@@ -438,7 +438,7 @@ export class SettingsLanguagesSubpageElement extends
   // </if>
 
   /**
-   * @param {string} targetLanguageCode The default translate target language.
+   * @param targetLanguageCode The default translate target language.
    * @return True if the translate checkbox should be disabled.
    */
   private disableTranslateCheckbox_(

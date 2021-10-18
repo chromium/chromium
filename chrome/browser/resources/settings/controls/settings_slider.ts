@@ -150,7 +150,7 @@ class SettingsSliderElement extends SettingsSliderElementBase {
     this.set('pref.value', newValue);
   }
 
-  private computeDisableSlider_() {
+  private computeDisableSlider_(): boolean {
     return this.disabled || this.isPrefEnforced();
   }
 

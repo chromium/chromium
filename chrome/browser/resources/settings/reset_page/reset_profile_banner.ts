@@ -24,7 +24,6 @@ interface SettingsResetProfileBannerElement {
   };
 }
 
-/** @polymer */
 class SettingsResetProfileBannerElement extends PolymerElement {
   static get is() {
     return 'settings-reset-profile-banner';

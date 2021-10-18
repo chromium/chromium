@@ -37,7 +37,6 @@ interface SettingsAnimatedPagesElement {
 const SettingsAnimatedPagesElementBase = RouteObserverMixin(PolymerElement) as
     {new (): PolymerElement & RouteObserverMixinInterface};
 
-/** @polymer */
 class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
   static get is() {
     return 'settings-animated-pages';
@@ -111,9 +110,8 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
     //     focused (further below in this function).
     if (this.previousRoute_ &&
         !Router.getInstance().lastRouteChangeWasPopstate()) {
-      const subpage = /** @type {{focusBackButton: Function}} */ (
-          this.querySelector<SettingsSubpageElement>(
-              'settings-subpage.iron-selected'));
+      const subpage = this.querySelector<SettingsSubpageElement>(
+          'settings-subpage.iron-selected');
       if (subpage) {
         subpage.focusBackButton();
         return;

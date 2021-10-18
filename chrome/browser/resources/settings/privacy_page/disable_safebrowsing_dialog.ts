@@ -33,7 +33,7 @@ export class SettingsDisableSafebrowsingDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  /** @return {boolean} Whether the user confirmed the dialog. */
+  /** @return Whether the user confirmed the dialog. */
   wasConfirmed(): boolean {
     return this.$.dialog.getNative().returnValue === 'success';
   }

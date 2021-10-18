@@ -165,5 +165,11 @@ class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'site-data-details-subpage': SiteDataDetailsSubpageElement;
+  }
+}
+
 customElements.define(
     SiteDataDetailsSubpageElement.is, SiteDataDetailsSubpageElement);

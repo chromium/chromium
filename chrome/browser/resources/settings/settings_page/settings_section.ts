@@ -20,7 +20,6 @@ import '//resources/cr_elements/shared_vars_css.m.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
 export class SettingsSectionElement extends PolymerElement {
   static get is() {
     return 'settings-section';

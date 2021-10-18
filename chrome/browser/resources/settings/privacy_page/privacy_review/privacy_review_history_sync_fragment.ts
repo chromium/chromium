@@ -21,7 +21,6 @@ import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs} from '../../people_pa
 const PrivacyReviewHistorySyncFragmentElementBase =
     WebUIListenerMixin(BaseMixin(PolymerElement));
 
-/** @polymer */
 export class PrivacyReviewHistorySyncFragmentElement extends
     PrivacyReviewHistorySyncFragmentElementBase {
   static get is() {

@@ -18,7 +18,6 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {ChooserException} from './site_settings_prefs_browser_proxy.js';
 
-/** @polymer */
 class ChooserExceptionListEntryElement extends PolymerElement {
   static get is() {
     return 'chooser-exception-list-entry';

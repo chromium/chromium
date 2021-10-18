@@ -66,7 +66,6 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
       },
 
       // <if expr="not chromeos">
-      /** @private */
       enableLiveCaption_: {
         type: Boolean,
         value: function() {
@@ -77,7 +76,6 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
       /**
        * Whether to show the focus highlight setting.
        * Depends on feature flag for focus highlight.
-       * @private {boolean}
        */
       showFocusHighlightOption_: {
         type: Boolean,
@@ -95,7 +93,6 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
         value: false,
       },
 
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -109,7 +106,6 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
 
       /**
        * Whether the caption settings link opens externally.
-       * @private {boolean}
        */
       captionSettingsOpensExternally_: {
         type: Boolean,
@@ -137,7 +133,6 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
   private showAccessibilityLabelsSetting_: boolean;
   private captionSettingsOpensExternally_: boolean;
 
-  /** @override */
   ready() {
     super.ready();
 
@@ -195,7 +190,6 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
         'https://chrome.google.com/webstore/category/collection/3p_accessibility_extensions');
   }
 
-  /** @private */
   private onCaptionsClick_() {
     if (this.captionSettingsOpensExternally_) {
       // <if expr="is_win or is_macosx">

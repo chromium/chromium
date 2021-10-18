@@ -287,7 +287,6 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
 
   /**
    * Handler for removing web app protocol handlers that were disallowed.
-   * @private
    */
   private onRemoveAppDisallowedHandlerButtonClick_(event: AppRepeaterEvent) {
     const item = event.model.item;

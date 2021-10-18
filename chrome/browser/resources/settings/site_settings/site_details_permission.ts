@@ -376,8 +376,6 @@ export class SiteDetailsPermissionElement extends
       return settingDetail;
     }
 
-    // TODO(crbug.com/1234307) Change "key: string" to "key: ContentSetting"
-    // when constants.js is migrated to TS (here and below).
     const extensionStrings: {[key: string]: string|null} = {};
     extensionStrings[ContentSetting.ALLOW] = extensionAllowString;
     extensionStrings[ContentSetting.BLOCK] = extensionBlockString;

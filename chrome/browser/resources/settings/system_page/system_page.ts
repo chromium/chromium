@@ -23,7 +23,6 @@ import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 import {SystemPageBrowserProxyImpl} from './system_page_browser_proxy.js';
 
 
-/** @polymer */
 class SettingsSystemPageElement extends PolymerElement {
   static get is() {
     return 'settings-system-page';

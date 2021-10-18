@@ -17,7 +17,6 @@ import {PrefControlMixin} from './pref_control_mixin.js';
 const ControlledButtonElementBase =
     CrPolicyPrefMixin(PrefControlMixin(PolymerElement));
 
-/** @polymer */
 class ControlledButtonElement extends ControlledButtonElementBase {
   static get is() {
     return 'controlled-button';

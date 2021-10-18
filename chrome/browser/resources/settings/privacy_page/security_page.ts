@@ -27,6 +27,7 @@ import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
+import {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
 import {SettingsDisableSafebrowsingDialogElement} from './disable_safebrowsing_dialog.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
@@ -39,13 +40,6 @@ export enum SafeBrowsingSetting {
   ENHANCED = 0,
   STANDARD = 1,
   DISABLED = 2,
-}
-
-// TODO(crbug.com/1234307): Remove when collapse_radio_button.js is migrated to
-// TypeScript.
-interface SettingsCollapseRadioButtonElement extends HTMLElement {
-  expanded: boolean;
-  updateCollapsed(): void;
 }
 
 type FocusConfig = Map<string, (string|(() => void))>;

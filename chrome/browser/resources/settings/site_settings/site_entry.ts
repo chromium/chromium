@@ -129,7 +129,6 @@ class SiteEntryElement extends SiteEntryElementBase {
        */
       sortMethod: {type: String, observer: 'updateOrigins_'},
 
-      /** @private */
       enableConsolidatedSiteStorageControls_: {
         type: Boolean,
         value: () =>
@@ -146,6 +145,7 @@ class SiteEntryElement extends SiteEntryElementBase {
   private originUsages_: Array<string>;
   private cookiesNum_: Array<string>;
   sortMethod?: SortMethod;
+  private enableConsolidatedSiteStorageControls_: boolean;
 
   private button_: Element|null = null;
   private localDataBrowserProxy_: LocalDataBrowserProxy =

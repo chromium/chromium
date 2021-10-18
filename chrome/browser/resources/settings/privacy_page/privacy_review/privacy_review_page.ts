@@ -56,7 +56,6 @@ const PrivacyReviewBase = RouteObserverMixin(WebUIListenerMixin(
   RouteObserverMixinInterface & PrefsMixinInterface
 };
 
-/** @polymer */
 export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   static get is() {
     return 'settings-privacy-review-page';
@@ -86,7 +85,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
       /**
        * The current step in the privacy review flow.
-       * @private {PrivacyReviewStep}
        */
       privacyReviewStep_: {
         type: String,

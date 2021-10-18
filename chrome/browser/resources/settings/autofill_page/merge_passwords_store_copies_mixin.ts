@@ -77,15 +77,14 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
         private mergePasswordsStoreDuplicates_(
             passwordList: Array<chrome.passwordsPrivate.PasswordUiEntry>):
             Array<MultiStorePasswordUiEntry> {
-          /** @type {!Array<!MultiStorePasswordUiEntry>} */
-          const multiStoreEntries = [];
-          /** @type {!Map<number, !MultiStorePasswordUiEntry>} */
-          const frontendIdToMergedEntry = new Map();
+          const multiStoreEntries: MultiStorePasswordUiEntry[] = [];
+          const frontendIdToMergedEntry =
+              new Map<number, MultiStorePasswordUiEntry>();
           for (const entry of passwordList) {
             if (frontendIdToMergedEntry.has(entry.frontendId)) {
               const mergeSucceded =
-                  frontendIdToMergedEntry.get(entry.frontendId)
-                      .mergeInPlace(entry);
+                  frontendIdToMergedEntry.get(entry.frontendId)!.mergeInPlace(
+                      entry);
               if (mergeSucceded) {
                 // The merge is in-place, so nothing to be done.
               } else {

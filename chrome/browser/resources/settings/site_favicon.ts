@@ -11,7 +11,6 @@ import {getFavicon, getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 
-/** @polymer */
 class SiteFaviconElement extends PolymerElement {
   static get is() {
     return 'site-favicon';
