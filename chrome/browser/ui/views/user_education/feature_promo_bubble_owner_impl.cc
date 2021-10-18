@@ -19,13 +19,47 @@ FeaturePromoBubbleOwnerImpl* FeaturePromoBubbleOwnerImpl::GetInstance() {
   return instance.get();
 }
 
-bool FeaturePromoBubbleOwnerImpl::ActivateBubbleForAccessibility() {
+bool FeaturePromoBubbleOwnerImpl::ToggleFocusForAccessibility() {
+  // If the bubble isn't present or can't be meaningfully focused, stop.
+  if (!bubble_ || !bubble_->GetInitiallyFocusedView())
+    return false;
+
+  auto* const anchor = bubble_->GetAnchorView();
+
+  // Focus can't be determined just by widget activity; we must check to see if
+  // there's a focused view in the anchor widget or the top-level browser
+  // widget (if different).
+  const bool is_focus_in_ancestor_widget =
+      (anchor && anchor->GetFocusManager()->GetFocusedView()) ||
+      bubble_->GetWidget()
+          ->GetPrimaryWindowWidget()
+          ->GetFocusManager()
+          ->GetFocusedView();
+
+  // If the focus isn't in the help bubble, focus the help bubble.
+  if (is_focus_in_ancestor_widget) {
+    bubble_->GetWidget()->Activate();
+    bubble_->RequestFocus();
+    return true;
+  }
+
+  // If the anchor isn't accessibility-focusable, we can't toggle focus.
+  if (!anchor || !anchor->IsAccessibilityFocusable())
+    return false;
+
+  // Focus the anchor. We can't request focus for an accessibility-only view
+  // until we turn on keyboard accessibility for its focus manager.
+  anchor->GetFocusManager()->SetKeyboardAccessible(true);
+  anchor->RequestFocus();
+  return true;
+}
+
+bool FeaturePromoBubbleOwnerImpl::IsPromoBubble(
+    const views::DialogDelegate* bubble) const {
   if (!bubble_)
     return false;
 
-  bubble_->GetWidget()->Activate();
-  bubble_->RequestFocus();
-  return true;
+  return bubble_ == bubble;
 }
 
 absl::optional<base::Token> FeaturePromoBubbleOwnerImpl::ShowBubble(

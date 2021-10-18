@@ -496,6 +496,12 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
 
   set_close_on_deactivate(!params.persist_on_blur);
 
+  // Want a consistent initial focused view if one is available.
+  if (close_button)
+    SetInitiallyFocusedView(close_button);
+  else if (button_container)
+    SetInitiallyFocusedView(button_container->children()[0]);
+
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());
   SetButtons(ui::DIALOG_BUTTON_NONE);
