@@ -6,11 +6,11 @@
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/button_style.h"
 #include "ash/system/time/calendar_month_view.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/unified/rounded_label_button.h"
 #include "base/check.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
@@ -287,9 +287,10 @@ void CalendarView::CreateExtraTitleRowButtons() {
 views::Button* CalendarView::CreateInfoButton(
     views::Button::PressedCallback callback,
     int info_accessible_name_id) {
-  auto* button = new RoundedLabelButton(
-      std::move(callback),
-      l10n_util::GetStringUTF16(IDS_ASH_CALENDA_INFO_BUTTON));
+  auto* button =
+      new PillButton(std::move(callback),
+                     l10n_util::GetStringUTF16(IDS_ASH_CALENDA_INFO_BUTTON),
+                     PillButton::Type::kIconless, /*icon=*/nullptr);
   button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION,
       base::TimeFormatWithPattern(base::Time::Now(), "MMMMdyyyy")));

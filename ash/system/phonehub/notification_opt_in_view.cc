@@ -10,7 +10,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/phonehub/interstitial_view_button.h"
+#include "ash/style/button_style.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "base/bind.h"
@@ -135,24 +135,19 @@ void NotificationOptInView::InitLayout() {
       kButtonSpacingDip));
   button_container->SetBorder(
       views::CreateEmptyBorder(kButtonContainerBorderInsets));
-  dismiss_button_ =
-      button_container->AddChildView(std::make_unique<InterstitialViewButton>(
-          base::BindRepeating(&NotificationOptInView::DismissButtonPressed,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DISMISS_BUTTON),
-          /*paint_background=*/false));
-  dismiss_button_->SetEnabledTextColors(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary));
+  dismiss_button_ = button_container->AddChildView(std::make_unique<PillButton>(
+      base::BindRepeating(&NotificationOptInView::DismissButtonPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DISMISS_BUTTON),
+      PillButton::Type::kIconlessFloating, /*icon=*/nullptr));
   dismiss_button_->SetID(kNotificationOptInDismissButton);
-  set_up_button_ =
-      button_container->AddChildView(std::make_unique<InterstitialViewButton>(
-          base::BindRepeating(&NotificationOptInView::SetUpButtonPressed,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON),
-          /*paint_background=*/true));
+  set_up_button_ = button_container->AddChildView(std::make_unique<PillButton>(
+      base::BindRepeating(&NotificationOptInView::SetUpButtonPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON),
+      PillButton::Type::kIconless, /*icon=*/nullptr));
   set_up_button_->SetID(kNotificationOptInSetUpButton);
 }
 

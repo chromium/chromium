@@ -40,6 +40,8 @@ SkColor GetPillButtonBackgroundColor(PillButton::Type type) {
       color_id =
           AshColorProvider::ControlsLayerType::kControlBackgroundColorActive;
       break;
+    case PillButton::Type::kIconlessFloating:
+      return SK_ColorTRANSPARENT;
   }
   return AshColorProvider::Get()->GetControlsLayerColor(color_id);
 }
@@ -51,6 +53,7 @@ SkColor GetPillButtonTextColor(PillButton::Type type) {
     case PillButton::Type::kIcon:
     case PillButton::Type::kIconless:
     case PillButton::Type::kIconlessProminent:
+    case PillButton::Type::kIconlessFloating:
       break;
     case PillButton::Type::kIconlessAlert:
       color_id = AshColorProvider::ContentLayerType::kButtonLabelColorPrimary;
@@ -145,8 +148,10 @@ PillButton::PillButton(PressedCallback callback,
                    /*highlight_on_hover=*/false, /*highlight_on_focus=*/false);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 button_size_.height() / 2.f);
-  SetBackground(views::CreateRoundedRectBackground(
-      GetPillButtonBackgroundColor(type), button_size_.height() / 2.f));
+  if (type_ != PillButton::Type::kIconlessFloating) {
+    SetBackground(views::CreateRoundedRectBackground(
+        GetPillButtonBackgroundColor(type), button_size_.height() / 2.f));
+  }
 }
 
 PillButton::~PillButton() = default;
@@ -183,7 +188,8 @@ void PillButton::OnThemeChanged() {
                AshColorProvider::GetDisabledColor(enabled_text_color));
   views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
-  background()->SetNativeControlColor(GetPillButtonBackgroundColor(type_));
+  if (type_ != PillButton::Type::kIconlessFloating)
+    background()->SetNativeControlColor(GetPillButtonBackgroundColor(type_));
 }
 
 BEGIN_METADATA(PillButton, views::LabelButton)

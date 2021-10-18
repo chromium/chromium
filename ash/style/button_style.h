@@ -32,7 +32,9 @@ class PillButton : public views::LabelButton {
     kIconlessAccent,
     // PillButton without an icon, default text color and
     // `kControlBackgroundColorActive` as the background color.
-    kIconlessProminent
+    kIconlessProminent,
+    // `kIconless` button without background.
+    kIconlessFloating
   };
 
   // TODO: Move this function outside of PillButton after we built up more

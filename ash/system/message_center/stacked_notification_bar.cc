@@ -13,7 +13,6 @@
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/rounded_label_button.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -32,6 +31,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 

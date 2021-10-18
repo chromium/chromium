@@ -19,7 +19,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/collapse_button.h"
-#include "ash/system/unified/rounded_label_button.h"
 #include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
