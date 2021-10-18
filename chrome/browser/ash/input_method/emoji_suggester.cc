@@ -113,6 +113,7 @@ EmojiSuggester::EmojiSuggester(SuggestionHandlerInterface* suggestion_handler,
       profile_(profile),
       highlighted_index_(kNoneHighlighted) {
   LoadEmojiMap();
+
   properties_.type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
   suggestion_button_.id = ui::ime::ButtonId::kSuggestion;
   suggestion_button_.window_type =

@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_blocklist.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/personal_info_suggester.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,6 +27,8 @@ using ::chromeos::ime::TextSuggestionMode;
 using ::chromeos::ime::TextSuggestionType;
 
 }  // namespace
+
+const char kEmojiData[] = "happy,😀;😃;😄";
 
 class AssistiveSuggesterTest : public testing::Test {
  protected:
@@ -262,9 +265,9 @@ class FakeBlocklist : public AssistiveSuggesterBlocklist {
   ~FakeBlocklist() override = default;
 
   // AssistiveSuggesterDelegate overrides
-  bool IsEmojiSuggestionAllowed() override { return false; }
+  bool IsEmojiSuggestionAllowed() override { return allowed_; }
   bool IsMultiWordSuggestionAllowed() override { return allowed_; }
-  bool IsPersonalInfoSuggestionAllowed() override { return false; }
+  bool IsPersonalInfoSuggestionAllowed() override { return allowed_; }
 
  private:
   bool allowed_;
@@ -442,6 +445,66 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 2);
   histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
                                        AssistiveType::kMultiWordPrediction, 2);
+}
+
+class AssistiveSuggesterEmojiTest : public testing::Test {
+ protected:
+  AssistiveSuggesterEmojiTest() {
+    profile_ = std::make_unique<TestingProfile>();
+  }
+
+  void SetUp() override {
+    engine_ = std::make_unique<InputMethodEngine>();
+    assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+        engine_.get(), profile_.get(), std::make_unique<FakeBlocklist>(true));
+    assistive_suggester_->get_emoji_suggester_for_testing()
+        ->LoadEmojiMapForTesting(kEmojiData);
+
+    // Needed to ensure globals accessed by EmojiSuggester are available.
+    chrome_keyboard_controller_client_ =
+        ChromeKeyboardControllerClient::CreateForTest();
+    chrome_keyboard_controller_client_->set_keyboard_visible_for_test(false);
+
+    profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
+                                     true);
+    profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
+
+    ui::IMEBridge::Initialize();
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<AssistiveSuggester> assistive_suggester_;
+  std::unique_ptr<InputMethodEngine> engine_;
+  base::HistogramTester histogram_tester_;
+
+  // Needs to outlive the emoji_suggester under test.
+  std::unique_ptr<ChromeKeyboardControllerClient>
+      chrome_keyboard_controller_client_;
+};
+
+TEST_F(AssistiveSuggesterEmojiTest,
+       ShouldReturnPrefixBasedEmojiSuggestionsWhenStandardFlagEnabledOnly) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kEmojiSuggestAddition},
+      /*disabled_features=*/{});
+
+  assistive_suggester_->OnFocus(5);
+
+  EXPECT_TRUE(assistive_suggester_->OnSurroundingTextChanged(u"happy ", 6, 6));
+}
+
+TEST_F(AssistiveSuggesterEmojiTest,
+       ShouldNotReturnPrefixBasedEmojiSuggestionsWhenBothEmojiFlagsAreEnabled) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kEmojiSuggestAddition,
+                            features::kAssistEmojiEnhanced},
+      /*disabled_features=*/{});
+
+  assistive_suggester_->OnFocus(5);
+
+  EXPECT_FALSE(assistive_suggester_->OnSurroundingTextChanged(u"happy ", 6, 6));
 }
 
 }  // namespace input_method

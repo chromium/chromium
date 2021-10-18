@@ -396,6 +396,7 @@ bool AssistiveSuggester::Suggest(const std::u16string& text,
       }
       return true;
     } else if (IsEmojiSuggestAdditionEnabled() &&
+               !IsEnhancedEmojiSuggestEnabled() &&
                blocklist_->IsEmojiSuggestionAllowed() &&
                emoji_suggester_.Suggest(text, cursor_pos, anchor_pos)) {
       current_suggester_ = &emoji_suggester_;

@@ -30,6 +30,7 @@ class AssistiveSuggester : public SuggestionsSource {
   AssistiveSuggester(InputMethodEngine* engine,
                      Profile* profile,
                      std::unique_ptr<AssistiveSuggesterBlocklist> blocklist);
+
   ~AssistiveSuggester() override;
 
   bool IsAssistiveFeatureEnabled();
