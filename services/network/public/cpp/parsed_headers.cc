@@ -39,11 +39,9 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
       ParseCrossOriginOpenerPolicy(*headers);
 
   std::string origin_agent_cluster;
-  if (headers->GetNormalizedHeader("Origin-Agent-Cluster",
-                                   &origin_agent_cluster)) {
-    parsed_headers->origin_agent_cluster =
-        ParseOriginAgentCluster(origin_agent_cluster);
-  }
+  headers->GetNormalizedHeader("Origin-Agent-Cluster", &origin_agent_cluster);
+  parsed_headers->origin_agent_cluster =
+      ParseOriginAgentCluster(origin_agent_cluster);
 
   std::string accept_ch;
   if (headers->GetNormalizedHeader("Accept-CH", &accept_ch))

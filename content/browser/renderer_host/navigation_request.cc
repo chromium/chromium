@@ -2629,7 +2629,10 @@ bool NavigationRequest::IsOptInIsolationRequested() {
   if (!SiteIsolationPolicy::IsOriginAgentClusterEnabled())
     return false;
 
-  return response_head_->parsed_headers->origin_agent_cluster;
+  // Origin agent cluster defaults to false, so comparing against kTrue
+  // handle both cases.
+  return response_head_->parsed_headers->origin_agent_cluster ==
+         network::mojom::OriginAgentClusterValue::kTrue;
 }
 
 void NavigationRequest::DetermineOriginAgentClusterEndResult(
