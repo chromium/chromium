@@ -383,7 +383,8 @@
       "is_debug": true,
       "is_tsan": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "TSAN Release": {
@@ -393,7 +394,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_tsan": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "UBSan Release": {

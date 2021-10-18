@@ -257,8 +257,8 @@
       'MSAN Release (no origins)': 'msan_no_origins_release_bot',
       'Mac ASAN Release Media': 'asan_disable_nacl_fuzzer_v8_heap_chrome_with_codecs_release_bot',
       'Mac ASAN Release': 'asan_disable_nacl_fuzzer_v8_heap_release_bot',
-      'TSAN Debug': 'tsan_disable_nacl_debug_bot',
-      'TSAN Release': 'tsan_disable_nacl_release_bot',
+      'TSAN Debug': 'tsan_disable_nacl_debug_bot_reclient',
+      'TSAN Release': 'tsan_disable_nacl_release_bot_reclient',
       'UBSan Release': 'ubsan_release_bot',
       'UBSan vptr Release': 'ubsan_vptr_release_bot',
       'Win ASan Release Media': 'asan_fuzzer_v8_heap_chrome_with_codecs_release_bot',
@@ -2945,10 +2945,6 @@
     'release_bot_x86_minimal_symbols_no_clang_cxx11': [
       'release_bot', 'x86', 'minimal_symbols', 'no_clang', 'use_cxx11',
       'no_goma',
-    ],
-
-    'tsan_disable_nacl_debug_bot': [
-      'tsan', 'disable_nacl', 'debug_bot',
     ],
 
     'tsan_disable_nacl_debug_bot_reclient': [
