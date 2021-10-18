@@ -1044,7 +1044,7 @@ bool AXNodeData::IsAtomicTextField() const {
   // by pruning interactive elements from the accessibility tree. Therefore,
   // until we have a reliable means to identify truly atomic ARIA textboxes,
   // treat them as non-atomic.
-  return ui::IsTextField(role) &&
+  return (ui::IsTextField(role) || IsSpinnerTextField()) &&
          !GetBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot);
 }
 

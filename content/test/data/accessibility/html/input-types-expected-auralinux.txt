@@ -24,7 +24,7 @@
 ++++++++[static] name='Submit'
 ++++[label] label-for
 ++++++[static] name='Number: '
-++++++[spin button] name='Number:' selectable-text labelled-by current=0.000000 minimum=0.000000 maximum=0.000000
+++++++[spin button] name='Number:' selectable-text labelled-by text-input-type:number current=0.000000 minimum=0.000000 maximum=0.000000
 ++++[label] label-for
 ++++++[static] name='Password: '
 ++++++[password text] name='Password:' selectable-text labelled-by text-input-type:password
