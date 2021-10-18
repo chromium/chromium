@@ -444,7 +444,7 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   if (pic->type == H264SliceHeader::kISlice && submit_packed_headers_) {
     // We always generate SPS and PPS with I(DR) frame. This will help for Seek
     // operation on the generated stream.
-    if (!SubmitPackedHeaders(encode_job, packed_sps_, packed_pps_)) {
+    if (!SubmitPackedHeaders(packed_sps_, packed_pps_)) {
       DVLOGF(1) << "Failed submitting keyframe headers";
       return false;
     }
@@ -892,14 +892,32 @@ H264VaapiVideoEncoderDelegate::GeneratePackedSliceHeader(
   return packed_slice_header;
 }
 
-void H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer(
-    scoped_refptr<H264BitstreamBuffer> buffer) {
+bool H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer(
+    const H264BitstreamBuffer& buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderDataBufferType,
-                                    buffer->BytesInBuffer(), buffer->data())) {
-    error_cb_.Run();
-  }
+  return vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderDataBufferType,
+                                      buffer.BytesInBuffer(), buffer.data());
+}
+
+bool H264VaapiVideoEncoderDelegate::SubmitVAEncMiscParamBuffer(
+    VAEncMiscParameterType type,
+    const void* data,
+    size_t size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/202337642): We don't have to allocate a misc parameter by having
+  // VAEncMiscParameterBuffer + the size and filling VA enc misc data directly
+  // into VAEncMiscParameterBuffer::data.
+  const size_t temp_size = sizeof(VAEncMiscParameterBuffer) + size;
+  std::vector<uint8_t> temp(temp_size);
+
+  auto* const va_buffer =
+      reinterpret_cast<VAEncMiscParameterBuffer*>(temp.data());
+  va_buffer->type = type;
+  memcpy(va_buffer->data, data, size);
+
+  return vaapi_wrapper_->SubmitBuffer(VAEncMiscParameterBufferType, temp_size,
+                                      temp.data());
 }
 
 bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
@@ -961,11 +979,6 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
   SPS_TO_SP(num_units_in_tick);
   SPS_TO_SP(time_scale);
 #undef SPS_TO_SP
-
-  job.AddSetupCallback(
-      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
-                     base::Unretained(this), VAEncSequenceParameterBufferType,
-                     MakeRefCountedBytes(&seq_param, sizeof(seq_param))));
 
   VAEncPictureParameterBufferH264 pic_param = {};
 
@@ -1046,30 +1059,21 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
       base::strict_cast<uint32_t>(encode_params.cpb_size_bits),
       rate_control_param, framerate_param, hrd_param);
 
-  job.AddSetupCallback(
-      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
-                     base::Unretained(this), VAEncPictureParameterBufferType,
-                     MakeRefCountedBytes(&pic_param, sizeof(pic_param))));
-
-  job.AddSetupCallback(
-      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
-                     base::Unretained(this), VAEncSliceParameterBufferType,
-                     MakeRefCountedBytes(&slice_param, sizeof(slice_param))));
-
-  job.AddSetupCallback(base::BindOnce(
-      &VaapiVideoEncoderDelegate::SubmitVAEncMiscParamBuffer,
-      base::Unretained(this), VAEncMiscParameterTypeRateControl,
-      MakeRefCountedBytes(&rate_control_param, sizeof(rate_control_param))));
-
-  job.AddSetupCallback(base::BindOnce(
-      &VaapiVideoEncoderDelegate::SubmitVAEncMiscParamBuffer,
-      base::Unretained(this), VAEncMiscParameterTypeFrameRate,
-      MakeRefCountedBytes(&framerate_param, sizeof(framerate_param))));
-
-  job.AddSetupCallback(
-      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitVAEncMiscParamBuffer,
-                     base::Unretained(this), VAEncMiscParameterTypeHRD,
-                     MakeRefCountedBytes(&hrd_param, sizeof(hrd_param))));
+  if (!vaapi_wrapper_->SubmitBuffer(VAEncSequenceParameterBufferType,
+                                    &seq_param) ||
+      !vaapi_wrapper_->SubmitBuffer(VAEncPictureParameterBufferType,
+                                    &pic_param) ||
+      !vaapi_wrapper_->SubmitBuffer(VAEncSliceParameterBufferType,
+                                    &slice_param) ||
+      !SubmitVAEncMiscParamBuffer(VAEncMiscParameterTypeRateControl,
+                                  &rate_control_param,
+                                  sizeof(rate_control_param)) ||
+      !SubmitVAEncMiscParamBuffer(VAEncMiscParameterTypeFrameRate,
+                                  &framerate_param, sizeof(framerate_param)) ||
+      !SubmitVAEncMiscParamBuffer(VAEncMiscParameterTypeHRD, &hrd_param,
+                                  sizeof(hrd_param))) {
+    return false;
+  }
 
   if (!submit_packed_headers_)
     return true;
@@ -1082,20 +1086,15 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
   packed_slice_param_buffer.has_emulation_bytes = 0;
 
   // Submit packed slice header.
-  job.AddSetupCallback(base::BindOnce(
-      &VaapiVideoEncoderDelegate::SubmitBuffer, base::Unretained(this),
-      VAEncPackedHeaderParameterBufferType,
-      MakeRefCountedBytes(&packed_slice_param_buffer,
-                          sizeof(packed_slice_param_buffer))));
-  job.AddSetupCallback(
-      base::BindOnce(&H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer,
-                     base::Unretained(this), packed_slice_header));
+  if (!vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderParameterBufferType,
+                                    &packed_slice_param_buffer)) {
+    return false;
+  }
 
-  return true;
+  return SubmitH264BitstreamBuffer(*packed_slice_header);
 }
 
 bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
-    EncodeJob& job,
     scoped_refptr<H264BitstreamBuffer> packed_sps,
     scoped_refptr<H264BitstreamBuffer> packed_pps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1108,29 +1107,25 @@ bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
   par_buffer.type = VAEncPackedHeaderSequence;
   par_buffer.bit_length = packed_sps->BytesInBuffer() * 8;
 
-  job.AddSetupCallback(base::BindOnce(
-      &VaapiVideoEncoderDelegate::SubmitBuffer, base::Unretained(this),
-      VAEncPackedHeaderParameterBufferType,
-      MakeRefCountedBytes(&par_buffer, sizeof(par_buffer))));
+  if (!vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderParameterBufferType,
+                                    &par_buffer)) {
+    return false;
+  }
 
-  job.AddSetupCallback(
-      base::BindOnce(&H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer,
-                     base::Unretained(this), packed_sps));
+  if (!SubmitH264BitstreamBuffer(*packed_sps))
+    return false;
 
   // Submit PPS.
   par_buffer = {};
   par_buffer.type = VAEncPackedHeaderPicture;
   par_buffer.bit_length = packed_pps->BytesInBuffer() * 8;
 
-  job.AddSetupCallback(base::BindOnce(
-      &VaapiVideoEncoderDelegate::SubmitBuffer, base::Unretained(this),
-      VAEncPackedHeaderParameterBufferType,
-      MakeRefCountedBytes(&par_buffer, sizeof(par_buffer))));
+  if (!vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderParameterBufferType,
+                                    &par_buffer)) {
+    return false;
+  }
 
-  job.AddSetupCallback(
-      base::BindOnce(&H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer,
-                     base::Unretained(this), packed_pps));
-  return true;
+  return SubmitH264BitstreamBuffer(*packed_pps);
 }
 
 }  // namespace media

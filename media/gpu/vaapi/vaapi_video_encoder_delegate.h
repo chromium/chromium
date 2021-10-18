@@ -20,10 +20,6 @@
 #include "media/video/video_encoder_info.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace base {
-class RefCountedBytes;
-}
-
 namespace media {
 struct BitstreamBufferMetadata;
 class CodecPicture;
@@ -202,14 +198,6 @@ class VaapiVideoEncoderDelegate {
   // can get this info from the encoder delegate. Returns empty vector on
   // failure.
   virtual std::vector<gfx::Size> GetSVCLayerResolutions() = 0;
-
-  // Submits |buffer| of |type| to the driver.
-  void SubmitBuffer(VABufferType type,
-                    scoped_refptr<base::RefCountedBytes> buffer);
-
-  // Submits a VAEncMiscParameterBuffer |buffer| of type |type| to the driver.
-  void SubmitVAEncMiscParamBuffer(VAEncMiscParameterType type,
-                                  scoped_refptr<base::RefCountedBytes> buffer);
 
  protected:
   virtual BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
