@@ -7,14 +7,12 @@ package org.chromium.chrome.browser.suggestions;
 import android.app.Activity;
 
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegateImpl;
-import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /**
  * Extension of {@link NativePageNavigationDelegate} with suggestions-specific methods.
@@ -25,14 +23,6 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
     public SuggestionsNavigationDelegate(Activity activity, Profile profile, NativePageHost host,
             TabModelSelector tabModelSelector, Tab tab) {
         super(activity, profile, host, tabModelSelector, tab);
-    }
-
-    @Override
-    public void navigateToHelpPage() {
-        NewTabPageUma.recordAction(NewTabPageUma.ACTION_CLICKED_LEARN_MORE);
-        // TODO(dgn): Use the standard Help UI rather than a random link to online help?
-        openUrl(WindowOpenDisposition.CURRENT_TAB,
-                new LoadUrlParams(NEW_TAB_URL_HELP, PageTransition.AUTO_BOOKMARK));
     }
 
     /**

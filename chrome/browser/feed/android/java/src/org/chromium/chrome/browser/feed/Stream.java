@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.shared.stream;
+package org.chromium.chrome.browser.feed;
 
 import android.view.View;
 
@@ -12,8 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
-import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.feed.NtpListContentManager.FeedContent;
 import org.chromium.chrome.browser.feed.sections.SectionType;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
@@ -34,7 +32,7 @@ public interface Stream {
     /**
      * @param scrollState Previous saved scroll state to restore to.
      */
-    void restoreSavedInstanceState(FeedSurfaceMediator.ScrollState scrollState);
+    void restoreSavedInstanceState(FeedScrollState scrollState);
 
     /**
      * Record that visibility of the feed was toggled through the header menu. Note that
@@ -128,10 +126,9 @@ public interface Stream {
      * @param launchReliabilityLogger Logger for timestamps and status codes related to launching
      * @param headerCount The number of headers in the RecyclerView that the feed shouldn't touch.
      */
-    void bind(RecyclerView view, NtpListContentManager manager,
-            FeedSurfaceMediator.ScrollState savedInstanceState, SurfaceScope surfaceScope,
-            HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger,
-            int headerCount);
+    void bind(RecyclerView view, NtpListContentManager manager, FeedScrollState savedInstanceState,
+            SurfaceScope surfaceScope, HybridListRenderer renderer,
+            FeedLaunchReliabilityLogger launchReliabilityLogger, int headerCount);
 
     /**
      * Unbinds the feed. Stops this feed from updating the RecyclerView.
