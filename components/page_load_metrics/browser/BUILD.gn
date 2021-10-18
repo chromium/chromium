@@ -56,6 +56,7 @@ source_set("browser") {
     "//components/data_reduction_proxy/core/browser",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core:core",
+    "//components/metrics",
     "//components/page_load_metrics/common",
     "//components/page_load_metrics/common:page_load_metrics_mojom",
     "//components/performance_manager:performance_manager",

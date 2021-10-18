@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
+#include "components/metrics/metrics_data_validation.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -682,6 +683,13 @@ void UmaPageLoadMetricsObserver::OnFirstInputInPage(
       internal::kHistogramFirstInputDelay,
       timing.interactive_timing->first_input_delay.value(),
       base::Milliseconds(1), base::Seconds(60), 50);
+  // The pseudo metric of |kHistogramFirstInputDelay|. Only used to assess field
+  // trial data quality.
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "UMA.Pseudo.PageLoad.InteractiveTiming.FirstInputDelay4",
+      metrics::GetPseudoMetricsSample(
+          timing.interactive_timing->first_input_delay.value()),
+      base::Milliseconds(1), base::Seconds(60), 50);
   PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstInputTimestamp,
                       timing.interactive_timing->first_input_timestamp.value());
   TRACE_EVENT_MARK_WITH_TIMESTAMP1(
@@ -1051,6 +1059,12 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestContentfulPaint,
                         all_frames_largest_contentful_paint.Time().value());
+    // The pseudo metric of |kHistogramLargestContentfulPaint|. Only used to
+    // assess field trial data quality.
+    PAGE_LOAD_HISTOGRAM(
+        "UMA.Pseudo.PageLoad.PaintTiming.NavigationToLargestContentfulPaint2",
+        metrics::GetPseudoMetricsSample(
+            all_frames_largest_contentful_paint.Time().value()));
     UMA_HISTOGRAM_ENUMERATION(
         internal::kHistogramLargestContentfulPaintContentType,
         all_frames_largest_contentful_paint.Type());

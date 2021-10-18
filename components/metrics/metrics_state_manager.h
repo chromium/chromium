@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
@@ -48,11 +47,6 @@ enum class EntropyProviderType {
   kDefault = 0,  // Use CreateDefaultEntropyProvider().
   kLow = 1,      // Use CreateLowEntropyProvider().
 };
-
-// Used to assess the reliability of field trial data by sending artificial
-// non-uniform data drawn from a log normal distribution.
-const base::Feature kNonUniformityValidationFeature{
-    "UMANonUniformityLogNormal", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Responsible for managing MetricsService state prefs, specifically the UMA
 // client id and low entropy source. Code outside the metrics directory should

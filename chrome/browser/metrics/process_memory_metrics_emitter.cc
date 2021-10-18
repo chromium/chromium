@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/tab_footprint_aggregator.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/metrics/metrics_data_validation.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
@@ -986,6 +987,12 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 #endif
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.PrivateMemoryFootprint",
                                   private_footprint_total_kb / kKiB);
+    // The pseudo metric of Memory.Total.PrivateMemoryFootprint. Only used to
+    // assess field trial data quality.
+    UMA_HISTOGRAM_MEMORY_LARGE_MB(
+        "UMA.Pseudo.Memory.Total.PrivateMemoryFootprint",
+        metrics::GetPseudoMetricsSample(
+            static_cast<double>(private_footprint_total_kb) / kKiB));
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererPrivateMemoryFootprint",
                                   renderer_private_footprint_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.SharedMemoryFootprint",
