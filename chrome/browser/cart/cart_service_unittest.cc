@@ -139,8 +139,13 @@ class CartServiceTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    service_ = CartServiceFactory::GetForProfile(&profile_);
-    DCHECK(profile_.CreateHistoryService());
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
+
+    service_ = CartServiceFactory::GetForProfile(profile_.get());
   }
 
   void OperationEvaluation(base::OnceClosure closure,
@@ -303,7 +308,7 @@ class CartServiceTest : public testing::Test {
 
   void TearDown() override {
     // Clean up the used discounts dictionary prefs.
-    profile_.GetPrefs()->ClearPref(prefs::kCartUsedDiscounts);
+    profile_->GetPrefs()->ClearPref(prefs::kCartUsedDiscounts);
   }
 
  protected:
@@ -313,7 +318,7 @@ class CartServiceTest : public testing::Test {
 
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   CartService* service_;
 };
 
@@ -698,7 +703,7 @@ TEST_F(CartServiceTest, TestOnHistoryDeletion) {
   run_loop[1].Run();
 
   service_->OnURLsDeleted(
-      HistoryServiceFactory::GetForProfile(&profile_,
+      HistoryServiceFactory::GetForProfile(profile_.get(),
                                            ServiceAccessType::EXPLICIT_ACCESS),
       history::DeletionInfo(history::DeletionTimeRange::Invalid(), false,
                             history::URLRows(), std::set<GURL>(),
@@ -846,13 +851,13 @@ TEST_F(CartServiceTest, TestRemovedCartsDeleted) {
 TEST_F(CartServiceTest, TestControlShowWelcomeSurface) {
   const int limit = CartService::kWelcomSurfaceShowLimit;
   for (int i = 0; i < limit; i++) {
-    EXPECT_EQ(i, profile_.GetPrefs()->GetInteger(
+    EXPECT_EQ(i, profile_->GetPrefs()->GetInteger(
                      prefs::kCartModuleWelcomeSurfaceShownTimes));
     EXPECT_TRUE(service_->ShouldShowWelcomeSurface());
     service_->IncreaseWelcomeSurfaceCounter();
   }
   EXPECT_FALSE(service_->ShouldShowWelcomeSurface());
-  EXPECT_EQ(limit, profile_.GetPrefs()->GetInteger(
+  EXPECT_EQ(limit, profile_->GetPrefs()->GetInteger(
                        prefs::kCartModuleWelcomeSurfaceShownTimes));
 }
 
@@ -1263,26 +1268,26 @@ TEST_F(CartServiceTest, TestNoShowConsentWithoutFeature) {
 
 // Tests discount is disabled without feature param.
 TEST_F(CartServiceTest, TestDiscountDisabledWithoutFeature) {
-  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
   ASSERT_FALSE(service_->IsCartDiscountEnabled());
 }
 
 // Tests acknowledging discount consent is reflected in profile pref.
 TEST_F(CartServiceTest, TestAcknowledgeDiscountConsent) {
-  ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+  ASSERT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
   ASSERT_FALSE(
-      profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
 
   service_->AcknowledgeDiscountConsent(true);
-  ASSERT_TRUE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+  ASSERT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
   ASSERT_TRUE(
-      profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
 
-  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, false);
   service_->AcknowledgeDiscountConsent(false);
-  ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+  ASSERT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
   ASSERT_TRUE(
-      profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
 }
 
 class MockCartDiscountLinkFetcher : public CartDiscountLinkFetcher {
@@ -1333,12 +1338,12 @@ class CartServiceDiscountTest : public CartServiceTest {
     service_->AddCart(kMockMerchantA, absl::nullopt, kMockProtoA);
     task_environment_.RunUntilIdle();
     // The feature is enabled for this test class.
-    profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+    profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
   }
 
   void TearDown() override {
     // Set the feature to default disabled state after test.
-    profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+    profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
   }
 
   void SetCartDiscountURLForTesting(const GURL& discount_url,
@@ -1356,7 +1361,7 @@ class CartServiceDiscountTest : public CartServiceTest {
 // Tests discount consent should not show when welcome surface is still showing.
 TEST_F(CartServiceDiscountTest, TestNoConsentWhenWelcomeSurface) {
   base::RunLoop run_loop;
-  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
 
   ASSERT_TRUE(service_->ShouldShowWelcomeSurface());
   service_->ShouldShowDiscountConsent(
@@ -1372,17 +1377,17 @@ TEST_F(CartServiceDiscountTest, TestReadConsentFromPrefs) {
     service_->IncreaseWelcomeSurfaceCounter();
   }
   ASSERT_FALSE(
-      profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
   ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
   service_->ShouldShowDiscountConsent(
       base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   run_loop[0].Run();
 
-  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
 
   ASSERT_TRUE(
-      profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
   ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
   service_->ShouldShowDiscountConsent(
       base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
@@ -1421,11 +1426,11 @@ TEST_F(CartServiceDiscountTest, TestNoConsentWithoutPartnerCart) {
 
 // Tests updating whether rule-based discount is enabled in profile prefs.
 TEST_F(CartServiceDiscountTest, TestSetCartDiscountEnabled) {
-  ASSERT_TRUE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+  ASSERT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
   service_->SetCartDiscountEnabled(false);
-  ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+  ASSERT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
   service_->SetCartDiscountEnabled(true);
-  ASSERT_TRUE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+  ASSERT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
 }
 
 // Tests no fetching for discount URL if the cart is not from a partner
@@ -1478,7 +1483,7 @@ TEST_F(CartServiceDiscountTest, TestNoFetchWhenFeatureDisabled) {
   const double timestamp = 1;
   GURL discount_url("https://www.discount.com");
   SetCartDiscountURLForTesting(discount_url, false);
-  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
   cart_db::ChromeCartContentProto cart_proto = AddDiscountToProto(
       BuildProto(kMockMerchantA, kMockMerchantURLA), timestamp,
       kMockMerchantADiscountRuleId, kMockMerchantADiscountsPercentOff,
@@ -1640,7 +1645,7 @@ class CartServiceRbdFastPathTest : public CartServiceTest {
   }
   void TearDown() override {
     // Set the feature to default disabled state after test.
-    profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+    profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
   }
 };
 
@@ -1649,7 +1654,7 @@ TEST_F(CartServiceRbdFastPathTest, TestAppendUTM) {
   EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_no_rbd"),
             CartService::AppendUTM(GURL(kMockMerchantURLA), false));
 
-  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
   EXPECT_TRUE(service_->IsCartDiscountEnabled());
   EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_rbd"),
             CartService::AppendUTM(GURL(kMockMerchantURLA), true));
@@ -1662,7 +1667,7 @@ TEST_F(CartServiceRbdFastPathTest, TestAppendUTMAvoidDuplicates) {
             CartService::AppendUTM(GURL(kMockMerchantURLA), false));
 
   merchantUrl = "https://www.foo.com?utm_source=chrome_cart_no_rbd";
-  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
   EXPECT_TRUE(service_->IsCartDiscountEnabled());
   EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_rbd"),
             CartService::AppendUTM(GURL(kMockMerchantURLA), true));
@@ -1712,7 +1717,7 @@ class CartServiceDiscountFetchTest : public CartServiceTest {
 
   void SetUp() override {
     CartServiceTest::SetUp();
-    profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+    profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
     // Only initialize CartServiceDelegate which is relevant to this test.
     fetch_discount_worker_ = std::make_unique<FakeFetchDiscountWorker>(
         nullptr, nullptr, std::make_unique<CartServiceDelegate>(service_),
@@ -1723,8 +1728,8 @@ class CartServiceDiscountFetchTest : public CartServiceTest {
 
   void TearDown() override {
     // Reset the last fetch timestamp.
-    profile_.GetPrefs()->SetTime(prefs::kCartDiscountLastFetchedTime,
-                                 base::Time());
+    profile_->GetPrefs()->SetTime(prefs::kCartDiscountLastFetchedTime,
+                                  base::Time());
     // Reset FetchDiscountWorker for testing.
     service_->SetFetchDiscountWorkerForTesting(nullptr);
   }
@@ -1736,11 +1741,11 @@ class CartServiceDiscountFetchTest : public CartServiceTest {
 };
 
 TEST_F(CartServiceDiscountFetchTest, TestFreshFetch) {
-  EXPECT_EQ(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
             base::Time());
   StartGettingDiscount();
   task_environment_.RunUntilIdle();
-  EXPECT_NE(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
+  EXPECT_NE(profile_->GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
             base::Time());
 }
 
@@ -1748,31 +1753,31 @@ TEST_F(CartServiceDiscountFetchTest, TestFetchWhenBeyondEnforcedDelay) {
   // Set last fetch timestamp so that the current time is beyond the enforced
   // delay.
   base::Time last_fetch_time = base::Time::Now() - base::Seconds(20);
-  profile_.GetPrefs()->SetTime(prefs::kCartDiscountLastFetchedTime,
-                               last_fetch_time);
+  profile_->GetPrefs()->SetTime(prefs::kCartDiscountLastFetchedTime,
+                                last_fetch_time);
   StartGettingDiscount();
   task_environment_.RunUntilIdle();
-  EXPECT_NE(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
+  EXPECT_NE(profile_->GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
             last_fetch_time);
 }
 
 TEST_F(CartServiceDiscountFetchTest, TestNoFetchWithinEnforcedDelay) {
-  EXPECT_EQ(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
             base::Time());
   base::Time last_fetch_time = base::Time::Now();
-  profile_.GetPrefs()->SetTime(prefs::kCartDiscountLastFetchedTime,
-                               last_fetch_time);
+  profile_->GetPrefs()->SetTime(prefs::kCartDiscountLastFetchedTime,
+                                last_fetch_time);
   // Set last fetch timestamp so that the current time is within the enforced
   // delay.
   StartGettingDiscount();
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
             last_fetch_time);
   // Wait so that the current time is beyond the enforced delay.
   task_environment_.FastForwardBy(base::Seconds(2));
   StartGettingDiscount();
   task_environment_.RunUntilIdle();
-  EXPECT_NE(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
+  EXPECT_NE(profile_->GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
             last_fetch_time);
 }
 
@@ -1809,7 +1814,7 @@ TEST_F(CartServiceCouponTest, TestClearCoupons) {
   EXPECT_CALL(coupon_service_, DeleteAllFreeListingCoupons()).Times(1);
 
   service_->OnURLsDeleted(
-      HistoryServiceFactory::GetForProfile(&profile_,
+      HistoryServiceFactory::GetForProfile(profile_.get(),
                                            ServiceAccessType::EXPLICIT_ACCESS),
       history::DeletionInfo(history::DeletionTimeRange::Invalid(), false,
                             history::URLRows(), std::set<GURL>(),
