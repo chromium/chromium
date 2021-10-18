@@ -4503,7 +4503,14 @@ TEST_P(DeepScanningDownloadTest, SafeVerdictPrecedence) {
 
     EXPECT_TRUE(IsResult(response.second));
     EXPECT_TRUE(HasClientDownloadRequest());
-    EXPECT_EQ(test_upload_service->was_called(), flag_enabled());
+
+    bool dangerous_response =
+        response.first == ClientDownloadResponse::DANGEROUS ||
+        response.first == ClientDownloadResponse::DANGEROUS_HOST ||
+        response.first == ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE;
+    EXPECT_EQ(test_upload_service->was_called(),
+              flag_enabled() && !dangerous_response);
+    test_upload_service->ClearWasCalled();
   }
 }
 

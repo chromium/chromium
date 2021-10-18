@@ -686,22 +686,12 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
                        DangerousHostNotMalwareScanned) {
-  // This allows the blocking DM token reads happening on profile-Connector
-  // triggers.
-  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::HistogramTester histograms;
 
   // The file is DANGEROUS_HOST according to the metadata check
   ClientDownloadResponse metadata_response;
   metadata_response.set_verdict(ClientDownloadResponse::DANGEROUS_HOST);
   ExpectMetadataResponse(metadata_response);
-
-  // The DLP scan still runs, but finds nothing
-  enterprise_connectors::ContentAnalysisResponse sync_response;
-  auto* result = sync_response.add_results();
-  result->set_tag("dlp");
-  result->set_status(
-      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-  ExpectContentAnalysisSynchronousResponse(sync_response, {"dlp"});
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/signed.exe");
@@ -709,7 +699,6 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  WaitForDeepScanRequest();
   WaitForDownloadToFinish();
 
   // The file should be blocked.
@@ -718,6 +707,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EXPECT_EQ(item->GetDangerType(),
             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST);
   EXPECT_EQ(item->GetState(), download::DownloadItem::IN_PROGRESS);
+
+  histograms.ExpectTotalCount("SafeBrowsingBinaryUploadRequest.Result", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
@@ -849,9 +840,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   SetUpReporting();
   base::HistogramTester histograms;
 
-  // The file is DANGEROUS_HOST according to the metadata check
+  // The file is POTENTIALLY_UNWANTED according to the metadata check
   ClientDownloadResponse metadata_response;
-  metadata_response.set_verdict(ClientDownloadResponse::DANGEROUS_HOST);
+  metadata_response.set_verdict(ClientDownloadResponse::POTENTIALLY_UNWANTED);
   ExpectMetadataResponse(metadata_response);
 
   GURL url = embedded_test_server()->GetURL(
@@ -860,16 +851,21 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  // The DLP scan finishes synchronously and find a violation.
+  // The DLP scan finishes synchronously and find a violation. Malware scanning
+  // finds nothing.
   enterprise_connectors::ContentAnalysisResponse sync_response;
-  auto* result = sync_response.add_results();
-  result->set_tag("dlp");
-  result->set_status(
+  auto* dlp_result = sync_response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-  auto* dlp_rule = result->add_triggered_rules();
+  auto* dlp_rule = dlp_result->add_triggered_rules();
   dlp_rule->set_action(enterprise_connectors::TriggeredRule::WARN);
   dlp_rule->set_rule_name("dlp_rule_name");
-  ExpectContentAnalysisSynchronousResponse(sync_response, {"dlp"});
+  auto* malware_result = sync_response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  ExpectContentAnalysisSynchronousResponse(sync_response, {"dlp", "malware"});
 
   WaitForMetadataCheck();
   WaitForDeepScanRequest();
@@ -886,10 +882,10 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
       /*sha*/
       "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C",
-      /*threat_type*/ "DANGEROUS_HOST",
+      /*threat_type*/ "POTENTIALLY_UNWANTED",
       /*trigger*/
       extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-      /*dlp_verdict*/ *result,
+      /*dlp_verdict*/ *dlp_result,
       /*mimetypes*/ &zip_types,
       /*size*/ 276,
       /*result*/ EventResultToString(EventResult::WARNED),
@@ -900,18 +896,18 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   // The file should be blocked.
   ASSERT_EQ(download_items().size(), 1u);
   download::DownloadItem* item = *download_items().begin();
-  EXPECT_EQ(item->GetDangerType(),
-            download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST);
+  EXPECT_EQ(
+      item->GetDangerType(),
+      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED);
   EXPECT_EQ(item->GetState(), download::DownloadItem::IN_PROGRESS);
 
-  // UMAs for this request should only be recorded once. The malware metric
-  // should not be recorded since no deep malware scan occurred.
+  // UMAs for this request should only be recorded once.
   histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.Result",
                                 BinaryUploadService::Result::SUCCESS, 1);
   histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.DlpResult",
                                 true, 1);
   histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.MalwareResult",
-                                true, 0);
+                                true, 1);
 }
 
 class DownloadRestrictionsDeepScanningBrowserTest
