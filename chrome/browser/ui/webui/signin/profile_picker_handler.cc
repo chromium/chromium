@@ -56,6 +56,10 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/webui/signin/profile_picker_lacros_sign_in_provider.h"
+#endif
+
 namespace {
 const size_t kProfileCardAvatarSize = 74;
 const size_t kProfileCreationAvatarSize = 100;
@@ -701,22 +705,22 @@ void ProfilePickerHandler::OnProfileStatisticsReceived(
 void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
     const base::ListValue* args) {
   CHECK_EQ(2U, args->GetList().size());
+  absl::optional<SkColor> profile_color = args->GetList()[0].GetIfInt();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
-    g_browser_process->profile_manager()
-        ->GetAccountProfileMapper()
-        ->ShowAddAccountDialog(
-            base::FilePath(),
-            base::BindOnce(&ProfilePickerHandler::OnLacrosProfileCreated,
-                           weak_factory_.GetWeakPtr()));
+    DCHECK(!lacros_sign_in_provider_);
+    lacros_sign_in_provider_ =
+        std::make_unique<ProfilePickerLacrosSignInProvider>();
+    lacros_sign_in_provider_->ShowAddAccountDialog(
+        base::BindOnce(&ProfilePickerHandler::OnLacrosSignedInProfileCreated,
+                       weak_factory_.GetWeakPtr(), profile_color));
     return;
   }
 #endif
 
   DCHECK(args->GetList()[1].GetString().empty())
       << "gaiaId is only supported on Lacros with account consistency";
-  absl::optional<SkColor> profile_color = args->GetList()[0].GetIfInt();
   if (signin_util::IsForceSigninEnabled()) {
     // Force sign-in policy uses a separate flow that doesn't initialize the
     // profile color. Generate a new profile color here.
@@ -728,7 +732,7 @@ void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
       profile_color, base::BindOnce(&ProfilePickerHandler::OnLoadSigninFinished,
                                     weak_factory_.GetWeakPtr()));
 #else
-  NOTIMPLEMENTED() << "Lacros/mirror flow is not implemented yet";
+  NOTREACHED();
 #endif
 }
 
@@ -962,21 +966,20 @@ void ProfilePickerHandler::HandleGetUnassignedAccounts(
   FireWebUIListener("unassigned-accounts-changed", std::move(accounts_list));
 }
 
-void ProfilePickerHandler::OnLacrosProfileCreated(
-    const absl::optional<AccountProfileMapper::AddAccountResult>& result) {
+void ProfilePickerHandler::OnLacrosSignedInProfileCreated(
+    absl::optional<SkColor> profile_color,
+    Profile* profile) {
   DCHECK(base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
-  // TODO(https://crbug.com/1226054): Complete the account setup.
-  NOTIMPLEMENTED();
-  FireWebUIListener("load-signin-finished", base::Value(/*success=*/false));
-  if (result && !result->profile_path.empty()) {
-    ProfileAttributesEntry* entry =
-        g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(result->profile_path);
-    entry->SetIsOmitted(false);
-  } else {
-    NOTREACHED() << "New profile creation failed.";
+  DCHECK(lacros_sign_in_provider_);
+  lacros_sign_in_provider_.reset();
+
+  if (!profile) {
+    FireWebUIListener("load-signin-finished", base::Value(/*success=*/false));
+    return;
   }
+
+  FireWebUIListener("load-signin-finished", base::Value(/*success=*/true));
+  ProfilePicker::SwitchToSignedInFlow(profile_color, profile);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -3070,6 +3070,8 @@ static_library("ui") {
       "views/frame/desktop_browser_frame_lacros.h",
       "views/frame/immersive_mode_controller_chromeos.cc",
       "views/frame/immersive_mode_controller_chromeos.h",
+      "webui/signin/profile_picker_lacros_sign_in_provider.cc",
+      "webui/signin/profile_picker_lacros_sign_in_provider.h",
       "window_sizer/window_sizer_chromeos.cc",
       "window_sizer/window_sizer_chromeos.h",
     ]

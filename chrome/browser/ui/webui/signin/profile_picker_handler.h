@@ -21,7 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+class ProfilePickerLacrosSignInProvider;
 #endif
 
 // The handler for Javascript messages related to the profile picker main view.
@@ -130,10 +130,10 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // selection screens.
   void HandleGetUnassignedAccounts(const base::ListValue* args);
 
-  // Called when a new Lacros profile is created. The profile is omitted,
-  // ephemeral, and has an account (but no primary account).
-  void OnLacrosProfileCreated(
-      const absl::optional<AccountProfileMapper::AddAccountResult>& result);
+  // Called when a new Lacros signed-in profile is created. The profile is
+  // omitted, ephemeral, and has a primary kSignin account.
+  void OnLacrosSignedInProfileCreated(absl::optional<SkColor> profile_color,
+                                      Profile* profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Returns the list of profiles in the same order as when the picker
@@ -144,6 +144,11 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // when the picker is shown on startup.
   base::TimeTicks creation_time_on_startup_;
   bool main_view_initialized_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Takes care of getting a signed-in profile.
+  std::unique_ptr<ProfilePickerLacrosSignInProvider> lacros_sign_in_provider_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // The order of the profiles when the picker was first shown. This is used
   // to freeze the order of profiles on the picker. Newly added profiles, will

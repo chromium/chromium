@@ -175,6 +175,18 @@ void ProfilePicker::SwitchToDiceSignIn(
 #endif
 
 // static
+void ProfilePicker::SwitchToSignedInFlow(absl::optional<SkColor> profile_color,
+                                         Profile* signed_in_profile) {
+  if (g_profile_picker_view) {
+    g_profile_picker_view->SwitchToSignedInFlow(
+        profile_color, signed_in_profile,
+        content::WebContents::Create(
+            content::WebContents::CreateParams(signed_in_profile)),
+        /*is_saml=*/false);
+  }
+}
+
+// static
 void ProfilePicker::CancelSignedInFlow() {
   if (g_profile_picker_view) {
     g_profile_picker_view->CancelSignedInFlow();
