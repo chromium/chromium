@@ -89913,6 +89913,7 @@
         "args": [
           "--child-processes=20"
         ],
+        "experiment_percentage": 100,
         "isolate_name": "wpt_tests_isolate",
         "merge": {
           "args": [
@@ -89974,6 +89975,7 @@
           "touch-events/",
           "uievents/"
         ],
+        "experiment_percentage": 100,
         "isolate_name": "wpt_tests_isolate",
         "merge": {
           "args": [

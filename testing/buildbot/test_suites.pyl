@@ -578,6 +578,7 @@
           'expiration': 18000,
           'hard_timeout': 14400,
         },
+        'experiment_percentage': 100,
         'merge': {
           'args': [
             '--verbose',
@@ -5048,6 +5049,7 @@
           'expiration': 18000,
           'hard_timeout': 14400,
         },
+        'experiment_percentage': 100,
         'merge': {
           'args': [
             '--verbose',
@@ -5336,6 +5338,7 @@
           'expiration': 18000,
           'hard_timeout': 14400,
         },
+        'experiment_percentage': 100,
         'merge': {
           'args': [
             '--verbose',
@@ -5666,6 +5669,7 @@
         'swarming': {
           'shards': 15,
         },
+        'experiment_percentage': 100,
       },
     },
 
@@ -5708,6 +5712,7 @@
         'swarming': {
           'shards': 1,
         },
+        'experiment_percentage': 100,
       },
     },
   },
