@@ -3411,7 +3411,8 @@
         "args": [
           "angle_end2end_tests",
           "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--bot-mode"
+          "--bot-mode",
+          "--batch-timeout=600"
         ],
         "merge": {
           "args": [],
