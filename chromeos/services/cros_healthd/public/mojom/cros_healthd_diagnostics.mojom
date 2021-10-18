@@ -155,8 +155,11 @@ struct RoutineUpdate {
 
 // Enumeration of the possible statuses for a power supply in the AC power
 // routine.
+//
+// NextMinVersion: 1, NextIndex: 3
 [Extensible]
 enum AcPowerStatusEnum {
+  [Default] kUnknown = 2,
   kConnected = 0,     // Power supply is connected.
   kDisconnected = 1,  // Power supply is disconnected.
 };
