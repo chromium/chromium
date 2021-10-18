@@ -76,6 +76,12 @@
         "specifiers": ["Trusty", "Release"],
         "is_try_builder": true
     },
+    "linux-wpt-input-fyi-rel": {
+        "master": "tryserver.chromium.linux",
+        "port_name": "linux-trusty",
+        "specifiers": ["Trusty", "Release"],
+        "is_try_builder": true
+    },
     "linux-blink-rel": {
         "master": "tryserver.blink",
         "port_name": "linux-trusty",
