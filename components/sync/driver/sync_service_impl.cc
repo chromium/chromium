@@ -1237,7 +1237,7 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
   }
 
   // No need to register invalidations for non-protocol or commit-only types.
-  // TODO(crbug.com/1232372): This could break with dynamic proxy types.
+  // TODO(crbug.com/1260836): This could break with dynamic proxy types.
   ModelTypeSet types = Intersection(GetDataTypesToConfigure(), ProtocolTypes());
   types.RemoveAll(CommitOnlyTypes());
   if (!sessions_invalidations_enabled_) {
