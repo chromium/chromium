@@ -24,7 +24,7 @@ _COMMANDS_THAT_TAKE_REFRESH_TOKEN = ('try', )
 
 # These characters always appear at the beginning of the SearchBuilds response
 # from BuildBucket.
-SEARCHBUILDS_RESPONSE_PREFIX = ")]}'"
+SEARCHBUILDS_RESPONSE_PREFIX = b")]}'"
 
 
 class CLStatus(
@@ -345,7 +345,7 @@ class GitCL(object):
             'builds.*.builder.builder,builds.*.status,builds.*.tags,builds.*.number'
         }
         url = 'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/SearchBuilds'
-        req_body = json.dumps(data)
+        req_body = json.dumps(data).encode("utf-8")
         _log.debug("Sending SearchBuilds request. Url: %s with Body: %s" %
                    (url, req_body))
         response = self._host.web.request(

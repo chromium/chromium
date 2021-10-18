@@ -18,6 +18,10 @@ We needed an Android flavour of the WPTExpectationsUpdater class because
 
 import logging
 from collections import defaultdict, namedtuple
+import six
+
+if six.PY3:
+    from functools import reduce
 
 from blinkpy.common.host import Host
 from blinkpy.common.memoized import memoized

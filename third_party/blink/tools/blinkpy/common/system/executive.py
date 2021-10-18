@@ -68,6 +68,8 @@ class ScriptError(Exception):
             message += '\n\noutput: %s' % shortened_output
 
         Exception.__init__(self, message)
+        if six.PY3:
+            self.message = message
         self.script_args = script_args  # 'args' is already used by Exception
         self.exit_code = exit_code
         self.output = output

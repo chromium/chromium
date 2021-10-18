@@ -31,9 +31,9 @@ import logging
 
 _log = logging.getLogger(__name__)
 
-JSON_CALLBACK = "ADD_RESULTS"
-_JSON_PREFIX = JSON_CALLBACK + "("
-_JSON_SUFFIX = ");"
+JSON_CALLBACK = b"ADD_RESULTS"
+_JSON_PREFIX = JSON_CALLBACK + b"("
+_JSON_SUFFIX = b");"
 
 
 def has_json_wrapper(string):
