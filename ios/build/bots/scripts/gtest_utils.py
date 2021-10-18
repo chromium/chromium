@@ -577,7 +577,7 @@ class GTestLogParser(object):
             test_name = single_test.get('test_name')
             if test_case_name and test_name and test_name.startswith(
                 'DISABLED_'):
-              full_test_name = '%s/%s' % (test_case_name, test_name)
+              full_test_name = str('%s/%s' % (test_case_name, test_name))
               disabled_tests_from_json.append(full_test_name)
               self._result_collection.add_test_result(
                   TestResult(

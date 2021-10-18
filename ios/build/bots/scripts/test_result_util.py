@@ -68,6 +68,8 @@ class TestResult(object):
       test_log: (str) Logs of the test.
     """
     _validate_kwargs(kwargs, _VALID_TEST_RESULT_INIT_KWARGS)
+    assert isinstance(name, str), (
+        'Test name should be an instance of str. We got: %s') % type(name)
     self.name = name
     _validate_test_status(status)
     self.status = status
