@@ -46,6 +46,14 @@ constexpr base::Feature kBrowserPrioritizeInputQueue{
 constexpr base::Feature kNavigationNetworkResponseQueue{
     "NavigationNetworkResponseQueue", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When TreatBootstrapAsDefault is enabled, the browser will execute tasks with
+// the kBootstrap task type on the default task queues (based on priority of
+// the task) rather than a dedicated high-priority task queue. Intended to
+// evaluate the impact of the already-launched prioritization of bootstrap
+// tasks (crbug.com/1258621).
+const base::Feature kTreatBootstrapTaskTypeAsDefault{
+    "TreatBootstrapAsDefault", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When TreatPreconnectAsDefault is enabled, the browser will execute tasks with
 // the kPreconnect task type on the default task queues (based on priority of
 // the task) rather than a dedicated high-priority task queue. Intended to
@@ -150,6 +158,13 @@ QueueType BaseBrowserTaskExecutor::GetQueueType(
 
     switch (task_type) {
       case BrowserTaskType::kBootstrap:
+        if (base::FeatureList::IsEnabled(
+                features::kTreatBootstrapTaskTypeAsDefault)) {
+          // Defer to traits.priority() below rather than executing this task on
+          // the dedicated bootstrap queue.
+          break;
+        }
+
         // Note we currently ignore the priority for bootstrap tasks.
         return QueueType::kBootstrap;
 

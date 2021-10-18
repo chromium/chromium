@@ -89,6 +89,7 @@ public class DeprecatedChromePreferenceKeys {
                 "prefetch_notification_ignored_counter",
                 "prefetch_notification_offline_counter",
                 "prefetch_notification_shown_time",
+                "prioritize_bootstrap_tasks",
                 "sole_integration_enabled",
                 "start_surface_single_pane_enabled",
                 "tab_persistent_store_task_runner_enabled",

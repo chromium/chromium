@@ -476,12 +476,6 @@ public final class ChromePreferenceKeys {
     public static final String FLAGS_CACHED_NETWORK_SERVICE_WARM_UP_ENABLED =
             "network_service_warm_up_enabled";
     /**
-     * Whether or not bootstrap tasks should be prioritized (i.e. bootstrap task prioritization
-     * experiment is enabled). Default value is true.
-     */
-    public static final String FLAGS_CACHED_PRIORITIZE_BOOTSTRAP_TASKS =
-            "prioritize_bootstrap_tasks";
-    /**
      * Key for whether PrefetchBackgroundTask should load native in service manager only mode.
      * Default value is false.
      */
