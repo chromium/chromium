@@ -6,7 +6,8 @@
       "is_debug": true,
       "is_lsan": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "ASAN Release": {
@@ -31,7 +32,8 @@
       "is_debug": false,
       "is_lsan": true,
       "proprietary_codecs": true,
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "v8_enable_verify_heap": true
     }
   },
