@@ -122,7 +122,11 @@ WebAppUiManagerImpl* WebAppUiManagerImpl::Get(
 
 WebAppUiManagerImpl::WebAppUiManagerImpl(Profile* profile)
     : dialog_manager_(std::make_unique<WebAppDialogManager>(profile)),
-      profile_(profile) {}
+      profile_(profile) {
+  // Register the source for the chrome://web-app-internals page.
+  content::URLDataSource::Add(
+      profile_, std::make_unique<WebAppInternalsSource>(profile_));
+}
 
 WebAppUiManagerImpl::~WebAppUiManagerImpl() = default;
 
@@ -147,10 +151,6 @@ void WebAppUiManagerImpl::Start() {
   extensions::ExtensionSystem::Get(profile_)->ready().Post(
       FROM_HERE, base::BindOnce(&WebAppUiManagerImpl::OnExtensionSystemReady,
                                 weak_ptr_factory_.GetWeakPtr()));
-
-  // Register the source for the chrome://web-app-internals page.
-  content::URLDataSource::Add(
-      profile_, std::make_unique<WebAppInternalsSource>(profile_));
 
   BrowserList::AddObserver(this);
 }
