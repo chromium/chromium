@@ -31,6 +31,8 @@ public class BookmarkFeatures {
      * ChromeFeatureList#BOOKMARKS_IMPROVED_SAVE_FLOW}
      * <li>{@code bookmarks_refresh_min_version} - {@link ChromeFeatureList#BOOKMARKS_REFRESH}
      * <li>{@code read_later_min_version} - {@link ChromeFeatureList#READ_LATER}
+     * <li>{@code bookmark_visuals_enabled}: boolean; refresh the visual looks of the bookmarks
+     * manager. Default: {@code false}</li>
      * </ul>
      *
      * <p>These parameters allow to control for cases where a significant bug fix or change of param
@@ -40,10 +42,12 @@ public class BookmarkFeatures {
      */
     static final int VERSION = 0;
 
+    private static final boolean BOOKMARK_VISUALS_ENABLED_DEFAULT = false;
     private static final boolean IMPROVED_SAVE_FLOW_AUTODISMISS_ENABLED_DEFAULT = true;
     // This is the same as the default dismiss time for snackbars.
     private static final int IMPROVED_SAVE_FLOW_AUTODISMISS_TIME_MS_DEFAULT = 3000;
 
+    static final String BOOKMARK_VISUALS_ENABLED = "bookmark_visuals_enabled";
     static final String AUTODISMISS_ENABLED_PARAM_NAME = "autodismiss_enabled";
     static final String AUTODISMISS_LENGTH_PARAM_NAME = "autodismiss_length_ms";
 
@@ -78,6 +82,13 @@ public class BookmarkFeatures {
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                            ChromeFeatureList.BOOKMARKS_REFRESH, "bookmarks_refresh_min_version", 0)
                 <= VERSION;
+    }
+
+    public static boolean isBookmarksVisualRefreshEnabled() {
+        return isBookmarksRefreshEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.BOOKMARKS_REFRESH, BOOKMARK_VISUALS_ENABLED,
+                        BOOKMARK_VISUALS_ENABLED_DEFAULT);
     }
 
     public static boolean isAddBookmarkMenuItemEnabled() {
