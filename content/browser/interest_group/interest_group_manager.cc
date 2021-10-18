@@ -26,6 +26,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -97,11 +98,13 @@ void InterestGroupManager::UpdateInterestGroup(blink::InterestGroup group) {
 }
 
 void InterestGroupManager::UpdateInterestGroupsOfOwner(
-    const url::Origin& owner) {
+    const url::Origin& owner,
+    network::mojom::ClientSecurityStatePtr client_security_state) {
   ClaimInterestGroupsForUpdate(
-      owner, base::BindOnce(
-                 &InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad,
-                 weak_factory_.GetWeakPtr(), owner));
+      owner,
+      base::BindOnce(
+          &InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad,
+          weak_factory_.GetWeakPtr(), owner, std::move(client_security_state)));
 }
 
 void InterestGroupManager::RecordInterestGroupBid(const ::url::Origin& owner,
@@ -153,6 +156,7 @@ void InterestGroupManager::GetLastMaintenanceTimeForTesting(
 
 void InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad(
     url::Origin owner,
+    network::mojom::ClientSecurityStatePtr client_security_state,
     std::vector<StorageInterestGroup> interest_groups) {
   net::IsolationInfo per_update_isolation_info =
       net::IsolationInfo::CreateTransient();
@@ -170,6 +174,8 @@ void InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad(
         network::ResourceRequest::TrustedParams();
     resource_request->trusted_params->isolation_info =
         per_update_isolation_info;
+    resource_request->trusted_params->client_security_state =
+        client_security_state.Clone();
     auto simple_url_loader = network::SimpleURLLoader::Create(
         std::move(resource_request), kTrafficAnnotation);
     auto simple_url_loader_it =

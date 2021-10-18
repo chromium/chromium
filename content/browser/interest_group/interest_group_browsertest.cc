@@ -2370,7 +2370,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::Seconds(300),
+          /*expiry=*/base::Time(),
           /*owner=*/url::Origin::Create(test_url.DeprecatedGetOriginAsURL()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -2415,7 +2415,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateGenerateBid) {
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::Seconds(300),
+          /*expiry=*/base::Time(),
           /*owner=*/url::Origin::Create(test_url_b.DeprecatedGetOriginAsURL()),
           /*name=*/"boats",
           /*bidding_url=*/
@@ -2441,7 +2441,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateGenerateBid) {
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::Seconds(300),
+          /*expiry=*/base::Time(),
           /*owner=*/url::Origin::Create(test_url.DeprecatedGetOriginAsURL()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -2489,7 +2489,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::Seconds(300),
+          /*expiry=*/base::Time(),
           /*owner=*/url::Origin::Create(test_url.DeprecatedGetOriginAsURL()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -2531,7 +2531,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateScoreAd) {
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::Seconds(300),
+          /*expiry=*/base::Time(),
           /*owner=*/url::Origin::Create(test_url.DeprecatedGetOriginAsURL()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -2786,7 +2786,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::Seconds(300),
+          /*expiry=*/base::Time(),
           /*owner=*/url::Origin::Create(test_url.DeprecatedGetOriginAsURL()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -2856,7 +2856,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::InterestGroup(
-          /*expiry=*/base::Time() + base::Seconds(300),
+          /*expiry=*/base::Time(),
           /*owner=*/url::Origin::Create(test_url.DeprecatedGetOriginAsURL()),
           /*name=*/"cars",
           /*bidding_url=*/
@@ -3442,6 +3442,128 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   // Check that both reports reached the server.
   WaitForURL(remote_test_server_.GetURL(bidder_report_to_url.path()));
   WaitForURL(remote_test_server_.GetURL(seller_report_to_url.path()));
+}
+
+// Make sure that the IPAddressSpace of the frame that triggers the update is
+// respected for the update request. Does this by adding an interest group,
+// trying to update it from a public page, and expecting the request to be
+// blocked, and then adding another interest group and updating it from a
+// private page, which should succeed. Have to use two interest groups to avoid
+// the delay between updates.
+IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
+                       UpdatePublicVsPrivateNetwork) {
+  const char kPubliclyUpdateGroupName[] = "Publicly updated group";
+  const char kLocallyUpdateGroupName[] = "Locally updated group";
+
+  GURL update_url = https_server_->GetURL(
+      "a.test", "/interest_group/daily_update_partial.json");
+  GURL initial_bidding_url = https_server_->GetURL(
+      "a.test", "/interest_group/initial_bidding_logic.js");
+  GURL new_bidding_url =
+      https_server_->GetURL("a.test", "/interest_group/new_bidding_logic.js");
+
+  // The server JSON updates biddingLogicUrl only.
+  network_responder_->RegisterNetworkResponse(update_url.path(),
+                                              JsReplace(R"(
+{
+  "biddingLogicUrl": $1
+}
+                                                        )",
+                                                        new_bidding_url));
+
+  URLLoaderMonitor url_loader_monitor;
+  for (bool public_address_space : {true, false}) {
+    SCOPED_TRACE(public_address_space);
+
+    GURL test_url;
+    std::string group_name;
+    if (public_address_space) {
+      // This header treats a response from a server on a private IP as if the
+      // server were on public address space.
+      test_url = https_server_->GetURL(
+          "a.test",
+          "/set-header?Content-Security-Policy: treat-as-public-address");
+      group_name = kPubliclyUpdateGroupName;
+    } else {
+      test_url = https_server_->GetURL("a.test", "/echo");
+      group_name = kLocallyUpdateGroupName;
+    }
+    ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+    ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
+        blink::InterestGroup(
+            /*expiry=*/base::Time(),
+            /*owner=*/url::Origin::Create(test_url), group_name,
+            initial_bidding_url, update_url,
+            /*trusted_bidding_signals_url=*/absl::nullopt,
+            /*trusted_bidding_signals_keys=*/absl::nullopt,
+            /*user_bidding_signals=*/absl::nullopt,
+            /*ads=*/absl::nullopt,
+            /*ad_components=*/absl::nullopt),
+        /*ads=*/MakeAdsArg({GURL("https://example.com/render")})));
+
+    EXPECT_EQ("done", EvalJs(shell(), R"(
+(function() {
+  navigator.updateAdInterestGroups();
+  return 'done';
+})();
+                                      )"));
+
+    // Wait for the update request to be made, and check its IPAddressSpace.
+    url_loader_monitor.WaitForUrls();
+    const network::ResourceRequest& request =
+        url_loader_monitor.WaitForUrl(update_url);
+    ASSERT_TRUE(request.trusted_params->client_security_state);
+    if (public_address_space) {
+      EXPECT_EQ(
+          network::mojom::IPAddressSpace::kPublic,
+          request.trusted_params->client_security_state->ip_address_space);
+    } else {
+      EXPECT_EQ(
+          network::mojom::IPAddressSpace::kLocal,
+          request.trusted_params->client_security_state->ip_address_space);
+    }
+    // Not the main purpose of this test, but it should be using a transient
+    // NetworkIsolationKey as well.
+    ASSERT_TRUE(request.trusted_params->isolation_info.network_isolation_key()
+                    .IsTransient());
+
+    // The request should be blocked in the public address space case.
+    if (public_address_space) {
+      EXPECT_EQ(
+          net::ERR_FAILED,
+          url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
+    } else {
+      EXPECT_EQ(
+          net::OK,
+          url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
+    }
+
+    url_loader_monitor.ClearRequests();
+  }
+
+  // Wait for the kLocallyUpdateGroupName interest group to have an updated
+  // bidding URL, while expecting the kPubliclyUpdateGroupName to continue to
+  // have the original bidding URL. Have to wait because just because
+  // URLLoaderMonitor has seen the request completed successfully doesn't mean
+  // that the InterestGroup has been updated yet.
+  WaitForInterestGroupsSatisfying(
+      url::Origin::Create(initial_bidding_url),
+      base::BindLambdaForTesting(
+          [&](const std::vector<StorageInterestGroup>& storage_groups) {
+            bool found_updated_group = false;
+            for (const auto& storage_group : storage_groups) {
+              const blink::InterestGroup& group =
+                  storage_group.bidding_group->group;
+              if (group.name == kPubliclyUpdateGroupName) {
+                EXPECT_EQ(initial_bidding_url, group.bidding_url);
+              } else {
+                EXPECT_EQ(group.name, kLocallyUpdateGroupName);
+                found_updated_group = (new_bidding_url == group.bidding_url);
+              }
+            }
+            return found_updated_group;
+          }));
 }
 
 }  // namespace

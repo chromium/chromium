@@ -222,7 +222,8 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
           origin().GetURL())) {
     return;
   }
-  GetInterestGroupManager().UpdateInterestGroupsOfOwner(origin());
+  GetInterestGroupManager().UpdateInterestGroupsOfOwner(
+      origin(), GetFrame()->BuildClientSecurityState());
 }
 
 void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,

@@ -22,6 +22,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/origin.h"
 
@@ -77,7 +78,9 @@ class CONTENT_EXPORT InterestGroupManager {
   // Loads all interest groups owned by `owner`, then updates their definitions
   // by fetching their `dailyUpdateUrl`. Interest group updates that fail to
   // load or validate are skipped, but other updates will proceed.
-  void UpdateInterestGroupsOfOwner(const url::Origin& owner);
+  void UpdateInterestGroupsOfOwner(
+      const url::Origin& owner,
+      network::mojom::ClientSecurityStatePtr client_security_state);
   // Adds an entry to the bidding history for this interest group.
   void RecordInterestGroupBid(const url::Origin& owner,
                               const std::string& name);
@@ -128,6 +131,7 @@ class CONTENT_EXPORT InterestGroupManager {
 
   void DidUpdateInterestGroupsOfOwnerDbLoad(
       url::Origin owner,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       std::vector<StorageInterestGroup> interest_groups);
   void DidUpdateInterestGroupsOfOwnerNetFetch(
       UrlLoadersList::iterator simple_url_loader,
