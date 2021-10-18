@@ -2303,18 +2303,6 @@ void PaintLayerScrollableArea::Resize(const IntPoint& pos,
   EResize resize = GetLayoutBox()->StyleRef().Resize(
       GetLayoutBox()->ContainingBlock()->StyleRef());
   if (resize != EResize::kVertical && difference.Width()) {
-    if (element->IsFormControlElement()) {
-      // Make implicit margins from the theme explicit (see
-      // <http://bugs.webkit.org/show_bug.cgi?id=9547>).
-      element->SetInlineStyleProperty(
-          CSSPropertyID::kMarginLeft,
-          GetLayoutBox()->MarginLeft() / zoom_factor,
-          CSSPrimitiveValue::UnitType::kPixels);
-      element->SetInlineStyleProperty(
-          CSSPropertyID::kMarginRight,
-          GetLayoutBox()->MarginRight() / zoom_factor,
-          CSSPrimitiveValue::UnitType::kPixels);
-    }
     LayoutUnit base_width =
         GetLayoutBox()->Size().Width() -
         (is_box_sizing_border ? LayoutUnit()
@@ -2326,17 +2314,6 @@ void PaintLayerScrollableArea::Resize(const IntPoint& pos,
   }
 
   if (resize != EResize::kHorizontal && difference.Height()) {
-    if (element->IsFormControlElement()) {
-      // Make implicit margins from the theme explicit (see
-      // <http://bugs.webkit.org/show_bug.cgi?id=9547>).
-      element->SetInlineStyleProperty(CSSPropertyID::kMarginTop,
-                                      GetLayoutBox()->MarginTop() / zoom_factor,
-                                      CSSPrimitiveValue::UnitType::kPixels);
-      element->SetInlineStyleProperty(
-          CSSPropertyID::kMarginBottom,
-          GetLayoutBox()->MarginBottom() / zoom_factor,
-          CSSPrimitiveValue::UnitType::kPixels);
-    }
     LayoutUnit base_height =
         GetLayoutBox()->Size().Height() -
         (is_box_sizing_border ? LayoutUnit()
