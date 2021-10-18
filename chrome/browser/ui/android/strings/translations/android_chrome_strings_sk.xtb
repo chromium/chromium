@@ -384,6 +384,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="3282568296779691940">Prihlásiť sa do Chromu</translation>
 <translation id="3284510035090979597">Proaktívna pomoc</translation>
 <translation id="3285080554353377245">Videá, ako používať Chrome</translation>
+<translation id="3285850955330478827">Upraviť čitateľský zoznam</translation>
 <translation id="3288003805934695103">Opätovne načítať stránku</translation>
 <translation id="32895400574683172">Upozornenia sú povolené</translation>
 <translation id="3290991969712132877">Ak sa sem chcete dostať rýchlejšie, pridajte si túto stránku na plochu z tlačidla Ďalšie možnosti</translation>
@@ -405,6 +406,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="3398320232533725830">Otvorenie správcu záložiek</translation>
 <translation id="3414952576877147120">Veľkosť:</translation>
 <translation id="3429160811076349561">Skúšobné funkcie sú vypnuté</translation>
+<translation id="3435465986463792564">Máte veľa okien? Tu ich môžete spravovať.</translation>
 <translation id="3440975416244667276">Ďalšie relevantné informácie získate pridržaním</translation>
 <translation id="3443221991560634068">Opätovné načítanie aktuálnej stránky</translation>
 <translation id="3444179773590444986">Chcete zdieľať spätnú väzbu k tmavému motívu pre weby?</translation>
@@ -1343,6 +1345,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8942627711005830162">Otvoriť v ďalšom okne</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – tento jazyk sa nedá stiahnuť. Skúste to neskôr.</translation>
 <translation id="8951232171465285730">Chrome ušetril <ph name="MEGABYTES" /> MB</translation>
+<translation id="895518431932062177">Pridať do čit. zoznamu <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="8955719471735800169">Späť na začiatok</translation>
 <translation id="8965591936373831584">nespracované</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognito a <ph name="TAB_COUNT_ONE" /> ďalšia karta budú zavreté}few{<ph name="INCOGNITO_TAB_COUNT" /> inkognito a <ph name="TAB_COUNT_MANY" /> ďalšie karty budú zavreté}many{<ph name="INCOGNITO_TAB_COUNT" /> incognito and <ph name="TAB_COUNT_MANY" /> more tabs will be closed}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognito a <ph name="TAB_COUNT_MANY" /> ďalších kariet budú zavreté}}</translation>

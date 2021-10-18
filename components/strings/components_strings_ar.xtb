@@ -407,6 +407,7 @@
 <translation id="2241693394036365668">تم تنزيل ملف</translation>
 <translation id="2248949050832152960">‏استخدام WebAuthn</translation>
 <translation id="2250931979407627383">خزم الحواف يسارًا</translation>
+<translation id="2251943122176102076">لا ينصح المشرف بالحصول على لقطات شاشة أو تسجيلات لأنّ المحتوى الذي تم التقاطه سرّي:</translation>
 <translation id="225207911366869382">تم تجاهل القيمة لهذه السياسة.</translation>
 <translation id="2258928405015593961">يُرجى إدخال تاريخ انتهاء صلاحية في المستقبل وإعادة المحاولة.</translation>
 <translation id="225943865679747347">رمز الخطأ: <ph name="ERROR_CODE" /></translation>
@@ -802,6 +803,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />، و<ph name="DOMAIN" />، و<ph name="TIME" /></translation>
 <translation id="3603507503523709">حظر مشرفك التطبيق</translation>
 <translation id="3608932978122581043">تخطيط الاتجاه</translation>
+<translation id="3611395257124510155">البطاقة الافتراضية لـ <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">الحجم 2</translation>
 <translation id="361438452008624280">إدخال في القائمة "<ph name="LANGUAGE_ID" />": لغة غير معروفة أو غير متاحة.</translation>
 <translation id="3615877443314183785">أدخِل تاريخ انتهاء صلاحية صحيحًا</translation>
@@ -1200,6 +1202,7 @@
           <ph name="LIST_ITEM" />قد يراقب مزوّدو خدمة الإنترنت زيارات المستخدمين للمواقع الإلكترونية<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">تفعيل التحذيرات</translation>
+<translation id="4834718916855725099">لا ينصح المشرف بالحصول على لقطات شاشة أو تسجيلات لأنّ المحتوى المعروض على الشاشة سرّي:</translation>
 <translation id="4838327282952368871">جذّاب</translation>
 <translation id="4840250757394056958">‏عرض سجلّ Chrome</translation>
 <translation id="484462545196658690">تلقائي</translation>
@@ -1620,6 +1623,7 @@
 <translation id="6272383483618007430">‏تحديث Google</translation>
 <translation id="6276112860590028508">تظهر الصفحات من قائمة القراءة التابعة لك هنا</translation>
 <translation id="627746635834430766">‏للدفع بشكلٍ أسرع في المرة القادمة، يجب حفظ البطاقة وعنوان إرسال الفواتير في حسابك على Google.</translation>
+<translation id="6279098320682980337">ألم تتم تعبئة النموذج برقم البطاقة الافتراضية؟ يمكنك النقر على تفاصيل البطاقة لنسخها.</translation>
 <translation id="6280223929691119688">لا يمكن التسليم على هذا العنوان. اختَر عنوانًا آخر.</translation>
 <translation id="6282194474023008486">الرمز البريدي</translation>
 <translation id="6289939620939689042">لون الصفحة</translation>

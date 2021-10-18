@@ -208,6 +208,7 @@
 <translation id="718435575166326686">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="7196312274710523067">‏تعذَّر إطلاق Chromium. يُرجى إعادة المحاولة.</translation>
 <translation id="7197677400338048821">‏يتعذّر على Chromium التحقُّق من كلمات المرور. يُرجى إعادة المحاولة بعد 24 ساعة.</translation>
+<translation id="7218568399872925918">‏تحتفظ المواقع الإلكترونية التي تزورها بمعلوماتك إلى أن تغلق متصفّح Chromium.</translation>
 <translation id="7223968959479464213">‏إدارة المهام - Chromium</translation>
 <translation id="731795002583552498">‏تحديث Chromium</translation>
 <translation id="7318036098707714271">‏ملف الإعدادات المفضّلة تالف أو غير صالح.
@@ -261,6 +262,8 @@
 <translation id="8621669128220841554">‏تعذّر التثبيت نظرًا لحدوث خطأ غير محدد. يُرجى إعادة تنزيل Chromium.</translation>
 <translation id="8697124171261953979">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chromium أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="8704119203788522458">‏هذا هو Chromium الخاص بك</translation>
+<translation id="8713679423359107094">‏عند إغلاق جميع نوافذ Chromium، يتم تلقائيًا محو ملفات تعريف الارتباط وبيانات المواقع الإلكترونية.</translation>
+<translation id="8796443464227412154">‏سيتم <ph name="BEGIN_BOLD" />تسجيل خروجك من معظم المواقع الإلكترونية<ph name="END_BOLD" /> عند إغلاق متصفّح Chromium. إذا كانت المزامنة متوقّفة، سيتم أيضًا <ph name="BEGIN_BOLD" />تسجيل خروجك من خدمات Google ومتصفّح Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا والميكروفون من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="8803635938069941624">‏بنود نظام تشغيل Chromium</translation>
 <translation id="8821041990367117597">‏تعذر على Chromium مزامنة البيانات نظرًا لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>

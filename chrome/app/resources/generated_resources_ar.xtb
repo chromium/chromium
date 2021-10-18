@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">يُرجى مراجعة البنود الجديدة.</translation>
 <translation id="103279545524624934">‏احرص على تفريغ مساحة على القرص لتشغيل تطبيقات Android.</translation>
 <translation id="1033780634303702874">الوصول إلى الأجهزة التسلسلية</translation>
+<translation id="1034484273907870301">شريط علامات التبويب الخاص بالصور المصغّرة في وضع الجهاز اللوحي</translation>
 <translation id="1036348656032585052">إيقاف</translation>
 <translation id="1036511912703768636">‏الدخول إلى أي من أجهزة USB هذه</translation>
 <translation id="1036982837258183574">اضغط على |<ph name="ACCELERATOR" />| للخروج من وضع ملء الشاشة</translation>
@@ -309,6 +310,7 @@
 <translation id="1313660246522271310">سيتم تسجيل خروجك من جميع المواقع الإلكترونية، بما في ذلك المواقع الإلكترونية في علامات التبويب المفتوحة.</translation>
 <translation id="1313705515580255288">‏ستتم مزامنة الإشارات المرجعية والسجل وغير ذلك من الإعدادات مع حسابك على Google.</translation>
 <translation id="1316136264406804862">جارِ البحث...</translation>
+<translation id="1316248800168909509">تعذّر الربط بجهاز <ph name="DEVICE" />. يُرجى إعادة المحاولة.</translation>
 <translation id="1316495628809031177">تم إيقاف المزامنة مؤقتًا</translation>
 <translation id="1317637799698924700">‏سيتم تشغيل محطة الإرساء في وضع USB من نوع C المتوافق.</translation>
 <translation id="1319983966058170660">زر الرجوع إلى الصفحة الفرعية <ph name="SUBPAGE_TITLE" /></translation>
@@ -361,6 +363,7 @@
 <translation id="1378613616312864539">يتحكم <ph name="NAME" /> في هذا الإعداد</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق.}=1{كلمة مرور واحدة محتمَل تعرّضها للاختراق}two{كلمتا مرور ({NUM_COMPROMISED}) محتمَل تعرّضهما للاختراق}few{{NUM_COMPROMISED} كلمات مرور محتمَل تعرّضها للاختراق}many{{NUM_COMPROMISED} كلمة مرور محتمَل تعرّضها للاختراق}other{{NUM_COMPROMISED} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="1380028686461971526">الاتصال التلقائي بالشبكة</translation>
+<translation id="1381567580865186407">‏سيتم إرسال ملفات التعرّف على الكلام باللغة <ph name="LANGUAGE" /> إلى Google لمعالجتها.</translation>
 <translation id="1383597849754832576">يتعذّر تنزيل ملفات ميزة "النسخ النصي التلقائي". يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="1383861834909034572">فتح الملفّ عند انتهاء التحميل.</translation>
 <translation id="1383876407941801731">البحث</translation>
@@ -1150,6 +1153,7 @@
 <translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت</translation>
 <translation id="2173801458090845390">إضافة معرّف الطلبات إلى هذا الجهاز</translation>
 <translation id="2174948148799307353">تتم إدارة الحساب من خلال <ph name="PARENT_EMAIL" />. لتسجيل الخروج من الحساب الأساسي على هذا الجهاز، يُرجى النقر على الوقت الظاهر على الشاشة. في القائمة التي تظهر، يُرجى النقر على "تسجيل الخروج".</translation>
+<translation id="2175384018164129879">&amp;إدارة محركات البحث والبحث في المواقع الإلكترونية</translation>
 <translation id="2175607476662778685">شريط التشغيل السريع</translation>
 <translation id="217576141146192373">تتعذّر إضافة طابعة. يُرجى التحقق من ضبط الطابعة والمحاولة مرة أخرى.</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
@@ -1181,6 +1185,7 @@
 <translation id="2200356397587687044">‏يحتاج Chrome إلى إذن للمتابعة</translation>
 <translation id="2202898655984161076">حدثت مشكلة أثناء إدراج الطابعات. ربما لا يتم تسجيل بعض الطابعات بنجاح في <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">يمكن أن يحتوي الاسم على أحرف وأرقام ورموز خاصة.</translation>
+<translation id="220321590587754225">تعذّر الربط. يُرجى إعادة المحاولة.</translation>
 <translation id="2204034823255629767">قراءة وتغيير أي شيء تكتبه</translation>
 <translation id="220858061631308971">يُرجى إدخال رمز رقم التعريف الشخصي هذا على "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">تعذّر إكمال التثبيت</translation>
@@ -3848,6 +3853,7 @@
 <translation id="5040823038948176460">إعدادات المحتوى الإضافية</translation>
 <translation id="5043440033854483429">يمكن أن يحتوي الاسم على الأحرف والأرقام والواصلات (-)، ويجب أن يتراوح عدد أحرف الاسم بين 1 و15 حرفًا كحدّ أقصى.</translation>
 <translation id="5043913660911154449">‏أو حدِّد ملف PPD للطابعة <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">عدم إظهار هذه الخطوة مجددًا</translation>
 <translation id="5045550434625856497">كلمة مرور غير صحيحة</translation>
 <translation id="504561833207953641">جارٍ الفتح في جلسة المتصفِّح الحالي.</translation>
 <translation id="5047421709274785093">منع المواقع الإلكترونية من استخدام أجهزة استشعار الإضاءة والحركة</translation>
@@ -4963,6 +4969,7 @@
 <translation id="6263284346895336537">غير مهمة</translation>
 <translation id="6264365405983206840">تحديد &amp;الكل</translation>
 <translation id="6265687851677020761">إزالة المنفذ</translation>
+<translation id="6266532094411434237">جارٍ الربط بجهاز <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">اختَر شهادة للمصادقة مع <ph name="HOST_NAME" />.</translation>
 <translation id="6268252012308737255">فتح باستخدام <ph name="APP" /></translation>
 <translation id="6270391203985052864">السماح للمواقع الإلكترونية بطلب إرسال إشعارات</translation>
@@ -5297,6 +5304,7 @@
 <translation id="6619801788773578757">إضافة تطبيق الكشك</translation>
 <translation id="6619990499523117484">تأكيد رقم التعريف الشخصي</translation>
 <translation id="6622980291894852883">متابعة منع عرض الصور</translation>
+<translation id="6624036901798307345">في وضع الجهاز اللوحي، انقر على زر شريط أدوات عدّاد علامات التبويب لفتح شريط علامات التبويب الجديد الذي يعرض الصور المصغّرة لكل علامة تبويب.</translation>
 <translation id="6624535038674360844">الملف <ph name="FILE_NAME" /> به محتوى حسّاس أو خطير. يُرجى طلب إصلاحه من المالك.</translation>
 <translation id="6624687053722465643">الطعم اللذيذ</translation>
 <translation id="6628328486509726751">تم التحميل في <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -5602,6 +5610,7 @@
 <translation id="6955893174999506273">تخصيص مفتاح تحكّم إضافي واحد</translation>
 <translation id="6957044667612803194">لا يوفّر مفتاح الأمان هذا أرقام التعريف الشخصية</translation>
 <translation id="6960507406838246615">‏يجب تحديث نظام التشغيل Linux.</translation>
+<translation id="6960648667961844909">‏تعذّر تنزيل ملفات التعرّف على الكلام باللغة <ph name="LANGUAGE" />. ستتم إعادة محاولة التنزيل لاحقًا. ويتم إرسال ملفات التعرّف على الكلام إلى Google لمعالجتها إلى حين اكتمال عملية التنزيل.</translation>
 <translation id="696103774840402661">تم حذف جميع الملفات والبيانات المحلّية لكلّ المستخدمين على الجهاز <ph name="DEVICE_TYPE" /> نهائيًا.</translation>
 <translation id="6964390816189577014">بطل</translation>
 <translation id="6964760285928603117">الإزالة من مجموعة</translation>
@@ -6207,6 +6216,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (رمز الخطأ <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">إعادة تشغيل الكمبيوتر</translation>
 <translation id="7599527631045201165">اسم الجهاز طويل. يُرجى إدخال اسم أقصر لإعادة المحاولة.</translation>
+<translation id="7600054753482800821">&amp;إدارة محركات البحث والبحث في المواقع الإلكترونية</translation>
 <translation id="7600965453749440009">عدم الترجمة مطلقًا من اللغة <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">انتقل إلى <ph name="LANDING_PAGE" /> للاتصال.</translation>
 <translation id="7602079150116086782">لا توجد علامات تبويب من أجهزة أخرى</translation>
@@ -6874,6 +6884,7 @@
 <translation id="8244514732452879619">سيبدأ وقت النوم قريبًا</translation>
 <translation id="8246776524656196770">‏حماية مفتاح الأمان باستخدام رقم التعريف الشخصي (PIN)</translation>
 <translation id="8248050856337841185">ل&amp;صق</translation>
+<translation id="8248887045858762645">‏معلومة مفيدة عن Chrome</translation>
 <translation id="8249048954461686687">‏مجلد OEM</translation>
 <translation id="8249615410597138718">إرسال إلى أجهزتك</translation>
 <translation id="8249672078237421304">عرض ترجمة الصفحات المكتوبة بلغة غير لغتك</translation>
@@ -7347,6 +7358,7 @@
 <translation id="8763927697961133303">‏جهاز USB</translation>
 <translation id="87646919272181953">‏ألبوم "صور Google"</translation>
 <translation id="8767621466733104912">‏تحديث Chrome لجميع المستخدمين تلقائيًا</translation>
+<translation id="8767765348545497220">إغلاق فقاعة المساعدة</translation>
 <translation id="8770406935328356739">الدليل الجذر للإضافة</translation>
 <translation id="8771300903067484968">تمت إعادة ضبط خلفية الصفحة الرئيسية إلى الخلفية التلقائية.</translation>
 <translation id="8773302562181397928">حفظ <ph name="PRINTER_NAME" /></translation>
