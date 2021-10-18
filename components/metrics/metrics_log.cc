@@ -100,10 +100,12 @@ static int64_t ToMonotonicSeconds(base::TimeTicks time_ticks) {
   return (time_ticks - base::TimeTicks()).InSeconds();
 }
 
-// Populates |time| with information about the current time and time zone.
+// Populates |time| with information about the current time and, if
+// |record_time_zone| is true, the time zone.
 void RecordCurrentTime(
     const base::Clock* clock,
     const network_time::NetworkTimeTracker* network_time_tracker,
+    bool record_time_zone,
     metrics::ChromeUserMetricsExtension::RealLocalTime* time) {
   // Record the current time and the clock used to determine the time.
   base::Time now;
@@ -113,24 +115,26 @@ void RecordCurrentTime(
       metrics::ChromeUserMetricsExtension::RealLocalTime::CLIENT_CLOCK);
   time->set_time_sec(now.ToTimeT());
 
-  // Determine time zone offset from GMT and store it.
-  int32_t raw_offset, dst_offset;
-  UErrorCode status = U_ZERO_ERROR;
-  // Ask for a new time zone object each time; don't cache it, as time zones may
-  // change while Chrome is running.
-  std::unique_ptr<icu::TimeZone> time_zone(icu::TimeZone::createDefault());
-  time_zone->getOffset(now.ToDoubleT() * base::Time::kMillisecondsPerSecond,
-                       false,  // interpret |now| as from UTC/GMT
-                       raw_offset, dst_offset, status);
-  base::TimeDelta time_zone_offset =
-      base::Milliseconds(raw_offset + dst_offset);
-  if (U_FAILURE(status)) {
-    DVLOG(1) << "Failed to get time zone offset, error code: " << status;
-    // The fallback case is to get the raw timezone offset ignoring the daylight
-    // saving time.
-    time_zone_offset = base::Milliseconds(time_zone->getRawOffset());
+  if (record_time_zone) {
+    // Determine time zone offset from GMT and store it.
+    int32_t raw_offset, dst_offset;
+    UErrorCode status = U_ZERO_ERROR;
+    // Ask for a new time zone object each time; don't cache it, as time zones
+    // may change while Chrome is running.
+    std::unique_ptr<icu::TimeZone> time_zone(icu::TimeZone::createDefault());
+    time_zone->getOffset(now.ToDoubleT() * base::Time::kMillisecondsPerSecond,
+                         false,  // interpret |now| as from UTC/GMT
+                         raw_offset, dst_offset, status);
+    base::TimeDelta time_zone_offset =
+        base::Milliseconds(raw_offset + dst_offset);
+    if (U_FAILURE(status)) {
+      DVLOG(1) << "Failed to get time zone offset, error code: " << status;
+      // The fallback case is to get the raw timezone offset ignoring the
+      // daylight saving time.
+      time_zone_offset = base::Milliseconds(time_zone->getRawOffset());
+    }
+    time->set_time_zone_offset_from_gmt_sec(time_zone_offset.InSeconds());
   }
-  time->set_time_zone_offset_from_gmt_sec(time_zone_offset.InSeconds());
 }
 
 }  // namespace
@@ -199,7 +203,11 @@ MetricsLog::MetricsLog(
     auto* network_clock = network_clock_for_testing_
                               ? network_clock_for_testing_
                               : client_->GetNetworkTimeTracker();
+    // Don't record the time when creating a log because creating a log happens
+    // on startups and setting the timezone requires ICU initialization that is
+    // too expensive to run during this critical time.
     RecordCurrentTime(clock_, network_clock,
+                      /*record_time_zone=*/false,
                       uma_proto_.mutable_time_log_created());
   }
 
@@ -485,6 +493,7 @@ void MetricsLog::CloseLog() {
                               ? network_clock_for_testing_
                               : client_->GetNetworkTimeTracker();
     RecordCurrentTime(clock_, network_clock,
+                      /*record_time_zone=*/true,
                       uma_proto_.mutable_time_log_closed());
   }
   closed_ = true;
