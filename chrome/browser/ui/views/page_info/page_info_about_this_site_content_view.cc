@@ -29,7 +29,7 @@ PageInfoAboutThisSiteContentView::PageInfoAboutThisSiteContentView(
 
   info_ = ui_delegate_->GetAboutThisSiteInfo();
   auto* label = AddChildView(std::make_unique<views::Label>(
-      base::UTF8ToUTF16(info_->entity_description()),
+      base::UTF8ToUTF16(info_->description().description()),
       views::style::CONTEXT_LABEL));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -49,7 +49,7 @@ PageInfoAboutThisSiteContentView::CreateSourceLabel(
   // TODO(crbug.com/1250653): Use actual strings.
   std::vector<std::u16string> subst;
   subst.push_back(u"From ");
-  subst.push_back(base::UTF8ToUTF16(info->source_name()));
+  subst.push_back(base::UTF8ToUTF16(info->description().source().label()));
 
   std::vector<size_t> offsets;
   std::u16string text =
@@ -70,5 +70,6 @@ void PageInfoAboutThisSiteContentView::SourceLinkClicked(
     const ui::Event& event) {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED);
-  ui_delegate_->AboutThisSiteSourceClicked(GURL(info_->source_url()), event);
+  ui_delegate_->AboutThisSiteSourceClicked(
+      GURL(info_->description().source().url()), event);
 }

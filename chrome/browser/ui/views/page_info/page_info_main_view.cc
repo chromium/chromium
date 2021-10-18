@@ -513,7 +513,8 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
                               base::Unretained(navigation_handler_)),
           PageInfoViewFactory::GetAboutThisSiteIcon(), 0, std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
-          std::u16string(), base::ASCIIToUTF16(info->entity_description()),
+          std::u16string(),
+          base::ASCIIToUTF16(info->description().description()),
           PageInfoViewFactory::GetOpenSubpageIcon()));
   about_this_site_button->SetTitleText(u"About this site");
   about_this_site_button->SetSubtitleMultiline(false);

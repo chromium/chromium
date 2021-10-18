@@ -13,42 +13,52 @@ package page_info.proto;
 // lowest possible granularity. E.g. use “1 month” as soon as an event happened
 // at least 30 days ago. When precision is MORE_THAN, the event happened at
 // least the specified time ago, e.g. “more than 2 years ago”.
-message CoarseDuration {
+message SiteFirstSeen {
   optional int32 count = 1;
   optional DurationUnit unit = 2;
   optional DurationPrecision precision = 3;
 }
 
 enum DurationUnit {
-  DURATION_UNIT_UNSPECIFIED = 0;
-  DURATION_UNIT_DAYS = 1;
-  DURATION_UNIT_MONTHS = 2;
-  DURATION_UNIT_YEARS = 3;
+  UNIT_UNSPECIFIED = 0;
+  UNIT_DAYS = 1;
+  UNIT_MONTHS = 2;
+  UNIT_YEARS = 3;
 }
 
 enum DurationPrecision {
-  DURATION_PRECISION_UNSPECIFIED = 0;
-  DURATION_PRECISION_ABOUT = 1;
-  DURATION_PRECISION_LESS_THAN = 2;
-  DURATION_PRECISION_MORE_THAN = 3;
+  PRECISION_UNSPECIFIED = 0;
+  PRECISION_ABOUT = 1;
+  PRECISION_LESS_THAN = 2;
+  PRECISION_MORE_THAN = 3;
+}
+
+message SiteDescription {
+  optional string name = 1;
+  optional string description = 2;
+
+  // Information about the source of the description. Note that if your product
+  // uses the name or description, you must provide a link to the source as an
+  // attribution.
+  optional Hyperlink source = 3;
+
+  // Language of the description. Examples: "en", "en-US", "es-419", "zh-Hans"
+  optional string lang = 4;
+}
+
+// A hyperlink.
+message Hyperlink {
+  optional string label = 1;
+  optional string url = 2;
 }
 
 message SiteInfo {
   // First-seen date information related to this host/domain.
   // When Google first indexed this site.
-  optional CoarseDuration first_seen = 1;
+  optional SiteFirstSeen first_seen = 1;
 
-  // Name of the entity associated with the site.
-  optional string entity_name = 2;
-
-  // Description of the entity associated with the site.
-  optional string entity_description = 3;
-
-  // Source URL of this information.
-  optional string source_url = 4;
-
-  // Name of the source of this information.
-  optional string source_name = 5;
+  // Description for this site.
+  optional SiteDescription description = 2;
 }
 
 // Optimization metadata associated with SiteInfo.

@@ -27,9 +27,9 @@ JNI_PageInfoAboutThisSiteController_GetSiteDescription(
   auto info = service->GetAboutThisSiteInfo(*url);
   if (!info)
     return nullptr;
-  if (!info->has_entity_description())
+  if (!info->has_description() || !info->description().has_description())
     return nullptr;
   // TODO(crbug.com/1250653): Pass full protobuf instead.
-  return base::android::ConvertUTF8ToJavaString(env,
-                                                info->entity_description());
+  return base::android::ConvertUTF8ToJavaString(
+      env, info->description().description());
 }

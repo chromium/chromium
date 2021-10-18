@@ -30,21 +30,23 @@ AboutThisSiteService::GetAboutThisSiteInfo(const GURL& url) const {
   page_info::proto::SiteInfo site_info_metadata;
   const GURL test_gurl("https://example.com");
   if (url == test_gurl) {
-    site_info_metadata.set_entity_description(
+    auto* description = site_info_metadata.mutable_description();
+    description->set_description(
         "A domain used in illustrative examples in documents");
-    site_info_metadata.set_source_url("https://example.com");
-    site_info_metadata.set_source_name("Example source");
+    description->mutable_source()->set_url("https://example.com");
+    description->mutable_source()->set_label("Example source");
     return site_info_metadata;
   }
 
   const GURL permissions_gurl("https://permission.site");
   if (url == permissions_gurl) {
-    site_info_metadata.set_entity_description(
+    auto* description = site_info_metadata.mutable_description();
+    description->set_description(
         "A site containing test buttons for various browser APIs, in order"
         " to trigger permission dialogues and similar UI in modern "
         "browsers.");
-    site_info_metadata.set_source_url("https://example.com");
-    site_info_metadata.set_source_name("Example source");
+    description->mutable_source()->set_url("https://permission.site.com");
+    description->mutable_source()->set_label("Permission Site");
     return site_info_metadata;
   }
 
