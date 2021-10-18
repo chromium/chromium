@@ -74,6 +74,8 @@ static_library("test_support") {
   ]
   deps = [
     "//components/autofill/content/renderer",
+    "//components/autofill/core/common",
+    "//content/public/renderer",
     "//services/service_manager/public/cpp",
     "//skia",
     "//testing/gmock",
