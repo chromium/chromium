@@ -151,6 +151,10 @@ chrome.accessibilityPrivate.SwitchAccessMenuAction = {
   VOLUME_UP: 'volumeUp',
   VOLUME_DOWN: 'volumeDown',
   LEAVE_GROUP: 'leaveGroup',
+  ACTION_RECORDER: 'actionRecorder',
+  START_RECORDING: 'startRecording',
+  STOP_RECORDING: 'stopRecording',
+  EXECUTE_MACRO: 'executeMacro',
 };
 
 /**

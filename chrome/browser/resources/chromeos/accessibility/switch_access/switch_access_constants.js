@@ -88,7 +88,8 @@ export const SAConstants = {
     MAIN_MENU: 0,
     TEXT_NAVIGATION: 1,
     POINT_SCAN_MENU: 2,
-    QUICK_COMMANDS_MENU: 3
+    QUICK_COMMANDS_MENU: 3,
+    ACTION_RECORDER_MENU: 4,
   },
 
   /**

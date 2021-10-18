@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ActionRecorder} from './action_recorder.js';
 import {FocusRingManager} from './focus_ring_manager.js';
 import {MenuManager} from './menu_manager.js';
 import {Navigator} from './navigator.js';
@@ -70,6 +71,10 @@ export class ActionManager {
    */
   static onSelect() {
     const node = Navigator.byItem.currentNode;
+    if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
+      ActionRecorder.instance.recordNode(node.automationNode);
+    }
+
     if (MenuManager.isMenuOpen() || node.actions.length <= 1 ||
         !node.location) {
       node.doDefaultAction();
@@ -152,6 +157,27 @@ export class ActionManager {
           Navigator.byItem.exitGroupUnconditionally();
         }
         break;
+      case SwitchAccessMenuAction.ACTION_RECORDER:
+        if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
+          ActionManager.openMenu(SAConstants.MenuType.ACTION_RECORDER_MENU);
+        }
+        break;
+      case SwitchAccessMenuAction.START_RECORDING:
+        if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
+          ActionManager.exitAllMenus();
+          ActionRecorder.instance.start();
+        }
+        break;
+      case SwitchAccessMenuAction.STOP_RECORDING:
+        if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
+          ActionRecorder.instance.stop();
+        }
+        break;
+      case SwitchAccessMenuAction.EXECUTE_MACRO:
+        if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
+          ActionRecorder.instance.executeMacro();
+        }
+        break;
       // Item scan actions:
       default:
         ActionManager.instance.performActionOnCurrentNode_(action);
@@ -226,12 +252,22 @@ export class ActionManager {
 
       case SAConstants.MenuType.QUICK_COMMANDS_MENU:
         if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
-          // TODO(crbug.com/1258921): Replace this with quick commands.
           return [
             SwitchAccessMenuAction.LEAVE_GROUP,
             SwitchAccessMenuAction.STATUS_BAR, SwitchAccessMenuAction.VOLUME_UP,
             SwitchAccessMenuAction.VOLUME_DOWN,
             SwitchAccessMenuAction.SCREENSHOT
+          ];
+        }
+
+        return [];
+
+      case SAConstants.MenuType.ACTION_RECORDER_MENU:
+        if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
+          return [
+            SwitchAccessMenuAction.START_RECORDING,
+            SwitchAccessMenuAction.STOP_RECORDING,
+            SwitchAccessMenuAction.EXECUTE_MACRO,
           ];
         }
 
@@ -276,6 +312,9 @@ export class ActionManager {
     } else if (
         this.currentMenuType_ === SAConstants.MenuType.QUICK_COMMANDS_MENU) {
       return this.actionsForType_(SAConstants.MenuType.QUICK_COMMANDS_MENU);
+    } else if (
+        this.currentMenuType_ === SAConstants.MenuType.ACTION_RECORDER_MENU) {
+      return this.actionsForType_(SAConstants.MenuType.ACTION_RECORDER_MENU);
     }
 
     if (!this.actionNode_ || !this.actionNode_.isValidAndVisible()) {
@@ -287,7 +326,9 @@ export class ActionManager {
     if (this.currentMenuType_ === SAConstants.MenuType.MAIN_MENU) {
       actions = this.addGlobalActions_(actions);
       if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
-        // Ensure quick commands are the first item in the menu.
+        // Ensure quick commands and action recorder are the first items in the
+        // menu.
+        actions.unshift(SwitchAccessMenuAction.ACTION_RECORDER);
         actions.unshift(SwitchAccessMenuAction.QUICK_COMMANDS);
       }
     }

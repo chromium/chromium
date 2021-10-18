@@ -119,6 +119,18 @@ const base::flat_map<std::string, ButtonInfo>& GetMenuButtonDetails() {
       base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
           "leaveGroup",
           {&kSwitchAccessLeaveGroupIcon, IDS_ASH_SWITCH_ACCESS_LEAVE_GROUP}));
+      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
+          "actionRecorder", {&kSwitchAccessActionRecorderIcon,
+                             IDS_ASH_SWITCH_ACCESS_ACTION_RECORDER}));
+      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
+          "startRecording", {&kSwitchAccessStartRecordingIcon,
+                             IDS_ASH_SWITCH_ACCESS_START_RECORDING}));
+      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
+          "stopRecording", {&kSwitchAccessStopRecordingIcon,
+                            IDS_ASH_SWITCH_ACCESS_STOP_RECORDING}));
+      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
+          "executeMacro", {&kSwitchAccessExecuteMacroIcon,
+                           IDS_ASH_SWITCH_ACCESS_EXECUTE_MACRO}));
     }
 
     menu_button_details->swap(base_menu_button_details);
