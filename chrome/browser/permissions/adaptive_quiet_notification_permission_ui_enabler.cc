@@ -19,7 +19,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/permissions/permission_actions_history.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -28,6 +28,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
@@ -50,7 +51,8 @@ constexpr char kQuietUiEnabledStateInPrefsChangedTo[] =
     "Permissions.QuietNotificationPrompts.EnabledStateInPrefsChangedTo";
 
 bool DidDenyLastThreeTimes(
-    const std::vector<PermissionActionsHistory::Entry>& permission_actions) {
+    const std::vector<permissions::PermissionActionsHistory::Entry>&
+        permission_actions) {
   size_t rolling_denies_in_a_row = 0u;
   for (const auto& entry : base::Reversed(permission_actions)) {
     switch (entry.action) {
@@ -149,9 +151,10 @@ void AdaptiveQuietNotificationPermissionUiEnabler::PermissionPromptResolved() {
       QuietNotificationPermissionUiConfig::GetAdaptiveActivationWindowSize();
 
   const auto actions =
-      PermissionActionsHistory::GetForProfile(profile_)->GetHistory(
+      PermissionActionsHistoryFactory::GetForProfile(profile_)->GetHistory(
           std::max(cutoff, disable_time),
-          permissions::RequestType::kNotifications);
+          permissions::RequestType::kNotifications,
+          permissions::PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
 
   if (!DidDenyLastThreeTimes(actions)) {
     return;

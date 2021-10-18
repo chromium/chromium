@@ -534,7 +534,6 @@ extern const char kNaviOnboardGroup[];
 extern const char kQuietNotificationPermissionShouldShowPromo[];
 extern const char kQuietNotificationPermissionPromoWasShown[];
 extern const char kNotificationPermissionActions[];
-extern const char kPermissionActions[];
 extern const char kHadThreeConsecutiveNotificationPermissionDenies[];
 
 #if !defined(OS_ANDROID)

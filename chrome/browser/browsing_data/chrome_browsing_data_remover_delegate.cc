@@ -57,7 +57,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/permissions/permission_actions_history.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
@@ -116,6 +116,7 @@
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -760,7 +761,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                                                                   delete_end_);
     }
 
-    PermissionActionsHistory::GetForProfile(profile_)->ClearHistory(
+    PermissionActionsHistoryFactory::GetForProfile(profile_)->ClearHistory(
         delete_begin_, delete_end_);
   }
 

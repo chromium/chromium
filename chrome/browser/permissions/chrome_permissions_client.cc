@@ -17,7 +17,7 @@
 #include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/contextual_notification_permission_ui_selector.h"
-#include "chrome/browser/permissions/permission_actions_history.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/permissions/prediction_based_permission_ui_selector.h"
@@ -34,6 +34,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -107,6 +108,13 @@ ChromePermissionsClient::GetChooserContext(
       NOTREACHED();
       return nullptr;
   }
+}
+
+permissions::PermissionActionsHistory*
+ChromePermissionsClient::GetPermissionActionsHistory(
+    content::BrowserContext* browser_context) {
+  return PermissionActionsHistoryFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context));
 }
 
 permissions::PermissionDecisionAutoBlocker*
@@ -225,11 +233,12 @@ void ChromePermissionsClient::OnPromptResolved(
     permissions::RequestType request_type,
     permissions::PermissionAction action,
     const GURL& origin,
+    permissions::PermissionPromptDisposition prompt_disposition,
     absl::optional<QuietUiReason> quiet_ui_reason) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
-  PermissionActionsHistory::GetForProfile(profile)->RecordAction(action,
-                                                                 request_type);
+  PermissionActionsHistoryFactory::GetForProfile(profile)->RecordAction(
+      action, request_type, prompt_disposition);
 
   if (request_type == permissions::RequestType::kNotifications) {
     AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(profile)

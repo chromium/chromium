@@ -54,6 +54,14 @@ WebLayerPermissionsClient::GetPermissionDecisionAutoBlocker(
       browser_context);
 }
 
+// PermissionActionsHistory would never be read in WebLayer, so it seems logical
+// not to have the service at all.
+permissions::PermissionActionsHistory*
+WebLayerPermissionsClient::GetPermissionActionsHistory(
+    content::BrowserContext* browser_context) {
+  return nullptr;
+}
+
 permissions::PermissionManager* WebLayerPermissionsClient::GetPermissionManager(
     content::BrowserContext* browser_context) {
   return PermissionManagerFactory::GetForBrowserContext(browser_context);

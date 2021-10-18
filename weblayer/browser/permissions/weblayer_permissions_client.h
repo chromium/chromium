@@ -26,6 +26,8 @@ class WebLayerPermissionsClient : public permissions::PermissionsClient {
       content::BrowserContext* browser_context) override;
   bool IsSubresourceFilterActivated(content::BrowserContext* browser_context,
                                     const GURL& url) override;
+  permissions::PermissionActionsHistory* GetPermissionActionsHistory(
+      content::BrowserContext* browser_context) override;
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
       content::BrowserContext* browser_context) override;
   permissions::PermissionManager* GetPermissionManager(

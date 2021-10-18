@@ -1,19 +1,18 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "chrome/browser/permissions/permission_actions_history.h"
+#include "components/permissions/permission_actions_history.h"
 
 #include "base/containers/adapters.h"
 #include "base/json/values_util.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/pref_names.h"
 #include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -21,7 +20,9 @@
 
 #include <vector>
 
+namespace permissions {
 namespace {
+
 // Inner structure of |prefs::kPermissionActions| containing a history of past
 // permission actions. It is a dictionary of JSON lists keyed on the result of
 // PermissionUtil::GetPermissionString (lower-cased for backwards compatibility)
@@ -29,28 +30,28 @@ namespace {
 //
 //   "profile.content_settings.permission_actions": {
 //      "notifications": [
-//       { "time": "1333333333337", "action": 1 },
-//       { "time": "1567957177000", "action": 3 },
+//       { "time": "1333333333337", "action": 1, "prompt_disposition": 2 },
+//       { "time": "1567957177000", "action": 3, "prompt_disposition": 4 },
 //     ],
 //     "geolocation": [...],
 //     ...
 //   }
+// The "prompt_disposition" key was added in M96. Any older entry will be
+// missing that key. The value is backed by the PermissionPromptDisposition
+// enum.
 constexpr char kPermissionActionEntryActionKey[] = "action";
 constexpr char kPermissionActionEntryTimestampKey[] = "time";
+constexpr char kPermissionActionEntryPromptDispositionKey[] =
+    "prompt_disposition";
 
 // Entries in permission actions expire after they become this old.
 constexpr base::TimeDelta kPermissionActionMaxAge = base::Days(90);
 
 }  // namespace
 
-// static
-PermissionActionsHistory* PermissionActionsHistory::GetForProfile(
-    Profile* profile) {
-  return Factory::GetForProfile(profile);
-}
-
 std::vector<PermissionActionsHistory::Entry>
-PermissionActionsHistory::GetHistory(const base::Time& begin) {
+PermissionActionsHistory::GetHistory(const base::Time& begin,
+                                     EntryFilter entry_filter) {
   const base::DictionaryValue* dictionary =
       pref_service_->GetDictionary(prefs::kPermissionActions);
   if (!dictionary)
@@ -59,29 +60,30 @@ PermissionActionsHistory::GetHistory(const base::Time& begin) {
   std::vector<PermissionActionsHistory::Entry> matching_actions;
   for (auto permission_entry : dictionary->DictItems()) {
     const auto permission_actions =
-        GetHistoryInternal(begin, permission_entry.first);
+        GetHistoryInternal(begin, permission_entry.first, entry_filter);
 
     matching_actions.insert(matching_actions.end(), permission_actions.begin(),
                             permission_actions.end());
   }
 
-  base::ranges::sort(matching_actions, {},
-                     [](const PermissionActionsHistory::Entry& entry) {
-                       return entry.time;
-                     });
-
+  base::ranges::sort(
+      matching_actions, {},
+      [](const PermissionActionsHistory::Entry& entry) { return entry.time; });
   return matching_actions;
 }
 
 std::vector<PermissionActionsHistory::Entry>
 PermissionActionsHistory::GetHistory(const base::Time& begin,
-                                          permissions::RequestType type) {
-  return GetHistoryInternal(begin, PermissionKeyForRequestType(type));
+                                     RequestType type,
+                                     EntryFilter entry_filter) {
+  return GetHistoryInternal(begin, PermissionKeyForRequestType(type),
+                            entry_filter);
 }
 
 void PermissionActionsHistory::RecordAction(
-    permissions::PermissionAction action,
-    permissions::RequestType type) {
+    PermissionAction action,
+    RequestType type,
+    PermissionPromptDisposition prompt_disposition) {
   DictionaryPrefUpdate update(pref_service_, prefs::kPermissionActions);
 
   const base::StringPiece permission_path(PermissionKeyForRequestType(type));
@@ -108,11 +110,13 @@ void PermissionActionsHistory::RecordAction(
                                base::TimeToValue(base::Time::Now()));
   new_action_attributes.SetIntKey(kPermissionActionEntryActionKey,
                                   static_cast<int>(action));
+  new_action_attributes.SetIntKey(kPermissionActionEntryPromptDispositionKey,
+                                  static_cast<int>(prompt_disposition));
   permission_actions->Append(std::move(new_action_attributes));
 }
 
 void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
-                                                 const base::Time& delete_end) {
+                                            const base::Time& delete_end) {
   DCHECK(!delete_end.is_null());
   if (delete_begin.is_null() && delete_end.is_max()) {
     pref_service_->ClearPref(prefs::kPermissionActions);
@@ -132,12 +136,13 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
   }
 }
 
-PermissionActionsHistory::PermissionActionsHistory(Profile* profile)
-    : pref_service_(profile->GetPrefs()) {}
+PermissionActionsHistory::PermissionActionsHistory(PrefService* pref_service)
+    : pref_service_(pref_service) {}
 
 std::vector<PermissionActionsHistory::Entry>
 PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
-                                                  const std::string& key) {
+                                             const std::string& key,
+                                             EntryFilter entry_filter) {
   const base::Value* permission_actions =
       pref_service_->GetDictionary(prefs::kPermissionActions)->FindListKey(key);
 
@@ -150,46 +155,72 @@ PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
     const absl::optional<base::Time> timestamp =
         base::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
 
-    if (timestamp >= begin) {
-      const permissions::PermissionAction past_action =
-          static_cast<permissions::PermissionAction>(
-              *(entry.FindIntKey(kPermissionActionEntryActionKey)));
+    if (timestamp < begin)
+      continue;
 
-      matching_actions.emplace_back(
-          PermissionActionsHistory::Entry{past_action, timestamp.value()});
+    if (entry_filter != EntryFilter::WANT_ALL_PROMPTS) {
+      // If we want either the Loud or Quiet UI actions but don't have this
+      // info due to legacy reasons we ignore the entry.
+      const absl::optional<int> prompt_disposition_int =
+          entry.FindIntKey(kPermissionActionEntryPromptDispositionKey);
+      if (!prompt_disposition_int)
+        continue;
+
+      const PermissionPromptDisposition prompt_disposition =
+          static_cast<PermissionPromptDisposition>(*prompt_disposition_int);
+
+      if (entry_filter == EntryFilter::WANT_LOUD_PROMPTS_ONLY &&
+          !PermissionUmaUtil::IsPromptDispositionLoud(prompt_disposition)) {
+        continue;
+      }
+
+      if (entry_filter == EntryFilter::WANT_QUIET_PROMPTS_ONLY &&
+          !PermissionUmaUtil::IsPromptDispositionQuiet(prompt_disposition)) {
+        continue;
+      }
     }
+    const PermissionAction past_action = static_cast<PermissionAction>(
+        *(entry.FindIntKey(kPermissionActionEntryActionKey)));
+    matching_actions.emplace_back(
+        PermissionActionsHistory::Entry{past_action, timestamp.value()});
   }
-
   return matching_actions;
 }
 
-// PermissionActionsHistory::Factory------------------------------------
-PermissionActionsHistory*
-PermissionActionsHistory::Factory::GetForProfile(Profile* profile) {
-  return static_cast<PermissionActionsHistory*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+PrefService* PermissionActionsHistory::GetPrefServiceForTesting() {
+  return pref_service_;
 }
 
 // static
-PermissionActionsHistory::Factory*
-PermissionActionsHistory::Factory::GetInstance() {
-  return base::Singleton<PermissionActionsHistory::Factory>::get();
+void PermissionActionsHistory::FillInActionCounts(
+    PredictionRequestFeatures::ActionCounts* counts,
+    const std::vector<PermissionActionsHistory::Entry>& actions) {
+  for (const auto& entry : actions) {
+    switch (entry.action) {
+      case PermissionAction::DENIED:
+        counts->denies++;
+        break;
+      case PermissionAction::GRANTED:
+        counts->grants++;
+        break;
+      case PermissionAction::DISMISSED:
+        counts->dismissals++;
+        break;
+      case PermissionAction::IGNORED:
+        counts->ignores++;
+        break;
+      default:
+        // Anything else is ignored.
+        break;
+    }
+  }
 }
 
-PermissionActionsHistory::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
-          "PermissionActionsHistory",
-          BrowserContextDependencyManager::GetInstance()) {}
-
-PermissionActionsHistory::Factory::~Factory() = default;
-
-KeyedService* PermissionActionsHistory::Factory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  return new PermissionActionsHistory(static_cast<Profile*>(context));
+// static
+void PermissionActionsHistory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterDictionaryPref(prefs::kPermissionActions,
+                                   PrefRegistry::LOSSY_PREF);
 }
 
-content::BrowserContext*
-PermissionActionsHistory::Factory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
+}  // namespace permissions

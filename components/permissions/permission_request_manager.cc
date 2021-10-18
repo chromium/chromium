@@ -713,7 +713,7 @@ void PermissionRequestManager::FinalizeCurrentRequests(
   }
   PermissionUmaUtil::PermissionPromptResolved(
       requests_, web_contents(), permission_action, time_to_decision,
-      DetermineCurrentRequestUIDispositionForUMA(),
+      DetermineCurrentRequestUIDisposition(),
       DetermineCurrentRequestUIDispositionReasonForUMA(),
       prediction_grant_likelihood_);
 
@@ -736,7 +736,8 @@ void PermissionRequestManager::FinalizeCurrentRequests(
 
     PermissionsClient::Get()->OnPromptResolved(
         browser_context, request->request_type(), permission_action,
-        request->requesting_origin(), quiet_ui_reason);
+        request->requesting_origin(), DetermineCurrentRequestUIDisposition(),
+        quiet_ui_reason);
 
     PermissionEmbargoStatus embargo_status =
         PermissionEmbargoStatus::NOT_EMBARGOED;
@@ -957,7 +958,7 @@ void PermissionRequestManager::OnPermissionUiSelectorDone(
 }
 
 PermissionPromptDisposition
-PermissionRequestManager::DetermineCurrentRequestUIDispositionForUMA() {
+PermissionRequestManager::DetermineCurrentRequestUIDisposition() {
   if (current_request_prompt_disposition_.has_value())
     return current_request_prompt_disposition_.value();
   return PermissionPromptDisposition::NONE_VISIBLE;

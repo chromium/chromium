@@ -10,9 +10,11 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -55,8 +57,9 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
   void RecordHistoryActions(size_t action_count,
                             permissions::RequestType request_type) {
     while (action_count--) {
-      PermissionActionsHistory::GetForProfile(profile())->RecordAction(
-          permissions::PermissionAction::DENIED, request_type);
+      PermissionActionsHistoryFactory::GetForProfile(profile())->RecordAction(
+          permissions::PermissionAction::DENIED, request_type,
+          permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
     }
   }
 

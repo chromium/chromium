@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
-#include "chrome/browser/permissions/permission_actions_history.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/common/chrome_features.h"
@@ -26,11 +26,13 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/pref_names.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -550,7 +552,7 @@ TEST_F(ChromePermissionRequestManagerTest,
 
   // Clearing interaction history, or turning off quiet mode in preferences does
   // not change the state of the currently showing quiet UI.
-  PermissionActionsHistory::GetForProfile(profile())->ClearHistory(
+  PermissionActionsHistoryFactory::GetForProfile(profile())->ClearHistory(
       base::Time(), base::Time::Max());
   profile()->GetPrefs()->ClearPref(prefs::kEnableQuietNotificationPermissionUi);
   EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
@@ -588,11 +590,12 @@ TEST_F(ChromePermissionRequestManagerTest,
   WaitForBubbleToBeShown();
   Deny();
 
-  DictionaryPrefUpdate update(profile()->GetPrefs(), prefs::kPermissionActions);
+  DictionaryPrefUpdate update(profile()->GetPrefs(),
+                              permissions::prefs::kPermissionActions);
   const auto permissions_actions =
       update->FindListPath("notifications")->GetList();
-  PermissionActionsHistory::GetForProfile(profile())->ClearHistory(from_time,
-                                                                   to_time);
+  PermissionActionsHistoryFactory::GetForProfile(profile())->ClearHistory(
+      from_time, to_time);
 
   // Check that we have cleared all entries >= |from_time| and <|end_time|.
   EXPECT_EQ(permissions_actions.size(), 3u);
