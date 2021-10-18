@@ -11,6 +11,7 @@
 #include "components/optimization_guide/core/optimization_metadata.h"
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -62,6 +63,9 @@ void ShoppingPersistedDataTabHelper::CreateForWebState(
 
 const ShoppingPersistedDataTabHelper::PriceDrop*
 ShoppingPersistedDataTabHelper::GetPriceDrop() {
+  if (!IsPriceAlertsEligible(web_state_->GetBrowserState()) ||
+      !IsPriceAlertsEnabled())
+    return nullptr;
   if (!price_drop_ || price_drop_->url != web_state_->GetLastCommittedURL() ||
       IsPriceDropStale(price_drop_->timestamp)) {
     ResetPriceDrop();
@@ -123,6 +127,9 @@ std::u16string ShoppingPersistedDataTabHelper::FormatPrice(
 void ShoppingPersistedDataTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
+  if (!IsPriceAlertsEligible(web_state->GetBrowserState()) ||
+      !IsPriceAlertsEnabled())
+    return;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS())

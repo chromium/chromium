@@ -14,13 +14,21 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/unified_consent/pref_names.h"
+#include "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_test_utils.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "url/gurl.h"
 
@@ -29,6 +37,8 @@
 #endif
 
 namespace {
+const char kPriceTrackingWithOptimizationGuideParam[] =
+    "price_tracking_with_optimization_guide";
 constexpr char kTypeURL[] =
     "type.googleapis.com/optimization_guide.proto.PriceTrackingData";
 constexpr char kPriceDropUrl[] = "https://merchant.com/has_price_drop.html";
@@ -80,6 +90,24 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
         optimization_guide::switches::kPurgeHintsStore);
   }
 
+  void SetUp() override {
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &AuthenticationServiceFake::CreateAuthenticationService));
+    browser_state_ = builder.Build();
+    browser_state_->GetPrefs()->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+    fake_identity_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+                                                    gaiaID:@"foo1ID"
+                                                      name:@"Fake Foo 1"];
+    auth_service_ = static_cast<AuthenticationServiceFake*>(
+        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
+            browser_state_.get()));
+    auth_service_->SignIn(fake_identity_);
+  }
+
   void MockOptimizationGuideResponse(
       const commerce::PriceTrackingData& price_tracking_data) {
     optimization_guide::proto::Any any_metadata;
@@ -90,13 +118,13 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
         optimization_guide::CreateHintsConfig(
             GURL(kPriceDropUrl), optimization_guide::proto::PRICE_TRACKING,
             &any_metadata));
-
-    scoped_feature_list_.InitWithFeatures(
-        {optimization_guide::features::kOptimizationHints,
-         optimization_guide::features::kOptimizationGuideMetadataValidation},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{optimization_guide::features::kOptimizationHints, {}},
+         {optimization_guide::features::kOptimizationGuideMetadataValidation,
+          {}},
+         {kCommercePriceTracking,
+          {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
         {});
-
-    browser_state_ = TestChromeBrowserState::Builder().Build();
 
     web_state_.SetBrowserState(browser_state_.get());
     ShoppingPersistedDataTabHelper::CreateForWebState(&web_state_);
@@ -142,12 +170,14 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
   web::FakeNavigationContext context_;
+  FakeChromeIdentity* fake_identity_ = nullptr;
+  AuthenticationServiceFake* auth_service_ = nullptr;
 };
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestRegularPriceDrop) {

@@ -130,7 +130,6 @@ void PositionView(UIView* view, CGPoint point) {
     self.layer.shadowRadius = 4.0f;
     self.layer.shadowOpacity = 0.5f;
     self.layer.masksToBounds = NO;
-
     NSMutableArray* constraints = [[NSMutableArray alloc] init];
     [constraints addObjectsFromArray:@[
       [topBar.topAnchor constraintEqualToAnchor:contentView.topAnchor],
