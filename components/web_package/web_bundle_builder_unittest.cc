@@ -55,7 +55,7 @@ TEST_F(WebBundleBuilderTest, CorrectWebBundleSizeIsWritten) {
 }
 
 TEST_F(WebBundleBuilderTest, ByteByByteComparison) {
-  WebBundleBuilder builder(kFallbackUrl, "");
+  WebBundleBuilder builder("", "");
   builder.AddExchange(
       "https://test.example.org/",
       {{":status", "200"}, {"content-type", "text/html; charset=UTF-8"}},
@@ -66,12 +66,12 @@ TEST_F(WebBundleBuilderTest, ByteByByteComparison) {
       "<p>Hello Web Bundles!</p>");
   std::vector<uint8_t> bundle = builder.CreateBundle();
   std::vector<uint8_t> expected_bundle = GetStringAsBytes(
-      GetTestFileContents(base::FilePath(FILE_PATH_LITERAL("simple.wbn"))));
+      GetTestFileContents(base::FilePath(FILE_PATH_LITERAL("simple_b2.wbn"))));
   EXPECT_EQ(bundle, expected_bundle);
 }
 
 TEST_F(WebBundleBuilderTest, MoreThan23ResponsesInABundle) {
-  WebBundleBuilder builder("", "", BundleVersion::kB2);
+  WebBundleBuilder builder("", "");
   for (int i = 0; i < 24; ++i) {
     builder.AddExchange("https://test.example.org/" + base::NumberToString(i),
                         {{":status", "200"}, {"content-type", "text/html;"}},

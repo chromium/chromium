@@ -97,10 +97,13 @@ ParseBundleResult ParseBundle(TestDataSource* data_source,
   return result;
 }
 
-void ExpectFormatErrorWithFallbackURL(ParseBundleResult result) {
+void ExpectFormatError(ParseBundleResult result,
+                       bool should_have_fallback_url = false) {
   ASSERT_TRUE(result.second);
   EXPECT_EQ(result.second->type, mojom::BundleParseErrorType::kFormatError);
-  EXPECT_EQ(result.second->fallback_url, kFallbackUrl);
+  if (should_have_fallback_url) {
+    EXPECT_EQ(result.second->fallback_url, kFallbackUrl);
+  }
 }
 
 // Finds the only response for |url|. The index entry for |url| must not have
@@ -215,7 +218,7 @@ TEST_F(WebBundleParserTest, SectionLengthsTooLarge) {
   builder.AddSection(too_long_section_name, cbor::Value(0));
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source));
 }
 
 TEST_F(WebBundleParserTest, DuplicateSectionName) {
@@ -224,7 +227,7 @@ TEST_F(WebBundleParserTest, DuplicateSectionName) {
   builder.AddSection("foo", cbor::Value(0));
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source));
 }
 
 TEST_F(WebBundleParserTest, SingleEntry) {
@@ -253,7 +256,7 @@ TEST_F(WebBundleParserTest, InvalidRequestURL) {
                       "payload");
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source));
 }
 
 TEST_F(WebBundleParserTest, RequestURLIsNotUTF8) {
@@ -264,7 +267,7 @@ TEST_F(WebBundleParserTest, RequestURLIsNotUTF8) {
                       "payload");
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source));
 }
 
 TEST_F(WebBundleParserTest, RequestURLHasBadScheme) {
@@ -274,7 +277,7 @@ TEST_F(WebBundleParserTest, RequestURLHasBadScheme) {
                       "payload");
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source));
 }
 
 TEST_F(WebBundleParserTest, RequestURLHasCredentials) {
@@ -284,7 +287,7 @@ TEST_F(WebBundleParserTest, RequestURLHasCredentials) {
                       "payload");
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source));
 }
 
 TEST_F(WebBundleParserTest, RequestURLHasFragment) {
@@ -294,7 +297,7 @@ TEST_F(WebBundleParserTest, RequestURLHasFragment) {
                       "payload");
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source));
 }
 
 TEST_F(WebBundleParserTest, RequestURLIsValidUrnUuid) {
@@ -320,7 +323,7 @@ TEST_F(WebBundleParserTest, RequestURLIsInvalidUrnUuid) {
                       "payload");
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source));
 }
 
 TEST_F(WebBundleParserTest, NoStatusInResponseHeaders) {
@@ -419,7 +422,7 @@ TEST_F(WebBundleParserTest, NoContentTypeWithEmptyContent) {
 }
 
 TEST_F(WebBundleParserTest, Variants) {
-  WebBundleBuilder builder(kFallbackUrl, kManifestUrl);
+  WebBundleBuilder builder(kFallbackUrl, kManifestUrl, BundleVersion::kB1);
   auto location1 = builder.AddResponse(
       {{":status", "200"}, {"content-type", "text/html"}}, "payload1");
   auto location2 = builder.AddResponse(
@@ -452,20 +455,21 @@ TEST_F(WebBundleParserTest, EmptyIndexEntry) {
   builder.AddIndexEntry("https://test.example.com/", "", {});
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source));
 }
 
 TEST_F(WebBundleParserTest, EmptyIndexEntryWithVariants) {
-  WebBundleBuilder builder(kFallbackUrl, kManifestUrl);
+  WebBundleBuilder builder(kFallbackUrl, kManifestUrl, BundleVersion::kB1);
   builder.AddIndexEntry("https://test.example.com/",
                         "Accept;text/html;text/plain", {});
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source),
+                    /* should_have_fallback_url */ true);
 }
 
 TEST_F(WebBundleParserTest, MultipleResponsesWithoutVariantsValue) {
-  WebBundleBuilder builder(kFallbackUrl, kManifestUrl);
+  WebBundleBuilder builder(kFallbackUrl, kManifestUrl, BundleVersion::kB1);
   auto location1 = builder.AddResponse(
       {{":status", "200"}, {"content-type", "text/html"}}, "payload1");
   auto location2 = builder.AddResponse(
@@ -474,7 +478,8 @@ TEST_F(WebBundleParserTest, MultipleResponsesWithoutVariantsValue) {
                         {location1, location2});
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source),
+                    /* should_have_fallback_url */ true);
 }
 
 TEST_F(WebBundleParserTest, AllKnownSectionInCritical) {
@@ -504,7 +509,7 @@ TEST_F(WebBundleParserTest, UnknownSectionInCritical) {
   builder.AddSection("critical", cbor::Value(critical_section));
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source));
 }
 
 TEST_F(WebBundleParserTest, NoManifest) {
@@ -519,13 +524,15 @@ TEST_F(WebBundleParserTest, NoManifest) {
 }
 
 TEST_F(WebBundleParserTest, InvalidManifestURL) {
-  WebBundleBuilder builder(kFallbackUrl, "not-an-absolute-url");
+  WebBundleBuilder builder(kFallbackUrl, "not-an-absolute-url",
+                           BundleVersion::kB1);
   builder.AddExchange("https://test.example.com/",
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "payload");
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+  ExpectFormatError(ParseBundle(&data_source),
+                    /* should_have_fallback_url */ true);
 }
 
 TEST_F(WebBundleParserTest, EmptySignaturesSection) {
@@ -668,13 +675,11 @@ TEST_F(WebBundleParserTest, MultipleSignatures) {
 }
 
 TEST_F(WebBundleParserTest, ParseGoldenFile) {
-  TestDataSource data_source(base::FilePath(FILE_PATH_LITERAL("hello.wbn")));
+  TestDataSource data_source(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn")));
 
   mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
   ASSERT_TRUE(metadata);
   ASSERT_EQ(metadata->requests.size(), 4u);
-  EXPECT_EQ(metadata->manifest_url,
-            "https://test.example.org/manifest.webmanifest");
 
   std::map<std::string, mojom::BundleResponsePtr> responses;
   for (const auto& item : metadata->requests) {
@@ -705,8 +710,6 @@ TEST_F(WebBundleParserTest, ParseGoldenFileB2Version) {
   mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
   ASSERT_TRUE(metadata);
   ASSERT_EQ(metadata->requests.size(), 4u);
-  EXPECT_EQ(metadata->manifest_url,
-            "https://test.example.org/manifest.webmanifest");
   EXPECT_EQ(metadata->primary_url, "https://test.example.org/");
 
   std::map<std::string, mojom::BundleResponsePtr> responses;
@@ -815,8 +818,6 @@ TEST_F(WebBundleParserTest, RelativeURL) {
         ParseBundle(&data_source, base_url).first;
     EXPECT_EQ(metadata->primary_url,
               "https://test.example.com/dir/path/to/primary_url");
-    EXPECT_EQ(metadata->manifest_url,
-              "https://test.example.com/dir/path/to/manifest");
     ASSERT_TRUE(metadata);
     ASSERT_EQ(metadata->requests.size(), 1u);
     auto location = FindResponse(

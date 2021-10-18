@@ -32,7 +32,7 @@ class WebBundleBuilder {
 
   WebBundleBuilder(const std::string& fallback_url,
                    const std::string& manifest_url,
-                   BundleVersion version = BundleVersion::kB1,
+                   BundleVersion version = BundleVersion::kB2,
                    bool allow_invalid_utf8_strings_for_testing = false);
 
   ~WebBundleBuilder();

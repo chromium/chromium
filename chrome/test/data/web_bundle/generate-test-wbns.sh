@@ -15,7 +15,7 @@ fi
 
 # Generate a WBN which includes urn:uuid resources.
 gen-bundle \
-  -version b1 \
+  -version b2 \
   -har urn-handler-test.har \
   -primaryURL urn:uuid:be40faa5-b581-42af-9c0c-fd9cb3b8a7a0 \
-  -o urn-handler-test.wbn
+  -o urn-handler-test_b2.wbn

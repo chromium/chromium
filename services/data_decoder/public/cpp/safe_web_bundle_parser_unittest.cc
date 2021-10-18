@@ -137,7 +137,7 @@ class SafeWebBundleParserTest : public testing::Test {
 TEST_F(SafeWebBundleParserTest, ParseGoldenFile) {
   SafeWebBundleParser parser;
   base::File test_file =
-      OpenTestFile(base::FilePath(FILE_PATH_LITERAL("hello.wbn")));
+      OpenTestFile(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn")));
   ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
 
   web_package::mojom::BundleMetadataPtr metadata_result;
@@ -236,7 +236,7 @@ TEST_F(SafeWebBundleParserTest, UseMockFactory) {
 
   EXPECT_FALSE(raw_factory->GetCreatedParser());
   base::File test_file =
-      OpenTestFile(base::FilePath(FILE_PATH_LITERAL("hello.wbn")));
+      OpenTestFile(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn")));
   ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
   ASSERT_TRUE(raw_factory->GetCreatedParser());
   EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());

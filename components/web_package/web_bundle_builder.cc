@@ -48,7 +48,7 @@ WebBundleBuilder::WebBundleBuilder(const std::string& fallback_url,
     : fallback_url_(fallback_url), version_(version) {
   writer_config_.allow_invalid_utf8_for_testing =
       allow_invalid_utf8_strings_for_testing;
-  if (!manifest_url.empty()) {
+  if (!manifest_url.empty() && version == BundleVersion::kB1) {
     AddSection("manifest", GetCborValueOfURL(manifest_url));
   }
   if (version == BundleVersion::kB2 && !fallback_url_.empty()) {
@@ -90,7 +90,7 @@ void WebBundleBuilder::AddIndexEntry(
     std::vector<ResponseLocation> response_locations) {
   // 'b2' version does not include |variants_value| in the response array.
   if (version_ != BundleVersion::kB1) {
-    DCHECK_EQ(response_locations.size(), 1u);
+    DCHECK_LE(response_locations.size(), 1u);
   }
   delayed_index_.insert(
       {std::string(url), std::make_pair(std::string(variants_value),
