@@ -108,11 +108,19 @@ public class AssistantViewFactory {
         textView.setTag(identifier);
         if (textAppearance != null) {
             try {
-                int fieldId = R.style.class.getField(textAppearance.replace('.', '_')).getInt(null);
-                if (fieldId != 0) {
-                    ApiCompatibilityUtils.setTextAppearance(textView, fieldId);
+                // TODO(b/203392437): Find the correct way of accessing a resource by name.
+                if (textAppearance.equals("TextAppearance.ErrorCaption")) {
+                    Log.i(TAG, "Using explicit style id for " + textAppearance);
+                    ApiCompatibilityUtils.setTextAppearance(
+                            textView, R.style.TextAppearance_ErrorCaption);
                 } else {
-                    Log.e(TAG, "Could not find field id for " + textAppearance);
+                    int fieldId =
+                            R.style.class.getField(textAppearance.replace('.', '_')).getInt(null);
+                    if (fieldId != 0) {
+                        ApiCompatibilityUtils.setTextAppearance(textView, fieldId);
+                    } else {
+                        Log.e(TAG, "Could not find field id for " + textAppearance);
+                    }
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error looking up style id for " + textAppearance, e);
