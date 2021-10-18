@@ -10,8 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "chrome/grit/pdf_resources.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -25,7 +23,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-#include "chrome/browser/ui/webui/print_preview/data_request_filter.h"
 #include "chrome/common/webui_url_constants.h"
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
@@ -88,16 +85,8 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     info.full_frame = !stream->embedded();
     info.allow_javascript = stream->pdf_plugin_attributes()->allow_javascript;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  } else if (stream_url.GetOrigin() == chrome::kChromeUIPrintURL) {
-    // Check if the request is for a valid Print Preview data path. Note that
-    // `ParseDataPath()` wants the path without a leading '/'.
-    base::StringPiece stream_path = stream_url.path_piece();
-    if (!base::StartsWith(stream_path, "/") ||
-        !printing::ParseDataPath(std::string(stream_path.substr(1)), nullptr,
-                                 nullptr)) {
-      return absl::nullopt;
-    }
-
+  } else if (stream_url.GetWithEmptyPath() ==
+             chrome::kChromeUIUntrustedPrintURL) {
     // Print Preview doesn't have access to `chrome.mimeHandlerPrivate`, so just
     // use values that match those set by `PDFViewerPPElement`.
     original_url = stream_url;

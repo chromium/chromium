@@ -66,7 +66,7 @@ bool GetPdfPluginInfo(content::WebPluginInfo* info) {
       pdf_plugin_path, info);
 }
 
-const char kDummyPrintUrl[] = "chrome://print/dummy.pdf";
+const char kDummyPrintUrl[] = "chrome-untrusted://print/dummy.pdf";
 
 void CountFrames(int* frame_count,
                  content::RenderFrameHost* frame) {

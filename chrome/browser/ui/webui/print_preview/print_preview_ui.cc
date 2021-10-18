@@ -59,6 +59,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "printing/buildflags/buildflags.h"
@@ -371,13 +372,16 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
 }
 
 void SetupPrintPreviewPlugin(content::WebUIDataSource* source) {
-  // TODO(crbug.com/1238829): Only serve PDF from chrome-untrusted://print.
+  // TODO(crbug.com/1238829): Only serve PDF from chrome-untrusted://print. The
+  // legacy Pepper-based PDF plugin still requires this.
   AddDataRequestFilter(*source);
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ChildSrc, "child-src 'self';");
+      network::mojom::CSPDirectiveName::ChildSrc,
+      "child-src 'self' chrome-untrusted://print;");
   source->DisableDenyXFrameOptions();
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ObjectSrc, "object-src 'self';");
+      network::mojom::CSPDirectiveName::ObjectSrc,
+      "object-src chrome-untrusted://print;");
 }
 
 content::WebUIDataSource* CreatePrintPreviewUISource(Profile* profile) {
@@ -441,6 +445,9 @@ PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui)
     : ConstrainedWebDialogUI(web_ui),
       initial_preview_start_time_(base::TimeTicks::Now()),
       handler_(CreatePrintPreviewHandlers(web_ui)) {
+  // Allow requests to URLs like chrome-untrusted://print/.
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+
   // Set up the chrome://print/ data source.
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = CreatePrintPreviewUISource(profile);

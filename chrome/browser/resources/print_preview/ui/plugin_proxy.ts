@@ -116,7 +116,7 @@ export class PluginProxyImpl implements PluginProxy {
    * @param index Page index for plugin.
    */
   private getPreviewUrl_(previewUid: number, index: number): string {
-    return `chrome://print/${previewUid}/${index}/print.pdf`;
+    return `chrome-untrusted://print/${previewUid}/${index}/print.pdf`;
   }
 
   resetPrintPreviewMode(

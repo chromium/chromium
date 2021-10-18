@@ -27,7 +27,7 @@ suite(pdf_viewer_test.suiteName, function() {
 
   test(assert(pdf_viewer_test.TestNames.Basic), async () => {
     const plugin = PDFCreateOutOfProcessPlugin(
-        'chrome://print/test.pdf', 'chrome://print/pdf');
+        'chrome-untrusted://print/test.pdf', 'chrome://print/pdf');
 
     const loaded = eventToPromise('load', plugin);
     document.body.appendChild(plugin);
