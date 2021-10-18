@@ -120,8 +120,6 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   ~MockSafeBrowsingDatabaseManager() override = default;
 };
 
-// PhishingDetector is not supported on Android.
-#if !defined(OS_ANDROID)
 class TestPhishingDetector : public mojom::PhishingDetector {
  public:
   TestPhishingDetector() = default;
@@ -164,7 +162,6 @@ class TestPhishingDetector : public mojom::PhishingDetector {
   std::vector<StartPhishingDetectionCallback> deferred_callbacks_;
   mojo::Receiver<mojom::PhishingDetector> receiver_{this};
 };
-#endif
 
 class TestPasswordProtectionService : public MockPasswordProtectionService {
  public:
@@ -218,7 +215,6 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
     return latest_request_ ? latest_request_->request_proto() : nullptr;
   }
 
-#if !defined(OS_ANDROID)
   void GetPhishingDetector(
       service_manager::InterfaceProvider* provider,
       mojo::Remote<mojom::PhishingDetector>* phishing_detector) override {
@@ -230,7 +226,6 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
     provider->GetInterface(phishing_detector->BindNewPipeAndPassReceiver());
     test_api.ClearBinderForName(mojom::PhishingDetector::Name_);
   }
-#endif
 
   void CacheVerdict(const GURL& url,
                     LoginReputationClientRequest::TriggerType trigger_type,
@@ -261,19 +256,15 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
     return cache_manager_->GetStoredPhishGuardVerdictCount(trigger_type);
   }
 
-#if !defined(OS_ANDROID)
   void SetDomFeatureCollectionTimeout(bool should_timeout) {
     test_phishing_detector_.set_should_timeout(should_timeout);
   }
-#endif
 
  private:
   PasswordProtectionRequest* latest_request_;
   base::RunLoop run_loop_;
   std::unique_ptr<LoginReputationClientResponse> latest_response_;
-#if !defined(OS_ANDROID)
   TestPhishingDetector test_phishing_detector_;
-#endif
 
   // The TestPasswordProtectionService manages its own cache, rather than using
   // the global one.

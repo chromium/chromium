@@ -35,10 +35,16 @@ const base::Feature kClientSideDetectionDocumentScanning{
     "ClientSideDetectionDocumentScanning", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kClientSideDetectionForAndroid{
-    "ClientSideDetectionModelOnAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ClientSideDetectionModelOnAndroid", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable only for Android
+#if defined(OS_ANDROID)
+const base::Feature kClientSideDetectionModelIsFlatBuffer{
+    "ClientSideDetectionModelIsFlatBuffer", base::FEATURE_ENABLED_BY_DEFAULT};
+#else
 const base::Feature kClientSideDetectionModelIsFlatBuffer{
     "ClientSideDetectionModelIsFlatBuffer", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 extern const base::Feature kClientSideDetectionModelVersion{
     "ClientSideDetectionModel", base::FEATURE_ENABLED_BY_DEFAULT};

@@ -58,6 +58,10 @@ void GetFlatBufferStringFromMappedMemory(
 
 TEST(ClientSidePhishingModelTest, NotifiesOnUpdate) {
   ResetClientSidePhishingModel();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kClientSideDetectionModelIsFlatBuffer});
 
   content::BrowserTaskEnvironment task_environment;
   base::RunLoop run_loop;
@@ -204,6 +208,10 @@ TEST(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
 
 TEST(ClientSidePhishingModelTest, CanOverrideProtoWithFlag) {
   ResetClientSidePhishingModel();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kClientSideDetectionModelIsFlatBuffer});
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath file_path =
