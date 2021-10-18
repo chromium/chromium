@@ -35,7 +35,7 @@ KeyEventResultReceiver::KeyEventResultReceiver() = default;
 
 KeyEventResultReceiver::~KeyEventResultReceiver() = default;
 
-void KeyEventResultReceiver::DispatchKeyEventPostIME(ui::KeyEvent* event) {
+bool KeyEventResultReceiver::DispatchKeyEventPostIME(ui::KeyEvent* event) {
   // This method is called by `ui::InputMethodAsh` when IME finishes
   // handling a key event coming from |ArcImeService::SendKeyEvent()|. If the
   // key event seems not to be consumed by IME, it's sent back to ARC to give it
@@ -44,22 +44,29 @@ void KeyEventResultReceiver::DispatchKeyEventPostIME(ui::KeyEvent* event) {
   DLOG_IF(WARNING, !callback_)
       << "DispatchKeyEventPostIME is called without setting a callback";
 
+  if (!expected_key_event_ || event->type() != expected_key_event_->type() ||
+      event->key_code() != expected_key_event_->key_code() ||
+      event->time_stamp() != expected_key_event_->time_stamp()) {
+    // Another key event was dispatched from IME before the expected key event.
+    return false;
+  }
+
   if (event->stopped_propagation()) {
     // The host IME wants to stop propagation of the event.
     RunCallbackIfNeeded(true);
-    return;
+    return true;
   }
 
   if (event->key_code() == ui::VKEY_PROCESSKEY) {
     // This event is consumed by IME.
     RunCallbackIfNeeded(true);
-    return;
+    return true;
   }
 
   if (!event->GetCharacter()) {
     // The event has no character and the host IME doesn't consume it.
     RunCallbackIfNeeded(false);
-    return;
+    return true;
   }
 
   // Check whether the event is sent via |InsertChar()| later.
@@ -68,14 +75,16 @@ void KeyEventResultReceiver::DispatchKeyEventPostIME(ui::KeyEvent* event) {
   const bool sent_by_insert_char =
       !IsControlChar(event) && !ui::IsSystemKeyModifier(event->flags());
   RunCallbackIfNeeded(sent_by_insert_char);
-  return;
+  return true;
 }
 
-void KeyEventResultReceiver::SetCallback(KeyEventDoneCallback callback) {
+void KeyEventResultReceiver::SetCallback(KeyEventDoneCallback callback,
+                                         const ui::KeyEvent* event) {
   // Cancel the obsolete callback if exist.
   RunCallbackIfNeeded(false);
   callback_ = std::move(callback);
   callback_set_time_ = base::TimeTicks::Now();
+  expected_key_event_ = *event;
   // Start expiring timer for the callback.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
