@@ -1511,6 +1511,12 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
     return;
   }
 
+  // Only applies to apps that open in an app window.
+  if (provider->registrar().GetAppUserDisplayMode(*link_app_id) ==
+      web_app::DisplayMode::kBrowser) {
+    return;
+  }
+
   int open_in_app_string_id;
   const Browser* browser = GetBrowser();
   if (browser && browser->app_name() ==
