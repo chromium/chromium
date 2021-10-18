@@ -23,6 +23,15 @@ config("distributed_point_functions_includes") {
   ]
 }
 
+config("distributed_point_functions_warnings") {
+  if (is_clang) {
+    # distributed_point_functions.cc (intentionally) does
+    # `control_bits[0] & control_bit_correction[keep]` where both args
+    # are of type bool.
+    cflags = [ "-Wno-bitwise-instead-of-logical" ]
+  }
+}
+
 source_set("distributed_point_functions") {
   sources = [
     "glog/logging.h",
@@ -43,6 +52,7 @@ source_set("distributed_point_functions") {
   # Do not apply Chromium code rules to this third-party code.
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ ":distributed_point_functions_warnings" ]
 
   public_configs = [ ":distributed_point_functions_includes" ]
 }
