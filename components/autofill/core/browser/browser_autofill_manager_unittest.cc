@@ -1870,46 +1870,6 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   external_delegate_->CheckSuggestionCount(kDefaultPageID, 2);
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetCreditCardSuggestions_IPHFeatureSetForVirtualCards) {
-  personal_data_.ClearCreditCards();
-  // Add a Virtual Card.
-  CreditCard virtual_card;
-  test::SetCreditCardInfo(&virtual_card, "Lorem Ispium",
-                          "5555555555554444",  // Mastercard
-                          "10", "2998", "1");
-  virtual_card.set_guid("00000000-0000-0000-0000-000000000007");
-  virtual_card.set_record_type(CreditCard::RecordType::VIRTUAL_CARD);
-  personal_data_.AddServerCreditCard(virtual_card);
-  // Set up our form data.
-  FormData form;
-  CreateTestCreditCardFormData(&form, true, false);
-  std::vector<FormData> forms(1, form);
-  FormsSeen(forms);
-  // Set the field being edited to credit card number field.
-  const FormFieldData& credit_card_number_field = form.fields[1];
-  const std::string card_value = base::JoinString(
-      {"Mastercard  ", test::ObfuscatedCardDigitsAsUTF8("4444")}, "");
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  const std::string card_label = std::string("10/98");
-#else
-  const std::string card_label = std::string("Expires on 10/98");
-#endif
-  GetAutofillSuggestions(form, credit_card_number_field);
-
-  // Assert that there is only one credit card suggestions returned.
-  external_delegate_->CheckSuggestionCount(kDefaultPageID, 1);
-  auto expected_suggestion =
-      Suggestion(card_value, card_label, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(7));
-#if defined(OS_ANDROID)
-  // The IPH feature is available only on Android.
-  expected_suggestion.feature_for_iph =
-      feature_engagement::kIPHKeyboardAccessoryPaymentVirtualCardFeature.name;
-#endif  // OS_ANDROID
-  CheckSuggestions(kDefaultPageID, expected_suggestion);
-}
-
 // Test that we will eventually return the credit card signin promo when there
 // are no credit card suggestions and the promo is active. See the tests in
 // AutofillExternalDelegateTest that test whether the promo is added.
