@@ -1644,7 +1644,7 @@ try_.chromium_mac_builder(
 
 try_.chromium_mac_builder(
     name = "mac-rel-orchestrator",
-    builderless = True,
+    builderless = False,
     cores = 2,
     executable = "recipe:chromium/orchestrator",
     use_clang_coverage = True,
