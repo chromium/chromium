@@ -336,6 +336,7 @@ def chromium_mac_builder(
         cores = None,
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.MAC_ANY,
+        ssd = True,
         **kwargs):
     return try_builder(
         name = name,
@@ -344,7 +345,7 @@ def chromium_mac_builder(
         goma_backend = goma_backend,
         os = os,
         builderless = builderless,
-        ssd = True,
+        ssd = ssd,
         **kwargs
     )
 
