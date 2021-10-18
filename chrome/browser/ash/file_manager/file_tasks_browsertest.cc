@@ -4,26 +4,34 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/constants.h"
 #include "net/base/mime_util.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/features.h"
 
 using web_app::kMediaAppId;
@@ -442,6 +450,70 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
       }));
   run_loop.Run();
   EXPECT_EQ(remaining_expectations, 0);
+}
+
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = GURL("https://www.example.com/");
+  web_app_info->scope = GURL("https://www.example.com/");
+  apps::FileHandler handler;
+  handler.action = GURL("https://www.example.com/handle_file");
+  handler.display_name = u"activity name";
+  apps::FileHandler::AcceptEntry accept_entry1;
+  accept_entry1.mime_type = "image/jpeg";
+  handler.accept.push_back(accept_entry1);
+  apps::FileHandler::AcceptEntry accept_entry2;
+  accept_entry2.file_extensions.insert(".png");
+  handler.accept.push_back(accept_entry2);
+  web_app_info->file_handlers.push_back(std::move(handler));
+
+  Profile* const profile = browser()->profile();
+  TaskDescriptor task_descriptor;
+  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kDisabled) {
+    // Install a PWA in ash.
+    web_app::AppId app_id =
+        web_app::test::InstallWebApp(profile, std::move(web_app_info));
+    task_descriptor =
+        TaskDescriptor(app_id, TaskType::TASK_TYPE_WEB_APP, "activity name");
+  } else {
+    // Use an existing SWA in ash - Media app.
+    task_descriptor =
+        TaskDescriptor(kMediaAppId, TaskType::TASK_TYPE_WEB_APP, "");
+    // TODO(petermarshall): Install the web app in Lacros once installing and
+    // launching apps from ash -> lacros is possible.
+  }
+
+  base::RunLoop run_loop;
+  web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
+            EXPECT_EQ(params.intent->action, apps_util::kIntentActionView);
+            EXPECT_EQ(params.launch_files.size(), 2U);
+            EXPECT_TRUE(base::EndsWith(params.launch_files.at(0).MaybeAsASCII(),
+                                       "foo.jpg"));
+            EXPECT_TRUE(base::EndsWith(params.launch_files.at(1).MaybeAsASCII(),
+                                       "bar.png"));
+            run_loop.Quit();
+            return nullptr;
+          }));
+
+  base::FilePath file1 =
+      util::GetMyFilesFolderForProfile(profile).AppendASCII("foo.jpg");
+  base::FilePath file2 =
+      util::GetMyFilesFolderForProfile(profile).AppendASCII("bar.png");
+  GURL url1;
+  CHECK(util::ConvertAbsoluteFilePathToFileSystemUrl(
+      profile, file1, util::GetFileManagerURL(), &url1));
+  GURL url2;
+  CHECK(util::ConvertAbsoluteFilePathToFileSystemUrl(
+      profile, file2, util::GetFileManagerURL(), &url2));
+
+  std::vector<storage::FileSystemURL> files;
+  files.push_back(storage::FileSystemURL::CreateForTest(url1));
+  files.push_back(storage::FileSystemURL::CreateForTest(url2));
+  ExecuteFileTask(profile, GURL("https://www.example.com/"), task_descriptor,
+                  files, base::DoNothing());
+  run_loop.Run();
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(

@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/app_service/launch_utils.h"
+
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 
@@ -25,6 +28,8 @@ class LaunchUtilsTest : public testing::Test {
   }
 
   std::string app_id = "aaa";
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
 };
 
 TEST_F(LaunchUtilsTest, WindowContainerAndWindowDisposition) {
@@ -89,9 +94,38 @@ TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
       app_id, apps::GetEventFlags(container, disposition, true),
       apps::mojom::LaunchSource::kFromChromeInternal,
       display::kInvalidDisplayId,
-      apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent));
+      apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent),
+      &profile_);
 
   EXPECT_EQ(url, params.override_url);
+}
+
+TEST_F(LaunchUtilsTest, IntentFilesAreCopiedToLaunchParams) {
+  auto container = apps::mojom::LaunchContainer::kLaunchContainerNone;
+  auto disposition = WindowOpenDisposition::NEW_WINDOW;
+
+  std::vector<apps::mojom::IntentFilePtr> files;
+  auto file = apps::mojom::IntentFile::New();
+  std::string file_path = "filesystem:http://foo.com/test/foo.txt";
+  file->url = GURL(file_path);
+  EXPECT_TRUE(file->url.is_valid());
+  file->mime_type = "text/plain";
+  files.push_back(std::move(file));
+  auto intent = apps_util::CreateViewIntentFromFiles(std::move(files));
+
+  auto params = apps::CreateAppLaunchParamsForIntent(
+      app_id, apps::GetEventFlags(container, disposition, true),
+      apps::mojom::LaunchSource::kFromChromeInternal,
+      display::kInvalidDisplayId,
+      apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent),
+      &profile_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_EQ(params.launch_files.size(), 1U);
+  EXPECT_EQ("foo.txt", params.launch_files[0].MaybeAsASCII());
+#else
+  ASSERT_EQ(params.launch_files.size(), 0U);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_NoAppID) {

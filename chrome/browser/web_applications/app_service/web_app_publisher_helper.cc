@@ -1188,7 +1188,7 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithIntentImpl(
       app_id, event_flags, launch_source, display_id,
       ConvertDisplayModeToAppLaunchContainer(
           registrar().GetAppEffectiveDisplayMode(app_id)),
-      std::move(intent));
+      std::move(intent), profile_);
   return LaunchAppWithParams(std::move(params));
 }
 

@@ -228,20 +228,24 @@ GURL GetIconURL(Profile* profile, const Extension& extension) {
       false);  // grayscale
 }
 
-void ExecuteByArcAfterMimeTypesCollected(
+void ExecuteTaskAfterMimeTypesCollected(
     Profile* profile,
     const TaskDescriptor& task,
     const std::vector<FileSystemURL>& file_urls,
     FileTaskFinishedCallback done,
     extensions::app_file_handler_util::MimeTypeCollector* mime_collector,
     std::unique_ptr<std::vector<std::string>> mime_types) {
-  if (task.action_id == kActionIdSend ||
-      task.action_id == kActionIdSendMultiple) {
+  bool is_arc_share = task.task_type == TASK_TYPE_ARC_APP &&
+                      (task.action_id == kActionIdSend ||
+                       task.action_id == kActionIdSendMultiple);
+  bool is_web_app = task.task_type == TASK_TYPE_WEB_APP;
+  if (is_arc_share || is_web_app) {
     ExecuteAppServiceTask(profile, task, file_urls, *mime_types,
                           std::move(done));
     return;
   }
 
+  DCHECK_EQ(task.task_type, TASK_TYPE_ARC_APP);
   apps::RecordAppLaunchMetrics(
       profile, apps::mojom::AppType::kArc, task.app_id,
       apps::mojom::LaunchSource::kFromFileManager,
@@ -521,12 +525,13 @@ bool ExecuteFileTask(Profile* profile,
     notifier->NotifyFileTasks(file_urls);
   }
 
-  // ARC apps needs mime types for launching. Retrieve them first.
-  if (task.task_type == TASK_TYPE_ARC_APP) {
+  // ARC apps and web apps need mime types for launching. Retrieve them first.
+  if (task.task_type == TASK_TYPE_ARC_APP ||
+      task.task_type == TASK_TYPE_WEB_APP) {
     extensions::app_file_handler_util::MimeTypeCollector* mime_collector =
         new extensions::app_file_handler_util::MimeTypeCollector(profile);
     mime_collector->CollectForURLs(
-        file_urls, base::BindOnce(&ExecuteByArcAfterMimeTypesCollected, profile,
+        file_urls, base::BindOnce(&ExecuteTaskAfterMimeTypesCollected, profile,
                                   task, file_urls, std::move(done),
                                   base::Owned(mime_collector)));
     return true;
@@ -536,11 +541,6 @@ bool ExecuteFileTask(Profile* profile,
       task.task_type == TASK_TYPE_PLUGIN_VM_APP) {
     DCHECK_EQ(kGuestOsAppActionID, task.action_id);
     ExecuteGuestOsTask(profile, task, file_urls, std::move(done));
-    return true;
-  }
-
-  if (task.task_type == TASK_TYPE_WEB_APP) {
-    ExecuteWebTask(profile, task, file_urls, std::move(done));
     return true;
   }
 

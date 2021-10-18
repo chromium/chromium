@@ -57,7 +57,8 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
     apps::mojom::LaunchSource source,
     int64_t display_id,
     apps::mojom::LaunchContainer fallback_container,
-    apps::mojom::IntentPtr&& intent);
+    apps::mojom::IntentPtr&& intent,
+    Profile* profile);
 
 apps::mojom::AppLaunchSource GetAppLaunchSource(
     apps::mojom::LaunchSource launch_source);

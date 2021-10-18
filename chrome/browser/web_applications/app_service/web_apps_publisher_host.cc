@@ -269,7 +269,8 @@ void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
         ConvertDisplayModeToAppLaunchContainer(
             registrar().GetAppEffectiveDisplayMode(launch_params->app_id)),
         apps_util::ConvertCrosapiToAppServiceIntent(launch_params->intent,
-                                                    profile_));
+                                                    profile_),
+        profile_);
     if (launch_params->intent->files.has_value()) {
       for (const auto& file : launch_params->intent->files.value()) {
         params.launch_files.push_back(file->file_path);

@@ -193,7 +193,7 @@ void LacrosExtensionAppsController::Launch(
       extensions::ExtensionPrefs::Get(profile), extension);
   auto params = apps::CreateAppLaunchParamsForIntent(
       extension->id(), ui::EF_NONE, launch_params->launch_source,
-      display::kInvalidDisplayId, launch_container, std::move(intent));
+      display::kInvalidDisplayId, launch_container, std::move(intent), profile);
   OpenApplication(profile, std::move(params));
 
   // TODO(https://crbug.com/1225848): Store the resulting instance token, which

@@ -269,7 +269,7 @@ content::WebContents* ExtensionAppsBase::LaunchAppWithIntentImpl(
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile_),
                                      extension),
-      std::move(intent));
+      std::move(intent), profile_);
   return LaunchImpl(std::move(params));
 }
 

@@ -6,6 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/apps/app_service/file_utils.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -21,6 +23,8 @@
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
@@ -95,7 +99,8 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
     apps::mojom::LaunchSource launch_source,
     int64_t display_id,
     apps::mojom::LaunchContainer fallback_container,
-    apps::mojom::IntentPtr&& intent) {
+    apps::mojom::IntentPtr&& intent,
+    Profile* profile) {
   auto params = CreateAppIdLaunchParamsWithEventFlags(
       app_id, event_flags, launch_source, display_id, fallback_container);
 
@@ -103,6 +108,22 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
     params.source = apps::mojom::AppLaunchSource::kSourceIntentUrl;
     params.override_url = intent->url.value();
   }
+
+  // On Lacros, the caller of this function attaches the intent files to the
+  // AppLaunchParams.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (intent->files.has_value()) {
+    std::vector<GURL> file_urls;
+    for (const auto& intent_file : *intent->files) {
+      file_urls.push_back(intent_file->url);
+    }
+    std::vector<storage::FileSystemURL> file_system_urls =
+        GetFileSystemURL(profile, file_urls);
+    for (const auto& file_system_url : file_system_urls) {
+      params.launch_files.push_back(file_system_url.path());
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   params.intent = std::move(intent);
 

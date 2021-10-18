@@ -256,15 +256,6 @@ void AppServiceProxyLacros::LaunchAppWithFiles(
   NOTIMPLEMENTED();
 }
 
-void AppServiceProxyLacros::LaunchAppWithFileUrls(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::LaunchSource launch_source,
-    const std::vector<GURL>& file_urls,
-    const std::vector<std::string>& mime_types) {
-  NOTIMPLEMENTED();
-}
-
 void AppServiceProxyLacros::LaunchAppWithIntent(
     const std::string& app_id,
     int32_t event_flags,
