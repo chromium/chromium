@@ -67,7 +67,15 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21">
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/accountswitcher/AccountManagerCompat.java"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
             line="628"/>
@@ -75,7 +83,7 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
             line="183"/>
@@ -83,7 +91,7 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
             line="221"/>
@@ -91,7 +99,7 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
             line="280"/>
@@ -99,7 +107,7 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
             line="512"/>
@@ -107,7 +115,7 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
             line="521"/>
@@ -115,7 +123,7 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
             line="605"/>
