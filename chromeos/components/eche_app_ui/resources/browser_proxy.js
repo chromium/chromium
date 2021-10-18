@@ -121,8 +121,9 @@ function locationHashChanged() {
     const notificationId = urlParams.get('notification_id');
     const packageName = urlParams.get('package_name');
     const timestamp = urlParams.get('timestamp');
+    const userId = urlParams.get('user_id');
     const notificationInfo = /** @type {!NotificationInfo} */(
-        {notificationId, packageName, timestamp});
+        {notificationId, packageName, timestamp, userId});
     guestMessagePipe.sendMessage(Message.NOTIFICATION_INFO, notificationInfo);
 }
 
