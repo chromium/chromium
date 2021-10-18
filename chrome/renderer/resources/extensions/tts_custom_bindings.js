@@ -39,21 +39,13 @@ apiBridge.registerCustomHook(function(api) {
 
   apiFunctions.setHandleRequest('speak', function() {
     var args = $Array.from(arguments);
-    if (args.length > 1 && args[1]) {
-      if (args[1].onEvent) {
-        var id = idGenerator.GetNextId();
-        args[1].srcId = id;
-        handlers[id] = args[1].onEvent;
-        // Keep the page alive until the event finishes.
-        // Balanced in eventHandler.
-        lazyBG.IncrementKeepaliveCount();
-      }
-      if (args[1].gender) {
-        console.warn(
-            'chrome.tts.speak: ' +
-            'Voice gender is deprecated and values will be ignored starting ' +
-            'in Chrome 71.');
-      }
+    if (args.length > 1 && args[1] && args[1].onEvent) {
+      var id = idGenerator.GetNextId();
+      args[1].srcId = id;
+      handlers[id] = args[1].onEvent;
+      // Keep the page alive until the event finishes.
+      // Balanced in eventHandler.
+      lazyBG.IncrementKeepaliveCount();
     }
     bindingUtil.sendRequest('tts.speak', args, undefined);
     return id;
