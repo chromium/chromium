@@ -52,7 +52,13 @@ class MockResponse(object):
         self.status_code = values['status_code']
         self.url = ''
         self.body = values.get('body', '')
-        self._info = MockInfo(values.get('headers', {}))
+        # The name of the headers (keys) are case-insensitive, and values are stripped.
+        headers_raw = values.get('headers', {})
+        self.headers = {
+            key.lower(): value.strip()
+            for key, value in headers_raw.items()
+        }
+        self._info = MockInfo(self.headers)
 
         if int(self.status_code) >= 400:
             raise HTTPError(url=self.url,
@@ -65,6 +71,9 @@ class MockResponse(object):
     def getcode(self):
         return self.status_code
 
+    def getheader(self, header):
+        return self.headers.get(header.lower(), None)
+
     def read(self):
         return self.body
 
@@ -74,11 +83,7 @@ class MockResponse(object):
 
 class MockInfo(object):
     def __init__(self, headers):
-        # The name of the headers (keys) are case-insensitive, and values are stripped.
-        self._headers = {
-            key.lower(): value.strip()
-            for key, value in headers.items()
-        }
+        self._headers = headers
 
     def getheader(self, header):
         return self._headers.get(header.lower(), None)
