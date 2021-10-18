@@ -1164,6 +1164,11 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   }
 
   SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
+
+  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
+    if (LiveRegionRoot())
+      SerializeLiveRegionAttributes(node_data);
+  }
 }
 
 // Attributes that don't need to be serialized on ignored nodes.
@@ -1751,7 +1756,41 @@ void AXObject::SerializeNameAndDescriptionAttributes(
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kPlaceholder,
                                 placeholder.Utf8());
+  }
 }
+
+void AXObject::SerializeLiveRegionAttributes(ui::AXNodeData* node_data) const {
+  DCHECK(LiveRegionRoot());
+  DCHECK(node_data);
+
+  node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kLiveAtomic,
+                              LiveRegionAtomic());
+  if (!LiveRegionStatus().IsEmpty()) {
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kLiveStatus,
+        LiveRegionStatus().Utf8());
+  }
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kLiveRelevant,
+      LiveRegionRelevant().Utf8());
+  // If we are not at the root of an atomic live region.
+  if (ContainerLiveRegionAtomic() && !LiveRegionRoot()->IsDetached() &&
+      !LiveRegionAtomic()) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kMemberOfId,
+                               LiveRegionRoot()->AXObjectID());
+  }
+  node_data->AddBoolAttribute(
+      ax::mojom::blink::BoolAttribute::kContainerLiveAtomic,
+      ContainerLiveRegionAtomic());
+  node_data->AddBoolAttribute(
+      ax::mojom::blink::BoolAttribute::kContainerLiveBusy,
+      ContainerLiveRegionBusy());
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kContainerLiveStatus,
+      ContainerLiveRegionStatus().Utf8());
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kContainerLiveRelevant,
+      ContainerLiveRegionRelevant().Utf8());
 }
 
 bool AXObject::IsAXNodeObject() const {

@@ -1396,6 +1396,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   void SerializeNameAndDescriptionAttributes(ui::AXMode accessibility_mode,
                                              ui::AXNodeData* node_data) const;
+  void SerializeLiveRegionAttributes(ui::AXNodeData* node_data) const;
 
   // Serialization implemented in specific subclasses.
   virtual void SerializeMarkerAttributes(ui::AXNodeData* node_data) const;

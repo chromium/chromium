@@ -531,8 +531,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   }
 
   if (accessibility_mode_.has_mode(ui::AXMode::kScreenReader)) {
-    if (src.IsInLiveRegion())
-      SerializeLiveRegionAttributes(src, dst);
     SerializeOtherScreenReaderAttributes(src, dst);
   }
 
@@ -590,37 +588,6 @@ void BlinkAXTreeSource::SerializeListMarkerAttributes(
                            src_word_starts.ReleaseVector());
   dst->AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
                            src_word_ends.ReleaseVector());
-}
-
-void BlinkAXTreeSource::SerializeLiveRegionAttributes(
-    WebAXObject src,
-    ui::AXNodeData* dst) const {
-  DCHECK(src.IsInLiveRegion());
-
-  dst->AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic,
-                        src.LiveRegionAtomic());
-  if (!src.LiveRegionStatus().IsEmpty()) {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kLiveStatus,
-                                  src.LiveRegionStatus().Utf8());
-  }
-  TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kLiveRelevant,
-                                src.LiveRegionRelevant().Utf8());
-  // If we are not at the root of an atomic live region.
-  if (src.ContainerLiveRegionAtomic() && !src.LiveRegionRoot().IsDetached() &&
-      !src.LiveRegionAtomic()) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kMemberOfId,
-                         src.LiveRegionRoot().AxID());
-  }
-  dst->AddBoolAttribute(ax::mojom::BoolAttribute::kContainerLiveAtomic,
-                        src.ContainerLiveRegionAtomic());
-  dst->AddBoolAttribute(ax::mojom::BoolAttribute::kContainerLiveBusy,
-                        src.ContainerLiveRegionBusy());
-  TruncateAndAddStringAttribute(
-      dst, ax::mojom::StringAttribute::kContainerLiveStatus,
-      src.ContainerLiveRegionStatus().Utf8());
-  TruncateAndAddStringAttribute(
-      dst, ax::mojom::StringAttribute::kContainerLiveRelevant,
-      src.ContainerLiveRegionRelevant().Utf8());
 }
 
 void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
