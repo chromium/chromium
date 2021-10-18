@@ -926,50 +926,6 @@ export const ENTRIES = {
     typeText: 'Zip archive'
   }),
 
-  zipArchiveSJIS: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'archive_sjis.zip',
-    targetPath: 'archive_sjis.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Dec 21, 2018, 12:21 PM',
-    nameText: 'archive_sjis.zip',
-    sizeText: '160 bytes',
-    typeText: 'Zip archive'
-  }),
-
-  zipArchiveMacOs: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'archive_macos.zip',
-    targetPath: 'archive_macos.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Dec 21, 2018, 12:21 PM',
-    nameText: 'archive_macos.zip',
-    sizeText: '190 bytes',
-    typeText: 'Zip archive'
-  }),
-
-  zipArchiveWithAbsolutePaths: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'absolute_paths.zip',
-    targetPath: 'absolute_paths.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
-    nameText: 'absolute_paths.zip',
-    sizeText: '400 bytes',
-    typeText: 'Zip archive'
-  }),
-
-  zipArchiveEncrypted: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'encrypted.zip',
-    targetPath: 'encrypted.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
-    nameText: 'encrypted.zip',
-    sizeText: '589 bytes',
-    typeText: 'Zip archive'
-  }),
-
   debPackage: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'package.deb',
