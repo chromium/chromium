@@ -95,6 +95,10 @@ absl::optional<base::FilePath> GetProductVersionPath(UpdaterScope scope) {
                       : product_path;
 }
 
+std::wstring GetAppClientsKey(const std::wstring& id) {
+  return base::StrCat({CLIENTS_KEY, id});
+}
+
 std::wstring GetAppClientStateKey(const std::string& id) {
   return base::StrCat({CLIENT_STATE_KEY, base::ASCIIToWide(id)});
 }
@@ -658,6 +662,70 @@ void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
                                     const std::string& app_id) {
   EXPECT_HRESULT_SUCCEEDED(
       DoUpdate(scope, base::win::ScopedBstr(base::UTF8ToWide(app_id).c_str())));
+}
+
+void SetFcLaunchCmd(const std::wstring& id) {
+  base::win::RegKey key;
+  ASSERT_EQ(key.Create(HKEY_LOCAL_MACHINE, GetAppClientsKey(id).c_str(),
+                       Wow6432(KEY_WRITE)),
+            ERROR_SUCCESS);
+  EXPECT_EQ(key.WriteValue(L"fc", L"fc /?"), ERROR_SUCCESS);
+}
+
+void DeleteFcLaunchCmd(const std::wstring& id) {
+  base::win::RegKey key;
+  ASSERT_EQ(key.Create(HKEY_LOCAL_MACHINE, GetAppClientsKey(id).c_str(),
+                       Wow6432(KEY_WRITE)),
+            ERROR_SUCCESS);
+  EXPECT_EQ(key.DeleteValue(L"fc"), ERROR_SUCCESS);
+}
+
+void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
+  // ProcessLauncher is only implemented for kSystem at the moment.
+  if (scope != UpdaterScope::kSystem)
+    return;
+
+  Microsoft::WRL::ComPtr<IProcessLauncher> process_launcher;
+  EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(__uuidof(ProcessLauncherClass),
+                                              nullptr, CLSCTX_LOCAL_SERVER,
+                                              IID_PPV_ARGS(&process_launcher)));
+  EXPECT_TRUE(process_launcher);
+
+  const wchar_t* const kAppId1 = L"{831EF4D0-B729-4F61-AA34-91526481799D}";
+  ULONG_PTR proc_handle = 0;
+  DWORD caller_proc_id = ::GetCurrentProcessId();
+
+  // Returns ERROR_BAD_IMPERSONATION_LEVEL when explicit security blanket is not
+  // set.
+  EXPECT_EQ(HRESULT_FROM_WIN32(ERROR_BAD_IMPERSONATION_LEVEL),
+            process_launcher->LaunchCmdElevated(kAppId1, _T("fc"),
+                                                caller_proc_id, &proc_handle));
+  EXPECT_EQ(static_cast<ULONG_PTR>(0), proc_handle);
+
+  // Sets a security blanket that will allow the server to impersonate the
+  // client.
+  EXPECT_HRESULT_SUCCEEDED(::CoSetProxyBlanket(
+      process_launcher.Get(), RPC_C_AUTHN_DEFAULT, RPC_C_AUTHZ_DEFAULT,
+      COLE_DEFAULT_PRINCIPAL, RPC_C_AUTHN_LEVEL_DEFAULT,
+      RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_DEFAULT));
+
+  // Succeeds when the command is present in the registry.
+  SetFcLaunchCmd(kAppId1);
+  EXPECT_HRESULT_SUCCEEDED(process_launcher->LaunchCmdElevated(
+      kAppId1, _T("fc"), caller_proc_id, &proc_handle));
+  EXPECT_NE(static_cast<ULONG_PTR>(0), proc_handle);
+
+  HANDLE handle = reinterpret_cast<HANDLE>(proc_handle);
+  EXPECT_NE(WAIT_FAILED, ::WaitForSingleObject(handle, 10000));
+  EXPECT_TRUE(::CloseHandle(handle));
+  DeleteFcLaunchCmd(kAppId1);
+
+  // Returns HRESULT_FROM_WIN32(ERROR_NOT_FOUND) when the command is missing in
+  // the registry.
+  EXPECT_EQ(HRESULT_FROM_WIN32(ERROR_NOT_FOUND),
+            process_launcher->LaunchCmdElevated(kAppId1, _T("fc"),
+                                                caller_proc_id, &proc_handle));
+  EXPECT_EQ(static_cast<ULONG_PTR>(0), proc_handle);
 }
 
 int RunVPythonCommand(const base::CommandLine& command_line) {

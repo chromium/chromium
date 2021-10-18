@@ -147,6 +147,7 @@ void WaitForServerExit(UpdaterScope scope);
 void ExpectInterfacesRegistered(UpdaterScope scope);
 void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
                                     const std::string& app_id);
+void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope);
 void RunTestServiceCommand(const std::string& sub_command);
 
 // Calls a function defined in test/service/win/rpc_client.py.

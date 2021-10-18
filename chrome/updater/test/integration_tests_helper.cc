@@ -198,6 +198,8 @@ void AppTestHelper::FirstTaskRun() {
         {"expect_legacy_update3web_succeeds",
          WithSwitch("app_id",
                     WithSystemScope(Wrap(&ExpectLegacyUpdate3WebSucceeds)))},
+        {"expect_legacy_process_launcher_succeeds",
+         WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
 #endif  // OS_WIN
         {"expect_version_active",
          WithSwitch("version", WithSystemScope(Wrap(&ExpectVersionActive)))},

@@ -90,6 +90,8 @@ std::vector<IID> GetActiveInterfaces() {
           __uuidof(ICompleteStatus),
           __uuidof(ICurrentState),
           __uuidof(IGoogleUpdate3Web),
+          __uuidof(IProcessLauncher),
+          __uuidof(IProcessLauncher2),
           __uuidof(IUpdateState),
           __uuidof(IUpdater),
           __uuidof(IUpdaterObserver),
@@ -112,7 +114,8 @@ std::vector<CLSID> GetActiveServers(UpdaterScope scope) {
       return {__uuidof(UpdaterUserClass), __uuidof(GoogleUpdate3WebUserClass)};
     case UpdaterScope::kSystem:
       return {__uuidof(UpdaterSystemClass),
-              __uuidof(GoogleUpdate3WebSystemClass)};
+              __uuidof(GoogleUpdate3WebSystemClass),
+              __uuidof(ProcessLauncherClass)};
   }
 }
 
@@ -274,6 +277,8 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IAppWeb), kUpdaterLegacyIndex},
       {__uuidof(ICurrentState), kUpdaterLegacyIndex},
       {__uuidof(IGoogleUpdate3Web), kUpdaterLegacyIndex},
+      {__uuidof(IProcessLauncher), kUpdaterLegacyIndex},
+      {__uuidof(IProcessLauncher2), kUpdaterLegacyIndex},
   };
   auto index = kTypeLibIndexes.find(iid);
   return index != kTypeLibIndexes.end() ? index->second : L"";

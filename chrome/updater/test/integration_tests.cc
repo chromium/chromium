@@ -144,6 +144,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectLegacyUpdate3WebSucceeds(app_id);
   }
 
+  void ExpectLegacyProcessLauncherSucceeds() {
+    test_commands_->ExpectLegacyProcessLauncherSucceeds();
+  }
+
 #endif  // OS_WIN
 
   void SetupFakeUpdaterHigherVersion() {
@@ -413,6 +417,12 @@ TEST_F(IntegrationTest, LegacyUpdate3Web) {
                        base::Version("0.2"));
   ExpectLegacyUpdate3WebSucceeds(kAppId);
 
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, LegacyProcessLauncher) {
+  Install();
+  ExpectLegacyProcessLauncherSucceeds();
   Uninstall();
 }
 #endif  // OS_WIN

@@ -147,6 +147,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectLegacyUpdate3WebSucceeds(kUpdaterScope, app_id);
   }
 
+  void ExpectLegacyProcessLauncherSucceeds() const override {
+    updater::test::ExpectLegacyProcessLauncherSucceeds(kUpdaterScope);
+  }
+
   void SetUpTestService() const override {}
 
   void TearDownTestService() const override {}

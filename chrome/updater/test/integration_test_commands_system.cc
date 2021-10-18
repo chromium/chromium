@@ -158,6 +158,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_legacy_update3web_succeeds", {Param("app_id", app_id)});
   }
 
+  void ExpectLegacyProcessLauncherSucceeds() const override {
+    RunCommand("expect_legacy_process_launcher_succeeds");
+  }
+
   void SetUpTestService() const override {
     updater::test::RunTestServiceCommand("setup");
   }

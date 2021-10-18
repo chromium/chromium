@@ -6,7 +6,6 @@
 
 #include <atlsecurity.h>
 #include <sddl.h>
-#include <wrl/module.h>
 
 #include <string>
 #include <type_traits>

@@ -64,6 +64,7 @@ class IntegrationTestCommands
   virtual void ExpectInterfacesRegistered() const = 0;
   virtual void ExpectLegacyUpdate3WebSucceeds(
       const std::string& app_id) const = 0;
+  virtual void ExpectLegacyProcessLauncherSucceeds() const = 0;
   virtual void SetUpTestService() const = 0;
   virtual void TearDownTestService() const = 0;
 #endif  // OS_WIN
