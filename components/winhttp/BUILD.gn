@@ -37,6 +37,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "net_util_unittest.cc",
+    "network_fetcher_unittest.cc",
     "proxy_configuration_unittest.cc",
     "proxy_info_unittest.cc",
   ]

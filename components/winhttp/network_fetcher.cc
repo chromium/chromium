@@ -132,7 +132,6 @@ void NetworkFetcher::PostRequest(
   fetch_progress_callback_ = std::move(fetch_progress_callback);
   fetch_complete_callback_ = std::move(fetch_complete_callback);
 
-  DCHECK(url_.SchemeIsHTTPOrHTTPS());
   CrackUrl(url_, &is_https_, &host_, &port_, &path_for_request_);
 
   verb_ = L"POST";
@@ -160,7 +159,6 @@ void NetworkFetcher::DownloadToFile(
   fetch_progress_callback_ = std::move(fetch_progress_callback);
   fetch_complete_callback_ = std::move(fetch_complete_callback);
 
-  DCHECK(url.SchemeIsHTTPOrHTTPS());
   CrackUrl(url, &is_https_, &host_, &port_, &path_for_request_);
 
   verb_ = L"GET";
@@ -177,6 +175,9 @@ HRESULT NetworkFetcher::BeginFetch(
     const std::string& data,
     base::flat_map<std::string, std::string> additional_headers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!url_.SchemeIsHTTPOrHTTPS())
+    return E_INVALIDARG;
 
   connect_handle_ = Connect();
   if (!connect_handle_.get())
