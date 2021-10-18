@@ -102,6 +102,10 @@ class DWriteFontCollectionProxy
   blink::mojom::DWriteFontProxy& GetFontProxy();
 
  private:
+  HRESULT FindFamilyName(const std::u16string& family_name,
+                         UINT32* index,
+                         BOOL* exists);
+
   Microsoft::WRL::ComPtr<IDWriteFactory> factory_;
   std::vector<Microsoft::WRL::ComPtr<DWriteFontFamilyProxy>> families_;
   std::map<std::u16string, UINT32> family_names_;

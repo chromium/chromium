@@ -123,14 +123,20 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(const WCHAR* family_name,
                                                   UINT32* index,
                                                   BOOL* exists) {
   DCHECK(family_name);
+  static_assert(sizeof(WCHAR) == sizeof(char16_t), "WCHAR should be UTF-16.");
+  const std::u16string name(reinterpret_cast<const char16_t*>(family_name));
+  return FindFamilyName(name, index, exists);
+}
+
+HRESULT DWriteFontCollectionProxy::FindFamilyName(
+    const std::u16string& family_name,
+    UINT32* index,
+    BOOL* exists) {
   DCHECK(index);
   DCHECK(exists);
   TRACE_EVENT0("dwrite,fonts", "FontProxy::FindFamilyName");
 
-  static_assert(sizeof(WCHAR) == sizeof(char16_t), "WCHAR should be UTF-16.");
-  const std::u16string name(reinterpret_cast<const char16_t*>(family_name));
-
-  auto iter = family_names_.find(name);
+  auto iter = family_names_.find(family_name);
   if (iter != family_names_.end()) {
     *index = iter->second;
     *exists = iter->second != UINT_MAX;
@@ -138,14 +144,15 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(const WCHAR* family_name,
   }
 
   if (base::FeatureList::IsEnabled(kLimitFontFamilyNamesPerRenderer) &&
-      family_names_.size() > kFamilyNamesLimit && !IsLastResortFontName(name)) {
+      family_names_.size() > kFamilyNamesLimit &&
+      !IsLastResortFontName(family_name)) {
     *exists = FALSE;
     *index = UINT32_MAX;
     return S_OK;
   }
 
   uint32_t family_index = 0;
-  if (!GetFontProxy().FindFamily(name, &family_index)) {
+  if (!GetFontProxy().FindFamily(family_name, &family_index)) {
     LogFontProxyError(FIND_FAMILY_SEND_FAILED);
     return E_FAIL;
   }
@@ -155,13 +162,13 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(const WCHAR* family_name,
       return E_FAIL;
     *exists = TRUE;
     *index = family_index;
-    families_[family_index]->SetName(name);
+    families_[family_index]->SetName(family_name);
   } else {
     *exists = FALSE;
     *index = UINT32_MAX;
   }
 
-  family_names_[name] = *index;
+  family_names_[family_name] = *index;
   return S_OK;
 }
 
