@@ -384,7 +384,11 @@ void DelegatedFrameHost::DidCopyStaleContent(
   DCHECK_EQ(result->destination(),
             viz::CopyOutputResult::Destination::kNativeTextures);
 
+// TODO(crbug.com/1227661): Revert https://crrev.com/c/3222541 to re-enable this
+// DCHECK on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK_NE(frame_eviction_state_, FrameEvictionState::kNotStarted);
+#endif
   SetFrameEvictionStateAndNotifyObservers(FrameEvictionState::kNotStarted);
   ContinueDelegatedFrameEviction();
 
