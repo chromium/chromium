@@ -22,6 +22,7 @@ class Rect;
 }
 
 namespace views {
+class LabelButton;
 class Widget;
 }
 
@@ -29,7 +30,6 @@ namespace ash {
 
 class ToastManagerImplTest;
 class ToastOverlayView;
-class ToastOverlayButton;
 
 class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
                                 public KeyboardControllerObserver {
@@ -86,8 +86,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   void OnKeyboardOccludedBoundsChanged(const gfx::Rect& new_bounds) override;
 
   views::Widget* widget_for_testing();
-  ToastOverlayButton* dismiss_button_for_testing();
-  void ClickDismissButtonForTesting(const ui::Event& event);
+  views::LabelButton* dismiss_button_for_testing();
 
   Delegate* const delegate_;
   const std::u16string text_;

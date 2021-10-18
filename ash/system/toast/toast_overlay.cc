@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/button_style.h"
 #include "ash/style/element_style.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
@@ -54,7 +55,6 @@ constexpr int kToastHeight = 32;
 constexpr int kToastHorizontalSpacing = 16;
 constexpr int kToastMaximumWidth = 512;
 constexpr int kToastMinimumWidth = 288;
-constexpr int kToastButtonMaximumWidth = 160;
 
 // Returns the work area bounds for the root window where new windows are added
 // (including new toasts).
@@ -128,49 +128,6 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-//  ToastOverlayButton
-class ToastOverlayButton : public views::LabelButton {
- public:
-  ToastOverlayButton(PressedCallback callback, const std::u16string& text)
-      : views::LabelButton(std::move(callback), text, CONTEXT_TOAST_OVERLAY) {
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    SetHasInkDropActionOnClick(true);
-    views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
-        [](Button* host) {
-          return std::make_unique<views::InkDropHighlight>(
-              gfx::SizeF(host->GetLocalBounds().size()),
-              views::InkDrop::Get(host)->GetBaseColor());
-        },
-        this));
-
-    // Treat the space below the baseline as a margin.
-    int vertical_spacing =
-        std::max((kToastHeight - GetPreferredSize().height()) / 2, 0);
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(vertical_spacing, kToastHorizontalSpacing)));
-
-    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  kToastCornerRounding);
-    SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  }
-
-  ToastOverlayButton(const ToastOverlayButton&) = delete;
-  ToastOverlayButton& operator=(const ToastOverlayButton&) = delete;
-  ~ToastOverlayButton() override = default;
-
- private:
-  friend class ToastOverlay;  // for ToastOverlay::ClickDismissButtonForTesting.
-
-  // views::LabelButton:
-  void OnThemeChanged() override {
-    views::LabelButton::OnThemeChanged();
-    views::InkDrop::Get(this)->SetBaseColor(
-        AshColorProvider::Get()->GetRippleAttributes().base_color);
-    element_style::DecorateIconlessFloatingPillButton(this);
-  }
-};
-
-///////////////////////////////////////////////////////////////////////////////
 //  ToastOverlayView
 class ToastOverlayView : public views::View {
  public:
@@ -204,25 +161,25 @@ class ToastOverlayView : public views::View {
     if (!dismiss_text.has_value())
       return;
 
-    button_ = AddChildView(std::make_unique<ToastOverlayButton>(
+    button_ = AddChildView(std::make_unique<PillButton>(
         std::move(dismiss_callback),
         dismiss_text.value().empty()
             ? l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON)
-            : dismiss_text.value()));
+            : dismiss_text.value(),
+        PillButton::Type::kIconlessAccentFloating,
+        /*icon=*/nullptr));
+    button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
-    const int button_width =
-        std::min(button_->GetPreferredSize().width(), kToastButtonMaximumWidth);
-    button_->SetMaxSize(gfx::Size(button_width, GetMaximumSize().height()));
-    label->SetMaximumWidth(GetMaximumSize().width() - button_width -
-                           icon_width - kToastHorizontalSpacing * 2 -
-                           kToastHorizontalSpacing * 2);
+    label->SetMaximumWidth(
+        GetMaximumSize().width() - button_->GetPreferredSize().width() -
+        icon_width - kToastHorizontalSpacing * 2 - kToastHorizontalSpacing * 2);
   }
 
   ToastOverlayView(const ToastOverlayView&) = delete;
   ToastOverlayView& operator=(const ToastOverlayView&) = delete;
   ~ToastOverlayView() override = default;
 
-  ToastOverlayButton* button() { return button_; }
+  views::LabelButton* button() { return button_; }
 
  private:
   // views::View:
@@ -251,7 +208,7 @@ class ToastOverlayView : public views::View {
     }
   }
 
-  ToastOverlayButton* button_ = nullptr;  // weak
+  views::LabelButton* button_ = nullptr;
   views::ImageView* managed_icon_ = nullptr;
 };
 
@@ -383,13 +340,8 @@ views::Widget* ToastOverlay::widget_for_testing() {
   return overlay_widget_.get();
 }
 
-ToastOverlayButton* ToastOverlay::dismiss_button_for_testing() {
+views::LabelButton* ToastOverlay::dismiss_button_for_testing() {
   return overlay_view_->button();
-}
-
-void ToastOverlay::ClickDismissButtonForTesting(const ui::Event& event) {
-  DCHECK(overlay_view_->button());
-  overlay_view_->button()->NotifyClick(event);
 }
 
 }  // namespace ash

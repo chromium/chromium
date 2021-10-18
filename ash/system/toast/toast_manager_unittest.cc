@@ -23,6 +23,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -69,7 +70,7 @@ class ToastManagerImplTest : public AshTestBase {
     return overlay ? overlay->widget_for_testing() : nullptr;
   }
 
-  ToastOverlayButton* GetDismissButton() {
+  views::LabelButton* GetDismissButton() {
     ToastOverlay* overlay = GetCurrentOverlay();
     DCHECK(overlay);
     return overlay->dismiss_button_for_testing();
@@ -86,9 +87,12 @@ class ToastManagerImplTest : public AshTestBase {
   }
 
   void ClickDismissButton() {
-    ToastOverlay* overlay = GetCurrentOverlay();
-    if (overlay)
-      overlay->ClickDismissButtonForTesting(DummyEvent());
+    views::LabelButton* dismiss_button = GetDismissButton();
+    const gfx::Point button_center =
+        dismiss_button->GetBoundsInScreen().CenterPoint();
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(button_center);
+    event_generator->ClickLeftButton();
   }
 
   std::string ShowToast(const std::string& text,
