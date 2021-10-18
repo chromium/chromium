@@ -8,6 +8,7 @@
 #include "components/segmentation_platform/internal/selection/segment_selector.h"
 
 #include "base/callback_helpers.h"
+#include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 
 namespace base {
@@ -32,7 +33,8 @@ class SegmentSelectorImpl : public SegmentSelector {
                       SignalStorageConfig* signal_storage_config,
                       SegmentationResultPrefs* result_prefs,
                       const Config* config,
-                      base::Clock* clock);
+                      base::Clock* clock,
+                      const PlatformOptions& platform_options);
 
   ~SegmentSelectorImpl() override;
 
@@ -86,6 +88,8 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   // The time provider.
   base::Clock* clock_;
+
+  const PlatformOptions platform_options_;
 
   // Segment selection result is read from prefs on init and used for serving
   // the clients in the current session.

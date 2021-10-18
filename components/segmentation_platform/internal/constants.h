@@ -10,6 +10,8 @@ namespace segmentation_platform {
 // The path to the pref storing the segmentation result.
 extern const char kSegmentationResultPref[];
 
+extern const char kSegmentationPlatformRefreshResultsSwitch[];
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_CONSTANTS_H_

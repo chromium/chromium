@@ -71,7 +71,7 @@ class SegmentSelectorTest : public testing::Test {
     prefs_ = std::make_unique<TestSegmentationResultPrefs>();
     segment_selector_ = std::make_unique<SegmentSelectorImpl>(
         segment_database_.get(), &signal_storage_config_, prefs_.get(),
-        &config_, &clock_);
+        &config_, &clock_, PlatformOptions::CreateDefault());
   }
 
   void GetSelectedSegment(const SegmentSelectionResult& expected) {
@@ -295,7 +295,7 @@ TEST_F(SegmentSelectorTest,
   // Construct a segment selector. It should read result from last session.
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
       segment_database_.get(), &signal_storage_config_, prefs_.get(), &config_,
-      &clock_);
+      &clock_, PlatformOptions::CreateDefault());
 
   SegmentSelectionResult result;
   result.segment = segment_id0;

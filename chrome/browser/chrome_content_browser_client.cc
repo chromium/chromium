@@ -112,6 +112,7 @@
 #include "chrome/browser/safe_browsing/url_checker_delegate_impl.h"
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/segmentation_platform/chrome_browser_main_extra_parts_segmentation_platform.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher.h"
 #include "chrome/browser/signin/chrome_signin_proxying_url_loader_factory.h"
 #include "chrome/browser/signin/chrome_signin_url_loader_throttle.h"
@@ -1414,6 +1415,9 @@ ChromeContentBrowserClient::CreateBrowserMainParts(
   // Always add ChromeBrowserMainExtraPartsGpu last to make sure
   // GpuDataManager initialization could pick up about:flags settings.
   main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsGpu>());
+
+  main_parts->AddParts(
+      std::make_unique<ChromeBrowserMainExtraPartsSegmentationPlatform>());
 
   return main_parts;
 }

@@ -61,6 +61,10 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  // If optimization guide feature is disabled, then disable segmentation.
+  if (!optimization_guide)
+    return new DummySegmentationPlatformService();
+
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});

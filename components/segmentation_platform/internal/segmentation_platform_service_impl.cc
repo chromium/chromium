@@ -8,8 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -24,6 +26,7 @@
 #include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_factory.h"
+#include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
 #include "components/segmentation_platform/internal/proto/signal_storage_config.pb.h"
@@ -89,6 +92,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     : model_provider_(model_provider),
       task_runner_(task_runner),
       clock_(clock),
+      platform_options_(PlatformOptions::CreateDefault()),
       configs_(std::move(config)) {
   // Construct databases.
   segment_info_database_ =
@@ -113,7 +117,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     segment_selectors_[config->segmentation_key] =
         std::make_unique<SegmentSelectorImpl>(
             segment_info_database_.get(), signal_storage_config_.get(),
-            segmentation_result_prefs_.get(), config.get(), clock);
+            segmentation_result_prefs_.get(), config.get(), clock,
+            platform_options_);
   }
 
   for (const auto& config : configs_) {
@@ -203,7 +208,8 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
     observers.push_back(key_and_selector.second.get());
   model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
       std::move(observers), segment_info_database_.get(),
-      signal_storage_config_.get(), model_execution_manager_.get(), clock_);
+      signal_storage_config_.get(), model_execution_manager_.get(), clock_,
+      platform_options_);
 
   signal_filter_processor_->OnSignalListUpdated();
   model_execution_scheduler_->RequestModelExecutionForEligibleSegments(

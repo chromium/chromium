@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/logging.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
@@ -43,15 +44,19 @@ void SignalFilterProcessor::FilterSignals(
       if (feature.type() == proto::SignalType::USER_ACTION &&
           feature.name_hash() != 0) {
         user_actions.insert(feature.name_hash());
+        VLOG(1) << "Segmentation platform started observing " << feature.name();
         continue;
       }
 
       if ((feature.type() == proto::SignalType::HISTOGRAM_VALUE ||
            feature.type() == proto::SignalType::HISTOGRAM_ENUM) &&
           !feature.name().empty()) {
+        VLOG(1) << "Segmentation platform started observing " << feature.name();
         histograms.insert(std::make_pair(feature.name(), feature.type()));
         continue;
       }
+
+      NOTREACHED() << "Unexpected feature type";
 
       // TODO(shaktisahu): We can filter out enum values as an optimization
       // before storing in DB.

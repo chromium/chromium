@@ -54,7 +54,7 @@ class ModelExecutionSchedulerTest : public testing::Test {
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
         std::move(observers), segment_database_.get(), &signal_storage_config_,
-        &model_execution_manager_, &clock_);
+        &model_execution_manager_, &clock_, PlatformOptions::CreateDefault());
   }
 
   base::test::TaskEnvironment task_environment_;

@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -114,6 +115,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   optimization_guide::OptimizationGuideModelProvider* model_provider_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::Clock* clock_;
+  const PlatformOptions platform_options_;
 
   // Config.
   std::vector<std::unique_ptr<Config>> configs_;

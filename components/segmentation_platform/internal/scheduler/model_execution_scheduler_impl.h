@@ -12,6 +12,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
+#include "components/segmentation_platform/internal/platform_options.h"
 
 namespace base {
 class Clock;
@@ -32,7 +33,8 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
                               SegmentInfoDatabase* segment_database,
                               SignalStorageConfig* signal_storage_config,
                               ModelExecutionManager* model_execution_manager,
-                              base::Clock* clock);
+                              base::Clock* clock,
+                              const PlatformOptions& platform_options);
   ~ModelExecutionSchedulerImpl() override;
 
   // Disallow copy/assign.
@@ -74,6 +76,8 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   // The time provider.
   base::Clock* clock_;
+
+  const PlatformOptions platform_options_;
 
   // In-flight model execution requests. Will be killed if we get a model
   // update.

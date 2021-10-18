@@ -25,6 +25,8 @@ namespace {
 
 // Default TTL for segment selection and unknown selection:
 
+constexpr int kDummyFeatureSelectionTTLDays = 1;
+
 #if defined(OS_ANDROID)
 constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 28;
 
@@ -65,7 +67,8 @@ std::unique_ptr<Config> GetConfigForDummyFeature() {
   config->segment_ids = {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY,
   };
-  // TTL can be added as result TTL in metadata if needed.
+  config->segment_selection_ttl = base::Days(kDummyFeatureSelectionTTLDays);
+  config->unknown_selection_ttl = base::Days(kDummyFeatureSelectionTTLDays);
   return config;
 }
 

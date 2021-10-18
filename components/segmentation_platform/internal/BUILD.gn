@@ -44,6 +44,8 @@ static_library("internal") {
     "execution/model_execution_manager_factory.cc",
     "execution/model_execution_manager_factory.h",
     "execution/model_execution_status.h",
+    "platform_options.cc",
+    "platform_options.h",
     "scheduler/model_execution_scheduler.h",
     "scheduler/model_execution_scheduler_impl.cc",
     "scheduler/model_execution_scheduler_impl.h",
