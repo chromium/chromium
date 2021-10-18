@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): forward declare AttestatoinFlow
+// TODO(https://crbug.com/1164001): forward declare AttestationFlow
 // after //chromeos/attestation is moved to ash.
 #include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/dbus/attestation/interface.pb.h"

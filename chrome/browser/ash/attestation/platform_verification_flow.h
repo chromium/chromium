@@ -14,10 +14,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-// TODO(https://crbug.com/1164001): forward declare AttestatoinFlow
+// TODO(https://crbug.com/1164001): forward declare AttestationFlow
 // after //chromeos/attestation is moved to ash.
 #include "chromeos/attestation/attestation_flow.h"
-// TODO(https://crbug.com/1164001): forward declare AttestatoinClient
+// TODO(https://crbug.com/1164001): forward declare AttestationClient
 // before ChromeOS source migration.
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
@@ -57,7 +57,8 @@ class PlatformVerificationFlowTest;
 // attestation flow is aborted at any stage, it will need to start over.  If we
 // use weak pointers, the attestation flow will stop when the next callback is
 // run.  So we need the instance to stay alive until the platform key is fully
-// certified so the next time ChallegePlatformKey() is invoked it will be quick.
+// certified so the next time ChallengePlatformKey() is invoked it will be
+// quick.
 class PlatformVerificationFlow
     : public base::RefCountedThreadSafe<PlatformVerificationFlow> {
  public:
