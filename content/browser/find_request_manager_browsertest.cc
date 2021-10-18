@@ -9,7 +9,9 @@
 #include "content/browser/find_request_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_message_filter.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -24,6 +26,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-test-utils.h"
+#include "url/origin.h"
 
 #if defined(OS_ANDROID)
 #include "ui/android/view_android.h"
@@ -34,6 +37,10 @@ namespace content {
 namespace {
 
 const int kInvalidId = -1;
+
+const url::Origin& GetOriginForFrameTreeNode(FrameTreeNode* node) {
+  return node->current_frame_host()->GetLastCommittedOrigin();
+}
 
 }  // namespace
 
@@ -81,17 +88,14 @@ class FindRequestManagerTest : public ContentBrowserTest,
   // cross-process.
   void LoadMultiFramePage(int height, bool cross_process) {
     LoadAndWait("/find_in_page_multi_frame.html");
-    FrameTreeNode* root = contents()->GetFrameTree()->root();
-    LoadMultiFramePageChildFrames(height, cross_process, root);
+    LoadMultiFramePageChildFrames(height, cross_process, root());
   }
 
   // Reloads the child frame cross-process.
   void MakeChildFrameCrossProcess() {
-    FrameTreeNode* root = contents()->GetFrameTree()->root();
-    FrameTreeNode* child = root->child_at(0);
-    GURL url(embedded_test_server()->GetURL(
-        "b.com", child->current_url().path()));
-
+    FrameTreeNode* child = first_child();
+    GURL url =
+        embedded_test_server()->GetURL("b.com", child->current_url().path());
     EXPECT_TRUE(NavigateToURLFromRenderer(child, url));
   }
 
@@ -113,6 +117,10 @@ class FindRequestManagerTest : public ContentBrowserTest,
   int last_request_id() const {
     return last_request_id_;
   }
+
+  FrameTreeNode* root() { return contents()->GetFrameTree()->root(); }
+
+  FrameTreeNode* first_child() { return root()->child_at(0); }
 
  private:
   // Helper function for LoadMultiFramePage. Loads child frames until the frame
@@ -403,8 +411,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_RemoveFrame) {
   EXPECT_EQ(17, results.active_match_ordinal);
 
   // Remove a frame.
-  FrameTreeNode* root = contents()->GetFrameTree()->root();
-  root->current_frame_host()->RemoveChild(root->child_at(0));
+  root()->current_frame_host()->RemoveChild(first_child());
 
   // The number of matches and active match ordinal should update automatically
   // to exclude the matches from the removed frame.
@@ -954,11 +961,9 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, ActivateNearestFindMatch) {
   std::unique_ptr<ZoomToFindInPageRectMessageFilter> message_interceptor_child;
 
   if (test_with_oopif) {
-    FrameTreeNode* root = contents()->GetFrameTree()->root();
-    FrameTreeNode* child = root->child_at(0);
     message_interceptor_child =
         std::make_unique<ZoomToFindInPageRectMessageFilter>(
-            child->current_frame_host()->GetRenderWidgetHost());
+            first_child()->current_frame_host()->GetRenderWidgetHost());
   }
 
   auto default_options = blink::mojom::FindOptions::New();
@@ -1059,6 +1064,100 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_HistoryBackAndForth) {
   test_page();
 }
 
+class FindInPageDisabledForOriginBrowserClient : public ContentBrowserClient {
+ public:
+  FindInPageDisabledForOriginBrowserClient() = default;
+  ~FindInPageDisabledForOriginBrowserClient() override = default;
+
+  // ContentBrowserClient:
+  bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override {
+    return origin.host() == "b.com";
+  }
+};
+
+// Tests that find-in-page won't show results for origins that disabled
+// find-in-page.
+IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, FindInPageDisabledForOrigin) {
+  FindInPageDisabledForOriginBrowserClient browser_client;
+  auto* old_client = content::SetBrowserClientForTesting(&browser_client);
+
+  // Start with a basic case to set a baseline.
+  LoadAndWait("/find_in_page.html");
+  url::Origin root_origin = GetOriginForFrameTreeNode(root());
+  url::Origin child_origin = GetOriginForFrameTreeNode(first_child());
+  EXPECT_EQ("a.com", root_origin.host());
+  EXPECT_EQ("a.com", child_origin.host());
+  EXPECT_FALSE(browser_client.IsFindInPageDisabledForOrigin(root_origin));
+  EXPECT_FALSE(browser_client.IsFindInPageDisabledForOrigin(child_origin));
+
+  auto options = blink::mojom::FindOptions::New();
+  options->run_synchronously_for_testing = true;
+  Find("result", options->Clone());
+  delegate()->WaitForFinalReply();
+
+  FindResults results = delegate()->GetFindResults();
+  EXPECT_EQ(last_request_id(), results.request_id);
+  EXPECT_EQ(19, results.number_of_matches);
+
+  // Navigate child frame to b.com.
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      first_child(), embedded_test_server()->GetURL(
+                         "b.com", first_child()->current_url().path())));
+  root_origin = GetOriginForFrameTreeNode(root());
+  child_origin = GetOriginForFrameTreeNode(first_child());
+  EXPECT_EQ("a.com", root_origin.host());
+  EXPECT_EQ("b.com", child_origin.host());
+  EXPECT_FALSE(browser_client.IsFindInPageDisabledForOrigin(root_origin));
+  EXPECT_TRUE(browser_client.IsFindInPageDisabledForOrigin(child_origin));
+
+  Find("result", options->Clone());
+  delegate()->WaitForFinalReply();
+
+  // Given the custom `browser_client` disabled find-in-page for b.com, only the
+  // results from the root node should show up now.
+  results = delegate()->GetFindResults();
+  EXPECT_EQ(last_request_id(), results.request_id);
+  EXPECT_EQ(2, results.number_of_matches);
+
+  // Navigate child frame, but remain on b.com.
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      first_child(),
+      embedded_test_server()->GetURL("b.com", "/find_in_simple_page.html")));
+  root_origin = GetOriginForFrameTreeNode(root());
+  child_origin = GetOriginForFrameTreeNode(first_child());
+  EXPECT_EQ("a.com", root_origin.host());
+  EXPECT_EQ("b.com", child_origin.host());
+  EXPECT_FALSE(browser_client.IsFindInPageDisabledForOrigin(root_origin));
+  EXPECT_TRUE(browser_client.IsFindInPageDisabledForOrigin(child_origin));
+
+  // Results from the child frame on b.com still do not show up.
+  results = delegate()->GetFindResults();
+  EXPECT_EQ(last_request_id(), results.request_id);
+  EXPECT_EQ(2, results.number_of_matches);
+
+  // Navigate child frame to a.com again.
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      first_child(),
+      embedded_test_server()->GetURL("a.com", "/find_in_simple_page.html")));
+  root_origin = GetOriginForFrameTreeNode(root());
+  child_origin = GetOriginForFrameTreeNode(first_child());
+  EXPECT_EQ("a.com", root_origin.host());
+  EXPECT_EQ("a.com", child_origin.host());
+  EXPECT_FALSE(browser_client.IsFindInPageDisabledForOrigin(root_origin));
+  EXPECT_FALSE(browser_client.IsFindInPageDisabledForOrigin(child_origin));
+
+  Find("result", options->Clone());
+  delegate()->WaitForFinalReply();
+
+  // Since the child frame is now on a.com, find-in-page is enabled, so its
+  // results show up again.
+  results = delegate()->GetFindResults();
+  EXPECT_EQ(last_request_id(), results.request_id);
+  EXPECT_EQ(7, results.number_of_matches);
+
+  content::SetBrowserClientForTesting(old_client);
+}
+
 class FindRequestManagerPortalTest : public FindRequestManagerTest {
  public:
   FindRequestManagerPortalTest() {
@@ -1070,7 +1169,7 @@ class FindRequestManagerPortalTest : public FindRequestManagerTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that results find-in-page won't show results inside a portal.
+// Tests that find-in-page won't show results inside a portal.
 IN_PROC_BROWSER_TEST_F(FindRequestManagerPortalTest, Portal) {
   TestNavigationObserver navigation_observer(contents());
   EXPECT_TRUE(

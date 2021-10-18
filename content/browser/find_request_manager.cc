@@ -14,7 +14,9 @@
 #include "content/browser/find_in_page_client.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_client.h"
 
 namespace content {
 
@@ -166,6 +168,11 @@ RenderFrameHostImpl* TraverseFrame(RenderFrameHostImpl* rfh,
   return forward ? TraverseNext(rfh, wrap) : TraversePrevious(rfh, wrap);
 }
 
+bool IsFindInPageDisabled(RenderFrameHost* rfh) {
+  return rfh && GetContentClient()->browser()->IsFindInPageDisabledForOrigin(
+                    rfh->GetLastCommittedOrigin());
+}
+
 }  // namespace
 
 // Observes searched WebContentses for frame changes, including deletion,
@@ -187,7 +194,11 @@ class FindRequestManager::FrameObserver : public WebContentsObserver {
     manager_->RemoveFrame(rfh);
     // Make sure RenderFrameDeleted will be called to clean up
     DCHECK(rfh->IsRenderFrameCreated());
-    manager_->AddFrame(rfh, true /* force */);
+
+    if (IsFindInPageDisabled(rfh))
+      return;
+
+    manager_->AddFrame(rfh, /*force=*/true);
   }
 
   void RenderFrameDeleted(RenderFrameHost* rfh) override {
@@ -627,12 +638,17 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
   for (WebContentsImpl* contents : contents_->GetWebContentsAndAllInner()) {
     // Portals can't receive keyboard events or be focused, so we don't return
     // find results inside a portal.
-    if (!contents->IsPortal()) {
-      frame_observers_.push_back(
-          std::make_unique<FrameObserver>(contents, this));
-      for (FrameTreeNode* node : contents->GetFrameTree()->Nodes()) {
-        AddFrame(node->current_frame_host(), false /* force */);
-      }
+    if (contents->IsPortal())
+      continue;
+
+    frame_observers_.push_back(std::make_unique<FrameObserver>(contents, this));
+
+    for (FrameTreeNode* node : contents->GetFrameTree()->Nodes()) {
+      RenderFrameHost* rfh = node->current_frame_host();
+      if (IsFindInPageDisabled(rfh))
+        continue;
+
+      AddFrame(rfh, /*force=*/false);
     }
   }
 }
@@ -740,6 +756,8 @@ void FindRequestManager::AddFrame(RenderFrameHost* rfh, bool force) {
   // A frame that is already being searched should not normally be added again.
   DCHECK(force || !CheckFrame(rfh));
 
+  DCHECK(!IsFindInPageDisabled(rfh));
+
   find_in_page_clients_[rfh] = std::make_unique<FindInPageClient>(
       this, static_cast<RenderFrameHostImpl*>(rfh));
 
@@ -751,7 +769,11 @@ void FindRequestManager::AddFrame(RenderFrameHost* rfh, bool force) {
 }
 
 bool FindRequestManager::CheckFrame(RenderFrameHost* rfh) const {
-  return rfh && base::Contains(find_in_page_clients_, rfh);
+  if (!rfh || !base::Contains(find_in_page_clients_, rfh))
+    return false;
+
+  DCHECK(!IsFindInPageDisabled(rfh));
+  return true;
 }
 
 void FindRequestManager::UpdateActiveMatchOrdinal() {

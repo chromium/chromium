@@ -2129,6 +2129,9 @@ class CONTENT_EXPORT ContentBrowserClient {
       base::OnceCallback<void(bool accepted,
                               const std::string& address,
                               const std::string& port)> callback);
+
+  // Returns true if find-in-page should be disabled for a given `origin`.
+  virtual bool IsFindInPageDisabledForOrigin(const url::Origin& origin);
 };
 
 }  // namespace content

@@ -1278,4 +1278,9 @@ void ContentBrowserClient::ShowDirectSocketsConnectionDialog(
   std::move(callback).Run(false, std::string(), std::string());
 }
 
+bool ContentBrowserClient::IsFindInPageDisabledForOrigin(
+    const url::Origin& origin) {
+  return false;
+}
+
 }  // namespace content

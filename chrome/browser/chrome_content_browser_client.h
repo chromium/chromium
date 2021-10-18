@@ -757,6 +757,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   CreateSpeculationHostDelegate(
       content::RenderFrameHost& render_frame_host) override;
 
+  bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

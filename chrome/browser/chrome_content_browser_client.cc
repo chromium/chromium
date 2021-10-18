@@ -527,6 +527,7 @@
 #include "components/pdf/browser/pdf_navigation_throttle.h"
 #include "components/pdf/browser/pdf_url_loader_request_interceptor.h"
 #include "components/pdf/common/internal_plugin_helpers.h"
+#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -6259,6 +6260,18 @@ bool ChromeContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
   }
   return ContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
       browser_context);
+}
+
+bool ChromeContentBrowserClient::IsFindInPageDisabledForOrigin(
+    const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_PDF)
+  // For PDF viewing with the PPAPI-free PDF Viewer, find-in-page should only
+  // display results from the PDF content, and not from the UI.
+  return base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned) &&
+         IsPdfExtensionOrigin(origin);
+#else
+  return false;
+#endif
 }
 
 std::unique_ptr<content::SpeculationHostDelegate>

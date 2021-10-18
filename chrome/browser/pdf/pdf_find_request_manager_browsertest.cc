@@ -346,4 +346,23 @@ IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest,
   EXPECT_EQ(1, results.active_match_ordinal);
 }
 
+// Tests that find-in-page results only come for the PDF contents, and not from
+// the PDF Viewer's UI.
+IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, DoesNotSearchPdfViewerUi) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  LoadAndWait("/find_in_pdf_page.pdf");
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
+
+  auto options = blink::mojom::FindOptions::New();
+  Find("pdf", options.Clone());
+  delegate()->WaitForFinalReply();
+
+  // The UI contains "find_in_pdf_page.pdf", but that should not generate any
+  // results.
+  // The contents contains one instance of "pdf", which should show up.
+  FindResults results = delegate()->GetFindResults();
+  EXPECT_EQ(last_request_id(), results.request_id);
+  EXPECT_EQ(1, results.number_of_matches);
+}
+
 }  // namespace content
