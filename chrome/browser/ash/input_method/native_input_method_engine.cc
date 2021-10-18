@@ -611,6 +611,11 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
     input_method_.reset();
     host_receiver_.reset();
 
+    // It is possible that the extension has missed changes to the input method
+    // options because the options were changed while it was sleeping.
+    // Trigger an input method option changed event to ensure the extension has
+    // the latest options.
+    ime_base_observer_->OnInputMethodOptionsChanged(engine_id);
     ime_base_observer_->OnActivate(engine_id);
   }
 }
