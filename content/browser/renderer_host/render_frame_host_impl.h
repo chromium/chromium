@@ -366,6 +366,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ExecuteJavaScriptWithUserGestureForTests(
       const std::u16string& javascript,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) override;
+  void ExecutePluginActionAtLocalLocation(
+      const gfx::Point& local_location,
+      blink::mojom::PluginActionType plugin_action) override;
   void ActivateFindInPageResultForAccessibility(int request_id) override;
   void InsertVisualStateCallback(VisualStateCallback callback) override;
   void CopyImageAt(int x, int y) override;

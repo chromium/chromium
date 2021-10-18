@@ -2390,6 +2390,12 @@ void RenderFrameHostImpl::ExecuteJavaScriptWithUserGestureForTests(
       javascript, false, has_user_gesture, world_id, base::NullCallback());
 }
 
+void RenderFrameHostImpl::ExecutePluginActionAtLocalLocation(
+    const gfx::Point& local_location,
+    blink::mojom::PluginActionType plugin_action) {
+  GetAssociatedLocalFrame()->PluginActionAt(local_location, plugin_action);
+}
+
 void RenderFrameHostImpl::CopyImageAt(int x, int y) {
   gfx::PointF point_in_view =
       GetView()->TransformRootPointToViewCoordSpace(gfx::PointF(x, y));

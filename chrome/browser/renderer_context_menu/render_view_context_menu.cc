@@ -181,6 +181,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -202,6 +203,10 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_frame_util.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -3552,6 +3557,24 @@ void RenderViewContextMenu::MediaPlayerActionAt(
 void RenderViewContextMenu::PluginActionAt(
     const gfx::Point& location,
     blink::mojom::PluginActionType plugin_action) {
+#if BUILDFLAG(ENABLE_PDF)
+  // A PDF plugin exists in a child frame embedded inside the extension's
+  // main frame when Pepper-free PDF viewer is enabled. To trigger any plugin
+  // action, we need to detect this child frame and trigger the actions from
+  // there.
+  RenderFrameHost* pdf_rfh =
+      pdf_frame_util::FindPdfChildFrame(source_web_contents_->GetMainFrame());
+  if (pdf_rfh) {
+    // Calculate the local location in view coordinates before executing the
+    // plugin action from the PDF render frame.
+    gfx::PointF local_location =
+        pdf_rfh->GetView()->TransformRootPointToViewCoordSpace(
+            gfx::PointF(location));
+    pdf_rfh->ExecutePluginActionAtLocalLocation(
+        gfx::ToFlooredPoint(local_location), plugin_action);
+    return;
+  }
+#endif
   source_web_contents_->GetMainFrame()
       ->GetRenderViewHost()
       ->ExecutePluginActionAtLocation(location, plugin_action);
