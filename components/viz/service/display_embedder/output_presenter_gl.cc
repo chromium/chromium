@@ -68,11 +68,8 @@ class PresenterImageGL : public OutputPresenter::Image {
  private:
   std::unique_ptr<gpu::SharedImageRepresentationOverlay>
       overlay_representation_;
-  std::unique_ptr<gpu::SharedImageRepresentationGLTexture> gl_representation_;
   std::unique_ptr<gpu::SharedImageRepresentationOverlay::ScopedReadAccess>
       scoped_overlay_read_access_;
-  std::unique_ptr<gpu::SharedImageRepresentationGLTexture::ScopedAccess>
-      scoped_gl_read_access_;
 
   int present_count_ = 0;
 };
@@ -99,14 +96,8 @@ bool PresenterImageGL::Initialize(
 
   overlay_representation_ = representation_factory->ProduceOverlay(mailbox);
 
-  // If the backing doesn't support overlay, then fallback to GL.
   if (!overlay_representation_) {
     LOG(ERROR) << "ProduceOverlay() failed";
-    gl_representation_ = representation_factory->ProduceGLTexture(mailbox);
-  }
-
-  if (!overlay_representation_ && !gl_representation_) {
-    LOG(ERROR) << "ProduceOverlay() and ProduceGLTexture() failed.";
     return false;
   }
 
@@ -115,25 +106,17 @@ bool PresenterImageGL::Initialize(
 
 void PresenterImageGL::BeginPresent() {
   if (++present_count_ != 1) {
-    DCHECK(scoped_overlay_read_access_ || scoped_gl_read_access_);
+    DCHECK(scoped_overlay_read_access_);
     return;
   }
 
   DCHECK(!sk_surface());
   DCHECK(!scoped_overlay_read_access_);
 
-  if (overlay_representation_) {
     scoped_overlay_read_access_ =
         overlay_representation_->BeginScopedReadAccess(
             true /* need_gl_image */);
     DCHECK(scoped_overlay_read_access_);
-    return;
-  }
-
-  scoped_gl_read_access_ = gl_representation_->BeginScopedAccess(
-      GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
-      gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
-  DCHECK(scoped_gl_read_access_);
 }
 
 void PresenterImageGL::EndPresent(gfx::GpuFenceHandle release_fence) {
@@ -141,13 +124,9 @@ void PresenterImageGL::EndPresent(gfx::GpuFenceHandle release_fence) {
   if (--present_count_)
     return;
 
-  // Check there is no release fence if we have a non-overlay read access.
-  DCHECK(!scoped_gl_read_access_ || release_fence.is_null());
-  if (scoped_overlay_read_access_)
-    scoped_overlay_read_access_->SetReleaseFence(std::move(release_fence));
+  scoped_overlay_read_access_->SetReleaseFence(std::move(release_fence));
 
   scoped_overlay_read_access_.reset();
-  scoped_gl_read_access_.reset();
 }
 
 int PresenterImageGL::GetPresentCount() const {
@@ -157,27 +136,15 @@ int PresenterImageGL::GetPresentCount() const {
 void PresenterImageGL::OnContextLost() {
   if (overlay_representation_)
     overlay_representation_->OnContextLost();
-  if (gl_representation_)
-    gl_representation_->OnContextLost();
 }
 
 gl::GLImage* PresenterImageGL::GetGLImage(
     std::unique_ptr<gfx::GpuFence>* fence) {
-  if (scoped_overlay_read_access_) {
-    if (fence) {
-      *fence = TakeGpuFence(scoped_overlay_read_access_->TakeAcquireFences());
-    }
-    return scoped_overlay_read_access_->gl_image();
+  DCHECK(scoped_overlay_read_access_);
+  if (fence) {
+    *fence = TakeGpuFence(scoped_overlay_read_access_->TakeAcquireFences());
   }
-
-  DCHECK(scoped_gl_read_access_);
-
-  if (gl::GLFence::IsGpuFenceSupported() && fence) {
-    if (auto gl_fence = gl::GLFence::CreateForGpuFence())
-      *fence = gl_fence->GetGpuFence();
-  }
-  auto* texture = gl_representation_->GetTexture();
-  return texture->GetLevelImage(texture->target(), 0);
+  return scoped_overlay_read_access_->gl_image();
 }
 
 }  // namespace
