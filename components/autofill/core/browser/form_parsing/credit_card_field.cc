@@ -418,8 +418,11 @@ bool CreditCardField::IsGiftCardField(AutofillScanner* scanner,
   if (scanner->IsEnd())
     return false;
 
-  const int kMatchFieldTypes =
-      MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE | MATCH_SEARCH;
+  // kMatchFieldTypes should subsume kMatchNumTelAndPwd used for
+  // CREDIT_CARD_NUMBER matching. Otherwise, a gift card field may not match the
+  // GIFT_CARD pattern but erroneously do match the CREDIT_CARD_NUMBER pattern.
+  const int kMatchFieldTypes = MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE |
+                               MATCH_SEARCH | MATCH_PASSWORD;
   size_t saved_cursor = scanner->SaveCursor();
 
   const std::vector<MatchingPattern>& debit_cards_patterns =
