@@ -2,7 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(crbug.com/1259122): Remove //build/config/sanitizers/sanitizers.gni when
+# Chromium Clang ship with a catalyst version of the compiler runtime.
+
 import("//build/config/ios/ios_sdk.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
@@ -136,6 +140,27 @@ config("runtime_library") {
                   root_build_dir),
       "-nodefaultlibs",
     ]
+  }
+
+  # TODO(crbug.com/1259122): Temporarily use a different libclang_rt.osx.a
+  # for catalyst build. This can be removed when a catalyst slice is added
+  # to upstream Clang.
+  if (target_environment == "catalyst") {
+    assert(xcode_version_int == 1300)
+    ldflags += [
+      "-lSystem",
+      rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
+                      "lib/darwin/libclang_rt.osx.a",
+                  root_build_dir),
+      "-nodefaultlibs",
+    ]
+
+    # UBSAn runtime library is also required when using libfuzzer.
+    if (use_libfuzzer) {
+      ldflags += [ rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
+                                   "lib/darwin/libclang_rt.ubsan_osx.a",
+                               root_build_dir) ]
+    }
   }
 }
 
