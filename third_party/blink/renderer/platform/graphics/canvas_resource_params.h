@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PARAMS_H_
 
 #include "components/viz/common/resources/resource_format.h"
+#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -34,6 +35,7 @@ class PLATFORM_EXPORT CanvasResourceParams {
   CanvasResourceParams(CanvasColorSpace, SkColorType, SkAlphaType);
   explicit CanvasResourceParams(const SkImageInfo&);
 
+  SkImageInfo MakeSkImageInfo(const IntSize&) const;
   CanvasColorSpace ColorSpace() const { return color_space_; }
 
   void SetCanvasColorSpace(CanvasColorSpace c) { color_space_ = c; }

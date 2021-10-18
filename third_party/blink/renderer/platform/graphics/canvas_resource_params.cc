@@ -49,6 +49,11 @@ CanvasResourceParams::CanvasResourceParams(const SkImageInfo& info)
   // TODO(https://crbug.com/1157747): This ignores |info|'s SkAlphaType.
 }
 
+SkImageInfo CanvasResourceParams::MakeSkImageInfo(const IntSize& size) const {
+  return SkImageInfo::Make(size.width(), size.height(), color_type_,
+                           alpha_type_, GetSkColorSpace());
+}
+
 SkSurfaceProps CanvasResourceParams::GetSkSurfaceProps() const {
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(CanUseLcdText());
 }

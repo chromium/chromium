@@ -76,13 +76,14 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT |
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kMedium,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       shared_image_usage_flags);
@@ -112,9 +113,10 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
@@ -138,12 +140,13 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kCPU, true /*is_origin_top_left*/,
       shared_image_usage_flags);
@@ -170,12 +173,13 @@ TEST_F(CanvasResourceProviderTest,
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kMedium,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       shared_image_usage_flags);
@@ -229,12 +233,13 @@ TEST_F(CanvasResourceProviderTest,
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kMedium,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       shared_image_usage_flags);
@@ -277,12 +282,13 @@ TEST_F(CanvasResourceProviderTest,
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kMedium,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU,
       true /* is_origin_top_left */, shared_image_usage_flags);
@@ -300,9 +306,10 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
-      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
 
   EXPECT_EQ(provider->Size(), kSize);
@@ -323,6 +330,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   MockCanvasResourceDispatcherClient client;
   CanvasResourceDispatcher resource_dispatcher(
@@ -330,7 +338,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
       1 /* placeholder_canvas_id */, kSize);
 
   auto provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       resource_dispatcher.GetWeakPtr());
 
@@ -355,13 +363,14 @@ TEST_F(CanvasResourceProviderTest,
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT |
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kMedium,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       shared_image_usage_flags);
@@ -392,11 +401,11 @@ TEST_F(CanvasResourceProviderTest,
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
-      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
-      context_provider_wrapper_, nullptr /*resource_dispatcher */,
-      true /*is_origin_top_left*/);
+      kInfo, cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
+      nullptr /*resource_dispatcher */, true /*is_origin_top_left*/);
 
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
@@ -430,47 +439,41 @@ TEST_F(CanvasResourceProviderTest,
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
-      IntSize(kMaxTextureSize - 1, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      SkImageInfo::MakeN32Premul(kMaxTextureSize - 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateBitmapProvider(
-      IntSize(kMaxTextureSize, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      SkImageInfo::MakeN32Premul(kMaxTextureSize, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateBitmapProvider(
-      IntSize(kMaxTextureSize + 1, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      SkImageInfo::MakeN32Premul(kMaxTextureSize + 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      IntSize(kMaxTextureSize - 1, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      SkImageInfo::MakeN32Premul(kMaxTextureSize - 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSharedImageProvider(
-      IntSize(kMaxTextureSize, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      SkImageInfo::MakeN32Premul(kMaxTextureSize, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSharedImageProvider(
-      IntSize(kMaxTextureSize + 1, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      SkImageInfo::MakeN32Premul(kMaxTextureSize + 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
@@ -480,25 +483,23 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
-      IntSize(kMaxTextureSize - 1, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      SkImageInfo::MakeN32Premul(kMaxTextureSize - 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, nullptr /* resource_dispatcher */,
       true /*is_origin_top_left*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSwapChainProvider(
-      IntSize(kMaxTextureSize, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      SkImageInfo::MakeN32Premul(kMaxTextureSize, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, nullptr /* resource_dispatcher */,
       true /*is_origin_top_left*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSwapChainProvider(
-      IntSize(kMaxTextureSize + 1, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      SkImageInfo::MakeN32Premul(kMaxTextureSize + 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, nullptr /* resource_dispatcher */,
       true /*is_origin_top_left*/);
@@ -509,25 +510,20 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_PassThrough) {
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
-      IntSize(kMaxTextureSize - 1, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
-      context_provider_wrapper_, nullptr /* resource_dispatcher */,
-      true /*is_origin_top_left*/);
+      SkImageInfo::MakeN32Premul(kMaxTextureSize - 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
+      nullptr /* resource_dispatcher */, true /*is_origin_top_left*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
-      IntSize(kMaxTextureSize, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
-      context_provider_wrapper_, nullptr /* resource_dispatcher */,
-      true /*is_origin_top_left*/);
+      SkImageInfo::MakeN32Premul(kMaxTextureSize, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
+      nullptr /* resource_dispatcher */, true /*is_origin_top_left*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
-      IntSize(kMaxTextureSize + 1, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, kColorParams,
-      context_provider_wrapper_, nullptr /* resource_dispatcher */,
-      true /*is_origin_top_left*/);
+      SkImageInfo::MakeN32Premul(kMaxTextureSize + 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
+      nullptr /* resource_dispatcher */, true /*is_origin_top_left*/);
   // The CanvasResourceProvider for PassThrough should not be created or valid
   // if the texture size is greater than the maximum value
   EXPECT_TRUE(!provider || !provider->IsValid());
@@ -537,9 +533,10 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
-      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, nullptr /* resource_dispatcher */,
       true /*is_origin_top_left*/);
@@ -562,15 +559,16 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
   const IntSize kSize(10, 10);
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
+  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
 
   auto src_provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kMedium,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
 
   auto dst_provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
+      kInfo, cc::PaintFlags::FilterQuality::kMedium,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);

@@ -339,13 +339,10 @@ class FakeCanvas2DLayerBridge : public Canvas2DLayerBridge {
 
 class FakeCanvasResourceProvider : public CanvasResourceProvider {
  public:
-  FakeCanvasResourceProvider(const IntSize& size,
-                             CanvasResourceParams params,
-                             RasterModeHint hint)
+  FakeCanvasResourceProvider(const SkImageInfo& info, RasterModeHint hint)
       : CanvasResourceProvider(CanvasResourceProvider::kBitmap,
-                               size,
+                               info,
                                cc::PaintFlags::FilterQuality::kLow,
-                               params,
                                /*is_origin_top_left=*/false,
                                nullptr,
                                nullptr),
@@ -1120,8 +1117,9 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
 
   IntSize size(10, 10);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider =
-      std::make_unique<FakeCanvasResourceProvider>(size, CanvasResourceParams(),
-                                                   RasterModeHint::kPreferGPU);
+      std::make_unique<FakeCanvasResourceProvider>(
+          SkImageInfo::MakeN32Premul(size.width(), size.height()),
+          RasterModeHint::kPreferGPU);
   std::unique_ptr<FakeCanvas2DLayerBridge> fake_2d_layer_bridge =
       std::make_unique<FakeCanvas2DLayerBridge>(size, CanvasColorParams(),
                                                 RasterModeHint::kPreferGPU);
@@ -1152,7 +1150,8 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
                                                 RasterModeHint::kPreferGPU);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider2 =
       std::make_unique<FakeCanvasResourceProvider>(
-          size2, CanvasResourceParams(), RasterModeHint::kPreferGPU);
+          SkImageInfo::MakeN32Premul(size2.width(), size2.height()),
+          RasterModeHint::kPreferGPU);
   anotherCanvas->SetResourceProviderForTesting(
       std::move(fake_resource_provider2), std::move(fake_2d_layer_bridge2),
       size2);

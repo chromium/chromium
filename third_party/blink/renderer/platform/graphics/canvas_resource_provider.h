@@ -104,18 +104,51 @@ class PLATFORM_EXPORT CanvasResourceProvider
   enum class ShouldInitialize { kNo, kCallClear };
 
   static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
+      const SkImageInfo& info,
+      cc::PaintFlags::FilterQuality filter_quality,
+      ShouldInitialize initialize_provider);
+
+  static std::unique_ptr<CanvasResourceProvider> CreateSharedBitmapProvider(
+      const SkImageInfo& info,
+      cc::PaintFlags::FilterQuality filter_quality,
+      ShouldInitialize initialize_provider,
+      base::WeakPtr<CanvasResourceDispatcher>);
+
+  static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
+      const SkImageInfo& info,
+      cc::PaintFlags::FilterQuality filter_quality,
+      ShouldInitialize initialize_provider,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      RasterMode raster_mode,
+      bool is_origin_top_left,
+      uint32_t shared_image_usage_flags);
+
+  static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
+      const SkImageInfo& info,
+      bool is_origin_top_left);
+
+  static std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(
+      const SkImageInfo& info,
+      cc::PaintFlags::FilterQuality filter_quality,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      base::WeakPtr<CanvasResourceDispatcher>,
+      bool is_origin_top_left);
+
+  static std::unique_ptr<CanvasResourceProvider> CreateSwapChainProvider(
+      const SkImageInfo& info,
+      cc::PaintFlags::FilterQuality filter_quality,
+      ShouldInitialize initialize_provider,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      base::WeakPtr<CanvasResourceDispatcher>,
+      bool is_origin_top_left);
+
+  // TODO(https://crbug.com/1260558): Remove these functions once all callers
+  // are gone.
+  static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
       const IntSize& size,
       cc::PaintFlags::FilterQuality filter_quality,
       const CanvasResourceParams& params,
       ShouldInitialize initialize_provider);
-
-  static std::unique_ptr<CanvasResourceProvider> CreateSharedBitmapProvider(
-      const IntSize& size,
-      cc::PaintFlags::FilterQuality filter_quality,
-      const CanvasResourceParams& params,
-      ShouldInitialize initialize_provider,
-      base::WeakPtr<CanvasResourceDispatcher>);
-
   static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
       const IntSize& size,
       cc::PaintFlags::FilterQuality filter_quality,
@@ -125,27 +158,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
       RasterMode raster_mode,
       bool is_origin_top_left,
       uint32_t shared_image_usage_flags);
-
   static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
       const IntSize& size,
       const CanvasResourceParams& params,
-      bool is_origin_top_left);
-
-  static std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(
-      const IntSize& size,
-      cc::PaintFlags::FilterQuality filter_quality,
-      const CanvasResourceParams& params,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceDispatcher>,
-      bool is_origin_top_left);
-
-  static std::unique_ptr<CanvasResourceProvider> CreateSwapChainProvider(
-      const IntSize& size,
-      cc::PaintFlags::FilterQuality filter_quality,
-      const CanvasResourceParams& params,
-      ShouldInitialize initialize_provider,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceDispatcher>,
       bool is_origin_top_left);
 
   // Use Snapshot() for capturing a frame that is intended to be displayed via
@@ -166,11 +181,12 @@ class PLATFORM_EXPORT CanvasResourceProvider
   sk_sp<cc::PaintRecord> FlushCanvas();
   // FlushCanvas and preserve recordings.
   sk_sp<cc::PaintRecord> FlushCanvasAndPreserveRecording();
-  const CanvasResourceParams& ColorParams() const { return params_; }
+  const SkImageInfo& GetSkImageInfo() const { return info_; }
+  CanvasResourceParams ColorParams() const;
   void SetFilterQuality(cc::PaintFlags::FilterQuality quality) {
     filter_quality_ = quality;
   }
-  const IntSize& Size() const { return size_; }
+  IntSize Size() const;
   bool IsOriginTopLeft() const { return is_origin_top_left_; }
   virtual bool IsValid() const = 0;
   virtual bool IsAccelerated() const = 0;
@@ -289,9 +305,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   sk_sp<cc::PaintRecord> FlushCanvasInternal(bool preserve_recording);
 
   CanvasResourceProvider(const ResourceProviderType&,
-                         const IntSize&,
+                         const SkImageInfo&,
                          cc::PaintFlags::FilterQuality,
-                         const CanvasResourceParams&,
                          bool is_origin_top_left,
                          base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                          base::WeakPtr<CanvasResourceDispatcher>);
@@ -345,9 +360,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher_;
-  const IntSize size_;
+  // Note that `info_` should be const, but the relevant SkImageInfo
+  // constructors do not exist.
+  SkImageInfo info_;
   cc::PaintFlags::FilterQuality filter_quality_;
-  const CanvasResourceParams params_;
   const bool is_origin_top_left_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
