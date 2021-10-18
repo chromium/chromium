@@ -30,6 +30,17 @@ namespace settings {
 
 class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
+  HatsHandlerTest() {
+    base::test::ScopedFeatureList::FeatureAndParams settings_privacy{
+        features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
+        {{"settings-time", "15s"}}};
+    base::test::ScopedFeatureList::FeatureAndParams privacy_sandbox{
+        features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
+        {{"settings-time", "10s"}}};
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {settings_privacy, privacy_sandbox}, {});
+  }
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -66,6 +77,11 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
   MockHatsService* mock_hats_service_;
   MockTrustSafetySentimentService* mock_sentiment_service_;
 
+ protected:
+  // This should only be accessed in the test constructor, to avoid race
+  // conditions with other threads.
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<HatsHandler> handler_;
@@ -83,7 +99,7 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
   // result in a survey request with the appropriate product specific data.
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(
-                  kHatsSurveyTriggerSettingsPrivacy, web_contents(), 20000,
+                  kHatsSurveyTriggerSettingsPrivacy, web_contents(), 15000,
                   expected_product_specific_data, _, true))
       .Times(2);
   base::Value args(base::Value::Type::LIST);
@@ -103,17 +119,12 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
 class HatsHandlerNoSandboxTest : public HatsHandlerTest {
  public:
   HatsHandlerNoSandboxTest() {
-    base::test::ScopedFeatureList::FeatureAndParams feature_and_params{
+    scoped_feature_list_.Reset();
+    base::test::ScopedFeatureList::FeatureAndParams settings_privacy{
         features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
         {{"no-sandbox", "true"}}};
-    scoped_feature_list_.InitWithFeaturesAndParameters({feature_and_params},
-                                                       {});
+    scoped_feature_list_.InitWithFeaturesAndParameters({settings_privacy}, {});
   }
-
- protected:
-  // This should only be accessed in the test constructor, to avoid race
-  // conditions with other threads.
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
@@ -150,7 +161,7 @@ TEST_F(HatsHandlerTest, PrivacySandboxHats) {
       {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(
-                  kHatsSurveyTriggerPrivacySandbox, web_contents(), 20000,
+                  kHatsSurveyTriggerPrivacySandbox, web_contents(), 10000,
                   expected_product_specific_data, _, true));
   base::Value args(base::Value::Type::LIST);
   args.Append(static_cast<int>(
