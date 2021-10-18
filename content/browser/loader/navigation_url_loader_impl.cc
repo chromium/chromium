@@ -357,33 +357,18 @@ NavigationURLLoaderImpl::~NavigationURLLoaderImpl() {
 }
 
 void NavigationURLLoaderImpl::StartImpl(
-    scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
     AppCacheNavigationHandle* appcache_handle,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
     scoped_refptr<SignedExchangePrefetchMetricRecorder>
         signed_exchange_prefetch_metric_recorder,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui,
-    std::string accept_langs,
-    bool needs_loader_factory_interceptor) {
+    std::string accept_langs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!started_);
   DCHECK(!head_);
   head_ = network::mojom::URLResponseHead::New();
   started_ = true;
-
-  // TODO(kinuko): This can likely be initialized in the ctor.
-  network_loader_factory_ = network_loader_factory;
-  if (needs_loader_factory_interceptor && g_loader_factory_interceptor.Get()) {
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory;
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver =
-        factory.InitWithNewPipeAndPassReceiver();
-    g_loader_factory_interceptor.Get().Run(&receiver);
-    network_loader_factory_->Clone(std::move(receiver));
-    network_loader_factory_ =
-        base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-            std::move(factory));
-  }
 
   resource_request_->headers.SetHeader(
       net::HttpRequestHeaders::kAccept,
@@ -1356,27 +1341,24 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
   for (auto& iter : non_network_url_loader_factories_)
     known_schemes_.insert(iter.first);
 
-  bool needs_loader_factory_interceptor = false;
-  scoped_refptr<network::SharedURLLoaderFactory> network_factory =
-      storage_partition_->GetURLLoaderFactoryForBrowserProcess();
   if (header_client) {
-    needs_loader_factory_interceptor = true;
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
     CreateURLLoaderFactoryWithHeaderClient(
         std::move(header_client),
         factory_remote.InitWithNewPipeAndPassReceiver(), storage_partition_);
-    network_factory =
+    network_loader_factory_ =
         base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
             std::move(factory_remote));
+  } else {
+    network_loader_factory_ =
+        storage_partition_->GetURLLoaderFactoryForBrowserProcess();
   }
 
-  start_closure_ =
-      base::BindOnce(&NavigationURLLoaderImpl::StartImpl,
-                     base::Unretained(this), network_factory, appcache_handle,
-                     std::move(prefetched_signed_exchange_cache),
-                     std::move(signed_exchange_prefetch_metric_recorder),
-                     std::move(factory_for_webui), std::move(accept_langs),
-                     needs_loader_factory_interceptor);
+  start_closure_ = base::BindOnce(
+      &NavigationURLLoaderImpl::StartImpl, base::Unretained(this),
+      appcache_handle, std::move(prefetched_signed_exchange_cache),
+      std::move(signed_exchange_prefetch_metric_recorder),
+      std::move(factory_for_webui), std::move(accept_langs));
 }
 
 void NavigationURLLoaderImpl::Start() {
@@ -1527,6 +1509,10 @@ void NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
     StoragePartitionImpl* partition) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (g_loader_factory_interceptor.Get())
+    g_loader_factory_interceptor.Get().Run(&factory_receiver);
+
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
   params->header_client = std::move(header_client);

@@ -96,15 +96,13 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // This is called only once (while Restart can be called multiple times).
   // Sets `started_` true.
   void StartImpl(
-      scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       AppCacheNavigationHandle* appcache_handle,
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
       scoped_refptr<SignedExchangePrefetchMetricRecorder>
           signed_exchange_prefetch_metric_recorder,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui,
-      std::string accept_langs,
-      bool needs_loader_factory_interceptor);
+      std::string accept_langs);
 
   void BindNonNetworkURLLoaderFactoryReceiver(
       const GURL& url,

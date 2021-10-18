@@ -131,17 +131,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerender) {
 // TODO(bokan): In the future, when prerendering supports cross origin
 // triggering, this test can be more straightforward by using one server for
 // the initial page and another, with bad certs, for the prerendering page.
-#if defined(OS_LINUX)
-// TODO(https://crbug.com/1245117):
-// SSLPrerenderTest.TestNoInterstitialInPrerenderSW fails on "Builder Network
-// Service Linux".
-#define MAYBE_TestNoInterstitialInPrerenderSW \
-  DISABLED_TestNoInterstitialInPrerenderSW
-#else
-#define MAYBE_TestNoInterstitialInPrerenderSW TestNoInterstitialInPrerenderSW
-#endif
-IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
-                       MAYBE_TestNoInterstitialInPrerenderSW) {
+IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerenderSW) {
   auto server = CreateExpiredCertServer(GetChromeTestDataDir());
   ASSERT_TRUE(server->Start());
 
