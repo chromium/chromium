@@ -50,17 +50,15 @@ ValueT* GetInstance(const BrowserAppInstanceMap<KeyT, ValueT>& instances,
 }
 
 template <typename KeyT, typename ValueT, typename PredicateT>
-std::set<const ValueT*> SelectInstances(
-    const BrowserAppInstanceMap<KeyT, ValueT>& instances,
-    PredicateT predicate) {
-  std::set<const ValueT*> result;
+void SelectInstances(std::set<const ValueT*>& result,
+                     const BrowserAppInstanceMap<KeyT, ValueT>& instances,
+                     PredicateT predicate) {
   for (const auto& pair : instances) {
     const ValueT& instance = *pair.second;
     if (predicate(instance)) {
       result.insert(&instance);
     }
   }
-  return result;
 }
 
 template <typename KeyT, typename ValueT, typename PredicateT>

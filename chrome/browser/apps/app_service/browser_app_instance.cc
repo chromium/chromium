@@ -6,10 +6,10 @@
 
 #include <utility>
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/exo/shell_surface_util.h"
+#include "extensions/common/constants.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/window_utility.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -106,5 +106,13 @@ bool BrowserWindowInstance::MaybeUpdate(bool is_active) {
 BrowserWindowInstanceUpdate BrowserWindowInstance::ToUpdate() const {
   return BrowserWindowInstanceUpdate{id, GetWindowUniqueId(window), is_active};
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::string BrowserWindowInstance::GetAppId() const {
+  return crosapi::browser_util::IsLacrosWindow(window)
+             ? extension_misc::kLacrosAppId
+             : extension_misc::kChromeAppId;
+}
+#endif
 
 }  // namespace apps

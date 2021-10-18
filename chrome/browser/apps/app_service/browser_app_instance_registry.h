@@ -50,10 +50,6 @@ class BrowserAppInstanceRegistry
       BrowserAppInstanceTracker& ash_instance_tracker);
   ~BrowserAppInstanceRegistry() override;
 
-  // Get all instances by app ID. Returns a set of unowned pointers.
-  std::set<const BrowserAppInstance*> GetAppInstancesByAppId(
-      const std::string& app_id) const;
-
   // Get a single app instance by ID (Ash or Lacros).
   const BrowserAppInstance* GetAppInstanceById(base::UnguessableToken id) const;
 
@@ -65,12 +61,46 @@ class BrowserAppInstanceRegistry
   std::set<const BrowserWindowInstance*> GetLacrosBrowserWindowInstances()
       const;
 
-  // Get the currently active app instance for a window (Ash or Lacros).
-  const BrowserAppInstance* GetActiveAppInstanceForWindow(aura::Window* window);
+  template <typename PredicateT>
+  const BrowserAppInstance* FindAppInstanceIf(PredicateT predicate) const {
+    const BrowserAppInstance* instance =
+        FindInstanceIf(lacros_app_instances_, predicate);
+    if (instance) {
+      return instance;
+    }
+    return FindInstanceIf(ash_instance_tracker_.app_instances_, predicate);
+  }
 
-  // Checks if an app with |app_id| is running (in Ash or Lacros).
+  template <typename PredicateT>
+  std::set<const BrowserAppInstance*> SelectAppInstances(
+      PredicateT predicate) const {
+    std::set<const BrowserAppInstance*> result;
+    SelectInstances(result, lacros_app_instances_, predicate);
+    SelectInstances(result, ash_instance_tracker_.app_instances_, predicate);
+    return result;
+  }
+
+  template <typename PredicateT>
+  const BrowserWindowInstance* FindWindowInstanceIf(
+      PredicateT predicate) const {
+    const BrowserWindowInstance* instance =
+        FindInstanceIf(lacros_window_instances_, predicate);
+    if (instance) {
+      return instance;
+    }
+    return FindInstanceIf(ash_instance_tracker_.window_instances_, predicate);
+  }
+
+  template <typename PredicateT>
+  std::set<const BrowserWindowInstance*> SelectWindowInstances(
+      PredicateT predicate) const {
+    std::set<const BrowserWindowInstance*> result;
+    SelectInstances(result, lacros_window_instances_, predicate);
+    SelectInstances(result, ash_instance_tracker_.window_instances_, predicate);
+    return result;
+  }
+
   bool IsAppRunning(const std::string& app_id) const;
-
   bool IsAshBrowserRunning() const;
   bool IsLacrosBrowserRunning() const;
 

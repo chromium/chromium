@@ -55,35 +55,12 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   BrowserAppInstanceTracker& operator=(const BrowserAppInstanceTracker&) =
       delete;
 
-  // Get all instances by app ID. Returns a set of unowned pointers.
-  std::set<const BrowserAppInstance*> GetAppInstancesByAppId(
-      const std::string& app_id) const;
-
-  // Get the currently active app instance for a window.
-  const BrowserAppInstance* GetActiveAppInstanceForWindow(aura::Window* window);
-
-  // Get all instances by app ID. Returns a set of unowned pointers.
-  std::set<const BrowserWindowInstance*> GetBrowserWindowInstances() const;
-
-  // Checks if at least one instance of the app is running.
-  bool IsAppRunning(const std::string& app_id) const;
-
-  // Checks if at least one instance of the app is running.
-  bool IsBrowserRunning() const;
-
   // Get app instance running in a |contents|. Returns null if no app is found.
   const BrowserAppInstance* GetAppInstance(
       content::WebContents* contents) const;
 
-  // Get app instance by ID. Returns null if no app is found.
-  const BrowserAppInstance* GetAppInstanceById(base::UnguessableToken id) const;
-
   // Get Chrome instance running in |browser|. Returns null if not found.
   const BrowserWindowInstance* GetWindowInstance(Browser* browser) const;
-
-  // Get Chrome browser window instance by ID. Returns null if not found.
-  const BrowserWindowInstance* GetBrowserWindowInstanceById(
-      base::UnguessableToken id) const;
 
   // Activate the given instance within its tabstrip. If the instance lives in
   // its own window, this will have no effect.
@@ -124,6 +101,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
 
  private:
   class WebContentsObserver;
+  friend class BrowserAppInstanceRegistry;
 
   // Called by TabStripModelChanged().
   void OnTabStripModelChangeInsert(Browser* browser,

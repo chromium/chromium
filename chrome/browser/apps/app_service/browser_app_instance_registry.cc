@@ -45,37 +45,18 @@ BrowserAppInstanceRegistry::BrowserAppInstanceRegistry(
 
 BrowserAppInstanceRegistry::~BrowserAppInstanceRegistry() = default;
 
-std::set<const BrowserAppInstance*>
-BrowserAppInstanceRegistry::GetAppInstancesByAppId(
-    const std::string& app_id) const {
-  auto result = ash_instance_tracker_.GetAppInstancesByAppId(app_id);
-  if (result.size() > 0) {
-    // Ash and Lacros apps don't share IDs, so return now.
-    return result;
-  }
-  return SelectInstances(lacros_app_instances_,
-                         [&app_id](const BrowserAppInstance& instance) {
-                           return instance.app_id == app_id;
-                         });
-}
-
 const BrowserAppInstance* BrowserAppInstanceRegistry::GetAppInstanceById(
     base::UnguessableToken id) const {
-  auto it = lacros_app_instances_.find(id);
-  if (it != lacros_app_instances_.end()) {
-    return it->second.get();
-  }
-  return ash_instance_tracker_.GetAppInstanceById(id);
+  return FindAppInstanceIf(
+      [&id](const BrowserAppInstance& instance) { return instance.id == id; });
 }
 
 const BrowserWindowInstance*
 BrowserAppInstanceRegistry::GetBrowserWindowInstanceById(
     base::UnguessableToken id) const {
-  auto it = lacros_window_instances_.find(id);
-  if (it != lacros_window_instances_.end()) {
-    return it->second.get();
-  }
-  return ash_instance_tracker_.GetBrowserWindowInstanceById(id);
+  return FindWindowInstanceIf([&id](const BrowserWindowInstance& instance) {
+    return instance.id == id;
+  });
 }
 
 std::set<const BrowserWindowInstance*>
@@ -87,29 +68,14 @@ BrowserAppInstanceRegistry::GetLacrosBrowserWindowInstances() const {
   return result;
 }
 
-const BrowserAppInstance*
-BrowserAppInstanceRegistry::GetActiveAppInstanceForWindow(
-    aura::Window* window) {
-  const BrowserAppInstance* instance = FindInstanceIf(
-      lacros_app_instances_, [window](const BrowserAppInstance& instance) {
-        return instance.window == window && instance.is_web_contents_active;
-      });
-  if (instance) {
-    return instance;
-  }
-  return ash_instance_tracker_.GetActiveAppInstanceForWindow(window);
-}
-
 bool BrowserAppInstanceRegistry::IsAppRunning(const std::string& app_id) const {
-  return ash_instance_tracker_.IsAppRunning(app_id) ||
-         FindInstanceIf(lacros_app_instances_,
-                        [&app_id](const BrowserAppInstance& instance) {
-                          return instance.app_id == app_id;
-                        }) != nullptr;
+  return FindAppInstanceIf([&app_id](const BrowserAppInstance& instance) {
+           return instance.app_id == app_id;
+         }) != nullptr;
 }
 
 bool BrowserAppInstanceRegistry::IsAshBrowserRunning() const {
-  return ash_instance_tracker_.IsBrowserRunning();
+  return ash_instance_tracker_.window_instances_.size() > 0;
 }
 
 bool BrowserAppInstanceRegistry::IsLacrosBrowserRunning() const {
@@ -118,12 +84,12 @@ bool BrowserAppInstanceRegistry::IsLacrosBrowserRunning() const {
 
 void BrowserAppInstanceRegistry::ActivateTabInstance(
     const base::UnguessableToken& id) {
-  if (ash_instance_tracker_.GetAppInstanceById(id)) {
+  if (lacros_app_instances_.find(id) != lacros_app_instances_.end()) {
+    if (controller_.is_bound()) {
+      controller_->ActivateTabInstance(id);
+    }
+  } else {
     ash_instance_tracker_.ActivateTabInstance(id);
-    return;
-  }
-  if (controller_.is_bound()) {
-    controller_->ActivateTabInstance(id);
   }
 }
 

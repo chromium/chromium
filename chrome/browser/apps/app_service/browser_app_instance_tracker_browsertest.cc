@@ -919,46 +919,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, Accessors) {
   EXPECT_EQ(TestInstance::Create(b3_tab1_app),
             (TestInstance{"snapshot", 6, kAppWindow, kAppId_B, window3,
                           kTitle_B, kActive, kActive}));
-
-  EXPECT_EQ(tracker_->GetAppInstancesByAppId(kAppId_A),
-            std::set<const apps::BrowserAppInstance*>{b1_tab1_app});
-  EXPECT_EQ(tracker_->GetAppInstancesByAppId(kAppId_B),
-            (std::set<const apps::BrowserAppInstance*>{b1_tab3_app, b2_tab2_app,
-                                                       b3_tab1_app}));
-  EXPECT_EQ(tracker_->GetBrowserWindowInstances(),
-            (std::set<const apps::BrowserWindowInstance*>{b1_app, b2_app}));
-
-  EXPECT_TRUE(tracker_->IsAppRunning(kAppId_A));
-  EXPECT_TRUE(tracker_->IsAppRunning(kAppId_B));
-  EXPECT_TRUE(tracker_->IsBrowserRunning());
-  EXPECT_FALSE(tracker_->IsAppRunning("non-existent-app"));
-
-  EXPECT_EQ(TestInstance::Create(tracker_->GetAppInstanceById(TestId(2))),
-            (TestInstance{"snapshot", 2, kAppTab, kAppId_A, window1, kTitle_A,
-                          kInactive, kInactive}));
-  EXPECT_EQ(TestInstance::Create(tracker_->GetAppInstanceById(TestId(10))),
-            TestInstance{});
-
-  // App A is closed, B and Chrome are still running.
-  browser1->tab_strip_model()->CloseAllTabs();
-
-  EXPECT_FALSE(tracker_->IsAppRunning(kAppId_A));
-  EXPECT_TRUE(tracker_->IsAppRunning(kAppId_B));
-  EXPECT_TRUE(tracker_->IsBrowserRunning());
-
-  // App A and Chrome are closed, B is still running.
-  browser2->tab_strip_model()->CloseAllTabs();
-
-  EXPECT_FALSE(tracker_->IsAppRunning(kAppId_A));
-  EXPECT_TRUE(tracker_->IsAppRunning(kAppId_B));
-  EXPECT_FALSE(tracker_->IsBrowserRunning());
-
-  // Everything is closed.
-  browser3->tab_strip_model()->CloseAllTabs();
-
-  EXPECT_FALSE(tracker_->IsAppRunning(kAppId_A));
-  EXPECT_FALSE(tracker_->IsAppRunning(kAppId_B));
-  EXPECT_FALSE(tracker_->IsBrowserRunning());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, AppInstall) {

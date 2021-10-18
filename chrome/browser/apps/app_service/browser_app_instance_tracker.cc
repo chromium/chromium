@@ -138,67 +138,14 @@ BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
   }
 }
 
-std::set<const BrowserAppInstance*>
-BrowserAppInstanceTracker::GetAppInstancesByAppId(
-    const std::string& app_id) const {
-  return SelectInstances(app_instances_,
-                         [&app_id](const BrowserAppInstance& instance) {
-                           return instance.app_id == app_id;
-                         });
-}
-
-const BrowserAppInstance*
-BrowserAppInstanceTracker::GetActiveAppInstanceForWindow(aura::Window* window) {
-  return FindInstanceIf(
-      app_instances_, [window](const BrowserAppInstance& instance) {
-        return instance.window == window && instance.is_web_contents_active;
-      });
-}
-
-std::set<const BrowserWindowInstance*>
-BrowserAppInstanceTracker::GetBrowserWindowInstances() const {
-  std::set<const BrowserWindowInstance*> result;
-  for (const auto& pair : window_instances_) {
-    result.insert(pair.second.get());
-  }
-  return result;
-}
-
-bool BrowserAppInstanceTracker::IsAppRunning(const std::string& app_id) const {
-  return FindInstanceIf(app_instances_,
-                        [&app_id](const BrowserAppInstance& instance) {
-                          return instance.app_id == app_id;
-                        }) != nullptr;
-}
-
-bool BrowserAppInstanceTracker::IsBrowserRunning() const {
-  return window_instances_.size() > 0;
-}
-
 const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstance(
     content::WebContents* contents) const {
   return GetInstance(app_instances_, contents);
 }
 
-const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstanceById(
-    base::UnguessableToken id) const {
-  return FindInstanceIf(
-      app_instances_,
-      [&id](const BrowserAppInstance& instance) { return instance.id == id; });
-}
-
 const BrowserWindowInstance* BrowserAppInstanceTracker::GetWindowInstance(
     Browser* browser) const {
   return GetInstance(window_instances_, browser);
-}
-
-const BrowserWindowInstance*
-BrowserAppInstanceTracker::GetBrowserWindowInstanceById(
-    base::UnguessableToken id) const {
-  return FindInstanceIf(window_instances_,
-                        [&id](const BrowserWindowInstance& instance) {
-                          return instance.id == id;
-                        });
 }
 
 void BrowserAppInstanceTracker::ActivateTabInstance(base::UnguessableToken id) {

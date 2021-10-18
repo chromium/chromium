@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/unguessable_token.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/browser_app_instance_update.h"
 #include "components/services/app_service/public/cpp/browser_window_instance_update.h"
 
@@ -76,6 +77,10 @@ struct BrowserWindowInstance {
   bool MaybeUpdate(bool is_active);
 
   BrowserWindowInstanceUpdate ToUpdate() const;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::string GetAppId() const;
+#endif
 
   // Immutable attributes.
   const base::UnguessableToken id;
