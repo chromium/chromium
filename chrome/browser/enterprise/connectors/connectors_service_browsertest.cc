@@ -187,7 +187,7 @@ class ConnectorsServiceProfileBrowserTest
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
     auto* fake_user_manager = new ash::FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(std::move(fake_user_manager)));
+        base::WrapUnique(fake_user_manager));
     AccountId account_id = AccountId::FromUserEmailGaiaId(
         browser()->profile()->GetProfileUserName(), "123");
     fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
