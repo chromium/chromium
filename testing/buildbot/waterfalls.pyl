@@ -3010,6 +3010,9 @@
       },
       # TODO(crbug.com/1254986): remove this after the migration.
       'ios-reclient': {
+        'additional_compile_targets': [
+          'all',
+        ],
         'mixins': [
           'has_native_resultdb_integration',
           'mac_11_x64',

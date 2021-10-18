@@ -25122,6 +25122,9 @@
     ]
   },
   "ios-reclient": {
+    "additional_compile_targets": [
+      "all"
+    ],
     "isolated_scripts": [
       {
         "args": [
