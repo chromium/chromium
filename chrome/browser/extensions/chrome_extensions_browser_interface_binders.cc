@@ -17,6 +17,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
+#include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chromeos/components/camera_app_ui/camera_app_ui.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/language/language_packs/language_packs_impl.h"

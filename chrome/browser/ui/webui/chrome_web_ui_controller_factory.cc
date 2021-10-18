@@ -153,6 +153,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/webui/camera_app_ui/camera_app_ui.h"
+#include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
@@ -236,8 +238,6 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
-#include "chromeos/components/camera_app_ui/camera_app_ui.h"
-#include "chromeos/components/camera_app_ui/url_constants.h"
 #include "chromeos/components/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/components/eche_app_ui/eche_app_manager.h"

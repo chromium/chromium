@@ -8,6 +8,7 @@
 
 #include "ash/constants/devicetype.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "ash/webui/camera_app_ui/url_constants.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
-#include "chromeos/components/camera_app_ui/url_constants.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

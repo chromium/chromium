@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "ash/webui/camera_app_ui/url_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -29,7 +30,6 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/camera_app_ui/url_constants.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"

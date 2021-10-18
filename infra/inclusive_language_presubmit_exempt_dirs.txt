@@ -1,4 +1,5 @@
 . 14 4
+ash/webui/camera_app_ui/resources/js/lib 7 1
 base/test/data/pe_image_reader 1 1
 base/trace_event 9 3
 build 14 4
@@ -45,7 +46,6 @@ chrome/common/extensions/api 8 1
 chrome/common/extensions/permissions 4 1
 chrome/installer/setup 2 1
 chrome/install_static 1 1
-chromeos/components/camera_app_ui/resources/js/lib 7 1
 chromeos/dbus/constants 1 1
 chromeos/process_proxy 4 3
 chrome/renderer 3 2

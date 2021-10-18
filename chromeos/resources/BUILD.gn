@@ -73,12 +73,6 @@ template("chromeos_generated_grit") {
   }
 }
 
-# Resources used by chrome://camera-app.
-chromeos_generated_grit("camera_app_resources") {
-  source = "$root_gen_dir/chromeos/components/camera_app_ui/chromeos_camera_app_resources.grd"
-  deps = [ "//chromeos/components/camera_app_ui:build_grd" ]
-}
-
 # Resources used by chrome://eche-app
 chromeos_generated_grit("eche_app_resources") {
   source = "$root_gen_dir/chromeos/components/eche_app_ui/chromeos_eche_app_resources.grd"

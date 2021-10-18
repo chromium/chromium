@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
 #include "base/callback.h"
 #include "base/files/file_path_watcher.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
-#include "chromeos/components/camera_app_ui/camera_app_ui_delegate.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_ui.h"
 

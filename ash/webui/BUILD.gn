@@ -31,7 +31,13 @@ test("ash_webui_unittests") {
     "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//ui/base:base",
+    "//ui/gl:test_support",
   ]
+
+  # Tests for Camera App only work on Chrome OS device but not linux-chromeos.
+  if (is_chromeos_device) {
+    deps += [ "//ash/webui/camera_app_ui:unit_tests" ]
+  }
 
   if (!is_official_build) {
     deps += [ "//ash/webui/telemetry_extension_ui:unit_tests" ]
@@ -48,6 +54,7 @@ test("ash_webui_unittests") {
 group("closure_compile") {
   testonly = true
   deps = [
+    "//ash/webui/camera_app_ui:closure_compile",
     "//ash/webui/diagnostics_ui:closure_compile",
     "//ash/webui/file_manager/resources:closure_compile",
     "//ash/webui/file_manager/untrusted_resources:closure_compile",

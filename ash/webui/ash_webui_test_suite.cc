@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
+#include "ui/gl/test/gl_surface_test_support.h"
 
 namespace {
 
@@ -43,6 +44,8 @@ AshWebUITestSuite::~AshWebUITestSuite() = default;
 
 void AshWebUITestSuite::Initialize() {
   base::TestSuite::Initialize();
+
+  gl::GLSurfaceTestSupport::InitializeOneOff();
 
   InitI18n();
 }

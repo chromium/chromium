@@ -410,11 +410,11 @@
     "META": {"align": 100},
     "messages": [2900],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/camera_app_ui/chromeos_camera_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/camera_app_ui/ash_camera_app_resources.grd": {
     "META": {"sizes": {"includes": [300],}},
     "includes": [2920],
   },
-  "chromeos/components/camera_app_ui/resources/strings/camera_strings.grd": {
+  "ash/webui/camera_app_ui/resources/strings/camera_strings.grd": {
     "messages": [2940],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/connectivity_diagnostics/resources/connectivity_diagnostics_resources.grd": {

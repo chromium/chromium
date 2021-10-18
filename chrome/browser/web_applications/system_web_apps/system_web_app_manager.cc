@@ -60,6 +60,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
@@ -84,7 +85,6 @@
 #include "chrome/browser/ash/web_applications/shortcut_customization_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/terminal_system_web_app_info.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chromeos/components/camera_app_ui/url_constants.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"  // nogncheck
 #if !defined(OFFICIAL_BUILD)
