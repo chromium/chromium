@@ -81,6 +81,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     } else {
       platform_suffix = "_android";
     }
+#elif defined(OS_FUCHSIA)
+    platform_suffix = "_fuchsia";
 #endif
 
     base::FilePath dir_test_data;
@@ -111,7 +113,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
         /* avg_abs_error_limit */ 20.f,
         /* max_abs_error_limit */ 120.f,
         /* small_error_threshold */ 0);
-#elif defined(OS_ANDROID) || defined(OS_WIN) || (OS_LINUX)
+#elif defined(OS_ANDROID) || defined(OS_WIN) || (OS_LINUX) || \
+    defined(OS_FUCHSIA)
     // Different versions of android may have slight differences in rendering.
     // Some versions have more significant differences than others, which are
     // tracked separately in separate baseline image files. The less significant
