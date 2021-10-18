@@ -31,7 +31,7 @@ using chrome_test_util::TextFieldForCellWithLabelId;
 
 namespace {
 
-// Matcher for the 'Nickname' text field in the add credit card view.
+// Matcher for the 'Nickname' text field in the edit credit card view.
 id<GREYMatcher> NicknameTextField() {
   return TextFieldForCellWithLabelId(IDS_IOS_AUTOFILL_NICKNAME);
 }
@@ -48,6 +48,11 @@ id<GREYMatcher> NavigationBarEditButton() {
 // Returns an action to scroll down (swipe up).
 id<GREYAction> ScrollDown() {
   return grey_scrollInDirection(kGREYDirectionDown, 150);
+}
+
+// Matcher for the 'Year of Expiry' text field in the edit credit card view.
+id<GREYMatcher> YearOfExpiryTextField() {
+  return TextFieldForCellWithLabelId(IDS_IOS_AUTOFILL_EXP_YEAR);
 }
 
 }  // namespace
@@ -113,6 +118,19 @@ id<GREYAction> ScrollDown() {
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(), grey_enabled(),
                                    nil)];
+}
+
+// Tests that the Done button in the navigation bar is disabled on entering
+// invalid year of expiry in the edit credit card form.
+- (void)testDoneOnInvalidYearInEditCreditCard {
+  [[[EarlGrey selectElementWithMatcher:YearOfExpiryTextField()]
+         usingSearchAction:ScrollDown()
+      onElementWithMatcher:chrome_test_util::AutofillCreditCardEditTableView()]
+      performAction:grey_replaceText(@"2000")];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
+                                   grey_not(grey_enabled()), nil)];
 }
 
 #pragma mark - Helper methods

@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_util.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
 #import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
@@ -191,6 +192,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewTextEditItem {
   if ([tableViewTextEditItem isKindOfClass:[AutofillEditItem class]]) {
+    self.navigationItem.rightBarButtonItem.enabled = [self isValidCreditCard];
+
     AutofillEditItem* item = (AutofillEditItem*)tableViewTextEditItem;
 
     // If the user is typing in the credit card number field, update the card
@@ -225,6 +228,35 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if ([tableViewTextEditItem isKindOfClass:[AutofillEditItem class]]) {
     AutofillEditItem* item = (AutofillEditItem*)tableViewTextEditItem;
+
+    switch (item.type) {
+      case ItemTypeCardNumber:
+        tableViewTextEditItem.hasValidText = [AutofillCreditCardUtil
+            isValidCreditCardNumber:item.textFieldValue
+                           appLocal:GetApplicationContext()
+                                        ->GetApplicationLocale()];
+        break;
+      case ItemTypeExpirationMonth:
+        tableViewTextEditItem.hasValidText = [AutofillCreditCardUtil
+            isValidCreditCardExpirationMonth:item.textFieldValue];
+        break;
+      case ItemTypeExpirationYear:
+        tableViewTextEditItem.hasValidText = [AutofillCreditCardUtil
+            isValidCreditCardExpirationYear:item.textFieldValue
+                                   appLocal:GetApplicationContext()
+                                                ->GetApplicationLocale()];
+        break;
+      case ItemTypeNickname:
+        tableViewTextEditItem.hasValidText =
+            [AutofillCreditCardUtil isValidCardNickname:item.textFieldValue];
+        break;
+      case ItemTypeCardholderName:
+      default:
+        // For the 'Name on card' textfield.
+        tableViewTextEditItem.hasValidText = YES;
+        break;
+    }
+
     // Reconfigure to trigger appropiate icon change.
     [self reconfigureCellsForItems:@[ item ]];
   }
@@ -301,7 +333,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self reloadData];
 }
 
-#pragma mark - Helper Methods
+#pragma mark - Private
 
 - (UIImage*)cardTypeIconFromNetwork:(const char*)network {
   if (network != autofill::kGenericCard) {
@@ -342,6 +374,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   cardNumberItem.keyboardType = UIKeyboardTypeNumberPad;
   cardNumberItem.hideIcon = !isEditing;
   cardNumberItem.delegate = self;
+  cardNumberItem.delegate = self;
   // Hide credit card icon when editing.
   if (!isEditing) {
     cardNumberItem.identifyingIcon =
@@ -361,6 +394,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   expirationMonthItem.autofillUIType = AutofillUITypeCreditCardExpMonth;
   expirationMonthItem.keyboardType = UIKeyboardTypeNumberPad;
   expirationMonthItem.hideIcon = !isEditing;
+  expirationMonthItem.delegate = self;
   return expirationMonthItem;
 }
 
@@ -377,6 +411,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   expirationYearItem.keyboardType = UIKeyboardTypeNumberPad;
   expirationYearItem.returnKeyType = UIReturnKeyDone;
   expirationYearItem.hideIcon = !isEditing;
+  expirationYearItem.delegate = self;
   return expirationYearItem;
 }
 
@@ -394,6 +429,32 @@ typedef NS_ENUM(NSInteger, ItemType) {
   nicknameItem.hideIcon = !isEditing;
   nicknameItem.delegate = self;
   return nicknameItem;
+}
+
+// Returns YES if the data entered in the fields represent a valid credit card.
+- (BOOL)isValidCreditCard {
+  NSString* cardNumber = [self textfieldValueForItemType:ItemTypeCardNumber];
+  NSString* expirationMonth =
+      [self textfieldValueForItemType:ItemTypeExpirationMonth];
+  NSString* expirationYear =
+      [self textfieldValueForItemType:ItemTypeExpirationYear];
+  NSString* nickname = [self textfieldValueForItemType:ItemTypeNickname];
+  return [AutofillCreditCardUtil
+      isValidCreditCard:cardNumber
+        expirationMonth:expirationMonth
+         expirationYear:expirationYear
+           cardNickname:nickname
+               appLocal:GetApplicationContext()->GetApplicationLocale()];
+}
+
+// Returns the value in the field corresponding to the |itemType|.
+- (NSString*)textfieldValueForItemType:(ItemType)itemType {
+  NSIndexPath* indexPath =
+      [self.tableViewModel indexPathForItemType:itemType
+                              sectionIdentifier:SectionIdentifierFields];
+  AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
+      [self.tableViewModel itemAtIndexPath:indexPath]);
+  return item.textFieldValue;
 }
 
 @end

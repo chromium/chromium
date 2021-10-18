@@ -60,7 +60,6 @@ id<GREYMatcher> NavigationBarEditButton() {
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
-
 // Matcher for the Delete button in the list view, located at the bottom of the
 // screen.
 id<GREYMatcher> BottomToolbar() {
