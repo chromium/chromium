@@ -102,11 +102,6 @@ void RecordLogoutRequestState(LogoutRequestState logout_state) {
   UMA_HISTOGRAM_ENUMERATION("Signin.GaiaCookieManager.Logout", logout_state);
 }
 
-void RecordRemoveLocalAccountOutcome(
-    GaiaCookieManagerService::RemoveLocalAccountOutcome outcome) {
-  base::UmaHistogramEnumeration("Signin.RemoveLocalAccountOutcome", outcome);
-}
-
 }  // namespace
 
 GaiaCookieManagerService::GaiaCookieRequest::SetAccountsParams::
@@ -684,7 +679,6 @@ void GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId(
   VLOG(1) << "GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId";
 
   if (list_accounts_stale_) {
-    RecordRemoveLocalAccountOutcome(RemoveLocalAccountOutcome::kAccountsStale);
     return;
   }
 
@@ -695,12 +689,8 @@ void GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId(
                     }) != 0;
 
   if (!accounts_updated) {
-    RecordRemoveLocalAccountOutcome(
-        RemoveLocalAccountOutcome::kSignedOutAccountMissing);
     return;
   }
-
-  RecordRemoveLocalAccountOutcome(RemoveLocalAccountOutcome::kSuccess);
 
   if (gaia_accounts_updated_in_cookie_callback_) {
     gaia_accounts_updated_in_cookie_callback_.Run(
