@@ -13,15 +13,15 @@
     android:layout_marginStart="14dp"
     android:layout_marginEnd="14dp"
     android:layout_marginTop="4dp"
-    android:background="@drawable/card_with_corners_background"
+    android:background="@drawable/single_tab_background"
     android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/tab_favicon_view"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_gravity="center_vertical"
         tools:ignore="ContentDescription" />
 
@@ -35,4 +35,15 @@
         android:gravity="center_vertical"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.TextLarge"/>
+
+    <ImageView
+        android:id="@+id/chevron_right_view"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="16dp"
+        android:layout_gravity="center_vertical|end"
+        android:scaleType= "centerCrop"
+        android:src="@drawable/chevron_right"
+        tools:ignore="ContentDescription" />
+
 </org.chromium.chrome.browser.tasks.SingleTabView>
