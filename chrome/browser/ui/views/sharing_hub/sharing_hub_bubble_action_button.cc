@@ -30,7 +30,7 @@ constexpr auto kPrimaryIconBorder = gfx::Insets(6);
 std::unique_ptr<views::ImageView> CreateIconFromVector(
     const gfx::VectorIcon& vector_icon) {
   auto icon = std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-      vector_icon, ui::kColorIcon, kPrimaryIconSize));
+      vector_icon, ui::kColorMenuIcon, kPrimaryIconSize));
   icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   return icon;
 }
