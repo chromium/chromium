@@ -352,7 +352,7 @@ void QRCodeGeneratorBubble::Init() {
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_BROWSER_SHARING_QR_CODE_DIALOG_DOWNLOAD_BUTTON_LABEL)));
-  download_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  download_button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   // End controls row
 
   // Initialize Service
