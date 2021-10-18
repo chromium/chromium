@@ -439,10 +439,10 @@ void ExtensionPrefs::MakePathsRelative() {
     const base::DictionaryValue* extension_dict = NULL;
     if (!i.value().GetAsDictionary(&extension_dict))
       continue;
-    int location_value;
-    if (extension_dict->GetInteger(kPrefLocation, &location_value) &&
-        Manifest::IsUnpackedLocation(
-            static_cast<ManifestLocation>(location_value))) {
+    absl::optional<int> location_value =
+        extension_dict->FindIntKey(kPrefLocation);
+    if (location_value && Manifest::IsUnpackedLocation(
+                              static_cast<ManifestLocation>(*location_value))) {
       // Unpacked extensions can have absolute paths.
       continue;
     }
@@ -598,9 +598,12 @@ bool ExtensionPrefs::ReadPrefAsInteger(const std::string& extension_id,
   DCHECK_EQ(PrefScope::kExtensionSpecific, pref.scope);
   DCHECK_EQ(PrefType::kInteger, pref.type);
   const base::DictionaryValue* ext = GetExtensionPref(extension_id);
-  if (!ext || !ext->GetInteger(pref.name, out_value))
+  if (!ext)
     return false;
-
+  absl::optional<int> value = ext->FindIntPath(pref.name);
+  if (!value)
+    return false;
+  *out_value = *value;
   return true;
 }
 
@@ -673,9 +676,14 @@ bool ExtensionPrefs::ReadPrefAsInteger(const std::string& extension_id,
                                        base::StringPiece pref_key,
                                        int* out_value) const {
   const base::DictionaryValue* ext = GetExtensionPref(extension_id);
-  if (!ext || !ext->GetInteger(pref_key, out_value))
+  if (!ext)
     return false;
 
+  absl::optional<int> value = ext->FindIntPath(pref_key);
+  if (!value)
+    return false;
+
+  *out_value = *value;
   return true;
 }
 
@@ -731,9 +739,9 @@ bool ExtensionPrefs::ReadPrefAsURLPatternSet(const std::string& extension_id,
   const base::DictionaryValue* extension = GetExtensionPref(extension_id);
   if (!extension)
     return false;
-  int location;
-  if (extension->GetInteger(kPrefLocation, &location) &&
-      static_cast<ManifestLocation>(location) == ManifestLocation::kComponent) {
+  absl::optional<int> location = extension->FindIntKey(kPrefLocation);
+  if (location && static_cast<ManifestLocation>(*location) ==
+                      ManifestLocation::kComponent) {
     valid_schemes |= URLPattern::SCHEME_CHROMEUI;
   }
 
@@ -1305,16 +1313,19 @@ bool ExtensionPrefs::HasAllowFileAccessSetting(
 bool ExtensionPrefs::DoesExtensionHaveState(
     const std::string& id, Extension::State check_state) const {
   const base::DictionaryValue* extension = GetExtensionPref(id);
-  int state = -1;
-  if (!extension || !extension->GetInteger(kPrefState, &state))
+  if (!extension)
     return false;
 
-  if (state < 0 || state >= Extension::NUM_STATES) {
+  absl::optional<int> state = extension->FindIntKey(kPrefState);
+  if (!state)
+    return false;
+
+  if (*state < 0 || *state >= Extension::NUM_STATES) {
     LOG(ERROR) << "Bad pref 'state' for extension '" << id << "'";
     return false;
   }
 
-  return state == check_state;
+  return *state == check_state;
 }
 
 bool ExtensionPrefs::IsExternalExtensionUninstalled(
@@ -1458,11 +1469,11 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
     const std::string& extension_id,
     const base::DictionaryValue* extension,
     bool include_component_extensions) const {
-  int location_value;
-  if (!extension->GetInteger(kPrefLocation, &location_value))
+  absl::optional<int> location_value = extension->FindIntKey(kPrefLocation);
+  if (!location_value)
     return nullptr;
 
-  ManifestLocation location = static_cast<ManifestLocation>(location_value);
+  ManifestLocation location = static_cast<ManifestLocation>(*location_value);
   if (location == ManifestLocation::kComponent &&
       !include_component_extensions) {
     // Component extensions are ignored by default. Component extensions may
@@ -1512,13 +1523,11 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledExtensionInfo(
       !extensions->GetDictionaryWithoutPathExpansion(extension_id, &ext)) {
     return nullptr;
   }
-  int state_value;
+  absl::optional<int> state_value = ext->FindIntKey(kPrefState);
   // TODO(devlin): Remove this once all clients are updated with
   // MigrateToNewExternalUninstallPref().
-  if (ext->GetInteger(kPrefState, &state_value) &&
-      state_value == Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED) {
+  if (state_value == Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED)
     return nullptr;
-  }
 
   return GetInstalledInfoHelper(extension_id, ext,
                                 include_component_extensions);
@@ -1647,11 +1656,11 @@ ExtensionPrefs::DelayReason ExtensionPrefs::GetDelayedInstallReason(
   if (!extension_prefs->GetDictionary(kDelayedInstallInfo, &ext))
     return DELAY_REASON_NONE;
 
-  int delay_reason;
-  if (!ext->GetInteger(kDelayedInstallReason, &delay_reason))
+  absl::optional<int> delay_reason = ext->FindIntKey(kDelayedInstallReason);
+  if (!delay_reason)
     return DELAY_REASON_NONE;
 
-  return static_cast<DelayReason>(delay_reason);
+  return static_cast<DelayReason>(*delay_reason);
 }
 
 std::unique_ptr<ExtensionPrefs::ExtensionsInfo>
@@ -1702,7 +1711,10 @@ int ExtensionPrefs::GetDelayedInstallCreationFlags(
   int creation_flags = Extension::NO_FLAGS;
   const base::DictionaryValue* delayed_info = NULL;
   if (ReadPrefAsDictionary(extension_id, kDelayedInstallInfo, &delayed_info)) {
-    delayed_info->GetInteger(kPrefCreationFlags, &creation_flags);
+    if (absl::optional<int> flags =
+            delayed_info->FindIntKey(kPrefCreationFlags)) {
+      creation_flags = *flags;
+    }
   }
   return creation_flags;
 }
@@ -2533,11 +2545,10 @@ void ExtensionPrefs::MigrateYoutubeOffBookmarkApps() {
                                             &youtube_dictionary)) {
     return;
   }
-  int creation_flags = 0;
-  if (!youtube_dictionary->GetInteger(kPrefCreationFlags, &creation_flags) ||
-      (creation_flags & Extension::FROM_BOOKMARK) == 0) {
+  int creation_flags =
+      youtube_dictionary->FindIntKey(kPrefCreationFlags).value_or(0);
+  if ((creation_flags & Extension::FROM_BOOKMARK) == 0)
     return;
-  }
   ScopedExtensionPrefUpdate update(prefs_, extension_misc::kYoutubeAppId);
   creation_flags &= ~Extension::FROM_BOOKMARK;
   update->SetInteger(kPrefCreationFlags, creation_flags);

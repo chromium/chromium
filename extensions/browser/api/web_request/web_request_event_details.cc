@@ -164,8 +164,7 @@ std::unique_ptr<base::DictionaryValue> WebRequestEventDetails::GetFilteredDict(
 
   // Only listeners with a permission for the initiator should receive it.
   if (initiator_) {
-    int tab_id = -1;
-    dict_.GetInteger(keys::kTabIdKey, &tab_id);
+    int tab_id = dict_.FindIntKey(keys::kTabIdKey).value_or(-1);
     if (initiator_->opaque() ||
         WebRequestPermissions::CanExtensionAccessInitiator(
             permission_helper, extension_id, initiator_, tab_id,

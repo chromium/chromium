@@ -66,26 +66,22 @@ helpers::RequestCookie ParseRequestCookie(const base::DictionaryValue* dict) {
 void ParseResponseCookieImpl(const base::DictionaryValue* dict,
                              helpers::ResponseCookie* cookie) {
   std::string string_tmp;
-  int int_tmp = 0;
-  absl::optional<bool> bool_tmp;
   if (dict->GetString(keys::kNameKey, &string_tmp))
     cookie->name = string_tmp;
   if (dict->GetString(keys::kValueKey, &string_tmp))
     cookie->value = string_tmp;
   if (dict->GetString(keys::kExpiresKey, &string_tmp))
     cookie->expires = string_tmp;
-  if (dict->GetInteger(keys::kMaxAgeKey, &int_tmp))
-    cookie->max_age = int_tmp;
+  if (absl::optional<int> v = dict->FindIntKey(keys::kMaxAgeKey))
+    cookie->max_age = *v;
   if (dict->GetString(keys::kDomainKey, &string_tmp))
     cookie->domain = string_tmp;
   if (dict->GetString(keys::kPathKey, &string_tmp))
     cookie->path = string_tmp;
-  bool_tmp = dict->FindBoolKey(keys::kSecureKey);
-  if (bool_tmp)
-    cookie->secure = *bool_tmp;
-  bool_tmp = dict->FindBoolKey(keys::kHttpOnlyKey);
-  if (bool_tmp)
-    cookie->http_only = *bool_tmp;
+  if (absl::optional<bool> v = dict->FindBoolKey(keys::kSecureKey))
+    cookie->secure = *v;
+  if (absl::optional<bool> v = dict->FindBoolKey(keys::kHttpOnlyKey))
+    cookie->http_only = *v;
 }
 
 helpers::ResponseCookie ParseResponseCookie(const base::DictionaryValue* dict) {
@@ -99,15 +95,12 @@ helpers::FilterResponseCookie ParseFilterResponseCookie(
   helpers::FilterResponseCookie result;
   ParseResponseCookieImpl(dict, &result);
 
-  int int_tmp = 0;
-  absl::optional<bool> bool_tmp;
-  if (dict->GetInteger(keys::kAgeUpperBoundKey, &int_tmp))
-    result.age_upper_bound = int_tmp;
-  if (dict->GetInteger(keys::kAgeLowerBoundKey, &int_tmp))
-    result.age_lower_bound = int_tmp;
-  bool_tmp = dict->FindBoolKey(keys::kSessionCookieKey);
-  if (bool_tmp)
-    result.session_cookie = *bool_tmp;
+  if (absl::optional<int> v = dict->FindIntKey(keys::kAgeUpperBoundKey))
+    result.age_upper_bound = *v;
+  if (absl::optional<int> v = dict->FindIntKey(keys::kAgeLowerBoundKey))
+    result.age_lower_bound = *v;
+  if (absl::optional<bool> v = dict->FindBoolKey(keys::kSessionCookieKey))
+    result.session_cookie = *v;
   return result;
 }
 
@@ -259,8 +252,10 @@ scoped_refptr<const WebRequestAction> CreateIgnoreRulesAction(
   int minimum_priority = std::numeric_limits<int>::min();
   std::string ignore_tag;
   if (dict->HasKey(keys::kLowerPriorityThanKey)) {
-    INPUT_FORMAT_VALIDATE(
-        dict->GetInteger(keys::kLowerPriorityThanKey, &minimum_priority));
+    absl::optional<int> minimum_priority_value =
+        dict->FindIntKey(keys::kLowerPriorityThanKey);
+    INPUT_FORMAT_VALIDATE(minimum_priority_value);
+    minimum_priority = *minimum_priority_value;
     has_parameter = true;
   }
   if (dict->HasKey(keys::kHasTagKey)) {

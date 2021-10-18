@@ -68,9 +68,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveIPLiteral) {
   base::DictionaryValue* dict = NULL;
   ASSERT_TRUE(result->GetAsDictionary(&dict));
 
-  int result_code = 0;
-  EXPECT_TRUE(dict->GetInteger("resultCode", &result_code));
-  EXPECT_EQ(net::OK, result_code);
+  EXPECT_EQ(net::OK, dict->FindIntKey("resultCode"));
 
   std::string address;
   EXPECT_TRUE(dict->GetString("address", &address));
@@ -93,9 +91,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
   base::DictionaryValue* dict = NULL;
   ASSERT_TRUE(result->GetAsDictionary(&dict));
 
-  int result_code = 0;
-  EXPECT_TRUE(dict->GetInteger("resultCode", &result_code));
-  EXPECT_EQ(net::OK, result_code);
+  EXPECT_EQ(net::OK, dict->FindIntKey("resultCode"));
 
   std::string address;
   EXPECT_TRUE(dict->GetString("address", &address));

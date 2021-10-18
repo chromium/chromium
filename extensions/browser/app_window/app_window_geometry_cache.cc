@@ -218,25 +218,32 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
       if (it.value().GetAsDictionary(&stored_window)) {
         WindowData& window_data = extension_data[it.key()];
 
-        int i;
-        if (stored_window->GetInteger("x", &i))
-          window_data.bounds.set_x(i);
-        if (stored_window->GetInteger("y", &i))
-          window_data.bounds.set_y(i);
-        if (stored_window->GetInteger("w", &i))
-          window_data.bounds.set_width(i);
-        if (stored_window->GetInteger("h", &i))
-          window_data.bounds.set_height(i);
-        if (stored_window->GetInteger("screen_bounds_x", &i))
-          window_data.screen_bounds.set_x(i);
-        if (stored_window->GetInteger("screen_bounds_y", &i))
-          window_data.screen_bounds.set_y(i);
-        if (stored_window->GetInteger("screen_bounds_w", &i))
-          window_data.screen_bounds.set_width(i);
-        if (stored_window->GetInteger("screen_bounds_h", &i))
-          window_data.screen_bounds.set_height(i);
-        if (stored_window->GetInteger("state", &i)) {
-          window_data.window_state = static_cast<ui::WindowShowState>(i);
+        if (absl::optional<int> i = stored_window->FindIntKey("x"))
+          window_data.bounds.set_x(*i);
+        if (absl::optional<int> i = stored_window->FindIntKey("y"))
+          window_data.bounds.set_y(*i);
+        if (absl::optional<int> i = stored_window->FindIntKey("w"))
+          window_data.bounds.set_width(*i);
+        if (absl::optional<int> i = stored_window->FindIntKey("h"))
+          window_data.bounds.set_height(*i);
+        if (absl::optional<int> i =
+                stored_window->FindIntKey("screen_bounds_x")) {
+          window_data.screen_bounds.set_x(*i);
+        }
+        if (absl::optional<int> i =
+                stored_window->FindIntKey("screen_bounds_y")) {
+          window_data.screen_bounds.set_y(*i);
+        }
+        if (absl::optional<int> i =
+                stored_window->FindIntKey("screen_bounds_w")) {
+          window_data.screen_bounds.set_width(*i);
+        }
+        if (absl::optional<int> i =
+                stored_window->FindIntKey("screen_bounds_h")) {
+          window_data.screen_bounds.set_height(*i);
+        }
+        if (absl::optional<int> i = stored_window->FindIntKey("state")) {
+          window_data.window_state = static_cast<ui::WindowShowState>(*i);
         }
         std::string ts_as_string;
         if (stored_window->GetString("ts", &ts_as_string)) {

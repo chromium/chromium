@@ -74,10 +74,10 @@ bool GetBoolean(const base::DictionaryValue* val, const std::string& key) {
 }
 
 int GetInteger(const base::DictionaryValue* val, const std::string& key) {
-  int result = 0;
-  if (!val->GetInteger(key, &result))
+  absl::optional<int> result = val->FindIntKey(key);
+  if (!result)
     ADD_FAILURE() << key << " does not exist or is not an integer.";
-  return result;
+  return result.value_or(0);
 }
 
 std::string GetString(const base::DictionaryValue* val,

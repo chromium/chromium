@@ -27,9 +27,9 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPCreateGood) {
       socket_create_function.get(), "[\"udp\"]", browser_context()));
   base::DictionaryValue* value = NULL;
   ASSERT_TRUE(result->GetAsDictionary(&value));
-  int socket_id = -1;
-  EXPECT_TRUE(value->GetInteger("socketId", &socket_id));
-  EXPECT_GT(socket_id, 0);
+  absl::optional<int> socket_id = value->FindIntKey("socketId");
+  ASSERT_TRUE(socket_id);
+  EXPECT_GT(*socket_id, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPCreateGood) {
@@ -45,9 +45,9 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPCreateGood) {
       socket_create_function.get(), "[\"tcp\"]", browser_context()));
   base::DictionaryValue* value = NULL;
   ASSERT_TRUE(result->GetAsDictionary(&value));
-  int socket_id = -1;
-  EXPECT_TRUE(value->GetInteger("socketId", &socket_id));
-  ASSERT_GT(socket_id, 0);
+  absl::optional<int> socket_id = value->FindIntKey("socketId");
+  ASSERT_TRUE(socket_id);
+  ASSERT_GT(*socket_id, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SocketApiTest, GetNetworkList) {
