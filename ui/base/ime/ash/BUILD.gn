@@ -78,6 +78,7 @@ component("ash") {
     "//ui/base",
     "//ui/base",
     "//ui/chromeos/strings",
+    "//ui/events:dom_keycode_converter",
     "//ui/ozone:ozone_base",
   ]
 }
