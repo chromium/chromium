@@ -1026,6 +1026,7 @@ class AuctionRunnerTest : public testing::Test,
                              bool& should_pause_on_start) override {
     should_pause_on_start = (worklet->url() == pause_worklet_url_);
     observer_log_.push_back(base::StrCat({"Create ", worklet->url().spec()}));
+    title_log_.push_back(worklet->Title());
   }
 
   void AuctionWorkletDestroyed(DebuggableAuctionWorklet* worklet) override {
@@ -1120,6 +1121,7 @@ class AuctionRunnerTest : public testing::Test,
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
   std::vector<std::string> observer_log_;
+  std::vector<std::string> title_log_;
 
   // Which worklet to pause, if any.
   GURL pause_worklet_url_;
@@ -1242,6 +1244,12 @@ TEST_F(AuctionRunnerTest, Basic) {
                   "Destroy https://adplatform.com/offers.js",
                   "Destroy https://anotheradthing.com/bids.js",
                   "Destroy https://adstuff.publisher1.com/auction.js"));
+  EXPECT_THAT(
+      title_log_,
+      testing::UnorderedElementsAre(
+          "FLEDGE seller worklet for https://adstuff.publisher1.com/auction.js",
+          "FLEDGE bidder worklet for https://adplatform.com/offers.js",
+          "FLEDGE bidder worklet for https://anotheradthing.com/bids.js"));
 }
 
 TEST_F(AuctionRunnerTest, BasicDebug) {

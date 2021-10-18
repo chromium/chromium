@@ -740,6 +740,8 @@ source_set("browser") {
     "data_url_loader_factory.cc",
     "data_url_loader_factory.h",
     "device/device_service.cc",
+    "devtools/auction_worklet_devtools_agent_host.cc",
+    "devtools/auction_worklet_devtools_agent_host.h",
     "devtools/browser_devtools_agent_host.cc",
     "devtools/browser_devtools_agent_host.h",
     "devtools/cross_thread_protocol_callback.h",

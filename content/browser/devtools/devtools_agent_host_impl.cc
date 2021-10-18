@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/observer_list.h"
+#include "content/browser/devtools/auction_worklet_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/devtools_stream_file.h"
 #include "content/browser/devtools/forwarding_agent_host.h"
@@ -48,6 +49,7 @@ const char DevToolsAgentHost::kTypeServiceWorker[] = "service_worker";
 const char DevToolsAgentHost::kTypeBrowser[] = "browser";
 const char DevToolsAgentHost::kTypeGuest[] = "webview";
 const char DevToolsAgentHost::kTypeOther[] = "other";
+const char DevToolsAgentHost::kTypeAuctionWorklet[] = "auction_worklet";
 int DevToolsAgentHostImpl::s_force_creation_count_ = 0;
 
 // static
@@ -79,6 +81,8 @@ DevToolsAgentHost::List DevToolsAgentHost::GetOrCreateAll() {
   // TODO(dgozman): we should add dedicated workers here, but clients are not
   // ready.
   RenderFrameDevToolsAgentHost::AddAllAgentHosts(&result);
+
+  AuctionWorkletDevToolsAgentHostManager::GetInstance().GetAll(&result);
 
 #if DCHECK_IS_ON()
   for (auto it : result) {

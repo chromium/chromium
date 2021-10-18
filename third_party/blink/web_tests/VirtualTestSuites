@@ -1059,6 +1059,15 @@
     "args": ["--enable-features=InterestGroupStorage,AdInterestGroupAPI,Parakeet"]
   },
   {
+    "prefix": "fledge",
+    "bases": [
+      "http/tests/inspector-protocol/target/auto-attach-auction-worklet.js"
+    ],
+    "args": [
+      "--enable-features=InterestGroupStorage,AdInterestGroupAPI,Fledge"
+    ]
+  },
+  {
     "prefix": "automatic-lazy-frame-loading",
     "bases": ["wpt_internal/lazyembed"],
     "args": [
