@@ -15,6 +15,7 @@ channel.port1.onmessage = e => {
       URL.revokeObjectURL(plugin.src);
     }
     plugin.src = URL.createObjectURL(new Blob([e.data.dataToLoad]));
+    plugin.setAttribute('has-edits', '');
   } else {
     plugin.postMessage(e.data);
   }

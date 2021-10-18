@@ -308,9 +308,10 @@ bool PdfViewWebPlugin::InitializeCommon(
   if (!params.has_value())
     return false;
 
-  PerProcessInitializer::GetInstance().Acquire();
+  // TODO(crbug.com/1232152): Set crash keys like
+  // `ppapi::proxy::PDFResource::SetCrashData()`.
 
-  // TODO(crbug.com/1257666): Implement "has-edits" support.
+  PerProcessInitializer::GetInstance().Acquire();
   InitializeBase(
       engine ? std::move(engine)
              : std::make_unique<PDFiumEngine>(this, params->script_option),
@@ -318,9 +319,8 @@ bool PdfViewWebPlugin::InitializeCommon(
       /*src_url=*/params->src_url,
       /*original_url=*/params->original_url,
       /*full_frame=*/params->full_frame,
-      /*background_color=*/
-      params->background_color.value_or(SK_ColorTRANSPARENT),
-      /*has_edits=*/false);
+      /*background_color=*/params->background_color,
+      /*has_edits=*/params->has_edits);
   return true;
 }
 

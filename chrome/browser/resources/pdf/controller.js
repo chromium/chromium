@@ -496,9 +496,9 @@ export class PluginController {
     } else {
       url = URL.createObjectURL(new Blob([data]));
       this.plugin_.setAttribute('src', url);
+      this.plugin_.setAttribute('has-edits', '');
     }
 
-    this.plugin_.setAttribute('has-edits', '');
     this.plugin_.style.display = 'block';
     try {
       await this.getLoadedCallback_();

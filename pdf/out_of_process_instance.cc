@@ -450,6 +450,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
 
   text_input_ = std::make_unique<pp::TextInput_Dev>(this);
 
+  // Parse attributes. Keep in sync with `ParseWebPluginParams()`.
   const char* src_url = nullptr;
   const char* original_url = nullptr;
   const char* top_level_url = nullptr;
