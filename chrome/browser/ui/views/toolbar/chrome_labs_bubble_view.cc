@@ -9,6 +9,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -83,7 +84,8 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
     } else if (internal_name ==
                flag_descriptions::kEnableLensRegionSearchFlagId) {
       return ChromeLabsSelectedLab::kLensRegionSearchSelected;
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && defined(OS_WIN)
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \
+    (defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH))
     } else if (internal_name == flag_descriptions::kWebUITabStripFlagId) {
       return ChromeLabsSelectedLab::kWebUITabStripSelected;
 #endif
