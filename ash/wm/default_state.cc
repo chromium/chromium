@@ -462,10 +462,8 @@ void DefaultState::EnterToNextState(WindowState* window_state,
   }
   window_state->NotifyPostStateTypeChange(previous_state_type);
 
-  if (next_state_type == WindowStateType::kPinned ||
-      previous_state_type == WindowStateType::kPinned ||
-      next_state_type == WindowStateType::kTrustedPinned ||
-      previous_state_type == WindowStateType::kTrustedPinned) {
+  if (IsPinnedWindowStateType(next_state_type) ||
+      IsPinnedWindowStateType(previous_state_type)) {
     Shell::Get()->screen_pinning_controller()->SetPinnedWindow(
         window_state->window());
     if (window_state->delegate())
@@ -481,13 +479,8 @@ void DefaultState::ReenterToCurrentState(
   // A state change should not move a window into or out of full screen or
   // pinned since these are "special mode" the user wanted to be in and
   // should be respected as such.
-  if (previous_state_type == WindowStateType::kFullscreen ||
-      previous_state_type == WindowStateType::kPinned ||
-      previous_state_type == WindowStateType::kTrustedPinned) {
-    state_type_ = previous_state_type;
-  } else if (state_type_ == WindowStateType::kFullscreen ||
-             state_type_ == WindowStateType::kPinned ||
-             state_type_ == WindowStateType::kTrustedPinned) {
+  if (IsFullscreenOrPinnedWindowStateType(previous_state_type) ||
+      IsFullscreenOrPinnedWindowStateType(state_type_)) {
     state_type_ = previous_state_type;
   }
 

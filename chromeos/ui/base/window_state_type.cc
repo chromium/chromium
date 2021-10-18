@@ -92,9 +92,7 @@ bool IsPinnedWindowStateType(WindowStateType type) {
 }
 
 bool IsFullscreenOrPinnedWindowStateType(WindowStateType type) {
-  return type == WindowStateType::kFullscreen ||
-         type == WindowStateType::kPinned ||
-         type == WindowStateType::kTrustedPinned;
+  return type == WindowStateType::kFullscreen || IsPinnedWindowStateType(type);
 }
 
 bool IsMaximizedOrFullscreenOrPinnedWindowStateType(WindowStateType type) {
