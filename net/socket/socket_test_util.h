@@ -1018,6 +1018,9 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
                            unsigned char* out,
                            unsigned int outlen) override;
 
+  // SSLClientSocket implementation.
+  std::vector<uint8_t> GetECHRetryConfigs() override;
+
   // This MockSocket does not implement the manual async IO feature.
   void OnReadComplete(const MockRead& data) override;
   void OnWriteComplete(int rv) override;

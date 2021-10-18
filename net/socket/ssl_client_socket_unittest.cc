@@ -75,6 +75,7 @@
 #include "net/socket/tcp_server_socket.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_client_session_cache.h"
+#include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_handshake_details.h"
@@ -5580,16 +5581,19 @@ TEST_F(SSLClientSocketTest, ECH) {
   EXPECT_FALSE(server_ssl_info->encrypted_client_hello);
 }
 
+// Test that, on key mismatch, the public name can be used to authenticate
+// replacement keys.
 TEST_F(SSLClientSocketTest, ECHWrongKeys) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
 
+  static const char kPublicName[] = "public.example";
   std::vector<uint8_t> ech_config_list1, ech_config_list2;
   bssl::UniquePtr<SSL_ECH_KEYS> keys1 =
-      MakeTestECHKeys("public.example", /*max_name_len=*/64, &ech_config_list1);
+      MakeTestECHKeys(kPublicName, /*max_name_len=*/64, &ech_config_list1);
   ASSERT_TRUE(keys1);
   bssl::UniquePtr<SSL_ECH_KEYS> keys2 =
-      MakeTestECHKeys("public.example", /*max_name_len=*/64, &ech_config_list2);
+      MakeTestECHKeys(kPublicName, /*max_name_len=*/64, &ech_config_list2);
   ASSERT_TRUE(keys2);
 
   // Configure the client and server with different keys.
@@ -5601,12 +5605,165 @@ TEST_F(SSLClientSocketTest, ECHWrongKeys) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
-  // Connecting with the client should use ECH.
+  // Verify the fallback handshake verifies the certificate against the public
+  // name.
+  cert_verifier_->set_default_result(ERR_CERT_INVALID);
+  scoped_refptr<X509Certificate> server_cert =
+      embedded_test_server()->GetCertificate();
+  CertVerifyResult verify_result;
+  verify_result.verified_cert = server_cert;
+  cert_verifier_->AddResultForCertAndHost(server_cert, kPublicName,
+                                          verify_result, OK);
+
+  // Connecting with the client should report ECH was not negotiated.
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
-  // TODO(crbug.com/1091403): Implement the recovery flow. Test that this both
-  // verifies against the public name and exposes retry configs.
-  EXPECT_THAT(rv, IsError(ERR_FAILED));
+  EXPECT_THAT(rv, IsError(ERR_ECH_NOT_NEGOTIATED));
+
+  // The server's keys are available as retry keys.
+  EXPECT_EQ(ech_config_list1, sock_->GetECHRetryConfigs());
+}
+
+// Test that, if the server does not support ECH, it can securely report this
+// via the public name. This allows recovery if the server needed to
+// rollback ECH support.
+TEST_F(SSLClientSocketTest, ECHSecurelyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  static const char kPublicName[] = "public.example";
+  std::vector<uint8_t> ech_config_list;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys =
+      MakeTestECHKeys(kPublicName, /*max_name_len=*/64, &ech_config_list);
+  ASSERT_TRUE(keys);
+
+  // The server does not have keys configured.
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, SSLServerConfig()));
+
+  // However it can authenticate for kPublicName.
+  cert_verifier_->set_default_result(ERR_CERT_INVALID);
+  scoped_refptr<X509Certificate> server_cert =
+      embedded_test_server()->GetCertificate();
+  CertVerifyResult verify_result;
+  verify_result.verified_cert = server_cert;
+  cert_verifier_->AddResultForCertAndHost(server_cert, kPublicName,
+                                          verify_result, OK);
+
+  // Connecting with the client should report ECH was not negotiated.
+  SSLConfig client_config;
+  client_config.ech_config_list = std::move(ech_config_list);
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsError(ERR_ECH_NOT_NEGOTIATED));
+
+  // The retry config is empty, meaning the server has securely reported that
+  // ECH is disabled
+  EXPECT_TRUE(sock_->GetECHRetryConfigs().empty());
+}
+
+// The same as the above, but testing that it also works in TLS 1.2, which
+// otherwise does not support ECH.
+TEST_F(SSLClientSocketTest, ECHSecurelyDisabledTLS12) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  static const char kPublicName[] = "public.example";
+  std::vector<uint8_t> ech_config_list;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys =
+      MakeTestECHKeys(kPublicName, /*max_name_len=*/64, &ech_config_list);
+  ASSERT_TRUE(keys);
+
+  // The server does not have keys configured.
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  // However it can authenticate for kPublicName.
+  cert_verifier_->set_default_result(ERR_CERT_INVALID);
+  scoped_refptr<X509Certificate> server_cert =
+      embedded_test_server()->GetCertificate();
+  CertVerifyResult verify_result;
+  verify_result.verified_cert = server_cert;
+  cert_verifier_->AddResultForCertAndHost(server_cert, kPublicName,
+                                          verify_result, OK);
+
+  // Connecting with the client should report ECH was not negotiated.
+  SSLConfig client_config;
+  client_config.ech_config_list = std::move(ech_config_list);
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsError(ERR_ECH_NOT_NEGOTIATED));
+
+  // The retry config is empty, meaning the server has securely reported that
+  // ECH is disabled
+  EXPECT_TRUE(sock_->GetECHRetryConfigs().empty());
+}
+
+// Test that the ECH fallback handshake rejects bad certificates.
+TEST_F(SSLClientSocketTest, ECHFallbackBadCert) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  static const char kPublicName[] = "public.example";
+  std::vector<uint8_t> ech_config_list1, ech_config_list2;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys1 =
+      MakeTestECHKeys(kPublicName, /*max_name_len=*/64, &ech_config_list1);
+  ASSERT_TRUE(keys1);
+  bssl::UniquePtr<SSL_ECH_KEYS> keys2 =
+      MakeTestECHKeys(kPublicName, /*max_name_len=*/64, &ech_config_list2);
+  ASSERT_TRUE(keys2);
+
+  // Configure the client and server with different keys.
+  SSLServerConfig server_config;
+  server_config.ech_keys = std::move(keys1);
+  SSLConfig client_config;
+  client_config.ech_config_list = std::move(ech_config_list2);
+
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  // Configure the client to reject the certificate for the public name (or any
+  // other name).
+  cert_verifier_->set_default_result(ERR_CERT_INVALID);
+
+  // Connecting with the client will fail with a fatal error.
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsError(ERR_ECH_FALLBACK_CERTIFICATE_INVALID));
+}
+
+// Test that the ECH fallback handshake rejects legacy TLS versions.
+TEST_F(SSLClientSocketTest, ECHFallbackLegacyVersion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  static const char kPublicName[] = "public.example";
+  std::vector<uint8_t> ech_config_list;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys =
+      MakeTestECHKeys(kPublicName, /*max_name_len=*/64, &ech_config_list);
+  ASSERT_TRUE(keys);
+
+  // Configure TLS 1.1 as allowed, but with a bypassable error.
+  SSLContextConfig context_config;
+  context_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
+  context_config.version_min_warn = SSL_PROTOCOL_VERSION_TLS1_2;
+  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
+
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_1;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  // We do not implement bypassable errors for the fallback handshake, so this
+  // should report a fatal ERR_SSL_VERSION_OR_CIPHER_MISMATCH, not
+  // ERR_SSL_OBSOLETE_VERSION.
+  SSLConfig client_config;
+  client_config.ech_config_list = std::move(ech_config_list);
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
 }
 
 TEST_F(SSLClientSocketTest, InvalidECHConfigList) {

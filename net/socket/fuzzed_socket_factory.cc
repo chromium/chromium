@@ -102,6 +102,12 @@ class FailingSSLClientSocket : public SSLClientSocket {
     return 0;
   }
 
+  // SSLClientSocket implementation:
+  std::vector<uint8_t> GetECHRetryConfigs() override {
+    NOTREACHED();
+    return {};
+  }
+
  private:
   NetLogWithSource net_log_;
 };

@@ -1683,6 +1683,13 @@ int MockSSLClientSocket::ExportKeyingMaterial(const base::StringPiece& label,
   return OK;
 }
 
+std::vector<uint8_t> MockSSLClientSocket::GetECHRetryConfigs() {
+  // TODO(crbug.com/1091403): Add a mechanism to specify this, when testing the
+  // retry portions of the recovery flow.
+  NOTIMPLEMENTED();
+  return {};
+}
+
 void MockSSLClientSocket::RunCallbackAsync(CompletionOnceCallback callback,
                                            int result) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(

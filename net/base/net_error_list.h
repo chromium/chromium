@@ -433,6 +433,14 @@ NET_ERROR(SSL_KEY_USAGE_INCOMPATIBLE, -181)
 // The ECHConfigList fetched over DNS cannot be parsed.
 NET_ERROR(INVALID_ECH_CONFIG_LIST, -182)
 
+// ECH was enabled, but the server was unable to decrypt the encrypted
+// ClientHello.
+NET_ERROR(ECH_NOT_NEGOTIATED, -183)
+
+// ECH was enabled, the server was unable to decrypt the encrypted ClientHello,
+// and additionally did not present a certificate valid for the public name.
+NET_ERROR(ECH_FALLBACK_CERTIFICATE_INVALID, -184)
+
 // Certificate error codes
 //
 // The values of certificate error codes must be consecutive.

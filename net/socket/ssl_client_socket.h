@@ -41,6 +41,14 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
  public:
   SSLClientSocket();
 
+  // Called in response to |ERR_ECH_NOT_NEGOTIATED| in Connect(), to determine
+  // how to retry the connection, up to some limit. If this method returns a
+  // non-empty string, it is the serialized updated ECHConfigList provided by
+  // the server. The connection can be retried with the new value. If it returns
+  // an empty string, the server has indicated ECH has been disabled. The
+  // connection can be retried with ECH disabled.
+  virtual std::vector<uint8_t> GetECHRetryConfigs() = 0;
+
   // Log SSL key material to |logger|. Must be called before any
   // SSLClientSockets are created.
   //

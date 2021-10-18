@@ -138,9 +138,9 @@ struct NET_EXPORT SSLConfig {
   NetworkIsolationKey network_isolation_key;
 
   // If non-empty, a serialized ECHConfigList to use to encrypt the ClientHello.
-  //
-  // TODO(crbug.com/1091403): Support is currently incomplete. Implement the
-  // recovery flow and document what this does to the socket behavior.
+  // If this field is non-empty, callers should handle |ERR_ECH_NOT_NEGOTIATED|
+  // errors from Connect() by calling GetECHRetryConfigs() to determine how to
+  // retry the connection.
   std::vector<uint8_t> ech_config_list;
 
   // An additional boolean to partition the session cache by.

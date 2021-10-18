@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
@@ -123,10 +124,10 @@ class NET_EXPORT CertVerifier {
    public:
     RequestParams();
     RequestParams(scoped_refptr<X509Certificate> certificate,
-                  const std::string& hostname,
+                  base::StringPiece hostname,
                   int flags,
-                  const std::string& ocsp_response,
-                  const std::string& sct_list);
+                  base::StringPiece ocsp_response,
+                  base::StringPiece sct_list);
     RequestParams(const RequestParams& other);
     ~RequestParams();
 

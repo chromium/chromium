@@ -26,6 +26,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
@@ -250,6 +251,14 @@ bool IsCECPQ2Host(const std::string& host) {
              .find(features::kPostQuantumCECPQ2Prefix.Get()) == 0;
 }
 
+bool HostIsIPAddressNoBrackets(base::StringPiece host) {
+  // Note this cannot directly call url::HostIsIPAddress, because that function
+  // expects bracketed IPv6 literals. By the time hosts reach SSLClientSocket,
+  // brackets have been removed.
+  IPAddress unused;
+  return unused.AssignFromIPLiteral(host);
+}
+
 }  // namespace
 
 class SSLClientSocketImpl::SSLContext {
@@ -402,6 +411,13 @@ SSLClientSocketImpl::~SSLClientSocketImpl() {
 void SSLClientSocketImpl::SetSSLKeyLogger(
     std::unique_ptr<SSLKeyLogger> logger) {
   SSLContext::GetInstance()->SetSSLKeyLogger(std::move(logger));
+}
+
+std::vector<uint8_t> SSLClientSocketImpl::GetECHRetryConfigs() {
+  const uint8_t* retry_configs;
+  size_t retry_configs_len;
+  SSL_get0_ech_retry_configs(ssl_.get(), &retry_configs, &retry_configs_len);
+  return std::vector<uint8_t>(retry_configs, retry_configs + retry_configs_len);
 }
 
 int SSLClientSocketImpl::ExportKeyingMaterial(const base::StringPiece& label,
@@ -746,9 +762,8 @@ int SSLClientSocketImpl::Init() {
   if (!ssl_ || !context->SetClientSocketForSSL(ssl_.get(), this))
     return ERR_UNEXPECTED;
 
-  IPAddress unused;
   const bool host_is_ip_address =
-      unused.AssignFromIPLiteral(host_and_port_.host());
+      HostIsIPAddressNoBrackets(host_and_port_.host());
 
   // SNI should only contain valid DNS hostnames, not IP addresses (see RFC
   // 6066, Section 3).
@@ -997,6 +1012,12 @@ int SSLClientSocketImpl::DoHandshakeComplete(int result) {
     return OK;
   }
 
+  // If ECH overrode certificate verification to authenticate a fallback, using
+  // the socket for application data would bypass server authentication.
+  // BoringSSL will never complete the handshake in this case, so this should
+  // not happen.
+  CHECK(!used_ech_name_override_);
+
   const uint8_t* alpn_proto = nullptr;
   unsigned alpn_len = 0;
   SSL_get0_alpn_selected(ssl_.get(), &alpn_proto, &alpn_len);
@@ -1115,18 +1136,6 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
     return HandleVerifyResult();
   }
 
-  // TODO(crbug.com/1091403): Implement the recovery flow.
-  const char* ech_name_override;
-  size_t ech_name_override_len;
-  SSL_get0_ech_name_override(ssl_.get(), &ech_name_override,
-                             &ech_name_override_len);
-  if (ech_name_override_len > 0) {
-    DCHECK(!ssl_config_.ech_config_list.empty());
-    NOTIMPLEMENTED();
-    OpenSSLPutNetError(FROM_HERE, ERR_FAILED);
-    return ssl_verify_invalid;
-  }
-
   // In this configuration, BoringSSL will perform exactly one certificate
   // verification, so there cannot be state from a previous verification.
   CHECK(!server_cert_);
@@ -1150,7 +1159,7 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
   // If the certificate is bad and has been previously accepted, use
   // the previous status and bypass the error.
   CertStatus cert_status;
-  if (ssl_config_.IsAllowedBadCert(server_cert_.get(), &cert_status)) {
+  if (IsAllowedBadCert(server_cert_.get(), &cert_status)) {
     server_cert_verify_result_.Reset();
     server_cert_verify_result_.cert_status = cert_status;
     server_cert_verify_result_.verified_cert = server_cert_;
@@ -1159,6 +1168,34 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
   }
 
   start_cert_verification_time_ = base::TimeTicks::Now();
+
+  base::StringPiece ech_name_override = GetECHNameOverride();
+  if (!ech_name_override.empty()) {
+    // If ECH was offered but not negotiated, BoringSSL will ask to verify a
+    // different name than the origin. If verification succeeds, we continue the
+    // handshake, but BoringSSL will not report success from SSL_do_handshake().
+    // If all else succeeds, BoringSSL will report |SSL_R_ECH_REJECTED|, mapped
+    // to |ERR_R_ECH_NOT_NEGOTIATED|. |ech_name_override| is only used to
+    // authenticate GetECHRetryConfigs().
+    DCHECK(!ssl_config_.ech_config_list.empty());
+    used_ech_name_override_ = true;
+
+    // CertVerifier::Verify takes a string host and internally interprets it as
+    // either a DNS name or IP address. However, the ECH public name is only
+    // defined to be an DNS name. Thus, reject all public names that would not
+    // be interpreted as IP addresses. Distinguishing IPv4 literals from DNS
+    // names varies by spec, however. BoringSSL internally checks for an LDH
+    // string, and that the last component is non-numeric. This should be
+    // sufficient for the web, but check with Chromium's parser, in case they
+    // diverge.
+    //
+    // See section 6.1.7 of draft-ietf-tls-esni-13.
+    if (HostIsIPAddressNoBrackets(ech_name_override)) {
+      NOTREACHED();
+      OpenSSLPutNetError(FROM_HERE, ERR_INVALID_ECH_CONFIG_LIST);
+      return ssl_verify_invalid;
+    }
+  }
 
   const uint8_t* ocsp_response_raw;
   size_t ocsp_response_len;
@@ -1174,8 +1211,10 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
 
   cert_verification_result_ = context_->cert_verifier()->Verify(
       CertVerifier::RequestParams(
-          server_cert_, host_and_port_.host(), ssl_config_.GetCertVerifyFlags(),
-          std::string(ocsp_response), std::string(sct_list)),
+          server_cert_,
+          ech_name_override.empty() ? host_and_port_.host() : ech_name_override,
+          ssl_config_.GetCertVerifyFlags(), std::string(ocsp_response),
+          std::string(sct_list)),
       &server_cert_verify_result_,
       base::BindOnce(&SSLClientSocketImpl::OnVerifyComplete,
                      base::Unretained(this)),
@@ -1260,7 +1299,7 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
     server_cert_verify_result_.cert_status |= CERT_STATUS_LEGACY_TLS;
 
     // Only set the resulting net error if it hasn't been previously bypassed.
-    if (!ssl_config_.IsAllowedBadCert(server_cert_.get(), nullptr))
+    if (!IsAllowedBadCert(server_cert_.get(), nullptr))
       result = ERR_SSL_OBSOLETE_VERSION;
   }
 
@@ -1271,8 +1310,18 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
       context_->transport_security_state()->ShouldSSLErrorsBeFatal(
           host_and_port_.host());
 
-  if (IsCertificateError(result) && ssl_config_.ignore_certificate_errors) {
-    result = OK;
+  if (IsCertificateError(result)) {
+    if (!GetECHNameOverride().empty()) {
+      // Certificate exceptions are only applicable for the origin name. For
+      // simplicity, we do not allow certificate exceptions for the public name
+      // and map all bypassable errors to fatal ones.
+      result = result == ERR_SSL_OBSOLETE_VERSION
+                   ? ERR_SSL_VERSION_OR_CIPHER_MISMATCH
+                   : ERR_ECH_FALLBACK_CERTIFICATE_INVALID;
+    }
+    if (ssl_config_.ignore_certificate_errors) {
+      result = OK;
+    }
   }
 
   if (result == OK) {
@@ -1895,6 +1944,23 @@ int SSLClientSocketImpl::MapLastOpenSSLError(
   }
 
   return net_error;
+}
+
+base::StringPiece SSLClientSocketImpl::GetECHNameOverride() const {
+  const char* data;
+  size_t len;
+  SSL_get0_ech_name_override(ssl_.get(), &data, &len);
+  return base::StringPiece(data, len);
+}
+
+bool SSLClientSocketImpl::IsAllowedBadCert(X509Certificate* cert,
+                                           CertStatus* cert_status) const {
+  if (!GetECHNameOverride().empty()) {
+    // Certificate exceptions are only applicable for the origin name. For
+    // simplicity, we do not allow certificate exceptions for the public name.
+    return false;
+  }
+  return ssl_config_.IsAllowedBadCert(cert, cert_status);
 }
 
 }  // namespace net

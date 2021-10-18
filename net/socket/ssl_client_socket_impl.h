@@ -71,6 +71,9 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // SSLClientSockets are created.
   static void SetSSLKeyLogger(std::unique_ptr<SSLKeyLogger> logger);
 
+  // SSLClientSocket implementation.
+  std::vector<uint8_t> GetECHRetryConfigs() override;
+
   // SSLSocket implementation.
   int ExportKeyingMaterial(const base::StringPiece& label,
                            bool has_context,
@@ -203,6 +206,15 @@ class SSLClientSocketImpl : public SSLClientSocket,
                           const crypto::OpenSSLErrStackTracer& tracer,
                           OpenSSLErrorInfo* info);
 
+  // Wraps SSL_get0_ech_name_override. See documentation for that function.
+  base::StringPiece GetECHNameOverride() const;
+
+  // Returns true if |cert| is one of the certs in |allowed_bad_certs|.
+  // The expected cert status is written to |cert_status|. |*cert_status| can
+  // be nullptr if user doesn't care about the cert status. This method checks
+  // handshake state, so it may only be called during certificate verification.
+  bool IsAllowedBadCert(X509Certificate* cert, CertStatus* cert_status) const;
+
   CompletionOnceCallback user_connect_callback_;
   CompletionOnceCallback user_read_callback_;
   CompletionOnceCallback user_write_callback_;
@@ -274,6 +286,9 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   // True if the socket has been disconnected.
   bool disconnected_;
+
+  // True if certificate verification used an ECH name override.
+  bool used_ech_name_override_ = false;
 
   NextProto negotiated_protocol_;
 
