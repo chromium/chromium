@@ -2765,6 +2765,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicHpackCompressionPercentage" units="%"
     expires_after="2022-05-11">
+  <obsolete>
+    Removed in M58.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2791,6 +2794,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicHpackDecompressionPercentage" units="%"
     expires_after="2022-05-11">
+  <obsolete>
+    Removed in M53.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -5031,6 +5037,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.SpdyHpackDecompressionPercentage" units="%"
     expires_after="2022-05-11">
+  <obsolete>
+    Removed in M53.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
