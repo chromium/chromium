@@ -9,7 +9,7 @@ import {AsyncUtil} from '../../common/js/async_util.js';
 import {FileType} from '../../common/js/file_type.js';
 import {metrics} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
-import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
+import {LEGACY_FILES_EXTENSION_ID, SWA_APP_ID, SWA_FILES_APP_URL} from '../../common/js/url_constants.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
@@ -280,10 +280,17 @@ export class FileTasks {
    */
   static isInternalTask_(descriptor) {
     const {appId, taskType, actionId} = descriptor;
-    if (appId !== LEGACY_FILES_EXTENSION_ID || taskType !== 'app') {
+    if (!isFilesAppId(appId)) {
       return false;
     }
-    switch (actionId) {
+
+    // Legacy Files app task type is 'app', Files SWA is 'web'.
+    if (!(taskType === 'app' || taskType == 'web')) {
+      return false;
+    }
+    const parsedActionId = parseActionId(actionId);
+
+    switch (parsedActionId) {
       case 'mount-archive':
       case 'install-linux-package':
       case 'import-crostini-image':
@@ -317,22 +324,23 @@ export class FileTasks {
    */
   static annotateTasks_(tasks, entries) {
     const result = [];
-    const id = LEGACY_FILES_EXTENSION_ID;
     for (const task of tasks) {
       const {appId, taskType, actionId} = task.descriptor;
+      const parsedActionId = parseActionId(actionId);
 
       // Skip internal Files app's handlers.
-      if (appId === id && (actionId === 'select' || actionId === 'open')) {
+      if (isFilesAppId(appId) &&
+          (parsedActionId === 'select' || parsedActionId === 'open')) {
         continue;
       }
 
       // Tweak images, titles of internal tasks.
-      if (appId === id && taskType === 'app') {
-        if (actionId === 'mount-archive') {
+      if (isFilesAppId(appId) && (taskType === 'app' || taskType === 'web')) {
+        if (parsedActionId === 'mount-archive') {
           task.iconType = 'archive';
           task.title = loadTimeData.getString('MOUNT_ARCHIVE');
           task.verb = undefined;
-        } else if (actionId === 'open-hosted-generic') {
+        } else if (parsedActionId === 'open-hosted-generic') {
           if (entries.length > 1) {
             task.iconType = 'generic';
           } else {  // Use specific icon.
@@ -340,35 +348,35 @@ export class FileTasks {
           }
           task.title = loadTimeData.getString('TASK_OPEN');
           task.verb = undefined;
-        } else if (actionId === 'open-hosted-gdoc') {
+        } else if (parsedActionId === 'open-hosted-gdoc') {
           task.iconType = 'gdoc';
           task.title = loadTimeData.getString('TASK_OPEN_GDOC');
           task.verb = undefined;
-        } else if (actionId === 'open-hosted-gsheet') {
+        } else if (parsedActionId === 'open-hosted-gsheet') {
           task.iconType = 'gsheet';
           task.title = loadTimeData.getString('TASK_OPEN_GSHEET');
           task.verb = undefined;
-        } else if (actionId === 'open-hosted-gslides') {
+        } else if (parsedActionId === 'open-hosted-gslides') {
           task.iconType = 'gslides';
           task.title = loadTimeData.getString('TASK_OPEN_GSLIDES');
           task.verb = undefined;
-        } else if (actionId === 'install-linux-package') {
+        } else if (parsedActionId === 'install-linux-package') {
           task.iconType = 'crostini';
           task.title = loadTimeData.getString('TASK_INSTALL_LINUX_PACKAGE');
           task.verb = undefined;
-        } else if (actionId === 'import-crostini-image') {
+        } else if (parsedActionId === 'import-crostini-image') {
           task.iconType = 'tini';
           task.title = loadTimeData.getString('TASK_IMPORT_CROSTINI_IMAGE');
           task.verb = undefined;
-        } else if (actionId === 'view-swf') {
+        } else if (parsedActionId === 'view-swf') {
           task.iconType = 'generic';
           task.title = loadTimeData.getString('TASK_VIEW');
           task.verb = undefined;
-        } else if (actionId === 'view-pdf') {
+        } else if (parsedActionId === 'view-pdf') {
           task.iconType = 'pdf';
           task.title = loadTimeData.getString('TASK_VIEW');
           task.verb = undefined;
-        } else if (actionId === 'view-in-browser') {
+        } else if (parsedActionId === 'view-in-browser') {
           task.iconType = 'generic';
           task.title = loadTimeData.getString('TASK_VIEW');
           task.verb = undefined;
@@ -394,7 +402,8 @@ export class FileTasks {
             // handlers from Android apps, since the title can already have an
             // appropriate verb.
             if (!(taskType == 'arc' &&
-                  (actionId == 'send' || actionId == 'send_multiple'))) {
+                  (parsedActionId == 'send' ||
+                   parsedActionId == 'send_multiple'))) {
               verbButtonLabel = 'SHARE_WITH_VERB_BUTTON_LABEL';
             }
             break;
@@ -768,16 +777,16 @@ export class FileTasks {
    * @private
    */
   executeInternalTask_(descriptor) {
-    const {actionId} = descriptor;
-    if (actionId === 'mount-archive') {
+    const parsedActionId = parseActionId(descriptor.actionId);
+    if (parsedActionId === 'mount-archive') {
       this.mountArchives_();
       return;
     }
-    if (actionId === 'install-linux-package') {
+    if (parsedActionId === 'install-linux-package') {
       this.installLinuxPackageInternal_();
       return;
     }
-    if (actionId === 'import-crostini-image') {
+    if (parsedActionId === 'import-crostini-image') {
       this.importCrostiniImageInternal_();
       return;
     }
@@ -1257,3 +1266,27 @@ const MAX_NON_SPLIT_ENTRIES = 10;
  * }}
  */
 FileTasks.ComboButtonItem;
+
+/**
+ * @param {string} appId
+ * @return {boolean} Whether the appId belongs to Files app (legacy or SWA).
+ */
+function isFilesAppId(appId) {
+  return appId === LEGACY_FILES_EXTENSION_ID || appId === SWA_APP_ID;
+}
+
+/**
+ * The SWA actionId is prefixed with chrome://file-manager/?ACTION_ID, just the
+ * sub-string compatible with the extension/legacy e.g.: "view-pdf".
+ *
+ * @param {string} actionId
+ * @return {string}
+ */
+function parseActionId(actionId) {
+  if (window.isSWA) {
+    const swaUrl = SWA_FILES_APP_URL.toString() + '?';
+    return actionId.replace(swaUrl, '');
+  }
+
+  return actionId;
+}

@@ -12,11 +12,14 @@
 
 #include "apps/launcher.h"
 #include "ash/constants/ash_features.h"
+#include "ash/webui/file_manager/url_constants.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
@@ -73,6 +76,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
+using ash::file_manager::kChromeUIFileManagerURL;
 using extensions::Extension;
 using extensions::api::file_manager_private::Verb;
 using storage::FileSystemURL;
@@ -95,6 +99,25 @@ const char kCrostiniAppTaskType[] = "crostini";
 const char kPluginVmAppTaskType[] = "pluginvm";
 const char kWebAppTaskType[] = "web";
 
+// Returns True if the `app_id` belongs to Files app either extension or SWA.
+inline bool isFilesAppId(const std::string& app_id) {
+  return app_id == kFileManagerAppId || app_id == kFileManagerSwaAppId;
+}
+
+// The SWA actionId is prefixed with chrome://file-manager/?ACTION_ID, just the
+// sub-string compatible with the extension/legacy e.g.: "view-pdf".
+std::string parseFilesAppActionId(const std::string& action_id) {
+  if (base::StartsWith(action_id, kChromeUIFileManagerURL)) {
+    std::string result(action_id);
+    base::ReplaceFirstSubstringAfterOffset(
+        &result, 0, base::StrCat({kChromeUIFileManagerURL, "?"}), "");
+
+    return result;
+  }
+
+  return action_id;
+}
+
 // Returns true if path_mime_set contains a Google document.
 bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
   for (const auto& it : entries) {
@@ -108,7 +131,7 @@ bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
 void KeepOnlyFileManagerInternalTasks(std::vector<FullTaskDescriptor>* tasks) {
   std::vector<FullTaskDescriptor> filtered;
   for (FullTaskDescriptor& task : *tasks) {
-    if (task.task_descriptor.app_id == kFileManagerAppId)
+    if (isFilesAppId(task.task_descriptor.app_id))
       filtered.push_back(task);
   }
   tasks->swap(filtered);
@@ -120,9 +143,9 @@ void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
   std::vector<FullTaskDescriptor> filtered;
   for (FullTaskDescriptor& task : *tasks) {
     const auto& action = task.task_descriptor.action_id;
-    if (task.task_descriptor.app_id != kFileManagerAppId) {
+    if (!isFilesAppId(task.task_descriptor.app_id)) {
       filtered.push_back(task);
-    } else if (actions.find(action) == actions.end()) {
+    } else if (actions.find(parseFilesAppActionId(action)) == actions.end()) {
       filtered.push_back(task);
     }
   }
@@ -187,6 +210,7 @@ bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
   // an app other than kMediaAppId to be the default (b/153387960).
   constexpr const char* kBuiltInApps[] = {
       kFileManagerAppId,
+      kFileManagerSwaAppId,
       kTextEditorAppId,
       kAudioPlayerAppId,
       extension_misc::kQuickOfficeComponentExtensionId,
@@ -303,7 +327,7 @@ void PostProcessFoundTasks(
 // is used to handle certain action IDs of the file manager.
 bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
                                const std::string& action_id) {
-  return extension_id == kFileManagerAppId &&
+  return isFilesAppId(extension_id) &&
          (action_id == "view-pdf" || action_id == "view-swf" ||
           action_id == "view-in-browser" ||
           action_id == "open-hosted-generic" ||
@@ -525,32 +549,14 @@ bool ExecuteFileTask(Profile* profile,
     notifier->NotifyFileTasks(file_urls);
   }
 
-  // ARC apps and web apps need mime types for launching. Retrieve them first.
-  if (task.task_type == TASK_TYPE_ARC_APP ||
-      task.task_type == TASK_TYPE_WEB_APP) {
-    extensions::app_file_handler_util::MimeTypeCollector* mime_collector =
-        new extensions::app_file_handler_util::MimeTypeCollector(profile);
-    mime_collector->CollectForURLs(
-        file_urls, base::BindOnce(&ExecuteTaskAfterMimeTypesCollected, profile,
-                                  task, file_urls, std::move(done),
-                                  base::Owned(mime_collector)));
-    return true;
-  }
-
-  if (task.task_type == TASK_TYPE_CROSTINI_APP ||
-      task.task_type == TASK_TYPE_PLUGIN_VM_APP) {
-    DCHECK_EQ(kGuestOsAppActionID, task.action_id);
-    ExecuteGuestOsTask(profile, task, file_urls, std::move(done));
-    return true;
-  }
-
   // Some action IDs of the file manager's file browser handlers require the
   // files to be directly opened with the browser. In a multiprofile session
   // this will always open on the current desktop, regardless of which profile
   // owns the files, so return TASK_RESULT_OPENED.
-  if (ShouldBeOpenedWithBrowser(task.app_id, task.action_id)) {
+  const std::string parsed_action_id(parseFilesAppActionId(task.action_id));
+  if (ShouldBeOpenedWithBrowser(task.app_id, parsed_action_id)) {
     const bool result =
-        OpenFilesWithBrowser(profile, file_urls, task.action_id);
+        OpenFilesWithBrowser(profile, file_urls, parsed_action_id);
     if (result && done) {
       std::move(done).Run(
           extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
@@ -559,8 +565,7 @@ bool ExecuteFileTask(Profile* profile,
   }
 
   // When the FilesSWA is enabled: Open Files SWA if the task is for Files app.
-  if (ash::features::IsFileManagerSwaEnabled() &&
-      task.app_id == kFileManagerAppId) {
+  if (ash::features::IsFileManagerSwaEnabled() && isFilesAppId(task.app_id)) {
     std::u16string title;
     const GURL destination_entry =
         file_urls.size() ? file_urls[0].ToGURL() : GURL();
@@ -584,6 +589,25 @@ bool ExecuteFileTask(Profile* profile,
       std::move(done).Run(
           extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
     }
+    return true;
+  }
+
+  // ARC apps and web apps need mime types for launching. Retrieve them first.
+  if (task.task_type == TASK_TYPE_ARC_APP ||
+      task.task_type == TASK_TYPE_WEB_APP) {
+    extensions::app_file_handler_util::MimeTypeCollector* mime_collector =
+        new extensions::app_file_handler_util::MimeTypeCollector(profile);
+    mime_collector->CollectForURLs(
+        file_urls, base::BindOnce(&ExecuteTaskAfterMimeTypesCollected, profile,
+                                  task, file_urls, std::move(done),
+                                  base::Owned(mime_collector)));
+    return true;
+  }
+
+  if (task.task_type == TASK_TYPE_CROSTINI_APP ||
+      task.task_type == TASK_TYPE_PLUGIN_VM_APP) {
+    DCHECK_EQ(kGuestOsAppActionID, task.action_id);
+    ExecuteGuestOsTask(profile, task, file_urls, std::move(done));
     return true;
   }
 
