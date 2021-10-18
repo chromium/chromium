@@ -155,7 +155,9 @@ void ContentViewRenderView::SurfaceChanged(
 }
 
 void ContentViewRenderView::SetNeedsRedraw(JNIEnv* env) {
-  compositor_->SetNeedsRedraw();
+  if (compositor_) {
+    compositor_->SetNeedsRedraw();
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>
