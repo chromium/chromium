@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
+import {Action} from 'chrome://resources/js/cr/ui/store.js';
 
 import {IncognitoAvailability, ROOT_NODE_ID} from './constants.js';
 import {BookmarkNode, BookmarksPageState, NodeMap} from './types.js';

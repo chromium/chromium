@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Store} from 'chrome://resources/js/cr/ui/store.m.js';
-import {StoreClient} from 'chrome://resources/js/cr/ui/store_client.m.js';
+import {Store} from 'chrome://resources/js/cr/ui/store.js';
+import {StoreClient} from 'chrome://resources/js/cr/ui/store_client.js';
 
 import {AppManagementStore} from './store.js';
 

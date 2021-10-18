@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-import {Store} from 'chrome://resources/js/cr/ui/store.m.js';
+import {Store} from 'chrome://resources/js/cr/ui/store.js';
 
 import {reduceAction} from './reducers.js';
 import {createEmptyState} from './util.js';

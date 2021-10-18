@@ -24,7 +24,7 @@ import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {KeyboardShortcutList} from 'chrome://resources/js/cr/ui/keyboard_shortcut_list.m.js';
-import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreObserver} from 'chrome://resources/js/cr/ui/store.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';

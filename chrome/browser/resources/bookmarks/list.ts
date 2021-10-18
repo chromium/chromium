@@ -11,7 +11,7 @@ import './item.js';
 import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
-import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreObserver} from 'chrome://resources/js/cr/ui/store.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/js/list_property_update_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

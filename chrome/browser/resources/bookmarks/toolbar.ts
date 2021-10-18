@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreObserver} from 'chrome://resources/js/cr/ui/store.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,9 +25,9 @@ import {BookmarksPageState} from './types.js';
 
 const BookmarksToolbarElementBase =
     mixinBehaviors([StoreClient], PolymerElement) as {
-  new (): PolymerElement & BookmarksStoreClientInterface &
+      new (): PolymerElement & BookmarksStoreClientInterface &
       StoreObserver<BookmarksPageState>
-}
+    };
 
 export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
   static get is() {

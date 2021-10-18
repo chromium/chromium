@@ -233,7 +233,7 @@ js_library("shared_vars") {
 js_library("store") {
   deps = [
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:store.m",
+    "//ui/webui/resources/js/cr/ui:store",
   ]
 }
 
@@ -242,8 +242,8 @@ js_library("store_client") {
     ":store",
     ":types",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:store.m",
-    "//ui/webui/resources/js/cr/ui:store_client.m",
+    "//ui/webui/resources/js/cr/ui:store",
+    "//ui/webui/resources/js/cr/ui:store_client",
   ]
 }
 

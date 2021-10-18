@@ -8,7 +8,7 @@
  * @see [redux tutorial]{@link https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers}
  */
 
-import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
+import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {ActionName} from './personalization_actions.js';
 
 /**

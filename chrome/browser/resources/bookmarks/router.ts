@@ -5,7 +5,7 @@
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 
-import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreObserver} from 'chrome://resources/js/cr/ui/store.js';
 import {Debouncer, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {selectFolder, setSearchTerm} from './actions.js';
@@ -15,9 +15,9 @@ import {BookmarksPageState} from './types.js';
 
 const BookmarksRouterElementBase =
     mixinBehaviors(StoreClient, PolymerElement) as {
-  new (): PolymerElement & BookmarksStoreClientInterface &
+      new (): PolymerElement & BookmarksStoreClientInterface &
       StoreObserver<BookmarksPageState>
-}
+    };
 
 /**
  * This element is a one way bound interface that routes the page URL to

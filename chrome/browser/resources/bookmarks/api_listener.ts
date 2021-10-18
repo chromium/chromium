@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addWebUIListener, removeWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
+import {Action} from 'chrome://resources/js/cr/ui/store.js';
 
 import {createBookmark, editBookmark, moveBookmark, refreshNodes, removeBookmark, reorderChildren, setCanEditBookmarks, setIncognitoAvailability} from './actions.js';
 import {BrowserProxy} from './browser_proxy.js';
