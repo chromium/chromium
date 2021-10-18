@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font_list.h"
@@ -51,6 +52,8 @@ LensRegionSearchInstructionsView::LensRegionSearchInstructionsView(
           },
           base::Passed(std::move(close_callback))),
       views::kIcCloseIcon, kCloseButtonSize);
+  close_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
 }
 
 LensRegionSearchInstructionsView::~LensRegionSearchInstructionsView() = default;

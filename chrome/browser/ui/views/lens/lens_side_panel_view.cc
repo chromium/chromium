@@ -10,8 +10,10 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -57,9 +59,11 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
     base::RepeatingClosure pressed_callback,
     const gfx::VectorIcon& icon,
     const gfx::Insets& margin_insets,
+    const std::u16string& tooltip_text,
     int dip_size) {
   auto button = views::CreateVectorImageButtonWithNativeTheme(pressed_callback,
                                                               icon, dip_size);
+  button->SetTooltipText(tooltip_text);
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button->SetBackground(
       views::CreateThemedSolidBackground(host, ui::kColorWindowBackground));
@@ -146,10 +150,12 @@ void LensSidePanelView::CreateAndInstallHeader(
           0, 0, 0,
           layout_provider->GetDistanceMetric(
               views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL)),
+      l10n_util::GetStringUTF16(IDS_ACCNAME_OPEN),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE)));
   close_button_ = header->AddChildView(CreateControlButton(
       this, close_callback, views::kIcCloseIcon, gfx::Insets(),
+      l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE)));
 
