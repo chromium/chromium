@@ -94,17 +94,13 @@ void ElementTrackerMac::NotifyMenuItemShown(NSMenu* menu,
                                             ElementIdentifier identifier,
                                             const gfx::Rect& screen_bounds) {
   const ElementContext context = GetContextForMenu(menu);
-  DCHECK(context);
-  context_to_data_[context]->AddElement(identifier, screen_bounds);
+  if (context)
+    context_to_data_[context]->AddElement(identifier, screen_bounds);
 }
 
 void ElementTrackerMac::NotifyMenuItemActivated(NSMenu* menu,
                                                 ElementIdentifier identifier) {
   const ElementContext context = GetContextForMenu(menu);
-  DCHECK(context)
-      << "Element was activated but was not registered as visible. "
-         "It is likely you assigned an ElementIdentifier to a submenu item. "
-         "Note that submenu item identifiers are not yet supported on Mac.";
   if (context)
     context_to_data_[context]->ActivateElement(identifier);
 }
