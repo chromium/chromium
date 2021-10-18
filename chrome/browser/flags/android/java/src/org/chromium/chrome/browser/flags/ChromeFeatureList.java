@@ -329,6 +329,7 @@ public abstract class ChromeFeatureList {
     public static final String DYNAMIC_COLOR_ANDROID = "DynamicColorAndroid";
     public static final String EDIT_PASSWORDS_IN_SETTINGS = "EditPasswordsInSettings";
     public static final String EARLY_LIBRARY_LOAD = "EarlyLibraryLoad";
+    public static final String ELIDE_TAB_PRELOAD_AT_STARTUP = "ElideTabPreloadAtStartup";
     public static final String ENABLE_DANGEROUS_DOWNLOAD_DIALOG = "EnableDangerousDownloadDialog";
     public static final String ENABLE_DUPLICATE_DOWNLOAD_DIALOG = "EnableDuplicateDownloadDialog";
     public static final String ENHANCED_PROTECTION_PROMO_CARD = "EnhancedProtectionPromoCard";

@@ -228,6 +228,11 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEarlyLibraryLoad;
 #endif
 
+#if defined(OS_ANDROID)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kElideTabPreloadAtStartup;
+#endif
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnableAllSystemWebApps;
 

@@ -123,6 +123,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &shared_highlighting::kSharedHighlightingV2,
     &shared_highlighting::kSharedHighlightingAmp,
     &features::kElasticOverscroll,
+    &features::kElideTabPreloadAtStartup,
     &features::kGiveJavaUiThreadDefaultTaskTraitsUserBlockingPriority,
     &features::kPrivacyReview,
     &features::kPrioritizeBootstrapTasks,

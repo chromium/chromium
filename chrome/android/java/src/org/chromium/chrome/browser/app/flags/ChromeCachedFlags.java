@@ -85,6 +85,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.DYNAMIC_COLOR_ANDROID);
                 add(ChromeFeatureList.EARLY_LIBRARY_LOAD);
                 add(ChromeFeatureList.ELASTIC_OVERSCROLL);
+                add(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP);
                 add(ChromeFeatureList
                                 .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY);
                 add(ChromeFeatureList.IMMERSIVE_UI_MODE);
