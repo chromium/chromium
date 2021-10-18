@@ -61,6 +61,8 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     }
 
     public static final int DEFAULT_SNACKBAR_DURATION_MS = 3000;
+    // For snackbars with long strings where a longer duration is favorable.
+    public static final int DEFAULT_SNACKBAR_DURATION_LONG_MS = 8000;
     private static final int ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS = 30000;
 
     // Used instead of the constant so tests can override the value.
@@ -161,7 +163,8 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     /**
      * Dismisses snackbars that are associated with the given {@link SnackbarController}.
      *
-     * @param controller Only snackbars with this controller will be removed.
+     * @param controller Only snackbars with this controller will be removed. A snackbar associated
+     *         with a null controller cannot be dismissed via this method.
      */
     public void dismissSnackbars(SnackbarController controller) {
         if (mSnackbars.removeMatchingSnackbars(controller)) {
@@ -172,7 +175,8 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     /**
      * Dismisses snackbars that have a certain controller and action data.
      *
-     * @param controller Only snackbars with this controller will be removed.
+     * @param controller Only snackbars with this controller will be removed. A snackbar associated
+     *         with a null controller cannot be dismissed via this method.
      * @param actionData Only snackbars whose action data is equal to actionData will be removed.
      */
     public void dismissSnackbars(SnackbarController controller, Object actionData) {
