@@ -1479,7 +1479,8 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
     gfx::Image* card_art_image = personal_data_->GetCreditCardArtImageForUrl(
         credit_card->card_art_url());
     client()->OnVirtualCardDataAvailable(
-        credit_card, cvc, card_art_image ? *card_art_image : gfx::Image());
+        credit_card_.CardIdentifierStringForAutofillDisplay(), credit_card, cvc,
+        card_art_image ? *card_art_image : gfx::Image());
   }
 
   FillCreditCardForm(credit_card_query_id_, credit_card_form_,

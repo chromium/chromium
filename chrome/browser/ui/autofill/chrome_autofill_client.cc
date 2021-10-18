@@ -736,6 +736,7 @@ void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
 }
 
 void ChromeAutofillClient::OnVirtualCardDataAvailable(
+    const std::u16string& masked_card_identifier_string,
     const CreditCard* credit_card,
     const std::u16string& cvc,
     const gfx::Image& card_image) {
@@ -756,7 +757,8 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
   VirtualCardManualFallbackBubbleControllerImpl* controller =
       VirtualCardManualFallbackBubbleControllerImpl::FromWebContents(
           web_contents());
-  controller->ShowBubble(credit_card, cvc, card_image);
+  controller->ShowBubble(masked_card_identifier_string, credit_card, cvc,
+                         card_image);
 #endif
 }
 

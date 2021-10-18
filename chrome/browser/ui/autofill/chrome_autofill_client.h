@@ -156,9 +156,11 @@ class ChromeAutofillClient
   void HideAutofillPopup(PopupHidingReason reason) override;
   void ShowOfferNotificationIfApplicable(
       const AutofillOfferData* offer) override;
-  void OnVirtualCardDataAvailable(const CreditCard* credit_card,
-                                  const std::u16string& cvc,
-                                  const gfx::Image& card_image) override;
+  void OnVirtualCardDataAvailable(
+      const std::u16string& masked_card_identifier_string,
+      const CreditCard* credit_card,
+      const std::u16string& cvc,
+      const gfx::Image& card_image) override;
   void ShowVirtualCardErrorDialog(bool is_permanent_error) override;
   void ShowAutofillProgressDialog(base::OnceClosure cancel_callback) override;
   void CloseAutofillProgressDialog(
