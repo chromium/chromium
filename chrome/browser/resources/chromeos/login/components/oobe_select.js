@@ -30,7 +30,7 @@
  * Note: do not forget to update getSelectedTitle() below if this is
  * updated!
  */
-var setupSelect = function(select, list, callback) {
+/* #export */ var setupSelect = function(select, list, callback) {
   select.innerHTML = '';
   var optgroup = select;
   for (var i = 0; i < list.length; ++i) {

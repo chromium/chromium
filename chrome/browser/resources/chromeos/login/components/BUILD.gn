@@ -28,7 +28,6 @@ js_type_check("closure_compile_local") {
     ":hd_iron_icon",
     ":html_echo",
     ":long_touch_detector",
-    ":oobe_i18n_dropdown",
     ":oobe_select",
     ":oobe_types",
   ]
@@ -50,6 +49,7 @@ group("closure_compile_module") {
     ":network_select_login.m",
     ":oobe_a11y_option.m",
     ":oobe_icons.m",
+    ":oobe_i18n_dropdown.m",
     ":oobe_network_icons.m",
     ":oobe_select.m",
     ":oobe_types.m",
@@ -73,6 +73,7 @@ group("polymer3_elements") {
     ":network_select_login_module",
     ":oobe_a11y_option_module",
     ":oobe_icons_module",
+    ":oobe_i18n_dropdown_module",
     ":oobe_network_icons_module",
   ] + [
     ":modulize"
@@ -113,13 +114,6 @@ js_library("html_echo") {
 }
 
 js_library("long_touch_detector") {
-}
-
-js_library("oobe_i18n_dropdown") {
-  deps = [
-    ":oobe_select",
-    ":oobe_types",
-  ]
 }
 
 js_library("oobe_select") {
@@ -184,6 +178,15 @@ js_library("oobe_icons.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_icons.m.js" ]
   deps = []
   extra_deps = [ ":oobe_icons_module" ]
+}
+
+js_library("oobe_i18n_dropdown.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_i18n_dropdown.m.js" ]
+  deps = [
+    ":oobe_select",
+    ":oobe_types",
+  ]
+  extra_deps = [ ":oobe_i18n_dropdown_module" ]
 }
 
 js_library("oobe_network_icons.m") {
@@ -254,6 +257,14 @@ polymer_modulizer("oobe_icons") {
   js_file = "oobe_icons.m.js"
   html_file = "oobe_icons.html"
   html_type = "iron-iconset"
+}
+
+polymer_modulizer("oobe_i18n_dropdown") {
+  js_file = "oobe_i18n_dropdown.js"
+  html_file = "oobe_i18n_dropdown.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
 }
 
 polymer_modulizer("oobe_network_icons") {

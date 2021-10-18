@@ -4,8 +4,6 @@
 
 // clang-format off
 
-// <include src="../components/oobe_i18n_dropdown.js">
-
 // <include src="../screens/oobe/enable_debugging.js">
 // <include src="../oobe_welcome_dialog.js">
 // <include src="../oobe_welcome.js">

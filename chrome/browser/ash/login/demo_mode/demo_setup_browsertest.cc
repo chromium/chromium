@@ -516,7 +516,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
     ASSERT_NE(kCountryCodeToNameMap.end(), it);
     const std::string query =
         base::StrCat({test::GetOobeElementPath(kDemoPreferencesCountry),
-                      ".$$('option[value=\"", country_code, "\"]').innerHTML"});
+                      ".shadowRoot.querySelector('option[value=\"", country_code,
+                      "\"]').innerHTML"});
     EXPECT_EQ(it->second, test::OobeJS().GetString(query));
   }
 
