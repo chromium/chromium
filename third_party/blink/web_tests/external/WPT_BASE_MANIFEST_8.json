@@ -218454,7 +218454,7 @@
        []
       ],
       "generate.py": [
-       "01103a232b697f94cf5c1173ba84eb32a519a085",
+       "176e0ebbebc07ac44cbf735c67a1b50ea028d0d7",
        []
       ],
       "spec.src.json": [
@@ -218462,7 +218462,7 @@
        []
       ],
       "spec_validator.py": [
-       "533917248cbda487241c2a4a28e46d7597ee3b06",
+       "3ac3f530169e5461ae070a7568aaff2cdba9c398",
        []
       ],
       "template": {
@@ -220863,7 +220863,7 @@
       []
      ],
      "cookie_helper.py": [
-      "2565944320a2de90cb756e45ebb09bf1d4b9c933",
+      "71dd8b82ee7eb50054455724bc4c018b22f20949",
       []
      ],
      "empty_sw.js": [
@@ -221147,7 +221147,7 @@
       []
      ],
      "304.py": [
-      "9e4a2a0a06b0c8cf5673a21dbebbc8b3f439cffc",
+      "aa5f5ab56081402ea2eb305cb6adbd5842772017",
       []
      ],
      "access-control-expose-headers.json": [
@@ -268946,7 +268946,7 @@
        []
       ],
       "network-partition-key.py": [
-       "d59c74137b80a7135bb9b2c0b39014b764a61428",
+       "32fe4999b7d66cb9fc431e934d1a81c87831827e",
        []
       ],
       "network-partition-worker-checker.html": [
@@ -269402,7 +269402,7 @@
      ],
      "resources": {
       "http-cache.py": [
-       "79359046c2faa4973d4e631c76c130d49f831aec",
+       "3ab610dd1421cea5289ad14a8ef472ade27f07f1",
        []
       ],
       "securedimage.py": [
@@ -299713,12 +299713,32 @@
        "262a1ae4d52973f650e34a2924c48598f657edff",
        []
       ],
+      "cache-storage-access.https.html": [
+       "ac714cc4ed2a1403eae9097751d75e58b96f1faf",
+       []
+      ],
+      "cache.txt": [
+       "89164cfabed56b5852445eb70470cfd1331bdb48",
+       []
+      ],
       "empty.html": [
        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
        []
       ],
+      "indexedb-utils.js": [
+       "39cb1a802a97358c7364c4dca52445824a351155",
+       []
+      ],
+      "indexeddb-access.html": [
+       "20e2956cd141b87a9ea1c5906d1708525949e3ef",
+       []
+      ],
       "key-value-store.py": [
        "1ab609f11bf2be22696f0b132b88d8fc86546b93",
+       []
+      ],
+      "local-storage-access.html": [
+       "00af1d5d16d832f1b611b6fe0978f059397d9add",
        []
       ],
       "notification.html": [
@@ -299733,8 +299753,16 @@
        "5dc8d6aca1ae35e8b6f2447f75ec72d786b87f1f",
        []
       ],
+      "storage-foundation-access.https.html": [
+       "4ab8b062c93f845a57e70650d248cf8bbb71ce48",
+       []
+      ],
       "utils.js": [
        "1c1cdb2fbf08dcadd7502d9299077d1a298a0e0b",
+       []
+      ],
+      "web-database-access.html": [
+       "99741906ed3b708fdbed36397f62d7cb4a9e2801",
        []
       ],
       "window-move.html": [
@@ -309787,15 +309815,15 @@
       []
      ],
      "access-control-basic-allow-no-credentials.py": [
-      "1b8bcdb8ae9814fab28449582f5564c7d6dace5d",
+      "e0668c67a19b72f2d74034dbaa8e745f258ec556",
       []
      ],
      "access-control-basic-allow-star.py": [
-      "8d4642d098cac3c6385361d97274a14a96de815c",
+      "38c5107cb71d8216a5164add0f4112393930d5c9",
       []
      ],
      "access-control-basic-allow.py": [
-      "6051bc2cdc4f68e7ea109fa6d9216b40ff866ee7",
+      "f1ca5875e260cde272d72ce9b2ff1d77efecccd9",
       []
      ],
      "access-control-basic-cors-safelisted-request-headers.py": [
@@ -309835,7 +309863,7 @@
       []
      ],
      "access-control-origin-header.py": [
-      "e282fe4425004cd1cc82ebd6488f70bec4f4a95d",
+      "65a2c64ca8c52d5c3f2cead64c96b4dcb3f429f4",
       []
      ],
      "access-control-preflight-denied.py": [
@@ -482505,6 +482533,33 @@
        }
       ]
      ],
+     "cache-storage.https.html": [
+      "015094c11517f4b7a9b901f50aa71b208048f534",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "indexeddb.html": [
+      "65368acbaef86b5af4dac28cc1205e6eca2c1b89",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "local-storage.html": [
+      "b07d1f054be0efa5800c5eb994327c8f42a72556",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "restriction-notification.https.html": [
       "964c408f111d92c9477fc2f14d21d87c768d6f92",
       [
@@ -482553,6 +482608,24 @@
      ],
      "state-and-event.html": [
       "b8252121b1569dad90098636e86b8ad930cf5c70",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "storage-foundation.https.html": [
+      "ca1b9363f4b243eada40b59ff60ee2ada9dc2a5b",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "web-database.html": [
+      "3e59c3c2959777682ce7279ea6110a034f7623e3",
       [
        null,
        {
@@ -490580,6 +490653,13 @@
      "scripted": {
       "autofocus-attribute.svg": [
        "edf200c4c7be31f2e1fea39003b991695610e6c3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "svg-getIntersectionList.svg": [
+       "a360bad3d35af84f0d65a4d00391cf454332691e",
        [
         null,
         {}
