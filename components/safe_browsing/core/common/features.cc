@@ -129,12 +129,6 @@ const base::Feature
         "SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid",
         base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSafeBrowsingSeparateNetworkContexts{
-    "SafeBrowsingSeparateNetworkContexts", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kSafeBrowsingRemoveCookies{
-    "SafeBrowsingRemoveCookies", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests{
     "SafeBrowsingRemoveCookiesInAuthRequests",
     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -188,7 +182,6 @@ constexpr struct {
     {&kSafeBrowsingPageLoadToken, true},
     {&kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
-    {&kSafeBrowsingSeparateNetworkContexts, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},
     {&kTriggerThrottlerDailyQuotaFeature, false},

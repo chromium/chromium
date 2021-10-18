@@ -126,13 +126,6 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   }
 #endif
 
-  // NetworkContext and URLLoaderFactory used for safe browsing requests.
-  // Called on UI thread.
-  // TODO(crbug/1049833): Transition all callers of these functions to the
-  // per-profile methods below.
-  network::mojom::NetworkContext* GetNetworkContext();
-  virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
-
   // Get the NetworkContext or URLLoaderFactory attached to |browser_context|.
   // Called on UI thread.
   network::mojom::NetworkContext* GetNetworkContext(
@@ -236,10 +229,7 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   // |sb_url_loader_factory| is a SharedURLLoaderFactory attached to the Safe
   // Browsing NetworkContexts, and |browser_url_loader_factory| is attached to
   // the global browser process.
-  // TODO(crbug.com/1049833): Remove the sb_url_loader_factory here.
   void StartOnIOThread(std::unique_ptr<network::PendingSharedURLLoaderFactory>
-                           sb_url_loader_factory,
-                       std::unique_ptr<network::PendingSharedURLLoaderFactory>
                            browser_url_loader_factory);
 
   // Called to stop or shutdown operations on the io_thread. This may be called

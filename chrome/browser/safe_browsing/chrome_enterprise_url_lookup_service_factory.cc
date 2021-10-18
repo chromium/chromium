@@ -60,12 +60,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   auto url_loader_factory =
       std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-          g_browser_process->safe_browsing_service()->GetURLLoaderFactory());
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies)) {
-    url_loader_factory =
-        std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-            profile->GetURLLoaderFactory());
-  }
+          profile->GetURLLoaderFactory());
   return new ChromeEnterpriseRealTimeUrlLookupService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       VerdictCacheManagerFactory::GetForProfile(profile), profile,

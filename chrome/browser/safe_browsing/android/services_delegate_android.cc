@@ -81,14 +81,9 @@ void ServicesDelegateAndroid::AddDownloadManager(
     content::DownloadManager* download_manager) {}
 
 void ServicesDelegateAndroid::StartOnIOThread(
-    scoped_refptr<network::SharedURLLoaderFactory> sb_url_loader_factory,
     scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
     const V4ProtocolConfig& v4_config) {
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies)) {
-    database_manager_->StartOnIOThread(browser_url_loader_factory, v4_config);
-  } else {
-    database_manager_->StartOnIOThread(sb_url_loader_factory, v4_config);
-  }
+  database_manager_->StartOnIOThread(browser_url_loader_factory, v4_config);
 }
 
 void ServicesDelegateAndroid::StopOnIOThread(bool shutdown) {

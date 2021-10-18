@@ -25,7 +25,11 @@ using content::BrowserThread;
 
 namespace extensions {
 
-BlocklistStateFetcher::BlocklistStateFetcher() {}
+BlocklistStateFetcher::BlocklistStateFetcher() {
+  if (g_browser_process) {
+    url_loader_factory_ = g_browser_process->shared_url_loader_factory();
+  }
+}
 
 BlocklistStateFetcher::~BlocklistStateFetcher() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -49,16 +53,6 @@ void BlocklistStateFetcher::Request(const std::string& id,
   callbacks_.insert(std::make_pair(id, std::move(callback)));
   if (request_already_sent)
     return;
-
-  if (g_browser_process && g_browser_process->safe_browsing_service()) {
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kSafeBrowsingRemoveCookies)) {
-      url_loader_factory_ = g_browser_process->shared_url_loader_factory();
-    } else {
-      url_loader_factory_ =
-          g_browser_process->safe_browsing_service()->GetURLLoaderFactory();
-    }
-  }
 
   SendRequest(id);
 }
@@ -107,9 +101,7 @@ void BlocklistStateFetcher::SendRequest(const std::string& id) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = request_url;
   resource_request->method = "POST";
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingRemoveCookies)) {
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  }
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   std::unique_ptr<network::SimpleURLLoader> fetcher_ptr =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);

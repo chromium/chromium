@@ -114,14 +114,6 @@ extern const base::Feature kSafeBrowsingPageLoadToken;
 extern const base::Feature
     kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid;
 
-// Controls whether Safe Browsing uses separate NetworkContexts for each
-// profile.
-extern const base::Feature kSafeBrowsingSeparateNetworkContexts;
-
-// Controls whether cookies are removed from certain communications with Safe
-// Browsing.
-extern const base::Feature kSafeBrowsingRemoveCookies;
-
 // Controls whether cookies are removed when the access token is present.
 extern const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests;
 

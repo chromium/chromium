@@ -47,7 +47,6 @@ class ServicesDelegateDesktop : public ServicesDelegate {
   DownloadProtectionService* GetDownloadService() override;
 
   void StartOnIOThread(
-      scoped_refptr<network::SharedURLLoaderFactory> sb_url_loader_factory,
       scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
       const V4ProtocolConfig& v4_config) override;
   void StopOnIOThread(bool shutdown) override;

@@ -145,7 +145,7 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetMetricSuffix() const {
 
 bool ChromeEnterpriseRealTimeUrlLookupService::ShouldIncludeCredentials()
     const {
-  return !base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies);
+  return false;
 }
 
 double ChromeEnterpriseRealTimeUrlLookupService::

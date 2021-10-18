@@ -192,25 +192,9 @@ void SafeBrowsingService::ShutDown() {
   proxy_config_monitor_.reset();
 }
 
-network::mojom::NetworkContext* SafeBrowsingService::GetNetworkContext() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return network_context_->GetNetworkContext();
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-SafeBrowsingService::GetURLLoaderFactory() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!network_context_)
-    return nullptr;
-  return network_context_->GetURLLoaderFactory();
-}
-
 network::mojom::NetworkContext* SafeBrowsingService::GetNetworkContext(
     content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts))
-    return GetNetworkContext();
-
   NetworkContextService* service =
       NetworkContextServiceFactory::GetForBrowserContext(browser_context);
   if (!service)
@@ -223,9 +207,6 @@ scoped_refptr<network::SharedURLLoaderFactory>
 SafeBrowsingService::GetURLLoaderFactory(
     content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts))
-    return GetURLLoaderFactory();
-
   NetworkContextService* service =
       NetworkContextServiceFactory::GetForBrowserContext(browser_context);
   if (!service)
@@ -347,8 +328,6 @@ void SafeBrowsingService::SetDatabaseManagerForTest(
 
 void SafeBrowsingService::StartOnIOThread(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        sb_url_loader_factory,
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
         browser_url_loader_factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (enabled_)
@@ -359,7 +338,6 @@ void SafeBrowsingService::StartOnIOThread(
   V4ProtocolConfig v4_config = GetV4ProtocolConfig();
 
   services_delegate_->StartOnIOThread(
-      network::SharedURLLoaderFactory::Create(std::move(sb_url_loader_factory)),
       network::SharedURLLoaderFactory::Create(
           std::move(browser_url_loader_factory)),
       v4_config);
@@ -384,8 +362,6 @@ void SafeBrowsingService::Start() {
       FROM_HERE,
       base::BindOnce(
           &SafeBrowsingService::StartOnIOThread, this,
-          std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-              GetURLLoaderFactory()),
           std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
               g_browser_process->shared_url_loader_factory())));
 }

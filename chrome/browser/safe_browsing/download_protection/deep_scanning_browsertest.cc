@@ -369,7 +369,8 @@ class DownloadDeepScanningBrowserTestBase
     binary_fcm_service_ = binary_fcm_service.get();
     Profile* profile = Profile::FromBrowserContext(browser_context);
     return std::make_unique<BinaryUploadService>(
-        g_browser_process->safe_browsing_service()->GetURLLoaderFactory(),
+        g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
+            profile),
         profile, std::move(binary_fcm_service));
   }
 

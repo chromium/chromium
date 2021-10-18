@@ -42,10 +42,6 @@ class BinaryUploadService : public KeyedService {
 
   explicit BinaryUploadService(Profile* profile);
 
-  BinaryUploadService(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      Profile* profile);
-
   // This constructor is useful in tests, if you want to keep a reference to the
   // service's |binary_fcm_service_|.
   BinaryUploadService(

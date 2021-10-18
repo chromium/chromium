@@ -92,8 +92,7 @@ IncidentReportUploaderImpl::IncidentReportUploaderImpl(
   resource_request->url = GetIncidentReportUrl();
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies))
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kSafeBrowsingIncidentTrafficAnnotation);
   url_loader_->AttachStringForUpload(post_data, "application/octet-stream");

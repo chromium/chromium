@@ -174,10 +174,7 @@ std::unique_ptr<KeyedService> CreateTestBinaryUploadService(
 
 class FakeSafeBrowsingService : public TestSafeBrowsingService {
  public:
-  explicit FakeSafeBrowsingService(Profile* profile)
-      : test_shared_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
+  explicit FakeSafeBrowsingService(Profile* profile) {
     services_delegate_ = ServicesDelegate::CreateForTest(this, this);
     BinaryUploadServiceFactory::GetInstance()->SetTestingFactory(
         profile, base::BindRepeating(&CreateTestBinaryUploadService));
@@ -192,15 +189,8 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
     return mock_database_manager_.get();
   }
 
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
-      override {
-    return test_shared_loader_factory_;
-  }
-
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context) override {
-    if (!base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts))
-      return GetURLLoaderFactory();
     auto* profile = Profile::FromBrowserContext(browser_context);
     auto it = test_shared_loader_factory_map_.find(profile);
     if (it == test_shared_loader_factory_map_.end())
@@ -213,13 +203,7 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
     download_report_count_++;
   }
 
-  network::TestURLLoaderFactory* test_url_loader_factory() {
-    return &test_url_loader_factory_;
-  }
-
   network::TestURLLoaderFactory* GetTestURLLoaderFactory(Profile* profile) {
-    if (!base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts))
-      return test_url_loader_factory();
     auto it = test_url_loader_factory_map_.find(profile);
     if (it == test_url_loader_factory_map_.end())
       return nullptr;
@@ -251,10 +235,6 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
   IncidentReportingService* CreateIncidentReportingService() override {
     return new IncidentReportingService(nullptr);
   }
-
-  // TODO(crbug/1049833): Remove these as we rollout separate network contexts.
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 
   base::flat_map<Profile*, std::unique_ptr<network::TestURLLoaderFactory>>
       test_url_loader_factory_map_;
@@ -4263,16 +4243,7 @@ TEST_F(EnhancedProtectionDownloadTest, NoAccessTokenWhileIncognito) {
   WebUIInfoSingleton::GetInstance()->ClearListenerForTesting();
 }
 
-class DownloadSeparateNetworkContextsTest
-    : public DownloadProtectionServiceTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  DownloadSeparateNetworkContextsTest() {
-    EnableFeatures({kSafeBrowsingSeparateNetworkContexts});
-  }
-};
-
-TEST_F(DownloadSeparateNetworkContextsTest,
+TEST_F(DownloadProtectionServiceTest,
        DifferentProfilesUseDifferentNetworkContexts) {
   Profile* profile1 =
       testing_profile_manager_.CreateTestingProfile("profile 1");

@@ -36,13 +36,7 @@ BinaryUploadServiceFactory::BinaryUploadServiceFactory()
 KeyedService* BinaryUploadServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies)) {
-    return new BinaryUploadService(profile);
-  } else {
-    return new BinaryUploadService(
-        g_browser_process->safe_browsing_service()->GetURLLoaderFactory(),
-        profile);
-  }
+  return new BinaryUploadService(profile);
 }
 
 content::BrowserContext* BinaryUploadServiceFactory::GetBrowserContextToUse(

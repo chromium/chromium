@@ -208,16 +208,6 @@ BinaryUploadService::BinaryUploadService(Profile* profile)
     : url_loader_factory_(profile->GetURLLoaderFactory()),
       binary_fcm_service_(BinaryFCMService::Create(profile)),
       profile_(profile),
-      weakptr_factory_(this) {
-  DCHECK(base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies));
-}
-
-BinaryUploadService::BinaryUploadService(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    Profile* profile)
-    : url_loader_factory_(url_loader_factory),
-      binary_fcm_service_(BinaryFCMService::Create(profile)),
-      profile_(profile),
       weakptr_factory_(this) {}
 
 BinaryUploadService::BinaryUploadService(

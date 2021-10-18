@@ -97,7 +97,6 @@ class TestSafeBrowsingService : public SafeBrowsingService,
 #endif
   IncidentReportingService* CreateIncidentReportingService() override;
 
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context) override;
 

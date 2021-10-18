@@ -364,7 +364,7 @@ class NetworkContextConfigurationBrowserTest
             ->GetURLLoaderFactory();
       case NetworkContextType::kSafeBrowsing:
         return g_browser_process->safe_browsing_service()
-            ->GetURLLoaderFactory()
+            ->GetURLLoaderFactory(browser()->profile())
             .get();
       case NetworkContextType::kProfile:
       case NetworkContextType::kIncognitoProfile:
@@ -390,7 +390,8 @@ class NetworkContextConfigurationBrowserTest
         return g_browser_process->system_network_context_manager()
             ->GetContext();
       case NetworkContextType::kSafeBrowsing:
-        return g_browser_process->safe_browsing_service()->GetNetworkContext();
+        return g_browser_process->safe_browsing_service()->GetNetworkContext(
+            browser()->profile());
       case NetworkContextType::kProfile:
       case NetworkContextType::kIncognitoProfile:
       case NetworkContextType::kOnDiskApp:
@@ -441,8 +442,8 @@ class NetworkContextConfigurationBrowserTest
   PrefService* GetPrefService() {
     switch (GetParam().network_context_type) {
       case NetworkContextType::kSystem:
-      case NetworkContextType::kSafeBrowsing:
         return g_browser_process->local_state();
+      case NetworkContextType::kSafeBrowsing:
       case NetworkContextType::kProfile:
       case NetworkContextType::kInMemoryApp:
       case NetworkContextType::kOnDiskApp:
