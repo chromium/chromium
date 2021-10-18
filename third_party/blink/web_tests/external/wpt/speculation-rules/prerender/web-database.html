@@ -6,6 +6,9 @@
 <script src="resources/utils.js"></script>
 <body>
 <script>
+
+setup(() => assertSpeculationRulesIsSupported());
+
 async function insertQuery() {
   return new Promise(resolve => {
     const db = openDatabase("test", "1.0", "test database", 1024);
@@ -62,5 +65,6 @@ promise_test(async t => {
     selectResult, 2,
     'prerendering page should be able to write to Web Database');
 }, 'prerendering page should be able to access Web Database');
+
 </script>
 </body>

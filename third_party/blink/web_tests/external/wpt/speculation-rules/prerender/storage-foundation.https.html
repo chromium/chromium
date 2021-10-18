@@ -7,6 +7,8 @@
 <body>
 <script>
 
+setup(() => assertSpeculationRulesIsSupported());
+
 const expectedReadBuffer = [65, 66, 67, 68];
 
 async function writeToFile() {
@@ -60,5 +62,6 @@ promise_test(async t => {
 
   await storageFoundation.delete('test_file');
 }, 'prerendering page should be able to access storage foundation API');
+
 </script>
 </body>
