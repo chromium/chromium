@@ -73,7 +73,8 @@ SessionServiceFactory::~SessionServiceFactory() = default;
 
 KeyedService* SessionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
-  SessionService* service = new SessionService(static_cast<Profile*>(profile));
+  SessionService* service = nullptr;
+  service = new SessionService(static_cast<Profile*>(profile));
   service->ResetFromCurrentBrowsers();
   return service;
 }

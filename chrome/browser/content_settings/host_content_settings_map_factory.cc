@@ -42,10 +42,6 @@
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
 #endif  // OS_ANDROID
 
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-#include "chrome/browser/sessions/exit_type_service_factory.h"
-#endif
-
 HostContentSettingsMapFactory::HostContentSettingsMapFactory()
     : RefcountedBrowserContextKeyedServiceFactory(
         "HostContentSettingsMap",
@@ -56,10 +52,6 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(extensions::ContentSettingsService::GetFactoryInstance());
-#endif
-  // Used by way of ShouldRestoreOldSessionCookies().
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-  DependsOn(ExitTypeServiceFactory::GetInstance());
 #endif
 }
 

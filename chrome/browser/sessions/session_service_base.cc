@@ -182,8 +182,7 @@ void SessionServiceBase::SetWindowVisibleOnAllWorkspaces(
 }
 
 void SessionServiceBase::ResetFromCurrentBrowsers() {
-  if (is_saving_enabled_)
-    ScheduleResetCommands();
+  ScheduleResetCommands();
 }
 
 void SessionServiceBase::SetTabWindow(const SessionID& window_id,
@@ -267,9 +266,6 @@ void SessionServiceBase::TabClosing(WebContents* contents) {
 }
 
 void SessionServiceBase::TabRestored(WebContents* tab, bool pinned) {
-  if (!is_saving_enabled_)
-    return;
-
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(tab);
   if (!ShouldTrackChangesToWindow(session_tab_helper->window_id()))
@@ -559,7 +555,6 @@ void SessionServiceBase::BuildCommandsForBrowser(
     Browser* browser,
     IdToRange* tab_to_available_range,
     std::set<SessionID>* windows_to_track) {
-  DCHECK(is_saving_enabled_);
   DCHECK(browser);
   DCHECK(browser->session_id().is_valid());
 
@@ -622,7 +617,6 @@ void SessionServiceBase::BuildCommandsForBrowser(
 void SessionServiceBase::BuildCommandsFromBrowsers(
     IdToRange* tab_to_available_range,
     std::set<SessionID>* windows_to_track) {
-  DCHECK(is_saving_enabled_);
   for (auto* browser : *BrowserList::GetInstance()) {
     // Make sure the browser has tabs and a window. Browser's destructor
     // removes itself from the BrowserList. When a browser is closed the

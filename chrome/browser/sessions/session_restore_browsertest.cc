@@ -37,7 +37,6 @@
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
-#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_restore_test_utils.h"
 #include "chrome/browser/sessions/session_service.h"
@@ -174,6 +173,8 @@ class SessionRestoreTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     active_browser_list_ = BrowserList::GetInstance();
 
+    SessionStartupPref pref(SessionStartupPref::LAST);
+    SessionStartupPref::SetStartupPref(browser()->profile(), pref);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
@@ -184,10 +185,6 @@ class SessionRestoreTest : public InProcessBrowserTest {
       helper.SetForceBrowserNotAliveWithNoWindows(true);
     }
 #endif
-    if (browser()) {
-      SessionStartupPref pref(SessionStartupPref::LAST);
-      SessionStartupPref::SetStartupPref(browser()->profile(), pref);
-    }
   }
 
   Browser* QuitBrowserAndRestore(Browser* browser) {
@@ -3091,56 +3088,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OmitFromSessionRestore) {
                            ->GetLastCommittedURL());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Skip for ChromeOS because the keep alive is not created for ChromeOS.
-// See https://crbug.com/1174627.
-class SessionRestoreSilentLaunchTest : public SessionRestoreTest {
- protected:
-  // SessionRestoreTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SessionRestoreTest::SetUpCommandLine(command_line);
-    if (GetTestPreCount() == 1)
-      command_line->AppendSwitch(switches::kNoStartupWindow);
-  }
-
-  ExitType GetLastSessionExitType() {
-    return GetExitTypeService()->last_session_exit_type();
-  }
-
-  bool IsSessionServiceSavingEnabled() {
-    SessionService* session_service = SessionServiceFactory::GetForProfile(
-        ProfileManager::GetLastUsedProfile());
-    return session_service && session_service->is_saving_enabled();
-  }
-
-  ExitTypeService* GetExitTypeService() {
-    return ExitTypeService::GetInstanceForProfile(
-        ProfileManager::GetLastUsedProfile());
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SessionRestoreSilentLaunchTest,
-                       PRE_PRE_SilentLaunchAfterCrash) {
-  // Marks session as crashed.
-  ExitTypeService::GetInstanceForProfile(browser()->profile())
-      ->SetWaitingForUserToAckCrashForTest(true);
-}
-
-IN_PROC_BROWSER_TEST_F(SessionRestoreSilentLaunchTest,
-                       PRE_SilentLaunchAfterCrash) {
-  // This is a launch with no startup windows. Last session should remain
-  // crashed, and saving should be disabled.
-  EXPECT_EQ(ExitType::kCrashed, GetLastSessionExitType());
-  EXPECT_FALSE(IsSessionServiceSavingEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(SessionRestoreSilentLaunchTest, SilentLaunchAfterCrash) {
-  // Last session still crashed, and saving disabled.
-  EXPECT_EQ(ExitType::kCrashed, GetLastSessionExitType());
-  EXPECT_FALSE(IsSessionServiceSavingEnabled());
-}
-#endif
-
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 class AppSessionRestoreTest : public SessionRestoreTest {
  public:
@@ -3400,7 +3347,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
 // These tests currently fail on linux due to http://crbug.com/1196493.
 // In order to keep the coverage from the rest of the test, the checks that
 // fail on linux are explicitly disabled.
-// Flaky on Lacros https://crbug.com/1256498
+// Flaky on Lacros https://crbug.com/1256498 
 #if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_RestoreMaximizedApp DISABLED_RestoreMaximizedApp
 #else
