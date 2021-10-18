@@ -365,6 +365,18 @@ SkColor ThemeHelper::GetDefaultColor(
                     incognito, theme_supplier);
   };
   switch (id) {
+    case TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND: {
+      return GetColor(TP::COLOR_DOWNLOAD_SHELF, incognito, theme_supplier,
+                      nullptr);
+    }
+    case TP::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT: {
+      const SkColor download_shelf_color =
+          GetColor(TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND, incognito,
+                   theme_supplier, nullptr);
+      return color_utils::PickGoogleColor(
+          SK_ColorBLUE, download_shelf_color,
+          color_utils::kMinimumReadableContrastRatio);
+    }
     case TP::COLOR_OMNIBOX_BACKGROUND: {
       // TODO(http://crbug.com/878664): Enable for all cases.
       if (!IsCustomTheme(theme_supplier))

@@ -52,6 +52,9 @@ namespace {
 // Clang format mangles lists like the below badly.
 // clang-format off
 #define TESTED_COLOR_IDS \
+  OP(COLOR_DOWNLOAD_SHELF),                                   \
+  OP(COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND),                 \
+  OP(COLOR_DOWNLOAD_SHELF_BUTTON_TEXT),                       \
   OP(COLOR_OMNIBOX_BACKGROUND),                               \
   OP(COLOR_OMNIBOX_BACKGROUND_HOVERED),                       \
   OP(COLOR_OMNIBOX_BUBBLE_OUTLINE),                           \

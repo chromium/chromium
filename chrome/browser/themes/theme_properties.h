@@ -116,9 +116,16 @@ class ThemeProperties {
     // Opaque base color for toolbar button ink drops.
     COLOR_TOOLBAR_INK_DROP,
 
-    // Color used for various 'shelves' and 'bars'.
+    // Colors used for various 'shelves' and 'bars'.
+    // Download shelf colors.
     COLOR_DOWNLOAD_SHELF,
+    COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND,
+    COLOR_DOWNLOAD_SHELF_BUTTON_TEXT,
+
+    // Infobar colors.
     COLOR_INFOBAR,
+
+    // Status bubble colors.
     COLOR_STATUS_BUBBLE,
 
     // Colors used when displaying hover cards.

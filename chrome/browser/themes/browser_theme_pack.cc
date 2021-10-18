@@ -1048,6 +1048,7 @@ void BrowserThemePack::AddColorMixers(
     int property_id;
     int color_id;
   } kThemePropertiesMap[] = {
+      {TP::COLOR_DOWNLOAD_SHELF, kColorDownloadShelf},
       {TP::COLOR_TOOLBAR, kColorToolbar},
       {TP::COLOR_OMNIBOX_TEXT, kColorOmniboxText},
       {TP::COLOR_OMNIBOX_BACKGROUND, kColorOmniboxBackground},

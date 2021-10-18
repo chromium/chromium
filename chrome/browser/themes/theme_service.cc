@@ -83,6 +83,10 @@ bool g_dont_write_theme_pack_for_testing = false;
 
 absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
   static constexpr const auto kMap = base::MakeFixedFlatMap<int, ui::ColorId>({
+      {TP::COLOR_DOWNLOAD_SHELF, kColorDownloadShelf},
+      {TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND,
+       kColorDownloadShelfButtonBackground},
+      {TP::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT, kColorDownloadShelfButtonText},
       {TP::COLOR_OMNIBOX_BACKGROUND, kColorOmniboxBackground},
       {TP::COLOR_OMNIBOX_BACKGROUND_HOVERED, kColorOmniboxBackgroundHovered},
       {TP::COLOR_OMNIBOX_BUBBLE_OUTLINE, kColorOmniboxBubbleOutline},

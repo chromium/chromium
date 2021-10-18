@@ -6,10 +6,13 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
+#include "ui/color/color_transform.h"
+#include "ui/gfx/color_utils.h"
 
 namespace {
 
@@ -43,4 +46,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider) {
   // TODO(tluk) Behavior change for dark mode to a darker toolbar color for
   // better color semantics. Follow up with UX team before landing change.
   mixer[kColorToolbar] = {ui::kColorPrimaryBackground};
+  mixer[kColorDownloadShelf] = {kColorToolbar};
+  mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelf};
+  mixer[kColorDownloadShelfButtonText] =
+      ui::PickGoogleColor(ui::kColorAccent, kColorDownloadShelf,
+                          color_utils::kMinimumReadableContrastRatio);
+  mixer[kColorToolbarContentAreaSeparator] = {ui::kColorSeparator};
 }

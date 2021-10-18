@@ -11,6 +11,7 @@
 #include "chrome/test/base/test_theme_provider.h"
 #include "chrome/test/views/chrome_test_widget.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 
@@ -26,24 +27,27 @@ TEST_F(DownloadShelfViewTest, ShowAllViewColors) {
       std::make_unique<DownloadShelfView>(browser(), nullptr));
   views::MdTextButton* button = view->show_all_view_;
 
-  // With default theme, button should have GoogleBlue600 text and no bg.
-  EXPECT_FALSE(button->GetBgColorOverride().has_value());
+  // Event With the default theme, button text color is derived from
+  // color_utils::PickGoogleColor from the SK_ColorBLUE class of colors.
+  EXPECT_TRUE(button->GetBgColorOverride().has_value());
   SkColor default_text_color = button->GetCurrentTextColor();
 
   // Custom theme will update text and bg.
   auto custom_theme = std::make_unique<TestThemeProvider>();
-  custom_theme->SetColor(ThemeProperties::COLOR_DOWNLOAD_SHELF, SK_ColorGREEN);
-  custom_theme->SetColor(ThemeProperties::COLOR_BOOKMARK_TEXT, SK_ColorYELLOW);
+  SkColor expected_text_color = color_utils::PickGoogleColor(
+      SK_ColorBLUE, SK_ColorGREEN, color_utils::kMinimumReadableContrastRatio);
+  custom_theme->SetColor(
+      ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND, SK_ColorGREEN);
+  custom_theme->SetColor(ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT,
+                         expected_text_color);
   widget.SetThemeProvider(std::move(custom_theme));
-  // The button bg color is derived from the shelf color by applying a tint.
-  // We will verify that a color has been set, and that it is different to the
-  // shelf color.
+  // The button bg color is the shelf color.
   EXPECT_TRUE(button->GetBgColorOverride().has_value());
-  EXPECT_NE(button->GetBgColorOverride(), SK_ColorGREEN);
-  EXPECT_EQ(button->GetCurrentTextColor(), SK_ColorYELLOW);
+  EXPECT_EQ(button->GetBgColorOverride(), SK_ColorGREEN);
+  EXPECT_EQ(button->GetCurrentTextColor(), expected_text_color);
 
   // Setting back to a default theme will revert.
   widget.SetThemeProvider(std::make_unique<TestThemeProvider>());
-  EXPECT_FALSE(button->GetBgColorOverride().has_value());
+  EXPECT_TRUE(button->GetBgColorOverride().has_value());
   EXPECT_EQ(button->GetCurrentTextColor(), default_text_color);
 }
