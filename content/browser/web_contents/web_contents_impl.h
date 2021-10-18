@@ -1293,6 +1293,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree*)>;
+  using RenderViewHostIterationCallback =
+      base::RepeatingCallback<void(RenderViewHostImpl*)>;
 
   friend class WebContentsObserver;
   friend class WebContents;  // To implement factory methods.
@@ -1751,7 +1753,20 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // if you don't.
   ukm::SourceId GetCurrentPageUkmSourceId() override;
 
-  std::set<RenderViewHostImpl*> GetRenderViewHostsIncludingBackForwardCached();
+  // Bit mask to indicate what types of RenderViewHosts to be returned in
+  // ForEachRenderViewHost.
+  enum ForEachRenderViewHostTypes {
+    kPrerenderViews = 1 << 0,
+    kBackForwardCacheViews = 1 << 1,
+    kActiveViews = 1 << 2,
+    kAllViews = kActiveViews | kBackForwardCacheViews | kPrerenderViews,
+  };
+
+  // For each RenderViewHost (including bfcache, prerendering) call the
+  // callback, this will be filtered by `view_mask`.
+  void ForEachRenderViewHost(
+      ForEachRenderViewHostTypes view_mask,
+      RenderViewHostIterationCallback on_render_view_host);
 
   // Sets the hardware-related fields in |prefs| that are slow to compute.  The
   // fields are set from cache if available, otherwise recomputed.

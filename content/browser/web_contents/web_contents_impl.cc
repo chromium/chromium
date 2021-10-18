@@ -3425,6 +3425,22 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
       !IsCrashed() && (page_visibility != PageVisibilityState::kHidden ||
                        HasPictureInPictureVideo());
 
+  // Prerendering relies on overriding FrameTree::Delegate::IsHidden,
+  // while for other frame trees FrameTree::Delegate::IsHidden
+  // resolves to WebContents' visibility, so we avoid Prerender RennderViewHosts
+  // here.
+  ForEachRenderViewHostTypes view_mask =
+      static_cast<ForEachRenderViewHostTypes>(
+          ForEachRenderViewHostTypes::kBackForwardCacheViews |
+          ForEachRenderViewHostTypes::kActiveViews);
+
+  RenderViewHostIterationCallback update_frame_tree_visibility =
+      base::BindRepeating(
+          [](PageVisibilityState page_visibility,
+             RenderViewHostImpl* render_view_host) {
+            render_view_host->SetFrameTreeVisibility(page_visibility);
+          },
+          page_visibility);
   if (page_visibility != PageVisibilityState::kHidden) {
     // We cannot show a page or capture video unless there is a valid renderer
     // associated with this web contents. The navigation controller for this
@@ -3445,9 +3461,7 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     // as soon as they are shown. But the Page and other classes do not expect
     // to be producing frames when the Page is hidden. So we make sure the Page
     // is shown first.
-    for (auto* rvh : GetRenderViewHostsIncludingBackForwardCached()) {
-      rvh->SetFrameTreeVisibility(page_visibility);
-    }
+    ForEachRenderViewHost(view_mask, update_frame_tree_visibility);
   }
 
   // |GetRenderWidgetHostView()| can be null if the user middle clicks a link to
@@ -3481,17 +3495,19 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
   if (page_visibility == PageVisibilityState::kHidden) {
     // Similar to when showing the page, we only hide the page after
     // hiding the individual RenderWidgets.
-    for (auto* rvh : GetRenderViewHostsIncludingBackForwardCached()) {
-      rvh->SetFrameTreeVisibility(page_visibility);
-    }
-
+    ForEachRenderViewHost(view_mask, update_frame_tree_visibility);
   } else {
-    for (FrameTreeNode* node : frame_tree_.Nodes()) {
-      RenderFrameProxyHost* parent = node->render_manager()->GetProxyToParent();
-      if (!parent)
+    for (FrameTreeNode* node :
+         FrameTree::SubtreeAndInnerTreeNodes(GetMainFrame())) {
+      RenderFrameProxyHost* proxy_to_parent_or_outer_delegate =
+          node->render_manager()->GetProxyToParentOrOuterDelegate();
+      if (!proxy_to_parent_or_outer_delegate)
         continue;
 
-      parent->cross_process_frame_connector()->DelegateWasShown();
+      // DelegateWasShown keeps track of crash metrics. This is safe to
+      // call for GuestViews, and inner frame trees.
+      proxy_to_parent_or_outer_delegate->cross_process_frame_connector()
+          ->DelegateWasShown();
     }
   }
 
@@ -8907,23 +8923,45 @@ ukm::SourceId WebContentsImpl::GetCurrentPageUkmSourceId() {
   return GetMainFrame()->GetPageUkmSourceId();
 }
 
-std::set<RenderViewHostImpl*>
-WebContentsImpl::GetRenderViewHostsIncludingBackForwardCached() {
+void WebContentsImpl::ForEachRenderViewHost(
+    ForEachRenderViewHostTypes view_mask,
+    RenderViewHostIterationCallback on_render_view_host) {
   std::set<RenderViewHostImpl*> render_view_hosts;
 
-  // Add RenderViewHostImpls outside of BackForwardCache.
-  for (auto& render_view_host : frame_tree_.render_view_hosts()) {
-    render_view_hosts.insert(render_view_host.second);
+  if ((view_mask & (ForEachRenderViewHostTypes::kPrerenderViews |
+                    ForEachRenderViewHostTypes::kActiveViews)) != 0) {
+    ForEachFrameTree(base::BindRepeating(
+        [](ForEachRenderViewHostTypes view_mask,
+           std::set<RenderViewHostImpl*>& render_view_hosts,
+           FrameTree* frame_tree) {
+          // Check the view masks.
+          if (frame_tree->is_prerendering()) {
+            // We are in a prerendering page.
+            if ((view_mask & ForEachRenderViewHostTypes::kPrerenderViews) == 0)
+              return;
+          } else {
+            // We are in an active page.
+            if ((view_mask & ForEachRenderViewHostTypes::kActiveViews) == 0)
+              return;
+          }
+          for (auto& render_view_host : frame_tree->render_view_hosts()) {
+            render_view_hosts.insert(render_view_host.second);
+          }
+        },
+        view_mask, std::ref(render_view_hosts)));
   }
 
-  // Add RenderViewHostImpls in BackForwardCache.
-  const auto& entries = GetController().GetBackForwardCache().GetEntries();
-  for (const auto& entry : entries) {
-    std::set<RenderViewHostImpl*> bfcached_hosts = entry->render_view_hosts();
-    render_view_hosts.insert(bfcached_hosts.begin(), bfcached_hosts.end());
+  if ((view_mask & ForEachRenderViewHostTypes::kBackForwardCacheViews) != 0) {
+    // Add RenderViewHostImpls in BackForwardCache.
+    const auto& entries = GetController().GetBackForwardCache().GetEntries();
+    for (const auto& entry : entries) {
+      std::set<RenderViewHostImpl*> bfcached_hosts = entry->render_view_hosts();
+      render_view_hosts.insert(bfcached_hosts.begin(), bfcached_hosts.end());
+    }
   }
 
-  return render_view_hosts;
+  for (auto* render_view_host : render_view_hosts)
+    on_render_view_host.Run(render_view_host);
 }
 
 void WebContentsImpl::NotifyPageChanged(PageImpl& page) {
