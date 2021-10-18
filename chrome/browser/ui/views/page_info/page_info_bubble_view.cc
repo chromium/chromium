@@ -206,6 +206,7 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
     gfx::NativeWindow parent_window,
     content::WebContents* web_contents,
     const GURL& url,
+    base::OnceClosure initialized_callback,
     PageInfoClosingCallback closing_callback) {
   DCHECK(web_contents);
   gfx::NativeView parent_view = platform_util::GetViewForWindow(parent_window);
@@ -218,13 +219,14 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
   }
 
   if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-    return new PageInfoNewBubbleView(anchor_view, anchor_rect, parent_view,
-                                     web_contents, url,
-                                     std::move(closing_callback));
+    return new PageInfoNewBubbleView(
+        anchor_view, anchor_rect, parent_view, web_contents, url,
+        std::move(initialized_callback), std::move(closing_callback));
   }
 
-  return new PageInfoBubbleView(anchor_view, anchor_rect, parent_view,
-                                web_contents, url, std::move(closing_callback));
+  return new PageInfoBubbleView(
+      anchor_view, anchor_rect, parent_view, web_contents, url,
+      std::move(initialized_callback), std::move(closing_callback));
 }
 
 void PageInfoBubbleView::SecurityDetailsClicked(const ui::Event& event) {
@@ -245,6 +247,7 @@ PageInfoBubbleView::PageInfoBubbleView(
     gfx::NativeView parent_window,
     content::WebContents* associated_web_contents,
     const GURL& url,
+    base::OnceClosure initialized_callback,
     PageInfoClosingCallback closing_callback)
     : PageInfoBubbleViewBase(anchor_view,
                              anchor_rect,
@@ -332,7 +335,7 @@ PageInfoBubbleView::PageInfoBubbleView(
   presenter_ = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents()), web_contents(),
       url);
-  presenter_->InitializeUiState(this);
+  presenter_->InitializeUiState(this, std::move(initialized_callback));
 }
 
 void PageInfoBubbleView::WebContentsDestroyed() {
@@ -385,11 +388,40 @@ gfx::Size PageInfoBubbleView::CalculatePreferredSize() const {
   return gfx::Size(width, views::View::GetHeightForWidth(width));
 }
 
+void PageInfoBubbleView::EnsureCookieInfo() {
+  if (cookie_button_ != nullptr)
+    return;
+
+  // Get the icon.
+  PageInfo::PermissionInfo info;
+  info.type = ContentSettingsType::COOKIES;
+  info.setting = CONTENT_SETTING_ALLOW;
+  const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
+
+  const std::u16string& tooltip =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
+
+  // Create the cookie button, leaving the secondary text blank since the
+  // cookie count is not yet known.
+  cookie_button_ =
+      std::make_unique<PageInfoHoverButton>(
+          base::BindRepeating(
+              [](PageInfoBubbleView* view) {
+                view->HandleMoreInfoRequest(view->cookie_button_);
+              },
+              this),
+          icon, IDS_PAGE_INFO_COOKIES, /*secondary_text=*/u"",
+          PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
+          tooltip, std::u16string())
+          .release();
+  site_settings_view_->AddChildView(cookie_button_);
+}
+
 void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
   // Calculate the number of cookies used by this site. |cookie_info_list|
   // should only ever have 2 items: first- and third-party cookies.
   DCHECK_EQ(cookie_info_list.size(), 2u);
-  int total_allowed = 0;
+  unsigned int total_allowed = 0;
   for (const auto& i : cookie_info_list) {
     total_allowed += i.allowed;
   }
@@ -401,29 +433,7 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
   // Create the cookie button if it doesn't yet exist. This method gets called
   // each time site data is updated, so if it *does* already exist, skip this
   // part and just update the text.
-  if (cookie_button_ == nullptr) {
-    // Get the icon.
-    PageInfo::PermissionInfo info;
-    info.type = ContentSettingsType::COOKIES;
-    info.setting = CONTENT_SETTING_ALLOW;
-    const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
-
-    const std::u16string& tooltip =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
-
-    cookie_button_ =
-        std::make_unique<PageInfoHoverButton>(
-            base::BindRepeating(
-                [](PageInfoBubbleView* view) {
-                  view->HandleMoreInfoRequest(view->cookie_button_);
-                },
-                this),
-            icon, IDS_PAGE_INFO_COOKIES_BUTTON_TEXT, num_cookies_text,
-            PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
-            tooltip, std::u16string())
-            .release();
-    site_settings_view_->AddChildView(cookie_button_);
-  }
+  PageInfoBubbleView::EnsureCookieInfo();
 
   // Update the text displaying the number of allowed cookies.
   cookie_button_->SetTitleText(IDS_PAGE_INFO_COOKIES_BUTTON_TEXT,
@@ -803,6 +813,7 @@ void ShowPageInfoDialogImpl(Browser* browser,
                             content::WebContents* web_contents,
                             const GURL& virtual_url,
                             bubble_anchor_util::Anchor anchor,
+                            base::OnceClosure initialized_callback,
                             PageInfoClosingCallback closing_callback) {
   AnchorConfiguration configuration =
       GetPageInfoAnchorConfiguration(browser, anchor);
@@ -813,7 +824,8 @@ void ShowPageInfoDialogImpl(Browser* browser,
   views::BubbleDialogDelegateView* bubble =
       PageInfoBubbleView::CreatePageInfoBubble(
           configuration.anchor_view, anchor_rect, parent_window, web_contents,
-          virtual_url, std::move(closing_callback));
+          virtual_url, std::move(initialized_callback),
+          std::move(closing_callback));
   bubble->SetHighlightedButton(configuration.highlighted_button);
   bubble->SetArrow(configuration.bubble_arrow);
   bubble->GetWidget()->Show();

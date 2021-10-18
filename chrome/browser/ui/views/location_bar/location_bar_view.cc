@@ -1412,10 +1412,16 @@ bool LocationBarView::ShowPageInfoDialog() {
     return false;
 
   DCHECK(GetWidget());
+
+  auto initialized_callback =
+      GetPageInfoDialogCreatedCallbackForTesting()
+          ? std::move(GetPageInfoDialogCreatedCallbackForTesting())
+          : base::DoNothing();
+
   views::BubbleDialogDelegateView* bubble =
       PageInfoBubbleView::CreatePageInfoBubble(
           this, gfx::Rect(), GetWidget()->GetNativeWindow(), contents,
-          entry->GetVirtualURL(),
+          entry->GetVirtualURL(), std::move(initialized_callback),
           base::BindOnce(&LocationBarView::OnPageInfoBubbleClosed,
                          weak_factory_.GetWeakPtr()));
   bubble->SetHighlightedButton(location_icon_view_);

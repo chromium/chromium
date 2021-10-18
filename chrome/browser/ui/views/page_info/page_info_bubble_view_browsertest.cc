@@ -576,7 +576,11 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
                        InteractedWithCookiesButton) {
   SetupSentimentServiceExpectations(/*interacted=*/true);
+
+  base::RunLoop run_loop;
+  GetPageInfoDialogCreatedCallbackForTesting() = run_loop.QuitClosure();
   OpenPageInfoBubble(browser());
+  run_loop.Run();
 
   views::View* cookies_button = GetView(
       browser(),

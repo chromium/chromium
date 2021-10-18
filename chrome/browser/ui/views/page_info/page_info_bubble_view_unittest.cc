@@ -110,6 +110,7 @@ class PageInfoBubbleViewTestApi {
     if (is_version_two_) {
       auto* bubble = new PageInfoNewBubbleView(
           anchor_view, gfx::Rect(), parent_, web_contents_, GURL(kUrl),
+          base::DoNothing(),
           base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
                          base::Unretained(this), run_loop_.QuitClosure()));
       presenter_ = bubble->presenter_.get();
@@ -120,6 +121,7 @@ class PageInfoBubbleViewTestApi {
     } else {
       auto* bubble = new PageInfoBubbleView(
           anchor_view, gfx::Rect(), parent_, web_contents_, GURL(kUrl),
+          base::DoNothing(),
           base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
                          base::Unretained(this), run_loop_.QuitClosure()));
       presenter_ = bubble->presenter_.get();

@@ -45,10 +45,12 @@ class PageInfoMainView : public views::View,
 
   PageInfoMainView(PageInfo* presenter,
                    ChromePageInfoUiDelegate* ui_delegate,
-                   PageInfoNavigationHandler* navigation_handler);
+                   PageInfoNavigationHandler* navigation_handler,
+                   base::OnceClosure initialized_callback);
   ~PageInfoMainView() override;
 
   // PageInfoUI implementations.
+  void EnsureCookieInfo() override;
   void SetCookieInfo(const CookieInfoList& cookie_info_list) override;
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) override;

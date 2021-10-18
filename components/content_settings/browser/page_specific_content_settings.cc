@@ -287,10 +287,12 @@ PageSpecificContentSettings::PageSpecificContentSettings(
       map_(delegate_->GetSettingsMap()),
       allowed_local_shared_objects_(
           handler_.web_contents()->GetBrowserContext(),
+          /*ignore_empty_localstorage=*/true,
           delegate_->GetAdditionalFileSystemTypes(),
           delegate_->GetIsDeletionDisabledCallback()),
       blocked_local_shared_objects_(
           handler_.web_contents()->GetBrowserContext(),
+          /*ignore_empty_localstorage=*/false,
           delegate_->GetAdditionalFileSystemTypes(),
           delegate_->GetIsDeletionDisabledCallback()),
       microphone_camera_state_(MICROPHONE_CAMERA_NOT_ACCESSED) {

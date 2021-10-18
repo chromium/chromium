@@ -378,14 +378,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AppInfoOpensPageInfo) {
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
 
-  bool dialog_created = false;
-
-  GetPageInfoDialogCreatedCallbackForTesting() = base::BindOnce(
-      [](bool* dialog_created) { *dialog_created = true; }, &dialog_created);
-
+  base::RunLoop run_loop_dialog_created;
+  GetPageInfoDialogCreatedCallbackForTesting() =
+      run_loop_dialog_created.QuitClosure();
   chrome::ExecuteCommand(app_browser, IDC_WEB_APP_MENU_APP_INFO);
-
-  EXPECT_TRUE(dialog_created);
+  // Wait for dialog to be created, timeout will trigger the test to fail.
+  run_loop_dialog_created.Run();
 
   // The test closure should have run. But clear the global in case it hasn't.
   EXPECT_FALSE(GetPageInfoDialogCreatedCallbackForTesting());

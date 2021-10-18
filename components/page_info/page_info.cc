@@ -396,14 +396,14 @@ bool PageInfo::IsFileOrInternalPage(const GURL& url) {
          url.SchemeIs(url::kFileScheme);
 }
 
-void PageInfo::InitializeUiState(PageInfoUI* ui) {
+void PageInfo::InitializeUiState(PageInfoUI* ui, base::OnceClosure done) {
   ui_ = ui;
   DCHECK(ui_);
 
   PresentSitePermissions();
   PresentSiteIdentity();
-  PresentSiteData();
   PresentPageFeatureInfo();
+  PresentSiteData(std::move(done));
 }
 
 void PageInfo::UpdateSecurityState() {
@@ -990,7 +990,12 @@ void PageInfo::PresentSitePermissions() {
                          std::move(chosen_object_info_list));
 }
 
-void PageInfo::PresentSiteData() {
+void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
+  // Since this is called asynchronously, the associated `WebContents` object
+  // might no longer be available.
+  if (!web_contents_ || web_contents_->IsBeingDestroyed())
+    return;
+
   CookieInfoList cookie_info_list;
 
   // Add first party cookie and site data counts.
@@ -1007,6 +1012,23 @@ void PageInfo::PresentSiteData() {
   cookie_info_list.push_back(cookie_info);
 
   ui_->SetCookieInfo(cookie_info_list);
+
+  std::move(done).Run();
+}
+
+void PageInfo::PresentSiteData(base::OnceClosure done) {
+  auto* settings = GetPageSpecificContentSettings();
+  if (!settings) {
+    PresentSiteDataInternal(std::move(done));
+  } else {
+    // Ensure the cookie button is displayed immediately, even before the cookie
+    // counts are known.
+    ui_->EnsureCookieInfo();
+
+    settings->allowed_local_shared_objects().UpdateIgnoredEmptyStorageKeys(
+        base::BindOnce(&PageInfo::PresentSiteDataInternal,
+                       weak_factory_.GetWeakPtr(), std::move(done)));
+  }
 }
 
 void PageInfo::PresentSiteIdentity() {

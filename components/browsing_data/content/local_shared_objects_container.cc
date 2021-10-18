@@ -43,6 +43,7 @@ bool SameDomainOrHost(const GURL& gurl1, const GURL& gurl2) {
 
 LocalSharedObjectsContainer::LocalSharedObjectsContainer(
     content::BrowserContext* browser_context,
+    bool ignore_empty_localstorage,
     const std::vector<storage::FileSystemType>& additional_file_system_types,
     browsing_data::CookieHelper::IsDeletionDisabledCallback callback)
     : cookies_(base::MakeRefCounted<CannedCookieHelper>(
@@ -55,8 +56,9 @@ LocalSharedObjectsContainer::LocalSharedObjectsContainer(
           browser_context->GetDefaultStoragePartition()->GetNativeIOContext())),
       indexed_dbs_(base::MakeRefCounted<CannedIndexedDBHelper>(
           browser_context->GetDefaultStoragePartition())),
-      local_storages_(
-          base::MakeRefCounted<CannedLocalStorageHelper>(browser_context)),
+      local_storages_(base::MakeRefCounted<CannedLocalStorageHelper>(
+          browser_context,
+          /*update_ignored_empty_keys_on_fetch=*/ignore_empty_localstorage)),
       service_workers_(base::MakeRefCounted<CannedServiceWorkerHelper>(
           browser_context->GetDefaultStoragePartition()
               ->GetServiceWorkerContext())),
@@ -64,8 +66,9 @@ LocalSharedObjectsContainer::LocalSharedObjectsContainer(
           browser_context->GetDefaultStoragePartition())),
       cache_storages_(base::MakeRefCounted<CannedCacheStorageHelper>(
           browser_context->GetDefaultStoragePartition())),
-      session_storages_(
-          base::MakeRefCounted<CannedLocalStorageHelper>(browser_context)) {}
+      session_storages_(base::MakeRefCounted<CannedLocalStorageHelper>(
+          browser_context,
+          /*update_ignored_empty_keys_on_fetch=*/false)) {}
 
 LocalSharedObjectsContainer::~LocalSharedObjectsContainer() = default;
 
@@ -207,6 +210,11 @@ size_t LocalSharedObjectsContainer::GetDomainCount() const {
       domains.insert(std::string(host));
   }
   return domains.size();
+}
+
+void LocalSharedObjectsContainer::UpdateIgnoredEmptyStorageKeys(
+    base::OnceClosure done) const {
+  local_storages_->UpdateIgnoredEmptyKeys(std::move(done));
 }
 
 void LocalSharedObjectsContainer::Reset() {

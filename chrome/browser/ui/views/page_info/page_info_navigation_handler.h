@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_NAVIGATION_HANDLER_H_
 
 // An interface that provides methods to navigate between pages of the page
-// info.
+// info. Note that `OpenMainPage` must update the set of ignored empty storage
+// keys before storage usage can be displayed. This happens asynchronously and
+// `initialized_callback` fires after it has finished.
 class PageInfoNavigationHandler {
  public:
-  virtual void OpenMainPage() = 0;
+  virtual void OpenMainPage(base::OnceClosure initialized_callback) = 0;
   virtual void OpenSecurityPage() = 0;
   virtual void OpenPermissionPage(ContentSettingsType type) = 0;
   virtual void OpenAboutThisSitePage() = 0;

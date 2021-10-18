@@ -215,5 +215,62 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedUnique) {
   EXPECT_EQ(storage_key.origin(), result.begin()->origin);
 }
 
+IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedEmptyIgnored) {
+  const blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting(kOrigin1);
+  const blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting(kOrigin2);
+  const blink::StorageKey storage_key3 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+
+  // Adds `storage_key1` and `storage_key2` to local storage.
+  CreateLocalStorageDataForTest();
+
+  // Add all three of our storage keys to our canned local storage helpers.
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext());
+  helper->Add(storage_key1);
+  helper->Add(storage_key2);
+  helper->Add(storage_key3);
+  auto helper_auto_ignore = base::MakeRefCounted<CannedLocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext(),
+      /*update_ignored_empty_keys_on_fetch=*/true);
+  helper_auto_ignore->Add(storage_key1);
+  helper_auto_ignore->Add(storage_key2);
+  helper_auto_ignore->Add(storage_key3);
+
+  // No keys should be automatically ignored if `update_empty_keys_on_fetch`
+  // wasn't given.
+  TestCompletionCallback callback;
+  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
+                                       base::Unretained(&callback)));
+  std::list<content::StorageUsageInfo> result = callback.result();
+  ASSERT_EQ(3u, result.size());
+
+  // Empty keys should be automatically ignored if `update_empty_keys_on_fetch`
+  // is true.
+  TestCompletionCallback callback1;
+  helper_auto_ignore->StartFetching(base::BindOnce(
+      &TestCompletionCallback::callback, base::Unretained(&callback1)));
+  result = callback1.result();
+  ASSERT_EQ(2u, result.size());
+
+  // Empty keys should be ignored when `UpdateIgnoredEmptyKeys` is called.
+  TestCompletionCallback callback2;
+  base::RunLoop run_loop;
+  helper->UpdateIgnoredEmptyKeys(run_loop.QuitClosure());
+  run_loop.Run();
+  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
+                                       base::Unretained(&callback2)));
+  result = callback2.result();
+  ASSERT_EQ(2u, result.size());
+
+  // Sanity check the origins are as expected.
+  auto info = result.begin();
+  EXPECT_EQ(storage_key1.origin(), info->origin);
+  info++;
+  EXPECT_EQ(storage_key2.origin(), info->origin);
+}
+
 }  // namespace
 }  // namespace browsing_data

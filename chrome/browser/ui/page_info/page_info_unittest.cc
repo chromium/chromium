@@ -12,6 +12,7 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -256,7 +257,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
                                          visible_security_state_);
       page_info_ = std::make_unique<PageInfo>(std::move(delegate),
                                               web_contents(), url());
-      page_info_->InitializeUiState(mock_ui());
+      base::RunLoop run_loop;
+      page_info_->InitializeUiState(mock_ui(), run_loop.QuitClosure());
+      run_loop.Run();
     }
     return page_info_.get();
   }
@@ -289,7 +292,10 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
                                          visible_security_state_);
       incognito_page_info_ = std::make_unique<PageInfo>(
           std::move(delegate), incognito_web_contents_.get(), url());
-      incognito_page_info_->InitializeUiState(incognito_mock_ui_.get());
+      base::RunLoop run_loop;
+      incognito_page_info_->InitializeUiState(incognito_mock_ui_.get(),
+                                              run_loop.QuitClosure());
+      run_loop.Run();
     }
     return incognito_page_info_.get();
   }

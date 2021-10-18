@@ -237,6 +237,10 @@ class PageInfoUI {
   static std::unique_ptr<SecurityDescription>
   CreateSafetyTipSecurityDescription(const security_state::SafetyTipInfo& info);
 
+  // Ensures the cookie information UI is present, with placeholder information
+  // if necessary.
+  virtual void EnsureCookieInfo() {}
+
   // Sets cookie information.
   virtual void SetCookieInfo(const CookieInfoList& cookie_info_list) {}
 

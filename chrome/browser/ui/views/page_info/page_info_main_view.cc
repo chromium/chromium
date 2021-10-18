@@ -51,7 +51,8 @@ constexpr float kMaxPermissionRowCount = 10.5;
 PageInfoMainView::PageInfoMainView(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
-    PageInfoNavigationHandler* navigation_handler)
+    PageInfoNavigationHandler* navigation_handler,
+    base::OnceClosure initialized_callback)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),
       navigation_handler_(navigation_handler) {
@@ -116,16 +117,44 @@ PageInfoMainView::PageInfoMainView(
     }
   }
 
-  presenter_->InitializeUiState(this);
+  presenter_->InitializeUiState(this, std::move(initialized_callback));
 }
 
 PageInfoMainView::~PageInfoMainView() = default;
+
+void PageInfoMainView::EnsureCookieInfo() {
+  if (cookie_button_ == nullptr) {
+    // Get the icon.
+    PageInfo::PermissionInfo info;
+    info.type = ContentSettingsType::COOKIES;
+    info.setting = CONTENT_SETTING_ALLOW;
+    const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
+
+    const std::u16string& tooltip =
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
+
+    // Create the cookie button, leaving the secondary text blank since the
+    // cookie count is not yet known.
+    cookie_button_ =
+        std::make_unique<PageInfoHoverButton>(
+            base::BindRepeating(
+                [](PageInfoMainView* view) {
+                  view->HandleMoreInfoRequest(view->cookie_button_);
+                },
+                this),
+            icon, IDS_PAGE_INFO_COOKIES, /*secondary_text=*/u"",
+            PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
+            tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon())
+            .release();
+    site_settings_view_->AddChildView(cookie_button_);
+  }
+}
 
 void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
   // Calculate the number of cookies used by this site. |cookie_info_list|
   // should only ever have 2 items: first- and third-party cookies.
   DCHECK_EQ(cookie_info_list.size(), 2u);
-  int total_allowed = 0;
+  unsigned int total_allowed = 0;
   for (const auto& i : cookie_info_list) {
     total_allowed += i.allowed;
   }
@@ -137,29 +166,7 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
   // Create the cookie button if it doesn't yet exist. This method gets called
   // each time site data is updated, so if it *does* already exist, skip this
   // part and just update the text.
-  if (cookie_button_ == nullptr) {
-    // Get the icon.
-    PageInfo::PermissionInfo info;
-    info.type = ContentSettingsType::COOKIES;
-    info.setting = CONTENT_SETTING_ALLOW;
-    const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
-
-    const std::u16string& tooltip =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
-
-    cookie_button_ =
-        std::make_unique<PageInfoHoverButton>(
-            base::BindRepeating(
-                [](PageInfoMainView* view) {
-                  view->HandleMoreInfoRequest(view->cookie_button_);
-                },
-                this),
-            icon, IDS_PAGE_INFO_COOKIES, num_cookies_text,
-            PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
-            tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon())
-            .release();
-    site_settings_view_->AddChildView(cookie_button_);
-  }
+  PageInfoMainView::EnsureCookieInfo();
 
   // Update the text displaying the number of allowed cookies.
   cookie_button_->SetTitleText(IDS_PAGE_INFO_COOKIES, num_cookies_text);

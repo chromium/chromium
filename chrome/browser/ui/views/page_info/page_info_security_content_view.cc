@@ -25,7 +25,7 @@ PageInfoSecurityContentView::PageInfoSecurityContentView(
           .left()));
 
   if (is_standalone_page)
-    presenter_->InitializeUiState(this);
+    presenter_->InitializeUiState(this, base::DoNothing());
 }
 
 PageInfoSecurityContentView::~PageInfoSecurityContentView() = default;

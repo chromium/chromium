@@ -62,7 +62,7 @@ PageInfoControllerAndroid::PageInfoControllerAndroid(
   presenter_ = std::make_unique<PageInfo>(
       page_info_client->CreatePageInfoDelegate(web_contents), web_contents,
       nav_entry->GetURL());
-  presenter_->InitializeUiState(this);
+  presenter_->InitializeUiState(this, base::DoNothing());
 }
 
 PageInfoControllerAndroid::~PageInfoControllerAndroid() {}

@@ -83,6 +83,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
       gfx::NativeWindow parent_window,
       content::WebContents* web_contents,
       const GURL& url,
+      base::OnceClosure initialized_callback,
       PageInfoClosingCallback closing_callback);
 
   void SecurityDetailsClicked(const ui::Event& event);
@@ -102,13 +103,13 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   friend class test::PageInfoBubbleViewTestApi;
   friend class TrustSafetySentimentServiceBrowserTest;
 
-  PageInfoBubbleView(
-      views::View* anchor_view,
-      const gfx::Rect& anchor_rect,
-      gfx::NativeView parent_window,
-      content::WebContents* web_contents,
-      const GURL& url,
-      PageInfoClosingCallback closing_callback);
+  PageInfoBubbleView(views::View* anchor_view,
+                     const gfx::Rect& anchor_rect,
+                     gfx::NativeView parent_window,
+                     content::WebContents* web_contents,
+                     const GURL& url,
+                     base::OnceClosure initialized_callback,
+                     PageInfoClosingCallback closing_callback);
 
   // PageInfoBubbleViewBase:
   gfx::Size CalculatePreferredSize() const override;
@@ -122,6 +123,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void OnChosenObjectDeleted(const PageInfoUI::ChosenObjectInfo& info) override;
 
   // PageInfoUI:
+  void EnsureCookieInfo() override;
   void SetCookieInfo(const CookieInfoList& cookie_info_list) override;
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) override;

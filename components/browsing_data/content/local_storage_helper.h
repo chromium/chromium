@@ -60,9 +60,15 @@ class LocalStorageHelper : public base::RefCounted<LocalStorageHelper> {
 // This class is a thin wrapper around LocalStorageHelper that does not fetch
 // its information from the local storage context, but gets them passed by a
 // call when accessed.
+//   If `update_ignored_empty_keys_on_fetch` is true, `UpdateIgnoredEmptyKeys`
+// is automatically called when `StartFetching` is called. But note that
+// `UpdateIgnoredEmptyKeys` must still be manually called before calling the
+// other methods such as `GetCount`, `empty` and `GetStorageKeys`.
 class CannedLocalStorageHelper : public LocalStorageHelper {
  public:
-  explicit CannedLocalStorageHelper(content::BrowserContext* context);
+  explicit CannedLocalStorageHelper(
+      content::BrowserContext* context,
+      bool update_ignored_empty_keys_on_fetch = false);
 
   CannedLocalStorageHelper(const CannedLocalStorageHelper&) = delete;
   CannedLocalStorageHelper& operator=(const CannedLocalStorageHelper&) = delete;
@@ -83,6 +89,11 @@ class CannedLocalStorageHelper : public LocalStorageHelper {
   // Returns the set of StorageKeys that use local storage.
   const std::set<blink::StorageKey>& GetStorageKeys() const;
 
+  // Update the list of empty StorageKeys to ignore.
+  // Note: If `update_ignored_empty_keys_on_fetch` is true this is also called
+  //       by the `StartFetching` method automatically.
+  void UpdateIgnoredEmptyKeys(base::OnceClosure done);
+
   // LocalStorageHelper implementation.
   void StartFetching(FetchCallback callback) override;
   void DeleteStorageKey(const blink::StorageKey& storage_key,
@@ -92,6 +103,14 @@ class CannedLocalStorageHelper : public LocalStorageHelper {
   ~CannedLocalStorageHelper() override;
 
   std::set<blink::StorageKey> pending_storage_keys_;
+  std::set<blink::StorageKey> non_empty_pending_storage_keys_;
+  bool update_ignored_empty_keys_on_fetch_ = false;
+
+  void UpdateIgnoredEmptyKeysInternal(
+      base::OnceClosure done,
+      const std::list<content::StorageUsageInfo>& storage_usage_info);
+
+  void StartFetchingInternal(FetchCallback callback);
 };
 
 }  // namespace browsing_data

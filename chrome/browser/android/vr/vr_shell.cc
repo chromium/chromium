@@ -1172,7 +1172,7 @@ std::unique_ptr<PageInfo> VrShell::CreatePageInfo() {
   auto page_info = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents_), web_contents_,
       entry->GetVirtualURL());
-  page_info->InitializeUiState(this);
+  page_info->InitializeUiState(this, base::DoNothing());
   return page_info;
 }
 

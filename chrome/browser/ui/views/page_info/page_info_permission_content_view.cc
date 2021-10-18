@@ -111,7 +111,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
           IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON_TOOLTIP),
       std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
 
-  presenter_->InitializeUiState(this);
+  presenter_->InitializeUiState(this, base::DoNothing());
 }
 
 PageInfoPermissionContentView::~PageInfoPermissionContentView() = default;

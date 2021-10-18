@@ -73,38 +73,72 @@ void LocalStorageHelper::DeleteStorageKey(const blink::StorageKey& storage_key,
 
 //---------------------------------------------------------
 
-CannedLocalStorageHelper::CannedLocalStorageHelper(BrowserContext* context)
-    : LocalStorageHelper(context) {}
+CannedLocalStorageHelper::CannedLocalStorageHelper(
+    BrowserContext* context,
+    bool update_ignored_empty_keys_on_fetch)
+    : LocalStorageHelper(context),
+      update_ignored_empty_keys_on_fetch_(update_ignored_empty_keys_on_fetch) {}
 
 void CannedLocalStorageHelper::Add(const blink::StorageKey& storage_key) {
   if (!HasStorageScheme(storage_key.origin()))
     return;
+
   pending_storage_keys_.insert(storage_key);
+
+  // Note: Assume that `storage_key` isn't currently empty, to avoid a
+  //       false-negative in the case that the calling code forgets to call
+  //       `UpdateIgnoredEmptyKeys` afterwards.
+  non_empty_pending_storage_keys_.insert(storage_key);
 }
 
 void CannedLocalStorageHelper::Reset() {
   pending_storage_keys_.clear();
+  non_empty_pending_storage_keys_.clear();
 }
 
 bool CannedLocalStorageHelper::empty() const {
-  return pending_storage_keys_.empty();
+  return non_empty_pending_storage_keys_.empty();
 }
 
 size_t CannedLocalStorageHelper::GetCount() const {
-  return pending_storage_keys_.size();
+  return non_empty_pending_storage_keys_.size();
 }
 
 const std::set<blink::StorageKey>& CannedLocalStorageHelper::GetStorageKeys()
     const {
-  return pending_storage_keys_;
+  return non_empty_pending_storage_keys_;
 }
 
-void CannedLocalStorageHelper::StartFetching(FetchCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!callback.is_null());
+void CannedLocalStorageHelper::UpdateIgnoredEmptyKeysInternal(
+    base::OnceClosure done,
+    const std::list<content::StorageUsageInfo>& storage_usage_info) {
+  non_empty_pending_storage_keys_.clear();
 
+  std::vector<url::Origin> non_empty_origins_list;
+  non_empty_origins_list.reserve(storage_usage_info.size());
+  // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
+  for (const auto& usage_info : storage_usage_info)
+    non_empty_origins_list.push_back(usage_info.origin);
+  const base::flat_set<url::Origin> non_empty_origins(
+      std::move(non_empty_origins_list));
+
+  for (const auto& storage_key : pending_storage_keys_) {
+    if (non_empty_origins.contains(storage_key.origin()))
+      non_empty_pending_storage_keys_.insert(storage_key);
+  }
+
+  std::move(done).Run();
+}
+
+void CannedLocalStorageHelper::UpdateIgnoredEmptyKeys(base::OnceClosure done) {
+  LocalStorageHelper::StartFetching(
+      base::BindOnce(&CannedLocalStorageHelper::UpdateIgnoredEmptyKeysInternal,
+                     this, std::move(done)));
+}
+
+void CannedLocalStorageHelper::StartFetchingInternal(FetchCallback callback) {
   std::list<content::StorageUsageInfo> result;
-  for (const auto& storage_key : pending_storage_keys_)
+  for (const auto& storage_key : non_empty_pending_storage_keys_)
     result.emplace_back(
         // TODO(https://crbug.com/1199077): Pass the real StorageKey when
         // StorageUsageInfo is converted.
@@ -114,10 +148,24 @@ void CannedLocalStorageHelper::StartFetching(FetchCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
+void CannedLocalStorageHelper::StartFetching(FetchCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!callback.is_null());
+
+  if (update_ignored_empty_keys_on_fetch_) {
+    UpdateIgnoredEmptyKeys(
+        base::BindOnce(&CannedLocalStorageHelper::StartFetchingInternal, this,
+                       std::move(callback)));
+  } else {
+    StartFetchingInternal(std::move(callback));
+  }
+}
+
 void CannedLocalStorageHelper::DeleteStorageKey(
     const blink::StorageKey& storage_key,
     base::OnceClosure callback) {
   pending_storage_keys_.erase(storage_key);
+  non_empty_pending_storage_keys_.erase(storage_key);
   LocalStorageHelper::DeleteStorageKey(storage_key, std::move(callback));
 }
 

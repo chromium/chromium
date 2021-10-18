@@ -30,12 +30,13 @@ class PageInfoNewBubbleView : public PageInfoBubbleViewBase,
                         gfx::NativeView parent_window,
                         content::WebContents* web_contents,
                         const GURL& url,
+                        base::OnceClosure initialized_callback,
                         PageInfoClosingCallback closing_callback);
 
   ~PageInfoNewBubbleView() override;
 
   // PageInfoNavigationHandler:
-  void OpenMainPage() override;
+  void OpenMainPage(base::OnceClosure initialized_callback) override;
   void OpenSecurityPage() override;
   void OpenPermissionPage(ContentSettingsType type) override;
   void OpenAboutThisSitePage() override;

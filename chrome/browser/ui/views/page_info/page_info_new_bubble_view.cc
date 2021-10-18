@@ -20,6 +20,7 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
     gfx::NativeView parent_window,
     content::WebContents* associated_web_contents,
     const GURL& url,
+    base::OnceClosure initialized_callback,
     PageInfoClosingCallback closing_callback)
     : PageInfoBubbleViewBase(anchor_view,
                              anchor_rect,
@@ -55,16 +56,18 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  page_container_ = AddChildView(
-      std::make_unique<PageSwitcherView>(view_factory_->CreateMainPageView()));
+  page_container_ = AddChildView(std::make_unique<PageSwitcherView>(
+      view_factory_->CreateMainPageView(std::move(initialized_callback))));
 
   views::BubbleDialogDelegateView::CreateBubble(this);
 }
 
 PageInfoNewBubbleView::~PageInfoNewBubbleView() = default;
 
-void PageInfoNewBubbleView::OpenMainPage() {
-  page_container_->SwitchToPage(view_factory_->CreateMainPageView());
+void PageInfoNewBubbleView::OpenMainPage(
+    base::OnceClosure initialized_callback) {
+  page_container_->SwitchToPage(
+      view_factory_->CreateMainPageView(std::move(initialized_callback)));
 }
 
 void PageInfoNewBubbleView::OpenSecurityPage() {

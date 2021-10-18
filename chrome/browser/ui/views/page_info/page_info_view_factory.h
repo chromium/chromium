@@ -100,7 +100,8 @@ class PageInfoViewFactory {
   // Returns the icon for 'About this site' button.
   static const ui::ImageModel GetAboutThisSiteIcon();
 
-  std::unique_ptr<views::View> CreateMainPageView() WARN_UNUSED_RESULT;
+  std::unique_ptr<views::View> CreateMainPageView(
+      base::OnceClosure initialized_callback) WARN_UNUSED_RESULT;
   std::unique_ptr<views::View> CreateSecurityPageView() WARN_UNUSED_RESULT;
   std::unique_ptr<views::View> CreatePermissionPageView(
       ContentSettingsType type) WARN_UNUSED_RESULT;

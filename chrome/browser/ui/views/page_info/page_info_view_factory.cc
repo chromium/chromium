@@ -108,9 +108,11 @@ PageInfoViewFactory::PageInfoViewFactory(
       ui_delegate_(ui_delegate),
       navigation_handler_(navigation_handler) {}
 
-std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView() {
+std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView(
+    base::OnceClosure initialized_callback) {
   return std::make_unique<PageInfoMainView>(presenter_, ui_delegate_,
-                                            navigation_handler_);
+                                            navigation_handler_,
+                                            std::move(initialized_callback));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
@@ -165,7 +167,8 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
 
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMainPage,
-                          base::Unretained(navigation_handler_)),
+                          base::Unretained(navigation_handler_),
+                          base::DoNothing()),
       vector_icons::kArrowBackIcon);
   views::InstallCircleHighlightPathGenerator(back_button.get());
   back_button->SetID(VIEW_ID_BACK_BUTTON);

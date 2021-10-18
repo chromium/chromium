@@ -371,6 +371,8 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
                                         blocked_by_policy);
   content_settings->OnDomStorageAccessed(GURL("http://maps.google.com:8080"),
                                          true, blocked_by_policy);
+  content_settings->OnDomStorageAccessed(GURL("http://example.com"), true,
+                                         blocked_by_policy);
   content_settings->OnWebDatabaseAccessed(GURL("http://192.168.0.1"),
                                           blocked_by_policy);
   content_settings->OnSharedWorkerAccessed(
@@ -379,13 +381,24 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
       blocked_by_policy);
 
   const auto& objects = content_settings->allowed_local_shared_objects();
-  EXPECT_EQ(6u, objects.GetObjectCount());
+  EXPECT_EQ(7u, objects.GetObjectCount());
   EXPECT_EQ(3u, objects.GetObjectCountForDomain(GURL("http://google.com")));
   EXPECT_EQ(1u, objects.GetObjectCountForDomain(GURL("http://youtube.com")));
   EXPECT_EQ(1u, objects.GetObjectCountForDomain(GURL("http://localhost")));
+  EXPECT_EQ(1u, objects.GetObjectCountForDomain(GURL("http://example.com")));
   EXPECT_EQ(1u, objects.GetObjectCountForDomain(GURL("http://192.168.0.1")));
-  // google.com, youtube.com, localhost and 192.168.0.1 should be counted as
-  // domains.
+  // google.com, youtube.com, localhost, example.com and 192.168.0.1 should be
+  // counted as domains.
+  EXPECT_EQ(5u, objects.GetDomainCount());
+
+  // The localStorage storage keys (http://maps.google.com:8080 and
+  // http://example.com) should be ignored since they are empty.
+  base::RunLoop run_loop;
+  objects.UpdateIgnoredEmptyStorageKeys(run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(5u, objects.GetObjectCount());
+  EXPECT_EQ(2u, objects.GetObjectCountForDomain(GURL("http://google.com")));
+  EXPECT_EQ(0u, objects.GetObjectCountForDomain(GURL("http://example.com")));
   EXPECT_EQ(4u, objects.GetDomainCount());
 }
 

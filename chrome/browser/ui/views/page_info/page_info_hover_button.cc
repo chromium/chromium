@@ -159,6 +159,7 @@ void PageInfoHoverButton::SetTitleText(int title_resource_id,
     style_info.text_style = views::style::STYLE_SECONDARY;
     title_->AddStyleRange(gfx::Range(offset, offset + secondary_text.length()),
                           style_info);
+    title_->SizeToFit(0);
   }
   UpdateAccessibleName();
 }
