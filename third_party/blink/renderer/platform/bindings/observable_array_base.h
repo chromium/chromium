@@ -70,7 +70,7 @@ namespace bindings {
 // https://heycam.github.io/webidl/#observable-array-attribute-backing-list
 class PLATFORM_EXPORT ObservableArrayBase : public ScriptWrappable {
  public:
-  explicit ObservableArrayBase(
+  ObservableArrayBase(
       ScriptWrappable* platform_object,
       ObservableArrayExoticObject* observable_array_exotic_object);
   ~ObservableArrayBase() override = default;
