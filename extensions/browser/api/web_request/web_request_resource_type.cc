@@ -33,6 +33,7 @@ constexpr struct {
     {"media", WebRequestResourceType::MEDIA},
     {"websocket", WebRequestResourceType::WEB_SOCKET},
     {"webtransport", WebRequestResourceType::WEB_TRANSPORT},
+    {"webbundle", WebRequestResourceType::WEBBUNDLE},
     {"other", WebRequestResourceType::OTHER},
 };
 
@@ -91,10 +92,11 @@ WebRequestResourceType ToWebRequestResourceType(
       if (request.keepalive)
         return WebRequestResourceType::PING;
       return WebRequestResourceType::OTHER;
+    case network::mojom::RequestDestination::kWebBundle:
+      return WebRequestResourceType::WEBBUNDLE;
     case network::mojom::RequestDestination::kAudioWorklet:
     case network::mojom::RequestDestination::kManifest:
     case network::mojom::RequestDestination::kPaintWorklet:
-    case network::mojom::RequestDestination::kWebBundle:
       return WebRequestResourceType::OTHER;
   }
   NOTREACHED();

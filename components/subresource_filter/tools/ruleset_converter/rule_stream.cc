@@ -363,6 +363,9 @@ static_assert(!(kChrome54To58ElementTypes &
                 url_pattern_index::proto::ELEMENT_TYPE_WEBTRANSPORT),
               "Wrong M54 element types.");
 static_assert(!(kChrome54To58ElementTypes &
+                url_pattern_index::proto::ELEMENT_TYPE_WEBBUNDLE),
+              "Wrong M54 element types.");
+static_assert(!(kChrome54To58ElementTypes &
                 url_pattern_index::proto::ELEMENT_TYPE_POPUP),
               "Wrong M54 element types.");
 

@@ -75,6 +75,7 @@ const ElementTypeMap& GetElementTypeMap() {
           {proto::ELEMENT_TYPE_POPUP, flat::ElementType_NONE},
           {proto::ELEMENT_TYPE_WEBSOCKET, flat::ElementType_WEBSOCKET},
           {proto::ELEMENT_TYPE_WEBTRANSPORT, flat::ElementType_WEBTRANSPORT},
+          {proto::ELEMENT_TYPE_WEBBUNDLE, flat::ElementType_WEBBUNDLE},
       });
   return *element_type_map;
 }

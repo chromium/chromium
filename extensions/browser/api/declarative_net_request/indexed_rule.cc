@@ -199,6 +199,8 @@ flat_rule::ElementType GetElementType(dnr_api::ResourceType resource_type) {
       return flat_rule::ElementType_WEBSOCKET;
     case dnr_api::RESOURCE_TYPE_WEBTRANSPORT:
       return flat_rule::ElementType_WEBTRANSPORT;
+    case dnr_api::RESOURCE_TYPE_WEBBUNDLE:
+      return flat_rule::ElementType_WEBBUNDLE;
     case dnr_api::RESOURCE_TYPE_OTHER:
       return flat_rule::ElementType_OTHER;
   }

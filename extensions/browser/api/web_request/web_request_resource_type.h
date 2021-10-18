@@ -28,6 +28,7 @@ enum class WebRequestResourceType : uint8_t {
   MEDIA,
   WEB_SOCKET,
   WEB_TRANSPORT,
+  WEBBUNDLE,
 
   OTHER,  // The type is unknown, or differs from all the above.
 };

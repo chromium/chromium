@@ -5730,8 +5730,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   rule.id = kMinValidID;
   rule.priority = 1;
   rule.condition->url_filter = "redirect.wbn|";
-  // TODO(crbug.com/1246214): Introduce a new resource type for web bundles.
-  rule.condition->resource_types = std::vector<std::string>({"other"});
+  rule.condition->resource_types = std::vector<std::string>({"webbundle"});
   rule.action->type = "redirect";
   rule.action->redirect.emplace();
   rule.action->redirect->url =

@@ -23,6 +23,7 @@ namespace declarativeNetRequest {
     media,
     websocket,
     webtransport,
+    webbundle,
     other
   };
 

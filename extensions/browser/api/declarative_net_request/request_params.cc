@@ -57,6 +57,8 @@ flat_rule::ElementType GetElementType(WebRequestResourceType web_request_type) {
       return flat_rule::ElementType_MEDIA;
     case WebRequestResourceType::FONT:
       return flat_rule::ElementType_FONT;
+    case WebRequestResourceType::WEBBUNDLE:
+      return flat_rule::ElementType_WEBBUNDLE;
     case WebRequestResourceType::WEB_SOCKET:
       return flat_rule::ElementType_WEBSOCKET;
     case WebRequestResourceType::WEB_TRANSPORT:
