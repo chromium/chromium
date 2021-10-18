@@ -38,7 +38,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
@@ -479,7 +478,6 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisabledTest(message = "crbug.com/1254561")
     public void testShowStoreIcon_DifferentUrl() {
         setupStoreIconForTesting("test1.com", false);
         // Show the default icon first.
@@ -501,7 +499,6 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisabledTest(message = "crbug.com/1254561")
     public void testShowStoreIcon_InIncognito() {
         setupStoreIconForTesting("test.com", true);
         // Show the default icon first.
@@ -523,7 +520,6 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisabledTest(message = "crbug.com/1254561")
     public void testShowStoreIcon() {
         setupStoreIconForTesting("test.com", false);
         // Show the default icon first.
