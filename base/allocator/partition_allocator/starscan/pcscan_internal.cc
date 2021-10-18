@@ -656,15 +656,6 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   PA_SCAN_DCHECK((maybe_ptr & kSuperPageBaseMask) ==
                  (base & kSuperPageBaseMask));
 
-  auto* target_slot_span =
-      SlotSpan::FromSlotInnerPtr(reinterpret_cast<void*>(base));
-  PA_SCAN_DCHECK(root == Root::FromSlotSpan(target_slot_span));
-
-  const size_t usable_size = target_slot_span->GetUsableSize(root);
-  // Range check for inner pointers.
-  if (maybe_ptr >= base + usable_size)
-    return 0;
-
   if (UNLIKELY(immediatelly_free_objects_))
     return 0;
 
@@ -672,8 +663,13 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   // the mutator bitmap and clear from the scanner bitmap. Note that since
   // PCScan has exclusive access to the scanner bitmap, we can avoid atomic rmw
   // operation for it.
-  if (LIKELY(state_map->MarkQuarantinedAsReachable(base, pcscan_epoch_)))
+  if (LIKELY(state_map->MarkQuarantinedAsReachable(base, pcscan_epoch_))) {
+    auto* target_slot_span =
+        SlotSpan::FromSlotInnerPtr(reinterpret_cast<void*>(base));
+    PA_SCAN_DCHECK(root == Root::FromSlotSpan(target_slot_span));
+
     return target_slot_span->bucket->slot_size;
+  }
 
   return 0;
 }

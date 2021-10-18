@@ -760,6 +760,25 @@ TEST_F(PartitionAllocPCScanTest, DanglingPointerToInaccessibleArea) {
   EXPECT_FALSE(IsInQuarantine(full_slot_span.last));
 }
 
+TEST_F(PartitionAllocPCScanTest, DanglingPointerOutsideUsablePart) {
+  using ValueList = List<kMaxBucketed - 4096>;
+  using SourceList = List<64>;
+
+  auto* value = ValueList::Create(root());
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(value);
+  ASSERT_TRUE(slot_span->CanStoreRawSize());
+
+  auto* source = SourceList::Create(root());
+
+  // Let the |source| object point to the unused area of |value| and expect
+  // |value| to be nevertheless marked during scanning.
+  static constexpr size_t kOffsetPastEnd = 7;
+  source->next = reinterpret_cast<ListBase*>(
+      reinterpret_cast<uint8_t*>(value + 1) + kOffsetPastEnd);
+
+  TestDanglingReference(*this, source, value);
+}
+
 }  // namespace internal
 }  // namespace base
 
