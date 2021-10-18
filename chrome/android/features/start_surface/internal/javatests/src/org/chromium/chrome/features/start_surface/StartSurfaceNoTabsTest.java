@@ -5,7 +5,6 @@
 package org.chromium.chrome.features.start_surface;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -21,6 +20,12 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Intent;
 
+import androidx.test.espresso.action.GeneralClickAction;
+import androidx.test.espresso.action.GeneralLocation;
+import androidx.test.espresso.action.Press;
+import androidx.test.espresso.action.Tap;
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -112,7 +117,7 @@ public class StartSurfaceNoTabsTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/tab_count_button_on_start_surface/true"})
@@ -138,7 +143,8 @@ public class StartSurfaceNoTabsTest {
         onView(withId(R.id.start_tab_switcher_button)).check(matches(isDisplayed()));
         onViewWaiting(withId(R.id.logo)).check(matches(isDisplayed()));
 
-        onView(withId(R.id.start_tab_switcher_button)).perform(click());
+        onView(withId(R.id.start_tab_switcher_button))
+                .perform(clickAndPressBackIfAccidentallyLongClicked());
         onViewWaiting(withId(R.id.secondary_tasks_surface_view));
         pressBack();
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
@@ -178,5 +184,12 @@ public class StartSurfaceNoTabsTest {
         mActivityTestRule.waitForActivityNativeInitializationComplete();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().onBackPressed());
+    }
+
+    private static GeneralClickAction clickAndPressBackIfAccidentallyLongClicked() {
+        // If the click is misinterpreted as a long press, do a pressBack() to dismiss a context
+        // menu.
+        return new GeneralClickAction(
+                Tap.SINGLE, GeneralLocation.CENTER, Press.FINGER, ViewActions.pressBack());
     }
 }
