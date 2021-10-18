@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #include "components/sync/driver/sync_service.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
@@ -28,6 +29,8 @@
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator_delegate.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_view_controller.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "ios/chrome/grit/ios_strings.h"
 
@@ -65,6 +68,9 @@
 // Coordinator that handles the advanced settings sign-in UI.
 @property(nonatomic, strong)
     SigninCoordinator* advancedSettingsSigninCoordinator;
+
+// YES if this coordinator is currently used in the First Run context.
+@property(nonatomic, assign) BOOL firstRun;
 
 @end
 
@@ -118,6 +124,12 @@
     return;
   }
 
+  // Determine if it is currently in the First Run context.
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  AppState* appState = sceneState.appState;
+  self.firstRun = appState.initStage == InitStageFirstRun;
+
   self.viewController = [[SyncScreenViewController alloc] init];
   self.viewController.delegate = self;
   self.viewController.syncTypesRestricted =
@@ -140,7 +152,10 @@
   self.mediator.delegate = self;
   self.mediator.consumer = self.viewController;
 
-  base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kSyncScreenStart);
+  if (self.firstRun) {
+    base::UmaHistogramEnumeration("FirstRun.Stage",
+                                  first_run::kSyncScreenStart);
+  }
 
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ self.viewController ]
@@ -178,8 +193,10 @@
 }
 
 - (void)didTapSecondaryActionButton {
-  base::UmaHistogramEnumeration("FirstRun.Stage",
-                                first_run::kSyncScreenCompletionWithoutSync);
+  if (self.firstRun) {
+    base::UmaHistogramEnumeration("FirstRun.Stage",
+                                  first_run::kSyncScreenCompletionWithoutSync);
+  }
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   // Call StopAndClear() to clear the encryption passphrase, in case the
@@ -206,8 +223,10 @@
     // interactions on the advanced settings button.
     [self showAdvancedSettings];
   } else {
-    base::UmaHistogramEnumeration("FirstRun.Stage",
-                                  first_run::kSyncScreenCompletionWithSync);
+    if (self.firstRun) {
+      base::UmaHistogramEnumeration("FirstRun.Stage",
+                                    first_run::kSyncScreenCompletionWithSync);
+    }
     [self.delegate willFinishPresenting];
   }
 }
