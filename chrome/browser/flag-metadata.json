@@ -243,11 +243,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "arc-resize-lock",
-    "owners": [ "takise" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "arc-rt-vcpu-dual-core",
     "owners": [ "kansho" ],
     "expiry_milestone": 100

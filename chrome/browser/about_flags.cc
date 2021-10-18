@@ -5576,10 +5576,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcInputOverlayDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kArcInputOverlay)},
 
-    {"arc-resize-lock", flag_descriptions::kArcResizeLockName,
-     flag_descriptions::kArcResizeLockDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kArcResizeLock)},
-
     {"full-restore", flag_descriptions::kFullRestoreName,
      flag_descriptions::kFullRestoreDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(full_restore::features::kFullRestore)},

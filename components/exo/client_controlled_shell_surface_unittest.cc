@@ -4,7 +4,6 @@
 
 #include "components/exo/client_controlled_shell_surface.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -2743,49 +2742,6 @@ TEST_F(ClientControlledShellSurfaceTest,
       exo_test_helper()->CreateClientControlledShellSurface(surface.get());
   surface->Attach(buffer.get());
   surface->Commit();
-
-  // Test resizability with the feature flag on.
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(ash::features::kArcResizeLock);
-    EXPECT_TRUE(shell_surface->CanResize());
-
-    shell_surface->SetResizeLockType(
-        ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
-    surface->Commit();
-    EXPECT_FALSE(shell_surface->CanResize());
-
-    // Test if the proper resize lock type is set depending on the resizability
-    // of the window.
-    aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-    EXPECT_EQ(window->GetProperty(ash::kArcResizeLockTypeKey),
-              ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
-    shell_surface->SetMinimumSize(gfx::Size(1, 1));
-    shell_surface->SetMaximumSize(gfx::Size(1, 1));
-    surface->Commit();
-    EXPECT_EQ(window->GetProperty(ash::kArcResizeLockTypeKey),
-              ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
-    shell_surface->SetMinimumSize(gfx::Size(0, 0));
-    shell_surface->SetMaximumSize(gfx::Size(0, 0));
-
-    shell_surface->SetResizeLockType(ash::ArcResizeLockType::NONE);
-    surface->Commit();
-    EXPECT_TRUE(shell_surface->CanResize());
-  }
-
-  // Test resizability with the feature flag off.
-  // TODO(180252634): Remove this once the feature is enabled by default and
-  // and the flag is removed.
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(ash::features::kArcResizeLock);
-    EXPECT_TRUE(shell_surface->CanResize());
-
-    shell_surface->SetResizeLockType(
-        ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
-    surface->Commit();
-    EXPECT_TRUE(shell_surface->CanResize());
-  }
 }
 
 TEST_F(ClientControlledShellSurfaceTest, OverlayShadowBounds) {

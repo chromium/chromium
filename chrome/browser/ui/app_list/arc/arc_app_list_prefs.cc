@@ -1025,9 +1025,6 @@ void ArcAppListPrefs::OnPolicySent(const std::string& policy) {
 
 arc::mojom::ArcResizeLockState ArcAppListPrefs::GetResizeLockState(
     const std::string& app_id) const {
-  if (!ash::features::IsArcResizeLockEnabled())
-    return arc::mojom::ArcResizeLockState::UNDEFINED;
-
   std::unique_ptr<AppInfo> app_info = GetApp(app_id);
   if (!app_info) {
     VLOG(2) << "Failed to get app info: " << app_id << ".";
@@ -1039,9 +1036,6 @@ arc::mojom::ArcResizeLockState ArcAppListPrefs::GetResizeLockState(
 
 void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
                                          arc::mojom::ArcResizeLockState state) {
-  if (!ash::features::IsArcResizeLockEnabled())
-    return;
-
   if (!IsRegistered(app_id)) {
     VLOG(2) << "Request to set ret resize lock for non-registered app:"
             << app_id << ".";

@@ -108,11 +108,6 @@ const base::Feature kArcInputOverlay{"ArcInputOverlay",
 const base::Feature kArcManagedAdbSideloadingSupport{
     "ArcManagedAdbSideloadingSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables resize lock for ARC++ and puts restrictions on window resizing.
-// TODO(takise): Remove this after the feature is fully launched.
-const base::Feature kArcResizeLock{"ArcResizeLock",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to enable assistive autocorrect.
 const base::Feature kAssistAutoCorrect{"AssistAutoCorrect",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1285,10 +1280,6 @@ bool IsArcInputOverlayEnabled() {
 bool IsArcNetworkDiagnosticsButtonEnabled() {
   return IsNetworkingInDiagnosticsAppEnabled() &&
          base::FeatureList::IsEnabled(kButtonARCNetworkDiagnostics);
-}
-
-bool IsArcResizeLockEnabled() {
-  return base::FeatureList::IsEnabled(kArcResizeLock);
 }
 
 bool IsAssistiveMultiWordEnabled() {

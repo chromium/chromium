@@ -58,7 +58,6 @@ extern const base::Feature kArcAdbSideloadingFeature;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kArcInputOverlay;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kArcManagedAdbSideloadingSupport;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kArcResizeLock;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAssistAutoCorrect;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAssistEmojiEnhanced;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAssistMultiWord;
@@ -472,7 +471,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeNewUrlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAppNotificationsPageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsArcInputOverlayEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsArcNetworkDiagnosticsButtonEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsArcResizeLockEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAssistiveMultiWordEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutoNightLightEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBackgroundBlurEnabled();

@@ -4960,12 +4960,6 @@ const char kArcInputOverlayDescription[] =
     "Enables the input overlay feature for some Android game apps, "
     "so it can play with a keyboard and a mouse instead of touch screen";
 
-const char kArcResizeLockName[] = "Resize Lock for Android apps";
-const char kArcResizeLockDescription[] =
-    "Enable keyboard and mouse input compatibility mode for Android games "
-    "that are designed to only support touch input. This mode is only "
-    "available on games for which there is an input overlay configuration.";
-
 const char kScanAppMediaLinkName[] = "Show Media app link in Scan app";
 const char kScanAppMediaLinkDescription[] =
     "Enables showing a link in the Scan app to open scanned images in the Media"
