@@ -185,6 +185,8 @@ class PLATFORM_EXPORT FontCache {
     prewarmer_ = prewarmer;
   }
   static void PrewarmFamily(const AtomicString& family_name);
+#else
+  static void PrewarmFamily(const AtomicString& family_name) {}
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
