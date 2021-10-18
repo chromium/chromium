@@ -59,8 +59,6 @@ class WaylandPopup : public WaylandWindow {
 
   PlatformWindowShadowType shadow_type_ = PlatformWindowShadowType::kNone;
 
-  gfx::Rect pending_initial_bounds_px_;
-
   // Helps to avoid reposition itself if HandlePopupConfigure was called, which
   // resulted in calling SetBounds.
   bool wayland_sets_bounds_ = false;

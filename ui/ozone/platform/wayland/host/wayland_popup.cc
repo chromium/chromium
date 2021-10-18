@@ -37,11 +37,7 @@ WaylandPopup::~WaylandPopup() = default;
 bool WaylandPopup::CreateShellPopup() {
   DCHECK(parent_window() && !shell_popup_);
 
-  // Set pending initial bounds and notify the delegate.
-  if (!pending_initial_bounds_px_.IsEmpty()) {
-    SetBounds(pending_initial_bounds_px_);
-    pending_initial_bounds_px_ = gfx::Rect();
-  } else if (window_scale() != parent_window()->window_scale()) {
+  if (window_scale() != parent_window()->window_scale()) {
     // If scale changed while this was hidden (when WaylandPopup hides, parent
     // window's child is reset), update buffer scale accordingly.
     UpdateWindowScale(true);
