@@ -16,7 +16,6 @@
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/mediacodec/cpp/fidl.h>
 #include <fuchsia/memorypressure/cpp/fidl.h>
-#include <fuchsia/net/cpp/fidl.h>
 #include <fuchsia/net/interfaces/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <fuchsia/ui/scenic/cpp/fidl.h>
@@ -78,7 +77,6 @@ constexpr SandboxConfig kGpuConfig = {
 
 constexpr SandboxConfig kNetworkConfig = {
     base::make_span((const char* const[]){
-        fuchsia::net::NameLookup::Name_,
         "fuchsia.net.name.Lookup",
         fuchsia::net::interfaces::State::Name_,
         "fuchsia.posix.socket.Provider",
