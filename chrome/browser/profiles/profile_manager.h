@@ -522,6 +522,14 @@ class ProfileManager : public Profile::Delegate {
   // to an access to this member.
   std::unique_ptr<ProfileAttributesStorage> profile_attributes_storage_;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Object that maintains a mapping between accounts known to the OS and Chrome
+  // profiles. AccountProfileMapper has dependencies on other members of this
+  // class. It must be destroyed after `profiles_info_` and before
+  // `profile_attributes_storage_`.
+  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
+#endif
+
   base::CallbackListSubscription closing_all_browsers_subscription_;
 
   // The path to the user data directory (DIR_USER_DATA).
@@ -545,10 +553,6 @@ class ProfileManager : public Profile::Delegate {
 
   // Manages the process of creating, deleteing and updating Desktop shortcuts.
   std::unique_ptr<ProfileShortcutManager> profile_shortcut_manager_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
-#endif
 
   // For keeping track of the last active profiles.
   std::map<Profile*, int> browser_counts_;
