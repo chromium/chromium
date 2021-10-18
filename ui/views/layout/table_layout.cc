@@ -355,22 +355,36 @@ TableLayout& TableLayout::LinkColumnSizes(std::vector<size_t> columns) {
   return *this;
 }
 
-void TableLayout::Layout(View* host) {
+TableLayout& TableLayout::SetLinkedColumnSizeLimit(int size_limit) {
+  linked_column_size_limit_ = size_limit;
+  OnLayoutChanged();
+  return *this;
+}
+
+TableLayout& TableLayout::SetMinimumSize(const gfx::Size& size) {
+  minimum_size_ = size;
+  OnLayoutChanged();
+  return *this;
+}
+
+ProposedLayout TableLayout::CalculateProposedLayout(
+    const SizeBounds& size_bounds) const {
+  ProposedLayout layout;
+  layout.host_size = SizeRowsAndColumns(size_bounds);
+  layout.host_size.SetToMax(minimum_size_);
+
   // Hiding all children here and then re-showing all the sized ones below has
   // the effect of leaving any excess children invisible.
-  for (View* child : host->children())
-    child->SetVisible(false);
-
-  // SizeRowsAndColumns sets the size and location of each row/column, but
-  // not of the views.
-  gfx::Size pref;
-  SizeRowsAndColumns(host, true, host->width(), host->height(), &pref);
+  for (View* child : GetChildViewsInPaintOrder(host_view())) {
+    if (!IsChildViewIgnoredByLayout(child))
+      layout.child_layouts.push_back({child, false, {}, {}});
+  }
 
   // Size each view.
   for (const auto& view_state : view_states_by_row_span_) {
     View* view = view_state->view;
     DCHECK(view);
-    const gfx::Insets& insets = host->GetInsets();
+    const gfx::Insets& insets = host_view()->GetInsets();
     int x = columns_[view_state->start_col].location() + insets.left();
     int width =
         TotalSize(view_state->start_col, view_state->col_span, columns_);
@@ -386,31 +400,28 @@ void TableLayout::Layout(View* host) {
       CalculateLocationAndSize(view_state->height, view_state->v_align, &y,
                                &height);
     }
-    view->SetBounds(x, y, width, height);
-    view->SetVisible(true);
+
+    auto it = base::ranges::find(layout.child_layouts, view,
+                                 &ChildLayout::child_view);
+    DCHECK(it != layout.child_layouts.cend());
+    it->bounds = gfx::Rect(x, y, width, height);
+    it->visible = true;
+    it->available_size = SizeBounds(width, height);
   }
+
+  return layout;
 }
 
-gfx::Size TableLayout::GetPreferredSize(const View* host) const {
-  gfx::Size out;
-  SizeRowsAndColumns(host, false, 0, 0, &out);
-  out.SetToMax(minimum_size_);
-  return out;
-}
-
-int TableLayout::GetPreferredHeightForWidth(const View* host, int width) const {
-  gfx::Size pref;
-  SizeRowsAndColumns(host, false, width, 0, &pref);
-  return pref.height();
-}
-
-void TableLayout::SetViewStates(const View* host) const {
+void TableLayout::SetViewStates() const {
   view_states_by_row_span_.clear();
   view_states_by_col_span_.clear();
 
   size_t col = 0, row = 0;
   std::vector<ViewState*> row_spans;
-  for (View* child : host->children()) {
+  for (View* child : GetChildViewsInPaintOrder(host_view())) {
+    if (!IsChildIncludedInLayout(child))
+      continue;
+
     // Move (col, row) to next open cell.
     for (; row < rows_.size(); ++row) {
       SkipPadding(row, rows_);
@@ -477,27 +488,24 @@ void TableLayout::SetViewStates(const View* host) const {
   }
 }
 
-void TableLayout::SizeRowsAndColumns(const View* host,
-                                     bool layout,
-                                     int width,
-                                     int height,
-                                     gfx::Size* pref) const {
-  SetViewStates(host);
+gfx::Size TableLayout::SizeRowsAndColumns(const SizeBounds& bounds) const {
+  SetViewStates();
 
-  pref->SetSize(0, 0);
+  gfx::Size pref;
   if (rows_.empty())
-    return;
+    return pref;
 
   // Calculate the preferred width of each of the columns. Some views'
   // preferred heights are derived from their width, as such we need to
   // calculate the size of the columns first.
   CalculateSize(SizeCalculationType::kPreferred);
-  const gfx::Insets& insets = host->GetInsets();
-  pref->set_width(LayoutWidth() + insets.width());
+  const gfx::Insets& insets = host_view()->GetInsets();
+  pref.set_width(LayoutWidth() + insets.width());
 
   // Go over the columns again and set them all to the size we settled for.
-  width = width ? width : pref->width();
-  Resize(width - pref->width());
+  const int bounded_width =
+      bounds.width().is_bounded() ? bounds.width().value() : pref.width();
+  Resize(bounded_width - pref.width());
   LayoutElement::CalculateLocationsFromSize(columns_);
 
   // Reset the height of each row.
@@ -550,17 +558,18 @@ void TableLayout::SizeRowsAndColumns(const View* host,
   LayoutElement::CalculateLocationsFromSize(rows_);
 
   // We now know the preferred height, set it here.
-  pref->set_height(rows_.back().location() + rows_.back().size() +
-                   insets.height());
+  pref.set_height(rows_.back().location() + rows_.back().size() +
+                  insets.height());
 
-  if (layout && height != pref->height()) {
-    // We're doing a layout, and the height differs from the preferred height,
-    // divvy up the extra space.
-    DistributeDelta(height - pref->height(), rows_);
+  if (bounds.height().is_bounded() && bounds.height() != pref.height()) {
+    // Divvy up the extra space.
+    DistributeDelta(bounds.height().value() - pref.height(), rows_);
 
     // Reset y locations.
     LayoutElement::CalculateLocationsFromSize(rows_);
   }
+
+  return pref;
 }
 
 void TableLayout::DistributeRemainingHeight(ViewState& view_state) const {

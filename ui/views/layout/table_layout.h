@@ -10,12 +10,10 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/layout/layout_manager.h"
+#include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_types.h"
 
 namespace views {
-
-class View;
 
 // TableLayout is a LayoutManager that positions child views in a table. You
 // define the structure of the table independently of adding child views.
@@ -72,7 +70,7 @@ class View;
 // use the minimum size. The minimum size is considered only for views whose
 // preferred width was not explicitly specified and where the containing columns
 // are resizable (resize > 0) and don't have a fixed width.
-class VIEWS_EXPORT TableLayout : public LayoutManager {
+class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
  public:
   // Use for `horizontal_resize` or `vertical_resize` when the column or row is
   // not resizable.
@@ -129,19 +127,13 @@ class VIEWS_EXPORT TableLayout : public LayoutManager {
   TableLayout& LinkColumnSizes(std::vector<size_t> columns);
 
   // When sizing linked columns, columns wider than |size_limit| are ignored.
-  TableLayout& set_linked_column_size_limit(int size_limit) {
-    linked_column_size_limit_ = size_limit;
-    return *this;
-  }
+  TableLayout& SetLinkedColumnSizeLimit(int size_limit);
 
-  TableLayout& set_minimum_size(const gfx::Size& size) {
-    minimum_size_ = size;
-    return *this;
-  }
+  TableLayout& SetMinimumSize(const gfx::Size& size);
 
-  void Layout(View* host) override;
-  gfx::Size GetPreferredSize(const View* host) const override;
-  int GetPreferredHeightForWidth(const View* host, int width) const override;
+ protected:
+  ProposedLayout CalculateProposedLayout(
+      const SizeBounds& size_bounds) const override;
 
  private:
   enum class SizeCalculationType {
@@ -152,19 +144,13 @@ class VIEWS_EXPORT TableLayout : public LayoutManager {
   class Row;
   struct ViewState;
 
-  // Creates ViewStates for `host`'s children and populates the
-  // "view_states_by_..." vectors with them.
-  void SetViewStates(const View* host) const;
+  // Creates ViewStates for the children and populates the "view_states_by_..."
+  // vectors with them.
+  void SetViewStates() const;
 
-  // As both Layout() and GetPreferredSize() need to do nearly the same thing,
-  // they both call into this method. This sizes the columns/rows as
-  // appropriate. If `layout` is true, `width`/`height` give the width/height of
-  // the host, otherwise they are ignored.
-  void SizeRowsAndColumns(const View* host,
-                          bool layout,
-                          int width,
-                          int height,
-                          gfx::Size* pref) const;
+  // Sizes the columns/rows as appropriate. Returns the preferred size of the
+  // host view.
+  gfx::Size SizeRowsAndColumns(const SizeBounds& bounds) const;
 
   // If `view_state`'s remaining height is > 0, it is distributed among the rows
   // it touches. This is used during layout to make sure the rows can

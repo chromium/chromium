@@ -171,7 +171,7 @@ TEST_F(TableLayoutTest, LinkedSizes) {
   ExpectViewBoundsEquals(40, 0, 20, 20, v3);
 
   // If the limit is zero, behaves as though the columns are not linked.
-  layout().set_linked_column_size_limit(0);
+  layout().SetLinkedColumnSizeLimit(0);
   pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(10 + 20 + 0, 20), pref);
   host()->SetBounds(0, 0, pref.width(), pref.height());
@@ -181,7 +181,7 @@ TEST_F(TableLayoutTest, LinkedSizes) {
   ExpectViewBoundsEquals(30, 0, 0, 20, v3);
 
   // Set a size limit.
-  layout().set_linked_column_size_limit(40);
+  layout().SetLinkedColumnSizeLimit(40);
   v1->SetPreferredSize(gfx::Size(35, 20));
 
   // |v1| now dominates, but it is still below the limit.
@@ -582,7 +582,7 @@ TEST_F(TableLayoutTest, MinimumPreferredSize) {
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(10, 20), pref);
 
-  layout().set_minimum_size(gfx::Size(40, 40));
+  layout().SetMinimumSize(gfx::Size(40, 40));
   pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(40, 40), pref);
 }
