@@ -225,8 +225,6 @@ void InitializeFeatureList(const base::Value& dcs_features,
     //   - The probability is hard-coded to 100% so that the FeatureList always
     //     respects the value from DCS.
     //   - The default group is unused; it will be the same for every feature.
-    //   - Expiration year, month, and day use a special value such that the
-    //     feature will never expire.
     //   - SESSION_RANDOMIZED is used to prevent the need for an
     //     entropy_provider. However, this value doesn't matter.
     //   - We don't care about the group_id.
