@@ -8,6 +8,8 @@
 
 #include <algorithm>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -46,6 +48,7 @@ AXNode::AXNode(AXNode::OwnerTree* tree,
 AXNode::~AXNode() = default;
 
 AXNodeData&& AXNode::TakeData() {
+  has_data_been_taken_ = true;
   return std::move(data_);
 }
 
@@ -162,7 +165,25 @@ AXNode* AXNode::GetParentCrossingTreeBoundary() const {
 }
 
 AXNode* AXNode::GetUnignoredParent() const {
-  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  // TODO(crbug.com/1237353): The following bailout is to test a hypothesis that
+  // this function is sometimes called while a tree update is in progress or
+  // when data_ isn't valid, which may be the cause of the crash detailed in
+  // crbug.com/1237353. Once this hypothesis has been verified, replace the
+  // bailout with a fix, which ideally should not call this function under
+  // the circumstances hypothesized. Also, add back in the following line:
+  // DCHECK(!tree_->GetTreeUpdateInProgressState());
+  if (tree_->GetTreeUpdateInProgressState() || is_data_still_uninitialized_ ||
+      has_data_been_taken_) {
+    static auto* const crash_key = base::debug::AllocateCrashKeyString(
+        "ax_node_err", base::debug::CrashKeySize::Size64);
+    std::ostringstream error;
+    error << "dataUninitialized=" << is_data_still_uninitialized_
+          << " dataTaken=" << has_data_been_taken_
+          << " treeUpdating=" << tree_->GetTreeUpdateInProgressState();
+    base::debug::SetCrashKeyString(crash_key, error.str());
+    base::debug::DumpWithoutCrashing();
+    return nullptr;
+  }
   AXNode* unignored_parent = GetParent();
   while (unignored_parent && unignored_parent->IsIgnored())
     unignored_parent = unignored_parent->GetParent();
@@ -641,6 +662,8 @@ bool AXNode::IsLineBreak() const {
 
 void AXNode::SetData(const AXNodeData& src) {
   data_ = src;
+  is_data_still_uninitialized_ = false;
+  has_data_been_taken_ = false;
 }
 
 void AXNode::SetLocation(AXNodeID offset_container_id,

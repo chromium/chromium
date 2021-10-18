@@ -738,6 +738,13 @@ class AX_EXPORT AXNode final {
   // computed by the tree's source, such as `content::BlinkAXTreeSource`.
   AXNodeData data_;
 
+  // Used to track when this object's data_ is valid. If either of these are
+  // true, and data is accessed, there will be a crash.
+  // TODO(crbug.com/1237353): Wrap this inside of an `#if DCHECK_IS_ON()` after
+  // removing `DumpWithoutCrashing`.
+  bool is_data_still_uninitialized_ = true;
+  bool has_data_been_taken_ = false;
+
   // See the class comment in "ax_hypertext.h" for an explanation of this
   // member.
   mutable AXHypertext hypertext_;
