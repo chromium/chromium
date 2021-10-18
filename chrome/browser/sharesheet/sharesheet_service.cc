@@ -398,6 +398,11 @@ void SharesheetService::RecordUserActionMetrics(
              l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL)) {
     SharesheetMetrics::RecordSharesheetActionMetrics(
         SharesheetMetrics::UserAction::kDriveAction);
+  } else if (target_name ==
+             l10n_util::GetStringUTF16(
+                 IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL)) {
+    SharesheetMetrics::RecordSharesheetActionMetrics(
+        SharesheetMetrics::UserAction::kCopyAction);
   } else {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // Should be an app if we reached here.
