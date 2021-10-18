@@ -7495,6 +7495,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="FocusHelpBubble">
+  <obsolete>Never used. Merged with F6 or equivalent for navigation.</obsolete>
   <owner>collinbaker@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <description>

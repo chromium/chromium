@@ -336,9 +336,6 @@ class BrowserWindow : public ui::BaseWindow {
   // Focuses a visible but inactive popup for accessibility.
   virtual void FocusInactivePopupForAccessibility() = 0;
 
-  // Focuses a help bubble if present.
-  virtual void FocusHelpBubble() = 0;
-
   // Moves keyboard focus to the next pane.
   virtual void RotatePaneFocus(bool forwards) = 0;
 

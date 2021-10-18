@@ -1540,13 +1540,6 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        {},
        // |accelerator_ids|
        {{ui::VKEY_SPACE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN}}},
-
-      {// |categories|
-       {ShortcutCategory::kAccessibility},
-       IDS_KSV_DESCRIPTION_FOCUS_HELP_BUBBLE,
-       {},
-       // |accelerator_ids|
-       {{ui::VKEY_H, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN}}},
   });
 
   static bool is_initialized = false;

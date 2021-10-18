@@ -731,9 +731,6 @@
   <message name="IDS_KSV_DESCRIPTION_FOCUS_WEB_CONTENTS_PANE" desc="Description of the command in keyboard shortcut viewer.">
     Focus web content in the browser
   </message>
-  <message name="IDS_KSV_DESCRIPTION_FOCUS_HELP_BUBBLE" desc="Description of the command in keyboard shortcut viewer.">
-    Move focus to a help dialog
-  </message>
   <message name="IDS_KSV_DESCRIPTION_MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS" desc="Description of the command in keyboard shortcut viewer.">
     Move active window between displays
   </message>

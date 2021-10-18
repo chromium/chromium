@@ -1502,11 +1502,6 @@ void FocusInactivePopupForAccessibility(Browser* browser) {
   browser->window()->FocusInactivePopupForAccessibility();
 }
 
-void FocusHelpBubble(Browser* browser) {
-  base::RecordAction(UserMetricsAction("FocusHelpBubble"));
-  browser->window()->FocusHelpBubble();
-}
-
 void FocusNextPane(Browser* browser) {
   base::RecordAction(UserMetricsAction("FocusNextPane"));
   browser->window()->RotatePaneFocus(true);

@@ -217,7 +217,6 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_J, ui::EF_CONTROL_DOWN, IDC_SHOW_DOWNLOADS},
     {ui::VKEY_H, ui::EF_CONTROL_DOWN, IDC_SHOW_HISTORY},
     {ui::VKEY_U, ui::EF_CONTROL_DOWN, IDC_VIEW_SOURCE},
-    {ui::VKEY_H, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN, IDC_FOCUS_HELP_BUBBLE},
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // On Chrome OS, these keys are assigned to change UI scale.
     {ui::VKEY_OEM_MINUS, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,

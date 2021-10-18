@@ -458,7 +458,6 @@ class BrowserView : public BrowserWindow,
   void FocusAppMenu() override;
   void FocusBookmarksToolbar() override;
   void FocusInactivePopupForAccessibility() override;
-  void FocusHelpBubble() override;
   void RotatePaneFocus(bool forwards) override;
   void FocusWebContentsPane() override;
   void DestroyBrowser() override;
