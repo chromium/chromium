@@ -429,7 +429,7 @@ rtc::AsyncPacketSocket* ChromiumPacketSocketFactory::CreateUdpSocket(
   return result.release();
 }
 
-rtc::AsyncPacketSocket* ChromiumPacketSocketFactory::CreateServerTcpSocket(
+rtc::AsyncListenSocket* ChromiumPacketSocketFactory::CreateServerTcpSocket(
     const rtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port,
