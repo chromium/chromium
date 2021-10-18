@@ -891,8 +891,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsTableColumnHidden) {
-  RunEventTest(FILE_PATH_LITERAL("table-column-hidden.html"));
+                       AccessibilityEventsRemoveSubtree) {
+  RunEventTest(FILE_PATH_LITERAL("remove-subtree.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
