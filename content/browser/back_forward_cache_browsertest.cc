@@ -206,9 +206,6 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     EnableFeatureAndSetParams(features::kBackForwardCache, "unload_support",
                               unload_support_);
     EnableFeatureAndSetParams(
-        features::kBackForwardCache, "check_eligibility_after_pagehide",
-        check_eligibility_after_pagehide_ ? "true" : "false");
-    EnableFeatureAndSetParams(
         blink::features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
         "delay_before_tracking_ms", "0");
     // TODO(crbug.com/1243600): Remove this per-request byte limit.
