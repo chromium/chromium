@@ -479,7 +479,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         for (String target : targets) {
             if (target.equals(MORE_TARGET_NAME)) {
                 models.add(createMorePropertyModel(activity, params, saveLastUsed));
-            } else {
+            } else if (!target.equals("")) {
+                assert resolveInfos.get(target) != null;
                 models.add(mPropertyModelBuilder.buildThirdPartyAppModel(mBottomSheet, params,
                         resolveInfos.get(target), saveLastUsed, mShareStartTime, NO_LOG_INDEX,
                         mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails));
