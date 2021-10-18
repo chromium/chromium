@@ -93,7 +93,6 @@ struct Config {
       feedwire::Capability::DOWNLOAD_LINK,
       feedwire::Capability::INFINITE_FEED,
       feedwire::Capability::MATERIAL_NEXT_BASELINE,
-      feedwire::Capability::OPEN_IN_TAB,
       feedwire::Capability::PREFETCH_METADATA,
       feedwire::Capability::REQUEST_SCHEDULE,
       feedwire::Capability::UI_THEME_V2,

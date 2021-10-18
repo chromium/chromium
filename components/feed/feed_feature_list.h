@@ -85,6 +85,10 @@ extern const base::Feature kFeedStamp;
 // Feature that enables sorting by different heuristics in the web feed.
 extern const base::Feature kWebFeedSort;
 
+// Feature that causes the "open in new tab" menu item to appear on feed items
+// on Start Surface.
+extern const base::Feature kEnableOpenInNewTabFromStartSurfaceFeed;
+
 std::string GetFeedReferrerUrl();
 
 }  // namespace feed
