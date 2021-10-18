@@ -77,10 +77,6 @@ const base::Feature kBackgroundFetch{"BackgroundFetch",
 const base::Feature kBackForwardCache{"BackForwardCache",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Allows pages with a media play to stay eligible the back/forward cache.
-const base::Feature kBackForwardCacheMediaPlay{
-    "BackForwardCacheMediaPlay", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Allows pages that created a MediaSession service to stay eligible for the
 // back/forward cache.
 const base::Feature kBackForwardCacheMediaSessionService{

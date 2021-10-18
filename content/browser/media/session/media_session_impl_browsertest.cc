@@ -3240,8 +3240,6 @@ class MediaSessionImplWithBackForwardCacheBrowserTest
     params["process_binding_strength"] = "NORMAL";
 #endif
     enabled_features.emplace_back(features::kBackForwardCache, params);
-    enabled_features.emplace_back(features::kBackForwardCacheMediaPlay,
-                                  std::map<std::string, std::string>{});
 
     std::vector<base::Feature> disabled_features = {
         features::kBackForwardCacheMemoryControls,

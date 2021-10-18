@@ -167,9 +167,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // Returns whether MediaSession's service is allowed for the BackForwardCache.
   static bool IsMediaSessionServiceAllowed();
 
-  // Returns whether a media play is allowed for the BackForwardCache.
-  static bool IsMediaPlayAllowed();
-
   // Returns whether a RenderFrameHost can be stored into the BackForwardCache
   // right now. Depends on the |render_frame_host| and its children's state.
   // Should only be called after we've navigated away from |render_frame_host|,

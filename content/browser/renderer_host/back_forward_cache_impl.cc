@@ -1329,10 +1329,6 @@ bool BackForwardCacheImpl::IsMediaSessionServiceAllowed() {
       features::kBackForwardCacheMediaSessionService);
 }
 
-bool BackForwardCacheImpl::IsMediaPlayAllowed() {
-  return base::FeatureList::IsEnabled(features::kBackForwardCacheMediaPlay);
-}
-
 bool BackForwardCache::DisabledReason::operator<(
     const DisabledReason& other) const {
   return std::tie(source, id) < std::tie(other.source, other.id);

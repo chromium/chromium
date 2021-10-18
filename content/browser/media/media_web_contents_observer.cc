@@ -15,8 +15,6 @@
 #include "build/build_config.h"
 #include "content/browser/media/audible_metrics.h"
 #include "content/browser/media/media_devices_util.h"
-#include "content/browser/renderer_host/back_forward_cache_disable.h"
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -99,10 +97,6 @@ class MediaWebContentsObserver::PlayerInfo {
   }
 
   bool IsAudible() const { return has_audio_ && is_playing_ && !muted_; }
-
-  GlobalRenderFrameHostId GetFrameRoutingId() const {
-    return id_.frame_routing_id;
-  }
 
  private:
   void NotifyPlayerStarted() {
@@ -434,13 +428,6 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaPlaying() {
   PlayerInfo* player_info = GetPlayerInfo();
   if (!player_info)
     return;
-
-  if (!BackForwardCacheImpl::IsMediaPlayAllowed()) {
-    BackForwardCache::DisableForRenderFrameHost(
-        player_info->GetFrameRoutingId(),
-        BackForwardCacheDisable::DisabledReason(
-            BackForwardCacheDisable::DisabledReasonId::kMediaPlay));
-  }
 
   if (!media_web_contents_observer_->session_controllers_manager()->RequestPlay(
           media_player_id_)) {
