@@ -71,8 +71,6 @@ void ApplySpreadToShadowShape(FloatRoundedRect& shadow_shape, float spread) {
   else
     shadow_shape.ShrinkRadii(-spread);
 
-  if (!shadow_shape.IsRenderable())
-    shadow_shape.AdjustRadii();
   shadow_shape.ConstrainRadii();
 }
 

@@ -90,25 +90,6 @@ void FloatRoundedRect::Radii::Scale(float factor) {
     bottom_right_ = FloatSize();
 }
 
-void FloatRoundedRect::Radii::ScaleAndFloor(float factor) {
-  if (factor == 1)
-    return;
-
-  // If either radius on a corner becomes zero, reset both radii on that corner.
-  top_left_.ScaleAndFloor(factor);
-  if (!top_left_.width() || !top_left_.height())
-    top_left_ = FloatSize();
-  top_right_.ScaleAndFloor(factor);
-  if (!top_right_.width() || !top_right_.height())
-    top_right_ = FloatSize();
-  bottom_left_.ScaleAndFloor(factor);
-  if (!bottom_left_.width() || !bottom_left_.height())
-    bottom_left_ = FloatSize();
-  bottom_right_.ScaleAndFloor(factor);
-  if (!bottom_right_.width() || !bottom_right_.height())
-    bottom_right_ = FloatSize();
-}
-
 void FloatRoundedRect::Radii::Shrink(float top_width,
                                      float bottom_width,
                                      float left_width,
@@ -300,67 +281,36 @@ bool FloatRoundedRect::IntersectsQuad(const FloatQuad& quad) const {
   return true;
 }
 
-float CalcBorderRadiiConstraintScaleFor(const FloatRect& rect,
-                                        const FloatRoundedRect::Radii& radii) {
+void FloatRoundedRect::ConstrainRadii() {
   float factor = 1;
-  float radii_sum;
 
-  // top
-  radii_sum = radii.TopLeft().width() +
-              radii.TopRight().width();  // Casts to avoid integer overflow.
-  if (radii_sum > rect.width())
-    factor = std::min(rect.width() / radii_sum, factor);
+  float horizontal_sum =
+      std::max(radii_.TopLeft().width() + radii_.TopRight().width(),
+               radii_.BottomLeft().width() + radii_.BottomRight().width());
+  if (horizontal_sum > rect_.width())
+    factor = std::min(rect_.width() / horizontal_sum, factor);
 
-  // bottom
-  radii_sum = radii.BottomLeft().width() + radii.BottomRight().width();
-  if (radii_sum > rect.width())
-    factor = std::min(rect.width() / radii_sum, factor);
-
-  // left
-  radii_sum = radii.TopLeft().height() + radii.BottomLeft().height();
-  if (radii_sum > rect.height())
-    factor = std::min(rect.height() / radii_sum, factor);
-
-  // right
-  radii_sum = radii.TopRight().height() + radii.BottomRight().height();
-  if (radii_sum > rect.height())
-    factor = std::min(rect.height() / radii_sum, factor);
+  float vertical_sum =
+      std::max(radii_.TopLeft().height() + radii_.BottomLeft().height(),
+               radii_.TopRight().height() + radii_.BottomRight().height());
+  if (vertical_sum > rect_.height())
+    factor = std::min(rect_.height() / vertical_sum, factor);
 
   DCHECK_LE(factor, 1);
-  return factor;
-}
-
-void FloatRoundedRect::ConstrainRadii() {
-  radii_.ScaleAndFloor(CalcBorderRadiiConstraintScaleFor(Rect(), GetRadii()));
+  radii_.Scale(factor);
+  DCHECK(IsRenderable());
 }
 
 bool FloatRoundedRect::IsRenderable() const {
-  // FIXME: remove the 0.0001 slop once this class is converted to layout units.
+  constexpr float kTolerance = 0.0001;
   return radii_.TopLeft().width() + radii_.TopRight().width() <=
-             rect_.width() + 0.0001 &&
+             rect_.width() + kTolerance &&
          radii_.BottomLeft().width() + radii_.BottomRight().width() <=
-             rect_.width() + 0.0001 &&
+             rect_.width() + kTolerance &&
          radii_.TopLeft().height() + radii_.BottomLeft().height() <=
-             rect_.height() + 0.0001 &&
+             rect_.height() + kTolerance &&
          radii_.TopRight().height() + radii_.BottomRight().height() <=
-             rect_.height() + 0.0001;
-}
-
-void FloatRoundedRect::AdjustRadii() {
-  float max_radius_width =
-      std::max(radii_.TopLeft().width() + radii_.TopRight().width(),
-               radii_.BottomLeft().width() + radii_.BottomRight().width());
-  float max_radius_height =
-      std::max(radii_.TopLeft().height() + radii_.BottomLeft().height(),
-               radii_.TopRight().height() + radii_.BottomRight().height());
-
-  if (max_radius_width <= 0 || max_radius_height <= 0) {
-    radii_.Scale(0.0f);
-    return;
-  }
-  float width_ratio = static_cast<float>(rect_.width()) / max_radius_width;
-  float height_ratio = static_cast<float>(rect_.height()) / max_radius_height;
-  radii_.Scale(width_ratio < height_ratio ? width_ratio : height_ratio);
+             rect_.height() + kTolerance;
 }
 
 std::ostream& operator<<(std::ostream& ostream, const FloatRoundedRect& rect) {
