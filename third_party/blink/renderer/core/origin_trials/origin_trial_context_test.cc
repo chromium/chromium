@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -426,9 +427,9 @@ TEST_F(OriginTrialContextTest, ParseHeaderValue_NotCommaSeparated) {
 }
 
 TEST_F(OriginTrialContextTest, PermissionsPolicy) {
-  // Create a dummy window/document with an OriginTrialContext.
-  auto dummy = std::make_unique<DummyPageHolder>();
-  LocalDOMWindow* window = dummy->GetFrame().DomWindow();
+  // Create a page holder window/document with an OriginTrialContext.
+  auto page_holder = std::make_unique<DummyPageHolder>();
+  LocalDOMWindow* window = page_holder->GetFrame().DomWindow();
   OriginTrialContext* context = window->GetOriginTrialContext();
 
   // Enable the sample origin trial API ("Frobulate").
@@ -541,6 +542,28 @@ TEST_F(OriginTrialContextTest, ImpliedFeatureExpiryTimesAreUpdated) {
   EXPECT_TRUE(IsFeatureEnabled(OriginTrialFeature::kOriginTrialsSampleAPI));
   EXPECT_EQ(tomorrow, GetFeatureExpiry(
                           OriginTrialFeature::kOriginTrialsSampleAPIImplied));
+}
+
+TEST_F(OriginTrialContextTest, SettingFeatureUpdatesDocumentSettings) {
+  // Create a page holder window/document with an OriginTrialContext.
+  auto page_holder = std::make_unique<DummyPageHolder>();
+  LocalDOMWindow* window = page_holder->GetFrame().DomWindow();
+  OriginTrialContext* context = window->GetOriginTrialContext();
+
+  // Force-disabled the AutoDarkMode feature in the page holder's settings.
+  ASSERT_TRUE(page_holder->GetDocument().GetSettings());
+  page_holder->GetDocument().GetSettings()->SetForceDarkModeEnabled(false);
+
+  // Enable a settings-based origin trial API ("AutoDarkMode").
+  context->AddFeature(OriginTrialFeature::kAutoDarkMode);
+  EXPECT_TRUE(context->IsFeatureEnabled(OriginTrialFeature::kAutoDarkMode));
+
+  // Expect the AutoDarkMode setting to have been enabled.
+  EXPECT_TRUE(
+      page_holder->GetDocument().GetSettings()->GetForceDarkModeEnabled());
+
+  // TODO(crbug.com/1260410): Switch this test away from using the AutoDarkMode
+  // feature towards an OriginTrialsSampleAPI* feature.
 }
 
 class OriginTrialContextDevtoolsTest : public OriginTrialContextTest {

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
@@ -350,27 +351,52 @@ void OriginTrialContext::InitializePendingFeatures() {
   if (!script_state->ContextIsValid())
     return;
   ScriptState::Scope scope(script_state);
-  int new_feature_added = 0;
-  for (OriginTrialFeature enabled_feature : enabled_features_) {
-    new_feature_added += InstallFeature(enabled_feature, script_state);
-  }
-  for (OriginTrialFeature enabled_feature : navigation_activated_features_) {
-    new_feature_added += InstallFeature(enabled_feature, script_state);
-  }
-  if (new_feature_added > 0) {
+
+  bool added_binding_feature =
+      InstallFeatures(enabled_features_, *window->document(), script_state);
+  added_binding_feature |= InstallFeatures(navigation_activated_features_,
+                                           *window->document(), script_state);
+
+  if (added_binding_feature) {
     // Also allow V8 to install conditional features now.
     script_state->GetIsolate()->InstallConditionalFeatures(
         script_state->GetContext());
   }
 }
 
-bool OriginTrialContext::InstallFeature(OriginTrialFeature enabled_feature,
-                                        ScriptState* script_state) {
-  if (installed_features_.Contains(enabled_feature))
-    return false;
-  InstallPropertiesPerFeature(script_state, enabled_feature);
-  installed_features_.insert(enabled_feature);
-  return true;
+bool OriginTrialContext::InstallFeatures(
+    const HashSet<OriginTrialFeature>& features,
+    Document& document,
+    ScriptState* script_state) {
+  bool added_binding_features = false;
+  for (OriginTrialFeature enabled_feature : features) {
+    if (installed_features_.Contains(enabled_feature))
+      continue;
+
+    installed_features_.insert(enabled_feature);
+
+    if (InstallSettingFeature(document, enabled_feature))
+      continue;
+
+    InstallPropertiesPerFeature(script_state, enabled_feature);
+    added_binding_features = true;
+  }
+
+  return added_binding_features;
+}
+
+bool OriginTrialContext::InstallSettingFeature(
+    Document& document,
+    OriginTrialFeature enabled_feature) {
+  switch (enabled_feature) {
+    case OriginTrialFeature::kAutoDarkMode:
+      if (document.GetSettings())
+        document.GetSettings()->SetForceDarkModeEnabled(true);
+      return true;
+
+    default:
+      return false;
+  }
 }
 
 void OriginTrialContext::AddFeature(OriginTrialFeature feature) {

@@ -3368,6 +3368,7 @@ enum WebFeature {
   kExternalProtocolBlockedBySandbox = 4058,
   kWebAssemblyDynamicTiering = 4059,
   kReadOrWriteWebDatabase = 4061,
+  kAutoDarkMode = 4062,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
