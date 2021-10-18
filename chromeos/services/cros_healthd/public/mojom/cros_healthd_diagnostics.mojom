@@ -165,8 +165,11 @@ enum AcPowerStatusEnum {
 };
 
 // Enumeration of the self-test type in nvme_self_test routine
+//
+// NextMinVersion: 1, NextIndex: 3
 [Extensible]
 enum NvmeSelfTestTypeEnum {
+  [Default] kUnknown = 2,
   kShortSelfTest = 0, // Short time self-test.
   kLongSelfTest = 1,  // Long time self-test.
 };
