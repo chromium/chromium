@@ -127,6 +127,33 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   }
 
+  content::WebContents* GetActiveSidePanelWebContents(Browser* browser) {
+    auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
+        browser->tab_strip_model()->GetActiveWebContents());
+    return tab_contents_helper->side_panel_contents_for_testing();
+  }
+
+  void NavigateActiveSideContents(Browser* browser, const GURL& url) {
+    auto* side_contents = GetActiveSidePanelWebContents(browser);
+    content::TestNavigationObserver nav_observer(side_contents);
+    side_contents->GetController().LoadURLWithParams(
+        content::NavigationController::LoadURLParams(url));
+    nav_observer.Wait();
+    if (SideSearchConfig::Get(browser->profile())
+            ->ShouldNavigateInSidePanel(url)) {
+      // If allowed to proceed in the side panel the side contents committed URL
+      // should have been updated to reflect.
+      EXPECT_EQ(url, side_contents->GetLastCommittedURL());
+    } else {
+      // If redirected to the tab contents ensure we observe the correct
+      // committed URL in the tab.
+      auto* tab_contents = browser->tab_strip_model()->GetActiveWebContents();
+      content::TestNavigationObserver tab_observer(tab_contents);
+      tab_observer.Wait();
+      EXPECT_EQ(url, tab_contents->GetLastCommittedURL());
+    }
+  }
+
   void NotifyButtonClick(Browser* browser) {
     views::test::ButtonTestApi(GetSidePanelButtonFor(browser))
         .NotifyClick(GetDummyEvent());
@@ -193,6 +220,8 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
     NotifyButtonClick(browser);
     EXPECT_TRUE(GetSidePanelButtonFor(browser)->GetVisible());
     EXPECT_TRUE(GetSidePanelFor(browser)->GetVisible());
+    EXPECT_TRUE(
+        content::WaitForLoadStop(GetActiveSidePanelWebContents(browser)));
   }
 
  protected:
@@ -221,6 +250,133 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// This interaction tests that pages in the tab frame opened from the side panel
+// are correctly marked as being non-skippable despite the tab frame not
+// receiving a user gesture.
+//   1. Have the side panel open A in the tab.
+//   2. Have the side panel open B1 in the tab.
+//   3. B1 automatically redirects to B2 to attempt to trap the user.
+//   4. Navigating backwards from B2 should skip back to A.
+//   5. Navigating backwards from A should skip back to the tab's initial page.
+IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+                       SidePanelOpenedPagesInTheTabFrameAreNonSkippable) {
+  // Start with the side panel in a toggled open state. The side panel will
+  // intercept non-google search URLs and redirect these to the tab contents.
+  NavigateToSRPAndOpenSidePanel(browser());
+
+  // Always show the side panel for the duration of the navigation test.
+  SideSearchConfig::Get(browser()->profile())
+      ->SetCanShowSidePanelForURLCallback(
+          base::BindRepeating([](const GURL& url) { return true; }));
+
+  const GURL initial_url = embedded_test_server()->GetURL("/initial.html");
+  const GURL a_url = embedded_test_server()->GetURL("/A.html");
+  const GURL b1_url = embedded_test_server()->GetURL("/B1.html");
+  const GURL b2_url = embedded_test_server()->GetURL("/B2.html");
+
+  // Start the tab contents at the initial url.
+  NavigateActiveTab(browser(), initial_url);
+  auto* tab_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(initial_url, tab_contents->GetLastCommittedURL());
+
+  // Have the side panel open page A in the tab contents.
+  NavigateActiveSideContents(browser(), a_url);
+  EXPECT_EQ(a_url, tab_contents->GetLastCommittedURL());
+
+  // Have the side panel open page B1 in the tab contents. Immediately redirect
+  // this to page B2.
+  NavigateActiveSideContents(browser(), b1_url);
+  EXPECT_EQ(b1_url, tab_contents->GetLastCommittedURL());
+  {
+    content::TestNavigationObserver tab_observer(tab_contents);
+    EXPECT_TRUE(content::ExecJs(tab_contents,
+                                "location = '" + b2_url.spec() + "';",
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    tab_observer.Wait();
+    EXPECT_EQ(b2_url, tab_contents->GetLastCommittedURL());
+  }
+
+  // Go back from page B2. B1 should be skippable and we should return to A.
+  {
+    content::TestNavigationObserver tab_observer(tab_contents);
+    tab_contents->GetController().GoBack();
+    tab_observer.Wait();
+    EXPECT_EQ(a_url, tab_contents->GetLastCommittedURL());
+  }
+
+  // Go back from page A. We should return to the initial page.
+  {
+    content::TestNavigationObserver tab_observer(tab_contents);
+    tab_contents->GetController().GoBack();
+    tab_observer.Wait();
+    EXPECT_EQ(initial_url, tab_contents->GetLastCommittedURL());
+  }
+}
+
+// This interaction tests that only the final page in the tab frame arrived at
+// from a redirection chain initiated from the side panel is marked as skippable
+// and not the intermediate pages in the chain.
+//   1. Have the side panel open A1 in the tab.
+//   2. A1 automatically redirects to A2 to attempt to trap the user.
+//   3. Have the side panel open B in the tab.
+//   4. Navigating backwards from B should skip back to A2.
+//   5. Navigating backwards from A2 should skip back to the tab's initial page.
+IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+                       RedirectedPagesOpenedFromTheSidePanelAreSkippable) {
+  // Start with the side panel in a toggled open state. The side panel will
+  // intercept non-google search URLs and redirect these to the tab contents.
+  NavigateToSRPAndOpenSidePanel(browser());
+
+  // Always show the side panel for the duration of the navigation test.
+  SideSearchConfig::Get(browser()->profile())
+      ->SetCanShowSidePanelForURLCallback(
+          base::BindRepeating([](const GURL& url) { return true; }));
+
+  const GURL initial_url = embedded_test_server()->GetURL("/initial.html");
+  const GURL a1_url = embedded_test_server()->GetURL("/A1.html");
+  const GURL a2_url = embedded_test_server()->GetURL("/A2.html");
+  const GURL b_url = embedded_test_server()->GetURL("/B.html");
+
+  // Start the tab contents at the initial url.
+  NavigateActiveTab(browser(), initial_url);
+  auto* tab_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(initial_url, tab_contents->GetLastCommittedURL());
+
+  // Have the side panel open page A1 in the tab contents. Immediately redirect
+  // this to page A2.
+  NavigateActiveSideContents(browser(), a1_url);
+  EXPECT_EQ(a1_url, tab_contents->GetLastCommittedURL());
+  {
+    content::TestNavigationObserver tab_observer(tab_contents);
+    EXPECT_TRUE(content::ExecJs(tab_contents,
+                                "location = '" + a2_url.spec() + "';",
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    tab_observer.Wait();
+    EXPECT_EQ(a2_url, tab_contents->GetLastCommittedURL());
+  }
+
+  // Have the side panel open page B in the tab contents.
+  NavigateActiveSideContents(browser(), b_url);
+  EXPECT_EQ(b_url, tab_contents->GetLastCommittedURL());
+
+  // Go back from page B. We should return to page A2.
+  {
+    content::TestNavigationObserver tab_observer(tab_contents);
+    tab_contents->GetController().GoBack();
+    tab_observer.Wait();
+    EXPECT_EQ(a2_url, tab_contents->GetLastCommittedURL());
+  }
+
+  // Go back from page A2. A1 should be skippable and we should return to the
+  // initial page
+  {
+    content::TestNavigationObserver tab_observer(tab_contents);
+    tab_contents->GetController().GoBack();
+    tab_observer.Wait();
+    EXPECT_EQ(initial_url, tab_contents->GetLastCommittedURL());
+  }
+}
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelButtonShowsCorrectlySingleTab) {
