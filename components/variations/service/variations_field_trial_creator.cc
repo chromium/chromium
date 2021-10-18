@@ -173,7 +173,7 @@ std::string VariationsFieldTrialCreator::GetLatestCountry() const {
              : local_state()->GetString(prefs::kVariationsCountry);
 }
 
-bool VariationsFieldTrialCreator::SetupFieldTrials(
+bool VariationsFieldTrialCreator::SetUpFieldTrials(
     const std::vector<std::string>& variation_ids,
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
     std::unique_ptr<const base::FieldTrial::EntropyProvider>
@@ -269,7 +269,7 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
                                      feature_list.get(), safe_seed_manager);
   }
 
-  platform_field_trials->SetupFeatureControllingFieldTrials(
+  platform_field_trials->SetUpFeatureControllingFieldTrials(
       used_seed, low_entropy_provider.get(), feature_list.get());
 
   base::FeatureList::SetInstance(std::move(feature_list));
@@ -283,7 +283,7 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
   }
 
   // This must be called after |local_state_| is initialized.
-  platform_field_trials->SetupFieldTrials();
+  platform_field_trials->SetUpFieldTrials();
 
   return used_seed;
 }

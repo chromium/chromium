@@ -77,7 +77,7 @@ class ChromeFeatureListCreator {
  private:
   void CreatePrefService();
   void ConvertFlagsToSwitches();
-  void SetupFieldTrials();
+  void SetUpFieldTrials();
   void CreateMetricsServices();
 
   // Imports variations initial preference any preferences (to local state)

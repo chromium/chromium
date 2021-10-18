@@ -191,8 +191,8 @@ class ShellContentBrowserClient::ShellFieldTrials
   ~ShellFieldTrials() override = default;
 
   // variations::PlatformFieldTrials:
-  void SetupFieldTrials() override {}
-  void SetupFeatureControllingFieldTrials(
+  void SetUpFieldTrials() override {}
+  void SetUpFeatureControllingFieldTrials(
       bool has_seed,
       const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list) override {}
@@ -653,10 +653,10 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
 
   variations::SafeSeedManager safe_seed_manager(local_state_.get());
 
-  // Since this is a test-only code path, some arguments to SetupFieldTrials are
+  // Since this is a test-only code path, some arguments to SetUpFieldTrials are
   // null.
   // TODO(crbug/1248066): Consider passing a low entropy provider and source.
-  field_trial_creator.SetupFieldTrials(
+  field_trial_creator.SetUpFieldTrials(
       variation_ids,
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),

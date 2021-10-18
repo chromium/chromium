@@ -77,7 +77,7 @@ class PlatformFieldTrials;
 class SafeSeedManager;
 class VariationsServiceClient;
 
-// Used to setup field trials based on stored variations seed data.
+// Used to set up field trials based on stored variations seed data.
 class VariationsFieldTrialCreator {
  public:
   // Caller is responsible for ensuring that objects passed to the constructor
@@ -128,7 +128,7 @@ class VariationsFieldTrialCreator {
   // explicit --disable-features and --enable-features from the command line
   // take precedence over |extra_overrides|, which takes precedence over the
   // field trials.
-  bool SetupFieldTrials(
+  bool SetUpFieldTrials(
       const std::vector<std::string>& variation_ids,
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
           extra_overrides,

@@ -223,7 +223,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // does not use the same Variations Safe Mode mechanism as most other
   // platforms, pass false for |extend_variations_safe_mode| to opt out of the
   // Extended Variations Safe Mode experiment. See crbug/1220131 for more info.
-  variations_field_trial_creator_->SetupFieldTrials(
+  variations_field_trial_creator_->SetUpFieldTrials(
       variation_ids,
       GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),

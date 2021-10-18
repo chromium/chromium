@@ -193,8 +193,8 @@ TEST_F(SyntheticTrialRegistryTest, RegisterExternalExperiments_WithAllowlist) {
 TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
   SyntheticTrialRegistry registry;
 
-  // Instantiate and setup the corresponding singleton observer which tracks the
-  // creation of all SyntheticTrialGroups.
+  // Instantiate and set up the corresponding singleton observer which tracks
+  // the creation of all SyntheticTrialGroups.
   registry.AddSyntheticTrialObserver(
       SyntheticTrialsActiveGroupIdProvider::GetInstance());
 

@@ -144,8 +144,8 @@ class TestPlatformFieldTrials : public PlatformFieldTrials {
   ~TestPlatformFieldTrials() override = default;
 
   // PlatformFieldTrials:
-  void SetupFieldTrials() override {}
-  void SetupFeatureControllingFieldTrials(
+  void SetUpFieldTrials() override {}
+  void SetUpFeatureControllingFieldTrials(
       bool has_seed,
       const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list) override {}
@@ -298,11 +298,11 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
 
   ~TestVariationsFieldTrialCreator() override = default;
 
-  // A convenience wrapper around SetupFieldTrials() which passes default values
+  // A convenience wrapper around SetUpFieldTrials() which passes default values
   // for uninteresting params.
-  bool SetupFieldTrials(bool extend_variations_safe_mode = true) {
+  bool SetUpFieldTrials(bool extend_variations_safe_mode = true) {
     TestPlatformFieldTrials platform_field_trials;
-    return VariationsFieldTrialCreator::SetupFieldTrials(
+    return VariationsFieldTrialCreator::SetUpFieldTrials(
         /*variation_ids=*/std::vector<std::string>(),
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
@@ -436,7 +436,7 @@ class FieldTrialCreatorTestWithStartupVisibility
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 // Verify that unexpired seeds are used.
-TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed_NotExpired) {
+TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSeed_NotExpired) {
   DisableTestingConfig();
   const base::Time now = base::Time::Now();
 
@@ -472,7 +472,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed_NotExpired) {
     // has only one experiment with 100% probability weight, we must be part of
     // it.
     base::HistogramTester histogram_tester;
-    EXPECT_TRUE(field_trial_creator.SetupFieldTrials());
+    EXPECT_TRUE(field_trial_creator.SetUpFieldTrials());
     EXPECT_EQ(kTestSeedExperimentName,
               base::FieldTrialList::FindFullName(kTestSeedStudyName));
 
@@ -489,7 +489,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed_NotExpired) {
   }
 }
 
-TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed_NoLastFetchTime) {
+TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSeed_NoLastFetchTime) {
   DisableTestingConfig();
 
   // With a valid seed on first run, the safe seed manager should be informed of
@@ -514,7 +514,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed_NoLastFetchTime) {
   // Check that field trials are created from the seed. Since the test study has
   // only one experiment with 100% probability weight, we must be part of it.
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(field_trial_creator.SetupFieldTrials());
+  EXPECT_TRUE(field_trial_creator.SetUpFieldTrials());
   EXPECT_EQ(base::FieldTrialList::FindFullName(kTestSeedStudyName),
             kTestSeedExperimentName);
 
@@ -528,7 +528,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed_NoLastFetchTime) {
                                       SeedUsage::kRegularSeedUsed, 1);
 }
 
-TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSeed) {
+TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ExpiredSeed) {
   DisableTestingConfig();
 
   // When the seed is older than 30 days and older than the binary, no field
@@ -552,7 +552,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSeed) {
 
   // Check that field trials are not created from the expired seed.
   base::HistogramTester histogram_tester;
-  EXPECT_FALSE(field_trial_creator.SetupFieldTrials());
+  EXPECT_FALSE(field_trial_creator.SetUpFieldTrials());
   EXPECT_FALSE(base::FieldTrialList::TrialExists(kTestSeedStudyName));
 
   // Verify metrics. The seed freshness metric should not be recorded for an
@@ -566,7 +566,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSeed) {
 
 // Verify that unexpired safe seeds are used.
 TEST_F(FieldTrialCreatorTest,
-       SetupFieldTrials_ValidSafeSeed_NewBinaryUsesSeed) {
+       SetUpFieldTrials_ValidSafeSeed_NewBinaryUsesSeed) {
   DisableTestingConfig();
   const base::Time now = base::Time::Now();
 
@@ -602,7 +602,7 @@ TEST_F(FieldTrialCreatorTest,
     // study has only one experiment with 100% probability weight, we must be
     // part of it.
     base::HistogramTester histogram_tester;
-    EXPECT_TRUE(field_trial_creator.SetupFieldTrials());
+    EXPECT_TRUE(field_trial_creator.SetUpFieldTrials());
     EXPECT_EQ(kTestSafeSeedExperimentName,
               base::FieldTrialList::FindFullName(kTestSeedStudyName));
 
@@ -622,7 +622,7 @@ TEST_F(FieldTrialCreatorTest,
 
 // Verify that Chrome applies the regular variations seed when Chrome should run
 // in variations safe mode but the safe seed is empty.
-TEST_F(FieldTrialCreatorTest, SetupFieldTrials_EmptySafeSeed_UsesRegularSeed) {
+TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_EmptySafeSeed_UsesRegularSeed) {
   DisableTestingConfig();
 
   NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
@@ -646,7 +646,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_EmptySafeSeed_UsesRegularSeed) {
   // study has only one experiment with 100% probability weight, we must be part
   // of it.
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(field_trial_creator.SetupFieldTrials());
+  EXPECT_TRUE(field_trial_creator.SetUpFieldTrials());
   EXPECT_EQ(kTestSeedExperimentName,
             base::FieldTrialList::FindFullName(kTestSeedStudyName));
 
@@ -662,7 +662,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_EmptySafeSeed_UsesRegularSeed) {
 // Verify that Chrome does not apply a variations seed when Chrome should run in
 // variations safe mode and a safe seed cannot be loaded.
 TEST_F(FieldTrialCreatorTest,
-       SetupFieldTrials_CorruptedSafeSeed_DoesNotUseSeed) {
+       SetUpFieldTrials_CorruptedSafeSeed_DoesNotUseSeed) {
   DisableTestingConfig();
 
   NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
@@ -680,7 +680,7 @@ TEST_F(FieldTrialCreatorTest,
   base::HistogramTester histogram_tester;
 
   // Verify that field trials were not set up.
-  EXPECT_FALSE(field_trial_creator.SetupFieldTrials());
+  EXPECT_FALSE(field_trial_creator.SetUpFieldTrials());
   EXPECT_FALSE(base::FieldTrialList::TrialExists(kTestSeedStudyName));
 
   // Verify that Chrome did not apply the safe seed.
@@ -689,7 +689,7 @@ TEST_F(FieldTrialCreatorTest,
 }
 
 // Verify that valid safe seeds with missing download times are applied.
-TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSafeSeed_NoLastFetchTime) {
+TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSafeSeed_NoLastFetchTime) {
   DisableTestingConfig();
 
   // With a valid safe seed, the safe seed manager should not be informed of the
@@ -710,7 +710,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSafeSeed_NoLastFetchTime) {
   // study has only one experiment with 100% probability weight, we must be part
   // of it.
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(field_trial_creator.SetupFieldTrials());
+  EXPECT_TRUE(field_trial_creator.SetUpFieldTrials());
   EXPECT_EQ(kTestSafeSeedExperimentName,
             base::FieldTrialList::FindFullName(kTestSeedStudyName));
 
@@ -726,7 +726,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSafeSeed_NoLastFetchTime) {
 
 // Verify that no seed is applied when (i) safe mode is triggered and (ii) the
 // loaded safe seed has expired.
-TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSafeSeed) {
+TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ExpiredSafeSeed) {
   DisableTestingConfig();
 
   // With a valid safe seed, the safe seed manager should not be informed of the
@@ -749,7 +749,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSafeSeed) {
 
   // Check that field trials are not created from the expired seed.
   base::HistogramTester histogram_tester;
-  EXPECT_FALSE(field_trial_creator.SetupFieldTrials());
+  EXPECT_FALSE(field_trial_creator.SetUpFieldTrials());
   EXPECT_FALSE(base::FieldTrialList::TrialExists(kTestSeedStudyName));
 
   // Verify metrics. The seed freshness metric should not be recorded for an
@@ -764,7 +764,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSafeSeed) {
 
 #if defined(OS_ANDROID)
 // This is a regression test for https://crbug.com/829527
-TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
+TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   DisableTestingConfig();
 
   // Simulate having received a seed in Java during First Run.
@@ -799,7 +799,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
   // single study with an experiment targeting 100% of users in India. Since
   // |initial_seed| included the country code for India, this study should be
   // active.
-  EXPECT_TRUE(field_trial_creator.SetupFieldTrials(
+  EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/std::vector<std::string>(),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
@@ -850,7 +850,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest, OptOutOfExperiment) {
       channel);
 
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(field_trial_creator.SetupFieldTrials(
+  ASSERT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*extend_variations_safe_mode=*/false));
 
   // Verify that the experiment is not active and that the WritePrefsTime metric
@@ -900,7 +900,7 @@ TEST_P(FieldTrialCreatorTestWithStartupVisibility,
   TestVariationsFieldTrialCreator field_trial_creator(
       pref_service.get(), &variations_service_client, &safe_seed_manager,
       channel, base::FilePath(), params.startup_visibility);
-  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+  ASSERT_TRUE(field_trial_creator.SetUpFieldTrials());
 
   // Verify that MaybeExtendVariationsSafeMode() was (or wasn't) called.
   EXPECT_EQ(field_trial_creator.was_maybe_extend_variations_safe_mode_called(),
@@ -932,7 +932,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
         channel);
 
     base::HistogramTester histogram_tester;
-    ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+    ASSERT_TRUE(field_trial_creator.SetUpFieldTrials());
 
     // Verify that the experiment is not active.
     EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
@@ -972,7 +972,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
       channel);
 
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+  ASSERT_TRUE(field_trial_creator.SetUpFieldTrials());
 
   // Verify that the field trial is active and that the client is in the
   // control group.
@@ -1017,7 +1017,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
       channel, user_data_dir_path());
 
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+  ASSERT_TRUE(field_trial_creator.SetUpFieldTrials());
 
   // Verify that the field trial is active and that the client is in the
   // SignalAndWriteViaFileUtil group.

@@ -352,7 +352,7 @@ void MetricsStateManager::InstantiateFieldTrialList(
   }
 
   // TODO(crbug/1257204): Some FieldTrial-setup-related code is here and some is
-  // in VariationsFieldTrialCreator::SetupFieldTrials(). It's not ideal that
+  // in VariationsFieldTrialCreator::SetUpFieldTrials(). It's not ideal that
   // it's in two places.
   //
   // When benchmarking is enabled, field trials' default groups are chosen, so

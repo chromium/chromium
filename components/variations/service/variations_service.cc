@@ -958,13 +958,13 @@ std::string VariationsService::GetLatestCountry() const {
   return field_trial_creator_.GetLatestCountry();
 }
 
-bool VariationsService::SetupFieldTrials(
+bool VariationsService::SetUpFieldTrials(
     const std::vector<std::string>& variation_ids,
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
     std::unique_ptr<base::FeatureList> feature_list,
     variations::PlatformFieldTrials* platform_field_trials,
     bool extend_variations_safe_mode) {
-  return field_trial_creator_.SetupFieldTrials(
+  return field_trial_creator_.SetUpFieldTrials(
       variation_ids, extra_overrides, CreateLowEntropyProvider(),
       std::move(feature_list), state_manager_, platform_field_trials,
       &safe_seed_manager_, state_manager_->GetLowEntropySource(),

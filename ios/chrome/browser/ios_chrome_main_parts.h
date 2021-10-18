@@ -38,7 +38,7 @@ class IOSChromeMainParts : public web::WebMainParts {
 
   // Sets up the field trials and related initialization. Call only after
   // about:flags have been converted to switches.
-  void SetupFieldTrials();
+  void SetUpFieldTrials();
 
   // Constructs the metrics service and initializes metrics recording.
   void SetupMetrics();

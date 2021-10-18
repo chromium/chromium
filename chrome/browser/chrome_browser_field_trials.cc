@@ -70,7 +70,7 @@ ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
 ChromeBrowserFieldTrials::~ChromeBrowserFieldTrials() {
 }
 
-void ChromeBrowserFieldTrials::SetupFieldTrials() {
+void ChromeBrowserFieldTrials::SetUpFieldTrials() {
   // Field trials that are shared by all platforms.
   InstantiateDynamicTrials();
 
@@ -79,7 +79,7 @@ void ChromeBrowserFieldTrials::SetupFieldTrials() {
 #endif
 }
 
-void ChromeBrowserFieldTrials::SetupFeatureControllingFieldTrials(
+void ChromeBrowserFieldTrials::SetUpFeatureControllingFieldTrials(
     bool has_seed,
     const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list) {

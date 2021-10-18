@@ -78,7 +78,7 @@ void FeatureListCreator::SetUpFieldTrials() {
   // Pass false for |extend_variations_safe_mode| to temporarily opt out of the
   // Extended Variations Safe Mode experiment.
   // TODO(crbug/1245347): Enable the experiment on Android WebLayer.
-  variations_service_->SetupFieldTrials(
+  variations_service_->SetUpFieldTrials(
       variation_ids,
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),

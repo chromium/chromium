@@ -11,7 +11,7 @@
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 
-void IOSChromeFieldTrials::SetupFieldTrials() {
+void IOSChromeFieldTrials::SetUpFieldTrials() {
   // Persistent histograms must be enabled as soon as possible.
   base::FilePath user_data_dir;
   if (base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir)) {
@@ -19,7 +19,7 @@ void IOSChromeFieldTrials::SetupFieldTrials() {
   }
 }
 
-void IOSChromeFieldTrials::SetupFeatureControllingFieldTrials(
+void IOSChromeFieldTrials::SetUpFeatureControllingFieldTrials(
     bool has_seed,
     const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list) {

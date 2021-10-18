@@ -198,7 +198,7 @@ void IOSChromeMainParts::PreCreateThreads() {
   // initialize field trials. The field trials are needed by IOThread's
   // initialization which happens in BrowserProcess:PreCreateThreads. Metrics
   // initialization is handled in PreMainMessageLoopRun since it posts tasks.
-  SetupFieldTrials();
+  SetUpFieldTrials();
 
   // Set metrics upload for stack/heap profiles.
   IOSThreadProfiler::SetBrowserProcessReceiverCallback(base::BindRepeating(
@@ -357,7 +357,7 @@ void IOSChromeMainParts::PostDestroyThreads() {
 }
 
 // This will be called after the command-line has been mutated by about:flags
-void IOSChromeMainParts::SetupFieldTrials() {
+void IOSChromeMainParts::SetUpFieldTrials() {
   base::SetRecordActionTaskRunner(
       base::CreateSingleThreadTaskRunner({web::WebThread::UI}));
 
@@ -378,7 +378,7 @@ void IOSChromeMainParts::SetupFieldTrials() {
   std::vector<std::string> variation_ids =
       RegisterAllFeatureVariationParameters(&flags_storage, feature_list.get());
 
-  application_context_->GetVariationsService()->SetupFieldTrials(
+  application_context_->GetVariationsService()->SetUpFieldTrials(
       variation_ids, std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), &ios_field_trials_);
 }
