@@ -24,6 +24,9 @@ class IdentityManagerLacros {
   static void GetAccountImage(
       const std::string& gaia_id,
       crosapi::mojom::IdentityManager::GetAccountImageCallback callback);
+  static void GetAccountEmail(
+      const std::string& gaia_id,
+      crosapi::mojom::IdentityManager::GetAccountEmailCallback callback);
 };
 
 #endif  // CHROME_BROWSER_LACROS_IDENTITY_MANAGER_LACROS_H_

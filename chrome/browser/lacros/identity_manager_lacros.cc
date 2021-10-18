@@ -58,3 +58,17 @@ void IdentityManagerLacros::GetAccountImage(
   service->GetRemote<crosapi::mojom::IdentityManager>()->GetAccountImage(
       gaia_id, std::move(callback));
 }
+
+void IdentityManagerLacros::GetAccountEmail(
+    const std::string& gaia_id,
+    crosapi::mojom::IdentityManager::GetAccountEmailCallback callback) {
+  chromeos::LacrosService* service = GetLacrosService(
+      RemoteMinVersions::kGetAccountEmailMinVersion, "GetAccountEmail");
+  if (!service) {
+    std::move(callback).Run("");
+    return;
+  }
+
+  service->GetRemote<crosapi::mojom::IdentityManager>()->GetAccountEmail(
+      gaia_id, std::move(callback));
+}

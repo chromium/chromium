@@ -64,4 +64,14 @@ void IdentityManagerAsh::GetAccountImage(const std::string& gaia_id,
   std::move(callback).Run(account_info.account_image.AsImageSkia());
 }
 
+void IdentityManagerAsh::GetAccountEmail(const std::string& gaia_id,
+                                         GetAccountEmailCallback callback) {
+  AccountInfo account_info = GetAccountInfo(gaia_id);
+  if (GetAccountInfo(gaia_id).IsEmpty()) {
+    std::move(callback).Run("");
+    return;
+  }
+  std::move(callback).Run(account_info.email);
+}
+
 }  // namespace crosapi

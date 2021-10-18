@@ -16,4 +16,8 @@ interface IdentityManager {
 
   // Returns the account_image of the account with gaia id `gaia`.
   GetAccountImage@1(string gaia) => (gfx.mojom.ImageSkia? image);
+
+  // Returns the email of the account with gaia id `gaia`.
+  [MinVersion=1]
+  GetAccountEmail@2(string gaia) => (string email);
 };

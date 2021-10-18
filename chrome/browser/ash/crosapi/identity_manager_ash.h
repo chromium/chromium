@@ -29,6 +29,8 @@ class IdentityManagerAsh : public mojom::IdentityManager {
                           GetAccountFullNameCallback callback) override;
   void GetAccountImage(const std::string& gaia_id,
                        GetAccountImageCallback callback) override;
+  void GetAccountEmail(const std::string& gaia_id,
+                       GetAccountEmailCallback callback) override;
 
  private:
   mojo::ReceiverSet<mojom::IdentityManager> receivers_;
