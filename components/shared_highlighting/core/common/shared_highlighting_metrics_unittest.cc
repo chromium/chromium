@@ -76,6 +76,12 @@ TEST_F(SharedHighlightingMetricsTest, LogTextFragmentLinkOpenSource) {
   histogram_tester_.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
                                       TextFragmentLinkOpenSource::kUnknown, 2);
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 3);
+
+  GURL google_non_search_domain("https://mail.google.com");
+  LogTextFragmentLinkOpenSource(google_non_search_domain);
+  histogram_tester_.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
+                                      TextFragmentLinkOpenSource::kUnknown, 3);
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 4);
 }
 
 TEST_F(SharedHighlightingMetricsTest, LogTextFragmentMatchRate) {

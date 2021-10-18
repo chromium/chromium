@@ -11,6 +11,8 @@
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -172,8 +174,8 @@ TEST_F(TextFragmentAnchorMetricsTest, UMAMetricsCollectedSearchEngineReferrer) {
   // Set the referrer to a known search engine URL. This should cause metrics
   // to be reported for the SearchEngine variant of histograms.
   SimRequest::Params params;
-  params.referrer = "https://www.bing.com";
-
+  params.requestor_origin = WebSecurityOrigin::CreateFromString(
+      WebString::FromUTF8("https://www.bing.com"));
   SimRequest request("https://example.com/test.html#:~:text=test&text=cat",
                      "text/html", params);
   LoadURL("https://example.com/test.html#:~:text=test&text=cat");
@@ -354,7 +356,8 @@ TEST_F(TextFragmentAnchorMetricsTest, NoMatchFoundWithSearchEngineSource) {
   // Set the referrer to a known search engine URL. This should cause metrics
   // to be reported for the SearchEngine variant of histograms.
   SimRequest::Params params;
-  params.referrer = "https://www.bing.com";
+  params.requestor_origin = WebSecurityOrigin::CreateFromString(
+      WebString::FromUTF8("https://www.bing.com"));
   SimRequest request("https://example.com/test.html#:~:text=cat", "text/html",
                      params);
   LoadURL("https://example.com/test.html#:~:text=cat");
@@ -1662,6 +1665,41 @@ TEST_F(TextFragmentAnchorMetricsTest,
     EXPECT_FALSE(GetDocument().IsUseCounted(
         WebFeature::kTextFragmentBlockedByForceLoadAtTop));
   }
+}
+
+TEST_F(TextFragmentAnchorMetricsTest, TextFragmentLinkOpenSource_GoogleDomain) {
+  // Set the referrer to a google domain page.
+  SimRequest::Params params;
+  params.requestor_origin = WebSecurityOrigin::CreateFromString(
+      WebString::FromUTF8("https://www.mail.google.com"));
+  SimRequest request("https://example.com/test.html#:~:text=test&text=cat",
+                     "text/html", params);
+  LoadURL("https://example.com/test.html#:~:text=test&text=cat");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 1200px;
+      }
+      p {
+        position: absolute;
+        top: 1000px;
+      }
+    </style>
+    <p>This is a test page</p>
+    <p>With ambiguous test content</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  // This should be recorded as coming from an unknown source (not search
+  // engine).
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 1);
+  histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
+                                       1);
 }
 
 }  // namespace blink

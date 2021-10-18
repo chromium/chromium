@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -884,6 +885,94 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, TextFragmentAnchorDisabled) {
   run_loop.Run();
   RunUntilInputProcessed(GetWidgetHost());
   EXPECT_DID_SCROLL(false);
+}
+
+// Tests that text fragments opened after a client redirect are considered as
+// coming from an unknown source, even if the redirect is through a known
+// search engine URL.
+IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
+                       LinkOpenSourceMetrics_GoogleClientRedirect) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL first_url(embedded_test_server()->GetURL("google.com", "/empty.html"));
+  GURL final_url(embedded_test_server()->GetURL(
+      "/scrollable_page_with_content.html#:~:text=text"));
+
+  // This navigtion is simulated as if it came from the omnibox, hence it is
+  // considered to be user initiated.
+  EXPECT_TRUE(NavigateToURL(shell(), first_url));
+
+  WebContents* main_contents = shell()->web_contents();
+  TestNavigationObserver observer(main_contents);
+  EXPECT_EQ(first_url, main_contents->GetLastCommittedURL());
+
+  // This navigation occurs without a user gesture, simulating a client
+  // redirect. However, because the above navigation didn't activate a text
+  // fragment, permission should be propagated to this navigation.
+  EXPECT_TRUE(ExecJs(main_contents,
+                     "location.replace('" + final_url.spec() + "');",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  observer.Wait();
+  EXPECT_EQ(final_url, main_contents->GetLastCommittedURL());
+
+  WaitForPageLoad(main_contents);
+  RenderFrameSubmissionObserver frame_observer(main_contents);
+  frame_observer.WaitForScrollOffsetAtTop(
+      /*expected_scroll_offset_at_top=*/false);
+  EXPECT_DID_SCROLL(true);
+
+  // Bucket 0 is unknown source.
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
+                                      1);
+}
+
+// Tests that text fragments opened after a server redirect are considered as
+// coming from an unknown source, even if the redirect is through a known
+// search engine URL.
+IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
+                       LinkOpenSourceMetrics_GoogleServerRedirect) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL initial_url(embedded_test_server()->GetURL("/simple_page.html"));
+  GURL redirected_url(embedded_test_server()->GetURL(
+      "/scrollable_page_with_content.html#:~:text=text"));
+  GURL redirector_url(embedded_test_server()->GetURL(
+      "google.com", "/server-redirect?" + redirected_url.spec()));
+
+  // This navigtion is simulated as if it came from the omnibox, hence it is
+  // considered to be user initiated.
+  EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+
+  WebContents* main_contents = shell()->web_contents();
+  TestNavigationObserver observer(main_contents);
+  EXPECT_EQ(initial_url, main_contents->GetLastCommittedURL());
+
+  // Simulate a user clicking on a link to the redirector url.
+  EXPECT_TRUE(ExecJs(main_contents,
+                     "var hyperLinkTag = document.createElement('a'); "
+                     "hyperLinkTag.setAttribute('id','fragmentLink'); "
+                     "hyperLinkTag.setAttribute('href','" +
+                         redirector_url.spec() +
+                         "'); document.body.appendChild(hyperLinkTag); "
+                         "hyperLinkTag.appendChild(document.createTextNode('"
+                         "Text Fragment Link.'));"
+                         "document.getElementById('fragmentLink').click();"));
+
+  observer.Wait();
+  EXPECT_EQ(redirected_url, main_contents->GetLastCommittedURL());
+
+  RenderFrameSubmissionObserver frame_observer(main_contents);
+  frame_observer.WaitForScrollOffsetAtTop(
+      /*expected_scroll_offset_at_top=*/false);
+  EXPECT_DID_SCROLL(true);
+
+  // Bucket 0 is unknown source.
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
+                                      1);
 }
 
 }  // namespace content

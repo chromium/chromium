@@ -548,12 +548,21 @@ void TextFragmentAnchor::SetTickClockForTesting(
 }
 
 bool TextFragmentAnchor::HasSearchEngineSource() {
-  AtomicString referrer = frame_->GetDocument()->referrer();
-  // TODO(crbug.com/1133823): Add test case for valid referrer.
-  if (!referrer)
+  if (!frame_->GetDocument() || !frame_->GetDocument()->Loader())
     return false;
 
-  return IsKnownSearchEngine(referrer);
+  // Client side redirects should not happen for links opened from search
+  // engines. If a redirect occurred, we can't rely on the requestorOrigin as
+  // it won't point to the original requestor anymore.
+  if (frame_->GetDocument()->Loader()->IsClientRedirect())
+    return false;
+
+  // TODO(crbug.com/1133823): Add test case for valid referrer.
+  if (!frame_->GetDocument()->Loader()->GetRequestorOrigin())
+    return false;
+
+  return IsKnownSearchEngine(
+      frame_->GetDocument()->Loader()->GetRequestorOrigin()->ToString());
 }
 
 bool TextFragmentAnchor::ShouldDismissOnScrollOrClick() {

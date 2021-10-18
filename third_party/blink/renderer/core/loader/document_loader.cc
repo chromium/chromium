@@ -605,6 +605,10 @@ const Referrer& DocumentLoader::GetReferrer() const {
   return referrer_;
 }
 
+const SecurityOrigin* DocumentLoader::GetRequestorOrigin() const {
+  return requestor_origin_.get();
+}
+
 void DocumentLoader::SetServiceWorkerNetworkProvider(
     std::unique_ptr<WebServiceWorkerNetworkProvider> provider) {
   service_worker_network_provider_ = std::move(provider);
