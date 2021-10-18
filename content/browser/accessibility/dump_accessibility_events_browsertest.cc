@@ -218,11 +218,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAriaComboBoxSelect) {
-  RunEventTest(FILE_PATH_LITERAL("aria-combo-box-select.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaControlsChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-controls-changed.html"));
 }
