@@ -7,6 +7,7 @@
 
 #include "content/browser/contacts/contacts_provider.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/document_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/contacts/contacts_manager.mojom.h"
 
@@ -15,13 +16,11 @@ namespace content {
 class RenderFrameHostImpl;
 
 class CONTENT_EXPORT ContactsManagerImpl
-    : public blink::mojom::ContactsManager {
+    : public DocumentService<blink::mojom::ContactsManager> {
  public:
-  static void Create(
+  explicit ContactsManagerImpl(
       RenderFrameHostImpl* render_frame_host,
       mojo::PendingReceiver<blink::mojom::ContactsManager> receiver);
-
-  explicit ContactsManagerImpl(RenderFrameHostImpl* render_frame_host);
 
   ContactsManagerImpl(const ContactsManagerImpl&) = delete;
   ContactsManagerImpl& operator=(const ContactsManagerImpl&) = delete;

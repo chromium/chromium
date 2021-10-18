@@ -18,6 +18,7 @@
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/contacts/contacts_manager_impl.h"
 #include "content/browser/content_index/content_index_service_impl.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/eye_dropper_chooser_impl.h"
@@ -658,7 +659,15 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       &RenderFrameHostImpl::BindComputePressureHost, base::Unretained(host)));
 
   map->Add<blink::mojom::ContactsManager>(base::BindRepeating(
-      &RenderFrameHostImpl::GetContactsManager, base::Unretained(host)));
+      [](RenderFrameHostImpl* host,
+         mojo::PendingReceiver<blink::mojom::ContactsManager> receiver) {
+        DCHECK(host);
+
+        // The object is bound to the lifetime of `render_frame_host`'s logical document
+        // by virtue of being a `DocumentService` implementation.
+        new ContactsManagerImpl(host, std::move(receiver));
+      },
+      base::Unretained(host)));
 
   map->Add<blink::mojom::ContentSecurityNotifier>(base::BindRepeating(
       [](RenderFrameHostImpl* host,
