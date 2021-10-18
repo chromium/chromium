@@ -313,7 +313,7 @@ static bool IntersectsAllowingEmpty(const FloatRect& r1, const FloatRect& r2) {
 // rect, text and use.
 static bool IsIntersectionOrEnclosureTarget(LayoutObject* layout_object) {
   return layout_object->IsSVGShape() || layout_object->IsSVGText() ||
-         layout_object->IsSVGImage() ||
+         layout_object->IsNGSVGText() || layout_object->IsSVGImage() ||
          IsA<SVGUseElement>(*layout_object->GetNode());
 }
 
