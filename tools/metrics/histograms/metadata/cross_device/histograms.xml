@@ -154,7 +154,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Result"
     enum="InstanceIDResult" expires_after="2022-08-23">
-  <owner>khorimoto@chromium.org</owner>
+  <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Indicates the result of fetching an InstanceId token during the construction
@@ -164,7 +164,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Retries"
     units="retries" expires_after="2022-08-23">
-  <owner>khorimoto@chromium.org</owner>
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1818,7 +1817,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.SecureChannel.Nearby.ConnectionMedium"
     enum="SecureChannelNearbyConnectionMedium" expires_after="2022-04-03">
-  <owner>khorimoto@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Measures the connection medium used by Nearby Connections requested by
@@ -1832,8 +1831,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.SecureChannel.Nearby.ConnectionResult"
     enum="MultiDeviceNearbyConnectionsInitiatorResult"
-    expires_after="2021-11-30">
-  <owner>khorimoto@chromium.org</owner>
+    expires_after="2022-10-18">
+  <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Emitted the result of attempting to establish a connection when the Nearby
@@ -1844,7 +1843,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.SecureChannel.Nearby.DisconnectionReason"
     enum="MultiDeviceNearbyDisconnectionReason" expires_after="2022-05-01">
-  <owner>khorimoto@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Tracks reasons why a Nearby Connection established via SecureChannel ends up
@@ -1859,7 +1858,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.SecureChannel.Nearby.EffectiveConnectionResult"
     enum="BooleanSuccess" expires_after="2022-04-03">
-  <owner>khorimoto@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Measures the effective success rate for Nearby Connections attempts via
@@ -1875,7 +1874,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.SecureChannel.Nearby.MessageAction"
     enum="MultiDeviceNearbyMessageAction" expires_after="2022-05-01">
-  <owner>khorimoto@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Measures the completion of SecureChannel messages transfers via the Nearby
@@ -1886,7 +1885,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.SecureChannel.Nearby.OperationResult.{Function}"
     enum="NearbyConnectionsStatus" expires_after="2022-01-01">
-  <owner>khorimoto@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Records the result of invoking Nearby Connection's {Function} API function
@@ -1907,7 +1906,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.SecureChannel.Nearby.SendMessageResult"
     enum="BooleanSuccess" expires_after="2022-04-03">
-  <owner>khorimoto@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Measures the success rate of sending a SecureChannel message via the Nearby
@@ -1917,8 +1916,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.WebRtcUpgradeDuration"
-    units="ms" expires_after="2021-11-30">
-  <owner>khorimoto@chromium.org</owner>
+    units="ms" expires_after="2022-10-18">
+  <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Measures the amount of time taken between when a connection is accepted over
