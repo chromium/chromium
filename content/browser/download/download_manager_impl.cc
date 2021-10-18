@@ -38,6 +38,7 @@
 #include "components/download/public/common/download_utils.h"
 #include "components/download/public/common/input_stream.h"
 #include "components/download/public/common/url_download_handler_factory.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/data_url_loader_factory.h"
@@ -544,6 +545,20 @@ bool DownloadManagerImpl::InterceptDownload(
       params.from_download_cross_origin_redirect = true;
       params.initiator_origin = info.request_initiator;
       params.is_renderer_initiated = info.is_content_initiated;
+
+      // Ensure the method is called from an active document.
+      // If inactive documents start download, it can be a security risk.
+      // Call ReceiveBadMessage to terminate such a renderer.
+      // TODO(https://crbug.com/1259521): confirm if fenced frames or portals
+      // are allowed to start downloads.
+      if (!RenderFrameHost::FromID(info.render_process_id, info.render_frame_id)
+               ->IsActive()) {
+        bad_message::ReceivedBadMessage(
+            info.render_process_id,
+            bad_message::RFH_INTERECEPT_DOWNLOAD_WHILE_INACTIVE);
+        return false;
+      }
+
       web_contents->GetController().LoadURLWithParams(params);
     }
     return true;
