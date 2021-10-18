@@ -31,6 +31,8 @@ class GuestTosScreen : public BaseScreen {
 
   void OnViewDestroyed(GuestTosScreenView* view);
 
+  void OnAccept(bool enable_usage_stats);
+
  private:
   // BaseScreen:
   void ShowImpl() override;

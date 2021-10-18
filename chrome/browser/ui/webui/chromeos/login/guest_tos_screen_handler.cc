@@ -32,6 +32,11 @@ void GuestTosScreenHandler::DeclareLocalizedValues(
   builder->Add("guestTosAccept", IDS_GUEST_TOS_ACCEPT);
   builder->Add("guestTosGoogleEulaTitle", IDS_GUEST_TOS_GOOGLE_EULA_TITLE);
   builder->Add("guestTosCrosEulaTitle", IDS_GUEST_TOS_CROS_EULA_TITLE);
+  builder->Add("guestTosUsageOptinTitle", IDS_GUEST_TOS_USAGE_OPT_IN_TITLE);
+  builder->Add("guestTosUsageOptin", IDS_GUEST_TOS_USAGE_OPT_IN);
+  builder->Add("guestTosUsageOptInLearnMore",
+               IDS_GUEST_TOS_USAGE_OPT_IN_LEARN_MORE);
+  builder->Add("guestTosLearnMore", IDS_GUEST_TOS_LEARN_MORE);
   builder->Add("guestTosOk", IDS_GUEST_TOS_OK);
   builder->Add("guestTosLoading", IDS_GUEST_TOS_LOADING);
 }
@@ -68,4 +73,13 @@ void GuestTosScreenHandler::Unbind() {
   BaseScreenHandler::SetBaseScreen(nullptr);
 }
 
+void GuestTosScreenHandler::RegisterMessages() {
+  BaseScreenHandler::RegisterMessages();
+  AddCallback("GuestToSAccept", &GuestTosScreenHandler::HandleAccept);
+}
+
+void GuestTosScreenHandler::HandleAccept(bool enable_usage_stats) {
+  if (screen_)
+    screen_->OnAccept(enable_usage_stats);
+}
 }  // namespace chromeos

@@ -26,7 +26,12 @@ Polymer({
 
   behaviors: [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
 
-  properties: {},
+  properties: {
+    usageChecked: {
+      type: Boolean,
+      value: true,
+    },
+  },
 
   ready() {
     this.initializeLoginScreen('GuestTosScreen', {
@@ -89,6 +94,10 @@ Polymer({
     return terms.innerHTML;
   },
 
+  getUsageLearnMoreText_(locale) {
+    return this.i18nAdvanced('guestTosUsageOptInLearnMore');
+  },
+
   onGoogleEulaLinkClick_() {
     this.setUIStep(UIState.GOOGLE_EULA);
     this.$.googleEulaOkButton.focus();
@@ -105,13 +114,17 @@ Polymer({
     }
   },
 
+  onUsageLearnMoreClick_() {
+    this.$.usageLearnMorePopUp.showDialog();
+  },
+
   onTermsStepOkClick_() {
     this.setUIStep(UIState.LOADED);
     this.$.acceptButton.focus();
   },
 
   onAcceptClick_() {
-    this.userActed('accept-button');
+    chrome.send('GuestToSAccept', [this.usageChecked]);
   },
 
   onBackClick_() {

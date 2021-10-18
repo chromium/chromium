@@ -3958,7 +3958,7 @@
   <message name="IDS_CONSOLIDATED_CONSENT_TOS_ARC_DISABLED" desc="Main terms to be accepted in the consolidated consent screen when arc is disabled." translateable="false">
     I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="eulaLinkArcDisabled"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a id="additionalTermsLinkArcDisabled"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for metrics for child accounts." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for metrics for accounts." translateable="false">
     Send usage and diagnostic data.
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN" desc="Message in the consolidated consent screen to opt-in for metrics." translateable="false">
@@ -4088,6 +4088,21 @@
   </message>
   <message name="IDS_GUEST_TOS_CROS_EULA_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen">
     Google Chrome and Chrome OS Additional Terms
+  </message>
+  <!-- TODO(crbug.com/1241468): remove translateable="false" once the strings are finalized-->
+  <message name="IDS_GUEST_TOS_USAGE_OPT_IN_TITLE" desc="Title for the message in the guest terms of service screen to opt-in for metrics during the guest session." translateable="false">
+    Send usage and diagnostic data.
+  </message>
+  <message name="IDS_GUEST_TOS_USAGE_OPT_IN" desc="Message in the guest terms of service screen to opt-in for metrics during the guest session." translateable="false">
+    Help improve Chrome and Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google. Some aggregate data will also help Android apps and Google partners. If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account.
+  </message>
+  <message name="IDS_GUEST_TOS_LEARN_MORE" desc="Learn more link text in guest terms of service screen." translateable="false">
+    Learn more
+  </message>
+  <message name="IDS_GUEST_TOS_USAGE_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the guest terms of service screen when the user clicks on the learn more for metrics opt-in." translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing your Chrome OS devices to send automatic reports helps us prioritize what to fix and improve in Chrome OS. These reports can include things like when Chrome OS crashes, which features you use, how much memory you typically use, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your Chrome OS device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Turning off this feature doesn't affect your device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
 
   <!-- Supervision transition OOBE screen. -->

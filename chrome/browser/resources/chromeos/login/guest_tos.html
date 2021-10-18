@@ -98,6 +98,23 @@ found in the LICENSE file. -->
           <div inner-h-t-m-l="[[getTerms_(locale)]]">
           </div>
         </div>
+
+        <!-- Usage stats toggle row -->
+        <div class="layout horizontal center oobe-optin-row">
+          <div>
+            <span class="oobe-optin-title">
+              [[i18nDynamic(locale, 'guestTosUsageOptinTitle')]]
+            </span>
+            [[i18nDynamic(locale, 'guestTosUsageOptin')]]
+            <a id="usageLearnMore" on-click="onUsageLearnMoreClick_"
+                class="oobe-local-link" is="action-link">
+              [[i18nDynamic(locale, 'guestTosLearnMore')]]
+            </a>
+          </div>
+          <cr-toggle id="usageOptin" class="oobe-toggle-icon"
+              checked="{{usageChecked}}">
+          </cr-toggle>
+        </div>
       </div>
       <div slot="back-navigation">
         <oobe-back-button on-click="onBackClick_"></oobe-back-button>
@@ -108,5 +125,11 @@ found in the LICENSE file. -->
         </oobe-next-button>
       </div>
     </oobe-adaptive-dialog>
+
+    <oobe-modal-dialog id="usageLearnMorePopUp">
+      <div slot="content">
+        <span inner-h-t-m-l="[[getUsageLearnMoreText_(locale)]]"></span>
+      </div>
+    </oobe-modal-dialog>
   </template>
 </dom-module>

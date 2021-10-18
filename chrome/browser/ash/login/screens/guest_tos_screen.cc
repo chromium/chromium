@@ -13,7 +13,6 @@
 namespace ash {
 namespace {
 
-constexpr const char kUserActionAcceptClicked[] = "accept-button";
 constexpr const char kUserActionBackClicked[] = "back-button";
 constexpr const char kUserActionCancelClicked[] = "cancel";
 
@@ -70,9 +69,7 @@ void GuestTosScreen::ShowImpl() {
 void GuestTosScreen::HideImpl() {}
 
 void GuestTosScreen::OnUserAction(const std::string& action_id) {
-  if (action_id == kUserActionAcceptClicked) {
-    exit_callback_.Run(Result::ACCEPT);
-  } else if (action_id == kUserActionBackClicked) {
+  if (action_id == kUserActionBackClicked) {
     exit_callback_.Run(Result::BACK);
   } else if (action_id == kUserActionCancelClicked) {
     exit_callback_.Run(Result::CANCEL);
@@ -81,4 +78,8 @@ void GuestTosScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
+void GuestTosScreen::OnAccept(bool enable_usage_stats) {
+  // TODO(crbug.com/1241468): Handle usage stats reporting for guest session.
+  exit_callback_.Run(Result::ACCEPT);
+}
 }  // namespace ash

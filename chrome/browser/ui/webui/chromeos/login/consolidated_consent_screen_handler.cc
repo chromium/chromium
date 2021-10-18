@@ -139,10 +139,11 @@ void ConsolidatedConsentScreenHandler::HandleAccept(
     bool enable_backup_restore,
     bool enable_location_services,
     const std::string& tos_content) {
-  screen_->OnAccept(enable_stats_usage, enable_backup_restore,
-                    enable_location_services, tos_content);
+  if (screen_) {
+    screen_->OnAccept(enable_stats_usage, enable_backup_restore,
+                      enable_location_services, tos_content);
+  }
 }
-
 void ConsolidatedConsentScreenHandler::SetUsageMode(bool enabled,
                                                     bool managed) {
   CallJS("login.ConsolidatedConsentScreen.SetUsageMode", enabled, managed);

@@ -48,6 +48,9 @@ class GuestTosScreenHandler : public GuestTosScreenView,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void Initialize() override;
+  void RegisterMessages() override;
+
+  void HandleAccept(bool enable_usage_stats);
 
   ash::GuestTosScreen* screen_ = nullptr;
   bool show_on_init_ = false;
