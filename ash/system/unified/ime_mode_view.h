@@ -46,6 +46,9 @@ class ImeModeView : public TrayItemView,
   const char* GetClassName() const override;
   void HandleLocaleChange() override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
  private:
   void Update();
 
