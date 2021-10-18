@@ -973,14 +973,6 @@
       "use_javascript_coverage": true
     }
   },
-  "linux-chromium-tests-staging-builder": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
   "linux-code-coverage": {
     "gn_args": {
       "dcheck_always_on": false,

@@ -2861,12 +2861,6 @@
           '--jobs=1',
         ],
       },
-      'linux-chromium-tests-staging-tests': {
-        'args': [
-          '--xvfb',
-          '--jobs=1',
-        ],
-      },
       'linux-trusty-rel': {
         'args': [
           '--xvfb',

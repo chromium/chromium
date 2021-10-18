@@ -3645,26 +3645,6 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
-    name = "linux-chromium-tests-staging-builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "recipe|staging|linux",
-        short_name = "bld",
-    ),
-    experiments = {
-        "chromium.chromium_tests.use_gitiles_trigger": 100,
-    },
-)
-
-ci.fyi_builder(
-    name = "linux-chromium-tests-staging-tests",
-    console_view_entry = consoles.console_view_entry(
-        category = "recipe|staging|linux",
-        short_name = "tst",
-    ),
-    triggered_by = ["linux-chromium-tests-staging-builder"],
-)
-
-ci.fyi_builder(
     name = "linux-example-builder",
     console_view_entry = consoles.console_view_entry(
         category = "linux",
