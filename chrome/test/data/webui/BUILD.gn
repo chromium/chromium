@@ -41,8 +41,6 @@ if (include_js_tests) {
     deps = [
       ":modulize",
       "//chrome/browser/ui",
-      "//ui/webui/resources/js:post_message_api_client.m",
-      "//ui/webui/resources/js:post_message_api_server.m",
       "//ui/webui/resources/js:webview_manager",
     ]
     data = [
