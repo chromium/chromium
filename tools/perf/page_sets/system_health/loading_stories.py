@@ -18,13 +18,13 @@ from telemetry.util import js_template
 class _LoadingStory(system_health_story.SystemHealthStory):
   """Abstract base class for single-page System Health user stories."""
   ABSTRACT_STORY = True
+  EXTRA_BROWSER_ARGUMENTS = []
 
-  def __init__(self,
-               story_set,
-               take_memory_measurement,
-               extra_browser_args=None):
-    super(_LoadingStory, self).__init__(story_set, take_memory_measurement,
-                                        extra_browser_args)
+  def __init__(self, story_set, take_memory_measurement):
+    super(_LoadingStory,
+          self).__init__(story_set,
+                         take_memory_measurement,
+                         extra_browser_args=self.EXTRA_BROWSER_ARGUMENTS)
     self.script_to_evaluate_on_commit = override_online.ALWAYS_ONLINE
 
   @classmethod
@@ -489,6 +489,13 @@ class LoadGmailStory2019(_LoadingStory):
   TAGS = [story_tags.HEALTH_CHECK, story_tags.YEAR_2019]
   SKIP_LOGIN = False
 
+  # TODO(crbug.com/1256844): Disable the ForceSynchronousHTMLParsing and
+  # LoaderDataPipeTuning experiments, because they cause failures and
+  # flakiness for this story as-recorded in 2019.
+  EXTRA_BROWSER_ARGUMENTS = [
+      '--disable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning'
+  ]
+
   def _Login(self, action_runner):
     google_login.NewLoginGoogleAccount(action_runner, 'googletest')
 
@@ -511,6 +518,13 @@ class LoadChatStory2020(_LoadingStory):
   TAGS = [story_tags.YEAR_2020]
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   SKIP_LOGIN = False
+
+  # TODO(crbug.com/1256844): Disable the ForceSynchronousHTMLParsing and
+  # LoaderDataPipeTuning experiments, because they cause failures and
+  # flakiness for this story as-recorded in 2020.
+  EXTRA_BROWSER_ARGUMENTS = [
+      '--disable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning'
+  ]
 
   def _Login(self, action_runner):
     google_login.NewLoginGoogleAccount(action_runner, 'chatfeature')
