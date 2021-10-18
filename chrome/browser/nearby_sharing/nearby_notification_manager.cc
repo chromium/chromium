@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -67,6 +68,11 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
       message_center::SettingsButtonHandler::DELEGATE);
 
   return notification;
+}
+
+std::string GetTimestampString() {
+  return base::NumberToString(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 FileAttachment::Type GetCommonFileAttachmentType(
@@ -1032,7 +1038,8 @@ void NearbyNotificationManager::OnNearbyDeviceTryingToShareClicked() {
 
   std::string path =
       std::string(chromeos::settings::mojom::kNearbyShareSubpagePath) +
-      "?receive&entrypoint=notification";
+      "?receive&entrypoint=notification&";
+  path += "&time=" + GetTimestampString();
   settings_opener_->ShowSettingsPage(profile_, path);
 }
 
