@@ -1443,7 +1443,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool is_destroyed_ = false;
 #endif
 
-  const WeakMember<LayoutBoxModelObject> layout_object_;
+  const Member<LayoutBoxModelObject> layout_object_;
 
   Member<PaintLayer> parent_;
   Member<PaintLayer> previous_;
