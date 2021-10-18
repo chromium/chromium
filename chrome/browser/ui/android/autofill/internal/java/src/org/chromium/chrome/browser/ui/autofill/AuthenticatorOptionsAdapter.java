@@ -53,10 +53,15 @@ public class AuthenticatorOptionsAdapter extends RecyclerView.Adapter<ViewHolder
         AuthenticatorOptionViewHolder holder = (AuthenticatorOptionViewHolder) viewHolder;
         AuthenticatorOption option = mAuthenticatorOptions.get(position);
         if (getItemCount() == 1) {
-            holder.getIconImageView().setVisibility(View.VISIBLE);
             holder.getRadioButton().setVisibility(View.GONE);
-            holder.getIconImageView().setImageDrawable(ResourcesCompat.getDrawable(
-                    mContext.getResources(), option.getIconResId(), mContext.getTheme()));
+            int iconResId = option.getIconResId();
+            if (iconResId != 0) {
+                holder.getIconImageView().setVisibility(View.VISIBLE);
+                holder.getIconImageView().setImageDrawable(ResourcesCompat.getDrawable(
+                        mContext.getResources(), iconResId, mContext.getTheme()));
+            } else {
+                holder.getIconImageView().setVisibility(View.GONE);
+            }
         } else {
             holder.getIconImageView().setVisibility(View.GONE);
             holder.getRadioButton().setVisibility(View.VISIBLE);

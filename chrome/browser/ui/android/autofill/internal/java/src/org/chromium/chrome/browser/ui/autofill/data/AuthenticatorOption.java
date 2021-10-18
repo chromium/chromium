@@ -82,7 +82,6 @@ public class AuthenticatorOption {
             assert mDescription != null
                     && !mDescription.isEmpty()
                 : "description for the AuthenticatorOption must be set";
-            assert mIconResId != 0 : "iconResId for the AuthenticatorOption must be set";
             return new AuthenticatorOption(mTitle, mIdentifier, mDescription, mIconResId);
         }
     }

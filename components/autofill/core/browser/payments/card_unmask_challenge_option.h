@@ -8,6 +8,8 @@
 namespace autofill {
 
 // Indicates the type of challenge option used in card unmasking.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.autofill
+// GENERATED_JAVA_PREFIX_TO_STRIP: k
 enum class CardUnmaskChallengeOptionType {
   // Default value, should never be used.
   kUnknownType = 0,
