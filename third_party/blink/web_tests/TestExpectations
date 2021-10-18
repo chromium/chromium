@@ -2846,6 +2846,7 @@ crbug.com/1156408 external/wpt/webrtc/RTCPeerConnection-capture-video.https.html
 crbug.com/1074547 external/wpt/css/css-transitions/transitioncancel-002.html [ Timeout ]
 
 crbug.com/1024156 external/wpt/css/css-pseudo/cascade-highlight-004.html [ Failure ]
+crbug.com/1024156 external/wpt/css/css-pseudo/cascade-highlight-005.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-cascade-001.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-cascade-002.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-paired-cascade-003.html [ Failure ]
@@ -3275,9 +3276,6 @@ crbug.com/626703 external/wpt/workers/interfaces/WorkerUtils/importScripts/blob-
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-get-target-ranges.html [ Failure Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?TypingA [ Skip Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-typing.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/css/css-pseudo/cascade-highlight-005.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/css/css-pseudo/selection-originating-decoration-color.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/infrastructure/testdriver/actions/eventOrder.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-cut-paste.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/CSS2/tables/table-anonymous-objects-211.xht [ Failure ]

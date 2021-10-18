@@ -279,6 +279,10 @@ crbug.com/1035708 wpt_internal/css/css-pseudo/spelling-error-color-001.html [ Fa
 crbug.com/1035708 wpt_internal/css/css-pseudo/spelling-error-color-002.html [ Failure ]
 crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-001.html [ Failure ]
 crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-002.html [ Failure ]
+crbug.com/1035708 external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/1035708 external/wpt/css/css-pseudo/selection-originating-decoration-color.html [ Failure ]
+crbug.com/1035708 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/1035708 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/selection-originating-decoration-color.html [ Failure ]
 
 ### external/wpt/css/css-ruby/
 crbug.com/591099 external/wpt/css/css-ruby/br-clear-all-002.html [ Failure ]
