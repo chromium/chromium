@@ -4,27 +4,11 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {PDFCreateOutOfProcessPlugin} from '../pdf/pdf_scripting_api.js';
+import {PDFCreateOutOfProcessPlugin, PDFPlugin} from '../pdf/pdf_scripting_api.js';
 
 export type ViewportChangedCallback =
     (pageX: number, pageY: number, pageWidth: number, viewportWidth: number,
      viewportHeight: number) => void;
-
-export interface PDFPlugin extends HTMLElement {
-  darkModeChanged(darkMode: boolean): void;
-  hideToolbar(): void;
-  loadPreviewPage(url: string, index: number): void;
-  resetPrintPreviewMode(
-      url: string, color: boolean, pages: number[], modifiable: boolean): void;
-  scrollPosition(x: number, y: number): void;
-  sendKeyEvent(e: KeyboardEvent): void;
-  setKeyEventCallback(callback: (e: KeyboardEvent) => void): void;
-  setLoadCompleteCallback(callback: (success: boolean) => void): void;
-  setViewportChangedCallback(
-      callback:
-          (pageX: number, pageY: number, pageWidth: number,
-           viewportWidth: number, viewportHeight: number) => void): void;
-}
 
 /**
  * An interface to the PDF plugin.
@@ -100,8 +84,7 @@ export class PluginProxyImpl implements PluginProxy {
   createPlugin(previewUid: number, index: number) {
     assert(!this.plugin_);
     const srcUrl = this.getPreviewUrl_(previewUid, index);
-    this.plugin_ = PDFCreateOutOfProcessPlugin(srcUrl, 'chrome://print/pdf') as
-        unknown as PDFPlugin;
+    this.plugin_ = PDFCreateOutOfProcessPlugin(srcUrl, 'chrome://print/pdf');
     this.plugin_!.classList.add('preview-area-plugin');
     // NOTE: The plugin's 'id' field must be set to 'pdf-viewer' since
     // chrome/renderer/printing/print_render_frame_helper.cc actually
