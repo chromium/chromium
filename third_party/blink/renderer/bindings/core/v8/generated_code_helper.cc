@@ -212,7 +212,7 @@ void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,
 bool IsEsIterableObject(v8::Isolate* isolate,
                         v8::Local<v8::Value> value,
                         ExceptionState& exception_state) {
-  // https://heycam.github.io/webidl/#es-overloads
+  // https://webidl.spec.whatwg.org/#es-overloads
   // step 9. Otherwise: if Type(V) is Object and ...
   if (!value->IsObject())
     return false;
@@ -312,7 +312,7 @@ void InstallUnscopablePropertyNames(
     v8::Local<v8::Object> prototype_object,
     base::span<const char* const> property_name_table) {
   // 3.6.3. Interface prototype object
-  // https://heycam.github.io/webidl/#interface-prototype-object
+  // https://webidl.spec.whatwg.org/#interface-prototype-object
   // step 8. If interface has any member declared with the [Unscopable]
   //   extended attribute, then:
   // step 8.1. Let unscopableObject be the result of performing

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """
 Here are rule classes which validate whether the extended attributes of targets
-violate the rules described in Web IDL https://heycam.github.io/webidl/.
+violate the rules described in Web IDL https://webidl.spec.whatwg.org/.
 
 Each rule class must inherit RuleBase.
 """
@@ -31,7 +31,7 @@ _extended_attributes_applicable_to_types = (
 
 class ExtendedAttributesApplicableToTypes(RuleBase):
     def validate(self, assert_, target_object):
-        web_idl_link = "https://heycam.github.io/webidl/#extended-attributes-applicable-to-types"
+        web_idl_link = "https://webidl.spec.whatwg.org/#extended-attributes-applicable-to-types"
         for extended_attribute in target_object.extended_attributes.keys():
             assert_(
                 extended_attribute not in
@@ -43,7 +43,7 @@ class ExtendedAttributesApplicableToTypes(RuleBase):
 
 class ExtendedAttributesApplicableToTypesForIdlType(RuleBase):
     def validate(self, assert_, target_object):
-        web_idl_link = "https://heycam.github.io/webidl/#extended-attributes-applicable-to-types"
+        web_idl_link = "https://webidl.spec.whatwg.org/#extended-attributes-applicable-to-types"
         for annotation in target_object.effective_annotations:
             assert_(annotation.key in _extended_attributes_applicable_to_types,
                     ("Extended attribute '{}' is not applicable to types, "

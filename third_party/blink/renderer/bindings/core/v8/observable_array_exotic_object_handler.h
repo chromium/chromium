@@ -30,7 +30,7 @@ namespace bindings {
 //   handler = v8::Object that has a set of trap functions implemented in
 //       ObservableArrayExoticObjectHandler.
 //
-// https://heycam.github.io/webidl/#creating-an-observable-array-exotic-object
+// https://webidl.spec.whatwg.org/#creating-an-observable-array-exotic-object
 //
 // Implementation notes:
 // - v8::Value::ToArrayIndex returns an empty handle if the conversion fails
@@ -44,7 +44,7 @@ class ObservableArrayExoticObjectHandler {
   STATIC_ONLY(ObservableArrayExoticObjectHandler);
 
  public:
-  // https://heycam.github.io/webidl/#es-observable-array-defineProperty
+  // https://webidl.spec.whatwg.org/#es-observable-array-defineProperty
   static void TrapDefineProperty(
       const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
@@ -70,7 +70,7 @@ class ObservableArrayExoticObjectHandler {
     }
   }
 
-  // https://heycam.github.io/webidl/#es-observable-array-deleteProperty
+  // https://webidl.spec.whatwg.org/#es-observable-array-deleteProperty
   static void TrapDeleteProperty(
       const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
@@ -107,7 +107,7 @@ class ObservableArrayExoticObjectHandler {
     }
   }
 
-  // https://heycam.github.io/webidl/#es-observable-array-get
+  // https://webidl.spec.whatwg.org/#es-observable-array-get
   static void TrapGet(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
@@ -140,7 +140,7 @@ class ObservableArrayExoticObjectHandler {
     }
   }
 
-  // https://heycam.github.io/webidl/#es-observable-array-getOwnPropertyDescriptor
+  // https://webidl.spec.whatwg.org/#es-observable-array-getOwnPropertyDescriptor
   static void TrapGetOwnPropertyDescriptor(
       const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
@@ -181,7 +181,7 @@ class ObservableArrayExoticObjectHandler {
     }
   }
 
-  // https://heycam.github.io/webidl/#es-observable-array-has
+  // https://webidl.spec.whatwg.org/#es-observable-array-has
   static void TrapHas(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
@@ -204,7 +204,7 @@ class ObservableArrayExoticObjectHandler {
     }
   }
 
-  // https://heycam.github.io/webidl/#es-observable-array-ownKeys
+  // https://webidl.spec.whatwg.org/#es-observable-array-ownKeys
   static void TrapOwnKeys(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
@@ -252,13 +252,13 @@ class ObservableArrayExoticObjectHandler {
     V8SetReturnValue(info, own_keys);
   }
 
-  // https://heycam.github.io/webidl/#es-observable-array-preventExtensions
+  // https://webidl.spec.whatwg.org/#es-observable-array-preventExtensions
   static void TrapPreventExtensions(
       const v8::FunctionCallbackInfo<v8::Value>& info) {
     V8SetReturnValue(info, false);
   }
 
-  // https://heycam.github.io/webidl/#es-observable-array-set
+  // https://webidl.spec.whatwg.org/#es-observable-array-set
   static void TrapSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
@@ -305,7 +305,7 @@ class ObservableArrayExoticObjectHandler {
                 ->ToImpl<BackingListWrappable>();
   }
 
-  // https://heycam.github.io/webidl/#observable-array-exotic-object-set-the-length
+  // https://webidl.spec.whatwg.org/#observable-array-exotic-object-set-the-length
   static bool DoSetTheLength(ScriptState* script_state,
                              BackingListWrappable& backing_list,
                              uint32_t length,
@@ -331,7 +331,7 @@ class ObservableArrayExoticObjectHandler {
     return true;
   }
 
-  // https://heycam.github.io/webidl/#observable-array-exotic-object-set-the-indexed-value
+  // https://webidl.spec.whatwg.org/#observable-array-exotic-object-set-the-indexed-value
   static bool DoSetTheIndexedValue(ScriptState* script_state,
                                    BackingListWrappable& backing_list,
                                    uint32_t index,
@@ -364,7 +364,7 @@ class ObservableArrayExoticObjectHandler {
     return true;
   }
 
-  // https://heycam.github.io/webidl/#observable-array-attribute-set-an-indexed-value
+  // https://webidl.spec.whatwg.org/#observable-array-attribute-set-an-indexed-value
   static bool RunSetAlgorithm(ScriptState* script_state,
                               BackingListWrappable& backing_list,
                               typename BackingListWrappable::size_type index,
@@ -378,7 +378,7 @@ class ObservableArrayExoticObjectHandler {
     return !exception_state.HadException();
   }
 
-  // https://heycam.github.io/webidl/#observable-array-attribute-delete-an-indexed-value
+  // https://webidl.spec.whatwg.org/#observable-array-attribute-delete-an-indexed-value
   static bool RunDeleteAlgorithm(ScriptState* script_state,
                                  BackingListWrappable& backing_list,
                                  typename BackingListWrappable::size_type index,

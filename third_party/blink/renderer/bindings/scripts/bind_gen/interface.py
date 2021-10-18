@@ -254,7 +254,7 @@ def bind_blink_api_arguments(code_node, cg_context):
         real_type = cg_context.attribute.idl_type.unwrap(typedef=True)
         if real_type.is_enumeration:
             pattern = """\
-// https://heycam.github.io/webidl/#dfn-attribute-setter
+// https://webidl.spec.whatwg.org/#dfn-attribute-setter
 // step 4.6.1. Let S be ? ToString(V).
 const auto&& arg1_value_string =
     NativeValueTraits<IDLString>::NativeValue(
@@ -1055,7 +1055,7 @@ def make_log_activity(cg_context):
 
 def _make_overload_dispatcher_per_arg_size(cg_context, items):
     """
-    https://heycam.github.io/webidl/#dfn-overload-resolution-algorithm
+    https://webidl.spec.whatwg.org/#dfn-overload-resolution-algorithm
 
     Args:
         items: Partial list of an "effective overload set" with the same
@@ -1250,7 +1250,7 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
 
 
 def make_overload_dispatcher(cg_context):
-    # https://heycam.github.io/webidl/#dfn-overload-resolution-algorithm
+    # https://webidl.spec.whatwg.org/#dfn-overload-resolution-algorithm
 
     assert isinstance(cg_context, CodeGenContext)
 
@@ -2673,7 +2673,7 @@ ${class_name}::NamedPropertyGetterCallback(property_name, ${info});
     body.extend([
         TextNode("""\
 // LegacyPlatformObjectGetOwnProperty
-// https://heycam.github.io/webidl/#LegacyPlatformObjectGetOwnProperty
+// https://webidl.spec.whatwg.org/#LegacyPlatformObjectGetOwnProperty
 // step 1.2. If index is a supported property index, then:
 // step 3. Return OrdinaryGetOwnProperty(O, P).
 if (${index} >= ${blink_receiver}->length())
@@ -2715,7 +2715,7 @@ ${class_name}::NamedPropertySetterCallback(
         body.append(
             TextNode("""\
 // 3.9.2. [[Set]]
-// https://heycam.github.io/webidl/#legacy-platform-object-set
+// https://webidl.spec.whatwg.org/#legacy-platform-object-set
 // OrdinarySetWithOwnDescriptor will end up calling DefineOwnProperty,
 // which will fail when the receiver object is this legacy platform
 // object.
@@ -2745,7 +2745,7 @@ if (${info}.ShouldThrowOnError()) {
     body.extend([
         TextNode("""\
 // 3.9.2. [[Set]]
-// https://heycam.github.io/webidl/#legacy-platform-object-set
+// https://webidl.spec.whatwg.org/#legacy-platform-object-set
 // step 1. If O and Receiver are the same object, then:\
 """),
         CxxLikelyIfNode(cond="${info}.Holder() == ${info}.This()",
@@ -2796,7 +2796,7 @@ ${class_name}::NamedPropertyDeleterCallback(property_name, ${info});
     body.append(
         TextNode("""\
 // 3.9.4. [[Delete]]
-// https://heycam.github.io/webidl/#legacy-platform-object-delete
+// https://webidl.spec.whatwg.org/#legacy-platform-object-delete
 // step 1.2. If index is not a supported property index, then return true.
 // step 1.3. Return false.
 const bool is_supported = ${index} < ${blink_receiver}->length();
@@ -2842,7 +2842,7 @@ ${class_name}::NamedPropertyDefinerCallback(
     body.append(
         TextNode("""\
 // 3.9.3. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#legacy-platform-object-defineownproperty
+// https://webidl.spec.whatwg.org/#legacy-platform-object-defineownproperty
 // step 1.1. If the result of calling IsDataDescriptor(Desc) is false, then
 //   return false.
 if (v8_property_desc.has_get() || v8_property_desc.has_set()) {
@@ -2909,7 +2909,7 @@ ${class_name}::NamedPropertyDescriptorCallback(property_name, ${info});
 
     pattern = """\
 // LegacyPlatformObjectGetOwnProperty
-// https://heycam.github.io/webidl/#LegacyPlatformObjectGetOwnProperty
+// https://webidl.spec.whatwg.org/#LegacyPlatformObjectGetOwnProperty
 // step 1.2.3. If operation was defined without an identifier, then set
 //   value to the result of performing the steps listed in the interface
 //   description to determine the value of an indexed property with index
@@ -2959,7 +2959,7 @@ def make_indexed_property_enumerator_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.9.6. [[OwnPropertyKeys]]
-// https://heycam.github.io/webidl/#legacy-platform-object-ownpropertykeys
+// https://webidl.spec.whatwg.org/#legacy-platform-object-ownpropertykeys
 // step 2. If O supports indexed properties, then for each index of O's
 //   supported property indices, in ascending numerical order, append
 //   ! ToString(index) to keys.
@@ -3018,7 +3018,7 @@ def make_named_property_getter_callback(cg_context, function_name):
     body.extend([
         TextNode("""\
 // LegacyPlatformObjectGetOwnProperty
-// https://heycam.github.io/webidl/#LegacyPlatformObjectGetOwnProperty
+// https://webidl.spec.whatwg.org/#LegacyPlatformObjectGetOwnProperty
 // step 2.1. If the result of running the named property visibility
 //   algorithm with property name P and object O is true, then:\
 """),
@@ -3063,7 +3063,7 @@ def make_named_property_setter_callback(cg_context, function_name):
         body.append(
             TextNode("""\
 // 3.9.2. [[Set]]
-// https://heycam.github.io/webidl/#legacy-platform-object-set
+// https://webidl.spec.whatwg.org/#legacy-platform-object-set
 // step 3. Perform ? OrdinarySetWithOwnDescriptor(O, P, V, Receiver, ownDesc).\
 """))
         if ("LegacyOverrideBuiltIns" in
@@ -3119,7 +3119,7 @@ if (!is_creating) {
     body.extend([
         TextNode("""\
 // 3.9.2. [[Set]]
-// https://heycam.github.io/webidl/#legacy-platform-object-set
+// https://webidl.spec.whatwg.org/#legacy-platform-object-set
 // step 1. If O and Receiver are the same object, then:\
 """),
         CxxLikelyIfNode(cond="${info}.Holder() == ${info}.This()",
@@ -3169,7 +3169,7 @@ def make_named_property_deleter_callback(cg_context, function_name):
         body.append(
             TextNode("""\
 // 3.9.4. [[Delete]]
-// https://heycam.github.io/webidl/#legacy-platform-object-delete
+// https://webidl.spec.whatwg.org/#legacy-platform-object-delete
 // step 2. If O supports named properties, O does not implement an interface
 //   with the [Global] extended attribute and the result of calling the
 //   named property visibility algorithm with property name P and object O
@@ -3184,7 +3184,7 @@ def make_named_property_deleter_callback(cg_context, function_name):
         body.append(
             TextNode("""\
 // 3.9.4. [[Delete]]
-// https://heycam.github.io/webidl/#legacy-platform-object-delete
+// https://webidl.spec.whatwg.org/#legacy-platform-object-delete
 // step 2. If O supports named properties, O does not implement an interface
 //   with the [Global] extended attribute and the result of calling the
 //   named property visibility algorithm with property name P and object O
@@ -3222,7 +3222,7 @@ if (does_exist) {
     body.extend([
         TextNode("""\
 // 3.9.4. [[Delete]]
-// https://heycam.github.io/webidl/#legacy-platform-object-delete\
+// https://webidl.spec.whatwg.org/#legacy-platform-object-delete\
 """),
         make_steps_of_ce_reactions(cg_context),
         EmptyNode(),
@@ -3276,7 +3276,7 @@ def make_named_property_definer_callback(cg_context, function_name):
         body.append(
             TextNode("""\
 // 3.9.3. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#legacy-platform-object-defineownproperty
+// https://webidl.spec.whatwg.org/#legacy-platform-object-defineownproperty
 // step 2.1. Let creating be true if P is not a supported property name, and
 //   false otherwise.
 // step 2.2.1. If creating is false and O does not implement an interface
@@ -3301,7 +3301,7 @@ if (!is_creating) {
         body.append(
             TextNode("""\
 // 3.9.3. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#legacy-platform-object-defineownproperty
+// https://webidl.spec.whatwg.org/#legacy-platform-object-defineownproperty
 // step 2.2.2. If O implements an interface with a named property setter,
 //   then:
 // step 2.2.2.1. If the result of calling IsDataDescriptor(Desc) is false,
@@ -3345,7 +3345,7 @@ def make_named_property_descriptor_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // LegacyPlatformObjectGetOwnProperty
-// https://heycam.github.io/webidl/#LegacyPlatformObjectGetOwnProperty\
+// https://webidl.spec.whatwg.org/#LegacyPlatformObjectGetOwnProperty\
 """))
 
     if ("LegacyOverrideBuiltIns" not in
@@ -3474,7 +3474,7 @@ def make_named_property_enumerator_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.9.6. [[OwnPropertyKeys]]
-// https://heycam.github.io/webidl/#legacy-platform-object-ownpropertykeys
+// https://webidl.spec.whatwg.org/#legacy-platform-object-ownpropertykeys
 // step 3. If O supports named properties, then for each P of O's supported
 //   property names that is visible according to the named property
 //   visibility algorithm, append P to keys.
@@ -3544,7 +3544,7 @@ def make_named_props_obj_indexed_setter_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.2. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-defineownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
   ExceptionState exception_state(
@@ -3607,7 +3607,7 @@ def make_named_props_obj_indexed_definer_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.2. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-defineownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
   ExceptionState exception_state(
@@ -3665,7 +3665,7 @@ def make_named_props_obj_named_getter_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.1. [[GetOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-getownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-getownproperty
 //
 // TODO(yukishiino): Update the following hard-coded call to an appropriate
 // one.
@@ -3694,7 +3694,7 @@ def make_named_props_obj_named_setter_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.2. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-defineownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
   ExceptionState exception_state(${info}.GetIsolate(),
@@ -3725,7 +3725,7 @@ def make_named_props_obj_named_deleter_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.3. [[Delete]]
-// https://heycam.github.io/webidl/#named-properties-object-delete
+// https://webidl.spec.whatwg.org/#named-properties-object-delete
 bindings::V8SetReturnValue(${info}, false);
 if (${info}.ShouldThrowOnError()) {
   ExceptionState exception_state(
@@ -3758,7 +3758,7 @@ def make_named_props_obj_named_definer_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.2. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-defineownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
   ExceptionState exception_state(${info}.GetIsolate(),
@@ -3789,7 +3789,7 @@ def make_named_props_obj_named_descriptor_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.1. [[GetOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-getownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-getownproperty
 // step 4. If the result of running the named property visibility algorithm
 //   with property name P and object object is true, then:
 if (${v8_receiver}->GetRealNamedPropertyAttributesInPrototypeChain(
@@ -4666,7 +4666,7 @@ def bind_installer_local_vars(code_node, cg_context):
     elif (interface and "Global" in interface.extended_attributes
           and interface.indexed_and_named_properties
           and interface.indexed_and_named_properties.has_named_properties):
-        # https://heycam.github.io/webidl/#named-properties-object
+        # https://webidl.spec.whatwg.org/#named-properties-object
         _1 = " = ${npo_interface_template}"  # npo = named properties object
     elif interface.inherited:
         _1 = (" = ${wrapper_type_info}->parent_class"
@@ -4697,7 +4697,7 @@ ${npo_prototype_template}->Set(
 // the named properties object to behave just like the global object (= the
 // wrapper object of the global object) from the point of view of named
 // properties.
-// https://heycam.github.io/webidl/#named-properties-object
+// https://webidl.spec.whatwg.org/#named-properties-object
 ${npo_prototype_template}->SetInternalFieldCount(
     kV8DefaultWrapperInternalFieldCount);
 """
@@ -5411,7 +5411,7 @@ def _make_install_prototype_object(cg_context):
             TextNode("""\
 // [Unscopable]
 // 3.7.3. Interface prototype object
-// https://heycam.github.io/webidl/#interface-prototype-object
+// https://webidl.spec.whatwg.org/#interface-prototype-object
 // step 10. If interface has any member declared with the [Unscopable]
 //   extended attribute, then:\
 """),
@@ -5435,7 +5435,7 @@ bindings::InstallUnscopablePropertyNames(
             TextNode("""\
 // [LegacyNoInterfaceObject]
 // 3.7.3. Interface prototype object
-// https://heycam.github.io/webidl/#interface-prototype-object
+// https://webidl.spec.whatwg.org/#interface-prototype-object
 // step 13. If the [LegacyNoInterfaceObject] extended attribute was not
 //   specified on interface, then:
 //
@@ -5488,7 +5488,7 @@ ${prototype_object}->Delete(
             and class_like.indexed_and_named_properties.has_named_properties):
         nodes.append(
             TextNode("""\
-// https://heycam.github.io/webidl/#named-properties-object
+// https://webidl.spec.whatwg.org/#named-properties-object
 // V8 defines "constructor" property on the prototype object by default.
 // Named properties object is currently implemented as a prototype object
 // (implemented with v8::FunctionTemplate::PrototypeTemplate()).
@@ -5651,7 +5651,7 @@ def make_install_interface_template(cg_context, function_name, class_name,
         body.append(
             T("""\
 // DOMException-specific settings
-// https://heycam.github.io/webidl/#es-DOMException-specialness
+// https://webidl.spec.whatwg.org/#es-DOMException-specialness
 {
   v8::Local<v8::FunctionTemplate> intrinsic_error_prototype_interface_template =
       v8::FunctionTemplate::New(${isolate}, nullptr, v8::Local<v8::Value>(),
@@ -5696,7 +5696,7 @@ ${instance_object_template}->MarkAsUndetectable();
         body.append(
             T("""\
 // Iterator-specific settings
-// https://heycam.github.io/webidl/#es-iterator-prototype-object
+// https://webidl.spec.whatwg.org/#es-iterator-prototype-object
 {
   v8::Local<v8::FunctionTemplate>
       intrinsic_iterator_prototype_interface_template =
@@ -5746,7 +5746,7 @@ ${prototype_object_template}->SetImmutableProto();
         body.append(
             T("""\
 // @@iterator for indexed properties
-// https://heycam.github.io/webidl/#define-the-iteration-methods
+// https://webidl.spec.whatwg.org/#define-the-iteration-methods
 ${prototype_template}->SetIntrinsicDataProperty(
     v8::Symbol::GetIterator(${isolate}), v8::kArrayProto_values, v8::DontEnum);
 """))
@@ -5754,7 +5754,7 @@ ${prototype_template}->SetIntrinsicDataProperty(
         body.append(
             T("""\
 // Value iterator's properties
-// https://heycam.github.io/webidl/#define-the-iteration-methods
+// https://webidl.spec.whatwg.org/#define-the-iteration-methods
 ${prototype_template}->SetIntrinsicDataProperty(
     V8AtomicString(${isolate}, "entries"), v8::kArrayProto_entries, v8::None);
 ${prototype_template}->SetIntrinsicDataProperty(
@@ -5779,7 +5779,7 @@ ${prototype_template}->SetIntrinsicDataProperty(
             TextNode("""\
 // [Global]
 // 3.7.1. [[SetPrototypeOf]]
-// https://heycam.github.io/webidl/#platform-object-setprototypeof
+// https://webidl.spec.whatwg.org/#platform-object-setprototypeof
 ${instance_object_template}->SetImmutableProto();
 ${prototype_object_template}->SetImmutableProto();
 """))
@@ -5789,7 +5789,7 @@ ${prototype_object_template}->SetImmutableProto();
             TextNode("""\
 // [Global] - prototype object in the prototype chain of global objects
 // 3.7.1. [[SetPrototypeOf]]
-// https://heycam.github.io/webidl/#platform-object-setprototypeof
+// https://webidl.spec.whatwg.org/#platform-object-setprototypeof
 ${prototype_object_template}->SetImmutableProto();
 """))
 
@@ -6083,7 +6083,7 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
 def make_indexed_and_named_property_callbacks_and_install_node(cg_context):
     """
     Implements non-ordinary internal methods of legacy platform objects.
-    https://heycam.github.io/webidl/#es-legacy-platform-objects
+    https://webidl.spec.whatwg.org/#es-legacy-platform-objects
 
     Also implements the same origin case of indexed access to WindowProxy
     objects just same as indexed properties of legacy platform objects.
@@ -6244,7 +6244,7 @@ ${instance_object_template}->SetHandler(
 def make_named_properties_object_callbacks_and_install_node(cg_context):
     """
     Implements non-ordinary internal methods of named properties objects.
-    https://heycam.github.io/webidl/#named-properties-object
+    https://webidl.spec.whatwg.org/#named-properties-object
     """
 
     assert isinstance(cg_context, CodeGenContext)

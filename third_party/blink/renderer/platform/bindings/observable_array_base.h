@@ -12,9 +12,9 @@
 //
 // Observable arrays are implemented with two objects:
 // 1) backing list object
-// https://heycam.github.io/webidl/#observable-array-attribute-backing-list
+// https://webidl.spec.whatwg.org/#observable-array-attribute-backing-list
 // and 2) exotic object.
-// https://heycam.github.io/webidl/#backing-observable-array-exotic-object
+// https://webidl.spec.whatwg.org/#backing-observable-array-exotic-object
 // As DOM objects are implemented with a ScriptWrappable and its V8 wrappers,
 // there are a ScriptWrappable of a backing list object and its V8 wrappers,
 // also a ScriptWrappable of a exotic object and its (pseudo) V8 wrappers.
@@ -67,7 +67,7 @@ namespace bindings {
 // classes, and represents the backing list for an IDL attribute of an
 // observable array type (but the actual implementation lives in
 // bindings/core/v8/).
-// https://heycam.github.io/webidl/#observable-array-attribute-backing-list
+// https://webidl.spec.whatwg.org/#observable-array-attribute-backing-list
 class PLATFORM_EXPORT ObservableArrayBase : public ScriptWrappable {
  public:
   ObservableArrayBase(
@@ -100,7 +100,7 @@ class PLATFORM_EXPORT ObservableArrayBase : public ScriptWrappable {
 }  // namespace bindings
 
 // Represents a backing observable array exotic object.
-// https://heycam.github.io/webidl/#backing-observable-array-exotic-object
+// https://webidl.spec.whatwg.org/#backing-observable-array-exotic-object
 class PLATFORM_EXPORT ObservableArrayExoticObject : public ScriptWrappable {
  public:
   explicit ObservableArrayExoticObject(

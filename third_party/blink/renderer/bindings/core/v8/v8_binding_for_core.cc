@@ -552,7 +552,7 @@ static bool HasUnmatchedSurrogates(const String& string) {
 
 // Replace unmatched surrogates with REPLACEMENT CHARACTER U+FFFD.
 String ReplaceUnmatchedSurrogates(String string) {
-  // This roughly implements http://heycam.github.io/webidl/#dfn-obtain-unicode
+  // This roughly implements https://webidl.spec.whatwg.org/#dfn-obtain-unicode
   // but since Blink strings are 16-bits internally, the output is simply
   // re-encoded to UTF-16.
 

@@ -266,7 +266,7 @@ def make_factory_methods(cg_context):
     # Create an instance from v8::Value based on the conversion algorithm.
     #
     # 3.2.24. Union types
-    # https://heycam.github.io/webidl/#es-union
+    # https://webidl.spec.whatwg.org/#es-union
 
     union_members = cg_context.union_members
     member = None  # Will be a found member in union_members.

@@ -8,7 +8,7 @@
 namespace blink {
 
 // DOMException uses |unsigned short| for exception codes.
-// https://heycam.github.io/webidl/#idl-DOMException
+// https://webidl.spec.whatwg.org/#idl-DOMException
 // In our DOM implementation we use |int| instead, and use different numerical
 // ranges for different types of exceptions (not limited to DOMException), so
 // that an exception of any type can be expressed with a single integer.
@@ -17,7 +17,7 @@ namespace blink {
 using ExceptionCode = int;
 
 // DOMException's error code
-// https://heycam.github.io/webidl/#idl-DOMException-error-names
+// https://webidl.spec.whatwg.org/#idl-DOMException-error-names
 enum class DOMExceptionCode : ExceptionCode {
   // DOMExceptions with the legacy error code.
 
@@ -26,7 +26,7 @@ enum class DOMExceptionCode : ExceptionCode {
 
   // The minimum value of the legacy error code of DOMException defined in
   // Web IDL.
-  // https://heycam.github.io/webidl/#idl-DOMException
+  // https://webidl.spec.whatwg.org/#idl-DOMException
   kLegacyErrorCodeMin = 1,
 
   kIndexSizeError = 1,  // Deprecated. Use ECMAScript RangeError instead.
@@ -42,7 +42,7 @@ enum class DOMExceptionCode : ExceptionCode {
                               // which have been removed from the DOM specs.
   kInvalidStateError = 11,
   // Web IDL 2.7.1 Error names
-  // https://heycam.github.io/webidl/#idl-DOMException-error-names
+  // https://webidl.spec.whatwg.org/#idl-DOMException-error-names
   // Note: Don't confuse the "SyntaxError" DOMException defined here with
   // ECMAScript's SyntaxError. "SyntaxError" DOMException is used to report
   // parsing errors in web APIs, for example when parsing selectors, while
@@ -63,7 +63,7 @@ enum class DOMExceptionCode : ExceptionCode {
   // "NotAllowedError" is often a better choice because the error represetnts
   // "The request is not allowed by the user agent or the platform in the
   // current context, possibly because the user denied permission."
-  // https://heycam.github.io/webidl/#idl-DOMException-error-names
+  // https://webidl.spec.whatwg.org/#idl-DOMException-error-names
   kSecurityError = 18,
   kNetworkError = 19,
   kAbortError = 20,
@@ -75,7 +75,7 @@ enum class DOMExceptionCode : ExceptionCode {
 
   // The maximum value of the legacy error code of DOMException defined in
   // Web IDL.
-  // https://heycam.github.io/webidl/#idl-DOMException
+  // https://webidl.spec.whatwg.org/#idl-DOMException
   kLegacyErrorCodeMax = 25,
 
   // DOMExceptions without the legacy error code.

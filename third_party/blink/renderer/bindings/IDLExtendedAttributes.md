@@ -35,7 +35,7 @@ const unsigned short bar;
 
 ## Naming
 
-Extended attributes are named in UpperCamelCase, and are conventionally written as the name of the attribute within brackets, as `[ExampleExtendedAttribute]`, per [Web IDL typographic conventions](https://heycam.github.io/webidl/#conventions).
+Extended attributes are named in UpperCamelCase, and are conventionally written as the name of the attribute within brackets, as `[ExampleExtendedAttribute]`, per [Web IDL typographic conventions](https://webidl.spec.whatwg.org/#conventions).
 
 There are a few rules in naming extended attributes:
 
@@ -130,7 +130,7 @@ Extended attributes are generally not inherited: only extended attributes on the
 
 ## Standard Web IDL Extended Attributes
 
-These are defined in the [ECMAScript-specific extended attributes](http://heycam.github.io/webidl/#es-extended-attributes) section of the [Web IDL spec](http://heycam.github.io/webidl/), and alter the binding behavior.
+These are defined in the [ECMAScript-specific extended attributes](https://webidl.spec.whatwg.org/#es-extended-attributes) section of the [Web IDL spec](https://webidl.spec.whatwg.org/), and alter the binding behavior.
 
 ### [CEReactions] _(m, a)_
 
@@ -149,7 +149,7 @@ Note that `blink::CEReactionsScope` must be constructed after `blink::ExceptionS
 
 ### [Clamp] _(t)_
 
-Standard: [Clamp](https://heycam.github.io/webidl/#Clamp)
+Standard: [Clamp](https://webidl.spec.whatwg.org/#Clamp)
 
 Summary: `[Clamp]` indicates that when an ECMAScript Number is converted to the IDL type, out of range values will be clamped to the range of valid values, rather than using the operators that use a modulo operation (ToInt32, ToUint32, etc.).
 
@@ -176,7 +176,7 @@ Calling the `[Clamp]` version of `setColor()` uses **clampTo()** to coerce the N
 
 ### [Constructor] _(i)_ _deprecated_
 
-`[Constructor]` is deprecated. Use [constructor operations](https://heycam.github.io/webidl/#idl-constructors) instead.
+`[Constructor]` is deprecated. Use [constructor operations](https://webidl.spec.whatwg.org/#idl-constructors) instead.
 
 Summary: `[Constructor]` indicates that the interface should have a constructor, i.e. "new XXX()".
 
@@ -219,7 +219,7 @@ Currently `[Constructor(...)]` does not yet support optional arguments w/o defau
 
 ### [CrossOriginIsolated] _(a, i, m)_
 
-Standard: [CrossOriginIsolated](https://heycam.github.io/webidl/#CrossOriginIsolated)
+Standard: [CrossOriginIsolated](https://webidl.spec.whatwg.org/#CrossOriginIsolated)
 
 Summary: Interfaces and interface members with a `CrossOriginIsolated` attribute are exposed only inside contexts whose [cross-origin isolated capability](https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-cross-origin-isolated-capability) is enabled.
 
@@ -234,7 +234,7 @@ interface HighResolutionTimer {
 
 ### [EnforceRange] _(t)_
 
-Standard: [EnforceRange](https://heycam.github.io/webidl/#EnforceRange)
+Standard: [EnforceRange](https://webidl.spec.whatwg.org/#EnforceRange)
 
 Summary: `[EnforceRange]` indicates that when an ECMAScript Number is converted to the IDL type, out of range values will result in a TypeError exception being thrown.
 
@@ -261,9 +261,9 @@ Calling the `[EnforceRange]` version of `setColorEnforced()` with an out of rang
 
 ### [Exposed] _(i, m, a, c)_
 
-Standard: [Exposed](http://heycam.github.io/webidl/#Exposed)
+Standard: [Exposed](https://webidl.spec.whatwg.org/#Exposed)
 
-Summary: Indicates on which global object or objects (e.g., Window, WorkerGlobalScope) the interface property is generated, i.e., in which global scope or scopes an interface exists. This is primarily of interest for the constructor, i.e., the [interface object Call method](https://heycam.github.io/webidl/#es-interface-call). If `[Exposed]` is not present or overridden by a standard extended attribute `[LegacyNoInterfaceObject]` (the value of the property on the global object corresponding to the interface is called the **interface object**), which results in no interface property being generated.
+Summary: Indicates on which global object or objects (e.g., Window, WorkerGlobalScope) the interface property is generated, i.e., in which global scope or scopes an interface exists. This is primarily of interest for the constructor, i.e., the [interface object Call method](https://webidl.spec.whatwg.org/#es-interface-call). If `[Exposed]` is not present or overridden by a standard extended attribute `[LegacyNoInterfaceObject]` (the value of the property on the global object corresponding to the interface is called the **interface object**), which results in no interface property being generated.
 
 As with `[LegacyNoInterfaceObject]` does not affect generated code for the interface itself, only the code for the corresponding global object. A partial interface is generated at build time, containing an attribute for each interface property on that global object.
 
@@ -301,7 +301,7 @@ As a Blink-specific extension, we allow `Exposed(Arguments)` form, such as `[Exp
 
 ### [Global] _(i)_
 
-Standard: [Global](http://heycam.github.io/webidl/#Global)
+Standard: [Global](https://webidl.spec.whatwg.org/#Global)
 
 Summary: The `[Global]` extended attribute can be used to give a name to one or more global interfaces, which can then be referenced by the `[Exposed]` extended attribute.
 
@@ -319,7 +319,7 @@ Usage: Must take no arguments, and must not appear on anything other than an int
 
 ### [LegacyLenientSetter] _(a)_
 
-Standard: [LegacyLenientSetter](https://heycam.github.io/webidl/#LenientSetter)
+Standard: [LegacyLenientSetter](https://webidl.spec.whatwg.org/#LenientSetter)
 
 Summary: `[LegacyLenientSetter]` indicates that a no-op setter will be generated for a readonly attribute’s accessor property. This results in erroneous assignments to the property in strict mode to be ignored rather than causing an exception to be thrown.
 
@@ -327,9 +327,9 @@ Summary: `[LegacyLenientSetter]` indicates that a no-op setter will be generated
 
 ### [LegacyUnenumerableNamedProperties] _(i)_
 
-Standard: [LegacyUnenumerableNamedProperties](https://heycam.github.io/webidl/#LegacyUnenumerableNamedProperties)
+Standard: [LegacyUnenumerableNamedProperties](https://webidl.spec.whatwg.org/#LegacyUnenumerableNamedProperties)
 
-Summary: If an IDL interface [supports named properties](https://heycam.github.io/webidl/#dfn-support-named-properties), this extended attribute causes those properties not to be enumerable.
+Summary: If an IDL interface [supports named properties](https://webidl.spec.whatwg.org/#dfn-support-named-properties), this extended attribute causes those properties not to be enumerable.
 
 ```webidl
 [
@@ -346,7 +346,7 @@ The `[LegacyUnenumerableNamedProperties]` extended attribute must be used **only
 
 ### [LegacyWindowAlias] _(i)_
 
-Standard: [LegacyWindowAlias](https://heycam.github.io/webidl/#LegacyWindowAlias)
+Standard: [LegacyWindowAlias](https://webidl.spec.whatwg.org/#LegacyWindowAlias)
 
 ### [LegacyWindowAlias_Measure] _(i)_
 
@@ -358,7 +358,7 @@ Summary: The same as `[RuntimeEnabled]` but applied to the property exposed as `
 
 ### [NamedConstructor] _(i)_
 
-Standard: [NamedConstructor](https://heycam.github.io/webidl/#NamedConstructor)
+Standard: [NamedConstructor](https://webidl.spec.whatwg.org/#NamedConstructor)
 
 Summary: If you want to allow JavaScript to create a DOM object of XXX using a different name constructor (i.e. allow JavaScript to create an XXX object using "new YYY()", where YYY != XXX), you can use `[NamedConstructor]`.
 
@@ -386,7 +386,7 @@ Summary: The same as `[RaisesException]` but applied to the named constructors.
 
 ### [NewObject] _(m)_
 
-Standard: [NewObject](https://heycam.github.io/webidl/#NewObject)
+Standard: [NewObject](https://webidl.spec.whatwg.org/#NewObject)
 
 Summary: Signals that a method that returns an object type always returns a new object or promise.
 
@@ -394,7 +394,7 @@ When a method returns an interface type, this extended attribute generates a tes
 
 ### [LegacyNoInterfaceObject] _(i)_
 
-Standard: [LegacyNoInterfaceObject](https://heycam.github.io/webidl/#NoInterfaceObject)
+Standard: [LegacyNoInterfaceObject](https://webidl.spec.whatwg.org/#NoInterfaceObject)
 
 Summary: If the `[LegacyNoInterfaceObject]` extended attribute appears on an interface, it indicates that an interface object will not exist for the interface in the ECMAScript binding. See also the standard `[Exposed=xxx]` extended attribute; these two do _not_ change the generated code for the interface itself.
 
@@ -425,13 +425,13 @@ Note that `[LegacyNoInterfaceObject]` **MUST** be specified on testing interface
 
 ### [LegacyOverrideBuiltIns] _(i)_
 
-Standard: [LegacyOverrideBuiltIns](https://heycam.github.io/webidl/#LegacyOverrideBuiltIns)
+Standard: [LegacyOverrideBuiltIns](https://webidl.spec.whatwg.org/#LegacyOverrideBuiltIns)
 
 Summary: Affects named property operations, making named properties shadow built-in properties of the object.
 
 ### [PutForwards] _(a)_
 
-Standard: [PutForwards](http://heycam.github.io/webidl/#PutForwards)
+Standard: [PutForwards](https://webidl.spec.whatwg.org/#PutForwards)
 
 Summary: Indicates that assigning to the attribute will have specific behavior. Namely, the assignment is “forwarded” to the attribute (specified by the extended attribute argument) on the object that is currently referenced by the attribute being assigned to.
 
@@ -445,7 +445,7 @@ On setting the location attribute, the assignment will be forwarded to the Locat
 
 ### [Replaceable] _(a)_
 
-Standard: [Replaceable](http://heycam.github.io/webidl/#Replaceable)
+Standard: [Replaceable](https://webidl.spec.whatwg.org/#Replaceable)
 
 Summary: `[Replaceable]` controls if a given read only regular attribute is "replaceable" or not.
 
@@ -485,7 +485,7 @@ Whether `[Replaceable]` should be specified or not depends on the spec of each a
 
 ### [SameObject] _(a)_
 
-Standard: [SameObject](http://heycam.github.io/webidl/#SameObject)
+Standard: [SameObject](https://webidl.spec.whatwg.org/#SameObject)
 
 Summary: Signals that a `readonly` attribute that returns an object type always returns the same object.
 
@@ -493,7 +493,7 @@ This attribute has no effect on code generation and should simply be used in Bli
 
 ### [SecureContext] _(a, i, m)_
 
-Standard: [SecureContext](https://heycam.github.io/webidl/#SecureContext)
+Standard: [SecureContext](https://webidl.spec.whatwg.org/#SecureContext)
 
 Summary: Interfaces and interface members with a `SecureContext` attribute are exposed only inside ["Secure Contexts"](https://w3c.github.io/webappsec-secure-contexts/).
 
@@ -539,7 +539,7 @@ This attribute has no effect on code generation and should simply be used in Bli
 
 ### [TreatNullAs] _(t)_
 
-Standard: [TreatNullAs](https://heycam.github.io/webidl/#TreatNullAs)
+Standard: [TreatNullAs](https://webidl.spec.whatwg.org/#TreatNullAs)
 
 Summary: `[TreatNullAs=EmptyString]` indicates that a JavaScript null is converted to `""` instead of `"null"`.
 
@@ -568,7 +568,7 @@ void func(TrustedString str);
 
 ### [LegacyUnforgeable] _(m,a)_
 
-Standard: [LegacyUnforgeable](https://heycam.github.io/webidl/#Unforgeable)
+Standard: [LegacyUnforgeable](https://webidl.spec.whatwg.org/#Unforgeable)
 
 Summary: Makes interface members unconfigurable and also controls where the member is defined.
 
@@ -585,7 +585,7 @@ By default, interface members are configurable (i.e. you can modify a property d
 
 ### [Unscopable] _(o, a)_
 
-Standard: [Unscopable](http://heycam.github.io/webidl/#Unscopable)
+Standard: [Unscopable](https://webidl.spec.whatwg.org/#Unscopable)
 
 Summary: The interface member will not appear as a named property within `with` statements.
 
@@ -1406,7 +1406,7 @@ writes. This is used for the `Window.location` attribute.
 
 ### [CustomConstructor] _(i)_ _deprecated_
 
-`[CustomConstructor]` is deprecated. Use [constructor operations](https://heycam.github.io/webidl/#idl-constructors) with `[Custom]`.
+`[CustomConstructor]` is deprecated. Use [constructor operations](https://webidl.spec.whatwg.org/#idl-constructors) with `[Custom]`.
 
 Summary: They allow you to write custom bindings for constructors.
 
@@ -1577,7 +1577,7 @@ There is not yet support for marking SymbolKeyedMethodConfigurations as side-eff
 
 Summary: `[DefaultValue]` allows one to specify the default values for optional arguments. This removes the need to have C++ overloads in the Blink implementation.
 
-Standard: In Web IDL, [default values for optional arguments](https://heycam.github.io/webidl/#dfn-optional-argument-default-value) are written as `optional type identifier = value`. Blink supports this but not all implementations have been updated to handle overloaded functions - see [bug 258153](https://crbug.com/258153). `[DefaultValue=Undefined]` was added to all optional parameters to preserve compatibility until the C++ implementations are updated.
+Standard: In Web IDL, [default values for optional arguments](https://webidl.spec.whatwg.org/#dfn-optional-argument-default-value) are written as `optional type identifier = value`. Blink supports this but not all implementations have been updated to handle overloaded functions - see [bug 258153](https://crbug.com/258153). `[DefaultValue=Undefined]` was added to all optional parameters to preserve compatibility until the C++ implementations are updated.
 
 Usage: `[DefaultValue=Undefined]` can be specified on any optional parameter:
 

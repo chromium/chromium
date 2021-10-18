@@ -24,7 +24,7 @@ class PLATFORM_EXPORT EnumerationBase {
   ~EnumerationBase() = default;
 
   // Returns the IDL enumeration value as a string.
-  // https://heycam.github.io/webidl/#dfn-enumeration-value
+  // https://webidl.spec.whatwg.org/#dfn-enumeration-value
   const char* AsCStr() const { return string_literal_; }
   String AsString() const { return string_literal_; }
 

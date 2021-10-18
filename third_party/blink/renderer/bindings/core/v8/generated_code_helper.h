@@ -33,7 +33,7 @@ class ScriptState;
 //
 // Promise-returning DOM operations are required to always return a promise
 // and to never throw an exception.
-// See also http://heycam.github.io/webidl/#es-operations
+// See also https://webidl.spec.whatwg.org/#es-operations
 class CORE_EXPORT ExceptionToRejectPromiseScope final {
   STACK_ALLOCATED();
 

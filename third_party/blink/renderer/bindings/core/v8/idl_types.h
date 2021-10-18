@@ -24,7 +24,7 @@ class ScriptPromise;
 class ScriptValue;
 
 // The type names below are named as "IDL" prefix + Web IDL type name.
-// https://heycam.github.io/webidl/#dfn-type-name
+// https://webidl.spec.whatwg.org/#dfn-type-name
 
 // any
 struct IDLAny final : public IDLBaseHelper<ScriptValue> {};

@@ -181,7 +181,7 @@ ValueWrapperSyntheticModuleScript::ValueWrapperSyntheticModuleScript(
       export_value_(v8::Isolate::GetCurrent(), value) {}
 
 // This is the definition of [[EvaluationSteps]] As per the synthetic module
-// spec  https://heycam.github.io/webidl/#synthetic-module-records
+// spec  https://webidl.spec.whatwg.org/#synthetic-module-records
 // It is responsible for setting the default export of the provided module to
 // the value wrapped by the ValueWrapperSyntheticModuleScript
 v8::MaybeLocal<v8::Value> ValueWrapperSyntheticModuleScript::EvaluationSteps(

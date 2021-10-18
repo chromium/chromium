@@ -10,7 +10,7 @@ from .ir_map import IRMap
 
 
 class Includes(object):
-    """https://heycam.github.io/webidl/#include"""
+    """https://webidl.spec.whatwg.org/#include"""
 
     class IR(IRMap.IR, WithCodeGeneratorInfo, WithComponent, WithDebugInfo):
         def __init__(self,

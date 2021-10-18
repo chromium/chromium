@@ -149,7 +149,7 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
     """
 
     class Optionality(object):
-        """https://heycam.github.io/webidl/#dfn-optionality-value"""
+        """https://webidl.spec.whatwg.org/#dfn-optionality-value"""
 
         class Type(str):
             pass
@@ -197,7 +197,7 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
     def type_name(self):
         """
         Returns the type name.
-        https://heycam.github.io/webidl/#dfn-type-name
+        https://webidl.spec.whatwg.org/#dfn-type-name
         Note that a type name is not necessarily unique.
         """
         return '{}{}'.format(
@@ -286,7 +286,7 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
     def effective_annotations(self):
         """
         Returns the extended attributes associated with this IDL type.
-        https://heycam.github.io/webidl/#idl-type-extended-attribute-associated-with
+        https://webidl.spec.whatwg.org/#idl-type-extended-attribute-associated-with
 
         For example, given the following IDL fragments,
 
@@ -303,7 +303,7 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
     def does_include_nullable_type(self):
         """
         Returns True if this type includes a nulllable type.
-        https://heycam.github.io/webidl/#dfn-includes-a-nullable-type
+        https://webidl.spec.whatwg.org/#dfn-includes-a-nullable-type
         """
         return False
 
@@ -538,7 +538,7 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
     def flattened_member_types(self):
         """
         Returns a set of flattened member types if |is_union|.
-        https://heycam.github.io/webidl/#dfn-flattened-union-member-types
+        https://webidl.spec.whatwg.org/#dfn-flattened-union-member-types
 
         Note that this is not simple flattening, and a nullable type will be
         unwrapped.  Annotated types are always unwrapped but you can access it
@@ -605,7 +605,7 @@ class SimpleType(IdlType):
     """
     Represents built-in types that do not contain other types internally.
     e.g. primitive types, string types, and object types.
-    https://heycam.github.io/webidl/#idl-types
+    https://webidl.spec.whatwg.org/#idl-types
     """
 
     _INTEGER_TYPES = ('byte', 'octet', 'short', 'unsigned short', 'long',
@@ -623,10 +623,10 @@ class SimpleType(IdlType):
     # it's much more convenient and reasonable for most of (if not all) use
     # cases to treat ArrayBufferView as a buffer source type than as an union
     # type.
-    # https://heycam.github.io/webidl/#ArrayBufferView
+    # https://webidl.spec.whatwg.org/#ArrayBufferView
     #
     # Note that BufferSource is an union type as defined in Web IDL.
-    # https://heycam.github.io/webidl/#BufferSource
+    # https://webidl.spec.whatwg.org/#BufferSource
     _BUFFER_SOURCE_TYPES = (
         ('ArrayBuffer', 'ArrayBufferView', 'DataView') + _TYPED_ARRAY_TYPES)
     _MISC_TYPES = ('any', 'boolean', 'object', 'symbol', 'void')
@@ -949,7 +949,7 @@ class _ArrayLikeType(IdlType):
 
 
 class SequenceType(_ArrayLikeType):
-    """https://heycam.github.io/webidl/#idl-sequence"""
+    """https://webidl.spec.whatwg.org/#idl-sequence"""
 
     def __init__(self,
                  element_type,
@@ -980,7 +980,7 @@ class SequenceType(_ArrayLikeType):
 
 
 class FrozenArrayType(_ArrayLikeType):
-    """https://heycam.github.io/webidl/#idl-frozen-array"""
+    """https://webidl.spec.whatwg.org/#idl-frozen-array"""
 
     def __init__(self,
                  element_type,
@@ -1011,7 +1011,7 @@ class FrozenArrayType(_ArrayLikeType):
 
 
 class ObservableArrayType(_ArrayLikeType):
-    """https://heycam.github.io/webidl/#idl-observable-array"""
+    """https://webidl.spec.whatwg.org/#idl-observable-array"""
 
     def __init__(self,
                  element_type,
@@ -1086,7 +1086,7 @@ class VariadicType(_ArrayLikeType):
 
 
 class RecordType(IdlType):
-    """https://heycam.github.io/webidl/#idl-record"""
+    """https://webidl.spec.whatwg.org/#idl-record"""
 
     def __init__(self,
                  key_type,
@@ -1145,7 +1145,7 @@ class RecordType(IdlType):
 
 
 class PromiseType(IdlType):
-    """https://heycam.github.io/webidl/#idl-promise"""
+    """https://webidl.spec.whatwg.org/#idl-promise"""
 
     def __init__(self,
                  result_type,
@@ -1196,7 +1196,7 @@ class PromiseType(IdlType):
 
 
 class UnionType(IdlType):
-    """https://heycam.github.io/webidl/#idl-union"""
+    """https://webidl.spec.whatwg.org/#idl-union"""
 
     def __init__(self,
                  member_types,
@@ -1299,7 +1299,7 @@ class UnionType(IdlType):
 
 
 class NullableType(IdlType):
-    """https://heycam.github.io/webidl/#idl-nullable-type"""
+    """https://webidl.spec.whatwg.org/#idl-nullable-type"""
 
     def __init__(self,
                  inner_type,
@@ -1330,7 +1330,7 @@ class NullableType(IdlType):
 
     @property
     def type_name_without_extended_attributes(self):
-        # https://heycam.github.io/webidl/#idl-annotated-types
+        # https://webidl.spec.whatwg.org/#idl-annotated-types
         # Web IDL seems not supposing a case of [X] ([Y] Type)?, i.e. something
         # like [X] nullable<[Y] Type>, which should turn into "TypeYOrNullX".
         #

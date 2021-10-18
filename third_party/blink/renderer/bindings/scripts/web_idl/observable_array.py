@@ -14,7 +14,7 @@ from .idl_type import IdlType
 
 class ObservableArray(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
                       WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-observable-array"""
+    """https://webidl.spec.whatwg.org/#idl-observable-array"""
 
     def __init__(self, idl_type, attributes):
         assert isinstance(idl_type, IdlType)

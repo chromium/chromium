@@ -191,17 +191,17 @@ def make_callback_invocation_function(cg_context,
         if is_construct_call:
             comment = T("""\
 // Performs "construct".
-// https://heycam.github.io/webidl/#construct-a-callback-function\
+// https://webidl.spec.whatwg.org/#construct-a-callback-function\
 """)
         else:
             comment = T("""\
 // Performs "invoke".
-// https://heycam.github.io/webidl/#invoke-a-callback-function\
+// https://webidl.spec.whatwg.org/#invoke-a-callback-function\
 """)
     elif cg_context.callback_interface:
         comment = T("""\
 // Performs "call a user object's operation".
-// https://heycam.github.io/webidl/#call-a-user-objects-operation\
+// https://webidl.spec.whatwg.org/#call-a-user-objects-operation\
 """)
     decls.extend([
         comment,

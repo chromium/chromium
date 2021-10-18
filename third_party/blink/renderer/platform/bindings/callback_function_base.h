@@ -105,7 +105,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
   Member<ScriptState> callback_relevant_script_state_;
   // The callback context, i.e. the incumbent Realm when an ECMAScript value is
   // converted to an IDL value.
-  // https://heycam.github.io/webidl/#dfn-callback-context
+  // https://webidl.spec.whatwg.org/#dfn-callback-context
   Member<ScriptState> incumbent_script_state_;
 };
 

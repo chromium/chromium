@@ -240,7 +240,7 @@ class CORE_EXPORT NativeValueTraitsStringAdapter {
 template <bindings::IDLStringConvMode mode>
 struct NativeValueTraits<IDLByteStringBase<mode>>
     : public NativeValueTraitsBase<IDLByteStringBase<mode>> {
-  // http://heycam.github.io/webidl/#es-ByteString
+  // https://webidl.spec.whatwg.org/#es-ByteString
   static bindings::NativeValueTraitsStringAdapter NativeValue(
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
@@ -300,7 +300,7 @@ struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLByteString>>
 template <bindings::IDLStringConvMode mode>
 struct NativeValueTraits<IDLStringBase<mode>>
     : public NativeValueTraitsBase<IDLStringBase<mode>> {
-  // https://heycam.github.io/webidl/#es-DOMString
+  // https://webidl.spec.whatwg.org/#es-DOMString
   static bindings::NativeValueTraitsStringAdapter NativeValue(
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
@@ -359,7 +359,7 @@ struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLString>>
 template <bindings::IDLStringConvMode mode>
 struct NativeValueTraits<IDLUSVStringBase<mode>>
     : public NativeValueTraitsBase<IDLUSVStringBase<mode>> {
-  // http://heycam.github.io/webidl/#es-USVString
+  // https://webidl.spec.whatwg.org/#es-USVString
   static bindings::NativeValueTraitsStringAdapter NativeValue(
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
@@ -817,7 +817,7 @@ struct NativeValueTraits<IDLSequence<T>>
   // while absl::optional<Vector<T>> is used for IDLNullable<Vector<T>>.
   static constexpr bool has_null_value = WTF::IsTraceable<T>::value;
 
-  // https://heycam.github.io/webidl/#es-sequence
+  // https://webidl.spec.whatwg.org/#es-sequence
   static ImplType NativeValue(v8::Isolate* isolate,
                               v8::Local<v8::Value> value,
                               ExceptionState& exception_state);
@@ -832,7 +832,7 @@ typename NativeValueTraits<IDLSequence<T>>::ImplType
 CreateIDLSequenceFromIterator(v8::Isolate* isolate,
                               ScriptIterator script_iterator,
                               ExceptionState& exception_state) {
-  // https://heycam.github.io/webidl/#create-sequence-from-iterable
+  // https://webidl.spec.whatwg.org/#create-sequence-from-iterable
   ExecutionContext* execution_context =
       ToExecutionContext(isolate->GetCurrentContext());
   typename NativeValueTraits<IDLSequence<T>>::ImplType result;
@@ -868,7 +868,7 @@ typename NativeValueTraits<IDLSequence<T>>::ImplType
 CreateIDLSequenceFromV8ArraySlow(v8::Isolate* isolate,
                                  v8::Local<v8::Array> v8_array,
                                  ExceptionState& exception_state) {
-  // https://heycam.github.io/webidl/#create-sequence-from-iterable
+  // https://webidl.spec.whatwg.org/#create-sequence-from-iterable
   const uint32_t length = v8_array->Length();
   if (length > NativeValueTraits<IDLSequence<T>>::ImplType::MaxCapacity()) {
     exception_state.ThrowRangeError("Array length exceeds supported limit.");
@@ -1043,7 +1043,7 @@ struct NativeValueTraits<IDLRecord<K, V>>
 
   // Converts a JavaScript value |O| to an IDL record<K, V> value. In C++, a
   // record is represented as a Vector<std::pair<k, v>> (or a HeapVector if
-  // necessary). See https://heycam.github.io/webidl/#es-record.
+  // necessary). See https://webidl.spec.whatwg.org/#es-record.
   static ImplType NativeValue(v8::Isolate* isolate,
                               v8::Local<v8::Value> v8_value,
                               ExceptionState& exception_state) {
@@ -1432,7 +1432,7 @@ struct NativeValueTraits<
     IDLNullable<InnerType>,
     typename std::enable_if_t<!NativeValueTraits<InnerType>::has_null_value>>
     : public NativeValueTraitsBase<IDLNullable<InnerType>> {
-  // https://heycam.github.io/webidl/#es-nullable-type
+  // https://webidl.spec.whatwg.org/#es-nullable-type
   using ImplType =
       absl::optional<typename NativeValueTraits<InnerType>::ImplType>;
 

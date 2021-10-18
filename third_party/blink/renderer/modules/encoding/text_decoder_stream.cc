@@ -53,7 +53,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
       return ScriptPromise();
 
     // This implements the "get a copy of the bytes held by the buffer source"
-    // algorithm (https://heycam.github.io/webidl/#dfn-get-buffer-source-copy).
+    // algorithm (https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy).
     DOMArrayPiece array_piece(buffer_source);
     if (array_piece.ByteLength() > std::numeric_limits<uint32_t>::max()) {
       exception_state.ThrowRangeError(

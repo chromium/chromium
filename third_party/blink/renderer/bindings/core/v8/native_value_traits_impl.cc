@@ -46,7 +46,7 @@ CreateIDLSequenceFromV8Array<IDLLong>(v8::Isolate* isolate,
                                       ExceptionState& exception_state) {
   typename NativeValueTraits<IDLSequence<IDLLong>>::ImplType result;
 
-  // https://heycam.github.io/webidl/#create-sequence-from-iterable
+  // https://webidl.spec.whatwg.org/#create-sequence-from-iterable
   const uint32_t length = v8_array->Length();
   if (length >
       NativeValueTraits<IDLSequence<IDLLong>>::ImplType::MaxCapacity()) {

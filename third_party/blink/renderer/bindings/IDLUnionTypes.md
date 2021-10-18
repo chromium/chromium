@@ -1,6 +1,6 @@
 # How to use Blink IDL Union Types
 
-Using [IDL union types](https://heycam.github.io/webidl/#idl-union) in
+Using [IDL union types](https://webidl.spec.whatwg.org/#idl-union) in
 Blink is a bit tricky. Here are some tips to use union types
 correctly.
 
@@ -9,7 +9,7 @@ correctly.
 For each union type, the code generator creates a C++ class which is
 used like an "impl" class of a normal interface type. The name of a
 generated class is a
-[type name](https://heycam.github.io/webidl/#dfn-type-name) of the
+[type name](https://webidl.spec.whatwg.org/#dfn-type-name) of the
 union type. For example, the code generator will create
 `StringOrFloat` class for `(DOMString or float)`.
 

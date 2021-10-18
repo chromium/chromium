@@ -34,7 +34,7 @@ namespace blink {
 namespace {
 
 // Name, decription, and legacy code name and value of DOMExceptions.
-// https://heycam.github.io/webidl/#idl-DOMException-error-names
+// https://webidl.spec.whatwg.org/#idl-DOMException-error-names
 const struct DOMExceptionEntry {
   DOMExceptionCode code;
   const char* name;
