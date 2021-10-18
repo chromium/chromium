@@ -470,12 +470,11 @@ void HTMLPlugInElement::DefaultEventHandler(Event& event) {
     if (embedded_object->ShowsUnavailablePluginIndicator())
       return;
   }
-  WebPluginContainerImpl* plugin = OwnedPlugin();
-  if (!plugin)
-    return;
-  plugin->HandleEvent(event);
-  if (event.DefaultHandled())
-    return;
+  if (WebPluginContainerImpl* plugin = OwnedPlugin()) {
+    plugin->HandleEvent(event);
+    if (event.DefaultHandled())
+      return;
+  }
   HTMLFrameOwnerElement::DefaultEventHandler(event);
 }
 
