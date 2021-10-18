@@ -26,7 +26,7 @@
 #include "ash/system/unified/user_chooser_view.h"
 #include "ash/system/user/login_status.h"
 #include "base/bind.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -97,13 +97,8 @@ void TopShortcutButtonContainer::Layout() {
   if (visible_children.size() > 1) {
     spacing = (child_area.width() - visible_child_width) /
               (static_cast<int>(visible_children.size()) - 1);
-    // This is a broken clamp function that successfully returns a bogus value
-    // when invalid inputs are provided, rather than crashing.
-    // TODO(https://crbug.com/1232414): Migrate this call to use base::clamp()
-    // from base/cxx17_backports.h, and fix all the broken tests that result.
-    spacing = base::BrokenClampThatShouldNotBeUsed(
-        spacing, kUnifiedTopShortcutButtonMinSpacing,
-        kUnifiedTopShortcutButtonDefaultSpacing);
+    spacing = base::clamp(spacing, kUnifiedTopShortcutButtonMinSpacing,
+                          kUnifiedTopShortcutButtonDefaultSpacing);
   }
 
   int x = child_area.x();
@@ -121,11 +116,7 @@ void TopShortcutButtonContainer::Layout() {
           child_area.width() -
           (static_cast<int>(visible_children.size()) - 1) * spacing -
           (visible_child_width - width);
-      // This is a broken clamp function that successfully returns a bogus value
-      // when invalid inputs are provided, rather than crashing.
-      // TODO(https://crbug.com/1232414): Migrate this call to use base::clamp()
-      // from base/cxx17_backports.h, and fix all the broken tests that result.
-      width = base::BrokenClampThatShouldNotBeUsed(width, 0, remainder);
+      width = base::clamp(width, 0, std::max(0, remainder));
     }
 
     child->SetBounds(x, child_y, width, child->GetHeightForWidth(width));
