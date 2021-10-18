@@ -140,7 +140,7 @@ AssistiveSuggester::~AssistiveSuggester() = default;
 
 bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
   return IsAssistPersonalInfoEnabled() || IsEmojiSuggestAdditionEnabled() ||
-         IsMultiWordSuggestEnabled();
+         IsMultiWordSuggestEnabled() || IsEnhancedEmojiSuggestEnabled();
 }
 
 bool AssistiveSuggester::IsAssistPersonalInfoEnabled() {
@@ -153,6 +153,11 @@ bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
          profile_->GetPrefs()->GetBoolean(
              prefs::kEmojiSuggestionEnterpriseAllowed) &&
          profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled);
+}
+
+bool AssistiveSuggester::IsEnhancedEmojiSuggestEnabled() {
+  return IsEmojiSuggestAdditionEnabled() &&
+         base::FeatureList::IsEnabled(features::kAssistEmojiEnhanced);
 }
 
 bool AssistiveSuggester::IsMultiWordSuggestEnabled() {

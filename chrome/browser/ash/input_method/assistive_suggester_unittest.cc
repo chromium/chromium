@@ -108,6 +108,51 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
+TEST_F(AssistiveSuggesterTest,
+       EnhancedEmojiSuggestDisabledWhenStandardEmojiDisabledAndPrefsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAssistEmojiEnhanced},
+      /*disabled_features=*/{features::kAssistPersonalInfo,
+                             features::kAssistMultiWord,
+                             features::kEmojiSuggestAddition});
+  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
+                                   false);
+  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
+
+  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
+TEST_F(AssistiveSuggesterTest,
+       EnhancedEmojiSuggestDisabledWhenStandardEmojiDisabledAndPrefsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAssistEmojiEnhanced},
+      /*disabled_features=*/{features::kAssistPersonalInfo,
+                             features::kAssistMultiWord,
+                             features::kEmojiSuggestAddition});
+  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
+                                   true);
+  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
+
+  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
+TEST_F(AssistiveSuggesterTest,
+       EnhancedEmojiSuggestEnabledWhenStandardEmojiEnabledAndPrefsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAssistEmojiEnhanced,
+                            features::kEmojiSuggestAddition},
+      /*disabled_features=*/{features::kAssistPersonalInfo,
+                             features::kAssistMultiWord});
+  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
+                                   true);
+  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
+
+  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
 TEST_F(
     AssistiveSuggesterTest,
     AssistPersonalInfoEnabledPrefFalseFeatureFlagTrue_AssitiveFeatureEnabledFalse) {
