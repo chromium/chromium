@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogType} from '../../common/js/dialog_type.js';
-
+import {DialogType} from './dialog_type.js';
 import {AllowedPaths} from './volume_manager_types.js';
 
 /**

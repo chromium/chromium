@@ -66,7 +66,6 @@ js_library("image_loader") {
     ":image_request_task",
     ":load_image_request",
     ":scheduler",
-    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -74,9 +73,9 @@ js_library("image_loader") {
 js_unittest("image_loader_unittest.m") {
   deps = [
     ":image_loader_util",
+    ":image_orientation",
     ":load_image_request",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
   ]
   extra_deps = [ ":copy_from_filesapp" ]
 }
@@ -128,7 +127,6 @@ js_library("image_request_task") {
     ":load_image_request",
     ":piex_loader",
     "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
     "//ui/webui/resources/js:assert.m",
   ]
   externs_list = [
