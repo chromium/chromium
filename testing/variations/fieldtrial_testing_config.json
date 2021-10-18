@@ -5104,7 +5104,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled"
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NetworkRequestUsesOnlyPerProcessBufferLimit"
+                    ]
                 }
             ]
         }
