@@ -21,19 +21,25 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController.AutoDarkClickableSpan;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -61,8 +67,8 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     private static final String USER_ED_FEATURE =
             FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE;
     private static final String OPT_OUT_FEATURE = FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE;
-
     private static final String DISABLED_EVENT = EventConstants.AUTO_DARK_DISABLED_IN_APP_MENU;
+    private static final String TEST_URL = "https://example.com";
 
     private static class FakeModalDialogManager extends ModalDialogManager {
         private PropertyModel mShownDialogModel;
@@ -89,6 +95,8 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     }
 
     @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule
     public JniMocker mJniMocker = new JniMocker();
 
     @Mock
@@ -96,9 +104,11 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     @Mock
     Profile mMockProfile;
     @Mock
+    MessageDispatcher mMockMessageDispatcher;
+    @Mock
     SettingsLauncher mMockSettingsLauncher;
     @Mock
-    MessageDispatcher mMockMessageDispatcher;
+    HelpAndFeedbackLauncher mMockFeedbackLauncher;
 
     @Mock
     UserPrefs.Natives mMockUserPrefJni;
@@ -133,6 +143,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     @After
     public void tearDown() {
         TrackerFactory.setTrackerForTests(null);
+        FeatureList.setTestValues(null);
     }
 
     @Test
@@ -220,8 +231,8 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         when(mMockTracker.shouldTriggerHelpUI(eq(OPT_OUT_FEATURE))).thenReturn(false);
 
         // Attempt to send message and fail because feature engagement conditions not met.
-        WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, mModalDialogManager, mMockSettingsLauncher);
+        WebContentsDarkModeMessageController.attemptToShowDialog(mMockActivity, mMockProfile,
+                TEST_URL, mModalDialogManager, mMockSettingsLauncher, mMockFeedbackLauncher);
         verify(mMockTracker, times(1)).notifyEvent(eq(DISABLED_EVENT));
         Assert.assertNull(
                 "Shown dialog model should be null, since we should not trigger the dialog.",
@@ -231,51 +242,83 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     @Test
     public void testShowDialog_ShouldTrigger() {
         // Attempt to send message and succeed because feature engagement conditions met.
-        WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, mModalDialogManager, mMockSettingsLauncher);
+        WebContentsDarkModeMessageController.attemptToShowDialog(mMockActivity, mMockProfile,
+                TEST_URL, mModalDialogManager, mMockSettingsLauncher, mMockFeedbackLauncher);
         verify(mMockTracker, times(1)).notifyEvent(eq(DISABLED_EVENT));
-        Assert.assertNotNull("Shown dialog model should be non-null, since we trigger the dialog",
+        Assert.assertNotNull("Shown dialog model should be non-null, since we trigger the dialog.",
                 mModalDialogManager.mShownDialogModel);
     }
 
     @Test
-    public void testDialogController_ClickPositiveButton() {
+    public void testDialogController_ClickPositiveButton_FeedbackEnabled() {
+        // Enable feedback.
+        FeatureList.TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING,
+                WebContentsDarkModeMessageController.FEEDBACK_DIALOG_PARAM, Boolean.toString(true));
+        FeatureList.setTestValues(testValues);
+
         // Click on positive button.
-        WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, mModalDialogManager, mMockSettingsLauncher);
+        WebContentsDarkModeMessageController.attemptToShowDialog(mMockActivity, mMockProfile,
+                TEST_URL, mModalDialogManager, mMockSettingsLauncher, mMockFeedbackLauncher);
         mModalDialogManager.clickButton(ButtonType.POSITIVE);
-        // TODO(1255301): Verify feedback flow logic.
+        verify(mMockFeedbackLauncher, times(1))
+                .showFeedback(
+                        eq(mMockActivity), eq(mMockProfile), eq(TEST_URL), any(), anyInt(), any());
 
         // Verify dismissal.
-        Assert.assertNull("Shown dialog model should be null after clicking the positive button",
+        Assert.assertNull("Shown dialog model should be null after clicking the positive button.",
                 mModalDialogManager.mShownDialogModel);
-        verify(mMockTracker, times(1)).dismissed(OPT_OUT_FEATURE);
+        verify(mMockTracker, times(1)).dismissed(eq(OPT_OUT_FEATURE));
+    }
+
+    @Test
+    public void testDialogController_ClickPositiveButton_FeedbackDisabled() {
+        // Disable feedback.
+        FeatureList.TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING,
+                WebContentsDarkModeMessageController.FEEDBACK_DIALOG_PARAM,
+                Boolean.toString(false));
+        FeatureList.setTestValues(testValues);
+
+        // Click on positive button.
+        WebContentsDarkModeMessageController.attemptToShowDialog(mMockActivity, mMockProfile,
+                TEST_URL, mModalDialogManager, mMockSettingsLauncher, mMockFeedbackLauncher);
+        mModalDialogManager.clickButton(ButtonType.POSITIVE);
+        verify(mMockSettingsLauncher, times(1))
+                .launchSettingsActivity(eq(mMockActivity), eq(ThemeSettingsFragment.class), any());
+
+        // Verify dismissal.
+        Assert.assertNull("Shown dialog model should be null after clicking the positive button.",
+                mModalDialogManager.mShownDialogModel);
+        verify(mMockTracker, times(1)).dismissed(eq(OPT_OUT_FEATURE));
     }
 
     @Test
     public void testDialogController_ClickNegativeButton() {
         // Click on negative button.
-        WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, mModalDialogManager, mMockSettingsLauncher);
+        WebContentsDarkModeMessageController.attemptToShowDialog(mMockActivity, mMockProfile,
+                TEST_URL, mModalDialogManager, mMockSettingsLauncher, mMockFeedbackLauncher);
         mModalDialogManager.clickButton(ButtonType.NEGATIVE);
 
         // Verify dismissal.
-        Assert.assertNull("Shown dialog model should be null after clicking the negative button",
+        Assert.assertNull("Shown dialog model should be null after clicking the negative button.",
                 mModalDialogManager.mShownDialogModel);
-        verify(mMockTracker, times(1)).dismissed(OPT_OUT_FEATURE);
+        verify(mMockTracker, times(1)).dismissed(eq(OPT_OUT_FEATURE));
     }
 
     @Test
     public void testShowDialog_ClickTitleIcon() {
         // Click on title icon.
-        WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, mModalDialogManager, mMockSettingsLauncher);
+        WebContentsDarkModeMessageController.attemptToShowDialog(mMockActivity, mMockProfile,
+                TEST_URL, mModalDialogManager, mMockSettingsLauncher, mMockFeedbackLauncher);
         mModalDialogManager.clickButton(ButtonType.TITLE_ICON);
 
         // Verify not dismissed.
-        Assert.assertNotNull("Shown dialog model should be non-null after clicking the title icon",
+        Assert.assertNotNull("Shown dialog model should be non-null after clicking the title icon.",
                 mModalDialogManager.mShownDialogModel);
-        verify(mMockTracker, never()).dismissed(OPT_OUT_FEATURE);
+        verify(mMockTracker, never()).dismissed(eq(OPT_OUT_FEATURE));
     }
 
     @Test
