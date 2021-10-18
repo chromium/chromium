@@ -23,7 +23,7 @@ interface RepeaterEvent<T> extends CustomEvent {
 }
 
 const ExtensionsKeyboardShortcutsElementBase =
-    CrContainerShadowMixin(PolymerElement) as {new (): PolymerElement};
+    CrContainerShadowMixin(PolymerElement);
 
 // The UI to display and manage keyboard shortcuts set for extension commands.
 class ExtensionsKeyboardShortcutsElement extends

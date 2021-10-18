@@ -31,18 +31,18 @@ import './link_container.js';
 
 // </if>
 
-import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
+import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DarkModeMixin, DarkModeMixinInterface} from '../dark_mode_mixin.js';
+import {DarkModeMixin} from '../dark_mode_mixin.js';
 import {Destination} from '../data/destination.js';
 import {Error, State} from '../data/state.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
 import {DestinationState, PrintPreviewDestinationSettingsElement} from './destination_settings.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 /**
  * Number of settings sections to show when "More settings" is collapsed.
@@ -55,15 +55,8 @@ export interface PrintPreviewSidebarElement {
   };
 }
 
-const PrintPreviewSidebarElementBase =
-    mixinBehaviors(
-        [
-          CrContainerShadowBehavior,
-        ],
-        WebUIListenerMixin(SettingsMixin(DarkModeMixin(PolymerElement)))) as {
-      new (): PolymerElement & WebUIListenerMixinInterface &
-      DarkModeMixinInterface & SettingsMixinInterface
-    };
+const PrintPreviewSidebarElementBase = CrContainerShadowMixin(
+    WebUIListenerMixin(SettingsMixin(DarkModeMixin(PolymerElement))));
 
 export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   static get is() {

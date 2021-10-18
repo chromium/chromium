@@ -24,7 +24,7 @@ import './shared_vars.js';
 import './strings.m.js';
 import './toggle_row.js';
 
-import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
+import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -52,8 +52,7 @@ interface RepeaterEvent extends CustomEvent {
 }
 
 const ExtensionsDetailViewElementBase =
-    CrContainerShadowMixin(ItemMixin(PolymerElement)) as
-    {new (): PolymerElement & CrContainerShadowMixinInterface};
+    CrContainerShadowMixin(ItemMixin(PolymerElement));
 
 export class ExtensionsDetailViewElement extends
     ExtensionsDetailViewElementBase {

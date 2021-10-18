@@ -198,6 +198,7 @@ ts_library("library") {
   composite = true
 
   in_files = [
+    "cr_elements/cr_container_shadow_mixin.ts",
     "cr_elements/cr_nav_menu_item_style.ts",
     "cr_elements/find_shortcut_mixin.ts",
     "js/i18n_mixin.ts",
@@ -219,7 +220,6 @@ ts_library("library") {
     "$root_dir/cr_elements/cr_fingerprint/cr_fingerprint_icon.m.d.ts",
     "$root_dir/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.d.ts",
     "$root_dir/cr_elements/cr_actionable_row_style.m.d.ts",
-    "$root_dir/cr_elements/cr_container_shadow_mixin.d.ts",
     "$root_dir/cr_elements/cr_grid/cr_grid.d.ts",
     "$root_dir/cr_elements/cr_icons_css.m.d.ts",
     "$root_dir/cr_elements/cr_auto_img/cr_auto_img.d.ts",
@@ -294,7 +294,6 @@ ts_definitions("generate_definitions") {
     "cr_elements/cr_grid/cr_grid.js",
     "cr_elements/cr_icons_css.m.js",
     "cr_elements/cr_auto_img/cr_auto_img.js",
-    "cr_elements/cr_container_shadow_mixin.js",
     "cr_elements/cr_input/cr_input_style_css.m.js",
     "cr_elements/cr_link_row/cr_link_row.js",
     "cr_elements/cr_lottie/cr_lottie.m.js",
