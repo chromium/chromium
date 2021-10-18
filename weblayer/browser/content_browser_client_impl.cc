@@ -1223,8 +1223,7 @@ bool ContentBrowserClientImpl::IsClipboardPasteAllowed(
 
   const GURL& url = render_frame_host->GetLastCommittedOrigin().GetURL();
   content::BrowserContext* browser_context =
-      content::WebContents::FromRenderFrameHost(render_frame_host)
-          ->GetBrowserContext();
+      render_frame_host->GetBrowserContext();
   DCHECK(browser_context);
 
   content::PermissionController* permission_controller =

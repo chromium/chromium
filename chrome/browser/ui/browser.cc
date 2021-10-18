@@ -1940,10 +1940,8 @@ blink::ProtocolHandlerSecurityLevel Browser::GetProtocolHandlerSecurityLevel(
     content::RenderFrameHost* requesting_frame) {
   // WARNING: This must match the logic of
   // ChromeExtensionsRendererClient::GetProtocolHandlerSecurityLevel().
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(requesting_frame);
 
-  content::BrowserContext* context = web_contents->GetBrowserContext();
+  content::BrowserContext* context = requesting_frame->GetBrowserContext();
   extensions::ProcessMap* process_map = extensions::ProcessMap::Get(context);
   const GURL& owner_site_url =
       requesting_frame->GetSiteInstance()->GetSiteURL();
@@ -2101,9 +2099,8 @@ bool Browser::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
     blink::mojom::MediaStreamType type) {
-  Profile* profile = Profile::FromBrowserContext(
-      content::WebContents::FromRenderFrameHost(render_frame_host)
-          ->GetBrowserContext());
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   const extensions::Extension* extension =
       GetExtensionForOrigin(profile, security_origin);
   return MediaCaptureDevicesDispatcher::GetInstance()

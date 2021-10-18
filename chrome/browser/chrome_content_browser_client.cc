@@ -5119,7 +5119,7 @@ bool ChromeContentBrowserClient::WillInterceptWebSocket(
   }
   const auto* web_request_api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
-          frame->GetProcess()->GetBrowserContext());
+          frame->GetBrowserContext());
 
   // NOTE: Some unit test environments do not initialize
   // BrowserContextKeyedAPI factories for e.g. WebRequest.
@@ -5147,7 +5147,7 @@ void ChromeContentBrowserClient::CreateWebSocket(
   }
   auto* web_request_api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
-          frame->GetProcess()->GetBrowserContext());
+          frame->GetBrowserContext());
 
   DCHECK(web_request_api);
   web_request_api->ProxyWebSocket(frame, std::move(factory), url,
@@ -5231,8 +5231,7 @@ void ChromeContentBrowserClient::MaybeInterceptWebTransport(
     return;
   }
 
-  content::BrowserContext* browser_context =
-      frame->GetProcess()->GetBrowserContext();
+  content::BrowserContext* browser_context = frame->GetBrowserContext();
   auto* web_request_api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
           browser_context);
@@ -5983,7 +5982,7 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
 
   const GURL& url = render_frame_host->GetLastCommittedOrigin().GetURL();
   content::BrowserContext* browser_context =
-      WebContents::FromRenderFrameHost(render_frame_host)->GetBrowserContext();
+      render_frame_host->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(browser_context);
   DCHECK(profile);
 
