@@ -69,9 +69,9 @@ class DateDeserializer final {
 };
 
 // Parses the offset info in `deserializer`, which is the time offset portion of
-// the date format provided in section 7.9.4 "Dates" of the ISO 32000-1
-// standard. An input is expected to look like "HH'mm", such that "HH" is the
-// hour and "mm" is the minute.
+// the date format provided in section 7.9.4 "Dates" of the ISO 32000-1:2008
+// spec. An input is expected to look like "HH'mm", such that "HH" is the hour
+// and "mm" is the minute.
 base::TimeDelta ParseOffset(DateDeserializer& deserializer) {
   base::TimeDelta offset;
 
