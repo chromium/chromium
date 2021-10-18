@@ -58,7 +58,8 @@ void FakeConnectionManager::RegisterPayloadFile(
 
 void FakeConnectionManager::SendFileTransferUpdate(
     mojom::FileTransferUpdatePtr update) {
-  file_transfer_update_callbacks_.at(update->payload_id).Run(std::move(update));
+  auto payload_id = update->payload_id;
+  file_transfer_update_callbacks_.at(payload_id).Run(std::move(update));
 }
 
 }  // namespace secure_channel
