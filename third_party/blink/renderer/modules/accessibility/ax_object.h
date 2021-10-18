@@ -1394,6 +1394,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeUnignoredAttributes(ui::AXNodeData* node_data,
                                     ui::AXMode accessibility_mode);
 
+  void SerializeNameAndDescriptionAttributes(ui::AXMode accessibility_mode,
+                                             ui::AXNodeData* node_data) const;
+
   // Serialization implemented in specific subclasses.
   virtual void SerializeMarkerAttributes(ui::AXNodeData* node_data) const;
 
@@ -1439,14 +1442,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // objects generated. Returns nullptr if a native scroll action to the node is
   // not possible.
   LayoutObject* GetLayoutObjectForNativeScrollAction() const;
-
-  // Max length for attributes such as aria-label.
-  static const uint32_t kMaxStringAttributeLength = 10000;
-  void TruncateAndAddStringAttribute(
-      ui::AXNodeData* dst,
-      ax::mojom::blink::StringAttribute attribute,
-      const std::string& value,
-      uint32_t max_len = kMaxStringAttributeLength) const;
 
   static unsigned number_of_live_ax_objects_;
 };

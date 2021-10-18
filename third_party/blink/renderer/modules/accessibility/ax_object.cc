@@ -103,6 +103,7 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_common.h"
+#include "ui/accessibility/ax_enums.mojom-blink-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
 
@@ -465,6 +466,37 @@ HTMLDialogElement* GetActiveDialogElement(Node* node) {
   return node->GetDocument().ActiveModalDialog();
 }
 
+void AddIntListAttributeFromObjects(ax::mojom::blink::IntListAttribute attr,
+                                    const AXObject::AXObjectVector& objects,
+                                    ui::AXNodeData* node_data) {
+  DCHECK(node_data);
+  std::vector<int32_t> ids;
+  for (const auto& obj : objects)
+    ids.push_back(obj->AXObjectID());
+  if (!ids.empty())
+    node_data->AddIntListAttribute(attr, ids);
+}
+
+// Max length for attributes such as aria-label.
+static constexpr uint32_t kMaxStringAttributeLength = 10000;
+// Max length for a static text name.
+// Length of War and Peace (http://www.gutenberg.org/files/2600/2600-0.txt).
+static constexpr uint32_t kMaxStaticTextLength = 3227574;
+
+void TruncateAndAddStringAttribute(
+    ui::AXNodeData* dst,
+    ax::mojom::blink::StringAttribute attribute,
+    const std::string& value,
+    uint32_t max_len = kMaxStringAttributeLength) {
+  if (value.size() > max_len) {
+    std::string truncated;
+    base::TruncateUTF8ToByteSize(value, max_len, &truncated);
+    dst->AddStringAttribute(attribute, truncated);
+  } else {
+    dst->AddStringAttribute(attribute, value);
+  }
+}
+
 }  // namespace
 
 int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
@@ -688,7 +720,6 @@ void AXObject::RepairMissingParent() const {
 AXObject* AXObject::ComputeParent() const {
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(!IsDetached());
-
 
   SANITIZER_CHECK(!IsMockObject())
       << "A mock object must have a parent, and cannot exist without one. "
@@ -1107,14 +1138,32 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     SerializeLangAttribute(node_data);  // Propagates using all nodes' values.
   }
 
+  // Return early. The following attributes are unnecessary for ignored nodes.
+  // Exception: focusable ignored nodes are fully serialized, so that reasonable
+  // verbalizations can be made if they actually receive focus.
   if (AccessibilityIsIgnored()) {
     node_data->AddState(ax::mojom::blink::State::kIgnored);
     // Early return for ignored, unfocusable nodes, avoiding unnecessary work.
-    if (!is_focusable)
+    if (!is_focusable) {
+      // The name is important for exposing the selection around ignored nodes.
+      // TODO(accessibility) Remove this and still pass this
+      // content_browsertest:
+      // All/DumpAccessibilityTreeTest.AccessibilityIgnoredSelection/blink
+      if (RoleValue() == ax::mojom::blink::Role::kStaticText)
+        SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
       return;
+    }
   }
 
   SerializeUnignoredAttributes(node_data, accessibility_mode);
+
+  if (accessibility_mode.has_mode(ui::AXMode::kPDF)) {
+    SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
+    // Return early. None of the following attributes are needed for PDFs.
+    return;
+  }
+
+  SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
 }
 
 // Attributes that don't need to be serialized on ignored nodes.
@@ -1653,18 +1702,56 @@ void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
   }
 }
 
-void AXObject::TruncateAndAddStringAttribute(
-    ui::AXNodeData* dst,
-    ax::mojom::blink::StringAttribute attribute,
-    const std::string& value,
-    uint32_t max_len) const {
-  if (value.size() > max_len) {
-    std::string truncated;
-    base::TruncateUTF8ToByteSize(value, max_len, &truncated);
-    dst->AddStringAttribute(attribute, truncated);
-  } else {
-    dst->AddStringAttribute(attribute, value);
+void AXObject::SerializeNameAndDescriptionAttributes(
+    ui::AXMode accessibility_mode,
+    ui::AXNodeData* node_data) const {
+  ax::mojom::blink::NameFrom name_from;
+  AXObjectVector name_objects;
+  String name = GetName(name_from, &name_objects);
+  if ((!name.IsEmpty()) ||
+      name_from == ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty) {
+    int max_length = node_data->role == ax::mojom::blink::Role::kStaticText
+                         ? kMaxStaticTextLength
+                         : kMaxStringAttributeLength;
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kName,
+                                  name.Utf8(), max_length);
+    node_data->SetNameFrom(name_from);
+    AddIntListAttributeFromObjects(
+        ax::mojom::blink::IntListAttribute::kLabelledbyIds, name_objects,
+        node_data);
   }
+
+    ax::mojom::blink::DescriptionFrom description_from;
+    AXObjectVector description_objects;
+    String description =
+        Description(name_from, description_from, &description_objects);
+  if (!description.IsEmpty()) {
+    DCHECK(description_from != ax::mojom::blink::DescriptionFrom::kNone);
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kDescription,
+        description.Utf8());
+    node_data->SetDescriptionFrom(description_from);
+    AddIntListAttributeFromObjects(
+        ax::mojom::blink::IntListAttribute::kDescribedbyIds,
+        description_objects, node_data);
+  }
+
+  String title = Title(name_from);
+  if (!title.IsEmpty()) {
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kTooltip, title.Utf8());
+  }
+
+  if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader))
+    return;
+
+  String placeholder = Placeholder(name_from);
+  if (!placeholder.IsEmpty()) {
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kPlaceholder,
+                                placeholder.Utf8());
+}
 }
 
 bool AXObject::IsAXNodeObject() const {
