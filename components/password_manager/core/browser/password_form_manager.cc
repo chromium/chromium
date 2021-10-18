@@ -710,7 +710,8 @@ bool PasswordFormManager::ProvisionallySave(
 
   // TODO(crbug.com/959776): Reset possible username after it's used.
   if (IsUsernameFirstFlowFeatureEnabled() &&
-      parsed_submitted_form_->username_value.empty()) {
+      parsed_submitted_form_->username_value.empty() &&
+      !parsed_submitted_form_->password_value.empty()) {
     if (IsPossibleSingleUsernameAvailable(possible_username)) {
       // Suggest the possible username value in a prompt if the server confirmed
       // it is a single username field. Otherwise, |possible_username| is used
