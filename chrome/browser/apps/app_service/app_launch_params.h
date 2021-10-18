@@ -77,9 +77,7 @@ struct AppLaunchParams {
 
   // Record where the app is launched from for tracking purpose.
   // Different app may have their own enumeration of sources.
-  // TODO(crbug.com/1113502): Reconcile AppLaunchSource vs. LaunchSource vs.
-  // app_runtime::LaunchSource.
-  apps::mojom::AppLaunchSource source;
+  apps::mojom::LaunchSource launch_source;
 
   // The id of the display from which the app is launched.
   // display::kInvalidDisplayId means that the default display for new windows

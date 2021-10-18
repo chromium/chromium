@@ -449,7 +449,7 @@ void LaunchProcess::RecordMetrics(const GURL& launch_url,
     RecordAppWindowLaunch(&profile_, params_.app_id);
   }
   UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchSource",
-                            params_.source);
+                            apps::GetAppLaunchSource(params_.launch_source));
   UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchContainer",
                             params_.container);
 

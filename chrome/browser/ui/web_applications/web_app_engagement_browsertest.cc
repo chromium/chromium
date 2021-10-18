@@ -136,7 +136,7 @@ void ExpectLaunchCounts(const base::HistogramTester& tester,
   }
 
   tester.ExpectUniqueSample("Extensions.BookmarkAppLaunchSource",
-                            apps::mojom::AppLaunchSource::kSourceTest,
+                            extensions::AppLaunchSource::kSourceTest,
                             windowLaunches + tabLaunches);
 
   tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",

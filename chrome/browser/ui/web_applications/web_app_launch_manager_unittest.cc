@@ -99,7 +99,7 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
               expected_results.command_line.GetArgs());
     EXPECT_EQ(actual_results.current_directory,
               expected_results.current_directory);
-    EXPECT_EQ(actual_results.source, expected_results.source);
+    EXPECT_EQ(actual_results.launch_source, expected_results.launch_source);
     EXPECT_EQ(actual_results.launch_files, expected_results.launch_files);
     EXPECT_EQ(actual_results.url_handler_launch_url,
               expected_results.url_handler_launch_url);
@@ -150,8 +150,8 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolWebPrefix) {
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(command_line, std::vector<base::FilePath>(),
                          absl::nullopt, protocol_handler_launch_url);
-  expected_results.source =
-      apps::mojom::AppLaunchSource::kSourceProtocolHandler;
+  expected_results.launch_source =
+      apps::mojom::LaunchSource::kFromProtocolHandler;
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
@@ -182,8 +182,8 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolMailTo) {
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(command_line, std::vector<base::FilePath>(),
                          absl::nullopt, protocol_handler_launch_url);
-  expected_results.source =
-      apps::mojom::AppLaunchSource::kSourceProtocolHandler;
+  expected_results.launch_source =
+      apps::mojom::LaunchSource::kFromProtocolHandler;
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))

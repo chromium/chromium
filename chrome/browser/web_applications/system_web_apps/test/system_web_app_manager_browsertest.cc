@@ -255,7 +255,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
       const std::vector<base::FilePath> launch_files,
       bool wait_for_load = true) {
     apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
-    params.source = apps::mojom::AppLaunchSource::kSourceChromeInternal;
+    params.launch_source = apps::mojom::LaunchSource::kFromChromeInternal;
     params.launch_files = launch_files;
 
     return SystemWebAppBrowserTestBase::LaunchApp(std::move(params));
@@ -264,7 +264,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
   content::WebContents* LaunchAppWithoutWaiting(
       const std::vector<base::FilePath> launch_files) {
     apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
-    params.source = apps::mojom::AppLaunchSource::kSourceChromeInternal;
+    params.launch_source = apps::mojom::LaunchSource::kFromChromeInternal;
     params.launch_files = launch_files;
 
     return SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
@@ -851,7 +851,7 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
 
     // Launch the App.
     apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
-    params.source = apps::mojom::AppLaunchSource::kSourceChromeInternal;
+    params.launch_source = apps::mojom::LaunchSource::kFromChromeInternal;
     params.launch_files = {temp_file_path};
 
     return SystemWebAppBrowserTestBase::LaunchApp(std::move(params));

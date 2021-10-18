@@ -40,12 +40,12 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
           params.app_id);
   if (!extension || extension->from_bookmark()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    AppLaunchParams params_for_restore(
-        params.app_id, params.container, params.disposition,
-        GetLaunchSource(params.source), params.display_id, params.launch_files,
-        params.intent);
+    AppLaunchParams params_for_restore(params.app_id, params.container,
+                                       params.disposition, params.launch_source,
+                                       params.display_id, params.launch_files,
+                                       params.intent);
     std::string app_id = params.app_id;
-    apps::mojom::AppLaunchSource source = params.source;
+    apps::mojom::LaunchSource launch_source = params.launch_source;
     apps::mojom::LaunchContainer container = params.container;
     int restore_id = params.restore_id;
 
@@ -58,7 +58,7 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
 
     if (!SessionID::IsValidValue(restore_id)) {
       RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kWeb, app_id,
-                             GetLaunchSource(source), container);
+                             launch_source, container);
       return web_contents;
     }
 
@@ -97,10 +97,10 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
         profile_, apps::mojom::AppType::kExtension, params.app_id,
         apps::mojom::LaunchSource::kFromFullRestore, params.container);
 
-    AppLaunchParams params_for_restore(
-        params.app_id, params.container, params.disposition,
-        GetLaunchSource(params.source), params.display_id, params.launch_files,
-        params.intent);
+    AppLaunchParams params_for_restore(params.app_id, params.container,
+                                       params.disposition, params.launch_source,
+                                       params.display_id, params.launch_files,
+                                       params.intent);
 
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         params_for_restore.app_id, params_for_restore.container,
@@ -111,7 +111,7 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
                                     std::move(launch_info));
   } else {
     RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kExtension,
-                           params.app_id, GetLaunchSource(params.source),
+                           params.app_id, params.launch_source,
                            params.container);
   }
 #endif

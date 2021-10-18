@@ -17,7 +17,7 @@ AppLaunchParams::AppLaunchParams(const std::string& app_id,
       container(container),
       disposition(disposition),
       command_line(base::CommandLine::NO_PROGRAM),
-      source(GetAppLaunchSource(launch_source)),
+      launch_source(launch_source),
       display_id(display_id) {}
 
 AppLaunchParams::AppLaunchParams(const std::string& app_id,
@@ -31,7 +31,7 @@ AppLaunchParams::AppLaunchParams(const std::string& app_id,
       container(container),
       disposition(disposition),
       command_line(base::CommandLine::NO_PROGRAM),
-      source(GetAppLaunchSource(launch_source)),
+      launch_source(launch_source),
       display_id(display_id),
       launch_files(files),
       intent(intentPtr ? intentPtr.Clone() : nullptr) {}

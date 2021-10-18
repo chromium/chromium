@@ -797,9 +797,8 @@ void ExtensionAppsChromeOs::RegisterInstance(extensions::AppWindow* app_window,
 content::WebContents* ExtensionAppsChromeOs::LaunchImpl(
     AppLaunchParams&& params) {
   AppLaunchParams params_for_restore(
-      params.app_id, params.container, params.disposition,
-      GetLaunchSource(params.source), params.display_id, params.launch_files,
-      params.intent);
+      params.app_id, params.container, params.disposition, params.launch_source,
+      params.display_id, params.launch_files, params.intent);
 
   auto* web_contents = ExtensionAppsBase::LaunchImpl(std::move(params));
 

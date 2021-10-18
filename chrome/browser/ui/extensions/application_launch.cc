@@ -297,8 +297,9 @@ WebContents* OpenEnabledApplication(Profile* profile,
 
     apps::LaunchPlatformAppWithCommandLineAndLaunchId(
         profile, extension, params.launch_id, params.command_line,
-        params.current_directory, params.source);
-    return NULL;
+        params.current_directory,
+        apps::GetAppLaunchSource(params.launch_source));
+    return nullptr;
   }
 
   UMA_HISTOGRAM_ENUMERATION("Extensions.HostedAppLaunchContainer",

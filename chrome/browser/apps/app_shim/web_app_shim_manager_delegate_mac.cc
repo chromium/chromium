@@ -225,7 +225,7 @@ void WebAppShimManagerDelegate::LaunchApp(
     }
 
     params.protocol_handler_launch_url = url;
-    params.source = apps::mojom::AppLaunchSource::kSourceProtocolHandler;
+    params.launch_source = apps::mojom::LaunchSource::kFromProtocolHandler;
   }
 
   if (GetBrowserAppLauncherForTesting()) {
