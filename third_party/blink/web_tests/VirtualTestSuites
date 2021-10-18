@@ -961,6 +961,11 @@
     "args": ["--use-first-party-set=https://firstparty.test,https://cookie.test"]
   },
   {
+    "prefix": "partitioned-cookies",
+    "bases": ["external/wpt/cookies/partitioned-cookies/"],
+    "args": ["--enable-features=PartitionedCookies"]
+  },
+  {
     "prefix": "prerender",
     "bases": [ "external/wpt/speculation-rules/prerender",
                "wpt_internal/prerender",

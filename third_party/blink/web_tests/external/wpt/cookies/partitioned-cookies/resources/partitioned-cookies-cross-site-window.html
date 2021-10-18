@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<meta name="timeout" content="long">
+<title>Cross-site window</title>
+<script src="/resources/testharness.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/cookies/resources/cookie-helper.sub.js"></script>
+<script src="/cookies/partitioned-cookies/resources/test-helpers.js"></script>
+
+<body>
+<script>
+
+let origin;
+
+// Test that parent window passed its origin in the URL parameters correctly.
+test(() => {
+  assert_true(window.location.search.startsWith('?origin='));
+  origin = decodeURIComponent(window.location.search.slice(
+      window.location.search.indexOf('?origin=') + 8));
+}, 'Cross-site window opened correctly');
+
+// Test that the request to the parent window's origin does not contain the
+// partitioned cookie.
+testHttpPartitionedCookie({
+  origin,
+  cookieName: '__Host-pchttp',
+  expectsCookie: false,
+});
+
+</script>
+</body>

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Test partitioned cookies
+PASS HTTP partitioned cookie on the top-level site it was created in
+PASS Cross-site window opened correctly
+PASS HTTP partitioned cookie on a different top-level site
+Harness: the test ran to completion.
+
