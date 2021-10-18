@@ -110,8 +110,6 @@ class BackForwardCachePageLoadMetricsObserverTest
   std::unique_ptr<FakePageLoadMetricsObserverDelegate> fake_delegate_;
 
   content::MockNavigationHandle navigation_handle_;
-
-  base::ScopedMockClockOverride clock_override_;
 };
 
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
@@ -324,11 +322,13 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   EXPECT_EQ(400, result_metrics[1].begin()->second);
 }
 
+// TODO(crbug.com/1255496): Flaky under TSan.
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
-       TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
+       DISABLED_TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
   // In the case that there is no page end time and the page has never
   // backgrounded, the observer falls back to using Now as the end point of
   // the time in foreground. So override what 'Now' means.
+  base::ScopedMockClockOverride clock_override;
   base::TimeTicks scoped_clock_start_time =
       base::ScopedMockClockOverride::NowTicks();
 
@@ -350,7 +350,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
       HistoryNavigation::kEntryName,
       HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
   EXPECT_EQ(0U, result_metrics.size());
-  clock_override_.Advance(base::Milliseconds(250));
+  clock_override.Advance(base::Milliseconds(250));
   // This time the app is entering the background, so a metric should be
   // logged.
   InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
