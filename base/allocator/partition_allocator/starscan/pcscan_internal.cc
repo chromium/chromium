@@ -163,6 +163,16 @@ using MetadataHashMap =
                        std::equal_to<>,
                        MetadataAllocator<std::pair<const K, V>>>;
 
+struct GetSlotStartResult final {
+  ALWAYS_INLINE bool is_found() const {
+    PA_SCAN_DCHECK(!slot_start || slot_size);
+    return slot_start;
+  }
+
+  uintptr_t slot_start = 0;
+  size_t slot_size = 0;
+};
+
 // Returns the start of a slot, or nullptr if |maybe_inner_ptr| is not inside of
 // an existing slot span. The function may return a non-nullptr pointer even
 // inside a decommitted or free slot span, it's the caller responsibility to
@@ -170,8 +180,8 @@ using MetadataHashMap =
 //
 // |maybe_inner_ptr| must be within a normal-bucket super page and can also
 // point to guard pages or slot-span metadata.
-ALWAYS_INLINE uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_inner_ptr,
-                                                  const PCScan::Root& root) {
+ALWAYS_INLINE GetSlotStartResult
+GetSlotStartInSuperPage(uintptr_t maybe_inner_ptr) {
   char* maybe_inner_ptr_as_char_ptr = reinterpret_cast<char*>(maybe_inner_ptr);
   PA_SCAN_DCHECK(IsManagedByNormalBuckets(maybe_inner_ptr_as_char_ptr));
   // Don't use FromSlotInnerPtr() or FromPtr() because they expect a pointer to
@@ -187,7 +197,7 @@ ALWAYS_INLINE uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_inner_ptr,
   // Check if page is valid. The check also works for the guard pages and the
   // metadata page.
   if (!page->is_valid)
-    return 0;
+    return {};
 
   page -= page->slot_span_metadata_offset;
   PA_SCAN_DCHECK(page->is_valid);
@@ -195,7 +205,7 @@ ALWAYS_INLINE uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_inner_ptr,
   auto* slot_span = &page->slot_span_metadata;
   // Check if the slot span is actually used and valid.
   if (!slot_span->bucket)
-    return 0;
+    return {};
   PA_SCAN_DCHECK(PartitionRoot<ThreadSafe>::IsValidSlotSpan(slot_span));
   char* const slot_span_begin = static_cast<char*>(
       SlotSpanMetadata<ThreadSafe>::ToSlotSpanStartPtr(slot_span));
@@ -209,10 +219,11 @@ ALWAYS_INLINE uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_inner_ptr,
   // the quarantine bit will anyway return false in this case.
   const size_t slot_size = slot_span->bucket->slot_size;
   const size_t slot_number = slot_span->bucket->GetSlotNumber(ptr_offset);
-  char* const result = slot_span_begin + (slot_number * slot_size);
-  PA_SCAN_DCHECK(result <= maybe_inner_ptr_as_char_ptr &&
-                 maybe_inner_ptr_as_char_ptr < result + slot_size);
-  return reinterpret_cast<uintptr_t>(root.AdjustPointerForExtrasAdd(result));
+  char* const slot_start = slot_span_begin + (slot_number * slot_size);
+  PA_SCAN_DCHECK(slot_start <= maybe_inner_ptr_as_char_ptr &&
+                 maybe_inner_ptr_as_char_ptr < slot_start + slot_size);
+  return {.slot_start = reinterpret_cast<uintptr_t>(slot_start),
+          .slot_size = slot_size};
 }
 
 #if PA_SCAN_DCHECK_IS_ON()
@@ -649,8 +660,15 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
 #endif
 
   // Check if pointer was in the quarantine bitmap.
-  const uintptr_t base = GetObjectStartInSuperPage(maybe_ptr, *root);
-  if (!base || !state_map->IsQuarantined(base))
+  const GetSlotStartResult object_start_result =
+      GetSlotStartInSuperPage(maybe_ptr);
+  if (!object_start_result.is_found())
+    return 0;
+
+  const uintptr_t base =
+      reinterpret_cast<uintptr_t>(root->AdjustPointerForExtrasAdd(
+          reinterpret_cast<char*>(object_start_result.slot_start)));
+  if (LIKELY(!state_map->IsQuarantined(base)))
     return 0;
 
   PA_SCAN_DCHECK((maybe_ptr & kSuperPageBaseMask) ==
@@ -663,13 +681,8 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   // the mutator bitmap and clear from the scanner bitmap. Note that since
   // PCScan has exclusive access to the scanner bitmap, we can avoid atomic rmw
   // operation for it.
-  if (LIKELY(state_map->MarkQuarantinedAsReachable(base, pcscan_epoch_))) {
-    auto* target_slot_span =
-        SlotSpan::FromSlotInnerPtr(reinterpret_cast<void*>(base));
-    PA_SCAN_DCHECK(root == Root::FromSlotSpan(target_slot_span));
-
-    return target_slot_span->bucket->slot_size;
-  }
+  if (LIKELY(state_map->MarkQuarantinedAsReachable(base, pcscan_epoch_)))
+    return object_start_result.slot_size;
 
   return 0;
 }
