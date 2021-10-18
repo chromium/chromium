@@ -16,6 +16,7 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "components/crash/core/browser/crashes_ui_util.h"
+#include "components/crash/core/common/reporter_running_ios.h"
 #include "components/grit/dev_ui_components_resources.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -136,7 +137,7 @@ void CrashesDOMHandler::UpdateUI() {
   base::Value result(base::Value::Type::DICTIONARY);
   result.SetBoolPath("enabled", crash_reporting_enabled);
   result.SetBoolPath("dynamicBackend", false);
-  result.SetBoolPath("manualUploads", false);
+  result.SetBoolPath("manualUploads", crash_reporter::IsCrashpadRunning());
   result.SetPath("crashes", std::move(crash_list));
   result.SetStringPath("version", version_info::GetVersionNumber());
   result.SetStringPath("os", base::SysInfo::OperatingSystemName() + " " +

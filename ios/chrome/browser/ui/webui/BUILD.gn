@@ -47,6 +47,7 @@ source_set("webui") {
     "//build:branding_buildflags",
     "//components/autofill/core/browser",
     "//components/crash/core/browser",
+    "//components/crash/core/common:reporter_running_ios",
     "//components/download/public/background_service:public",
     "//components/download/resources/download_internals:resources",
     "//components/flags_ui",
