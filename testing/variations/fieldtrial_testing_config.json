@@ -8245,21 +8245,6 @@
             ]
         }
     ],
-    "V8WasmTrapHandlerMacOSArm64": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebAssemblyTrapHandler"
-                    ]
-                }
-            ]
-        }
-    ],
     "VaapiVp9kSVCEncoding": [
         {
             "platforms": [

@@ -939,9 +939,10 @@ const base::Feature kWebAssemblyTiering{"WebAssemblyTiering",
 // Enable WebAssembly trap handler.
 const base::Feature kWebAssemblyTrapHandler {
   "WebAssemblyTrapHandler",
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
-     defined(OS_MAC)) &&                                             \
-    defined(ARCH_CPU_X86_64)
+#if ((defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
+      defined(OS_MAC)) &&                                             \
+     defined(ARCH_CPU_X86_64)) ||                                     \
+    (defined(OS_MAC) && defined(ARCH_CPU_ARM64))
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
