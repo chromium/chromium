@@ -63,8 +63,11 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         mMediator = new LightweightReactionsMediator(imageFetcher);
         mReactionService.getReactions((reactions) -> {
             mAvailableReactions = reactions;
-            mMediator.getBitmapForUrl(
-                    reactions.get(0).thumbnailUrl, (bitmap) -> { assert bitmap != null; });
+            mMediator.fetchAssetsAndGetThumbnails(reactions, (thumbnails) -> {
+                assert thumbnails != null;
+                assert thumbnails.length > 0;
+                assert thumbnails.length == mAvailableReactions.size();
+            });
         });
     }
 
