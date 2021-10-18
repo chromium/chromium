@@ -208,7 +208,6 @@ source_set("eg_test_support+eg2") {
     "signin_earl_grey.mm",
     "signin_earl_grey_app_interface.h",
     "signin_earl_grey_app_interface_stub.mm",
-    "signin_earl_grey_ui.h",
     "signin_earl_grey_ui_test_util.h",
     "signin_earl_grey_ui_test_util.mm",
     "signin_matchers.h",
