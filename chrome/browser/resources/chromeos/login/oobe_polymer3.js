@@ -14,6 +14,7 @@ import 'chrome://oobe/screens/common/tpm_error.m.js';
 import 'chrome://oobe/screens/common/user_creation.m.js';
 import 'chrome://oobe/screens/common/oobe_reset.m.js';
 import 'chrome://oobe/screens/login/active_directory_password_change.m.js';
+import 'chrome://oobe/screens/login/encryption_migration.m.js';
 import 'chrome://oobe/screens/login/gaia_password_changed.m.js';
 import 'chrome://oobe/screens/login/lacros_data_migration.m.js';
 import 'chrome://oobe/screens/login/management_transition.m.js';

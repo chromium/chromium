@@ -6,6 +6,8 @@
  * @fileoverview Polymer element for displaying encryption migration screen.
  */
 
+/* #js_imports_placeholder */
+
 /**
  * Enum for the UI states corresponding to sub steps inside migration screen.
  * These values must be kept in sync with
@@ -21,101 +23,121 @@ var EncryptionMigrationUIState = {
   NOT_ENOUGH_SPACE: 'not-enough-space',
 };
 
-Polymer({
-  is: 'encryption-migration-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ */
+const EncryptionMigrationBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+    Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    OobeDialogHostBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+class EncryptionMigration extends EncryptionMigrationBase {
+  static get is() {
+    return 'encryption-migration-element';
+  }
 
-  EXTERNAL_API: [
-    'setUIState',
-    'setMigrationProgress',
-    'setIsResuming',
-    'setBatteryState',
-    'setNecessaryBatteryPercent',
-    'setSpaceInfoInString',
-  ],
+  /* #html_template_placeholder */
 
-  properties: {
-    /**
-     * Current migration progress in range [0, 1]. Negative value means that
-     * the progress is unknown.
-     */
-    progress: {type: Number, value: -1},
+  static get properties() {
+    return {
+      /**
+       * Current migration progress in range [0, 1]. Negative value means that
+       * the progress is unknown.
+       */
+      progress: Number,
 
-    /**
-     * Whether the current migration is resuming the previous one.
-     */
-    isResuming: {type: Boolean, value: false},
+      /**
+       * Whether the current migration is resuming the previous one.
+       */
+      isResuming: Boolean,
 
-    /**
-     * Battery level.
-     */
-    batteryPercent: {type: Number, value: 0},
+      /**
+       * Battery level.
+       */
+      batteryPercent: Number,
 
-    /**
-     * Necessary battery level to start migration in percent.
-     */
-    necessaryBatteryPercent: {type: Number, value: 0},
+      /**
+       * Necessary battery level to start migration in percent.
+       */
+      necessaryBatteryPercent: Number,
 
-    /**
-     * True if the battery level is enough to start migration.
-     */
-    isEnoughBattery: {type: Boolean, value: true},
+      /**
+       * True if the battery level is enough to start migration.
+       */
+      isEnoughBattery: Boolean,
 
-    /**
-     * True if the device is charging.
-     */
-    isCharging: {type: Boolean, value: false},
+      /**
+       * True if the device is charging.
+       */
+      isCharging: Boolean,
 
-    /**
-     * True if the migration was skipped.
-     */
-    isSkipped: {type: Boolean, value: false},
+      /**
+       * True if the migration was skipped.
+       */
+      isSkipped: Boolean,
 
-    /**
-     * Formatted string of the current available space size.
-     */
-    availableSpaceInString: {type: String, value: ''},
+      /**
+       * Formatted string of the current available space size.
+       */
+      availableSpaceInString: String,
 
-    /**
-     * Formatted string of the necessary space size for migration.
-     */
-    necessarySpaceInString: {type: String, value: ''},
-  },
+      /**
+       * Formatted string of the necessary space size for migration.
+       */
+      necessarySpaceInString: String,
+    };
+  }
 
-  /**
-   * Ignore any accelerators the user presses on this screen.
-   */
-  ignoreAccelerators: true,
+  constructor() {
+    super();
+    this.progress = -1;
+    this.isResuming = false;
+    this.batteryPercent = 0;
+    this.necessaryBatteryPercent = 0;
+    this.isEnoughBattery = true;
+    this.isCharging = false;
+    this.isSkipped = false;
+    this.availableSpaceInString = '';
+    this.necessarySpaceInString = '';
+    this.ignoreAccelerators = true;
+  }
 
-  ready() {
-    this.initializeLoginScreen('EncryptionMigrationScreen', {
-      resetAllowed: false,
-    });
-  },
+  get UI_STEPS() {
+    return EncryptionMigrationUIState;
+  }
 
   defaultUIStep() {
     return EncryptionMigrationUIState.INITIAL;
-  },
-
-  UI_STEPS: EncryptionMigrationUIState,
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.MIGRATION;
-  },
+  }
 
-  /*
-   * Executed on language change.
-   */
-  updateLocalizedContent() {
-    this.i18nUpdateLocale();
-  },
+  /** Overridden from LoginScreenBehavior. */
+  // clang-format off
+  get EXTERNAL_API() {
+    return [
+      'setUIState',
+      'setMigrationProgress',
+      'setIsResuming',
+      'setBatteryState',
+      'setNecessaryBatteryPercent',
+      'setSpaceInfoInString',
+    ];
+  }
+  // clang-format on
+
+  ready() {
+    super.ready();
+    this.initializeLoginScreen('EncryptionMigrationScreen', {
+      resetAllowed: false,
+    });
+  }
 
   /**
    * Updates the migration screen by specifying a state which corresponds
@@ -124,7 +146,7 @@ Polymer({
    */
   setUIState(state) {
     this.setUIStep(Object.values(EncryptionMigrationUIState)[state]);
-  },
+  }
 
   /**
    * Updates the migration progress.
@@ -132,7 +154,7 @@ Polymer({
    */
   setMigrationProgress(progress) {
     this.progress = progress;
-  },
+  }
 
   /**
    * Updates the migration screen based on whether the migration process
@@ -141,7 +163,7 @@ Polymer({
    */
   setIsResuming(isResuming) {
     this.isResuming = isResuming;
-  },
+  }
 
   /**
    * Updates battery level of the device.
@@ -153,7 +175,7 @@ Polymer({
     this.batteryPercent = Math.floor(batteryPercent);
     this.isEnoughBattery = isEnoughBattery;
     this.isCharging = isCharging;
-  },
+  }
 
   /**
    * Update the necessary battery percent to start migration in the UI.
@@ -161,7 +183,7 @@ Polymer({
    */
   setNecessaryBatteryPercent(necessaryBatteryPercent) {
     this.necessaryBatteryPercent = necessaryBatteryPercent;
-  },
+  }
 
   /**
    * Updates the string representation of available space size and necessary
@@ -172,7 +194,7 @@ Polymer({
   setSpaceInfoInString(availableSpaceSize, necessarySpaceSize) {
     this.availableSpaceInString = availableSpaceSize;
     this.necessarySpaceInString = necessarySpaceSize;
-  },
+  }
 
   /**
    * Returns true if the current migration progress is unknown.
@@ -181,7 +203,7 @@ Polymer({
    */
   isProgressIndeterminate_(progress) {
     return progress < 0;
-  },
+  }
 
   /**
    * Returns true if the 'Update' button should be disabled.
@@ -191,7 +213,7 @@ Polymer({
    */
   isUpdateDisabled_(isEnoughBattery, isSkipped) {
     return !isEnoughBattery || isSkipped;
-  },
+  }
 
   /**
    * Returns true if the 'Skip' button on the initial screen should be hidden.
@@ -204,7 +226,7 @@ Polymer({
     // set in the appropriate board overlays.
     // https://goo.gl/BbBkzg.
     return this.i18n('migrationBoardName').startsWith('kevin');
-  },
+  }
 
   /**
    * Computes the label shown under progress bar.
@@ -215,7 +237,7 @@ Polymer({
    */
   computeProgressLabel_(locale, progress) {
     return this.i18n('migrationProgressLabel', Math.floor(progress * 100));
-  },
+  }
 
   /**
    * Computes the warning label when battery level is not enough.
@@ -226,7 +248,7 @@ Polymer({
    */
   computeBatteryWarningLabel_(locale, batteryPercent) {
     return this.i18n('migrationBatteryWarningLabel', batteryPercent);
-  },
+  }
 
   /**
    * Computes the label to show the necessary battery level for migration.
@@ -238,7 +260,7 @@ Polymer({
   computeNecessaryBatteryLevelLabel_(locale, necessaryBatteryPercent) {
     return this.i18n(
         'migrationNecessaryBatteryLevelLabel', necessaryBatteryPercent);
-  },
+  }
 
   /**
    * Computes the label to show the current available space.
@@ -249,7 +271,7 @@ Polymer({
    */
   computeAvailableSpaceLabel_(locale, availableSpaceInString) {
     return this.i18n('migrationAvailableSpaceLabel', availableSpaceInString);
-  },
+  }
 
   /**
    * Computes the label to show the necessary space to start migration.
@@ -260,7 +282,7 @@ Polymer({
    */
   computeNecessarySpaceLabel_(locale, necessarySpaceInString) {
     return this.i18n('migrationNecessarySpaceLabel', necessarySpaceInString);
-  },
+  }
 
   /**
    * Handles tap on UPGRADE button.
@@ -270,7 +292,7 @@ Polymer({
     // TODO(crbug.com/1133705) Move the logic from handler to screen object and
     // use userActed call.
     this.userActed('startMigration');
-  },
+  }
 
   /**
    * Handles tap on SKIP button.
@@ -279,7 +301,7 @@ Polymer({
   onSkip_() {
     this.isSkipped = true;
     this.userActed('skipMigration');
-  },
+  }
 
   /**
    * Handles tap on RESTART button.
@@ -287,7 +309,7 @@ Polymer({
    */
   onRestartOnLowStorage_() {
     this.userActed('requestRestartOnLowStorage');
-  },
+  }
 
   /**
    * Handles tap on RESTART button on the migration failure screen.
@@ -295,7 +317,7 @@ Polymer({
    */
   onRestartOnFailure_() {
     this.userActed('requestRestartOnFailure');
-  },
+  }
 
   /**
    * Handles tap on REPORT AN ISSUE button.
@@ -303,5 +325,7 @@ Polymer({
    */
   onReportAnIssue_() {
     this.userActed('openFeedbackDialog');
-  },
-});
+  }
+}
+
+customElements.define(EncryptionMigration.is, EncryptionMigration);

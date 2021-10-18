@@ -10,6 +10,7 @@ import("../../oobe_auto_imports.gni")
 group("polymer3_elements") {
   public_deps = [
     ":active_directory_password_change_module",
+    ":encryption_migration_module",
     ":gaia_password_changed_module",
     ":lacros_data_migration_module",
     ":management_transition_module",
@@ -23,7 +24,6 @@ group("closure_compile") {
 js_type_check("closure_compile_local") {
   uses_legacy_modules = true
   deps = [
-    ":encryption_migration",
     ":offline_login",
     ":update_required_card",
   ]
@@ -34,6 +34,7 @@ js_type_check("closure_compile_module") {
   closure_flags = default_closure_args
   deps = [
     ":active_directory_password_change.m",
+    ":encryption_migration.m",
     ":gaia_password_changed.m",
     ":lacros_data_migration.m",
     ":management_transition.m",
@@ -42,17 +43,6 @@ js_type_check("closure_compile_module") {
 
 ###############################
 # Closure compiler libraries below
-
-js_library("encryption_migration") {
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-}
 
 js_library("offline_login") {
   deps = [
@@ -88,6 +78,20 @@ js_library("active_directory_password_change.m") {
     "../../components/dialogs:oobe_modal_dialog.m",
   ]
   extra_deps = [ ":active_directory_password_change_module" ]
+}
+
+js_library("encryption_migration.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/encryption_migration.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+  ]
+  extra_deps = [ ":encryption_migration_module" ]
 }
 
 js_library("gaia_password_changed.m") {
@@ -133,6 +137,15 @@ polymer_modulizer("active_directory_password_change") {
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("encryption_migration") {
+  js_file = "encryption_migration.js"
+  html_file = "encryption_migration.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+  ignore_imports = [ "//oobe/custom_elements.html" ]
 }
 
 polymer_modulizer("gaia_password_changed") {

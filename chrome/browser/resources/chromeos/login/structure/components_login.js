@@ -4,6 +4,5 @@
 
 // clang-format off
 
-// <include src="../screens/login/encryption_migration.js">
 // <include src="../screens/login/update_required_card.js">
 // <include src="../screens/login/offline_login.js">
