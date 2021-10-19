@@ -26,6 +26,7 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/examples/create_examples.h"
+#include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
@@ -149,6 +150,8 @@ class ExamplesWindowContents : public WidgetDelegateView {
     instance_ = this;
     combobox->SetCallback(base::BindRepeating(
         &ExamplesWindowContents::ComboboxChanged, base::Unretained(this)));
+    combobox->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_EXAMPLES_COMBOBOX_AX_LABEL));
 
     SetBackground(
         CreateThemedSolidBackground(this, ui::kColorDialogBackground));

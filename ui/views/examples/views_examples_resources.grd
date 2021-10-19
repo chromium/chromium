@@ -13,7 +13,8 @@
       <message translateable="false" name="IDS_ABORT_ANIMATION_BUTTON">
         Abort Animation
       </message>
-       <!-- colored dialog example -->
+
+      <!-- colored dialog example -->
       <message translateable="false" name="IDS_COLORED_DIALOG_CHOOSER_CHECKBOX">
         Use Dark Theme
       </message>
@@ -34,6 +35,11 @@
       </message>
       <message translateable="false" name="IDS_COLORED_DIALOG_SUBMIT_BUTTON">
         Submit
+      </message>
+
+      <!-- examples window -->
+      <message translateable="false" name="IDS_EXAMPLES_COMBOBOX_AX_LABEL">
+        Examples
       </message>
 
       <!-- layout base example -->
@@ -187,7 +193,6 @@
       <message translateable="false" name="IDS_RADIO_BUTTON_STATUS_LABEL">
         Show Status
       </message>
-
 
       <!-- scroll view example -->
       <message translateable="false" name="IDS_SCROLL_VIEW_BUTTON_LABEL">
