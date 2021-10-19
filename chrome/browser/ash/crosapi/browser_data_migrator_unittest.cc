@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -131,9 +132,9 @@ TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
 
   // Check for ash data.
   std::vector<BrowserDataMigrator::TargetItem> expected_ash_data_items = {
-      {from_dir_.Append(kDownloads),
+      {from_dir_.Append(kDownloads), kFileSize,
        BrowserDataMigrator::TargetItem::ItemType::kDirectory},
-      {from_dir_.Append(kFullRestoreData),
+      {from_dir_.Append(kFullRestoreData), kFileSize,
        BrowserDataMigrator::TargetItem::ItemType::kFile}};
   std::sort(target_info.ash_data_items.begin(),
             target_info.ash_data_items.end(), TargetItemComparator());
@@ -145,7 +146,7 @@ TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
 
   // Check for lacros data.
   std::vector<BrowserDataMigrator::TargetItem> expected_lacros_data_items = {
-      {from_dir_.Append(kBookmarks),
+      {from_dir_.Append(kBookmarks), kFileSize,
        BrowserDataMigrator::TargetItem::ItemType::kFile},
   };
   ASSERT_EQ(target_info.lacros_data_items.size(),
@@ -155,9 +156,9 @@ TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
   // Check for common data.
   std::vector<BrowserDataMigrator::TargetItem> expected_common_data_items = {
 
-      {from_dir_.Append(kAffiliationDatabase),
+      {from_dir_.Append(kAffiliationDatabase), kFileSize * 2,
        BrowserDataMigrator::TargetItem::ItemType::kDirectory},
-      {from_dir_.Append(kCookies),
+      {from_dir_.Append(kCookies), kFileSize,
        BrowserDataMigrator::TargetItem::ItemType::kFile}};
   ASSERT_EQ(target_info.common_data_items.size(),
             expected_common_data_items.size());
@@ -189,8 +190,9 @@ TEST_F(BrowserDataMigratorTest, CopyDirectory) {
                            copy_from.Append(kFirstRun));
 
   scoped_refptr<CancelFlag> cancelled = base::MakeRefCounted<CancelFlag>();
-  ASSERT_TRUE(
-      BrowserDataMigrator::CopyDirectory(copy_from, copy_to, cancelled.get()));
+  FakeMigrationProgressTracker progress_tracker;
+  ASSERT_TRUE(BrowserDataMigrator::CopyDirectory(
+      copy_from, copy_to, cancelled.get(), &progress_tracker));
 
   // Setup `copy_from` as below.
   // |- copy_from/
@@ -275,9 +277,9 @@ TEST_F(BrowserDataMigratorTest, SetupTmpDir) {
   scoped_refptr<CancelFlag> cancel_flag = base::MakeRefCounted<CancelFlag>();
   BrowserDataMigrator::TargetInfo target_info =
       BrowserDataMigrator::GetTargetInfo(from_dir_);
-
-  EXPECT_TRUE(BrowserDataMigrator::SetupTmpDir(target_info, from_dir_, tmp_dir,
-                                               cancel_flag.get()));
+  FakeMigrationProgressTracker progress_tracker;
+  EXPECT_TRUE(BrowserDataMigrator::SetupTmpDir(
+      target_info, from_dir_, tmp_dir, cancel_flag.get(), &progress_tracker));
 
   EXPECT_TRUE(base::PathExists(tmp_dir));
   EXPECT_TRUE(base::PathExists(tmp_dir.Append(kFirstRun)));
@@ -300,13 +302,15 @@ TEST_F(BrowserDataMigratorTest, SetupTmpDir) {
 TEST_F(BrowserDataMigratorTest, CancelSetupTmpDir) {
   base::FilePath tmp_dir = from_dir_.Append(kTmpDir);
   scoped_refptr<CancelFlag> cancel_flag = base::MakeRefCounted<CancelFlag>();
+  FakeMigrationProgressTracker progress_tracker;
   BrowserDataMigrator::TargetInfo target_info =
       BrowserDataMigrator::GetTargetInfo(from_dir_);
 
   // Set cancel_flag to cancel migrationl.
   cancel_flag->Set();
   EXPECT_FALSE(BrowserDataMigrator::SetupTmpDir(
-      target_info, user_data_dir_.GetPath(), tmp_dir, cancel_flag.get()));
+      target_info, user_data_dir_.GetPath(), tmp_dir, cancel_flag.get(),
+      &progress_tracker));
 
   // These files should not exist.
   EXPECT_FALSE(base::PathExists(tmp_dir.Append(kFirstRun)));
@@ -319,7 +323,10 @@ TEST_F(BrowserDataMigratorTest, Migrate) {
 
   {
     scoped_refptr<CancelFlag> cancelled = base::MakeRefCounted<CancelFlag>();
-    BrowserDataMigrator::MigrateInternal(from_dir_, cancelled);
+    std::unique_ptr<MigrationProgressTracker> progress_tracker =
+        std::make_unique<FakeMigrationProgressTracker>();
+    BrowserDataMigrator::MigrateInternal(from_dir_, std::move(progress_tracker),
+                                         cancelled);
 
     // Expected dir structure after migration.
     // ./                             /* user_data_dir_ */

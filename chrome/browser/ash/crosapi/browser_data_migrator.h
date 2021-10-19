@@ -16,6 +16,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/version.h"
+#include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -75,11 +76,14 @@ class BrowserDataMigrator {
   // Used to describe a file/dir that has to be migrated.
   struct TargetItem {
     enum class ItemType { kFile, kDirectory };
-    TargetItem(base::FilePath path, ItemType item_type);
+    TargetItem(base::FilePath path, int64_t size, ItemType item_type);
     ~TargetItem() = default;
     bool operator==(const TargetItem& rhs) const;
 
     base::FilePath path;
+    // The size of the TargetItem. If TargetItem is a directory, it is the sum
+    // of all files under the directory.
+    int64_t size;
     bool is_directory;
   };
 
@@ -156,10 +160,14 @@ class BrowserDataMigrator {
 
   // The method needs to be called on UI thread. It posts `MigrateInternal()` on
   // a worker thread and returns a callback which can be used to cancel
-  // migration mid way. The `callback` passed as an argument will be called on
-  // the original thread once migration has completed or failed.
+  // migration mid way. `progress_callback` is called to update the progress bar
+  // on the screen.
+  // `completion_callbackchrome/browser/ash/crosapi/browser_data_migrator.cc`
+  // passed as an argument will be called on the original thread once migration
+  // has completed or failed.
   static base::OnceClosure Migrate(const std::string& user_id_hash,
-                                   base::OnceClosure callback);
+                                   const ProgressCallback& progress_callback,
+                                   base::OnceClosure completion_callback);
 
   // Registers boolean pref `kCheckForMigrationOnRestart` with default as false.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -188,9 +196,11 @@ class BrowserDataMigrator {
   static bool IsMigrationRequiredOnWorker(base::FilePath user_data_dir,
                                           const std::string& user_id_hash);
   // Handles the migration on a worker thread. Returns the end status of data
-  // wipe and migration.
+  // wipe and migration. `progress_callback` gets posted on UI thread whenever
+  // an update to the UI is required
   static MigrationResult MigrateInternal(
       const base::FilePath& original_user_dir,
+      std::unique_ptr<MigrationProgressTracker> progress_tracker,
       scoped_refptr<CancelFlag> cancel_flag);
 
   // This will be posted with `IsMigrationRequiredOnWorker()` as the reply on UI
@@ -222,24 +232,28 @@ class BrowserDataMigrator {
   static bool SetupTmpDir(const TargetInfo& target_info,
                           const base::FilePath& from_dir,
                           const base::FilePath& tmp_dir,
-                          CancelFlag* cancel_flag);
+                          CancelFlag* cancel_flag,
+                          MigrationProgressTracker* progress_tracker);
   // Copies `items` to `to_dir`. `items_size` and `category_name` are used for
   // logging.
   static bool CopyTargetItems(const base::FilePath& to_dir,
                               const std::vector<TargetItem>& items,
                               CancelFlag* cancel_flag,
                               int64_t items_size,
-                              base::StringPiece category_name);
+                              base::StringPiece category_name,
+                              MigrationProgressTracker* progress_tracker);
   // Copies `item` to location pointed by `dest`. Returns true on success and
   // false on failure.
   static bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
                              const base::FilePath& dest,
-                             CancelFlag* cancel_flag);
+                             CancelFlag* cancel_flag,
+                             MigrationProgressTracker* progress_tracker);
   // Copies the contents of `from_path` to `to_path` recursively. Unlike
   // `base::CopyDirectory()` it skips symlinks.
   static bool CopyDirectory(const base::FilePath& from_path,
                             const base::FilePath& to_path,
-                            CancelFlag* cancel_flag);
+                            CancelFlag* cancel_flag,
+                            MigrationProgressTracker* progress_tracker);
 };
 
 }  // namespace ash

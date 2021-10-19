@@ -94,6 +94,7 @@ generate_grd("build_oobe_grd") {
     "images/settings_gear.svg",
     "images/sync-consent.svg",
     "images/powerwash.svg",
+    "images/update_boot.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")
 }

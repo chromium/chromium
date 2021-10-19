@@ -4138,8 +4138,8 @@
   <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE" desc="Title of the data migration screen.">
     Updating Chrome browser
   </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE" desc="Subtitle of the data migration screen.">
-    You will be able to use your Chromebook shortly.
+  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE" desc="Shows the % of progress.">
+    <ph name="PERCENT">$1<ex>100</ex></ph>% completed
   </message>
 
   <!-- Print Job Notification -->

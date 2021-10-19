@@ -29,6 +29,9 @@ class LacrosDataMigrationScreenView {
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+
+  // Updates the progress bar.
+  virtual void SetProgressValue(int progress) = 0;
 };
 
 class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
@@ -52,6 +55,7 @@ class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
   void Bind(ash::LacrosDataMigrationScreen* screen) override;
   void Unbind() override;
   void Show() override;
+  void SetProgressValue(int progress) override;
 
  private:
   // BaseScreenHandler:

@@ -211,11 +211,13 @@ BrowserDataMigrator::TargetInfo::TargetInfo(TargetInfo&&) = default;
 BrowserDataMigrator::TargetInfo::~TargetInfo() = default;
 
 BrowserDataMigrator::TargetItem::TargetItem(base::FilePath path,
+                                            int64_t size,
                                             ItemType item_type)
-    : path(path), is_directory(item_type == ItemType::kDirectory) {}
+    : path(path), size(size), is_directory(item_type == ItemType::kDirectory) {}
 
 bool BrowserDataMigrator::TargetItem::operator==(const TargetItem& rhs) const {
-  return this->path == rhs.path && this->is_directory == rhs.is_directory;
+  return this->path == rhs.path && this->size == rhs.size &&
+         this->is_directory == rhs.is_directory;
 }
 
 int64_t BrowserDataMigrator::TargetInfo::TotalCopySize() const {
@@ -320,8 +322,10 @@ bool BrowserDataMigrator::IsMigrationRequiredOnWorker(
 }
 
 // static
-base::OnceClosure BrowserDataMigrator::Migrate(const std::string& user_id_hash,
-                                               base::OnceClosure callback) {
+base::OnceClosure BrowserDataMigrator::Migrate(
+    const std::string& user_id_hash,
+    const ProgressCallback& progress_callback,
+    base::OnceClosure completion_callback) {
   DCHECK(GetMigrationStep(g_browser_process->local_state()) ==
          MigrationStep::kRestartCalled);
   SetMigrationStep(g_browser_process->local_state(), MigrationStep::kStarted);
@@ -330,7 +334,7 @@ base::OnceClosure BrowserDataMigrator::Migrate(const std::string& user_id_hash,
     LOG(ERROR)
         << "Could not get the original user data dir path. Aborting migration.";
     RecordStatus(FinalStatus::kGetPathFailed);
-    std::move(callback).Run();
+    std::move(completion_callback).Run();
     return base::DoNothing();
   }
 
@@ -341,6 +345,9 @@ base::OnceClosure BrowserDataMigrator::Migrate(const std::string& user_id_hash,
       [](scoped_refptr<CancelFlag> cancel_flag) { cancel_flag->Set(); },
       cancel_flag);
 
+  std::unique_ptr<MigrationProgressTracker> progress_tracker =
+      std::make_unique<MigrationProgressTrackerImpl>(progress_callback);
+
   base::FilePath profile_data_dir =
       user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -348,9 +355,9 @@ base::OnceClosure BrowserDataMigrator::Migrate(const std::string& user_id_hash,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::BindOnce(&BrowserDataMigrator::MigrateInternal, profile_data_dir,
-                     cancel_flag),
+                     std::move(progress_tracker), cancel_flag),
       base::BindOnce(&BrowserDataMigrator::MigrateInternalFinishedUIThread,
-                     std::move(callback), user_id_hash));
+                     std::move(completion_callback), user_id_hash));
 
   return cancel_callback;
 }
@@ -393,6 +400,7 @@ void BrowserDataMigrator::RecordStatus(const FinalStatus& final_status,
 // original location intact. We will allow these two states to diverge.
 BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
     const base::FilePath& original_user_dir,
+    std::unique_ptr<MigrationProgressTracker> progress_tracker,
     scoped_refptr<CancelFlag> cancel_flag) {
   ResultValue data_wipe_result = ResultValue::kSkipped;
 
@@ -420,6 +428,8 @@ BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
   }
 
   TargetInfo target_info = GetTargetInfo(original_user_dir);
+  progress_tracker->SetTotalSizeToCopy(target_info.TotalCopySize());
+
   base::ElapsedTimer timer;
 
   if (!HasEnoughDiskSpace(target_info, new_user_dir)) {
@@ -433,8 +443,8 @@ BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
   }
 
   // Copy files to `tmp_dir`.
-  if (!SetupTmpDir(target_info, original_user_dir, tmp_dir,
-                   cancel_flag.get())) {
+  if (!SetupTmpDir(target_info, original_user_dir, tmp_dir, cancel_flag.get(),
+                   progress_tracker.get())) {
     if (base::PathExists(tmp_dir)) {
       base::DeletePathRecursively(tmp_dir);
     }
@@ -500,16 +510,19 @@ void BrowserDataMigrator::MigrateInternalFinishedUIThread(
 bool BrowserDataMigrator::CopyTargetItem(
     const BrowserDataMigrator::TargetItem& item,
     const base::FilePath& dest,
-    CancelFlag* cancel_flag) {
+    CancelFlag* cancel_flag,
+    MigrationProgressTracker* progress_tracker) {
   if (cancel_flag->IsSet())
     return false;
 
   if (item.is_directory) {
-    if (CopyDirectory(item.path, dest, cancel_flag))
+    if (CopyDirectory(item.path, dest, cancel_flag, progress_tracker))
       return true;
   } else {
-    if (base::CopyFile(item.path, dest))
+    if (base::CopyFile(item.path, dest)) {
+      progress_tracker->UpdateProgress(item.size);
       return true;
+    }
   }
 
   PLOG(ERROR) << "Copy failed for " << item.path;
@@ -545,18 +558,21 @@ BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo(
     }
 
     if (base::Contains(ash_data_paths, entry.BaseName().value())) {
-      target_info.ash_data_items.emplace_back(TargetItem{entry, item_type});
+      target_info.ash_data_items.emplace_back(
+          TargetItem{entry, size, item_type});
       target_info.ash_data_size += size;
     } else if (base::Contains(no_copy_data_paths, entry.BaseName().value())) {
       target_info.no_copy_data_size += size;
     } else if (base::Contains(lacros_data_paths, entry.BaseName().value())) {
       // Items that should be moved to lacros.
-      target_info.lacros_data_items.emplace_back(TargetItem{entry, item_type});
+      target_info.lacros_data_items.emplace_back(
+          TargetItem{entry, size, item_type});
       target_info.lacros_data_size += size;
     } else {
       // Items that are not explicitly ash, no_copy or lacros are put into
       // common category.
-      target_info.common_data_items.emplace_back(TargetItem{entry, item_type});
+      target_info.common_data_items.emplace_back(
+          TargetItem{entry, size, item_type});
       target_info.common_data_size += size;
     }
   }
@@ -596,9 +612,11 @@ bool BrowserDataMigrator::IsMigrationSmallEnough(
 }
 
 // static
-bool BrowserDataMigrator::CopyDirectory(const base::FilePath& from_path,
-                                        const base::FilePath& to_path,
-                                        CancelFlag* cancel_flag) {
+bool BrowserDataMigrator::CopyDirectory(
+    const base::FilePath& from_path,
+    const base::FilePath& to_path,
+    CancelFlag* cancel_flag,
+    MigrationProgressTracker* progress_tracker) {
   if (cancel_flag->IsSet())
     return false;
 
@@ -623,27 +641,35 @@ bool BrowserDataMigrator::CopyDirectory(const base::FilePath& from_path,
     if (S_ISREG(info.stat().st_mode)) {
       if (!base::CopyFile(entry, to_path.Append(entry.BaseName())))
         return false;
+
+      progress_tracker->UpdateProgress(info.GetSize());
     } else if (S_ISDIR(info.stat().st_mode)) {
-      if (!CopyDirectory(entry, to_path.Append(entry.BaseName()), cancel_flag))
+      if (!CopyDirectory(entry, to_path.Append(entry.BaseName()), cancel_flag,
+                         progress_tracker)) {
         return false;
+      }
     }
   }
 
   return true;
 }
 
-bool BrowserDataMigrator::CopyTargetItems(const base::FilePath& to_dir,
-                                          const std::vector<TargetItem>& items,
-                                          CancelFlag* cancel_flag,
-                                          int64_t items_size,
-                                          base::StringPiece category_name) {
+bool BrowserDataMigrator::CopyTargetItems(
+    const base::FilePath& to_dir,
+    const std::vector<TargetItem>& items,
+    CancelFlag* cancel_flag,
+    int64_t items_size,
+    base::StringPiece category_name,
+    MigrationProgressTracker* progress_tracker) {
   base::ElapsedTimer timer;
   for (const auto& item : items) {
     if (cancel_flag->IsSet())
       return false;
 
-    if (!CopyTargetItem(item, to_dir.Append(item.path.BaseName()), cancel_flag))
+    if (!CopyTargetItem(item, to_dir.Append(item.path.BaseName()), cancel_flag,
+                        progress_tracker)) {
       return false;
+    }
   }
   base::TimeDelta elapsed_time = timer.Elapsed();
   // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
@@ -664,10 +690,12 @@ bool BrowserDataMigrator::CopyTargetItems(const base::FilePath& to_dir,
 }
 
 // static
-bool BrowserDataMigrator::SetupTmpDir(const TargetInfo& target_info,
-                                      const base::FilePath& from_dir,
-                                      const base::FilePath& tmp_dir,
-                                      CancelFlag* cancel_flag) {
+bool BrowserDataMigrator::SetupTmpDir(
+    const TargetInfo& target_info,
+    const base::FilePath& from_dir,
+    const base::FilePath& tmp_dir,
+    CancelFlag* cancel_flag,
+    MigrationProgressTracker* progress_tracker) {
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(tmp_dir.Append(kLacrosProfilePath),
                                         &error)) {
@@ -681,12 +709,14 @@ bool BrowserDataMigrator::SetupTmpDir(const TargetInfo& target_info,
   // Copy lacros items.
   if (!CopyTargetItems(tmp_dir.Append(kLacrosProfilePath),
                        target_info.lacros_data_items, cancel_flag,
-                       target_info.lacros_data_size, kLacrosCategory))
+                       target_info.lacros_data_size, kLacrosCategory,
+                       progress_tracker))
     return false;
   // Copy common items.
   if (!CopyTargetItems(tmp_dir.Append(kLacrosProfilePath),
                        target_info.common_data_items, cancel_flag,
-                       target_info.common_data_size, kCommonCategory))
+                       target_info.common_data_size, kCommonCategory,
+                       progress_tracker))
     return false;
 
   // Copy `First Run` in user data directory.

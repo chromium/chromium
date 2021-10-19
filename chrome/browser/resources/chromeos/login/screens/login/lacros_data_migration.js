@@ -14,7 +14,8 @@
  * @implements {LoginScreenBehaviorInterface}
  */
 const LacrosDataMigrationScreenElementBase = Polymer.mixinBehaviors(
-    [OobeDialogHostBehavior, LoginScreenBehavior], Polymer.Element);
+    [OobeDialogHostBehavior, OobeI18nBehavior, LoginScreenBehavior],
+    Polymer.Element);
 
 class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
   static get is() {
@@ -25,6 +26,25 @@ class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
 
   constructor() {
     super();
+    this.progressValue_ = 0;
+  }
+
+  static get properties() {
+    return {
+      progressValue_: {type: Number},
+    };
+  }
+
+  get EXTERNAL_API() {
+    return ['setProgressValue'];
+  }
+
+  /**
+   * Called to update the progress of data migration.
+   * @param {number} progress Percentage of data copied so far.
+   */
+  setProgressValue(progress) {
+    this.progressValue_ = progress;
   }
 
   ready() {

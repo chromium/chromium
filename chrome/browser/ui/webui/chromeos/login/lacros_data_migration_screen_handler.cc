@@ -50,6 +50,10 @@ void LacrosDataMigrationScreenHandler::Show() {
   ShowScreen(kScreenId);
 }
 
+void LacrosDataMigrationScreenHandler::SetProgressValue(int progress) {
+  CallJS("login.LacrosDataMigrationScreen.setProgressValue", progress);
+}
+
 void LacrosDataMigrationScreenHandler::Initialize() {
   if (show_on_init_) {
     Show();

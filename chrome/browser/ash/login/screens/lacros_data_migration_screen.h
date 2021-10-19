@@ -30,6 +30,10 @@ class LacrosDataMigrationScreen : public BaseScreen {
   // `cancel_callback_` to cancel migration.
   void OnCancelClicked();
 
+  // Passed to `BrowserDataMigrator` as a callback to transmit the progress
+  // value. `progress` is then passed to `LacrosDataMigrationView`.
+  void OnProgressUpdate(int progress);
+
  private:
   // BaseScreen:
   void ShowImpl() override;
@@ -40,6 +44,7 @@ class LacrosDataMigrationScreen : public BaseScreen {
   // Callback to cancel migration. Stores the return value from
   // `BrowserDataMigrator::Migrate()`.
   base::OnceClosure cancel_callback_;
+  base::WeakPtrFactory<LacrosDataMigrationScreen> weak_factory_{this};
 };
 
 }  // namespace ash
