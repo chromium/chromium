@@ -34,8 +34,10 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -52,6 +54,7 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 
 @interface PopupMenuCoordinator () <PopupMenuCommands,
                                     PopupMenuPresenterDelegate,
+                                    UIPopoverPresentationControllerDelegate,
                                     UISheetPresentationControllerDelegate>
 
 // Presenter for the popup menu, managing the animations.
@@ -288,17 +291,36 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   tableViewController.delegate = self.actionHandler;
 
-  if (IsNewOverflowMenuEnabled()) {
+  if (type == PopupMenuTypeToolsMenu && IsNewOverflowMenuEnabled()) {
     if (@available(iOS 15, *)) {
       self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
       UIViewController* menu = [OverflowMenuViewProvider
           makeViewControllerWithModel:self.overflowMenuMediator
                                           .overflowMenuModel];
-      UISheetPresentationController* sheetPC = menu.sheetPresentationController;
-      if (sheetPC) {
-        sheetPC.delegate = self;
-        sheetPC.prefersGrabberVisible = YES;
-        sheetPC.detents = @[
+
+      NamedGuide* guide =
+          [NamedGuide guideWithName:guideName
+                               view:self.baseViewController.view];
+      menu.modalPresentationStyle = UIModalPresentationPopover;
+
+      UIPopoverPresentationController* popoverPresentationController =
+          menu.popoverPresentationController;
+      popoverPresentationController.sourceView = guide.constrainedView;
+      popoverPresentationController.sourceRect = guide.constrainedView.bounds;
+      popoverPresentationController.permittedArrowDirections =
+          UIPopoverArrowDirectionUp;
+      popoverPresentationController.delegate = self;
+      popoverPresentationController.backgroundColor =
+          [UIColor colorNamed:kBackgroundColor];
+
+      // The adaptive controller adjusts styles based on window size: sheet for
+      // slim windows on iPhone and iPad, popover for larger windows on ipad.
+      UISheetPresentationController* sheetPresentationController =
+          popoverPresentationController.adaptiveSheetPresentationController;
+      if (sheetPresentationController) {
+        sheetPresentationController.delegate = self;
+        sheetPresentationController.prefersGrabberVisible = YES;
+        sheetPresentationController.detents = @[
           [UISheetPresentationControllerDetent mediumDetent],
           [UISheetPresentationControllerDetent largeDetent]
         ];
