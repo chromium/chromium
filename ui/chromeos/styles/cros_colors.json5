@@ -371,5 +371,7 @@
 
     button_primary_ripple_opacity: { light: 0.32, dark: 0.16 },
     button_secondary_ripple_opacity: { light: 0.1, dark: 0.16 },
+
+    second_tone_opacity: 0.3,
   },
 }
