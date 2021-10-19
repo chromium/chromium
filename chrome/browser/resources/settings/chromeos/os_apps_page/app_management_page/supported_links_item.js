@@ -14,6 +14,8 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import {recordSettingChange} from '../../metrics_recorder.m.js';
+
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction, AppType} from './constants.js';
 import {AppManagementStoreClient} from './store_client.js';
@@ -146,6 +148,10 @@ Polymer({
     e.detail.event.preventDefault();
     e.stopPropagation();
     this.showSupportedLinksDialog_ = true;
+
+    recordSettingChange();
+    recordAppManagementUserAction(
+        this.app.type, AppManagementUserAction.SupportedLinksListShown);
   },
 
   /**
@@ -182,6 +188,8 @@ Polymer({
     if (preference === PREFERRED_APP_PREF && overlappingAppIds.length > 0) {
       this.overlappingAppIds_ = overlappingAppIds;
       this.showOverlappingAppsDialog_ = true;
+      recordAppManagementUserAction(
+          this.app.type, AppManagementUserAction.OverlappingAppsDialogShown);
       return;
     }
 
@@ -215,6 +223,7 @@ Polymer({
 
     BrowserProxy.getInstance().handler.setPreferredApp(this.app.id, newState);
 
+    recordSettingChange();
     const userAction = newState ? AppManagementUserAction.PreferredAppTurnedOn :
                                   AppManagementUserAction.PreferredAppTurnedOff;
     recordAppManagementUserAction(this.app.type, userAction);

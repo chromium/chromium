@@ -3512,6 +3512,12 @@ Unknown properties are collapsed to zero. -->
   <int value="16" label="Storage turned off"/>
   <int value="17" label="Printing turned on"/>
   <int value="18" label="Printing turned off"/>
+  <int value="19" label="Resize Lock turned on"/>
+  <int value="20" label="Resize Lock turned off"/>
+  <int value="21" label="Preferred App turned on"/>
+  <int value="22" label="Preferred App turned off"/>
+  <int value="23" label="Supported Links list shown"/>
+  <int value="24" label="Overlapping apps dialog shown"/>
 </enum>
 
 <enum name="AppMenuHighlightItem">

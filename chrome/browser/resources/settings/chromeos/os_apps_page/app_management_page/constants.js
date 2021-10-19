@@ -91,4 +91,6 @@ export const AppManagementUserAction = {
   ResizeLockTurnedOff: 20,
   PreferredAppTurnedOn: 21,
   PreferredAppTurnedOff: 22,
+  SupportedLinksListShown: 23,
+  OverlappingAppsDialogShown: 24,
 };
