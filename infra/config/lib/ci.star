@@ -431,6 +431,7 @@ def fyi_builder(
     return ci.builder(
         name = name,
         builder_group = "chromium.fyi",
+        bootstrap = True,
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
         **kwargs
