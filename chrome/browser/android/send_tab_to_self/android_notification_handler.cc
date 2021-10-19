@@ -92,7 +92,7 @@ void AndroidNotificationHandler::DisplayNewEntries(
   for (const SendTabToSelfEntry* entry : new_entries) {
     if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2) ||
         share::AreUpcomingSharingFeaturesEnabled()) {
-      web_contents_ = GetWebContentsForProfile(profile_);
+      web_contents_ = GetWebContentsForProfile(profile_)->GetWeakPtr();
 
       std::unique_ptr<messages::MessageWrapper> message =
           std::make_unique<messages::MessageWrapper>(
@@ -157,7 +157,9 @@ void AndroidNotificationHandler::DismissEntries(
 }
 
 void AndroidNotificationHandler::OnMessageOpened(GURL url, std::string guid) {
-  DCHECK(web_contents_);
+  if (!web_contents_)
+    return;
+
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
@@ -189,7 +191,8 @@ void AndroidNotificationHandler::OnMessageDismissed(
 
 void AndroidNotificationHandler::UpdateWebContents(
     content::WebContents* web_contents) {
-  web_contents_ = web_contents;
+  DCHECK(web_contents);
+  web_contents_ = web_contents->GetWeakPtr();
   while (!pending_messages_.empty()) {
     queued_messages_.push_back(std::move(pending_messages_.front()));
     pending_messages_.pop();
