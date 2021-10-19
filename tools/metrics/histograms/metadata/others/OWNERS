@@ -8,8 +8,6 @@ per-file histograms.xml=file://tools/metrics/histograms/metadata/METRIC_REVIEWER
 zentaro@chromium.org
 # For the TrustedWebActivity.* histograms:
 eirage@chromium.org
-# For the Graphics.Smoothness.* histograms:
-xidachen@chromium.org
 # For Conversions.* histograms:
 johnidel@chromium.org
 # For SharedHighlights.* histograms:
