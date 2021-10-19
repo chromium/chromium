@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.download;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.notifications.PendingNotificationTask;
 import org.chromium.components.browser_ui.notifications.ThrottlingNotificationScheduler;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -148,14 +147,6 @@ public class SystemDownloadNotifier implements DownloadNotifier {
         ThrottlingNotificationScheduler.getInstance().cancelPendingNotificationTask(
                 info.getContentId());
         getDownloadNotificationService().cancelNotification(notificationId, info.getContentId());
-    }
-
-    @Override
-    public void resumePendingDownloads() {
-        if (DownloadNotificationService.isTrackingResumableDownloads(
-                    ContextUtils.getApplicationContext())) {
-            getDownloadNotificationService().resumeAllPendingDownloads();
-        }
     }
 
     /**

@@ -8,7 +8,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTask;
 import org.chromium.chrome.browser.background_sync.PeriodicBackgroundSyncChromeWakeUpTask;
-import org.chromium.chrome.browser.download.DownloadResumptionBackgroundTask;
 import org.chromium.chrome.browser.download.service.DownloadBackgroundTask;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBackgroundTask;
 import org.chromium.chrome.browser.notifications.NotificationTriggerBackgroundTask;
@@ -71,8 +70,6 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
                 return new DownloadBackgroundTask();
             case TaskIds.WEBAPK_UPDATE_JOB_ID:
                 return new WebApkUpdateTask();
-            case TaskIds.DOWNLOAD_RESUMPTION_JOB_ID:
-                return new DownloadResumptionBackgroundTask();
             case TaskIds.COMPONENT_UPDATE_JOB_ID:
                 return new UpdateTask();
             case TaskIds.DEPRECATED_EXPLORE_SITES_REFRESH_JOB_ID:

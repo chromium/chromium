@@ -27,8 +27,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -544,43 +542,6 @@ public class DownloadNotificationService {
         return entry.canDownloadWhileMetered || !isNetworkMetered;
     }
 
-    /**
-     * Resumes all pending downloads from SharedPreferences. If a download is
-     * already in progress, do nothing.
-     */
-    void resumeAllPendingDownloads() {
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE)) {
-            return;
-        }
-
-        // Limit the number of auto resumption attempts in case Chrome falls into a vicious cycle.
-        DownloadResumptionScheduler.getDownloadResumptionScheduler().cancel();
-        int numAutoResumptionAtemptLeft = getResumptionAttemptLeft();
-        if (numAutoResumptionAtemptLeft <= 0) return;
-
-        numAutoResumptionAtemptLeft--;
-        updateResumptionAttemptLeft(numAutoResumptionAtemptLeft);
-
-        // Go through and check which downloads to resume.
-        List<DownloadSharedPreferenceEntry> entries = mDownloadSharedPreferenceHelper.getEntries();
-        for (int i = 0; i < entries.size(); ++i) {
-            DownloadSharedPreferenceEntry entry = entries.get(i);
-            if (!canResumeDownload(ContextUtils.getApplicationContext(), entry)) continue;
-            if (mDownloadsInProgress.contains(entry.id)) continue;
-            notifyDownloadPending(entry.id, entry.fileName, entry.otrProfileID,
-                    entry.canDownloadWhileMetered, entry.isTransient, null, null, false, false,
-                    PendingState.PENDING_NETWORK);
-
-            Intent intent = new Intent();
-            intent.setAction(ACTION_DOWNLOAD_RESUME);
-            intent.putExtra(EXTRA_DOWNLOAD_CONTENTID_ID, entry.id.id);
-            intent.putExtra(EXTRA_DOWNLOAD_CONTENTID_NAMESPACE, entry.id.namespace);
-            intent.putExtra(EXTRA_IS_AUTO_RESUMPTION, true);
-
-            resumeDownload(intent);
-        }
-    }
-
     @VisibleForTesting
     void resumeDownload(Intent intent) {
         DownloadBroadcastManagerImpl.startDownloadBroadcastManager(
@@ -665,7 +626,6 @@ public class DownloadNotificationService {
         relaunchPinnedNotification(pinnedNotificationId);
 
         updateNotificationsForShutdown();
-        resumeAllPendingDownloads();
     }
 
     void onForegroundServiceTaskRemoved() {
@@ -677,7 +637,6 @@ public class DownloadNotificationService {
 
     void onForegroundServiceDestroyed() {
         updateNotificationsForShutdown();
-        rescheduleDownloads();
     }
 
     /**
@@ -744,10 +703,5 @@ public class DownloadNotificationService {
                 delegate.destroyServiceDelegate();
             }
         }
-    }
-
-    private void rescheduleDownloads() {
-        if (getResumptionAttemptLeft() <= 0) return;
-        DownloadResumptionScheduler.getDownloadResumptionScheduler().scheduleIfNecessary();
     }
 }

@@ -21,20 +21,17 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.download.DownloadManagerServiceTest.MockDownloadNotifier.MethodID;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.net.ConnectionType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -161,9 +158,6 @@ public class DownloadManagerServiceTest {
         public void notifyDownloadCanceled(ContentId id) {
             assertCorrectExpectedCall(MethodID.CANCEL_DOWNLOAD_ID, id, true);
         }
-
-        @Override
-        public void resumePendingDownloads() {}
     }
 
     /**
@@ -417,52 +411,5 @@ public class DownloadManagerServiceTest {
 
         notifier.waitTillExpectedCallsComplete();
         Assert.assertTrue("All downloads should be updated.", matchSet.mMatches.isEmpty());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Download"})
-    @Features.DisableFeatures({ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE})
-    public void testInterruptedDownloadAreAutoResumed() throws InterruptedException {
-        MockDownloadNotifier notifier = new MockDownloadNotifier();
-        createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
-        DownloadManagerService.disableNetworkListenerForTest();
-        DownloadInfo interrupted = DownloadInfo.Builder.fromDownloadInfo(getDownloadInfo())
-                                           .setIsResumable(true)
-                                           .build();
-        notifier.expect(MethodID.DOWNLOAD_PROGRESS, interrupted)
-                .andThen(MethodID.DOWNLOAD_INTERRUPTED, interrupted);
-        mService.onDownloadUpdated(interrupted);
-        Thread.sleep(DELAY_BETWEEN_CALLS);
-        mService.onDownloadInterrupted(interrupted, true);
-        notifier.waitTillExpectedCallsComplete();
-        int resumableIdCount = mService.mAutoResumableDownloadIds.size();
-        mService.onConnectionTypeChanged(ConnectionType.CONNECTION_WIFI);
-        Assert.assertEquals(resumableIdCount - 1, mService.mAutoResumableDownloadIds.size());
-        CriteriaHelper.pollUiThread(() -> mService.mResumed);
-    }
-
-    @Test
-    //@MediumTest
-    //@Feature({"Download"})
-    @DisabledTest // crbug.com/789931
-    public void testInterruptedUnmeteredDownloadCannotAutoResumeOnMeteredNetwork()
-            throws InterruptedException {
-        MockDownloadNotifier notifier = new MockDownloadNotifier();
-        createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
-        DownloadManagerService.disableNetworkListenerForTest();
-        DownloadInfo interrupted = DownloadInfo.Builder.fromDownloadInfo(getDownloadInfo())
-                                           .setIsResumable(true)
-                                           .build();
-        notifier.expect(MethodID.DOWNLOAD_PROGRESS, interrupted)
-                .andThen(MethodID.DOWNLOAD_INTERRUPTED, interrupted);
-        mService.onDownloadUpdated(interrupted);
-        Thread.sleep(DELAY_BETWEEN_CALLS);
-        mService.onDownloadInterrupted(interrupted, true);
-        notifier.waitTillExpectedCallsComplete();
-        DownloadManagerService.setIsNetworkMeteredForTest(true);
-        int resumableIdCount = mService.mAutoResumableDownloadIds.size();
-        mService.onConnectionTypeChanged(ConnectionType.CONNECTION_2G);
-        Assert.assertEquals(resumableIdCount, mService.mAutoResumableDownloadIds.size());
     }
 }

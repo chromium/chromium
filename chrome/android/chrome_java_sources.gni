@@ -547,8 +547,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/download/DownloadNotificationUmaHelper.java",
   "java/src/org/chromium/chrome/browser/download/DownloadNotifier.java",
   "java/src/org/chromium/chrome/browser/download/DownloadPage.java",
-  "java/src/org/chromium/chrome/browser/download/DownloadResumptionBackgroundTask.java",
-  "java/src/org/chromium/chrome/browser/download/DownloadResumptionScheduler.java",
   "java/src/org/chromium/chrome/browser/download/DownloadServiceDelegate.java",
   "java/src/org/chromium/chrome/browser/download/DownloadSharedPreferenceEntry.java",
   "java/src/org/chromium/chrome/browser/download/DownloadSharedPreferenceHelper.java",

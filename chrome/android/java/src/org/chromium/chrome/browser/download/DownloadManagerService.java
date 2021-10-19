@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -41,7 +40,6 @@ import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueu
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueResponse;
 import org.chromium.chrome.browser.download.DownloadNotificationUmaHelper.UmaDownloadResumption;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
@@ -68,9 +66,6 @@ import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.net.ConnectionType;
-import org.chromium.net.NetworkChangeNotifierAutoDetect;
-import org.chromium.net.RegistrationPolicyAlwaysRegister;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 
@@ -92,15 +87,12 @@ import java.util.concurrent.RejectedExecutionException;
  * download Id issued by Android DownloadManager.
  */
 public class DownloadManagerService implements DownloadController.Observer,
-                                               NetworkChangeNotifierAutoDetect.Observer,
                                                DownloadServiceDelegate, ProfileManager.Observer {
     private static final String TAG = "DownloadService";
     private static final String DOWNLOAD_RETRY_COUNT_FILE_NAME = "DownloadRetryCount";
     private static final String DOWNLOAD_MANUAL_RETRY_SUFFIX = ".Manual";
     private static final String DOWNLOAD_TOTAL_RETRY_SUFFIX = ".Total";
     private static final long UPDATE_DELAY_MILLIS = 1000;
-    // Wait 10 seconds to resume all downloads, so that we won't impact tab loading.
-    private static final long RESUME_DELAY_MILLIS = 10000;
     public static final long UNKNOWN_BYTES_RECEIVED = -1;
 
     private static final Set<String> sFirstSeenDownloadIds = new HashSet<String>();
@@ -150,7 +142,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     private DownloadMessageUiController mMessageUiController;
     private DownloadMessageUiController mIncognitoMessageUiController;
     private long mNativeDownloadManagerService;
-    private NetworkChangeNotifierAutoDetect mNetworkChangeNotifier;
     // Flag to track if we need to post a task to update download notifications.
     private boolean mIsUIUpdateScheduled;
     private int mAutoResumptionLimit = -1;
@@ -261,8 +252,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     @VisibleForTesting
     protected void init() {
         DownloadController.setDownloadNotificationService(this);
-        // Post a delayed task to resume all pending downloads.
-        mHandler.postDelayed(() -> mDownloadNotifier.resumePendingDownloads(), RESUME_DELAY_MILLIS);
         // Clean up unused shared prefs. TODO(qinmin): remove this after M84.
         mSharedPrefs.removeKey(ChromePreferenceKeys.DOWNLOAD_UMA_ENTRY);
     }
@@ -372,40 +361,6 @@ public class DownloadManagerService implements DownloadController.Observer,
 
         updateDownloadProgress(item, status);
         updateDownloadInfoBar(item);
-
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE)) {
-            return;
-        }
-        DownloadProgress progress = mDownloadProgressMap.get(item.getId());
-        if (progress == null) return;
-        if (!isAutoResumable || sIsNetworkListenerDisabled) return;
-        ConnectivityManager cm =
-                (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.CONNECTIVITY_SERVICE);
-        NetworkInfo info = cm.getActiveNetworkInfo();
-        if (info == null || !info.isConnected()) return;
-        if (progress.mCanDownloadWhileMetered
-                || !isActiveNetworkMetered(ContextUtils.getApplicationContext())) {
-            // Normally the download will automatically resume when network is reconnected.
-            // However, if there are multiple network connections and the interruption is caused
-            // by switching between active networks, onConnectionTypeChanged() will not get called.
-            // As a result, we should resume immediately.
-            scheduleDownloadResumption(item);
-        }
-    }
-
-    // Deprecated after native auto-resumption.
-    /**
-     * Helper method to schedule a download for resumption.
-     * @param item DownloadItem to resume.
-     */
-    private void scheduleDownloadResumption(final DownloadItem item) {
-        removeAutoResumableDownload(item.getId());
-        // Post a delayed task to avoid an issue that when connectivity status just changed
-        // to CONNECTED, immediately establishing a connection will sometimes fail.
-        mHandler.postDelayed(
-                () -> resumeDownload(LegacyHelpers.buildLegacyContentId(false, item.getId()),
-                        item, false), mUpdateDelayInMillis);
     }
 
     /**
@@ -1301,16 +1256,6 @@ public class DownloadManagerService implements DownloadController.Observer,
      */
     // Deprecated after native auto-resumption handler.
     private void addAutoResumableDownload(String guid) {
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE)) {
-            return;
-        }
-        if (mAutoResumableDownloadIds.isEmpty() && !sIsNetworkListenerDisabled) {
-            mNetworkChangeNotifier = new NetworkChangeNotifierAutoDetect(
-                    this, new RegistrationPolicyAlwaysRegister());
-        }
-        if (!mAutoResumableDownloadIds.contains(guid)) {
-            mAutoResumableDownloadIds.add(guid);
-        }
     }
 
     /**
@@ -1319,12 +1264,6 @@ public class DownloadManagerService implements DownloadController.Observer,
      */
     // Deprecated after native auto-resumption.
     private void removeAutoResumableDownload(String guid) {
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE)) {
-            return;
-        }
-        if (mAutoResumableDownloadIds.isEmpty()) return;
-        mAutoResumableDownloadIds.remove(guid);
-        stopListenToConnectionChangeIfNotNeeded();
     }
 
     /**
@@ -1336,42 +1275,6 @@ public class DownloadManagerService implements DownloadController.Observer,
         mDownloadProgressMap.remove(guid);
         removeAutoResumableDownload(guid);
         sFirstSeenDownloadIds.remove(guid);
-    }
-
-    // Deprecated after native auto resumption.
-    @Override
-    public void onConnectionTypeChanged(int connectionType) {
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE)) {
-            return;
-        }
-        if (mAutoResumableDownloadIds.isEmpty()) return;
-        if (connectionType == ConnectionType.CONNECTION_NONE) return;
-        boolean isMetered = isActiveNetworkMetered(ContextUtils.getApplicationContext());
-        // Make a copy of |mAutoResumableDownloadIds| as scheduleDownloadResumption() may delete
-        // elements inside the array.
-        List<String> copies = new ArrayList<String>(mAutoResumableDownloadIds);
-        Iterator<String> iterator = copies.iterator();
-        while (iterator.hasNext()) {
-            final String id = iterator.next();
-            final DownloadProgress progress = mDownloadProgressMap.get(id);
-            // Introduce some delay in each resumption so we don't start all of them immediately.
-            if (progress != null && (progress.mCanDownloadWhileMetered || !isMetered)) {
-                scheduleDownloadResumption(progress.mDownloadItem);
-            }
-        }
-        stopListenToConnectionChangeIfNotNeeded();
-    }
-
-    /**
-     * Helper method to stop listening to the connection type change
-     * if it is no longer needed.
-     */
-    // Deprecated after native auto resumption.
-    private void stopListenToConnectionChangeIfNotNeeded() {
-        if (mAutoResumableDownloadIds.isEmpty() && mNetworkChangeNotifier != null) {
-            mNetworkChangeNotifier.destroy();
-            mNetworkChangeNotifier = null;
-        }
     }
 
     // Deprecated after native auto resumption.
@@ -1841,26 +1744,6 @@ public class DownloadManagerService implements DownloadController.Observer,
                 DownloadManagerService.this, downloadGuid,
                 IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
     }
-
-    // Deprecated after native auto-resumption handler.
-    @Override
-    public void onConnectionSubtypeChanged(int newConnectionSubtype) {}
-
-    // Deprecated after native auto-resumption handler.
-    @Override
-    public void onNetworkConnect(long netId, int connectionType) {}
-
-    // Deprecated after native auto-resumption handler.
-    @Override
-    public void onNetworkSoonToDisconnect(long netId) {}
-
-    // Deprecated after native auto-resumption handler.
-    @Override
-    public void onNetworkDisconnect(long netId) {}
-
-    // Deprecated after native auto-resumption handler.
-    @Override
-    public void purgeActiveNetworkList(long[] activeNetIds) {}
 
     @NativeMethods
     interface Natives {
