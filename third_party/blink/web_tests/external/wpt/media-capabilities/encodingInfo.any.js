@@ -1,9 +1,3 @@
-<!DOCTYPE html>
-<title>MediaCapabilities.encodingInfo()</title>
-<script src=/resources/testharness.js></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
-
 // Minimal VideoConfiguration that will be allowed per spec. All optional
 // properties are missing.
 var minimalVideoConfiguration = {
@@ -314,5 +308,3 @@ async_test(t => {
     }
   }), t.unreached_func('Promise.all should not reject for valid types'));
 }, "Test that encodingInfo rejects if the MediaConfiguration does not have a valid type");
-
-</script>

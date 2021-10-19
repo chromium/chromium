@@ -6,6 +6,7 @@
 # See: https://docs.google.com/document/d/1QCM912Dr6u38DqyQqd7pxQxDy8FFOoWMMDq7uAXqKdA/view
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/media-capabilities/encodingInfo.any.worker.html [ Crash ]
 crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-add.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-add-2.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-delete-2.html [ Timeout ]
