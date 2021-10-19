@@ -188,6 +188,26 @@
         </settings-slider>
       </div>
     </template>
+    <!--TODO(gavinwill): Check if device has a haptic touchpad.-->
+    <template is="dom-if" if="[[allowTouchpadHapticFeedback_]]">
+      <div class="settings-box" id="touchpadHapticFeedbackRow"
+          on-click="onTouchpadHapticFeedbackRowClicked_">
+        <div class="start settings-box-text">
+          <!--TODO(gavinwill): Add haptic feedback help link URL.-->
+          <localized-link
+              on-click="onLearnMoreLinkClicked_"
+              id="touchpadHapticFeedbackLabel"
+              localized-string="$i18n{touchpadHapticFeedbackLabel}"
+              link-url="#">
+          </localized-link>
+        </div>
+        <cr-toggle id="touchpadHapticFeedbackToggle"
+            checked="{{prefs.settings.touchpad.haptic_feedback.value}}"
+            aria-labelledby="touchpadHapticFeedbackRow"
+            deep-link-focus-id$="[[Setting.kTouchpadHapticFeedback]]">
+        </cr-toggle>
+      </div>
+    </template>
     <div class="settings-box" id="reverseScrollRow"
          on-click="onTouchpadReverseScrollRowClicked_">
       <div class="start settings-box-text">

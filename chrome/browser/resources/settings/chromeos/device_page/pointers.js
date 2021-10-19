@@ -111,6 +111,17 @@ Polymer({
     },
 
     /**
+     * TODO(gavinwill): Remove this conditional once the feature is launched.
+     * @private
+     */
+    allowTouchpadHapticFeedback_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('allowTouchpadHapticFeedback');
+      },
+    },
+
+    /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
      */
@@ -123,6 +134,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kTouchpadAcceleration,
         chromeos.settings.mojom.Setting.kTouchpadScrollAcceleration,
         chromeos.settings.mojom.Setting.kTouchpadSpeed,
+        chromeos.settings.mojom.Setting.kTouchpadHapticFeedback,
         chromeos.settings.mojom.Setting.kPointingStickAcceleration,
         chromeos.settings.mojom.Setting.kPointingStickSpeed,
         chromeos.settings.mojom.Setting.kPointingStickSwapPrimaryButtons,
@@ -205,5 +217,12 @@ Polymer({
     this.setPrefValue(
         'settings.touchpad.natural_scroll',
         !this.getPref('settings.touchpad.natural_scroll').value);
+  },
+
+  /** @private */
+  onTouchpadHapticFeedbackRowClicked_: function() {
+    this.setPrefValue(
+        'settings.touchpad.haptic_feedback',
+        !this.getPref('settings.touchpad.haptic_feedback').value);
   },
 });
