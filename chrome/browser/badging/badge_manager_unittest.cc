@@ -262,4 +262,16 @@ TEST_F(BadgeManagerUnittest, BadgingWithNoDelegateDoesNotCrash) {
   badge_manager().ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
 }
 
+// Tests methods which use the web app sync_bridge do not crash when web
+// apps aren't supported (and thus sync_bridge is null).
+TEST_F(BadgeManagerUnittest, BadgingWithNoSyncBridgeDoesNotCrash) {
+  badge_manager().SetSyncBridgeForTesting(nullptr);
+
+  badge_manager().SetBadgeForTesting(kAppId, absl::nullopt,
+                                     ukm::TestUkmRecorder::Get());
+  badge_manager().SetBadgeForTesting(
+      kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
+  badge_manager().ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
+}
+
 }  // namespace badging

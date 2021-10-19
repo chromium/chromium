@@ -51,14 +51,18 @@ bool IsLastBadgingTimeWithin(base::TimeDelta time_frame,
   return clock->Now() < last_badging_time + time_frame;
 }
 
+// When web apps are disabled, there is no WebAppProvider.
+web_app::WebAppSyncBridge* GetWebAppSyncBridgeForProfile(Profile* profile) {
+  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  return provider ? &provider->sync_bridge() : nullptr;
+}
+
 }  // namespace
 
 namespace badging {
 
 BadgeManager::BadgeManager(Profile* profile)
-    : BadgeManager(
-          profile,
-          &WebAppProvider::GetForLocalAppsUnchecked(profile)->sync_bridge()) {}
+    : BadgeManager(profile, GetWebAppSyncBridgeForProfile(profile)) {}
 
 BadgeManager::BadgeManager(Profile* profile,
                            web_app::WebAppSyncBridge* sync_bridge)
@@ -165,9 +169,15 @@ const base::Clock* BadgeManager::SetClockForTesting(const base::Clock* clock) {
   return previous;
 }
 
+void BadgeManager::SetSyncBridgeForTesting(
+    web_app::WebAppSyncBridge* sync_bridge) {
+  sync_bridge_ = sync_bridge;
+}
+
 void BadgeManager::UpdateBadge(const web_app::AppId& app_id,
                                absl::optional<BadgeValue> value) {
-  if (!IsLastBadgingTimeWithin(badging::kBadgingMinimumUpdateInterval, app_id,
+  if (sync_bridge_ &&
+      !IsLastBadgingTimeWithin(badging::kBadgingMinimumUpdateInterval, app_id,
                                clock_, profile_)) {
     sync_bridge_->SetAppLastBadgingTime(app_id, clock_->Now());
   }
