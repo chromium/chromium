@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
-import org.chromium.components.download.DownloadState;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -270,7 +269,6 @@ public class DownloadInfoBarController implements DownloadMessageUiController {
         }
     }
 
-    private final boolean mUseNewDownloadPath;
     private final OTRProfileID mOtrProfileID;
     private final Handler mHandler = new Handler();
     private final DownloadProgressInfoBar.Client mClient = new DownloadProgressInfoBarClient();
@@ -311,8 +309,6 @@ public class DownloadInfoBarController implements DownloadMessageUiController {
 
     /** Constructor. */
     public DownloadInfoBarController(OTRProfileID otrProfileID) {
-        mUseNewDownloadPath =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
         mOtrProfileID = otrProfileID;
         mHandler.post(() -> getOfflineContentProvider().addObserver(this));
     }
@@ -323,50 +319,8 @@ public class DownloadInfoBarController implements DownloadMessageUiController {
     }
 
     @Override
-    public void onDownloadItemUpdated(DownloadItem downloadItem) {
-        if (mUseNewDownloadPath) return;
-
-        OfflineItem offlineItem = DownloadItem.createOfflineItem(downloadItem);
-        if (!isVisibleToUser(offlineItem)) return;
-
-        if (downloadItem.getDownloadInfo().state() == DownloadState.COMPLETE) {
-            handleDownloadCompletion(downloadItem);
-            return;
-        }
-
-        if (offlineItem.state == OfflineItemState.CANCELLED) {
-            onItemRemoved(offlineItem.id);
-            return;
-        }
-
-        computeNextStepForUpdate(offlineItem);
-    }
-
-    @Override
-    public void onDownloadItemRemoved(ContentId contentId) {
-        if (mUseNewDownloadPath) return;
-        onItemRemoved(contentId);
-    }
-
-    @Override
     public void onNotificationShown(ContentId id, int notificationId) {
         mNotificationIds.put(id, notificationId);
-    }
-
-    private void handleDownloadCompletion(DownloadItem downloadItem) {
-        // Multiple OnDownloadUpdated() notifications may be issued while the
-        // download is in the COMPLETE state. Don't handle it if it was previously not in-progress.
-        if (!mTrackedItems.containsKey(downloadItem.getContentId())) return;
-
-        // If the download should be auto-opened, we shouldn't show the infobar.
-        DownloadManagerService.getDownloadManagerService().checkIfDownloadWillAutoOpen(
-                downloadItem, (result) -> {
-                    if (result) {
-                        onItemRemoved(downloadItem.getContentId());
-                    } else {
-                        computeNextStepForUpdate(DownloadItem.createOfflineItem(downloadItem));
-                    }
-                });
     }
 
     @Override
@@ -1089,12 +1043,7 @@ public class DownloadInfoBarController implements DownloadMessageUiController {
         mDownloadLaterDialogHelper.showChangeScheduleDialog(
                 currentSchedule, Source.DOWNLOAD_INFOBAR, (newSchedule) -> {
                     if (newSchedule == null) return;
-                    if (mUseNewDownloadPath) {
-                        OfflineContentAggregatorFactory.get().changeSchedule(id, newSchedule);
-                    } else {
-                        DownloadManagerService.getDownloadManagerService().changeSchedule(
-                                id, newSchedule, mOtrProfileID);
-                    }
+                    OfflineContentAggregatorFactory.get().changeSchedule(id, newSchedule);
                 });
     }
 

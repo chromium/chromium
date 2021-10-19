@@ -151,20 +151,6 @@ public class DownloadMessageUiControllerTest {
     @Test
     @SmallTest
     @Feature({"Download"})
-    @Features.DisableFeatures(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
-    public void testMultipleDownloadInProgress() {
-        OfflineItem item1 = createOfflineItem(OfflineItemState.IN_PROGRESS);
-        mTestController.onDownloadItemUpdated(createDownloadItem(item1));
-        mTestController.verify(MESSAGE_DOWNLOADING_FILE, DESCRIPTION_DOWNLOADING);
-
-        OfflineItem item2 = createOfflineItem(OfflineItemState.IN_PROGRESS);
-        mTestController.onDownloadItemUpdated(createDownloadItem(item2));
-        mTestController.verify(MESSAGE_DOWNLOADING_TWO_FILES, DESCRIPTION_DOWNLOADING);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Download"})
     public void testSingleOfflineItemComplete() {
         OfflineItem item = createOfflineItem(OfflineItemState.IN_PROGRESS);
         mTestController.onItemUpdated(item);

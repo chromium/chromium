@@ -87,15 +87,6 @@ public class OMADownloadHandlerTest {
         }
 
         @Override
-        public void onDownloadItemUpdated(DownloadItem downloadItem) {
-            OfflineItem offlineItem = DownloadItem.createOfflineItem(downloadItem);
-            onItemUpdated(offlineItem, null);
-        }
-
-        @Override
-        public void onDownloadItemRemoved(ContentId contentId) {}
-
-        @Override
         public void onItemsAdded(List<OfflineItem> items) {}
 
         @Override

@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.download.DownloadState;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -255,7 +254,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         }
     }
 
-    private final boolean mUseNewDownloadPath;
     private final Handler mHandler = new Handler();
 
     // Keeps track of a running list of items, which gets updated regularly with every update from
@@ -316,8 +314,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     public DownloadMessageUiControllerImpl(Context context, OTRProfileID otrProfileID,
             Supplier<MessageDispatcher> messageDispatcher, ModalDialogManager modalDialogManager,
             ActivityTabProvider activityTabProvider) {
-        mUseNewDownloadPath =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
         mOtrProfileID = otrProfileID;
         mMessageDispatcher = messageDispatcher;
         mContext = context;
@@ -358,55 +354,11 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         computeNextStepForUpdate(null, true, false, false);
     }
 
-    /** Updates the message UI when new information about a download comes in. */
-    @Override
-    public void onDownloadItemUpdated(DownloadItem downloadItem) {
-        if (mUseNewDownloadPath) return;
-
-        OfflineItem offlineItem = DownloadItem.createOfflineItem(downloadItem);
-        if (!isVisibleToUser(offlineItem)) return;
-
-        if (downloadItem.getDownloadInfo().state() == DownloadState.COMPLETE) {
-            handleDownloadCompletion(downloadItem);
-            return;
-        }
-
-        if (offlineItem.state == OfflineItemState.CANCELLED) {
-            onItemRemoved(offlineItem.id);
-            return;
-        }
-
-        computeNextStepForUpdate(offlineItem);
-    }
-
-    /** Updates the message UI after a download has been removed. */
-    @Override
-    public void onDownloadItemRemoved(ContentId contentId) {
-        if (mUseNewDownloadPath) return;
-        onItemRemoved(contentId);
-    }
-
     /** Associates a notification ID with the tracked download for future usage. */
     // TODO(shaktisahu): Find an alternative way after moving to offline content provider.
     @Override
     public void onNotificationShown(ContentId id, int notificationId) {
         mNotificationIds.put(id, notificationId);
-    }
-
-    private void handleDownloadCompletion(DownloadItem downloadItem) {
-        // Multiple OnDownloadUpdated() notifications may be issued while the
-        // download is in the COMPLETE state. Don't handle it if it was previously not in-progress.
-        if (!mTrackedItems.containsKey(downloadItem.getContentId())) return;
-
-        // If the download should be auto-opened, we shouldn't show the UI.
-        DownloadManagerService.getDownloadManagerService().checkIfDownloadWillAutoOpen(
-                downloadItem, (result) -> {
-                    if (result) {
-                        onItemRemoved(downloadItem.getContentId());
-                    } else {
-                        computeNextStepForUpdate(DownloadItem.createOfflineItem(downloadItem));
-                    }
-                });
     }
 
     @Override
@@ -973,15 +925,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mDownloadLaterDialogHelper.showChangeScheduleDialog(
                 currentSchedule, Source.DOWNLOAD_INFOBAR, (newSchedule) -> {
                     if (newSchedule == null) return;
-                    if (mUseNewDownloadPath) {
-                        OfflineContentAggregatorFactory.get().changeSchedule(id, newSchedule);
-                    } else {
-                        OfflineItem offlineItem = mTrackedItems.get(id);
-                        DownloadManagerService.getDownloadManagerService().changeSchedule(id,
-                                newSchedule,
-                                OTRProfileID.deserializeWithoutVerify(
-                                        offlineItem == null ? null : offlineItem.otrProfileId));
-                    }
+                    OfflineContentAggregatorFactory.get().changeSchedule(id, newSchedule);
                 });
     }
 

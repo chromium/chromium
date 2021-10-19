@@ -401,11 +401,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
     }
 
-    private void updateDownloadInfoBar(DownloadItem item) {
-        DownloadMessageUiController infobarController =
-                getInfoBarController(item.getDownloadInfo().getOTRProfileId());
-        if (infobarController != null) infobarController.onDownloadItemUpdated(item);
-    }
+    private void updateDownloadInfoBar(DownloadItem item) {}
 
     /**
      * Broadcast that a download was successful.
@@ -1014,8 +1010,6 @@ public class DownloadManagerService implements DownloadController.Observer,
             removeDownloadProgress(id.id);
         } else {
             mDownloadNotifier.notifyDownloadCanceled(id);
-            DownloadMessageUiController infoBarController = getInfoBarController(otrProfileID);
-            if (infoBarController != null) infoBarController.onDownloadItemRemoved(id);
         }
     }
 
@@ -1499,12 +1493,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     // Deprecated after new download backend.
     @CalledByNative
     private void onDownloadItemRemoved(String guid, OTRProfileID otrProfileID) {
-        DownloadMessageUiController infobarController = getInfoBarController(otrProfileID);
-        if (infobarController != null) {
-            infobarController.onDownloadItemRemoved(
-                    LegacyHelpers.buildLegacyContentId(false, guid));
-        }
-
         for (DownloadObserver adapter : mDownloadObservers) {
             adapter.onDownloadItemRemoved(guid);
         }

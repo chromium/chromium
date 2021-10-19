@@ -30,12 +30,6 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
      */
     void onDownloadStarted();
 
-    /** Updates the UI when new information about a download comes in. */
-    void onDownloadItemUpdated(DownloadItem downloadItem);
-
-    /** Updates the UI after a download has been removed. */
-    void onDownloadItemRemoved(ContentId contentId);
-
     /** Associates a notification ID with the tracked download for future usage. */
     // TODO(shaktisahu): Find an alternative way after moving to offline content provider.
     void onNotificationShown(ContentId id, int notificationId);
