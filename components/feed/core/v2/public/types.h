@@ -30,7 +30,7 @@ enum class RefreshTaskId {
 struct ChromeInfo {
   version_info::Channel channel{};
   base::Version version;
-  bool start_surface;
+  bool start_surface = false;
 };
 // Device display metrics.
 struct DisplayMetrics {

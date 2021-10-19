@@ -21,10 +21,14 @@
 namespace feed {
 namespace {
 
+using ::testing::Contains;
+using ::testing::Not;
+
 TEST(ProtoUtilTest, CreateClientInfo) {
   RequestMetadata request_metadata;
   request_metadata.chrome_info.version = base::Version({1, 2, 3, 4});
   request_metadata.chrome_info.channel = version_info::Channel::STABLE;
+  request_metadata.chrome_info.start_surface = false;
   request_metadata.display_metrics.density = 1;
   request_metadata.display_metrics.width_pixels = 2;
   request_metadata.display_metrics.height_pixels = 3;
@@ -37,6 +41,7 @@ TEST(ProtoUtilTest, CreateClientInfo) {
   EXPECT_EQ(2, result.app_version().minor());
   EXPECT_EQ(3, result.app_version().build());
   EXPECT_EQ(4, result.app_version().revision());
+  EXPECT_FALSE(result.chrome_client_info().start_surface());
 
   EXPECT_EQ(R"({
   screen_density: 1
@@ -91,7 +96,7 @@ TEST(ProtoUtilTest, HeartsEnabled) {
           .feed_request();
 
   ASSERT_THAT(request.client_capability(),
-              testing::Contains(feedwire::Capability::HEART));
+              Contains(feedwire::Capability::HEART));
 }
 
 TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
@@ -163,9 +168,9 @@ TEST(ProtoUtilTest, AutoplayEnabled) {
           .feed_request();
 
   ASSERT_THAT(request.client_capability(),
-              testing::Contains(feedwire::Capability::INLINE_VIDEO_AUTOPLAY));
+              Contains(feedwire::Capability::INLINE_VIDEO_AUTOPLAY));
   ASSERT_THAT(request.client_capability(),
-              testing::Contains(feedwire::Capability::OPEN_VIDEO_COMMAND));
+              Contains(feedwire::Capability::OPEN_VIDEO_COMMAND));
 }
 
 TEST(ProtoUtilTest, StampEnabled) {
@@ -179,11 +184,72 @@ TEST(ProtoUtilTest, StampEnabled) {
           .feed_request();
 
   ASSERT_THAT(request.client_capability(),
-              testing::Contains(feedwire::Capability::SILK_AMP_OPEN_COMMAND));
+              Contains(feedwire::Capability::SILK_AMP_OPEN_COMMAND));
   ASSERT_THAT(request.client_capability(),
-              testing::Contains(feedwire::Capability::AMP_STORY_PLAYER));
+              Contains(feedwire::Capability::AMP_STORY_PLAYER));
   ASSERT_THAT(request.client_capability(),
-              testing::Contains(feedwire::Capability::AMP_GROUP_DATASTORE));
+              Contains(feedwire::Capability::AMP_GROUP_DATASTORE));
+}
+
+TEST(ProtoUtilTest, OpenInNewTabFromStartSurface) {
+  RequestMetadata metadata;
+  metadata.chrome_info.start_surface = true;
+
+  {
+    feedwire::FeedRequest request =
+        CreateFeedQueryRefreshRequest(kForYouStream,
+                                      feedwire::FeedQuery::MANUAL_REFRESH,
+                                      /*request_metadata=*/metadata,
+                                      /*consistency_token=*/std::string())
+            .feed_request();
+
+    ASSERT_THAT(request.client_capability(),
+                Not(Contains(feedwire::Capability::OPEN_IN_TAB)));
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {kEnableOpenInNewTabFromStartSurfaceFeed}, {});
+    feedwire::FeedRequest request =
+        CreateFeedQueryRefreshRequest(kForYouStream,
+                                      feedwire::FeedQuery::MANUAL_REFRESH,
+                                      /*request_metadata=*/metadata,
+                                      /*consistency_token=*/std::string())
+            .feed_request();
+
+    ASSERT_THAT(request.client_capability(),
+                Contains(feedwire::Capability::OPEN_IN_TAB));
+  }
+}
+
+TEST(ProtoUtilTest, OpenInNewTabFromNTP) {
+  RequestMetadata metadata;
+  metadata.chrome_info.start_surface = false;
+  {
+    feedwire::FeedRequest request =
+        CreateFeedQueryRefreshRequest(kForYouStream,
+                                      feedwire::FeedQuery::MANUAL_REFRESH,
+                                      /*request_metadata=*/metadata,
+                                      /*consistency_token=*/std::string())
+            .feed_request();
+
+    ASSERT_THAT(request.client_capability(),
+                Contains(feedwire::Capability::OPEN_IN_TAB));
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {kEnableOpenInNewTabFromStartSurfaceFeed}, {});
+    feedwire::FeedRequest request =
+        CreateFeedQueryRefreshRequest(kForYouStream,
+                                      feedwire::FeedQuery::MANUAL_REFRESH,
+                                      /*request_metadata=*/metadata,
+                                      /*consistency_token=*/std::string())
+            .feed_request();
+
+    ASSERT_THAT(request.client_capability(),
+                Contains(feedwire::Capability::OPEN_IN_TAB));
+  }
 }
 
 }  // namespace
