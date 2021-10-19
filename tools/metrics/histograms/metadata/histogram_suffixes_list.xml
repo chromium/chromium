@@ -15390,12 +15390,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>tgupta@chromium.org</owner>
   <owner>chrome-sharing-core@google.com</owner>
   <suffix name="AndroidShareSheet"
-      label="Option to show in the android share sheet"/>
+      label="Option to show in the android share sheet">
+    <obsolete>
+      Replaced with ShareSheet in 05/2021 (M92). More details in
+      crbug.com/1261416.
+    </obsolete>
+  </suffix>
   <suffix name="ContentMenu" label="Option shown in the content context menu"/>
   <suffix name="LinkMenu" label="Option shown in the link context menu"/>
   <suffix name="OmniboxIcon" label="Icon shown in the omnibox"/>
   <suffix name="OmniboxMenu" label="Option shown in the omnibox context menu"/>
   <suffix name="ShareMenu" label="Option shown in the share sheet menu"/>
+  <suffix name="ShareSheet" label="Option to show in the android share sheet"/>
   <suffix name="TabMenu" label="Option shown in the tab context menu"/>
   <affected-histogram name="SendTabToSelf.ClickResult"/>
 </histogram_suffixes>
