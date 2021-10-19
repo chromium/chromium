@@ -584,6 +584,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SharingHubAndroid.CloseReason"
+    enum="BottomSheet.StateChangeReason" expires_after="M100">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    The reason why the Clank sharing hub was closed, logged when the bottom
+    sheet transitions into the HIDDEN state. Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
     expires_after="2022-04-17">
   <owner>sophey@chromium.org</owner>
