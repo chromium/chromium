@@ -50,11 +50,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
-#include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #else
 #include "chrome/browser/ui/signin_view_controller.h"
 #endif

@@ -5,11 +5,11 @@
 #include "chrome/browser/net/net_error_diagnostics_dialog.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chromeos/components/connectivity_diagnostics/url_constants.h"
 
 namespace {
 void LaunchDiagnosticsAppAtConnectivityScreen(Profile* profile) {
