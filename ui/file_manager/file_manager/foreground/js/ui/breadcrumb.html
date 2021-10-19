@@ -99,7 +99,7 @@
   }
 
   :host-context(:root.pointer-active) button.dropdown-item:active {
-    background-color: var(--cros-ripple-color);
+    background-color: var(--cros-menu-item-background-hover);
   }
 
   :host-context(:root:not(.pointer-active)) button.dropdown-item > paper-ripple {
@@ -107,8 +107,8 @@
   }
 
   button.dropdown-item > paper-ripple {
-    --paper-ripple-opacity: 8%;
-    color: black;
+    --paper-ripple-opacity: 100%;
+    color: var(--cros-menu-item-background-hover);
   }
 
   button:not([disabled]):not(:active):hover {
@@ -139,7 +139,7 @@
 
   #elider-menu button {
     border: unset;
-    color: rgb(51, 51, 51);
+    color: var(--cros-menu-label-color);
     display: block;
     font-family: 'Roboto';
     font-size: 13px;
@@ -154,7 +154,24 @@
   }
 
   :host-context(:root.focus-outline-visible) #elider-menu button:focus {
-    background-color: rgba(0, 0, 0, 4%);
+    background-color: var(--cros-menu-item-background-hover);
+  }
+
+  cr-action-menu {
+    --cr-menu-background-color: var(--cros-bg-color-elevation-2);
+    --cr-menu-shadow: 0 1px 2px 0 rgba(var(--google-grey-800-rgb), 0.3),
+                      0 2px 6px 2px rgba(var(--google-grey-800-rgb), 0.15);
+  }
+
+  /**
+    * TODO(crbug.com/1250570): Remove this media query when the semantic colour
+    * is available
+    */
+  @media (prefers-color-scheme: dark) {
+    cr-action-menu {
+      --cr-menu-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3),
+                        0 2px 6px 2px rgba(0, 0, 0, 0.15);
+    }
   }
 </style>
 
