@@ -254,6 +254,60 @@ disk_cache::MappedFile::buffer_
 network::MojoToNetPendingBuffer::buffer_
 network::NetToMojoPendingBuffer::buffer_
 
+# Populated manually - based on sampling profiler data and tab_search:top100:2020 profiler data
+(anonymous namespace)::TlsVectorEntry::data
+LinkNodeBase::next_
+LinkNodeBase::previous_
+WeakLinkNode::list_
+base::Location::program_counter_
+base::MessagePump::Delegate::ScopedDoWorkItem::outer_
+base::MessagePumpLibevent::RunState::delegate
+base::internal::OperationsController::OperationToken::outer_
+base::internal::SequenceLocalStorageMap::ValueDestructorPair::destructor_
+base::internal::SequenceLocalStorageMap::ValueDestructorPair::value_
+base::internal::TaskDestructionDetector::timer_
+base::internal::VectorBuffer::buffer_
+base::internal::circular_deque_const_iterator::parent_deque_
+base::sequence_manager::internal::LazilyDeallocatedDeque::tail_
+base::sequence_manager::internal::SequenceManagerImpl::ExecutingTask::task_queue
+base::sequence_manager::internal::TaskQueueImpl::DeferredNonNestableTask::task_queue
+base::sequence_manager::internal::WorkQueue::TaskPusher::work_queue_
+cc::(anonymous namespace)::DependentIterator::current_node_
+cc::(anonymous namespace)::DependentIterator::graph_
+cc::(anonymous namespace)::DependentIterator::task_
+cc::LayerListIterator::current_layer_
+cc::ListContainerHelper::CharAllocator::last_list_
+cc::ListContainerHelper::PositionInCharAllocator::item_iterator
+cc::ListContainerHelper::PositionInCharAllocator::ptr_to_container
+cc::PaintOpBuffer::Iterator::buffer_
+cc::PaintOpBuffer::Iterator::ptr_
+cc::PaintOpBuffer::OffsetIterator::buffer_
+cc::PaintOpBuffer::OffsetIterator::offsets_
+cc::PaintOpBuffer::OffsetIterator::ptr_
+cc::PaintOpBuffer::PlaybackFoldingIterator::current_op_
+cc::PictureLayerTiling::CoverageIterator::current_tile_
+cc::PictureLayerTiling::CoverageIterator::tiling_
+cc::PlaybackParams::image_provider
+cc::ResourcePool::InUsePoolResource::resource_
+cc::TilingSetEvictionQueue::EvictionRectIterator::tilings_
+cc::TilingSetRasterQueueAll::OnePriorityRectIterator::tiling_
+cc::TilingSetRasterQueueAll::OnePriorityRectIterator::tiling_data_
+cc::TilingSetRasterQueueAll::TilingIterator::tiling_
+cc::TilingSetRasterQueueAll::TilingIterator::tiling_data_
+cc::TilingSetRasterQueueRequired::TilingIterator::tiling_
+cc::TilingSetRasterQueueRequired::TilingIterator::tiling_data_
+content::FrameTree::NodeIterator::current_node_
+content::FrameTree::NodeIterator::root_of_subtree_to_skip_
+content::responsiveness::Watcher::Metadata::identifier
+mojo::core::UserMessageImpl::header_
+mojo::core::UserMessageImpl::message_event_
+mojo::core::UserMessageImpl::user_payload_
+mojo::core::ports::UserMessage::type_info_
+mojo::internal::MultiplexRouter::MessageWrapper::router_
+tracing::(anonymous namespace)::LazyLegacyEventInitializer::legacy_event_
+tracing::(anonymous namespace)::LazyLegacyEventInitializer::track_event_
+url::StdStringCanonOutput::str_
+
 #######
 # End of performance-related exclusions
 #######

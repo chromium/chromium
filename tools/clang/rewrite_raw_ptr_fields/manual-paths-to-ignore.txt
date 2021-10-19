@@ -50,20 +50,6 @@ components/history_clusters/core/
 # provide a stable C ABI. Can't depend on //base.
 android_webview/public/
 
-# Performance related exclusion based on sampling profiler data
-base/bind_internal.h
-base/message_loop/
-base/task/
-base/threading/
-base/timer/
-cc/
-content/browser/scheduler/responsiveness/
-
-# Performance related exclusion based on tab_search:top100:2020 profiler data
-base/observer_list.h
-base/containers/linked_list.h
-base/containers/circular_deque.h
-
 # Exclude code that only runs inside a renderer process - renderer
 # processes are excluded for now from the MiraclePtr project scope,
 # because they are sensitive to performance regressions (to a much higher
