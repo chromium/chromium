@@ -16,6 +16,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -26,6 +27,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 public class ManifestHWATest {
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1261209")
     public void testAccelerationDisabled() throws Exception {
         Context context = InstrumentationRegistry.getTargetContext();
         PackageInfo info = context.getPackageManager().getPackageInfo(
