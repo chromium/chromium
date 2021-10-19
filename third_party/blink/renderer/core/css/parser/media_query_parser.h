@@ -129,7 +129,6 @@ class CORE_EXPORT MediaQueryParser {
                                            CSSParserTokenRange&);
 
   void SetStateAndRestrict(State, MediaQuery::RestrictorType);
-  void HandleBlocks(const CSSParserToken&);
 
   bool IsMediaFeatureAllowedInMode(const String& media_feature) const;
 

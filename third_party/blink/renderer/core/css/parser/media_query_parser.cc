@@ -254,18 +254,11 @@ void MediaQueryParser::Done(CSSParserTokenType type,
                             const CSSParserToken& token,
                             CSSParserTokenRange& range) {}
 
-void MediaQueryParser::HandleBlocks(const CSSParserToken& token) {
-  if (token.GetBlockType() == CSSParserToken::kBlockStart &&
-      (token.GetType() != kLeftParenthesisToken || block_watcher_.BlockLevel()))
-    state_ = kSkipUntilBlockEnd;
-}
-
 void MediaQueryParser::ProcessToken(const CSSParserToken& token,
                                     CSSParserTokenRange& range) {
   CSSParserTokenType type = token.GetType();
 
   if (state_ != kReadFeatureValue || type == kWhitespaceToken) {
-    HandleBlocks(token);
     block_watcher_.HandleToken(token);
     range.Consume();
   }
