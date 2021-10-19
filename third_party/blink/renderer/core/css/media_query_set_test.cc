@@ -56,6 +56,7 @@ TEST(MediaQuerySetTest, Basic) {
       {"screen and (max-weight: 3kg) and (color), (monochrome)",
        "not all, (monochrome)"},
       {"(min-width: -100px)", "not all"},
+      {"(width:100gil)", "not all"},
       {"(example, all,), speech", "not all, speech"},
       {"&test, screen", "not all, screen"},
       {"print and (min-width: 25cm)", nullptr},

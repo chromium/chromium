@@ -205,14 +205,8 @@ void MediaQueryParser::ReadFeatureColon(CSSParserTokenType type,
 void MediaQueryParser::ReadFeatureValue(CSSParserTokenType type,
                                         const CSSParserToken& token,
                                         CSSParserTokenRange& range) {
-  if (type == kDimensionToken &&
-      token.GetUnitType() == CSSPrimitiveValue::UnitType::kUnknown) {
-    range.Consume();
-    state_ = kSkipUntilComma;
-  } else {
-    media_query_data_.AddExpression(range, execution_context_);
-    state_ = kReadFeatureEnd;
-  }
+  media_query_data_.AddExpression(range, execution_context_);
+  state_ = kReadFeatureEnd;
 }
 
 void MediaQueryParser::ReadFeatureEnd(CSSParserTokenType type,
