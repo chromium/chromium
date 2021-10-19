@@ -106,12 +106,15 @@
   <message name="IDS_SETTINGS_RESTART_TO_APPLY_CHANGES" desc="Description in the snackbar to restart Chrome and apply changes.">
     To apply your changes, relaunch Chromium
   </message>
-  <message name="IDS_SETTINGS_SIGNIN_ALLOWED" desc="The title of the preference to allow to sign-in to Chrome">
+
+  <if expr="not chromeos and not lacros">
+    <message name="IDS_SETTINGS_SIGNIN_ALLOWED" desc="The title of the preference to allow to sign-in to Chrome">
     Allow Chromium sign-in
-  </message>
-  <message name="IDS_SETTINGS_SIGNIN_ALLOWED_DESC" desc="The description of the preference to allow to sign-in to Chrome">
+    </message>
+    <message name="IDS_SETTINGS_SIGNIN_ALLOWED_DESC" desc="The description of the preference to allow to sign-in to Chrome">
     By turning this off, you can sign in to Google sites like Gmail without signing in to Chromium
-  </message>
+    </message>
+  </if>
 
   <!-- Site Settings -->
   <message name="IDS_SETTINGS_SITE_SETTINGS_PDFS_BLOCKED" desc="Label for the disabled option of the pdfs content setting.">

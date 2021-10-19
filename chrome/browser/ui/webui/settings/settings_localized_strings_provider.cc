@@ -28,6 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1334,7 +1335,12 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean("isAccountManagerEnabled",
                           IsAccountManagerAvailable(profile));
-  html_source->AddBoolean("isMainProfile", profile->IsMainProfile());
+  // On Lacros, signout is only supported for secondary profiles without account
+  // consistency.
+  html_source->AddBoolean(
+      "isSignoutSupported",
+      !base::FeatureList::IsEnabled(kMultiProfileAccountConsistency) &&
+          !profile->IsMainProfile());
 #endif
 
   AddSignOutDialogStrings(html_source, profile);

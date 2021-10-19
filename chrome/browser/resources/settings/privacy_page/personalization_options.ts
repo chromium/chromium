@@ -92,7 +92,7 @@ export class SettingsPersonalizationOptionsElement extends
         computed: 'computeSyncFirstSetupInProgress_(syncStatus)',
       },
 
-      // <if expr="not chromeos">
+      // <if expr="not chromeos and not lacros">
       signinAvailable_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('signinAvailable'),
@@ -112,7 +112,7 @@ export class SettingsPersonalizationOptionsElement extends
   private showSignoutDialog_: boolean;
   private syncFirstSetupInProgress_: boolean;
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos and not lacros">
   private signinAvailable_: boolean;
   // </if>
 

@@ -178,7 +178,7 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
     {"urlKeyedAnonymizedDataCollectionDesc",
      IDS_SETTINGS_ENABLE_URL_KEYED_ANONYMIZED_DATA_COLLECTION_DESC},
     {"spellingPref", IDS_SETTINGS_SPELLING_PREF},
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     {"signinAllowedTitle", IDS_SETTINGS_SIGNIN_ALLOWED},
     {"signinAllowedDescription", IDS_SETTINGS_SIGNIN_ALLOWED_DESC},
 #endif

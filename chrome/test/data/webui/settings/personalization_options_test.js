@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrivacyPageBrowserProxyImpl, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {TestPrivacyPageBrowserProxy} from 'chrome://test/settings/test_privacy_page_browser_proxy.js';
@@ -77,7 +77,7 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
     assertFalse(!!testElement.shadowRoot.querySelector('#driveSuggestControl'));
   });
 
-  if (!isChromeOS) {
+  if (!isChromeOS && !isLacros) {
     test('signinAllowedToggle', function() {
       const toggle = testElement.$.signinAllowedToggle;
       assertTrue(isVisible(toggle));

@@ -8,7 +8,8 @@
         border-top: none;
       }
     </style>
-<if expr="not chromeos">
+<if expr="not chromeos and not lacros">
+    <!-- Signout is not supported yet on lacros, https://crbug.com/1217645 -->
     <settings-toggle-button id="signinAllowedToggle"
         class="hr"
         hidden="[[!signinAvailable_]]"
@@ -19,7 +20,7 @@
         on-settings-boolean-control-change="onSigninAllowedChange_"
         no-set-pref>
     </settings-toggle-button>
-</if><!-- not chromeos -->
+</if><!-- not chromeos and not lacros -->
     <settings-toggle-button id="searchSuggestToggle"
         class="hr"
         hidden="[[!pageVisibility.searchPrediction]]"

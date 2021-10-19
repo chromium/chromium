@@ -319,7 +319,7 @@ class SettingsSyncAccountControlElement extends
     }
     // </if>
     // <if expr="lacros">
-    if (loadTimeData.getBoolean('isMainProfile')) {
+    if (!loadTimeData.getBoolean('isSignoutSupported')) {
       // On Lacros the primary account doesn't support turning off sync yet.
       // TODO(https://crbug.com/1217645): Remove after adding sync off state.
       return false;
