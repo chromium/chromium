@@ -292,7 +292,7 @@ int64_t TimeToProtoTime(const base::Time& t) {
   return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
 
-std::unique_ptr<ash::DeskTemplate> ParseDeskTemplate(
+std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromPolicy(
     const base::Value& policyJson) {
   if (!policyJson.is_dict())
     return nullptr;
@@ -316,7 +316,8 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplate(
   const base::Time created_time = ProtoTimeToTime(created_time_usec);
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
-      std::make_unique<ash::DeskTemplate>(uuid, name, created_time);
+      std::make_unique<ash::DeskTemplate>(
+          uuid, ash::DeskTemplateSource::kPolicy, name, created_time);
 
   desk_template->set_desk_restore_data(ConvertJsonToRestoreData(desk));
 

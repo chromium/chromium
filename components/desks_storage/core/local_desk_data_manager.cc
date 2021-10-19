@@ -79,7 +79,8 @@ std::unique_ptr<ash::DeskTemplate> ConvertValueToDeskTemplate(
     return nullptr;
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
-      std::make_unique<ash::DeskTemplate>(*uuid, *name, created_time.value());
+      std::make_unique<ash::DeskTemplate>(*uuid, ash::DeskTemplateSource::kUser,
+                                          *name, created_time.value());
 
   // Full Restore will only take in std::unique_ptr as it's constructor
   // parameter from base::Value.  We're not allowed to use the explicit
@@ -232,6 +233,10 @@ void LocalDeskDataManager::GetEntryByUUID(
 void LocalDeskDataManager::AddOrUpdateEntry(
     std::unique_ptr<ash::DeskTemplate> new_entry,
     DeskModel::AddOrUpdateEntryCallback callback) {
+  // When a user creates a desk template locally, the desk template has |kUser|
+  // as its source. Only user desk templates should be saved.
+  DCHECK_EQ(ash::DeskTemplateSource::kUser, new_entry->source());
+
   auto status = std::make_unique<DeskModel::AddOrUpdateEntryStatus>();
 
   task_runner_->PostTaskAndReply(

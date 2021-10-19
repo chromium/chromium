@@ -14,17 +14,29 @@
 
 namespace ash {
 
+// Indicates where a desk template originated from.
+enum class ASH_PUBLIC_EXPORT DeskTemplateSource {
+  // Default value, indicates no value was set.
+  kUnknownSource = 0,
+
+  // Desk template created by the user.
+  kUser,
+
+  // Desk template pushed through policy.
+  kPolicy
+};
+
 // Class to represent a desk template. It can be used to create a desk with
 // a certain set of application windows specified in |desk_restore_data_|.
 class ASH_PUBLIC_EXPORT DeskTemplate {
  public:
-  DeskTemplate();
-  explicit DeskTemplate(const base::GUID& uuid);
-  // This constructor is used in the instantiation of the DeskTemplate from
-  // a WorkspaceDeskSpecifics proto and base::Value.
+  // This constructor is used to instantiate DeskTemplate with a specific
+  // source.
   DeskTemplate(const std::string& uuid,
+               DeskTemplateSource source,
                const std::string& name,
-               const base::Time& time_created);
+               const base::Time created_time);
+
   DeskTemplate(const DeskTemplate&) = delete;
   DeskTemplate& operator=(const DeskTemplate&) = delete;
   ~DeskTemplate();
@@ -36,6 +48,7 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   std::unique_ptr<DeskTemplate> Clone();
 
   base::GUID uuid() const { return uuid_; }
+  DeskTemplateSource source() const { return source_; }
   base::Time created_time() const { return created_time_; }
   const std::u16string& template_name() const { return template_name_; }
   void set_template_name(const std::u16string& template_name) {
@@ -52,8 +65,13 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   }
 
  private:
+  DeskTemplate();
+
   const base::GUID uuid_;  // We utilize the string based base::GUID to uniquely
                            // identify the template.
+
+  // Indicates the source where this desk template originates from.
+  const DeskTemplateSource source_;
 
   const base::Time created_time_;  // We'll use the current time in seconds
                                    // since the Windows epoch.

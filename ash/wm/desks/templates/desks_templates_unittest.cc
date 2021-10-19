@@ -139,7 +139,8 @@ class DesksTemplatesTest : public OverviewTestBase {
                 const std::string& name,
                 base::Time created_time) {
     auto desk_template = std::make_unique<DeskTemplate>(
-        uuid.AsLowercaseString(), name, created_time);
+        uuid.AsLowercaseString(), DeskTemplateSource::kUser, name,
+        created_time);
     desk_template->set_desk_restore_data(
         std::make_unique<app_restore::RestoreData>());
 

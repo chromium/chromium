@@ -48,6 +48,7 @@ using WorkspaceDeskSpecifics_App = sync_pb::WorkspaceDeskSpecifics_App;
 namespace {
 
 using ash::DeskTemplate;
+using ash::DeskTemplateSource;
 using sync_pb::ModelTypeState;
 using sync_pb::WorkspaceDeskSpecifics;
 using syncer::EntityChange;
@@ -195,7 +196,7 @@ std::unique_ptr<ash::DeskTemplate> CreateTemplateWithBrowserFromScratch(
   const std::string template_name =
       base::StringPrintf(kNameFormat, template_index);
   auto desk_template = std::make_unique<ash::DeskTemplate>(
-      template_uuid, template_name, created_time);
+      template_uuid, DeskTemplateSource::kUser, template_name, created_time);
 
   auto restore_data = std::make_unique<app_restore::RestoreData>();
   auto browser_info = std::make_unique<app_restore::AppLaunchInfo>(
@@ -550,6 +551,16 @@ TEST_F(DeskSyncBridgeTest, GetAllEntriesIncludesPolicyEntries) {
                                      std::vector<ash::DeskTemplate*> entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 4ul);
+
+        // Two of these templates should be from policy.
+        EXPECT_EQ(
+            base::ranges::count_if(entries,
+                                   [](const ash::DeskTemplate* entry) {
+                                     return entry->source() ==
+                                            ash::DeskTemplateSource::kPolicy;
+                                   }),
+            2l);
+
         loop.Quit();
       }));
   loop.Run();
@@ -615,7 +626,8 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldSucceedWheSyncIsDisabled) {
   base::RunLoop loop;
   bridge()->AddOrUpdateEntry(
       std::make_unique<DeskTemplate>(kTestUuid1.AsLowercaseString(),
-                                     "template 1", AdvanceAndGetTime()),
+                                     DeskTemplateSource::kUser, "template 1",
+                                     AdvanceAndGetTime()),
       base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
         EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
         loop.Quit();
@@ -636,7 +648,8 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldFailWhenBridgeIsNotReady) {
   base::RunLoop loop;
   bridge()->AddOrUpdateEntry(
       std::make_unique<DeskTemplate>(kTestUuid1.AsLowercaseString(),
-                                     "template 1", AdvanceAndGetTime()),
+                                     DeskTemplateSource::kUser, "template 1",
+                                     AdvanceAndGetTime()),
       base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
         EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kFailure);
         loop.Quit();
@@ -719,6 +732,7 @@ TEST_F(DeskSyncBridgeTest, UpdateEntryLocally) {
   base::RunLoop loop;
   bridge()->AddOrUpdateEntry(
       std::make_unique<DeskTemplate>(kTestUuid1.AsLowercaseString(),
+                                     DeskTemplateSource::kUser,
                                      "updated template 1", AdvanceAndGetTime()),
       base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
         EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);

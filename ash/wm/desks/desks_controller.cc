@@ -44,10 +44,13 @@
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/cxx17_backports.h"
+#include "base/guid.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/restore_data.h"
@@ -855,10 +858,6 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
     const {
   DCHECK(current_account_id_.is_valid());
 
-  std::unique_ptr<DeskTemplate> desk_template =
-      std::make_unique<DeskTemplate>();
-  desk_template->set_template_name(active_desk_->name());
-
   // Construct |restore_data| for |desk_template|.
   std::unique_ptr<app_restore::RestoreData> restore_data =
       std::make_unique<app_restore::RestoreData>();
@@ -884,6 +883,12 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
     window_info->desk_id.reset();
     restore_data->ModifyWindowInfo(app_id, window_id, *window_info);
   }
+
+  std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
+      base::GUID::GenerateRandomV4().AsLowercaseString(),
+      DeskTemplateSource::kUser, base::UTF16ToUTF8(active_desk_->name()),
+      base::Time::Now());
+
   desk_template->set_desk_restore_data(std::move(restore_data));
 
   return desk_template;

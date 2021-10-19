@@ -67,7 +67,8 @@ TEST(DeskTemplateConversionTest, ParseBrowserTemplate) {
   EXPECT_TRUE(parsed_json.value->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> dt =
-      desk_template_conversion::ParseDeskTemplate(parsed_json.value.value());
+      desk_template_conversion::ParseDeskTemplateFromPolicy(
+          parsed_json.value.value());
 
   EXPECT_TRUE(dt != nullptr);
   EXPECT_EQ(dt->uuid(), base::GUID::ParseCaseInsensitive(kTestUuidBrowser));
@@ -124,7 +125,8 @@ TEST(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   EXPECT_TRUE(parsed_json.value->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> dt =
-      desk_template_conversion::ParseDeskTemplate(parsed_json.value.value());
+      desk_template_conversion::ParseDeskTemplateFromPolicy(
+          parsed_json.value.value());
 
   EXPECT_TRUE(dt != nullptr);
   EXPECT_EQ(dt->uuid(),
@@ -210,7 +212,8 @@ TEST(DeskTemplateConversionTest, kEmptyJson) {
   EXPECT_TRUE(parsed_json.value->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> dt =
-      desk_template_conversion::ParseDeskTemplate(parsed_json.value.value());
+      desk_template_conversion::ParseDeskTemplateFromPolicy(
+          parsed_json.value.value());
   EXPECT_TRUE(dt == nullptr);
 }
 

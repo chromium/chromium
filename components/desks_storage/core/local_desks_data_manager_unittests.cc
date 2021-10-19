@@ -114,8 +114,9 @@ std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(int index) {
   const std::string template_name =
       base::StringPrintf(kTemplateNameFormat, index);
   std::unique_ptr<ash::DeskTemplate> desk_template =
-      std::make_unique<ash::DeskTemplate>(template_uuid, template_name,
-                                          base::Time::Now());
+      std::make_unique<ash::DeskTemplate>(template_uuid,
+                                          ash::DeskTemplateSource::kUser,
+                                          template_name, base::Time::Now());
   desk_template->set_desk_restore_data(
       std::make_unique<app_restore::RestoreData>());
   return desk_template;
@@ -128,41 +129,50 @@ class LocalDeskDataManagerTest : public testing::Test {
   LocalDeskDataManagerTest()
       : sample_desk_template_one_(
             std::make_unique<ash::DeskTemplate>(kTestUuid1,
+                                                ash::DeskTemplateSource::kUser,
                                                 std::string("desk_01"),
                                                 kTestTime1)),
         sample_desk_template_one_duplicate_(
             std::make_unique<ash::DeskTemplate>(kTestUuid5,
+                                                ash::DeskTemplateSource::kUser,
                                                 std::string("desk_01"),
                                                 base::Time::Now())),
         sample_desk_template_one_duplicate_two_(
             std::make_unique<ash::DeskTemplate>(kTestUuid6,
+                                                ash::DeskTemplateSource::kUser,
                                                 std::string("desk_01"),
                                                 base::Time::Now())),
         duplicate_pattern_matching_named_desk_(
             std::make_unique<ash::DeskTemplate>(
                 kTestUuid7,
+                ash::DeskTemplateSource::kUser,
                 std::string("(1) desk_template"),
                 base::Time::Now())),
         duplicate_pattern_matching_named_desk_two_(
             std::make_unique<ash::DeskTemplate>(
                 kTestUuid8,
+                ash::DeskTemplateSource::kUser,
                 std::string("(1) desk_template"),
                 base::Time::Now())),
         duplicate_pattern_matching_named_desk_three_(
             std::make_unique<ash::DeskTemplate>(
                 kTestUuid9,
+                ash::DeskTemplateSource::kUser,
                 std::string("(1) desk_template"),
                 base::Time::Now())),
         sample_desk_template_two_(
             std::make_unique<ash::DeskTemplate>(kTestUuid2,
+                                                ash::DeskTemplateSource::kUser,
                                                 std::string("desk_02"),
                                                 base::Time::Now())),
         sample_desk_template_three_(
             std::make_unique<ash::DeskTemplate>(kTestUuid3,
+                                                ash::DeskTemplateSource::kUser,
                                                 std::string("desk_03"),
                                                 base::Time::Now())),
         modified_sample_desk_template_one_(
             std::make_unique<ash::DeskTemplate>(kTestUuid1,
+                                                ash::DeskTemplateSource::kUser,
                                                 std::string("desk_01_mod"),
                                                 kTestTime1)),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
@@ -283,6 +293,15 @@ TEST_F(LocalDeskDataManagerTest, GetAllEntriesIncludesPolicyValues) {
         EXPECT_TRUE(FindUuidInUuidList(kTestUuid2, entries));
         EXPECT_TRUE(FindUuidInUuidList(kTestUuid3, entries));
         EXPECT_TRUE(FindUuidInUuidList(kTestUuid9, entries));
+
+        // One of these templates should be from policy.
+        EXPECT_EQ(
+            base::ranges::count_if(entries,
+                                   [](const ash::DeskTemplate* entry) {
+                                     return entry->source() ==
+                                            ash::DeskTemplateSource::kPolicy;
+                                   }),
+            1l);
 
         // Sanity check for the search function.
         EXPECT_FALSE(FindUuidInUuidList(kTestUuid4, entries));

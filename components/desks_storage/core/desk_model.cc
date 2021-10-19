@@ -39,7 +39,7 @@ void DeskModel::SetPolicyDeskTemplates(const std::string& policyJson) {
 
   for (auto& desk_template : parsed_list.value->GetList()) {
     std::unique_ptr<ash::DeskTemplate> dt =
-        desk_template_conversion::ParseDeskTemplate(desk_template);
+        desk_template_conversion::ParseDeskTemplateFromPolicy(desk_template);
     if (dt)
       policy_entries_.push_back(std::move(dt));
   }

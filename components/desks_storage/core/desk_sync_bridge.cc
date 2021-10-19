@@ -41,6 +41,7 @@ using BrowserAppTab =
     sync_pb::WorkspaceDeskSpecifics_BrowserAppWindow_BrowserAppTab;
 using BrowserAppWindow = sync_pb::WorkspaceDeskSpecifics_BrowserAppWindow;
 using ash::DeskTemplate;
+using ash::DeskTemplateSource;
 using WindowState = sync_pb::WorkspaceDeskSpecifics_WindowState;
 using WindowBound = sync_pb::WorkspaceDeskSpecifics_WindowBound;
 using ProgressiveWebApp = sync_pb::WorkspaceDeskSpecifics_ProgressiveWebApp;
@@ -499,8 +500,8 @@ std::unique_ptr<DeskTemplate> DeskSyncBridge::FromSyncProto(
       desk_template_conversion::ProtoTimeToTime(pb_entry.created_time_usec());
 
   // Protobuf parsing enforces UTF-8 encoding for all strings.
-  std::unique_ptr<DeskTemplate> desk_template =
-      std::make_unique<DeskTemplate>(uuid, pb_entry.name(), created_time);
+  std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
+      uuid, ash::DeskTemplateSource::kUser, pb_entry.name(), created_time);
   desk_template->set_desk_restore_data(ConvertToRestoreData(pb_entry));
   return desk_template;
 }
@@ -683,6 +684,10 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
     std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument);
     return;
   }
+
+  // When a user creates a desk template locally, the desk template has |kUser|
+  // as its source. Only user desk templates should be saved to Sync.
+  DCHECK_EQ(DeskTemplateSource::kUser, new_entry->source());
 
   auto entry = new_entry->Clone();
   entry->set_template_name(
@@ -916,6 +921,7 @@ void DeskSyncBridge::UploadLocalOnlyData(
     const syncer::EntityChangeList& entity_data) {
   std::set<base::GUID> local_keys_to_upload;
   for (const auto& it : entries_) {
+    DCHECK_EQ(DeskTemplateSource::kUser, it.second->source());
     local_keys_to_upload.insert(it.first);
   }
 
