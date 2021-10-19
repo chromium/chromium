@@ -3,14 +3,17 @@
 // found in the LICENSE file.
 
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
+#include <array>
 
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_encryption.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 
 namespace ash {
 namespace quick_pair {
@@ -52,12 +55,52 @@ void FastPairDataEncryptorImpl::Factory::CreateAsync(
     return;
   }
 
+  if (device->protocol == Protocol::kFastPairInitial ||
+      device->protocol == Protocol::kFastPairRetroactive) {
+    CreateAsyncWithKeyExchange(std::move(device),
+                               std::move(on_get_instance_callback));
+  } else if (device->protocol == Protocol::kFastPairSubsequent) {
+    CreateAsyncWithAccountKey(std::move(device),
+                              std::move(on_get_instance_callback));
+  } else {
+    // This object doesn't handle any other protocols, calling with another
+    // is a bug.
+    NOTREACHED();
+  }
+}
+
+// static
+void FastPairDataEncryptorImpl::Factory::CreateAsyncWithKeyExchange(
+    scoped_refptr<Device> device,
+    base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
+        on_get_instance_callback) {
+  // We first have to get the metadata in order to get the public key to use
+  // to generate the new secret key pair.
   auto metadata_id = device->metadata_id;
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
       base::BindOnce(
           &FastPairDataEncryptorImpl::Factory::DeviceMetadataRetrieved,
           std::move(device), std::move(on_get_instance_callback)));
+}
+
+// static
+void FastPairDataEncryptorImpl::Factory::CreateAsyncWithAccountKey(
+    scoped_refptr<Device> device,
+    base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
+        on_get_instance_callback) {
+  QP_LOG(VERBOSE) << __func__;
+  DCHECK_EQ(device->additional_data().size(),
+            static_cast<size_t>(kPrivateKeyByteSize))
+      << "Additional data field should be set to the account key, a "
+         "16-byte AES key";
+  std::array<uint8_t, kPrivateKeyByteSize> private_key;
+  std::copy_n(device->additional_data().begin(), kPrivateKeyByteSize,
+              private_key.begin());
+
+  std::unique_ptr<FastPairDataEncryptorImpl> data_encryptor =
+      base::WrapUnique(new FastPairDataEncryptorImpl(std::move(private_key)));
+  std::move(on_get_instance_callback).Run(std::move(data_encryptor));
 }
 
 // static
@@ -91,6 +134,10 @@ void FastPairDataEncryptorImpl::Factory::DeviceMetadataRetrieved(
 FastPairDataEncryptorImpl::FastPairDataEncryptorImpl(
     const fast_pair_encryption::KeyPair& key_pair)
     : secret_key_(key_pair.private_key), public_key_(key_pair.public_key) {}
+
+FastPairDataEncryptorImpl::FastPairDataEncryptorImpl(
+    const std::array<uint8_t, kPrivateKeyByteSize>& secret_key)
+    : secret_key_(secret_key) {}
 
 FastPairDataEncryptorImpl::~FastPairDataEncryptorImpl() = default;
 

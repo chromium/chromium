@@ -8,6 +8,7 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
+#include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client_impl.h"
@@ -271,8 +272,10 @@ void FastPairPairer::OnParseDecryptedPasskey(
 }
 
 void FastPairPairer::SendAccountKey() {
-  // No public key indicates that this is a subsequent pairing.
-  if (!fast_pair_data_encryptor_->GetPublicKey()) {
+  // We only send the account key if we're doing an initial or retroactive
+  // pairing.
+  if (device_->protocol != Protocol::kFastPairInitial &&
+      device_->protocol != Protocol::kFastPairRetroactive) {
     return;
   }
 

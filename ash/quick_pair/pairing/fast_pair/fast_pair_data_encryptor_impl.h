@@ -37,12 +37,23 @@ class FastPairDataEncryptorImpl : public FastPairDataEncryptor {
 
    protected:
     virtual ~Factory();
+
     virtual void CreateInstance(
         scoped_refptr<Device> device,
         base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
             on_get_instance_callback) = 0;
 
    private:
+    static void CreateAsyncWithKeyExchange(
+        scoped_refptr<Device> device,
+        base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
+            on_get_instance_callback);
+
+    static void CreateAsyncWithAccountKey(
+        scoped_refptr<Device> device,
+        base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
+            on_get_instance_callback);
+
     static void DeviceMetadataRetrieved(
         scoped_refptr<Device> device,
         base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
@@ -69,7 +80,10 @@ class FastPairDataEncryptorImpl : public FastPairDataEncryptor {
   ~FastPairDataEncryptorImpl() override;
 
  protected:
-  FastPairDataEncryptorImpl(const fast_pair_encryption::KeyPair& key_pair);
+  explicit FastPairDataEncryptorImpl(
+      const fast_pair_encryption::KeyPair& key_pair);
+  explicit FastPairDataEncryptorImpl(
+      const std::array<uint8_t, kPrivateKeyByteSize>& secret_key);
   FastPairDataEncryptorImpl(const FastPairDataEncryptorImpl&) = delete;
   FastPairDataEncryptorImpl& operator=(const FastPairDataEncryptorImpl&) =
       delete;
