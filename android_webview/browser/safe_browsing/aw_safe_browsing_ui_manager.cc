@@ -11,7 +11,6 @@
 
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_blocking_page.h"
-#include "android_webview/browser/safe_browsing/aw_safe_browsing_subresource_helper.h"
 #include "android_webview/common/aw_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -135,7 +134,9 @@ AwSafeBrowsingUIManager::CreateBlockingPageForSubresource(
     content::WebContents* contents,
     const GURL& blocked_url,
     const UnsafeResource& unsafe_resource) {
-  AwSafeBrowsingSubresourceHelper::CreateForWebContents(contents);
+  // The AwWebResourceRequest can't be provided yet, since the navigation hasn't
+  // started. Once it has, it will be provided via
+  // AwSafeBrowsingBlockingPage::CreatedErrorPageNavigation.
   AwSafeBrowsingBlockingPage* blocking_page =
       AwSafeBrowsingBlockingPage::CreateBlockingPage(
           this, contents, blocked_url, unsafe_resource, nullptr);

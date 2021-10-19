@@ -14,6 +14,7 @@
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_context.h"
@@ -277,7 +278,13 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   } else if (entry && !resource.IsMainPageLoadBlocked()) {
     unsafe_url = entry->GetURL();
   }
-  AddUnsafeResource(unsafe_url, resource);
+
+  const bool load_post_commit_error_page = !resource.IsMainPageLoadBlocked() ||
+                                           resource.is_delayed_warning ||
+                                           outermost_contents != web_contents;
+  if (!load_post_commit_error_page) {
+    AddUnsafeResource(unsafe_url, resource);
+  }
   // If the delayed warnings experiment is not enabled, with committed
   // interstitials we just cancel the load from here, the actual interstitial
   // will be shown from the SafeBrowsingNavigationThrottle.
@@ -294,24 +301,25 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
     DCHECK(!resource.is_delayed_warning);
   }
 
-  if (!resource.IsMainPageLoadBlocked() || resource.is_delayed_warning ||
-      outermost_contents != web_contents) {
+  if (load_post_commit_error_page) {
     DCHECK(!IsAllowlisted(resource));
     // For subresource triggered interstitials, we trigger the error page
     // navigation from here since there will be no navigation to intercept
     // in the throttle.
-    //
-    // Blocking pages handle both user interaction, and generation of the
-    // interstitial HTML. In the case of subresources, we need the HTML
-    // content prior to (and in a different process than when) installing the
-    // command handlers. For this reason we create a blocking page here just
-    // to generate the HTML, and immediately delete it.
     std::unique_ptr<BaseBlockingPage> blocking_page =
         base::WrapUnique(CreateBlockingPageForSubresource(
             outermost_contents, unsafe_url, resource));
-    outermost_contents->GetController().LoadPostCommitErrorPage(
-        outermost_contents->GetMainFrame(), unsafe_url,
-        blocking_page->GetHTMLContents(), net::ERR_BLOCKED_BY_CLIENT);
+    base::WeakPtr<content::NavigationHandle> error_page_navigation_handle =
+        outermost_contents->GetController().LoadPostCommitErrorPage(
+            outermost_contents->GetMainFrame(), unsafe_url,
+            blocking_page->GetHTMLContents(), net::ERR_BLOCKED_BY_CLIENT);
+    if (error_page_navigation_handle) {
+      blocking_page->CreatedPostCommitErrorPageNavigation(
+          error_page_navigation_handle.get());
+      security_interstitials::SecurityInterstitialTabHelper::
+          AssociateBlockingPage(error_page_navigation_handle.get(),
+                                std::move(blocking_page));
+    }
   }
 }
 

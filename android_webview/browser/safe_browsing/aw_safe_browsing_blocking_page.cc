@@ -27,6 +27,7 @@
 #include "components/security_interstitials/core/safe_browsing_quiet_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
@@ -137,6 +138,19 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
 }
 
 AwSafeBrowsingBlockingPage::~AwSafeBrowsingBlockingPage() {}
+
+void AwSafeBrowsingBlockingPage::CreatedPostCommitErrorPageNavigation(
+    content::NavigationHandle* error_page_navigation_handle) {
+  DCHECK(!resource_request_);
+  resource_request_ = std::make_unique<AwWebResourceRequest>(
+      error_page_navigation_handle->GetURL().spec(),
+      error_page_navigation_handle->IsPost() ? "POST" : "GET",
+      error_page_navigation_handle->IsInMainFrame(),
+      error_page_navigation_handle->HasUserGesture(),
+      error_page_navigation_handle->GetRequestHeaders());
+  resource_request_->is_renderer_initiated =
+      error_page_navigation_handle->IsRendererInitiated();
+}
 
 void AwSafeBrowsingBlockingPage::FinishThreatDetails(
     const base::TimeDelta& delay,

@@ -174,8 +174,6 @@ source_set("browser") {
     "safe_browsing/aw_safe_browsing_blocking_page.h",
     "safe_browsing/aw_safe_browsing_navigation_throttle.cc",
     "safe_browsing/aw_safe_browsing_navigation_throttle.h",
-    "safe_browsing/aw_safe_browsing_subresource_helper.cc",
-    "safe_browsing/aw_safe_browsing_subresource_helper.h",
     "safe_browsing/aw_safe_browsing_ui_manager.cc",
     "safe_browsing/aw_safe_browsing_ui_manager.h",
     "safe_browsing/aw_url_checker_delegate_impl.cc",
