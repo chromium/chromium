@@ -53,7 +53,6 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler,
   void UpdateCurrentPageActionButtonState() override;
   void ShowUI() override;
   void CloseUI() override;
-  void GetThemeColors(GetThemeColorsCallback callback) override;
 
   // ReadingListModelObserver:
   void ReadingListModelLoaded(const ReadingListModel* model) override {}

@@ -16,7 +16,6 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/color/color_id.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace content {
@@ -40,7 +39,6 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
         gfx::Point point,
         std::unique_ptr<ui::MenuModel> menu_model) {}
     virtual void HideCustomContextMenu() {}
-    virtual SkColor GetColorProviderColor(ui::ColorId id);
     virtual void ResizeDueToAutoResize(content::WebContents* source,
                                        const gfx::Size& new_size) {}
     virtual bool HandleKeyboardEvent(
@@ -79,7 +77,6 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   void ShowContextMenu(gfx::Point point,
                        std::unique_ptr<ui::MenuModel> menu_model) override;
   void HideContextMenu() override;
-  SkColor GetColorProviderColor(ui::ColorId id) override;
 
   // Reloads the WebContents hosting the WebUI.
   virtual void ReloadWebContents() = 0;
