@@ -58,6 +58,24 @@ constexpr uint32_t kNumberOfLowEntropyHashValues = 64;
 // Contains all special symbols considered for password-generation.
 constexpr char kSpecialSymbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
+// Helper function that assigns |field_types[field_name]=type| and also sets
+// |field_name_collision| if |field_types[field_name]| is already set.
+// TODO(crbug/1260336): The function is needed to only detect a
+// field name collision and report that in a metric. Once the bug is fixed, the
+// metric becomes obsolete and the function can be inlined.
+void SetFieldType(const std::u16string& field_name,
+                  const ServerFieldType type,
+                  FieldTypeMap& field_types,
+                  bool& field_name_collision) {
+  std::pair<FieldTypeMap::iterator, bool> it = field_types.insert(
+      std::pair<std::u16string, ServerFieldType>(field_name, type));
+  if (!it.second) {
+    field_name_collision = true;
+    // To preserve the old behavior, overwrite the type.
+    it.first->second = type;
+  }
+}
+
 // Sets autofill types of password and new password fields in |field_types|.
 // |password_type| (the autofill type of new password field) should be equal to
 // NEW_PASSWORD, PROBABLY_NEW_PASSWORD or NOT_NEW_PASSWORD. These values
@@ -65,7 +83,8 @@ constexpr char kSpecialSymbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 // declined to update password respectively.
 void SetFieldLabelsOnUpdate(const ServerFieldType password_type,
                             const PasswordForm& submitted_form,
-                            FieldTypeMap* field_types) {
+                            FieldTypeMap& field_types,
+                            bool& field_name_collision) {
   DCHECK(password_type == autofill::NEW_PASSWORD ||
          password_type == autofill::PROBABLY_NEW_PASSWORD ||
          password_type == autofill::NOT_NEW_PASSWORD)
@@ -73,24 +92,30 @@ void SetFieldLabelsOnUpdate(const ServerFieldType password_type,
   if (submitted_form.new_password_element.empty())
     return;
 
-  (*field_types)[submitted_form.password_element] = autofill::PASSWORD;
-  (*field_types)[submitted_form.new_password_element] = password_type;
+  SetFieldType(submitted_form.password_element, autofill::PASSWORD, field_types,
+               field_name_collision);
+  SetFieldType(submitted_form.new_password_element, password_type, field_types,
+               field_name_collision);
 }
 
 // Sets the autofill type of the password field stored in |submitted_form| to
 // |password_type| in |field_types| map.
 void SetFieldLabelsOnSave(const ServerFieldType password_type,
                           const PasswordForm& form,
-                          FieldTypeMap* field_types) {
+                          FieldTypeMap& field_types,
+                          bool& field_name_collision) {
   DCHECK(password_type == autofill::PASSWORD ||
          password_type == autofill::ACCOUNT_CREATION_PASSWORD ||
          password_type == autofill::NOT_ACCOUNT_CREATION_PASSWORD)
       << password_type;
 
-  if (!form.new_password_element.empty())
-    (*field_types)[form.new_password_element] = password_type;
-  else if (!form.password_element.empty())
-    (*field_types)[form.password_element] = password_type;
+  if (!form.new_password_element.empty()) {
+    SetFieldType(form.new_password_element, password_type, field_types,
+                 field_name_collision);
+  } else if (!form.password_element.empty()) {
+    SetFieldType(form.password_element, password_type, field_types,
+                 field_name_collision);
+  }
 }
 
 // Label username and password fields with autofill types in |form_structure|
@@ -98,9 +123,12 @@ void SetFieldLabelsOnSave(const ServerFieldType password_type,
 // also adds the types to |available_field_types|. For fields of |USERNAME|
 // type, a vote type must exist.
 void LabelFields(const FieldTypeMap& field_types,
+                 const bool field_name_collision,
                  const VoteTypeMap& vote_types,
                  FormStructure* form_structure,
                  ServerFieldTypeSet* available_field_types) {
+  UMA_HISTOGRAM_BOOLEAN("PasswordManager.FieldNameCollisionInVotes",
+                        field_name_collision);
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     AutofillField* field = form_structure->field(i);
 
@@ -356,6 +384,9 @@ bool VotesUploader::UploadPasswordVote(
   ServerFieldTypeSet available_field_types;
   // A map from field names to field types.
   FieldTypeMap field_types;
+  // Used to detect whether the vote is corrupted because of duplicate field
+  // names.
+  bool field_name_collision = false;
   auto username_vote_type = AutofillUploadContents::Field::NO_INFORMATION;
   if (autofill_type != autofill::USERNAME) {
     if (has_autofill_vote) {
@@ -366,16 +397,19 @@ bool VotesUploader::UploadPasswordVote(
       if (is_update) {
         if (form_to_upload.new_password_element.empty())
           return false;
-        SetFieldLabelsOnUpdate(autofill_type, form_to_upload, &field_types);
+        SetFieldLabelsOnUpdate(autofill_type, form_to_upload, field_types,
+                               field_name_collision);
       } else {  // Saving.
-        SetFieldLabelsOnSave(autofill_type, form_to_upload, &field_types);
+        SetFieldLabelsOnSave(autofill_type, form_to_upload, field_types,
+                             field_name_collision);
       }
       if (autofill_type != autofill::ACCOUNT_CREATION_PASSWORD) {
         // If |autofill_type| == autofill::ACCOUNT_CREATION_PASSWORD, Chrome
         // will upload a vote for another form: the one that the credential was
         // saved on.
-        field_types[submitted_form.confirmation_password_element] =
-            autofill::CONFIRMATION_PASSWORD;
+        SetFieldType(submitted_form.confirmation_password_element,
+                     autofill::CONFIRMATION_PASSWORD, field_types,
+                     field_name_collision);
         form_structure.set_passwords_were_revealed(
             has_passwords_revealed_vote_);
       }
@@ -390,7 +424,8 @@ bool VotesUploader::UploadPasswordVote(
       if (generation_popup_was_shown_)
         AddGeneratedVote(&form_structure);
       if (username_change_state_ == UsernameChangeState::kChangedToKnownValue) {
-        field_types[form_to_upload.username_element] = autofill::USERNAME;
+        SetFieldType(form_to_upload.username_element, autofill::USERNAME,
+                     field_types, field_name_collision);
         username_vote_type = AutofillUploadContents::Field::USERNAME_EDITED;
       }
     } else {  // User reuses credentials.
@@ -398,7 +433,8 @@ bool VotesUploader::UploadPasswordVote(
       // username.
       if (!submitted_form.username_value.empty()) {
         DCHECK(submitted_form.username_value == form_to_upload.username_value);
-        field_types[form_to_upload.username_element] = autofill::USERNAME;
+        SetFieldType(form_to_upload.username_element, autofill::USERNAME,
+                     field_types, field_name_collision);
         username_vote_type = AutofillUploadContents::Field::CREDENTIALS_REUSED;
       }
     }
@@ -413,12 +449,14 @@ bool VotesUploader::UploadPasswordVote(
                                      &form_structure);
     }
   } else {  // User overwrites username.
-    field_types[form_to_upload.username_element] = autofill::USERNAME;
-    field_types[form_to_upload.password_element] =
-        autofill::ACCOUNT_CREATION_PASSWORD;
+    SetFieldType(form_to_upload.username_element, autofill::USERNAME,
+                 field_types, field_name_collision);
+    SetFieldType(form_to_upload.password_element,
+                 autofill::ACCOUNT_CREATION_PASSWORD, field_types,
+                 field_name_collision);
     username_vote_type = AutofillUploadContents::Field::USERNAME_OVERWRITTEN;
   }
-  LabelFields(field_types,
+  LabelFields(field_types, field_name_collision,
               {{form_to_upload.username_element, username_vote_type}},
               &form_structure, &available_field_types);
 
@@ -467,18 +505,22 @@ void VotesUploader::UploadFirstLoginVotes(
   FormStructure form_structure(form_to_upload.form_data);
   form_structure.set_submission_event(form_to_upload.submission_event);
 
-  FieldTypeMap field_types = {
-      {form_to_upload.username_element, autofill::USERNAME}};
+  FieldTypeMap field_types;
+  bool field_name_collision = false;
+  SetFieldType(form_to_upload.username_element, autofill::USERNAME, field_types,
+               field_name_collision);
   VoteTypeMap vote_types = {{form_to_upload.username_element,
                              AutofillUploadContents::Field::FIRST_USE}};
   if (!password_overridden_) {
-    field_types[form_to_upload.password_element] = autofill::PASSWORD;
+    SetFieldType(form_to_upload.password_element, autofill::PASSWORD,
+                 field_types, field_name_collision);
     vote_types[form_to_upload.password_element] =
         AutofillUploadContents::Field::FIRST_USE;
   }
 
   ServerFieldTypeSet available_field_types;
-  LabelFields(field_types, vote_types, &form_structure, &available_field_types);
+  LabelFields(field_types, field_name_collision, vote_types, &form_structure,
+              &available_field_types);
   SetKnownValueFlag(pending_credentials, best_matches, &form_structure);
 
   // Force uploading as these events are relatively rare and we want to make

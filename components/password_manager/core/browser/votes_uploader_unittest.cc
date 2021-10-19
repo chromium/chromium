@@ -12,6 +12,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -986,6 +987,55 @@ TEST_F(VotesUploaderTest, DontUploadSingleUsernameWhenAlreadyUploaded) {
       .Times(0);
 
   votes_uploader.MaybeSendSingleUsernameVote();
+}
+
+// Tests FieldNameCollisionInVotes metric reports "true" when multiple fields in
+// the form to be uploaded have the same name.
+TEST_F(VotesUploaderTest, FieldNameCollisionInVotes) {
+  VotesUploader votes_uploader(&client_, false);
+  std::u16string password_element = GetFieldNameByIndex(5);
+  form_to_upload_.password_element = password_element;
+  submitted_form_.password_element = password_element;
+  form_to_upload_.confirmation_password_element = password_element;
+  submitted_form_.confirmation_password_element = password_element;
+  ServerFieldTypeSet expected_field_types = {CONFIRMATION_PASSWORD};
+
+  EXPECT_CALL(mock_autofill_download_manager_,
+              StartUploadRequest(_, false, expected_field_types,
+                                 login_form_signature_, true,
+                                 /* pref_service= */ nullptr));
+  base::HistogramTester histogram_tester;
+
+  EXPECT_TRUE(votes_uploader.UploadPasswordVote(
+      form_to_upload_, submitted_form_, PASSWORD, login_form_signature_));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FieldNameCollisionInVotes", true, 1);
+}
+
+// Tests FieldNameCollisionInVotes metric reports "false" when all fields in the
+// form to be uploaded have different names.
+TEST_F(VotesUploaderTest, NoFieldNameCollisionInVotes) {
+  VotesUploader votes_uploader(&client_, false);
+  std::u16string password_element = GetFieldNameByIndex(5);
+  std::u16string confirmation_element = GetFieldNameByIndex(12);
+  form_to_upload_.password_element = password_element;
+  submitted_form_.password_element = password_element;
+  form_to_upload_.confirmation_password_element = confirmation_element;
+  submitted_form_.confirmation_password_element = confirmation_element;
+  ServerFieldTypeSet expected_field_types = {PASSWORD, CONFIRMATION_PASSWORD};
+
+  EXPECT_CALL(mock_autofill_download_manager_,
+              StartUploadRequest(_, false, expected_field_types,
+                                 login_form_signature_, true,
+                                 /* pref_service= */ nullptr));
+  base::HistogramTester histogram_tester;
+
+  EXPECT_TRUE(votes_uploader.UploadPasswordVote(
+      form_to_upload_, submitted_form_, PASSWORD, login_form_signature_));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FieldNameCollisionInVotes", false, 1);
 }
 
 }  // namespace password_manager
