@@ -4660,21 +4660,6 @@
             ]
         }
     ],
-    "MICEWebSignIn": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MICEWebSignIn"
-                    ]
-                }
-            ]
-        }
-    ],
     "ManagedSigninPopup": [
         {
             "platforms": [
