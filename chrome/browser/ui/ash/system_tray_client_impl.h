@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_SYSTEM_TRAY_CLIENT_IMPL_H_
 
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/public/cpp/update_types.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/system/system_clock_observer.h"
@@ -25,7 +26,6 @@ class Profile;
 
 // Handles method calls delegated back to chrome from ash. Also notifies ash of
 // relevant state changes in chrome.
-// TODO: Consider renaming this to SystemTrayClientImpl.
 class SystemTrayClientImpl : public ash::SystemTrayClient,
                              public ash::system::SystemClockObserver,
                              public policy::CloudPolicyStore::Observer,
@@ -43,9 +43,8 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   // Specifies if notification is recommended or required by administrator and
   // triggers the notification to be shown with the given body and title.
   // Only applies to OS updates.
-  void SetUpdateNotificationState(ash::NotificationStyle style,
-                                  const std::u16string& notification_title,
-                                  const std::u16string& notification_body);
+  void SetRelaunchNotificationState(
+      const ash::RelaunchNotificationState& relaunch_notification_state);
 
   // Resets update state to hide notification.
   void ResetUpdateState();
@@ -125,14 +124,8 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   // The system tray model in ash.
   ash::SystemTray* const system_tray_;
 
-  // Tells update notification style, for example required by administrator.
-  ash::NotificationStyle update_notification_style_;
-
-  // Update notification title to be overwritten.
-  std::u16string update_notification_title_;
-
-  // Update notification body to be overwritten.
-  std::u16string update_notification_body_;
+  // Information on whether the update is recommended or required.
+  ash::RelaunchNotificationState relaunch_notification_state_;
 
   // Avoid sending ash an empty enterprise domain manager at startup and
   // suppress duplicate IPCs during the session.

@@ -5,10 +5,7 @@
 #ifndef ASH_SYSTEM_MODEL_UPDATE_MODEL_H_
 #define ASH_SYSTEM_MODEL_UPDATE_MODEL_H_
 
-#include <string>
-
 #include "ash/public/cpp/update_types.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -33,7 +30,7 @@ class UpdateModel {
   void AddObserver(UpdateObserver* observer);
   void RemoveObserver(UpdateObserver* observer);
 
-  // Store the state that a software update is available. The state persists
+  // Stores the state that a software update is available. The state persists
   // until reboot. Based on |severity|, |factory_reset_required| and |rollback|,
   // the observer views can indicate the severity of the update to users by
   // changing the icon, color, and tooltip.
@@ -42,13 +39,10 @@ class UpdateModel {
                           bool rollback,
                           UpdateType update_type);
 
-  // Store the state of the notification according to the RelaunchNotification
+  // Stores the state of the notification according to the RelaunchNotification
   // policy. State persists until reboot or another call to this function.
-  // The |notification_body| changes the text of the notification, as it
-  // contains a countdown until the required reboot.
-  void SetUpdateNotificationState(NotificationStyle style,
-                                  const std::u16string& notification_title,
-                                  const std::u16string& notification_body);
+  void SetRelaunchNotificationState(
+      const RelaunchNotificationState& relaunch_notification_state);
 
   // If |available| is true, a software update is available but user's agreement
   // is required as current connection is cellular. If |available| is false, the
@@ -65,11 +59,9 @@ class UpdateModel {
   bool factory_reset_required() const { return factory_reset_required_; }
   bool rollback() const { return rollback_; }
   UpdateType update_type() const { return update_type_; }
-  NotificationStyle notification_style() const { return notification_style_; }
-  const std::u16string& notification_title() const {
-    return notification_title_;
+  const RelaunchNotificationState& relaunch_notification_state() const {
+    return relaunch_notification_state_;
   }
-  const std::u16string& notification_body() const { return notification_body_; }
   bool update_over_cellular_available() const {
     return update_over_cellular_available_;
   }
@@ -82,11 +74,7 @@ class UpdateModel {
   bool factory_reset_required_ = false;
   bool rollback_ = false;
   UpdateType update_type_ = UpdateType::kSystem;
-  NotificationStyle notification_style_ = NotificationStyle::kDefault;
-  // Custom title for an OS update, usually due to RelaunchNotification policy.
-  std::u16string notification_title_;
-  // Custom body for an OS update, usually due to RelaunchNotification policy.
-  std::u16string notification_body_;
+  RelaunchNotificationState relaunch_notification_state_;
   bool update_over_cellular_available_ = false;
 
   base::ObserverList<UpdateObserver>::Unchecked observers_;

@@ -16,6 +16,7 @@ class ActiveNetworkIcon;
 class ClockModel;
 class EnterpriseDomainModel;
 class LocaleModel;
+struct RelaunchNotificationState;
 class SessionLengthLimitModel;
 class SystemTrayClient;
 class TracingModel;
@@ -49,10 +50,8 @@ class SystemTrayModel : public SystemTray {
                       bool factory_reset_required,
                       bool rollback,
                       UpdateType update_type) override;
-  void SetUpdateNotificationState(
-      NotificationStyle style,
-      const std::u16string& notification_title,
-      const std::u16string& notification_body) override;
+  void SetRelaunchNotificationState(
+      const RelaunchNotificationState& relaunch_notification_state) override;
   void ResetUpdateState() override;
   void SetUpdateOverCellularAvailableIconVisible(bool visible) override;
   void ShowVolumeSliderBubble() override;

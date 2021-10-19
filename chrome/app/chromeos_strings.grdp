@@ -341,45 +341,6 @@
     Verifying confirmation code...
   </message>
 
-  <!-- Upgrade notifications -->
-  <message name="IDS_RELAUNCH_REQUIRED_TITLE_DAYS" desc="The title of a dialog that tells users the device must be restarted within two or more days.">
-    {0, plural,
-      =1 {Update device within a day}
-      other {Update device within # days}}
-  </message>
-  <message name="IDS_RELAUNCH_REQUIRED_TITLE_HOURS" desc="The title of a dialog that tells users the device must be restarted within one or more hours.">
-    {0, plural,
-      =1 {Update device within an hour}
-      other {Update device within # hours}}
-  </message>
-  <message name="IDS_RELAUNCH_REQUIRED_TITLE_MINUTES" desc="The title of a dialog that tells users the device must be restarted within one or more minutes.">
-    {0, plural,
-      =1 {Update device within 1 minute}
-      other {Update device within # minutes}}
-  </message>
-  <message name="IDS_RELAUNCH_REQUIRED_TITLE_SECONDS" desc="The title of a dialog that tells users the device must be restarted within some number of seconds.">
-    {0, plural,
-      =0 {Update device now}
-      =1 {Update device within 1 second}
-      other {Update device within # seconds}}
-  </message>
-  <message name="IDS_RELAUNCH_REQUIRED_BODY" desc="The body text of a dialog that tells users the device must be restarted. MANAGER can be a domain or an email address.">
-    <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to update this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> before the deadline.
-  </message>
-
-  <message name="IDS_RELAUNCH_RECOMMENDED_TITLE" desc="The title of a dialog that tells users that a device restart is recommended for an update.">
-    Update available
-  </message>
-  <message name="IDS_RELAUNCH_RECOMMENDED_OVERDUE_TITLE" desc="The title of a dialog that tells users that a device restart had been recommended for an update.">
-    Update overdue
-  </message>
-  <message name="IDS_RELAUNCH_RECOMMENDED_BODY" desc="The body text of a dialog that tells users the device must be restarted. MANAGER can be a domain or an email address.">
-    <ph name="MANAGER">$1<ex>google.com</ex></ph> recommends that you update this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
-  </message>
-  <message name="IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY" desc="The body text of a dialog that tells users the device must be restarted right now. MANAGER can be a domain or an email address.">
-    <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to update this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> immediately.
-  </message>
-
   <!-- Chrome OS Strings -->
   <message name="IDS_ECHO_CONSENT_DIALOG_TEXT" desc="Dialog text shown when user is asked to give consent to proceed with redeeming an ECHO offer.">
     <ph name="SERVICE_NAME">$1<ex>Google Drive</ex></ph> wants to check if you are using an eligible Chrome OS device.

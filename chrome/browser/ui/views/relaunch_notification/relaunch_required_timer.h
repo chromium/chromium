@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_REQUIRED_TIMER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 
@@ -31,9 +30,9 @@ class RelaunchRequiredTimer {
   // title accordingly.
   void SetDeadline(base::Time deadline);
 
-  // Returns current notification's title, composed depending on how much time
-  // is left until the deadline.
-  std::u16string GetWindowTitle() const;
+  // Returns how much time is left until the deadline rounded to the nearest
+  // day/hour/minute/second.
+  base::TimeDelta GetRoundedDeadlineDelta() const;
 
  private:
   // Schedules a timer to fire the next time the title must be updated.

@@ -4,6 +4,7 @@
 
 #include "ash/system/model/system_tray_model.h"
 
+#include "ash/public/cpp/update_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/message_center_controller.h"
@@ -92,12 +93,9 @@ void SystemTrayModel::ShowUpdateIcon(UpdateSeverity severity,
                                      update_type);
 }
 
-void SystemTrayModel::SetUpdateNotificationState(
-    NotificationStyle style,
-    const std::u16string& notification_title,
-    const std::u16string& notification_body) {
-  update_model()->SetUpdateNotificationState(style, notification_title,
-                                             notification_body);
+void SystemTrayModel::SetRelaunchNotificationState(
+    const RelaunchNotificationState& relaunch_notification_state) {
+  update_model()->SetRelaunchNotificationState(relaunch_notification_state);
 }
 
 void SystemTrayModel::ResetUpdateState() {
