@@ -81,6 +81,7 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void GetHistograms(GetHistogramsCallback callback) override {}
   void GetActiveTabUrl(GetActiveTabUrlCallback callback) override {}
   void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override {}
+  void UpdateKeepAlive(bool enabled) override {}
 
  private:
   mojo::Receiver<mojom::BrowserService> receiver_;

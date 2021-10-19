@@ -571,8 +571,8 @@ enum CreationResult {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 29
-// Next id: 29
+// Next version: 30
+// Next id: 30
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -744,6 +744,29 @@ struct BrowserInitParams {
   // When this flag is set, lacros will publish chrome apps to the app service.
   [MinVersion=28]
   bool publish_chrome_apps@28;
+
+  [Stable, Extensible]
+  enum InitialKeepAlive {
+    // ash-chrome is too old so the keep-alive settings in ash-chrome is not
+    // available.
+    [Default] kUnknown,
+
+    // On the browser launching, keep-alive is disabled so lacros-chrome
+    // process can be terminated at browser's preferred timing.
+    kDisabled,
+
+    // On the browser launching, keep-alive is enabled so lacros-chrome process
+    // is expected to be kept, specifically, e.g. even if all windows are
+    // closed.
+    kEnabled,
+  };
+
+  // Initial keep-alive value. If ash-chrome is too old (M96 or earlier)
+  // the default value kUnknown should be set.
+  // This is initial value, and so the value can be updated later via
+  // BrowserService::UpdateKeepAlive().
+  [MinVersion=29]
+  InitialKeepAlive initial_keep_alive@29;
 };
 
 // BrowserService defines the APIs that live in a browser (such as
@@ -753,8 +776,8 @@ struct BrowserInitParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 14.
-// Next ID: 12
+// Next MinVersion: 15.
+// Next ID: 13
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -834,6 +857,14 @@ interface BrowserService {
   // object.
   [MinVersion=9]
   UpdateDeviceAccountPolicy@6(array<uint8> policy);
+
+  // Updates keep-alive instance to maintain the browser lifetime.
+  // Note: there is always timing issue. If the browser is in the process of
+  // termination, this may not work. To fully implement keep-alive, ash-chrome
+  // may need to relaunch Lacros soon after the termination.
+  // Introduced in M97.
+  [MinVersion=14]
+  UpdateKeepAlive@12(bool enabled);
 };
 
 // TODO(crbug.com/1180712): move to its own file. Currently due to circular

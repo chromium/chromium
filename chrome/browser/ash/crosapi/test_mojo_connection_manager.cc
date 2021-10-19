@@ -89,7 +89,8 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
   base::ScopedFD startup_fd = browser_util::CreateStartupData(
       environment_provider_,
       browser_util::InitialBrowserAction(
-          mojom::InitialBrowserAction::kUseStartupPreference));
+          mojom::InitialBrowserAction::kUseStartupPreference),
+      /*is_keep_alive_enabled=*/false);
   if (!startup_fd.is_valid()) {
     LOG(ERROR) << "Failed to create startup data";
     return;

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -31,6 +32,8 @@
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/platform_window/platform_window.h"
@@ -58,14 +61,40 @@ std::string GetCompressedHistograms() {
 
 BrowserServiceLacros::BrowserServiceLacros() {
   auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service->IsAvailable<crosapi::mojom::BrowserServiceHost>())
-    return;
+  const auto* init_params = lacros_service->init_params();
 
-  lacros_service->GetRemote<crosapi::mojom::BrowserServiceHost>()
-      ->AddBrowserService(receiver_.BindNewPipeAndPassRemoteWithVersion());
+  if (init_params->initial_keep_alive ==
+      crosapi::mojom::BrowserInitParams::InitialKeepAlive::kUnknown) {
+    // ash-chrome is too old, so for backward compatibility fallback to the old
+    // way, which is "if launched with kDoNotOpenWindow, run the lacro process
+    // on background, and reset the state when a Browser instance is created."
+    // Thus, if a user creates a browser window then close it, Lacros is
+    // terminated, but ash-chrome has responsibility to re-launch it soon.
+    if (init_params->initial_browser_action ==
+        crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow) {
+      keep_alive_ = std::make_unique<ScopedKeepAlive>(
+          KeepAliveOrigin::BROWSER_PROCESS_LACROS,
+          KeepAliveRestartOption::ENABLED);
+      BrowserList::AddObserver(this);
+    }
+  } else {
+    if (init_params->initial_keep_alive ==
+        crosapi::mojom::BrowserInitParams::InitialKeepAlive::kEnabled) {
+      keep_alive_ = std::make_unique<ScopedKeepAlive>(
+          KeepAliveOrigin::BROWSER_PROCESS_LACROS,
+          KeepAliveRestartOption::ENABLED);
+    }
+  }
+
+  if (lacros_service->IsAvailable<crosapi::mojom::BrowserServiceHost>()) {
+    lacros_service->GetRemote<crosapi::mojom::BrowserServiceHost>()
+        ->AddBrowserService(receiver_.BindNewPipeAndPassRemoteWithVersion());
+  }
 }
 
-BrowserServiceLacros::~BrowserServiceLacros() = default;
+BrowserServiceLacros::~BrowserServiceLacros() {
+  BrowserList::RemoveObserver(this);
+}
 
 void BrowserServiceLacros::REMOVED_0(REMOVED_0Callback callback) {
   NOTIMPLEMENTED();
@@ -255,6 +284,19 @@ void BrowserServiceLacros::UpdateDeviceAccountPolicy(
   chromeos::LacrosService::Get()->NotifyPolicyUpdated(policy);
 }
 
+void BrowserServiceLacros::UpdateKeepAlive(bool enabled) {
+  if (enabled == static_cast<bool>(keep_alive_))
+    return;
+
+  if (enabled) {
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::BROWSER_PROCESS_LACROS,
+        KeepAliveRestartOption::ENABLED);
+  } else {
+    keep_alive_.reset();
+  }
+}
+
 void BrowserServiceLacros::OnSystemInformationReady(
     GetFeedbackDataCallback callback,
     std::unique_ptr<system_logs::SystemLogsResponse> sys_info) {
@@ -285,4 +327,11 @@ void BrowserServiceLacros::OnGetCompressedHistograms(
     const std::string& compressed_histograms) {
   DCHECK(!callback.is_null());
   std::move(callback).Run(compressed_histograms);
+}
+
+void BrowserServiceLacros::OnBrowserAdded(Browser* broser) {
+  // Note: this happens only when ash-chrome is too old.
+  // Please see the comment in the ctor for the detail.
+  BrowserList::RemoveObserver(this);
+  keep_alive_.reset();
 }

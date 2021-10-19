@@ -5,18 +5,22 @@
 #ifndef CHROME_BROWSER_LACROS_BROWSER_SERVICE_LACROS_H_
 #define CHROME_BROWSER_LACROS_BROWSER_SERVICE_LACROS_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class GURL;
+class ScopedKeepAlive;
 
 // BrowserSerivce's Lacros implementation.
 // This handles the requests from ash-chrome.
-class BrowserServiceLacros : public crosapi::mojom::BrowserService {
+class BrowserServiceLacros : public crosapi::mojom::BrowserService,
+                             public BrowserListObserver {
  public:
   BrowserServiceLacros();
   BrowserServiceLacros(const BrowserServiceLacros&) = delete;
@@ -40,6 +44,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService {
   void GetHistograms(GetHistogramsCallback callback) override;
   void GetActiveTabUrl(GetActiveTabUrlCallback callback) override;
   void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override;
+  void UpdateKeepAlive(bool enabled) override;
 
  private:
   void OnSystemInformationReady(
@@ -48,6 +53,13 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService {
 
   void OnGetCompressedHistograms(GetHistogramsCallback callback,
                                  const std::string& compressed_histogram);
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
+
+  // Keeps the Lacros browser alive in the background. This is destroyed once
+  // any browser window is opened.
+  std::unique_ptr<ScopedKeepAlive> keep_alive_;
 
   mojo::Receiver<crosapi::mojom::BrowserService> receiver_{this};
   base::WeakPtrFactory<BrowserServiceLacros> weak_ptr_factory_{this};

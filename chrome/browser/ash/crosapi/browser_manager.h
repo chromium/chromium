@@ -355,9 +355,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // STOPPED, launch Lacros.
   void LaunchForKeepAliveIfNecessary();
 
-  // If no features want to keep Lacros alive, and it's running in the
-  // background, then stop running Lacros.
-  void UnlauchForKeepAlive();
+  // Notifies browser to update its keep-alive status.
+  // Disabling keep-alive here may shut down the browser in background.
+  // (i.e., if there's no browser window opened, it may be shut down).
+  void UpdateKeepAliveInBrowserIfNecessary(bool enabled);
 
   State state_ = State::NOT_INITIALIZED;
 

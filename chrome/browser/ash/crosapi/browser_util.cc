@@ -716,7 +716,8 @@ base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
 
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider,
-    InitialBrowserAction initial_browser_action) {
+    InitialBrowserAction initial_browser_action,
+    bool is_keep_alive_enabled) {
   auto params = mojom::BrowserInitParams::New();
   params->crosapi_version = crosapi::mojom::Crosapi::Version_;
   params->deprecated_ash_metrics_enabled_has_value = true;
@@ -820,6 +821,12 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 
   params->standalone_browser_is_only_browser = !IsAshWebBrowserEnabled();
   params->publish_chrome_apps = browser_util::IsLacrosChromeAppsEnabled();
+
+  // Keep-alive mojom API is now used by the current ash-chrome.
+  params->initial_keep_alive =
+      is_keep_alive_enabled
+          ? crosapi::mojom::BrowserInitParams::InitialKeepAlive::kEnabled
+          : crosapi::mojom::BrowserInitParams::InitialKeepAlive::kDisabled;
   return params;
 }
 
@@ -846,9 +853,11 @@ InitialBrowserAction& InitialBrowserAction::operator=(InitialBrowserAction&&) =
 InitialBrowserAction::~InitialBrowserAction() = default;
 
 base::ScopedFD CreateStartupData(EnvironmentProvider* environment_provider,
-                                 InitialBrowserAction initial_browser_action) {
+                                 InitialBrowserAction initial_browser_action,
+                                 bool is_keep_alive_enabled) {
   auto data = GetBrowserInitParams(environment_provider,
-                                   std::move(initial_browser_action));
+                                   std::move(initial_browser_action),
+                                   is_keep_alive_enabled);
   std::vector<uint8_t> serialized =
       crosapi::mojom::BrowserInitParams::Serialize(&data);
 
