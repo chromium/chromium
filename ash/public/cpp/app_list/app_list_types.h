@@ -39,17 +39,19 @@ ASH_PUBLIC_EXPORT extern const char kCrostiniFolderId[];
 
 // App list config types supported by AppListConfig.
 enum class AppListConfigType {
-  // Config used on large screens when app_list_features::ScalableAppList
-  // feature is enabled.
+  // Legacy configs, chosen based on the size of the screen.
+  // Used when ProductivityLauncher is disabled.
   kLarge,
-
-  // Config used on medium sized screens when app_list_features::ScalableAppList
-  // feature is enabled.
   kMedium,
+  kSmall,
 
-  // Config used on small screens when app_list_features::ScalableAppList
-  // feature is enabled.
-  kSmall
+  // Config for tablet mode on typical size screens.
+  // Used when ProductivityLauncher is enabled.
+  kRegular,
+
+  // Config for clamshell mode. Also used for tablet mode on small screens.
+  // Used when ProductivityLauncher is enabled.
+  kDense,
 };
 
 // A structure holding the common information which is sent between ash and,

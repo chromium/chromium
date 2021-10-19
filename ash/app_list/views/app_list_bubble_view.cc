@@ -53,7 +53,7 @@ constexpr int kFolderViewInset = 16;
 
 AppListConfig* GetAppListConfig() {
   return AppListConfigProvider::Get().GetConfigForType(
-      AppListConfigType::kMedium, /*can_create=*/true);
+      AppListConfigType::kDense, /*can_create=*/true);
 }
 
 // A simplified horizontal separator that uses a solid color layer for painting.

@@ -758,8 +758,6 @@ void AppListItemView::Layout() {
 
   gfx::Rect title_bounds = GetTitleBoundsForTargetViewBounds(
       app_list_config_, rect, title_->GetPreferredSize(), icon_scale_);
-  if (!grid_delegate_->IsInFolder())
-    title_bounds.Inset(title_shadow_margins_);
   title_->SetBoundsRect(title_bounds);
 
   if (notification_indicator_)

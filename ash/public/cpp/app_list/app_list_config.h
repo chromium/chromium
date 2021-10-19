@@ -220,10 +220,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   explicit AppListConfig(AppListConfigType type);
 
   // Constructor for scaled app list configuration.
-  // Used only if kScalableAppList feature is not enabled, in which case the
-  // app list configuration for small screens is created by scaling down
-  // AppListConfigType::kShared configuration.
-  //
   // |scale_x| - The scale at which apps grid tile should be scaled
   // horizontally.
   // |scale_y| - The scale at which apps grid tile should be scaled
@@ -345,13 +341,18 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // The font for app title in app list.
   const gfx::FontList app_title_font_;
 
-  // The folder image bubble radius.
+  // The radius of the circle in a folder icon (i.e. the gray circle underneath
+  // the mini app icons).
   const int folder_bubble_radius_;
 
-  // The icon dimension of folder.
+  // The size of the folder icon in its usual state (e.g. in the apps grid, not
+  // when the user is dragging an item over it).
   const int folder_icon_dimension_;
 
-  // The unclipped icon dimension of folder.
+  // The size of the folder icon in its expanded state (e.g. when the user drags
+  // an item on top of the folder). In the non-expanded state, the folder is
+  // actually drawn at this size, then clipped to `folder_icon_dimensions_`.
+  // When animating to the expanded state, the code just animates the clipping.
   const int folder_unclipped_icon_dimension_;
 
   // The corner radius of folder icon.

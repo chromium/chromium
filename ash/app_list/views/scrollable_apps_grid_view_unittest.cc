@@ -201,7 +201,7 @@ TEST_F(ScrollableAppsGridViewTest, DragApp) {
   StartDragOnItemViewAt(0);
 
   // Drag to the right of the second item.
-  gfx::Size tile_size = apps_grid_view_->GetTileViewSize();
+  gfx::Size tile_size = apps_grid_view_->GetTotalTileSize();
   auto* generator = GetEventGenerator();
   generator->MoveMouseBy(tile_size.width() * 2, 0);
   generator->ReleaseLeftButton();
@@ -308,7 +308,7 @@ TEST_F(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {
   generator->MoveMouseTo(item->GetBoundsInScreen().CenterPoint());
   generator->PressLeftButton();
   item->FireMouseDragTimerForTest();
-  gfx::Size tile_size = apps_grid_view->GetTileViewSize();
+  gfx::Size tile_size = apps_grid_view->GetTotalTileSize();
   generator->MoveMouseBy(tile_size.width() * 2, 0);
   generator->ReleaseLeftButton();
 
@@ -468,7 +468,7 @@ TEST_F(ScrollableAppsGridViewTest, DragItemIntoEmptySpaceWillReorderToEnd) {
 
   // Drag and drop the first item straight down below the first row.
   StartDragOnItemViewAt(0);
-  gfx::Size tile_size = apps_grid_view_->GetTileViewSize();
+  gfx::Size tile_size = apps_grid_view_->GetTotalTileSize();
   auto* generator = GetEventGenerator();
   generator->MoveMouseBy(0, tile_size.height());
   generator->ReleaseLeftButton();

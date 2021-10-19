@@ -621,7 +621,7 @@ class AppsGridViewNonBubbleTest : public AppsGridViewTest {
   AppsGridViewNonBubbleTest() { is_productivity_launcher_enabled_ = false; }
 };
 
-// Test suite for clamshell mode, parameterized by feature AppListBubble.
+// Test suite for clamshell mode, parameterized by feature ProductivityLauncher.
 class AppsGridViewClamshellTest : public AppsGridViewTest,
                                   public testing::WithParamInterface<bool> {
  public:
@@ -640,7 +640,7 @@ class AppsGridViewRTLTest : public AppsGridViewTest,
 INSTANTIATE_TEST_SUITE_P(All, AppsGridViewRTLTest, testing::Bool());
 
 // Tests suite for app list items drag and drop tests. These tests are
-// parameterized by RTL locale and feature AppListBubble.
+// parameterized by RTL locale and feature ProductivityLauncher.
 class AppsGridViewDragTest
     : public AppsGridViewTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
@@ -715,6 +715,25 @@ class AppsGridViewTabletTest
 INSTANTIATE_TEST_SUITE_P(All,
                          AppsGridViewTabletTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
+
+// This does not test the font name or weight because ash_unittests returns
+// different font lists than chrome (e.g. "DejaVu Sans" instead of "Roboto").
+TEST_P(AppsGridViewClamshellTest, AppListItemViewFont) {
+  model_->PopulateApps(1);
+  AppListItemView* item_view = GetItemViewInTopLevelGrid(0);
+  EXPECT_EQ(12, item_view->title()->font_list().GetFontSize());
+}
+
+// This does not test the font name or weight because ash_unittests returns
+// different font lists than chrome (e.g. "DejaVu Sans" instead of "Roboto").
+TEST_P(AppsGridViewTabletTest, AppListItemViewFont) {
+  model_->PopulateApps(1);
+  AppListItemView* item_view = GetItemViewInTopLevelGrid(0);
+  if (is_productivity_launcher_enabled_)
+    EXPECT_EQ(13, item_view->title()->font_list().GetFontSize());
+  else
+    EXPECT_EQ(12, item_view->title()->font_list().GetFontSize());
+}
 
 TEST_P(AppsGridViewClamshellTest, RemoveSelectedLastApp) {
   const int kTotalItems = 2;

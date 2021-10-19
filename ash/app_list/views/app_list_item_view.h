@@ -391,9 +391,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // A timer to defer showing drag UI when the app item is touch pressed.
   base::OneShotTimer touch_drag_timer_;
 
-  // The shadow margins added to the app list item title.
-  gfx::Insets title_shadow_margins_;
-
   // The bitmap image for this app list item.
   gfx::ImageSkia icon_image_;
 
