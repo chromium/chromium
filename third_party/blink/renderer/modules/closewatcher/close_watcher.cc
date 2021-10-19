@@ -21,15 +21,16 @@ const char CloseWatcher::WatcherStack::kSupplementName[] =
 CloseWatcher::WatcherStack& CloseWatcher::WatcherStack::From(
     LocalDOMWindow& window) {
   auto* stack = Supplement<LocalDOMWindow>::From<WatcherStack>(window);
-  if (!stack) {
-    stack = MakeGarbageCollected<WatcherStack>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, stack);
-  }
+
+  // Must have been installed by InstallUserActivationObserver.
+  DCHECK(stack);
   return *stack;
 }
 
 CloseWatcher::WatcherStack::WatcherStack(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), receiver_(this, &window) {}
+    : Supplement<LocalDOMWindow>(window), receiver_(this, &window) {
+  window.RegisterUserActivationObserver(this);
+}
 
 void CloseWatcher::WatcherStack::Add(CloseWatcher* watcher) {
   if (watchers_.IsEmpty()) {
@@ -65,6 +66,16 @@ void CloseWatcher::WatcherStack::Invoke(ExecutionContext*, Event* e) {
     Signal();
 }
 
+bool CloseWatcher::WatcherStack::CheckForCreation() {
+  if (HasActiveWatcher() && !LocalFrame::ConsumeTransientUserActivation(
+                                GetSupplementable()->GetFrame())) {
+    return false;
+  }
+
+  ConsumeCloseWatcherCancelability();
+  return true;
+}
+
 CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
                                    ExceptionState& exception_state) {
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
@@ -76,8 +87,8 @@ CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
   }
 
   WatcherStack& stack = WatcherStack::From(*window);
-  if (stack.HasActiveWatcher() &&
-      !LocalFrame::HasTransientUserActivation(window->GetFrame())) {
+
+  if (!stack.CheckForCreation()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Creating more than one CloseWatcher at a time requires a user "
@@ -94,19 +105,28 @@ CloseWatcher::CloseWatcher(LocalDOMWindow* window)
     : ExecutionContextClient(window) {}
 
 void CloseWatcher::signalClosed() {
-  if (IsClosed() || dispatching_cancel_)
+  if (IsClosed() || dispatching_cancel_ || !DomWindow())
     return;
 
-  // TODO(domenic): only dispatch cancel if there's been user activation.
-  Event& cancel_event = *Event::CreateCancelable(event_type_names::kCancel);
-  {
-    base::AutoReset<bool> scoped_committing(&dispatching_cancel_, true);
-    DispatchEvent(cancel_event);
-  }
-  if (cancel_event.defaultPrevented()) {
-    state_ = State::kModal;
+  WatcherStack& stack = WatcherStack::From(*DomWindow());
+
+  if (stack.CanCloseWatcherFireCancel()) {
+    stack.ConsumeCloseWatcherCancelability();
+    Event& cancel_event = *Event::CreateCancelable(event_type_names::kCancel);
+    {
+      base::AutoReset<bool> scoped_committing(&dispatching_cancel_, true);
+      DispatchEvent(cancel_event);
+    }
+    if (cancel_event.defaultPrevented())
+      return;
   }
   Close();
+}
+
+// static
+void CloseWatcher::InstallUserActivationObserver(LocalDOMWindow& window) {
+  Supplement<LocalDOMWindow>::ProvideTo(
+      window, MakeGarbageCollected<WatcherStack>(window));
 }
 
 void CloseWatcher::Close() {

@@ -2316,8 +2316,9 @@ void LocalFrame::NotifyUserActivation(
     LocalFrame* frame,
     mojom::blink::UserActivationNotificationType notification_type,
     bool need_browser_verification) {
-  if (frame)
+  if (frame) {
     frame->NotifyUserActivation(notification_type, need_browser_verification);
+  }
 }
 
 // static
@@ -2345,6 +2346,7 @@ void LocalFrame::NotifyUserActivation(
                                                       notification_type);
   Client()->NotifyUserActivation();
   NotifyUserActivationInFrameTree(notification_type);
+  DomWindow()->DidReceiveUserActivation();
 }
 
 bool LocalFrame::ConsumeTransientUserActivation(
