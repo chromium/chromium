@@ -5,11 +5,15 @@
 import("//build/config/android/rules.gni")
 
 generate_jni("content_settings_jni_headers") {
-  sources = [ "java/src/org/chromium/components/content_settings/CookieControlsBridge.java" ]
+  sources = [
+    "java/src/org/chromium/components/content_settings/ContentSettingsObserver.java",
+    "java/src/org/chromium/components/content_settings/CookieControlsBridge.java",
+  ]
 }
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/content_settings/ContentSettingsObserver.java",
     "java/src/org/chromium/components/content_settings/CookieControlsBridge.java",
     "java/src/org/chromium/components/content_settings/CookieControlsObserver.java",
   ]
@@ -24,6 +28,8 @@ android_library("java") {
 
 source_set("android") {
   sources = [
+    "content_settings_observer_android.cc",
+    "content_settings_observer_android.h",
     "cookie_controls_bridge.cc",
     "cookie_controls_bridge.h",
   ]
@@ -39,6 +45,7 @@ source_set("android") {
 }
 
 android_library("content_settings_enums_java") {
+  sources = [ "java/src/org/chromium/components/content_settings/ContentSettingsTypeSet.java" ]
   srcjar_deps = [ ":content_settings_enums_javagen" ]
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
