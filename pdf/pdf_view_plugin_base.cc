@@ -637,6 +637,9 @@ void PdfViewPluginBase::SaveToBuffer(const std::string& token) {
   message.SetStringKey("token", token);
   message.SetStringKey("fileName", GetFileNameForSaveFromUrl(url_));
 
+  // Expose `edit_mode_` state for integration testing.
+  message.SetBoolKey("editModeForTesting", edit_mode_);
+
   base::Value data_to_save;
   if (edit_mode_) {
     base::Value::BlobStorage data = engine()->GetSaveData();

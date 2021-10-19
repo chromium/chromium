@@ -356,11 +356,13 @@ base::Value CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType type,
   return message;
 }
 
-base::Value CreateExpectedSaveToBufferResponse(const std::string& token) {
+base::Value CreateExpectedSaveToBufferResponse(const std::string& token,
+                                               bool edit_mode) {
   base::Value expected_response(base::Value::Type::DICTIONARY);
   expected_response.SetStringKey("type", "saveData");
   expected_response.SetStringKey("token", token);
   expected_response.SetStringKey("fileName", kDefaultDownloadFileName);
+  expected_response.SetBoolKey("editModeForTesting", edit_mode);
   expected_response.SetKey(
       "dataToSave", base::Value(base::make_span(TestPDFiumEngine::kSaveData)));
   return expected_response;
@@ -796,7 +798,8 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInNonEditMode) {
       CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kAnnotation,
                                kSaveAnnotInNonEditModeToken);
   base::Value expected_response =
-      CreateExpectedSaveToBufferResponse(kSaveAnnotInNonEditModeToken);
+      CreateExpectedSaveToBufferResponse(kSaveAnnotInNonEditModeToken,
+                                         /*edit_mode=*/false);
 
   EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
@@ -815,7 +818,8 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInEditMode) {
       CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kAnnotation,
                                kSaveAnnotInEditModeToken);
   base::Value expected_response =
-      CreateExpectedSaveToBufferResponse(kSaveAnnotInEditModeToken);
+      CreateExpectedSaveToBufferResponse(kSaveAnnotInEditModeToken,
+                                         /*edit_mode=*/true);
 
   EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
@@ -877,7 +881,8 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInNonEditMode) {
       CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kEdited,
                                kSaveEditedInNonEditModeToken);
   base::Value expected_response =
-      CreateExpectedSaveToBufferResponse(kSaveEditedInNonEditModeToken);
+      CreateExpectedSaveToBufferResponse(kSaveEditedInNonEditModeToken,
+                                         /*edit_mode=*/false);
 
   EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
   fake_plugin_.HandleMessage(message);
@@ -895,7 +900,8 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInEditMode) {
   base::Value message = CreateSaveRequestMessage(
       PdfViewPluginBase::SaveRequestType::kEdited, kSaveEditedInEditModeToken);
   base::Value expected_response =
-      CreateExpectedSaveToBufferResponse(kSaveEditedInEditModeToken);
+      CreateExpectedSaveToBufferResponse(kSaveEditedInEditModeToken,
+                                         /*edit_mode=*/true);
 
   EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
   fake_plugin_.HandleMessage(message);
