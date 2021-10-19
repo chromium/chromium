@@ -88469,6 +88469,9 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
+        "args": [
+          "--coverage-continuous-mode=1"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -88869,6 +88872,9 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
+        "args": [
+          "--coverage-continuous-mode=1"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -89402,6 +89408,9 @@
         "test_id_prefix": "ninja://storage:storage_unittests/"
       },
       {
+        "args": [
+          "--coverage-continuous-mode=1"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],

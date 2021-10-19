@@ -751,6 +751,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux_trusty_rel.browser_tests.filter',
         ],
       },
+      'mac-code-coverage': {
+        'args': [
+          '--coverage-continuous-mode=1',
+        ],
+      },
       'mac11-arm64-rel-tests': {
         'ci_only': False,  # https://crbug.com/1234525
       },
@@ -1338,6 +1343,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.content_browsertests.filter',
         ],
       },
+      'mac-code-coverage': {
+        'args': [
+          '--coverage-continuous-mode=1',
+        ],
+      },
       # https://crbug.com/1255940
       'mac-rel-swarming': {
         'swarming': {
@@ -1871,6 +1881,11 @@
       'linux-lacros-tester-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
+        ],
+      },
+      'mac-code-coverage': {
+        'args': [
+          '--coverage-continuous-mode=1',
         ],
       },
     },
@@ -2760,6 +2775,11 @@
       'linux-lacros-tester-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.sync_integration_tests.filter',
+        ],
+      },
+      'mac-code-coverage': {
+        'args': [
+          '--coverage-continuous-mode=1',
         ],
       },
     },
