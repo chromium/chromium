@@ -113,7 +113,7 @@ export class SettingsToggleButtonElement extends
   }
 
   private getAriaLabel_(): string {
-    return this.label || this.ariaLabel;
+    return this.ariaLabel || this.label;
   }
 
   private onDisableOrPrefChange_() {

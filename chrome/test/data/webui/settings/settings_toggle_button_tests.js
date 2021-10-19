@@ -255,6 +255,32 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
   });
 
+  test('set label text should update aria-label of toggle', () => {
+    const testLabelText = 'test label text';
+    testElement.setAttribute('label', testLabelText);
+
+    const crToggle = testElement.shadowRoot.querySelector('#control');
+    assertTrue(!!crToggle);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
+
+    const testLabelTextAlt = 'test label text alt';
+    testElement.setAttribute('label', testLabelTextAlt);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelTextAlt);
+  });
+
+  test('set aria-label attribute should override aria-label of toggle', () => {
+    const testLabelText = 'test label text';
+    testElement.setAttribute('label', testLabelText);
+
+    const crToggle = testElement.shadowRoot.querySelector('#control');
+    assertTrue(!!crToggle);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
+
+    const testAriaLabel = 'test aria label';
+    testElement.setAttribute('aria-label', testAriaLabel);
+    assertEquals(crToggle.getAttribute('aria-label'), testAriaLabel);
+  });
+
   // <if expr="chromeos">
   test('click on sub label link should not toggle the button', () => {
     let subLabelTextWithLink =
