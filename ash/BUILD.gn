@@ -1952,6 +1952,7 @@ component("ash") {
     "//ash/assistant/ui:constants",
     "//ash/assistant/util",
     "//ash/components/audio",
+    "//ash/components/fwupd",
     "//ash/components/pcie_peripheral",
     "//ash/components/quick_answers",
     "//ash/components/quick_answers/public/cpp:prefs",
