@@ -7,17 +7,27 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/camera_roll_menu_model.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "chromeos/components/phonehub/camera_roll_item.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
+namespace chromeos {
+namespace phonehub {
+class UserActionRecorder;
+}  // namespace phonehub
+}  // namespace chromeos
+
 namespace ash {
 
 class ASH_EXPORT CameraRollThumbnail : public views::MenuButton {
  public:
-  CameraRollThumbnail(const chromeos::phonehub::CameraRollItem& item);
+  CameraRollThumbnail(
+      const int index,
+      const chromeos::phonehub::CameraRollItem& item,
+      chromeos::phonehub::UserActionRecorder* user_action_recorder);
   ~CameraRollThumbnail() override;
   CameraRollThumbnail(CameraRollThumbnail&) = delete;
   CameraRollThumbnail operator=(CameraRollThumbnail&) = delete;
@@ -29,13 +39,17 @@ class ASH_EXPORT CameraRollThumbnail : public views::MenuButton {
  private:
   void ButtonPressed();
   ui::SimpleMenuModel* GetMenuModel();
+  void DownloadRequested();
+  phone_hub_metrics::CameraRollMediaType GetMediaType();
 
-  const std::string key_;
+  const int index_;
+  const chromeos::phonehub::proto::CameraRollItemMetadata metadata_;
   const bool video_type_;
   const gfx::ImageSkia image_;
 
   std::unique_ptr<CameraRollMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
+  chromeos::phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
 };
 
 }  // namespace ash

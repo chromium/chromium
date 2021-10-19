@@ -40,6 +40,7 @@ TEST_F(UserActionRecorderImplTest, RecordActions) {
   recorder_.RecordBrowserTabOpened();
   recorder_.RecordNotificationDismissAttempt();
   recorder_.RecordNotificationReplyAttempt();
+  recorder_.RecordCameraRollDownloadAttempt();
 
   // Each of the actions should have been completed
   histogram_tester_.ExpectBucketCount(
@@ -66,6 +67,10 @@ TEST_F(UserActionRecorderImplTest, RecordActions) {
   histogram_tester_.ExpectBucketCount(
       kCompletedActionMetricName,
       UserActionRecorderImpl::UserAction::kNotificationReply,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      kCompletedActionMetricName,
+      UserActionRecorderImpl::UserAction::kCameraRollDownload,
       /*expected_count=*/1);
 }
 

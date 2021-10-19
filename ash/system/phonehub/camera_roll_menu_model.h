@@ -13,8 +13,8 @@ namespace ash {
 class ASH_EXPORT CameraRollMenuModel : public ui::SimpleMenuModel,
                                        public ui::SimpleMenuModel::Delegate {
  public:
-  explicit CameraRollMenuModel(const std::string key);
-
+  explicit CameraRollMenuModel(const base::RepeatingClosure download_callback);
+  ~CameraRollMenuModel() override;
   CameraRollMenuModel(const CameraRollMenuModel&) = delete;
   CameraRollMenuModel& operator=(const CameraRollMenuModel&) = delete;
 
@@ -26,7 +26,7 @@ class ASH_EXPORT CameraRollMenuModel : public ui::SimpleMenuModel,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  const std::string key_;
+  const base::RepeatingClosure download_callback_;
 };
 
 }  // namespace ash

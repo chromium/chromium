@@ -67,8 +67,10 @@ class HeaderView : public views::Label {
 }  // namespace
 
 CameraRollView::CameraRollView(
-    chromeos::phonehub::CameraRollManager* camera_roll_manager)
-    : camera_roll_manager_(camera_roll_manager) {
+    chromeos::phonehub::CameraRollManager* camera_roll_manager,
+    chromeos::phonehub::UserActionRecorder* user_action_recorder)
+    : camera_roll_manager_(camera_roll_manager),
+      user_action_recorder_(user_action_recorder) {
   SetID(PhoneHubViewID::kCameraRollView);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -169,8 +171,10 @@ void CameraRollView::Update() {
     return;
   }
 
+  int index = 0;
   for (const chromeos::phonehub::CameraRollItem& item : camera_roll_items) {
-    items_view_->AddCameraRollItem(new CameraRollThumbnail(item));
+    items_view_->AddCameraRollItem(
+        new CameraRollThumbnail(index++, item, user_action_recorder_));
   }
 
   PreferredSizeChanged();

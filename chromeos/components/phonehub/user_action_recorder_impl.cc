@@ -48,6 +48,10 @@ void UserActionRecorderImpl::RecordNotificationReplyAttempt() {
   HandleUserAction(UserAction::kNotificationReply);
 }
 
+void UserActionRecorderImpl::RecordCameraRollDownloadAttempt() {
+  HandleUserAction(UserAction::kCameraRollDownload);
+}
+
 void UserActionRecorderImpl::HandleUserAction(UserAction action) {
   base::UmaHistogramEnumeration("PhoneHub.CompletedUserAction", action);
 }

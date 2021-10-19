@@ -28,6 +28,9 @@ class FakeUserActionRecorder : public UserActionRecorder {
     return num_notification_dismissals_;
   }
   size_t num_notification_replies() const { return num_notification_replies_; }
+  size_t num_camera_roll_downloads() const {
+    return num_camera_roll_downloads_;
+  }
 
  private:
   // UserActionRecorder:
@@ -38,6 +41,7 @@ class FakeUserActionRecorder : public UserActionRecorder {
   void RecordBrowserTabOpened() override;
   void RecordNotificationDismissAttempt() override;
   void RecordNotificationReplyAttempt() override;
+  void RecordCameraRollDownloadAttempt() override;
 
   size_t num_ui_opened_events_ = 0u;
   size_t num_tether_attempts_ = 0u;
@@ -46,6 +50,7 @@ class FakeUserActionRecorder : public UserActionRecorder {
   size_t num_browser_tabs_opened_ = 0u;
   size_t num_notification_dismissals_ = 0u;
   size_t num_notification_replies_ = 0u;
+  size_t num_camera_roll_downloads_ = 0u;
 };
 
 }  // namespace phonehub

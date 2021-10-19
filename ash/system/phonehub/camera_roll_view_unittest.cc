@@ -7,6 +7,7 @@
 #include "ash/test/ash_test_base.h"
 #include "chromeos/components/phonehub/camera_roll_item.h"
 #include "chromeos/components/phonehub/fake_camera_roll_manager.h"
+#include "chromeos/components/phonehub/fake_user_action_recorder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 
@@ -22,8 +23,10 @@ class CameraRollViewTest : public AshTestBase {
     AshTestBase::SetUp();
     fake_camera_roll_manager_ =
         std::make_unique<chromeos::phonehub::FakeCameraRollManager>();
-    camera_roll_view_ =
-        std::make_unique<CameraRollView>(fake_camera_roll_manager_.get());
+    fake_user_action_recorder_ =
+        std::make_unique<chromeos::phonehub::FakeUserActionRecorder>();
+    camera_roll_view_ = std::make_unique<CameraRollView>(
+        fake_camera_roll_manager_.get(), fake_user_action_recorder_.get());
   }
 
   void TearDown() override {
@@ -61,6 +64,8 @@ class CameraRollViewTest : public AshTestBase {
 
  private:
   std::unique_ptr<CameraRollView> camera_roll_view_;
+  std::unique_ptr<chromeos::phonehub::FakeUserActionRecorder>
+      fake_user_action_recorder_;
   std::unique_ptr<chromeos::phonehub::FakeCameraRollManager>
       fake_camera_roll_manager_;
 };

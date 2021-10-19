@@ -37,7 +37,8 @@ class UserActionRecorderImpl : public UserActionRecorder {
     kBrowserTab = 4,
     kNotificationDismissal = 5,
     kNotificationReply = 6,
-    kMaxValue = kNotificationReply,
+    kCameraRollDownload = 7,
+    kMaxValue = kCameraRollDownload,
   };
 
   // UserActionRecorder:
@@ -48,6 +49,7 @@ class UserActionRecorderImpl : public UserActionRecorder {
   void RecordBrowserTabOpened() override;
   void RecordNotificationDismissAttempt() override;
   void RecordNotificationReplyAttempt() override;
+  void RecordCameraRollDownloadAttempt() override;
 
   void HandleUserAction(UserAction action);
 

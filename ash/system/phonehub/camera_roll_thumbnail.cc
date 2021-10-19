@@ -7,6 +7,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
+#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/components/phonehub/user_action_recorder.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -25,12 +27,16 @@ constexpr int kCameraRollThumbnailVideoIconSize = 20;
 }  // namespace
 
 CameraRollThumbnail::CameraRollThumbnail(
-    const chromeos::phonehub::CameraRollItem& item)
+    const int index,
+    const chromeos::phonehub::CameraRollItem& item,
+    chromeos::phonehub::UserActionRecorder* user_action_recorder)
     : views::MenuButton(base::BindRepeating(&CameraRollThumbnail::ButtonPressed,
                                             base::Unretained(this))),
-      key_(item.metadata().key()),
-      video_type_(item.metadata().mime_type().find("video/") == 0),
-      image_(item.thumbnail().AsImageSkia()) {
+      index_(index),
+      metadata_(item.metadata()),
+      video_type_(metadata_.mime_type().find("video/") == 0),
+      image_(item.thumbnail().AsImageSkia()),
+      user_action_recorder_(user_action_recorder) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Get(this)->SetColor(
       AshColorProvider::Get()->GetControlsLayerColor(
@@ -43,6 +49,8 @@ CameraRollThumbnail::CameraRollThumbnail(
                                    kCameraRollThumbnailBorderSize.height())),
       SkIntToScalar(kCameraRollThumbnailBorderRadius),
       SkIntToScalar(kCameraRollThumbnailBorderRadius))));
+
+  phone_hub_metrics::LogCameraRollContentShown(index_, GetMediaType());
 }
 
 CameraRollThumbnail::~CameraRollThumbnail() = default;
@@ -81,6 +89,8 @@ const char* CameraRollThumbnail::GetClassName() const {
 }
 
 void CameraRollThumbnail::ButtonPressed() {
+  phone_hub_metrics::LogCameraRollContentClicked(index_, GetMediaType());
+
   menu_runner_ = std::make_unique<views::MenuRunner>(
       GetMenuModel(), views::MenuRunner::CONTEXT_MENU |
                           views::MenuRunner::FIXED_ANCHOR |
@@ -92,8 +102,20 @@ void CameraRollThumbnail::ButtonPressed() {
 
 ui::SimpleMenuModel* CameraRollThumbnail::GetMenuModel() {
   if (!menu_model_)
-    menu_model_ = std::make_unique<CameraRollMenuModel>(key_);
+    menu_model_ = std::make_unique<CameraRollMenuModel>(base::BindRepeating(
+        &CameraRollThumbnail::DownloadRequested, base::Unretained(this)));
   return menu_model_.get();
+}
+
+void CameraRollThumbnail::DownloadRequested() {
+  PA_LOG(INFO) << "Downloading Camera Roll Item: index=" << index_;
+  user_action_recorder_->RecordCameraRollDownloadAttempt();
+  phone_hub_metrics::LogCameraRollContextMenuDownload(index_, GetMediaType());
+}
+
+phone_hub_metrics::CameraRollMediaType CameraRollThumbnail::GetMediaType() {
+  return video_type_ ? phone_hub_metrics::CameraRollMediaType::kVideo
+                     : phone_hub_metrics::CameraRollMediaType::kPhoto;
 }
 
 }  // namespace ash

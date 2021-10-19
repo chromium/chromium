@@ -40,6 +40,10 @@ class UserActionRecorder {
   // has been attempted.
   virtual void RecordNotificationReplyAttempt() = 0;
 
+  // Records that an attempt to download a camera roll item via Phone Hub has
+  // been attempted.
+  virtual void RecordCameraRollDownloadAttempt() = 0;
+
  protected:
   UserActionRecorder() = default;
 };

@@ -6,7 +6,6 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -18,8 +17,10 @@ constexpr int kCameraRollMenuIconSize = 20;
 
 }  // namespace
 
-CameraRollMenuModel::CameraRollMenuModel(const std::string key)
-    : ui::SimpleMenuModel(this), key_(key) {
+CameraRollMenuModel::CameraRollMenuModel(
+    const base::RepeatingClosure download_callback)
+    : ui::SimpleMenuModel(this),
+      download_callback_(std::move(download_callback)) {
   AddItemWithIcon(COMMAND_DOWNLOAD,
                   l10n_util::GetStringUTF16(
                       IDS_ASH_PHONE_HUB_CAMERA_ROLL_MENU_DOWNLOAD_LABEL),
@@ -28,10 +29,12 @@ CameraRollMenuModel::CameraRollMenuModel(const std::string key)
                       kCameraRollMenuIconSize));
 }
 
+CameraRollMenuModel::~CameraRollMenuModel() {}
+
 void CameraRollMenuModel::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case COMMAND_DOWNLOAD: {
-      PA_LOG(INFO) << "User requests download of Camera Roll Item key=" << key_;
+      download_callback_.Run();
       break;
     }
   }

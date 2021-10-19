@@ -39,5 +39,9 @@ void FakeUserActionRecorder::RecordNotificationReplyAttempt() {
   ++num_notification_replies_;
 }
 
+void FakeUserActionRecorder::RecordCameraRollDownloadAttempt() {
+  ++num_camera_roll_downloads_;
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

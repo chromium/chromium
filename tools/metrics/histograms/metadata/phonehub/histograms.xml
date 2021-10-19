@@ -21,6 +21,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="CameraRollMediaType">
+  <variant name=".Photo" summary="image media types"/>
+  <variant name=".Video" summary="video media types"/>
+</variants>
+
 <histogram name="PhoneHub.Adoption.FeatureStatusChangesSinceLogin"
     enum="PhoneHubFeatureStatus" expires_after="2022-10-31">
   <owner>jonmann@chromium.org</owner>
@@ -37,6 +42,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>The steady state feature status of PhoneHub on user login.</summary>
+</histogram>
+
+<histogram name="PhoneHub.CameraRoll.Content.Clicked{MediaType}"
+    enum="PhoneHubCameraRollContentClicked" expires_after="2022-10-31">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records user clicks on Camera Roll items. Emmited when opening the context
+    menu associated with the item.
+  </summary>
+  <token key="MediaType" variants="CameraRollMediaType"/>
+</histogram>
+
+<histogram name="PhoneHub.CameraRoll.Content.Shown{MediaType}"
+    enum="PhoneHubCameraRollContentShown" expires_after="2022-10-31">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records Camera Roll items shown in PhoneHub. Emmited when displaying or
+    updating thumbnails.
+  </summary>
+  <token key="MediaType" variants="CameraRollMediaType"/>
+</histogram>
+
+<histogram name="PhoneHub.CameraRoll.ContextMenu.Download{MediaType}"
+    enum="PhoneHubCameraRollContextMenuDownload" expires_after="2022-10-31">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records download events in the Camera Roll context menu. Emitted when user
+    clicks on download for a Camera Roll item.
+  </summary>
+  <token key="MediaType" variants="CameraRollMediaType"/>
 </histogram>
 
 <histogram name="PhoneHub.CompletedUserAction" enum="PhoneHubUserAction"
