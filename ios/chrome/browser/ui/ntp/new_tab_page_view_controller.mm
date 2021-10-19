@@ -631,6 +631,13 @@ const CGFloat kOffsetToPinOmnibox = 100;
              scrollPosition <= -kOffsetToPinOmnibox) {
     [self resetFakeOmnibox];
   }
+
+  // Content suggestions header will sometimes glitch when swiping quickly from
+  // inside the feed to the top of the NTP. This check safeguards this action to
+  // make sure the header is properly positioned. (crbug.com/1261458)
+  if (scrollPosition <= -[self adjustedContentSuggestionsHeight]) {
+    [self resetFakeOmnibox];
+  }
 }
 
 // Registers notifications for certain actions on the NTP.
