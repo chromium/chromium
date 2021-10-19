@@ -231,7 +231,7 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   const std::string expected_system_info_section_name = "--- System Info ---";
   const std::string expected_snapshot_time_prefix = "Snapshot Time: ";
   const std::vector<std::string> log_lines = GetCombinedLogContents(log_path);
-  ASSERT_EQ(13u, log_lines.size());
+  ASSERT_EQ(18u, log_lines.size());
   EXPECT_EQ(expected_system_log_header, log_lines[0]);
   EXPECT_EQ(expected_system_info_section_name, log_lines[1]);
   EXPECT_GT(log_lines[2].size(), expected_snapshot_time_prefix.size());
@@ -260,6 +260,13 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   // first_routine_log_line_contents[0] is ignored because it's a timestamp.
   EXPECT_EQ("CpuStress", first_routine_log_line_contents[1]);
   EXPECT_EQ("Started", first_routine_log_line_contents[2]);
+
+  // Networking log contents.
+  EXPECT_EQ("=== Networking ===", log_lines[13]);
+  EXPECT_EQ("--- Network Info ---", log_lines[14]);
+  EXPECT_EQ("--- Test Routines ---", log_lines[15]);
+  EXPECT_EQ("No routines of this type were run in the session.", log_lines[16]);
+  EXPECT_EQ("--- Network Events ---", log_lines[17]);
 }
 
 // Validates that invoking the saveSessionLog Web UI event opens the
