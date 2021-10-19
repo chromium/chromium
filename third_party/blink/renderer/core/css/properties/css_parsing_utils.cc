@@ -3854,6 +3854,12 @@ CSSValue* ConsumeFontWeight(CSSParserTokenRange& range,
   if (token.Id() >= CSSValueID::kNormal && token.Id() <= CSSValueID::kLighter)
     return ConsumeIdent(range);
 
+  if (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
+      token.Id() == CSSValueID::kAuto &&
+      context.Mode() == kCSSFontFaceRuleMode) {
+    return ConsumeIdent(range);
+  }
+
   // Avoid consuming the first zero of font: 0/0; e.g. in the Acid3 test.  In
   // font:0/0; the first zero is the font size, the second is the line height.
   // In font: 100 0/0; we should parse the first 100 as font-weight, the 0

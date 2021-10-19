@@ -734,10 +734,17 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
         case CSSValueID::kBolder:
           break;
         case CSSValueID::kNormal:
-          capabilities.weight = {NormalWeightValue(), NormalWeightValue()};
+          capabilities.weight = {NormalWeightValue(), NormalWeightValue(),
+                                 FontSelectionRange::RangeType::kSetExplicitly};
           break;
         case CSSValueID::kBold:
-          capabilities.weight = {BoldWeightValue(), BoldWeightValue()};
+          capabilities.weight = {BoldWeightValue(), BoldWeightValue(),
+                                 FontSelectionRange::RangeType::kSetExplicitly};
+          break;
+        case CSSValueID::kAuto:
+          DCHECK(RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled());
+          capabilities.weight = {NormalWeightValue(), NormalWeightValue(),
+                                 FontSelectionRange::RangeType::kSetFromAuto};
           break;
         default:
           NOTREACHED();
@@ -761,11 +768,12 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
       // endpoint of the range in order to forbid decreasing ranges."
       if (weight_from->GetFloatValue() < weight_to->GetFloatValue()) {
         capabilities.weight = {FontSelectionValue(weight_from->GetFloatValue()),
-                               FontSelectionValue(weight_to->GetFloatValue())};
+                               FontSelectionValue(weight_to->GetFloatValue()),
+                               FontSelectionRange::RangeType::kSetExplicitly};
       } else {
-        capabilities.weight = {
-            FontSelectionValue(weight_to->GetFloatValue()),
-            FontSelectionValue(weight_from->GetFloatValue())};
+        capabilities.weight = {FontSelectionValue(weight_to->GetFloatValue()),
+                               FontSelectionValue(weight_from->GetFloatValue()),
+                               FontSelectionRange::RangeType::kSetExplicitly};
       }
     } else if (auto* weight_primitive_value =
                    DynamicTo<CSSPrimitiveValue>(weight_.Get())) {
@@ -773,7 +781,8 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
       if (weight_value < 1 || weight_value > 1000)
         return normal_capabilities;
       capabilities.weight = {FontSelectionValue(weight_value),
-                             FontSelectionValue(weight_value)};
+                             FontSelectionValue(weight_value),
+                             FontSelectionRange::RangeType::kSetExplicitly};
     } else {
       NOTREACHED();
       return normal_capabilities;

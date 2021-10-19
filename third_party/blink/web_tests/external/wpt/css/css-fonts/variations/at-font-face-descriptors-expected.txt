@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-Found 84 tests; 64 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 85 tests; 65 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS font-weight(valid): 'normal' keyword: normal
 PASS font-weight(valid): 'bold' keyword: bold
+PASS font-weight(valid): 'auto' keyword: auto
 FAIL font-weight(invalid): 'lighter' keyword iside @font-face: lighter assert_equals: No properties should be set. expected "" but got "lighter"
 FAIL font-weight(invalid): 'lighter' keyword iside @font-face: bolder assert_equals: No properties should be set. expected "" but got "bolder"
 PASS font-weight(invalid): Extra content after keyword: bold a

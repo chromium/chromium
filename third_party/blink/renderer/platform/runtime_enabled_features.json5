@@ -630,6 +630,12 @@
       status: "experimental",
     },
     {
+      // @font-face Font property descriptors auto range.
+      // https://www.w3.org/TR/css-fonts-4/#font-prop-desc
+      name: "CSSFontFaceAutoVariableRange",
+      status: "test",
+    },
+    {
       // @font-face descriptor size-adjust.
       // https://drafts.csswg.org/css-fonts-5/#descdef-font-face-size-adjust
       name: "CSSFontFaceSizeAdjust",

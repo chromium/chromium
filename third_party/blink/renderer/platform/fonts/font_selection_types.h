@@ -28,6 +28,7 @@
 
 #include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
@@ -311,11 +312,18 @@ static inline const FontSelectionValue& UltraExpandedWidthValue() {
 }
 
 struct FontSelectionRange {
-  FontSelectionRange(FontSelectionValue single_value)
+  enum RangeType { kSetFromAuto, kSetExplicitly };
+
+  explicit FontSelectionRange(FontSelectionValue single_value)
       : minimum(single_value), maximum(single_value) {}
 
   FontSelectionRange(FontSelectionValue minimum, FontSelectionValue maximum)
       : minimum(minimum), maximum(maximum) {}
+
+  FontSelectionRange(FontSelectionValue minimum,
+                     FontSelectionValue maximum,
+                     RangeType type)
+      : minimum(minimum), maximum(maximum), type(type) {}
 
   bool operator==(const FontSelectionRange& other) const {
     return minimum == other.minimum && maximum == other.maximum;
@@ -324,6 +332,8 @@ struct FontSelectionRange {
   bool IsValid() const { return minimum <= maximum; }
 
   bool IsRange() const { return maximum > minimum; }
+
+  bool IsRangeSetFromAuto() const { return type == kSetFromAuto; }
 
   void Expand(const FontSelectionRange& other) {
     DCHECK(other.IsValid());
@@ -350,6 +360,10 @@ struct FontSelectionRange {
 
   FontSelectionValue minimum{FontSelectionValue(1)};
   FontSelectionValue maximum{FontSelectionValue(0)};
+
+  RangeType type = RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled()
+                       ? kSetFromAuto
+                       : kSetExplicitly;
 };
 
 struct PLATFORM_EXPORT FontSelectionRequest {
