@@ -7,6 +7,7 @@
 #include <ostream>
 #include <sstream>
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/accelerators.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -133,6 +134,16 @@ bool AssistantStateBase::IsScreenContextAllowed() const {
              chromeos::assistant::AssistantAllowedState::ALLOWED &&
          settings_enabled().value_or(false) &&
          context_enabled().value_or(false);
+}
+
+bool AssistantStateBase::HasAudioInputDevice() const {
+  ash::AudioDeviceList devices;
+  ash::CrasAudioHandler::Get()->GetAudioDevices(&devices);
+  for (const chromeos::AudioDevice& device : devices) {
+    if (device.is_input)
+      return true;
+  }
+  return false;
 }
 
 void AssistantStateBase::InitializeObserver(AssistantStateObserver* observer) {

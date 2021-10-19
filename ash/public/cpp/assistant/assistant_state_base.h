@@ -123,6 +123,8 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
 
   bool IsScreenContextAllowed() const;
 
+  bool HasAudioInputDevice() const;
+
  protected:
   void InitializeObserver(AssistantStateObserver* observer);
 

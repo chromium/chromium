@@ -343,6 +343,7 @@ component("cpp") {
   ]
 
   deps = [
+    "//ash/components/audio",
     "//ash/components/quick_answers/public/cpp:prefs",
     "//ash/constants",
     "//ash/public/cpp/ambient/proto",
