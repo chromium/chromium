@@ -18,7 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/components/projector_app/annotator_tool.h"
-#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"

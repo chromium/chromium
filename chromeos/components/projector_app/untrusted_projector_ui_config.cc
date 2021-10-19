@@ -4,7 +4,7 @@
 
 #include "chromeos/components/projector_app/untrusted_projector_ui_config.h"
 
-#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"
 #include "chromeos/grit/chromeos_projector_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_projector_app_bundle_resources_map.h"
 #include "chromeos/grit/chromeos_projector_app_untrusted_resources.h"

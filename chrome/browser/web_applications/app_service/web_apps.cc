@@ -41,7 +41,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"

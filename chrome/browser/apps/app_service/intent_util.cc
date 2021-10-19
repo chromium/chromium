@@ -36,7 +36,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
 #include "components/arc/mojom/intent_common.mojom.h"

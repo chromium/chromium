@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"
 
 namespace chromeos {
 

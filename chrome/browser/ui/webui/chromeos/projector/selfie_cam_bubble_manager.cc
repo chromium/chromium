@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"
 #include "chromeos/components/projector_app/trusted_projector_ui.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"

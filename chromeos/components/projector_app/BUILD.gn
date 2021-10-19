@@ -12,8 +12,6 @@ static_library("projector_app") {
     "annotator_tool.h",
     "projector_app_client.cc",
     "projector_app_client.h",
-    "projector_app_constants.cc",
-    "projector_app_constants.h",
     "projector_message_handler.cc",
     "projector_message_handler.h",
     "projector_oauth_token_fetcher.cc",
@@ -27,8 +25,7 @@ static_library("projector_app") {
   ]
 
   deps = [
-    "//ash/constants:constants",
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//chromeos/resources:projector_app_bundle_resources",
     "//chromeos/resources:projector_app_trusted_resources",
     "//chromeos/resources:projector_app_untrusted_resources",
@@ -38,6 +35,8 @@ static_library("projector_app") {
     "//ui/resources",
     "//ui/webui",
   ]
+
+  public_deps = [ "//chromeos/components/projector_app/public/cpp" ]
 }
 
 source_set("test_support") {

@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chromeos/components/projector_app/annotator_message_handler.h"
-#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/download_manager.h"

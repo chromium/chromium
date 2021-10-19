@@ -6,8 +6,8 @@
 
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "chromeos/components/projector_app/annotator_message_handler.h"
-#include "chromeos/components/projector_app/projector_app_constants.h"
 #include "chromeos/components/projector_app/projector_message_handler.h"
+#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"
 #include "chromeos/grit/chromeos_projector_app_trusted_resources.h"
 #include "chromeos/grit/chromeos_projector_app_trusted_resources_map.h"
 #include "content/public/browser/web_contents.h"
