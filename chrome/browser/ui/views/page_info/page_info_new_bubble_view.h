@@ -49,6 +49,7 @@ class PageInfoNewBubbleView : public PageInfoBubbleViewBase,
   friend class PageInfoBubbleViewBrowserTest;
   friend class PageInfoBubbleViewDialogBrowserTest;
   friend class test::PageInfoBubbleViewTestApi;
+  friend class TrustSafetySentimentServiceBrowserTest;
 
   // PageInfoBubbleViewBase:
   gfx::Size CalculatePreferredSize() const override;

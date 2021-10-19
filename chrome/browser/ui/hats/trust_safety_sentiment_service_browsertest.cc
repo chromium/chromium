@@ -10,10 +10,12 @@
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_new_bubble_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_info/features.h"
 #include "content/public/test/browser_test.h"
 
 using ::testing::_;
@@ -46,16 +48,21 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
+  PageInfo* GetPresenter() {
+    auto* bubble = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+    return base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)
+               ? static_cast<PageInfoNewBubbleView*>(bubble)->presenter_.get()
+               : static_cast<PageInfoBubbleView*>(bubble)->presenter_.get();
+  }
+
   void ChangePermission() {
     PageInfo::PermissionInfo permission;
     permission.type = ContentSettingsType::NOTIFICATIONS;
     permission.setting = ContentSetting::CONTENT_SETTING_BLOCK;
     permission.default_setting = ContentSetting::CONTENT_SETTING_ASK;
-    permission.source = content_settings::SettingSource::SETTING_SOURCE_USER;
 
-    static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleView::GetPageInfoBubbleForTesting())
-        ->OnPermissionChanged(permission);
+    GetPresenter()->OnSitePermissionChanged(permission.type, permission.setting,
+                                            permission.is_one_time);
   }
 
   void OpenEnoughNewTabs() {

@@ -365,13 +365,6 @@ class SafetyTipPageInfoBubbleViewBrowserTest
     return AreLookalikeWarningsEnabled() ? IsUIShowing() : !IsUIShowing();
   }
 
-  const std::u16string GetPageInfoBubbleViewSummaryText() {
-    auto* label =
-        PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
-            PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
-    return static_cast<views::StyledLabel*>(label)->GetText();
-  }
-
   std::u16string GetSafetyTipSummaryText() {
     auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
     if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
@@ -394,8 +387,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest
     OpenPageInfoBubble(browser);
     ASSERT_EQ(PageInfoBubbleViewBase::GetShownBubbleType(),
               PageInfoBubbleViewBase::BubbleType::BUBBLE_PAGE_INFO);
-    auto* page_info = static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+    auto* page_info = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
     ASSERT_TRUE(page_info);
 
     switch (expected_safety_tip_status) {
@@ -710,8 +702,9 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
                               WindowOpenDisposition::CURRENT_TAB);
   ASSERT_NO_FATAL_FAILURE(CheckNoButtons());
+  auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
   EXPECT_EQ(
-      GetSafetyTipSummaryText(),
+      page_info->GetWindowTitle(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE));
 }
 

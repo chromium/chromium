@@ -47,7 +47,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -56,6 +58,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/page_info/features.h"
 #include "components/permissions/permission_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -2010,6 +2013,17 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
         ->AddDangerousUrl(url, threat_type);
   }
 
+  std::u16string GetSecuritySummaryTextFromPageInfo() {
+    auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+    if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
+      auto* summary_label = page_info->GetViewByID(
+          PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
+      return static_cast<views::StyledLabel*>(summary_label)->GetText();
+    }
+
+    return page_info->GetWindowTitle();
+  }
+
  protected:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Installs an extension and returns its ID.
@@ -2660,7 +2674,7 @@ IN_PROC_BROWSER_TEST_P(
   auto* page_info = OpenPageInfo(browser());
   ASSERT_TRUE(page_info);
   EXPECT_EQ(
-      page_info->GetWindowTitle(),
+      GetSecuritySummaryTextFromPageInfo(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE));
 
   // When the Safety Tip is showing, the security level should be downgraded, as
@@ -2767,7 +2781,7 @@ IN_PROC_BROWSER_TEST_P(
             PageInfoBubbleViewBase::GetShownBubbleType());
   auto* page_info = OpenPageInfo(browser());
   ASSERT_TRUE(page_info);
-  EXPECT_EQ(page_info->GetWindowTitle(),
+  EXPECT_EQ(GetSecuritySummaryTextFromPageInfo(),
             l10n_util::GetStringFUTF16(IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE,
                                        u"google.com"));
 }
