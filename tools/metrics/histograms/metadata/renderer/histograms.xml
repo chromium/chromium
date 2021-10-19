@@ -297,6 +297,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Font.Shaping.DomContentLoaded" units="ms"
+    expires_after="2022-04-18">
+  <owner>tkent@chromium.org</owner>
+  <owner>kojii@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent shaping font before DOMContentLoaded event. This would be
+    helpful for evaluating performance of the &quot;deferred shaping&quot;
+    feature.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Font.Shaping.FCP" units="ms"
+    expires_after="2022-04-18">
+  <owner>tkent@chromium.org</owner>
+  <owner>kojii@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent shaping font before FCP. This would be helpful for evaluating
+    performance of the &quot;deferred shaping&quot; feature.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.Font.SystemFallback.DomContentLoaded" units="ms"
     expires_after="2022-01-31">
   <owner>kojii@chromium.org</owner>

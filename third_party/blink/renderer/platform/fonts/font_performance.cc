@@ -11,6 +11,7 @@ namespace blink {
 base::TimeDelta FontPerformance::primary_font_;
 base::TimeDelta FontPerformance::primary_font_in_style_;
 base::TimeDelta FontPerformance::system_fallback_;
+base::TimeDelta FontPerformance::shaping_;
 unsigned FontPerformance::in_style_ = 0;
 
 const base::Feature kAsyncFontAccess{"AsyncFontAccess",
@@ -24,6 +25,7 @@ void FontPerformance::MarkFirstContentfulPaint() {
                       FontPerformance::PrimaryFontTimeInStyle());
   UMA_HISTOGRAM_TIMES("Renderer.Font.SystemFallback.FCP",
                       FontPerformance::SystemFallbackFontTime());
+  UMA_HISTOGRAM_TIMES("Renderer.Font.Shaping.FCP", shaping_);
 }
 
 // static
@@ -34,6 +36,7 @@ void FontPerformance::MarkDomContentLoaded() {
                       FontPerformance::PrimaryFontTimeInStyle());
   UMA_HISTOGRAM_TIMES("Renderer.Font.SystemFallback.DomContentLoaded",
                       FontPerformance::SystemFallbackFontTime());
+  UMA_HISTOGRAM_TIMES("Renderer.Font.Shaping.DomContentLoaded", shaping_);
 }
 
 }  // namespace blink

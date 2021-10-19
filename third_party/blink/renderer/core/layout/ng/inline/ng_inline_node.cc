@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_attributes_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
@@ -524,8 +525,12 @@ void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
   DCHECK(data);
   CollectInlines(data, previous_data);
   SegmentText(data);
-  ShapeText(data, previous_data ? &previous_data->text_content : nullptr);
-  ShapeTextForFirstLineIfNeeded(data);
+  {
+    base::ElapsedTimer shaping_timer;
+    ShapeText(data, previous_data ? &previous_data->text_content : nullptr);
+    ShapeTextForFirstLineIfNeeded(data);
+    FontPerformance::AddShapingTime(shaping_timer.Elapsed());
+  }
   AssociateItemsWithInlines(data);
   DCHECK_EQ(data, MutableData());
 
@@ -933,8 +938,12 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
   // Relocates |ShapeResult| in |previous_data| after |offset|+|length|
   editor.Run();
   node.SegmentText(data);
-  node.ShapeText(data, &previous_data->text_content, &previous_data->items);
-  node.ShapeTextForFirstLineIfNeeded(data);
+  {
+    base::ElapsedTimer shaping_timer;
+    node.ShapeText(data, &previous_data->text_content, &previous_data->items);
+    node.ShapeTextForFirstLineIfNeeded(data);
+    FontPerformance::AddShapingTime(shaping_timer.Elapsed());
+  }
   node.AssociateItemsWithInlines(data);
   return true;
 }
