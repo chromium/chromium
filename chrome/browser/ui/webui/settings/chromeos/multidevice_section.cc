@@ -13,6 +13,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
@@ -345,6 +346,12 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_LEARN_MORE_LABEL},
       {"multideviceNotificationAccessSetupConnectingTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTING_TITLE},
+      {"multideviceNotificationAccessSetupScreenLockTitle",
+       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_TITLE},
+      {"multideviceNotificationAccessSetupScreenLockSubtitle",
+       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_SUBTITLE},
+      {"multideviceNotificationAccessSetupScreenLockInstruction",
+       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_INSTRUCTION},
       {"multideviceNotificationAccessSetupAwaitingResponseTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE},
       {"multideviceNotificationAccessSetupInstructions",
@@ -512,6 +519,14 @@ void MultiDeviceSection::AddLoadTimeData(
       chromeos::features::IsBluetoothAdvertisementMonitoringEnabled() &&
           base::FeatureList::IsEnabled(
               ::features::kNearbySharingBackgroundScanning));
+  html_source->AddBoolean("isEcheAppEnabled", features::IsEcheSWAEnabled());
+  // TODO(crbug.com/1256644): Query the real value from pref.
+  html_source->AddBoolean("isPhoneScreenLockEnabled", false);
+  const bool is_screen_lock_enabled =
+      SessionControllerClientImpl::CanLockScreen() &&
+      SessionControllerClientImpl::ShouldLockScreenAutomatically();
+  html_source->AddBoolean("isChromeosScreenLockEnabled",
+                          is_screen_lock_enabled);
 }
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {

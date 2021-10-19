@@ -21,6 +21,7 @@ js_type_check("closure_compile_module") {
     ":multidevice_page.m",
     ":multidevice_permissions_setup_dialog.m",
     ":multidevice_radio_button.m",
+    ":multidevice_screen_lock_subpage.m",
     ":multidevice_smartlock_subpage.m",
     ":multidevice_subpage.m",
     ":multidevice_task_continuation_disabled_link.m",
@@ -110,6 +111,7 @@ js_library("multidevice_notification_access_setup_dialog.m") {
   deps = [
     ":multidevice_constants.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":multidevice_notification_access_setup_dialog_module" ]
@@ -246,6 +248,22 @@ js_library("multidevice_wifi_sync_disabled_link.m") {
   extra_deps = [ ":multidevice_wifi_sync_disabled_link_module" ]
 }
 
+js_library("multidevice_screen_lock_subpage.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_screen_lock_subpage.m.js" ]
+  deps = [
+    "../os_people_page:lock_screen_password_prompt_dialog.m",
+    "../os_people_page:lock_state_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
+  ]
+  extra_deps = [ ":multidevice_screen_lock_subpage_module" ]
+  externs_list = [ "$externs_path/chrome_extensions.js" ]
+}
+
 js_library("multidevice_smartlock_item.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_smartlock_item.m.js" ]
   deps = [
@@ -269,6 +287,7 @@ group("polymer3_elements") {
     ":multidevice_page_module",
     ":multidevice_permissions_setup_dialog_module",
     ":multidevice_radio_button_module",
+    ":multidevice_screen_lock_subpage_module",
     ":multidevice_smartlock_item_module",
     ":multidevice_smartlock_subpage_module",
     ":multidevice_subpage_module",
@@ -410,6 +429,15 @@ polymer_modulizer("multidevice_task_continuation_disabled_link") {
 polymer_modulizer("multidevice_wifi_sync_disabled_link") {
   js_file = "multidevice_wifi_sync_disabled_link.js"
   html_file = "multidevice_wifi_sync_disabled_link.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("multidevice_screen_lock_subpage") {
+  js_file = "multidevice_screen_lock_subpage.js"
+  html_file = "multidevice_screen_lock_subpage.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites

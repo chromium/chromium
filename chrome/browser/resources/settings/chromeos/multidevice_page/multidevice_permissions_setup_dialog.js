@@ -13,7 +13,7 @@
  * Numerical values should not be changed because they must stay in sync with
  * notification_access_setup_operation.h, with the exception of
  * CONNECTION_REQUESTED.
- * @enum{number}
+ * @enum {number}
  */
 /* #export */ const NotificationAccessSetupOperationStatus = {
   CONNECTION_REQUESTED: 0,
@@ -23,6 +23,16 @@
   SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE: 4,
   COMPLETED_SUCCESSFULLY: 5,
   NOTIFICATION_ACCESS_PROHIBITED: 6,
+};
+
+/**
+ * Numerical values the flow of dialog set up progress.
+ * @enum {number}
+ */
+/* #export */ const SetupFlowStatus = {
+  INTRO: 0,
+  SET_LOCKSCREEN: 1,
+  WAIT_FOR_PHONE: 2,
 };
 
 Polymer({
@@ -46,13 +56,13 @@ Polymer({
     /** @private */
     title_: {
       type: String,
-      computed: 'getTitle_(setupState_)',
+      computed: 'getTitle_(setupState_, flowState_)',
     },
 
     /** @private */
     description_: {
       type: String,
-      computed: 'getDescription_(setupState_)',
+      computed: 'getDescription_(setupState_, flowState_)',
     },
 
     /** @private */
@@ -95,6 +105,27 @@ Polymer({
       computed: 'computeShouldShowSetupInstructionsSeparately_(' +
           'setupState_)',
       reflectToAttribute: true,
+    },
+
+    /**
+     * @private {?SetupFlowStatus}
+     */
+    flowState_: {
+      type: Number,
+      value: SetupFlowStatus.INTRO,
+    },
+
+    /** @private */
+    isScreenLockEnabled_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** Reflects whether the password dialog is showing. */
+    isPasswordDialogShowing: {
+      type: Boolean,
+      value: false,
+      notify: true,
     },
   },
 
@@ -195,7 +226,25 @@ Polymer({
   },
 
   /** @private */
-  attemptNotificationSetup_() {
+  nextPage_() {
+    const isScreenLockRequired = loadTimeData.getBoolean('isEcheAppEnabled') &&
+        loadTimeData.getBoolean('isPhoneScreenLockEnabled') &&
+        !loadTimeData.getBoolean('isChromeosScreenLockEnabled');
+    switch (this.flowState_) {
+      case SetupFlowStatus.INTRO:
+        if (isScreenLockRequired) {
+          this.flowState_ = SetupFlowStatus.SET_LOCKSCREEN;
+          return;
+        }
+        break;
+      case SetupFlowStatus.SET_LOCKSCREEN:
+        if (!this.isScreenLockEnabled_) {
+          return;
+        }
+        this.isPasswordDialogShowing = false;
+        break;
+    }
+    this.flowState_ = SetupFlowStatus.WAIT_FOR_PHONE;
     this.browserProxy_.attemptNotificationSetup();
     this.setupState_ =
         NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED;
@@ -222,6 +271,9 @@ Polymer({
    * @private
    */
   getTitle_() {
+    if (this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN) {
+      return this.i18n('multideviceNotificationAccessSetupScreenLockTitle');
+    }
     if (this.setupState_ === null) {
       return this.i18n('multideviceNotificationAccessSetupAckTitle');
     }
@@ -255,6 +307,9 @@ Polymer({
    * @private
    */
   getDescription_() {
+    if (this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN) {
+      return '';
+    }
     if (this.setupState_ === null) {
       return this.i18n('multideviceNotificationAccessSetupAckSummary');
     }
@@ -304,5 +359,13 @@ Polymer({
         NotificationAccessSetupOperationStatus.TIMED_OUT_CONNECTING ||
         this.setupState_ ===
         NotificationAccessSetupOperationStatus.CONNECTION_DISCONNECTED;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowScreenLockInstructions_() {
+    return this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN;
   },
 });

@@ -99,6 +99,15 @@ Polymer({
         chromeos.settings.mojom.Setting.kNearbyShareOnOff,
       ]),
     },
+
+    /**
+     * Reflects the password sub-dialog property.
+     * @private
+     */
+    isPasswordDialogShowing_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   listeners: {
@@ -577,6 +586,10 @@ Polymer({
 
   /** @private */
   onHideNotificationSetupAccessDialog_() {
+    // Don't close the main dialog if the password sub-dialog is open.
+    if (this.isPasswordDialogShowing_) {
+      return;
+    }
     this.showNotificationAccessSetupDialog_ = false;
   },
 
