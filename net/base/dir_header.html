@@ -80,13 +80,6 @@ function onHasParentDirectory() {
   link.href = root + "..";
 }
 
-function onListingParsingError() {
-  var box = document.getElementById("listingParsingErrorBox");
-  box.innerHTML = box.innerHTML.replace("LOCATION", encodeURI(document.location)
-      + "?raw");
-  box.style.display = "block";
-}
-
 function sortTable(column) {
   var theader = document.getElementById("theader");
   var oldOrder = theader.cells[column].dataset.order || '1';
@@ -197,13 +190,6 @@ window.addEventListener('DOMContentLoaded', onLoad);
     margin-bottom: 10px;
     padding-bottom: 10px;
   }
-
-  #listingParsingErrorBox {
-    border: 1px solid black;
-    background: #fae691;
-    padding: 10px;
-    display: none;
-  }
 </style>
 
 <title id="title"></title>
@@ -211,8 +197,6 @@ window.addEventListener('DOMContentLoaded', onLoad);
 </head>
 
 <body>
-
-<div id="listingParsingErrorBox">$i18nRaw{listingParsingErrorBoxText}</div>
 
 <h1 id="header">$i18n{header}</h1>
 
