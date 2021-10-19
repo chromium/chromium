@@ -239,6 +239,8 @@ class DesksTemplatesTest : public OverviewTestBase {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     desk_model_ = std::make_unique<desks_storage::LocalDeskDataManager>(
         temp_dir_.GetPath());
+    // Ensure the model is ready for tests.
+    desk_model_->EnsureCacheIsLoaded();
 
     // This will call `AshTestBase::SetUp()`.
     SetUpInternal(std::make_unique<CustomTestShellDelegate>(desk_model_.get()));

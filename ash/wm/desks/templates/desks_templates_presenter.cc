@@ -37,18 +37,21 @@ DesksTemplatesPresenter::DesksTemplatesPresenter(
 
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
-
-  GetAllEntries();
+  if (desk_model->IsReady())
+    GetAllEntries();
 }
 
 DesksTemplatesPresenter::~DesksTemplatesPresenter() = default;
 
 void DesksTemplatesPresenter::GetAllEntries() {
   weak_ptr_factory_.InvalidateWeakPtrs();
-
   GetDeskModel()->GetAllEntries(
       base::BindOnce(&DesksTemplatesPresenter::OnGetAllEntries,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DesksTemplatesPresenter::DeskModelLoaded() {
+  GetAllEntries();
 }
 
 void DesksTemplatesPresenter::OnDeskModelDestroying() {
