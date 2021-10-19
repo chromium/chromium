@@ -48,19 +48,18 @@ void WebGPURecyclableResourceCacheTest::TearDown() {
 }
 
 TEST_F(WebGPURecyclableResourceCacheTest, MRUSameSize) {
-  const IntSize kSize(10, 10);
+  SkImageInfo kInfo =
+      SkImageInfo::Make(10, 10, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
   Vector<CanvasResourceProvider*> returned_resource_providers;
 
-  const CanvasResourceParams params(
-      CanvasColorSpace::kSRGB, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSize, params, /*is_origin_top_left=*/true);
+          kInfo, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_0->resource_provider());
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_1 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSize, params, /*is_origin_top_left=*/true);
+          kInfo, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_1->resource_provider());
 
   // Now release the holders to recycle the resource_providers.
@@ -69,7 +68,7 @@ TEST_F(WebGPURecyclableResourceCacheTest, MRUSameSize) {
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_2 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSize, params, /*is_origin_top_left=*/true);
+          kInfo, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_2->resource_provider());
 
   // GetOrCreateCanvasResource should return the MRU provider, which is
@@ -78,19 +77,20 @@ TEST_F(WebGPURecyclableResourceCacheTest, MRUSameSize) {
 }
 
 TEST_F(WebGPURecyclableResourceCacheTest, DifferentSize) {
-  const IntSize kSizes[] = {{10, 10}, {20, 20}, {30, 30}};
+  const SkImageInfo kInfos[] = {
+      SkImageInfo::Make(10, 10, kRGBA_8888_SkColorType, kPremul_SkAlphaType),
+      SkImageInfo::Make(20, 20, kRGBA_8888_SkColorType, kPremul_SkAlphaType),
+  };
   Vector<CanvasResourceProvider*> returned_resource_providers;
 
-  const CanvasResourceParams params(
-      CanvasColorSpace::kSRGB, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSizes[0], params, /*is_origin_top_left=*/true);
+          kInfos[0], /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_0->resource_provider());
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_1 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSizes[1], params, /*is_origin_top_left=*/true);
+          kInfos[1], /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_1->resource_provider());
 
   // Now release the holders to recycle the resource_providers.
@@ -99,12 +99,12 @@ TEST_F(WebGPURecyclableResourceCacheTest, DifferentSize) {
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_2 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSizes[0], params, /*is_origin_top_left=*/true);
+          kInfos[0], /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_2->resource_provider());
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_3 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSizes[1], params, /*is_origin_top_left=*/true);
+          kInfos[1], /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_3->resource_provider());
 
   // GetOrCreateCanvasResource should return the same resource provider
@@ -114,65 +114,69 @@ TEST_F(WebGPURecyclableResourceCacheTest, DifferentSize) {
 }
 
 TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
-  const IntSize kSizes[] = {{10, 10}, {20, 20}};
   Vector<CanvasResourceProvider*> returned_resource_providers;
 
-  const CanvasResourceParams params(
-      CanvasColorSpace::kSRGB, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+  const auto info_0 =
+      SkImageInfo::Make(10, 10, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSizes[0], params, /*is_origin_top_left=*/true);
+          info_0, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_0->resource_provider());
 
   // Now release the holder to recycle the resource_provider.
   provider_holder_0.reset();
 
   // (1) For different size.
+  const auto info_1 =
+      SkImageInfo::Make(20, 20, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
   std::unique_ptr<RecyclableCanvasResource> provider_holder_1 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSizes[1], params, /*is_origin_top_left=*/true);
+          info_1, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_1->resource_provider());
 
   // Cache miss. A new resource provider should be created.
   EXPECT_NE(returned_resource_providers[0], returned_resource_providers[1]);
 
   // (2) For different is_origin_top_left.
+  const auto info_2 =
+      SkImageInfo::Make(10, 10, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
   std::unique_ptr<RecyclableCanvasResource> provider_holder_2 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSizes[0], params, /*is_origin_top_left=*/false);
+          info_2, /*is_origin_top_left=*/false);
   returned_resource_providers.push_back(provider_holder_2->resource_provider());
 
   // Cache miss. A new resource provider should be created.
   EXPECT_NE(returned_resource_providers[0], returned_resource_providers[2]);
 
-  // (3) For different CanvasResourceParams: color space
-  const CanvasResourceParams params_3(
-      CanvasColorSpace::kRec2020, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+  // (3) For different SkImageInfo: color space
+  const SkImageInfo info_3 =
+      SkImageInfo::Make(10, 10, kRGBA_8888_SkColorType, kPremul_SkAlphaType,
+                        SkColorSpace::MakeSRGBLinear());
   std::unique_ptr<RecyclableCanvasResource> provider_holder_3 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSizes[0], params_3, /*is_origin_top_left=*/true);
+          info_3, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_3->resource_provider());
 
   // Cache miss. A new resource provider should be created.
   EXPECT_NE(returned_resource_providers[0], returned_resource_providers[3]);
 
-  // (4) For different CanvasResourceParams: color type.
-  const CanvasResourceParams params_4(
-      CanvasColorSpace::kSRGB, kRGBA_F16_SkColorType, kPremul_SkAlphaType);
+  // (4) For different SkImageInfo: color type.
+  const SkImageInfo info_4 =
+      SkImageInfo::Make(10, 10, kRGBA_F16_SkColorType, kPremul_SkAlphaType);
   std::unique_ptr<RecyclableCanvasResource> provider_holder_4 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSizes[0], params_4, /*is_origin_top_left=*/true);
+          info_4, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_4->resource_provider());
 
   // Cache miss. A new resource provider should be created.
   EXPECT_NE(returned_resource_providers[0], returned_resource_providers[4]);
 
-  // (5) For different CanvasResourceParams: alpha type.
-  const CanvasResourceParams params_5(
-      CanvasColorSpace::kSRGB, kRGBA_8888_SkColorType, kOpaque_SkAlphaType);
+  // (5) For different SkImageInfo: alpha type.
+  const auto info_5 =
+      SkImageInfo::Make(10, 10, kRGBA_8888_SkColorType, kOpaque_SkAlphaType);
   std::unique_ptr<RecyclableCanvasResource> provider_holder_5 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSizes[0], params_5, /*is_origin_top_left=*/true);
+          info_5, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_5->resource_provider());
 
   // Cache miss. A new resource provider should be created.
@@ -181,7 +185,7 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
   // (6) For the same config again.
   std::unique_ptr<RecyclableCanvasResource> provider_holder_6 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSizes[0], params, /*is_origin_top_left=*/true);
+          info_0, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_6->resource_provider());
 
   // Should get the same provider.
@@ -189,22 +193,22 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
 }
 
 TEST_F(WebGPURecyclableResourceCacheTest, StaleResourcesCleanUp) {
-  const IntSize kSize(10, 10);
+  SkImageInfo kInfo =
+      SkImageInfo::Make(10, 10, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+
   Vector<CanvasResourceProvider*> returned_resource_providers;
   // The loop count for CleanUpResources before the resource gets cleaned up.
   int wait_count =
       recyclable_resource_cache_->GetWaitCountBeforeDeletionForTesting();
 
-  const CanvasResourceParams params(
-      CanvasColorSpace::kSRGB, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSize, params, /*is_origin_top_left=*/true);
+          kInfo, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_0->resource_provider());
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_1 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSize, params, /*is_origin_top_left=*/true);
+          kInfo, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_1->resource_provider());
 
   // Now release the holders to recycle the resource_providers.
@@ -226,17 +230,17 @@ TEST_F(WebGPURecyclableResourceCacheTest, StaleResourcesCleanUp) {
 }
 
 TEST_F(WebGPURecyclableResourceCacheTest, ReuseBeforeCleanUp) {
-  const IntSize kSize(10, 10);
+  SkImageInfo kInfo =
+      SkImageInfo::Make(10, 10, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+
   Vector<CanvasResourceProvider*> returned_resource_providers;
   // The loop count for CleanUpResources before the resource gets cleaned up.
   int wait_count =
       recyclable_resource_cache_->GetWaitCountBeforeDeletionForTesting();
 
-  const CanvasResourceParams params(
-      CanvasColorSpace::kSRGB, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
-          kSize, params, /*is_origin_top_left=*/true);
+          kInfo, /*is_origin_top_left=*/true);
   returned_resource_providers.push_back(provider_holder_0->resource_provider());
 
   // Release the holder to recycle the resource_provider.
@@ -249,7 +253,7 @@ TEST_F(WebGPURecyclableResourceCacheTest, ReuseBeforeCleanUp) {
       // Now request a resource with the same configuration.
       std::unique_ptr<RecyclableCanvasResource> provider_holder_1 =
           recyclable_resource_cache_->GetOrCreateCanvasResource(
-              kSize, params, /*is_origin_top_left=*/true);
+              kInfo, /*is_origin_top_left=*/true);
       returned_resource_providers.push_back(
           provider_holder_1->resource_provider());
 

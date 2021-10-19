@@ -34,13 +34,14 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     return nullptr;
 
   // Keep the same config as source image.
-  const CanvasResourceParams params(
-      color_space, color_type,
-      image->IsPremultiplied() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
+  SkImageInfo info = SkImageInfo::Make(
+      image->Size().width(), image->Size().height(), color_type,
+      image->IsPremultiplied() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
+      CanvasColorSpaceToSkColorSpace(color_space));
 
   // Get a recyclable resource for producing WebGPU-compatible shared images.
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
-      dawn_control_client->GetOrCreateCanvasResource(image->Size(), params,
+      dawn_control_client->GetOrCreateCanvasResource(info,
                                                      image->IsOriginTopLeft());
 
   // Fallback to unstable intermediate resource copy path.

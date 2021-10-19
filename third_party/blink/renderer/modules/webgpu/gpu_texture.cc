@@ -167,14 +167,13 @@ GPUTexture* GPUTexture::FromCanvas(GPUDevice* device,
     return nullptr;
   }
 
-  const CanvasResourceParams params(CanvasColorSpace::kSRGB, kN32_SkColorType,
-                                    kPremul_SkAlphaType);
-
   // Get a recyclable resource for producing WebGPU-compatible shared images.
   // First texel i.e. UV (0, 0) should be mapped to top left of the source.
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       device->GetDawnControlClient()->GetOrCreateCanvasResource(
-          canvas->Size(), params, /*is_origin_top_left=*/true);
+          SkImageInfo::MakeN32Premul(canvas->Size().width(),
+                                     canvas->Size().height()),
+          /*is_origin_top_left=*/true);
   if (!recyclable_canvas_resource) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to create resource provider");

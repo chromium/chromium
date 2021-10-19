@@ -81,12 +81,13 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage() {
   if (swapchain_->Size() == kEmpty && !swapchain_->getCurrentTexture())
     return nullptr;
 
-  CanvasResourceParams resource_params;
-  resource_params.SetSkColorType(viz::ResourceFormatToClosestSkColorType(
-      /*gpu_compositing=*/true, swapchain_->Format()));
-
+  const auto info =
+      SkImageInfo::Make(swapchain_->Size().width(), swapchain_->Size().height(),
+                        viz::ResourceFormatToClosestSkColorType(
+                            /*gpu_compositing=*/true, swapchain_->Format()),
+                        kPremul_SkAlphaType);
   auto resource_provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-      IntSize(swapchain_->Size()), resource_params,
+      info,
       /*is_origin_top_left=*/true);
   if (!resource_provider)
     return nullptr;

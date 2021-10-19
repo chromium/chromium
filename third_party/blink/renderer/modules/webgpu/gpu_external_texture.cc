@@ -56,14 +56,14 @@ GPUExternalTexture* GPUExternalTexture::FromVideo(
       context_provider_wrapper->ContextProvider()->IsContextLost())
     return nullptr;
 
-  const CanvasResourceParams params(CanvasColorSpace::kSRGB, kN32_SkColorType,
-                                    kPremul_SkAlphaType);
   const auto intrinsic_size = IntSize(media_video_frame->natural_size());
 
   // Get a recyclable resource for producing WebGPU-compatible shared images.
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       device->GetDawnControlClient()->GetOrCreateCanvasResource(
-          intrinsic_size, params, /*is_origin_top_left=*/true);
+          SkImageInfo::MakeN32Premul(intrinsic_size.width(),
+                                     intrinsic_size.height()),
+          /*is_origin_top_left=*/true);
   if (!recyclable_canvas_resource) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to import texture from video");

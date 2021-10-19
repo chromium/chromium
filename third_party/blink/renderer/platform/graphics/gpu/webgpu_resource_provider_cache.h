@@ -17,17 +17,14 @@ namespace blink {
 class WebGPURecyclableResourceCache;
 
 struct ResourceCacheKey {
-  ResourceCacheKey(const IntSize& size,
-                   const CanvasResourceParams& params,
-                   bool is_origin_top_left);
+  ResourceCacheKey(const SkImageInfo& info, bool is_origin_top_left);
   ~ResourceCacheKey() = default;
   bool operator==(const ResourceCacheKey& other) const;
   bool operator!=(const ResourceCacheKey& other) const;
 
   // If we support more parameters for CreateWebGPUImageProvider(), we should
   // add them here.
-  const IntSize size;
-  const CanvasResourceParams params;
+  const SkImageInfo info;
   const bool is_origin_top_left;
 };
 
@@ -58,8 +55,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   ~WebGPURecyclableResourceCache() = default;
 
   std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
-      const IntSize& size,
-      const CanvasResourceParams& params,
+      const SkImageInfo& info,
       bool is_origin_top_left);
 
   // When the holder is destroyed, move the resource provider to
