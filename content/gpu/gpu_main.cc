@@ -68,9 +68,9 @@
 #endif
 
 #if defined(OS_ANDROID)
-#include "base/cpu_affinity_posix.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/tracing/common/graphics_memory_dump_provider_android.h"
+#include "content/common/android/cpu_affinity_setter.h"
 #endif
 
 #if defined(OS_WIN)
@@ -236,13 +236,6 @@ int GpuMain(const MainFunctionParams& parameters) {
 
   if (base::FeatureList::IsEnabled(features::kGpuProcessHighPriorityWin))
     ::SetPriorityClass(::GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
-#elif defined(OS_ANDROID)
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          features::kBigLittleScheduling,
-          features::kBigLittleSchedulingGpuMainBigParam, false)) {
-    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
-                                   base::CpuAffinityMode::kBigCoresOnly);
-  }
 #endif
 
   // Installs a base::LogMessageHandlerFunction which ensures messages are sent
@@ -428,6 +421,11 @@ int GpuMain(const MainFunctionParams& parameters) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       tracing::GraphicsMemoryDumpProvider::GetInstance(), "AndroidGraphics",
       nullptr);
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kBigLittleScheduling,
+          features::kBigLittleSchedulingGpuMainBigParam, false)) {
+    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
+  }
 #endif
 
   internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(

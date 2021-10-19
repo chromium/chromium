@@ -155,7 +155,6 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
-#include "base/cpu_affinity_posix.h"
 #include "base/trace_event/cpufreq_monitor_android.h"
 #include "components/tracing/common/graphics_memory_dump_provider_android.h"
 #include "content/browser/android/browser_startup_controller.h"
@@ -164,6 +163,7 @@
 #include "content/browser/android/tracing_controller_android.h"
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
 #include "content/browser/screen_orientation/screen_orientation_delegate_android.h"
+#include "content/common/android/cpu_affinity_setter.h"
 #include "media/base/android/media_drm_bridge_client.h"
 #include "ui/android/screen_android.h"
 #include "ui/display/screen.h"
@@ -515,15 +515,13 @@ int BrowserMainLoop::EarlyInitialization() {
   if (base::GetFieldTrialParamByFeatureAsBool(
           features::kBigLittleScheduling,
           features::kBigLittleSchedulingBrowserMainBiggerParam, false)) {
-    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
-                                   base::HasBiggerCpuCores()
+    SetCpuAffinityForCurrentThread(base::HasBiggerCpuCores()
                                        ? base::CpuAffinityMode::kBiggerCoresOnly
                                        : base::CpuAffinityMode::kBigCoresOnly);
   } else if (base::GetFieldTrialParamByFeatureAsBool(
                  features::kBigLittleScheduling,
                  features::kBigLittleSchedulingBrowserMainBigParam, false)) {
-    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
-                                   base::CpuAffinityMode::kBigCoresOnly);
+    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
   }
 #endif
 

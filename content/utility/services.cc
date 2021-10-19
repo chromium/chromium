@@ -40,7 +40,7 @@
 #include "sandbox/mac/system_services.h"
 #include "sandbox/policy/sandbox.h"
 #elif defined(OS_ANDROID)
-#include "base/cpu_affinity_posix.h"
+#include "content/common/android/cpu_affinity_setter.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -149,8 +149,7 @@ auto RunNetworkService(
   if (base::GetFieldTrialParamByFeatureAsBool(
           features::kBigLittleScheduling,
           features::kBigLittleSchedulingNetworkMainBigParam, false)) {
-    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
-                                   base::CpuAffinityMode::kBigCoresOnly);
+    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
   }
 #endif
 

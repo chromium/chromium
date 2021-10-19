@@ -23,7 +23,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
-#include "base/cpu_affinity_posix.h"
+#include "content/common/android/cpu_affinity_setter.h"
 #endif
 
 namespace content {
@@ -55,8 +55,7 @@ void InProcessGpuThread::Init() {
   if (base::GetFieldTrialParamByFeatureAsBool(
           features::kBigLittleScheduling,
           features::kBigLittleSchedulingGpuMainBigParam, false)) {
-    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
-                                   base::CpuAffinityMode::kBigCoresOnly);
+    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
   }
 #endif
 

@@ -52,7 +52,7 @@
 #endif
 
 #if defined(OS_ANDROID)
-#include "base/cpu_affinity_posix.h"
+#include "content/common/android/cpu_affinity_setter.h"
 #endif
 
 namespace {
@@ -179,8 +179,7 @@ RenderProcessImpl::RenderProcessImpl()
   if (base::GetFieldTrialParamByFeatureAsBool(
           features::kBigLittleScheduling,
           features::kBigLittleSchedulingRenderMainBigParam, false)) {
-    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
-                                   base::CpuAffinityMode::kBigCoresOnly);
+    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
   }
 #else
   // Bypass the SAB restriction for the Finch "kill switch".

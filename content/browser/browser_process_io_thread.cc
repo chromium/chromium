@@ -28,7 +28,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
-#include "base/cpu_affinity_posix.h"
+#include "content/common/android/cpu_affinity_setter.h"
 #endif
 
 #if defined(OS_WIN)
@@ -93,8 +93,7 @@ void BrowserProcessIOThread::Run(base::RunLoop* run_loop) {
   if (base::GetFieldTrialParamByFeatureAsBool(
           features::kBigLittleScheduling,
           features::kBigLittleSchedulingBrowserIOBigParam, false)) {
-    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
-                                   base::CpuAffinityMode::kBigCoresOnly);
+    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
   }
 
 #endif
