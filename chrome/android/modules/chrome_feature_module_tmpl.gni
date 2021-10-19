@@ -86,6 +86,7 @@ template("chrome_feature_module") {
   android_app_bundle_module(target_name) {
     forward_variables_from(invoker,
                            [
+                             "add_view_trace_events",
                              "base_module_target",
                              "manifest_package",
                              "min_sdk_version",

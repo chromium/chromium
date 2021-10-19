@@ -2389,6 +2389,7 @@ template("chrome_public_apk_or_module_tmpl") {
   chrome_public_common_apk_or_module_tmpl(target_name) {
     forward_variables_from(invoker,
                            [
+                             "add_view_trace_events",
                              "apk_name",
                              "bundle_target",
                              "is_base_module",
@@ -2433,6 +2434,7 @@ chrome_public_apk_or_module_tmpl("chrome_public_apk") {
 chrome_public_apk_or_module_tmpl("chrome_modern_public_base_bundle_module") {
   target_type = "android_app_bundle_module"
   is_base_module = true
+  add_view_trace_events = true
   bundle_target = ":chrome_modern_public_bundle"
 }
 
@@ -2661,6 +2663,7 @@ template("monochrome_public_apk_or_module_tmpl") {
   monochrome_public_common_apk_or_module_tmpl(target_name) {
     forward_variables_from(invoker,
                            [
+                             "add_view_trace_events",
                              "apk_name",
                              "bundle_target",
                              "expected_android_manifest",
@@ -3378,6 +3381,7 @@ chrome_bundle("chrome_modern_public_bundle") {
     include_32_bit_webview = false
   }
   is_monochrome_or_trichrome = false
+  add_view_trace_events = true
   manifest_package = chrome_public_manifest_package
   min_sdk_version = default_min_sdk_version
   module_descs = chrome_modern_module_descs
@@ -3459,6 +3463,7 @@ template("monochrome_or_trichrome_public_bundle_tmpl") {
   monochrome_public_apk_or_module_tmpl(_base_module_target_name) {
     forward_variables_from(invoker,
                            [
+                             "add_view_trace_events",
                              "expected_android_manifest",
                              "is_64_bit_browser",
                              "include_32_bit_webview",
@@ -3482,6 +3487,7 @@ template("monochrome_or_trichrome_public_bundle_tmpl") {
   chrome_bundle(target_name) {
     forward_variables_from(invoker,
                            [
+                             "add_view_trace_events",
                              "enable_lint",
                              "include_32_bit_webview",
                              "include_64_bit_webview",
@@ -3541,6 +3547,7 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     enable_lint = true
     lint_baseline_file = "expectations/lint-baseline.xml"
     lint_suppressions_file = "expectations/lint-suppressions.xml"
+    add_view_trace_events = true
 
     bundle_suffix = ""
     if (android_64bit_target_cpu) {
@@ -3587,6 +3594,7 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     bundle_suffix = ""
     use_trichrome_library = true
     static_library_provider = ":trichrome_library_apk"
+    add_view_trace_events = true
     if (!is_java_debug) {
       static_library_synchronized_proguard = trichrome_synchronized_proguard
       if (trichrome_synchronized_proguard) {

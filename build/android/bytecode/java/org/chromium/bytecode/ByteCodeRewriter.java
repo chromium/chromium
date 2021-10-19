@@ -9,6 +9,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,15 +61,25 @@ public abstract class ByteCodeRewriter {
             ZipInputStream zipInputStream = new ZipInputStream(inputStream);
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                boolean handled = processClassEntry(entry, zipInputStream, buffer);
+                // Get the uncompressed contents of the current zip entry and wrap in an input
+                // stream. This is done because ZipInputStreams can't be reset so they can only be
+                // read once, and classes that don't need rewriting need to be read twice, first to
+                // parse and then to copy.
+                byte[] currentEntryBytes = zipInputStream.readAllBytes();
+                ByteArrayInputStream currentEntryInputStream =
+                        new ByteArrayInputStream(currentEntryBytes);
+                ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
+                boolean handled = processClassEntry(entry, currentEntryInputStream, outputBuffer);
                 if (handled) {
                     ZipEntry newEntry = new ZipEntry(entry.getName());
                     zipOutputStream.putNextEntry(newEntry);
-                    zipOutputStream.write(buffer.toByteArray(), 0, buffer.size());
+                    zipOutputStream.write(outputBuffer.toByteArray(), 0, outputBuffer.size());
                 } else {
                     zipOutputStream.putNextEntry(entry);
-                    zipInputStream.transferTo(zipOutputStream);
+                    // processClassEntry may have advanced currentEntryInputStream, so reset it to
+                    // copy zip entry contents unmodified.
+                    currentEntryInputStream.reset();
+                    currentEntryInputStream.transferTo(zipOutputStream);
                 }
             }
         } catch (IOException e) {
@@ -83,11 +94,11 @@ public abstract class ByteCodeRewriter {
         }
         try {
             ClassReader reader = new ClassReader(inputStream);
-            ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
-            ClassVisitor classVisitor = writer;
-            if (shouldRewriteClass(reader)) {
-                classVisitor = getClassVisitorForClass(entry.getName(), writer);
+            if (!shouldRewriteClass(reader)) {
+                return false;
             }
+            ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
+            ClassVisitor classVisitor = getClassVisitorForClass(entry.getName(), writer);
             reader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
 
             writer.visitEnd();

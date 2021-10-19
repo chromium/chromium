@@ -2744,6 +2744,12 @@ if (enable_java_templates) {
 
     _java_target = "${_template_name}__java"
 
+    if (_is_bundle_module) {
+      _add_view_trace_events =
+          defined(invoker.add_view_trace_events) &&
+          invoker.add_view_trace_events && enable_trace_event_bytecode_rewriting
+    }
+
     java_library_impl(_java_target) {
       forward_variables_from(invoker,
                              [
@@ -2789,6 +2795,7 @@ if (enable_java_templates) {
                                  "version_code",
                                  "version_name",
                                ])
+        add_view_trace_events = _add_view_trace_events
       } else {
         type = "android_apk"
       }
@@ -3563,6 +3570,7 @@ if (enable_java_templates) {
     android_apk_or_module(target_name) {
       forward_variables_from(invoker,
                              [
+                               "add_view_trace_events",
                                "aapt_locale_allowlist",
                                "additional_jar_files",
                                "alternative_android_sdk_dep",
@@ -4502,6 +4510,11 @@ if (enable_java_templates) {
   #    default_modules_for_testing: (optional): A list of DFM that the wrapper
   #      script should install. This is for local testing only, and does not
   #      affect the actual DFM in production.
+  #
+  #    add_view_trace_events: (optional): If true will add an additional step to
+  #      add trace events to all Android views contained in the bundle. It also
+  #      requires build argument enable_trace_event_bytecode_rewriting = true.
+  #
   # Example:
   #   android_app_bundle("chrome_public_bundle") {
   #      base_module_target = "//chrome/android:chrome_public_apk"
@@ -4691,6 +4704,11 @@ if (enable_java_templates) {
 
     if (_proguard_enabled) {
       _proguard_mapping_path = "${_bundle_path}.mapping"
+      _add_view_trace_events =
+          defined(invoker.add_view_trace_events) &&
+          invoker.add_view_trace_events && enable_trace_event_bytecode_rewriting
+    } else {
+      not_needed(invoker, [ "add_view_trace_events" ])
     }
 
     write_build_config(_build_config_target) {
@@ -4701,6 +4719,7 @@ if (enable_java_templates) {
       module_build_configs = _module_build_configs
 
       if (_proguard_enabled) {
+        add_view_trace_events = _add_view_trace_events
         proguard_mapping_path = _proguard_mapping_path
       }
     }
@@ -4720,6 +4739,7 @@ if (enable_java_templates) {
           if (defined(expected_proguard_config)) {
             top_target_name = _target_name
           }
+          add_view_trace_events = _add_view_trace_events
           enable_multidex = _enable_multidex
           proguard_enabled = true
           proguard_mapping_path = _proguard_mapping_path
