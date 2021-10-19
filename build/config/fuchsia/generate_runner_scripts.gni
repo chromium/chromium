@@ -89,7 +89,27 @@ template("fuchsia_run_script_with_packages") {
     wrapper_script = _generated_script_path
 
     deps = [ invoker.package ]
-    data_deps = [ invoker.package ]
+
+    data_deps = [
+      "//build/config/fuchsia:deployment_resources",
+      "//testing:test_scripts_shared",
+      "//testing/buildbot/filters:fuchsia_filters",
+    ]
+
+    _combined_package_list = [ invoker.package ]
+    if (defined(invoker.package_deps)) {
+      foreach(package_dep, invoker.package_deps) {
+        _combined_package_list += [ package_dep[0] ]
+      }
+    }
+    foreach(package_dep, _combined_package_list) {
+      data_deps += [
+        package_dep,
+        package_dep + "__archive-manifest",
+        package_dep + "__archive-metadata",
+      ]
+    }
+
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
     }
@@ -204,38 +224,6 @@ template("fuchsia_test_runner") {
       data = []
     }
     data += [ _test_runner_py ]
-
-    if (!defined(data_deps)) {
-      data_deps = []
-    }
-    data_deps += [
-      "//build/config/fuchsia:deployment_resources",
-      "//testing:test_scripts_shared",
-      "//testing/buildbot/filters:fuchsia_filters",
-
-      # Runner scripts require access to "ids.txt" for symbolization, and to
-      # the "package" from which to get the name & version to deploy, which
-      # are outputs of the archive manifest generation action.
-      "${invoker.package}__archive-manifest",
-
-      # Runner scripts require access to "meta.far" from which to calculate the
-      # expected Merkle root for the package, to verify it has been cached.
-      "${invoker.package}__archive-metadata",
-    ]
-
-    _combined_package_list = [ invoker.package ]
-    if (defined(invoker.package_deps)) {
-      foreach(package_dep, invoker.package_deps) {
-        _combined_package_list += [ package_dep[0] ]
-      }
-    }
-    foreach(package_dep, _combined_package_list) {
-      data_deps += [
-        package_dep,
-        package_dep + "__archive-manifest",
-        package_dep + "__archive-metadata",
-      ]
-    }
 
     # TODO(crbug.com/1256870): Remove this once all out-of-tree references
     # to "package_name_override" are migrated to "package_name".

@@ -694,29 +694,29 @@ static_library("test_support") {
 if (is_fuchsia) {
   group("fuchsia_telemetry_gpu_integration_test") {
     testonly = true
-    data = [
-      "//content/test/gpu/fuchsia_util.py",
-      "//content/test/gpu/run_gpu_integration_test_fuchsia.py",
-    ]
+    data = [ "//content/test/gpu/run_gpu_integration_test_fuchsia.py" ]
     data_deps = [
+      ":fuchsia_telemetry_test_data",
       ":telemetry_gpu_integration_test_scripts_only",
       ":telemetry_gpu_integration_test_support",
-      "//fuchsia/engine:web_engine_shell",
-      "//fuchsia/engine:web_engine_with_webui",
     ]
   }
   group("performance_web_engine_test_suite") {
     testonly = true
-    data = [
-      "//content/test/gpu/fuchsia_util.py",
-      "//content/test/gpu/run_telemetry_benchmark_fuchsia.py",
-    ]
+    data = [ "//content/test/gpu/run_telemetry_benchmark_fuchsia.py" ]
     data_deps = [
+      ":fuchsia_telemetry_test_data",
       ":telemetry_gpu_integration_test_data",
-      "//fuchsia/engine:web_engine_shell",
-      "//fuchsia/engine:web_engine_with_webui",
       "//testing:run_perf_test",
       "//tools/perf/:perf",
+    ]
+  }
+  group("fuchsia_telemetry_test_data") {
+    testonly = true
+    data = [ "//content/test/gpu/fuchsia_util.py" ]
+    data_deps = [
+      "//fuchsia/engine:web_engine_shell",
+      "//fuchsia/engine:web_engine_with_webui_installer",
     ]
   }
 }
