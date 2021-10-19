@@ -7,6 +7,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {BrowserProxy} from './browser_proxy.js';
 import {PageCallbackRouter} from './enterprise_casting.mojom-webui.js';
 
+declare const chrome: any;
+
 class EnterpriseCastingElement extends PolymerElement {
   static get is() {
     return 'enterprise-casting';
@@ -46,6 +48,10 @@ class EnterpriseCastingElement extends PolymerElement {
 
   requestPin() {
     BrowserProxy.getInstance().handler.updatePin();
+  }
+
+  close() {
+    chrome.send('dialogClose');
   }
 
   private setPin(pin: string) {
