@@ -48,7 +48,7 @@
       </template>
     </dom-repeat>
   </div>
-  <div class="settings-link-container">
+  <div class="settings-link-container" hidden$="[[!isLoggedIn_]]">
     <iron-icon icon="diagnostics:settings" id="settingsIcon"></iron-icon>
     <div id="settingsLink" inner-h-t-m-l="[[getSettingsString_()]]"></div>
   </div>

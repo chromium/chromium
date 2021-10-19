@@ -103,6 +103,13 @@ export function networkListTestSuite() {
     return flushTasks();
   }
 
+  /** @return {!HTMLElement} */
+  function getSettingsLink() {
+    assertTrue(!!networkListElement);
+
+    return /** @type {!HTMLElement} */ (networkListElement.$$('#settingsLink'));
+  }
+
   /**
    * Returns list of network guids.
    * @suppress {visibility} // access private member for test
@@ -110,6 +117,18 @@ export function networkListTestSuite() {
    */
   function getOtherNetworkGuids() {
     return networkListElement.otherNetworkGuids_;
+  }
+
+  /**
+   * @suppress {visibility}
+   * @param {boolean} state
+   * @return {!Promise}
+   */
+  function setIsLoggedIn_(state) {
+    assertTrue(!!networkListElement);
+    networkListElement.isLoggedIn_ = state;
+
+    return flushTasks();
   }
 
   test('ActiveGuidPresent', () => {
@@ -203,5 +222,17 @@ export function networkListTestSuite() {
     return initializeNetworkList(fakeNetworkGuidInfoList)
         .then(() => changeActiveGuid(''))
         .then(() => assertFalse(!!networkListElement.$$('connectivity-card')));
+  });
+
+  test('SettingsLinkHiddenWhenNotLoggedIn', () => {
+    return initializeNetworkList(fakeNetworkGuidInfoList)
+        .then(() => {
+          assertTrue(isVisible(getSettingsLink()));
+
+          return setIsLoggedIn_(false);
+        })
+        .then(() => {
+          assertFalse(isVisible(getSettingsLink()));
+        });
   });
 }

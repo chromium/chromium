@@ -9,6 +9,7 @@ import './icons.js';
 import './network_card.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NetworkHealthProviderInterface, NetworkListObserverInterface, NetworkListObserverReceiver} from './diagnostics_types.js'
@@ -61,6 +62,12 @@ Polymer({
     isActive: {
       type: Boolean,
       value: true,
+    },
+
+    /** @protected {boolean} */
+    isLoggedIn_: {
+      type: Boolean,
+      value: loadTimeData.getBoolean('isLoggedIn'),
     },
   },
 
