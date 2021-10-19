@@ -656,18 +656,6 @@ public class TabUiThemeProvider {
     }
 
     /**
-     * Return the insect dimension around the selection button for tab grid card.
-     * @param context {@link Context} to retrieve dimension.
-     *
-     * @return The insect dimension around the selection button for tab grid card.
-     */
-    public static float getTabGridCardSelectButtonInsectDimension(Context context) {
-        return context.getResources().getDimension(themeRefactorEnabled()
-                        ? R.dimen.tab_grid_card_toggle_button_background_inset
-                        : R.dimen.selection_tab_grid_toggle_button_inset);
-    }
-
-    /**
      * Returns the style resource Id that requires for Tab UI.
      *
      * @return The resource Id for the theme overlay used for tab UI.

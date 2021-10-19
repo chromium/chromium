@@ -37,8 +37,8 @@ public class SelectableTabGridView extends SelectableItemView<Integer> {
 
         if (actionButton != null) {
             InsetDrawable drawable = new InsetDrawable(selectionListIcon,
-                    (int) TabUiThemeProvider.getTabGridCardSelectButtonInsectDimension(
-                            getContext()));
+                    (int) getContext().getResources().getDimension(
+                            R.dimen.selection_tab_grid_toggle_button_inset));
             actionButton.setBackground(drawable);
             // Remove the original content from SelectableItemView since we are not using them.
             removeView(mContentView);
