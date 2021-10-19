@@ -16,6 +16,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/user_agent.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -453,35 +454,119 @@ TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
 TEST_P(UserAgentUtilsTest, GenerateBrandVersionList) {
   blink::UserAgentMetadata metadata;
 
-  metadata.brand_version_list =
-      GenerateBrandVersionList(84, absl::nullopt, "84", absl::nullopt);
+  metadata.brand_version_list = GenerateBrandVersionList(
+      84, absl::nullopt, "84", absl::nullopt, absl::nullopt);
   std::string brand_list = metadata.SerializeBrandVersionList();
   EXPECT_EQ(R"(" Not A;Brand";v="99", "Chromium";v="84")", brand_list);
 
-  metadata.brand_version_list =
-      GenerateBrandVersionList(85, absl::nullopt, "85", absl::nullopt);
+  metadata.brand_version_list = GenerateBrandVersionList(
+      85, absl::nullopt, "85", absl::nullopt, absl::nullopt);
   std::string brand_list_diff = metadata.SerializeBrandVersionList();
   // Make sure the lists are different for different seeds
   EXPECT_EQ(R"("Chromium";v="85", " Not;A Brand";v="99")", brand_list_diff);
   EXPECT_NE(brand_list, brand_list_diff);
 
-  metadata.brand_version_list =
-      GenerateBrandVersionList(84, "Totally A Brand", "84", absl::nullopt);
+  metadata.brand_version_list = GenerateBrandVersionList(
+      84, "Totally A Brand", "84", absl::nullopt, absl::nullopt);
   std::string brand_list_w_brand = metadata.SerializeBrandVersionList();
   EXPECT_EQ(
       R"(" Not A;Brand";v="99", "Chromium";v="84", "Totally A Brand";v="84")",
       brand_list_w_brand);
 
-  metadata.brand_version_list =
-      GenerateBrandVersionList(84, absl::nullopt, "84", "Clean GREASE");
+  metadata.brand_version_list = GenerateBrandVersionList(
+      84, absl::nullopt, "84", "Clean GREASE", absl::nullopt);
   std::string brand_list_grease_override = metadata.SerializeBrandVersionList();
   EXPECT_EQ(R"("Clean GREASE";v="99", "Chromium";v="84")",
             brand_list_grease_override);
   EXPECT_NE(brand_list, brand_list_grease_override);
 
+  metadata.brand_version_list =
+      GenerateBrandVersionList(84, absl::nullopt, "84", "Clean GREASE", "1024");
+  std::string brand_list_and_version_grease_override =
+      metadata.SerializeBrandVersionList();
+  EXPECT_EQ(R"("Clean GREASE";v="1024", "Chromium";v="84")",
+            brand_list_and_version_grease_override);
+  EXPECT_NE(brand_list, brand_list_and_version_grease_override);
+
+  metadata.brand_version_list =
+      GenerateBrandVersionList(84, absl::nullopt, "84", absl::nullopt, "1024");
+  std::string brand_version_grease_override =
+      metadata.SerializeBrandVersionList();
+  EXPECT_EQ(R"(" Not A;Brand";v="1024", "Chromium";v="84")",
+            brand_version_grease_override);
+  EXPECT_NE(brand_list, brand_version_grease_override);
+
   // Should DCHECK on negative numbers
-  EXPECT_DCHECK_DEATH(
-      GenerateBrandVersionList(-1, absl::nullopt, "99", absl::nullopt));
+  EXPECT_DCHECK_DEATH(GenerateBrandVersionList(-1, absl::nullopt, "99",
+                                               absl::nullopt, absl::nullopt));
+}
+
+TEST_P(UserAgentUtilsTest, GetGreasedUserAgentBrandVersion) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Test to ensure the old algorithm is respected when the flag is not set.
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kGreaseUACH, {{"updated_algorithm", "false"}});
+
+  std::vector<int> permuted_order{0, 1, 2};
+  blink::UserAgentBrandVersion greased_bv = GetGreasedUserAgentBrandVersion(
+      permuted_order, 84, absl::nullopt, absl::nullopt);
+  EXPECT_EQ(greased_bv.brand, " Not A;Brand");
+  EXPECT_EQ(greased_bv.major_version, "99");
+
+  greased_bv = GetGreasedUserAgentBrandVersion(permuted_order, 84,
+                                               "WhatIsGrease", absl::nullopt);
+  EXPECT_EQ(greased_bv.brand, "WhatIsGrease");
+  EXPECT_EQ(greased_bv.major_version, "99");
+
+  greased_bv = GetGreasedUserAgentBrandVersion(permuted_order, 84,
+                                               absl::nullopt, "1024");
+  EXPECT_EQ(greased_bv.brand, " Not A;Brand");
+  EXPECT_EQ(greased_bv.major_version, "1024");
+
+  greased_bv = GetGreasedUserAgentBrandVersion(permuted_order, 84,
+                                               "WhatIsGrease", "1024");
+  EXPECT_EQ(greased_bv.brand, "WhatIsGrease");
+  EXPECT_EQ(greased_bv.major_version, "1024");
+
+  // Test to ensure the new algorithm works and is still overridable.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kGreaseUACH, {{"updated_algorithm", "true"}});
+
+  greased_bv = GetGreasedUserAgentBrandVersion(permuted_order, 84,
+                                               absl::nullopt, absl::nullopt);
+  EXPECT_EQ(greased_bv.brand, "/Not=A?Brand");
+  EXPECT_EQ(greased_bv.major_version, "8");
+
+  greased_bv = GetGreasedUserAgentBrandVersion(permuted_order, 84,
+                                               "WhatIsGrease", absl::nullopt);
+  EXPECT_EQ(greased_bv.brand, "WhatIsGrease");
+  EXPECT_EQ(greased_bv.major_version, "8");
+
+  greased_bv = GetGreasedUserAgentBrandVersion(permuted_order, 84,
+                                               absl::nullopt, "1024");
+  EXPECT_EQ(greased_bv.brand, "/Not=A?Brand");
+  EXPECT_EQ(greased_bv.major_version, "1024");
+
+  greased_bv = GetGreasedUserAgentBrandVersion(permuted_order, 84,
+                                               "WhatIsGrease", "1024");
+  EXPECT_EQ(greased_bv.brand, "WhatIsGrease");
+  EXPECT_EQ(greased_bv.major_version, "1024");
+
+  permuted_order = {2, 1, 0};
+  greased_bv = GetGreasedUserAgentBrandVersion(permuted_order, 86,
+                                               absl::nullopt, absl::nullopt);
+  EXPECT_EQ(greased_bv.brand, ";Not_A Brand");
+  EXPECT_EQ(greased_bv.major_version, "24");
+
+  // Go up to 110 based on the 11 total chars * 10 possible first chars.
+  for (int i = 0; i < 110; i++) {
+    // Regardless of the major version seed, the spec calls for no leading
+    // whitespace in the brand.
+    greased_bv = GetGreasedUserAgentBrandVersion(permuted_order, i,
+                                                 absl::nullopt, absl::nullopt);
+    EXPECT_NE(greased_bv.brand[0], ' ');
+  }
 }
 
 TEST_P(UserAgentUtilsTest, GetProduct) {

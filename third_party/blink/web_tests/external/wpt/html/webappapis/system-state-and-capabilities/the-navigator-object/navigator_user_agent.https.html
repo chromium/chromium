@@ -11,8 +11,10 @@
   promise_test(async t => {
     let didMicrotaskRun = false;
     const uaData = navigator.userAgentData;
+    const brandRegex = /^[a-zA-Z ()\-.\/:;=?_]+$/;
     for (brandVersionPair of uaData.brands) {
       assert_equals(typeof brandVersionPair.brand, "string", "brand should be a string");
+      assert_regexp_match(brandVersionPair.brand, brandRegex, "brand should not contain unexpected characters");
       assert_equals(typeof brandVersionPair.version, "string", "version should be a string");
     }
     assert_equals(typeof uaData.mobile, "boolean", "mobile should be a boolean");

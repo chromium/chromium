@@ -143,14 +143,19 @@ const blink::UserAgentBrandList GetUserAgentBrandList(
 #if !BUILDFLAG(CHROMIUM_BRANDING)
   brand = version_info::GetProductName();
 #endif
-  absl::optional<std::string> maybe_param_override =
+  absl::optional<std::string> maybe_brand_override =
       base::GetFieldTrialParamValueByFeature(features::kGreaseUACH,
                                              "brand_override");
-  if (maybe_param_override->empty())
-    maybe_param_override = absl::nullopt;
+  absl::optional<std::string> maybe_version_override =
+      base::GetFieldTrialParamValueByFeature(features::kGreaseUACH,
+                                             "version_override");
+  if (maybe_brand_override->empty())
+    maybe_brand_override = absl::nullopt;
+  if (maybe_version_override->empty())
+    maybe_version_override = absl::nullopt;
 
   return GenerateBrandVersionList(major_version_number, brand, major_version,
-                                  maybe_param_override);
+                                  maybe_brand_override, maybe_version_override);
 }
 
 const blink::UserAgentBrandList& GetUserAgentBrandList() {
@@ -216,14 +221,15 @@ std::string GetReducedUserAgent() {
 // Generate a pseudo-random permutation of the following brand/version pairs:
 //   1. The base project (i.e. Chromium)
 //   2. The browser brand, if available
-//   3. A randomized string containing escaped characters to ensure proper
+//   3. A randomized string containing GREASE characters to ensure proper
 //      header parsing, along with an arbitrarily low version to ensure proper
 //      version checking.
 blink::UserAgentBrandList GenerateBrandVersionList(
     int seed,
     absl::optional<std::string> brand,
     std::string major_version,
-    absl::optional<std::string> maybe_greasey_brand) {
+    absl::optional<std::string> maybe_greasey_brand,
+    absl::optional<std::string> maybe_greasey_version) {
   DCHECK_GE(seed, 0);
   const int npermutations = 6;  // 3!
   int permutation = seed % npermutations;
@@ -236,17 +242,9 @@ blink::UserAgentBrandList GenerateBrandVersionList(
   DCHECK_EQ(6u, orders.size());
   DCHECK_EQ(3u, order.size());
 
-  // Previous values for indexes 0 and 1 were '\' and '"', temporarily removed
-  // because of compat issues
-  const std::vector<std::string> escaped_chars = {" ", " ", ";"};
-  std::string greasey_brand =
-      base::StrCat({escaped_chars[order[0]], "Not", escaped_chars[order[1]],
-                    "A", escaped_chars[order[2]], "Brand"});
-
-  blink::UserAgentBrandVersion greasey_bv = {
-      maybe_greasey_brand.value_or(greasey_brand), "99"};
+  blink::UserAgentBrandVersion greasey_bv = GetGreasedUserAgentBrandVersion(
+      order, seed, maybe_greasey_brand, maybe_greasey_version);
   blink::UserAgentBrandVersion chromium_bv = {"Chromium", major_version};
-
   blink::UserAgentBrandList greased_brand_version_list(3);
 
   if (brand) {
@@ -266,6 +264,39 @@ blink::UserAgentBrandList GenerateBrandVersionList(
   return greased_brand_version_list;
 }
 
+blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
+    std::vector<int> permuted_order,
+    int seed,
+    absl::optional<std::string> maybe_greasey_brand,
+    absl::optional<std::string> maybe_greasey_version) {
+  std::string greasey_brand;
+  std::string greasey_version;
+  if (base::GetFieldTrialParamByFeatureAsBool(features::kGreaseUACH,
+                                              "updated_algorithm", false)) {
+    const std::vector<std::string> greasey_chars = {
+        " ", "(", ":", "-", ".", "/", ")", ";", "=", "?", "_"};
+    const std::vector<std::string> greased_versions = {"8", "99", "24"};
+    // The spec disallows a leading or trailing space, so ensuring the first
+    // char isn't index 0. See the spec:
+    // https://wicg.github.io/ua-client-hints/#create-arbitrary-brands-section
+    greasey_brand = base::StrCat(
+        {greasey_chars[(seed % (greasey_chars.size() - 1)) + 1], "Not",
+         greasey_chars[(seed + 1) % greasey_chars.size()], "A",
+         greasey_chars[(seed + 2) % greasey_chars.size()], "Brand"});
+    greasey_version = greased_versions[seed % greased_versions.size()];
+  } else {
+    const std::vector<std::string> greasey_chars = {" ", " ", ";"};
+    greasey_brand = base::StrCat({greasey_chars[permuted_order[0]], "Not",
+                                  greasey_chars[permuted_order[1]], "A",
+                                  greasey_chars[permuted_order[2]], "Brand"});
+    greasey_version = "99";
+  }
+  blink::UserAgentBrandVersion greasey_bv = {
+      maybe_greasey_brand.value_or(greasey_brand),
+      maybe_greasey_version.value_or(greasey_version)};
+
+  return greasey_bv;
+}
 // TODO(crbug.com/1103047): This can be removed/re-refactored once we use
 // "macOS" by default
 std::string GetPlatformForUAMetadata() {
