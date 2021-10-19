@@ -6,7 +6,8 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/system/sys_info.h"
-#include "chromeos/components/eche_app_ui/eche_message_receiver.h"
+#include "chromeos/components/eche_app_ui/eche_connector_impl.h"
+#include "chromeos/components/eche_app_ui/eche_message_receiver_impl.h"
 #include "chromeos/components/eche_app_ui/eche_notification_generator.h"
 #include "chromeos/components/eche_app_ui/eche_presence_manager.h"
 #include "chromeos/components/eche_app_ui/eche_signaler.h"
@@ -63,8 +64,8 @@ EcheAppManager::EcheAppManager(
               feature_status_provider_.get(),
               launch_app_helper_.get())),
       eche_connector_(
-          std::make_unique<EcheConnector>(feature_status_provider_.get(),
-                                          connection_manager_.get())),
+          std::make_unique<EcheConnectorImpl>(feature_status_provider_.get(),
+                                              connection_manager_.get())),
       signaler_(std::make_unique<EcheSignaler>(eche_connector_.get(),
                                                connection_manager_.get())),
       eche_presence_manager_(std::make_unique<EchePresenceManager>(
@@ -81,8 +82,8 @@ EcheAppManager::EcheAppManager(
               launch_app_helper_.get())),
       notification_generator_(std::make_unique<EcheNotificationGenerator>(
           launch_app_helper_.get())),
-      message_receiver_(
-          std::make_unique<EcheMessageReceiver>(connection_manager_.get())) {
+      message_receiver_(std::make_unique<EcheMessageReceiverImpl>(
+          connection_manager_.get())) {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(

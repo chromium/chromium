@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/eche_app_ui/eche_message_receiver.h"
+#include "chromeos/components/eche_app_ui/eche_message_receiver_impl.h"
 
 #include "chromeos/components/eche_app_ui/proto/exo_messages.pb.h"
 #include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
@@ -10,6 +10,8 @@
 
 namespace chromeos {
 namespace eche_app {
+
+namespace {
 class FakeObserver : public EcheMessageReceiver::Observer {
  public:
   FakeObserver() = default;
@@ -48,24 +50,27 @@ class FakeObserver : public EcheMessageReceiver::Observer {
   proto::GetAppsAccessStateResponse last_apps_access_state_response_;
   proto::SendAppsSetupResponse last_apps_setup_reponse_;
 };
+}  // namespace
 
-class EcheMessageReceiverTest : public testing::Test {
+class EcheMessageReceiverImplTest : public testing::Test {
  protected:
-  EcheMessageReceiverTest()
+  EcheMessageReceiverImplTest()
       : fake_connection_manager_(
             std::make_unique<secure_channel::FakeConnectionManager>()) {}
-  EcheMessageReceiverTest(const EcheMessageReceiverTest&) = delete;
-  EcheMessageReceiverTest& operator=(const EcheMessageReceiverTest&) = delete;
-  ~EcheMessageReceiverTest() override = default;
+  EcheMessageReceiverImplTest(const EcheMessageReceiverImplTest&) = delete;
+  EcheMessageReceiverImplTest& operator=(const EcheMessageReceiverImplTest&) =
+      delete;
+  ~EcheMessageReceiverImplTest() override = default;
 
   void SetUp() override {
-    message_receiver_ =
-        std::make_unique<EcheMessageReceiver>(fake_connection_manager_.get());
+    message_receiver_ = std::make_unique<EcheMessageReceiverImpl>(
+        fake_connection_manager_.get());
     message_receiver_->AddObserver(&fake_observer_);
   }
 
   void TearDown() override {
     message_receiver_->RemoveObserver(&fake_observer_);
+    message_receiver_.reset();
   }
 
   size_t GetNumAppsAccessStateResponseCalls() const {
@@ -90,7 +95,7 @@ class EcheMessageReceiverTest : public testing::Test {
   std::unique_ptr<EcheMessageReceiver> message_receiver_;
 };
 
-TEST_F(EcheMessageReceiverTest, onGetAppsAccessStateResponseReceived) {
+TEST_F(EcheMessageReceiverImplTest, onGetAppsAccessStateResponseReceived) {
   proto::GetAppsAccessStateResponse response;
   response.set_result(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED);
   response.set_apps_access_state(
@@ -111,7 +116,7 @@ TEST_F(EcheMessageReceiverTest, onGetAppsAccessStateResponseReceived) {
             actual_apps_state.apps_access_state());
 }
 
-TEST_F(EcheMessageReceiverTest, onSendAppsSetupResponseReceived) {
+TEST_F(EcheMessageReceiverImplTest, onSendAppsSetupResponseReceived) {
   proto::SendAppsSetupResponse response;
   response.set_result(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED);
   response.set_apps_access_state(

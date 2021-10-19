@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/eche_app_ui/eche_connector.h"
+#include "chromeos/components/eche_app_ui/eche_connector_impl.h"
 
 #include "chromeos/components/eche_app_ui/proto/exo_messages.pb.h"
 #include "chromeos/components/multidevice/logging/logging.h"
@@ -15,7 +15,7 @@
 namespace chromeos {
 namespace eche_app {
 
-EcheConnector::EcheConnector(
+EcheConnectorImpl::EcheConnectorImpl(
     EcheFeatureStatusProvider* eche_feature_status_provider,
     secure_channel::ConnectionManager* connection_manager)
     : eche_feature_status_provider_(eche_feature_status_provider),
@@ -23,11 +23,11 @@ EcheConnector::EcheConnector(
   eche_feature_status_provider_->AddObserver(this);
 }
 
-EcheConnector::~EcheConnector() {
+EcheConnectorImpl::~EcheConnectorImpl() {
   eche_feature_status_provider_->RemoveObserver(this);
 }
 
-void EcheConnector::SendMessage(const std::string& message) {
+void EcheConnectorImpl::SendMessage(const std::string& message) {
   const FeatureStatus feature_status =
       eche_feature_status_provider_->GetStatus();
   switch (feature_status) {
@@ -47,52 +47,56 @@ void EcheConnector::SendMessage(const std::string& message) {
       FALLTHROUGH;
     case FeatureStatus::kConnecting:
       PA_LOG(INFO) << "Connecting; queuing message";
-      queue_.push(message);
+      message_queue_.push(message);
       break;
     case FeatureStatus::kConnected:
-      queue_.push(message);
+      message_queue_.push(message);
       FlushQueue();
       break;
   }
 }
 
-void EcheConnector::Disconnect() {
+void EcheConnectorImpl::Disconnect() {
   // Drain queue
-  if (!queue_.empty())
+  if (!message_queue_.empty())
     PA_LOG(INFO) << "Draining nonempty queue after manual disconnect";
-  while (!queue_.empty())
-    queue_.pop();
+  while (!message_queue_.empty())
+    message_queue_.pop();
   connection_manager_->Disconnect();
 }
 
-void EcheConnector::SendAppsSetupRequest() {
+void EcheConnectorImpl::SendAppsSetupRequest() {
   proto::SendAppsSetupRequest request;
   proto::ExoMessage message;
   *message.mutable_apps_setup_request() = std::move(request);
   SendMessage(message.SerializeAsString());
 }
 
-void EcheConnector::GetAppsAccessStateRequest() {
+void EcheConnectorImpl::GetAppsAccessStateRequest() {
   proto::GetAppsAccessStateRequest request;
   proto::ExoMessage message;
   *message.mutable_apps_access_state_request() = std::move(request);
   SendMessage(message.SerializeAsString());
 }
 
-void EcheConnector::OnFeatureStatusChanged() {
+void EcheConnectorImpl::AttemptNearbyConnection() {
+  connection_manager_->AttemptNearbyConnection();
+}
+
+void EcheConnectorImpl::OnFeatureStatusChanged() {
   const FeatureStatus feature_status =
       eche_feature_status_provider_->GetStatus();
-  if (feature_status == FeatureStatus::kConnected && !queue_.empty()) {
+  if (feature_status == FeatureStatus::kConnected && !message_queue_.empty()) {
     PA_LOG(INFO) << "Flushing message queue";
     FlushQueue();
   }
 }
 
-void EcheConnector::FlushQueue() {
-  const int size = queue_.size();
+void EcheConnectorImpl::FlushQueue() {
+  const int size = message_queue_.size();
   for (int i = 0; i < size; i++) {
-    connection_manager_->SendMessage(queue_.front());
-    queue_.pop();
+    connection_manager_->SendMessage(message_queue_.front());
+    message_queue_.pop();
   }
 }
 

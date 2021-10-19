@@ -12,7 +12,9 @@ namespace eche_app {
 
 class FakeFeatureStatusProvider : public FeatureStatusProvider {
  public:
+  // Defaults initial status to kConnected.
   FakeFeatureStatusProvider();
+  explicit FakeFeatureStatusProvider(FeatureStatus initial_status);
   ~FakeFeatureStatusProvider() override;
 
   void SetStatus(FeatureStatus status);

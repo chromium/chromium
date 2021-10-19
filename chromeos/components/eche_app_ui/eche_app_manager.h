@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "chromeos/components/eche_app_ui/eche_connector.h"
 #include "chromeos/components/eche_app_ui/eche_feature_status_provider.h"
 #include "chromeos/components/eche_app_ui/eche_notification_click_handler.h"
 #include "chromeos/components/eche_app_ui/eche_recent_app_click_handler.h"
@@ -39,6 +38,7 @@ class SecureChannelClient;
 
 namespace eche_app {
 
+class EcheConnector;
 class EcheMessageReceiver;
 class EcheNotificationGenerator;
 class EchePresenceManager;

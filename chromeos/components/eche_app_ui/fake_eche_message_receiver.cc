@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/components/eche_app_ui/fake_eche_message_receiver.h"
+
+namespace chromeos {
+namespace eche_app {
+
+FakeEcheMessageReceiver::FakeEcheMessageReceiver() = default;
+FakeEcheMessageReceiver::~FakeEcheMessageReceiver() = default;
+
+void FakeEcheMessageReceiver::FakeGetAppsAccessStateResponse(
+    eche_app::proto::Result result,
+    eche_app::proto::AppsAccessState status) {
+  proto::GetAppsAccessStateResponse response;
+  response.set_result(result);
+  response.set_apps_access_state(status);
+  NotifyGetAppsAccessStateResponse(response);
+}
+
+void FakeEcheMessageReceiver::FakeSendAppsSetupResponse(
+    eche_app::proto::Result result,
+    eche_app::proto::AppsAccessState status) {
+  proto::SendAppsSetupResponse response;
+  response.set_result(result);
+  response.set_apps_access_state(status);
+  NotifySendAppsSetupResponse(response);
+}
+
+}  // namespace eche_app
+}  // namespace chromeos

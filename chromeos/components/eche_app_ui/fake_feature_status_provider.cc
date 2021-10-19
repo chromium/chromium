@@ -7,9 +7,13 @@
 namespace chromeos {
 namespace eche_app {
 
-FakeFeatureStatusProvider::FakeFeatureStatusProvider() {
-  status_ = FeatureStatus::kConnected;
-}
+FakeFeatureStatusProvider::FakeFeatureStatusProvider()
+    : FakeFeatureStatusProvider(FeatureStatus::kConnected) {}
+
+FakeFeatureStatusProvider::FakeFeatureStatusProvider(
+    FeatureStatus initial_status)
+    : status_(initial_status) {}
+
 FakeFeatureStatusProvider::~FakeFeatureStatusProvider() = default;
 
 void FakeFeatureStatusProvider::SetStatus(FeatureStatus status) {

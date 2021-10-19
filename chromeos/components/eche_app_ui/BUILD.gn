@@ -22,12 +22,15 @@ static_library("eche_app_ui") {
     "eche_app_manager.h",
     "eche_app_ui.cc",
     "eche_app_ui.h",
-    "eche_connector.cc",
     "eche_connector.h",
+    "eche_connector_impl.cc",
+    "eche_connector_impl.h",
     "eche_feature_status_provider.cc",
     "eche_feature_status_provider.h",
     "eche_message_receiver.cc",
     "eche_message_receiver.h",
+    "eche_message_receiver_impl.cc",
+    "eche_message_receiver_impl.h",
     "eche_notification_click_handler.cc",
     "eche_notification_click_handler.h",
     "eche_notification_generator.cc",
@@ -82,6 +85,10 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_eche_connector.cc",
+    "fake_eche_connector.h",
+    "fake_eche_message_receiver.cc",
+    "fake_eche_message_receiver.h",
     "fake_feature_status_provider.cc",
     "fake_feature_status_provider.h",
   ]
@@ -96,7 +103,7 @@ source_set("unit_tests") {
   sources = [
     "apps_access_setup_operation_unittest.cc",
     "eche_feature_status_provider_unittest.cc",
-    "eche_message_receiver_unittest.cc",
+    "eche_message_receiver_impl_unittest.cc",
     "eche_notification_click_handler_unittest.cc",
     "eche_notification_generator_unittest.cc",
     "eche_recent_app_click_handler_unittest.cc",

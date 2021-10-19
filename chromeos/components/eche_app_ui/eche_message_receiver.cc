@@ -4,20 +4,11 @@
 
 #include "chromeos/components/eche_app_ui/eche_message_receiver.h"
 
-#include "chromeos/components/eche_app_ui/proto/exo_messages.pb.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-
 namespace chromeos {
 namespace eche_app {
-EcheMessageReceiver::EcheMessageReceiver(
-    secure_channel::ConnectionManager* connection_manager)
-    : connection_manager_(connection_manager) {
-  connection_manager_->AddObserver(this);
-}
 
-EcheMessageReceiver::~EcheMessageReceiver() {
-  connection_manager_->RemoveObserver(this);
-}
+EcheMessageReceiver::EcheMessageReceiver() = default;
+EcheMessageReceiver::~EcheMessageReceiver() = default;
 
 void EcheMessageReceiver::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -37,16 +28,6 @@ void EcheMessageReceiver::NotifySendAppsSetupResponse(
     proto::SendAppsSetupResponse apps_setup_response) {
   for (auto& observer : observer_list_)
     observer.onSendAppsSetupResponseReceived(apps_setup_response);
-}
-
-void EcheMessageReceiver::OnMessageReceived(const std::string& payload) {
-  proto::ExoMessage message;
-  message.ParseFromString(payload);
-  if (message.has_apps_access_state_response()) {
-    NotifyGetAppsAccessStateResponse(message.apps_access_state_response());
-  } else if (message.has_apps_setup_response()) {
-    NotifySendAppsSetupResponse(message.apps_setup_response());
-  }
 }
 
 }  // namespace eche_app
