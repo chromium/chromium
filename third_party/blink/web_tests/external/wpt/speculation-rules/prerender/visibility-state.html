@@ -7,6 +7,8 @@
 <body>
 <script>
 
+setup(() => assertSpeculationRulesIsSupported());
+
 promise_test(async t => {
   const bc = new BroadcastChannel('test-channel');
 
@@ -45,7 +47,7 @@ promise_test(async t => {
     assert_equals(result[i].prerendering, expected[i].prerendering,
       `prerendering${i}`);
   }
-}, `The visibilityState must be updated after prerendering.`);
+}, 'The visibilityState must be updated after prerendering.');
 
 </script>
 </body>
