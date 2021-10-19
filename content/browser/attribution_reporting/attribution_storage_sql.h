@@ -82,15 +82,15 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   };
 
   // AttributionStorage
-  void StoreImpression(const StorableSource& impression) override;
-  CreateReportResult MaybeCreateAndStoreConversionReport(
-      const StorableTrigger& conversion) override;
-  std::vector<AttributionReport> GetConversionsToReport(
+  void StoreSource(const StorableSource& source) override;
+  CreateReportResult MaybeCreateAndStoreReport(
+      const StorableTrigger& trigger) override;
+  std::vector<AttributionReport> GetAttributionsToReport(
       base::Time expiry_time,
       int limit = -1) override;
-  std::vector<StorableSource> GetActiveImpressions(int limit = -1) override;
-  bool DeleteConversion(AttributionReport::Id conversion_id) override;
-  bool UpdateReportForSendFailure(AttributionReport::Id conversion_id,
+  std::vector<StorableSource> GetActiveSources(int limit = -1) override;
+  bool DeleteReport(AttributionReport::Id report_id) override;
+  bool UpdateReportForSendFailure(AttributionReport::Id report_id,
                                   base::Time new_report_time) override;
   void ClearData(
       base::Time delete_begin,
@@ -103,21 +103,21 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   void ClearAllDataAllTime() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns false on failure.
-  bool DeleteImpressions(const std::vector<StorableSource::Id>& impression_ids)
+  bool DeleteSources(const std::vector<StorableSource::Id>& source_ids)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
-  // Deletes all impressions that have expired and have no pending conversion
+  // Deletes all sources that have expired and have no pending
   // reports. Returns false on failure.
-  bool DeleteExpiredImpressions()
+  bool DeleteExpiredSources()
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
-  // Deletes the conversion with `conversion_id` without checking the the DB
+  // Deletes the report with `report_id` without checking the the DB
   // initialization status or the number of deleted rows. Returns false on
   // failure.
-  bool DeleteConversionInternal(AttributionReport::Id conversion_id)
+  bool DeleteReportInternal(AttributionReport::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
-  bool HasCapacityForStoringImpression(const std::string& serialized_origin)
+  bool HasCapacityForStoringSource(const std::string& serialized_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   enum class ReportAlreadyStoredStatus {
@@ -127,7 +127,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   };
 
   ReportAlreadyStoredStatus ReportAlreadyStored(
-      StorableSource::Id impression_id,
+      StorableSource::Id source_id,
       absl::optional<int64_t> dedup_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
@@ -137,7 +137,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
-  ConversionCapacityStatus CapacityForStoringConversion(
+  ConversionCapacityStatus CapacityForStoringReport(
       const std::string& serialized_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
@@ -154,21 +154,19 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       absl::optional<AttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
-  absl::optional<AttributionReport> GetConversion(
-      AttributionReport::Id conversion_id)
+  absl::optional<AttributionReport> GetReport(AttributionReport::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
-  // When storing an event-source impression, deletes active event-source
-  // impressions in order by |impression_time| until there are sufficiently few
+  // When storing an event source, deletes active event
+  // sources in order by |impression_time| until there are sufficiently few
   // unique conversion destinations for the same |impression_site|.
-  bool EnsureCapacityForPendingDestinationLimit(
-      const StorableSource& impression)
+  bool EnsureCapacityForPendingDestinationLimit(const StorableSource& source)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
-  // Stores |report| in the database, but uses |impression_id| rather than
+  // Stores |report| in the database, but uses |source_id| rather than
   // |AttributionReport::impression::impression_id()|, which may be null.
-  bool StoreConversionReport(const AttributionReport& report,
-                             StorableSource::Id impression_id)
+  bool StoreReport(const AttributionReport& report,
+                   StorableSource::Id source_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Initializes the database if necessary, and returns whether the database is
@@ -216,9 +214,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Time at which `DeleteExpiredImpressions()` was last called. Initialized to
+  // Time at which `DeleteExpiredSources()` was last called. Initialized to
   // the NULL time.
-  base::Time last_deleted_expired_impressions_
+  base::Time last_deleted_expired_sources_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

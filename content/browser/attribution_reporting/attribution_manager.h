@@ -41,25 +41,25 @@ class CONTENT_EXPORT AttributionManager {
    public:
     virtual ~Provider() = default;
 
-    // Gets the AttributionManager that should be used for handling conversions
-    // that occur in the given |web_contents|. Returns nullptr if conversion
-    // measurement is not enabled in the given |web_contents|, e.g. when the
+    // Gets the AttributionManager that should be used for handling attributions
+    // that occur in the given |web_contents|. Returns nullptr if attribution
+    // reporting is not enabled in the given |web_contents|, e.g. when the
     // browser context is off the record.
     virtual AttributionManager* GetManager(WebContents* web_contents) const = 0;
   };
   virtual ~AttributionManager() = default;
 
-  // Persists the given |impression| to storage. Called when a navigation
-  // originating from an impression tag finishes.
-  virtual void HandleImpression(StorableSource impression) = 0;
+  // Persists the given |source| to storage. Called when a navigation
+  // originating from a source tag finishes.
+  virtual void HandleSource(StorableSource source) = 0;
 
-  // Process a newly registered conversion. Will create and log any new
-  // conversion reports to storage.
-  virtual void HandleConversion(StorableTrigger conversion) = 0;
+  // Process a newly registered trigger. Will create and log any new
+  // reports to storage.
+  virtual void HandleTrigger(StorableTrigger trigger) = 0;
 
-  // Get all impressions that are currently stored in this partition. Used for
+  // Get all sources that are currently stored in this partition. Used for
   // populating WebUI.
-  virtual void GetActiveImpressionsForWebUI(
+  virtual void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StorableSource>)> callback) = 0;
 
   // Get all pending reports that are currently stored in this partition. Used

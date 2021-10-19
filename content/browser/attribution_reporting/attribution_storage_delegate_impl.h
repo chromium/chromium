@@ -17,9 +17,9 @@ class Time;
 namespace content {
 
 // Implementation of the storage delegate. This class handles assigning
-// report times to newly created conversion reports. It
+// report times to newly created reports. It
 // also controls constants for AttributionStorage. This is owned by
-// AttributionStorageSql, and should only be accessed on the conversions storage
+// AttributionStorageSql, and should only be accessed on the attribution storage
 // task runner.
 class CONTENT_EXPORT AttributionStorageDelegateImpl
     : public AttributionStorage::Delegate {
@@ -36,17 +36,17 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   ~AttributionStorageDelegateImpl() override = default;
 
   // AttributionStorageDelegate:
-  base::Time GetReportTime(const StorableSource& impression,
-                           base::Time conversion_time) const override;
-  int GetMaxConversionsPerImpression(
+  base::Time GetReportTime(const StorableSource& source,
+                           base::Time trigger_time) const override;
+  int GetMaxAttributionsPerSource(
       StorableSource::SourceType source_type) const override;
-  int GetMaxImpressionsPerOrigin() const override;
-  int GetMaxConversionsPerOrigin() const override;
+  int GetMaxSourcesPerOrigin() const override;
+  int GetMaxAttributionsPerOrigin() const override;
   int GetMaxAttributionDestinationsPerEventSource() const override;
   RateLimitConfig GetRateLimits(
       AttributionStorage::AttributionType attribution_type) const override;
   uint64_t GetFakeEventSourceTriggerData() const override;
-  base::TimeDelta GetDeleteExpiredImpressionsFrequency() const override;
+  base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
 
  private:

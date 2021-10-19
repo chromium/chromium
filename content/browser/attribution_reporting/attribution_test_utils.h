@@ -83,29 +83,27 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
   ~ConfigurableStorageDelegate() override;
 
   // AttributionStorage::Delegate
-  base::Time GetReportTime(const StorableSource& impression,
-                           base::Time conversion_time) const override;
-  int GetMaxConversionsPerImpression(
+  base::Time GetReportTime(const StorableSource& source,
+                           base::Time trigger_time) const override;
+  int GetMaxAttributionsPerSource(
       StorableSource::SourceType source_type) const override;
-  int GetMaxImpressionsPerOrigin() const override;
-  int GetMaxConversionsPerOrigin() const override;
+  int GetMaxSourcesPerOrigin() const override;
+  int GetMaxAttributionsPerOrigin() const override;
   RateLimitConfig GetRateLimits(
       AttributionStorage::AttributionType attribution_type) const override;
   int GetMaxAttributionDestinationsPerEventSource() const override;
   uint64_t GetFakeEventSourceTriggerData() const override;
-  base::TimeDelta GetDeleteExpiredImpressionsFrequency() const override;
+  base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
 
-  void set_max_conversions_per_impression(int max) {
-    max_conversions_per_impression_ = max;
+  void set_max_attributions_per_source(int max) {
+    max_attributions_per_source_ = max;
   }
 
-  void set_max_impressions_per_origin(int max) {
-    max_impressions_per_origin_ = max;
-  }
+  void set_max_sources_per_origin(int max) { max_sources_per_origin_ = max; }
 
-  void set_max_conversions_per_origin(int max) {
-    max_conversions_per_origin_ = max;
+  void set_max_attributions_per_origin(int max) {
+    max_attributions_per_origin_ = max;
   }
 
   void set_max_attribution_destinations_per_event_source(int max) {
@@ -118,8 +116,8 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
     fake_event_source_trigger_data_ = data;
   }
 
-  void set_delete_expired_impressions_frequency(base::TimeDelta frequency) {
-    delete_expired_impressions_frequency_ = frequency;
+  void set_delete_expired_sources_frequency(base::TimeDelta frequency) {
+    delete_expired_sources_frequency_ = frequency;
   }
 
   void set_delete_expired_rate_limits_frequency(base::TimeDelta frequency) {
@@ -131,9 +129,9 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
   }
 
  private:
-  int max_conversions_per_impression_ = INT_MAX;
-  int max_impressions_per_origin_ = INT_MAX;
-  int max_conversions_per_origin_ = INT_MAX;
+  int max_attributions_per_source_ = INT_MAX;
+  int max_sources_per_origin_ = INT_MAX;
+  int max_attributions_per_origin_ = INT_MAX;
   int max_attribution_destinations_per_event_source_ = INT_MAX;
 
   RateLimitConfig rate_limits_ = {
@@ -143,7 +141,7 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
 
   uint64_t fake_event_source_trigger_data_ = 0;
 
-  base::TimeDelta delete_expired_impressions_frequency_;
+  base::TimeDelta delete_expired_sources_frequency_;
   base::TimeDelta delete_expired_rate_limits_frequency_;
 
   int report_time_ms_ = 0;
@@ -170,9 +168,9 @@ class TestAttributionManager : public AttributionManager {
   ~TestAttributionManager() override;
 
   // AttributionManager:
-  void HandleImpression(StorableSource impression) override;
-  void HandleConversion(StorableTrigger conversion) override;
-  void GetActiveImpressionsForWebUI(
+  void HandleSource(StorableSource source) override;
+  void HandleTrigger(StorableTrigger trigger) override;
+  void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StorableSource>)> callback) override;
   void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<AttributionReport>)> callback,
@@ -185,15 +183,15 @@ class TestAttributionManager : public AttributionManager {
                  base::RepeatingCallback<bool(const url::Origin&)> filter,
                  base::OnceClosure done) override;
 
-  void SetActiveImpressionsForWebUI(std::vector<StorableSource> impressions);
+  void SetActiveSourcesForWebUI(std::vector<StorableSource> sources);
   void SetReportsForWebUI(std::vector<AttributionReport> reports);
   AttributionSessionStorage& GetSessionStorage();
 
   // Resets all counters on this.
   void Reset();
 
-  size_t num_impressions() const { return num_impressions_; }
-  size_t num_conversions() const { return num_conversions_; }
+  size_t num_sources() const { return num_sources_; }
+  size_t num_triggers() const { return num_triggers_; }
 
   const net::SchemefulSite& last_conversion_destination() {
     return last_conversion_destination_;
@@ -219,10 +217,10 @@ class TestAttributionManager : public AttributionManager {
   absl::optional<StorableSource::SourceType> last_impression_source_type_;
   absl::optional<url::Origin> last_impression_origin_;
   absl::optional<int64_t> last_attribution_source_priority_;
-  size_t num_impressions_ = 0;
-  size_t num_conversions_ = 0;
+  size_t num_sources_ = 0;
+  size_t num_triggers_ = 0;
 
-  std::vector<StorableSource> impressions_;
+  std::vector<StorableSource> sources_;
   std::vector<AttributionReport> reports_;
 };
 
@@ -342,7 +340,7 @@ std::ostream& operator<<(std::ostream& out, const SentReportInfo& info);
 std::ostream& operator<<(std::ostream& out,
                          StorableSource::AttributionLogic attribution_logic);
 
-std::vector<AttributionReport> GetConversionsToReportForTesting(
+std::vector<AttributionReport> GetAttributionsToReportForTesting(
     AttributionManagerImpl* manager,
     base::Time max_report_time) WARN_UNUSED_RESULT;
 

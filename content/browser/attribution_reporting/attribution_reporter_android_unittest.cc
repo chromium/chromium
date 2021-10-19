@@ -45,7 +45,7 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
       test_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
       kReportToUrl, 56789);
 
-  EXPECT_EQ(1u, test_manager_.num_impressions());
+  EXPECT_EQ(1u, test_manager_.num_sources());
 
   EXPECT_EQ(OriginFromAndroidPackageName(kPackageName),
             test_manager_.last_impression_origin());
@@ -63,7 +63,7 @@ TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
       test_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
       kReportToUrl, 56789);
 
-  EXPECT_EQ(0u, test_manager_.num_impressions());
+  EXPECT_EQ(0u, test_manager_.num_sources());
 
   SetBrowserClientForTesting(old_browser_client);
 }
@@ -73,7 +73,7 @@ TEST_F(AttributionReporterTest, InvalidImpression) {
       test_manager_, nullptr, kPackageName, kEventId, kInvalidUrl, kReportToUrl,
       56789);
 
-  EXPECT_EQ(0u, test_manager_.num_impressions());
+  EXPECT_EQ(0u, test_manager_.num_sources());
 }
 
 }  // namespace content

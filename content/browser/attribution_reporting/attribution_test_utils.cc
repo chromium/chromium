@@ -92,22 +92,22 @@ ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;
 ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
 
 base::Time ConfigurableStorageDelegate::GetReportTime(
-    const StorableSource& impression,
-    base::Time conversion_time) const {
-  return impression.impression_time() + base::Milliseconds(report_time_ms_);
+    const StorableSource& source,
+    base::Time trigger_time) const {
+  return source.impression_time() + base::Milliseconds(report_time_ms_);
 }
 
-int ConfigurableStorageDelegate::GetMaxConversionsPerImpression(
+int ConfigurableStorageDelegate::GetMaxAttributionsPerSource(
     StorableSource::SourceType source_type) const {
-  return max_conversions_per_impression_;
+  return max_attributions_per_source_;
 }
 
-int ConfigurableStorageDelegate::GetMaxImpressionsPerOrigin() const {
-  return max_impressions_per_origin_;
+int ConfigurableStorageDelegate::GetMaxSourcesPerOrigin() const {
+  return max_sources_per_origin_;
 }
 
-int ConfigurableStorageDelegate::GetMaxConversionsPerOrigin() const {
-  return max_conversions_per_origin_;
+int ConfigurableStorageDelegate::GetMaxAttributionsPerOrigin() const {
+  return max_attributions_per_origin_;
 }
 
 int ConfigurableStorageDelegate::GetMaxAttributionDestinationsPerEventSource()
@@ -125,9 +125,9 @@ uint64_t ConfigurableStorageDelegate::GetFakeEventSourceTriggerData() const {
   return fake_event_source_trigger_data_;
 }
 
-base::TimeDelta
-ConfigurableStorageDelegate::GetDeleteExpiredImpressionsFrequency() const {
-  return delete_expired_impressions_frequency_;
+base::TimeDelta ConfigurableStorageDelegate::GetDeleteExpiredSourcesFrequency()
+    const {
+  return delete_expired_sources_frequency_;
 }
 
 base::TimeDelta
@@ -144,22 +144,22 @@ TestAttributionManager::TestAttributionManager() = default;
 
 TestAttributionManager::~TestAttributionManager() = default;
 
-void TestAttributionManager::HandleImpression(StorableSource impression) {
-  num_impressions_++;
-  last_impression_source_type_ = impression.source_type();
-  last_impression_origin_ = impression.impression_origin();
-  last_attribution_source_priority_ = impression.priority();
+void TestAttributionManager::HandleSource(StorableSource source) {
+  num_sources_++;
+  last_impression_source_type_ = source.source_type();
+  last_impression_origin_ = source.impression_origin();
+  last_attribution_source_priority_ = source.priority();
 }
 
-void TestAttributionManager::HandleConversion(StorableTrigger conversion) {
-  num_conversions_++;
+void TestAttributionManager::HandleTrigger(StorableTrigger trigger) {
+  num_triggers_++;
 
-  last_conversion_destination_ = conversion.conversion_destination();
+  last_conversion_destination_ = trigger.conversion_destination();
 }
 
-void TestAttributionManager::GetActiveImpressionsForWebUI(
+void TestAttributionManager::GetActiveSourcesForWebUI(
     base::OnceCallback<void(std::vector<StorableSource>)> callback) {
-  std::move(callback).Run(impressions_);
+  std::move(callback).Run(sources_);
 }
 
 void TestAttributionManager::GetPendingReportsForWebUI(
@@ -191,15 +191,15 @@ void TestAttributionManager::ClearData(
     base::Time delete_end,
     base::RepeatingCallback<bool(const url::Origin&)> filter,
     base::OnceClosure done) {
-  impressions_.clear();
+  sources_.clear();
   reports_.clear();
   session_storage_.Reset();
   std::move(done).Run();
 }
 
-void TestAttributionManager::SetActiveImpressionsForWebUI(
-    std::vector<StorableSource> impressions) {
-  impressions_ = std::move(impressions);
+void TestAttributionManager::SetActiveSourcesForWebUI(
+    std::vector<StorableSource> sources) {
+  sources_ = std::move(sources);
 }
 
 void TestAttributionManager::SetReportsForWebUI(
@@ -208,8 +208,8 @@ void TestAttributionManager::SetReportsForWebUI(
 }
 
 void TestAttributionManager::Reset() {
-  num_impressions_ = 0u;
-  num_conversions_ = 0u;
+  num_sources_ = 0u;
+  num_triggers_ = 0u;
 }
 
 // Builds an impression with default values. This is done as a builder because
@@ -529,21 +529,21 @@ std::ostream& operator<<(std::ostream& out, const SentReportInfo& info) {
              << ",http_response_code=" << info.http_response_code << "}";
 }
 
-std::vector<AttributionReport> GetConversionsToReportForTesting(
+std::vector<AttributionReport> GetAttributionsToReportForTesting(
     AttributionManagerImpl* manager,
     base::Time max_report_time) {
   base::RunLoop run_loop;
-  std::vector<AttributionReport> conversion_reports;
+  std::vector<AttributionReport> attribution_reports;
   manager->attribution_storage_
-      .AsyncCall(&AttributionStorage::GetConversionsToReport)
+      .AsyncCall(&AttributionStorage::GetAttributionsToReport)
       .WithArgs(max_report_time, /*limit=*/-1)
       .Then(base::BindOnce(base::BindLambdaForTesting(
           [&](std::vector<AttributionReport> reports) {
-            conversion_reports = std::move(reports);
+            attribution_reports = std::move(reports);
             run_loop.Quit();
           })));
   run_loop.Run();
-  return conversion_reports;
+  return attribution_reports;
 }
 
 }  // namespace content

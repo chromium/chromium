@@ -126,7 +126,7 @@ void AttributionInternalsHandlerImpl::GetActiveImpressions(
     mojom::AttributionInternalsHandler::GetActiveImpressionsCallback callback) {
   if (AttributionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
-    manager->GetActiveImpressionsForWebUI(
+    manager->GetActiveSourcesForWebUI(
         base::BindOnce(&ForwardImpressionsToWebUI, std::move(callback)));
   } else {
     std::move(callback).Run({});

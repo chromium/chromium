@@ -22,7 +22,7 @@ AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(bool debug_mode)
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-int AttributionStorageDelegateImpl::GetMaxConversionsPerImpression(
+int AttributionStorageDelegateImpl::GetMaxAttributionsPerSource(
     StorableSource::SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
@@ -33,12 +33,12 @@ int AttributionStorageDelegateImpl::GetMaxConversionsPerImpression(
   }
 }
 
-int AttributionStorageDelegateImpl::GetMaxImpressionsPerOrigin() const {
+int AttributionStorageDelegateImpl::GetMaxSourcesPerOrigin() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return 1024;
 }
 
-int AttributionStorageDelegateImpl::GetMaxConversionsPerOrigin() const {
+int AttributionStorageDelegateImpl::GetMaxAttributionsPerOrigin() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return 1024;
 }
@@ -77,7 +77,7 @@ uint64_t AttributionStorageDelegateImpl::GetFakeEventSourceTriggerData() const {
 }
 
 base::TimeDelta
-AttributionStorageDelegateImpl::GetDeleteExpiredImpressionsFrequency() const {
+AttributionStorageDelegateImpl::GetDeleteExpiredSourcesFrequency() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Minutes(5);
 }
@@ -89,13 +89,13 @@ AttributionStorageDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
 }
 
 base::Time AttributionStorageDelegateImpl::GetReportTime(
-    const StorableSource& impression,
-    base::Time conversion_time) const {
+    const StorableSource& source,
+    base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If in debug mode, the report should be sent immediately.
   if (debug_mode_)
-    return conversion_time;
-  return ComputeReportTime(impression, conversion_time);
+    return trigger_time;
+  return ComputeReportTime(source, trigger_time);
 }
 
 }  // namespace content

@@ -107,7 +107,7 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   if (!db->Execute(kRateLimitAttributionTypeConversionTimeIndexSql))
     return false;
 
-  // Optimizes calls to |ClearDataForImpressionIds()|.
+  // Optimizes calls to |ClearDataForSourceIds()|.
   static constexpr char kRateLimitImpressionIndexSql[] =
       "CREATE INDEX IF NOT EXISTS rate_limit_impression_id_idx "
       "ON rate_limits(impression_id)";
@@ -137,7 +137,7 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
 bool RateLimitTable::AddRow(
     sql::Database* db,
     AttributionType attribution_type,
-    StorableSource::Id impression_id,
+    StorableSource::Id source_id,
     const std::string& serialized_impression_site,
     const std::string& serialized_impression_origin,
     const std::string& serialized_conversion_destination,
@@ -165,7 +165,7 @@ bool RateLimitTable::AddRow(
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
   statement.BindInt(0, SerializeAttributionType(attribution_type));
-  statement.BindInt64(1, *impression_id);
+  statement.BindInt64(1, *source_id);
   statement.BindString(2, serialized_impression_site);
   statement.BindString(3, serialized_impression_origin);
   statement.BindString(4, serialized_conversion_destination);
@@ -353,9 +353,9 @@ bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db,
   return statement.Run();
 }
 
-bool RateLimitTable::ClearDataForImpressionIds(
+bool RateLimitTable::ClearDataForSourceIds(
     sql::Database* db,
-    const std::vector<StorableSource::Id>& impression_ids) {
+    const std::vector<StorableSource::Id>& source_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(db);
@@ -367,7 +367,7 @@ bool RateLimitTable::ClearDataForImpressionIds(
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
 
-  for (StorableSource::Id id : impression_ids) {
+  for (StorableSource::Id id : source_ids) {
     statement.Reset(/*clear_bound_vars=*/true);
     statement.BindInt64(0, *id);
     if (!statement.Run())
@@ -380,17 +380,17 @@ bool RateLimitTable::ClearDataForImpressionIds(
 AttributionAllowedStatus
 RateLimitTable::AddAggregateHistogramContributionsForTesting(
     sql::Database* db,
-    const StorableSource& impression,
+    const StorableSource& source,
     const std::vector<AggregateHistogramContribution>& contributions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(impression.impression_id().has_value());
+  DCHECK(source.impression_id().has_value());
 
   base::Time now = clock_->Now();
 
   const std::string serialized_impression_site =
-      impression.ImpressionSite().Serialize();
+      source.ImpressionSite().Serialize();
   const std::string serialized_conversion_destination =
-      impression.ConversionDestination().Serialize();
+      source.ConversionDestination().Serialize();
 
   const int64_t capacity =
       GetCapacity(db, AttributionType::kAggregate, serialized_impression_site,
@@ -415,12 +415,12 @@ RateLimitTable::AddAggregateHistogramContributionsForTesting(
     return AttributionAllowedStatus::kError;
 
   const std::string serialized_impression_origin =
-      SerializeOrigin(impression.impression_origin());
+      SerializeOrigin(source.impression_origin());
   const std::string serialized_conversion_origin =
-      SerializeOrigin(impression.conversion_origin());
+      SerializeOrigin(source.conversion_origin());
 
   for (const auto& contribution : contributions) {
-    if (!AddRow(db, AttributionType::kAggregate, *impression.impression_id(),
+    if (!AddRow(db, AttributionType::kAggregate, *source.impression_id(),
                 serialized_impression_site, serialized_impression_origin,
                 serialized_conversion_destination, serialized_conversion_origin,
                 now, contribution.bucket, contribution.value)) {

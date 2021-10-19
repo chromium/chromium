@@ -26,7 +26,7 @@ namespace content {
 
 class StorableTrigger;
 
-// This class provides an interface for persisting impression/conversion data to
+// This class provides an interface for persisting attribution data to
 // disk, and performing queries on it. AttributionStorage should initialize
 // itself. Calls to a AttributionStorage instance that failed to initialize
 // properly should result in no-ops.
@@ -39,24 +39,24 @@ class AttributionStorage {
     kAggregate = 2,
   };
 
-  // Storage delegate that can supplied to extend basic conversion storage
-  // functionality like annotating conversion reports.
+  // Storage delegate that can supplied to extend basic attribution storage
+  // functionality like annotating reports.
   class Delegate {
    public:
     virtual ~Delegate() = default;
 
-    // Returns the time a report should be sent for a given conversion time and
-    // its corresponding impression.
-    virtual base::Time GetReportTime(const StorableSource& impression,
-                                     base::Time conversion_time) const
+    // Returns the time a report should be sent for a given trigger time and
+    // its corresponding source.
+    virtual base::Time GetReportTime(const StorableSource& source,
+                                     base::Time trigger_time) const
         WARN_UNUSED_RESULT = 0;
 
-    // This limit is used to determine if an impression is allowed to schedule
-    // a new conversion reports. When an impression reaches this limit it is
-    // marked inactive and no new conversion reports will be created for it.
-    // Impressions will be checked against this limit after they schedule a new
+    // This limit is used to determine if a source is allowed to schedule
+    // a new report. When a source reaches this limit it is
+    // marked inactive and no new reports will be created for it.
+    // Sources will be checked against this limit after they schedule a new
     // report.
-    virtual int GetMaxConversionsPerImpression(
+    virtual int GetMaxAttributionsPerSource(
         StorableSource::SourceType source_type) const WARN_UNUSED_RESULT = 0;
 
     // These limits are designed solely to avoid excessive disk / memory usage.
@@ -64,19 +64,19 @@ class AttributionStorage {
     // TODO(crbug.com/1082754): Consider replacing this functionality (and the
     // data deletion logic) with the quota system.
     //
-    // Returns the maximum number of impressions that can be in storage at any
-    // time for an impression top-level origin.
-    virtual int GetMaxImpressionsPerOrigin() const WARN_UNUSED_RESULT = 0;
+    // Returns the maximum number of sources that can be in storage at any
+    // time for a source top-level origin.
+    virtual int GetMaxSourcesPerOrigin() const WARN_UNUSED_RESULT = 0;
 
-    //  Returns the maximum number of conversions that can be in storage at any
-    //  time for a conversion top-level origin. Note that since reporting
-    //  origins are the actual entities that invoke conversion registration, we
-    //  could consider changing this limit to be keyed by a <conversion origin,
-    //  reporting origin> tuple.
-    virtual int GetMaxConversionsPerOrigin() const WARN_UNUSED_RESULT = 0;
+    // Returns the maximum number of reports that can be in storage at any
+    // time for an attribution top-level origin. Note that since reporting
+    // origins are the actual entities that invoke attribution registration, we
+    // could consider changing this limit to be keyed by an <attribution origin,
+    // reporting origin> tuple.
+    virtual int GetMaxAttributionsPerOrigin() const WARN_UNUSED_RESULT = 0;
 
-    // Returns the maximum number of distinct conversion destinations that can
-    // be in storage at any time for event-source impressions with a given
+    // Returns the maximum number of distinct attribution destinations that can
+    // be in storage at any time for event sources with a given
     // reporting origin.
     virtual int GetMaxAttributionDestinationsPerEventSource() const
         WARN_UNUSED_RESULT = 0;
@@ -97,9 +97,9 @@ class AttributionStorage {
     virtual uint64_t GetFakeEventSourceTriggerData() const
         WARN_UNUSED_RESULT = 0;
 
-    // Returns the maximum frequency at which to delete expired impressions.
+    // Returns the maximum frequency at which to delete expired sources.
     // Must be positive.
-    virtual base::TimeDelta GetDeleteExpiredImpressionsFrequency() const
+    virtual base::TimeDelta GetDeleteExpiredSourcesFrequency() const
         WARN_UNUSED_RESULT = 0;
 
     // Returns the maximum frequency at which to delete expired rate limits.
@@ -112,12 +112,12 @@ class AttributionStorage {
   // When adding a new method, also add it to
   // AttributionStorageTest.StorageUsedAfterFailedInitilization_FailsSilently.
 
-  // Add |impression| to storage. Two impressions are considered
-  // matching when they share a <reporting_origin, conversion_origin> pair. When
-  // an impression is stored, all matching impressions that have
-  // already converted are marked as inactive, and are no longer eligible for
-  // reporting. Unconverted matching impressions are not modified.
-  virtual void StoreImpression(const StorableSource& impression) = 0;
+  // Add |source| to storage. Two sources are considered
+  // matching when they share a <reporting origin, attribution destination>
+  // pair. When a source is stored, all matching sources that have already
+  // converted are marked as inactive, and are no longer eligible for reporting.
+  // Unconverted matching sources are not modified.
+  virtual void StoreSource(const StorableSource& source) = 0;
 
   class CONTENT_EXPORT CreateReportResult {
    public:
@@ -160,47 +160,45 @@ class AttributionStorage {
     absl::optional<AttributionReport> dropped_report_;
   };
 
-  // Finds all stored impressions matching a given `conversion`, and stores the
-  // new associated conversion report. The delegate will receive a call to
-  // `Delegate::ProcessNewConversionReports()` before the report is added to
-  // storage. Only active impressions will receive new conversions. Returns
-  // whether a new conversion report has been scheduled/added to storage.
-  virtual CreateReportResult MaybeCreateAndStoreConversionReport(
-      const StorableTrigger& conversion) = 0;
+  // Finds all stored sources matching a given `trigger`, and stores the
+  // new associated report. Only active sources will receive new attributions.
+  // Returns whether a new report has been scheduled/added to storage.
+  virtual CreateReportResult MaybeCreateAndStoreReport(
+      const StorableTrigger& trigger) = 0;
 
-  // Returns all of the conversion reports that should be sent before
+  // Returns all of the reports that should be sent before
   // |max_report_time|. This call is logically const, and does not modify the
-  // underlying storage. |limit| limits the number of conversions to return; use
+  // underlying storage. |limit| limits the number of reports to return; use
   // a negative number for no limit.
-  virtual std::vector<AttributionReport> GetConversionsToReport(
+  virtual std::vector<AttributionReport> GetAttributionsToReport(
       base::Time max_report_time,
       int limit = -1) WARN_UNUSED_RESULT = 0;
 
-  // Returns all active impressions in storage. Active impressions are all
-  // impressions that can still convert. Impressions that: are past expiry,
-  // reached the conversion limit, or was marked inactive due to having
-  // converted and then superceded by a matching impression should not be
-  // returned. |limit| limits the number of impressions to return; use
+  // Returns all active sources in storage. Active sources are all
+  // sources that can still convert. Sources that: are past expiry,
+  // reached the attribution limit, or was marked inactive due to having
+  // trigger and then superceded by a matching source should not be
+  // returned. |limit| limits the number of sources to return; use
   // a negative number for no limit.
-  virtual std::vector<StorableSource> GetActiveImpressions(int limit = -1)
+  virtual std::vector<StorableSource> GetActiveSources(int limit = -1)
       WARN_UNUSED_RESULT = 0;
 
-  // Deletes the conversion report with the given |conversion_id|. Returns
+  // Deletes the report with the given |report_id|. Returns
   // false if an error occurred.
-  virtual bool DeleteConversion(AttributionReport::Id conversion_id) = 0;
+  virtual bool DeleteReport(AttributionReport::Id report_id) = 0;
 
   // Updates the number of failures associated with the given report, and sets
   // its report time to the given value. Should be called after a transient
   // failure to send the report so that it is retried later.
-  virtual bool UpdateReportForSendFailure(AttributionReport::Id conversion_id,
+  virtual bool UpdateReportForSendFailure(AttributionReport::Id report_id,
                                           base::Time new_report_time) = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between
   // |delete_begin| and |delete_end| time. More specifically, this:
-  // 1. Deletes all impressions within the time range. If any conversion is
-  //    attributed to this impression it is also deleted.
-  // 2. Deletes all conversions within the time range. All impressions
-  //    attributed to the conversion are also deleted.
+  // 1. Deletes all sources within the time range. If any report is
+  //    attributed to this source it is also deleted.
+  // 2. Deletes all reports within the time range. All sources
+  //    attributed to the report are also deleted.
   //
   // Note: if |filter| is null, it means that all Origins should match.
   virtual void ClearData(

@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsOriginTrialBrowserTest,
   base::RunLoop run_loop;
 
   // Verify we have received and logged an impression for the origin trial.
-  attribution_manager->GetActiveImpressionsForWebUI(base::BindLambdaForTesting(
+  attribution_manager->GetActiveSourcesForWebUI(base::BindLambdaForTesting(
       [&](std::vector<StorableSource> impressions) -> void {
         EXPECT_EQ(1u, impressions.size());
         run_loop.Quit();

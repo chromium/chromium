@@ -1923,18 +1923,18 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
       partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
-  auto impression = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
-  attribution_manager->HandleImpression(impression);
-  attribution_manager->HandleConversion(DefaultTrigger());
+  auto source = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
+  attribution_manager->HandleSource(source);
+  attribution_manager->HandleTrigger(DefaultTrigger());
 
   base::RunLoop run_loop;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0,
-                       impression.impression_origin().GetURL(), now, now,
+                       source.impression_origin().GetURL(), now, now,
                        run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(
-      GetConversionsToReportForTesting(attribution_manager, base::Time::Max())
+      GetAttributionsToReportForTesting(attribution_manager, base::Time::Max())
           .empty());
 }
 
@@ -1946,22 +1946,22 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
       partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
-  auto impression = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
-  attribution_manager->HandleImpression(impression);
-  attribution_manager->HandleConversion(DefaultTrigger());
+  auto source = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
+  attribution_manager->HandleSource(source);
+  attribution_manager->HandleTrigger(DefaultTrigger());
 
   EXPECT_FALSE(
-      GetConversionsToReportForTesting(attribution_manager, base::Time::Max())
+      GetAttributionsToReportForTesting(attribution_manager, base::Time::Max())
           .empty());
 
   // Arbitrary non-conversions mask.
   base::RunLoop run_loop;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_COOKIES, 0,
-                       impression.impression_origin().GetURL(), now, now,
+                       source.impression_origin().GetURL(), now, now,
                        run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_FALSE(
-      GetConversionsToReportForTesting(attribution_manager, base::Time::Max())
+      GetAttributionsToReportForTesting(attribution_manager, base::Time::Max())
           .empty());
 }
 
@@ -1976,13 +1976,13 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
   for (int i = 0; i < 20; i++) {
     auto origin = url::Origin::Create(
         GURL(base::StringPrintf("https://www.%d.test/", i)));
-    auto impression = SourceBuilder(now)
-                          .SetExpiry(base::Days(2))
-                          .SetImpressionOrigin(origin)
-                          .SetReportingOrigin(origin)
-                          .SetConversionOrigin(origin)
-                          .Build();
-    attribution_manager->HandleImpression(impression);
+    auto source = SourceBuilder(now)
+                      .SetExpiry(base::Days(2))
+                      .SetImpressionOrigin(origin)
+                      .SetReportingOrigin(origin)
+                      .SetConversionOrigin(origin)
+                      .Build();
+    attribution_manager->HandleSource(source);
   }
   base::RunLoop run_loop;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0,
@@ -1990,7 +1990,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
   run_loop.Run();
 
   EXPECT_TRUE(
-      GetConversionsToReportForTesting(attribution_manager, base::Time::Max())
+      GetAttributionsToReportForTesting(attribution_manager, base::Time::Max())
           .empty());
 }
 
@@ -2009,21 +2009,21 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
         GURL(base::StringPrintf("https://reporter-%d.com/", i)));
     auto conv = url::Origin::Create(
         GURL(base::StringPrintf("https://conv-%d.com/", i)));
-    attribution_manager->HandleImpression(SourceBuilder(now)
-                                              .SetImpressionOrigin(impression)
-                                              .SetReportingOrigin(reporter)
-                                              .SetConversionOrigin(conv)
-                                              .SetExpiry(base::Days(2))
-                                              .Build());
-    attribution_manager->HandleConversion(
+    attribution_manager->HandleSource(SourceBuilder(now)
+                                          .SetImpressionOrigin(impression)
+                                          .SetReportingOrigin(reporter)
+                                          .SetConversionOrigin(conv)
+                                          .SetExpiry(base::Days(2))
+                                          .Build());
+    attribution_manager->HandleTrigger(
         StorableTrigger(123, net::SchemefulSite(conv), reporter,
                         /*event_source_trigger_data=*/0,
                         /*priority=*/0,
                         /*dedup_key=*/absl::nullopt));
   }
 
-  EXPECT_EQ(5u, GetConversionsToReportForTesting(attribution_manager,
-                                                 base::Time::Max())
+  EXPECT_EQ(5u, GetAttributionsToReportForTesting(attribution_manager,
+                                                  base::Time::Max())
                     .size());
 
   // Match against enough Origins to delete three of the imp/conv pairs.
@@ -2038,8 +2038,8 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0, func,
                        nullptr, false, now, now, run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_EQ(2u, GetConversionsToReportForTesting(attribution_manager,
-                                                 base::Time::Max())
+  EXPECT_EQ(2u, GetAttributionsToReportForTesting(attribution_manager,
+                                                  base::Time::Max())
                     .size());
 }
 

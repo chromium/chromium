@@ -325,7 +325,7 @@ void AttributionHost::RegisterConversion(
 
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnConversion(conversion->reporting_origin);
-  attribution_manager->HandleConversion(std::move(storable_conversion));
+  attribution_manager->HandleTrigger(std::move(storable_conversion));
 }
 
 void AttributionHost::NotifyImpressionInitiatedByPage(

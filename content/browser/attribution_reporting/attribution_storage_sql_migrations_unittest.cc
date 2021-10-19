@@ -48,7 +48,7 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
 
     // We need to run an operation on storage to force the lazy initialization.
     ignore_result(
-        static_cast<AttributionStorage*>(&storage)->GetConversionsToReport(
+        static_cast<AttributionStorage*>(&storage)->GetAttributionsToReport(
             base::Time::Min()));
   }
 
@@ -112,7 +112,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
 
     // We need to perform an operation that is non-trivial on an empty database
     // to force initialization.
-    static_cast<AttributionStorage*>(&storage)->StoreImpression(
+    static_cast<AttributionStorage*>(&storage)->StoreSource(
         SourceBuilder(base::Time::Min()).Build());
   }
 

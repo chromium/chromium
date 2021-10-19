@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // with `Number.MAX_SAFE_INTEGER`.
 
   TestAttributionManager manager;
-  manager.SetActiveImpressionsForWebUI(
+  manager.SetActiveSourcesForWebUI(
       {SourceBuilder(base::Time::Now())
            .SetData(std::numeric_limits<uint64_t>::max())
            .SetAttributionLogic(StorableSource::AttributionLogic::kNever)

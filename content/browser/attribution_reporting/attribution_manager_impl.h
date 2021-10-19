@@ -32,8 +32,7 @@ class FilePath;
 
 namespace content {
 
-// Frequency we pull ConversionReports from storage and queue them to be
-// reported.
+// Frequency we pull reports from storage and queue them to be reported.
 extern CONTENT_EXPORT const base::TimeDelta
     kAttributionManagerQueueReportsInterval;
 
@@ -57,7 +56,7 @@ class AttributionManagerProviderImpl : public AttributionManager::Provider {
   AttributionManager* GetManager(WebContents* web_contents) const override;
 };
 
-// UI thread class that manages the lifetime of the underlying conversion
+// UI thread class that manages the lifetime of the underlying attribution
 // storage. Owned by the storage partition.
 class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
  public:
@@ -71,7 +70,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   };
 
   // Interface which manages the ownership, queuing, and sending of pending
-  // conversion reports. Owned by |this|.
+  // reports. Owned by |this|.
   class AttributionReporter {
    public:
     virtual ~AttributionReporter() = default;
@@ -109,9 +108,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   ~AttributionManagerImpl() override;
 
   // AttributionManager:
-  void HandleImpression(StorableSource impression) override;
-  void HandleConversion(StorableTrigger conversion) override;
-  void GetActiveImpressionsForWebUI(
+  void HandleSource(StorableSource source) override;
+  void HandleTrigger(StorableTrigger trigger) override;
+  void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StorableSource>)> callback) override;
   void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<AttributionReport>)> callback,
@@ -155,14 +154,12 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void HandleReportsSentFromWebUI(base::OnceClosure done,
                                   std::vector<AttributionReport> reports);
 
-  // Notifies storage to delete the given |conversion_id| when its associated
-  // report has been sent.
   void OnReportSent(SentReportInfo info);
 
   void OnReportStored(AttributionStorage::CreateReportResult result);
 
   // Friend to expose the AttributionStorage for certain tests.
-  friend std::vector<AttributionReport> GetConversionsToReportForTesting(
+  friend std::vector<AttributionReport> GetAttributionsToReportForTesting(
       AttributionManagerImpl* manager,
       base::Time max_report_time);
 
@@ -176,19 +173,19 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // Timer which administers calls to `GetAndQueueReportsForNextInterval()`.
   base::RepeatingTimer get_and_queue_reports_timer_;
 
-  // Handle keeping track of conversion reports to send. Reports are fetched
-  // from |storage_| and added to |reporter_| by |get_reports_timer_|.
+  // Tracks reports to send. Reports are fetched
+  // from |attribution_storage_| and added to |reporter_| by
+  // |get_and_queue_reports_timer_|.
   std::unique_ptr<AttributionReporter> reporter_;
 
   base::SequenceBound<AttributionStorage> attribution_storage_;
 
   AttributionSessionStorage session_storage_;
 
-  // Stores the set of conversion IDs whose reports are being sent by
+  // Stores the set of IDs whose reports are being sent by
   // `SendReportsForWebUI()`. Once empty, `send_reports_for_web_ui_callback_` is
   // invoked if non-null.
-  base::flat_set<AttributionReport::Id>
-      pending_conversion_ids_for_internals_ui_;
+  base::flat_set<AttributionReport::Id> pending_report_ids_for_internals_ui_;
   base::OnceClosure send_reports_for_web_ui_callback_;
 
   // Policy used for controlling API configurations such as reporting and

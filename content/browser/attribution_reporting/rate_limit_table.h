@@ -80,7 +80,7 @@ class CONTENT_EXPORT RateLimitTable {
   // tests.
   AttributionAllowedStatus AddAggregateHistogramContributionsForTesting(
       sql::Database* db,
-      const StorableSource& impression,
+      const StorableSource& source,
       const std::vector<AggregateHistogramContribution>& contributions)
       WARN_UNUSED_RESULT;
 
@@ -98,9 +98,9 @@ class CONTENT_EXPORT RateLimitTable {
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin&)> filter)
       WARN_UNUSED_RESULT;
-  bool ClearDataForImpressionIds(
-      sql::Database* db,
-      const std::vector<StorableSource::Id>& impression_ids) WARN_UNUSED_RESULT;
+  bool ClearDataForSourceIds(sql::Database* db,
+                             const std::vector<StorableSource::Id>& source_ids)
+      WARN_UNUSED_RESULT;
 
  private:
   // Returns the capacity for the given `attribution_type`, `impression_site`,
@@ -115,7 +115,7 @@ class CONTENT_EXPORT RateLimitTable {
 
   bool AddRow(sql::Database* db,
               AttributionStorage::AttributionType attribution_type,
-              StorableSource::Id impression_id,
+              StorableSource::Id source_id,
               const std::string& serialized_impression_site,
               const std::string& serialized_impression_origin,
               const std::string& serialized_conversion_destination,
