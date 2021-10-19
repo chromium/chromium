@@ -795,7 +795,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCommercePriceTrackingDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kCommercePriceTracking,
                                     kCommercePriceTrackingVariations,
-                                    "CommercePriceTracking")}};
+                                    "CommercePriceTracking")},
+    {"web-feed-ios", flag_descriptions::kFollowingFeedInNtpName,
+     flag_descriptions::kFollowingFeedInNtpDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kFollowingFeedInNTP)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

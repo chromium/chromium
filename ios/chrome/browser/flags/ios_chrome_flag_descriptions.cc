@@ -252,6 +252,11 @@ const char kFillingAcrossAffiliatedWebsitesDescription[] =
     "Enables filling password on a website when there is saved "
     "password on affiliated website.";
 
+const char kFollowingFeedInNtpName[] = "Following feed in the new tab page.";
+const char kFollowingFeedInNtpDescription[] =
+    "Enabled Following feed to display personalized feed based on websites "
+    "that users follow.";
+
 const char kForceDisableExtendedSyncPromosName[] =
     "Disable all extended sync promos";
 const char kForceDisableExtendedSyncPromosDescription[] =

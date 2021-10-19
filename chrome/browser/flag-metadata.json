@@ -5541,6 +5541,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "web-feed-ios",
+    "owners": [ "adamta", "sczs", "tinazwang" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "web-feed-sort",
     "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 100

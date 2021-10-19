@@ -35,6 +35,9 @@ const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
 const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
     "DiscoverFeedSRSPreloadTemplatesEnabled";
 
+const base::Feature kFollowingFeedInNTP{"FollowingFeedInNTP",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
 }
@@ -45,4 +48,8 @@ bool IsDiscoverFeedAppFlowsEnabled() {
 
 bool IsDiscoverFeedShorterCacheEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedShorterCache);
+}
+
+bool IsFollowingFeedEnabled() {
+  return base::FeatureList::IsEnabled(kFollowingFeedInNTP);
 }
