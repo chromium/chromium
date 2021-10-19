@@ -609,7 +609,6 @@
       //
       // https://crbug.com/1180159
       name: "CSSDelayedAnimationUpdates",
-      status: "stable",
     },
     {
       name: "CSSDynamicRangeMediaQueries",
