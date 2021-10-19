@@ -77,6 +77,21 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
 }
 
+// TODO(crbug.com/1256480): Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
+                       DISABLED_PromoCodeOffer_FromCouponService) {
+  auto offer_data =
+      CreatePromoCodeOfferDataWithDomains({GURL("https://www.example.com/")});
+  SetUpFreeListingCouponOfferDataForCouponService(std::move(offer_data));
+
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+  NavigateTo("https://www.example.com/first/");
+  WaitForObservedEvent();
+
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_TRUE(GetOfferNotificationBubbleViews());
+}
+
 class OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes
     : public OfferNotificationBubbleViewsTestBase {
  public:
