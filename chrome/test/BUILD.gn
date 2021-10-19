@@ -2516,7 +2516,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/extensions/api/socket/socket_apitest.cc",
         "../browser/extensions/api/storage/settings_apitest.cc",
         "../browser/extensions/api/system_display/system_display_extension_apitest.cc",
-        "../browser/extensions/api/system_indicator/system_indicator_apitest.cc",
         "../browser/extensions/api/system_private/system_private_apitest.cc",
         "../browser/extensions/api/tab_capture/tab_capture_apitest.cc",
         "../browser/extensions/api/tab_capture/tab_capture_performance_test_base.cc",
@@ -2678,7 +2677,10 @@ if (!is_android && !is_fuchsia) {
       }
 
       if (is_win || is_linux || is_mac) {
-        sources += [ "../browser/enterprise/connectors/device_trust/device_trust_browsertest.cc" ]
+        sources += [
+          "../browser/enterprise/connectors/device_trust/device_trust_browsertest.cc",
+          "../browser/extensions/api/system_indicator/system_indicator_apitest.cc",
+        ]
 
         deps += [
           "//chrome/browser/enterprise/connectors/device_trust:features",
@@ -6891,7 +6893,6 @@ test("unit_tests") {
       "../common/extensions/api/extension_action/page_action_manifest_unittest.cc",
       "../common/extensions/api/speech/tts_engine_manifest_handler_unittest.cc",
       "../common/extensions/api/storage/storage_schema_manifest_handler_unittest.cc",
-      "../common/extensions/api/system_indicator/system_indicator_handler_unittest.cc",
       "../common/extensions/chrome_extensions_client_unittest.cc",
       "../common/extensions/chrome_manifest_url_handlers_unittest.cc",
       "../common/extensions/command_unittest.cc",
@@ -6948,6 +6949,10 @@ test("unit_tests") {
       "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
       "../renderer/extensions/tabs_hooks_delegate_unittest.cc",
     ]
+
+    if (is_linux || is_mac || is_win) {
+      sources += [ "../common/extensions/api/system_indicator/system_indicator_handler_unittest.cc" ]
+    }
 
     allow_circular_includes_from = [
       "//chrome/browser/web_applications:web_applications_unit_tests",

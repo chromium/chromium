@@ -219,25 +219,20 @@
       "login_screen_extension"
     ]
   },
-  "system_indicator": [
-    {
-      "channel": "dev",
-      "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
-    },
-    {
-      "channel": "stable",
-      "allowlist": [
-        "F29716B08705C9D3C12CDFE3F638BAE709570C31",  // browser_tests
-        // See crbug.com/245730 for details on the Hangouts allowlist.
-        "53041A2FA309EECED01FFC751E7399186E860B2C",  // Hangouts
-        "312745D9BF916161191143F6490085EEA0434997",  // Hangouts beta
-        "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",  // Hangouts alpha
-        "E7E2461CE072DF036CF9592740196159E2D7C089",  // Hangouts debug
-        "49DA0B9CCEEA299186C6E7226FD66922D57543DC"   // Hangouts dev
-      ],
-      "extension_types": ["extension", "platform_app"]
-    }
-  ],
+  "system_indicator": {
+    "channel": "stable",
+    "allowlist": [
+      "F29716B08705C9D3C12CDFE3F638BAE709570C31",  // Tests
+      // See crbug.com/245730 for details on the Hangouts allowlist.
+      "53041A2FA309EECED01FFC751E7399186E860B2C",  // Hangouts
+      "312745D9BF916161191143F6490085EEA0434997",  // Hangouts beta
+      "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",  // Hangouts alpha
+      "E7E2461CE072DF036CF9592740196159E2D7C089",  // Hangouts debug
+      "49DA0B9CCEEA299186C6E7226FD66922D57543DC"   // Hangouts dev
+    ],
+    "extension_types": ["extension", "platform_app"],
+    "platforms": ["linux", "mac", "win"]
+  },
   "theme": {
     "channel": "stable",
     "extension_types": ["theme"]

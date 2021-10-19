@@ -52,7 +52,6 @@ schema_sources_ = [
   "sessions.json",
   "settings_private.idl",
   "signed_in_devices.idl",
-  "system_indicator.idl",
   "system_private.json",
   "tab_capture.idl",
   "tab_groups.json",
@@ -126,6 +125,10 @@ if (is_chromeos_ash) {
 
 if (enable_service_discovery) {
   schema_sources_ += [ "mdns.idl" ]
+}
+
+if (is_linux || is_mac || is_win) {
+  schema_sources_ += [ "system_indicator.idl" ]
 }
 
 uncompiled_sources_ = [
