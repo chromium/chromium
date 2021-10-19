@@ -382,8 +382,6 @@ static_library("test_support") {
       "//ui/snapshot",
     ]
     sources += [
-      "../browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.cc",
-      "../browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h",
       "../browser/ui/tabs/pinned_tab_test_utils.cc",
       "../browser/ui/tabs/pinned_tab_test_utils.h",
       "base/dialog_test_browser_window.cc",
@@ -5758,7 +5756,6 @@ test("unit_tests") {
       "../browser/enterprise/reporting/extension_request/extension_request_observer_factory_unittest.cc",
       "../browser/enterprise/reporting/extension_request/extension_request_observer_unittest.cc",
       "../browser/enterprise/reporting/extension_request/extension_request_report_generator_unittest.cc",
-      "../browser/enterprise/reporting/extension_request/extension_request_report_throttler_unittest.cc",
       "../browser/enterprise/reporting/policy_info_unittest.cc",
       "../browser/enterprise/reporting/profile_report_generator_unittest.cc",
       "../browser/enterprise/reporting/real_time_report_generator_unittest.cc",

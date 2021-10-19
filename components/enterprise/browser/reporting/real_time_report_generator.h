@@ -21,6 +21,8 @@ class RealTimeReportGenerator {
  public:
   enum class ReportType { kExtensionRequest = 0 };
 
+  struct Data {};
+
   // Delegate class that is used to collect information and generate reports
   // outside the //components. For example, RealTimeReportGeneratorDesktop
   // actual_report chrome/browser/enterprise/reporting.
@@ -32,7 +34,7 @@ class RealTimeReportGenerator {
     virtual ~Delegate();
 
     virtual std::vector<std::unique_ptr<google::protobuf::MessageLite>>
-    Generate(ReportType type) = 0;
+    Generate(ReportType type, const Data& data) = 0;
   };
 
   explicit RealTimeReportGenerator(ReportingDelegateFactory* delegate_factory);
@@ -43,7 +45,8 @@ class RealTimeReportGenerator {
   // Generates and returns reports for |type|. Multiple reports can be generated
   // together in case of previous events are not generated successfully.
   virtual std::vector<std::unique_ptr<google::protobuf::MessageLite>> Generate(
-      ReportType type);
+      ReportType type,
+      const Data& data);
 
  private:
   std::unique_ptr<Delegate> delegate_;

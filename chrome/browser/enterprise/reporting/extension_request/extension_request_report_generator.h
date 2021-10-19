@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "components/enterprise/browser/reporting/real_time_report_generator.h"
 
 class Profile;
 
@@ -21,6 +22,11 @@ class ExtensionsWorkflowEvent;
 
 class ExtensionRequestReportGenerator {
  public:
+  struct ExtensionRequestData : public RealTimeReportGenerator::Data {
+    explicit ExtensionRequestData(Profile* profile) : profile(profile) {}
+    Profile* profile;
+  };
+
   // Extension request are moved out of the pending list once user confirm the
   // notification. However, there is no need to upload these requests anymore as
   // long as admin made a decision.
@@ -36,7 +42,8 @@ class ExtensionRequestReportGenerator {
       const ExtensionRequestReportGenerator&) = delete;
   ~ExtensionRequestReportGenerator();
 
-  std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> Generate();
+  std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> Generate(
+      const RealTimeReportGenerator::Data& data);
 
   // Uploads extension request update for |profile|.
   std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> GenerateForProfile(

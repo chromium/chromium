@@ -9,7 +9,6 @@
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -29,10 +28,8 @@ namespace {
 constexpr int kTimeStamp = 42;
 constexpr char kJustification[] = "Please, I need dark mode everywhere!";
 constexpr char kProfileName[] = "profile-1";
-constexpr char kAnotherProfileName[] = "profile-2";
 constexpr char kExtensionId1[] = "abcdefghijklmnopabcdefghijklmnop";
 constexpr char kExtensionId2[] = "abcdefghijklmnopabcdefghijklmnpo";
-constexpr char kExtensionId3[] = "abcdefghijklmnopabcdefghijklmonp";
 
 constexpr char kAllowedExtensionSettings[] = R"({
   "abcdefghijklmnopabcdefghijklmnop" : {
@@ -76,11 +73,8 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
 
   std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> GenerateReports(
       Profile* profile) {
-    return generator_.GenerateForProfile(profile);
-  }
-
-  std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> GenerateReports() {
-    return generator_.Generate();
+    return generator_.Generate(
+        ExtensionRequestReportGenerator::ExtensionRequestData(profile));
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) {
@@ -114,10 +108,6 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
-  void AddProfileToThrottler(Profile* profile) {
-    throttler_.Get()->AddProfile(profile->GetPath());
-  }
-
   base::test::ScopedFeatureList feature_list_;
 
  private:
@@ -147,7 +137,6 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ExtensionRequestReportGenerator generator_;
   TestingProfileManager profile_manager_;
-  ScopedExtensionRequestReportThrottler throttler_;
 };
 
 TEST_F(ExtensionRequestReportGeneratorTest, AddRequests) {
@@ -215,50 +204,6 @@ TEST_F(ExtensionRequestReportGeneratorTest, RejectedRequest) {
   auto reports = GenerateReports(profile);
 
   EXPECT_EQ(0u, reports.size());
-}
-
-TEST_F(ExtensionRequestReportGeneratorTest, MultipleProfiles) {
-  auto* profile = CreateProfile(kProfileName);
-  auto* another_profile = CreateProfile(kAnotherProfileName);
-
-  SetExtensionRequestsList({kExtensionId1, kExtensionId2}, {}, profile);
-  SetExtensionRequestsList({kExtensionId1, kExtensionId3}, {}, another_profile);
-
-  AddProfileToThrottler(profile);
-  AddProfileToThrottler(another_profile);
-
-  auto reports = GenerateReports();
-
-  EXPECT_EQ(4u, reports.size());
-  VerifyReport(reports[0].get(), kExtensionId1, /*is_removed=*/false);
-  VerifyReport(reports[1].get(), kExtensionId2, /*is_removed=*/false);
-  VerifyReport(reports[2].get(), kExtensionId1, /*is_removed=*/false);
-  VerifyReport(reports[3].get(), kExtensionId3, /*is_removed=*/false);
-
-  EXPECT_EQ(0u, GenerateReports().size());
-}
-
-TEST_F(ExtensionRequestReportGeneratorTest, MultipleProfiles_Justification) {
-  feature_list_.InitAndEnableFeature(features::kExtensionWorkflowJustification);
-
-  auto* profile = CreateProfile(kProfileName);
-  auto* another_profile = CreateProfile(kAnotherProfileName);
-
-  SetExtensionRequestsList({kExtensionId1, kExtensionId2}, {}, profile);
-  SetExtensionRequestsList({kExtensionId1, kExtensionId3}, {}, another_profile);
-
-  AddProfileToThrottler(profile);
-  AddProfileToThrottler(another_profile);
-
-  auto reports = GenerateReports();
-
-  EXPECT_EQ(4u, reports.size());
-  VerifyReport(reports[0].get(), kExtensionId1, /*is_removed=*/false);
-  VerifyReport(reports[1].get(), kExtensionId2, /*is_removed=*/false);
-  VerifyReport(reports[2].get(), kExtensionId1, /*is_removed=*/false);
-  VerifyReport(reports[3].get(), kExtensionId3, /*is_removed=*/false);
-
-  EXPECT_EQ(0u, GenerateReports().size());
 }
 
 }  // namespace enterprise_reporting

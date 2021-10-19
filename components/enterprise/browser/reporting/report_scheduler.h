@@ -47,6 +47,9 @@ class ReportScheduler {
   };
 
   using ReportTriggerCallback = base::RepeatingCallback<void(ReportTrigger)>;
+  using RealtimeReportTriggerCallback =
+      base::RepeatingCallback<void(ReportTrigger,
+                                   const RealTimeReportGenerator::Data&)>;
 
   class Delegate {
    public:
@@ -57,6 +60,8 @@ class ReportScheduler {
     virtual ~Delegate();
 
     void SetReportTriggerCallback(ReportTriggerCallback callback);
+    void SetRealtimeReportTriggerCallback(
+        RealtimeReportTriggerCallback callback);
 
     virtual PrefService* GetLocalState() = 0;
 
@@ -74,6 +79,7 @@ class ReportScheduler {
 
    protected:
     ReportTriggerCallback trigger_report_callback_;
+    RealtimeReportTriggerCallback trigger_realtime_report_callback_;
   };
 
   ReportScheduler(
@@ -104,6 +110,7 @@ class ReportScheduler {
   void SetReportUploaderForTesting(std::unique_ptr<ReportUploader> uploader);
   void SetExtensionRequestUploaderForTesting(
       std::unique_ptr<RealTimeUploader> uploader);
+  Delegate* GetDelegateForTesting();
 
   void OnDMTokenUpdated();
 
@@ -127,6 +134,9 @@ class ReportScheduler {
 
   // Starts report generation in response to |trigger|.
   void GenerateAndUploadReport(ReportTrigger trigger);
+  void GenerateAndUploadRealtimeReport(
+      ReportTrigger trigger,
+      const RealTimeReportGenerator::Data& data);
 
   // Continues processing a report (contained in the |requests| collection) by
   // sending it to the uploader.
@@ -141,7 +151,7 @@ class ReportScheduler {
   void RunPendingTriggers();
 
   // Creates and uploads extension requests with real time reporting pipeline.
-  void UploadExtensionRequests();
+  void UploadExtensionRequests(const RealTimeReportGenerator::Data& data);
 
   // Records that |trigger| was responsible for an upload attempt.
   static void RecordUploadTrigger(ReportTrigger trigger);

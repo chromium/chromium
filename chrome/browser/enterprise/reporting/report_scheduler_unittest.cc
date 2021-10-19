@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/enterprise/browser/reporting/report_scheduler.h"
-#include "components/enterprise/browser/reporting/real_time_report_generator.h"
 
 #include <utility>
 
@@ -13,7 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -24,6 +23,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/real_time_uploader.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/common/proto/extensions_workflow_events.pb.h"
@@ -38,6 +38,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #else
+#include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #endif  // defined(OS_ANDROID)
 
@@ -116,9 +117,10 @@ class MockRealTimeReportGenerator : public RealTimeReportGenerator {
       : RealTimeReportGenerator(delegate_factory) {}
 #endif  // defined(OS_ANDROID)
 
-  MOCK_METHOD1(Generate,
+  MOCK_METHOD2(Generate,
                std::vector<std::unique_ptr<google::protobuf::MessageLite>>(
-                   ReportType type));
+                   ReportType type,
+                   const RealTimeReportGenerator::Data& data));
 };
 
 class MockRealTimeUploader : public RealTimeUploader {
@@ -248,12 +250,12 @@ class ReportSchedulerTest : public ::testing::Test {
 #endif
   }
 
-  void TriggerExtensionRequestReport() {
-    ASSERT_TRUE(ExtensionRequestReportThrottler::Get());
-    ASSERT_TRUE(ExtensionRequestReportThrottler::Get()->IsEnabled());
-    ExtensionRequestReportThrottler::Get()->AddProfile(
-        profile_manager_.CreateTestingProfile("profile")->GetPath());
+#if !defined(OS_ANDROID)
+  void TriggerExtensionRequestReport(Profile* profile) {
+    static_cast<ReportSchedulerDesktop*>(scheduler_->GetDelegateForTesting())
+        ->TriggerExtensionRequest(profile);
   }
+#endif  // !defined(OS_ANDROID)
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
@@ -662,19 +664,28 @@ TEST_F(ReportSchedulerTest, ExtensionRequestWithRealTimePipeline) {
   EXPECT_CALL(*generator_, OnGenerate(_, _)).Times(0);
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _)).Times(0);
 
+  Profile* profile = profile_manager_.CreateTestingProfile("profile");
+
   std::vector<std::unique_ptr<google::protobuf::MessageLite>> reports;
   reports.push_back(std::make_unique<ExtensionsWorkflowEvent>());
   reports.push_back(std::make_unique<ExtensionsWorkflowEvent>());
-  EXPECT_CALL(*real_time_generator_,
-              Generate(RealTimeReportGenerator::ReportType::kExtensionRequest))
-      .WillOnce(DoAll(InvokeWithoutArgs([]() {
-                        ExtensionRequestReportThrottler::Get()->ResetProfiles();
-                      }),
-                      Return(ByMove(std::move(reports)))));
+
+  EXPECT_CALL(
+      *real_time_generator_,
+      Generate(RealTimeReportGenerator::ReportType::kExtensionRequest, _))
+      .WillOnce(DoAll(
+          WithArgs<1>(
+              Invoke([profile](const MockRealTimeReportGenerator::Data& data) {
+                EXPECT_EQ(profile,
+                          static_cast<const ExtensionRequestReportGenerator::
+                                          ExtensionRequestData&>(data)
+                              .profile);
+              })),
+          Return(ByMove(std::move(reports)))));
   EXPECT_CALL(*extension_request_uploader_, OnUpload(_, _)).Times(2);
   CreateScheduler();
 
-  TriggerExtensionRequestReport();
+  TriggerExtensionRequestReport(profile);
 
   ExpectLastUploadTimestampUpdated(false);
 

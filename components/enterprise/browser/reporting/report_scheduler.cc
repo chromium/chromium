@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/real_time_uploader.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -74,6 +75,12 @@ void ReportScheduler::Delegate::SetReportTriggerCallback(
   trigger_report_callback_ = std::move(callback);
 }
 
+void ReportScheduler::Delegate::SetRealtimeReportTriggerCallback(
+    ReportScheduler::RealtimeReportTriggerCallback callback) {
+  DCHECK(trigger_realtime_report_callback_.is_null());
+  trigger_realtime_report_callback_ = std::move(callback);
+}
+
 ReportScheduler::ReportScheduler(
     policy::CloudPolicyClient* client,
     std::unique_ptr<ReportGenerator> report_generator,
@@ -96,6 +103,9 @@ ReportScheduler::ReportScheduler(
   delegate_->SetReportTriggerCallback(
       base::BindRepeating(&ReportScheduler::GenerateAndUploadReport,
                           weak_ptr_factory_.GetWeakPtr()));
+  delegate_->SetRealtimeReportTriggerCallback(
+      base::BindRepeating(&ReportScheduler::GenerateAndUploadRealtimeReport,
+                          weak_ptr_factory_.GetWeakPtr()));
   RegisterPrefObserver();
 }
 
@@ -117,6 +127,10 @@ void ReportScheduler::SetReportUploaderForTesting(
 void ReportScheduler::SetExtensionRequestUploaderForTesting(
     std::unique_ptr<RealTimeUploader> uploader) {
   extension_request_uploader_ = std::move(uploader);
+}
+
+ReportScheduler::Delegate* ReportScheduler::GetDelegateForTesting() {
+  return delegate_.get();
 }
 
 void ReportScheduler::OnDMTokenUpdated() {
@@ -206,12 +220,6 @@ void ReportScheduler::Start(base::Time last_upload_time) {
 }
 
 void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
-  // Real time report is generated and uploaded separately.
-  if (trigger == kTriggerExtensionRequestRealTime) {
-    UploadExtensionRequests();
-    return;
-  }
-
   if (active_trigger_ != kTriggerNone) {
     // A report is already being generated. Remember this trigger to be handled
     // once the current report completes.
@@ -242,6 +250,15 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
   report_generator_->Generate(
       report_type, base::BindOnce(&ReportScheduler::OnReportGenerated,
                                   base::Unretained(this)));
+}
+
+void ReportScheduler::GenerateAndUploadRealtimeReport(
+    ReportTrigger trigger,
+    const RealTimeReportGenerator::Data& data) {
+  if (trigger == kTriggerExtensionRequestRealTime) {
+    UploadExtensionRequests(data);
+    return;
+  }
 }
 
 void ReportScheduler::OnReportGenerated(
@@ -326,7 +343,8 @@ void ReportScheduler::RunPendingTriggers() {
   GenerateAndUploadReport(trigger);
 }
 
-void ReportScheduler::UploadExtensionRequests() {
+void ReportScheduler::UploadExtensionRequests(
+    const RealTimeReportGenerator::Data& data) {
   RecordUploadTrigger(kTriggerExtensionRequestRealTime);
   DCHECK(real_time_report_generator_);
   VLOG(1) << "Create extension request and add it to the pipeline.";
@@ -337,7 +355,7 @@ void ReportScheduler::UploadExtensionRequests() {
                                  reporting::Priority::FAST_BATCH);
   }
   auto reports = real_time_report_generator_->Generate(
-      RealTimeReportGenerator::ReportType::kExtensionRequest);
+      RealTimeReportGenerator::ReportType::kExtensionRequest, data);
 
   for (auto& report : reports) {
     extension_request_uploader_->Upload(

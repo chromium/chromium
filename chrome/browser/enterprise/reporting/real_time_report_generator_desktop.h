@@ -22,7 +22,8 @@ class RealTimeReportGeneratorDesktop
 
   // RealTimeReportGenerator::Delegate
   std::vector<std::unique_ptr<google::protobuf::MessageLite>> Generate(
-      RealTimeReportGenerator::ReportType type) override;
+      RealTimeReportGenerator::ReportType type,
+      const RealTimeReportGenerator::Data& data) override;
 
  private:
   ExtensionRequestReportGenerator extension_request_report_generator_;

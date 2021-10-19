@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
-#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/enterprise/reporting/real_time_report_generator_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
@@ -48,16 +47,13 @@ TEST_F(RealTimeReportGeneratorTest, ExtensionRequest) {
   profile->GetTestingPrefService()->SetUserPref(
       prefs::kCloudExtensionRequestIds, std::move(requests));
 
-  ScopedExtensionRequestReportThrottler throttler;
-
-  throttler.Get()->AddProfile(profile->GetPath());
-
   ReportingDelegateFactoryDesktop factory;
   RealTimeReportGenerator generator{&factory};
 
   std::vector<std::unique_ptr<google::protobuf::MessageLite>> reports =
       generator.Generate(
-          RealTimeReportGenerator::ReportType::kExtensionRequest);
+          RealTimeReportGenerator::ReportType::kExtensionRequest,
+          ExtensionRequestReportGenerator::ExtensionRequestData(profile));
   EXPECT_EQ(1u, reports.size());
 
   EXPECT_EQ(extension_id,
