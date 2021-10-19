@@ -17,7 +17,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 
@@ -364,10 +366,23 @@ void PartitionAllocSupport::OnBackgrounded() {
 
   // Performance matters less for background renderers, don't pay the memory
   // cost.
-  //
-  // TODO(lizeb): Consider forcing a one-off thread cache purge.
   base::internal::ThreadCache::SetLargestCachedSize(
       base::internal::ThreadCacheLimits::kDefaultSizeThreshold);
+
+  // In renderers, memory reclaim uses the "idle time" task runner to run
+  // periodic reclaim. This does not always run when the renderer is idle, and
+  // in particular after the renderer gets backgrounded. As a result, empty slot
+  // spans are potentially never decommitted. To mitigate that, run a one-off
+  // reclaim a few seconds later. Even if the renderer comes back to foreground
+  // in the meantime, the worst case is a few more system calls.
+  //
+  // TODO(lizeb): Remove once/if the behavior of idle tasks changes.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, base::BindOnce([]() {
+        base::PartitionAllocMemoryReclaimer::Instance()->ReclaimAll();
+      }),
+      base::Seconds(10));
+
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
