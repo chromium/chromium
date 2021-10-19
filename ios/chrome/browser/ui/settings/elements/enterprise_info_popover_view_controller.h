@@ -37,6 +37,11 @@
                       secondaryAttributedString:
                           (NSAttributedString*)secondaryAttributedString
     NS_UNAVAILABLE;
+- (instancetype)initWithPrimaryAttributedString:
+                    (NSAttributedString*)primaryAttributedString
+                      secondaryAttributedString:
+                          (NSAttributedString*)secondaryAttributedString
+                                           icon:(UIImage*)icon NS_UNAVAILABLE;
 
 @end
 
