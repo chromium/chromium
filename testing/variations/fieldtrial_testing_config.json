@@ -6825,25 +6825,6 @@
             ]
         }
     ],
-    "SafeBrowsingEnterpriseCsd": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "SafeBrowsingEnterpriseCsd",
-                    "enable_features": [
-                        "SafeBrowsingDisableConsumerCsdForEnterprise",
-                        "SafeBrowsingEnterpriseCsd"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingOmitNonUserGesturesFromReferrerChain": [
         {
             "platforms": [
