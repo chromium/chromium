@@ -1182,13 +1182,6 @@ bool IsSigninForcedByPolicy() {
 }
 
 - (BOOL)isIncognitoForced {
-  // TODO(crbug.com/1182280):remove the decision only for testing and set up a
-  // proper scene controller in unittests.
-  if (!self.incognitoInterface) {
-    // ONLY for testing.
-    return NO;
-  }
-
   return IsIncognitoModeForced(
       self.incognitoInterface.browser->GetBrowserState()->GetPrefs());
 }
