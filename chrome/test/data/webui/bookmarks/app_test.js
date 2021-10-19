@@ -79,7 +79,7 @@ suite('<bookmarks-app>', function() {
 
   test('focus ring hides and restores', async function() {
     await flushTasks();
-    const list = app.$$('bookmarks-list');
+    const list = app.shadowRoot.querySelector('bookmarks-list');
     const item = list.root.querySelectorAll('bookmarks-item')[0];
     const getFocusAttribute = () => app.getAttribute(HIDE_FOCUS_RING_ATTRIBUTE);
 
@@ -98,8 +98,8 @@ suite('<bookmarks-app>', function() {
   });
 
   test('when find shortcut is invoked, focus on search input', () => {
-    const searchInput =
-        app.$$('bookmarks-toolbar').searchField.getSearchInput();
+    const searchInput = app.shadowRoot.querySelector('bookmarks-toolbar')
+                            .searchField.getSearchInput();
     assertNotEquals(searchInput, getDeepActiveElement());
     pressAndReleaseKeyOn(document.body, '', isMac ? 'meta' : 'ctrl', 'f');
     assertEquals(searchInput, getDeepActiveElement());

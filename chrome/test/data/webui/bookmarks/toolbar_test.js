@@ -73,7 +73,9 @@ suite('<bookmarks-toolbar>', function() {
     store.notifyObservers();
 
     flush();
-    const button = toolbar.$$('cr-toolbar-selection-overlay').deleteButton;
+    const button =
+        toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')
+            .deleteButton;
     assertFalse(button.disabled);
     button.click();
 
@@ -84,7 +86,9 @@ suite('<bookmarks-toolbar>', function() {
     store.data.selection.items = new Set(['2']);
     store.notifyObservers();
 
-    const input = toolbar.$$('cr-toolbar').getSearchField().getSearchInput();
+    const input = toolbar.shadowRoot.querySelector('cr-toolbar')
+                      .getSearchField()
+                      .getSearchInput();
     const modifier = isMac ? 'meta' : 'ctrl';
     pressAndReleaseKeyOn(input, 67, modifier, 'c');
 
@@ -98,7 +102,7 @@ suite('<bookmarks-toolbar>', function() {
     flush();
 
     assertTrue(toolbar.showSelectionOverlay);
-    assertTrue(
-        toolbar.$$('cr-toolbar-selection-overlay').deleteButton.disabled);
+    assertTrue(toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')
+                   .deleteButton.disabled);
   });
 });

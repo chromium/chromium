@@ -253,7 +253,6 @@ ts_library("library") {
     "$root_dir/js/cr/ui/focus_outline_manager.m.d.ts",
     "$root_dir/js/cr/ui/focus_row.m.d.ts",
     "$root_dir/js/cr/ui/keyboard_shortcut_list.m.d.ts",
-    "$root_dir/js/cr/ui/store_client.d.ts",
     "$root_dir/js/custom_element.d.ts",
     "$root_dir/js/event_tracker.m.d.ts",
     "$root_dir/js/load_time_data.m.d.ts",
@@ -267,6 +266,7 @@ ts_library("library") {
     definitions += [
       "$root_dir/cr_elements/chromeos/cros_color_overrides.m.d.ts",
       "$root_dir/cr_elements/chromeos/cr_picture/png.m.d.ts",
+      "$root_dir/js/cr/ui/store_client.d.ts",
     ]
   }
 
@@ -326,7 +326,6 @@ ts_definitions("generate_definitions") {
     "js/cr/ui/focus_outline_manager.m.js",
     "js/cr/ui/focus_row.m.js",
     "js/cr/ui/keyboard_shortcut_list.m.js",
-    "js/cr/ui/store_client.js",
     "js/cr/ui/store.js",
     "js/custom_element.js",
     "js/event_tracker.m.js",
@@ -341,6 +340,7 @@ ts_definitions("generate_definitions") {
     js_files += [
       "cr_elements/chromeos/cros_color_overrides.m.js",
       "cr_elements/chromeos/cr_picture/png.m.js",
+      "js/cr/ui/store_client.js",
     ]
   }
 

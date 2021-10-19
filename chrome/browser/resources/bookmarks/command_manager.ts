@@ -24,12 +24,11 @@ import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {KeyboardShortcutList} from 'chrome://resources/js/cr/ui/keyboard_shortcut_list.m.js';
-import {StoreObserver} from 'chrome://resources/js/cr/ui/store.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {deselectItems, selectAll, selectFolder} from './actions.js';
 import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
@@ -37,15 +36,11 @@ import {BrowserProxy} from './browser_proxy.js';
 import {Command, IncognitoAvailability, MenuSource, OPEN_CONFIRMATION_LIMIT, ROOT_NODE_ID} from './constants.js';
 import {DialogFocusManager} from './dialog_focus_manager.js';
 import {BookmarksEditDialogElement} from './edit_dialog.js';
-import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
-import {BookmarkNode, BookmarksPageState, OpenCommandMenuDetail} from './types.js';
+import {StoreClientMixin} from './store_client_mixin.js';
+import {BookmarkNode, OpenCommandMenuDetail} from './types.js';
 import {canEditNode, canReorderChildren, getDisplayedList} from './util.js';
 
-const BookmarksCommandManagerElementBase =
-    mixinBehaviors([StoreClient], PolymerElement) as {
-      new (): PolymerElement & BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState>
-    };
+const BookmarksCommandManagerElementBase = StoreClientMixin(PolymerElement);
 
 export interface BookmarksCommandManagerElement {
   $: {
@@ -106,8 +101,7 @@ export class BookmarksCommandManagerElement extends
 
     this.browserProxy_ = BrowserProxy.getInstance();
 
-    this.watch(
-        'globalCanEdit_', state => (state as BookmarksPageState).prefs.canEdit);
+    this.watch('globalCanEdit_', state => state.prefs.canEdit);
     this.updateFromStore();
 
     this.shortcuts_ = new Map();

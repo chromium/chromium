@@ -127,8 +127,8 @@ suite('drag and drop', function() {
     BrowserProxy.setInstance(testBrowserProxy);
     app = document.createElement('bookmarks-app');
     replaceBody(app);
-    list = app.$$('bookmarks-list');
-    rootFolderNode = app.$$('bookmarks-folder-node');
+    list = app.shadowRoot.querySelector('bookmarks-list');
+    rootFolderNode = app.shadowRoot.querySelector('bookmarks-folder-node');
     dndManager = app.dndManager_;
     dndManager.setTimerProxyForTesting(new TestTimerProxy());
 

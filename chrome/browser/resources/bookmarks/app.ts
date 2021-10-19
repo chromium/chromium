@@ -18,7 +18,6 @@ import './toolbar.js';
 
 import {CrSplitterElement} from 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
-import {StoreObserver} from 'chrome://resources/js/cr/ui/store.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
@@ -30,18 +29,18 @@ import {LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, ROOT_NODE_
 import {DNDManager} from './dnd_manager.js';
 import {MouseFocusMixin} from './mouse_focus_behavior.js';
 import {Store} from './store.js';
-import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
+import {StoreClientMixin, StoreClientMixinInterface} from './store_client_mixin.js';
 import {BookmarksToolbarElement} from './toolbar.js';
 import {BookmarksPageState, FolderOpenState} from './types.js';
 import {createEmptyState, normalizeNodes} from './util.js';
 
 const BookmarksAppElementBase =
     mixinBehaviors(
-        [StoreClient, IronScrollTargetBehavior],
-        MouseFocusMixin(FindShortcutMixin(PolymerElement))) as {
-      new (): PolymerElement & BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState>& FindShortcutMixinInterface &
-      IronScrollTargetBehavior
+        [IronScrollTargetBehavior],
+        StoreClientMixin(MouseFocusMixin(FindShortcutMixin(PolymerElement)))) as
+    {
+      new (): PolymerElement & StoreClientMixinInterface &
+      FindShortcutMixinInterface & IronScrollTargetBehavior
     };
 
 export interface BookmarksAppElement {

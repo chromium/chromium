@@ -13,5 +13,5 @@ export {DragInfo} from './dnd_manager.js';
 export {HIDE_FOCUS_RING_ATTRIBUTE} from './mouse_focus_behavior.js';
 export {reduceAction, updateFolderOpenState, updateNodes, updateSelectedFolder, updateSelection} from './reducers.js';
 export {Store} from './store.js';
-export {StoreClient} from './store_client.js';
+export {StoreClientMixin} from './store_client_mixin.js';
 export {canEditNode, canReorderChildren, createEmptyState, getDescendants, getDisplayedList, isShowingSearch, normalizeNodes, removeIdsFromObject, removeIdsFromSet} from './util.js';

@@ -79,7 +79,9 @@ suite('<bookmarks-list>', function() {
   });
 
   test('selects all valid IDs on highlight-items', function() {
-    list.fire('highlight-items', ['10', '1', '3', '9']);
+    list.dispatchEvent(new CustomEvent(
+        'highlight-items',
+        {bubbles: true, composed: true, detail: ['10', '1', '3', '9']}));
     assertEquals('select-items', store.lastAction.name);
     assertEquals('1', store.lastAction.anchor);
     assertDeepEquals(['1', '3'], store.lastAction.items);
@@ -196,15 +198,18 @@ suite('<bookmarks-list> command manager integration test', function() {
   });
 
   test('show context menu', async () => {
-    const commandManager = app.$$('bookmarks-command-manager');
+    const commandManager =
+        app.shadowRoot.querySelector('bookmarks-command-manager');
     commandManager.updateForPaste_ = function() {
       this.canPaste_ = true;
       return Promise.resolve();
     };
 
     proxy.resetResolver('recordInHistogram');
-    const list = app.$$('bookmarks-list');
-    list.fire('contextmenu', {clientX: 0, clientY: 0});
+    const list = app.shadowRoot.querySelector('bookmarks-list');
+    list.dispatchEvent(new CustomEvent(
+        'contextmenu',
+        {bubbles: true, composed: true, detail: {clientX: 0, clientY: 0}}));
 
     await proxy.whenCalled('recordInHistogram');
 

@@ -11,22 +11,17 @@ import './shared_style.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {StoreObserver} from 'chrome://resources/js/cr/ui/store.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {changeFolderOpen, selectFolder} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {FOLDER_OPEN_BY_DEFAULT_DEPTH, MenuSource, ROOT_NODE_ID} from './constants.js';
-import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
-import {BookmarkNode, BookmarksPageState} from './types.js';
+import {StoreClientMixin} from './store_client_mixin.js';
+import {BookmarkNode} from './types.js';
 import {hasChildFolders, isShowingSearch} from './util.js';
 
-const BookmarksFolderNodeElementBase =
-    mixinBehaviors(StoreClient, PolymerElement) as {
-  new (): PolymerElement & BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState>;
-};
+const BookmarksFolderNodeElementBase = StoreClientMixin(PolymerElement);
 
 // Workaround because TS compiler doesn't know about scrollIntoViewIfNeeded().
 type HTMLDivElementWithScroll = HTMLDivElement&{
@@ -114,19 +109,16 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   connectedCallback() {
     super.connectedCallback();
     this.watch('item_', state => {
-      return (state as BookmarksPageState).nodes[this.itemId];
+      return state.nodes[this.itemId];
     });
     this.watch('openState_', state => {
-      const bookmarksState = state as BookmarksPageState;
-      return bookmarksState.folderOpenState.has(this.itemId) ?
-          bookmarksState.folderOpenState.get(this.itemId) :
+      return state.folderOpenState.has(this.itemId) ?
+          state.folderOpenState.get(this.itemId) :
           null;
     });
-    this.watch('selectedFolder_', state => {
-      return (state as BookmarksPageState).selectedFolder;
-    });
+    this.watch('selectedFolder_', state => state.selectedFolder);
     this.watch('searchActive_', state => {
-      return isShowingSearch(state as BookmarksPageState);
+      return isShowingSearch(state);
     });
 
     this.updateFromStore();

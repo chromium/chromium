@@ -40,7 +40,6 @@ preprocess_if_expr("preprocess_src") {
     "focus_grid.js",
     "focus_outline_manager.js",
     "splitter.js",
-    "store_client.js",
     "store.js",
     "tabs.js",
     "tree.js",
@@ -67,6 +66,7 @@ preprocess_if_expr("preprocess_src") {
       "menu_item.js",
       "menu.js",
       "position_util.js",
+      "store_client.js",
     ]
   }
 }
