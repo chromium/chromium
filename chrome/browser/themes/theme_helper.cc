@@ -479,6 +479,13 @@ SkColor ThemeHelper::GetDefaultColor(
                            : ui::NativeTheme::kColorId_ThrobberWaitingColor,
                        ui::NativeTheme::GetInstanceForNativeUi());
     }
+    case TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE:
+    case TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE: {
+      return GetColor(id == TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE
+                          ? TP::COLOR_FRAME_ACTIVE
+                          : TP::COLOR_FRAME_INACTIVE,
+                      incognito, theme_supplier);
+    }
   }
 
   return TP::GetDefaultColor(id,

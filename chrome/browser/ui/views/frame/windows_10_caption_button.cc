@@ -53,17 +53,14 @@ gfx::Size Windows10CaptionButton::CalculatePreferredSize() const {
 SkColor Windows10CaptionButton::GetBaseColor() const {
   // Get the theme's calculated custom control button background color
   // (as it takes into account images, etc).  If none is specified (likely when
-  // there is no theme active), fall back to the titlebar color.
+  // there is no theme active), the ThemeProvider will fall back to the titlebar
+  // color.
   const int control_button_bg_color_id =
       (frame_view_->ShouldPaintAsActive()
            ? ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE
            : ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE);
   const ui::ThemeProvider* theme_provider = GetThemeProvider();
-  const bool has_custom_color =
-      theme_provider->HasCustomColor(control_button_bg_color_id);
-  const SkColor bg_color =
-      (has_custom_color ? theme_provider->GetColor(control_button_bg_color_id)
-                        : frame_view_->GetTitlebarColor());
+  const SkColor bg_color = theme_provider->GetColor(control_button_bg_color_id);
 
   return GlassBrowserFrameView::GetReadableFeatureColor(bg_color);
 }
