@@ -2364,14 +2364,6 @@ void StyleEngine::UpdateLayoutTreeRebuildRoot(ContainerNode* ancestor,
   }
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(dirty_node);
-  if (!ancestor && !dirty_node->NeedsReattachLayoutTree() &&
-      !dirty_node->ChildNeedsReattachLayoutTree()) {
-    // The StyleTraversalRoot requires the root node to be dirty or child-dirty.
-    // When we mark for whitespace re-attachment, we only mark the ancestor
-    // chain. Use the parent as the dirty node if the dirty_node is not dirty.
-    dirty_node = dirty_node->GetReattachParent();
-    DCHECK(dirty_node && dirty_node->ChildNeedsReattachLayoutTree());
-  }
   layout_tree_rebuild_root_.Update(ancestor, dirty_node);
 }
 

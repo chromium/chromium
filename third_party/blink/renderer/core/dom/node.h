@@ -533,9 +533,13 @@ class CORE_EXPORT Node : public EventTarget {
   }
 
   bool NeedsLayoutSubtreeUpdate() const;
+  bool NeedsWhitespaceChildrenUpdate() const;
   bool IsDirtyForStyleRecalc() const {
     return NeedsStyleRecalc() || GetForceReattachLayoutTree() ||
            NeedsLayoutSubtreeUpdate();
+  }
+  bool IsDirtyForRebuildLayoutTree() const {
+    return NeedsReattachLayoutTree() || NeedsLayoutSubtreeUpdate();
   }
 
   // True if the style invalidation process should traverse this node's children

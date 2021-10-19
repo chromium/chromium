@@ -548,7 +548,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
   bool NeedsRebuildChildLayoutTrees(
       const WhitespaceAttacher& whitespace_attacher) const {
-    return ChildNeedsReattachLayoutTree() ||
+    return ChildNeedsReattachLayoutTree() || NeedsWhitespaceChildrenUpdate() ||
            (whitespace_attacher.TraverseIntoDisplayContents() &&
             HasDisplayContentsStyle());
   }

@@ -1300,11 +1300,11 @@ Element* Node::FlatTreeParentForChildDirty() const {
 void Node::MarkAncestorsWithChildNeedsReattachLayoutTree() {
   DCHECK(isConnected());
   Element* ancestor = GetReattachParent();
-  bool parent_dirty = ancestor && ancestor->NeedsReattachLayoutTree();
+  bool parent_dirty = ancestor && ancestor->IsDirtyForRebuildLayoutTree();
   for (; ancestor && !ancestor->ChildNeedsReattachLayoutTree();
        ancestor = ancestor->GetReattachParent()) {
     ancestor->SetChildNeedsReattachLayoutTree();
-    if (ancestor->NeedsReattachLayoutTree())
+    if (ancestor->IsDirtyForRebuildLayoutTree())
       break;
   }
   // If the parent node is already dirty, we can keep the same rebuild root. The
@@ -1655,6 +1655,12 @@ void Node::SetForceReattachLayoutTree() {
     // Make sure we traverse down to this node during style recalc.
     MarkAncestorsWithChildNeedsStyleRecalc();
   }
+}
+
+bool Node::NeedsWhitespaceChildrenUpdate() const {
+  if (const auto* layout_object = GetLayoutObject())
+    return layout_object->WhitespaceChildrenMayChange();
+  return false;
 }
 
 bool Node::NeedsLayoutSubtreeUpdate() const {

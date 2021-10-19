@@ -2996,17 +2996,15 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       // 2. Whitespace siblings of removed subtrees may change to have their
       //    layout object added or removed as the need for rendering the
       //    whitespace may have changed.
-      Node* node = nullptr;
-      if (layout_object->WasNotifiedOfSubtreeChange())
-        node = this;
+      bool mark_ancestors = layout_object->WasNotifiedOfSubtreeChange();
       if (layout_object->WhitespaceChildrenMayChange()) {
-        if (Node* first_child = LayoutTreeBuilderTraversal::FirstChild(*this))
-          node = first_child;
+        if (LayoutTreeBuilderTraversal::FirstChild(*this))
+          mark_ancestors = true;
         else
           layout_object->SetWhitespaceChildrenMayChange(false);
       }
-      if (node)
-        node->MarkAncestorsWithChildNeedsReattachLayoutTree();
+      if (mark_ancestors)
+        MarkAncestorsWithChildNeedsReattachLayoutTree();
     }
   }
 

@@ -4779,4 +4779,19 @@ TEST_F(StyleEngineTest, EmptyDetachParent) {
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 }
 
+TEST_F(StyleEngineTest, LegacyListItemRebuildRootCrash) {
+  UpdateAllLifecyclePhases();
+
+  auto* doc_elm = GetDocument().documentElement();
+  ASSERT_TRUE(doc_elm);
+
+  doc_elm->SetInlineStyleProperty(CSSPropertyID::kDisplay, "list-item");
+  doc_elm->SetInlineStyleProperty(CSSPropertyID::kColumnCount, "1");
+  UpdateAllLifecyclePhases();
+
+  doc_elm->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "green");
+  // Should not crash
+  UpdateAllLifecyclePhases();
+}
+
 }  // namespace blink
