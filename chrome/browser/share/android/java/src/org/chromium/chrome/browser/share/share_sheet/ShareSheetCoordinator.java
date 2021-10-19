@@ -454,7 +454,11 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         final boolean shouldFixMore =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_USAGE_RANKING_FIXED_MORE);
 
-        if (!shouldFixMore) return ShareSheetPropertyModelBuilder.MAX_NUM_APPS;
+        if (!shouldFixMore) {
+            // + 1 to allow for the More item, which takes up an app slot in
+            // the share ranking backend.
+            return ShareSheetPropertyModelBuilder.MAX_NUM_APPS + 1;
+        }
 
         int screenWidth =
                 ContextUtils.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
