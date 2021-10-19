@@ -97,10 +97,13 @@
 #include "content/public/test/text_input_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -735,6 +738,55 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBlobNavigationTest, SameTab) {
       /*number_of_navigations=*/2));
   EXPECT_TRUE(
       pdf_extension_test_util::EnsurePDFHasLoaded(GetActiveWebContents()));
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LoadInPlatformApp) {
+  extensions::TestExtensionDir dir;
+  dir.WriteManifest(R"(
+    {
+      "name": "PDFExtensionTest App",
+      "version": "1.0",
+      "manifest_version": 2,
+      "app": {
+        "background": {
+          "scripts": ["background_script.js"]
+        }
+      }
+    }
+  )");
+
+  dir.WriteFile(FILE_PATH_LITERAL("background_script.js"), R"(
+    chrome.app.runtime.onLaunched.addListener(() => {
+      chrome.app.window.create('test.pdf', () => {
+        chrome.test.notifyPass();
+      });
+    });
+  )");
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string pdf_contents;
+    ASSERT_TRUE(base::ReadFileToString(
+        GetTestResourcesParentDir().AppendASCII("pdf").AppendASCII("test.pdf"),
+        &pdf_contents));
+    dir.WriteFile(FILE_PATH_LITERAL("test.pdf"), pdf_contents);
+  }
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(LoadAndLaunchApp(dir.UnpackedPath()));
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  auto* app_registry = extensions::AppWindowRegistry::Get(browser()->profile());
+  ASSERT_TRUE(app_registry);
+  const extensions::AppWindowRegistry::AppWindowList& app_windows =
+      app_registry->app_windows();
+  ASSERT_EQ(app_windows.size(), 1u);
+  extensions::AppWindow* window = app_windows.front();
+  ASSERT_TRUE(window);
+  content::WebContents* app_contents = window->web_contents();
+
+  ASSERT_TRUE(content::WaitForLoadStop(app_contents));
+  EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(app_contents));
 }
 
 class DownloadAwaiter : public content::DownloadManager::Observer {

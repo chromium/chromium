@@ -5800,6 +5800,10 @@ bool NavigationRequest::WasResourceHintsReceived() {
   return was_resource_hints_received_;
 }
 
+bool NavigationRequest::IsPdf() {
+  return is_pdf_;
+}
+
 bool NavigationRequest::IsLoadDataWithBaseURL() const {
   // A navigation is a loadDataWithBaseURL navigation if it's a successful main
   // frame navigation, and its base URL is valid. This function should be kept

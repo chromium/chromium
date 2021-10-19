@@ -494,6 +494,9 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // a main frame navigation.
   virtual bool WasResourceHintsReceived() = 0;
 
+  // Whether this navigation is for PDF content in a PDF-specific renderer.
+  virtual bool IsPdf() = 0;
+
   // Write a representation of this object into a trace.
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
