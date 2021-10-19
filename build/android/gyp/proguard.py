@@ -532,31 +532,14 @@ https://chromium.googlesource.com/chromium/src.git/+/main/docs/ui/android/byteco
                           fail_on_output=warnings_as_errors)
 
 
-def _CombineConfigs(configs,
-                    dynamic_config_data,
-                    embedded_configs,
-                    exclude_generated=False):
+def _CombineConfigs(configs, dynamic_config_data, exclude_generated=False):
+  ret = []
+
   # Sort in this way so //clank versions of the same libraries will sort
   # to the same spot in the file.
   def sort_key(path):
     return tuple(reversed(path.split(os.path.sep)))
 
-  def format_config_contents(path, contents):
-    formatted_contents = []
-    if not contents.strip():
-      return []
-
-    # Fix up line endings (third_party configs can have windows endings).
-    contents = contents.replace('\r', '')
-    # Remove numbers from generated rule comments to make file more
-    # diff'able.
-    contents = re.sub(r' #generated:\d+', '', contents)
-    formatted_contents.append('# File: ' + path)
-    formatted_contents.append(contents)
-    formatted_contents.append('')
-    return formatted_contents
-
-  ret = []
   for config in sorted(configs, key=sort_key):
     if exclude_generated and config.endswith('.resources.proguard.txt'):
       continue
@@ -564,11 +547,18 @@ def _CombineConfigs(configs,
     with open(config) as config_file:
       contents = config_file.read().rstrip()
 
-    ret.extend(format_config_contents(config, contents))
+    if not contents.strip():
+      # Ignore empty files.
+      continue
 
-  for path, contents in sorted(embedded_configs.items(), key=lambda x: x[0]):
-    ret.extend(format_config_contents(path, contents))
-
+    # Fix up line endings (third_party configs can have windows endings).
+    contents = contents.replace('\r', '')
+    # Remove numbers from generated rule comments to make file more
+    # diff'able.
+    contents = re.sub(r' #generated:\d+', '', contents)
+    ret.append('# File: ' + config)
+    ret.append(contents)
+    ret.append('')
 
   if dynamic_config_data:
     ret.append('# File: //build/android/gyp/proguard.py (generated rules)')
@@ -614,17 +604,20 @@ def _CreateDynamicConfig(options):
   return '\n'.join(ret)
 
 
-def _ExtractEmbeddedConfigs(jar_paths):
-  embedded_configs = {}
+def _VerifyNoEmbeddedConfigs(jar_paths):
+  failed = False
   for jar_path in jar_paths:
     with zipfile.ZipFile(jar_path) as z:
-      for info in z.infolist():
-        if info.is_dir():
-          continue
-        if info.filename.startswith('META-INF/proguard/'):
-          config_path = '{}:{}'.format(jar_path, info.filename)
-          embedded_configs[config_path] = z.read(info).decode('utf-8').rstrip()
-  return embedded_configs
+      for name in z.namelist():
+        if name.startswith('META-INF/proguard/'):
+          failed = True
+          sys.stderr.write("""\
+Found embedded proguard config within {}.
+Embedded configs are not permitted (https://crbug.com/989505)
+""".format(jar_path))
+          break
+  if failed:
+    sys.exit(1)
 
 
 def _ContainsDebuggingConfig(config_str):
@@ -651,6 +644,19 @@ def main():
   # ProGuard configs that are derived from flags.
   dynamic_config_data = _CreateDynamicConfig(options)
 
+  # ProGuard configs that are derived from flags.
+  merged_configs = _CombineConfigs(
+      proguard_configs, dynamic_config_data, exclude_generated=True)
+  print_stdout = _ContainsDebuggingConfig(merged_configs) or options.verbose
+
+  if options.expected_file:
+    diff_utils.CheckExpectations(merged_configs, options)
+    if options.only_verify_expectations:
+      build_utils.WriteDepfile(options.depfile,
+                               options.actual_file,
+                               inputs=options.proguard_configs)
+      return
+
   logging.debug('Looking for embedded configs')
   libraries = []
   for p in options.classpath:
@@ -661,24 +667,7 @@ def main():
     # If a jar is part of input no need to include it as library jar.
     if p not in libraries and p not in options.input_paths:
       libraries.append(p)
-  embedded_configs = _ExtractEmbeddedConfigs(options.input_paths + libraries)
-
-  # ProGuard configs that are derived from flags.
-  merged_configs = _CombineConfigs(proguard_configs,
-                                   dynamic_config_data,
-                                   embedded_configs,
-                                   exclude_generated=True)
-  print_stdout = _ContainsDebuggingConfig(merged_configs) or options.verbose
-
-  depfile_inputs = options.proguard_configs + options.input_paths + libraries
-  if options.expected_file:
-    diff_utils.CheckExpectations(merged_configs, options)
-    if options.only_verify_expectations:
-      build_utils.WriteDepfile(options.depfile,
-                               options.actual_file,
-                               inputs=depfile_inputs)
-      return
-
+  _VerifyNoEmbeddedConfigs(options.input_paths + libraries)
   if options.keep_rules_output_path:
     _OutputKeepRules(options.r8_path, options.input_paths, options.classpath,
                      options.keep_rules_targets_regex,
@@ -710,10 +699,11 @@ def main():
   for output in options.extra_mapping_output_paths:
     shutil.copy(options.mapping_output, output)
 
+  inputs = options.proguard_configs + options.input_paths + libraries
   if options.apply_mapping:
-    depfile_inputs.append(options.apply_mapping)
+    inputs.append(options.apply_mapping)
 
-  _MaybeWriteStampAndDepFile(options, depfile_inputs)
+  _MaybeWriteStampAndDepFile(options, inputs)
 
 
 if __name__ == '__main__':
