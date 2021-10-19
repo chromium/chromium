@@ -376,8 +376,8 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
   base::DictionaryValue* dictionary =
       static_cast<base::DictionaryValue*>(result.get());
 
-  int id;
-  if (!dictionary->GetInteger("id", &id)) {
+  absl::optional<int> id = dictionary->FindIntKey("id");
+  if (!id) {
     std::string method_name;
     if (!dictionary->GetString("method", &method_name))
       return;
@@ -394,7 +394,7 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
     EventRouter::Get(profile_)->DispatchEventToExtension(extension_id(),
                                                          std::move(event));
   } else {
-    auto it = pending_requests_.find(id);
+    auto it = pending_requests_.find(*id);
     if (it == pending_requests_.end())
       return;
 

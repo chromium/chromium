@@ -132,14 +132,11 @@ TEST_F(ComponentLoaderTest, ParseManifest) {
 
   // Test parsing valid JSON.
 
-  int value = 0;
   manifest = component_loader_.ParseManifest(
       "{ \"test\": { \"one\": 1 }, \"two\": 2 }");
   ASSERT_TRUE(manifest);
-  EXPECT_TRUE(manifest->GetInteger("test.one", &value));
-  EXPECT_EQ(1, value);
-  ASSERT_TRUE(manifest->GetInteger("two", &value));
-  EXPECT_EQ(2, value);
+  EXPECT_EQ(1, manifest->FindIntPath("test.one"));
+  EXPECT_EQ(2, manifest->FindIntKey("two"));
 
   std::string string_value;
   manifest = component_loader_.ParseManifest(manifest_contents_);

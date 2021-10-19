@@ -381,7 +381,6 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
   // setIcon can take a variant argument: either a dictionary of canvas
   // ImageData, or an icon index.
   base::DictionaryValue* canvas_set = NULL;
-  int icon_index;
   if (details_->GetDictionary("imageData", &canvas_set)) {
     gfx::ImageSkia icon;
 
@@ -422,7 +421,7 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
       return RespondNow(Error("Icon not sufficiently visible."));
 
     extension_action_->SetIcon(tab_id_, icon_image);
-  } else if (details_->GetInteger("iconIndex", &icon_index)) {
+  } else if (details_->FindIntKey("iconIndex")) {
     // Obsolete argument: ignore it.
     return RespondNow(NoArguments());
   } else {

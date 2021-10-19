@@ -650,11 +650,9 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
                        base::CompareCase::SENSITIVE) &&
       action->other()) {
     base::DictionaryValue* other = action->mutable_other();
-    int dom_verb = -1;
-    if (other->GetInteger(constants::kActionDomVerb, &dom_verb) &&
-        dom_verb == DomActionType::METHOD) {
+    absl::optional<int> dom_verb = other->FindIntKey(constants::kActionDomVerb);
+    if (dom_verb == DomActionType::METHOD)
       other->SetInteger(constants::kActionDomVerb, DomActionType::XHR);
-    }
   }
   if (IsDatabaseEnabled() && database_policy_)
     database_policy_->ProcessAction(action);

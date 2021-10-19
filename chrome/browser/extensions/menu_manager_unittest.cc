@@ -626,11 +626,8 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   base::DictionaryValue* info;
   ASSERT_TRUE(list->GetDictionary(0, &info));
 
-  int tmp_id = 0;
-  ASSERT_TRUE(info->GetInteger("menuItemId", &tmp_id));
-  ASSERT_EQ(id.uid, tmp_id);
-  ASSERT_TRUE(info->GetInteger("parentMenuItemId", &tmp_id));
-  ASSERT_EQ(parent_id.uid, tmp_id);
+  ASSERT_EQ(id.uid, info->FindIntKey("menuItemId"));
+  ASSERT_EQ(parent_id.uid, info->FindIntKey("parentMenuItemId"));
 
   std::string tmp;
   ASSERT_TRUE(info->GetString("mediaType", &tmp));

@@ -313,9 +313,7 @@ void ExtensionServiceTestBase::ValidateIntegerPref(
   const base::DictionaryValue* pref = NULL;
   ASSERT_TRUE(dict->GetDictionary(extension_id, &pref)) << msg;
   EXPECT_TRUE(pref != NULL) << msg;
-  int val;
-  ASSERT_TRUE(pref->GetInteger(pref_path, &val)) << msg;
-  EXPECT_EQ(expected_val, val) << msg;
+  EXPECT_EQ(expected_val, pref->FindIntPath(pref_path)) << msg;
 }
 
 void ExtensionServiceTestBase::ValidateStringPref(

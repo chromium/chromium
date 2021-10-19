@@ -283,10 +283,10 @@ int ExtensionWindowLastFocusedTest::GetTabId(
   const base::DictionaryValue* tab_dict = nullptr;
   if (!tab->GetAsDictionary(&tab_dict))
     return -2;
-  int tab_id = 0;
-  if (!tab_dict->GetInteger(keys::kIdKey, &tab_id))
+  absl::optional<int> tab_id = tab_dict->FindIntKey(keys::kIdKey);
+  if (!tab_id)
     return -2;
-  return tab_id;
+  return *tab_id;
 }
 
 base::Value* ExtensionWindowLastFocusedTest::RunFunction(

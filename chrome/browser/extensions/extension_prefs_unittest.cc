@@ -711,9 +711,8 @@ class ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue
     const base::DictionaryValue* ext =
         prefs()->GetExtensionPref(extension_->id());
     EXPECT_NE(nullptr, ext);
-    int out_value;
     // The pref value should be cleared.
-    EXPECT_FALSE(ext->GetInteger("disable_reasons", &out_value));
+    EXPECT_FALSE(ext->FindIntKey("disable_reasons"));
   }
 
  private:

@@ -307,8 +307,7 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
 
   const base::DictionaryValue* third_tab_info;
   ASSERT_TRUE(tabs_list_with_permission->GetDictionary(0, &third_tab_info));
-  int third_tab_id = -1;
-  ASSERT_TRUE(third_tab_info->GetInteger("id", &third_tab_id));
+  absl::optional<int> third_tab_id = third_tab_info->FindIntKey("id");
   EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contentses[2]), third_tab_id);
 
   while (!browser()->tab_strip_model()->empty())
@@ -364,8 +363,7 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
 
     const base::DictionaryValue* third_tab_info;
     ASSERT_TRUE(tabs_list_with_permission->GetDictionary(0, &third_tab_info));
-    int third_tab_id = -1;
-    ASSERT_TRUE(third_tab_info->GetInteger("id", &third_tab_id));
+    absl::optional<int> third_tab_id = third_tab_info->FindIntKey("id");
     EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contentses[2]), third_tab_id);
   }
 
@@ -387,13 +385,13 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
     expected_tabs_ids.push_back(ExtensionTabUtil::GetTabId(web_contentses[0]));
     expected_tabs_ids.push_back(ExtensionTabUtil::GetTabId(web_contentses[2]));
 
-    int first_tab_id = -1;
-    ASSERT_TRUE(first_tab_info->GetInteger("id", &first_tab_id));
-    EXPECT_TRUE(base::Contains(expected_tabs_ids, first_tab_id));
+    absl::optional<int> first_tab_id = first_tab_info->FindIntKey("id");
+    ASSERT_TRUE(first_tab_id);
+    EXPECT_TRUE(base::Contains(expected_tabs_ids, *first_tab_id));
 
-    int third_tab_id = -1;
-    ASSERT_TRUE(third_tab_info->GetInteger("id", &third_tab_id));
-    EXPECT_TRUE(base::Contains(expected_tabs_ids, third_tab_id));
+    absl::optional<int> third_tab_id = third_tab_info->FindIntKey("id");
+    ASSERT_TRUE(third_tab_id);
+    EXPECT_TRUE(base::Contains(expected_tabs_ids, *third_tab_id));
   }
   while (!browser()->tab_strip_model()->empty())
     browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);

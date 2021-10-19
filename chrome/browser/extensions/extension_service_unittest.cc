@@ -726,11 +726,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     if (!pref) {
       return false;
     }
-    int val;
-    if (!pref->GetInteger(pref_path, &val)) {
-      return false;
-    }
-    return true;
+    return pref->FindIntPath(pref_path).has_value();
   }
 
   void SetPref(const std::string& extension_id,

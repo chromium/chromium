@@ -120,10 +120,10 @@ void SetDefaultsFromValue(const base::DictionaryValue* dict,
     action->SetBadgeTextColor(kDefaultTabId, RawStringToSkColor(str_value));
   }
 
-  int appearance_storage = 0;
-  if (dict->GetInteger(kAppearanceStorageKey, &appearance_storage) &&
-      !action->HasIsVisible(kDefaultTabId)) {
-    switch (appearance_storage) {
+  absl::optional<int> appearance_storage =
+      dict->FindIntKey(kAppearanceStorageKey);
+  if (appearance_storage && !action->HasIsVisible(kDefaultTabId)) {
+    switch (*appearance_storage) {
       case INVISIBLE:
       case OBSOLETE_WANTS_ATTENTION:
         action->SetIsVisible(kDefaultTabId, false);

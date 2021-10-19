@@ -223,7 +223,6 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
   static void RetrieveActions_ArgUrlExtraction(
       std::unique_ptr<std::vector<scoped_refptr<Action>>> i) {
     const base::DictionaryValue* other = NULL;
-    int dom_verb = -1;
 
     ASSERT_EQ(4U, i->size());
     scoped_refptr<Action> action = i->at(0);
@@ -236,8 +235,8 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
     // so just test once.
     other = action->other();
     ASSERT_TRUE(other);
-    ASSERT_TRUE(other->GetInteger(activity_log_constants::kActionDomVerb,
-                                  &dom_verb));
+    absl::optional<int> dom_verb =
+        other->FindIntKey(activity_log_constants::kActionDomVerb);
     ASSERT_EQ(DomActionType::XHR, dom_verb);
 
     action = i->at(1);
@@ -263,7 +262,6 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
       std::unique_ptr<std::vector<scoped_refptr<Action>>> actions) {
     size_t api_calls_size = base::size(kUrlApiCalls);
     const base::DictionaryValue* other = NULL;
-    int dom_verb = -1;
 
     ASSERT_EQ(api_calls_size, actions->size());
 
@@ -277,8 +275,8 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
       ASSERT_EQ("http://www.google.co.uk/", action->arg_url().spec());
       other = action->other();
       ASSERT_TRUE(other);
-      ASSERT_TRUE(
-          other->GetInteger(activity_log_constants::kActionDomVerb, &dom_verb));
+      absl::optional<int> dom_verb =
+          other->FindIntKey(activity_log_constants::kActionDomVerb);
       ASSERT_EQ(DomActionType::SETTER, dom_verb);
     }
   }

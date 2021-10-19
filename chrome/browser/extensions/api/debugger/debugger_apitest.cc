@@ -124,8 +124,8 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   for (size_t i = 0; i < targets.GetList().size(); ++i) {
     const base::DictionaryValue* target_dict = nullptr;
     EXPECT_TRUE(targets.GetDictionary(i, &target_dict));
-    int id = -1;
-    if (target_dict->GetInteger("tabId", &id) && id == tab_id) {
+    absl::optional<int> id = target_dict->FindIntKey("tabId");
+    if (id == tab_id) {
       EXPECT_TRUE(target_dict->GetString("id", &debugger_target_id));
       break;
     }

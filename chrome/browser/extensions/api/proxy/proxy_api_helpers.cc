@@ -192,10 +192,9 @@ bool GetProxyServer(const base::DictionaryValue* proxy_server,
   }
   std::string host = base::UTF16ToASCII(host16);
 
-  int port;  // optional.
-  if (!proxy_server->GetInteger(proxy_api_constants::kProxyConfigRulePort,
-                                &port))
-    port = net::ProxyServer::GetDefaultPortForScheme(scheme);
+  // optional.
+  int port = proxy_server->FindIntKey(proxy_api_constants::kProxyConfigRulePort)
+                 .value_or(net::ProxyServer::GetDefaultPortForScheme(scheme));
 
   *out = net::ProxyServer(scheme, net::HostPortPair(host, port));
 
