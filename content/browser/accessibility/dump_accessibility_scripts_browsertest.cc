@@ -40,6 +40,12 @@ constexpr const char kMacMethods[]{"mac/methods"};
 //    exactly match.
 class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
  public:
+  DumpAccessibilityScriptTest() {
+    // Drop 'mac' expectations qualifier both from expectation file names and
+    // from scenario directives.
+    test_helper_.OverrideExpectationType("content");
+  }
+
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override;
   void AddPropertyFilter(
       std::vector<AXPropertyFilter>* property_filters,

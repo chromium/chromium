@@ -29,6 +29,12 @@ class DumpAccessibilityTestHelper {
   explicit DumpAccessibilityTestHelper(const char* expectation_type);
   ~DumpAccessibilityTestHelper() = default;
 
+  // Overrides the expectation type. Useful to tune up the expectations format
+  // after the helper object was instantiated.
+  void OverrideExpectationType(const std::string& expectation_type) {
+    expectation_type_ = expectation_type;
+  }
+
   // Returns a path to an expectation file for the current platform. If no
   // suitable expectation file can be found, logs an error message and returns
   // an empty path.
