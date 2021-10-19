@@ -10910,7 +10910,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="OptimizationGuide_RequestContexts" separator=".">
-  <suffix name="BatchUpdate" label="Batch update"/>
+  <suffix name="BatchUpdate" label="Batch update.">
+    <obsolete>
+      Obsolete as of 10/2021.
+    </obsolete>
+  </suffix>
+  <suffix name="BatchUpdateActiveTabs"
+      label="Batch update of hints for active tabs"/>
+  <suffix name="BatchUpdateGoogleSRP"
+      label="Batch update of hints for result links off the Google SRP"/>
+  <suffix name="BatchUpdateModels" label="Batch update of models"/>
   <suffix name="PageNavigation" label="Page navigation"/>
   <affected-histogram
       name="OptimizationGuide.HintsFetcher.GetHintsRequest.ActiveRequestCanceled"/>

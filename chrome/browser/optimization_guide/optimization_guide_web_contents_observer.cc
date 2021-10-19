@@ -150,7 +150,9 @@ void OptimizationGuideWebContentsObserver::FetchHintsUsingManager(
   PageData& page_data = GetPageData(*page);
   page_data.set_sent_batched_hints_request();
 
-  hints_manager->FetchHintsForURLs(page_data.GetHintsTargetUrls());
+  hints_manager->FetchHintsForURLs(
+      page_data.GetHintsTargetUrls(),
+      optimization_guide::proto::CONTEXT_BATCH_UPDATE_GOOGLE_SRP);
 }
 
 void OptimizationGuideWebContentsObserver::NotifyNavigationFinish(

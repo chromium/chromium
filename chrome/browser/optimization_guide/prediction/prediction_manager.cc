@@ -461,7 +461,7 @@ void PredictionManager::FetchModels() {
 
   bool fetch_initiated =
       prediction_model_fetcher_->FetchOptimizationGuideServiceModels(
-          models_info, active_field_trials, proto::CONTEXT_BATCH_UPDATE,
+          models_info, active_field_trials, proto::CONTEXT_BATCH_UPDATE_MODELS,
           g_browser_process->GetApplicationLocale(),
           base::BindOnce(&PredictionManager::OnModelsFetched,
                          ui_weak_ptr_factory_.GetWeakPtr()));

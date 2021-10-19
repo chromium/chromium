@@ -157,8 +157,9 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // metrics such as jank.
   void OnDeferredStartup();
 
-  // Fetch the hints for the given URLs.
-  void FetchHintsForURLs(std::vector<GURL> target_urls);
+  // Fetch the hints for the given URLs with the provided |request_context|.
+  void FetchHintsForURLs(std::vector<GURL> target_urls,
+                         proto::RequestContext request_context);
 
   // optimization_guide::PushNotificationManager::Delegate:
   void RemoveFetchedEntriesByHintKeys(

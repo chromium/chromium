@@ -721,7 +721,8 @@ void HintsManager::FetchHintsForActiveTabs() {
 
   batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
       top_hosts, active_tab_urls_to_refresh, registered_optimization_types_,
-      optimization_guide::proto::CONTEXT_BATCH_UPDATE, application_locale_,
+      optimization_guide::proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
+      application_locale_,
       base::BindOnce(&HintsManager::OnHintsForActiveTabsFetched,
                      weak_ptr_factory_.GetWeakPtr(), top_hosts_set,
                      base::flat_set<GURL>(active_tab_urls_to_refresh.begin(),
@@ -852,7 +853,8 @@ void HintsManager::LoadHintForHost(const std::string& host,
                                              std::move(callback)));
 }
 
-void HintsManager::FetchHintsForURLs(std::vector<GURL> target_urls) {
+void HintsManager::FetchHintsForURLs(std::vector<GURL> target_urls,
+                                     proto::RequestContext request_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Collect hosts, stripping duplicates, but preserving the ordering.
@@ -875,7 +877,7 @@ void HintsManager::FetchHintsForURLs(std::vector<GURL> target_urls) {
   // returned, we pass this through to the page navigation callback.
   batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
       target_hosts.vector(), target_urls, registered_optimization_types_,
-      optimization_guide::proto::CONTEXT_BATCH_UPDATE, application_locale_,
+      request_context, application_locale_,
       base::BindOnce(&HintsManager::OnPageNavigationHintsFetched,
                      weak_ptr_factory_.GetWeakPtr(), nullptr, absl::nullopt,
                      target_urls, target_hosts.set()));

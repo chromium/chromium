@@ -46,12 +46,15 @@ std::string GetStringNameForRequestContext(
     proto::RequestContext request_context) {
   switch (request_context) {
     case proto::RequestContext::CONTEXT_UNSPECIFIED:
+    case proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS:
       NOTREACHED();
       return "Unknown";
-    case proto::RequestContext::CONTEXT_BATCH_UPDATE:
-      return "BatchUpdate";
     case proto::RequestContext::CONTEXT_PAGE_NAVIGATION:
       return "PageNavigation";
+    case proto::RequestContext::CONTEXT_BATCH_UPDATE_GOOGLE_SRP:
+      return "BatchUpdateGoogleSRP";
+    case proto::RequestContext::CONTEXT_BATCH_UPDATE_ACTIVE_TABS:
+      return "BatchUpdateActiveTabs";
   }
   NOTREACHED();
   return std::string();

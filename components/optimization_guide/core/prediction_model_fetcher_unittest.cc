@@ -125,7 +125,7 @@ TEST_F(PredictionModelFetcherTest, FetchOptimizationGuideServiceModels) {
   model_info.set_optimization_target(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   EXPECT_TRUE(FetchModels({model_info}, /*active_field_trials=*/{},
-                          proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
                           "en-US"));
   VerifyHasPendingFetchRequests();
 
@@ -142,7 +142,7 @@ TEST_F(PredictionModelFetcherTest, FetchReturned404) {
   model_info.set_optimization_target(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   EXPECT_TRUE(FetchModels({model_info}, /*active_field_trials=*/{},
-                          proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
                           "en-US"));
   // Send a 404 to HintsFetcher.
   SimulateResponse(response_content, net::HTTP_NOT_FOUND);
@@ -164,7 +164,7 @@ TEST_F(PredictionModelFetcherTest, FetchReturnBadResponse) {
   model_info.set_optimization_target(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   EXPECT_TRUE(FetchModels({model_info}, /*active_field_trials=*/{},
-                          proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
                           "en-US"));
   VerifyHasPendingFetchRequests();
   EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
@@ -178,13 +178,13 @@ TEST_F(PredictionModelFetcherTest, FetchAttemptWhenNetworkOffline) {
   model_info.set_optimization_target(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   EXPECT_FALSE(FetchModels({model_info}, /*active_field_trials=*/{},
-                           proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                           proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
                            "en-US"));
   EXPECT_FALSE(models_fetched());
 
   SetConnectionOnline();
   EXPECT_TRUE(FetchModels({model_info}, /*active_field_trials=*/{},
-                          proto::RequestContext::CONTEXT_BATCH_UPDATE,
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
                           "en-US"));
   VerifyHasPendingFetchRequests();
   EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
@@ -196,8 +196,8 @@ TEST_F(PredictionModelFetcherTest, EmptyModelInfo) {
   std::string response_content;
   proto::FieldTrial field_trial;
   field_trial.set_name_hash(123);
-  EXPECT_FALSE(FetchModels(/*model_request_info=*/{}, {field_trial},
-                           proto::RequestContext::CONTEXT_BATCH_UPDATE,
+  EXPECT_FALSE(FetchModels(/*models_request_info=*/{}, {field_trial},
+                           proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
                            "en-US"));
 
   EXPECT_FALSE(models_fetched());

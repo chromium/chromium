@@ -41,13 +41,17 @@ enum EffectiveConnectionType {
 
 // Context in which the items are requested.
 enum RequestContext {
-  reserved 1;
+  reserved 1, 3;
   // Context not specified.
   CONTEXT_UNSPECIFIED = 0;
   // Requesting items on page navigation.
   CONTEXT_PAGE_NAVIGATION = 2;
-  // Requesting items as part of a batch update.
-  CONTEXT_BATCH_UPDATE = 3;
+  // Requesting as part of a SRP fetch.
+  CONTEXT_BATCH_UPDATE_GOOGLE_SRP = 4;
+  // Requesting as part of a regularly scheduled fetch for active tabs.
+  CONTEXT_BATCH_UPDATE_ACTIVE_TABS = 5;
+  // Requesting a batch of models to update.
+  CONTEXT_BATCH_UPDATE_MODELS = 6;
 }
 
 message FieldTrial {

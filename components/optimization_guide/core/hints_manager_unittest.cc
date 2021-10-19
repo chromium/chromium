@@ -200,6 +200,7 @@ class TestHintsFetcher : public optimization_guide::HintsFetcher {
             : fetch_states_.back();
     num_fetches_requested_++;
     locale_requested_ = locale;
+    request_context_requested_ = request_context;
     switch (fetch_state) {
       case HintsFetcherEndState::kFetchFailed:
         std::move(hints_fetched_callback).Run(absl::nullopt);
@@ -232,10 +233,16 @@ class TestHintsFetcher : public optimization_guide::HintsFetcher {
 
   std::string locale_requested() const { return locale_requested_; }
 
+  proto::RequestContext request_context_requested() const {
+    return request_context_requested_;
+  }
+
  private:
   std::vector<HintsFetcherEndState> fetch_states_;
   int num_fetches_requested_ = 0;
   std::string locale_requested_;
+  proto::RequestContext request_context_requested_ =
+      proto::RequestContext::CONTEXT_UNSPECIFIED;
 };
 
 // A mock class of HintsFetcherFactory that returns instances of
@@ -2028,6 +2035,8 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
   EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
   EXPECT_EQ("en-US", batch_update_hints_fetcher()->locale_requested());
+  EXPECT_EQ(proto::RequestContext::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
+            batch_update_hints_fetcher()->request_context_requested());
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 2, 1);
 

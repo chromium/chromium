@@ -1177,6 +1177,14 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 3, 1);
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 7, 1);
+  EXPECT_GE(
+      optimization_guide::RetryForHistogramUntilCountReached(
+          histogram_tester,
+          "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP",
+          1),
+      1);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP", 1);
 }
 
 class HintsFetcherSearchPagePrerenderingBrowserTest
