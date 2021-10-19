@@ -4257,6 +4257,10 @@ const char kCrostiniUseLxd4Description[] =
     "Uses LXD version 4 instead of the default version. WARNING: Once this is "
     "set you can't unset it without deleting your entire container";
 
+const char kCrostiniMultiContainerName[] = "Allow multiple Crostini containers";
+const char kCrostiniMultiContainerDescription[] =
+    "Experimental UI for creating and managing multiple Crostini containers";
+
 const char kDisableBufferBWCompressionName[] =
     "Disable buffer bandwidth compression";
 const char kDisableBufferBWCompressionDescription[] =

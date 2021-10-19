@@ -51115,6 +51115,7 @@ from previous Chrome versions.
   <int value="319683583" label="ContentSuggestionsDebugLog:enabled"/>
   <int value="320121752" label="DelegateOverscrollSwipes:disabled"/>
   <int value="321366101" label="WebXRARDOMOverlay:enabled"/>
+  <int value="322249981" label="CrostiniMultiContainer:enabled"/>
   <int value="323605372" label="ui-disable-compositor-animation-timelines"/>
   <int value="324060906"
       label="enable-experimental-accessibility-language-detection"/>
@@ -53085,6 +53086,7 @@ from previous Chrome versions.
   <int value="1819256299" label="disable-webrtc-hw-decoding"/>
   <int value="1819536169" label="disable-cast-streaming-hw-encoding"/>
   <int value="1820317896" label="NTPShowGoogleGInOmnibox:disabled"/>
+  <int value="1820442907" label="CrostiniMultiContainer:disabled"/>
   <int value="1820451991" label="enable-offline-auto-reload"/>
   <int value="1821723343" label="disable-saml-signin"/>
   <int value="1823102966" label="disable-ipc-flooding-protection"/>

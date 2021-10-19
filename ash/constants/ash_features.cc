@@ -296,6 +296,9 @@ const base::Feature kCrostiniUseLxd4{"CrostiniUseLxd4",
 // (and component updater instead of DLC if not).
 const base::Feature kCrostiniUseDlc{"CrostiniUseDlc",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
+// Enables experimental UI creating and managing multiple Crostini containers.
+const base::Feature kCrostiniMultiContainer{"CrostiniMultiContainer",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables using Cryptauth's GetDevicesActivityStatus API.
 const base::Feature kCryptAuthV2DeviceActivityStatus{

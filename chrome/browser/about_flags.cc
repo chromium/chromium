@@ -3580,6 +3580,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"crostini-use-lxd-4", flag_descriptions::kCrostiniUseLxd4Name,
      flag_descriptions::kCrostiniUseLxd4Description, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCrostiniResetLxdDb)},
+    {"crostini-multi-container", flag_descriptions::kCrostiniMultiContainerName,
+     flag_descriptions::kCrostiniMultiContainerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kCrostiniMultiContainer)},
 #if BUILDFLAG(USE_TCMALLOC)
     {"dynamic-tcmalloc-tuning", flag_descriptions::kDynamicTcmallocName,
      flag_descriptions::kDynamicTcmallocDescription, kOsCrOS,
