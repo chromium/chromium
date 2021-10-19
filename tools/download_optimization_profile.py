@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -21,7 +21,10 @@ import os
 import subprocess
 import sys
 
-from urllib.request import urlopen
+if sys.version_info.major == 2:
+  from urllib2 import urlopen
+else:
+  from urllib.request import urlopen
 
 GS_HTTP_URL = 'https://storage.googleapis.com'
 
@@ -48,10 +51,7 @@ def WriteLocalProfileName(name, local_profile_name_path):
 
 
 def CheckCallOrExit(cmd):
-  proc = subprocess.Popen(cmd,
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE,
-                          text=True)
+  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   stdout, stderr = proc.communicate()
   exit_code = proc.wait()
   if not exit_code:
