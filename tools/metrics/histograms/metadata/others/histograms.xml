@@ -4669,8 +4669,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Whether Chrome was the default browser when it started up.
 
-    Only logged correctly on Windows, Mac, and Linux. Logged incorrectly on
-    other platforms.
+    Only logged correctly on Windows and Mac. Logged incorrectly on other
+    platforms. On Linux, this histogram is no longer logged as of 2021/10/18 due
+    to browser test hangs. See crbug.com/1216328.
 
     For ChromeOS, no histogram is necessary because Chrome is always the default
     browser.

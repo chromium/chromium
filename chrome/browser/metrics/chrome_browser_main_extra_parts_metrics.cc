@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "build/config/compiler/compiler_buildflags.h"
+#include "build/os_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
@@ -223,19 +224,22 @@ void RecordStartupMetrics() {
 #endif  // defined(OS_WIN)
 
   // TODO(crbug.com/1216328) Remove logging.
-  LOG(ERROR) << "crbug.com/1216328: Checking Bluetooth availability started. "
-                "Please report if there is no report that this ends.";
+  LOG(ERROR) << "START: ReportBluetoothAvailability(). "
+                "If you don't see the END: message, this is crbug.com/1216328.";
   bluetooth_utility::ReportBluetoothAvailability();
-  LOG(ERROR) << "crbug.com/1216328: Checking Bluetooth availability ended.";
+  LOG(ERROR) << "END: ReportBluetoothAvailability()";
 
   // Record whether Chrome is the default browser or not.
-  LOG(ERROR) << "crbug.com/1216328: Checking default browser status started. "
-                "Please report if there is no report that this ends.";
+  // Disabled on Linux due to hanging browser tests, see crbug.com/1216328.
+#if !BUILDFLAG(IS_LINUX)
+  LOG(ERROR) << "START: GetDefaultBrowser(). "
+                "If you don't see the END: message, this is crbug.com/1216328.";
   shell_integration::DefaultWebClientState default_state =
       shell_integration::GetDefaultBrowser();
-  LOG(ERROR) << "crbug.com/1216328: Checking default browser status ended.";
+  LOG(ERROR) << "END: GetDefaultBrowser()";
   base::UmaHistogramEnumeration("DefaultBrowser.State", default_state,
                                 shell_integration::NUM_DEFAULT_STATES);
+#endif  // !BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   RecordChromeOSChannel();
