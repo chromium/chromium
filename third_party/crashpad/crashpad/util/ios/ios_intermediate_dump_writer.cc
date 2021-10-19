@@ -50,15 +50,6 @@ bool RawLoggingCloseFile(int fd) {
   return rv == 0;
 }
 
-// Similar to LoggingLockFile but with CRASHPAD_RAW_LOG.
-bool RawLoggingLockFileExclusiveNonBlocking(int fd) {
-  int rv = HANDLE_EINTR(flock(fd, LOCK_EX | LOCK_NB));
-  if (rv != 0) {
-    CRASHPAD_RAW_LOG_ERROR(rv, "RawLoggingLockFileExclusiveNonBlocking");
-  }
-  return rv == 0;
-}
-
 bool IOSIntermediateDumpWriter::Open(const base::FilePath& path) {
   // Set data protection class D (No protection). A file with this type of
   // protection can be read from or written to at any time.
@@ -76,7 +67,7 @@ bool IOSIntermediateDumpWriter::Open(const base::FilePath& path) {
     return false;
   }
 
-  return RawLoggingLockFileExclusiveNonBlocking(fd_);
+  return true;
 }
 
 bool IOSIntermediateDumpWriter::Close() {

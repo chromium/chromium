@@ -19,7 +19,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "handler/mac/crash_report_exception_handler.h"
+#include "handler/crash_report_upload_thread.h"
 #include "snapshot/ios/process_snapshot_ios_intermediate_dump.h"
 #include "util/ios/ios_intermediate_dump_writer.h"
 #include "util/ios/ios_system_data_collector.h"
@@ -45,11 +45,13 @@ class InProcessHandler {
   //! \param[in] database The path to a Crashpad database.
   //! \param[in] url The URL of an upload server.
   //! \param[in] annotations Process annotations to set in each crash report.
+  //! \param[in] system_data An object containing various system data points.
   //! \return `true` if a handler to a pending intermediate dump could be
   //!     opened.
   bool Initialize(const base::FilePath& database,
                   const std::string& url,
-                  const std::map<std::string, std::string>& annotations);
+                  const std::map<std::string, std::string>& annotations,
+                  const IOSSystemDataCollector& system_data);
 
   //! \brief Generate an intermediate dump from a signal handler exception.
   //!
@@ -192,6 +194,7 @@ class InProcessHandler {
   std::unique_ptr<IOSIntermediateDumpWriter> alternate_mach_writer_;
   std::unique_ptr<CrashReportUploadThread> upload_thread_;
   std::unique_ptr<CrashReportDatabase> database_;
+  std::string bundle_identifier_and_seperator_;
   InitializationStateDcheck initialized_;
 };
 

@@ -36,6 +36,13 @@ void CreateDirectory(const base::FilePath& path) {
   }
 }
 
+// The file extension used to indicate a file is locked.
+constexpr char kLockedExtension[] = ".locked";
+
+// The seperator used to break the bundle id (e.g. com.chromium.ios) from the
+// uuid in the intermediate dump file name.
+constexpr char kBundleSeperator[] = "@";
+
 }  // namespace
 
 namespace crashpad {
@@ -50,10 +57,13 @@ InProcessHandler::~InProcessHandler() {
 bool InProcessHandler::Initialize(
     const base::FilePath& database,
     const std::string& url,
-    const std::map<std::string, std::string>& annotations) {
+    const std::map<std::string, std::string>& annotations,
+    const IOSSystemDataCollector& system_data) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
   annotations_ = annotations;
   database_ = CrashReportDatabase::Initialize(database);
+  bundle_identifier_and_seperator_ =
+      system_data.BundleIdentifier() + kBundleSeperator;
 
   if (!url.empty()) {
     // TODO(scottmg): options.rate_limit should be removed when we have a
@@ -213,16 +223,22 @@ std::vector<base::FilePath> InProcessHandler::PendingFiles() {
   DirectoryReader::Result result;
   while ((result = reader.NextFile(&file)) ==
          DirectoryReader::Result::kSuccess) {
-    file = base_dir_.Append(file);
-    if (file != current_file_) {
-      ScopedFileHandle fd(LoggingOpenFileForRead(file));
-      if (LoggingLockFile(fd.get(),
-                          FileLocking::kExclusive,
-                          FileLockingBlocking::kNonBlocking) ==
-          FileLockingResult::kSuccess) {
-        files.push_back(file);
-      }
+    // Don't try to process files marked as 'locked' from a different bundle id.
+    if (file.value().compare(0,
+                             bundle_identifier_and_seperator_.size(),
+                             bundle_identifier_and_seperator_) != 0 &&
+        file.FinalExtension() == kLockedExtension) {
+      continue;
     }
+
+    // Never process the current file.
+    file = base_dir_.Append(file);
+    if (file == current_file_)
+      continue;
+
+    // Otherwise, include any other unlocked, or locked files matching
+    // |bundle_identifier_and_seperator_|.
+    files.push_back(file);
   }
   return files;
 }
@@ -272,10 +288,17 @@ InProcessHandler::ScopedReport::ScopedReport(
 }
 
 bool InProcessHandler::OpenNewFile() {
+  if (!current_file_.empty()) {
+    // Remove .lock extension so this dump can be processed on next run by this
+    // client, or a client with a different bundle id that can access this dump.
+    base::FilePath new_path = current_file_.RemoveFinalExtension();
+    MoveFileOrDirectory(current_file_, new_path);
+  }
   UUID uuid;
   uuid.InitializeWithNew();
-  const std::string uuid_string = uuid.ToString();
-  current_file_ = base_dir_.Append(uuid_string);
+  const std::string file_string =
+      bundle_identifier_and_seperator_ + uuid.ToString() + kLockedExtension;
+  current_file_ = base_dir_.Append(file_string);
   writer_ = std::make_unique<IOSIntermediateDumpWriter>();
   if (!writer_->Open(current_file_)) {
     DLOG(ERROR) << "Unable to open intermediate dump file: "
