@@ -743,7 +743,7 @@ void OobeInteractiveUITest::SimpleEndToEnd() {
 
 // Disabled on *San bots since they time out.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(LEAK_SANITIZER)
+    defined(LEAK_SANITIZER) || defined(OS_CHROMEOS)
 #define MAYBE_SimpleEndToEnd DISABLED_SimpleEndToEnd
 #else
 #define MAYBE_SimpleEndToEnd SimpleEndToEnd
