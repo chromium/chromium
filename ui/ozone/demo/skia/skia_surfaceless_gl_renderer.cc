@@ -256,7 +256,8 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
             0, gfx::OVERLAY_TRANSFORM_NONE, primary_plane_rect_, unity_rect,
             /* enable_blend */ true, gfx::Rect(buffers_[back_buffer_]->size()),
             /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone,
-            /* rounded_corners */ gfx::RRectF()));
+            /* rounded_corners */ gfx::RRectF(), gfx::ColorSpace::CreateSRGB(),
+            /*hdr_metadata=*/absl::nullopt));
   }
 
   if (overlay_buffer_[0] && overlay_list.back().overlay_handled) {
@@ -266,7 +267,8 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
             1, gfx::OVERLAY_TRANSFORM_NONE, overlay_rect, unity_rect,
             /* enable_blend */ true, gfx::Rect(buffers_[back_buffer_]->size()),
             /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone,
-            /* rounded_corners */ gfx::RRectF()));
+            /* rounded_corners */ gfx::RRectF(), gfx::ColorSpace::CreateSRGB(),
+            /*hdr_metadata=*/absl::nullopt));
   }
 
   back_buffer_ ^= 1;

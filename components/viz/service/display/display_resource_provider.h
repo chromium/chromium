@@ -87,6 +87,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   gfx::BufferFormat GetBufferFormat(ResourceId id);
   ResourceFormat GetResourceFormat(ResourceId id);
   const gfx::ColorSpace& GetColorSpace(ResourceId id);
+  const absl::optional<gfx::HDRMetadata>& GetHDRMetadata(ResourceId id);
+
   // Indicates if this resource may be used for a hardware overlay plane.
   bool IsOverlayCandidate(ResourceId id);
   SurfaceId GetSurfaceId(ResourceId id);

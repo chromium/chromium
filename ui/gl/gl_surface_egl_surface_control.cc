@@ -439,7 +439,8 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     pending_transaction_->SetOpaque(*surface_state.surface, opaque);
   }
 
-  auto image_color_space = GetNearestSupportedImageColorSpace(image);
+  auto image_color_space =
+      GetNearestSupportedColorSpace(overlay_plane_data.color_space);
   if (!gfx::SurfaceControl::SupportsColorSpace(image_color_space)) {
     LOG(ERROR) << "Not supported color space used with overlay : "
                << image_color_space.ToString();
@@ -648,8 +649,8 @@ gfx::Rect GLSurfaceEGLSurfaceControl::ApplyDisplayInverse(
 }
 
 const gfx::ColorSpace&
-GLSurfaceEGLSurfaceControl::GetNearestSupportedImageColorSpace(
-    GLImage* image) const {
+GLSurfaceEGLSurfaceControl::GetNearestSupportedColorSpace(
+    const gfx::ColorSpace& buffer_color_space) const {
   static constexpr gfx::ColorSpace kSRGB = gfx::ColorSpace::CreateSRGB();
   static constexpr gfx::ColorSpace kP3 = gfx::ColorSpace::CreateDisplayP3D65();
 
@@ -658,7 +659,7 @@ GLSurfaceEGLSurfaceControl::GetNearestSupportedImageColorSpace(
     case GLSurfaceFormat::COLOR_SPACE_SRGB:
       return kSRGB;
     case GLSurfaceFormat::COLOR_SPACE_DISPLAY_P3:
-      return image->color_space() == kP3 ? kP3 : kSRGB;
+      return buffer_color_space == kP3 ? kP3 : kSRGB;
   }
 
   NOTREACHED();

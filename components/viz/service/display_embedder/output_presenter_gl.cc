@@ -65,6 +65,11 @@ class PresenterImageGL : public OutputPresenter::Image {
 
   gl::GLImage* GetGLImage(std::unique_ptr<gfx::GpuFence>* fence);
 
+  const gfx::ColorSpace& color_space() {
+    DCHECK(overlay_representation_);
+    return overlay_representation_->color_space();
+  }
+
  private:
   std::unique_ptr<gpu::SharedImageRepresentationOverlay>
       overlay_representation_;
@@ -339,8 +344,9 @@ void OutputPresenterGL::SchedulePrimaryPlane(
     Image* image,
     bool is_submitted) {
   std::unique_ptr<gfx::GpuFence> fence;
+  auto* presenter_image = static_cast<PresenterImageGL*>(image);
   // If the submitted_image() is being scheduled, we don't new a new fence.
-  auto* gl_image = reinterpret_cast<PresenterImageGL*>(image)->GetGLImage(
+  auto* gl_image = presenter_image->GetGLImage(
       (is_submitted || !gl_surface_->SupportsPlaneGpuFences()) ? nullptr
                                                                : &fence);
 
@@ -355,14 +361,16 @@ void OutputPresenterGL::SchedulePrimaryPlane(
       gfx::OverlayPlaneData(
           kPlaneZOrder, plane.transform, ToNearestRect(plane.display_rect),
           plane.uv_rect, plane.enable_blending, gfx::Rect(plane.resource_size),
-          plane.opacity, plane.priority_hint, plane.rounded_corners));
+          plane.opacity, plane.priority_hint, plane.rounded_corners,
+          presenter_image->color_space(),
+          /*hdr_metadata=*/absl::nullopt));
 }
 
 void OutputPresenterGL::ScheduleBackground(Image* image) {
+  auto* presenter_image = static_cast<PresenterImageGL*>(image);
   // Background is not seen by user, and is created before buffer queue buffers.
   // So fence is not needed.
-  auto* gl_image =
-      reinterpret_cast<PresenterImageGL*>(image)->GetGLImage(nullptr);
+  auto* gl_image = presenter_image->GetGLImage(nullptr);
 
   // Background is also z-order 0.
   constexpr int kPlaneZOrder = INT32_MIN;
@@ -375,7 +383,9 @@ void OutputPresenterGL::ScheduleBackground(Image* image) {
                             /*crop_rect=*/kUVRect,
                             /*enable_blend=*/false, /*damage_rect=*/gfx::Rect(),
                             /*opacity=*/1.0f, gfx::OverlayPriorityHint::kNone,
-                            /*rounded_corners*/ gfx::RRectF()));
+                            /*rounded_corners=*/gfx::RRectF(),
+                            /*color_space=*/presenter_image->color_space(),
+                            /*hdr_metadata=*/absl::nullopt));
 }
 
 void OutputPresenterGL::CommitOverlayPlanes(
@@ -412,7 +422,8 @@ void OutputPresenterGL::ScheduleOverlays(
               overlay.plane_z_order, overlay.transform,
               ToNearestRect(overlay.display_rect), overlay.uv_rect,
               !overlay.is_opaque, ToEnclosingRect(overlay.damage_rect),
-              overlay.opacity, overlay.priority_hint, overlay.rounded_corners));
+              overlay.opacity, overlay.priority_hint, overlay.rounded_corners,
+              overlay.color_space, overlay.hdr_metadata));
     }
 #elif defined(OS_APPLE)
     // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied

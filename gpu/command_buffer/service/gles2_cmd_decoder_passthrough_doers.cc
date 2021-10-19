@@ -4868,7 +4868,8 @@ error::Error GLES2DecoderPassthroughImpl::DoScheduleOverlayPlaneCHROMIUM(
               gfx::RectF(uv_x, uv_y, uv_width, uv_height), enable_blend,
               /*damage_rect=*/gfx::Rect(), /*opacity=*/1.0f,
               gfx::OverlayPriorityHint::kNone,
-              /*rounded_corners*/ gfx::RRectF()))) {
+              /*rounded_corners*/ gfx::RRectF(), image->color_space(),
+              /*hdr_metadata=*/absl::nullopt))) {
     InsertError(GL_INVALID_OPERATION, "failed to schedule overlay");
     return error::kNoError;
   }

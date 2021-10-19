@@ -339,6 +339,8 @@ bool OverlayCandidate::FromDrawQuadResource(
   if (resource_id != kInvalidResourceId) {
     candidate->format = resource_provider->GetBufferFormat(resource_id);
     candidate->color_space = resource_provider->GetColorSpace(resource_id);
+    candidate->hdr_metadata = resource_provider->GetHDRMetadata(resource_id);
+
     if (!base::Contains(kOverlayFormats, candidate->format))
       return false;
   }

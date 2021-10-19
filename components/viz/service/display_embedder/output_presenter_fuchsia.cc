@@ -460,7 +460,8 @@ void OutputPresenterFuchsia::PresentNextFrame() {
             overlay.plane_z_order, overlay.transform,
             gfx::ToRoundedRect(overlay.display_rect), overlay.uv_rect,
             !overlay.is_opaque, gfx::ToRoundedRect(overlay.damage_rect),
-            overlay.opacity, overlay.priority_hint, overlay.rounded_corners),
+            overlay.opacity, overlay.priority_hint, overlay.rounded_corners,
+            overlay.color_space, overlay.hdr_metadata),
         ZxEventsToGpuFences(frame.acquire_fences),
         /*release_fences=*/{});
   }

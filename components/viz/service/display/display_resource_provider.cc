@@ -169,6 +169,12 @@ const gfx::ColorSpace& DisplayResourceProvider::GetColorSpace(ResourceId id) {
   return resource->transferable.color_space;
 }
 
+const absl::optional<gfx::HDRMetadata>& DisplayResourceProvider::GetHDRMetadata(
+    ResourceId id) {
+  ChildResource* resource = GetResource(id);
+  return resource->transferable.hdr_metadata;
+}
+
 int DisplayResourceProvider::CreateChild(ReturnCallback return_callback,
                                          const SurfaceId& surface_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
