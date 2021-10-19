@@ -1235,7 +1235,7 @@ bool AppPlatformMetrics::ShouldRecordUkm() {
 
 ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
   ukm::SourceId source_id = ukm::kInvalidSourceId;
-  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
+  apps::mojom::AppType app_type = GetAppType(app_id);
   switch (app_type) {
     case apps::mojom::AppType::kBuiltIn:
     case apps::mojom::AppType::kExtension:
@@ -1297,7 +1297,11 @@ ukm::SourceId AppPlatformMetrics::GetSourceIdForCrostini(
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
   auto registration = registry->GetRegistration(app_id);
   if (!registration) {
-    return ukm::kInvalidSourceId;
+    // If there's no registration then we're not allowed to record anything that
+    // could identify the app (and we don't know the app name anyway), but
+    // recording every unregistered app in one big bucket is fine.
+    return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini("UNREGISTERED",
+                                                             "UNREGISTERED");
   }
   auto desktop_id = registration->DesktopFileId() == ""
                         ? "NoId"
