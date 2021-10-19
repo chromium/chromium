@@ -106,7 +106,6 @@ extern const char kExtensionsInstallVerification[];
 extern const char kExtensionsNotWebstore[];
 extern const char kForceAppMode[];
 extern const char kForceFirstRun[];
-extern const char kForceStackedTabStripLayout[];
 extern const char kHideCrashRestoreBubble[];
 extern const char kHomePage[];
 extern const char kIncognito[];

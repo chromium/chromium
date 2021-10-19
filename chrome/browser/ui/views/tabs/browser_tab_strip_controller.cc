@@ -89,8 +89,7 @@ bool DetermineTabStripLayoutStacked(PrefService* prefs, bool* adjust_layout) {
   *adjust_layout = true;
   return prefs->GetBoolean(prefs::kTabStripStackedLayout);
 #else
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kForceStackedTabStripLayout);
+  return false;
 #endif
 }
 
