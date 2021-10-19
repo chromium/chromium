@@ -12,7 +12,6 @@
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/direct_composition_surface_win.h"
-#include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gpu {
@@ -153,8 +152,11 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> ValidateAndOpenSharedHandle(
 
 }  // anonymous namespace
 
-SharedImageBackingFactoryD3D::SharedImageBackingFactoryD3D()
-    : d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()) {}
+SharedImageBackingFactoryD3D::SharedImageBackingFactoryD3D(
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device)
+    : d3d11_device_(std::move(d3d11_device)) {
+  DCHECK(d3d11_device_);
+}
 
 SharedImageBackingFactoryD3D::~SharedImageBackingFactoryD3D() = default;
 
