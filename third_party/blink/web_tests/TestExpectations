@@ -7155,3 +7155,9 @@ crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image
 crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-image.html [ Pass Timeout ]
 crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Pass Timeout ]
 crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure Pass Timeout ]
+
+# Sheriff 2021-10-19
+crbug.com/1256763 [ Linux ] images/color-profile-background-image-cross-fade.html [ Failure Pass ]
+crbug.com/1256763 [ Linux ] images/color-profile-background-clip-text.html [ Failure Pass ]
+crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-svg-fill-text.html [ Failure Pass ]
+crbug.com/1259277 [ Mac ] fast/events/message-port-multi.html [ Failure Pass ]
