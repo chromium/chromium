@@ -204,8 +204,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // offset will be calculated as normal.
   void AddResult(const NGLayoutResult&,
                  const LogicalOffset,
-                 absl::optional<LogicalOffset> relative_offset = absl::nullopt,
-                 bool propagate_oof_descendants = true);
+                 absl::optional<LogicalOffset> relative_offset = absl::nullopt);
 
   void AddChild(
       const NGPhysicalFragment&,
@@ -367,6 +366,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   void SetIsAtBlockEnd() { is_at_block_end_ = true; }
   bool IsAtBlockEnd() const { return is_at_block_end_; }
+
+  void SetDisableOOFDescendantsPropagation() {
+    disable_oof_descendants_propagation_ = true;
+  }
 
   // See |NGPhysicalBoxFragment::InflowBounds|.
   void SetInflowBounds(const LogicalRect& inflow_bounds) {
@@ -605,6 +608,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool is_math_fraction_ = false;
   bool is_math_operator_ = false;
   bool is_at_block_end_ = false;
+  bool disable_oof_descendants_propagation_ = false;
   LayoutUnit consumed_block_size_;
   LayoutUnit consumed_block_size_legacy_adjustment_;
   LayoutUnit block_offset_for_additional_columns_;

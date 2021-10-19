@@ -27,6 +27,7 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
   container_builder_.SetBoxType(previous_fragment.BoxType());
   container_builder_.SetFragmentBlockSize(
       params.space.FragmentainerBlockSize());
+  container_builder_.SetDisableOOFDescendantsPropagation();
   if (incoming_break_token_)
     break_token_iterator_ = incoming_break_token_->ChildBreakTokens().begin();
   old_fragment_break_token_ =
@@ -99,9 +100,7 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
 
 void NGSimplifiedOOFLayoutAlgorithm::AppendOutOfFlowResult(
     scoped_refptr<const NGLayoutResult> result) {
-  container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset(),
-                               /* relative_offset */ absl::nullopt,
-                               /* propagate_oof_descendants */ false);
+  container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset());
 
   // If there is an incoming child break token, make sure that it matches
   // the OOF child that was just added.

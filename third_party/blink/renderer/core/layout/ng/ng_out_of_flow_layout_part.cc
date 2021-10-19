@@ -739,6 +739,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
   // the remaining OOFs.
   limited_multicol_container_builder.SetFragmentsTotalBlockSize(LayoutUnit());
 
+  limited_multicol_container_builder.SetDisableOOFDescendantsPropagation();
+
   WritingDirectionMode writing_direction =
       multicol.Style().GetWritingDirection();
   const NGPhysicalBoxFragment* last_fragment_with_fragmentainer = nullptr;

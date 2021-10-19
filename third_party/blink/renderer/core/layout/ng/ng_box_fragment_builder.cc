@@ -84,8 +84,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
 void NGBoxFragmentBuilder::AddResult(
     const NGLayoutResult& child_layout_result,
     const LogicalOffset offset,
-    absl::optional<LogicalOffset> relative_offset,
-    bool propagate_oof_descendants) {
+    absl::optional<LogicalOffset> relative_offset) {
   const auto& fragment = child_layout_result.PhysicalFragment();
   const NGLayoutResult* child_box_layout_result = nullptr;
   if (fragment.IsBox()) {
@@ -113,7 +112,7 @@ void NGBoxFragmentBuilder::AddResult(
   DCHECK(!fragment.IsFormattingContextRoot() || end_margin_strut.IsEmpty());
 
   absl::optional<LayoutUnit> adjustment_for_oof_propagation;
-  if (propagate_oof_descendants)
+  if (!disable_oof_descendants_propagation_)
     adjustment_for_oof_propagation = BlockOffsetAdjustmentForFragmentainer();
 
   AddChild(fragment, offset, /* inline_container */ nullptr, &end_margin_strut,
@@ -136,6 +135,8 @@ void NGBoxFragmentBuilder::AddChild(
   needs_inflow_bounds_explicitly_set_ = !!relative_offset;
   needs_may_have_descendant_above_block_start_explicitly_set_ =
       !!relative_offset;
+  DCHECK(!disable_oof_descendants_propagation_ ||
+         !adjustment_for_oof_propagation);
 #endif
 
   if (!relative_offset) {
