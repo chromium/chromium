@@ -773,7 +773,7 @@ export class FileManager extends EventTarget {
         this.ui_.showConfirmationDialog.bind(this.ui_), this.progressCenter,
         assert(this.fileOperationManager_), assert(this.metadataModel_),
         assert(this.directoryModel_), assert(this.volumeManager_),
-        assert(this.selectionHandler_));
+        assert(this.selectionHandler_), this.ui_.toast);
   }
 
   /**

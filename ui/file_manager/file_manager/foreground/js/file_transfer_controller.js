@@ -18,6 +18,7 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {FilesToast} from '../elements/files_toast.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {DropEffectAndLabel, DropEffectType} from './drop_effect_and_label.js';
@@ -69,11 +70,12 @@ export class FileTransferController {
    * @param {!DirectoryModel} directoryModel Directory model instance.
    * @param {!VolumeManager} volumeManager Volume manager instance.
    * @param {!FileSelectionHandler} selectionHandler Selection handler.
+   * @param {!FilesToast} filesToast Files toast.
    */
   constructor(
       doc, listContainer, directoryTree, confirmationCallback, progressCenter,
       fileOperationManager, metadataModel, directoryModel, volumeManager,
-      selectionHandler) {
+      selectionHandler, filesToast) {
     /**
      * @private {!Document}
      * @const
@@ -128,6 +130,12 @@ export class FileTransferController {
      * @const
      */
     this.progressCenter_ = progressCenter;
+
+    /**
+     * @private {!FilesToast}
+     * @const
+     */
+    this.filesToast_ = filesToast;
 
     /**
      * The array of pending task ID.
@@ -437,6 +445,51 @@ export class FileTransferController {
   }
 
   /**
+   * Calls executePaste with |pastePlan| if paste is allowed by Data Leak
+   * Prevention policy. If paste is not allowed, it shows a toast to the
+   * user.
+   *
+   * @param {!FileTransferController.PastePlan} pastePlan
+   * @return {!Promise<string>} Either "copy" or "move".
+   * @private
+   */
+  async executePasteIfAllowed_(pastePlan) {
+    const sourceEntries = await pastePlan.resolveEntries();
+    const isPasteAllowed = true;
+
+    // TODO(crbug.com/1259202): Add Dlp logic
+    if (!isPasteAllowed) {
+      this.filesToast_.show(
+          'Pasting this file is blocked by your administrator', {
+            text: 'Learn more',
+            callback: () => {
+              util.visitURL(
+                  'https://support.google.com/chrome/a/?p=chromeos_datacontrols');
+            }
+          });
+      throw new Error('ABORT');
+    }
+    if (sourceEntries.length == 0) {
+      // This can happen when copied files were deleted before pasting
+      // them. We execute the plan as-is, so as to share the post-copy
+      // logic. This is basically same as getting empty by filtering
+      // same-directory entries.
+      return this.executePaste(pastePlan);
+    }
+    const confirmationType = pastePlan.getConfirmationType();
+    if (confirmationType == FileTransferController.ConfirmationType.NONE) {
+      return this.executePaste(pastePlan);
+    }
+    const messages = pastePlan.getConfirmationMessages(confirmationType);
+    const userApproved =
+        await this.confirmationCallback_(pastePlan.isMove, messages);
+    if (!userApproved) {
+      throw new Error('ABORT');
+    }
+    return this.executePaste(pastePlan);
+  }
+
+  /**
    * Collects parameters of paste operation by the given command and the current
    * system clipboard.
    *
@@ -519,28 +572,7 @@ export class FileTransferController {
     const pastePlan =
         this.preparePaste(clipboardData, opt_destinationEntry, opt_effect);
 
-    return pastePlan.resolveEntries().then(
-        sourceEntries => {
-          if (sourceEntries.length == 0) {
-            // This can happen when copied files were deleted before pasting
-            // them. We execute the plan as-is, so as to share the post-copy
-            // logic. This is basically same as getting empty by filtering
-            // same-directory entries.
-            return Promise.resolve(this.executePaste(pastePlan));
-          }
-          const confirmationType = pastePlan.getConfirmationType();
-          if (confirmationType ==
-              FileTransferController.ConfirmationType.NONE) {
-            return Promise.resolve(this.executePaste(pastePlan));
-          }
-          const messages = pastePlan.getConfirmationMessages(confirmationType);
-          this.confirmationCallback_(pastePlan.isMove, messages)
-              .then(userApproved => {
-                if (userApproved) {
-                  this.executePaste(pastePlan);
-                }
-              });
-        });
+    return this.executePasteIfAllowed_(pastePlan);
   }
 
   /**
