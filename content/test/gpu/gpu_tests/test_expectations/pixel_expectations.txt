@@ -420,6 +420,7 @@ crbug.com/1209344 [ linux display-server-wayland intel skia-renderer-gl ] Pixel_
 crbug.com/1213170 [ mac ] Pixel_WebGPUImport* [ Skip ]
 crbug.com/1213170 [ mac ] Pixel_WebGPUCanvas* [ Skip ]
 crbug.com/1213170 [ mac ] Pixel_WebGPUWebGL* [ Skip ]
+crbug.com/1213170 [ mac ] Pixel_WebGPUCopyExternalImage* [ Skip ]
 
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
 crbug.com/1245704 [ mac ] Pixel_WebGPUToDataURL [ Failure ]
@@ -438,6 +439,7 @@ crbug.com/976497 [ android ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ chromeos ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ fuchsia ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ win7 ] Pixel_WebGPU* [ Skip ]
+crbug.com/852089 [ win10 skia-renderer-gl ] Pixel_WebGPUCopyExternalImage* [ Skip ]
 
 # Flaky on Pixel 4
 crbug.com/1215747 [ android android-pixel-4 skia-renderer-gl ] Pixel_OffscreenCanvasWebGLDefault [ RetryOnFailure ]

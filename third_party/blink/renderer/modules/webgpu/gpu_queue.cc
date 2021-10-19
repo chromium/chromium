@@ -427,7 +427,22 @@ void GPUQueue::copyExternalImageToTexture(
     ExceptionState& exception_state) {
   // "srgb" is the only valid color space for now.
   DCHECK_EQ(destination->colorSpace(), "srgb");
-  bool is_webgl = IsExternalImageWebGLCanvas(copyImage->source());
+
+  // TODO(crbug.com/1257856): Current implementation takes wrong flip step for
+  // WebGL canvas. It should follow the canvas origin but it follows WebGL
+  // coords instead. Use the temporary origin config for WebGL canvas so user
+  // could fix the flip issue.
+  bool is_bottom_left_origin_webgl =
+      copyImage->temporaryOriginBottomLeftIfWebGL() &&
+      IsExternalImageWebGLCanvas(copyImage->source());
+
+  if (is_bottom_left_origin_webgl) {
+    device_->AddConsoleWarning(
+        "temporaryOriginBottomLeftIfWebGL is true means the top-left pixel in "
+        "destination gpu texture is from"
+        "bottom-left pixel of WebGL Canvas. Set "
+        "temporaryOriginBottomLeftIfWebGL to false to unflip the result.");
+  }
 
   scoped_refptr<Image> image =
       GetImageFromExternalImage(copyImage->source(), exception_state);
@@ -522,12 +537,8 @@ void GPUQueue::copyExternalImageToTexture(
 
   // NOTE: IsOriginTopLeft for AcceleratedStaticBitmapImage
   // will provide the correct orientation info.
-  // TODO(crbug.com/1221110): WebGL canvas image orientation seems
-  // opposite with the orientation attributes. Need to figure out whether
-  // this is expected.
   bool is_origin_top_left = static_bitmap_image->IsOriginTopLeft();
-  bool flipY =
-      (!is_origin_top_left && !is_webgl) || (is_origin_top_left && is_webgl);
+  bool flipY = is_origin_top_left == is_bottom_left_origin_webgl;
 
   // Try GPU path first and delegate noop copy to CPU path.
   if (static_bitmap_image->IsTextureBacked() &&
@@ -542,7 +553,7 @@ void GPUQueue::copyExternalImageToTexture(
   // GPU path failed, fallback to CPU path
   static_bitmap_image = static_bitmap_image->MakeUnaccelerated();
   DCHECK_EQ(static_bitmap_image->IsOriginTopLeft(), true);
-  flipY = is_webgl;
+  flipY = is_bottom_left_origin_webgl;
 
   // CPU path is the fallback path and should always work.
   if (!CopyContentFromCPU(static_bitmap_image.get(), origin_in_external_image,

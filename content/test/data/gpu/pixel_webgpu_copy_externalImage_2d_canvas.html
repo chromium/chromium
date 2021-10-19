@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>WebGPU experimentalImportTexture test</title>
+  <title>WebGPU copyExternalImageToTexture test</title>
   <style type="text/css">
   .nomargin {
     margin: 0px auto;
@@ -12,12 +12,11 @@
     var g_swapsBeforeAck = 15;
 
     async function main() {
-      const glCanvas = document.getElementById('canvas_gl');
-      const gl = glCanvas.getContext('webgl');
-      if (!gl) {
-        console.error('getContext(webgl) failed');
-        domAutomationController.send("FAILURE");
-        return;
+      const canvas2d = document.getElementById('canvas_2d');
+      const c2d = canvas2d.getContext("2d");
+      if (!c2d) {
+        console.error('getContext(2d) failed');
+        return null;
       }
 
       const gpuCanvas = document.getElementById('canvas_gpu');
@@ -29,25 +28,20 @@
       }
 
       const renderCallback = function() {
-        gl.enable(gl.SCISSOR_TEST);
-        gl.scissor(0, 0, 100, 100);
-        gl.clearColor(1.0, 0.0, 0.0, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        c2d.fillStyle = "rgb(0, 255, 0)";
+        c2d.fillRect(0, 0, 100, 100);
 
-        gl.scissor(0, 100, 100, 100);
-        gl.clearColor(0.0, 1.0, 0.0, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        c2d.fillStyle = "rgb(255, 0, 0)";
+        c2d.fillRect(0, 100, 100, 100);
 
-        gl.scissor(100, 100, 100, 100);
-        gl.clearColor(0.0, 0.0, 1.0, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        c2d.fillStyle = "rgb(255, 255, 0)";
+        c2d.fillRect(100, 100, 100, 100);
 
-        gl.scissor(100, 0, 100, 100);
-        gl.clearColor(1.0, 1.0, 0.0, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        c2d.fillStyle = "rgb(0, 0, 255)";
+        c2d.fillRect(100, 0, 100, 100);
 
-        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, glCanvas,
-                                           {useImport: true, isWebGLCanvas: true});
+        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, canvas2d,
+                                           {useImport: false, isWebGLCanvas: false});
 
         waitForFinish();
       };
@@ -66,7 +60,7 @@
   </script>
 </head>
 <body onload="main()">
-  <canvas id="canvas_gl" width="200" height="200" class="nomargin"></canvas>
+  <canvas id="canvas_2d" width="200" height="200" class="nomargin"></canvas>
   <canvas id="canvas_gpu" width="200" height="200" class="nomargin"></canvas>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>WebGPU experimentalImportTexture test</title>
+  <title>WebGPU copyExternalImageToTexture test</title>
   <style type="text/css">
   .nomargin {
     margin: 0px auto;
@@ -19,6 +19,23 @@
         return null;
       }
 
+      if (typeof OffscreenCanvas === 'undefined') {
+        console.error('Browser does not support OffscreenCanvas');
+        return null;
+      }
+
+      const offscreenCanvas = new OffscreenCanvas(canvas2d.width, canvas2d.height);
+      if (typeof offscreenCanvas === 'undefined') {
+        console.error('Cannot get offscreenCanvas');
+        return null;
+      }
+
+      const o2d = offscreenCanvas.getContext("2d");
+      if (!o2d) {
+        console.error('getContext(2d) failed');
+        return null;
+      }
+
       const gpuCanvas = document.getElementById('canvas_gpu');
       const [gpuDevice, gpuContext] = await webGpuUtils.init(gpuCanvas);
       if (!gpuDevice || !gpuContext) {
@@ -28,20 +45,24 @@
       }
 
       const renderCallback = function() {
-        c2d.fillStyle = "rgb(0, 255, 0)";
-        c2d.fillRect(0, 0, 100, 100);
+        o2d.fillStyle = "rgb(0, 255, 0)";
+        o2d.fillRect(0, 0, 100, 100);
 
-        c2d.fillStyle = "rgb(255, 0, 0)";
-        c2d.fillRect(0, 100, 100, 100);
+        o2d.fillStyle = "rgb(255, 0, 0)";
+        o2d.fillRect(0, 100, 100, 100);
 
-        c2d.fillStyle = "rgb(255, 255, 0)";
-        c2d.fillRect(100, 100, 100, 100);
+        o2d.fillStyle = "rgb(255, 255, 0)";
+        o2d.fillRect(100, 100, 100, 100);
 
-        c2d.fillStyle = "rgb(0, 0, 255)";
-        c2d.fillRect(100, 0, 100, 100);
+        o2d.fillStyle = "rgb(0, 0, 255)";
+        o2d.fillRect(100, 0, 100, 100);
 
-        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, canvas2d,
-                                           {useImport: true, isWebGLCanvas: false});
+        c2d.drawImage(offscreenCanvas, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
+
+        const imageBitmap = offscreenCanvas.transferToImageBitmap();
+
+        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, imageBitmap,
+                                           {useImport: false, isWebGLCanvas: false});
 
         waitForFinish();
       };

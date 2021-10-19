@@ -31,7 +31,11 @@
       const renderCallback = function() {
         webGpuUtils.fourColorsTest(gpuDevice1, gpuContext1, gpuCanvas1.width,
                                    gpuCanvas1.height);
-        webGpuUtils.importCanvasTest(gpuDevice2, gpuContext2, gpuCanvas1);
+        
+        webGpuUtils.uploadToGPUTextureTest(gpuDevice2,
+                                           gpuContext2,
+                                           gpuCanvas1, 
+                                           {useImport: true, isWebGLCanvas: false});
         waitForFinish();
       };
 

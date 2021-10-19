@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>WebGPU experimentalImportTexture test</title>
+  <title>WebGPU copyExternalImageToTexture test</title>
   <style type="text/css">
   .nomargin {
     margin: 0px auto;
@@ -13,7 +13,18 @@
 
     async function main() {
       const canvas2d = document.getElementById('canvas_2d');
-      const c2d = canvas2d.getContext("2d");
+      if (typeof canvas2d.transferControlToOffscreen === 'undefined') {
+        console.error('HTMLCanvasElement.transferControlToOffscreen is not supported');
+        return null;
+      }
+
+      const offscreenCanvas = canvas2d.transferControlToOffscreen();
+      if (typeof offscreenCanvas === 'undefined') {
+        console.error('Cannot get offscreenCanvas');
+        return null;
+      }
+
+      const c2d = offscreenCanvas.getContext("2d");
       if (!c2d) {
         console.error('getContext(2d) failed');
         return null;
@@ -40,8 +51,8 @@
         c2d.fillStyle = "rgb(0, 0, 255)";
         c2d.fillRect(100, 0, 100, 100);
 
-        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, canvas2d,
-                                           {useImport: true, isWebGLCanvas: false});
+        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, offscreenCanvas,
+                                           {useImport: false, isWebGLCanvas: false});
 
         waitForFinish();
       };
