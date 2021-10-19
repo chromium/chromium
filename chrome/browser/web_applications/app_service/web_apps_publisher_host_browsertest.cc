@@ -405,8 +405,10 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, Launch) {
 
   content::TestNavigationObserver navigation_observer(app_url);
   navigation_observer.StartWatchingNewWebContents();
-  web_apps_publisher_host.Launch(app_id, 0,
-                                 apps::mojom::LaunchSource::kFromTest, nullptr);
+  auto launch_params = crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
+  web_apps_publisher_host.Launch(std::move(launch_params), base::DoNothing());
   navigation_observer.Wait();
 }
 

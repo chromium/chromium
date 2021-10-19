@@ -168,35 +168,6 @@ void WebAppsPublisherHost::LoadIcon(const std::string& app_id,
                               size_hint_in_dip, std::move(callback));
 }
 
-content::WebContents* WebAppsPublisherHost::Launch(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
-  return publisher_helper().Launch(
-      app_id, event_flags, std::move(launch_source), std::move(window_info));
-}
-
-content::WebContents* WebAppsPublisherHost::LaunchAppWithFiles(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::FilePathsPtr file_paths) {
-  return publisher_helper().LaunchAppWithFiles(
-      app_id, event_flags, std::move(launch_source), std::move(file_paths));
-}
-
-content::WebContents* WebAppsPublisherHost::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
-  return publisher_helper().LaunchAppWithIntent(
-      app_id, event_flags, std::move(intent), std::move(launch_source),
-      std::move(window_info));
-}
-
 void WebAppsPublisherHost::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }
