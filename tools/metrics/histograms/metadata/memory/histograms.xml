@@ -1961,7 +1961,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableImage.DiskIsUsable.5min" enum="BooleanYesNo"
-    expires_after="M95">
+    expires_after="2022-04-17">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -2026,7 +2026,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableImage.TotalSize.5min" units="KiB"
-    expires_after="2022-04-03">
+    expires_after="2022-04-17">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
