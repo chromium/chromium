@@ -132,6 +132,10 @@ gfx::NativePixmapHandle SysmemNativePixmap::ExportHandle() {
   return gfx::CloneHandleForIPC(handle_);
 }
 
+const gfx::NativePixmapHandle& SysmemNativePixmap::PeekHandle() const {
+  return handle_;
+}
+
 bool SysmemNativePixmap::SupportsOverlayPlane(
     gfx::AcceleratedWidget widget) const {
   if (!collection_->scenic_overlay_view())

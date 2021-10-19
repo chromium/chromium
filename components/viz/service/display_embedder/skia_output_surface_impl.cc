@@ -789,7 +789,6 @@ void SkiaOutputSurfaceImpl::ScheduleOverlays(
     std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished) {
 #if defined(OS_APPLE) || defined(USE_OZONE)
-  DCHECK_EQ(dependency_->gr_context_type(), gpu::GrContextType::kGL);
   // If there are render pass overlays, then a gl context is needed for drawing
   // the overlay render passes to a backing for being scanned out.
   bool make_current =

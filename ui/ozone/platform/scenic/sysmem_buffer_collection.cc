@@ -334,10 +334,9 @@ bool SysmemBufferCollection::CreateVkImage(
   return true;
 }
 
-void SysmemBufferCollection::SetOnDeletedCallback(
+void SysmemBufferCollection::AddOnDeletedCallback(
     base::OnceClosure on_deleted) {
-  DCHECK(!on_deleted_);
-  on_deleted_ = std::move(on_deleted);
+  on_deleted_.push_back(std::move(on_deleted));
 }
 
 SysmemBufferCollection::~SysmemBufferCollection() {
@@ -349,8 +348,8 @@ SysmemBufferCollection::~SysmemBufferCollection() {
   if (collection_)
     collection_->Close();
 
-  if (on_deleted_)
-    std::move(on_deleted_).Run();
+  for (auto& callback : on_deleted_)
+    std::move(callback).Run();
 
   if (scenic_overlay_view_ &&
       !overlay_view_task_runner_->BelongsToCurrentThread()) {

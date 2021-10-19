@@ -4,13 +4,22 @@
 
 #include "ui/ozone/platform/scenic/scenic_surface.h"
 
+#include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/commands.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
 #include <lib/zx/eventpair.h>
 
+#include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/process_context.h"
 #include "base/numerics/math_constants.h"
+#include "base/process/process_handle.h"
+#include "base/trace_event/trace_event.h"
+#include "gpu/vulkan/vulkan_device_queue.h"
+#include "sysmem_native_pixmap.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/ozone/platform/scenic/scenic_gpu_host.h"
 #include "ui/ozone/platform/scenic/scenic_surface_factory.h"
+#include "ui/ozone/platform/scenic/sysmem_buffer_collection.h"
 
 namespace ui {
 
@@ -20,6 +29,31 @@ namespace {
 // to elevate content. ViewProperties set by ScenicWindow sets z-plane to
 // [-0.5f, 0.5f] range, so 0.01f is small enough to make a difference.
 constexpr float kElevationStep = 0.01f;
+
+std::vector<zx::event> GpuFenceHandlesToZxEvents(
+    std::vector<gfx::GpuFenceHandle> handles) {
+  std::vector<zx::event> events;
+  events.reserve(handles.size());
+  for (auto& handle : handles)
+    events.push_back(std::move(handle.owned_event));
+  return events;
+}
+
+zx::event DuplicateZxEvent(const zx::event& event) {
+  zx::event result;
+  zx_status_t status = event.duplicate(ZX_RIGHT_SAME_RIGHTS, &result);
+  ZX_DCHECK(status == ZX_OK, status);
+  return result;
+}
+
+std::vector<gfx::GpuFence> DuplicateGpuFences(
+    const std::vector<gfx::GpuFenceHandle>& fence_handles) {
+  std::vector<gfx::GpuFence> fences;
+  fences.reserve(fence_handles.size());
+  for (const auto& handle : fence_handles)
+    fences.emplace_back(handle.Clone());
+  return fences;
+}
 
 // Converts OverlayTransform enum to angle in radians.
 float OverlayTransformToRadians(gfx::OverlayTransform plane_transform) {
@@ -46,6 +80,7 @@ float OverlayTransformToRadians(gfx::OverlayTransform plane_transform) {
 
 ScenicSurface::ScenicSurface(
     ScenicSurfaceFactory* scenic_surface_factory,
+    SysmemBufferManager* sysmem_buffer_manager,
     gfx::AcceleratedWidget window,
     scenic::SessionPtrAndListenerRequest sesion_and_listener_request)
     : scenic_session_(std::move(sesion_and_listener_request)),
@@ -53,6 +88,7 @@ ScenicSurface::ScenicSurface(
       main_shape_(&scenic_session_),
       main_material_(&scenic_session_),
       scenic_surface_factory_(scenic_surface_factory),
+      sysmem_buffer_manager_(sysmem_buffer_manager),
       window_(window) {
   // Setting alpha to 0 makes this transparent.
   scenic::Material transparent_material(&scenic_session_);
@@ -68,6 +104,16 @@ ScenicSurface::ScenicSurface(
 
 ScenicSurface::~ScenicSurface() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Signal release fences that were submitted in the last PresentImage(). This
+  // is necessary because ExternalVkImageBacking destructor will wait for the
+  // corresponding semaphores, while they may not be signaled by the ImagePipe.
+  for (auto& fence : release_fences_from_last_present_) {
+    auto status =
+        fence.signal(/*clear_mask=*/0, /*set_mask=*/ZX_EVENT_SIGNALED);
+    ZX_DCHECK(status == ZX_OK, status);
+  }
+
   scenic_surface_factory_->RemoveSurface(window_);
 }
 
@@ -96,7 +142,140 @@ void ScenicSurface::OnScenicEvents(
   }
 }
 
-bool ScenicSurface::SetTextureToNewImagePipe(
+void ScenicSurface::Present(
+    scoped_refptr<gfx::NativePixmap> primary_plane_pixmap,
+    std::vector<ui::OverlayPlane> overlays,
+    std::vector<gfx::GpuFenceHandle> acquire_fences,
+    std::vector<gfx::GpuFenceHandle> release_fences,
+    SwapCompletionCallback completion_callback,
+    BufferPresentedCallback presentation_callback) {
+  if (!image_pipe_) {
+    std::move(completion_callback)
+        .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_FAILED));
+    return;
+  }
+
+  auto& handle = static_cast<SysmemNativePixmap*>(primary_plane_pixmap.get())
+                     ->PeekHandle();
+  DCHECK_EQ(handle.buffer_index, 0u);
+  DCHECK(buffer_collection_to_image_id_.contains(handle.buffer_collection_id));
+  uint32_t image_id =
+      buffer_collection_to_image_id_.at(handle.buffer_collection_id);
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("viz", "ScenicSurface::PresentFrame",
+                                    TRACE_ID_LOCAL(this), "image_id", image_id);
+
+  for (auto& overlay : overlays) {
+    overlay.pixmap->ScheduleOverlayPlane(window_, overlay.overlay_plane_data,
+                                         DuplicateGpuFences(acquire_fences),
+                                         /*release_fences=*/{});
+  }
+
+  pending_frames_.emplace_back(
+      next_frame_ordinal_++, image_id, std::move(primary_plane_pixmap),
+      std::move(completion_callback), std::move(presentation_callback));
+
+  auto now = base::TimeTicks::Now();
+
+  auto present_time = now;
+
+  // If we have PresentationState frame a previously displayed frame then use it
+  // to calculate target timestamp for the new frame.
+  if (presentation_state_) {
+    uint32_t relative_position = pending_frames_.back().ordinal -
+                                 presentation_state_->presented_frame_ordinal;
+    present_time = presentation_state_->presentation_time +
+                   presentation_state_->interval * relative_position -
+                   base::Milliseconds(1);
+    present_time = std::max(present_time, now);
+  }
+
+  // Ensure that the target timestamp is not decreasing from the previous frame,
+  // since Scenic doesn't allow it (see crbug.com/1181528).
+  present_time = std::max(present_time, last_frame_present_time_);
+  last_frame_present_time_ = present_time;
+
+  release_fences_from_last_present_.clear();
+  for (auto& fence : release_fences) {
+    release_fences_from_last_present_.push_back(
+        DuplicateZxEvent(fence.owned_event));
+  }
+
+  image_pipe_->PresentImage(
+      image_id, present_time.ToZxTime(),
+      GpuFenceHandlesToZxEvents(std::move(acquire_fences)),
+      GpuFenceHandlesToZxEvents(std::move(release_fences)),
+      fit::bind_member(this, &ScenicSurface::OnPresentComplete));
+}
+
+scoped_refptr<gfx::NativePixmap> ScenicSurface::AllocatePrimaryPlanePixmap(
+    VkDevice vk_device,
+    const gfx::Size& size,
+    gfx::BufferFormat buffer_format) {
+  if (!image_pipe_)
+    InitializeImagePipe();
+
+  // Create buffer collection with 2 extra tokens: one for Vulkan and one for
+  // the ImagePipe.
+  fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token;
+  zx_status_t status =
+      sysmem_buffer_manager_->GetAllocator()->AllocateSharedCollection(
+          collection_token.NewRequest());
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status)
+        << "fuchsia.sysmem.Allocator.AllocateSharedCollection()";
+    return {};
+  }
+
+  collection_token->SetName(100u, "ChromiumPrimaryPlaneOutput");
+  collection_token->SetDebugClientInfo("vulkan", 0u);
+
+  fuchsia::sysmem::BufferCollectionTokenSyncPtr token_for_scenic;
+  collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
+                              token_for_scenic.NewRequest());
+  token_for_scenic->SetDebugClientInfo("scenic", 0u);
+
+  status = collection_token->Sync();
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status) << "fuchsia.sysmem.BufferCollection.Sync()";
+    return {};
+  }
+
+  // Register the new buffer collection with the ImagePipe. Since there will
+  // only be a single buffer in the buffer collection we use the same value for
+  // both buffer collection id and image ids.
+  const uint32_t image_id = ++next_unique_id_;
+  image_pipe_->AddBufferCollection(image_id, std::move(token_for_scenic));
+
+  // Register the new buffer collection with Vulkan.
+  gfx::SysmemBufferCollectionId buffer_collection_id =
+      gfx::SysmemBufferCollectionId::Create();
+
+  buffer_collection_to_image_id_[buffer_collection_id] = image_id;
+
+  auto buffer_collection = sysmem_buffer_manager_->ImportSysmemBufferCollection(
+      vk_device, buffer_collection_id, collection_token.Unbind().TakeChannel(),
+      size, buffer_format, gfx::BufferUsage::SCANOUT, 1,
+      /*register_with_image_pipe=*/false);
+
+  if (!buffer_collection) {
+    ZX_DLOG(ERROR, status) << "Failed to allocate sysmem buffer collection";
+    return {};
+  }
+
+  buffer_collection->AddOnDeletedCallback(
+      base::BindOnce(&ScenicSurface::RemoveBufferCollection,
+                     weak_ptr_factory_.GetWeakPtr(), buffer_collection_id));
+
+  fuchsia::sysmem::ImageFormat_2 image_format;
+  image_format.coded_width = size.width();
+  image_format.coded_height = size.height();
+  image_pipe_->AddImage(image_id, image_id, 0, image_format);
+
+  return buffer_collection->CreateNativePixmap(0);
+}
+
+void ScenicSurface::SetTextureToNewImagePipe(
     fidl::InterfaceRequest<fuchsia::images::ImagePipe2> image_pipe_request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   uint32_t image_pipe_id = scenic_session_.AllocResourceId();
@@ -106,7 +285,6 @@ bool ScenicSurface::SetTextureToNewImagePipe(
   main_shape_.SetMaterial(main_material_);
   scenic_session_.ReleaseResource(image_pipe_id);
   safe_presenter_.QueuePresent();
-  return true;
 }
 
 void ScenicSurface::SetTextureToImage(const scenic::Image& image) {
@@ -199,6 +377,59 @@ mojo::PlatformHandle ScenicSurface::CreateView() {
   return mojo::PlatformHandle(std::move(tokens.view_holder_token.value));
 }
 
+void ScenicSurface::InitializeImagePipe() {
+  DCHECK(!image_pipe_);
+
+  SetTextureToNewImagePipe(image_pipe_.NewRequest());
+
+  image_pipe_.set_error_handler([this](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "ImagePipe disconnected";
+
+    for (auto& frame : pending_frames_) {
+      std::move(frame.completion_callback)
+          .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_FAILED));
+    }
+    pending_frames_.clear();
+  });
+}
+
+void ScenicSurface::RemoveBufferCollection(
+    gfx::SysmemBufferCollectionId buffer_collection_id) {
+  DCHECK(image_pipe_);
+
+  auto iter = buffer_collection_to_image_id_.find(buffer_collection_id);
+  DCHECK(iter != buffer_collection_to_image_id_.end());
+
+  image_pipe_->RemoveBufferCollection(iter->second);
+  buffer_collection_to_image_id_.erase(iter);
+}
+
+void ScenicSurface::OnPresentComplete(
+    fuchsia::images::PresentationInfo presentation_info) {
+  TRACE_EVENT_NESTABLE_ASYNC_END1("viz", "ScenicSurface::PresentFrame",
+                                  TRACE_ID_LOCAL(this), "image_id",
+                                  pending_frames_.front().image_id);
+
+  auto presentation_time =
+      base::TimeTicks::FromZxTime(presentation_info.presentation_time);
+  auto presentation_interval =
+      base::TimeDelta::FromZxDuration(presentation_info.presentation_interval);
+
+  auto& frame = pending_frames_.front();
+
+  std::move(frame.completion_callback)
+      .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK));
+  std::move(frame.presentation_callback)
+      .Run(gfx::PresentationFeedback(presentation_time, presentation_interval,
+                                     gfx::PresentationFeedback::kVSync));
+
+  presentation_state_ =
+      PresentationState{static_cast<int>(frame.ordinal), presentation_time,
+                        presentation_interval};
+
+  pending_frames_.pop_front();
+}
+
 void ScenicSurface::UpdateViewHolderScene() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (overlays_.empty())
@@ -265,5 +496,22 @@ void ScenicSurface::UpdateViewHolderScene() {
 
   safe_presenter_.QueuePresent();
 }
+
+ScenicSurface::PresentedFrame::PresentedFrame(
+    uint32_t ordinal,
+    uint32_t image_id,
+    scoped_refptr<gfx::NativePixmap> primary_plane,
+    SwapCompletionCallback completion_callback,
+    BufferPresentedCallback presentation_callback)
+    : ordinal(ordinal),
+      image_id(image_id),
+      primary_plane(std::move(primary_plane)),
+      completion_callback(std::move(completion_callback)),
+      presentation_callback(std::move(presentation_callback)) {}
+ScenicSurface::PresentedFrame::~PresentedFrame() = default;
+
+ScenicSurface::PresentedFrame::PresentedFrame(PresentedFrame&&) = default;
+ScenicSurface::PresentedFrame& ScenicSurface::PresentedFrame::operator=(
+    PresentedFrame&&) = default;
 
 }  // namespace ui

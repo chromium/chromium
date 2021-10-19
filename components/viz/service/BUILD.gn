@@ -511,12 +511,6 @@ viz_source_set("gpu_service_dependencies") {
       "display_embedder/output_presenter_fuchsia.cc",
       "display_embedder/output_presenter_fuchsia.h",
     ]
-
-    deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.images",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
-    ]
   }
 }
 

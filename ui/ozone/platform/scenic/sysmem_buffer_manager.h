@@ -42,6 +42,10 @@ class SysmemBufferManager {
   // Initialize() again.
   void Shutdown();
 
+  // Returns sysmem allocator. Should only be called after `Initialize()` and
+  // before `Shutdown()`.
+  fuchsia::sysmem::Allocator_Sync* GetAllocator();
+
   scoped_refptr<SysmemBufferCollection> CreateCollection(
       VkDevice vk_device,
       gfx::Size size,

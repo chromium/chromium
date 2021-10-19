@@ -29,11 +29,6 @@ FlatlandSurface::~FlatlandSurface() {
   flatland_surface_factory_->RemoveSurface(window_);
 }
 
-bool FlatlandSurface::SetTextureToNewImagePipe(
-    fidl::InterfaceRequest<fuchsia::images::ImagePipe2> image_pipe_request) {
-  return false;
-}
-
 mojo::PlatformHandle FlatlandSurface::CreateView() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

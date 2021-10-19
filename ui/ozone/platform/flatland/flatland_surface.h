@@ -38,11 +38,6 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
   FlatlandSurface(const FlatlandSurface&) = delete;
   FlatlandSurface& operator=(const FlatlandSurface&) = delete;
 
-  // Sets the texture of the surface to a new image pipe.
-  bool SetTextureToNewImagePipe(
-      fidl::InterfaceRequest<fuchsia::images::ImagePipe2> image_pipe_request)
-      override;
-
   // Creates a View for this surface, and returns a ViewHolderToken handle
   // that can be used to attach it into a scene graph.
   mojo::PlatformHandle CreateView();

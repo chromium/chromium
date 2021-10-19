@@ -35,6 +35,8 @@ class SysmemNativePixmap : public gfx::NativePixmap {
                             std::vector<gfx::GpuFence> release_fences) override;
   gfx::NativePixmapHandle ExportHandle() override;
 
+  const gfx::NativePixmapHandle& PeekHandle() const;
+
   // Returns true if overlay planes are supported and ScheduleOverlayPlane() can
   // be called.
   bool SupportsOverlayPlane(gfx::AcceleratedWidget widget) const;

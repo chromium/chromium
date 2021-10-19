@@ -65,8 +65,7 @@ class SysmemBufferCollection
                   size_t min_buffer_count,
                   bool register_with_image_pipe);
 
-  // Must not be called more than once.
-  void SetOnDeletedCallback(base::OnceClosure on_deleted);
+  void AddOnDeletedCallback(base::OnceClosure on_deleted);
 
   // Creates a NativePixmap the buffer with the specified index. Returned
   // NativePixmap holds a reference to the collection, so the collection is not
@@ -151,7 +150,7 @@ class SysmemBufferCollection
   size_t buffer_size_ = 0;
   bool is_protected_ = false;
 
-  base::OnceClosure on_deleted_;
+  std::vector<base::OnceClosure> on_deleted_;
 };
 
 }  // namespace ui
