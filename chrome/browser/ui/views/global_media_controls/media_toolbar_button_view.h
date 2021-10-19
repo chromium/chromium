@@ -15,6 +15,7 @@ class FeaturePromoControllerViews;
 class MediaNotificationService;
 class MediaToolbarButtonController;
 class MediaToolbarButtonObserver;
+class MediaToolbarButtonContextualMenu;
 
 // Media icon shown in the trusted area of toolbar. Its lifetime is tied to that
 // of its parent ToolbarView. The icon is made visible when there is an active
@@ -23,7 +24,9 @@ class MediaToolbarButtonView : public ToolbarButton,
                                public MediaToolbarButtonControllerDelegate {
  public:
   METADATA_HEADER(MediaToolbarButtonView);
-  explicit MediaToolbarButtonView(BrowserView* browser_view);
+  MediaToolbarButtonView(
+      BrowserView* browser_view,
+      std::unique_ptr<MediaToolbarButtonContextualMenu> context_menu);
   MediaToolbarButtonView(const MediaToolbarButtonView&) = delete;
   MediaToolbarButtonView& operator=(const MediaToolbarButtonView&) = delete;
   ~MediaToolbarButtonView() override;
@@ -56,6 +59,8 @@ class MediaToolbarButtonView : public ToolbarButton,
   std::unique_ptr<MediaToolbarButtonController> controller_;
 
   base::ObserverList<MediaToolbarButtonObserver> observers_;
+
+  std::unique_ptr<MediaToolbarButtonContextualMenu> context_menu_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_VIEW_H_
