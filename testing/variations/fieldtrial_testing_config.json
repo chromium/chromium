@@ -3582,6 +3582,33 @@
             ]
         }
     ],
+    "FocusHelpBubbleScreenReaderPromo": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_actual": "name:focus_help_bubble_accelerator_promo_read;comparator:<10;window:365;storage:365",
+                        "event_trigger": "name:focus_help_bubble_accelerator_promo_triggered;comparator:Any;window:365;storage:365",
+                        "event_used": "name:focus_help_bubble_accelerator_pressed;comparator:<1;window:365;storage:365",
+                        "session_rate": "any",
+                        "session_rate_impact": "none"
+                    },
+                    "enable_features": [
+                        "IPH_FocusHelpBubbleScreenReaderPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "FontManagerEarlyInit": [
         {
             "platforms": [

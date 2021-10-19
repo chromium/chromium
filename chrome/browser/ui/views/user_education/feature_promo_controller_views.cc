@@ -24,11 +24,12 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_registry.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
-#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/style/platform_style.h"
@@ -140,8 +141,10 @@ absl::optional<base::Token> FeaturePromoControllerViews::ShowCriticalPromo(
 
   DCHECK(!bubble_id_);
 
+  const bool screen_reader_available = CheckScreenReaderPromptAvailable();
+
   current_critical_promo_ = base::Token::CreateRandom();
-  ShowPromoBubbleImpl(params, anchor_view);
+  ShowPromoBubbleImpl(params, anchor_view, screen_reader_available);
 
   return current_critical_promo_;
 }
@@ -309,6 +312,10 @@ bool FeaturePromoControllerViews::MaybeShowPromoImpl(
   if (bubble_owner_->AnyBubbleIsShowing())
     return false;
 
+  // TODO(crbug.com/1258216): Currently this must be called before
+  // ShouldTriggerHelpUI() below. See bug for details.
+  const bool screen_reader_available = CheckScreenReaderPromptAvailable();
+
   if (!tracker_->ShouldTriggerHelpUI(iph_feature))
     return false;
 
@@ -317,7 +324,7 @@ bool FeaturePromoControllerViews::MaybeShowPromoImpl(
   DCHECK(!current_iph_feature_);
   current_iph_feature_ = &iph_feature;
 
-  if (!ShowPromoBubbleImpl(params, anchor_view)) {
+  if (!ShowPromoBubbleImpl(params, anchor_view, screen_reader_available)) {
     // `current_iph_feature_` is needed in the call. If it fails, we must reset
     // it and also notify the backend.
     current_iph_feature_ = nullptr;
@@ -393,7 +400,8 @@ FeaturePromoControllerViews::GetBaseCreateParams(
 
 bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
     const FeaturePromoBubbleParams& params,
-    views::View* anchor_view) {
+    views::View* anchor_view,
+    bool screen_reader_promo) {
   FeaturePromoBubbleView::CreateParams create_params =
       GetBaseCreateParams(params, anchor_view);
 
@@ -461,6 +469,8 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
       DCHECK(params.allow_snooze || params.show_close_button);
     }
   }
+  const bool had_screen_reader_promo =
+      !create_params.keyboard_navigation_hint.empty();
 
   bubble_id_ = bubble_owner_->ShowBubble(
       std::move(create_params),
@@ -468,6 +478,15 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
                      weak_ptr_factory_.GetWeakPtr()));
   if (!bubble_id_)
     return false;
+
+  // Record that the focus help message was actually read to the user. See the
+  // note in MaybeShowPromoImpl().
+  // TODO(crbug.com/1258216): Rewrite this when we have the ability for FE
+  // promos to ignore other active promos.
+  if (had_screen_reader_promo) {
+    tracker_->NotifyEvent(
+        feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead);
+  }
 
   anchor_view->SetProperty(kHasInProductHelpPromoKey, true);
   anchor_view_tracker_.SetView(anchor_view);
@@ -503,6 +522,28 @@ void FeaturePromoControllerViews::HandleBubbleClosed() {
 }
 
 bool FeaturePromoControllerViews::CheckScreenReaderPromptAvailable() const {
-  return ui::AXPlatformNode::GetAccessibilityMode().has_mode(
-      ui::AXMode::kScreenReader);
+  if (!ui::AXPlatformNode::GetAccessibilityMode().has_mode(
+          ui::AXMode::kScreenReader)) {
+    return false;
+  }
+
+  // If we're in demo mode and screen reader is on, always play the demo
+  // without querying the FE backend, since the backend will return false for
+  // all promos other than the one that's being demoed. If we didn't have this
+  // code the screen reader prompt would never play.
+  if (base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode))
+    return true;
+
+  if (!tracker_->ShouldTriggerHelpUI(
+          feature_engagement::kIPHFocusHelpBubbleScreenReaderPromoFeature)) {
+    return false;
+  }
+
+  // TODO(crbug.com/1258216): Once we have our answer, immediately dismiss
+  // so that this doesn't interfere with actually showing the bubble. This
+  // dismiss can be moved elsewhere once we support concurrency.
+  tracker_->Dismissed(
+      feature_engagement::kIPHFocusHelpBubbleScreenReaderPromoFeature);
+
+  return true;
 }

@@ -105,6 +105,7 @@ const base::Feature* const kAllFeatures[] = {
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
     &kIPHDesktopTabGroupsNewGroupFeature,
+    &kIPHFocusHelpBubbleScreenReaderPromoFeature,
     &kIPHGMCCastStartStopFeature,
     &kIPHLiveCaptionFeature,
     &kIPHPasswordsAccountStorageFeature,

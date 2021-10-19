@@ -41,6 +41,12 @@ const char kDesktopPwaInstalled[] = "desktop_pwa_installed";
 const char kUpdatedConnectionSecurityIndicatorDisplayed[] =
     "updated_connection_security_indicator_displayed";
 
+const char kFocusHelpBubbleAcceleratorPressed[] =
+    "focus_help_bubble_accelerator_pressed";
+
+const char kFocusHelpBubbleAcceleratorPromoRead[] =
+    "focus_help_bubble_accelerator_promo_read";
+
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 

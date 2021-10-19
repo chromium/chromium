@@ -68,6 +68,13 @@ extern const char kDesktopPwaInstalled[];
 // Omnibox displayed the updated connection security indicator.
 extern const char kUpdatedConnectionSecurityIndicatorDisplayed[];
 
+// The user entered the special "focus help bubble" accelerator.
+extern const char kFocusHelpBubbleAcceleratorPressed[];
+
+// The screen reader promo for the "focus help bubble" accelerator was read to
+// the user.
+extern const char kFocusHelpBubbleAcceleratorPromoRead[];
+
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 

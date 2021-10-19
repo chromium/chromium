@@ -22,6 +22,7 @@ extern const base::Feature kIPHDummyFeature;
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 extern const base::Feature kIPHDesktopTabGroupsNewGroupFeature;
+extern const base::Feature kIPHFocusHelpBubbleScreenReaderPromoFeature;
 extern const base::Feature kIPHGMCCastStartStopFeature;
 extern const base::Feature kIPHLiveCaptionFeature;
 extern const base::Feature kIPHPasswordsAccountStorageFeature;

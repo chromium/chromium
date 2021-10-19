@@ -153,6 +153,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -1816,8 +1817,15 @@ void BrowserView::FocusWebContentsPane() {
 
 bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
   auto* const feature_bubble_owner = FeaturePromoBubbleOwnerImpl::GetInstance();
-  if (feature_bubble_owner->ToggleFocusForAccessibility())
+  if (feature_bubble_owner->ToggleFocusForAccessibility()) {
+    // Record that the user successfully used the accelerator to focus the
+    // bubble, reducing the need to describe the accelerator the next time a
+    // help bubble is shown.
+    feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile())
+        ->NotifyEvent(
+            feature_engagement::events::kFocusHelpBubbleAcceleratorPressed);
     return true;
+  }
 
   if (GetLocationBarView()->ActivateFirstInactiveBubbleForAccessibility())
     return true;
