@@ -12,7 +12,7 @@ export class ActionRecorder {
   constructor() {
     /** @private {boolean} */
     this.recording_ = false;
-    /** @private {Array<!NodeIdentifier>} */
+    /** @private {!Array<!NodeIdentifier>} */
     this.macro_ = [];
   }
 
@@ -48,11 +48,66 @@ export class ActionRecorder {
       return;
     }
 
+    if (node.className === 'SwitchAccessBackButtonView' ||
+        node.className === 'SwitchAccessMenuButton') {
+      // Do not record actions on the back button or menu buttons.
+      return;
+    }
+
     this.macro_.push(NodeIdentifier.fromNode(node));
   }
 
   /** Executes the saved macro */
-  executeMacro() {
-    // TODO: Implement.
+  async executeMacro() {
+    const desktop =
+        await new Promise(resolve => chrome.automation.getDesktop(resolve));
+    for (const identifier of this.macro_) {
+      // Wait for stable state.
+      // TODO: replace this with something more substantive e.g. a focus or
+      // page load listener.
+      await this.sleep();
+      // Find node.
+      const node = this.find_(desktop, identifier);
+      if (!node) {
+        return;
+      }
+
+      // Focus node with Switch Access.
+      node.focus();
+
+      // TODO: draw focus ring around node.
+
+      // Perform 'Select' on the node.
+      node.doDefault();
+    }
+  }
+
+  sleep() {
+    return new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
+  /**
+   * Searches through the tree for a node that matches `target`.
+   * @param {!chrome.automation.AutomationNode} root
+   * @param {!NodeIdentifier} target
+   * @return {chrome.automation.AutomationNode}
+   * @private
+   */
+  find_(root, target) {
+    const nodes = [];
+    nodes.push(root);
+    while (nodes.length !== 0) {
+      const current = nodes.shift();
+      // Goal test.
+      if (NodeIdentifier.fromNode(current).equals(target)) {
+        return current;
+      }
+
+      for (const child of current.children) {
+        nodes.push(child);
+      }
+    }
+
+    return null;
   }
 }
