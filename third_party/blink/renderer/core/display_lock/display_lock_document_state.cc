@@ -172,6 +172,36 @@ bool DisplayLockDocumentState::ActivatableDisplayLocksForced() const {
   return activatable_display_locks_forced_;
 }
 
+void DisplayLockDocumentState::ElementAddedToTopLayer(Element* element) {
+  if (MarkAncestorContextsHaveTopLayerElement(element))
+    element->DetachLayoutTree();
+}
+
+void DisplayLockDocumentState::ElementRemovedFromTopLayer(Element*) {
+  for (auto context : display_lock_contexts_)
+    context->ClearHasTopLayerElement();
+  // We don't use the given element here, but rather all elements that are still
+  // in the top layer.
+  for (auto element : document_->TopLayerElements())
+    MarkAncestorContextsHaveTopLayerElement(element.Get());
+}
+
+bool DisplayLockDocumentState::MarkAncestorContextsHaveTopLayerElement(
+    Element* element) {
+  if (display_lock_contexts_.IsEmpty())
+    return false;
+
+  bool had_locked_ancestor = false;
+  auto* ancestor = element;
+  while ((ancestor = FlatTreeTraversal::ParentElement(*ancestor))) {
+    if (auto* context = ancestor->GetDisplayLockContext()) {
+      context->NotifyHasTopLayerElement();
+      had_locked_ancestor |= context->IsLocked();
+    }
+  }
+  return had_locked_ancestor;
+}
+
 void DisplayLockDocumentState::NotifySelectionRemoved() {
   for (auto context : display_lock_contexts_)
     context->NotifySubtreeLostSelection();
