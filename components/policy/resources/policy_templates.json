@@ -5803,7 +5803,7 @@
           'caption': '''Do not allow use of the Headless Mode''',
         },
       ],
-      'supported_on': ['chrome.*:91-', 'chrome_os:91-'],
+      'supported_on': ['chrome.*:91-'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
