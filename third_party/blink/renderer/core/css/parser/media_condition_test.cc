@@ -40,11 +40,8 @@ TEST(MediaConditionParserTest, Basic) {
       {"(min-width: 500px), (min-width: 500px)", "not all"},
       {"not (min-width: 500px), not (min-width: 500px)", "not all"},
       {"(width: 1px), screen", "not all"},
-
-      // TODO(crbug.com/962417): These look wrong, but are included to
-      // discover changes to the media query parser.
-      {"screen, (width: 1px)", "not all, (width: 1px)"},
-      {"screen, (width: 1px), print", "not all, not all"},
+      {"screen, (width: 1px)", "not all"},
+      {"screen, (width: 1px), print", "not all"},
 
       {nullptr, nullptr}  // Do not remove the terminator line.
   };

@@ -234,9 +234,11 @@ void MediaQueryParser::SkipUntilComma(CSSParserTokenType type,
                                       CSSParserTokenRange& range) {
   if ((type == kCommaToken && !block_watcher_.BlockLevel()) ||
       type == kEOFToken) {
-    state_ = kReadRestrictor;
-    media_query_data_.Clear();
-    query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
+    if (parser_type_ == kMediaQuerySetParser) {
+      state_ = kReadRestrictor;
+      media_query_data_.Clear();
+      query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
+    }
   }
 }
 
