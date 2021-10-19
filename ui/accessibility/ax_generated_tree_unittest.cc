@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
@@ -98,7 +99,7 @@ void MakeTreeOfUnignoredNodesOnly(AXSerializableTree& src,
   CHECK(dst->Unserialize(update));
 }
 
-}  // anonymous namespace
+}  // namespace
 
 // Test the TreeGenerator class by building all possible trees with
 // 3 nodes and the ids [1...3], with no permutations of ids.
@@ -152,7 +153,8 @@ TEST(AXGeneratedTreeTest, TestGeneratingTreesWithIgnoredNodes) {
         generator.IgnoredPermutationCountPerUniqueTree(i);
     for (int j = 0; j < ignored_permutation_count; j++) {
       AXTree tree;
-      generator.BuildUniqueTreeWithIgnoredNodes(i, j, &tree);
+      generator.BuildUniqueTreeWithIgnoredNodes(
+          i, j, /* focused_node */ absl::nullopt, &tree);
       std::string str = TreeToString(tree);
       EXPECT_EQ(EXPECTED_TREES[expected_index++], str);
     }
@@ -323,23 +325,25 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
   for (int tree_index = 0; tree_index < unique_tree_count; tree_index++) {
     // Try each permutation of nodes other than the root being ignored.
     // We'll call this tree the "fat" tree because it has redundant
-    // ignored nodes.
+    // ignored nodes. Also try permuting the focused node, because focus affects
+    // the ignored state of a node by removing it.
     int ignored_permutation_count =
         generator.IgnoredPermutationCountPerUniqueTree(tree_index);
     for (int perm_index0 = 0; perm_index0 < ignored_permutation_count;
          perm_index0++) {
       AXSerializableTree fat_tree;
-      generator.BuildUniqueTreeWithIgnoredNodes(tree_index, perm_index0,
-                                                &fat_tree);
+      generator.BuildUniqueTreeWithIgnoredNodes(
+          tree_index, perm_index0, /* focused_node */ absl::nullopt, &fat_tree);
       SCOPED_TRACE("fat_tree is " + TreeToString(fat_tree));
 
-      // Create a second tree, also with each permutations of nodes
-      // other than the root being ignored.
+      // Create a second tree, also with each permutations of nodes other than
+      // the root being ignored.
       for (int perm_index1 = 1; perm_index1 < ignored_permutation_count;
            perm_index1++) {
         AXSerializableTree fat_tree1;
-        generator.BuildUniqueTreeWithIgnoredNodes(tree_index, perm_index1,
-                                                  &fat_tree1);
+        generator.BuildUniqueTreeWithIgnoredNodes(
+            tree_index, perm_index1, /* focused_node */ absl::nullopt,
+            &fat_tree1);
         SCOPED_TRACE("fat_tree1 is " + TreeToString(fat_tree1));
 
         // Make a source and destination tree using only the unignored nodes.
@@ -416,8 +420,9 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
         // Make sure that the parents, children, and siblings are all computed
         // correctly.
         AXTreeUpdate skinny_tree_serialized = SerializeEntireTree(skinny_tree);
-        for (size_t i = 0; i < skinny_tree_serialized.nodes.size(); i++) {
-          AXNodeID id = skinny_tree_serialized.nodes[i].id;
+        for (const AXNodeData& skinny_tree_node_data :
+             skinny_tree_serialized.nodes) {
+          AXNodeID id = skinny_tree_node_data.id;
 
           AXNode* skinny_tree_node = skinny_tree.GetFromId(id);
           AXNode* fat_tree_node = fat_tree.GetFromId(id);

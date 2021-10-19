@@ -19,8 +19,10 @@
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_tree.h"
 
 namespace content {
+
 namespace {
 
 class CountingAXTreeObserver : public ui::AXTreeObserver {
@@ -1219,9 +1221,11 @@ TEST_F(BrowserAccessibilityManagerTest, DeletingFocusedNodeDoesNotCrash) {
   root2.id = 3;
   root2.role = ax::mojom::Role::kRootWebArea;
 
+  ui::AXTreeUpdate update2 = MakeAXTreeUpdate(root2);
+  update2.node_id_to_clear = root.id;
+  update2.root_id = root2.id;
   AXEventNotificationDetails events2;
-  events2.updates.resize(1);
-  events2.updates[0] = MakeAXTreeUpdate(root2);
+  events2.updates = {update2};
   ASSERT_TRUE(manager->OnAccessibilityEvents(events2));
 
   // Make sure that the focused node was updated to the new root and
@@ -1265,11 +1269,12 @@ TEST_F(BrowserAccessibilityManagerTest, DeletingFocusedNodeDoesNotCrash2) {
   root2.id = 3;
   root2.role = ax::mojom::Role::kRootWebArea;
 
-  // Make an update the explicitly clears the previous root.
+  // Make an update that explicitly clears the previous root.
+  ui::AXTreeUpdate update2 = MakeAXTreeUpdate(root2);
+  update2.node_id_to_clear = root.id;
+  update2.root_id = root2.id;
   AXEventNotificationDetails events2;
-  events2.updates.resize(1);
-  events2.updates[0] = MakeAXTreeUpdate(root2);
-  events2.updates[0].node_id_to_clear = 1;
+  events2.updates = {update2};
   ASSERT_TRUE(manager->OnAccessibilityEvents(events2));
 
   // Make sure that the focused node was updated to the new root and
@@ -1277,6 +1282,43 @@ TEST_F(BrowserAccessibilityManagerTest, DeletingFocusedNodeDoesNotCrash2) {
   EXPECT_EQ(3, manager->GetRoot()->GetId());
   ASSERT_NE(nullptr, manager->GetFocus());
   EXPECT_EQ(3, manager->GetFocus()->GetId());
+}
+
+TEST_F(BrowserAccessibilityManagerTest, IsIgnoredChangedDueToFocusChange) {
+  ui::AXTree::SetFocusedNodeShouldNeverBeIgnored();
+  ui::AXNodeData root;
+  ui::AXNodeData button;
+  root.id = 1;
+  button.id = 2;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {button.id};
+
+  button.role = ax::mojom::Role::kButton;
+  button.AddState(ax::mojom::State::kIgnored);
+
+  ui::AXTreeUpdate initial_state = MakeAXTreeUpdate(root, button);
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          initial_state, test_browser_accessibility_delegate_.get()));
+  ASSERT_EQ(0u, manager->GetRoot()->PlatformChildCount());
+
+  // On purpose we omit "button" from the list of updated nodes. It should be
+  // added due to the focus changing.
+  ui::AXTreeUpdate update = MakeAXTreeUpdate(root);
+  ui::AXTreeData tree_data;
+  tree_data.focused_tree_id = manager->GetTreeID();
+  tree_data.focus_id = button.id;
+  update.has_tree_data = true;
+  update.tree_data = tree_data;
+  AXEventNotificationDetails events;
+  events.updates = {update};
+  ASSERT_TRUE(manager->OnAccessibilityEvents(events));
+
+  // Now that the button is focused, it is no longer ignored.
+  ASSERT_EQ(1u, manager->GetRoot()->PlatformChildCount());
+  EXPECT_EQ(ax::mojom::Role::kButton,
+            manager->GetRoot()->PlatformGetChild(0)->GetRole());
 }
 
 TEST_F(BrowserAccessibilityManagerTest, TreeUpdatesAreMergedWhenPossible) {

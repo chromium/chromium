@@ -7,12 +7,15 @@
 
 #include <vector>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
 namespace ui {
 
 class AXTree;
 
+// This class is only used for fuzz testing.
+//
 // A class to create all possible trees with up to <n> nodes and the
 // ids [1...n].
 //
@@ -57,8 +60,14 @@ class TreeGenerator {
   // Support for returning every permutation of ignored nodes
   // (other than the root, which is never ignored) per unique tree.
   int IgnoredPermutationCountPerUniqueTree(int tree_index) const;
+
+  // The focused node is never ignored, even if marked as such. To enable
+  // testing how focus could affect the ignored state when unserializing trees,
+  // the `focused_node` argument (if specified) indicates which node should be
+  // focused.
   void BuildUniqueTreeWithIgnoredNodes(int tree_index,
                                        int ignored_index,
+                                       absl::optional<int> focused_node,
                                        AXTree* out_tree) const;
 
  private:

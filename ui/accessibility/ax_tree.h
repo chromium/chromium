@@ -16,6 +16,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node.h"
@@ -70,6 +71,30 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   using IntListReverseRelationMap =
       std::map<ax::mojom::IntListAttribute,
                std::map<AXNodeID, std::set<AXNodeID>>>;
+
+  // If called, the focused node in this tree will never be ignored, even if it
+  // has the ignored state set. For now, this boolean will be set to false for
+  // all trees except in test scenarios, in order to thoroughly test the
+  // relevant code without causing any potential regressions. Ultimately, we
+  // want to expose all focused nodes so that a user of an assistive technology
+  // will be able to interact with the application / website, even if there is
+  // an authoring error, e.g. the aria-hidden attribute has been applied to the
+  // focused element.
+  // TODO(nektar): Removed once the feature has been fully tested.
+  static void SetFocusedNodeShouldNeverBeIgnored();
+
+  // Determines the ignored state of a node, given information about the node
+  // and the tree.
+  static bool ComputeNodeIsIgnored(const AXTreeData* optional_tree_data,
+                                   const AXNodeData& node_data);
+
+  // Determines whether a node has flipped its ignored state, given information
+  // about the previous and current state of the node / tree.
+  static bool ComputeNodeIsIgnoredChanged(
+      const AXTreeData* optional_old_tree_data,
+      const AXNodeData& old_node_data,
+      const AXTreeData* optional_new_tree_data,
+      const AXNodeData& new_node_data);
 
   AXTree();
   explicit AXTree(const AXTreeUpdate& initial_state);
@@ -211,6 +236,10 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
  private:
   friend class AXTableInfoTest;
 
+  // Indicates if the node with the focus should never be ignored, (see
+  // `SetFocusedNodeShouldNeverBeIgnored` above).
+  static bool is_focused_node_always_unignored_;
+
   // Accumulate errors as there can be more than one before Chrome is crashed
   // via AccessibilityFatalError();
   void RecordError(std::string new_error);
@@ -277,14 +306,22 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
       AXNode* node,
       const AXTreeUpdateState* update_state);
 
-  // Notify the delegate that a node will change its data.
-  void NotifyNodeDataWillChange(const AXNodeData& old_data,
-                                const AXNodeData& new_data);
+  // Notify the delegate that `node` will change its data attributes, including
+  // its ignored state.
+  void NotifyNodeAttributesWillChange(AXNode* node,
+                                      const AXTreeData* optional_old_tree_data,
+                                      const AXNodeData& old_data,
+                                      const AXTreeData* new_tree_data,
+                                      const AXNodeData& new_data);
 
-  // Notify the delegate that |node| has changed its data.
-  void NotifyNodeDataHasBeenChanged(AXNode* node,
-                                    const AXNodeData& old_data,
-                                    const AXNodeData& new_data);
+  // Notify the delegate that `node` has changed its data attributes, including
+  // its ignored state.
+  void NotifyNodeAttributesHaveBeenChanged(
+      AXNode* node,
+      const AXTreeData* optional_old_tree_data,
+      const AXNodeData& old_data,
+      const AXTreeData* new_tree_data,
+      const AXNodeData& new_data);
 
   void UpdateReverseRelations(AXNode* node, const AXNodeData& new_data);
 
@@ -327,6 +364,10 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
                             const std::vector<AXNodeID>& new_child_ids,
                             std::vector<AXNode*>* new_children,
                             AXTreeUpdateState* update_state);
+
+  // Returns the lowest unignored ancestor of the node with the given ID. If the
+  // node is not ignored, it returns the node.
+  AXNode* GetUnignoredAncestorFromId(AXNodeID node_id) const;
 
   // Internal implementation of RelativeToTreeBounds. It calls itself
   // recursively but ensures that it can only do so exactly once!

@@ -178,6 +178,14 @@ class TestAXTreeObserver final : public AXTreeObserver {
         "Role changed from %s to %s", ToString(old_role), ToString(new_role)));
   }
 
+  void OnIgnoredChanged(AXTree* tree,
+                        AXNode* node,
+                        bool is_ignored_new_value) override {
+    attribute_change_log_.push_back(
+        base::StringPrintf("IsIgnored changed on node ID %d to %s", node->id(),
+                           is_ignored_new_value ? "true" : "false"));
+  }
+
   void OnStateChanged(AXTree* tree,
                       AXNode* node,
                       ax::mojom::State state,
@@ -3385,10 +3393,11 @@ TEST_P(AXTreeTestWithMultipleUTFEncodings, ComputedNodeData) {
 
   const std::vector<std::string>& change_log =
       test_observer.attribute_change_log();
-  EXPECT_THAT(
-      change_log,
-      ElementsAre("ignored changed to true", "ignored changed to false",
-                  "ignored changed to false", "ignored changed to true"));
+  EXPECT_THAT(change_log,
+              ElementsAre("IsIgnored changed on node ID 5 to true",
+                          "IsIgnored changed on node ID 8 to false",
+                          "IsIgnored changed on node ID 9 to false",
+                          "IsIgnored changed on node ID 10 to true"));
 }
 
 INSTANTIATE_TEST_SUITE_P(MultipleUTFEncodingTest,
@@ -5049,6 +5058,196 @@ TEST(AXTreeTest, SingleUpdateTogglesIgnoredStateBeforeDestroyingNode) {
       "AXTree\n"
       "id=1 rootWebArea (0, 0)-(0, 0)\n",
       tree.ToString());
+}
+
+TEST(AXTreeTest, FocusChangeTogglesIgnoredState) {
+  AXTree::SetFocusedNodeShouldNeverBeIgnored();
+
+  AXNodeData root;
+  AXNodeData text_field;
+  AXNodeData button_1;
+  AXNodeData button_2;
+  root.id = 1;
+  text_field.id = 2;
+  button_1.id = 3;
+  button_2.id = 4;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {text_field.id, button_1.id, button_2.id};
+
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.AddState(ax::mojom::State::kEditable);
+
+  button_1.role = ax::mojom::Role::kButton;
+  button_1.AddState(ax::mojom::State::kIgnored);
+
+  button_2.role = ax::mojom::Role::kButton;
+  button_2.AddState(ax::mojom::State::kIgnored);
+
+  AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes = {root, text_field, button_1, button_2};
+
+  AXTree tree(update);
+  TestAXTreeObserver test_observer(&tree);
+
+  ASSERT_NE(nullptr, tree.root());
+  ASSERT_EQ(3u, tree.root()->children().size());
+  EXPECT_EQ(1u, tree.root()->GetUnignoredChildCount());
+  EXPECT_EQ(0u, tree.root()->children()[0]->GetUnignoredIndexInParent());
+  EXPECT_EQ(0u, tree.root()->children()[1]->GetUnignoredIndexInParent());
+  EXPECT_EQ(0u, tree.root()->children()[2]->GetUnignoredIndexInParent());
+  EXPECT_FALSE(tree.root()->children()[0]->IsIgnored());
+  EXPECT_TRUE(tree.root()->children()[1]->IsIgnored());
+  EXPECT_TRUE(tree.root()->children()[2]->IsIgnored());
+
+  EXPECT_EQ(
+      "AXTree\n"
+      "id=1 rootWebArea (0, 0)-(0, 0) child_ids=2,3,4\n"
+      "  id=2 textField EDITABLE (0, 0)-(0, 0)\n"
+      "  id=3 button IGNORED (0, 0)-(0, 0)\n"
+      "  id=4 button IGNORED (0, 0)-(0, 0)\n",
+      tree.ToString());
+
+  //
+  // Focus the first button which should change its ignored state.
+  //
+
+  AXTreeData tree_data = tree.data();
+  tree_data.focus_id = button_1.id;
+  AXTreeUpdate update_2;
+  update_2.has_tree_data = true;
+  update_2.tree_data = tree_data;
+  update_2.nodes = {button_1};
+
+  ASSERT_TRUE(tree.Unserialize(update_2)) << tree.error();
+  ASSERT_EQ(3u, tree.root()->children().size());
+  EXPECT_EQ(2u, tree.root()->GetUnignoredChildCount());
+  EXPECT_EQ(0u, tree.root()->children()[0]->GetUnignoredIndexInParent());
+  EXPECT_EQ(1u, tree.root()->children()[1]->GetUnignoredIndexInParent());
+  EXPECT_EQ(0u, tree.root()->children()[2]->GetUnignoredIndexInParent());
+  EXPECT_FALSE(tree.root()->children()[0]->IsIgnored());
+  EXPECT_FALSE(tree.root()->children()[1]->IsIgnored());
+  EXPECT_TRUE(tree.root()->children()[2]->IsIgnored());
+
+  EXPECT_EQ(
+      "AXTree focus_id=3\n"
+      "id=1 rootWebArea (0, 0)-(0, 0) child_ids=2,3,4\n"
+      "  id=2 textField EDITABLE (0, 0)-(0, 0)\n"
+      "  id=3 button IGNORED (0, 0)-(0, 0)\n"
+      "  id=4 button IGNORED (0, 0)-(0, 0)\n",
+      tree.ToString());
+
+  {
+    const std::vector<std::string>& change_log =
+        test_observer.attribute_change_log();
+    ASSERT_EQ(1U, change_log.size());
+    // Button_1 has an ID of 3.
+    EXPECT_EQ("IsIgnored changed on node ID 3 to false", change_log[0]);
+  }
+
+  //
+  // Focus the second button which should change its ignored state.
+  //
+
+  tree_data.focus_id = button_2.id;
+  update_2.has_tree_data = true;
+  update_2.tree_data = tree_data;
+  update_2.nodes = {button_1, button_2};
+
+  ASSERT_TRUE(tree.Unserialize(update_2)) << tree.error();
+  ASSERT_EQ(3u, tree.root()->children().size());
+  EXPECT_EQ(2u, tree.root()->GetUnignoredChildCount());
+  EXPECT_EQ(0u, tree.root()->children()[0]->GetUnignoredIndexInParent());
+  EXPECT_EQ(0u, tree.root()->children()[1]->GetUnignoredIndexInParent());
+  EXPECT_EQ(1u, tree.root()->children()[2]->GetUnignoredIndexInParent());
+  EXPECT_FALSE(tree.root()->children()[0]->IsIgnored());
+  EXPECT_TRUE(tree.root()->children()[1]->IsIgnored());
+  EXPECT_FALSE(tree.root()->children()[2]->IsIgnored());
+
+  EXPECT_EQ(
+      "AXTree focus_id=4\n"
+      "id=1 rootWebArea (0, 0)-(0, 0) child_ids=2,3,4\n"
+      "  id=2 textField EDITABLE (0, 0)-(0, 0)\n"
+      "  id=3 button IGNORED (0, 0)-(0, 0)\n"
+      "  id=4 button IGNORED (0, 0)-(0, 0)\n",
+      tree.ToString());
+
+  {
+    const std::vector<std::string>& change_log =
+        test_observer.attribute_change_log();
+    ASSERT_EQ(3U, change_log.size());
+    // Button_1 has an ID of 3 and button_2 an ID of 4.
+    EXPECT_EQ("IsIgnored changed on node ID 3 to true", change_log[1]);
+    EXPECT_EQ("IsIgnored changed on node ID 4 to false", change_log[2]);
+  }
+
+  //
+  // Remove the focus completely, which should reset the ignored state of both
+  // buttons.
+  //
+
+  tree_data.focus_id = kInvalidAXNodeID;
+  update_2.has_tree_data = true;
+  update_2.tree_data = tree_data;
+  update_2.nodes = {button_1, button_2};
+
+  ASSERT_TRUE(tree.Unserialize(update_2)) << tree.error();
+  ASSERT_EQ(3u, tree.root()->children().size());
+  EXPECT_EQ(1u, tree.root()->GetUnignoredChildCount());
+  EXPECT_EQ(0u, tree.root()->children()[0]->GetUnignoredIndexInParent());
+  EXPECT_EQ(0u, tree.root()->children()[1]->GetUnignoredIndexInParent());
+  EXPECT_EQ(0u, tree.root()->children()[2]->GetUnignoredIndexInParent());
+  EXPECT_FALSE(tree.root()->children()[0]->IsIgnored());
+  EXPECT_TRUE(tree.root()->children()[1]->IsIgnored());
+  EXPECT_TRUE(tree.root()->children()[2]->IsIgnored());
+
+  EXPECT_EQ(
+      "AXTree\n"
+      "id=1 rootWebArea (0, 0)-(0, 0) child_ids=2,3,4\n"
+      "  id=2 textField EDITABLE (0, 0)-(0, 0)\n"
+      "  id=3 button IGNORED (0, 0)-(0, 0)\n"
+      "  id=4 button IGNORED (0, 0)-(0, 0)\n",
+      tree.ToString());
+
+  {
+    const std::vector<std::string>& change_log =
+        test_observer.attribute_change_log();
+    ASSERT_EQ(4U, change_log.size());
+    EXPECT_EQ("IsIgnored changed on node ID 4 to true", change_log[3]);
+  }
+
+  //
+  // Focus the first button using a special "...ForTesting" method in AXTree.
+  //
+
+  tree_data.focus_id = button_1.id;
+
+  tree.UpdateDataForTesting(tree_data);
+  ASSERT_EQ(3u, tree.root()->children().size());
+  EXPECT_EQ(2u, tree.root()->GetUnignoredChildCount());
+  EXPECT_EQ(0u, tree.root()->children()[0]->GetUnignoredIndexInParent());
+  EXPECT_EQ(1u, tree.root()->children()[1]->GetUnignoredIndexInParent());
+  EXPECT_EQ(0u, tree.root()->children()[2]->GetUnignoredIndexInParent());
+  EXPECT_FALSE(tree.root()->children()[0]->IsIgnored());
+  EXPECT_FALSE(tree.root()->children()[1]->IsIgnored());
+  EXPECT_TRUE(tree.root()->children()[2]->IsIgnored());
+
+  EXPECT_EQ(
+      "AXTree focus_id=3\n"
+      "id=1 rootWebArea (0, 0)-(0, 0) child_ids=2,3,4\n"
+      "  id=2 textField EDITABLE (0, 0)-(0, 0)\n"
+      "  id=3 button IGNORED (0, 0)-(0, 0)\n"
+      "  id=4 button IGNORED (0, 0)-(0, 0)\n",
+      tree.ToString());
+
+  {
+    const std::vector<std::string>& change_log =
+        test_observer.attribute_change_log();
+    ASSERT_EQ(5U, change_log.size());
+    // Button_1 has an ID of 3.
+    EXPECT_EQ("IsIgnored changed on node ID 3 to false", change_log[4]);
+  }
 }
 
 // Tests that the IsInListMarker() method returns true if the current node is a

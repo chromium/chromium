@@ -39,6 +39,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_tree.h"
 #include "ui/base/ui_base_features.h"
 
 namespace content {
@@ -246,6 +247,13 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   // we want all events to fire immediately to make tests predictable and not
   // flaky.
   BrowserAccessibilityManager::NeverSuppressOrDelayEventsForTesting();
+
+  // Enable the behavior whereby all focused nodes will be exposed to the
+  // platform accessibility layer. This behavior is currently disabled in
+  // production code, but is enabled in tests so that it could be tested
+  // thoroughly before it is turned on for all code.
+  // TODO(nektar): Turn this on in a followup patch.
+  // ui::AXTree::SetFocusedNodeShouldNeverBeIgnored();
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 

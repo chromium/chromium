@@ -274,38 +274,35 @@ void AXEventGenerator::AddEvent(AXNode* node, AXEventGenerator::Event event) {
                       ax::mojom::Action::kNone, tree_->event_intents());
 }
 
+void AXEventGenerator::OnIgnoredWillChange(AXTree* tree,
+                                           AXNode* node,
+                                           bool is_ignored_new_value) {
+  // If the node had been ignored and invisible before it changes to unignored,
+  // then we should not fire `EVENT::PARENT_CHANGED` on its children because
+  // they were previously unknown to ATs as they were in a hidden subtree.
+  // TODO(nektar): Handle this by instead removing the `PARENT_CHANGED` event in
+  // post-processing, because invisibility is not an accurate indicator of
+  // whether nodes are known to the AT. In fact, a node can be invisible and
+  // have visible descendants.
+  if (!is_ignored_new_value && node->data().IsInvisible())
+    nodes_to_suppress_parent_changed_on_.insert(node->id());
+}
+
 void AXEventGenerator::OnNodeDataChanged(AXTree* tree,
                                          const AXNodeData& old_node_data,
                                          const AXNodeData& new_node_data) {
   DCHECK_EQ(tree_, tree);
+  AXNode* node = tree_->GetFromId(new_node_data.id);
+  if (!node)
+    return;
+
   // Fire CHILDREN_CHANGED events when the list of children updates.
   // Internally we store inline text box nodes as children of a static text
   // node or a line break node, which enables us to determine character bounds
   // and line layout. We don't expose those to platform APIs, though, so
   // suppress CHILDREN_CHANGED events on static text nodes.
-  if (new_node_data.child_ids != old_node_data.child_ids &&
-      !ui::IsText(new_node_data.role)) {
-    AXNode* node = tree_->GetFromId(new_node_data.id);
-    if (node)
-      AddEvent(node, Event::CHILDREN_CHANGED);
-  }
-
-  // If the ignored state of a node has changed, the inclusion/exclusion of that
-  // node in platform accessibility trees will change. Fire PARENT_CHANGED on
-  // the children of a node whose ignored state changed in order to notify ATs
-  // that existing children may have been reparented.
-  //
-  // We don't fire parent-changed if the invisible state of the node has changed
-  // because when invisibility changes, the entire subtree is being inserted /
-  // removed. For example if the 'hidden' property is changed on list item, we
-  // should not fire parent-changed on the list marker or static text.
-  if (old_node_data.IsIgnored() != new_node_data.IsIgnored() &&
-      !old_node_data.IsInvisible() && !new_node_data.IsInvisible()) {
-    AXNode* node = tree_->GetFromId(new_node_data.id);
-    for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-      AXNode* child = node->GetUnignoredChildAtIndex(i);
-      AddEvent(child, Event::PARENT_CHANGED);
-    }
+  if (new_node_data.child_ids != old_node_data.child_ids && !node->IsText()) {
+    AddEvent(node, Event::CHILDREN_CHANGED);
   }
 }
 
@@ -317,22 +314,70 @@ void AXEventGenerator::OnRoleChanged(AXTree* tree,
   AddEvent(node, Event::ROLE_CHANGED);
 }
 
+void AXEventGenerator::OnIgnoredChanged(AXTree* tree,
+                                        AXNode* node,
+                                        bool is_ignored_new_value) {
+  DCHECK_EQ(tree_, tree);
+  AXNode* unignored_parent = node->GetUnignoredParent();
+  if (unignored_parent)
+    AddEvent(unignored_parent, Event::CHILDREN_CHANGED);
+  AddEvent(node, Event::IGNORED_CHANGED);
+  if (!is_ignored_new_value)
+    AddEvent(node, Event::SUBTREE_CREATED);
+  if (node->GetRole() == ax::mojom::Role::kMenu) {
+    if (is_ignored_new_value) {
+      AddEvent(node, Event::MENU_POPUP_END);
+    } else {
+      AddEvent(node, Event::MENU_POPUP_START);
+    }
+  }
+
+  // If the ignored state of a node has changed, the inclusion/exclusion of that
+  // node in platform accessibility trees will change. Fire PARENT_CHANGED on
+  // the unignored children of a node whose ignored state changed in order to
+  // notify ATs that existing children may have been reparented.
+  //
+  // Note that we should not fire parent-changed if the invisible state of the
+  // node has changed because when invisibility changes, the entire subtree is
+  // being inserted / removed. For example if the 'hidden' property is changed
+  // on list item, we should not fire parent-changed on the list marker or
+  // static text children because: A) If the 'hidden' property has been removed,
+  // both the list marker and the static text were not previously known to ATs
+  // since they were not in the accessibility tree, and B) If the 'hidden'
+  // property has been added then the children will be ignored and thus no
+  // longer be in the accessibility tree that is exposed to the platform layer.
+  // The second condition is automatically taken care of by the fact that we are
+  // only iterating through unignored children.
+  // TODO(nektar): Handle this by instead removing the `PARENT_CHANGED` event in
+  // post-processing, because invisibility is not an accurate indicator of
+  // whether nodes are known to the AT. In fact, a node can be invisible and
+  // have visible descendants.
+  const bool was_in_invisible_subtree =
+      !base::Contains(nodes_to_suppress_parent_changed_on_, node->id());
+  if (was_in_invisible_subtree) {
+    for (auto iter = node->UnignoredChildrenBegin();
+         iter != node->UnignoredChildrenEnd(); ++iter) {
+      AddEvent(iter.get(), Event::PARENT_CHANGED);
+    }
+  }
+}
+
 void AXEventGenerator::OnStateChanged(AXTree* tree,
                                       AXNode* node,
                                       ax::mojom::State state,
                                       bool new_value) {
   DCHECK_EQ(tree_, tree);
-
-  if (state != ax::mojom::State::kIgnored) {
-    AddEvent(node, Event::STATE_CHANGED);
-    AddEvent(node, Event::WIN_IACCESSIBLE_STATE_CHANGED);
-  }
+  DCHECK_NE(state, ax::mojom::State::kIgnored)
+      << "The ignored state should be handled in "
+         "`AXEventGenerator::OnIgnoredChanged` and not in this method.";
+  AddEvent(node, Event::STATE_CHANGED);
+  AddEvent(node, Event::WIN_IACCESSIBLE_STATE_CHANGED);
 
   switch (state) {
     case ax::mojom::State::kExpanded:
       AddEvent(node, new_value ? Event::EXPANDED : Event::COLLAPSED);
 
-      if (node->GetRole() == ax::mojom::Role::kRow ||
+      if (IsTableRow(node->GetRole()) ||
           node->GetRole() == ax::mojom::Role::kTreeItem) {
         AXNode* container = node;
         while (container && !IsRowContainer(container->GetRole()))
@@ -341,19 +386,6 @@ void AXEventGenerator::OnStateChanged(AXTree* tree,
           AddEvent(container, Event::ROW_COUNT_CHANGED);
       }
       break;
-    case ax::mojom::State::kIgnored: {
-      AXNode* unignored_parent = node->GetUnignoredParent();
-      if (unignored_parent)
-        AddEvent(unignored_parent, Event::CHILDREN_CHANGED);
-      AddEvent(node, Event::IGNORED_CHANGED);
-      if (!new_value)
-        AddEvent(node, Event::SUBTREE_CREATED);
-      if (node->GetRole() == ax::mojom::Role::kMenu) {
-        new_value ? AddEvent(node, Event::MENU_POPUP_END)
-                  : AddEvent(node, Event::MENU_POPUP_START);
-      }
-      break;
-    }
     case ax::mojom::State::kMultiline:
       AddEvent(node, Event::MULTILINE_STATE_CHANGED);
       break;
@@ -444,7 +476,7 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
 
       // If it's a change to static text, and it's in an editable text field,
       // fire an event on the editable root.
-      if (IsText(node->GetRole())) {
+      if (node->IsText()) {
         AXNode* text_field = node->GetTextFieldAncestor();
         if (text_field)
           AddEvent(text_field, Event::EDITABLE_TEXT_CHANGED);
@@ -618,7 +650,7 @@ void AXEventGenerator::OnBoolAttributeChanged(AXTree* tree,
     case ax::mojom::BoolAttribute::kBusy:
       AddEvent(node, Event::BUSY_CHANGED);
       AddEvent(node, Event::WIN_IACCESSIBLE_STATE_CHANGED);
-      // Fire an 'invalidated' event when aria-busy becomes false
+      // Fire an 'invalidated' event when aria-busy becomes false.
       if (!new_value)
         AddEvent(node, Event::LAYOUT_INVALIDATED);
       break;
@@ -666,7 +698,8 @@ void AXEventGenerator::OnIntListAttributeChanged(
     case ax::mojom::IntListAttribute::kFlowtoIds: {
       AddEvent(node, Event::FLOW_TO_CHANGED);
 
-      // Fire FLOW_FROM_CHANGED for all nodes added or removed
+      // Fire FLOW_FROM_CHANGED for all nodes added or removed.
+      // TODO(nektar): Consider removing this because flowto is unused by AT.
       for (AXNodeID id : ComputeIntListDifference(old_value, new_value)) {
         if (AXNode* target_node = tree->GetFromId(id))
           AddEvent(target_node, Event::FLOW_FROM_CHANGED);
@@ -805,6 +838,7 @@ void AXEventGenerator::OnAtomicUpdateFinished(
   }
 
   FireActiveDescendantEvents();
+  nodes_to_suppress_parent_changed_on_.clear();
 
   // If we queued any live region change events during node deletion, add them
   // here. It's necessary to wait to add these events, because an update might

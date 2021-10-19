@@ -1591,7 +1591,10 @@ std::string AXNode::GetValueForTextField() const {
 }
 
 bool AXNode::IsIgnored() const {
-  return data().IsIgnored();
+  // If the focus has moved, then it could make a previously ignored node
+  // unignored or vice versa. We never ignore focused nodes otherwise users of
+  // assistive software might be unable to interact with the webpage.
+  return AXTree::ComputeNodeIsIgnored(&tree_->data(), data());
 }
 
 bool AXNode::IsIgnoredForTextNavigation() const {
@@ -1611,14 +1614,7 @@ bool AXNode::IsIgnoredForTextNavigation() const {
 }
 
 bool AXNode::IsInvisibleOrIgnored() const {
-  if (!data().IsInvisibleOrIgnored())
-    return false;
-
-  return !IsFocusedWithinThisTree();
-}
-
-bool AXNode::IsFocusedWithinThisTree() const {
-  return id() == tree_->data().focus_id;
+  return id() != tree_->data().focus_id && (IsIgnored() || data_.IsInvisible());
 }
 
 bool AXNode::IsChildOfLeaf() const {
