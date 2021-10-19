@@ -391,7 +391,9 @@ void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
   permission_creator_ =
       static_cast<PermissionRequestCreatorMock*>(creator.get());
   permission_creator_->SetEnabled();
-  service->SetPrimaryPermissionCreatorForTest(std::move(creator));
+  service->web_approvals_manager().ClearRemoteApprovalRequestsCreators();
+  service->web_approvals_manager().AddRemoteApprovalRequestCreator(
+      std::move(creator));
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   tracker_ = std::make_unique<RenderFrameTracker>(tab);

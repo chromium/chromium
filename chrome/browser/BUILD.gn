@@ -6936,6 +6936,8 @@ static_library("browser") {
       "supervised_user/supervised_user_url_filter.cc",
       "supervised_user/supervised_user_url_filter.h",
       "supervised_user/supervised_users.h",
+      "supervised_user/web_approvals_manager.cc",
+      "supervised_user/web_approvals_manager.h",
     ]
     deps += [
       "//chrome/browser/supervised_user/kids_chrome_management:proto",
