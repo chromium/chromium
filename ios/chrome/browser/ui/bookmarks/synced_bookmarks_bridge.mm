@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/bookmarks/synced_bookmarks_bridge.h"
 
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -44,7 +46,15 @@ bool SyncedBookmarksObserverBridge::IsPerformingInitialSync() {
   SyncSetupService* sync_setup_service =
       SyncSetupServiceFactory::GetForBrowserState(browser_state_);
 
-  bool can_sync_start = sync_setup_service->CanSyncFeatureStart();
+  PrefService* user_pref_service = browser_state_->GetPrefs();
+  bool is_managed =
+      user_pref_service->FindPreference(syncer::prefs::kSyncBookmarks)
+          ->IsManaged();
+
+  // If bookmarks are enterprise managed (i.e. disabled) then an initial sync
+  // never happens.
+  bool can_sync_start =
+      sync_setup_service->CanSyncFeatureStart() && !is_managed;
   bool no_sync_error = sync_setup_service->IsFirstSetupComplete() &&
                        sync_setup_service->GetSyncServiceState() ==
                            SyncSetupService::kNoSyncServiceError;
