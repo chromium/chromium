@@ -1296,7 +1296,7 @@ class Port(object):
 
         This exists because Windows has inconsistent behavior between the bots
         and local developer machines, such that determining which python3 name
-        to use is non-trivial. See https://crbug.com/155616.
+        to use is non-trivial. See https://crbug.com/1155616.
 
         Once blinkpy runs under python3, this can be removed in favour of
         callers using sys.executable.
