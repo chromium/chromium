@@ -308,9 +308,6 @@ class MEDIA_EXPORT TypedStatus {
  private:
   std::unique_ptr<internal::StatusData> data_;
 
-  template <typename OtherTraitsType>
-  friend class TypedStatus;
-
   template <typename StatusEnum, typename DataView>
   friend struct mojo::StructTraits;
 
