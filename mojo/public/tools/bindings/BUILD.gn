@@ -24,7 +24,6 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/cpp_templates/module-shared-message-ids.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-shared.cc.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-shared.h.tmpl",
-    "$mojom_generator_root/generators/cpp_templates/module-test-utils.cc.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-test-utils.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module.cc.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module.h.tmpl",

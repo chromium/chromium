@@ -477,10 +477,6 @@ class Generator(generator.Generator):
   def _GenerateModuleTestUtilsHeader(self):
     return self._GetJinjaExports()
 
-  @UseJinja("module-test-utils.cc.tmpl")
-  def _GenerateModuleTestUtilsSource(self):
-    return self._GetJinjaExports()
-
   @UseJinja("module-params-data.h.tmpl")
   def _GenerateModuleParamsDataHeader(self):
     return self._GetJinjaExports()
@@ -521,8 +517,6 @@ class Generator(generator.Generator):
                                                        suffix))
       self.WriteWithComment(self._GenerateModuleTestUtilsHeader(),
                             "%s%s-test-utils.h" % (self.module.path, suffix))
-      self.WriteWithComment(self._GenerateModuleTestUtilsSource(),
-                            "%s%s-test-utils.cc" % (self.module.path, suffix))
 
     if self.extra_cpp_template_paths:
       for cpp_template_path in self.extra_cpp_template_paths:
