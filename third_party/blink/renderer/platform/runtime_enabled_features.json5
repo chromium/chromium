@@ -2550,12 +2550,11 @@
     },
     {
       name: "WebTransport",
-      origin_trial_feature_name: "WebTransport",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebTransportCustomCertificates",
-      origin_trial_feature_name: "WebTransport",
+      origin_trial_feature_name: "WebTransportCustomCertificates",
       status: "experimental",
       depends_on: ["WebTransport"],
     },

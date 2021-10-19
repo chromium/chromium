@@ -2744,6 +2744,41 @@ interface WebSocket : EventTarget
     setter onerror
     setter onmessage
     setter onopen
+interface WebTransport
+    attribute @@toStringTag
+    getter closed
+    getter datagrams
+    getter incomingBidirectionalStreams
+    getter incomingUnidirectionalStreams
+    getter ready
+    method close
+    method constructor
+    method createBidirectionalStream
+    method createUnidirectionalStream
+interface WebTransportBidirectionalStream
+    attribute @@toStringTag
+    getter readable
+    getter writable
+    method constructor
+interface WebTransportDatagramDuplexStream
+    attribute @@toStringTag
+    getter incomingHighWaterMark
+    getter incomingMaxAge
+    getter maxDatagramSize
+    getter outgoingHighWaterMark
+    getter outgoingMaxAge
+    getter readable
+    getter writable
+    method constructor
+    setter incomingHighWaterMark
+    setter incomingMaxAge
+    setter outgoingHighWaterMark
+    setter outgoingMaxAge
+interface WebTransportError : DOMException
+    attribute @@toStringTag
+    getter source
+    getter streamErrorCode
+    method constructor
 interface WindowClient : Client
     attribute @@toStringTag
     getter focused
