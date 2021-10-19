@@ -4295,13 +4295,13 @@
   },
   {
     "name": "paint-preview-demo",
-    "owners": [ "ckitagawa", "fredmello", "mahmoudi" ],
-    "expiry_milestone": 96
+    "owners": [ "ckitagawa", "fredmello", "yashard" ],
+    "expiry_milestone": 98
   },
   {
     "name": "paint-preview-startup",
-    "owners": [ "ckitagawa", "fredmello", "mahmoudi" ],
-    "expiry_milestone": 96
+    "owners": [ "ckitagawa", "fredmello", "yashard" ],
+    "expiry_milestone": 98
   },
   {
     "name": "partitioned-cookies",
