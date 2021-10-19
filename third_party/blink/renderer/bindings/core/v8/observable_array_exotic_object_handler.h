@@ -5,13 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_OBSERVABLE_ARRAY_EXOTIC_OBJECT_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_OBSERVABLE_ARRAY_EXOTIC_OBJECT_HANDLER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-object.h"
@@ -209,30 +212,30 @@ class ObservableArrayExoticObjectHandler {
     const auto& v8_target = info[0];
     auto& backing_list = ToWrappableUnsafe(v8_target);
 
-    v8::Local<v8::Array> own_keys = v8::Array::New(isolate);
-    for (uint32_t index = 0; index < backing_list.size(); ++index) {
-      v8::Local<v8::String> key;
-      if (!v8::Integer::NewFromUnsigned(isolate, index)
-               ->ToString(current_context)
-               .ToLocal(&key)) {
-        return;
-      }
-      bool is_created = false;
-      if (!own_keys->CreateDataProperty(current_context, index, key)
-               .To(&is_created)) {
-        return;
-      }
-      DCHECK(is_created);
-    }
-    uint32_t own_keys_index = backing_list.size();
+    // 2. Let length be handler.[[BackingList]]'s size.
+    // 3. Let keys be an empty list.
+    // 4. Let i be 0.
+    // 5. While i < length :
+    // 5.1. Append !ToString(i) to keys.
+    // 5.2. Set i to i + 1.
+    WTF::Vector<uint32_t> keys_vector(backing_list.size());
+    for (uint32_t index = 0; index < backing_list.size(); ++index)
+      keys_vector.push_back(index);
+    v8::Local<v8::Array> own_keys;
+    if (!ToV8Traits<IDLSequence<IDLString>>::ToV8(
+             ScriptState::From(current_context), keys_vector)
+             .ToLocal(&own_keys))
+      return;
 
+    // 6. Extend keys with ! O.[[OwnPropertyKeys]]().
+    uint32_t own_keys_index = backing_list.size();
     v8::Local<v8::Array> own_props;
     if (!v8_target.As<v8::Object>()
              ->GetOwnPropertyNames(current_context)
              .ToLocal(&own_props)) {
       return;
     }
-    uint32_t own_props_length = own_props->Length();
+    const uint32_t own_props_length = own_props->Length();
     for (uint32_t index = 0; index < own_props_length; ++index) {
       v8::Local<v8::Value> prop_name;
       if (!own_props->Get(current_context, index).ToLocal(&prop_name))
@@ -247,6 +250,7 @@ class ObservableArrayExoticObjectHandler {
       DCHECK(is_created);
     }
 
+    // 7. Return !CreateArrayFromList(keys).
     V8SetReturnValue(info, own_keys);
   }
 
