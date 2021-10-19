@@ -224,7 +224,6 @@ public class WebContentsDarkModeMessageController {
             HelpAndFeedbackLauncher launcher, Activity activity, Profile profile, String url) {
         // TODO(crbug.com/1260152): Import ScreenshotMode instead of hardcoding value once new build
         //  target added.
-        // TODO(crbug.com/1261168): Include URL as PSD in feedback reports.
         launcher.showFeedback(activity, profile, url,
                 activity.getPackageName() + FEEDBACK_CATEGORY_TAG,
                 /* ScreenshotMode.DEFAULT */ 0, FEEDBACK_CONTEXT);
