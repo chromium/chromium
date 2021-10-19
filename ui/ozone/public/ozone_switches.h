@@ -12,6 +12,8 @@ namespace switches {
 
 COMPONENT_EXPORT(OZONE_BASE) extern const char kOzonePlatform[];
 
+COMPONENT_EXPORT(OZONE_BASE) extern const char kOzonePlatformHint[];
+
 COMPONENT_EXPORT(OZONE_BASE) extern const char kOzoneDumpFile[];
 
 COMPONENT_EXPORT(OZONE_BASE) extern const char kEnableWaylandIme[];

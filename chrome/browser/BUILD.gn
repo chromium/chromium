@@ -6026,6 +6026,13 @@ static_library("browser") {
     deps += [ "//ui/ozone" ]
   }
 
+  if (is_linux) {
+    sources += [
+      "chrome_browser_main_extra_parts_linux.cc",
+      "chrome_browser_main_extra_parts_linux.h",
+    ]
+  }
+
   if (enable_click_to_call) {
     sources += [
       "sharing/click_to_call/click_to_call_utils.cc",

@@ -4264,6 +4264,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "ozone-platform-hint",
+    "owners": [ "rjkroege", "thomasanderson", "msisov@igalia.com", "nickdiego@igalia.com", "adunaev@igalia.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "page-content-annotations",
     "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 100

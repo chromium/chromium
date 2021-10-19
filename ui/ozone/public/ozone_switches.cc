@@ -9,6 +9,10 @@ namespace switches {
 // Specify ozone platform implementation to use.
 const char kOzonePlatform[] = "ozone-platform";
 
+// Suggests the ozone platform to use (desktop Linux only).  Can be set on
+// chrome://flags.  See https://crbug.com/1246928.
+const char kOzonePlatformHint[] = "ozone-platform-hint";
+
 // Specify location for image dumps.
 const char kOzoneDumpFile[] = "ozone-dump-file";
 

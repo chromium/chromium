@@ -3097,6 +3097,16 @@ extern const char kWebShareName[];
 extern const char kWebShareDescription[];
 #endif  // defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MAC)
 
+#if defined(OS_LINUX)
+extern const char kOzonePlatformHintChoiceDefault[];
+extern const char kOzonePlatformHintChoiceAuto[];
+extern const char kOzonePlatformHintChoiceX11[];
+extern const char kOzonePlatformHintChoiceWayland[];
+
+extern const char kOzonePlatformHintName[];
+extern const char kOzonePlatformHintDescription[];
+#endif  // defined(OS_LINUX)
+
 // Feature flags --------------------------------------------------------------
 
 #if defined(DCHECK_IS_CONFIGURABLE)

@@ -340,6 +340,12 @@ class DesktopConfigurationMonitor;
 }
 
 namespace base {
+class Environment;
+}
+
+bool HasWaylandDisplay(base::Environment* env);
+
+namespace base {
 
 namespace sequence_manager {
 namespace internal {
@@ -474,6 +480,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend bool PathProviderWin(int, FilePath*);
   friend bool chromeos::system::IsCoreSchedulingAvailable();
   friend int chromeos::system::NumberOfPhysicalCores();
+  friend bool ::HasWaylandDisplay(Environment* env);  // crbug.com/1246928
 
   ScopedAllowBlocking(const Location& from_here = Location::Current());
   ~ScopedAllowBlocking();

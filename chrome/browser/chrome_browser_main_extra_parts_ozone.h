@@ -16,7 +16,7 @@ class ChromeBrowserMainExtraPartsOzone : public ChromeBrowserMainExtraParts {
       const ChromeBrowserMainExtraPartsOzone&) = delete;
   ~ChromeBrowserMainExtraPartsOzone() override;
 
- private:
+ protected:
   // ChromeBrowserMainExtraParts overrides.
   void PreEarlyInitialization() override;
   void PostCreateMainMessageLoop() override;
