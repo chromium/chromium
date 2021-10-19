@@ -51,6 +51,7 @@ import {windowController} from '../window_controller.js';
 
 import {Layout} from './camera/layout.js';
 import {
+  getDefaultScanCorners,
   Modes,
   PhotoHandler,  // eslint-disable-line no-unused-vars
   ScanHandler,   // eslint-disable-line no-unused-vars
@@ -707,16 +708,6 @@ export class Camera extends View {
   /**
    * @override
    */
-  handleNoDocument() {
-    nav.close(ViewName.FLASH);
-    const message = loadTimeData.getI18nMessage(
-        I18nString.DOCUMENT_MODE_DIALOG_NOT_DETECTED_TITLE);
-    nav.open(ViewName.DOCUMENT_MODE_DIALOG, {message});
-  }
-
-  /**
-   * @override
-   */
   async handleResultDocument({blob, resolution, mimeType}, name) {
     let docResult;
     if (mimeType === MimeType.JPEG) {
@@ -779,7 +770,7 @@ export class Camera extends View {
   /**
    * @override
    */
-  async reviewDocument(rawBlob, corners) {
+  async reviewDocument(originImage, refCorners) {
     nav.open(ViewName.FLASH);
     const helper = await ChromeHelper.getInstance();
     let result = null;
@@ -787,12 +778,33 @@ export class Camera extends View {
       await this.prepareReview_(async () => {
         const doCrop = (blob, corners) =>
             helper.convertToDocument(blob, corners, MimeType.JPEG);
-        /**
-         * @type {!Blob}
-         */
-        let docBlob = await doCrop(rawBlob, corners);
-        await this.review_.setReviewPhoto(docBlob);
-        nav.close(ViewName.FLASH);
+        const needFirstRecrop = refCorners === null;
+        let corners =
+            refCorners || getDefaultScanCorners(originImage.resolution);
+        let docBlob;
+        const doRecrop = async () => {
+          corners = await this.cropDocument_.reviewCropArea(corners);
+          docBlob = await (async () => {
+            nav.open(ViewName.FLASH);
+            try {
+              return await doCrop(originImage.blob, corners);
+            } finally {
+              nav.close(ViewName.FLASH);
+            }
+          })();
+          await this.review_.setReviewPhoto(docBlob);
+        };
+
+        await this.cropDocument_.setReviewPhoto(originImage.blob);
+        if (needFirstRecrop) {
+          nav.close(ViewName.FLASH);
+          await doRecrop();
+        } else {
+          docBlob = await doCrop(originImage.blob, corners);
+          await this.review_.setReviewPhoto(docBlob);
+          nav.close(ViewName.FLASH);
+        }
+
         const positive = new review.Options(
             new review.Option(
                 I18nString.LABEL_SAVE_PDF_DOCUMENT, {exitValue: MimeType.PDF}),
@@ -802,19 +814,7 @@ export class Camera extends View {
         );
         const negative = new review.Options(
             new review.Option(I18nString.LABEL_FIX_DOCUMENT, {
-              callback: async () => {
-                await this.cropDocument_.setReviewPhoto(rawBlob);
-                corners = await this.cropDocument_.reviewCropArea(corners);
-                docBlob = await (async () => {
-                  nav.open(ViewName.FLASH);
-                  try {
-                    return await doCrop(rawBlob, corners);
-                  } finally {
-                    nav.close(ViewName.FLASH);
-                  }
-                })();
-                await this.review_.setReviewPhoto(docBlob);
-              },
+              callback: doRecrop,
               hasPopup: true,
             }),
             new review.Option(I18nString.LABEL_RETAKE, {exitValue: null}),

@@ -185,7 +185,6 @@ export class Review extends View {
     nav.open(this.viewName_);
     const result = await onSelected.wait();
     nav.close(this.viewName_);
-    this.image_.src = '';
     return result;
   }
 }

@@ -48,7 +48,7 @@ import {
 } from './video.js';
 
 export {PhotoHandler, PhotoResult} from './photo.js';
-export {ScanHandler} from './scan.js';
+export {getDefaultScanCorners, ScanHandler} from './scan.js';
 export {setAvc1Parameters, Video, VideoHandler, VideoResult} from './video.js';
 
 /**

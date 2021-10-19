@@ -4,13 +4,13 @@
 
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
-// eslint-disable-next-line no-unused-vars
 import {Point} from '../../../geometry.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import {ChromeHelper} from '../../../mojo/chrome_helper.js';
 import {
   CanceledError,
-  Facing,  // eslint-disable-line no-unused-vars
+  Facing,     // eslint-disable-line no-unused-vars
+  ImageBlob,  // eslint-disable-line no-unused-vars
   MimeType,
   Resolution,  // eslint-disable-line no-unused-vars
 } from '../../../type.js';
@@ -32,6 +32,27 @@ import {
 export let DocumentResult;
 
 /**
+ * @param {!Resolution} size Size of image to be cropped document from.
+ * @return {!Array<!Point>}
+ */
+export function getDefaultScanCorners(size) {
+  // No initial guess from scan API, position corners in box of portrait A4
+  // size occupied with 80% center area.
+  const WIDTH_A4 = 210;
+  const HEIGHT_A4 = 297;
+  const {width: w, height: h} = size;
+  const [width, height] = size.aspectRatio > WIDTH_A4 / HEIGHT_A4 ?
+      [h / w * WIDTH_A4 / HEIGHT_A4 * 0.8, 0.8] :
+      [0.8, w / h * HEIGHT_A4 / WIDTH_A4 * 0.8];
+  return [
+    new Point(0.5 - width / 2, 0.5 - height / 2),
+    new Point(0.5 - width / 2, 0.5 + height / 2),
+    new Point(0.5 + width / 2, 0.5 + height / 2),
+    new Point(0.5 + width / 2, 0.5 - height / 2),
+  ];
+}
+
+/**
  * Provides external dependency functions used by photo mode and handles the
  * captured result photo.
  * @interface
@@ -43,18 +64,15 @@ export class ScanHandler {
   playShutterEffect() {}
 
   /**
-   * @param {!Blob} blob Jpeg Blob as scanned document.
-   * @param {!Array<!Point>} corners
+   * @param {!ImageBlob} originImage Original photo to be cropped document from.
+   * @param {?Array<!Point>} refCorners Initial reference document corner
+   *     positions detected by scan API. Sets to null if scan API cannot find
+   *     any reference corner from |rawBlob|.
    * @return {!Promise<?{docBlob: !Blob, mimeType: !MimeType}>} Returns the
    *     processed document blob and which mime type user choose to save. Null
    *     for cancel document.
    */
-  async reviewDocument(blob, corners) {}
-
-  /**
-   * Handles case when no document detected in photo result.
-   */
-  handleNoDocument() {}
+  async reviewDocument(originImage, refCorners) {}
 
   /**
    * Handles the result document.
@@ -100,11 +118,8 @@ class DocumentPhotoHandler {
     const namer = new Filenamer();
     const helper = await ChromeHelper.getInstance();
     const corners = await helper.scanDocumentCorners(rawBlob);
-    if (corners.length === 0) {
-      this.handler_.handleNoDocument();
-      throw new CanceledError(`Couldn't detect a document`);
-    }
-    const reviewResult = await this.handler_.reviewDocument(rawBlob, corners);
+    const reviewResult = await this.handler_.reviewDocument(
+        {blob: rawBlob, resolution}, corners);
     if (reviewResult === null) {
       this.handler_.handleCancelDocument({resolution});
       throw new CanceledError('Cancelled after review document');

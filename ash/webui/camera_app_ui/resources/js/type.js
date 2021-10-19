@@ -211,6 +211,14 @@ export const PerfEvent = {
 
 /**
  * @typedef {{
+ *   blob: !Blob,
+ *   resolution: !Resolution,
+ * }}
+ */
+export let ImageBlob;
+
+/**
+ * @typedef {{
  *   hasError: (boolean|undefined),
  *   resolution: (!Resolution|undefined),
  * }}

@@ -292,13 +292,17 @@ export class ChromeHelper {
   /**
    * Scans the blob data and returns the detected document corners.
    * @param {!Blob} blob
-   * @return {!Promise<!Array<!Point>>}
+   * @return {!Promise<?Array<!Point>>} Promise resolve to positions of document
+   *     corner. Null for failing to detected corner positions.
    */
   async scanDocumentCorners(blob) {
     const buffer = new Uint8Array(await blob.arrayBuffer());
 
     const {corners} =
         await this.remote_.scanDocumentCorners(castToNumberArray(buffer));
+    if (corners.length === 0) {
+      return null;
+    }
     return corners.map(({x, y}) => new Point(x, y));
   }
 
