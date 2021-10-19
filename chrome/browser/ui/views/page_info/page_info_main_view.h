@@ -98,7 +98,7 @@ class PageInfoMainView : public views::View,
   // Creates 'About this site' section which contains a button that opens a
   // subpage and two separators.
   std::unique_ptr<views::View> CreateAboutThisSiteSection(
-      const absl::optional<page_info::proto::SiteInfo> info) WARN_UNUSED_RESULT;
+      const page_info::proto::SiteInfo& info) WARN_UNUSED_RESULT;
 
   PageInfo* presenter_;
 

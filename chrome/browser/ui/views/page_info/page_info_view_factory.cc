@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "components/page_info/features.h"
 #include "components/page_info/page_info.h"
+#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -131,13 +132,13 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
                                                       type));
 }
 
-std::unique_ptr<views::View>
-PageInfoViewFactory::CreateAboutThisSitePageView() {
+std::unique_ptr<views::View> PageInfoViewFactory::CreateAboutThisSitePageView(
+    const page_info::proto::SiteInfo& info) {
   // TODO(crbug.com/1250653): Use actual strings.
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(u"About this site"),
       std::make_unique<PageInfoAboutThisSiteContentView>(presenter_,
-                                                         ui_delegate_));
+                                                         ui_delegate_, info));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(

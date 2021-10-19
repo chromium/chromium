@@ -17,17 +17,18 @@ class PageInfo;
 class PageInfoAboutThisSiteContentView : public views::View {
  public:
   PageInfoAboutThisSiteContentView(PageInfo* presenter,
-                                   ChromePageInfoUiDelegate* ui_delegate);
+                                   ChromePageInfoUiDelegate* ui_delegate,
+                                   const page_info::proto::SiteInfo& info);
   ~PageInfoAboutThisSiteContentView() override;
 
  private:
   std::unique_ptr<views::View> CreateSourceLabel(
-      const absl::optional<page_info::proto::SiteInfo> info) WARN_UNUSED_RESULT;
+      const page_info::proto::SiteInfo& info) WARN_UNUSED_RESULT;
   void SourceLinkClicked(const ui::Event& event);
 
   PageInfo* presenter_;
   ChromePageInfoUiDelegate* ui_delegate_;
-  absl::optional<page_info::proto::SiteInfo> info_;
+  page_info::proto::SiteInfo info_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ABOUT_THIS_SITE_CONTENT_VIEW_H_

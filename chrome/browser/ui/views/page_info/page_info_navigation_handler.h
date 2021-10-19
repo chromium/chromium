@@ -5,6 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_NAVIGATION_HANDLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_NAVIGATION_HANDLER_H_
 
+namespace page_info {
+namespace proto {
+class SiteInfo;
+}
+}  // namespace page_info
+
 // An interface that provides methods to navigate between pages of the page
 // info. Note that `OpenMainPage` must update the set of ignored empty storage
 // keys before storage usage can be displayed. This happens asynchronously and
@@ -14,7 +20,8 @@ class PageInfoNavigationHandler {
   virtual void OpenMainPage(base::OnceClosure initialized_callback) = 0;
   virtual void OpenSecurityPage() = 0;
   virtual void OpenPermissionPage(ContentSettingsType type) = 0;
-  virtual void OpenAboutThisSitePage() = 0;
+  virtual void OpenAboutThisSitePage(
+      const page_info::proto::SiteInfo& info) = 0;
   virtual void CloseBubble() = 0;
 };
 

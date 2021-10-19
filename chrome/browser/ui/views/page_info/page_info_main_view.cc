@@ -110,10 +110,10 @@ PageInfoMainView::PageInfoMainView(
 
   if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
     auto info = ui_delegate_->GetAboutThisSiteInfo();
-    if (info) {
+    if (info.has_value()) {
       layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
       about_this_site_section_ =
-          layout->AddView(CreateAboutThisSiteSection(info));
+          layout->AddView(CreateAboutThisSiteSection(info.value()));
     }
   }
 
@@ -504,7 +504,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
 }
 
 std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
-    const absl::optional<page_info::proto::SiteInfo> info) {
+    const page_info::proto::SiteInfo& info) {
   auto about_this_site_section = std::make_unique<views::View>();
   about_this_site_section
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -517,11 +517,11 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
   auto* about_this_site_button = about_this_site_section->AddChildView(
       std::make_unique<PageInfoHoverButton>(
           base::BindRepeating(&PageInfoNavigationHandler::OpenAboutThisSitePage,
-                              base::Unretained(navigation_handler_)),
+                              base::Unretained(navigation_handler_), info),
           PageInfoViewFactory::GetAboutThisSiteIcon(), 0, std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
           std::u16string(),
-          base::ASCIIToUTF16(info->description().description()),
+          base::ASCIIToUTF16(info.description().description()),
           PageInfoViewFactory::GetOpenSubpageIcon()));
   about_this_site_button->SetTitleText(u"About this site");
   about_this_site_button->SetSubtitleMultiline(false);

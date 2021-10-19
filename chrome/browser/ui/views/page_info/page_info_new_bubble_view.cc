@@ -82,10 +82,12 @@ void PageInfoNewBubbleView::OpenPermissionPage(ContentSettingsType type) {
   page_container_->SwitchToPage(view_factory_->CreatePermissionPageView(type));
 }
 
-void PageInfoNewBubbleView::OpenAboutThisSitePage() {
+void PageInfoNewBubbleView::OpenAboutThisSitePage(
+    const page_info::proto::SiteInfo& info) {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
-  page_container_->SwitchToPage(view_factory_->CreateAboutThisSitePageView());
+  page_container_->SwitchToPage(
+      view_factory_->CreateAboutThisSitePageView(info));
 }
 
 void PageInfoNewBubbleView::CloseBubble() {

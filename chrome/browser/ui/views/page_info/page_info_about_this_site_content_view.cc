@@ -19,17 +19,17 @@
 
 PageInfoAboutThisSiteContentView::PageInfoAboutThisSiteContentView(
     PageInfo* presenter,
-    ChromePageInfoUiDelegate* ui_delegate)
-    : presenter_(presenter), ui_delegate_(ui_delegate) {
+    ChromePageInfoUiDelegate* ui_delegate,
+    const page_info::proto::SiteInfo& info)
+    : presenter_(presenter), ui_delegate_(ui_delegate), info_(info) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   SetBorder(views::CreateEmptyBorder(layout_provider->GetInsetsMetric(
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
 
-  info_ = ui_delegate_->GetAboutThisSiteInfo();
   auto* label = AddChildView(std::make_unique<views::Label>(
-      base::UTF8ToUTF16(info_->description().description()),
+      base::UTF8ToUTF16(info_.description().description()),
       views::style::CONTEXT_LABEL));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -43,13 +43,13 @@ PageInfoAboutThisSiteContentView::~PageInfoAboutThisSiteContentView() = default;
 
 std::unique_ptr<views::View>
 PageInfoAboutThisSiteContentView::CreateSourceLabel(
-    const absl::optional<page_info::proto::SiteInfo> info) {
+    const page_info::proto::SiteInfo& info) {
   auto source_label = std::make_unique<views::StyledLabel>();
 
   // TODO(crbug.com/1250653): Use actual strings.
   std::vector<std::u16string> subst;
   subst.push_back(u"From ");
-  subst.push_back(base::UTF8ToUTF16(info->description().source().label()));
+  subst.push_back(base::UTF8ToUTF16(info.description().source().label()));
 
   std::vector<size_t> offsets;
   std::u16string text =
@@ -71,5 +71,5 @@ void PageInfoAboutThisSiteContentView::SourceLinkClicked(
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED);
   ui_delegate_->AboutThisSiteSourceClicked(
-      GURL(info_->description().source().url()), event);
+      GURL(info_.description().source().url()), event);
 }
