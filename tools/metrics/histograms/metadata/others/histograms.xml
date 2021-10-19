@@ -13518,7 +13518,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>huanzhong@chromium.org</owner>
   <summary>
     Whether third-party cookies are blocked in incognito mode or completely.
-    Recorded at the Profile startup.
+    Recorded at the Profile startup. In case that &quot;Block all cookies&quot;
+    is selected in settings, this metric records BlockThirdParty.
   </summary>
 </histogram>
 
