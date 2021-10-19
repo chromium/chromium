@@ -105,6 +105,11 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/policy_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
 #endif
@@ -1097,6 +1102,17 @@ void PolicyUIHandler::HandleReloadPolicies(const base::ListValue* args) {
         remote_commands_service->FetchRemoteCommands();
     }
   }
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Send request to Ash to reload the policy. This will reload the device
+  // policy and the device account policy. Then Ash will send the updates to
+  // Lacros the same way it happens when that policy gets invalidated.
+  // TODO(crbug.com/1260935): Add here the request for remote commands to be
+  // sent.
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (service->IsAvailable<crosapi::mojom::PolicyService>())
+    service->GetRemote<crosapi::mojom::PolicyService>()->ReloadPolicy();
 #endif
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

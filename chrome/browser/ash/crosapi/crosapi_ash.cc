@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
+#include "chrome/browser/ash/crosapi/policy_service_ash.h"
 #include "chrome/browser/ash/crosapi/power_ash.h"
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
@@ -148,6 +149,7 @@ CrosapiAsh::CrosapiAsh()
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
       network_settings_service_ash_(std::make_unique<NetworkSettingsServiceAsh>(
           g_browser_process->local_state())),
+      policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
       power_ash_(std::make_unique<PowerAsh>()),
       prefs_ash_(
           std::make_unique<PrefsAsh>(g_browser_process->profile_manager(),
@@ -448,6 +450,11 @@ void CrosapiAsh::BindStableVideoDecoderFactory(
     mojo::GenericPendingReceiver receiver) {
   if (auto r = receiver.As<media::stable::mojom::StableVideoDecoderFactory>())
     stable_video_decoder_factory_ash_->BindReceiver(std::move(r));
+}
+
+void CrosapiAsh::BindPolicyService(
+    mojo::PendingReceiver<mojom::PolicyService> receiver) {
+  policy_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindPower(mojo::PendingReceiver<mojom::Power> receiver) {

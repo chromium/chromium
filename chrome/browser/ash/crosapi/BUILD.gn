@@ -92,6 +92,8 @@ source_set("crosapi") {
     "network_settings_translation.h",
     "networking_attributes_ash.cc",
     "networking_attributes_ash.h",
+    "policy_service_ash.cc",
+    "policy_service_ash.h",
     "power_ash.cc",
     "power_ash.h",
     "prefs_ash.cc",

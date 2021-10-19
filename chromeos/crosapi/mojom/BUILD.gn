@@ -43,6 +43,7 @@ mojom("mojom") {
     "network_settings_service.mojom",
     "networking_attributes.mojom",
     "notification.mojom",
+    "policy_service.mojom",
     "power.mojom",
     "prefs.mojom",
     "remoting.mojom",

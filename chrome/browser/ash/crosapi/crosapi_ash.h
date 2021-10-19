@@ -50,6 +50,7 @@ class MessageCenterAsh;
 class MetricsReportingAsh;
 class NativeThemeServiceAsh;
 class NetworkingAttributesAsh;
+class PolicyServiceAsh;
 class PowerAsh;
 class PrefsAsh;
 class RemotingAsh;
@@ -151,6 +152,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::NativeThemeService> receiver) override;
   void BindNetworkingAttributes(
       mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) override;
+  void BindPolicyService(
+      mojo::PendingReceiver<mojom::PolicyService> receiver) override;
   void BindPower(mojo::PendingReceiver<mojom::Power> receiver) override;
   void BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) override;
   void BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) override;
@@ -282,6 +285,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
   std::unique_ptr<NetworkSettingsServiceAsh> network_settings_service_ash_;
+  std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
   std::unique_ptr<PowerAsh> power_ash_;
   std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<RemotingAsh> remoting_ash_;

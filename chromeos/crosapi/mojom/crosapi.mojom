@@ -30,6 +30,7 @@ import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
+import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/native_theme.mojom";
@@ -81,8 +82,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 56
-// Next method id: 60
+// Next version: 57
+// Next method id: 61
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -268,6 +269,11 @@ interface Crosapi {
   // extension APIs to query details about the network.
   [MinVersion=39]
   BindNetworkingAttributes@44(pending_receiver<NetworkingAttributes> receiver);
+
+  // Binds the Policy service to allow Lacros request policy data from Ash when
+  // needed.
+  [MinVersion=56] BindPolicyService@60(
+      pending_receiver<PolicyService> receiver);
 
   // Binds the prefs service which allows get, set, and notify update of prefs.
   // Added in M89.

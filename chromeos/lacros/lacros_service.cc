@@ -43,6 +43,7 @@
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
+#include "chromeos/crosapi/mojom/policy_service.mojom.h"
 #include "chromeos/crosapi/mojom/power.mojom.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
@@ -303,6 +304,8 @@ LacrosService::LacrosService()
       crosapi::mojom::NetworkSettingsService,
       &crosapi::mojom::Crosapi::BindNetworkSettingsService,
       Crosapi::MethodMinVersions::kBindNetworkSettingsServiceMinVersion>();
+  ConstructRemote<crosapi::mojom::PolicyService, &Crosapi::BindPolicyService,
+                  Crosapi::MethodMinVersions::kBindPolicyServiceMinVersion>();
   ConstructRemote<crosapi::mojom::Remoting,
                   &crosapi::mojom::Crosapi::BindRemoting,
                   Crosapi::MethodMinVersions::kBindRemotingMinVersion>();
