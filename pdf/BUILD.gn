@@ -139,8 +139,6 @@ if (enable_pdf) {
       "pdfium/pdfium_engine_exports.h",
       "pdfium/pdfium_form_filler.cc",
       "pdfium/pdfium_form_filler.h",
-      "pdfium/pdfium_mem_buffer_file_read.cc",
-      "pdfium/pdfium_mem_buffer_file_read.h",
       "pdfium/pdfium_mem_buffer_file_write.cc",
       "pdfium/pdfium_mem_buffer_file_write.h",
       "pdfium/pdfium_page.cc",
