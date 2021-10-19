@@ -704,6 +704,27 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Android.DarkTheme.AutoDarkMode">
+  <owner>nemco@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Recorded when the user changes auto-dark theming for a site through the app
+    menu.
+  </summary>
+  <metric name="DisabledByUser" enum="Boolean">
+    <summary>
+      A boolean signaling that auto-dark theming has been disabled.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Android.MultiWindowChangeActivity">
   <owner>gangwu@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
