@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/user_data_stats_recorder.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 
 #include <string.h>
 
@@ -16,9 +16,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
-namespace crosapi {
-namespace user_data_stats_recorder {
-
+namespace ash {
+namespace browser_data_migrator_util {
 namespace {
 
 struct PathNamePair {
@@ -202,5 +201,5 @@ std::string GetUMAItemName(const base::FilePath& path) {
   return kUnknownUMAName;
 }
 
-}  // namespace user_data_stats_recorder
-}  // namespace crosapi
+}  // namespace browser_data_migrator_util
+}  // namespace ash

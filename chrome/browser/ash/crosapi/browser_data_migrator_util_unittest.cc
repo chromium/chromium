@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/user_data_stats_recorder.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -10,8 +10,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace crosapi {
-namespace user_data_stats_recorder {
+namespace ash {
+namespace browser_data_migrator_util {
 
 namespace {
 constexpr char kCodeCachePath[] = "Code Cache";
@@ -20,7 +20,7 @@ constexpr char kTextFileContent[] = "Hello, World!";
 constexpr int kTextFileSize = sizeof(kTextFileContent);
 }  // namespace
 
-TEST(UserDataStatsRecorderTest, ComputeDirectorySizeWithoutLinks) {
+TEST(BrowserDataMigratorUtilTest, ComputeDirectorySizeWithoutLinks) {
   base::ScopedTempDir dir_1;
   ASSERT_TRUE(dir_1.CreateUniqueTempDir());
 
@@ -55,7 +55,7 @@ TEST(UserDataStatsRecorderTest, ComputeDirectorySizeWithoutLinks) {
             kTextFileSize * 2);
 }
 
-TEST(UserDataStatsRecorderTest, GetUMAItemName) {
+TEST(BrowserDataMigratorUtilTest, GetUMAItemName) {
   base::FilePath profile_data_dir("/home/chronos/user");
 
   EXPECT_STREQ(GetUMAItemName(profile_data_dir.Append(kCodeCachePath)).c_str(),
@@ -67,7 +67,7 @@ TEST(UserDataStatsRecorderTest, GetUMAItemName) {
       kUnknownUMAName);
 }
 
-TEST(UserDataStatsRecorderTest, RecordUserDataSize) {
+TEST(BrowserDataMigratorUtilTest, RecordUserDataSize) {
   base::HistogramTester histogram_tester;
 
   base::FilePath profile_data_dir("/home/chronos/user");
@@ -82,7 +82,7 @@ TEST(UserDataStatsRecorderTest, RecordUserDataSize) {
   histogram_tester.ExpectBucketCount(uma_name, size / 1024 / 1024, 1);
 }
 
-TEST(UserDataStatsRecorderTest, RecordUserDataSizes) {
+TEST(BrowserDataMigratorUtilTest, RecordUserDataSizes) {
   base::HistogramTester histogram_tester;
   base::ScopedTempDir profile_data_dir;
   ASSERT_TRUE(profile_data_dir.CreateUniqueTempDir());
@@ -112,5 +112,5 @@ TEST(UserDataStatsRecorderTest, RecordUserDataSizes) {
                                      1);
 }
 
-}  // namespace user_data_stats_recorder
-}  // namespace crosapi
+}  // namespace browser_data_migrator_util
+}  // namespace ash
