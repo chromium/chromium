@@ -147,12 +147,14 @@ Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error) {
   using crosapi::mojom::KeystoreError;
 
   switch (error) {
-      // Keystore specific errors shouldn't be passed here.
     case KeystoreError::kUnknown:
     case KeystoreError::kUnsupportedKeystoreType:
     case KeystoreError::kUnsupportedAlgorithmType:
     case KeystoreError::kUnsupportedKeyTag:
-      DCHECK(false);
+    case KeystoreError::kMojoUnavailable:
+    case KeystoreError::kUnsupportedKeyType:
+      // Keystore specific errors shouldn't be passed here.
+      NOTREACHED();
       return Status::kErrorInternal;
 
     case KeystoreError::kAlgorithmNotSupported:
@@ -201,6 +203,10 @@ std::string KeystoreErrorToString(crosapi::mojom::KeystoreError error) {
       return "The token is not valid.";
     case KeystoreError::kUnsupportedAlgorithmType:
       return "Algorithm type is not supported.";
+    case KeystoreError::kMojoUnavailable:
+      return "The OS is too old.";
+    case KeystoreError::kUnsupportedKeyType:
+      return "Key type is not supported.";
     default:
       break;
   }

@@ -166,9 +166,12 @@ crosapi::mojom::KeystoreService* GetKeystoreService(
   CHECK(Profile::FromBrowserContext(browser_context)->IsMainProfile())
       << "Attempted to use an incorrect profile. Please file a bug at "
          "https://bugs.chromium.org/ if this happens.";
-  return chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::KeystoreService>()
-      .get();
+
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<crosapi::mojom::KeystoreService>()) {
+    return nullptr;
+  }
+  return service->GetRemote<crosapi::mojom::KeystoreService>().get();
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -893,7 +896,6 @@ ExtensionPlatformKeysService::ExtensionPlatformKeysService(
     : browser_context_(browser_context),
       keystore_service_(GetKeystoreService(browser_context_)) {
   DCHECK(browser_context);
-  DCHECK(keystore_service_);
 }
 
 ExtensionPlatformKeysService::~ExtensionPlatformKeysService() {}
@@ -910,6 +912,30 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
     const std::string& extension_id,
     GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!keystore_service_) {
+    std::move(callback).Run(/*public_key_spki_der=*/std::string(),
+                            crosapi::mojom::KeystoreError::kMojoUnavailable);
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (sw_backed) {
+    // Software-backed RSA keys are only supported starting with KeyStore
+    // interface version 16.
+    // TODO(https://crbug.com/1252410): Remove this code with M-100.
+    const int kSoftwareBackedRsaMinVersion = 16;
+    if (!chromeos::LacrosService::Get() ||
+        (chromeos::LacrosService::Get()->GetInterfaceVersion(
+             KeystoreService::Uuid_) < kSoftwareBackedRsaMinVersion)) {
+      std::move(callback).Run(
+          /*public_key_spki_der=*/std::string(),
+          crosapi::mojom::KeystoreError::kUnsupportedKeyType);
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   StartOrQueueTask(std::make_unique<GenerateRSAKeyTask>(
       token_id, modulus_length, sw_backed, extension_id, std::move(callback),
       this));
@@ -921,6 +947,13 @@ void ExtensionPlatformKeysService::GenerateECKey(
     const std::string& extension_id,
     GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!keystore_service_) {
+    std::move(callback).Run(/*public_key_spki_der=*/std::string(),
+                            crosapi::mojom::KeystoreError::kMojoUnavailable);
+    return;
+  }
+
   StartOrQueueTask(std::make_unique<GenerateECKeyTask>(
       token_id, named_curve, extension_id, std::move(callback), this));
 }
@@ -945,6 +978,13 @@ void ExtensionPlatformKeysService::SignDigest(
     const std::string& extension_id,
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!keystore_service_) {
+    std::move(callback).Run(/*signature=*/std::string(),
+                            crosapi::mojom::KeystoreError::kMojoUnavailable);
+    return;
+  }
+
   StartOrQueueTask(std::make_unique<SignTask>(
       token_id, data, public_key_spki_der, key_type, hash_algorithm,
       extension_id, std::move(callback), this));
@@ -957,6 +997,13 @@ void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
     const std::string& extension_id,
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!keystore_service_) {
+    std::move(callback).Run(/*signature=*/std::string(),
+                            crosapi::mojom::KeystoreError::kMojoUnavailable);
+    return;
+  }
+
   StartOrQueueTask(std::make_unique<SignTask>(
       token_id, data, public_key_spki_der,
       /*key_type=*/platform_keys::KeyType::kRsassaPkcs1V15,
@@ -972,6 +1019,13 @@ void ExtensionPlatformKeysService::SelectClientCertificates(
     SelectCertificatesCallback callback,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!keystore_service_) {
+    std::move(callback).Run(/*matches=*/nullptr,
+                            crosapi::mojom::KeystoreError::kMojoUnavailable);
+    return;
+  }
+
   StartOrQueueTask(std::make_unique<SelectTask>(
       request, std::move(client_certificates), interactive, extension_id,
       std::move(callback), web_contents, this));

@@ -88,8 +88,11 @@ crosapi::mojom::KeystoreService* GetKeystoreService(
 // extension. |context| is the browser context in which the extension is hosted.
 std::string ValidateCrosapi(int min_version, content::BrowserContext* context) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int version = chromeos::LacrosService::Get()->GetInterfaceVersion(
-      KeystoreService::Uuid_);
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<crosapi::mojom::KeystoreService>())
+    return kUnsupportedByAsh;
+
+  int version = service->GetInterfaceVersion(KeystoreService::Uuid_);
   if (version < min_version)
     return kUnsupportedByAsh;
 
@@ -152,11 +155,6 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
       api_pki::SelectClientCertificates::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  chromeos::ExtensionPlatformKeysService* service =
-      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
-          browser_context());
-  DCHECK(service);
-
   chromeos::platform_keys::ClientCertificateRequest request;
   request.certificate_authorities =
       std::move(params->details.request.certificate_authorities);
@@ -209,6 +207,11 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
       return RespondNow(Error(kErrorInteractiveCallFromBackground));
     }
   }
+
+  chromeos::ExtensionPlatformKeysService* service =
+      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
+          browser_context());
+  DCHECK(service);
 
   service->SelectClientCertificates(
       request, std::move(client_certs), params->details.interactive,

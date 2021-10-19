@@ -67,8 +67,11 @@ crosapi::mojom::KeystoreService* GetKeystoreService(
 // extension. |context| is the browser context in which the extension is hosted.
 std::string ValidateCrosapi(int min_version, content::BrowserContext* context) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int version = chromeos::LacrosService::Get()->GetInterfaceVersion(
-      KeystoreService::Uuid_);
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<crosapi::mojom::KeystoreService>())
+    return kUnsupportedByAsh;
+
+  int version = service->GetInterfaceVersion(KeystoreService::Uuid_);
   if (version < min_version)
     return kUnsupportedByAsh;
 
@@ -154,18 +157,6 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
   // implemented for secondary profiles in Lacros.
   if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
     return RespondNow(Error(kUnsupportedProfile));
-
-  if (params->software_backed) {
-    // Software-backed RSA keys are only supported starting with KeyStore
-    // interface version 16.
-    // TODO(https://crbug.com/1252410): Remove this code with M-100.
-    const uint32_t kSoftwareBackedRsaMinVersion = 16;
-    std::string error =
-        ValidateCrosapi(kSoftwareBackedRsaMinVersion, browser_context());
-    if (!error.empty()) {
-      return RespondNow(Error(error));
-    }
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   EXTENSION_FUNCTION_VALIDATE(params);
