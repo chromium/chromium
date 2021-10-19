@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
@@ -44,12 +45,18 @@ class MojoIpcServerBase : public IpcServer {
     on_invitation_sent_callback_for_testing_ = callback;
   }
 
+  size_t GetNumberOfActiveConnectionsForTesting() const {
+    return active_connections_.size();
+  }
+
  protected:
   explicit MojoIpcServerBase(
       const mojo::NamedPlatformChannel::ServerName& server_name);
   ~MojoIpcServerBase() override;
 
   void SendInvitation();
+
+  void OnIpcDisconnected();
 
   virtual mojo::ReceiverId TrackMessagePipe(
       mojo::ScopedMessagePipeHandle message_pipe) = 0;
@@ -59,6 +66,8 @@ class MojoIpcServerBase : public IpcServer {
   virtual void UntrackAllMessagePipes() = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::RepeatingClosure disconnect_handler_;
 
  private:
   using ActiveConnectionMap =
@@ -123,7 +132,10 @@ class MojoIpcServer final : public MojoIpcServerBase {
   // ExtractMessagePipe() with the same ID.
   MojoIpcServer(const mojo::NamedPlatformChannel::ServerName& server_name,
                 Interface* interface_impl)
-      : MojoIpcServerBase(server_name), interface_impl_(interface_impl) {}
+      : MojoIpcServerBase(server_name), interface_impl_(interface_impl) {
+    receiver_set_.set_disconnect_handler(base::BindRepeating(
+        &MojoIpcServer::OnIpcDisconnected, base::Unretained(this)));
+  }
 
   ~MojoIpcServer() override = default;
 
@@ -131,7 +143,7 @@ class MojoIpcServer final : public MojoIpcServerBase {
   MojoIpcServer& operator=(const MojoIpcServer&) = delete;
 
   void set_disconnect_handler(base::RepeatingClosure handler) override {
-    receiver_set_.set_disconnect_handler(handler);
+    disconnect_handler_ = handler;
   }
 
   mojo::ReceiverId current_receiver() const override {

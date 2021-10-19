@@ -110,7 +110,10 @@ void MojoIpcServerBase::StopServer() {
 
 void MojoIpcServerBase::Close(mojo::ReceiverId id) {
   UntrackMessagePipe(id);
-  active_connections_.erase(id);
+  auto it = active_connections_.find(id);
+  if (it != active_connections_.end()) {
+    active_connections_.erase(it);
+  }
 }
 
 void MojoIpcServerBase::SendInvitation() {
@@ -121,6 +124,13 @@ void MojoIpcServerBase::SendInvitation() {
       FROM_HERE, base::BindOnce(&SendInvitationOnIoSequence, server_name_),
       base::BindOnce(&MojoIpcServerBase::OnInvitationSent,
                      weak_factory_.GetWeakPtr()));
+}
+
+void MojoIpcServerBase::OnIpcDisconnected() {
+  if (disconnect_handler_) {
+    disconnect_handler_.Run();
+  }
+  Close(current_receiver());
 }
 
 void MojoIpcServerBase::OnInvitationSent(
@@ -153,17 +163,24 @@ void MojoIpcServerBase::OnMessagePipeReady(
     const mojo::HandleSignalsState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  pending_message_pipe_watcher_.Cancel();
+  if (result == MOJO_RESULT_FAILED_PRECONDITION) {
+    LOG(WARNING) << "The message pipe will never become ready.";
+    pending_connection_.reset();
+    SendInvitation();
+    return;
+  }
   if (result != MOJO_RESULT_OK) {
-    LOG(ERROR) << "Message pipe is not ready. Result: " << result;
+    LOG(ERROR) << "Unexpected message pipe result: " << result;
     pending_connection_.reset();
     return;
   }
   if (state.peer_closed()) {
     LOG(ERROR) << "Message pipe is closed.";
     pending_connection_.reset();
+    SendInvitation();
     return;
   }
-  pending_message_pipe_watcher_.Cancel();
 
   DCHECK(pending_connection_->message_pipe.is_valid());
   auto receiver_id =
