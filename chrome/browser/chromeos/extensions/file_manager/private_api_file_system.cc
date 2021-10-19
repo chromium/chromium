@@ -978,6 +978,11 @@ void FileManagerPrivateInternalStartCopyFunction::RunAfterFreeDiskSpace(
     int64_t space_needed) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (!render_frame_host()) {  // crbug.com/1261282
+    Respond(NoArguments());
+    return;
+  }
+
   if (!available) {
     Respond(Error("QuotaExceededError"));
     return;
