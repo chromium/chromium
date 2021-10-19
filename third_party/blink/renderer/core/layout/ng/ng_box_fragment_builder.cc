@@ -119,8 +119,8 @@ void NGBoxFragmentBuilder::AddResult(
            child_layout_result.IsSelfCollapsing(), relative_offset,
            adjustment_for_oof_propagation);
 
-  if (child_box_layout_result)
-    PropagateBreak(*child_box_layout_result);
+  if (UNLIKELY(has_block_fragmentation_ && child_box_layout_result))
+    PropagateBreakInfo(*child_box_layout_result);
 }
 
 void NGBoxFragmentBuilder::AddChild(
@@ -345,10 +345,9 @@ void NGBoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
     items_builder->MoveChildrenInBlockDirection(delta);
 }
 
-void NGBoxFragmentBuilder::PropagateBreak(
+void NGBoxFragmentBuilder::PropagateBreakInfo(
     const NGLayoutResult& child_layout_result) {
-  if (LIKELY(!has_block_fragmentation_))
-    return;
+  DCHECK(has_block_fragmentation_);
   const auto& child_fragment =
       To<NGPhysicalBoxFragment>(child_layout_result.PhysicalFragment());
   if (const auto* token = child_fragment.BreakToken()) {
@@ -369,14 +368,16 @@ void NGBoxFragmentBuilder::PropagateBreak(
         CalculateBreakAppealInside(*ConstraintSpace(), child_layout_result);
     ClampBreakAppeal(appeal_inside);
   }
-  if (child_layout_result.HasForcedBreak()) {
-    SetHasForcedBreak();
-  } else if (IsInitialColumnBalancingPass()) {
+
+  if (IsInitialColumnBalancingPass()) {
     PropagateTallestUnbreakableBlockSize(
         child_layout_result.TallestUnbreakableBlockSize());
-  } else {
-    PropagateSpaceShortage(child_layout_result.MinimalSpaceShortage());
   }
+
+  if (child_layout_result.HasForcedBreak())
+    SetHasForcedBreak();
+  else if (!IsInitialColumnBalancingPass())
+    PropagateSpaceShortage(child_layout_result.MinimalSpaceShortage());
 
   // If a spanner was found inside the child, we need to finish up and propagate
   // the spanner to the column layout algorithm, so that it can take care of it.

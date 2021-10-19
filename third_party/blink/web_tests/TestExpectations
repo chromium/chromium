@@ -1426,6 +1426,7 @@ virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-007
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-008.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-009.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-010.html [ Pass ]
+virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-011.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-014.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-015.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-017.html [ Pass ]

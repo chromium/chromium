@@ -574,8 +574,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
       LayoutUnit fragmentainer_consumed_block_size = LayoutUnit()) const;
 
  private:
-  // Update whether we have fragmented in this flow.
-  void PropagateBreak(const NGLayoutResult&);
+  // Propagate fragmentation details. This includes checking whether we have
+  // fragmented in this flow, break appeal, column spanner detection, and column
+  // balancing hints.
+  void PropagateBreakInfo(const NGLayoutResult&);
 
   void SetHasForcedBreak() {
     has_forced_break_ = true;
