@@ -67,6 +67,10 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
     std::u16string title_text;
     std::u16string screenreader_text;
 
+    // Additional message to be read to screen reader users to aid in
+    // navigation.
+    std::u16string keyboard_navigation_hint;
+
     std::vector<ButtonParams> buttons;
 
     absl::optional<int> preferred_width;

@@ -21,14 +21,13 @@ FeaturePromoBubbleOwnerImpl* FeaturePromoBubbleOwnerImpl::GetInstance() {
 
 bool FeaturePromoBubbleOwnerImpl::ToggleFocusForAccessibility() {
   // If the bubble isn't present or can't be meaningfully focused, stop.
-  if (!bubble_ || !bubble_->GetInitiallyFocusedView())
+  if (!bubble_)
     return false;
-
-  auto* const anchor = bubble_->GetAnchorView();
 
   // Focus can't be determined just by widget activity; we must check to see if
   // there's a focused view in the anchor widget or the top-level browser
   // widget (if different).
+  auto* const anchor = bubble_->GetAnchorView();
   const bool is_focus_in_ancestor_widget =
       (anchor && anchor->GetFocusManager()->GetFocusedView()) ||
       bubble_->GetWidget()

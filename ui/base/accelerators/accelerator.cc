@@ -410,6 +410,9 @@ std::u16string Accelerator::KeyCodeToName() const {
     case VKEY_F1:
       string_id = IDS_APP_F1_KEY;
       break;
+    case VKEY_F6:
+      string_id = IDS_APP_F6_KEY;
+      break;
     case VKEY_F11:
       string_id = IDS_APP_F11_KEY;
       break;

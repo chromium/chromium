@@ -521,6 +521,12 @@ are declared in tools/grit/grit_rule.gni.
             This dialog is not currently focused. Press Alt-Shift A to focus this dialog.
           </message>
         </if>
+        <message name="IDS_FOCUS_HELP_BUBBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader users when a general help bubble is shown.">
+          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus this help bubble.
+        </message>
+        <message name="IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader when a help bubble pointing to a specific element is shown.">
+          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to toggle focus between this help bubble and the element it is pointing to.
+        </message>
       </if>
 
        <!-- content area context menus. Android does not use it -->

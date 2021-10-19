@@ -137,6 +137,10 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   void OnUserSnooze(const base::Feature& iph_feature);
   void OnUserDismiss(const base::Feature& iph_feature);
 
+  // Returns whether we can play a screen reader prompt for the "focus help
+  // bubble" promo.
+  bool CheckScreenReaderPromptAvailable() const;
+
   // The browser window this instance is responsible for.
   BrowserView* const browser_view_;
 

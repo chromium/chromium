@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -11,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/token.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
@@ -25,6 +27,8 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/style/platform_style.h"
@@ -426,6 +430,38 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
         weak_ptr_factory_.GetWeakPtr(), *current_iph_feature_);
   }
 
+  if (CheckScreenReaderPromptAvailable()) {
+    ui::Accelerator accelerator;
+    std::u16string accelerator_text;
+    if (browser_view_->GetAccelerator(IDC_FOCUS_NEXT_PANE, &accelerator)) {
+      accelerator_text = accelerator.GetShortcutText();
+    } else {
+      NOTREACHED();
+    }
+
+    if (!params.focus_on_create && !params.timeout_no_interaction.has_value()) {
+      // No message is required as this is a background bubble with a
+      // screen reader-specific prompt and will dismiss itself.
+      LOG_IF(WARNING, !params.screenreader_string_specifier)
+          << "Toast feature promo without screenreader prompt: "
+          << create_params.body_text;
+    } else if (anchor_view->IsAccessibilityFocusable()) {
+      // Present the user with the full help bubble navigation shortcut.
+      create_params.keyboard_navigation_hint = l10n_util::GetStringFUTF16(
+          IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION, accelerator_text);
+    } else if (!params.focus_on_create) {
+      // Present the user with an abridged help bubble navigation shortcut.
+      create_params.keyboard_navigation_hint = l10n_util::GetStringFUTF16(
+          IDS_FOCUS_HELP_BUBBLE_DESCRIPTION, accelerator_text);
+    } else {
+      // No prompt for a bubble that starts focused and where the anchor view
+      // cannot receive focus, since neither the help bubble accelerator nor F6
+      // would do anything. However, in this case we require a close button of
+      // some variety.
+      DCHECK(params.allow_snooze || params.show_close_button);
+    }
+  }
+
   bubble_id_ = bubble_owner_->ShowBubble(
       std::move(create_params),
       base::BindOnce(&FeaturePromoControllerViews::HandleBubbleClosed,
@@ -464,4 +500,9 @@ void FeaturePromoControllerViews::HandleBubbleClosed() {
   } else {
     current_critical_promo_.reset();
   }
+}
+
+bool FeaturePromoControllerViews::CheckScreenReaderPromptAvailable() const {
+  return ui::AXPlatformNode::GetAccessibilityMode().has_mode(
+      ui::AXMode::kScreenReader);
 }

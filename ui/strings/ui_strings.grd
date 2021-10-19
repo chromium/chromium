@@ -703,6 +703,9 @@ need to be translated for each locale.-->
       <message name="IDS_APP_F1_KEY" desc="F1 key">
         F1
       </message>
+      <message name="IDS_APP_F6_KEY" is_accessibility_with_no_ui="true" desc="F6 key">
+        F6
+      </message>
       <message name="IDS_APP_F11_KEY" desc="F11 key">
         F11
       </message>

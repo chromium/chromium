@@ -260,6 +260,10 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
                          ? params.body_text
                          : params.screenreader_text;
 
+  // If there's a keyboard navigation hint, append it after a full stop.
+  if (!params.keyboard_navigation_hint.empty())
+    accessible_name_ += u". " + params.keyboard_navigation_hint;
+
   // Since we don't have any controls for the user to interact with (we're just
   // an information bubble), override our role to kAlert.
   SetAccessibleRole(ax::mojom::Role::kAlert);
