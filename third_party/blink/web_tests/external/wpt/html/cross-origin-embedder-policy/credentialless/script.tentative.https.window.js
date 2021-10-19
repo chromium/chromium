@@ -1,16 +1,12 @@
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
-<script src="./resources/common.js"></script>
-
-<script>
+// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils.js
+// META: script=/common/dispatcher/dispatcher.js
+// META: script=./resources/common.js
 
 promise_test_parallel(async test => {
   const same_origin = get_host_info().HTTPS_ORIGIN;
   const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
-  const cookie_key = "coep_credentialless_link";
+  const cookie_key = "coep_credentialless_script";
   const cookie_same_origin = "same_origin";
   const cookie_cross_origin = "cross_origin";
 
@@ -35,7 +31,7 @@ promise_test_parallel(async test => {
   const w_credentialless = window.open(w_credentialless_url);
   add_completion_callback(() => w_credentialless.close());
 
-  let linkTest = function(
+  let scriptTest = function(
     description, origin, mode,
     expected_cookies_control,
     expected_cookies_credentialless)
@@ -45,18 +41,16 @@ promise_test_parallel(async test => {
       const token_2 = token();
 
       send(w_control_token, `
-        let link = document.createElement("link");
-        link.href = "${showRequestHeaders(origin, token_1)}";
-        link.rel = "stylesheet";
-        ${mode}
-        document.head.appendChild(link);
+        let script = document.createElement("script");
+        script.src = "${showRequestHeaders(origin, token_1)}";
+        ${mode};
+        document.body.appendChild(script);
       `);
       send(w_credentialless_token, `
-        let link = document.createElement("link");
-        link.href = "${showRequestHeaders(origin, token_2)}";
-        link.rel = "stylesheet";
-        ${mode}
-        document.head.appendChild(link);
+        let script = document.createElement("script");
+        script.src = "${showRequestHeaders(origin, token_2)}";
+        ${mode};
+        document.body.appendChild(script);
       `);
 
       const headers_control = JSON.parse(await receive(token_1));
@@ -68,38 +62,36 @@ promise_test_parallel(async test => {
       assert_equals(parseCookies(headers_credentialless)[cookie_key],
         expected_cookies_credentialless,
         "coep:credentialless => ");
-    }, `link ${description}`)
+    }, `script ${description}`)
   };
 
   // Same-origin request always contains Cookies:
-  linkTest("same-origin + undefined",
+  scriptTest("same-origin + undefined",
     same_origin, '',
     cookie_same_origin,
     cookie_same_origin);
-  linkTest("same-origin + anonymous",
-    same_origin, 'link.crossOrigin="anonymous"',
+  scriptTest("same-origin + anonymous",
+    same_origin, 'script.crossOrigin="anonymous"',
     cookie_same_origin,
     cookie_same_origin);
-  linkTest("same-origin + use-credentials",
-    same_origin, 'link.crossOrigin="use-credentials"',
+  scriptTest("same-origin + use-credentials",
+    same_origin, 'script.crossOrigin="use-credentials"',
     cookie_same_origin,
     cookie_same_origin);
 
   // Cross-origin request contains cookies in the following cases:
   // - COEP:credentialless is not set.
-  // - link.crossOrigin is `use-credentials`.
-  linkTest("cross-origin + undefined",
+  // - script.crossOrigin is `use-credentials`.
+  scriptTest("cross-origin + undefined",
     cross_origin, '',
     cookie_cross_origin,
     undefined);
-  linkTest("cross-origin + anonymous",
-    cross_origin, 'link.crossOrigin="anonymous"',
+  scriptTest("cross-origin + anonymous",
+    cross_origin, 'script.crossOrigin="anonymous"',
     undefined,
     undefined);
-  linkTest("cross-origin + use-credentials",
-    cross_origin, 'link.crossOrigin="use-credentials"',
+  scriptTest("cross-origin + use-credentials",
+    cross_origin, 'script.crossOrigin="use-credentials"',
     cookie_cross_origin,
     cookie_cross_origin);
 }, "Main");
-
-</script>

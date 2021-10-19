@@ -1,15 +1,12 @@
-<meta name="variant" content="?1-4">
-<meta name="variant" content="?5-9">
-<meta name="variant" content="?9-last">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
-<script src="./resources/common.js"></script>
-<script src="./resources/iframeTest.js"></script>
-<script src="/common/subset-tests.js"></script>
-<script>
+// META: variant=?1-4
+// META: variant=?5-9
+// META: variant=?9-last
+// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils.js
+// META: script=/common/dispatcher/dispatcher.js
+// META: script=./resources/common.js
+// META: script=./resources/iframeTest.js
+// META: script=/common/subset-tests.js
 
 const parent_coep_require_corp = newWindow(coep_require_corp);
 
@@ -39,5 +36,3 @@ subsetTest(iframeTestCORP, "COEP:require-corp embeds same-origin COEP:require-co
   parent_coep_require_corp, same_origin, coep_require_corp, EXPECT_LOAD);
 subsetTest(iframeTestCORP, "COEP:require-corp embeds cross-origin COEP:require-corp",
   parent_coep_require_corp, cross_origin, coep_require_corp, EXPECT_LOAD);
-
-</script>

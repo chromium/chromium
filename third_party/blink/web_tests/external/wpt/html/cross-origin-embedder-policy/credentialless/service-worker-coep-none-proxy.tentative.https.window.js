@@ -1,11 +1,8 @@
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
-<script src="./resources/common.js"></script>
-<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
-<script>
+// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils.js
+// META: script=/common/dispatcher/dispatcher.js
+// META: script=./resources/common.js
+// META: script=/service-workers/service-worker/resources/test-helpers.sub.js
 
 const same_origin = get_host_info().HTTPS_ORIGIN;
 const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
@@ -14,10 +11,9 @@ promise_test(async test => {
   const this_token_1 = token();
   const this_token_2 = token();
 
-  // Register a COEP:credentialless ServiceWorker.
+  // Register a COEP:none ServiceWorker.
   const sw_token = token();
-  const sw_url =
-    executor_service_worker_path + coep_credentialless + `&uuid=${sw_token}`;
+  const sw_url = executor_service_worker_path + coep_none + `&uuid=${sw_token}`;
   // Executors should be controlled by the service worker.
   const scope = executor_path;
   const sw_registration =
@@ -65,7 +61,10 @@ promise_test(async test => {
   // be same-origin to be handled by the ServiceWorker.
   send(document_token, `
     try {
-      const response = await fetch("/proxied", { mode: "no-cors", });
+      const response = await fetch("/proxied", {
+        mode: "no-cors",
+        credentials: "include"
+      });
 
       send("${this_token_2}", "Document: Fetch success");
     } catch (error) {
@@ -73,18 +72,16 @@ promise_test(async test => {
     }
   `);
 
-  // The COEP:credentialless ServiceWorker is able to handle the cross-origin
+  // The COEP:unsafe-none ServiceWorker is able to handle the cross-origin
   // no-cors request, requested with credentials.
   assert_equals(await receive(this_token_1), "ServiceWorker: Proxying");
   assert_equals(await receive(this_token_1), "ServiceWorker: Fetch success");
 
-  // The COEP:credentialless Document is allowed by CORP to get it.
-  assert_equals(await receive(this_token_2), "Document: Fetch success");
+  // However, the COEP:credentialless Document is disallowed by CORP to get it.
+  assert_equals(await receive(this_token_2), "Document: Fetch error");
 
   // test.add_cleanup doesn't allow waiting for a promise. Unregistering a
   // ServiceWorker is an asynchronous operation. It might not be completed on
   // time for the next test. Do it here for extra flakiness safety.
   await sw_registration.unregister()
-}, "COEP:credentialless ServiceWorker");
-
-</script>
+}, "COEP:unsafe-none ServiceWorker");

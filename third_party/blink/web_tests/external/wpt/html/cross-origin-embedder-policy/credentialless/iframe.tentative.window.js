@@ -1,12 +1,8 @@
-<meta name="timeout" content="long">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
-<script src="./resources/common.js"></script>
-
-<script>
+// META: timeout=long
+// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils.js
+// META: script=/common/dispatcher/dispatcher.js
+// META: script=./resources/common.js
 const same_origin = get_host_info().HTTPS_ORIGIN;
 const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
 const cookie_key = "coep_redirect";
@@ -49,5 +45,3 @@ promise_test_parallel(async test => {
   iframeTest("same-origin", same_origin, cookie_same_origin);
   iframeTest("cross-origin", cross_origin, cookie_cross_origin);
 }, "Setup");
-
-</script>

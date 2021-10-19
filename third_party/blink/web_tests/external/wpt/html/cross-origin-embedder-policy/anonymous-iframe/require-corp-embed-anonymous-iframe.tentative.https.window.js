@@ -1,9 +1,4 @@
-<!doctype html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/utils.js"></script>
-<body>
-<script>
+// META: script=/common/utils.js
 
 promise_test(async t => {
   let iframe_allowed = (iframe) => new Promise(async resolve => {
@@ -52,6 +47,3 @@ promise_test(async t => {
   assert_true(await iframe_allowed(grandchild),
              "The child of the anonymous iframe should be allowed.");
 }, 'Loading an anonymous iframe with COEP: require-corp is allowed.');
-
-</script>
-</body>

@@ -1,10 +1,7 @@
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
-<script src="./resources/common.js"></script>
-<script>
+// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils.js
+// META: script=/common/dispatcher/dispatcher.js
+// META: script=./resources/common.js
 
 // With COEP:credentialless, requesting a resource without credentials MUST NOT
 // return a response requested with credentials. This would be a security
@@ -85,5 +82,3 @@ promise_test(async test => {
   test.step_timeout(test.unreached_func("The HTTP cache has been used"), 1500);
   assert_equals(await receive(request_token).then(GetCookie), undefined);
 }, "The HTTP cache must not be used");
-
-</script>

@@ -5570,7 +5570,7 @@ crbug.com/1059645 external/wpt/pointerevents/pointerevent_coalesced_events_attri
 
 # Failing on Fuchsia due to dependency on FuchsiaMediaResourceProvider, which is not implemented in content_shell.
 crbug.com/1061226 [ Fuchsia ] fast/mediastream/MediaStream-onactive-oninactive.html [ Skip ]
-crbug.com/1061226 [ Fuchsia ] external/wpt/html/cross-origin-embedder-policy/credentialless/video.tentative.https.html [ Skip ]
+crbug.com/1061226 [ Fuchsia ] external/wpt/html/cross-origin-embedder-policy/credentialless/video.tentative.https.window.html [ Skip ]
 crbug.com/1061226 [ Fuchsia ] external/wpt/mediacapture-streams/MediaStream-idl.https.html [ Skip ]
 crbug.com/1061226 [ Fuchsia ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/baseaudiocontext-audioworklet.https.html [ Skip ]
 crbug.com/1061226 [ Fuchsia ] external/wpt/webaudio/the-audio-api/the-pannernode-interface/panner-equalpower-stereo.html [ Skip ]
@@ -6331,7 +6331,6 @@ crbug.com/1093041 fast/canvas/color-space/canvas-createImageBitmap-rec2020.html 
 crbug.com/1093041 virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Failure Pass Skip Timeout ]
 
 # Sheriff 2021-05-10
-crbug.com/1207319 external/wpt/html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.html [ Pass Timeout ]
 crbug.com/1207337 virtual/scroll-unification/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Failure Pass ]
 
 # Sheriff 2021-05-04

@@ -1,12 +1,6 @@
-<!doctype html>
-<html>
-<meta name="timeout" content="long">
-<body>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="./resources/common.js"></script>
-<script>
+// META: timeout=long
+// META: script=/common/get-host-info.sub.js
+// META: script=./resources/common.js
 const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
 const COEP = '|header(cross-origin-embedder-policy,credentialless)';
 const COEP_RO =
@@ -143,6 +137,3 @@ reportingTest(COEP_RO, CORP_CROSS_ORIGIN, ['NAV-RO']);
 reportingTest(COEP_RO, COEP + CORP_CROSS_ORIGIN, []);
 
 reportingTest(COEP, COEP_RO + CORP_CROSS_ORIGIN, ['NAV']);
-
-</script>
-</body></html>

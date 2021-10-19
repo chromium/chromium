@@ -1,9 +1,5 @@
-<!doctype html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/utils.js"></script>
-<body>
-<script>
+// META: script=/common/utils.js
+
 const sw_url = location.pathname.replace(/[^/]*$/, '') +
       "./resources/sharedworker-partitioning-helper.js";
 
@@ -95,6 +91,3 @@ promise_test(async t => {
               'but instead returned ' + JSON.stringify(msgs[3]));
 
 }, "Anonymous iframes get partitioned shared workers.");
-
-</script>
-</body>

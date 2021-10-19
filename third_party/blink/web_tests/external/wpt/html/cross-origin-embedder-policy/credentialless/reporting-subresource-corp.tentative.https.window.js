@@ -1,13 +1,7 @@
-<!doctype html>
-<html>
-<meta name="timeout" content="long">
-<body>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
-<script>
+// META: timeout=long
+// META: script=/common/utils.js
+// META: script=/common/get-host-info.sub.js
+// META: script=/service-workers/service-worker/resources/test-helpers.sub.js
 const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
 const BASE = "/html/cross-origin-embedder-policy/resources";
 const REPORTING_FRAME_URL = `${ORIGIN}${BASE}/reporting-empty-frame.html` +
@@ -78,5 +72,3 @@ promise_test(async (t) => {
   assert_equals(reports.length, 1);
   checkReport(reports[0], REPORTING_FRAME_URL, url, 'enforce', '');
 });
-
-</script>

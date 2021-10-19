@@ -1,13 +1,9 @@
-<!doctype html>
-<meta name="timeout" content="long">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
-<script src="../credentialless/resources/common.js"></script>
-<body>
-<script>
+// META: timeout=long
+// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils.js
+// META: script=/common/dispatcher/dispatcher.js
+// META: script=../credentialless/resources/common.js
+
 const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
 const control_iframe = document.createElement('iframe');
 const anonymous_iframe = document.createElement('iframe');
@@ -68,5 +64,3 @@ promise_test(async t => {
   assert_equals(
     anonymous_popup, null, "Opener from anonymous iframe should be blocked.");
 }, 'Same-origin popup from normal/anonymous iframes.');
-</script>
-</body>

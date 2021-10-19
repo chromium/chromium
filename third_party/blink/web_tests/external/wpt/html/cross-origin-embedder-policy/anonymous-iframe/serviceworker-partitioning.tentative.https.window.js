@@ -1,9 +1,5 @@
-<!doctype html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/utils.js"></script>
-<body>
-<script>
+// META: script=/common/utils.js
+
 const sw_url = location.pathname.replace(/[^/]*$/, '') +
       "./resources/serviceworker-partitioning-helper.js";
 
@@ -87,6 +83,3 @@ promise_test(async t => {
   assert_true(!!msgs[3]["anonymous_control"]);
 
 }, "Anonymous iframes get partitioned service workers.");
-
-</script>
-</body>

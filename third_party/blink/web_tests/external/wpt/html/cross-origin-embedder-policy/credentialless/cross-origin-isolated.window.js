@@ -1,10 +1,7 @@
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
-<script src="./resources/common.js"></script>
-<script>
+// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils.js
+// META: script=/common/dispatcher/dispatcher.js
+// META: script=./resources/common.js
 
 const http  = get_host_info().HTTP_ORIGIN;
 const https = get_host_info().HTTPS_ORIGIN;
@@ -50,5 +47,3 @@ crossOriginIsolatedTest("Report-only + enforced:",
   https, coop_same_origin +
          coep_credentialless +
          coep_report_only_credentialless, "crossOriginIsolated");
-
-</script>

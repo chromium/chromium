@@ -1,15 +1,12 @@
-<meta name="timeout" content="long">
-<meta name="variant" content="?document">
-<meta name="variant" content="?dedicated_worker">
-<meta name="variant" content="?shared_worker">
-<meta name="variant" content="?service_worker">
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
-<script src="./resources/common.js"></script>
-<script>
+// META: timeout=long
+// META: variant=?document
+// META: variant=?dedicated_worker
+// META: variant=?shared_worker
+// META: variant=?service_worker
+// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils.js
+// META: script=/common/dispatcher/dispatcher.js
+// META: script=./resources/common.js
 
 // Fetch a resource and store it into CacheStorage from |storer| context. Then
 // check if it can be retrieved via CacheStorage.match from |retriever| context.
@@ -151,5 +148,3 @@ cacheStorageTest(`[${environment}] require_corp => require-corp`,
   corp_cross_origin,
   "include",
   "retrieved");
-
-</script>

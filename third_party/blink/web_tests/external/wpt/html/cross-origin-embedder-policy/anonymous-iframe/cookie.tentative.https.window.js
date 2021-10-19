@@ -1,15 +1,12 @@
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
-<script src="../credentialless/resources/common.js"></script>
-<script src="./resources/common.js"></script>
-<script>
+// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils.js
+// META: script=/common/dispatcher/dispatcher.js
+// META: script=../credentialless/resources/common.js
+// META: script=./resources/common.js
 
 const same_origin = get_host_info().HTTPS_ORIGIN;
 const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
-const cookie_key = "coep_credentialless_iframe_load_cookie";
+const cookie_key = "anonymous_iframe_load_cookie";
 const cookie_same_origin = "same_origin";
 const cookie_cross_origin = "cross_origin";
 
@@ -128,5 +125,3 @@ promise_test_parallel(async test => {
                         + "on child iframe");
 
 }, "Setup")
-
-</script>
