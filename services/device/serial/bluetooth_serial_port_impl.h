@@ -5,6 +5,7 @@
 #ifndef SERVICES_DEVICE_SERIAL_BLUETOOTH_SERIAL_PORT_IMPL_H_
 #define SERVICES_DEVICE_SERIAL_BLUETOOTH_SERIAL_PORT_IMPL_H_
 
+#include "base/containers/span.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -65,6 +66,9 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   void ReadFromSocketAndWriteOut(MojoResult result,
                                  const mojo::HandleSignalsState& state);
 
+  void ResetPendingWriteBuffer();
+  void ResetReceiveBuffer();
+
   void ReadMore();
   void WriteMore();
 
@@ -73,9 +77,8 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   void OnSocketConnectedError(OpenCallback callback,
                               const std::string& message);
 
-  void OnBluetoothSocketReceive(base::span<char> pending_write_buffer,
-                                int num_bytes_received,
-                                scoped_refptr<net::IOBuffer> io_buffer);
+  void OnBluetoothSocketReceive(int num_bytes_received,
+                                scoped_refptr<net::IOBuffer> receive_buffer);
   void OnBluetoothSocketReceiveError(
       device::BluetoothSocket::ErrorReason error_reason,
       const std::string& error_message);
@@ -93,10 +96,12 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   mojo::ScopedDataPipeProducerHandle out_stream_;
   mojo::SimpleWatcher out_stream_watcher_;
 
-  // Holds the callback for a flush or drain until pending operations have been
+  // Used for pending writes to |out_stream_|. When empty this indicates that
+  // |out_stream_| has been closed (and possibly replaced).
+  base::span<char> pending_write_buffer_;
+
+  // Holds the callback for a drain until pending operations have been
   // completed.
-  FlushCallback read_flush_callback_;
-  FlushCallback write_flush_callback_;
   DrainCallback drain_callback_;
 
   scoped_refptr<BluetoothSocket> bluetooth_socket_;
@@ -106,9 +111,12 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   bool read_pending_ = false;
   bool write_pending_ = false;
 
-  // If the data being received from BluetoothSocket::Receive
-  // is too large, these fields will be used to save the data
-  // so a single write can be broken up into multiple.
+  // Field to track whether the a write had a Flush call.
+  bool flush_next_write_ = false;
+
+  // |receive_buffer_| is used to temporarily hold larger than expected
+  // BluetoothSocket::Receive() responses, or responses received on a replaced
+  // |out_stream_|.
   size_t receive_buffer_size_ = 0;
   size_t receive_buffer_next_byte_pos_ = 0;
   scoped_refptr<net::IOBuffer> receive_buffer_;
