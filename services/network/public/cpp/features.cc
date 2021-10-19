@@ -80,17 +80,10 @@ const base::Feature kProactivelyThrottleLowPriorityRequests{
 
 // Enables Cross-Origin-Embedder-Policy: credentialless.
 // https://github.com/mikewest/credentiallessness
+// TODO(https://crbug.com/1175099): Remove one week after M96: 2021-11-25
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCrossOriginEmbedderPolicyCredentialless{
     "CrossOriginEmbedderPolicyCredentialless",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables Cross-Origin-Embedder-Policy credentialless origin trial. It will be
-// used as a kill switch during the experiment.
-// Intent-to-experiment:
-// https://groups.google.com/a/chromium.org/g/blink-dev/c/Sdc0G1bvKr0/m/YHR8RuWyAAAJ
-const base::Feature kCrossOriginEmbedderPolicyCredentiallessOriginTrial{
-    "CrossOriginEmbedderPolicyCredentiallessOriginTrial",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables Cross-Origin Opener Policy (COOP).
