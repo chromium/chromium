@@ -29,6 +29,9 @@
                 "xdg-settings"
             ],
             "dirs": ["ClearKeyCdm", "locales", "resources"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chrome-linux"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Linux_x64/{%position%}/chrome-linux.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP",
@@ -40,6 +43,9 @@
         {
             "files": [
                 "chromedriver"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chromedriver_linux64"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Linux_x64/{%position%}/chromedriver_linux64.zip",
@@ -57,12 +63,18 @@
                 "v8_context_snapshot.bin"
             ],
             "dirs": ["resources"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "content-shell"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Linux_x64/{%position%}/content-shell.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
             "dirs": ["gen/third_party/devtools-frontend/src/front_end"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "devtools-frontend"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Linux_x64/{%position%}/devtools-frontend.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
@@ -71,6 +83,9 @@
             "files": [
                 "headless_lib.pak",
                 "headless_shell"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "headless-shell"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Linux_x64/{%position%}/headless-shell.zip",
@@ -112,12 +127,18 @@
                 "gen/ui/gfx/mojom/*.mojom.m.js"
             ],
             "dirs":["gen/layout_test_data/mojo/public/js"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "mojojs"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Linux_x64/{%position%}/mojojs.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
             "dirs": ["pnacl"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "pnacl"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Linux_x64/{%position%}/pnacl.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
