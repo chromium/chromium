@@ -12,6 +12,9 @@ void ApplyAshFontStyles(int context,
   switch (context) {
     case CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS:
       break;
+    case CONTEXT_SHARESHEET_BUBBLE_SMALL:
+      details.size_delta = -2;
+      break;
     case CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY:
       details.size_delta = 1;
       break;
@@ -22,8 +25,6 @@ void ApplyAshFontStyles(int context,
     case CONTEXT_LAUNCHER_BUTTON:
     case CONTEXT_SHARESHEET_BUBBLE_BODY:
     case CONTEXT_CALENDAR_DATE:
-      details.size_delta = 2;
-      break;
     case CONTEXT_SEARCH_RESULT_VIEW:
       details.size_delta = 2;
       break;
@@ -53,7 +54,8 @@ void ApplyAshFontStyles(int context,
     case STYLE_SHARESHEET:
       DCHECK(context == CONTEXT_SHARESHEET_BUBBLE_TITLE ||
              context == CONTEXT_SHARESHEET_BUBBLE_BODY ||
-             context == CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY);
+             context == CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY ||
+             context == CONTEXT_SHARESHEET_BUBBLE_SMALL);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case STYLE_CLASSIC_LAUNCHER:

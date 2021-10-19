@@ -128,12 +128,10 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
       // If we have |enumeration|, add it as a label at the bottom right of
       // SharesheetImagePreview.
       if (enumeration != 0 && index == kImagePreviewMaxIcons - 1) {
-        // TODO(crbug.com/1189945) : Add a sharesheet context to replace
-        // |CONTEXT_DOWNLOAD_SHELF_STATUS|.
         auto* label =
             children()[1]->AddChildView(std::make_unique<views::Label>(
                 base::StrCat({u"+", base::NumberToString16(enumeration)}),
-                CONTEXT_DOWNLOAD_SHELF_STATUS, STYLE_SHARESHEET));
+                CONTEXT_SHARESHEET_BUBBLE_SMALL, STYLE_SHARESHEET));
         label->SetLineHeight(kImagePreviewFileEnumerationLineHeight);
         label->SetEnabledColor(kButtonTextColor);
         label->SetHorizontalAlignment(gfx::ALIGN_CENTER);

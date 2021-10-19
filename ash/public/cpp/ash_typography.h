@@ -37,6 +37,10 @@ enum AshTextContext {
   // text. Usually 13pt.
   CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY,
 
+  // Text label in the Sharesheet bubble for small text. Medium weight.
+  // Usually 10pt.
+  CONTEXT_SHARESHEET_BUBBLE_SMALL,
+
   // A month label that appears in the Calendar view.
   CONTEXT_CALENDAR_LABEL,
 
