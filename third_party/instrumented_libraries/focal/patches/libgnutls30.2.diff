@@ -1,0 +1,47 @@
+diff -rup gnutls28-3.4.10.bak/lib/gnutls_mbuffers.c gnutls28-3.4.10/lib/gnutls_mbuffers.c
+--- gnutls28-3.4.10.bak/lib/gnutls_mbuffers.c	2021-09-28 19:32:36.657779361 +0000
++++ gnutls28-3.4.10/lib/gnutls_mbuffers.c	2021-09-28 19:57:20.893828258 +0000
+@@ -330,7 +330,7 @@ mbuffer_st *_mbuffer_alloc_align16(size_
+ 	}
+ 
+ 	/* set the structure to zero */
+-	memset(st, 0, sizeof(*st));
++	memset(st, 0, maximum_size + sizeof(mbuffer_st) + ALIGN_SIZE);
+ 
+ 	/* payload points after the mbuffer_st structure */
+ 	st->msg.data = (uint8_t *) st + sizeof(mbuffer_st);
+diff -rup gnutls28-3.4.10.bak/lib/gnutls_state.c gnutls28-3.4.10/lib/gnutls_state.c
+--- gnutls28-3.4.10.bak/lib/gnutls_state.c	2021-09-28 19:32:36.689779620 +0000
++++ gnutls28-3.4.10/lib/gnutls_state.c	2021-09-28 19:51:38.311029189 +0000
+@@ -804,6 +804,7 @@ P_hash(gnutls_mac_algorithm_t algorithm,
+ 	mac_hd_st td2;
+ 	int i, times, how, blocksize, A_size;
+ 	uint8_t final[MAX_HASH_SIZE], Atmp[MAX_SEED_SIZE];
++	memset(final, 0, MAX_HASH_SIZE);
+ 	int output_bytes, result;
+ 	const mac_entry_st *me = mac_to_entry(algorithm);
+ 
+Binary files gnutls28-3.4.10.bak/lib/nettle/.libs/cipher.o and gnutls28-3.4.10/lib/nettle/.libs/cipher.o differ
+Binary files gnutls28-3.4.10.bak/lib/nettle/.libs/libcrypto.a and gnutls28-3.4.10/lib/nettle/.libs/libcrypto.a differ
+diff -rup gnutls28-3.4.10.bak/lib/nettle/cipher.c gnutls28-3.4.10/lib/nettle/cipher.c
+--- gnutls28-3.4.10.bak/lib/nettle/cipher.c	2021-09-28 19:32:36.681779555 +0000
++++ gnutls28-3.4.10/lib/nettle/cipher.c	2021-09-28 19:47:34.521036429 +0000
+@@ -664,6 +664,7 @@ wrap_nettle_cipher_aead_decrypt(void *_c
+ 	if (ctx->cipher->aead_decrypt == NULL) {
+ 		/* proper AEAD cipher */
+ 		uint8_t tag[MAX_HASH_SIZE];
++		memset(tag, 0, MAX_HASH_SIZE);
+ 
+ 		ctx->cipher->set_iv(ctx->ctx_ptr, nonce_size, nonce);
+ 		ctx->cipher->auth(ctx->ctx_ptr, auth_size, auth);
+diff -rup gnutls28-3.4.10/lib/nettle/pk.c gnutls28-3.4.10.new/lib/nettle/pk.c
+--- gnutls28-3.4.10/lib/nettle/pk.c	2015-07-21 09:42:08.000000000 +0000
++++ gnutls28-3.4.10.new/lib/nettle/pk.c	2021-09-28 20:25:00.439384325 +0000
+@@ -248,6 +248,7 @@ dh_cleanup:
+ 	case GNUTLS_PK_EC:
+ 		{
+ 			struct ecc_scalar ecc_priv;
++			memset(&ecc_priv, 0, sizeof(ecc_priv));
+ 			struct ecc_point ecc_pub;
+ 			const struct ecc_curve *curve;
+ 
