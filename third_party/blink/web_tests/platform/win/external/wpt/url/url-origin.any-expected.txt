@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 326 tests; 315 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 329 tests; 318 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Origin parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -320,6 +320,9 @@ PASS Origin parsing: <ldap://localhost:389/ou=People,o=JNDITutorial> against <ab
 PASS Origin parsing: <git+https://github.com/foo/bar> against <about:blank>
 PASS Origin parsing: <urn:ietf:rfc:2648> against <about:blank>
 PASS Origin parsing: <tag:joe@example.org,2001:foo/bar> against <about:blank>
+PASS Origin parsing: <blob:https://example.com:443/> against <about:blank>
+PASS Origin parsing: <blob:d3958f5c-0777-0845-9dcf-2cb28783acaf> against <about:blank>
+PASS Origin parsing: <blob:> against <about:blank>
 PASS Origin parsing: <non-special:cannot-be-a-base-url-\0~> against <about:blank>
 PASS Origin parsing: <https://www.example.com/path{path.html?query'=query#fragment<fragment> against <about:blank>
 PASS Origin parsing: <https://user:pass[@foo/bar> against <http://example.org>

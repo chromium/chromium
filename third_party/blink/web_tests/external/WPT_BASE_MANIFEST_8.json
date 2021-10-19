@@ -80213,6 +80213,97 @@
        {}
       ]
      ],
+     "revert-layer-001.html": [
+      "009867e751afcd1c58855bbe57ed6b1cc532102c",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "revert-layer-002.html": [
+      "38d3d33d9390a03d8e52438e7cfc6fe909f3f9d8",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "revert-layer-003.html": [
+      "e4e331c82d92857eb538f6344f45cc05eb2ed910",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "revert-layer-004.html": [
+      "b751359857a053073d38eb6f978c59e2c08f5f9c",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "revert-layer-005.html": [
+      "6cd4030727d85953c52e7a24809e38e00b301898",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "revert-layer-006.html": [
+      "678c3e1e9bce6b18b2b56b634e728cb15aa550b3",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "revert-layer-007.html": [
+      "7915beeafad13cb77df12056eacc91f0b1428e9f",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "revert-val-001.html": [
       "a346267c7bdb08b6b67ca68c6e821ea71ab1eefa",
       [
@@ -87903,6 +87994,71 @@
         [
          [
           "/css/css-contain/content-visibility/spacer-and-container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-top-layer-000.tentative.html": [
+       "0fb00894452600c9f95a3f0517b898fc5ddb9b75",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-top-layer-001.tentative.html": [
+       "4487157cf0523ebb1dc3b105dacde6594630df7b",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-top-layer-002.tentative.html": [
+       "f54c639d7b2465e8c296d62e438c28ff8f9a37a5",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-top-layer-003.tentative.html": [
+       "4b410843cf21b8177b5a215170acff71f7e7f30b",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-with-top-layer-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-top-layer-004.tentative.html": [
+       "9a4c026ed31bf9a0a1bde60381c35732c0d30a25",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/spacer-with-top-layer-ref.html",
           "=="
          ]
         ],
@@ -103232,6 +103388,45 @@
        [
         [
          "/css/css-fonts/font-face-unicode-range-nbsp-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-face-weight-auto-static.html": [
+      "af84d4b1f1a91417225c955c98bdb746b665aea8",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-face-weight-auto-static-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-face-weight-auto-variable.html": [
+      "7baf6466610c4fc137511d99da8d3309dccccc67",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-face-weight-auto-variable-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-face-weight-default-variable.html": [
+      "1d1c1d091fe1133361bbb7c7ba64a0ece4aebc57",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-face-weight-default-variable-ref.html",
          "=="
         ]
        ],
@@ -217801,10 +217996,6 @@
      "bdee847bbfbc32b30aeb382dd5661d1ce4e393c9",
      []
     ],
-    "accept-ch-malformed-header.https.html.headers": [
-     "6d23758273ba2cc4a7ec865a523b549cd8a49875",
-     []
-    ],
     "accept-ch-no-feature-policy-navigation.https.html.headers": [
      "7da10731654a70ce6dd95cd319e3f48b4be23ea6",
      []
@@ -217958,6 +218149,14 @@
       "25215abdf7376ede28190981f543ae339552284d",
       []
      ],
+     "accept-ch-malformed.html": [
+      "70c1c757133cc31aa85f6b9b75b80c694499c2d4",
+      []
+     ],
+     "accept-ch-malformed.html.headers": [
+      "83a6a05e547f39947f21da53de7a3bbc137101d1",
+      []
+     ],
      "accept-ch.html": [
       "1f1da26cebe45d3e55fe4aea8af6cefcae94adb5",
       []
@@ -217986,6 +218185,10 @@
       "951781124a250595d8d72f803930dc8d6357f390",
       []
      ],
+     "expect-no-client-hints-headers.html": [
+      "07eb0568d423498752a6caafecce06d14575a13c",
+      []
+     ],
      "feature-policy-navigation.js": [
       "b8d6fd6c44de343a0083744dc195ae08c00af140",
       []
@@ -217999,7 +218202,7 @@
       []
      ],
      "open-and-add-load-event.js": [
-      "7100c3f48a5b643c66434efdb180ea0ccb3a7dc3",
+      "bd88fcc28e8bc1f19ec717d05b5459d4942c0079",
       []
      ],
      "sec-ch-ua.py": [
@@ -231763,6 +231966,10 @@
        "416f23e8ca6aff4cd121a1c6b7a77945accd433e",
        []
       ],
+      "content-with-top-layer-ref.html": [
+       "48fe741cd231baaa2ebd131a33eafadd7b5e9812",
+       []
+      ],
       "inline-container-with-child-ref.html": [
        "af51cbd5db8f3eff56411345860548e95fe4d354",
        []
@@ -231799,6 +232006,10 @@
       ],
       "spacer-and-container-scrolled-ref.html": [
        "ed189c7d30614ea671457b98ecf3633ccde24bb6",
+       []
+      ],
+      "spacer-with-top-layer-ref.html": [
+       "d25fddcf7fcf770000b96426217cb55cf3157f47",
        []
       ]
      },
@@ -235828,6 +236039,18 @@
       "d8c3f4b5f6847d5d72fd05e86971a00f7c2f77c2",
       []
      ],
+     "font-face-weight-auto-static-ref.html": [
+      "34772a941884a60846ef78733c7c9169459f8028",
+      []
+     ],
+     "font-face-weight-auto-variable-ref.html": [
+      "2f9399b150c807b8e9c28498c3543e756b74b983",
+      []
+     ],
+     "font-face-weight-default-variable-ref.html": [
+      "b3dde9a8521e0dd97b078d6ce2f3a1682a898139",
+      []
+     ],
      "font-family-name-016-ref.xht": [
       "084b13e3c585ab9d6325dfce409702a935b7f717",
       []
@@ -236896,6 +237119,10 @@
        ],
        "LinLibertine_Re-4.7.5.woff": [
         "c953a546f0a76bbbe58a7e7cbf6bb3fffa4e3ed7",
+        []
+       ],
+       "RobotoExtremo-VF.subset.ttf": [
+        "c29dad1f737fa2880096e810629e7fd4682605ac",
         []
        ],
        "Rochester.otf": [
@@ -242705,6 +242932,10 @@
        "pass.woff": [
         "839bb20b12fee0e6f24f76ea58501aff76fa5a14",
         []
+       ],
+       "roboto_var_light_range.ttf": [
+        "07d1a7e68abdd1f32f7124cbf282b2cf06fca4ad",
+        []
        ]
       },
       "green15x15.png": [
@@ -242880,7 +243111,7 @@
        []
       ],
       "at-font-face-descriptors-expected.txt": [
-       "d1f5f37ec385395507a33bb8688df59dfd2ed1ed",
+       "03f354895cf12e94521413b39fb3cbd32982ad90",
        []
       ],
       "font-descriptor-range-reversed-ref.html": [
@@ -275381,15 +275612,15 @@
       []
      ],
      "anonymous-iframe": {
-      "cookie.tentative.https-expected.txt": [
+      "cookie.tentative.https.window-expected.txt": [
        "377c7296a781adb8ce5792cda50a4ded28472339",
        []
       ],
-      "local-storage.tentative.https-expected.txt": [
+      "local-storage.tentative.https.window-expected.txt": [
        "0f6267c7c83b6d4183dc8d273e43e12b80fe07fc",
        []
       ],
-      "require-corp-embed-anonymous-iframe.tentative.https.html.headers": [
+      "require-corp-embed-anonymous-iframe.tentative.https.window.js.headers": [
        "6604450991a122e3e241e40b1b9e0516c525389d",
        []
       ],
@@ -275433,11 +275664,11 @@
        "86654525dda61a31ed7a9617ad449309b8a55366",
        []
       ],
-      "cache-storage.tentative.https_dedicated_worker-expected.txt": [
+      "cache-storage.tentative.https.window_dedicated_worker-expected.txt": [
        "cfb3376feff4285356d70408c109d44938f656c1",
        []
       ],
-      "dedicated-worker.tentative.https-expected.txt": [
+      "dedicated-worker.tentative.https.window-expected.txt": [
        "7ecbf9ce7d5e1358c846788eb555627ca00c4833",
        []
       ],
@@ -289369,7 +289600,7 @@
     ]
    },
    "lint.ignore": [
-    "8798fa37ded3198d26d685f7193c56cb4136ead3",
+    "ac67bd0b4c0cea0305a5bf3eb5d2fb98929e5851",
     []
    ],
    "loading": {
@@ -299789,6 +300020,10 @@
        "5f8621ef83660c66f0d037ea28fafefb558140f1",
        []
       ],
+      "deferred-promise-utils.js": [
+       "02bd7ec5873a512c0fdd84ac5fa18071d1fd9357",
+       []
+      ],
       "empty.html": [
        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
        []
@@ -299835,6 +300070,10 @@
       ],
       "utils.js": [
        "1c1cdb2fbf08dcadd7502d9299077d1a298a0e0b",
+       []
+      ],
+      "visibility-state-check.html": [
+       "3c1e48879ed2dedb554c31152ba70be616e15ab1",
        []
       ],
       "web-database-access.html": [
@@ -302207,7 +302446,7 @@
       []
      ],
      "urltestdata.json": [
-      "c7b6637cb583811aa087cf580f868f857a0b8b3b",
+      "e5e5e76336f678763b375873074d88c8967e25ba",
       []
      ]
     },
@@ -329491,7 +329730,7 @@
      ]
     ],
     "accept-ch-change.https.html": [
-     "3d291e3f0665d08257f8fcabdb1bc8ffa5fbc671",
+     "43275c84e385032ce9c60320c9b5640286e65fd3",
      [
       null,
       {}
@@ -329512,7 +329751,7 @@
      ]
     ],
     "accept-ch-malformed-header.https.html": [
-     "b35e4768dcb8370db505537f1011d6f3073e87f4",
+     "649ecf959034b94c5b126df136b749d61f38de9f",
      [
       null,
       {}
@@ -346636,7 +346875,7 @@
      ],
      "variations": {
       "at-font-face-descriptors.html": [
-       "7083639ddf6066794e7b27c8f5a71a9eb20c1dc1",
+       "5f8ab8e9395a68a466e848a1c22b4625e48de62f",
        [
         null,
         {}
@@ -351594,6 +351833,13 @@
      ],
      "multicol-fill-balance-015.html": [
       "80d452678c99569540918137a23fb8a96e67dcc8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "multicol-fill-balance-016.html": [
+      "3b2bdc68e976cdf5c38ee0b7359364b28da865e9",
       [
        null,
        {}
@@ -424567,48 +424813,137 @@
       ]
      ],
      "anonymous-iframe": {
-      "anonymous-iframe-popup.tentative.https.html": [
-       "4326bb92d608bf9131a5848e2517dbd32111f66e",
+      "anonymous-iframe-popup.tentative.https.window.js": [
+       "6e82aefc65bc048dd552cd851db9f2276a8e5ed0",
        [
-        null,
+        "html/cross-origin-embedder-policy/anonymous-iframe/anonymous-iframe-popup.tentative.https.window.html",
         {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "../credentialless/resources/common.js"
+          ]
+         ],
          "timeout": "long"
         }
        ]
       ],
-      "cookie.tentative.https.html": [
-       "ad0df73e1292aa4b238ee4546cb44af565547da3",
+      "cookie.tentative.https.window.js": [
+       "aafe5d3f5d1ffc5d5d7f4befcd81d19c2de809e2",
        [
-        null,
-        {}
+        "html/cross-origin-embedder-policy/anonymous-iframe/cookie.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "../credentialless/resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
        ]
       ],
-      "local-storage.tentative.https.html": [
-       "7f673653d65a2acb7d4954aae8e26dfce254b324",
+      "local-storage.tentative.https.window.js": [
+       "9ce8b0f00250e3231cf3013b975426d92cf56d5a",
        [
-        null,
-        {}
+        "html/cross-origin-embedder-policy/anonymous-iframe/local-storage.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "../credentialless/resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
        ]
       ],
-      "require-corp-embed-anonymous-iframe.tentative.https.html": [
-       "4618b7468e8a101d5f51430ff003914e3657a59c",
+      "require-corp-embed-anonymous-iframe.tentative.https.window.js": [
+       "a62c7a9a2e04fa679c6338dad518f867456ab7a2",
        [
-        null,
-        {}
+        "html/cross-origin-embedder-policy/anonymous-iframe/require-corp-embed-anonymous-iframe.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/utils.js"
+          ]
+         ]
+        }
        ]
       ],
-      "serviceworker-partitioning.tentative.https.html": [
-       "b93108551ec8c2e40aa15e5cc8427a1b27577e79",
+      "serviceworker-partitioning.tentative.https.window.js": [
+       "dd78195a3c8ba9d2b8b84b14d89dd04de166c2ea",
        [
-        null,
-        {}
+        "html/cross-origin-embedder-policy/anonymous-iframe/serviceworker-partitioning.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/utils.js"
+          ]
+         ]
+        }
        ]
       ],
-      "sharedworker-partitioning.tentative.https.html": [
-       "3b7fa5943a16a3a986fb1dfff20b9faef76e29d4",
+      "sharedworker-partitioning.tentative.https.window.js": [
+       "a6eb551759d865059064fcfa43fdd6519a6b05f1",
        [
-        null,
-        {}
+        "html/cross-origin-embedder-policy/anonymous-iframe/sharedworker-partitioning.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/utils.js"
+          ]
+         ]
+        }
        ]
       ]
      },
@@ -424668,189 +425003,951 @@
       ]
      ],
      "credentialless": {
-      "cache-storage.tentative.https.html": [
-       "f4df73d6b8b4271620f5ddefff6874475cdb4ae4",
+      "cache-storage.tentative.https.window.js": [
+       "573e6ac9cbd7fdaea4c07546020c2a3f3760c2f0",
        [
-        "html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.html?dedicated_worker",
+        "html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.window.html?dedicated_worker",
         {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "variant",
+           "?document"
+          ],
+          [
+           "variant",
+           "?dedicated_worker"
+          ],
+          [
+           "variant",
+           "?shared_worker"
+          ],
+          [
+           "variant",
+           "?service_worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ],
          "timeout": "long"
         }
        ],
        [
-        "html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.html?document",
+        "html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.window.html?document",
         {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "variant",
+           "?document"
+          ],
+          [
+           "variant",
+           "?dedicated_worker"
+          ],
+          [
+           "variant",
+           "?shared_worker"
+          ],
+          [
+           "variant",
+           "?service_worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ],
          "timeout": "long"
         }
        ],
        [
-        "html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.html?service_worker",
+        "html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.window.html?service_worker",
         {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "variant",
+           "?document"
+          ],
+          [
+           "variant",
+           "?dedicated_worker"
+          ],
+          [
+           "variant",
+           "?shared_worker"
+          ],
+          [
+           "variant",
+           "?service_worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ],
          "timeout": "long"
         }
        ],
        [
-        "html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.html?shared_worker",
+        "html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.window.html?shared_worker",
         {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "variant",
+           "?document"
+          ],
+          [
+           "variant",
+           "?dedicated_worker"
+          ],
+          [
+           "variant",
+           "?shared_worker"
+          ],
+          [
+           "variant",
+           "?service_worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ],
          "timeout": "long"
         }
        ]
       ],
-      "cache.tentative.html": [
-       "e28d6125107dee537cf812f0c0fd654a96951bac",
+      "cache.tentative.window.js": [
+       "7d961804a071db96d5f150acb16feb0f24f64d01",
        [
-        null,
-        {}
-       ]
-      ],
-      "cross-origin-isolated.html": [
-       "f4286f14eb28e11ea50c91e220ee9016f21e16dc",
-       [
-        null,
-        {}
-       ]
-      ],
-      "dedicated-worker.tentative.https.html": [
-       "a336c0c1ffa121dc339dbf0d9f002de176deee96",
-       [
-        null,
+        "html/cross-origin-embedder-policy/credentialless/cache.tentative.window.html",
         {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "cross-origin-isolated.window.js": [
+       "361739f283ecaca46e809d9c94adb6a8e26ed3b7",
+       [
+        "html/cross-origin-embedder-policy/credentialless/cross-origin-isolated.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "dedicated-worker.tentative.https.window.js": [
+       "780780565f54bb19bcaebf3d58619e4bafb2cfa3",
+       [
+        "html/cross-origin-embedder-policy/credentialless/dedicated-worker.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ],
          "timeout": "long"
         }
        ]
       ],
-      "fetch.tentative.https.html": [
-       "12531448afcc4f74bb505962ea4d23324c54541c",
+      "fetch.tentative.https.window.js": [
+       "6ea94d0a194c408b37af2e507a091c4762f7cdc7",
        [
-        null,
-        {}
+        "html/cross-origin-embedder-policy/credentialless/fetch.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
        ]
       ],
-      "iframe-coep-credentialless.tentative.https.html": [
-       "c1a47c5fcc132074ca01a204e4af5e1f2260cc66",
+      "iframe-coep-credentialless.tentative.https.window.js": [
+       "f9d9fcb9322f1eaeeab46a4428f9c2bce0bb67a2",
        [
-        "html/cross-origin-embedder-policy/credentialless/iframe-coep-credentialless.tentative.https.html?1-4",
-        {}
+        "html/cross-origin-embedder-policy/credentialless/iframe-coep-credentialless.tentative.https.window.html?1-4",
+        {
+         "script_metadata": [
+          [
+           "variant",
+           "?1-4"
+          ],
+          [
+           "variant",
+           "?5-9"
+          ],
+          [
+           "variant",
+           "?9-last"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/iframeTest.js"
+          ],
+          [
+           "script",
+           "/common/subset-tests.js"
+          ]
+         ]
+        }
        ],
        [
-        "html/cross-origin-embedder-policy/credentialless/iframe-coep-credentialless.tentative.https.html?5-9",
-        {}
+        "html/cross-origin-embedder-policy/credentialless/iframe-coep-credentialless.tentative.https.window.html?5-9",
+        {
+         "script_metadata": [
+          [
+           "variant",
+           "?1-4"
+          ],
+          [
+           "variant",
+           "?5-9"
+          ],
+          [
+           "variant",
+           "?9-last"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/iframeTest.js"
+          ],
+          [
+           "script",
+           "/common/subset-tests.js"
+          ]
+         ]
+        }
        ],
        [
-        "html/cross-origin-embedder-policy/credentialless/iframe-coep-credentialless.tentative.https.html?9-last",
-        {}
+        "html/cross-origin-embedder-policy/credentialless/iframe-coep-credentialless.tentative.https.window.html?9-last",
+        {
+         "script_metadata": [
+          [
+           "variant",
+           "?1-4"
+          ],
+          [
+           "variant",
+           "?5-9"
+          ],
+          [
+           "variant",
+           "?9-last"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/iframeTest.js"
+          ],
+          [
+           "script",
+           "/common/subset-tests.js"
+          ]
+         ]
+        }
        ]
       ],
-      "iframe-coep-none.tentative.https.html": [
-       "897396cde389d6fefd42218655c97fa735198fd3",
+      "iframe-coep-none.tentative.https.window.js": [
+       "4f50b8d407776a87ac4541144838b9339badf58e",
        [
-        "html/cross-origin-embedder-policy/credentialless/iframe-coep-none.tentative.https.html?1-4",
-        {}
+        "html/cross-origin-embedder-policy/credentialless/iframe-coep-none.tentative.https.window.html?1-4",
+        {
+         "script_metadata": [
+          [
+           "variant",
+           "?1-4"
+          ],
+          [
+           "variant",
+           "?5-last"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/iframeTest.js"
+          ],
+          [
+           "script",
+           "/common/subset-tests.js"
+          ]
+         ]
+        }
        ],
        [
-        "html/cross-origin-embedder-policy/credentialless/iframe-coep-none.tentative.https.html?5-last",
-        {}
+        "html/cross-origin-embedder-policy/credentialless/iframe-coep-none.tentative.https.window.html?5-last",
+        {
+         "script_metadata": [
+          [
+           "variant",
+           "?1-4"
+          ],
+          [
+           "variant",
+           "?5-last"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/iframeTest.js"
+          ],
+          [
+           "script",
+           "/common/subset-tests.js"
+          ]
+         ]
+        }
        ]
       ],
-      "iframe-coep-require-corp.tentative.https.html": [
-       "4e9f939bbf2f995f8c0eab553bf48cc42f519efd",
+      "iframe-coep-require-corp.tentative.https.window.js": [
+       "a70d4ff8fc4abc3e865400f2e5f2ba217ba9b9d9",
        [
-        "html/cross-origin-embedder-policy/credentialless/iframe-coep-require-corp.tentative.https.html?1-4",
-        {}
+        "html/cross-origin-embedder-policy/credentialless/iframe-coep-require-corp.tentative.https.window.html?1-4",
+        {
+         "script_metadata": [
+          [
+           "variant",
+           "?1-4"
+          ],
+          [
+           "variant",
+           "?5-9"
+          ],
+          [
+           "variant",
+           "?9-last"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/iframeTest.js"
+          ],
+          [
+           "script",
+           "/common/subset-tests.js"
+          ]
+         ]
+        }
        ],
        [
-        "html/cross-origin-embedder-policy/credentialless/iframe-coep-require-corp.tentative.https.html?5-9",
-        {}
+        "html/cross-origin-embedder-policy/credentialless/iframe-coep-require-corp.tentative.https.window.html?5-9",
+        {
+         "script_metadata": [
+          [
+           "variant",
+           "?1-4"
+          ],
+          [
+           "variant",
+           "?5-9"
+          ],
+          [
+           "variant",
+           "?9-last"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/iframeTest.js"
+          ],
+          [
+           "script",
+           "/common/subset-tests.js"
+          ]
+         ]
+        }
        ],
        [
-        "html/cross-origin-embedder-policy/credentialless/iframe-coep-require-corp.tentative.https.html?9-last",
-        {}
+        "html/cross-origin-embedder-policy/credentialless/iframe-coep-require-corp.tentative.https.window.html?9-last",
+        {
+         "script_metadata": [
+          [
+           "variant",
+           "?1-4"
+          ],
+          [
+           "variant",
+           "?5-9"
+          ],
+          [
+           "variant",
+           "?9-last"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/iframeTest.js"
+          ],
+          [
+           "script",
+           "/common/subset-tests.js"
+          ]
+         ]
+        }
        ]
       ],
-      "iframe.tentative.html": [
-       "832a7044791e3d69a934eecd3992d2f4c6f002a1",
+      "iframe.tentative.window.js": [
+       "d7a9c1e170b1dca912a1afc0810bd985803f7f9f",
        [
-        null,
+        "html/cross-origin-embedder-policy/credentialless/iframe.tentative.window.html",
         {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ],
          "timeout": "long"
         }
        ]
       ],
-      "image.tentative.https.html": [
-       "18373db0a481267fa20176db1eec068d02089113",
+      "image.tentative.https.window.js": [
+       "2e9166d1bb747e7b4a3b6d73f5fc01ba62820654",
        [
-        null,
-        {}
-       ]
-      ],
-      "link.tentative.https.html": [
-       "a12f7041a052a1b3ace9fa29439da54efdffc742",
-       [
-        null,
-        {}
-       ]
-      ],
-      "redirect.tentative.html": [
-       "f3bf02da6e27b2ee208f04e2d4cc179403240e4b",
-       [
-        null,
+        "html/cross-origin-embedder-policy/credentialless/image.tentative.https.window.html",
         {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "link.tentative.https.window.js": [
+       "0a0f8eef66a83c2907648d0e09c4162bfe934810",
+       [
+        "html/cross-origin-embedder-policy/credentialless/link.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "redirect.tentative.window.js": [
+       "db8ca08d366d7cdc00c8e00e4c59f1754206666d",
+       [
+        "html/cross-origin-embedder-policy/credentialless/redirect.tentative.window.html",
+        {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ],
          "timeout": "long"
         }
        ]
       ],
-      "reporting-navigation.tentative.https.html": [
-       "185b576a9ad6c823b5f61cf6bd68ae6a72e18344",
+      "reporting-navigation.tentative.https.window.js": [
+       "1d62996e383722f442e103b0f654c1eb78882050",
        [
-        null,
+        "html/cross-origin-embedder-policy/credentialless/reporting-navigation.tentative.https.window.html",
         {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ],
          "timeout": "long"
         }
        ]
       ],
-      "reporting-subresource-corp.tentative.https.html": [
-       "1e5de71a933eb58da8735f9c9fac7ec8e12e670d",
+      "reporting-subresource-corp.tentative.https.window.js": [
+       "ab583fd49eb44c093b3996449b8544fc965fee5f",
        [
-        null,
+        "html/cross-origin-embedder-policy/credentialless/reporting-subresource-corp.tentative.https.window.html",
         {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/service-workers/service-worker/resources/test-helpers.sub.js"
+          ]
+         ],
          "timeout": "long"
         }
        ]
       ],
-      "script.tentative.https.html": [
-       "6a3f6559cb3608815fd6283b34477c9fa94cea5b",
+      "script.tentative.https.window.js": [
+       "c3b4f0fa58c21637286b5c2f5ab6441ff466aebb",
        [
-        null,
-        {}
-       ]
-      ],
-      "service-worker-coep-credentialless-proxy.tentative.https.html": [
-       "05e044f9f4a06ecf1eafd933659fa9c98687ec25",
-       [
-        null,
-        {}
-       ]
-      ],
-      "service-worker-coep-none-proxy.tentative.https.html": [
-       "2ab9f92bac0bdc0d48ac5c42ae32eeb04139fe58",
-       [
-        null,
-        {}
-       ]
-      ],
-      "service-worker.tentative.https.html": [
-       "ec7c7d69379a7b7abde7068af7c618f96862c3b5",
-       [
-        null,
+        "html/cross-origin-embedder-policy/credentialless/script.tentative.https.window.html",
         {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "service-worker-coep-credentialless-proxy.tentative.https.window.js": [
+       "d1a61dbb5794ea688ae4fddf919ad6146f0a6e56",
+       [
+        "html/cross-origin-embedder-policy/credentialless/service-worker-coep-credentialless-proxy.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "/service-workers/service-worker/resources/test-helpers.sub.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "service-worker-coep-none-proxy.tentative.https.window.js": [
+       "21969bb7ede0f39a26543bb9acd1d23308941bcb",
+       [
+        "html/cross-origin-embedder-policy/credentialless/service-worker-coep-none-proxy.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ],
+          [
+           "script",
+           "/service-workers/service-worker/resources/test-helpers.sub.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "service-worker.tentative.https.window.js": [
+       "4fc0061c57d486773c37705371b19d3bbe364788",
+       [
+        "html/cross-origin-embedder-policy/credentialless/service-worker.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "/service-workers/service-worker/resources/test-helpers.sub.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ],
          "timeout": "long"
         }
        ]
       ],
-      "shared-worker.tentative.https.html": [
-       "ba8965d66b03d0fb3b0cf8431a936bbcf8013104",
+      "shared-worker.tentative.https.window.js": [
+       "0bfa72e2e5464ed060789ee9eef98f8847167619",
        [
-        null,
+        "html/cross-origin-embedder-policy/credentialless/shared-worker.tentative.https.window.html",
         {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ],
          "timeout": "long"
         }
        ]
@@ -435792,6 +436889,20 @@
        ]
       },
       "the-selectmenu-element": {
+       "selectmenu-form-attribute.tentative.html": [
+        "16ee1b8045654a0afb6460dc7bc02974d68281ff",
+        [
+         null,
+         {}
+        ]
+       ],
+       "selectmenu-form-submission.tentative.html": [
+        "c34b5004ebd4940dbe60a9430d692be4deff8ca5",
+        [
+         null,
+         {}
+        ]
+       ],
        "selectmenu-keyboard.tentative.html": [
         "9f8debc3ea28bcb8273e3d70bc2b6b1f6a3075e9",
         [
@@ -445128,7 +446239,7 @@
         ]
        ],
        "navigator_user_agent.https.html": [
-        "302f702c65f1a8781b97598983200fd816d42ad2",
+        "09992a9f0c49df6dcbe3613d630a3a2a16fbdbb6",
         [
          null,
          {}
@@ -482786,6 +483897,15 @@
      ],
      "storage-foundation.https.html": [
       "ca1b9363f4b243eada40b59ff60ee2ada9dc2a5b",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "visibility-state.html": [
+      "1affe546a97f288f0e67426fedda7f22bbdbbab2",
       [
        null,
        {
