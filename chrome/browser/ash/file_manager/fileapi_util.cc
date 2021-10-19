@@ -489,13 +489,13 @@ void GenerateUnusedFilenameOnGotMetadata(
   std::string filename =
       base::StringPrintf("%s (%d)%s", state.prefix.c_str(), state.counter,
                          state.extension.c_str());
-  auto filesystem_url = state.file_system_context->CreateCrackedFileSystemURL(
+  auto filesystem_url = file_system_context->CreateCrackedFileSystemURL(
       state.destination_folder.storage_key(),
       state.destination_folder.mount_type(),
       state.destination_folder.virtual_path().Append(
           base::FilePath::FromUTF8Unsafe(filename)));
   GetMetadataForPathOnIoThread(
-      state.file_system_context, filesystem_url,
+      file_system_context, filesystem_url,
       storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
       base::BindOnce(&GenerateUnusedFilenameOnGotMetadata, filesystem_url,
                      std::move(state), std::move(callback)));
