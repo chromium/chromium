@@ -433,7 +433,8 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvasForDraw(
                !canvas()->GetCanvas2DLayerBridge()->ResourceProvider()))
     return nullptr;
   CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
-  if (!layer_count_) {
+  // Always draw everything during printing.
+  if (!layer_count_ && !canvas()->IsPrinting()) {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
     canvas()
         ->GetCanvas2DLayerBridge()
