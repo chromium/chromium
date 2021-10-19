@@ -72,13 +72,14 @@ class FakeEventRouter : public extensions::EventRouter {
       const extensions::ExtensionId& extension_id,
       std::unique_ptr<extensions::Event> event) override {
     ASSERT_TRUE(file_system_);
-    std::string file_system_id;
-    const base::DictionaryValue* dictionary_value = NULL;
-    ASSERT_TRUE(event->event_args->GetDictionary(0, &dictionary_value));
-    EXPECT_TRUE(dictionary_value->GetString("fileSystemId", &file_system_id));
-    EXPECT_EQ(kFileSystemId, file_system_id);
-    int request_id = -1;
-    EXPECT_TRUE(dictionary_value->GetInteger("requestId", &request_id));
+    const base::Value* dict = &event->event_args->GetList()[0];
+    ASSERT_TRUE(dict->is_dict());
+    const std::string* file_system_id = dict->FindStringKey("fileSystemId");
+    EXPECT_NE(file_system_id, nullptr);
+    EXPECT_EQ(kFileSystemId, *file_system_id);
+    absl::optional<int> id = dict->FindIntKey("requestId");
+    EXPECT_TRUE(id);
+    int request_id = *id;
     EXPECT_TRUE(event->event_name == extensions::api::file_system_provider::
                                          OnAddWatcherRequested::kEventName ||
                 event->event_name == extensions::api::file_system_provider::
