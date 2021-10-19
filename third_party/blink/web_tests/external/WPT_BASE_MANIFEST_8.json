@@ -273041,6 +273041,10 @@
        "677b5fc83aa75abdc3c542a1663cf211607dbed3",
        []
       ],
+      "popup-from-initial-empty-sandboxed-document.window-expected.txt": [
+       "8f0d2e4bd9a4cc8c24f13215f3f62eee851b8989",
+       []
+      ],
       "resources": {
        "check-sandbox-flags.html": [
         "0dc95315f164d693bd7bd0622880781f30bad7a1",
@@ -273050,8 +273054,12 @@
         "136c494d5ad866a12e361b95e8ca29e377f4c0fd",
         []
        ],
-       "executor.html": [
+       "execute-postmessage.html": [
         "89bd268f9c73343f64648e91ed618c3e7096f567",
+        []
+       ],
+       "executor.html": [
+        "67b9783fec49518eea29b92e7810e9784be9e84b",
         []
        ],
        "post-done-to-opener.html": [
@@ -299809,6 +299817,10 @@
        "f9502dd5f21d6f93fd97f3553f4fc01f0cf57809",
        []
       ],
+      "prerender-focus.html": [
+       "f6a79533e560c80f1acbcbf28217ada86d660903",
+       []
+      ],
       "prerender-state.html": [
        "914db2a9ed900ece42982c12913576086f7db928",
        []
@@ -299830,7 +299842,7 @@
        []
       ],
       "window-move.html": [
-       "bccaec5328ade8d902d75214775595fe47f35b8e",
+       "02013a6db3c3417b5c86c282cd7c4e7804908bb2",
        []
       ],
       "window-open-during-prerendering.html": [
@@ -299842,7 +299854,7 @@
        []
       ],
       "window-resize.html": [
-       "7edb1f7cab039729c7bf1bc280bd1658a90205e6",
+       "d8ae493cbb240068a7cd1847090557a2cb326768",
        []
       ]
      }
@@ -404057,6 +404069,29 @@
       }
      },
      "sandboxing": {
+      "popup-from-initial-empty-sandboxed-document.window.js": [
+       "e70a52ae8a1113fb013023a2802a5bea3b5608e8",
+       [
+        "html/browsers/sandboxing/popup-from-initial-empty-sandboxed-document.window.html",
+        {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ]
+      ],
       "sandbox-allow-same-origin.html": [
        "d6b3b099f28c351219b7bd18c2820db5a8628dae",
        [
@@ -404163,7 +404198,7 @@
        ]
       ],
       "window-open-blank-from-different-initiator.html": [
-       "28345d2a8e8fd31acd177dc81ba536cb65888d5b",
+       "91817c3db440d76a0793f8feae7bc877659b123d",
        [
         null,
         {
@@ -481255,7 +481290,7 @@
       ]
      ],
      "focus-method-delegatesFocus.html": [
-      "30d60f975d9ab46d578d364b1aa040be4494cd03",
+      "de0b6bf70f8083d9ccdbeff432c9a194da45adc8",
       [
        null,
        {
@@ -482678,6 +482713,15 @@
      ],
      "local-storage.html": [
       "b07d1f054be0efa5800c5eb994327c8f42a72556",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-focus.html": [
+      "b6576eb15a29e66ce0d0a3e9b046b171835d8837",
       [
        null,
        {
