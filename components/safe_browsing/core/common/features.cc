@@ -107,11 +107,11 @@ const base::Feature kSafeBrowsingCTDownloadWarning{
     "SafeBrowsingCTDownloadWarning", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingEnterpriseCsd{
-    "SafeBrowsingEnterpriseCsd", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SafeBrowsingEnterpriseCsd", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise{
     "SafeBrowsingDisableConsumerCsdForEnterprise",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kRealTimeUrlLookupReferrerChain{
     "SafeBrowsingRealTimeUrlLookupReferrerChain",
