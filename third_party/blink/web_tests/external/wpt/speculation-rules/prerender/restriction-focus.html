@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <title>Prerendering documents are not focused</title>
 <meta name="timeout" content="long">
-<script src="/common/utils.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
 <body>
 <input type="text" id = "prerenderTextField">
 <script>
+
+setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
   const bc = new BroadcastChannel('prerender-channel');
