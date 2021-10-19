@@ -22,7 +22,6 @@ ExternalInstallOptions GetConfigForCalculator() {
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.gate_on_feature = kDefaultCalculatorWebApp.name;
   options.uninstall_and_replace.push_back("joodangkbfjnajiiifokapkpmhfnpleo");
-  options.add_to_quick_launch_bar = false;
   return options;
 }
 

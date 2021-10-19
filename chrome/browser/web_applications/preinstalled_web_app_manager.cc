@@ -493,7 +493,12 @@ void PreinstalledWebAppManager::PostProcessConfigs(
 
     options.require_manifest = true;
 
-#if !defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS)
+    // On Chrome OS the "quick launch bar" is the shelf pinned apps.
+    // This is configured in `GetDefaultPinnedAppsForFormFactor()` instead of
+    // here to ensure a specific order is deployed.
+    options.add_to_quick_launch_bar = false;
+#else   // defined(OS_CHROMEOS)
     if (!g_bypass_offline_manifest_requirement_for_testing_) {
       // Non-Chrome OS platforms are not permitted to fetch the web app install
       // URLs during start up.
@@ -508,7 +513,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     options.add_to_management = false;
     options.add_to_desktop = false;
     options.add_to_quick_launch_bar = false;
-#endif  // !defined(OS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
   }
 
   // TODO(crbug.com/1175196): Move this constant into some shared constants.h
