@@ -320,12 +320,6 @@ const char kAutofillEnableMerchantBoundVirtualCardsDescription[] =
     "When enabled, Autofill will offer to use merchant bound virtual cards in "
     "payment forms.";
 
-const char kAutofillEnableOfferNotificationName[] =
-    "Enable Autofill offers and rewards notification";
-const char kAutofillEnableOfferNotificationDescription[] =
-    "When enabled, a notification will be displayed on page navigation if the "
-    "domain has an eligible credit card linked offer or reward.";
-
 const char kAutofillEnableOfferNotificationCrossTabTrackingName[] =
     "Enable cross tab status tracking for Autofill offer notification";
 const char kAutofillEnableOfferNotificationCrossTabTrackingDescription[] =

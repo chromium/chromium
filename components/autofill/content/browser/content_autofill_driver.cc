@@ -780,13 +780,10 @@ void ContentAutofillDriver::ShowOfferNotificationIfApplicable(
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
-  // TODO(crbug.com/1093057): Android webview does not have
-  // |browser_autofill_manager_|, so flow is not enabled in Android Webview.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableOfferNotification) ||
-      !browser_autofill_manager_) {
+  // Android webview does not have |browser_autofill_manager_|, so flow is not
+  // enabled in Android Webview.
+  if (!browser_autofill_manager_)
     return;
-  }
 
   AutofillOfferManager* offer_manager =
       browser_autofill_manager_->offer_manager();

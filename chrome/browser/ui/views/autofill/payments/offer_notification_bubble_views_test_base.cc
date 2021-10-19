@@ -24,18 +24,9 @@ const char kDefaultTestPromoCode[] = "5PCTOFFSHOES";
 
 OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase(
     bool promo_code_flag_enabled) {
-  if (promo_code_flag_enabled) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kAutofillEnableOfferNotification,
-         features::kAutofillEnableOfferNotificationForPromoCodes},
-        /*disabled_features=*/{});
-  } else {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableOfferNotification},
-        /*disabled_features=*/{
-            features::kAutofillEnableOfferNotificationForPromoCodes});
-  }
+  scoped_feature_list_.InitWithFeatureState(
+    features::kAutofillEnableOfferNotificationForPromoCodes,
+    promo_code_flag_enabled);
 }
 
 OfferNotificationBubbleViewsTestBase::~OfferNotificationBubbleViewsTestBase() =

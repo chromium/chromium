@@ -384,11 +384,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "autofill-enable-offer-notification",
-    "owners": [ "siyua", "jsaul@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "autofill-enable-offer-notification-cross-tab-tracking",
     "owners": [ "siyua" ],
     "expiry_milestone": 100
