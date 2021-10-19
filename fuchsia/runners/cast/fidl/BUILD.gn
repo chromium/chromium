@@ -25,6 +25,7 @@ fidl_library("fidl") {
 
   visibility = [
     "//chromecast/bindings:*",
+    "//chromecast/internal/*",
     "//fuchsia/runners:cast_runner_core",
     "//fuchsia/runners:cast_runner_test_core",
   ]
