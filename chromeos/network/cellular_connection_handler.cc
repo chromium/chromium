@@ -395,8 +395,7 @@ void CellularConnectionHandler::RequestInstalledProfiles() {
 
 void CellularConnectionHandler::OnRefreshProfileListResult(
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
-  DCHECK(state_ == ConnectionState::kRequestingProfilesBeforeEnabling ||
-         state_ == ConnectionState::kRequestingProfilesAfterEnabling);
+  DCHECK_EQ(ConnectionState::kRequestingProfilesBeforeEnabling, state_);
 
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "eSIM connection flow failed to request profiles";
@@ -406,15 +405,6 @@ void CellularConnectionHandler::OnRefreshProfileListResult(
   }
 
   request_queue_.front()->inhibit_lock = std::move(inhibit_lock);
-
-  if (state_ == ConnectionState::kRequestingProfilesAfterEnabling) {
-    // Reset the inhibit_lock so that the device will be uninhibited
-    // automatically.
-    request_queue_.front()->inhibit_lock.reset();
-    TransitionToConnectionState(ConnectionState::kWaitingForConnectable);
-    CheckForConnectable();
-    return;
-  }
 
   TransitionToConnectionState(ConnectionState::kEnablingProfile);
   EnableProfile();
@@ -454,12 +444,11 @@ void CellularConnectionHandler::OnEnableCarrierProfileResult(
     return;
   }
 
-  // Hermes currently exposes stale data after EnableCarrierProfile() completes.
-  // To work around this issue, we request the installed profiles one more time.
-  // TODO(b/178817914): Remove once underylying issue is fixed.
-  TransitionToConnectionState(
-      ConnectionState::kRequestingProfilesAfterEnabling);
-  RequestInstalledProfiles();
+  // Reset the inhibit_lock so that the device will be uninhibited
+  // automatically.
+  request_queue_.front()->inhibit_lock.reset();
+  TransitionToConnectionState(ConnectionState::kWaitingForConnectable);
+  CheckForConnectable();
 }
 
 void CellularConnectionHandler::HandleNetworkPropertiesUpdate() {
@@ -514,10 +503,6 @@ std::ostream& operator<<(
       break;
     case CellularConnectionHandler::ConnectionState::kEnablingProfile:
       stream << "[Enabling profile]";
-      break;
-    case CellularConnectionHandler::ConnectionState::
-        kRequestingProfilesAfterEnabling:
-      stream << "[Requesting profiles after enabling]";
       break;
     case CellularConnectionHandler::ConnectionState::kWaitingForConnectable:
       stream << "[Waiting for network to become connectable]";
