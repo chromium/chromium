@@ -467,15 +467,10 @@ void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
     layer()->SetColor(ColorProvider::Get()->GetBaseLayerColor(
         ColorProvider::BaseLayerType::kTransparent80));
   } else if (features::IsDarkLightModeEnabled()) {
-    const float opacity = features::IsBackgroundBlurEnabled()
-                              ? AppListView::kAppListOpacityWithBlur
-                              : AppListView::kAppListOpacity;
-    // We pass kShield80 to ColorProvider::GetShieldLayerColor. But we overwrite
-    // it as kAppListOpacity is 0.95 and kShield doesn't have kShield95.
-    layer()->SetColor(
-        SkColorSetA(ColorProvider::Get()->GetShieldLayerColor(
-                        ColorProvider::ShieldLayerType::kShield80),
-                    static_cast<U8CPU>(opacity * 255)));
+    layer()->SetColor(ColorProvider::Get()->GetShieldLayerColor(
+        features::IsBackgroundBlurEnabled()
+            ? ColorProvider::ShieldLayerType::kShield80
+            : ColorProvider::ShieldLayerType::kShield95));
   } else {
     layer()->SetColor(SK_ColorWHITE);
   }

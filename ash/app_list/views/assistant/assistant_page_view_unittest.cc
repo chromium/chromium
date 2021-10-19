@@ -942,28 +942,27 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
 
   ASSERT_FALSE(features::IsBackgroundBlurEnabled());
 
+  // Confirm that our opacity matches with that of AppListView using.
+  const SkColor shield_layer_color_95_light =
+      ColorProvider::Get()->GetShieldLayerColor(
+          ColorProvider::ShieldLayerType::kShield95);
+  EXPECT_EQ(SkColorGetA(shield_layer_color_95_light),
+            static_cast<uint32_t>(AppListView::kAppListOpacity * 255));
+
   ShowAssistantUi();
 
   ASSERT_FALSE(Shell::Get()->IsInTabletMode());
   EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(), 0.0f);
-
-  const U8CPU opacity = static_cast<U8CPU>(AppListView::kAppListOpacity * 255);
-
-  // We pass kShield80 to ColorProvider::GetShieldLayerColor. But it will be
-  // overwritten by opacity. kAppListOpacity is 0.95. kShield doesn't have
-  // kShield95.
   EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            SkColorSetA(ColorProvider::Get()->GetShieldLayerColor(
-                            ColorProvider::ShieldLayerType::kShield80),
-                        opacity));
+            shield_layer_color_95_light);
 
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kDarkModeEnabled, true);
 
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            SkColorSetA(ColorProvider::Get()->GetShieldLayerColor(
-                            ColorProvider::ShieldLayerType::kShield80),
-                        opacity));
+  const SkColor shield_layer_color_95_dark =
+      ColorProvider::Get()->GetShieldLayerColor(
+          ColorProvider::ShieldLayerType::kShield95);
+  EXPECT_EQ(page_view()->layer()->GetTargetColor(), shield_layer_color_95_dark);
 
   // Simulate the case where tablet mode is enabled in the middle of a session.
   SetTabletMode(true);
@@ -971,10 +970,7 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
   // Unlike with-blur case, it does not get a background blur if the blur flag
   // is off. But it gets 0.95 opacity.
   EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(), 0.0f);
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            SkColorSetA(ColorProvider::Get()->GetShieldLayerColor(
-                            ColorProvider::ShieldLayerType::kShield80),
-                        opacity));
+  EXPECT_EQ(page_view()->layer()->GetTargetColor(), shield_layer_color_95_dark);
 }
 
 TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightModeWithBlur) {
@@ -983,22 +979,31 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightModeWithBlur) {
       Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(features::IsBackgroundBlurEnabled());
 
+  // Confirm that our opacity matches with that of AppListView using.
+  const SkColor shield_layer_color_80_light =
+      ColorProvider::Get()->GetShieldLayerColor(
+          ColorProvider::ShieldLayerType::kShield80);
+  EXPECT_EQ(SkColorGetA(shield_layer_color_80_light),
+            static_cast<uint32_t>(AppListView::kAppListOpacityWithBlur * 255));
+
   ShowAssistantUi();
   ASSERT_FALSE(Shell::Get()->IsInTabletMode());
   EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(), 0.0f);
 
   EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            ColorProvider::Get()->GetShieldLayerColor(
-                ColorProvider::ShieldLayerType::kShield80));
+            shield_layer_color_80_light);
 
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kDarkModeEnabled, true);
+  const SkColor shield_layer_color_80_dark =
+      ColorProvider::Get()->GetShieldLayerColor(
+          ColorProvider::ShieldLayerType::kShield80);
 
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            ColorProvider::Get()->GetShieldLayerColor(
-                ColorProvider::ShieldLayerType::kShield80));
+  EXPECT_EQ(page_view()->layer()->GetTargetColor(), shield_layer_color_80_dark);
 
   // Simulate the case where tablet mode is enabled in the middle of a session.
+  // We add a background blur as we don't get a blur from AppListView in tablet
+  // mode.
   SetTabletMode(true);
   EXPECT_FLOAT_EQ(page_view()->layer()->background_blur(),
                   ColorProvider::kBackgroundBlurSigma);

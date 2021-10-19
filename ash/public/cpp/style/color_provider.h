@@ -24,6 +24,7 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kShield60,
     kShield80,
     kShield90,
+    kShield95,
   };
 
   // Blur sigma for system UI layers.

@@ -307,7 +307,8 @@ void AshColorProvider::UpdateColorModeThemed(bool is_themed) {
 
 SkColor AshColorProvider::GetShieldLayerColorImpl(ShieldLayerType type,
                                                   bool inverted) const {
-  constexpr int kAlphas[] = {kAlpha20, kAlpha40, kAlpha60, kAlpha80, kAlpha90};
+  constexpr int kAlphas[] = {kAlpha20, kAlpha40, kAlpha60,
+                             kAlpha80, kAlpha90, kAlpha95};
   DCHECK_LT(static_cast<size_t>(type), base::size(kAlphas));
   return SkColorSetA(
       inverted ? GetInvertedBackgroundColor() : GetBackgroundColor(),
