@@ -2404,7 +2404,7 @@
     },
     {
       name: "WebAssemblyCSP",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebAssemblyDynamicTiering",
