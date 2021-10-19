@@ -701,7 +701,7 @@ StyleRuleCharset* CSSParserImpl::ConsumeCharsetRule(
 }
 
 StyleRuleImport* CSSParserImpl::ConsumeImportRule(
-    AtomicString uri,
+    const AtomicString& uri,
     CSSParserTokenStream& stream) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);

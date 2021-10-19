@@ -94,23 +94,26 @@ class CORE_EXPORT CSSPropertyValueSet
   }
 
   template <typename T>  // CSSPropertyID or AtomicString
-  int FindPropertyIndex(T property) const;
+  int FindPropertyIndex(const T& property) const;
 
   bool HasProperty(CSSPropertyID property) const {
     return FindPropertyIndex(property) != -1;
   }
 
   template <typename T>  // CSSPropertyID or AtomicString
-  const CSSValue* GetPropertyCSSValue(T property) const;
+  const CSSValue* GetPropertyCSSValue(const T& property) const;
 
   template <typename T>  // CSSPropertyID or AtomicString
-  String GetPropertyValue(T property) const;
+  String GetPropertyValue(const T& property) const;
 
   template <typename T>  // CSSPropertyID or AtomicString
-  bool PropertyIsImportant(T property) const;
+  bool PropertyIsImportant(const T& property) const;
 
   bool ShorthandIsImportant(CSSPropertyID) const;
-  bool ShorthandIsImportant(AtomicString custom_property_name) const;
+  bool ShorthandIsImportant(const AtomicString& custom_property_name) const {
+    // Custom properties are never shorthands.
+    return false;
+  }
 
   CSSPropertyID GetPropertyShorthand(CSSPropertyID) const;
   bool IsPropertyImplicit(CSSPropertyID) const;
@@ -193,7 +196,7 @@ class CORE_EXPORT ALIGNAS(alignof(Member<const CSSValue>))
   const CSSPropertyValueMetadata* MetadataArray() const;
 
   template <typename T>  // CSSPropertyID or AtomicString
-  int FindPropertyIndex(T property) const;
+  int FindPropertyIndex(const T& property) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 };
@@ -268,7 +271,7 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   bool SetProperty(const CSSPropertyValue&, CSSPropertyValue* slot = nullptr);
 
   template <typename T>  // CSSPropertyID or AtomicString
-  bool RemoveProperty(T property, String* return_text = nullptr);
+  bool RemoveProperty(const T& property, String* return_text = nullptr);
   bool RemovePropertiesInSet(const CSSProperty* const set[], unsigned length);
   void RemoveEquivalentProperties(const CSSPropertyValueSet*);
   void RemoveEquivalentProperties(const CSSStyleDeclaration*);
@@ -284,7 +287,7 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
       ExecutionContext* execution_context);
 
   template <typename T>  // CSSPropertyID or AtomicString
-  int FindPropertyIndex(T property) const;
+  int FindPropertyIndex(const T& property) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -341,7 +344,7 @@ inline bool CSSPropertyValueSet::IsEmpty() const {
 }
 
 template <typename T>
-inline int CSSPropertyValueSet::FindPropertyIndex(T property) const {
+inline int CSSPropertyValueSet::FindPropertyIndex(const T& property) const {
   if (auto* mutable_property_set = DynamicTo<MutableCSSPropertyValueSet>(this))
     return mutable_property_set->FindPropertyIndex(property);
   return To<ImmutableCSSPropertyValueSet>(this)->FindPropertyIndex(property);

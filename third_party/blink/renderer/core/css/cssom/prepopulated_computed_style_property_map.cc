@@ -86,7 +86,7 @@ const CSSValue* PrepopulatedComputedStylePropertyMap::GetProperty(
 }
 
 const CSSValue* PrepopulatedComputedStylePropertyMap::GetCustomProperty(
-    AtomicString property_name) const {
+    const AtomicString& property_name) const {
   auto it = custom_values_.find(property_name);
   return it != custom_values_.end() ? it->value : nullptr;
 }

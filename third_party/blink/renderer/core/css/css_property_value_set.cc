@@ -151,7 +151,7 @@ static bool IsPropertyMatch(const CSSPropertyValueMetadata& metadata,
 }
 
 template <typename T>
-int ImmutableCSSPropertyValueSet::FindPropertyIndex(T property) const {
+int ImmutableCSSPropertyValueSet::FindPropertyIndex(const T& property) const {
   uint16_t id = GetConvertedCSSPropertyID(property);
   for (int n = array_size_ - 1; n >= 0; --n) {
     if (IsPropertyMatch(MetadataArray()[n], id, property))
@@ -161,11 +161,11 @@ int ImmutableCSSPropertyValueSet::FindPropertyIndex(T property) const {
   return -1;
 }
 template CORE_EXPORT int ImmutableCSSPropertyValueSet::FindPropertyIndex(
-    CSSPropertyID) const;
+    const CSSPropertyID&) const;
 template CORE_EXPORT int ImmutableCSSPropertyValueSet::FindPropertyIndex(
-    AtomicString) const;
+    const AtomicString&) const;
 template CORE_EXPORT int ImmutableCSSPropertyValueSet::FindPropertyIndex(
-    AtRuleDescriptorID) const;
+    const AtRuleDescriptorID&) const;
 
 void ImmutableCSSPropertyValueSet::TraceAfterDispatch(
     blink::Visitor* visitor) const {
@@ -220,7 +220,7 @@ static String SerializeShorthand(const CSSPropertyValueSet& property_set,
 }
 
 template <typename T>
-String CSSPropertyValueSet::GetPropertyValue(T property) const {
+String CSSPropertyValueSet::GetPropertyValue(const T& property) const {
   String shorthand_serialization = SerializeShorthand(*this, property);
   if (!shorthand_serialization.IsNull())
     return shorthand_serialization;
@@ -230,26 +230,28 @@ String CSSPropertyValueSet::GetPropertyValue(T property) const {
   return g_empty_string;
 }
 template CORE_EXPORT String
-    CSSPropertyValueSet::GetPropertyValue<CSSPropertyID>(CSSPropertyID) const;
+CSSPropertyValueSet::GetPropertyValue<CSSPropertyID>(
+    const CSSPropertyID&) const;
 template CORE_EXPORT String
-    CSSPropertyValueSet::GetPropertyValue<AtRuleDescriptorID>(
-        AtRuleDescriptorID) const;
+CSSPropertyValueSet::GetPropertyValue<AtRuleDescriptorID>(
+    const AtRuleDescriptorID&) const;
 template CORE_EXPORT String
-    CSSPropertyValueSet::GetPropertyValue<AtomicString>(AtomicString) const;
+CSSPropertyValueSet::GetPropertyValue<AtomicString>(const AtomicString&) const;
 
 template <typename T>
-const CSSValue* CSSPropertyValueSet::GetPropertyCSSValue(T property) const {
+const CSSValue* CSSPropertyValueSet::GetPropertyCSSValue(
+    const T& property) const {
   int found_property_index = FindPropertyIndex(property);
   if (found_property_index == -1)
     return nullptr;
   return &PropertyAt(found_property_index).Value();
 }
 template CORE_EXPORT const CSSValue* CSSPropertyValueSet::GetPropertyCSSValue<
-    CSSPropertyID>(CSSPropertyID) const;
+    CSSPropertyID>(const CSSPropertyID&) const;
 template CORE_EXPORT const CSSValue* CSSPropertyValueSet::GetPropertyCSSValue<
-    AtRuleDescriptorID>(AtRuleDescriptorID) const;
-template CORE_EXPORT const CSSValue*
-    CSSPropertyValueSet::GetPropertyCSSValue<AtomicString>(AtomicString) const;
+    AtRuleDescriptorID>(const AtRuleDescriptorID&) const;
+template CORE_EXPORT const CSSValue* CSSPropertyValueSet::GetPropertyCSSValue<
+    AtomicString>(const AtomicString&) const;
 
 void CSSPropertyValueSet::Trace(Visitor* visitor) const {
   if (is_mutable_)
@@ -293,7 +295,7 @@ bool MutableCSSPropertyValueSet::RemovePropertyAtIndex(int property_index,
 }
 
 template <typename T>
-bool MutableCSSPropertyValueSet::RemoveProperty(T property,
+bool MutableCSSPropertyValueSet::RemoveProperty(const T& property,
                                                 String* return_text) {
   if (RemoveShorthandProperty(property)) {
     // FIXME: Return an equivalent shorthand when possible.
@@ -306,23 +308,23 @@ bool MutableCSSPropertyValueSet::RemoveProperty(T property,
   return RemovePropertyAtIndex(found_property_index, return_text);
 }
 template CORE_EXPORT bool MutableCSSPropertyValueSet::RemoveProperty(
-    CSSPropertyID,
+    const CSSPropertyID&,
     String*);
 template CORE_EXPORT bool MutableCSSPropertyValueSet::RemoveProperty(
-    AtomicString,
+    const AtomicString&,
     String*);
 
 template <typename T>
-bool CSSPropertyValueSet::PropertyIsImportant(T property) const {
+bool CSSPropertyValueSet::PropertyIsImportant(const T& property) const {
   int found_property_index = FindPropertyIndex(property);
   if (found_property_index != -1)
     return PropertyAt(found_property_index).IsImportant();
   return ShorthandIsImportant(property);
 }
 template bool CSSPropertyValueSet::PropertyIsImportant<CSSPropertyID>(
-    CSSPropertyID) const;
+    const CSSPropertyID&) const;
 template bool CSSPropertyValueSet::PropertyIsImportant<AtomicString>(
-    AtomicString) const;
+    const AtomicString&) const;
 
 bool CSSPropertyValueSet::ShorthandIsImportant(
     CSSPropertyID property_id) const {
@@ -335,12 +337,6 @@ bool CSSPropertyValueSet::ShorthandIsImportant(
       return false;
   }
   return true;
-}
-
-bool CSSPropertyValueSet::ShorthandIsImportant(
-    AtomicString custom_property_name) const {
-  // Custom properties are never shorthands.
-  return false;
 }
 
 CSSPropertyID CSSPropertyValueSet::GetPropertyShorthand(
@@ -654,7 +650,7 @@ CSSStyleDeclaration* MutableCSSPropertyValueSet::EnsureCSSStyleDeclaration(
 }
 
 template <typename T>
-int MutableCSSPropertyValueSet::FindPropertyIndex(T property) const {
+int MutableCSSPropertyValueSet::FindPropertyIndex(const T& property) const {
   const CSSPropertyValue* begin = property_vector_.data();
   const CSSPropertyValue* end = begin + property_vector_.size();
 
@@ -668,9 +664,9 @@ int MutableCSSPropertyValueSet::FindPropertyIndex(T property) const {
   return (it == end) ? -1 : static_cast<int>(it - begin);
 }
 template CORE_EXPORT int MutableCSSPropertyValueSet::FindPropertyIndex(
-    CSSPropertyID) const;
+    const CSSPropertyID&) const;
 template CORE_EXPORT int MutableCSSPropertyValueSet::FindPropertyIndex(
-    AtomicString) const;
+    const AtomicString&) const;
 
 void MutableCSSPropertyValueSet::TraceAfterDispatch(
     blink::Visitor* visitor) const {

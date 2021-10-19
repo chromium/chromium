@@ -39,7 +39,7 @@ class CORE_EXPORT StylePropertyMapReadOnlyMainThread
   StylePropertyMapReadOnlyMainThread() = default;
 
   virtual const CSSValue* GetProperty(CSSPropertyID) const = 0;
-  virtual const CSSValue* GetCustomProperty(AtomicString) const = 0;
+  virtual const CSSValue* GetCustomProperty(const AtomicString&) const = 0;
 
   using IterationCallback =
       std::function<void(const CSSPropertyName&, const CSSValue&)>;

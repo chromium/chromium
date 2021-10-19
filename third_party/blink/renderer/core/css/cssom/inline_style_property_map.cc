@@ -24,7 +24,7 @@ const CSSValue* InlineStylePropertyMap::GetProperty(
 }
 
 const CSSValue* InlineStylePropertyMap::GetCustomProperty(
-    AtomicString property_name) const {
+    const AtomicString& property_name) const {
   const CSSPropertyValueSet* inline_style = owner_element_->InlineStyle();
   return inline_style ? inline_style->GetPropertyCSSValue(property_name)
                       : nullptr;

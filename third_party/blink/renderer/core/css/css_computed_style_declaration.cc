@@ -210,7 +210,7 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
 }
 
 const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
-    AtomicString custom_property_name) const {
+    const AtomicString& custom_property_name) const {
   return GetPropertyCSSValue(CSSPropertyName(custom_property_name));
 }
 
@@ -445,7 +445,7 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValueInternal(
 }
 
 const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValueInternal(
-    AtomicString custom_property_name) {
+    const AtomicString& custom_property_name) {
   DCHECK_EQ(CSSPropertyID::kVariable,
             CssPropertyID(GetExecutionContext(), custom_property_name));
   return GetPropertyCSSValue(custom_property_name);

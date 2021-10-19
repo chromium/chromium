@@ -170,7 +170,7 @@ AbstractPropertySetCSSStyleDeclaration::GetPropertyCSSValueInternal(
 
 const CSSValue*
 AbstractPropertySetCSSStyleDeclaration::GetPropertyCSSValueInternal(
-    AtomicString custom_property_name) {
+    const AtomicString& custom_property_name) {
   DCHECK_EQ(CSSPropertyID::kVariable,
             CssPropertyID(GetExecutionContext(), custom_property_name));
   return PropertySet().GetPropertyCSSValue(custom_property_name);

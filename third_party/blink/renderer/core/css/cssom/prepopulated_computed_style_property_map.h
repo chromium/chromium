@@ -45,7 +45,7 @@ class CORE_EXPORT PrepopulatedComputedStylePropertyMap
 
  protected:
   const CSSValue* GetProperty(CSSPropertyID) const override;
-  const CSSValue* GetCustomProperty(AtomicString) const override;
+  const CSSValue* GetCustomProperty(const AtomicString&) const override;
   void ForEachProperty(const IterationCallback&) override;
 
   String SerializationForShorthand(const CSSProperty&) const override;

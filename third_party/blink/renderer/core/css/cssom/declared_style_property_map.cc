@@ -31,7 +31,7 @@ const CSSValue* DeclaredStylePropertyMap::GetProperty(
 }
 
 const CSSValue* DeclaredStylePropertyMap::GetCustomProperty(
-    AtomicString property_name) const {
+    const AtomicString& property_name) const {
   if (!GetStyleRule())
     return nullptr;
   return GetStyleRule()->Properties().GetPropertyCSSValue(property_name);
