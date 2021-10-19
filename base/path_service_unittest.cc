@@ -278,8 +278,7 @@ TEST_F(PathServiceTest, GetProgramFiles) {
   EXPECT_EQ(programfiles_dir.value(),
       FILE_PATH_LITERAL("C:\\Program Files"));
 #else
-  if (base::win::OSInfo::GetInstance()->wow64_status() ==
-      base::win::OSInfo::WOW64_ENABLED) {
+  if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
     // 32-bit on 64-bit.
     EXPECT_TRUE(PathService::Get(DIR_PROGRAM_FILES,
         &programfiles_dir));

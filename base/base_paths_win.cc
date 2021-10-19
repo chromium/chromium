@@ -70,8 +70,7 @@ bool PathProviderWin(int key, FilePath* result) {
       break;
     case base::DIR_PROGRAM_FILES6432:
 #if !defined(_WIN64)
-      if (base::win::OSInfo::GetInstance()->wow64_status() ==
-          base::win::OSInfo::WOW64_ENABLED) {
+      if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
         std::unique_ptr<base::Environment> env(base::Environment::Create());
         std::string programfiles_w6432;
         // 32-bit process running in WOW64 sets ProgramW6432 environment
