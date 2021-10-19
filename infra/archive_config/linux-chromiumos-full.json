@@ -24,6 +24,9 @@
                 "xdg-settings"
             ],
             "dirs": ["locales", "resources"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chrome-chromeos"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Linux_ChromiumOS_Full/{%position%}/chrome-chromeos.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP",

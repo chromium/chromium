@@ -2,6 +2,9 @@
 	"archive_datas": [
         {
             "dirs": ["Chromium.app"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chrome-mac"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Mac/{%position%}/chrome-mac.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP",
@@ -13,6 +16,9 @@
         {
             "files": [
                 "chromedriver"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chromedriver_mac64"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Mac/{%position%}/chromedriver_mac64.zip",
@@ -29,18 +35,27 @@
                 "Content Shell.app",
                 "resources"
             ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "content-shell"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Mac/{%position%}/content-shell.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
             "dirs": ["gen/third_party/devtools-frontend/src/front_end"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "devtools-frontend"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Mac/{%position%}/devtools-frontend.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
             "dirs": ["pnacl"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "pnacl"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Mac/{%position%}/pncal.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
@@ -58,6 +73,9 @@
                 "chrome/updater/.install"
             ],
             "dirs": ["ChromiumUpdater.app", "Updater Packaging"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "updater"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Mac/{%position%}/updater.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"

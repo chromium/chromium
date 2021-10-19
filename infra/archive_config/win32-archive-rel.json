@@ -88,6 +88,9 @@
                 "vulkan-1.dll"
             ],
             "file_globs": ["*.manifest"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chrome-win"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Win/{%position%}/chrome-win.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP",
@@ -120,6 +123,9 @@
                 "vk_swiftshader.dll.pdb",
                 "vulkan-1.dll.pdb"
             ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chrome-win32-syms"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Win/{%position%}/chrome-win32-syms.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
@@ -128,6 +134,9 @@
             "files": [
                 "chromedriver.exe.pdb"
             ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chromedriver_win32-syms"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Win/{%position%}/chromedriver_win32-syms.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
@@ -135,6 +144,9 @@
         {
             "files": [
                 "chromedriver.exe"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chromedriver_win32"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Win/{%position%}/chromedriver_win32.zip",
@@ -150,12 +162,18 @@
                 "v8_context_snapshot.bin"
             ],
             "dirs": ["resources"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "content-shell"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Win/{%position%}/content-shell.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
             "dirs": ["gen\\third_party\\devtools-frontend\\src\\front_end"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "devtools-frontend"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Win/{%position%}/devtools-frontend.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
@@ -166,6 +184,9 @@
                 "gcapi_dll.dll",
                 "gcapi_dll.dll.lib"
             ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "gcapi"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Win/{%position%}/gcapi.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
@@ -175,6 +196,9 @@
                 "actions.xml",
                 "histograms.xml",
                 "ukm.xml"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "metrics-metadata"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Win/{%position%}/metrics-metadata.zip",
@@ -190,6 +214,9 @@
         },
         {
             "dirs": ["pnacl"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "pnacl"}
+            ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Win/{%position%}/pnacl.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
@@ -206,6 +233,9 @@
             "files": [
                 "updater.exe",
                 "UpdaterSetup.exe"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "updater"}
             ],
             "dirs": ["UpdaterSigning"],
             "gcs_bucket": "chromium-browser-snapshots",
