@@ -25,7 +25,6 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -404,7 +403,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
         if (mLinkToggleState == LinkToggleState.LINK) {
             drawable = R.drawable.link;
-            skillColor = R.color.default_icon_color_blue;
+            skillColor = R.color.default_icon_color_accent1_tint_list;
             contentDescription = R.string.link_toggle_include_link;
         } else {
             drawable = R.drawable.link_off;
@@ -423,7 +422,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         }
 
         ImageView linkToggleView = getContentView().findViewById(R.id.link_toggle_view);
-        linkToggleView.setColorFilter(ContextCompat.getColor(mActivity, skillColor));
+        linkToggleView.setColorFilter(
+                AppCompatResources.getColorStateList(mActivity, skillColor).getDefaultColor());
         linkToggleView.setVisibility(View.VISIBLE);
         linkToggleView.setImageDrawable(AppCompatResources.getDrawable(mActivity, drawable));
         // This is necessary in order to prevent voice over announcing the content description

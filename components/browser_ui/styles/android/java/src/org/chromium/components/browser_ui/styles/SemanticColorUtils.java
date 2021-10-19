@@ -34,4 +34,13 @@ public class SemanticColorUtils {
     public static @ColorInt int getDefaultTextColorAccent1(Context context) {
         return MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
     }
+
+    /**
+     * Returns the semantic color value that corresponds to default_icon_color_accent1.
+     * @param context The {@link Context}.
+     * @return The color.
+     */
+    public static @ColorInt int getDefaultIconColorAccent1(Context context) {
+        return MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
+    }
 }

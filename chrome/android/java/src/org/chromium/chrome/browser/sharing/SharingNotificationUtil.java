@@ -128,8 +128,8 @@ public final class SharingNotificationUtil {
                                 new NotificationMetadata(type, group, id))
                         .setContentTitle(contentTitle)
                         .setGroup(group)
-                        .setColor(ApiCompatibilityUtils.getColor(
-                                context.getResources(), R.color.default_icon_color_blue))
+                        .setColor(ApiCompatibilityUtils.getColor(context.getResources(),
+                                R.color.default_icon_color_accent1_baseline))
                         .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setSmallIcon(R.drawable.ic_devices_16dp)
                         .setProgress(/*max=*/0, /*percentage=*/0, true)

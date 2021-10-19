@@ -65,8 +65,8 @@ public class ContentLanguagesPreference extends Preference {
                 ListItem item = buildMenuListItemWithEndIcon(
                         R.string.languages_item_option_offer_to_translate, 0, endIconResId,
                         info.isTranslateSupported());
-                item.model.set(
-                        ListMenuItemProperties.TINT_COLOR_ID, R.color.default_icon_color_blue);
+                item.model.set(ListMenuItemProperties.TINT_COLOR_ID,
+                        R.color.default_icon_color_accent1_tint_list);
 
                 // Add checked icon at the end.
                 menuItems.add(item);

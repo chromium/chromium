@@ -371,7 +371,7 @@ public class TabbedAppMenuTest {
         PropertyModel bookmarkStarPropertyModel = AppMenuTestSupport.getMenuItemPropertyModel(
                 mActivityTestRule.getAppMenuCoordinator(), R.id.add_bookmark_menu_id);
         Assert.assertEquals("Add Bookmark item should be tint blue.",
-                R.color.default_icon_color_blue,
+                R.color.default_icon_color_accent1_tint_list,
                 bookmarkStarPropertyModel.get(AppMenuItemProperties.ICON_COLOR_RES));
 
         int addBookmarkMenuItemIndex = findIndexOfMenuItemById(R.id.add_bookmark_menu_id);

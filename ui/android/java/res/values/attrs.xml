@@ -44,7 +44,6 @@
 
     <attr name="default_icon_color" format="color" />
     <attr name="default_icon_color_inverse" format="color" />
-    <attr name="default_icon_color_blue" format="color" />
     <attr name="default_icon_color_secondary" format="color" />
     <attr name="default_icon_color_disabled" format="color" />
     <attr name="default_icon_color_disabled_inverse" format="color" />

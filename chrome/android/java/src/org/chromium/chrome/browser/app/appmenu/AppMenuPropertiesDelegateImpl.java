@@ -1105,7 +1105,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     protected @ColorRes int getMenuItemIconColorRes(MenuItem menuItem) {
         int itemId = menuItem.getItemId();
         if (itemId == R.id.edit_bookmark_menu_id || itemId == R.id.add_bookmark_menu_id) {
-            return R.color.default_icon_color_blue;
+            return R.color.default_icon_color_accent1_tint_list;
         }
 
         return R.color.default_icon_color_secondary_tint_list;

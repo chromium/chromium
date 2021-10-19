@@ -37,7 +37,7 @@
                 android:drawableStart="@drawable/btn_info"
                 app:drawableWidth="24dp"
                 app:drawableHeight="24dp"
-                app:chromeDrawableTint="@color/default_icon_color_blue"
+                app:chromeDrawableTint="@macro/default_icon_color_accent1"
                 android:tintMode="src_in"
                 android:drawablePadding="8dp"
                 android:text="@string/contextual_search_promo_title"

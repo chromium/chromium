@@ -51,8 +51,8 @@ public class MessageBannerProperties {
     public static final WritableIntPropertyKey ICON_RESOURCE_ID = new WritableIntPropertyKey();
 
     /**
-     * If left unspecified, this will be default_icon_color_blue. {@link #TINT_NONE} can be used to
-     * completely remove the tint.
+     * If left unspecified, this will be default_icon_color_accent1. {@link #TINT_NONE} can be used
+     * to completely remove the tint.
      */
     public static final WritableIntPropertyKey ICON_TINT_COLOR = new WritableIntPropertyKey();
     // Secondary icon is shown as a button, so content description should be always set.

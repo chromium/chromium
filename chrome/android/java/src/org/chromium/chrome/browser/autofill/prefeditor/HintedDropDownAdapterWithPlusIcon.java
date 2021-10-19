@@ -68,8 +68,8 @@ public class HintedDropDownAdapterWithPlusIcon<T> extends HintedDropDownAdapter<
 
             // Create the "+" icon, put it left of the text and add appropriate padding.
             mTextView.setCompoundDrawablesWithIntrinsicBounds(
-                    TintedDrawable.constructTintedDrawable(
-                            getContext(), R.drawable.plus, R.color.default_icon_color_blue),
+                    TintedDrawable.constructTintedDrawable(getContext(), R.drawable.plus,
+                            R.color.default_icon_color_accent1_tint_list),
                     null, null, null);
             Resources resources = getContext().getResources();
             mTextView.setCompoundDrawablePadding(

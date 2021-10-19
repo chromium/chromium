@@ -152,7 +152,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
 
     private void updateCookieDeleteButton() {
         mCookieInUse.setImageColor(!mDeleteDisabled && mDataUsed
-                        ? R.color.default_icon_color_blue
+                        ? R.color.default_icon_color_accent1_tint_list
                         : R.color.default_icon_color_disabled);
     }
 }

@@ -150,8 +150,8 @@ public class ChipView extends LinearLayout {
         int loadingViewWidthPadding = (iconWidth - loadingViewSize) / 2;
         mLoadingView = new LoadingView(getContext());
         mLoadingView.setVisibility(GONE);
-        mLoadingView.setIndeterminateTintList(ColorStateList.valueOf(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.default_icon_color_blue)));
+        mLoadingView.setIndeterminateTintList(ColorStateList.valueOf(ApiCompatibilityUtils.getColor(
+                getResources(), R.color.default_icon_color_accent1_baseline)));
         mLoadingView.setPaddingRelative(loadingViewWidthPadding, loadingViewHeightPadding,
                 loadingViewWidthPadding, loadingViewHeightPadding);
         addView(mLoadingView, new LayoutParams(iconWidth, iconHeight));

@@ -327,7 +327,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             if (entry.getIndex() == FULL_HISTORY_ENTRY_INDEX) {
                 ApiCompatibilityUtils.setImageTintList(viewHolder.mImageView,
                         AppCompatResources.getColorStateList(
-                                mContext, R.color.default_icon_color_blue));
+                                mContext, R.color.default_icon_color_accent1_tint_list));
             } else {
                 ApiCompatibilityUtils.setImageTintList(viewHolder.mImageView, null);
             }

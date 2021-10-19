@@ -14,6 +14,7 @@ import android.provider.Browser;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -499,8 +500,8 @@ public class BookmarkUtils {
      * @param type The bookmark type.
      * @return The tint used on the bookmark folder icon.
      */
-    public static int getFolderIconTint(@BookmarkType int type) {
-        return (type == BookmarkType.READING_LIST) ? R.color.default_icon_color_blue
+    public static @ColorRes int getFolderIconTint(@BookmarkType int type) {
+        return (type == BookmarkType.READING_LIST) ? R.color.default_icon_color_accent1_tint_list
                                                    : R.color.default_icon_color_tint_list;
     }
 

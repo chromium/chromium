@@ -204,7 +204,7 @@ class AppMenuItemViewBinder {
         if (model.get(AppMenuItemProperties.CHECKED)) {
             ApiCompatibilityUtils.setImageTintList(button,
                     AppCompatResources.getColorStateList(
-                            button.getContext(), R.color.blue_mode_tint));
+                            button.getContext(), R.color.default_icon_color_accent1_tint_list));
         }
 
         setupMenuButton(button, model, appMenuClickHandler);

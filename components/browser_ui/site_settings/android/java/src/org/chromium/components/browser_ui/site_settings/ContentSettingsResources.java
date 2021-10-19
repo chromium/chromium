@@ -335,7 +335,7 @@ public class ContentSettingsResources {
             @ContentSettingsType int contentSettingsType,
             @ContentSettingValues @Nullable Integer value, boolean isIncognito) {
         int color = isIncognito ? R.color.default_icon_color_blue_light
-                                : R.color.default_icon_color_blue;
+                                : R.color.default_icon_color_accent1_tint_list;
         Drawable icon =
                 SettingsUtils.getTintedIcon(context, getSmallIcon(contentSettingsType), color);
         if (value != null && value == ContentSettingValues.BLOCK) {

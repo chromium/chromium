@@ -6,7 +6,6 @@ package org.chromium.components.page_info;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -18,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
@@ -126,7 +127,7 @@ public class ConnectionInfoView implements OnClickListener {
         ImageView i = section.findViewById(R.id.connection_info_icon);
         i.setImageResource(iconId);
         ApiCompatibilityUtils.setImageTintList(
-                i, ColorStateList.valueOf(mContext.getResources().getColor(iconColorId)));
+                i, AppCompatResources.getColorStateList(mContext, iconColorId));
 
         TextView d = section.findViewById(R.id.connection_info_description);
         d.setText(description);

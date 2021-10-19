@@ -572,7 +572,7 @@ public class SelectableListToolbar<E>
             if (mShowInfoIcon) {
                 Drawable iconDrawable =
                         TintedDrawable.constructTintedDrawable(getContext(), R.drawable.btn_info,
-                                infoShowing ? R.color.blue_mode_tint
+                                infoShowing ? R.color.default_icon_color_accent1_tint_list
                                             : R.color.default_icon_color_secondary_tint_list);
 
                 infoMenuItem.setIcon(iconDrawable);

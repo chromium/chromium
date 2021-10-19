@@ -16,6 +16,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -77,7 +78,8 @@ public class PageInfoRowView extends FrameLayout {
             getChildAt(0).setOnClickListener((v) -> params.clickCallback.run());
         }
         if (params.rowTint != 0) {
-            setBackgroundColor(params.rowTint);
+            setBackgroundColor(AppCompatResources.getColorStateList(getContext(), params.rowTint)
+                                       .getDefaultColor());
         }
     }
 

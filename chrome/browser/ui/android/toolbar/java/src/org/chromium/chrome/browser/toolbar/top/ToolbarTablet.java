@@ -457,7 +457,8 @@ public class ToolbarTablet extends ToolbarLayout
         if (isBookmarked) {
             mBookmarkButton.setImageResource(R.drawable.btn_star_filled);
             ApiCompatibilityUtils.setImageTintList(mBookmarkButton,
-                    AppCompatResources.getColorStateList(getContext(), R.color.blue_mode_tint));
+                    AppCompatResources.getColorStateList(
+                            getContext(), R.color.default_icon_color_accent1_tint_list));
             mBookmarkButton.setContentDescription(getContext().getString(R.string.edit_bookmark));
         } else {
             mBookmarkButton.setImageResource(R.drawable.btn_star);

@@ -33,7 +33,7 @@
     <color name="tab_grid_dialog_background_color">@color/legacy_bg_color_elev_1</color>
     <color name="tab_grid_dialog_background_color_incognito">@color/default_bg_color_dark_elev_1</color>
 
-    <color name="tab_grid_dialog_ungroup_button_text_color">@color/default_icon_color_blue</color>
+    <color name="tab_grid_dialog_ungroup_button_text_color">@color/default_icon_color_accent1_baseline</color>
     <color name="tab_grid_dialog_ungroup_button_text_color_incognito">@color/default_icon_color_blue_light</color>
     <color name="tab_grid_dialog_ungroup_button_text_color_hovered">@color/default_text_color_light_list</color>
 

@@ -88,7 +88,7 @@
               android:scaleType="fitStart"
               android:importantForAccessibility="no"
               app:srcCompat="@drawable/ic_checkmark_24dp"
-              app:tint="?attr/default_icon_color_blue" />
+              app:tint="@macro/default_icon_color_accent1" />
 
           <org.chromium.ui.widget.TextViewWithLeading
               android:id="@+id/performance_info_text"

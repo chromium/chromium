@@ -28,7 +28,7 @@
 
                 <path
                     android:name="arrow_blue"
-                    android:fillColor="?attr/default_icon_color_blue"
+                    android:fillColor="@color/default_icon_color_accent1_baseline"
                     android:pathData="M30,15 L42,15 L42,30 L52,30 L36,46 L20,30 L30,30 Z"
                     android:strokeColor="#00000000"/>
             </group>
@@ -42,7 +42,7 @@
             <path
                 android:name="bar"
                 android:pathData="M12,54 L60,54"
-                android:strokeColor="?attr/default_icon_color_blue"
+                android:strokeColor="@color/default_icon_color_accent1_baseline"
                 android:strokeWidth="6"/>
 
         </vector>
@@ -67,14 +67,14 @@
                     android:duration="0"
                     android:interpolator="@android:interpolator/linear"
                     android:propertyName="fillColor"
-                    android:valueFrom="?attr/default_icon_color_blue"
-                    android:valueTo="?attr/default_icon_color_blue"/>
+                    android:valueFrom="@color/default_icon_color_accent1_baseline"
+                    android:valueTo="@color/default_icon_color_accent1_baseline"/>
                 <objectAnimator
                     android:duration="@integer/download_infobar_fill_out_delay"
                     android:startOffset="@integer/download_infobar_fill_in_delay"
                     android:interpolator="@android:interpolator/linear"
                     android:propertyName="fillColor"
-                    android:valueFrom="?attr/default_icon_color_blue"
+                    android:valueFrom="@color/default_icon_color_accent1_baseline"
                     android:valueTo="@color/google_blue_50"/>
             </set>
         </aapt:attr>

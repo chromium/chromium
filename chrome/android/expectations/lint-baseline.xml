@@ -2,14 +2,6 @@
 <issues format="5" by="lint 7.0.0" client="cli" variant="all" version="4.1.0">
 
     <issue
-        id="ResourceType"
-        message="Expected a color resource id (`R.color.`) but received an RGB integer">
-        <location
-            file="../../components/page_info/android/java/src/org/chromium/components/page_info/PageInfoPermissionsController.java"
-            line="68"/>
-    </issue>
-
-    <issue
         id="DiscouragedPrivateApi"
         message="Reflective access to sPackageManager, which is not part of the public SDK and therefore likely to change in future Android releases">
         <location

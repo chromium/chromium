@@ -65,7 +65,7 @@ public class PageInfoPermissionsController
         mPageUrl = mainController.getURL().getSpec();
         mHighlightedPermission = highlightedPermission;
         Resources resources = mRowView.getContext().getResources();
-        mHighlightColor = resources.getColor(R.color.iph_highlight_blue);
+        mHighlightColor = R.color.iph_highlight_blue;
         mTitle = resources.getString(R.string.page_info_permissions_title);
     }
 

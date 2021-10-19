@@ -61,7 +61,6 @@
         <!-- Common icon colors for drawables. -->
         <item name="default_icon_color">@color/default_icon_color_dark</item>
         <item name="default_icon_color_inverse">@color/default_icon_color_light</item>
-        <item name="default_icon_color_blue">@color/default_icon_color_blue_dark</item>
         <item name="default_icon_color_secondary">@color/default_icon_color_secondary_dark</item>
         <item name="default_icon_color_disabled">@color/default_icon_color_disabled_dark</item>
         <item name="default_icon_color_disabled_inverse">@color/default_icon_color_disabled_light</item>

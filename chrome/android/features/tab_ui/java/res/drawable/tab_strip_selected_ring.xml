@@ -9,8 +9,8 @@
         a 17,17 0 1,0 34,0
         a 17,17 0 1,0 -34,0
         z"
-        android:strokeColor="?attr/default_icon_color_blue" android:strokeWidth="2"/>
-    <path android:fillColor="?attr/default_icon_color_blue" android:fillType="evenOdd"
+        android:strokeColor="@macro/default_icon_color_accent1" android:strokeWidth="2"/>
+    <path android:fillColor="@macro/default_icon_color_accent1" android:fillType="evenOdd"
         android:pathData="M 40, 12
         m -12, 0
         a 8,8 0 1,0 16,0

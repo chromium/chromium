@@ -151,7 +151,8 @@ public class SmsFetcherMessageHandler {
                 /*deleteIntent=*/cancelIntent, confirmIntent, cancelIntent,
                 getNotificationTitle(oneTimeCode, topOrigin, embeddedOrigin, clientName),
                 getNotificationText(oneTimeCode, topOrigin, embeddedOrigin, clientName),
-                R.drawable.ic_chrome, /*largeIconId=*/0, R.color.default_icon_color_blue,
+                R.drawable.ic_chrome, /*largeIconId=*/0,
+                R.color.default_icon_color_accent1_baseline,
                 /*startsActivity=*/false);
     }
 

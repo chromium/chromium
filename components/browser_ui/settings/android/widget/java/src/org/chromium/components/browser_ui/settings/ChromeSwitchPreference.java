@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.PreferenceViewHolder;
 import androidx.preference.SwitchPreferenceCompat;
 
@@ -79,6 +80,8 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
 
     private void updateBackground() {
         if (mView == null || mBackgroundColorRes == null) return;
-        mView.setBackgroundColor(mBackgroundColorRes);
+        mView.setBackgroundColor(
+                AppCompatResources.getColorStateList(getContext(), mBackgroundColorRes)
+                        .getDefaultColor());
     }
 }

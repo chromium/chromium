@@ -25,6 +25,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.permissions.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -74,6 +75,7 @@ public class NfcSystemLevelPromptTest {
         MockitoAnnotations.initMocks(this);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
 
         doAnswer(invocation -> {
