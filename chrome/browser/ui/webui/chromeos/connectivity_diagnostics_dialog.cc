@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "ash/webui/connectivity_diagnostics/url_constants.h"
+#include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 

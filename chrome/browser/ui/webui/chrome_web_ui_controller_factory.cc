@@ -155,8 +155,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
-#include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
-#include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
@@ -240,6 +238,8 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
+#include "chromeos/components/connectivity_diagnostics/connectivity_diagnostics_ui.h"
+#include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/components/eche_app_ui/eche_app_manager.h"
 #include "chromeos/components/eche_app_ui/eche_app_ui.h"
 #include "chromeos/components/eche_app_ui/url_constants.h"
@@ -527,9 +527,10 @@ WebUIController* NewWebUI<chromeos::multidevice::ProximityAuthUI>(
 }
 
 template <>
-WebUIController* NewWebUI<ash::ConnectivityDiagnosticsUI>(WebUI* web_ui,
-                                                          const GURL& url) {
-  return new ash::ConnectivityDiagnosticsUI(
+WebUIController* NewWebUI<chromeos::ConnectivityDiagnosticsUI>(
+    WebUI* web_ui,
+    const GURL& url) {
+  return new chromeos::ConnectivityDiagnosticsUI(
       web_ui,
       /* BindNetworkDiagnosticsServiceCallback */
       base::BindRepeating(
@@ -823,8 +824,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUICertificateManagerHost)
     return &NewWebUI<chromeos::CertificateManagerDialogUI>;
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (url.host_piece() == ash::kChromeUIConnectivityDiagnosticsHost)
-    return &NewWebUI<ash::ConnectivityDiagnosticsUI>;
+  if (url.host_piece() == chromeos::kChromeUIConnectivityDiagnosticsHost)
+    return &NewWebUI<chromeos::ConnectivityDiagnosticsUI>;
   if (url.host_piece() == chrome::kChromeUICrostiniInstallerHost)
     return &NewWebUI<chromeos::CrostiniInstallerUI>;
   if (url.host_piece() == chrome::kChromeUICrostiniUpgraderHost)

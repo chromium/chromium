@@ -1,5 +1,0 @@
-include_rules = [
-  "+chromeos/components/network_ui",
-  "+chromeos/services/network_health",
-  "+chromeos/strings/grit/chromeos_strings.h",
-]

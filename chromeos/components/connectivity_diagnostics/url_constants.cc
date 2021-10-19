@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/connectivity_diagnostics/url_constants.h"
+#include "chromeos/components/connectivity_diagnostics/url_constants.h"
 
-namespace ash {
+namespace chromeos {
 
 const char kChromeUIConnectivityDiagnosticsHost[] = "connectivity-diagnostics";
 const char kChromeUIConnectivityDiagnosticsUrl[] =
     "chrome://connectivity-diagnostics";
 
-}  // namespace ash
+}  // namespace chromeos
