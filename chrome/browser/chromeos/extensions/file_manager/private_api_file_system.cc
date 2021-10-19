@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/file_manager/copy_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -1414,10 +1415,20 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
     }
   }
 
-  // TODO(b/199804935): Replace with {Copy/Move/etc}IOTask when implemented.
-  volume_manager->io_task_controller()->Add(
-      std::make_unique<file_manager::io_task::DummyIOTask>(
-          std::move(source_urls), std::move(destination_folder_url), *type));
+  std::unique_ptr<file_manager::io_task::IOTask> task;
+  switch (type.value()) {
+    case file_manager::io_task::OperationType::kCopy:
+      task = std::make_unique<file_manager::io_task::CopyIOTask>(
+          std::move(source_urls), std::move(destination_folder_url), profile,
+          file_system_context);
+      break;
+    default:
+      // TODO(b/199804935): Replace with {Move/Zip/etc}IOTask when implemented.
+      task = std::make_unique<file_manager::io_task::DummyIOTask>(
+          std::move(source_urls), std::move(destination_folder_url), *type);
+      break;
+  }
+  volume_manager->io_task_controller()->Add(std::move(task));
   return RespondNow(NoArguments());
 }
 
