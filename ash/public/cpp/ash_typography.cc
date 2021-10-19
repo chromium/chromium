@@ -60,7 +60,8 @@ void ApplyAshFontStyles(int context,
       // Classic launcher uses default font styling.
       break;
     case STYLE_PRODUCTIVITY_LAUNCHER:
-      details.typeface = "Google Sans";
+      // TODO(https://crbug.com/1197600): Use font "Google Sans Text" when it is
+      // available on Chrome OS. For now, use the default font for consistency.
       break;
   }
 }
