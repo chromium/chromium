@@ -3114,6 +3114,40 @@ TEST_P(WaylandWindowTest, DoesNotCreateSurfaceSyncOnCommitWithoutBuffers) {
   EXPECT_THAT(window_->root_surface()->surface_sync_, nullptr);
 }
 
+TEST_P(WaylandWindowTest, StartWithMinimized) {
+  // Make sure the window is initialized to normal state from the beginning.
+  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+
+  ScopedWlArray states = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(xdg_surface_, 0, 0, 1, states.get());
+  Sync();
+
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+  window_->Minimize();
+  // The state of the window has to be already minimized.
+  EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kMinimized);
+
+  // We don't receive any state change if that does not differ from the last
+  // state.
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
+  // It must be still the same minimized state.
+  EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kMinimized);
+  ui::PlatformWindowState state;
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _))
+      .WillRepeatedly(DoAll(SaveArg<0>(&state), InvokeWithoutArgs([&]() {
+                              EXPECT_EQ(state, PlatformWindowState::kMinimized);
+                            })));
+  // The window geometry has to be set to the current bounds of the window for
+  // minimized state.
+  gfx::Rect bounds = window_->GetBounds();
+  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, bounds.width(), bounds.height()));
+  // Send one additional empty configuration event for minimized state.
+  // (which means the surface is not maximized, fullscreen or activated)
+  states = ScopedWlArray();
+  SendConfigureEvent(xdg_surface_, 0, 0, 2, states.get());
+  Sync();
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{

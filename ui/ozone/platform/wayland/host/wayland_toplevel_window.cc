@@ -387,7 +387,13 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
     // In exo, widget creation is deferred until the surface has contents and
     // |initial_show_state_| for a widget is ignored. Exo sends a configure
     // callback with empty bounds expecting client to suggest a size.
-    shell_toplevel()->SetWindowGeometry(gfx::Rect(0, 0, 1, 1));
+    // For the window activated from minimized state,
+    // the saved window placement should be set as window geometry.
+    gfx::Rect bounds_in_dip = GetBoundsInDIP();
+    // As per spec, width and height must be greater than zero.
+    if (bounds_in_dip.IsEmpty())
+      bounds_in_dip = gfx::Rect(0, 0, 1, 1);
+    shell_toplevel()->SetWindowGeometry(bounds_in_dip);
     shell_toplevel()->AckConfigure(serial);
     root_surface()->Commit();
   } else if (pending_bounds_dip_ ==
