@@ -224,7 +224,7 @@ void HandleSubstitutableParamRule(
                          << rule.scheme_filters(0);
     return;
   }
-  if (!translated_rules->full_host_names.empty() |
+  if (!translated_rules->full_host_names.empty() ||
       !translated_rules->wildcard_host_names.empty()) {
     RULE_WARNING(errors) << "Multiple rules specifying host-filters";
     return;
