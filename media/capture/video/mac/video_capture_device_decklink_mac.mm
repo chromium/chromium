@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -386,6 +387,7 @@ void VideoCaptureDeviceDeckLinkMac::EnumerateDevices(
     DVLOG_IF(1, hr != S_OK) << "Error reading Blackmagic device display name";
     DVLOG_IF(1, hr == S_OK) << "Blackmagic device found with name: "
                             << base::SysCFStringRefToUTF8(device_display_name);
+    ALLOW_UNUSED_LOCAL(hr);
 
     if (!device_model_name && !device_display_name)
       continue;
