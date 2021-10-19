@@ -766,18 +766,18 @@ TEST_F(PreflightControllerTest, CheckPreflightAccessDetectsErrorStatus) {
   // Status 200-299 should pass.
   EXPECT_FALSE(PreflightController::CheckPreflightAccessForTesting(
       response_url, 200, allow_all_header,
-      absl::nullopt /* allow_credentials_header */,
+      /*allow_credentials_header=*/absl::nullopt,
       network::mojom::CredentialsMode::kOmit, origin));
   EXPECT_FALSE(PreflightController::CheckPreflightAccessForTesting(
       response_url, 299, allow_all_header,
-      absl::nullopt /* allow_credentials_header */,
+      /*allow_credentials_header=*/absl::nullopt,
       network::mojom::CredentialsMode::kOmit, origin));
 
   // Status 300 should fail.
   absl::optional<CorsErrorStatus> invalid_status_error =
       PreflightController::CheckPreflightAccessForTesting(
           response_url, 300, allow_all_header,
-          absl::nullopt /* allow_credentials_header */,
+          /*allow_credentials_header=*/absl::nullopt,
           network::mojom::CredentialsMode::kOmit, origin);
   ASSERT_TRUE(invalid_status_error);
   EXPECT_EQ(mojom::CorsError::kPreflightInvalidStatus,
@@ -786,7 +786,7 @@ TEST_F(PreflightControllerTest, CheckPreflightAccessDetectsErrorStatus) {
   // Status 0 should fail too.
   invalid_status_error = PreflightController::CheckPreflightAccessForTesting(
       response_url, 0, allow_all_header,
-      absl::nullopt /* allow_credentials_header */,
+      /*allow_credentials_header=*/absl::nullopt,
       network::mojom::CredentialsMode::kOmit, origin);
   ASSERT_TRUE(invalid_status_error);
   EXPECT_EQ(mojom::CorsError::kPreflightInvalidStatus,
@@ -811,6 +811,40 @@ TEST_F(PreflightControllerTest, CheckExternalPreflightErrors) {
   EXPECT_EQ(mojom::CorsError::kPreflightInvalidAllowExternal,
             error3->cors_error);
   EXPECT_EQ("TRUE", error3->failed_parameter);
+}
+
+TEST_F(PreflightControllerTest, CheckLoaderCallbackWithHeaderReceived) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.url = GetURL("/allow");
+  request.request_initiator = test_initiator_origin();
+
+  PerformPreflightCheck(request);
+  EXPECT_EQ(net_error(), net::OK);
+  EXPECT_FALSE(status());
+  EXPECT_FALSE(has_authorization_covered_by_wildcard());
+  EXPECT_EQ(access_count(), 1u);
+}
+
+TEST_F(PreflightControllerTest,
+       CheckLoaderCallbackWithHeaderReceivedDetectingCorsError) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.url = GetURL("/wildcard_headers");
+  request.request_initiator = test_initiator_origin();
+
+  PerformPreflightCheck(request);
+  // A wildcard Access-Control-Allow-Origin can not be used if credentials are
+  // to be sent.
+  EXPECT_EQ(net_error(), net::ERR_FAILED);
+  ASSERT_TRUE(status());
+  EXPECT_EQ(
+      status().value(),
+      CorsErrorStatus(mojom::CorsError::kPreflightInvalidAllowCredentials));
+  EXPECT_FALSE(has_authorization_covered_by_wildcard());
+  EXPECT_EQ(access_count(), 1u);
 }
 
 }  // namespace

@@ -66,7 +66,7 @@ constexpr char kTestCorsExemptHeader[] = "x-test-cors-exempt";
 
 class TestURLLoaderFactory : public mojom::URLLoaderFactory {
  public:
-  TestURLLoaderFactory() {}
+  TestURLLoaderFactory() = default;
 
   TestURLLoaderFactory(const TestURLLoaderFactory&) = delete;
   TestURLLoaderFactory& operator=(const TestURLLoaderFactory&) = delete;
@@ -1267,6 +1267,7 @@ TEST_F(CorsURLLoaderTest,
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "https://example.com"},
        {"Access-Control-Allow-Methods", "PATCH"}});
+  NotifyLoaderClientOnComplete(net::OK);
   RunUntilCreateLoaderAndStartCalled();
 
   // the actual request
@@ -1297,6 +1298,7 @@ TEST_F(CorsURLLoaderTest,
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "null"},
        {"Access-Control-Allow-Methods", "PATCH"}});
+  NotifyLoaderClientOnComplete(net::OK);
   RunUntilCreateLoaderAndStartCalled();
 
   // the second actual request
@@ -1942,6 +1944,7 @@ TEST_F(CorsURLLoaderTest, RevalidationAndPreflight) {
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "https://example.com"},
        {"Access-Control-Allow-Headers", "foo"}});
+  NotifyLoaderClientOnComplete(net::OK);
   RunUntilCreateLoaderAndStartCalled();
 
   // the actual request
@@ -2766,6 +2769,7 @@ TEST_F(CorsURLLoaderTest, NetLogBasic) {
       {{"Access-Control-Allow-Origin", "https://example.com"},
        {"Access-Control-Allow-Headers", "Apple"},
        {"Access-Control-Allow-Methods", "GET"}});
+  NotifyLoaderClientOnComplete(net::OK);
 
   // Continue the actual request.
   RunUntilCreateLoaderAndStartCalled();
