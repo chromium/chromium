@@ -1534,11 +1534,6 @@ config("default_warnings") {
             "-Wno-unused-but-set-parameter",
             "-Wno-unused-but-set-variable",
           ]
-
-          if (is_ios) {
-            # TODO(https://crbug.com/1255745): Clean up, enable.
-            cflags += [ "-Wno-bitwise-instead-of-logical" ]
-          }
         }
 
         if (is_fuchsia) {
