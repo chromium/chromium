@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
@@ -27,9 +28,12 @@ void ProfilePickerLacrosSignInProvider::ShowAddAccountDialog(
 
   g_browser_process->profile_manager()
       ->GetAccountProfileMapper()
-      ->ShowAddAccountDialogAndCreateNewProfile(base::BindOnce(
-          &ProfilePickerLacrosSignInProvider::OnLacrosProfileCreated,
-          weak_ptr_factory_.GetWeakPtr()));
+      ->ShowAddAccountDialogAndCreateNewProfile(
+          account_manager::AccountManagerFacade::AccountAdditionSource::
+              kChromeProfileCreation,
+          base::BindOnce(
+              &ProfilePickerLacrosSignInProvider::OnLacrosProfileCreated,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ProfilePickerLacrosSignInProvider::OnRefreshTokenUpdatedForAccount(

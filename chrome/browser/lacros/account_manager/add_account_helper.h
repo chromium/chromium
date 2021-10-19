@@ -8,6 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/account_manager_core/account_manager_facade.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace account_manager {
 struct Account;
@@ -21,8 +24,8 @@ class FilePath;
 
 class ProfileAttributesStorage;
 
-// Helper class encapsulating the implementation of
-// `AccountProfileMapper::ShowAddAccountDialog()`.
+// Helper class encapsulating creation of accounts and profiles for
+// `AccountProfileMapper`.
 class AddAccountHelper {
  public:
   AddAccountHelper(account_manager::AccountManagerFacade* facade,
@@ -33,7 +36,16 @@ class AddAccountHelper {
   AddAccountHelper& operator=(const AddAccountHelper&) = delete;
 
   // Starts the account addition flow. `callback` must not be null.
+  // If `profile_path` is empty, created a new profile that is ephemeral and
+  // omitted. The account in `source_or_account` is used if present, otherwise a
+  // new account is added with the source.
+  // Note: it is important that `AddAccountHelper` completes quickly, as account
+  // updates are blocked in the meantime. In particular, this should not block
+  // on any user input beside the OS account addition flow.
   void Start(const base::FilePath& profile_path,
+             const absl::variant<
+                 account_manager::AccountManagerFacade::AccountAdditionSource,
+                 account_manager::Account>& source_or_account,
              AccountProfileMapper::AddAccountCallback callback);
 
  private:

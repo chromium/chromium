@@ -18,6 +18,7 @@
 #include "base/scoped_observation.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace account_manager {
 struct Account;
@@ -96,31 +97,53 @@ class AccountProfileMapper
       const account_manager::AccountKey& account,
       const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer);
+
+  // Profile creation methods and assignment of accounts to profiles:
+
   // Adds an account to the specified profile. Some notes:
   // - `callback` is called with nullopt if the operation failed;
   // - fails if the user adds a non-Gaia account;
   // - may return the empty path if the account was added but could not be
   //   assigned to the profile.
-  void ShowAddAccountDialog(const base::FilePath& profile_path,
-                            AddAccountCallback callback);
-
+  void ShowAddAccountDialog(
+      const base::FilePath& profile_path,
+      account_manager::AccountManagerFacade::AccountAdditionSource source,
+      AddAccountCallback callback);
+  // Similar to `ShowAddAccountDialog()` but uses an account that already exists
+  // in the `AccountManagerFacade` instead of creating a new one.
+  void AddAccount(const base::FilePath& profile_path,
+                  const account_manager::AccountKey& account,
+                  AddAccountCallback callback);
   // Similar to `ShowAddAccountDialog()` but creates a new profile first. The
   // new profile is omitted and ephemeral: it's the caller responsibility to
   // clean these flags if needed.
-  void ShowAddAccountDialogAndCreateNewProfile(AddAccountCallback callback);
+  void ShowAddAccountDialogAndCreateNewProfile(
+      account_manager::AccountManagerFacade::AccountAdditionSource source,
+      AddAccountCallback callback);
+  // Similar to `ShowAddAccountDialogAndCreateNewProfile()` but uses an account
+  // that already exists in the `AccountManagerFacade` instead of creating a new
+  // one.
+  void CreateNewProfileWithAccount(const account_manager::AccountKey& account,
+                                   AddAccountCallback callback);
 
   // account_manager::AccountManagerFacade::Observer:
   void OnAccountUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
 
  private:
-  // Shared code for `ShowAddAccountDialogAndCreateNewProfile()` and
-  // `ShowAddAccountDialog()`. Pass an empty path to request a new profile.
-  void ShowAddAccountDialogInternal(const base::FilePath& profile_path,
-                                    AddAccountCallback callback);
+  // Shared code for methods related to profile creation and adding accounts to
+  // profiles. Pass an empty path to request a new profile. If
+  // `source_or_accountkey` is an account, this account is used, otherwise a new
+  // account is added with the source.
+  void AddAccountInternal(
+      const base::FilePath& profile_path,
+      const absl::variant<
+          account_manager::AccountManagerFacade::AccountAdditionSource,
+          account_manager::AccountKey>& source_or_accountkey,
+      AddAccountCallback callback);
 
   // Callback for `AddAccountHelper`, end of the flow starting with
-  // `ShowAddAccountDialogInternal()`.
+  // `AddAccounInternal()`.
   void OnAddAccountCompleted(AddAccountHelper* helper,
                              AddAccountCallback callback,
                              const absl::optional<AddAccountResult>& result);

@@ -10,13 +10,11 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
-#include "components/account_manager_core/account_manager_facade.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 AddAccountHelper::AddAccountHelper(
@@ -31,16 +29,26 @@ AddAccountHelper::~AddAccountHelper() = default;
 
 void AddAccountHelper::Start(
     const base::FilePath& profile_path,
+    const absl::variant<
+        account_manager::AccountManagerFacade::AccountAdditionSource,
+        account_manager::Account>& source_or_account,
     AccountProfileMapper::AddAccountCallback callback) {
   DCHECK(!callback_) << "Start() must be called only once.";
   callback_ = std::move(callback);
   DCHECK(callback_);
 
-  account_manager_facade_->ShowAddAccountDialog(
-      account_manager::AccountManagerFacade::AccountAdditionSource::
-          kChromeProfileCreation,
-      base::BindOnce(&AddAccountHelper::OnShowAddAccountDialogCompleted,
-                     weak_factory_.GetWeakPtr(), profile_path));
+  if (const account_manager::Account* account =
+          absl::get_if<account_manager::Account>(&source_or_account)) {
+    OnShowAddAccountDialogCompleted(
+        profile_path,
+        account_manager::AccountAdditionResult::FromAccount(*account));
+  } else {
+    account_manager_facade_->ShowAddAccountDialog(
+        absl::get<account_manager::AccountManagerFacade::AccountAdditionSource>(
+            source_or_account),
+        base::BindOnce(&AddAccountHelper::OnShowAddAccountDialogCompleted,
+                       weak_factory_.GetWeakPtr(), profile_path));
+  }
 }
 
 void AddAccountHelper::OnShowAddAccountDialogCompleted(
@@ -106,17 +114,20 @@ void AddAccountHelper::OnShowAddAccountDialogCompletedWithProfilePath(
   ProfileAttributesEntry* entry =
       profile_attributes_storage_->GetProfileAttributesWithPath(profile_path);
   if (entry) {
-    auto profile_accounts = entry->GetGaiaIds();
+    base::flat_set<std::string> profile_accounts = entry->GetGaiaIds();
     auto inserted = profile_accounts.insert(gaia_id);
     if (inserted.second) {
       entry->SetGaiaIds(profile_accounts);
       result = {profile_path, account};
+    } else {
+      // Duplicate account, this was a no-op.
+      LOG(ERROR) << "Account " << account.raw_email
+                 << " already exists in profile " << profile_path;
     }
   } else {
     // If the profile does not exist, the account is left unassigned.
     result = {base::FilePath(), account};
   }
-
   std::move(callback_).Run(result);
   // `this` may be deleted.
 }

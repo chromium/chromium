@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/browser_process.h"
@@ -128,15 +129,32 @@ AccountProfileMapper::CreateAccessTokenFetcher(
 
 void AccountProfileMapper::ShowAddAccountDialog(
     const base::FilePath& profile_path,
+    account_manager::AccountManagerFacade::AccountAdditionSource source,
     AddAccountCallback callback) {
   DCHECK(!profile_path.empty())
       << "For a new profile use ShowAddAccountDialogAndCreateNewProfile()";
-  ShowAddAccountDialogInternal(profile_path, std::move(callback));
+  AddAccountInternal(profile_path, source, std::move(callback));
+}
+
+void AccountProfileMapper::AddAccount(
+    const base::FilePath& profile_path,
+    const account_manager::AccountKey& account,
+    AddAccountCallback callback) {
+  DCHECK(!profile_path.empty())
+      << "For a new profile use CreateNewProfileWithAccount()";
+  AddAccountInternal(profile_path, account, std::move(callback));
 }
 
 void AccountProfileMapper::ShowAddAccountDialogAndCreateNewProfile(
+    account_manager::AccountManagerFacade::AccountAdditionSource source,
     AddAccountCallback callback) {
-  ShowAddAccountDialogInternal(base::FilePath(), std::move(callback));
+  AddAccountInternal(base::FilePath(), source, std::move(callback));
+}
+
+void AccountProfileMapper::CreateNewProfileWithAccount(
+    const account_manager::AccountKey& account,
+    AddAccountCallback callback) {
+  AddAccountInternal(base::FilePath(), account, std::move(callback));
 }
 
 void AccountProfileMapper::OnAccountUpserted(
@@ -153,20 +171,47 @@ void AccountProfileMapper::OnAccountRemoved(
                      weak_factory_.GetWeakPtr()));
 }
 
-void AccountProfileMapper::ShowAddAccountDialogInternal(
+void AccountProfileMapper::AddAccountInternal(
     const base::FilePath& profile_path,
+    const absl::variant<
+        account_manager::AccountManagerFacade::AccountAdditionSource,
+        account_manager::AccountKey>& source_or_accountkey,
     AddAccountCallback callback) {
   if (!initialized_) {
     initialization_callbacks_.push_back(base::BindOnce(
-        &AccountProfileMapper::ShowAddAccountDialogInternal,
-        weak_factory_.GetWeakPtr(), profile_path, std::move(callback)));
+        &AccountProfileMapper::AddAccountInternal, weak_factory_.GetWeakPtr(),
+        profile_path, source_or_accountkey, std::move(callback)));
     return;
   }
+
+  absl::variant<account_manager::AccountManagerFacade::AccountAdditionSource,
+                account_manager::Account>
+      source_or_account;
+  // If an account is provided, check that it exists in the facade.
+  if (const account_manager::AccountKey* account_key =
+          absl::get_if<account_manager::AccountKey>(&source_or_accountkey)) {
+    if (account_key->account_type() != account_manager::AccountType::kGaia) {
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    const auto& it = account_cache_.find(account_key->id());
+    if (it == account_cache_.end()) {
+      std::move(callback).Run(absl::nullopt);
+      return;
+    } else {
+      source_or_account = it->second;
+    }
+  } else {
+    source_or_account =
+        absl::get<account_manager::AccountManagerFacade::AccountAdditionSource>(
+            source_or_accountkey);
+  }
+
   add_account_helpers_.push_back(std::make_unique<AddAccountHelper>(
       account_manager_facade_, profile_attributes_storage_));
   AddAccountHelper* helper = add_account_helpers_.back().get();
   helper->Start(
-      profile_path,
+      profile_path, source_or_account,
       base::BindOnce(&AccountProfileMapper::OnAddAccountCompleted,
                      weak_factory_.GetWeakPtr(), helper, std::move(callback)));
 }
@@ -175,6 +220,9 @@ void AccountProfileMapper::OnAddAccountCompleted(
     AddAccountHelper* helper,
     AddAccountCallback callback,
     const absl::optional<AddAccountResult>& result) {
+  // Note: the new account may or may not be in `account_cache_` yet. It's also
+  // possible (although unlikely) that it was already removed from the OS. As a
+  // result, this function does not use `account_cache_` at all.
   if (result) {
     for (auto& obs : observers_)
       obs.OnAccountUpserted(result->profile_path, result->account);
@@ -186,6 +234,11 @@ void AccountProfileMapper::OnAddAccountCompleted(
   size_t erased_count =
       base::EraseIf(add_account_helpers_, base::MatchesUniquePtr(helper));
   DCHECK_EQ(erased_count, 1u);
+  if (add_account_helpers_.empty()) {
+    account_manager_facade_->GetAccounts(
+        base::BindOnce(&AccountProfileMapper::OnGetAccountsCompleted,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 std::vector<std::pair<base::FilePath, std::string>>
@@ -249,6 +302,14 @@ AccountProfileMapper::AddNewGaiaAccounts(
 
 void AccountProfileMapper::OnGetAccountsCompleted(
     const std::vector<account_manager::Account>& system_accounts) {
+  // `AccountManagerFacade` may call `OnAccountUpserted()` before the
+  // `ShowAddAccountDialog()` callback, which may result in this function being
+  // called during the account addition. In this case, return immediately now,
+  // to avoid incorrectly assigning accounts to the main profile. Another call
+  // will be triggered at the end of the account addition to sort things up.
+  if (!add_account_helpers_.empty())
+    return;
+
   // Update `account_cache_`, and keep a copy of the old cache to call
   // `OnAccountRemoved()`.
   base::flat_map<std::string, account_manager::Account> old_cache;
@@ -311,13 +372,6 @@ bool AccountProfileMapper::ProfileContainsAccount(
 
 ProfileAttributesEntry* AccountProfileMapper::MaybeGetProfileForNewAccounts()
     const {
-  // `AccountManagerFacade` may call `OnAccountUpserted()` before the
-  // `ShowAddAccountDialog()` callback, which may result in this function being
-  // called during the account addition. In this case, do not assign the new
-  // account here, as this will be done by `AddAccountHelper`.
-  if (!add_account_helpers_.empty())
-    return nullptr;
-
   std::vector<ProfileAttributesEntry*> entries =
       profile_attributes_storage_->GetAllProfilesAttributes();
   // Ignore omitted profiles.
