@@ -28,7 +28,7 @@ bool SharingHubOmniboxEnabled(content::BrowserContext* context);
 // This feature is only accessed through the sharing hub. It allows the user to
 // select and capture a region of a page, and optionally to edit it with an
 // image editor before sharing.
-bool DesktopScreenshotsFeatureEnabled();
+bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context);
 
 // Feature flag to enable the 3-dot menu entry point for the desktop sharing
 // hub.

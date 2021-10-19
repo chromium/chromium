@@ -25,6 +25,14 @@ bool IsEnterprisePolicyEnabled(content::BrowserContext* context) {
 #endif
 }
 
+// Whether screenshots-related features should be disabled by policy.
+// Currently used by desktop.
+// TODO(crbug.com/1261244): possibly apply to Android features.
+bool ScreenshotsDisabledByPolicy(content::BrowserContext* context) {
+  const PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
+  return prefs->GetBoolean(prefs::kDisableScreenshots);
+}
+
 }  // namespace
 
 bool SharingHubAppMenuEnabled(content::BrowserContext* context) {
@@ -38,9 +46,10 @@ bool SharingHubOmniboxEnabled(content::BrowserContext* context) {
          IsEnterprisePolicyEnabled(context);
 }
 
-bool DesktopScreenshotsFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kDesktopScreenshots) ||
-         share::AreUpcomingSharingFeaturesEnabled();
+bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context) {
+  return (base::FeatureList::IsEnabled(kDesktopScreenshots) ||
+          share::AreUpcomingSharingFeaturesEnabled()) &&
+         !ScreenshotsDisabledByPolicy(context);
 }
 
 const base::Feature kSharingHubDesktopAppMenu{

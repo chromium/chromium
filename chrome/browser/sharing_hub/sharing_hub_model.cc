@@ -153,7 +153,7 @@ void SharingHubModel::PopulateFirstPartyActions() {
        &kCopyIcon, true, gfx::ImageSkia(),
        "SharingHubDesktop.CopyURLSelected"});
 
-  if (DesktopScreenshotsFeatureEnabled()) {
+  if (DesktopScreenshotsFeatureEnabled(context_)) {
     first_party_action_list_.push_back(
         {IDC_SHARING_HUB_SCREENSHOT,
          l10n_util::GetStringUTF16(IDS_SHARING_HUB_SCREENSHOT_LABEL),
