@@ -1219,7 +1219,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   ui::WindowShowState saved_show_state_ = ui::SHOW_STATE_DEFAULT;
 
   // The restored bounds used for the initial show. This is only used if
-  // |saved_show_state_| is maximized.
+  // |saved_show_state_| is maximized. initial_restored_bounds_ is in DIP units
+  // and is converted to pixels in DesktopWindowTreeHostWin::Show.
   gfx::Rect initial_restored_bounds_;
 
   // Focus is automatically set to the view provided by the delegate

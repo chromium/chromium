@@ -266,8 +266,12 @@ void DesktopWindowTreeHostWin::Show(ui::WindowShowState show_state,
 
   gfx::Rect pixel_restore_bounds;
   if (show_state == ui::SHOW_STATE_MAXIMIZED) {
+    // The window parameter is intentionally passed as nullptr because a
+    // non-null window parameter causes errors when restoring windows to saved
+    // positions in variable-DPI situations. See https://crbug.com/1252564 for
+    // details.
     pixel_restore_bounds =
-        display::win::ScreenWin::DIPToScreenRect(GetHWND(), restore_bounds);
+        display::win::ScreenWin::DIPToScreenRect(nullptr, restore_bounds);
   }
   message_handler_->Show(show_state, pixel_restore_bounds);
 
