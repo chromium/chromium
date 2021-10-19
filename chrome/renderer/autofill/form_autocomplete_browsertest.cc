@@ -70,7 +70,8 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   void SetFormToBeProbablySubmitted(
       const absl::optional<FormData>& form) override {}
 
-  void FormsSeen(const std::vector<FormData>& forms) override {}
+  void FormsSeen(const std::vector<FormData>& updated_forms,
+                 const std::vector<FormRendererId>& removed_forms) override {}
 
   void FormSubmitted(const FormData& form,
                      bool known_success,

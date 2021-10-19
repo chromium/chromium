@@ -142,8 +142,9 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
       const absl::optional<FormData>& form) override {
     DeferMsg(&mojom::AutofillDriver::SetFormToBeProbablySubmitted, form);
   }
-  void FormsSeen(const std::vector<FormData>& forms) override {
-    DeferMsg(&mojom::AutofillDriver::FormsSeen, forms);
+  void FormsSeen(const std::vector<FormData>& updated_forms,
+                 const std::vector<FormRendererId>& removed_forms) override {
+    DeferMsg(&mojom::AutofillDriver::FormsSeen, updated_forms, removed_forms);
   }
   void FormSubmitted(const FormData& form,
                      bool known_success,
@@ -506,7 +507,7 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
     forms.push_back(updated_form);
     // Always communicate to browser process for topmost frame.
     if (!forms.empty() || !frame->Parent()) {
-      GetAutofillDriver().FormsSeen(forms);
+      GetAutofillDriver().FormsSeen(forms, {});
     }
   }
 }
@@ -958,13 +959,14 @@ void AutofillAgent::TriggerReparse() {
 }
 
 void AutofillAgent::ProcessForms() {
-  WebLocalFrame* frame = render_frame()->GetWebFrame();
-  std::vector<FormData> forms =
+  FormCache::UpdateFormCacheResult cache =
       form_cache_.ExtractNewForms(field_data_manager_.get());
 
   // Always communicate to browser process for topmost frame.
-  if (!forms.empty() || !frame->Parent()) {
-    GetAutofillDriver().FormsSeen(forms);
+  if (!cache.updated_forms.empty() ||
+      !render_frame()->GetWebFrame()->Parent()) {
+    GetAutofillDriver().FormsSeen(cache.updated_forms,
+                                  std::move(cache.removed_forms).extract());
   }
 }
 

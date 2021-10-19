@@ -392,7 +392,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
     std::vector<FormData> augmented_forms;
     EXPECT_CALL(*driver_->mock_browser_autofill_manager(), ShouldParseForms(_))
         .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
-    driver_->FormsSeen({form});
+    driver_->FormsSeen(/*updated_forms=*/{form}, /*removed_forms=*/{});
     return augmented_forms.front();
   }
 
@@ -572,7 +572,7 @@ TEST_P(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   std::vector<FormData> augmented_forms;
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), ShouldParseForms(_))
       .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
-  driver_->FormsSeen({form});
+  driver_->FormsSeen(/*updated_forms=*/{form}, /*removed_forms=*/{});
 
   ContentAutofillDriverTestApi(driver_.get())
       .SetFrameAndFormMetaData(form, nullptr);

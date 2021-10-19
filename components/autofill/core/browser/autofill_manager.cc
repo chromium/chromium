@@ -182,20 +182,22 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
     OnFormSubmittedImpl(form, known_success, source);
 }
 
-void AutofillManager::OnFormsSeen(const std::vector<FormData>& forms) {
-  if (!IsValidFormDataVector(forms) || !driver_->RendererIsAvailable())
+void AutofillManager::OnFormsSeen(
+    const std::vector<FormData>& updated_forms,
+    const std::vector<FormGlobalId>& removed_forms) {
+  if (!IsValidFormDataVector(updated_forms) || !driver_->RendererIsAvailable())
     return;
 
   // This should be called even forms is empty, AutofillProviderAndroid uses
   // this event to detect form submission.
-  if (!ShouldParseForms(forms))
+  if (!ShouldParseForms(updated_forms))
     return;
 
-  if (forms.empty())
+  if (updated_forms.empty())
     return;
 
   std::vector<const FormData*> new_forms;
-  for (const FormData& form : forms) {
+  for (const FormData& form : updated_forms) {
     const auto parse_form_start_time = AutofillTickClock::NowTicks();
     FormStructure* cached_form_structure =
         FindCachedFormByRendererId(form.global_id());

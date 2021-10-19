@@ -171,7 +171,8 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {
-    browser_autofill_manager_->OnFormsSeen(forms);
+    browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/forms,
+                                           /*removed_forms=*/{});
   }
 
   void FormSubmitted(const FormData& form) {
