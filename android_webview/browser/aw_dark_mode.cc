@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
@@ -51,10 +52,13 @@ AwDarkMode::~AwDarkMode() {
     Java_AwDarkMode_onNativeObjectDestroyed(env, scoped_obj);
 }
 
+// TODO(crbug.com/1253990): Probably need to PopulateWebPreferences() after
+// the app's theme changed and the configuration change is handled by app.
 void AwDarkMode::PopulateWebPreferences(
     blink::web_pref::WebPreferences* web_prefs,
     int force_dark_mode,
     int force_dark_behavior) {
+  prefers_dark_from_theme_ = false;
   switch (force_dark_mode) {
     case AwSettings::ForceDarkMode::FORCE_DARK_OFF:
       is_dark_mode_ = false;
@@ -65,6 +69,8 @@ void AwDarkMode::PopulateWebPreferences(
     case AwSettings::ForceDarkMode::FORCE_DARK_AUTO: {
       AwContents* contents = AwContents::FromWebContents(web_contents());
       is_dark_mode_ = contents && contents->GetViewTreeForceDarkState();
+      if (!is_dark_mode_)
+        prefers_dark_from_theme_ = IsAppUsingDarkTheme();
       break;
     }
   }
@@ -98,6 +104,16 @@ void AwDarkMode::PopulateWebPreferences(
         break;
       }
     }
+  } else if (prefers_dark_from_theme_ &&
+             base::FeatureList::IsEnabled(
+                 android_webview::features::kWebViewDarkModeMatchTheme)) {
+    web_prefs->preferred_color_scheme =
+        blink::mojom::PreferredColorScheme::kDark;
+    if (base::FeatureList::IsEnabled(
+            android_webview::features::kWebViewForceDarkModeMatchTheme)) {
+      web_prefs->force_dark_mode_enabled = true;
+      is_dark_mode_ = true;
+    }
   } else {
     web_prefs->preferred_color_scheme =
         blink::mojom::PreferredColorScheme::kLight;
@@ -105,9 +121,24 @@ void AwDarkMode::PopulateWebPreferences(
   }
 }
 
+bool AwDarkMode::IsAppUsingDarkTheme() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> scoped_obj = jobj_.get(env);
+  if (!scoped_obj)
+    return false;
+  return Java_AwDarkMode_isAppUsingDarkTheme(env, scoped_obj);
+}
+
 void AwDarkMode::DetachFromJavaObject(JNIEnv* env,
                                       const JavaParamRef<jobject>& jcaller) {
   jobj_.reset();
 }
 
+void AwDarkMode::NavigationEntryCommitted(
+    const content::LoadCommittedDetails& load_details) {
+  if (!load_details.is_main_frame)
+    return;
+  UMA_HISTOGRAM_BOOLEAN("Android.WebView.DarkMode.PrefersDarkFromTheme",
+                        prefers_dark_from_theme_);
+}
 }  // namespace android_webview

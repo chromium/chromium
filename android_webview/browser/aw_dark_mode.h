@@ -9,7 +9,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 class AwDarkMode : public content::WebContentsObserver,
@@ -28,10 +27,18 @@ class AwDarkMode : public content::WebContentsObserver,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller);
 
+  // TODO(crbug.com/1253990): Rename to is_force_dark_applied().
   bool is_dark_mode() const { return is_dark_mode_; }
 
  private:
+  // content::WebContentsObserver
+  void NavigationEntryCommitted(
+      const content::LoadCommittedDetails& load_details) override;
+
+  bool IsAppUsingDarkTheme();
+
   bool is_dark_mode_ = false;
+  bool prefers_dark_from_theme_ = false;
 
   JavaObjectWeakGlobalRef jobj_;
 };

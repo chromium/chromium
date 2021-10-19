@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "android_webview/common/aw_features.h"
+#include "base/feature_list.h"
 
 namespace android_webview {
 namespace features {
@@ -17,6 +18,16 @@ const base::Feature kWebViewBrotliSupport{"WebViewBrotliSupport",
 // Feature is checked and used in downstream internal code.
 const base::Feature kWebViewConnectionlessSafeBrowsing{
     "WebViewConnectionlessSafeBrowsing", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enable WebView to set prefers-color-theme according to the app's theme unless
+// app specifies FORCE_DARK_OFF or DARK_STRATEGY_USER_AGENT_DARKENING_ONLY.
+const base::Feature kWebViewDarkModeMatchTheme{
+    "WebViewDarkModeMatchTheme", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enable WebView to automatically darken the page in FORCE_DARK_AUTO mode if
+// the app's theme is dark.
+const base::Feature kWebViewForceDarkModeMatchTheme{
+    "WebViewForceDarkModeMatchTheme", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable display cutout support for Android P and above.
 const base::Feature kWebViewDisplayCutout{"WebViewDisplayCutout",

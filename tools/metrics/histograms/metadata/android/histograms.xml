@@ -3490,6 +3490,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.DarkMode.PrefersDarkFromTheme"
+    enum="BooleanYesNo" expires_after="2022-03-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records if WebView shall set prefers-color-scheme to dark according to app's
+    theme after FORCE_DARK_AUTO fails. It is recorded on each main frame
+    navigation entry committed.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.DarkMode.PrimaryTextLuminanceVsLightTheme"
     enum="WebViewPrimaryTextLuminanceVsLightTheme" expires_after="2022-01-24">
   <owner>michaelbai@chromium.org</owner>
