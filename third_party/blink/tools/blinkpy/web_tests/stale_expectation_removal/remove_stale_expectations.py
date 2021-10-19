@@ -9,9 +9,11 @@ import sys
 assert sys.version_info[0] == 3
 
 from blinkpy.web_tests.stale_expectation_removal import builders
+from blinkpy.web_tests.stale_expectation_removal import data_types
 from blinkpy.web_tests.stale_expectation_removal import expectations
 from blinkpy.web_tests.stale_expectation_removal import queries
 from unexpected_passes_common import builders as common_builders
+from unexpected_passes_common import data_types as common_data_types
 from unexpected_passes_common import result_output
 
 
@@ -84,6 +86,10 @@ def main():
     raise RuntimeError(
         'Script is still under active development and not currently functional'
     )
+    # Set any custom data types.
+    common_data_types.SetExpectationImplementation(
+        data_types.WebTestExpectation)
+
     builders_instance = builders.WebTestBuilders()
     common_builders.RegisterInstance(builders_instance)
     expectations_instance = expectations.WebTestExpectations()

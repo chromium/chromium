@@ -92,6 +92,14 @@ class ExpectationUnittest(unittest.TestCase):
                                'Pass')
     self.assertFalse(e.AppliesToResult(r))
 
+  def testCustomImplementation(self):
+    class CustomExpectation(data_types.BaseExpectation):
+      pass
+
+    data_types.SetExpectationImplementation(CustomExpectation)
+    expectation = data_types.Expectation('test', ['tag1', 'tag2'], 'Pass')
+    self.assertIsInstance(expectation, CustomExpectation)
+
 
 class ResultUnittest(unittest.TestCase):
   def testEquality(self):
@@ -120,6 +128,15 @@ class ResultUnittest(unittest.TestCase):
   def testHashability(self):
     r = GENERIC_RESULT
     _ = {r}
+
+  def testCustomImplementation(self):
+    class CustomResult(data_types.BaseResult):
+      pass
+
+    data_types.SetResultImplementation(CustomResult)
+    result = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
+                               'build_id')
+    self.assertIsInstance(result, CustomResult)
 
 
 class BuildStatsUnittest(unittest.TestCase):

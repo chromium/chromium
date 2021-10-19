@@ -16,8 +16,26 @@ FULL_PASS = 1
 NEVER_PASS = 2
 PARTIAL_PASS = 3
 
+# Allow different unexpected pass finder implementations to register custom
+# data types if necessary. These are set to the base versions at the end of the
+# file.
+Expectation = None
+Result = None
 
-class Expectation(object):
+
+def SetExpectationImplementation(impl):
+  global Expectation
+  assert issubclass(impl, BaseExpectation)
+  Expectation = impl
+
+
+def SetResultImplementation(impl):
+  global Result
+  assert issubclass(impl, BaseResult)
+  Result = impl
+
+
+class BaseExpectation(object):
   """Container for a test expectation.
 
   Similar to typ's expectations_parser.Expectation class, but with unnecessary
@@ -40,12 +58,12 @@ class Expectation(object):
     # slower (~40x from rough testing) than a straight comparison, so only use
     # it if necessary.
     if '*' in test:
-      self._comp = lambda r: fnmatch.fnmatch(r, self.test)
+      self._comp = self._CompareWildcard
     else:
-      self._comp = lambda r: r == self.test
+      self._comp = self._CompareNonWildcard
 
   def __eq__(self, other):
-    return (isinstance(other, Expectation) and self.test == other.test
+    return (isinstance(other, BaseExpectation) and self.test == other.test
             and self.tags == other.tags
             and self.expected_results == other.expected_results
             and self.bug == other.bug)
@@ -55,6 +73,12 @@ class Expectation(object):
 
   def __hash__(self):
     return hash((self.test, self.tags, self.expected_results, self.bug))
+
+  def _CompareWildcard(self, result_test_name):
+    return fnmatch.fnmatch(result_test_name, self.test)
+
+  def _CompareNonWildcard(self, result_test_name):
+    return result_test_name == self.test
 
   def AppliesToResult(self, result):
     """Checks whether this expectation should have applied to |result|.
@@ -69,7 +93,7 @@ class Expectation(object):
     Returns:
       True if |self| applies to |result|, otherwise False.
     """
-    assert isinstance(result, Result)
+    assert isinstance(result, BaseResult)
     return (self._comp(result.test) and self.tags <= result.tags)
 
   def MaybeAppliesToTest(self, test_name):
@@ -84,7 +108,7 @@ class Expectation(object):
     return self._comp(test_name)
 
 
-class Result(object):
+class BaseResult(object):
   """Container for a test result.
 
   Contains the minimal amount of data necessary to describe/identify a result
@@ -108,7 +132,7 @@ class Result(object):
     self.build_id = build_id
 
   def __eq__(self, other):
-    return (isinstance(other, Result) and self.test == other.test
+    return (isinstance(other, BaseResult) and self.test == other.test
             and self.tags == other.tags
             and self.actual_result == other.actual_result
             and self.step == other.step and self.build_id == other.build_id)
@@ -486,7 +510,7 @@ class ExpectationBuilderMap(BaseTypedMap):
   """Typed map for Expectation -> BuilderStepMap."""
 
   def __setitem__(self, key, value):
-    assert isinstance(key, Expectation)
+    assert isinstance(key, BaseExpectation)
     assert isinstance(value, self._value_type())
     super(ExpectationBuilderMap, self).__setitem__(key, value)
 
@@ -556,3 +580,7 @@ class StepBuildStatsMap(BaseTypedMap):
 
 def IsStringType(s):
   return isinstance(s, six.string_types)
+
+
+Expectation = BaseExpectation
+Result = BaseResult
