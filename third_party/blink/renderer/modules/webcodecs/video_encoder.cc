@@ -671,9 +671,19 @@ void VideoEncoder::ProcessEncode(Request* request) {
       // be nice to not have to do this, but currently the request processing
       // loop must execute synchronously or flush() will miss frames.
       blocking_request_in_progress_ = true;
+      // When doing RGBA to YUVA conversion using `accelerated_frame_pool_`, use
+      // sRGB primaries and the 601 YUV matrix. Note that this is subtly
+      // different from the 601 gfx::ColorSpace because the 601 gfx::ColorSpace
+      // has different (non-sRGB) primaries.
+      // https://crbug.com/1258245
+      constexpr gfx::ColorSpace dst_color_space(
+          gfx::ColorSpace::PrimaryID::BT709,
+          gfx::ColorSpace::TransferID::IEC61966_2_1,
+          gfx::ColorSpace::MatrixID::SMPTE170M,
+          gfx::ColorSpace::RangeID::LIMITED);
       if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
-              format, frame->coded_size(), gfx::ColorSpace::CreateSRGB(),
-              origin, frame->mailbox_holder(0),
+              format, frame->coded_size(), frame->ColorSpace(), origin,
+              frame->mailbox_holder(0), dst_color_space,
               WTF::Bind(blit_done_callback, WrapWeakPersistent(this), keyframe,
                         reset_count_,
                         ConvertToBaseOnceCallback(CrossThreadBindOnce(

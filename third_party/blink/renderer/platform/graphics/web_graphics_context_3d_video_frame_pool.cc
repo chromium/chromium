@@ -95,6 +95,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     const gfx::ColorSpace& src_color_space,
     GrSurfaceOrigin src_surface_origin,
     const gpu::MailboxHolder& src_mailbox_holder,
+    const gfx::ColorSpace& dst_color_space,
     base::OnceCallback<void(scoped_refptr<media::VideoFrame>)> callback) {
   if (!weak_context_provider_)
     return false;
@@ -106,7 +107,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     return false;
 
   scoped_refptr<media::VideoFrame> dst_frame =
-      pool_->MaybeCreateVideoFrame(src_size);
+      pool_->MaybeCreateVideoFrame(src_size, dst_color_space);
   if (!dst_frame)
     return false;
 

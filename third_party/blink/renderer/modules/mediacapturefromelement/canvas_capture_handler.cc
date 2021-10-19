@@ -264,7 +264,8 @@ void CanvasCaptureHandler::SendNewFrame(
               gfx::ColorSpace::CreateSRGB(),
               image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
                                        : kBottomLeft_GrSurfaceOrigin,
-              image->GetMailboxHolder(), std::move(blit_done_callback))) {
+              image->GetMailboxHolder(), gfx::ColorSpace::CreateREC709(),
+              std::move(blit_done_callback))) {
         return;
       }
     }

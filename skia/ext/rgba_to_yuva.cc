@@ -4,6 +4,7 @@
 
 #include "skia/ext/rgba_to_yuva.h"
 
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -22,18 +23,18 @@ void BlitRGBAToYUVA(SkImage* src_image,
   const SkRect dst_rect =
       SkRect::MakeSize(SkSize::Make(dst_yuva_info.dimensions()));
 
-  // TODO(https://crbug.com/1206168): These color matrices are copied directly
-  // from kRGBtoYColorWeights et al in the gpu::GLHelperScaling::
-  // CreateI420Planerizer method this is code is replacing.
-  // The code below should look up the color matrix based on |dst_yuva_info|.
-  // See also third_party/skia/src/core/SkYUVMath.cpp for another source for
-  // those matrices.
-
+  // TODO(https://crbug.com/skia/12545): Expose color matrices via SkYUVAInfo.
   // This corresponds to hard-coding kRec601_Limited_SkYUVColorSpace:
   constexpr SkColorMatrix rgb_to_yuv_rec601_limited(
       0.257f, 0.504f, 0.098f, 0.000f, 0.063f,    //
-      -0.148f, -0.291f, 0.439f, 0.000f, 0.502f,  //
-      0.439f, -0.368f, -0.071f, 0.000f, 0.502f,  //
+      -0.148f, -0.291f, 0.439f, 0.000f, 0.500f,  //
+      0.439f, -0.368f, -0.071f, 0.000f, 0.500f,  //
+      0.000f, 0.000f, 0.000f, 1.000f, 0.000f);
+  // This corresponds to hard-coding kRec709_Limited_SkYUVColorSpace:
+  constexpr SkColorMatrix rgb_to_yuv_rec709_limited(
+      0.183f, 0.614f, 0.062f, 0.000f, 0.063f,    //
+      -0.101f, -0.339f, 0.439f, 0.000f, 0.502f,  //
+      0.439f, -0.399f, -0.040f, 0.000f, 0.502f,  //
       0.000f, 0.000f, 0.000f, 1.000f, 0.000f);
 
   // Permutation matrices to select the appropriate YUVA channels for each
@@ -55,15 +56,26 @@ void BlitRGBAToYUVA(SkImage* src_image,
       permutation_matrices[1] = UVx1;
       break;
     default:
-      NOTREACHED();
+      DLOG(ERROR) << "Unsupported plane configuration.";
+      return;
+  }
+
+  SkColorMatrix rgb_to_yuv_matrix;
+  switch (dst_yuva_info.yuvColorSpace()) {
+    case kRec601_Limited_SkYUVColorSpace:
+      rgb_to_yuv_matrix = rgb_to_yuv_rec601_limited;
+      break;
+    default:
+      // TODO(https://crbug.com/skia/12545): Query Skia for matrices.
+      DLOG(ERROR) << "Unsupported color matrix, using Rec709.";
+    case kRec709_Limited_SkYUVColorSpace:
+      rgb_to_yuv_matrix = rgb_to_yuv_rec709_limited;
       break;
   }
 
   // Blit each plane.
   for (int plane = 0; plane < dst_yuva_info.numPlanes(); ++plane) {
-    // TODO(https://crbug.com/1258245): Look up appropriate color matrix based
-    // on `dst_yuva_info.yuvColorSpace()` once the bug is fixed.
-    SkColorMatrix color_matrix = rgb_to_yuv_rec601_limited;
+    SkColorMatrix color_matrix = rgb_to_yuv_matrix;
     color_matrix.postConcat(permutation_matrices[plane]);
 
     SkSamplingOptions sampling_options(SkFilterMode::kLinear);

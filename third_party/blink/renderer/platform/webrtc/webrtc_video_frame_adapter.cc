@@ -213,7 +213,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
       // Blocking is necessary to create the GpuMemoryBuffer from this thread.
       base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
       dst_frame = accelerated_frame_pool_->MaybeCreateVideoFrame(
-          source_frame->coded_size());
+          source_frame->coded_size(), gfx::ColorSpace::CreateREC709());
       if (!dst_frame) {
         return nullptr;
       }

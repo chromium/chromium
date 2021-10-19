@@ -33,7 +33,8 @@ class InternalRefCountedPool;
 class FrameResources {
  public:
   FrameResources(scoped_refptr<InternalRefCountedPool> pool,
-                 const gfx::Size& coded_size);
+                 const gfx::Size& coded_size,
+                 const gfx::ColorSpace& color_space);
   ~FrameResources();
   FrameResources(const FrameResources& other) = delete;
   FrameResources& operator=(const FrameResources& other) = delete;
@@ -43,7 +44,8 @@ class FrameResources {
 
   // Return true if these resources can be reused for a frame with the specified
   // parameters.
-  bool IsCompatibleWith(const gfx::Size& coded_size) const;
+  bool IsCompatibleWith(const gfx::Size& coded_size,
+                        const gfx::ColorSpace& color_space) const;
 
   // Create a VideoFrame using these resources. This will transfer ownership of
   // the GpuMemoryBuffer to the VideoFrame.
@@ -78,7 +80,9 @@ class InternalRefCountedPool : public base::RefCounted<InternalRefCountedPool> {
 
   // Create a VideoFrame with the specified parameters, reusing the resources
   // of a previous frame, if possible.
-  scoped_refptr<VideoFrame> MaybeCreateVideoFrame(const gfx::Size& coded_size);
+  scoped_refptr<VideoFrame> MaybeCreateVideoFrame(
+      const gfx::Size& coded_size,
+      const gfx::ColorSpace& color_space);
 
   // Indicate that the owner of `this` is being destroyed. This will eventually
   // cause `this` to be destroyed (once all of the FrameResources it created are
@@ -118,7 +122,8 @@ class RenderableGpuMemoryBufferVideoFramePoolImpl
           context);
 
   scoped_refptr<VideoFrame> MaybeCreateVideoFrame(
-      const gfx::Size& coded_size) override;
+      const gfx::Size& coded_size,
+      const gfx::ColorSpace& color_space) override;
 
   ~RenderableGpuMemoryBufferVideoFramePoolImpl() override;
 
@@ -129,10 +134,11 @@ class RenderableGpuMemoryBufferVideoFramePoolImpl
 // FrameResources
 
 FrameResources::FrameResources(scoped_refptr<InternalRefCountedPool> pool,
-                               const gfx::Size& coded_size)
+                               const gfx::Size& coded_size,
+                               const gfx::ColorSpace& color_space)
     : pool_(std::move(pool)),
       coded_size_(coded_size),
-      color_space_(gfx::ColorSpace::CreateREC709()) {}
+      color_space_(color_space) {}
 
 FrameResources::~FrameResources() {
   auto* context = pool_->GetContext();
@@ -188,8 +194,10 @@ bool FrameResources::Initialize() {
   return true;
 }
 
-bool FrameResources::IsCompatibleWith(const gfx::Size& coded_size) const {
-  return coded_size_ == coded_size;
+bool FrameResources::IsCompatibleWith(
+    const gfx::Size& coded_size,
+    const gfx::ColorSpace& color_space) const {
+  return coded_size_ == coded_size && color_space_ == color_space;
 }
 
 scoped_refptr<VideoFrame>
@@ -235,19 +243,21 @@ InternalRefCountedPool::InternalRefCountedPool(
     : context_(std::move(context)) {}
 
 scoped_refptr<VideoFrame> InternalRefCountedPool::MaybeCreateVideoFrame(
-    const gfx::Size& coded_size) {
+    const gfx::Size& coded_size,
+    const gfx::ColorSpace& color_space) {
   // Find or create a suitable FrameResources.
   std::unique_ptr<FrameResources> frame_resources;
   while (!available_frame_resources_.empty()) {
     frame_resources = std::move(available_frame_resources_.front());
     available_frame_resources_.pop_front();
-    if (!frame_resources->IsCompatibleWith(coded_size)) {
+    if (!frame_resources->IsCompatibleWith(coded_size, color_space)) {
       frame_resources = nullptr;
       continue;
     }
   }
   if (!frame_resources) {
-    frame_resources = std::make_unique<FrameResources>(this, coded_size);
+    frame_resources =
+        std::make_unique<FrameResources>(this, coded_size, color_space);
     if (!frame_resources->Initialize()) {
       DLOG(ERROR) << "Failed to initialize frame resources.";
       return nullptr;
@@ -317,8 +327,9 @@ RenderableGpuMemoryBufferVideoFramePoolImpl::
 
 scoped_refptr<VideoFrame>
 RenderableGpuMemoryBufferVideoFramePoolImpl::MaybeCreateVideoFrame(
-    const gfx::Size& coded_size) {
-  return pool_internal_->MaybeCreateVideoFrame(coded_size);
+    const gfx::Size& coded_size,
+    const gfx::ColorSpace& color_space) {
+  return pool_internal_->MaybeCreateVideoFrame(coded_size, color_space);
 }
 
 RenderableGpuMemoryBufferVideoFramePoolImpl::
