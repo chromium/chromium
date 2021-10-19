@@ -293,6 +293,21 @@ export function routineSectionTestSuite() {
     });
   });
 
+  test('ElementVisibleWhenRoutinesLengthGreaterThanZero', () => {
+    return initializeRoutineSection([])
+        .then(() => {
+          // Verify the element is hidden.
+          assertFalse(isVisible(/** @type {!HTMLElement} */ (
+              routineSectionElement.$$('#routineSection'))));
+        })
+        .then(() => setRoutines([RoutineType.kLanConnectivity]))
+        .then(() => {
+          // Verify the element is not hidden.
+          assertTrue(isVisible(/** @type {!HTMLElement} */ (
+              routineSectionElement.$$('#routineSection'))));
+        });
+  });
+
   test('ClickButtonShowsStopTest', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [

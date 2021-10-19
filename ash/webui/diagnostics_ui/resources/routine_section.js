@@ -661,4 +661,12 @@ Polymer({
 
   /** @override */
   created() {},
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  hideRoutineSection() {
+    return this.routines.length === 0;
+  },
 });

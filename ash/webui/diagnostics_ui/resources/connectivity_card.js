@@ -109,8 +109,12 @@ Polymer({
     this.getRoutineSectionElem_().stopTests();
   },
 
-  displayRoutines_() {
-    return this.routines_ && this.routines_.length > 0;
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  hasRoutines_() {
+    return this.routineGroups_ && this.routineGroups_.length > 0;
   },
 
   /** @private */
