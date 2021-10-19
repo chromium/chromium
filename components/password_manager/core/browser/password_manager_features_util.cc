@@ -198,7 +198,7 @@ bool IsOptedInForAccountStorage(const PrefService* pref_service,
     return false;
 
   // The opt-in is per account, so if there's no account then there's no opt-in.
-  std::string gaia_id = sync_service->GetAuthenticatedAccountInfo().gaia;
+  std::string gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty())
     return false;
 
@@ -254,7 +254,7 @@ void OptInToAccountStorage(PrefService* pref_service,
   DCHECK(
       base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage));
 
-  std::string gaia_id = sync_service->GetAuthenticatedAccountInfo().gaia;
+  std::string gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     // Maybe the account went away since the opt-in UI was shown. This should be
     // rare, but is ultimately harmless - just do nothing here.
@@ -278,7 +278,7 @@ void OptOutOfAccountStorageAndClearSettings(
   DCHECK(
       base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage));
 
-  std::string gaia_id = sync_service->GetAuthenticatedAccountInfo().gaia;
+  std::string gaia_id = sync_service->GetAccountInfo().gaia;
   bool account_exists = !gaia_id.empty();
   base::UmaHistogramBoolean(
       "PasswordManager.AccountStorage.SignedInAccountFoundDuringOptOut",
@@ -321,7 +321,7 @@ bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
   if (!sync_service)
     return false;
 
-  std::string gaia_id = sync_service->GetAuthenticatedAccountInfo().gaia;
+  std::string gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty())
     return false;
 
@@ -340,7 +340,7 @@ PasswordForm::Store GetDefaultPasswordStore(
   if (!IsUserEligibleForAccountStorage(sync_service))
     return PasswordForm::Store::kProfileStore;
 
-  std::string gaia_id = sync_service->GetAuthenticatedAccountInfo().gaia;
+  std::string gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty())
     return PasswordForm::Store::kProfileStore;
 
@@ -380,7 +380,7 @@ void SetDefaultPasswordStore(PrefService* pref_service,
   DCHECK(
       base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage));
 
-  std::string gaia_id = sync_service->GetAuthenticatedAccountInfo().gaia;
+  std::string gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     // Maybe the account went away since the UI was shown. This should be rare,
     // but is ultimately harmless - just do nothing here.
@@ -494,7 +494,7 @@ void RecordMoveOfferedToNonOptedInUser(
     const syncer::SyncService* sync_service) {
   DCHECK(pref_service);
   DCHECK(sync_service);
-  std::string gaia_id = sync_service->GetAuthenticatedAccountInfo().gaia;
+  std::string gaia_id = sync_service->GetAccountInfo().gaia;
   DCHECK(!gaia_id.empty());
   DCHECK(!AccountStorageSettingsReader(pref_service,
                                        GaiaIdHash::FromGaiaId(gaia_id))
@@ -509,7 +509,7 @@ int GetMoveOfferedToNonOptedInUserCount(
     const syncer::SyncService* sync_service) {
   DCHECK(pref_service);
   DCHECK(sync_service);
-  std::string gaia_id = sync_service->GetAuthenticatedAccountInfo().gaia;
+  std::string gaia_id = sync_service->GetAccountInfo().gaia;
   DCHECK(!gaia_id.empty());
   AccountStorageSettingsReader reader(pref_service,
                                       GaiaIdHash::FromGaiaId(gaia_id));

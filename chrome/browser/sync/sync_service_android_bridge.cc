@@ -324,8 +324,7 @@ jboolean SyncServiceAndroidBridge::GetDecoupledFromAndroidMasterSync(
 base::android::ScopedJavaLocalRef<jobject>
 SyncServiceAndroidBridge::GetAuthenticatedAccountInfo(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CoreAccountInfo account_info =
-      native_sync_service_->GetAuthenticatedAccountInfo();
+  CoreAccountInfo account_info = native_sync_service_->GetAccountInfo();
   return account_info.IsEmpty()
              ? nullptr
              : ConvertToJavaCoreAccountInfo(env, account_info);
@@ -333,7 +332,7 @@ SyncServiceAndroidBridge::GetAuthenticatedAccountInfo(JNIEnv* env) {
 
 jboolean SyncServiceAndroidBridge::IsAuthenticatedAccountPrimary(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return native_sync_service_->IsAuthenticatedAccountPrimary();
+  return native_sync_service_->HasSyncConsent();
 }
 
 jboolean

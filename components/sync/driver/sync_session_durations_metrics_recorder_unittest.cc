@@ -25,7 +25,7 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
  public:
   SyncSessionDurationsMetricsRecorderTest()
       : identity_test_env_(&test_url_loader_factory_) {
-    sync_service_.SetIsAuthenticatedAccountPrimary(false);
+    sync_service_.SetHasSyncConsent(false);
     sync_service_.SetDisableReasons(SyncService::DISABLE_REASON_NOT_SIGNED_IN);
   }
 
@@ -39,7 +39,7 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
   void EnableSync() {
     identity_test_env_.MakePrimaryAccountAvailable("foo@gmail.com",
                                                    signin::ConsentLevel::kSync);
-    sync_service_.SetIsAuthenticatedAccountPrimary(true);
+    sync_service_.SetHasSyncConsent(true);
     sync_service_.SetDisableReasons(SyncService::DisableReasonSet());
     sync_service_.FireStateChanged();
   }

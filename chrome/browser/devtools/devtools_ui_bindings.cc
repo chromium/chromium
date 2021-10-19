@@ -1298,7 +1298,7 @@ void DevToolsUIBindings::GetSyncInformation(DispatchCallback callback) {
       "arePreferencesSynced",
       sync_service->GetActiveDataTypes().Has(syncer::ModelType::PREFERENCES));
 
-  CoreAccountInfo account_info = sync_service->GetAuthenticatedAccountInfo();
+  CoreAccountInfo account_info = sync_service->GetAccountInfo();
   if (account_info.IsEmpty()) {
     std::move(callback).Run(&result);
     return;

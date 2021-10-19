@@ -196,9 +196,9 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_EmptyUserEmail) {
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillEnableAccountWalletStorage);
-  // When we have no primary account, Sync will start in Transport-only mode
+  // When we don't have Sync consent, Sync will start in Transport-only mode
   // (if allowed).
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetHasSyncConsent(false);
 
   EXPECT_TRUE(IsCreditCardUploadEnabled(
       "john.smith@gmail.com",
@@ -216,9 +216,9 @@ TEST_F(
     IsCardUploadEnabled_TransportSyncDoesNotHaveAutofillProfileActiveDataType) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillEnableAccountWalletStorage);
-  // When we have no primary account, Sync will start in Transport-only mode
+  // When we don't have Sync consent, Sync will start in Transport-only mode
   // (if allowed).
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetHasSyncConsent(false);
 
   // Update the active types to only include Wallet. This disables all other
   // types, including profiles.

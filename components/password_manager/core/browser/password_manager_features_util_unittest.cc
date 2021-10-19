@@ -39,8 +39,8 @@ class PasswordManagerFeaturesUtilTestBase {
   // Sets up |sync_service_| for the case where there is no signed-in user (so
   // |sync_service_| will be fully inactive).
   void SetSyncStateNotSignedIn() {
-    sync_service_.SetAuthenticatedAccountInfo(CoreAccountInfo());
-    sync_service_.SetIsAuthenticatedAccountPrimary(false);
+    sync_service_.SetAccountInfo(CoreAccountInfo());
+    sync_service_.SetHasSyncConsent(false);
     sync_service_.SetTransportState(
         syncer::SyncService::TransportState::DISABLED);
     sync_service_.SetDisableReasons(
@@ -52,8 +52,8 @@ class PasswordManagerFeaturesUtilTestBase {
   // "transport-only" mode, meaning that the user will be eligibe for
   // account-based features such as the account-scoped password storage.
   void SetSyncStateTransportActive(const CoreAccountInfo& account) {
-    sync_service_.SetAuthenticatedAccountInfo(account);
-    sync_service_.SetIsAuthenticatedAccountPrimary(false);
+    sync_service_.SetAccountInfo(account);
+    sync_service_.SetHasSyncConsent(false);
     sync_service_.SetTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service_.SetDisableReasons(
@@ -64,8 +64,8 @@ class PasswordManagerFeaturesUtilTestBase {
   // Sets up |sync_service_| for the case where the signed-in user has enabled
   // Sync-the-feature.
   void SetSyncStateFeatureActive(const CoreAccountInfo& account) {
-    sync_service_.SetAuthenticatedAccountInfo(account);
-    sync_service_.SetIsAuthenticatedAccountPrimary(true);
+    sync_service_.SetAccountInfo(account);
+    sync_service_.SetHasSyncConsent(true);
     sync_service_.SetTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service_.SetDisableReasons({});

@@ -736,8 +736,8 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   AccountInfo account_info;
   account_info.email = "account@gmail.com";
   account_info.gaia = "account";
-  test_sync_service()->SetAuthenticatedAccountInfo(account_info);
-  test_sync_service()->SetIsAuthenticatedAccountPrimary(false);
+  test_sync_service()->SetAccountInfo(account_info);
+  test_sync_service()->SetHasSyncConsent(false);
 
   const std::string kRealm1 = "https://example.com";
   const std::string kRealm2 = "https://example2.com";

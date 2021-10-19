@@ -154,8 +154,7 @@ TEST_F(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
 TEST_F(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
   ON_CALL(*mock_sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(true));
-  ON_CALL(*mock_sync_service(), IsAuthenticatedAccountPrimary())
-      .WillByDefault(Return(true));
+  ON_CALL(*mock_sync_service(), HasSyncConsent()).WillByDefault(Return(true));
 
   CreateController();
   CheckController();

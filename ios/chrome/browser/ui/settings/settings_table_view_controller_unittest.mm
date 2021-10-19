@@ -145,8 +145,7 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_->GetMockUserSettings(), GetSelectedTypes())
         .WillByDefault(Return(syncer::UserSelectableTypeSet::All()));
-    ON_CALL(*sync_service_mock_, IsAuthenticatedAccountPrimary())
-        .WillByDefault(Return(true));
+    ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(true));
   }
 
   void AddSigninDisabledEnterprisePolicy() {

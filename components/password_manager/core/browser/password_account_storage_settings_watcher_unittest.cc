@@ -45,8 +45,8 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   account.gaia = "gaia_id";
   account.email = "email@test.com";
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  sync_service.SetAuthenticatedAccountInfo(account);
-  sync_service.SetIsAuthenticatedAccountPrimary(false);
+  sync_service.SetAccountInfo(account);
+  sync_service.SetHasSyncConsent(false);
   ASSERT_FALSE(sync_service.IsSyncFeatureEnabled());
 
   // Once the SyncService notifies its observers, the watcher should run the

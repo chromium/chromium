@@ -243,7 +243,7 @@ void SyncServiceImpl::Initialize() {
   RecordSyncInitialState(GetDisableReasons(),
                          user_settings_->IsFirstSetupComplete());
 
-  if (!IsAuthenticatedAccountPrimary()) {
+  if (!HasSyncConsent()) {
     // Remove after 11/2021. Migration logic to set SyncRequested to false if
     // the user is signed-out or signed-in but not syncing (crbug.com/1147026).
     user_settings_->SetSyncRequested(false);
@@ -320,9 +320,8 @@ void SyncServiceImpl::AccountStateChanged() {
   // Once the feature toggle is enabled, Sync and master sync should only remain
   // coupled if the former stays enabled and the latter disabled. Upon sign-out
   // set the pref so they are decoupled on the next time Sync is turned on.
-  if (!IsAuthenticatedAccountPrimary() &&
-      base::FeatureList::IsEnabled(
-          switches::kDecoupleSyncFromAndroidMasterSync)) {
+  if (!HasSyncConsent() && base::FeatureList::IsEnabled(
+                               switches::kDecoupleSyncFromAndroidMasterSync)) {
     sync_prefs_.SetDecoupledFromAndroidMasterSync();
   }
 #endif  // defined(OS_ANDROID)
@@ -427,8 +426,7 @@ void SyncServiceImpl::OnDataTypeRequestsSyncStartup(ModelType type) {
 void SyncServiceImpl::StartUpSlowEngineComponents() {
   DCHECK(IsEngineAllowedToRun());
 
-  const CoreAccountInfo authenticated_account_info =
-      GetAuthenticatedAccountInfo();
+  const CoreAccountInfo authenticated_account_info = GetAccountInfo();
 
   if (IsLocalSyncEnabled()) {
     // With local sync (roaming profiles) there is no identity manager and hence
@@ -762,7 +760,7 @@ void SyncServiceImpl::OnEngineInitialized(
           debug_info_listener, &data_type_controllers_, &crypto_, engine_.get(),
           this);
 
-  crypto_.SetSyncEngine(GetAuthenticatedAccountInfo(), engine_.get());
+  crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
 
   // Auto-start means IsFirstSetupComplete gets set automatically.
   if (start_behavior_ == AUTO_START &&
@@ -1049,7 +1047,7 @@ void SyncServiceImpl::TriggerRefresh(const ModelTypeSet& types) {
 
 bool SyncServiceImpl::IsSignedIn() const {
   // Sync is logged in if there is a non-empty account id.
-  return !GetAuthenticatedAccountInfo().account_id.empty();
+  return !GetAccountInfo().account_id.empty();
 }
 
 base::Time SyncServiceImpl::GetLastSyncedTimeForDebugging() const {
@@ -1123,8 +1121,7 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
   DCHECK(!engine_->GetCacheGuid().empty());
 
   ConfigureContext configure_context;
-  configure_context.authenticated_account_id =
-      GetAuthenticatedAccountInfo().account_id;
+  configure_context.authenticated_account_id = GetAccountInfo().account_id;
   configure_context.cache_guid = engine_->GetCacheGuid();
   configure_context.sync_mode = SyncMode::kFull;
   configure_context.reason = reason;
@@ -1445,7 +1442,7 @@ void SyncServiceImpl::OnAccountsInCookieUpdatedWithCallback(
 
 bool SyncServiceImpl::HasCookieJarMismatch(
     const std::vector<gaia::ListedAccount>& cookie_jar_accounts) {
-  CoreAccountId account_id = GetAuthenticatedAccountInfo().account_id;
+  CoreAccountId account_id = GetAccountInfo().account_id;
   // Iterate through list of accounts, looking for current sync account.
   for (const auto& account : cookie_jar_accounts) {
     if (account.id == account_id)
@@ -1575,7 +1572,7 @@ void SyncServiceImpl::GetAllNodesForDebugging(
   }
 }
 
-CoreAccountInfo SyncServiceImpl::GetAuthenticatedAccountInfo() const {
+CoreAccountInfo SyncServiceImpl::GetAccountInfo() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!auth_manager_) {
     // Some crashes on iOS (crbug.com/962384) suggest that SyncServiceImpl
@@ -1587,11 +1584,11 @@ CoreAccountInfo SyncServiceImpl::GetAuthenticatedAccountInfo() const {
   return auth_manager_->GetActiveAccountInfo().account_info;
 }
 
-bool SyncServiceImpl::IsAuthenticatedAccountPrimary() const {
+bool SyncServiceImpl::HasSyncConsent() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!auth_manager_) {
     // This is a precautionary check to be consistent with the check in
-    // GetAuthenticatedAccountInfo().
+    // GetAccountInfo().
     return false;
   }
   return auth_manager_->GetActiveAccountInfo().is_primary;

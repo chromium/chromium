@@ -87,7 +87,7 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
     const GoogleServiceAuthError& auth_error) {
   DCHECK(service);
 
-  if (!service->IsAuthenticatedAccountPrimary()) {
+  if (!service->HasSyncConsent()) {
     return {SyncStatusMessageType::kPreSynced, IDS_SETTINGS_EMPTY_STRING,
             IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
   }
@@ -243,7 +243,7 @@ SyncStatusLabels GetSyncStatusLabels(syncer::SyncService* sync_service,
             IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
   }
   DCHECK(identity_manager);
-  CoreAccountInfo account_info = sync_service->GetAuthenticatedAccountInfo();
+  CoreAccountInfo account_info = sync_service->GetAccountInfo();
   GoogleServiceAuthError auth_error =
       identity_manager->GetErrorStateOfRefreshTokenForAccount(
           account_info.account_id);
@@ -275,7 +275,7 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
     return absl::nullopt;
   }
 
-  if (!service->IsAuthenticatedAccountPrimary()) {
+  if (!service->HasSyncConsent()) {
     // Only trusted vault errors can be shown if the account isn't a consented
     // primary account.
     // Note the condition checked is not HasUserOptedInToSync(), because the
@@ -360,8 +360,7 @@ bool ShouldRequestSyncConfirmation(const syncer::SyncService* service) {
   // usually be true, but in situation 2 it's false. Note that while there is a
   // primary account, IsSyncRequested() can only be false if Sync was reset from
   // the dashboard.
-  return !service->IsLocalSyncEnabled() &&
-         service->IsAuthenticatedAccountPrimary() &&
+  return !service->IsLocalSyncEnabled() && service->HasSyncConsent() &&
          !service->IsSetupInProgress() &&
          !service->GetUserSettings()->IsFirstSetupComplete();
 }

@@ -359,6 +359,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   Stat<std::string>* invalidator_id =
       section_identity->AddStringStat("Invalidator Client ID");
   Stat<std::string>* username = section_identity->AddStringStat("Username");
+  // TODO(crbug.com/1254280): Replace "is primary" terminology with
+  // "is Sync-consented".
   Stat<bool>* user_is_primary = section_identity->AddBoolStat("Is Primary");
 
   Section* section_credentials =
@@ -522,8 +524,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   if (is_status_valid && !full_status.invalidator_client_id.empty())
     invalidator_id->Set(full_status.invalidator_client_id);
   if (!is_local_sync_enabled_state) {
-    username->Set(service->GetAuthenticatedAccountInfo().email);
-    user_is_primary->Set(service->IsAuthenticatedAccountPrimary());
+    username->Set(service->GetAccountInfo().email);
+    user_is_primary->Set(service->HasSyncConsent());
   }
 
   // Credentials.

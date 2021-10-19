@@ -258,8 +258,8 @@ class PersonalDataManagerTestBase {
     AccountInfo account_info;
     account_info.email = use_sync_transport_mode ? kSyncTransportAccountEmail
                                                  : kPrimaryAccountEmail;
-    sync_service_.SetAuthenticatedAccountInfo(account_info);
-    sync_service_.SetIsAuthenticatedAccountPrimary(!use_sync_transport_mode);
+    sync_service_.SetAccountInfo(account_info);
+    sync_service_.SetHasSyncConsent(!use_sync_transport_mode);
     personal_data->OnSyncServiceInitialized(&sync_service_);
     personal_data->OnStateChanged(&sync_service_);
 
@@ -268,7 +268,7 @@ class PersonalDataManagerTestBase {
 
   bool TurnOnSyncFeature(PersonalDataManager* personal_data)
       WARN_UNUSED_RESULT {
-    sync_service_.SetIsAuthenticatedAccountPrimary(true);
+    sync_service_.SetHasSyncConsent(true);
     if (!sync_service_.IsSyncFeatureEnabled())
       return false;
     personal_data->OnStateChanged(&sync_service_);
@@ -325,8 +325,8 @@ class PersonalDataManagerTestBase {
     AccountInfo account_info;
     account_info.email = kSyncTransportAccountEmail;
     account_info.account_id = CoreAccountId("account_id");
-    sync_service_.SetAuthenticatedAccountInfo(account_info);
-    sync_service_.SetIsAuthenticatedAccountPrimary(false);
+    sync_service_.SetAccountInfo(account_info);
+    sync_service_.SetHasSyncConsent(false);
     return account_info;
   }
   base::test::TaskEnvironment task_environment_;
@@ -1480,7 +1480,7 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
   // Sign in.
   identity_test_env_.SetPrimaryAccount("test@gmail.com",
                                        signin::ConsentLevel::kSync);
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
+  sync_service_.SetHasSyncConsent(true);
   sync_service_.SetActiveDataTypes(
       syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_EQ(AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled,
@@ -6584,7 +6584,7 @@ TEST_F(PersonalDataManagerTest, SwitchServerStorages) {
   ASSERT_EQ(2U, personal_data_->GetServerCreditCards().size());
 
   // Switch to persistent storage.
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
+  sync_service_.SetHasSyncConsent(true);
   personal_data_->OnStateChanged(&sync_service_);
   WaitForOnPersonalDataChanged();
 
@@ -6603,7 +6603,7 @@ TEST_F(PersonalDataManagerTest, SwitchServerStorages) {
   EXPECT_EQ(1U, personal_data_->GetServerCreditCards().size());
 
   // Switch back to the account storage.
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetHasSyncConsent(false);
   personal_data_->OnStateChanged(&sync_service_);
   WaitForOnPersonalDataChanged();
 
@@ -7123,10 +7123,10 @@ TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   // Make the sync service return a non-empty AccountInfo when
-  // GetAuthenticatedAccountInfo() is called.
+  // GetAccountInfo() is called.
   AccountInfo active_info;
   active_info.email = kSyncTransportAccountEmail;
-  sync_service_.SetAuthenticatedAccountInfo(active_info);
+  sync_service_.SetAccountInfo(active_info);
 
   // The Active Sync AccountInfo should be returned.
   EXPECT_EQ(kSyncTransportAccountEmail,
@@ -7300,7 +7300,7 @@ TEST_F(PersonalDataManagerMigrationTest,
   EXPECT_FALSE(::autofill::prefs::IsUserOptedInWalletSyncTransport(
       prefs_.get(), CoreAccountId::FromEmail(kPrimaryAccountEmail)));
   EXPECT_TRUE(::autofill::prefs::IsUserOptedInWalletSyncTransport(
-      prefs_.get(), sync_service_.GetAuthenticatedAccountInfo().account_id));
+      prefs_.get(), sync_service_.GetAccountInfo().account_id));
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
@@ -7319,8 +7319,8 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   AccountInfo active_info;
   active_info.email = kPrimaryAccountEmail;
   active_info.account_id = CoreAccountId("account_id");
-  sync_service_.SetAuthenticatedAccountInfo(active_info);
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetAccountInfo(active_info);
+  sync_service_.SetHasSyncConsent(false);
 
   // Set a server credit card.
   std::vector<CreditCard> server_cards;
@@ -7391,7 +7391,7 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
 
   // Set that the user enabled the sync feature. Check that the function now
   // returns false.
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
+  sync_service_.SetHasSyncConsent(true);
   {
     base::HistogramTester histogram_tester;
     EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
@@ -7400,7 +7400,7 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   }
 
   // Re-disable the sync feature. Check that the function now returns true.
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetHasSyncConsent(false);
   {
     base::HistogramTester histogram_tester;
     EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
@@ -7433,8 +7433,8 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   AccountInfo active_info;
   active_info.email = kPrimaryAccountEmail;
   active_info.account_id = CoreAccountId("account_id");
-  sync_service_.SetAuthenticatedAccountInfo(active_info);
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetAccountInfo(active_info);
+  sync_service_.SetHasSyncConsent(false);
 
   // Set a server credit card.
   std::vector<CreditCard> server_cards;
@@ -7481,11 +7481,11 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
 
   // Set that the user enabled the sync feature. Check that the function still
   // returns false.
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
+  sync_service_.SetHasSyncConsent(true);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-disable the sync feature. Check that the function still returns false.
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetHasSyncConsent(false);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function still returns false.
@@ -7500,7 +7500,7 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   // for the first few tests.
   identity_test_env_.SetPrimaryAccount("test@gmail.com",
                                        signin::ConsentLevel::kSync);
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetHasSyncConsent(false);
   sync_service_.SetActiveDataTypes(
       syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
 
@@ -7555,8 +7555,8 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   // Simulate that the user has enabled the sync feature.
   AccountInfo primary_account_info;
   primary_account_info.email = kPrimaryAccountEmail;
-  sync_service_.SetAuthenticatedAccountInfo(primary_account_info);
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
+  sync_service_.SetAccountInfo(primary_account_info);
+  sync_service_.SetHasSyncConsent(true);
 // MakePrimaryAccountAvailable is not supported on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   identity_test_env_.MakePrimaryAccountAvailable(primary_account_info.email,
@@ -7591,8 +7591,8 @@ TEST_F(PersonalDataManagerTest, OnUserAcceptedUpstreamOffer) {
   // Transport for Wallet mode.
   CoreAccountInfo active_info = identity_test_env_.MakePrimaryAccountAvailable(
       kSyncTransportAccountEmail, signin::ConsentLevel::kSignin);
-  sync_service_.SetAuthenticatedAccountInfo(active_info);
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetAccountInfo(active_info);
+  sync_service_.SetHasSyncConsent(false);
   sync_service_.SetActiveDataTypes(
       syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
   // Make sure there are no opt-ins recorded yet.
@@ -7667,7 +7667,7 @@ TEST_F(PersonalDataManagerTest, OnUserAcceptedUpstreamOffer) {
   ///////////////////////////////////////////////////////////
   identity_test_env_.SetPrimaryAccount(active_info.email,
                                        signin::ConsentLevel::kSync);
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
+  sync_service_.SetHasSyncConsent(true);
   {
     EXPECT_EQ(AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled,
               personal_data_->GetSyncSigninState());

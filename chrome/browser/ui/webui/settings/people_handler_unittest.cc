@@ -219,8 +219,7 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&BuildMockSyncService)));
 
-    ON_CALL(*mock_sync_service_, IsAuthenticatedAccountPrimary())
-        .WillByDefault(Return(true));
+    ON_CALL(*mock_sync_service_, HasSyncConsent()).WillByDefault(Return(true));
 
     ON_CALL(*mock_sync_service_->GetMockUserSettings(), GetPassphraseType())
         .WillByDefault(Return(syncer::PassphraseType::kImplicitPassphrase));

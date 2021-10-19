@@ -88,7 +88,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
   sync_service_.SetFirstSetupComplete(false);
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   sync_service_.SetIsUsingExplicitPassphrase(false);
-  sync_service_.SetAuthenticatedAccountInfo(account_info);
+  sync_service_.SetAccountInfo(account_info);
 
   CWVSyncController* sync_controller = [[CWVSyncController alloc]
       initWithSyncService:&sync_service_

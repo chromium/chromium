@@ -218,12 +218,14 @@ class SyncService : public KeyedService {
   // etc. is considered not granted.
   virtual bool IsLocalSyncEnabled() const = 0;
 
-  // Information about the currently signed in user.
-  virtual CoreAccountInfo GetAuthenticatedAccountInfo() const = 0;
-  // Whether the currently signed in user is the "primary" browser account (see
-  // IdentityManager). If this is false, then IsSyncFeatureEnabled will also be
-  // false, but Sync-the-transport might still run.
-  virtual bool IsAuthenticatedAccountPrimary() const = 0;
+  // Information about the primary account. Note that this account doesn't
+  // necessarily have Sync consent (in that case, only Sync-the-transport may be
+  // running).
+  virtual CoreAccountInfo GetAccountInfo() const = 0;
+  // Whether the primary account has consented to Sync (see IdentityManager). If
+  // this is false, then IsSyncFeatureEnabled will also be false, but
+  // Sync-the-transport might still run.
+  virtual bool HasSyncConsent() const = 0;
 
   // Returns whether the SyncService has completed at least one Sync cycle since
   // starting up (i.e. since browser startup or signin). This can be useful
@@ -250,7 +252,7 @@ class SyncService : public KeyedService {
   //////////////////////////////////////////////////////////////////////////////
 
   // Returns whether all conditions are satisfied for Sync-the-feature to start.
-  // This means that there is a primary account, no disable reasons, and
+  // This means that there is a Sync-consented account, no disable reasons, and
   // first-time Sync setup has been completed by the user.
   // Note: This does not imply that Sync is actually running. Check
   // IsSyncFeatureActive or GetTransportState to get the current state.
@@ -266,9 +268,9 @@ class SyncService : public KeyedService {
   bool IsEngineInitialized() const;
 
   // Returns whether Sync-the-feature can (attempt to) start. This means that
-  // there is a primary account and no disable reasons. It does *not* require
-  // first-time Sync setup to be complete, because that can only happen after
-  // the engine has started.
+  // there is a Sync-consented account and no disable reasons. It does *not*
+  // require first-time Sync setup to be complete, because that can only happen
+  // after the engine has started.
   // Note: This refers to Sync-the-feature. Sync-the-transport may be running
   // even if this is false.
   bool CanSyncFeatureStart() const;

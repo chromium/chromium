@@ -111,7 +111,7 @@ SyncStatusLabels SetUpDistinctCase(
           test_environment->identity_manager()->GetPrimaryAccountId(
               signin::ConsentLevel::kSync);
       test_environment->SetRefreshTokenForPrimaryAccount();
-      service->SetAuthenticatedAccountInfo(
+      service->SetAccountInfo(
           test_environment->identity_manager()->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSync));
       test_environment->UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -331,7 +331,7 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
   const AccountInfo primary_account_info =
       environment.MakePrimaryAccountAvailable(kTestUser,
                                               signin::ConsentLevel::kSync);
-  service.SetAuthenticatedAccountInfo(primary_account_info);
+  service.SetAccountInfo(primary_account_info);
   service.SetFirstSetupComplete(true);
 
   // Setup a secondary account.

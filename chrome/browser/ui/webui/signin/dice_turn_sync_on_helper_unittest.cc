@@ -191,8 +191,7 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
 std::unique_ptr<KeyedService> BuildMockSyncService(
     content::BrowserContext* context) {
   auto service = std::make_unique<testing::NiceMock<syncer::MockSyncService>>();
-  ON_CALL(*service, IsAuthenticatedAccountPrimary())
-      .WillByDefault(Return(true));
+  ON_CALL(*service, HasSyncConsent()).WillByDefault(Return(true));
   return service;
 }
 

@@ -847,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
   // something is already running or scheduled to run on the sync thread. We
   // want to block here until we know the cookie jar stats have been updated.
   UpdateCookieJarAccountsAndWait(
-      {GetClient(0)->service()->GetAuthenticatedAccountInfo().account_id},
+      {GetClient(0)->service()->GetAccountInfo().account_id},
       /*expected_cookie_jar_mismatch=*/false);
 
   // Trigger a sync and wait for it.

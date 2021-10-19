@@ -20,6 +20,8 @@ struct SyncAccountInfo {
   SyncAccountInfo(const CoreAccountInfo& account_info, bool is_primary);
 
   CoreAccountInfo account_info;
+  // TODO(crbug.com/1254280): Replace "is primary" terminology with
+  // "is Sync-consented".
   bool is_primary = false;
 };
 
