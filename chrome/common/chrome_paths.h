@@ -22,10 +22,9 @@ namespace chrome {
 enum {
   PATH_START = 1000,
 
-  DIR_APP = PATH_START,  // Directory where dlls and data reside.
-  DIR_LOGS,              // Directory where logs should be written.
-  DIR_USER_DATA,         // Directory where user data can be written.
-  DIR_CRASH_DUMPS,       // Directory where crash dumps are written.
+  DIR_LOGS = PATH_START,  // Directory where logs should be written.
+  DIR_USER_DATA,          // Directory where user data can be written.
+  DIR_CRASH_DUMPS,        // Directory where crash dumps are written.
 #if defined(OS_WIN)
   DIR_WATCHER_DATA,       // Directory where the Chrome watcher stores
                           // data.

@@ -259,7 +259,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveDirectoryAccess_BlockAllChildren) {
   base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
-  base::ScopedPathOverride app_override(chrome::DIR_APP, app_dir, true, true);
+  base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
 
   // App directory itself should not be allowed.
   EXPECT_EQ(SensitiveDirectoryResult::kAbort,

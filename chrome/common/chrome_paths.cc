@@ -130,8 +130,6 @@ namespace chrome {
 bool PathProvider(int key, base::FilePath* result) {
   // Some keys are just aliases...
   switch (key) {
-    case chrome::DIR_APP:
-      return base::PathService::Get(base::DIR_MODULE, result);
     case chrome::DIR_LOGS:
 #ifdef NDEBUG
       // Release builds write to the data dir
@@ -246,11 +244,8 @@ bool PathProvider(int key, base::FilePath* result) {
 #if defined(OS_MAC)
       cur = base::mac::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Resources"));
-#elif defined(OS_FUCHSIA)
-      if (!base::PathService::Get(base::DIR_ASSETS, &cur))
-        return false;
 #else
-      if (!base::PathService::Get(chrome::DIR_APP, &cur))
+      if (!base::PathService::Get(base::DIR_ASSETS, &cur))
         return false;
       cur = cur.Append(FILE_PATH_LITERAL("resources"));
 #endif
@@ -487,7 +482,7 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = base::mac::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Default Apps"));
 #else
-      if (!base::PathService::Get(chrome::DIR_APP, &cur))
+      if (!base::PathService::Get(base::DIR_MODULE, &cur))
         return false;
       cur = cur.Append(FILE_PATH_LITERAL("default_apps"));
 #endif
