@@ -937,7 +937,7 @@ deps = {
   },
 
   'src/third_party/google_benchmark/src': {
-    'url': Var('chromium_git') + '/external/github.com/google/benchmark.git' + '@' + 'e991355c02b93fe17713efe04cbc2e278e00fdbd',
+    'url': Var('chromium_git') + '/external/github.com/google/benchmark.git' + '@' + 'f730846b0a3c0dc0699978846fb14ffb2fad0bdc',
     'condition': 'checkout_google_benchmark',
   },
 
