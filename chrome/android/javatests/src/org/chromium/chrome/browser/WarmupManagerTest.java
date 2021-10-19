@@ -6,7 +6,6 @@ package org.chromium.chrome.browser;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.view.ContextThemeWrapper;
 
 import androidx.test.filters.SmallTest;
 
@@ -76,10 +75,14 @@ public class WarmupManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        mContext = new ContextThemeWrapper(InstrumentationRegistry.getInstrumentation()
-                                                   .getTargetContext()
-                                                   .getApplicationContext(),
-                R.style.ColorOverlay);
+        // Unlike most of Chrome, the WarmupManager inflates layouts with the application context.
+        // This is because the inflation happens before an activity exists. If you're trying to fix
+        // a failing test, it's important to not add extra theme/style information to this context
+        // in this test because it could hide a real production issue. See https://crbug.com/1246329
+        // for an example.
+        mContext = InstrumentationRegistry.getInstrumentation()
+                           .getTargetContext()
+                           .getApplicationContext();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
             mWarmupManager = WarmupManager.getInstance();
