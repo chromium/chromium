@@ -120,8 +120,6 @@ class PerformanceManagerTabHelper
   friend class content::WebContentsUserData<PerformanceManagerTabHelper>;
   friend class PerformanceManagerRegistryImpl;
   friend class WebContentsProxyImpl;
-  FRIEND_TEST_ALL_PREFIXES(PerformanceManagerFencedFrameBrowserTest,
-                           FencedFrameDoesNotHaveParentFrameNode);
 
   explicit PerformanceManagerTabHelper(content::WebContents* web_contents);
 
