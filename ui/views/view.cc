@@ -64,6 +64,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/views_features.h"
 #include "ui/views/views_switches.h"
 #include "ui/views/widget/native_widget_private.h"
@@ -213,6 +214,14 @@ View::View() {
   SetTargetHandler(this);
   if (kUseDefaultFillLayout)
     default_fill_layout_.emplace(DefaultFillLayout());
+
+  static bool capture_stack_trace =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kViewStackTraces);
+  if (capture_stack_trace) {
+    SetProperty(kViewStackTraceKey,
+                std::make_unique<base::debug::StackTrace>());
+  }
 }
 
 View::~View() {

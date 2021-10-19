@@ -9,22 +9,14 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/class_property.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSkipAccessibilityPaintChecks, false)
-
-namespace {
-
-std::string GetViewTreeAsString(View* view) {
-  if (!view->parent())
-    return view->GetClassName();
-  return GetViewTreeAsString(view->parent()) + " -> " + view->GetClassName();
-}
-
-}  // namespace
 
 void RunAccessibilityPaintChecks(View* view) {
   if (view->GetProperty(kSkipAccessibilityPaintChecks))
@@ -45,14 +37,12 @@ void RunAccessibilityPaintChecks(View* view) {
 // the CHECK elsewhere.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(!node_data.HasState(ax::mojom::State::kIgnored))
-      << " " << view << ": " << view->GetClassName()
-      << " is focusable and should not be ignored.\n"
-      << GetViewTreeAsString(view);
+      << "View is focusable and should not be ignored.\n"
+      << GetViewDebugInfo(view);
 
   CHECK(!node_data.IsInvisible())
-      << " " << view << ": " << view->GetClassName()
-      << " is focusable and should not be invisible.\n"
-      << GetViewTreeAsString(view);
+      << "View is focusable and should not be invisible.\n"
+      << GetViewDebugInfo(view);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Focusable nodes must have an accessible name, otherwise screen reader users
@@ -79,10 +69,9 @@ void RunAccessibilityPaintChecks(View* view) {
   // DCHECKs are enabled.
   CHECK_EQ(node_data.GetNameFrom(),
            ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
-      << " " << view << ": " << view->GetClassName()
-      << " is focusable but has no accessible name or placeholder, and is not "
-         "explicitly marked as empty.\n"
-      << GetViewTreeAsString(view);
+      << "View is focusable but has no accessible name or placeholder, and is "
+         "not explicitly marked as empty.\n"
+      << GetViewDebugInfo(view);
 }
 
 }  // namespace views
