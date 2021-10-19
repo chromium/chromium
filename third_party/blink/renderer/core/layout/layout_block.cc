@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_marquee_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
@@ -2031,6 +2032,13 @@ LayoutUnit LayoutBlock::InlineBlockBaseline(
 
 const LayoutBlock* LayoutBlock::EnclosingFirstLineStyleBlock() const {
   NOT_DESTROYED();
+  auto* element = DynamicTo<Element>(GetNode());
+  if (element && element->ShadowPseudoId() ==
+                     shadow_element_names::kPseudoInternalInputSuggested) {
+    // Disable ::first-line style for autofill previews. See
+    // crbug.com/1227170.
+    return nullptr;
+  }
   const LayoutBlock* first_line_block = this;
   bool has_pseudo = false;
   while (true) {
