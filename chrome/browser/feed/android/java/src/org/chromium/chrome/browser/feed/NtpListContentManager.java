@@ -21,6 +21,7 @@ import org.chromium.ui.UiUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -271,6 +272,87 @@ public class NtpListContentManager implements ListContentManager {
         for (ListContentManagerObserver observer : mObservers) {
             observer.onItemMoved(curIndex, newIndex);
         }
+    }
+
+    /**
+     * Replaces content in the range [index, index+count) with the content in {@code
+     * newContentList}. For content that already exists in the range, it is moved rather than
+     * removed and then inserted.
+     * @param index Index of first item to replace.
+     * @param count Number of items to replace.
+     * @param newContentList List of content to insert.
+     * @return Whether content has changed. Returns false if the new content matches the replaced
+     *         content.
+     */
+    public boolean replaceRange(int rangeStart, int count, List<FeedContent> newContentList) {
+        boolean hasContentChange = false;
+        // 1) Builds the hash set based on keys of new contents.
+        HashSet<String> newContentKeySet = new HashSet<>();
+        for (int i = 0; i < newContentList.size(); ++i) {
+            newContentKeySet.add(newContentList.get(i).getKey());
+        }
+
+        // 2) Builds the hash map of existing content list for fast look up by key. Ignores headers.
+        HashMap<String, FeedContent> existingContentMap = new HashMap<>();
+        for (int i = rangeStart; i < rangeStart + count; ++i) {
+            FeedContent content = getContent(i);
+            existingContentMap.put(content.getKey(), content);
+        }
+
+        // 3) Removes those existing contents that do not appear in the new list.
+        for (int i = rangeStart + count - 1; i >= rangeStart;) {
+            // Find out how many contiguous items need to be removed, and then remove them in one
+            // call.
+            int rmIndex = i;
+            while (rmIndex >= rangeStart) {
+                String key = getContent(rmIndex).getKey();
+                if (newContentKeySet.contains(key)) {
+                    break;
+                }
+                existingContentMap.remove(key);
+                --rmIndex;
+            }
+
+            if (rmIndex != i) {
+                hasContentChange = true;
+                removeContents(rmIndex + 1, i - rmIndex);
+                i = rmIndex;
+            } else {
+                --i;
+            }
+        }
+
+        // 4) Iterates through the new list to add the new content or move the existing content
+        //    if needed.
+        for (int i = 0; i < newContentList.size();) {
+            FeedContent content = newContentList.get(i);
+
+            // If this is an existing content, moves it to new position, offset by header count.
+            if (existingContentMap.containsKey(content.getKey())) {
+                hasContentChange = true;
+                int oldIndex = findContentPositionByKey(content.getKey());
+                int newIndex = i + rangeStart;
+                if (oldIndex != newIndex) {
+                    hasContentChange = true;
+                    moveContent(oldIndex, i + rangeStart);
+                }
+
+                ++i;
+                continue;
+            }
+
+            // Otherwise, this is new content. Add it together with all adjacent new contents.
+            int startIndex = i++;
+            while (i < newContentList.size()
+                    && !existingContentMap.containsKey(newContentList.get(i).getKey())) {
+                ++i;
+            }
+            hasContentChange = true;
+            // Account for headers when inserting contents.
+            addContents(startIndex + rangeStart, newContentList.subList(startIndex, i));
+        }
+
+        return hasContentChange;
     }
 
     @Override

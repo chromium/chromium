@@ -69,7 +69,6 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -940,61 +939,9 @@ public class FeedStream implements Stream {
 
     private void updateContentsInPlace(
             ArrayList<NtpListContentManager.FeedContent> newContentList) {
-        boolean hasContentChange = false;
-
-        // 1) Builds the hash set based on keys of new contents.
-        HashSet<String> newContentKeySet = new HashSet<>();
-        for (int i = 0; i < newContentList.size(); ++i) {
-            hasContentChange = true;
-            newContentKeySet.add(newContentList.get(i).getKey());
-        }
-
-        // 2) Builds the hash map of existing content list for fast look up by key. Ignores headers.
-        HashMap<String, NtpListContentManager.FeedContent> existingContentMap = new HashMap<>();
-        for (int i = mHeaderCount; i < mContentManager.getItemCount(); ++i) {
-            NtpListContentManager.FeedContent content = mContentManager.getContent(i);
-            existingContentMap.put(content.getKey(), content);
-        }
-
-        // 3) Removes those existing contents that do not appear in the new list. Ignores headers.
-        for (int i = mContentManager.getItemCount() - 1; i >= mHeaderCount; --i) {
-            String key = mContentManager.getContent(i).getKey();
-            if (!newContentKeySet.contains(key)) {
-                hasContentChange = true;
-                mContentManager.removeContents(i, 1);
-                existingContentMap.remove(key);
-            }
-        }
-
-        // 4) Iterates through the new list to add the new content or move the existing content
-        //    if needed.
-        int i = 0;
-        while (i < newContentList.size()) {
-            NtpListContentManager.FeedContent content = newContentList.get(i);
-
-            // If this is an existing content, moves it to new position, offset by header count.
-            if (existingContentMap.containsKey(content.getKey())) {
-                hasContentChange = true;
-                mContentManager.moveContent(
-                        mContentManager.findContentPositionByKey(content.getKey()),
-                        i + mHeaderCount);
-                ++i;
-                continue;
-            }
-
-            // Otherwise, this is new content. Add it together with all adjacent new contents.
-            int startIndex = i++;
-            while (i < newContentList.size()
-                    && !existingContentMap.containsKey(newContentList.get(i).getKey())) {
-                ++i;
-            }
-            hasContentChange = true;
-            // Account for headers when inserting contents.
-            mContentManager.addContents(
-                    startIndex + mHeaderCount, newContentList.subList(startIndex, i));
-        }
-
-        if (hasContentChange) {
+        assert mHeaderCount <= mContentManager.getItemCount();
+        if (mContentManager.replaceRange(
+                    mHeaderCount, mContentManager.getItemCount() - mHeaderCount, newContentList)) {
             notifyContentChange();
         }
     }

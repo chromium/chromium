@@ -706,12 +706,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     }
 
     private void setHeaders(List<View> headerViews) {
-        // Remove current headers.
-        if (mHeaderCount > 0) {
-            mContentManager.removeContents(0, mHeaderCount);
-        }
-
-        // Add new headers.
+        // Build the list of headers we want, and then replace existing headers.
         List<NtpListContentManager.FeedContent> headerList = new ArrayList<>();
         for (View header : headerViews) {
             // Feed header view in multi does not need padding added.
@@ -726,11 +721,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
                             lateralPaddingsPx, "Header" + header.hashCode(), header);
             headerList.add(content);
         }
-        mHeaderCount = headerList.size();
-        if (mHeaderCount > 0) {
-            mContentManager.addContents(0, headerList);
+        if (mContentManager.replaceRange(0, mHeaderCount, headerList)) {
+            mHeaderCount = headerList.size();
+            mMediator.notifyHeadersChanged(mHeaderCount);
         }
-        mMediator.notifyHeadersChanged(mHeaderCount);
     }
 
     /**
