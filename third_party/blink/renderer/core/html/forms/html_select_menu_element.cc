@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/forms/form_controller.h"
+#include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/select_menu_part_traversal.h"
@@ -161,7 +163,7 @@ void HTMLSelectMenuElement::SelectMutationCallback::SlotChanged(
 }
 
 HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
-    : HTMLElement(html_names::kSelectmenuTag, document) {
+    : HTMLFormControlElementWithState(html_names::kSelectmenuTag, document) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
   DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
   UseCounter::Count(document, WebFeature::kSelectMenuElement);
@@ -681,6 +683,7 @@ void HTMLSelectMenuElement::SetSelectedOption(Element* selected_option) {
 
   selected_option_ = selected_option;
   UpdateSelectedValuePartContents();
+  NotifyFormStateChanged();
 }
 
 void HTMLSelectMenuElement::SelectNextOption() {
@@ -793,6 +796,28 @@ void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
   }
 }
 
+const AtomicString& HTMLSelectMenuElement::FormControlType() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, selectmenu, ("selectmenu"));
+  return selectmenu;
+}
+
+bool HTMLSelectMenuElement::MayTriggerVirtualKeyboard() const {
+  return true;
+}
+
+void HTMLSelectMenuElement::AppendToFormData(FormData& form_data) {
+  if (!GetName().IsEmpty())
+    form_data.AppendFromElement(GetName(), value());
+}
+
+// TODO(crbug.com/1121840) Add support for saving form control state
+FormControlState HTMLSelectMenuElement::SaveFormControlState() const {
+  return FormControlState();
+}
+
+void HTMLSelectMenuElement::RestoreFormControlState(
+    const FormControlState& state) {}
+
 void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
   visitor->Trace(button_part_listener_);
   visitor->Trace(option_part_listener_);
@@ -804,7 +829,7 @@ void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
   visitor->Trace(button_slot_);
   visitor->Trace(listbox_slot_);
   visitor->Trace(selected_option_);
-  HTMLElement::Trace(visitor);
+  HTMLFormControlElementWithState::Trace(visitor);
 }
 
 constexpr char HTMLSelectMenuElement::kButtonPartName[];

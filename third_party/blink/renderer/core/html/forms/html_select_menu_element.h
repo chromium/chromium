@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_SELECT_MENU_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
-#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 
 namespace blink {
 
@@ -20,7 +20,8 @@ class Document;
 // --enable-blink-features=HTMLSelectMenuElement. See
 // https://groups.google.com/u/1/a/chromium.org/g/blink-dev/c/9TcfjaOs5zg/m/WAiv6WpUAAAJ
 // for more details.
-class CORE_EXPORT HTMLSelectMenuElement final : public HTMLElement {
+class CORE_EXPORT HTMLSelectMenuElement final
+    : public HTMLFormControlElementWithState {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -81,6 +82,16 @@ class CORE_EXPORT HTMLSelectMenuElement final : public HTMLElement {
 
   void SetButtonPart(Element* new_button_part);
   void SetListboxPart(HTMLPopupElement* new_listbox_part);
+
+  // HTMLFormControlElementWithState overrides:
+  const AtomicString& FormControlType() const override;
+  bool MayTriggerVirtualKeyboard() const override;
+  bool AlwaysCreateUserAgentShadowRoot() const override { return false; }
+  void AppendToFormData(FormData&) override;
+  bool SupportsFocus() const override { return HTMLElement::SupportsFocus(); }
+  // TODO(crbug.com/1121840) Add support for saving form control state
+  FormControlState SaveFormControlState() const override;
+  void RestoreFormControlState(const FormControlState&) override;
 
   class ButtonPartEventListener : public NativeEventListener {
    public:

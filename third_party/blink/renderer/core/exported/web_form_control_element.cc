@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 
@@ -82,6 +83,8 @@ bool WebFormControlElement::UserHasEditedTheField() const {
     return input->UserHasEditedTheField();
   if (auto* select_element = DynamicTo<HTMLSelectElement>(*private_))
     return select_element->UserHasEditedTheField();
+  if (auto* select_menu_element = DynamicTo<HTMLSelectMenuElement>(*private_))
+    return select_menu_element->UserHasEditedTheField();
   return true;
 }
 
@@ -90,6 +93,8 @@ void WebFormControlElement::SetUserHasEditedTheField(bool value) {
     input->SetUserHasEditedTheField(value);
   if (auto* select_element = DynamicTo<HTMLSelectElement>(*private_))
     select_element->SetUserHasEditedTheField(value);
+  if (auto* select_menu_element = DynamicTo<HTMLSelectMenuElement>(*private_))
+    select_menu_element->SetUserHasEditedTheField(value);
 }
 
 void WebFormControlElement::SetUserHasEditedTheFieldForTest() {

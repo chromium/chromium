@@ -4214,9 +4214,13 @@ interface HTMLSelectElement : HTMLElement
     setter value
 interface HTMLSelectMenuElement : HTMLElement
     attribute @@toStringTag
+    getter form
+    getter name
     getter open
+    getter type
     getter value
     method constructor
+    setter name
     setter value
 interface HTMLSlotElement : HTMLElement
     attribute @@toStringTag
