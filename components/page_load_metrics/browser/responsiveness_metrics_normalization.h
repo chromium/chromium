@@ -14,6 +14,9 @@ namespace page_load_metrics {
 constexpr uint64_t kHighPercentileUpdateFrequency = 50;
 // The struct that stores normalized user interactions latencies.
 struct NormalizedInteractionLatencies {
+  NormalizedInteractionLatencies();
+  ~NormalizedInteractionLatencies();
+
   // The maximum value of user interaction latencies.
   base::TimeDelta worst_latency;
   // For metrics below, we reduce a fixed budget from every user interaction
@@ -26,26 +29,23 @@ struct NormalizedInteractionLatencies {
   base::TimeDelta high_percentile_latency_over_budget;
 
   // A min priority queue. The top is the smallest base::TimeDelta in the queue.
+  // We use the worst 10 latencies to approximate a high percentile.
   std::priority_queue<base::TimeDelta,
                       std::vector<base::TimeDelta>,
                       std::greater<>>
       worst_ten_latencies_over_budget;
-
-  NormalizedInteractionLatencies();
-  ~NormalizedInteractionLatencies();
 };
 
 // The struct that stores all normalization results for a page load.
 struct NormalizedResponsivenessMetrics {
+  NormalizedResponsivenessMetrics();
+  ~NormalizedResponsivenessMetrics();
   uint64_t num_user_interactions = 0;
   // Max event duration
   NormalizedInteractionLatencies normalized_max_event_durations;
 
   // Total event duration
   NormalizedInteractionLatencies normalized_total_event_durations;
-
-  NormalizedResponsivenessMetrics();
-  ~NormalizedResponsivenessMetrics();
 };
 
 // ResponsivenessMetricsNormalization implements some experimental normalization
@@ -70,6 +70,16 @@ class ResponsivenessMetricsNormalization {
       const {
     return normalized_responsiveness_metrics_;
   }
+  void ClearAllUserInteractionLatencies() {
+    normalized_responsiveness_metrics_ = NormalizedResponsivenessMetrics();
+  }
+
+  // Approximate a high percentile of user interaction latency.
+  static base::TimeDelta ApproximateHighPercentile(
+      uint64_t num_interactions,
+      std::priority_queue<base::TimeDelta,
+                          std::vector<base::TimeDelta>,
+                          std::greater<>>& worst_ten_latencies_over_budget);
 
  private:
   void NormalizeUserInteractionLatencies(

@@ -32,12 +32,34 @@ base::TimeDelta LatencyOverBudget(
 
 NormalizedInteractionLatencies::NormalizedInteractionLatencies() = default;
 NormalizedInteractionLatencies::~NormalizedInteractionLatencies() = default;
+
 NormalizedResponsivenessMetrics::NormalizedResponsivenessMetrics() = default;
 NormalizedResponsivenessMetrics::~NormalizedResponsivenessMetrics() = default;
+
 ResponsivenessMetricsNormalization::ResponsivenessMetricsNormalization() =
     default;
 ResponsivenessMetricsNormalization::~ResponsivenessMetricsNormalization() =
     default;
+
+// static
+base::TimeDelta ResponsivenessMetricsNormalization::ApproximateHighPercentile(
+    uint64_t num_interactions,
+    std::priority_queue<base::TimeDelta,
+                        std::vector<base::TimeDelta>,
+                        std::greater<>>& worst_ten_latencies_over_budget) {
+  DCHECK(num_interactions &&
+         base::FeatureList::IsEnabled(
+             blink::features::kSendAllUserInteractionLatencies));
+  int index = std::max(
+      0,
+      static_cast<int>(worst_ten_latencies_over_budget.size()) - 1 -
+          static_cast<int>(num_interactions / kHighPercentileUpdateFrequency));
+  for (; index > 0; index--) {
+    worst_ten_latencies_over_budget.pop();
+  }
+
+  return worst_ten_latencies_over_budget.top();
+}
 
 void ResponsivenessMetricsNormalization::AddNewUserInteractionLatencies(
     uint64_t num_new_interactions,

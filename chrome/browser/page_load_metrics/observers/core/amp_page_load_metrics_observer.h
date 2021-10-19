@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
 namespace content {
@@ -69,6 +70,9 @@ class AMPPageLoadMetricsObserver
   void OnTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnInputTimingUpdate(
+      content::RenderFrameHost* subframe_rfh,
+      const page_load_metrics::mojom::InputTiming& input_timing_delta) override;
   void OnMobileFriendlinessUpdate(
       const blink::MobileFriendliness& mobile_friendliness) override;
   void OnSubFrameRenderDataUpdate(
@@ -117,6 +121,8 @@ class AMPPageLoadMetricsObserver
     page_load_metrics::mojom::PageLoadTimingPtr timing;
     page_load_metrics::PageRenderData render_data;
     page_load_metrics::LayoutShiftNormalization layout_shift_normalization;
+    page_load_metrics::ResponsivenessMetricsNormalization
+        responsiveness_metrics_normalization;
 
     // MobileFriendliness metrics observed in the AMP iframe.
     blink::MobileFriendliness mobile_friendliness;
@@ -127,7 +133,10 @@ class AMPPageLoadMetricsObserver
   };
 
   void RecordLoadingBehaviorObserved();
-
+  void RecordNormalizedResponsivenessMetrics(
+      const page_load_metrics::NormalizedResponsivenessMetrics&
+          normalized_responsiveness_metrics,
+      ukm::builders::AmpPageLoad& builder);
   void ProcessMainFrameNavigation(content::NavigationHandle* navigation_handle);
   void MaybeRecordAmpDocumentMetrics();
   void RecordMobileFriendliness(ukm::builders::AmpPageLoad& builder);
