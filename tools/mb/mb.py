@@ -1354,6 +1354,9 @@ class MetaBuildWrapper(object):
         # A stable filter exists
         if not self.args.use_rts:
           self.Print('RTS disabled, using stable filter')
+          dest_dir = os.path.dirname(abs_filter_file_path)
+          if not self.Exists(dest_dir):
+            os.makedirs(dest_dir)
           shutil.copy(abs_stable_filter_file, abs_filter_file_path)
         else:
           # Rts is enabled and will delete ALL .filter files
