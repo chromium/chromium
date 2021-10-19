@@ -727,7 +727,7 @@ WebContentsImpl::WebContentsTreeNode::WebContentsTreeNode(
       outer_web_contents_(nullptr),
       outer_contents_frame_tree_node_id_(
           FrameTreeNode::kFrameTreeNodeInvalidId),
-      focused_web_contents_(current_web_contents) {}
+      focused_frame_tree_(current_web_contents->GetFrameTree()->GetSafeRef()) {}
 
 WebContentsImpl::WebContentsTreeNode::~WebContentsTreeNode() = default;
 
@@ -752,7 +752,6 @@ void WebContentsImpl::WebContentsTreeNode::AttachInnerWebContents(
       static_cast<WebContentsImpl*>(inner_web_contents.get());
   WebContentsTreeNode& inner_web_contents_node = inner_web_contents_impl->node_;
 
-  inner_web_contents_node.focused_web_contents_ = nullptr;
   inner_web_contents_node.outer_web_contents_ = current_web_contents_;
   inner_web_contents_node.outer_contents_frame_tree_node_id_ =
       render_frame_host->frame_tree_node()->frame_tree_node_id();
@@ -801,13 +800,12 @@ void WebContentsImpl::WebContentsTreeNode::OnFrameTreeNodeDestroyed(
   outer_web_contents_->node_.DetachInnerWebContents(current_web_contents_);
 }
 
-void WebContentsImpl::WebContentsTreeNode::SetFocusedWebContents(
-    WebContentsImpl* web_contents) {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsTreeNode::SetFocusedWebContents");
+void WebContentsImpl::WebContentsTreeNode::SetFocusedFrameTree(
+    FrameTree* frame_tree) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsTreeNode::SetFocusedFrameTree");
   DCHECK(!outer_web_contents())
       << "Only the outermost WebContents tracks focus.";
-  focused_web_contents_ = web_contents;
+  focused_frame_tree_ = frame_tree->GetSafeRef();
 }
 
 WebContentsImpl*
@@ -852,7 +850,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
     : delegate_(nullptr),
       render_view_host_delegate_view_(nullptr),
       opened_by_another_window_(false),
-      node_(this),
       frame_tree_(browser_context,
                   this,
                   this,
@@ -863,6 +860,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
                   this,
                   this,
                   FrameTree::Type::kPrimary),
+      node_(this),
       is_load_to_different_document_(false),
       primary_main_frame_process_status_(
           base::TERMINATION_STATUS_STILL_RUNNING),
@@ -2440,7 +2438,7 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
   std::unique_ptr<WebContents> web_contents =
       node_.DisconnectFromOuterWebContents();
   DCHECK_EQ(web_contents.get(), this);
-  node_.SetFocusedWebContents(this);
+  node_.SetFocusedFrameTree(GetFrameTree());
 
   for (auto* render_view_host : render_view_hosts)
     CreateRenderWidgetHostViewForRenderManager(render_view_host);
@@ -3223,8 +3221,7 @@ RenderWidgetHostImpl* WebContentsImpl::GetFocusedRenderWidgetHost(
 
   // If the focused WebContents is a guest WebContents, then get the focused
   // frame in the embedder WebContents instead.
-  FrameTreeNode* focused_frame =
-      GetFocusedWebContents()->frame_tree_.GetFocusedFrame();
+  FrameTreeNode* focused_frame = GetFocusedFrameTree()->GetFocusedFrame();
 
   if (!focused_frame)
     return receiving_widget;
@@ -6937,7 +6934,11 @@ WebContentsImpl* WebContentsImpl::GetResponsibleWebContents() {
 }
 
 WebContentsImpl* WebContentsImpl::GetFocusedWebContents() {
-  return GetOutermostWebContents()->node_.focused_web_contents();
+  return WebContentsImpl::FromFrameTreeNode(GetFocusedFrameTree()->root());
+}
+
+FrameTree* WebContentsImpl::GetFocusedFrameTree() {
+  return GetOutermostWebContents()->node_.focused_frame_tree();
 }
 
 void WebContentsImpl::SetFocusToLocationBar() {
@@ -7501,7 +7502,7 @@ void WebContentsImpl::SetAsFocusedWebContentsIfNecessary() {
   if (old_contents == this)
     return;
 
-  GetOutermostWebContents()->node_.SetFocusedWebContents(this);
+  GetOutermostWebContents()->node_.SetFocusedFrameTree(GetFrameTree());
 
   // Send a page level blur to the old contents so that it displays inactive UI
   // and focus this contents to activate it.

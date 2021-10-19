@@ -893,4 +893,8 @@ void FrameTree::Shutdown() {
       root_manager->current_frame_host()->render_view_host());
 }
 
+base::SafeRef<FrameTree> FrameTree::GetSafeRef() {
+  return weak_ptr_factory_.GetSafeRef();
+}
+
 }  // namespace content

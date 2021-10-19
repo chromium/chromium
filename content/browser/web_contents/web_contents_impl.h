@@ -20,6 +20,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/safe_ref.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/scoped_observation.h"
@@ -296,6 +297,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // <guestview>, ...) returns the single one containing the currently focused
   // frame. Otherwise, returns this WebContents.
   WebContentsImpl* GetFocusedWebContents();
+
+  // Returns the focused FrameTree. For MPArch we may return a different
+  // focused frame tree even though the focused WebContents is the same.
+  FrameTree* GetFocusedFrameTree();
 
   // TODO(lukasza): Maybe this method can be removed altogether (so that the
   // focus of the location bar is only set in the //chrome layer).
@@ -1425,8 +1430,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     }
     FrameTreeNode* OuterContentsFrameTreeNode() const;
 
-    WebContentsImpl* focused_web_contents() { return focused_web_contents_; }
-    void SetFocusedWebContents(WebContentsImpl* web_contents);
+    FrameTree* focused_frame_tree() { return &*focused_frame_tree_; }
+    void SetFocusedFrameTree(FrameTree* frame_tree);
 
     // Returns the inner WebContents within |frame|, if one exists, or nullptr
     // otherwise.
@@ -1456,10 +1461,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     // inner WebContents.
     std::vector<std::unique_ptr<WebContents>> inner_web_contents_;
 
-    // Only the root node should have this set. This indicates the WebContents
-    // whose frame tree has the focused frame. The WebContents tree could be
-    // arbitrarily deep.
-    WebContentsImpl* focused_web_contents_;
+    // Only the root node should have this set. This indicates the FrameTree
+    // that has the focused frame. The FrameTree tree could be arbitrarily deep.
+    // An inner WebContents if focused is responsible for setting this back to
+    // another valid during its destruction. See WebContentsImpl destructor.
+    // TODO(crbug.com/1257595): Support clearing this for inner frame trees.
+    base::SafeRef<FrameTree> focused_frame_tree_;
   };
 
   // Container for WebContentsObservers, which knows when we are iterating over
@@ -1863,11 +1870,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Helper classes ------------------------------------------------------------
 
-  // Contains information about the WebContents tree structure.
-  WebContentsTreeNode node_;
-
   // Manages the frame tree of the page and process swaps in each node.
   FrameTree frame_tree_;
+
+  // Contains information about the WebContents tree structure.
+  WebContentsTreeNode node_;
 
   // SavePackage, lazily created.
   scoped_refptr<SavePackage> save_package_;

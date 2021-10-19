@@ -17,6 +17,8 @@
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/safe_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
@@ -431,6 +433,8 @@ class CONTENT_EXPORT FrameTree {
 
   bool IsBeingDestroyed() const { return is_being_destroyed_; }
 
+  base::SafeRef<FrameTree> GetSafeRef();
+
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
@@ -486,6 +490,8 @@ class CONTENT_EXPORT FrameTree {
   // Whether Shutdown() was called.
   bool was_shut_down_ = false;
 #endif
+
+  base::WeakPtrFactory<FrameTree> weak_ptr_factory_{this};
 };
 
 }  // namespace content
