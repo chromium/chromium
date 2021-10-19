@@ -38,6 +38,7 @@
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -118,6 +119,8 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean("allowDeletingHistory", allow_deleting_history);
 
   source->AddBoolean("isGuestSession", profile->IsGuestSession());
+  source->AddBoolean("isSignInAllowed",
+                     prefs->GetBoolean(prefs::kSigninAllowed));
 
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
 

@@ -341,10 +341,18 @@ suite('<history-synced-device-manager>', function() {
   });
 
   test('hide sign in promo in guest mode', function() {
+    element.signInState = false;
     element.guestSession_ = true;
     return flushTasks().then(function() {
       assertTrue(element.$['sign-in-guide'].hidden);
     });
+  });
+
+  test('hide sign-in promo if sign-in is disabled', async function() {
+    element.signInState = false;
+    element.signInAllowed_ = false;
+    await flushTasks();
+    assertTrue(element.$['sign-in-guide'].hidden);
   });
 
   test('no synced tabs message displays on load', function() {
