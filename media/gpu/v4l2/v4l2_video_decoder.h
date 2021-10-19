@@ -200,10 +200,10 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
 
   SEQUENCE_CHECKER(decoder_sequence_checker_);
 
-  // |weak_this_for_polling_| must be dereferenced and invalidated on
+  // |weak_this_| must be dereferenced and invalidated on
   // |decoder_task_runner_|.
-  base::WeakPtr<V4L2VideoDecoder> weak_this_for_polling_;
-  base::WeakPtrFactory<V4L2VideoDecoder> weak_this_for_polling_factory_;
+  base::WeakPtr<V4L2VideoDecoder> weak_this_;
+  base::WeakPtrFactory<V4L2VideoDecoder> weak_this_factory_;
 };
 
 }  // namespace media

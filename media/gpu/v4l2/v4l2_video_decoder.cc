@@ -97,11 +97,11 @@ V4L2VideoDecoder::V4L2VideoDecoder(
                         std::move(decoder_task_runner),
                         std::move(client)),
       device_(std::move(device)),
-      weak_this_for_polling_factory_(this) {
+      weak_this_factory_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   VLOGF(2);
 
-  weak_this_for_polling_ = weak_this_for_polling_factory_.GetWeakPtr();
+  weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
 V4L2VideoDecoder::~V4L2VideoDecoder() {
@@ -125,7 +125,7 @@ V4L2VideoDecoder::~V4L2VideoDecoder() {
     output_queue_ = nullptr;
   }
 
-  weak_this_for_polling_factory_.InvalidateWeakPtrs();
+  weak_this_factory_.InvalidateWeakPtrs();
 
   if (can_use_decoder_)
     num_instances_.Decrement();
@@ -566,10 +566,9 @@ bool V4L2VideoDecoder::StartStreamV4L2Queue(bool start_output_queue) {
   }
 
   if (!device_->StartPolling(
-          base::BindRepeating(&V4L2VideoDecoder::ServiceDeviceTask,
-                              weak_this_for_polling_),
-          base::BindRepeating(&V4L2VideoDecoder::SetState,
-                              weak_this_for_polling_, State::kError))) {
+          base::BindRepeating(&V4L2VideoDecoder::ServiceDeviceTask, weak_this_),
+          base::BindRepeating(&V4L2VideoDecoder::SetState, weak_this_,
+                              State::kError))) {
     SetState(State::kError);
     return false;
   }
@@ -585,10 +584,6 @@ bool V4L2VideoDecoder::StopStreamV4L2Queue(bool stop_input_queue) {
     SetState(State::kError);
     return false;
   }
-
-  // Invalidate the callback from the device.
-  weak_this_for_polling_factory_.InvalidateWeakPtrs();
-  weak_this_for_polling_ = weak_this_for_polling_factory_.GetWeakPtr();
 
   // Streamoff input and output queue.
   if (input_queue_ && stop_input_queue)
