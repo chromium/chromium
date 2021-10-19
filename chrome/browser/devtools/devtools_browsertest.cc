@@ -45,6 +45,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
+#include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -2851,4 +2853,32 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, HostBindingsSyncIntegration) {
   EXPECT_EQ(*synced_settings->FindStringKey("synced_setting"), "synced value");
   EXPECT_EQ(*unsynced_settings->FindStringKey("unsynced_setting"),
             "unsynced value");
+}
+
+class DevToolsSyncTest : public SyncTest {
+ public:
+  DevToolsSyncTest() : SyncTest(SyncTest::SINGLE_CLIENT) {}
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsSyncTest, GetSyncInformation) {
+  // Smoke test to make sure that `getSyncInformation` works from JavaScript.
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  DevToolsWindow* window = DevToolsWindowTesting::OpenDevToolsWindowSync(
+      browser()->tab_strip_model()->GetActiveWebContents(), GetProfile(0),
+      true);
+
+  WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
+  const auto result = content::EvalJs(wc, content::JsReplace(R"(
+      (async function() {
+        return new Promise(resolve => {
+          Host.InspectorFrontendHost.getSyncInformation(resolve);
+        });
+      })();
+    )"));
+  ASSERT_TRUE(result.value.is_dict());
+  EXPECT_TRUE(*result.value.FindBoolKey("isSyncActive"));
+  EXPECT_TRUE(*result.value.FindBoolKey("arePreferencesSynced"));
+  EXPECT_EQ(*result.value.FindStringKey("accountEmail"), "user@gmail.com");
 }

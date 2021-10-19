@@ -586,8 +586,16 @@ void DevToolsWindow::OpenDevToolsWindowForWorker(
 // static
 void DevToolsWindow::OpenDevToolsWindow(
     content::WebContents* inspected_web_contents) {
-  ToggleDevToolsWindow(
-        inspected_web_contents, true, DevToolsToggleAction::Show(), "");
+  ToggleDevToolsWindow(inspected_web_contents, nullptr, true,
+                       DevToolsToggleAction::Show(), "");
+}
+
+// static
+void DevToolsWindow::OpenDevToolsWindow(
+    content::WebContents* inspected_web_contents,
+    Profile* profile) {
+  ToggleDevToolsWindow(inspected_web_contents, profile, true,
+                       DevToolsToggleAction::Show(), "");
 }
 
 // static
@@ -638,14 +646,14 @@ void DevToolsWindow::OpenDevToolsWindow(
 
   content::WebContents* web_contents = agent_host->GetWebContents();
   if (web_contents)
-    DevToolsWindow::OpenDevToolsWindow(web_contents);
+    DevToolsWindow::OpenDevToolsWindow(web_contents, profile);
 }
 
 // static
 void DevToolsWindow::OpenDevToolsWindow(
     content::WebContents* inspected_web_contents,
     const DevToolsToggleAction& action) {
-  ToggleDevToolsWindow(inspected_web_contents, true, action, "");
+  ToggleDevToolsWindow(inspected_web_contents, nullptr, true, action, "");
 }
 
 // static
@@ -675,8 +683,8 @@ void DevToolsWindow::ToggleDevToolsWindow(Browser* browser,
   }
 
   ToggleDevToolsWindow(browser->tab_strip_model()->GetActiveWebContents(),
-                       action.type() == DevToolsToggleAction::kInspect, action,
-                       "", opened_by);
+                       nullptr, action.type() == DevToolsToggleAction::kInspect,
+                       action, "", opened_by);
 }
 
 // static
@@ -751,6 +759,7 @@ Profile* DevToolsWindow::GetProfileForDevToolsWindow(
 // static
 void DevToolsWindow::ToggleDevToolsWindow(
     content::WebContents* inspected_web_contents,
+    Profile* profile,
     bool force_open,
     const DevToolsToggleAction& action,
     const std::string& settings,
@@ -760,7 +769,8 @@ void DevToolsWindow::ToggleDevToolsWindow(
   DevToolsWindow* window = FindDevToolsWindow(agent.get());
   bool do_open = force_open;
   if (!window) {
-    Profile* profile = GetProfileForDevToolsWindow(inspected_web_contents);
+    if (!profile)
+      profile = GetProfileForDevToolsWindow(inspected_web_contents);
     base::RecordAction(base::UserMetricsAction("DevTools_InspectRenderer"));
     std::string panel;
     switch (action.type()) {

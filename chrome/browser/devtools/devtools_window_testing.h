@@ -29,6 +29,10 @@ class DevToolsWindowTesting {
   // The following methods block until DevToolsWindow is completely loaded.
   static DevToolsWindow* OpenDevToolsWindowSync(
       content::WebContents* inspected_web_contents,
+      Profile* profile,
+      bool is_docked);
+  static DevToolsWindow* OpenDevToolsWindowSync(
+      content::WebContents* inspected_web_contents,
       bool is_docked);
   static DevToolsWindow* OpenDevToolsWindowSync(
       Browser* browser, bool is_docked);
