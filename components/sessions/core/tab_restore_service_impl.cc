@@ -352,12 +352,12 @@ CreateWindowEntryFromCommand(const SessionCommand* command,
         fields.window_width == 0 && fields.window_height == 0)) {
     window->bounds.SetRect(fields.window_x, fields.window_y,
                            fields.window_width, fields.window_height);
-    // |show_state| was converted from window->show_state earlier during
-    // validation.
-    window->show_state = show_state;
-    window->workspace = std::move(fields.workspace);
   }
 
+  // |show_state| was converted from window->show_state earlier during
+  // validation.
+  window->show_state = show_state;
+  window->workspace = std::move(fields.workspace);
   return window;
 }
 

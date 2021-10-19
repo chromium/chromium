@@ -603,6 +603,31 @@ TEST_F(TabRestoreServiceImplTest, DontLoadWhenSavingIsDisabled) {
   ASSERT_EQ(0U, service_->entries().size());
 }
 
+// Regression test to ensure Window::show_state is set correctly when reading
+// TabRestoreSession from saved state.
+TEST_F(TabRestoreServiceImplTest, WindowShowStateIsSet) {
+  CreateSessionServiceWithOneWindow(false);
+
+  SessionServiceFactory::GetForProfile(profile())
+      ->MoveCurrentSessionToLastSession();
+
+  SynchronousLoadTabsFromLastSession();
+
+  RecreateService();
+
+  // There should be at least one window and its show state should be the
+  // default.
+  bool got_window = false;
+  for (auto& entry : service_->entries()) {
+    if (entry->type == sessions::TabRestoreService::WINDOW) {
+      got_window = true;
+      Window* window = static_cast<Window*>(entry.get());
+      EXPECT_EQ(window->show_state, ui::SHOW_STATE_DEFAULT);
+    }
+  }
+  EXPECT_TRUE(got_window);
+}
+
 TEST_F(TabRestoreServiceImplTest, LoadPreviousSessionAndTabs) {
   CreateSessionServiceWithOneWindow(false);
 
