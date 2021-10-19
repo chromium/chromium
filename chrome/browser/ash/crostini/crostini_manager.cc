@@ -30,12 +30,14 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/crostini_engagement_metrics_service.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_remover.h"
 #include "chrome/browser/ash/crostini/crostini_reporting_util.h"
 #include "chrome/browser/ash/crostini/crostini_sshfs.h"
+#include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_upgrade_available_notification.h"
 #include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
@@ -358,6 +360,17 @@ class CrostiniManager::CrostiniRestarter
     }
   }
 
+  void OnLxdContainerStarting(
+      vm_tools::cicerone::LxdContainerStartingSignal_Status status) {
+    if (!is_running_ || !stage_timeout_timer_.IsRunning() ||
+        status != vm_tools::cicerone::LxdContainerStartingSignal::STARTING ||
+        stage_ != mojom::InstallerState::kStartContainer) {
+      return;
+    }
+    // We got a progress message, reset the timeout duration back to full.
+    stage_timeout_timer_.Reset();
+  }
+
   CrostiniManager::RestartId restart_id() const { return restart_id_; }
   const ContainerId& container_id() { return container_id_; }
   bool is_aborted() const { return is_aborted_; }
@@ -454,6 +467,8 @@ class CrostiniManager::CrostiniRestarter
       {mojom::InstallerState::kSetupContainer, base::Minutes(5)},
       // StartContainer might need to do a UID remapping, which in the worst
       // case can take a very long time.
+      // TODO(crbug/1197416) once the heartbeat change has landed in Tremplin
+      // and made it out, make this something shorter like a few minutes.
       {mojom::InstallerState::kStartContainer, base::Days(5)},
       // ConfigureContainer is special, it's not part of the restarter flow, so
       // it doesn't have a timeout.
@@ -2972,6 +2987,9 @@ void CrostiniManager::OnLxdContainerStarting(
     return;
   ContainerId container_id(signal.vm_name(), signal.container_name());
   CrostiniResult result;
+  std::pair<std::multimap<crostini::ContainerId, int>::iterator,
+            std::multimap<crostini::ContainerId, int>::iterator>
+      range;
 
   switch (signal.status()) {
     case vm_tools::cicerone::LxdContainerStartingSignal::UNKNOWN:
@@ -2986,6 +3004,12 @@ void CrostiniManager::OnLxdContainerStarting(
     case vm_tools::cicerone::LxdContainerStartingSignal::FAILED:
       result = CrostiniResult::CONTAINER_START_FAILED;
       break;
+    case vm_tools::cicerone::LxdContainerStartingSignal::STARTING:
+      range = restarters_by_container_.equal_range(container_id);
+      for (auto it = range.first; it != range.second; ++it) {
+        restarters_by_id_[it->second]->OnLxdContainerStarting(signal.status());
+      }
+      return;
     default:
       result = CrostiniResult::UNKNOWN_ERROR;
       break;
