@@ -82,6 +82,12 @@ enum class SystemAppType {
   // will have a mock page.
   PROJECTOR = 20,
 
+  // OsUrlHandler is called by Lacros to show Ash internal chrome:// pages as
+  // applications to the user. Note that these pages are accessible to the user
+  // as os://<page> through search.
+  // contact: skuhne@google.com
+  OS_URL_HANDLER = 21,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
@@ -117,7 +123,7 @@ enum class SystemAppType {
   //
   // 7. Have one of System Web App Platform owners review the CL.
   //    See: //chromeos/components/system_apps/PLATFORM_OWNERS
-  kMaxValue = PROJECTOR
+  kMaxValue = OS_URL_HANDLER,
 };
 
 }  // namespace web_app

@@ -6,6 +6,7 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/chrome_url_window_manager_observer.h"
 #include "chrome/browser/ui/ash/window_properties.h"
@@ -14,6 +15,12 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/aura/client/aura_constants.h"
 #include "url/gurl.h"
 
@@ -49,6 +56,16 @@ void ChromeUrlWindowManager::ShowChromePageForProfile(Profile* profile,
       Browser::CreationStatus::kOk) {
     return;
   }
+
+  if (profile != nullptr) {  // Temporary: "if (true)" - will removed rest next.
+    web_app::SystemAppLaunchParams params;
+    params.url = gurl;
+    web_app::LaunchSystemWebAppAsync(profile,
+                                     web_app::SystemAppType::OS_URL_HANDLER,
+                                     params, apps::MakeWindowInfo(display_id));
+    return;
+  }
+  // TODO(skuhne): Remove below and the other associated files next!
 
   // Look for an existing Chrome url browser window.
   Browser* browser = FindBrowserForProfileAndUrl(profile, gurl);

@@ -137,6 +137,9 @@ extern const char kChromeUINewTabURL[];
 extern const char kChromeUIOfflineInternalsHost[];
 extern const char kChromeUIOmniboxHost[];
 extern const char kChromeUIOmniboxURL[];
+#if defined(OS_CHROMEOS)
+extern const char kChromeUIOsUrlAppURL[];
+#endif
 extern const char kChromeUIPasswordManagerInternalsHost[];
 extern const char kChromeUIPolicyHost[];
 extern const char kChromeUIPolicyURL[];

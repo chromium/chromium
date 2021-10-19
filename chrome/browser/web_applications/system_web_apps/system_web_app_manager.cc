@@ -77,6 +77,7 @@
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_feedback_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_settings_web_app_info.h"
+#include "chrome/browser/ash/web_applications/os_url_handler_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_info.h"
 #include "chrome/browser/ash/web_applications/print_management_web_app_info.h"
 #include "chrome/browser/ash/web_applications/projector_system_web_app_info.h"
@@ -139,6 +140,8 @@ SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
       std::make_unique<FileManagerSystemAppDelegate>(profile));
   info_vec.emplace_back(
       std::make_unique<ProjectorSystemWebAppDelegate>(profile));
+  info_vec.emplace_back(
+      std::make_unique<OsUrlHandlerSystemWebAppDelegate>(profile));
 
 #if !defined(OFFICIAL_BUILD)
   info_vec.emplace_back(std::make_unique<TelemetrySystemAppDelegate>(profile));
