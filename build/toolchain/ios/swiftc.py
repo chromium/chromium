@@ -10,7 +10,6 @@ import subprocess
 import sys
 import tempfile
 
-
 class OrderedSet(collections.OrderedDict):
   def add(self, value):
     self[value] = True
@@ -51,6 +50,9 @@ def compile_module(module, sources, settings, extras, tmpdir):
     path = output_file_map[key]['object']
     if os.path.exists(path):
       os.unlink(path)
+
+  output_file_map.setdefault('', {})['swift-dependencies'] = \
+      os.path.join(tmpdir, module + '.swift.d')
 
   output_file_map_path = os.path.join(tmpdir, module + '.json')
   with open(output_file_map_path, 'w') as output_file_map_file:
@@ -107,6 +109,24 @@ def compile_module(module, sources, settings, extras, tmpdir):
     for include_dir in settings.include_dirs:
       extra_args.append('-I' + include_dir)
 
+  if settings.system_include_dirs:
+    for system_include_dir in settings.system_include_dirs:
+      extra_args.extend(['-Xcc', '-isystem', '-Xcc', system_include_dir])
+
+  if settings.framework_dirs:
+    for framework_dir in settings.framework_dirs:
+      extra_args.extend([
+          '-F',
+          framework_dir,
+      ])
+
+  if settings.system_framework_dirs:
+    for system_framework_dir in settings.system_framework_dirs:
+      extra_args.extend([
+          '-F',
+          system_framework_dir,
+      ])
+
   process = subprocess.Popen([
       'swiftc',
       '-parse-as-library',
@@ -130,7 +150,16 @@ def compile_module(module, sources, settings, extras, tmpdir):
 
   depfile_content = collections.OrderedDict()
   for key in output_file_map:
-    for line in open(output_file_map[key]['dependencies']):
+
+    # When whole module optimisation is disabled, there will be an entry
+    # with an empty string as the key and only ('swift-dependencies') as
+    # keys in the value dictionary. This is expected, so skip entry that
+    # do not include 'dependencies' in their keys.
+    depencency_file_path = output_file_map[key].get('dependencies')
+    if not depencency_file_path:
+      continue
+
+    for line in open(depencency_file_path):
       output, inputs = line.split(' : ', 2)
       _, ext = os.path.splitext(output)
       if ext == '.o':
@@ -157,6 +186,10 @@ def main(args):
                       action='append',
                       dest='include_dirs',
                       help='add directory to header search path')
+  parser.add_argument('-isystem',
+                      action='append',
+                      dest='system_include_dirs',
+                      help='add directory to system header search path')
   parser.add_argument('sources', nargs='+', help='Swift source file to compile')
   parser.add_argument('-whole-module-optimization',
                       action='store_true',
@@ -177,6 +210,14 @@ def main(args):
                       action='store',
                       help='generate code for the given target <triple>')
   parser.add_argument('-sdk', action='store', help='compile against sdk')
+  parser.add_argument('-F',
+                      dest='framework_dirs',
+                      action='append',
+                      help='add dir to framework search path')
+  parser.add_argument('-Fsystem',
+                      dest='system_framework_dirs',
+                      action='append',
+                      help='add dir to system framework search path')
 
   parsed, extras = parser.parse_known_args(args)
   with tempfile.TemporaryDirectory() as tmpdir:

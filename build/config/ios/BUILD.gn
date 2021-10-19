@@ -114,6 +114,13 @@ config("runtime_library") {
       "-iframework",
       "$_sdk_root/System/iOSSupport/System/Library/Frameworks",
     ]
+
+    swiftflags += [
+      "-isystem",
+      "$_sdk_root/System/iOSSupport/usr/include",
+      "-Fsystem",
+      "$_sdk_root/System/iOSSupport/System/Library/Frameworks",
+    ]
   }
 
   if (use_xcode_clang && enable_ios_bitcode) {
