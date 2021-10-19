@@ -1181,6 +1181,7 @@ test("content_browsertests") {
     "../browser/navigation_browsertest.cc",
     "../browser/navigation_mhtml_browsertest.cc",
     "../browser/net/accept_header_browsertest.cc",
+    "../browser/net/cross_origin_opener_policy_reporting_browsertest.cc",
     "../browser/net/dns_https_protocol_upgrade_browsertest.cc",
     "../browser/net/http_cookie_browsertest.cc",
     "../browser/net/network_field_trial_browsertest.cc",

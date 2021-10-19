@@ -7,6 +7,9 @@
 
 #include <memory>
 
+#include "base/scoped_observation.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -22,14 +25,15 @@ class CrossOriginOpenerPolicyReporter;
 class FrameTreeNode;
 class NavigationRequest;
 class StoragePartition;
+struct ChildProcessTerminationInfo;
 
 // Groups information used to apply COOP during navigations. This class will be
 // used to trigger a number of mechanisms such as BrowsingInstance switch or
 // reporting.
-class CrossOriginOpenerPolicyStatus {
+class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
  public:
   explicit CrossOriginOpenerPolicyStatus(NavigationRequest* navigation_request);
-  ~CrossOriginOpenerPolicyStatus();
+  ~CrossOriginOpenerPolicyStatus() override;
 
   // Sanitize the COOP header from the `response`.
   // Return an error when COOP is used on sandboxed popups.
@@ -75,6 +79,11 @@ class CrossOriginOpenerPolicyStatus {
     return current_coop_;
   }
 
+  const std::vector<base::UnguessableToken>&
+  TransientReportingSourcesForTesting() {
+    return transient_reporting_sources_;
+  }
+
   std::unique_ptr<CrossOriginOpenerPolicyReporter> TakeCoopReporter();
 
   // Called when a RenderFrameHost has been created to use its process's
@@ -83,6 +92,20 @@ class CrossOriginOpenerPolicyStatus {
   void UpdateReporterStoragePartition(StoragePartition* storage_partition);
 
  private:
+  // If the process crashes/exited before CrossOriginOpenerPolicyStatus is
+  // destructed, clean up transient reporting sources.
+  void RenderProcessExited(RenderProcessHost* host,
+                           const ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
+
+  void SetReportingEndpoints(const url::Origin& response_origin,
+                             StoragePartition* storage_partition,
+                             const base::UnguessableToken& reporting_source,
+                             const net::IsolationInfo& isolation_info);
+  // Remove any transient Reporting-Endpoints endpoint created for COOP
+  // reporting during navigation before the document loads.
+  // There could be multiple due to redirect chains.
+  void ClearTransientReportingSources();
   // Make sure COOP is relevant or clear the COOP headers.
   void SanitizeCoopHeaders(
       const GURL& response_url,
@@ -93,6 +116,13 @@ class CrossOriginOpenerPolicyStatus {
 
   // Tracks the FrameTreeNode in which this navigation is taking place.
   const FrameTreeNode* frame_tree_node_;
+
+  // Track the previous document's RenderProcessHost. This instance acquires
+  // reporting endpoints from it, and will use it to release them in its
+  // destructor.
+  RenderProcessHost* previous_document_rph_;
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      previous_document_rph_observation_{this};
 
   bool require_browsing_instance_swap_ = false;
 
@@ -130,6 +160,10 @@ class CrossOriginOpenerPolicyStatus {
 
   // The reporter currently in use by COOP.
   std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter_;
+
+  // Transient reporting sources created for Reporting-Endpoints header during
+  // this navigation before it fails or commits.
+  std::vector<base::UnguessableToken> transient_reporting_sources_;
 
   // Whether the current context tracked by this CrossOriginOpenerPolicy is the
   // source of the current navigation. This is updated every time we receive a

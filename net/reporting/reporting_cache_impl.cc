@@ -40,6 +40,15 @@ void ReportingCacheImpl::AddReport(
     int attempts) {
   // If |reporting_source| is present, it must not be empty.
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
+  // Drop the report if its reporting source is already marked as expired.
+  // This should only happen in testing as reporting source is only marked
+  // expiring when the document that can generate report is gone.
+  if (reporting_source.has_value() &&
+      expired_sources_.find(reporting_source.value()) !=
+          expired_sources_.end()) {
+    return;
+  }
+
   auto report = std::make_unique<ReportingReport>(
       reporting_source, network_isolation_key, url, user_agent, group_name,
       type, std::move(body), depth, queued, attempts);

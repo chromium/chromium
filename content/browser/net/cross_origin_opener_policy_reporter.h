@@ -48,6 +48,9 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
   void set_storage_partition(StoragePartition* storage_partition) {
     storage_partition_ = storage_partition;
   }
+  void set_reporting_source(const base::UnguessableToken& reporting_source) {
+    reporting_source_ = reporting_source;
+  }
 
   // Returns the information necessary for the renderer process to report
   // accesses between the COOP document and other pages.
@@ -79,12 +82,12 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
 
   // See the class comment.
   StoragePartition* storage_partition_;
+  base::UnguessableToken reporting_source_;
   GURL source_url_;
   GlobalRenderFrameHostId source_routing_id_;
   const GURL context_url_;
   const std::string context_referrer_url_;
   const network::CrossOriginOpenerPolicy coop_;
-  const base::UnguessableToken reporting_source_;
   const net::NetworkIsolationKey network_isolation_key_;
 
   mojo::UniqueReceiverSet<network::mojom::CrossOriginOpenerPolicyReporter>
