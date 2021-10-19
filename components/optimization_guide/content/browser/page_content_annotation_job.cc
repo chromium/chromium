@@ -8,36 +8,38 @@
 
 namespace optimization_guide {
 
-PageContentAnnotationJob::PageContentAnnotationJob(const std::string& input,
-                                                   AnnotationType type)
-    : input_(input), type_(type) {}
+PageContentAnnotationJob::PageContentAnnotationJob(
+    BatchAnnotationCallback on_complete_callback,
+    const std::vector<std::string>& inputs,
+    AnnotationType type)
+    : on_complete_callback_(std::move(on_complete_callback)),
+      type_(type),
+      inputs_(inputs.begin(), inputs.end()) {}
 
 PageContentAnnotationJob::~PageContentAnnotationJob() = default;
 
-void PageContentAnnotationJob::SetStatus(ExecutionStatus status) {
-  // TODO(crbug/1249632): Consider adding a DCHECK here to check if the state
-  // transition is correct.
-  status_ = status;
+void PageContentAnnotationJob::OnComplete() {
+  DCHECK(inputs_.empty());
+  if (!on_complete_callback_) {
+    NOTREACHED();
+    return;
+  }
+
+  std::move(on_complete_callback_).Run(results_);
 }
 
-void PageContentAnnotationJob::SetPageTopicsOutput(
-    const std::vector<WeightedString>& page_topics) {
-  DCHECK_EQ(AnnotationType::kPageTopics, type_);
-  page_topics_ =
-      std::vector<WeightedString>{page_topics.begin(), page_topics.end()};
+absl::optional<std::string> PageContentAnnotationJob::GetNextInput() {
+  if (inputs_.empty()) {
+    return absl::nullopt;
+  }
+  std::string next = *inputs_.begin();
+  inputs_.erase(inputs_.begin());
+  return next;
 }
 
-void PageContentAnnotationJob::SetPageEntitiesOutput(
-    const std::vector<WeightedString>& page_entities) {
-  DCHECK_EQ(AnnotationType::kPageEntities, type_);
-  page_entities_ =
-      std::vector<WeightedString>{page_entities.begin(), page_entities.end()};
-}
-
-void PageContentAnnotationJob::SetVisibilityScoreOutput(
-    double visibility_score) {
-  DCHECK_EQ(AnnotationType::kContentVisibility, type_);
-  visibility_score_ = visibility_score;
+void PageContentAnnotationJob::PostNewResult(
+    const BatchAnnotationResult& result) {
+  results_.push_back(result);
 }
 
 }  // namespace optimization_guide

@@ -5,58 +5,58 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATION_JOB_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATION_JOB_H_
 
+#include <deque>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_common.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
 // A single page content annotation job with all request and response data
-// throughout the progression of the model execution.
+// throughout the progression of the model execution. It can contain one or more
+// inputs to be annotated, specified by the AnnotationType. This is a data
+// container that matches the I/O of a single call to the PCA Service.
 class PageContentAnnotationJob {
  public:
-  using OnJobCompleteCallback =
-      base::OnceCallback<void(const PageContentAnnotationJob&)>;
+  using WeightedCategories = std::vector<WeightedString>;
 
-  PageContentAnnotationJob(const std::string& input, AnnotationType type);
+  PageContentAnnotationJob(BatchAnnotationCallback on_complete_callback,
+                           const std::vector<std::string>& inputs,
+                           AnnotationType type);
   ~PageContentAnnotationJob();
 
-  // Updates the execution status.
-  void SetStatus(ExecutionStatus status);
+  // Called when the Job has finished executing to call |on_complete_callback_|.
+  void OnComplete();
 
-  // Sets the corresponding output.
-  void SetPageTopicsOutput(const std::vector<WeightedString>& page_topics);
-  void SetPageEntitiesOutput(const std::vector<WeightedString>& page_entities);
-  void SetVisibilityScoreOutput(double visibility_score);
+  // Returns the next input to be annotated, effectively "draining" the
+  // |inputs_| queue.
+  absl::optional<std::string> GetNextInput();
 
-  std::string input() const { return input_; }
+  // Posts a new result after an execution has completed.
+  void PostNewResult(const BatchAnnotationResult& result);
+
   AnnotationType type() const { return type_; }
-  ExecutionStatus status() const { return status_; }
-  absl::optional<std::vector<WeightedString>> page_topics() const {
-    return page_topics_;
-  }
-  absl::optional<std::vector<WeightedString>> page_entities() const {
-    return page_entities_;
-  }
-  absl::optional<double> visibility_score() const { return visibility_score_; }
 
   PageContentAnnotationJob(const PageContentAnnotationJob&) = delete;
   PageContentAnnotationJob& operator=(const PageContentAnnotationJob&) = delete;
 
  private:
-  // Initial request data.
-  const std::string input_;
+  // Run with |results_| when |OnComplete()| is called.
+  BatchAnnotationCallback on_complete_callback_;
+
+  // The requested annotation type.
   const AnnotationType type_;
 
-  // The current execution status.
-  ExecutionStatus status_ = ExecutionStatus::kUnknown;
+  // This is filled with all of the passed inputs in the ctor, then slowly
+  // drained from the beginning to end by |GetNextInput|.
+  std::deque<std::string> inputs_;
 
-  // The corresponding output. Only the output for |type_| will be set on a
-  // successful execution.
-  absl::optional<std::vector<WeightedString>> page_topics_;
-  absl::optional<std::vector<WeightedString>> page_entities_;
-  absl::optional<double> visibility_score_;
+  // Filled by |PostNewResult| with the complete annotations, specified by
+  // |type_|.
+  std::vector<BatchAnnotationResult> results_;
 };
 
 }  // namespace optimization_guide

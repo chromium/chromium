@@ -5,50 +5,70 @@
 #include "components/optimization_guide/content/browser/page_content_annotation_job.h"
 
 #include "base/callback_helpers.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
 
-class PageContentAnnotationJobTest : public testing::Test {};
+class PageContentAnnotationJobTest : public testing::Test {
+ public:
+  PageContentAnnotationJobTest() = default;
+  ~PageContentAnnotationJobTest() override = default;
 
-TEST_F(PageContentAnnotationJobTest, State) {
-  PageContentAnnotationJob job("input", AnnotationType::kPageTopics);
-  EXPECT_EQ(job.input(), "input");
-  EXPECT_EQ(job.type(), AnnotationType::kPageTopics);
-  EXPECT_EQ(job.status(), ExecutionStatus::kUnknown);
-  EXPECT_EQ(job.page_topics(), absl::nullopt);
-  EXPECT_EQ(job.page_entities(), absl::nullopt);
-  EXPECT_EQ(job.visibility_score(), absl::nullopt);
+  void OnBatchAnnotationComplete(
+      std::vector<BatchAnnotationResult>* out,
+      const std::vector<BatchAnnotationResult>& results) {
+    *out = results;
+  }
+};
 
-  job.SetStatus(ExecutionStatus::kPending);
-  EXPECT_EQ(job.status(), ExecutionStatus::kPending);
+TEST_F(PageContentAnnotationJobTest, IteratesInput) {
+  PageContentAnnotationJob job(base::NullCallback(), {"1", "2", "3"},
+                               AnnotationType::kPageTopics);
+  absl::optional<std::string> input;
+
+  input = job.GetNextInput();
+  ASSERT_TRUE(input);
+  EXPECT_EQ("1", *input);
+
+  input = job.GetNextInput();
+  ASSERT_TRUE(input);
+  EXPECT_EQ("2", *input);
+
+  input = job.GetNextInput();
+  ASSERT_TRUE(input);
+  EXPECT_EQ("3", *input);
+
+  EXPECT_FALSE(job.GetNextInput());
 }
 
-TEST_F(PageContentAnnotationJobTest, FinalizePageTopics) {
-  PageContentAnnotationJob job("input", AnnotationType::kPageTopics);
-  job.SetPageTopicsOutput(std::vector<WeightedString>{});
+TEST_F(PageContentAnnotationJobTest, Callback) {
+  std::vector<BatchAnnotationResult> results;
+  PageContentAnnotationJob job(
+      base::BindOnce(&PageContentAnnotationJobTest::OnBatchAnnotationComplete,
+                     base::Unretained(this), &results),
+      {"1", "2", "3"}, AnnotationType::kPageTopics);
 
-  EXPECT_NE(job.page_topics(), absl::nullopt);
-  EXPECT_EQ(job.page_entities(), absl::nullopt);
-  EXPECT_EQ(job.visibility_score(), absl::nullopt);
+  // Drain the inputs before running the callback.
+  while (job.GetNextInput()) {
+  }
+
+  BatchAnnotationResult expected =
+      BatchAnnotationResult::CreatePageTopicsResult(
+          "input", ExecutionStatus::kSuccess, absl::nullopt);
+
+  job.PostNewResult(expected);
+  job.OnComplete();
+
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(expected, results[0]);
 }
 
-TEST_F(PageContentAnnotationJobTest, FinalizePageEntites) {
-  PageContentAnnotationJob job("input", AnnotationType::kPageEntities);
-  job.SetPageEntitiesOutput(std::vector<WeightedString>{});
-
-  EXPECT_EQ(job.page_topics(), absl::nullopt);
-  EXPECT_NE(job.page_entities(), absl::nullopt);
-  EXPECT_EQ(job.visibility_score(), absl::nullopt);
-}
-
-TEST_F(PageContentAnnotationJobTest, FinalizeContentVisibility) {
-  PageContentAnnotationJob job("input", AnnotationType::kContentVisibility);
-  job.SetVisibilityScoreOutput(1.0);
-
-  EXPECT_EQ(job.page_topics(), absl::nullopt);
-  EXPECT_EQ(job.page_entities(), absl::nullopt);
-  EXPECT_NE(job.visibility_score(), absl::nullopt);
+TEST_F(PageContentAnnotationJobTest, DeathOnUncompleted) {
+  PageContentAnnotationJob job(base::NullCallback(), {"1", "2", "3"},
+                               AnnotationType::kPageTopics);
+  EXPECT_TRUE(job.GetNextInput());
+  EXPECT_DCHECK_DEATH(job.OnComplete());
 }
 
 }  // namespace optimization_guide
