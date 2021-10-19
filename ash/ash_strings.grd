@@ -4023,6 +4023,11 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE" desc="Context menu option title to remove a suggestion for a task in the launcher. Tasks display in the continue section located above the app list.">
         Remove Suggestion
       </message>
+
+      <!-- WM -->
+      <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">
+        Picture-in-picture started, Alt+Shift+V to focus
+      </message>
     </messages>
   </release>
 </grit>

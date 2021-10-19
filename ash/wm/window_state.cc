@@ -17,6 +17,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/default_state.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
@@ -42,12 +43,14 @@
 #include "ui/aura/layout_manager.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/painter.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -899,6 +902,11 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
     UpdatePipBounds();
     if (!was_pip) {
       window()->SetProperty(kPrePipWindowStateTypeKey, old_window_state_type);
+
+      if (widget && widget->GetContentsView()) {
+        widget->GetContentsView()->GetViewAccessibility().AnnounceText(
+            l10n_util::GetStringUTF16(IDS_ENTER_PIP_A11Y_NOTIFICATION));
+      }
     }
 
     CollectPipEnterExitMetrics(/*enter=*/true);
