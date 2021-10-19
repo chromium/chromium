@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -112,11 +113,15 @@ void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
   NotifyKioskAppsChanged();
 }
 
-void WebKioskAppManager::InitSession(Browser* browser) {
+void WebKioskAppManager::InitSession(Browser* browser, Profile* profile) {
   LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
 
   app_session_ = std::make_unique<AppSessionAsh>();
-  app_session_->InitForWebKiosk(browser);
+  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession())
+    app_session_->InitForWebKioskWithLacros(profile);
+  else
+    app_session_->InitForWebKiosk(browser);
+
   NotifySessionInitialized();
 }
 

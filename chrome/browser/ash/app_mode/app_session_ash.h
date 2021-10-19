@@ -16,6 +16,23 @@ class AppSessionAsh : public chromeos::AppSession {
   AppSessionAsh(const AppSessionAsh&) = delete;
   AppSessionAsh& operator=(const AppSessionAsh&) = delete;
   ~AppSessionAsh() override;
+
+  // chromeos::AppSession:
+  void Init(Profile* profile, const std::string& app_id) override;
+  void InitForWebKiosk(Browser* browser) override;
+
+  // Initialize the web Kiosk session (ash) when Lacros is enabled.
+  void InitForWebKioskWithLacros(Profile* profile);
+
+ private:
+  // Initialize the Kiosk app update service. The external update will be
+  // triggered if a USB stick is used.
+  void InitKioskAppUpdateService(Profile* profile, const std::string& app_id);
+
+  // If the device is not enterprise managed, set prefs to reboot after update
+  // and create a user security message which shows the user the application
+  // name and author after some idle timeout.
+  void SetRebootAfterUpdateIfNecessary();
 };
 
 }  // namespace ash

@@ -15,6 +15,7 @@
 
 class Browser;
 class PrefRegistrySimple;
+class Profile;
 struct WebApplicationInfo;
 
 namespace ash {
@@ -60,7 +61,7 @@ class WebKioskAppManager : public KioskAppManagerBase {
   void AddAppForTesting(const AccountId& account_id, const GURL& install_url);
 
   // Initialize current app session with the browser that is running the app.
-  void InitSession(Browser* browser);
+  void InitSession(Browser* browser, Profile* profile);
 
  private:
   // KioskAppManagerBase:

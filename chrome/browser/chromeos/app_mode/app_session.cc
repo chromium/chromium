@@ -7,7 +7,6 @@
 #include <errno.h>
 #include <signal.h>
 
-#include "ash/public/cpp/accessibility_controller.h"
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -15,8 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -27,8 +24,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -43,10 +38,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
-#include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -72,18 +63,6 @@ void RebootDevice() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "kiosk app session");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-void StartFloatingAccessibilityMenu() {
-  // TODO (anqing): this method needs to be moved to `AppSessionAsh`. We need
-  // to make sure that all a11y features including the floating menu can work as
-  // before after Lacros is supported.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::AccessibilityController* accessibility_controller =
-      ash::AccessibilityController::Get();
-  if (accessibility_controller)
-    accessibility_controller->ShowFloatingMenuIfEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -253,52 +232,17 @@ AppSession::AppSession(base::OnceClosure attempt_user_exit)
     : attempt_user_exit_(std::move(attempt_user_exit)) {}
 AppSession::~AppSession() {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 void AppSession::Init(Profile* profile, const std::string& app_id) {
-  profile_ = profile;
+  SetProfile(profile);
   app_window_handler_ = std::make_unique<AppWindowHandler>(this);
   app_window_handler_->Init(profile, app_id);
-
-  browser_window_handler_ =
-      std::make_unique<BrowserWindowHandler>(this, nullptr);
-
+  CreateBrowserWindowHandler(nullptr);
   plugin_handler_ = std::make_unique<KioskSessionPluginHandler>(this);
-
-  StartFloatingAccessibilityMenu();
-
-  // Set the app_id for the current instance of KioskAppUpdateService.
-  ash::KioskAppUpdateService* update_service =
-      ash::KioskAppUpdateServiceFactory::GetForProfile(profile);
-  DCHECK(update_service);
-  if (update_service)
-    update_service->Init(app_id);
-
-  // Start to monitor external update from usb stick.
-  KioskAppManager::Get()->MonitorKioskExternalUpdate();
-
-  // If the device is not enterprise managed, set prefs to reboot after update
-  // and create a user security message which shows the user the application
-  // name and author after some idle timeout.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (!connector->IsDeviceEnterpriseManaged()) {
-    PrefService* local_state = g_browser_process->local_state();
-    local_state->SetBoolean(prefs::kRebootAfterUpdate, true);
-    KioskModeIdleAppNameNotification::Initialize();
-  }
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 void AppSession::InitForWebKiosk(Browser* browser) {
-  profile_ = browser->profile();
-  // We should block all other browser window creation and terminate the
-  // session the browser window was closed.
-  browser_window_handler_ =
-      std::make_unique<BrowserWindowHandler>(this, browser);
-
-  StartFloatingAccessibilityMenu();
+  SetProfile(browser->profile());
+  CreateBrowserWindowHandler(browser);
 }
 
 void AppSession::SetAttemptUserExitForTesting(base::OnceClosure closure) {
@@ -308,6 +252,15 @@ void AppSession::SetAttemptUserExitForTesting(base::OnceClosure closure) {
 void AppSession::SetOnHandleBrowserCallbackForTesting(
     base::RepeatingClosure closure) {
   on_handle_browser_callback_ = std::move(closure);
+}
+
+void AppSession::SetProfile(Profile* profile) {
+  profile_ = profile;
+}
+
+void AppSession::CreateBrowserWindowHandler(Browser* browser) {
+  browser_window_handler_ =
+      std::make_unique<BrowserWindowHandler>(this, browser);
 }
 
 void AppSession::OnAppWindowAdded(AppWindow* app_window) {

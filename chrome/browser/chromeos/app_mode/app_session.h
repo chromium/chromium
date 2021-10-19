@@ -37,10 +37,10 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   ~AppSession() override;
 
   // Initializes an app session.
-  void Init(Profile* profile, const std::string& app_id);
+  virtual void Init(Profile* profile, const std::string& app_id);
 
   // Initializes an app session for Web kiosk.
-  void InitForWebKiosk(Browser* browser);
+  virtual void InitForWebKiosk(Browser* browser);
 
   // Invoked when GuestViewManager adds a guest web contents.
   void OnGuestAdded(content::WebContents* guest_web_contents);
@@ -50,6 +50,13 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
 
   Browser* GetSettingsBrowserForTesting() { return settings_browser_; }
   void SetOnHandleBrowserCallbackForTesting(base::RepeatingClosure closure);
+
+ protected:
+  // Set the |profile_| object.
+  void SetProfile(Profile* profile);
+
+  // Create a |browser_window_handler_| object.
+  void CreateBrowserWindowHandler(Browser* browser);
 
  private:
   // AppWindowHandler watches for app window and exits the session when the
