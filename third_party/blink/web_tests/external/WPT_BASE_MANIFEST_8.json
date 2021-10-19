@@ -299725,10 +299725,6 @@
        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
        []
       ],
-      "iframe-added-post-activation.html": [
-       "fb7aaa8e95cea564e03e0e9a35b767cd7ac4b24e",
-       []
-      ],
       "indexedb-utils.js": [
        "39cb1a802a97358c7364c4dca52445824a351155",
        []
@@ -304741,24 +304737,12 @@
     ],
     "broadcastchannel": {
      "resources": {
-      "cross-origin.html": [
-       "5078b6fc8e46f556fe1b86c7e1aa5a141c132be1",
-       []
-      ],
-      "ordering.html": [
-       "b7f12d865ad2bf64278791e60ef925539de40671",
-       []
-      ],
       "origin.html": [
        "f57d582bbb878ceb7ebd8d962d5d4293b736b4c4",
        []
       ],
       "sandboxed.html": [
        "e32962cdfd4456942c9af24541fb34e93d9c5a6d",
-       []
-      ],
-      "service-worker.js": [
-       "fc37aede84586e235464dbfd3517ebbd899047d8",
        []
       ],
       "worker.js": [
@@ -428023,15 +428007,6 @@
     },
     "interaction": {
      "focus": {
-      "chrome-object-tab-focus-bug.html": [
-       "5127ee1cb6eafec3ba4038c23a9d3afe74646f80",
-       [
-        null,
-        {
-         "testdriver": true
-        }
-       ]
-      ],
       "composed.window.js": [
        "8951afc4e0ce643752754e67243532ae8e0fa9ae",
        [
@@ -476895,7 +476870,7 @@
       ]
      ],
      "scroll-animation-inactive-timeline.html": [
-      "12ca1b8e1b26e080e401ea615cb92189eee17d3a",
+      "257f94d26f611c63b9558a3ad6bd501b76290256",
       [
        null,
        {}
@@ -482567,15 +482542,6 @@
        }
       ]
      ],
-     "iframe-added-post-activation.html": [
-      "aeec5fc99bbd6519c7c0a8345a0beeafb58a0c2d",
-      [
-       null,
-       {
-        "timeout": "long"
-       }
-      ]
-     ],
      "indexeddb.html": [
       "65368acbaef86b5af4dac28cc1205e6eca2c1b89",
       [
@@ -487117,7 +487083,7 @@
     },
     "writable-streams": {
      "aborting.any.js": [
-      "e86969ba934ee91062c2f18eda416b89365e3240",
+      "ab154a705ed0e98b4da2fb93d22082a46797600f",
       [
        null,
        {
@@ -506090,13 +506056,6 @@
        {}
       ]
      ],
-     "cross-origin.html": [
-      "ee4b2f21c8e3fec488cb28d72e45a7e918210806",
-      [
-       null,
-       {}
-      ]
-     ],
      "interface.any.js": [
       "35e09d34b418d3c6d2a574bfdedc9e6632a6c09f",
       [
@@ -506105,13 +506064,6 @@
       ],
       [
        "webmessaging/broadcastchannel/interface.any.worker.html",
-       {}
-      ]
-     ],
-     "ordering.html": [
-      "2d521b9e0ccf94feb42fa9acc09343314f625a87",
-      [
-       null,
        {}
       ]
      ],
@@ -506124,13 +506076,6 @@
      ],
      "sandbox.html": [
       "aedf3c0d6fe64dca2b3a6058d69d7f3a7f70cc28",
-      [
-       null,
-       {}
-      ]
-     ],
-     "service-worker.https.html": [
-      "d605434ae1ccb02724a901caf5f2325b1719d878",
       [
        null,
        {}

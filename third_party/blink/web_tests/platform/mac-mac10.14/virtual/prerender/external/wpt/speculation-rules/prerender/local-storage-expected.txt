@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL prerendering page should be able to access local storage assert_equals: prerendering page should be able to write to local storage expected (string) "prerender_set" but got (object) null
-Harness: the test ran to completion.
-
