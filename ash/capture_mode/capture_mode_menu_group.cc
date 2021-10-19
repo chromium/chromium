@@ -167,7 +167,8 @@ class CaptureModeOption : public views::Button {
   CaptureModeOption(views::Button::PressedCallback callback,
                     std::u16string option_label,
                     int option_id,
-                    bool checked)
+                    bool checked,
+                    bool enabled)
       : views::Button(callback),
         label_view_(AddChildView(
             std::make_unique<views::Label>(std::move(option_label)))),
@@ -179,7 +180,6 @@ class CaptureModeOption : public views::Button {
         kHollowCheckCircleIcon,
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kButtonLabelColorBlue)));
-    checked_icon_view_->SetVisible(checked);
 
     SetBorder(views::CreateEmptyBorder(kOptionPadding));
     ConfigLabelView(label_view_);
@@ -188,6 +188,9 @@ class CaptureModeOption : public views::Button {
     SetInkDropForButton(this);
     GetViewAccessibility().OverrideIsLeaf(true);
     SetAccessibleName(GetOptionLabel());
+
+    checked_icon_view_->SetVisible(checked);
+    SetEnabled(enabled);
   }
 
   CaptureModeOption(const CaptureModeOption&) = delete;
@@ -210,6 +213,16 @@ class CaptureModeOption : public views::Button {
   }
 
   bool IsOptionChecked() { return checked_icon_view_->GetVisible(); }
+
+  // views::Button:
+  void StateChanged(ButtonState old_state) override {
+    auto* provider = AshColorProvider::Get();
+    const auto enabled_color = provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    label_view_->SetEnabledColor(GetState() == STATE_DISABLED
+                                     ? provider->GetDisabledColor(enabled_color)
+                                     : enabled_color);
+  }
 
  private:
   views::Label* label_view_;
@@ -246,7 +259,8 @@ void CaptureModeMenuGroup::AddOption(std::u16string option_label,
           base::BindRepeating(&CaptureModeMenuGroup::HandleOptionClick,
                               base::Unretained(this), option_id),
           std::move(option_label), option_id,
-          /*checked=*/delegate_->IsOptionChecked(option_id))));
+          /*checked=*/delegate_->IsOptionChecked(option_id),
+          /*enabled=*/delegate_->IsOptionEnabled(option_id))));
 }
 
 void CaptureModeMenuGroup::AddOrUpdateExistingOption(

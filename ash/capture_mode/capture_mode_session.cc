@@ -706,7 +706,8 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
           "CaptureModeSettingsWidget"));
       capture_mode_advanced_settings_view_ =
           capture_mode_settings_widget_->SetContentsView(
-              std::make_unique<CaptureModeAdvancedSettingsView>(this));
+              std::make_unique<CaptureModeAdvancedSettingsView>(
+                  this, is_in_projector_mode_));
       OnCaptureFolderMayHaveChanged();
     } else {
       capture_mode_settings_widget_->Init(CreateWidgetParams(

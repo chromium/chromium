@@ -4622,6 +4622,38 @@ TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
                                      CaptureModeEntryType::kProjector, 1);
 }
 
+// Tests that when the advanced capture mode settings are enabled, a simplified
+// view of the settings are shown.
+TEST_F(ProjectorCaptureModeIntegrationTests, WithAdvancedSettings) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kImprovedScreenCaptureSettings};
+
+  auto* controller = CaptureModeController::Get();
+  StartProjectorModeSession();
+  auto* event_generator = GetEventGenerator();
+
+  ClickOnView(GetSettingsButton(), event_generator);
+
+  CaptureModeAdvancedSettingsTestApi test_api;
+
+  // The "Save-to" menu group should never be added.
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+  EXPECT_FALSE(save_to_menu_group);
+
+  // The audio-off option should be disabled, unchecked and not interactable
+  // (even when clicked).
+  views::View* audio_off_option = test_api.GetAudioOffOption();
+  EXPECT_FALSE(audio_off_option->GetEnabled());
+  CaptureModeMenuGroup* audio_input_menu_group =
+      test_api.GetAudioInputMenuGroup();
+  EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
+  EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioOff));
+  ClickOnView(audio_off_option, event_generator);
+  EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
+  EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioOff));
+  EXPECT_TRUE(controller->enable_audio_recording());
+}
+
 TEST_F(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
   auto* controller = CaptureModeController::Get();
   StartProjectorModeSession();

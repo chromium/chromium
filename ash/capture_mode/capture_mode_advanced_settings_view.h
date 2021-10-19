@@ -39,7 +39,8 @@ class ASH_EXPORT CaptureModeAdvancedSettingsView
  public:
   METADATA_HEADER(CaptureModeAdvancedSettingsView);
 
-  explicit CaptureModeAdvancedSettingsView(CaptureModeSession* session);
+  CaptureModeAdvancedSettingsView(CaptureModeSession* session,
+                                  bool is_in_projector_mode);
   CaptureModeAdvancedSettingsView(const CaptureModeAdvancedSettingsView&) =
       delete;
   CaptureModeAdvancedSettingsView& operator=(
@@ -69,6 +70,7 @@ class ASH_EXPORT CaptureModeAdvancedSettingsView
   // CaptureModeMenuGroup::Delegate:
   void OnOptionSelected(int option_id) const override;
   bool IsOptionChecked(int option_id) const override;
+  bool IsOptionEnabled(int option_id) const override;
 
   // For tests only:
   CaptureModeMenuGroup* GetAudioInputMenuGroupForTesting() {
@@ -94,12 +96,17 @@ class ASH_EXPORT CaptureModeAdvancedSettingsView
   // "Off" is the default one which means no audio input selected.
   CaptureModeMenuGroup* audio_input_menu_group_;
 
-  views::Separator* separator_;
+  // Can be null when in Projector mode, since then it's not needed as the
+  // "Save-to" menu group will not be added at all.
+  views::Separator* separator_ = nullptr;
 
   // "Save to" menu group that users can select a folder to save the captured
   // files to. It will include the "Downloads" folder as the default one and
   // one more folder selected by users.
-  CaptureModeMenuGroup* save_to_menu_group_;
+  // This menu group is not added when in Projector mode, since the folder
+  // selection here doesn't affect where Projector saves the videos, and hence
+  // it doesn't make sense to show this option. In this case, it remains null.
+  CaptureModeMenuGroup* save_to_menu_group_ = nullptr;
 };
 
 }  // namespace ash

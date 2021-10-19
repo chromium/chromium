@@ -54,38 +54,42 @@ CaptureModeController::CaptureFolder GetCurrentCaptureFolder() {
 }  // namespace
 
 CaptureModeAdvancedSettingsView::CaptureModeAdvancedSettingsView(
-    CaptureModeSession* session)
+    CaptureModeSession* session,
+    bool is_in_projector_mode)
     : capture_mode_session_(session),
       audio_input_menu_group_(
           AddChildView(std::make_unique<CaptureModeMenuGroup>(
               this,
               kCaptureModeMicIcon,
-              l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT)))),
-      separator_(AddChildView(std::make_unique<views::Separator>())),
-      save_to_menu_group_(AddChildView(std::make_unique<CaptureModeMenuGroup>(
-          this,
-          kCaptureModeFolderIcon,
-          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO)))) {
+              l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT)))) {
   audio_input_menu_group_->AddOption(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_OFF),
       kAudioOff);
   audio_input_menu_group_->AddOption(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE),
       kAudioMicrophone);
-  save_to_menu_group_->AddOption(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_DOWNLOADS),
-      kDownloadsFolder);
-  save_to_menu_group_->AddMenuItem(
-      base::BindRepeating(
-          &CaptureModeAdvancedSettingsView::OnSelectFolderMenuItemPressed,
-          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_SELECT_FOLDER));
 
   auto* color_provider = AshColorProvider::Get();
+  if (!is_in_projector_mode) {
+    separator_ = AddChildView(std::make_unique<views::Separator>());
 
-  const SkColor separator_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor);
-  separator_->SetColor(separator_color);
+    save_to_menu_group_ = AddChildView(std::make_unique<CaptureModeMenuGroup>(
+        this, kCaptureModeFolderIcon,
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO)));
+    save_to_menu_group_->AddOption(
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_DOWNLOADS),
+        kDownloadsFolder);
+    save_to_menu_group_->AddMenuItem(
+        base::BindRepeating(
+            &CaptureModeAdvancedSettingsView::OnSelectFolderMenuItemPressed,
+            base::Unretained(this)),
+        l10n_util::GetStringUTF16(
+            IDS_ASH_SCREEN_CAPTURE_SAVE_TO_SELECT_FOLDER));
+
+    const SkColor separator_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kSeparatorColor);
+    separator_->SetColor(separator_color);
+  }
 
   SetPaintToLayer();
   SetBackground(views::CreateSolidBackground(color_provider->GetBaseLayerColor(
@@ -112,6 +116,9 @@ gfx::Rect CaptureModeAdvancedSettingsView::GetBounds(
 }
 
 void CaptureModeAdvancedSettingsView::OnCaptureFolderMayHaveChanged() {
+  if (!save_to_menu_group_)
+    return;
+
   const auto custom_path =
       CaptureModeController::Get()->GetCustomCaptureFolder();
   if (!custom_path.empty()) {
@@ -124,7 +131,8 @@ void CaptureModeAdvancedSettingsView::OnCaptureFolderMayHaveChanged() {
 }
 
 void CaptureModeAdvancedSettingsView::OnDefaultCaptureFolderSelectionChanged() {
-  save_to_menu_group_->RefreshOptionsSelections();
+  if (save_to_menu_group_)
+    save_to_menu_group_->RefreshOptionsSelections();
 }
 
 void CaptureModeAdvancedSettingsView::OnOptionSelected(int option_id) const {
@@ -159,6 +167,18 @@ bool CaptureModeAdvancedSettingsView::IsOptionChecked(int option_id) const {
       return !GetCurrentCaptureFolder().is_default_downloads_folder;
     default:
       return false;
+  }
+}
+
+bool CaptureModeAdvancedSettingsView::IsOptionEnabled(int option_id) const {
+  switch (option_id) {
+    case kAudioOff:
+      return !capture_mode_session_->is_in_projector_mode();
+    case kAudioMicrophone:
+    case kDownloadsFolder:
+    case kCustomFolder:
+    default:
+      return true;
   }
 }
 

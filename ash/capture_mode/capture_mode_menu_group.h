@@ -33,8 +33,11 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
     // Called when user selects an option.
     virtual void OnOptionSelected(int option_id) const = 0;
 
-    // Called to determine if an option with the given |option_id| is selected.
+    // Called to determine if an option with the given `option_id` is selected.
     virtual bool IsOptionChecked(int option_id) const = 0;
+
+    // Called to determine if an option with the given `option_id` is enabled.
+    virtual bool IsOptionEnabled(int option_id) const = 0;
 
    protected:
     virtual ~Delegate() = default;
