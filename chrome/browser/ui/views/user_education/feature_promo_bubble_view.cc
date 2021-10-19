@@ -259,10 +259,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   accessible_name_ = params.screenreader_text.empty()
                          ? params.body_text
                          : params.screenreader_text;
-
-  // If there's a keyboard navigation hint, append it after a full stop.
-  if (!params.keyboard_navigation_hint.empty())
-    accessible_name_ += u". " + params.keyboard_navigation_hint;
+  screenreader_hint_text_ = params.keyboard_navigation_hint;
 
   // Since we don't have any controls for the user to interact with (we're just
   // an information bubble), override our role to kAlert.
@@ -591,7 +588,19 @@ void FeaturePromoBubbleView::OnMouseExited(const ui::MouseEvent& event) {
 }
 
 std::u16string FeaturePromoBubbleView::GetAccessibleWindowTitle() const {
-  return accessible_name_;
+  std::u16string result = accessible_name_;
+
+  // If there's a keyboard navigation hint, append it after a full stop.
+  if (!screenreader_hint_text_.empty() && activate_count_ <= 1)
+    result += u". " + screenreader_hint_text_;
+
+  return result;
+}
+
+void FeaturePromoBubbleView::OnWidgetActivationChanged(views::Widget* widget,
+                                                       bool active) {
+  if (widget == GetWidget() && active)
+    ++activate_count_;
 }
 
 gfx::Size FeaturePromoBubbleView::CalculatePreferredSize() const {

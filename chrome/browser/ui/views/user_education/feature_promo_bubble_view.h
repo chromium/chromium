@@ -128,12 +128,21 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   void UpdateHighlightedButton(bool highlighted) override {
     // Do nothing: the anchor for promo bubbles should not highlight.
   }
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   gfx::Size CalculatePreferredSize() const override;
 
   // If the bubble has buttons, it must be focusable.
   std::vector<views::MdTextButton*> buttons_;
 
+  // This is the base accessible name of the window.
   std::u16string accessible_name_;
+
+  // This is any additional hint text to read.
+  std::u16string screenreader_hint_text_;
+
+  // Track the number of times the widget has been activated; if it's greater
+  // than 1 we won't re-read the screenreader hint again.
+  int activate_count_ = 0;
 
   absl::optional<int> preferred_width_;
 
