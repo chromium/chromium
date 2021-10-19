@@ -197,7 +197,7 @@ static_library("test_support") {
 
   if (is_linux || is_chromeos) {
     sources += [ "test_file_util_linux.cc" ]
-    public_deps += [ "//third_party/test_fonts:test_support" ]
+    public_deps += [ "//third_party/test_fonts/fontconfig:test_support" ]
   }
 
   if (is_mac) {

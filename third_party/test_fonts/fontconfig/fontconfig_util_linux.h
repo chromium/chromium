@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TEST_FONTCONFIG_UTIL_LINUX_H_
-#define BASE_TEST_FONTCONFIG_UTIL_LINUX_H_
+#ifndef THIRD_PARTY_TEST_FONTS_FONTCONFIG_FONTCONFIG_UTIL_LINUX_H_
+#define THIRD_PARTY_TEST_FONTS_FONTCONFIG_FONTCONFIG_UTIL_LINUX_H_
 
 #include <string>
 
@@ -19,4 +19,4 @@ void SetUpFontconfig();
 
 }  // namespace test_fonts
 
-#endif  // BASE_TEST_FONTCONFIG_UTIL_LINUX_H_
+#endif  // THIRD_PARTY_TEST_FONTS_FONTCONFIG_FONTCONFIG_UTIL_LINUX_H_

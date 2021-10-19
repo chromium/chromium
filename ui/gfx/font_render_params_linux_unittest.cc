@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/test_fonts/fontconfig_util_linux.h"
+#include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/linux/fontconfig_util.h"
 #include "ui/gfx/skia_font_delegate.h"

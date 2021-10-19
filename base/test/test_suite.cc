@@ -69,7 +69,7 @@
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "third_party/test_fonts/fontconfig_util_linux.h"
+#include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #endif
 
 #if defined(OS_FUCHSIA)

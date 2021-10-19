@@ -12,7 +12,7 @@
 #include <cassert>
 #include <string>
 
-#include "third_party/test_fonts/fontconfig_util_linux.h"
+#include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 
 // GIANT WARNING: The point of this file is to front-load construction of the
 // font cache [which takes 600ms] from test run time to compile time. This saves

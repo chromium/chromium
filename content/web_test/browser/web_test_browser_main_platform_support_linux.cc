@@ -4,7 +4,7 @@
 
 #include "content/web_test/browser/web_test_browser_main_platform_support.h"
 
-#include "third_party/test_fonts/fontconfig_util_linux.h"
+#include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 
 namespace content {
 
