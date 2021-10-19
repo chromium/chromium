@@ -570,9 +570,15 @@ export function scanningAppTest() {
    * @return {!Promise}
    */
   function getScannerCapabilities() {
-    return fakeScanService_.whenCalled('getScannerCapabilities').then(() => {
-      return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
-    });
+    return fakeScanService_.whenCalled('getScannerCapabilities')
+        .then(() => {
+          return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
+        })
+        .then(() => {
+          // Need to wait for the app to render again when the Source type is
+          // selected from saved scan settings.
+          return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
+        });
   }
 
   /**

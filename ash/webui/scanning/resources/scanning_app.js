@@ -1050,10 +1050,12 @@ Polymer({
     }
 
     this.setSelectedSourceTypeIfAvailable_(scannerSettings.sourceName);
-    this.setSelectedFileTypeIfAvailable_(scannerSettings.fileType);
-    this.setSelectedColorModeIfAvailable_(scannerSettings.colorMode);
-    this.setSelectedPageSizeIfAvailable_(scannerSettings.pageSize);
-    this.setSelectedResolutionIfAvailable_(scannerSettings.resolutionDpi);
+    afterNextRender(this, () => {
+      this.setSelectedFileTypeIfAvailable_(scannerSettings.fileType);
+      this.setSelectedColorModeIfAvailable_(scannerSettings.colorMode);
+      this.setSelectedPageSizeIfAvailable_(scannerSettings.pageSize);
+      this.setSelectedResolutionIfAvailable_(scannerSettings.resolutionDpi);
+    });
 
     // This must be set last because it depends on the values of sourceType and
     // fileType.
