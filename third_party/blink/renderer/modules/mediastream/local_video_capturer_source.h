@@ -14,10 +14,10 @@
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "media/capture/video_capture_types.h"
-#include "media/capture/video_capturer_source.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace base {
@@ -34,10 +34,9 @@ class WebVideoCaptureImplManager;
 // WebVideoCaptureImplManager to start / stop and receive I420 frames from
 // Chrome's video capture implementation. This is a main Render thread only
 // object.
-class MODULES_EXPORT LocalVideoCapturerSource
-    : public media::VideoCapturerSource {
+class MODULES_EXPORT LocalVideoCapturerSource : public VideoCapturerSource {
  public:
-  static std::unique_ptr<media::VideoCapturerSource> Create(
+  static std::unique_ptr<VideoCapturerSource> Create(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       LocalFrame* frame,
       const base::UnguessableToken& session_id);

@@ -20,13 +20,10 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
-namespace media {
-class VideoCapturerSource;
-}  // namespace media
-
 namespace blink {
 
 class LocalFrame;
+class VideoCapturerSource;
 
 // Representation of a video stream coming from a camera, owned by Blink as
 // WebMediaStreamSource. Objects of this class are created and live on main
@@ -36,12 +33,11 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
     : public MediaStreamVideoSource {
  public:
   using DeviceCapturerFactoryCallback =
-      base::RepeatingCallback<std::unique_ptr<media::VideoCapturerSource>(
+      base::RepeatingCallback<std::unique_ptr<VideoCapturerSource>(
           const base::UnguessableToken& session_id)>;
-  MediaStreamVideoCapturerSource(
-      LocalFrame* frame,
-      SourceStoppedCallback stop_callback,
-      std::unique_ptr<media::VideoCapturerSource> source);
+  MediaStreamVideoCapturerSource(LocalFrame* frame,
+                                 SourceStoppedCallback stop_callback,
+                                 std::unique_ptr<VideoCapturerSource> source);
   MediaStreamVideoCapturerSource(
       LocalFrame* frame,
       SourceStoppedCallback stop_callback,
@@ -63,7 +59,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
       mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost>
           dispatcher_host);
 
-  media::VideoCapturerSource* GetSourceForTesting();
+  VideoCapturerSource* GetSourceForTesting();
 
  private:
   friend class MediaStreamVideoCapturerSourceTest;
@@ -101,7 +97,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   mojo::Remote<mojom::blink::MediaStreamDispatcherHost> host_;
 
   // The source that provides video frames.
-  std::unique_ptr<media::VideoCapturerSource> source_;
+  std::unique_ptr<VideoCapturerSource> source_;
 
   enum State {
     STARTING,

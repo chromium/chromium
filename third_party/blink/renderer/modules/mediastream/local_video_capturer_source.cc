@@ -135,7 +135,7 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
 }
 
 // static
-std::unique_ptr<media::VideoCapturerSource> LocalVideoCapturerSource::Create(
+std::unique_ptr<VideoCapturerSource> LocalVideoCapturerSource::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     LocalFrame* frame,
     const base::UnguessableToken& session_id) {

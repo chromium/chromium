@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video_capturer_source.h"
+#include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
+
 #include "base/callback_helpers.h"
 
-namespace media {
+namespace blink {
 
 // TODO(mcasas): VideoCapturerSource is implemented in other .dll(s) (e.g.
 // content) in Windows component build. The current compiler fails to generate
@@ -18,4 +19,4 @@ media::VideoCaptureFeedbackCB VideoCapturerSource::GetFeedbackCallback() const {
   return base::DoNothing();
 }
 
-}  // namespace media
+}  // namespace blink

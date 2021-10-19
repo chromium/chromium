@@ -134,7 +134,7 @@ class CanvasCaptureHandlerTest
   std::unique_ptr<CanvasCaptureHandler> canvas_capture_handler_;
 
  protected:
-  media::VideoCapturerSource* GetVideoCapturerSource(
+  VideoCapturerSource* GetVideoCapturerSource(
       blink::MediaStreamVideoCapturerSource* ms_source) {
     return ms_source->GetSourceForTesting();
   }
@@ -171,7 +171,7 @@ TEST_P(CanvasCaptureHandlerTest, GetFormatsStartAndStop) {
       static_cast<blink::MediaStreamVideoCapturerSource*>(
           media_stream_source->GetPlatformSource());
   EXPECT_TRUE(ms_source);
-  media::VideoCapturerSource* source = GetVideoCapturerSource(ms_source);
+  VideoCapturerSource* source = GetVideoCapturerSource(ms_source);
   EXPECT_TRUE(source);
 
   media::VideoCaptureFormats formats = source->GetPreferredFormats();
@@ -209,7 +209,7 @@ TEST_P(CanvasCaptureHandlerTest, VerifyFrame) {
   const bool width = testing::get<1>(GetParam());
   const bool height = testing::get<1>(GetParam());
   InSequence s;
-  media::VideoCapturerSource* const source = GetVideoCapturerSource(
+  VideoCapturerSource* const source = GetVideoCapturerSource(
       static_cast<blink::MediaStreamVideoCapturerSource*>(
           component_->Source()->GetPlatformSource()));
   EXPECT_TRUE(source);
@@ -233,7 +233,7 @@ TEST_F(CanvasCaptureHandlerTest, DropAlphaDeliversOpaqueFrame) {
   const int width = 2;
   const int height = 2;
   InSequence s;
-  media::VideoCapturerSource* const source = GetVideoCapturerSource(
+  VideoCapturerSource* const source = GetVideoCapturerSource(
       static_cast<blink::MediaStreamVideoCapturerSource*>(
           component_->Source()->GetPlatformSource()));
   EXPECT_TRUE(source);
@@ -257,7 +257,7 @@ TEST_F(CanvasCaptureHandlerTest, DropAlphaDeliversOpaqueFrame) {
 // Checks that needsNewFrame() works as expected.
 TEST_F(CanvasCaptureHandlerTest, CheckNeedsNewFrame) {
   InSequence s;
-  media::VideoCapturerSource* source = GetVideoCapturerSource(
+  VideoCapturerSource* source = GetVideoCapturerSource(
       static_cast<blink::MediaStreamVideoCapturerSource*>(
           component_->Source()->GetPlatformSource()));
   EXPECT_TRUE(source);

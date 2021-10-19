@@ -71,8 +71,8 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
   ~PushableMediaStreamVideoSource() override;
 
   // See the definition of VideoCaptureDeliverFrameCB in
-  // media/capture/video_capturer_source.h for the documentation
-  // of |estimated_capture_time| and the difference with
+  // third_party/blink/public/common/media/video_capture.h
+  // for the documentation of |estimated_capture_time| and the difference with
   // media::VideoFrame::timestamp().
   // This function can be called on any thread.
   void PushFrame(scoped_refptr<media::VideoFrame> video_frame,

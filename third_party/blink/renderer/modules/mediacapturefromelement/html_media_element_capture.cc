@@ -43,7 +43,7 @@ namespace {
 // MediaTrackConstraints.
 bool AddVideoTrackToMediaStream(
     LocalFrame* frame,
-    std::unique_ptr<media::VideoCapturerSource> video_source,
+    std::unique_ptr<VideoCapturerSource> video_source,
     bool is_remote,
     MediaStreamDescriptor* descriptor) {
   DCHECK(video_source.get());

@@ -6,13 +6,13 @@
 
 #include <utility>
 
-#include "media/capture/video_capturer_source.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -31,7 +31,7 @@ scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerFromFrame(
 MediaStreamVideoCapturerSource::MediaStreamVideoCapturerSource(
     LocalFrame* frame,
     SourceStoppedCallback stop_callback,
-    std::unique_ptr<media::VideoCapturerSource> source)
+    std::unique_ptr<VideoCapturerSource> source)
     : MediaStreamVideoSource(GetTaskRunnerFromFrame(frame)),
       frame_(frame),
       source_(std::move(source)) {
@@ -254,8 +254,7 @@ void MediaStreamVideoCapturerSource::SetMediaStreamDispatcherHostForTesting(
   host_.Bind(std::move(host));
 }
 
-media::VideoCapturerSource*
-MediaStreamVideoCapturerSource::GetSourceForTesting() {
+VideoCapturerSource* MediaStreamVideoCapturerSource::GetSourceForTesting() {
   return source_.get();
 }
 

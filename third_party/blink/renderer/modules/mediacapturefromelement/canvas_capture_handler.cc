@@ -65,16 +65,16 @@ gfx::ColorSpace GetImageYUVColorSpace(scoped_refptr<StaticBitmapImage> image) {
 // MediaStreamVideoCapturerSource and delegates the Start/Stop calls to
 // CanvasCaptureHandler.
 // This class is single threaded and pinned to main render thread.
-class VideoCapturerSource : public media::VideoCapturerSource {
+class CanvasVideoCapturerSource : public VideoCapturerSource {
  public:
-  VideoCapturerSource(base::WeakPtr<CanvasCaptureHandler> canvas_handler,
-                      const gfx::Size& size,
-                      double frame_rate)
+  CanvasVideoCapturerSource(base::WeakPtr<CanvasCaptureHandler> canvas_handler,
+                            const gfx::Size& size,
+                            double frame_rate)
       : size_(size),
         frame_rate_(static_cast<float>(
             std::min(static_cast<double>(media::limits::kMaxFramesPerSecond),
                      frame_rate))),
-        canvas_handler_(canvas_handler) {
+        canvas_handler_(std::move(canvas_handler)) {
     DCHECK_LE(0, frame_rate_);
   }
 
@@ -128,7 +128,7 @@ class VideoCapturerSource : public media::VideoCapturerSource {
 class CanvasCaptureHandler::CanvasCaptureHandlerDelegate {
  public:
   explicit CanvasCaptureHandlerDelegate(
-      media::VideoCapturerSource::VideoCaptureDeliverFrameCB new_frame_callback)
+      VideoCaptureDeliverFrameCB new_frame_callback)
       : new_frame_callback_(new_frame_callback) {
     DETACH_FROM_THREAD(io_thread_checker_);
   }
@@ -152,8 +152,7 @@ class CanvasCaptureHandler::CanvasCaptureHandlerDelegate {
   }
 
  private:
-  const media::VideoCapturerSource::VideoCaptureDeliverFrameCB
-      new_frame_callback_;
+  const VideoCaptureDeliverFrameCB new_frame_callback_;
   // Bound to IO thread.
   THREAD_CHECKER(io_thread_checker_);
   base::WeakPtrFactory<CanvasCaptureHandlerDelegate> weak_ptr_factory_{this};
@@ -166,9 +165,9 @@ CanvasCaptureHandler::CanvasCaptureHandler(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     MediaStreamComponent** component)
     : ask_for_new_frame_(false), io_task_runner_(std::move(io_task_runner)) {
-  std::unique_ptr<media::VideoCapturerSource> video_source(
-      new VideoCapturerSource(weak_ptr_factory_.GetWeakPtr(), size,
-                              frame_rate));
+  std::unique_ptr<VideoCapturerSource> video_source(
+      new CanvasVideoCapturerSource(weak_ptr_factory_.GetWeakPtr(), size,
+                                    frame_rate));
   AddVideoCapturerSourceToVideoTrack(frame, std::move(video_source), component);
 }
 
@@ -282,9 +281,8 @@ bool CanvasCaptureHandler::NeedsNewFrame() const {
 
 void CanvasCaptureHandler::StartVideoCapture(
     const media::VideoCaptureParams& params,
-    const media::VideoCapturerSource::VideoCaptureDeliverFrameCB&
-        new_frame_callback,
-    const media::VideoCapturerSource::RunningCallback& running_callback) {
+    const VideoCaptureDeliverFrameCB& new_frame_callback,
+    const VideoCapturerSource::RunningCallback& running_callback) {
   DVLOG(3) << __func__ << " requested "
            << media::VideoCaptureFormat::ToString(params.requested_format);
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
@@ -578,7 +576,7 @@ void CanvasCaptureHandler::SendFrame(
 
 void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
     LocalFrame* frame,
-    std::unique_ptr<media::VideoCapturerSource> source,
+    std::unique_ptr<VideoCapturerSource> source,
     MediaStreamComponent** component) {
   uint8_t track_id_bytes[64];
   base::RandBytes(track_id_bytes, sizeof(track_id_bytes));

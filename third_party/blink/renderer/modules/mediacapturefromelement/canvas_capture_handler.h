@@ -17,9 +17,9 @@
 #include "base/threading/thread_checker.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "media/base/video_frame_pool.h"
-#include "media/capture/video_capturer_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 
@@ -67,12 +67,11 @@ class MODULES_EXPORT CanvasCaptureHandler {
                         context_provider);
   bool NeedsNewFrame() const;
 
-  // Functions called by media::VideoCapturerSource implementation.
+  // Functions called by VideoCapturerSource implementation.
   void StartVideoCapture(
       const media::VideoCaptureParams& params,
-      const media::VideoCapturerSource::VideoCaptureDeliverFrameCB&
-          new_frame_callback,
-      const media::VideoCapturerSource::RunningCallback& running_callback);
+      const VideoCaptureDeliverFrameCB& new_frame_callback,
+      const VideoCapturerSource::RunningCallback& running_callback);
   void RequestRefreshFrame();
   void StopVideoCapture();
   void SetCanDiscardAlpha(bool can_discard_alpha) {
@@ -119,7 +118,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
 
   void AddVideoCapturerSourceToVideoTrack(
       LocalFrame* frame,
-      std::unique_ptr<media::VideoCapturerSource> source,
+      std::unique_ptr<VideoCapturerSource> source,
       MediaStreamComponent** component);
 
   // Helper methods to increment/decrement the number of ongoing async pixel

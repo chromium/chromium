@@ -10,8 +10,8 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/base/video_types.h"
-#include "media/capture/video_capturer_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -25,7 +25,7 @@ class WebMediaPlayer;
 // blink::WebMediaPlayer on Render Main thread. The captured data is converted
 // and sent back to |io_task_runner_| via the registered |new_frame_callback_|.
 class MODULES_EXPORT HtmlVideoElementCapturerSource final
-    : public media::VideoCapturerSource {
+    : public VideoCapturerSource {
  public:
   static std::unique_ptr<HtmlVideoElementCapturerSource>
   CreateFromWebMediaPlayerImpl(
@@ -45,7 +45,7 @@ class MODULES_EXPORT HtmlVideoElementCapturerSource final
 
   ~HtmlVideoElementCapturerSource() override;
 
-  // media::VideoCapturerSource Implementation.
+  // VideoCapturerSource Implementation.
   media::VideoCaptureFormats GetPreferredFormats() override;
   void StartCapture(const media::VideoCaptureParams& params,
                     const VideoCaptureDeliverFrameCB& new_frame_callback,
