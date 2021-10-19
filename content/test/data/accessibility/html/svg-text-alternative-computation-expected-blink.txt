@@ -19,10 +19,12 @@ rootWebArea htmlTag='#document'
 ++++++++graphicsSymbol htmlTag='circle' name='Circle (from title)'
 ++++++svgRoot className='name-use-title' htmlTag='svg'
 ++++++++graphicsObject htmlTag='use' name='Circle (From first use element's title)'
+++++++++++group ignored htmlTag='svg'
 ++++++++graphicsObject htmlTag='use' name='Circle (From second use element's title)'
+++++++++++group ignored htmlTag='svg'
 ++++++svgRoot className='name-symbol-title' htmlTag='svg'
-++++++++genericContainer htmlTag='svg' name='Rectangle Symbol (From symbol's title)'
-++++++++genericContainer htmlTag='svg' name='Rectangle Symbol (From symbol's title)'
+++++++++group htmlTag='svg' name='Rectangle Symbol (From symbol's title)'
+++++++++group htmlTag='svg' name='Rectangle Symbol (From symbol's title)'
 ++++++genericContainer ignored invisible htmlTag='div'
 ++++++svgRoot className='description-aria-describedby' htmlTag='svg'
 ++++++++link description='Link (from aria-describedby)' htmlTag='a' name='Link (from title)' descriptionFrom=relatedElement
@@ -36,10 +38,14 @@ rootWebArea htmlTag='#document'
 ++++++++link description='Link (from xlink:title)' htmlTag='a' name='Link (from title)' descriptionFrom=title
 ++++++svgRoot className='description-use-desc' htmlTag='svg'
 ++++++++graphicsObject description='Circle (From first use element's desc)' htmlTag='use' descriptionFrom=svgDescElement
+++++++++++group ignored htmlTag='svg'
 ++++++++graphicsObject description='Circle (From second use element's desc)' htmlTag='use' descriptionFrom=svgDescElement
+++++++++++group ignored htmlTag='svg'
 ++++++svgRoot className='description-use-title' htmlTag='svg'
 ++++++++graphicsObject description='Circle (From first use element's title)' htmlTag='use' name='Circle 1' descriptionFrom=title
+++++++++++group ignored htmlTag='svg'
 ++++++++graphicsObject description='Circle (From second use element's title)' htmlTag='use' name='Circle 2' descriptionFrom=title
+++++++++++group ignored htmlTag='svg'
 ++++++svgRoot className='desc-symbol-desc' htmlTag='svg'
-++++++++genericContainer description='Rectangle Symbol (From symbol's desc)' htmlTag='svg' descriptionFrom=svgDescElement
-++++++++genericContainer description='Rectangle Symbol (From symbol's desc)' htmlTag='svg' descriptionFrom=svgDescElement
+++++++++group description='Rectangle Symbol (From symbol's desc)' htmlTag='svg' descriptionFrom=svgDescElement
+++++++++group description='Rectangle Symbol (From symbol's desc)' htmlTag='svg' descriptionFrom=svgDescElement

@@ -2739,6 +2739,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("svg-child-of-button.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvgChildOfSvg) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-child-of-svg.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvgDescInGroup) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-desc-in-group.html"));
 }

@@ -251,8 +251,15 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
   if (node && node->IsSVGElement()) {
     if (layout_object_->IsSVGImage())
       return ax::mojom::blink::Role::kImage;
-    if (layout_object_->IsSVGRoot())
-      return ax::mojom::blink::Role::kSvgRoot;
+    if (IsA<SVGSVGElement>(node)) {
+      // Exposing a nested <svg> as a group (rather than a generic container)
+      // increases the likelihood that an author-provided name will be presented
+      // by assistive technologies. Note that this mapping is not yet in the
+      // SVG-AAM, which currently maps all <svg> elements as graphics-document.
+      // See https://github.com/w3c/svg-aam/issues/18.
+      return layout_object_->IsSVGRoot() ? ax::mojom::blink::Role::kSvgRoot
+                                         : ax::mojom::blink::Role::kGroup;
+    }
     if (layout_object_->IsSVGShape())
       return ax::mojom::blink::Role::kGraphicsSymbol;
     if (layout_object_->IsSVGForeignObject() || IsA<SVGGElement>(node))
