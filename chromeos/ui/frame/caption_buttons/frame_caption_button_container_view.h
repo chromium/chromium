@@ -105,6 +105,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // Tell the window controls to reset themselves to the normal state.
   void ResetWindowControls();
 
+  // Creates or removes a layer for the caption button container when window
+  // controls overlay is enabled or disabled.
+  void OnWindowControlsOverlayEnabledChanged(bool enabled,
+                                             SkColor background_color);
+
   // Updates the caption buttons' state based on the caption button model's
   // state. A parent view should relayout to reflect the change in states.
   void UpdateCaptionButtonState(bool animate);
@@ -191,6 +196,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // Callback for the size button action, which overrides the default behavior.
   // If the callback returns false, it will fall back to the default dehavior.
   base::RepeatingCallback<bool()> on_size_button_pressed_callback_;
+
+  // Keeps track of the window-controls-overlay toggle, and defines if the
+  // background of the entire view should be updated when the background of the
+  // button container changes and SetBackgroundColor() gets called.
+  bool window_controls_overlay_enabled_ = false;
 };
 
 }  // namespace chromeos

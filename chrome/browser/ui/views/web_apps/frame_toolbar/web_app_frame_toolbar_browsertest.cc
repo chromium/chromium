@@ -549,8 +549,8 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
   base::ScopedTempDir temp_dir_;
 };
 
-// TODO(laurila): Enable on Chrome OS
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+// TODO(crbug.com/1259620): Enable for LaCrOS.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        WindowControlsOverlay) {
   InstallAndLaunchWebApp();
@@ -916,7 +916,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                    ->GetVisible());
   EXPECT_FALSE(browser_view->IsWindowControlsOverlayEnabled());
 }
-#endif  // #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 // Regression test for https://crbug.com/1239443.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
@@ -930,3 +929,4 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
   // If there's no crash, the test has passed.
 }
+#endif  // #if !BUILDFLAG(IS_CHROMEOS_LACROS)

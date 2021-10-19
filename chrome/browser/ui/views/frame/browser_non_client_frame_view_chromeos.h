@@ -70,6 +70,7 @@ class BrowserNonClientFrameViewChromeOS
   int NonClientHitTest(const gfx::Point& point) override;
   void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
   void ResetWindowControls() override;
+  void WindowControlsOverlayEnabledChanged() override;
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
@@ -113,6 +114,11 @@ class BrowserNonClientFrameViewChromeOS
   void OnImmersiveRevealStarted() override;
   void OnImmersiveRevealEnded() override;
   void OnImmersiveFullscreenExited() override;
+
+  chromeos::FrameCaptionButtonContainerView*
+  caption_button_container_for_testing() {
+    return caption_button_container_;
+  }
 
  protected:
   // BrowserNonClientFrameView:
@@ -204,6 +210,8 @@ class BrowserNonClientFrameViewChromeOS
   void UpdateProfileIcons();
 
   void LayoutProfileIndicator();
+
+  void LayoutWindowControlsOverlay();
 
   // Returns whether this window is currently in the overview list.
   bool GetOverviewMode() const;

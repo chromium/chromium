@@ -1747,6 +1747,9 @@ void BrowserView::UpdateWindowControlsOverlayToggleVisible() {
     should_show = false;
   }
 
+  if (IsImmersiveModeEnabled())
+    should_show = false;
+
   if (should_show == should_show_window_controls_overlay_toggle_)
     return;
 

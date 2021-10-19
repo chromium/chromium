@@ -163,6 +163,11 @@ void BrowserNonClientFrameViewChromeOS::Init() {
   }
 
   browser_view()->immersive_mode_controller()->AddObserver(this);
+
+  // Init caption button's WCO state on creation.
+  caption_button_container_->OnWindowControlsOverlayEnabledChanged(
+      browser_view()->IsWindowControlsOverlayEnabled(),
+      GetFrameHeaderColor(browser_view()->IsActive()));
 }
 
 gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForTabStripRegion(
@@ -325,6 +330,14 @@ void BrowserNonClientFrameViewChromeOS::ResetWindowControls() {
   caption_button_container_->ResetWindowControls();
 }
 
+void BrowserNonClientFrameViewChromeOS::WindowControlsOverlayEnabledChanged() {
+  bool enabled = browser_view()->IsWindowControlsOverlayEnabled();
+  web_app_frame_toolbar()->OnWindowControlsOverlayEnabledChanged();
+  caption_button_container_->OnWindowControlsOverlayEnabledChanged(
+      enabled, GetFrameHeaderColor(browser_view()->IsActive()));
+  browser_view()->InvalidateLayout();
+}
+
 void BrowserNonClientFrameViewChromeOS::UpdateWindowIcon() {
   if (window_icon_)
     window_icon_->SchedulePaint();
@@ -350,6 +363,23 @@ void BrowserNonClientFrameViewChromeOS::OnPaint(gfx::Canvas* canvas) {
     frame_header_->PaintHeader(canvas);
 }
 
+void BrowserNonClientFrameViewChromeOS::LayoutWindowControlsOverlay() {
+  int overlay_height = caption_button_container_->size().height();
+  gfx::Rect available_space(caption_button_container_->x(), overlay_height);
+  web_app_frame_toolbar()->LayoutForWindowControlsOverlay(available_space);
+
+  content::WebContents* web_contents = browser_view()->GetActiveWebContents();
+  // WebContents can be null when an app window is first launched.
+  if (web_contents) {
+    int overlay_width = web_app_frame_toolbar()->size().width() +
+                        caption_button_container_->size().width();
+    int bounding_rect_width = width() - overlay_width;
+    auto bounding_rect =
+        GetMirroredRect(gfx::Rect(bounding_rect_width, overlay_height));
+    web_contents->UpdateWindowControlsOverlay(bounding_rect);
+  }
+}
+
 void BrowserNonClientFrameViewChromeOS::Layout() {
   // The header must be laid out before computing |painted_height| because the
   // computation of |painted_height| for app and popup windows depends on the
@@ -366,10 +396,15 @@ void BrowserNonClientFrameViewChromeOS::Layout() {
 
   if (profile_indicator_icon_)
     LayoutProfileIndicator();
+
   if (web_app_frame_toolbar()) {
-    web_app_frame_toolbar()->LayoutInContainer(GetToolbarLeftInset(),
-                                               caption_button_container_->x(),
-                                               0, painted_height);
+    if (browser_view()->IsWindowControlsOverlayEnabled()) {
+      LayoutWindowControlsOverlay();
+    } else {
+      web_app_frame_toolbar()->LayoutInContainer(GetToolbarLeftInset(),
+                                                 caption_button_container_->x(),
+                                                 0, painted_height);
+    }
   }
 
   BrowserNonClientFrameView::Layout();
