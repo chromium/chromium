@@ -460,9 +460,7 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "languagePacksNotice",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_LANGUAGES_LANGUAGE_PACKS_NOTICE,
-          // TODO(b/200128583): Change this to point to the language packs help
-          // centre article.
-          base::ASCIIToUTF16(chrome::kLanguageSettingsLearnMoreUrl)));
+          base::ASCIIToUTF16(chrome::kLanguagePacksLearnMoreURL)));
   AddSmartInputsStrings(html_source, IsEmojiSuggestionAllowed());
   AddInputMethodOptionsStrings(html_source);
   AddLanguagesPageStringsV2(html_source);
