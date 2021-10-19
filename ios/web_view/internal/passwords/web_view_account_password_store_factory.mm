@@ -109,6 +109,7 @@ WebViewAccountPasswordStoreFactory::BuildServiceInstanceFor(
           std::make_unique<password_manager::PasswordStoreImpl>(
               std::move(login_db)));
   if (!ps->Init(browser_state->GetPrefs(),
+                /*affiliated_match_helper=*/nullptr,
                 base::BindRepeating(&SyncEnabledOrDisabled, browser_state))) {
     // TODO(crbug.com/479725): Remove the LOG once this error is visible in the
     // UI.

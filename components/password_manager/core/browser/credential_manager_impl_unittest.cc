@@ -220,11 +220,19 @@ class CredentialManagerImplTest : public testing::Test,
 
   void SetUp() override {
     store_ = new TestPasswordStore;
-    store_->Init(/*prefs=*/nullptr);
+
+    mock_affiliation_service_ = std::make_unique<MockAffiliationService>();
+    auto owning_mock_match_helper =
+        std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
+            mock_affiliation_service_.get());
+    mock_match_helper_ = owning_mock_match_helper.get();
+    store_->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
+
     if (base::FeatureList::IsEnabled(
             features::kEnablePasswordsAccountStorage)) {
       account_store_ = new TestPasswordStore(IsAccountStore(true));
-      ASSERT_TRUE(account_store_->Init(/*prefs=*/nullptr));
+      ASSERT_TRUE(account_store_->Init(/*prefs=*/nullptr,
+                                       /*affiliated_match_helper=*/nullptr));
     }
     client_ = std::make_unique<testing::NiceMock<MockPasswordManagerClient>>(
         store_.get(), account_store_.get());
@@ -394,6 +402,8 @@ class CredentialManagerImplTest : public testing::Test,
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
   std::unique_ptr<testing::NiceMock<MockPasswordManagerClient>> client_;
+  std::unique_ptr<MockAffiliationService> mock_affiliation_service_;
+  MockAffiliatedMatchHelper* mock_match_helper_;
   std::unique_ptr<CredentialManagerImpl> cm_service_impl_;
 };
 
@@ -826,18 +836,11 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(affiliated_form1_);
   store_->AddLogin(affiliated_form2_);
 
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto mock_match_helper =
-      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
-          store_.get(), mock_affiliation_service.get());
-  store_->SetAffiliatedMatchHelper(std::move(mock_match_helper));
-
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
-  static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
-      ->ExpectCallToGetAffiliatedAndroidRealms(
-          cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
+  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(
+      cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
   RunAllPendingTasks();
 
   TestPasswordStore::PasswordMap passwords = store_->stored_passwords();
@@ -1090,18 +1093,12 @@ TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialAffiliatedPasswordMatch) {
   store_->AddLogin(affiliated_form1_);
   client_->set_first_run_seen(true);
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto mock_match_helper =
-      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
-          store_.get(), mock_affiliation_service.get());
-  store_->SetAffiliatedMatchHelper(std::move(mock_match_helper));
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
-  static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
-      ->ExpectCallToGetAffiliatedAndroidRealms(
-          cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
+  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(
+      cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   // We pass in 'true' for the 'include_passwords' argument to ensure that
   // password-type credentials are included as potential matches.
@@ -1114,18 +1111,12 @@ TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialAffiliatedPasswordNoMatch) {
   store_->AddLogin(affiliated_form1_);
   client_->set_first_run_seen(true);
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto mock_match_helper =
-      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
-          store_.get(), mock_affiliation_service.get());
-  store_->SetAffiliatedMatchHelper(std::move(mock_match_helper));
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
-  static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
-      ->ExpectCallToGetAffiliatedAndroidRealms(
-          cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
+  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(
+      cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   // We pass in 'false' for the 'include_passwords' argument to ensure that
   // password-type credentials are excluded as potential matches.
@@ -1140,20 +1131,14 @@ TEST_P(CredentialManagerImplTest,
   affiliated_form1_.password_value = std::u16string();
   store_->AddLogin(affiliated_form1_);
   client_->set_first_run_seen(true);
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto mock_match_helper =
-      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
-          store_.get(), mock_affiliation_service.get());
-  store_->SetAffiliatedMatchHelper(std::move(mock_match_helper));
 
   std::vector<GURL> federations;
   federations.emplace_back("https://example.com/");
 
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
-  static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
-      ->ExpectCallToGetAffiliatedAndroidRealms(
-          cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
+  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(
+      cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   ExpectZeroClickSignInSuccess(CredentialMediationRequirement::kSilent, true,
                                federations,
@@ -1167,20 +1152,14 @@ TEST_P(CredentialManagerImplTest,
   affiliated_form1_.password_value = std::u16string();
   store_->AddLogin(affiliated_form1_);
   client_->set_first_run_seen(true);
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto mock_match_helper =
-      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
-          store_.get(), mock_affiliation_service.get());
-  store_->SetAffiliatedMatchHelper(std::move(mock_match_helper));
 
   std::vector<GURL> federations;
   federations.emplace_back("https://not-example.com/");
 
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
-  static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
-      ->ExpectCallToGetAffiliatedAndroidRealms(
-          cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
+  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(
+      cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   ExpectZeroClickSignInFailure(CredentialMediationRequirement::kSilent, true,
                                federations);
@@ -1490,17 +1469,10 @@ TEST_P(CredentialManagerImplTest, ZeroClickWithAffiliatedFormInPasswordStore) {
   // ought to be returned automagically.
   store_->AddLogin(affiliated_form1_);
 
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto mock_match_helper =
-      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
-          store_.get(), mock_affiliation_service.get());
-  store_->SetAffiliatedMatchHelper(std::move(mock_match_helper));
-
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms = {kTestAndroidRealm1};
-  static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
-      ->ExpectCallToGetAffiliatedAndroidRealms(
-          cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
+  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(
+      cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   ExpectZeroClickSignInSuccess(CredentialMediationRequirement::kSilent, true,
                                federations,
@@ -1514,19 +1486,12 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(affiliated_form1_);
   store_->AddLogin(affiliated_form2_);
 
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto mock_match_helper =
-      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
-          store_.get(), mock_affiliation_service.get());
-  store_->SetAffiliatedMatchHelper(std::move(mock_match_helper));
-
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
   affiliated_realms.push_back(kTestAndroidRealm2);
-  static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
-      ->ExpectCallToGetAffiliatedAndroidRealms(
-          cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
+  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(
+      cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   ExpectZeroClickSignInFailure(CredentialMediationRequirement::kSilent, true,
                                federations);
@@ -1539,23 +1504,17 @@ TEST_P(CredentialManagerImplTest,
   // in.
   store_->AddLogin(affiliated_form1_);
 
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto mock_match_helper =
-      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
-          store_.get(), mock_affiliation_service.get());
-  store_->SetAffiliatedMatchHelper(std::move(mock_match_helper));
-
   std::vector<std::string> affiliated_realms;
   PasswordFormDigest digest = cm_service_impl_->GetSynthesizedFormForOrigin();
   // First expect affiliations for the HTTPS domain.
-  static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
-      ->ExpectCallToGetAffiliatedAndroidRealms(digest, affiliated_realms);
+  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(digest,
+                                                             affiliated_realms);
 
   digest.url = HttpURLFromHttps(digest.url);
   digest.signon_realm = digest.url.spec();
   // The second call happens for HTTP as the migration is triggered.
-  static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
-      ->ExpectCallToGetAffiliatedAndroidRealms(digest, affiliated_realms);
+  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(digest,
+                                                             affiliated_realms);
 
   std::vector<GURL> federations;
   ExpectZeroClickSignInFailure(CredentialMediationRequirement::kSilent, true,
@@ -1570,17 +1529,10 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(form_);
   store_->AddLogin(affiliated_form1_);
 
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto mock_match_helper =
-      std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
-          store_.get(), mock_affiliation_service.get());
-  store_->SetAffiliatedMatchHelper(std::move(mock_match_helper));
-
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
-  static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
-      ->ExpectCallToGetAffiliatedAndroidRealms(
-          cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
+  mock_match_helper_->ExpectCallToGetAffiliatedAndroidRealms(
+      cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   ExpectZeroClickSignInSuccess(CredentialMediationRequirement::kSilent, true,
                                federations,

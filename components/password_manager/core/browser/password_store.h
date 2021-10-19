@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
@@ -46,7 +47,6 @@ using IsAccountStore = base::StrongAlias<class IsAccountStoreTag, bool>;
 
 using metrics_util::GaiaPasswordHashChange;
 
-class AffiliatedMatchHelper;
 class PasswordStoreConsumer;
 
 // Partial, cross-platform implementation for storing form passwords.
@@ -74,24 +74,11 @@ class PasswordStore : public PasswordStoreInterface {
   // TODO(crbug.bom/1218413): Move initialization into the core interface, too.
   bool Init(
       PrefService* prefs,
+      std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper,
       base::RepeatingClosure sync_enabled_or_disabled_cb = base::DoNothing());
 
   // RefcountedKeyedService:
   void ShutdownOnUIThread() override;
-
-  // Sets the affiliation-based match |helper| that will be used by subsequent
-  // GetLogins() calls to return credentials stored not only for the requested
-  // sign-on realm, but also for affiliated Android applications and Web realms.
-  // If |helper| is null, clears the the currently set helper if any. Unless a
-  // helper is set, affiliation-based matching is disabled. The passed |helper|
-  // must already be initialized if it is non-null.
-  // TODO(crbug.bom/1218413): Inject into constructor or `Init()` instead.
-  void SetAffiliatedMatchHelper(std::unique_ptr<AffiliatedMatchHelper> helper);
-
-  // TODO(crbug.com/1252350): Delete this method once it's no longer used.
-  AffiliatedMatchHelper* affiliated_match_helper() const {
-    return affiliated_match_helper_.get();
-  }
 
   // PasswordStoreInterface:
   bool IsAbleToSavePasswords() const override;

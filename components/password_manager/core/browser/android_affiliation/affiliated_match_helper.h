@@ -45,14 +45,13 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
 
   // The |password_store| must outlive |this|. Both arguments must be non-NULL,
   // except in tests which do not Initialize() the object.
-  AffiliatedMatchHelper(PasswordStoreInterface* password_store,
-                        AffiliationService* affiliation_service);
+  explicit AffiliatedMatchHelper(AffiliationService* affiliation_service);
   AffiliatedMatchHelper(const AffiliatedMatchHelper&) = delete;
   AffiliatedMatchHelper& operator=(const AffiliatedMatchHelper&) = delete;
   ~AffiliatedMatchHelper() override;
 
   // Schedules deferred initialization.
-  void Initialize();
+  void Initialize(PasswordStoreInterface* password_store);
 
   // Retrieves realms of Android applications and Web realms affiliated with the
   // realm of the |observed_form| if it is web-based. Otherwise, yields the
@@ -101,7 +100,7 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
-  PasswordStoreInterface* const password_store_;
+  PasswordStoreInterface* password_store_ = nullptr;
 
   AffiliationService* affiliation_service_;
 

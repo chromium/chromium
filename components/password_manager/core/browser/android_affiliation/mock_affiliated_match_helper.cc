@@ -13,12 +13,11 @@
 namespace password_manager {
 
 MockAffiliatedMatchHelper::MockAffiliatedMatchHelper()
-    : AffiliatedMatchHelper(nullptr, nullptr) {}
+    : AffiliatedMatchHelper(nullptr) {}
 
 MockAffiliatedMatchHelper::MockAffiliatedMatchHelper(
-    PasswordStoreInterface* password_store,
     AffiliationService* affiliation_service)
-    : AffiliatedMatchHelper(password_store, affiliation_service) {}
+    : AffiliatedMatchHelper(affiliation_service) {}
 
 MockAffiliatedMatchHelper::~MockAffiliatedMatchHelper() = default;
 

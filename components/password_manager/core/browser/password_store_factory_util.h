@@ -7,24 +7,9 @@
 
 #include <memory>
 
-#include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/login_database.h"
-#include "components/password_manager/core/browser/password_store.h"
-#include "components/sync/driver/sync_service.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
-
-class AffiliationService;
-
-// Activates affiliation-based matching for |password_store|, The
-// AffiliationService will use |url_loader_factory| to fetch affiliation
-// information.
-void EnableAffiliationBasedMatching(PasswordStore* password_store,
-                                    AffiliationService* affiliation_service);
 
 // Creates a LoginDatabase. Looks in |profile_path| for the database file.
 // Does not call LoginDatabase::Init() -- to avoid UI jank, that needs to be

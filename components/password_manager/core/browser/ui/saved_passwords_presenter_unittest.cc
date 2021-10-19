@@ -41,7 +41,9 @@ using StrictMockSavedPasswordsPresenterObserver =
 
 class SavedPasswordsPresenterTest : public ::testing::Test {
  protected:
-  SavedPasswordsPresenterTest() { store_->Init(/*prefs=*/nullptr); }
+  SavedPasswordsPresenterTest() {
+    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  }
 
   ~SavedPasswordsPresenterTest() override {
     store_->ShutdownOnUIThread();
@@ -511,8 +513,10 @@ namespace {
 class SavedPasswordsPresenterWithTwoStoresTest : public ::testing::Test {
  protected:
   SavedPasswordsPresenterWithTwoStoresTest() {
-    profile_store_->Init(/*prefs=*/nullptr);
-    account_store_->Init(/*prefs=*/nullptr);
+    profile_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
   }
 
   ~SavedPasswordsPresenterWithTwoStoresTest() override {

@@ -110,7 +110,9 @@ CredentialWithPassword MakeWeakAndCompromisedCredential(
 
 class InsecureCredentialsManagerTest : public ::testing::Test {
  protected:
-  InsecureCredentialsManagerTest() { store_->Init(/*prefs=*/nullptr); }
+  InsecureCredentialsManagerTest() {
+    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  }
 
   ~InsecureCredentialsManagerTest() override {
     store_->ShutdownOnUIThread();
@@ -844,8 +846,10 @@ namespace {
 class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
  protected:
   InsecureCredentialsManagerWithTwoStoresTest() {
-    profile_store_->Init(/*prefs=*/nullptr);
-    account_store_->Init(/*prefs=*/nullptr);
+    profile_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
   }
 
   ~InsecureCredentialsManagerWithTwoStoresTest() override {

@@ -24,7 +24,7 @@ constexpr char kHttpsWebOrigin[] = "https://www.example.com/";
 TestPasswordManagerClient::TestPasswordManagerClient()
     : last_committed_url_(kHttpsWebOrigin), password_manager_(this) {
   store_ = base::MakeRefCounted<TestPasswordStore>();
-  store_->Init(nullptr);
+  store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   prefs_ = std::make_unique<TestingPrefServiceSimple>();
   prefs_->registry()->RegisterBooleanPref(
       password_manager::prefs::kCredentialsEnableAutosignin, true);

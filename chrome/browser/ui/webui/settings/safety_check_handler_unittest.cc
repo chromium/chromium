@@ -132,7 +132,9 @@ bool TestDestructionVersionUpdater::destructor_invoked_ = false;
 
 class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
  public:
-  TestPasswordsDelegate() { store_->Init(/*prefs=*/nullptr); }
+  TestPasswordsDelegate() {
+    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  }
 
   void TearDown() {
     store_->ShutdownOnUIThread();

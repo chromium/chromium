@@ -37,6 +37,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 
@@ -89,7 +90,13 @@ PasswordStoreFactory::BuildServiceInstanceFor(
   NOTIMPLEMENTED();
 #endif
   DCHECK(ps);
-  if (!ps->Init(profile->GetPrefs())) {
+
+  password_manager::AffiliationService* affiliation_service =
+      AffiliationServiceFactory::GetForProfile(profile);
+  std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper =
+      std::make_unique<AffiliatedMatchHelper>(affiliation_service);
+
+  if (!ps->Init(profile->GetPrefs(), std::move(affiliated_match_helper))) {
     // TODO(crbug.com/479725): Remove the LOG once this error is visible in the
     // UI.
     LOG(WARNING) << "Could not initialize password store.";
@@ -107,10 +114,6 @@ PasswordStoreFactory::BuildServiceInstanceFor(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
       profile->GetPrefs(), base::Seconds(60), network_context_getter);
 
-  password_manager::AffiliationService* affiliation_service =
-      AffiliationServiceFactory::GetForProfile(profile);
-  password_manager::EnableAffiliationBasedMatching(ps.get(),
-                                                   affiliation_service);
   DelayReportingPasswordStoreMetrics(profile);
   return ps;
 }

@@ -59,7 +59,8 @@ class CredentialProviderServiceTest : public PlatformTest {
     PlatformTest::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     password_store_ = CreatePasswordStore();
-    password_store_->Init(nullptr);
+    password_store_->Init(/*prefs=*/nullptr,
+                          /*affiliated_match_helper=*/nullptr);
 
     NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
     EXPECT_FALSE([user_defaults

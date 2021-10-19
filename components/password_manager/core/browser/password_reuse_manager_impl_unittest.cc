@@ -86,9 +86,9 @@ class PasswordReuseManagerImplTest : public testing::Test {
                                         PrefRegistry::NO_REGISTRATION_FLAGS);
 
     profile_store_ = base::MakeRefCounted<TestPasswordStore>();
-    profile_store_->Init(&prefs_);
+    profile_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
     account_store_ = base::MakeRefCounted<TestPasswordStore>();
-    account_store_->Init(&prefs_);
+    account_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
     reuse_manager_.Init(&prefs(), profile_store(), account_store());
     RunUntilIdle();
   }

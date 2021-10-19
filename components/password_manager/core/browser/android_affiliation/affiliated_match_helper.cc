@@ -19,19 +19,18 @@ namespace password_manager {
 constexpr base::TimeDelta AffiliatedMatchHelper::kInitializationDelayOnStartup;
 
 AffiliatedMatchHelper::AffiliatedMatchHelper(
-    PasswordStoreInterface* password_store,
     AffiliationService* affiliation_service)
-    : password_store_(password_store),
-      affiliation_service_(affiliation_service) {}
+    : affiliation_service_(affiliation_service) {}
 
 AffiliatedMatchHelper::~AffiliatedMatchHelper() {
   if (password_store_)
     password_store_->RemoveObserver(this);
 }
 
-void AffiliatedMatchHelper::Initialize() {
-  DCHECK(password_store_);
+void AffiliatedMatchHelper::Initialize(PasswordStoreInterface* password_store) {
+  DCHECK(password_store);
   DCHECK(affiliation_service_);
+  password_store_ = password_store;
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AffiliatedMatchHelper::DoDeferredInitialization,

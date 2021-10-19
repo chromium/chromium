@@ -20,8 +20,7 @@ namespace password_manager {
 class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
  public:
   MockAffiliatedMatchHelper();
-  MockAffiliatedMatchHelper(PasswordStoreInterface* password_store,
-                            AffiliationService* affiliation_service);
+  explicit MockAffiliatedMatchHelper(AffiliationService* affiliation_service);
 
   MockAffiliatedMatchHelper(const MockAffiliatedMatchHelper&) = delete;
   MockAffiliatedMatchHelper& operator=(const MockAffiliatedMatchHelper&) =

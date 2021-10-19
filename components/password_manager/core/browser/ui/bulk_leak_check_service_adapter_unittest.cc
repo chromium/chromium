@@ -96,7 +96,7 @@ class BulkLeakCheckServiceAdapterTest : public ::testing::Test {
     auto factory = std::make_unique<MockLeakDetectionCheckFactory>();
     factory_ = factory.get();
     service_.set_leak_factory(std::move(factory));
-    store_->Init(/*prefs=*/nullptr);
+    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
     prefs_.registry()->RegisterBooleanPref(prefs::kPasswordLeakDetectionEnabled,
                                            true);
     prefs_.registry()->RegisterBooleanPref(::prefs::kSafeBrowsingEnabled, true);

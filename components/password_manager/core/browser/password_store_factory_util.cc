@@ -13,19 +13,6 @@
 
 namespace password_manager {
 
-void EnableAffiliationBasedMatching(PasswordStore* password_store,
-                                    AffiliationService* affiliation_service) {
-  DCHECK(password_store);
-  // Return if the matching is already enabled.
-  if (password_store->affiliated_match_helper())
-    return;
-
-  auto affiliated_match_helper = std::make_unique<AffiliatedMatchHelper>(
-      password_store, affiliation_service);
-  affiliated_match_helper->Initialize();
-  password_store->SetAffiliatedMatchHelper(std::move(affiliated_match_helper));
-}
-
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
     const base::FilePath& profile_path) {
   base::FilePath login_db_file_path =
