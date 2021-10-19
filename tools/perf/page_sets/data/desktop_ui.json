@@ -36,6 +36,12 @@
         "omnibox:search": {
             "DEFAULT": "desktop_ui_43a34671bf.wprgo"
         },
+        "side_search:measure_memory": {
+            "DEFAULT": "desktop_ui_0a53cfa584.wprgo"
+        },
+        "side_search:navigation": {
+            "DEFAULT": "desktop_ui_0a53cfa584.wprgo"
+        },
         "tab_search:close_and_open:2020": {
             "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },

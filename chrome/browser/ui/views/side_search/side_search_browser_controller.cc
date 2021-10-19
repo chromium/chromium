@@ -131,6 +131,17 @@ class HeaderView : public views::View {
 BEGIN_METADATA(HeaderView, views::View)
 END_METADATA
 
+// Used for finding the button from telemetry tests.
+// TODO(crbug.com/1201243): Support using View.GetID() to find elements in
+// telemetry tests instead of subclassing ToolbarButton.
+class SideSearchToolbarButton : public ToolbarButton {
+ public:
+  METADATA_HEADER(SideSearchToolbarButton);
+};
+
+BEGIN_METADATA(SideSearchToolbarButton, views::View)
+END_METADATA
+
 std::unique_ptr<views::Separator> CreateSeparator() {
   auto separator = std::make_unique<views::Separator>();
   separator->SetColor(kSeparatorColor);
@@ -266,7 +277,7 @@ void SideSearchBrowserController::UpdateSidePanelForContents(
 
 std::unique_ptr<ToolbarButton>
 SideSearchBrowserController::CreateToolbarButton() {
-  auto toolbar_button = std::make_unique<ToolbarButton>();
+  auto toolbar_button = std::make_unique<SideSearchToolbarButton>();
   toolbar_button->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
   toolbar_button->SetTooltipText(
