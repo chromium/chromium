@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -155,6 +156,10 @@ class WebAppInstallTask : content::WebContentsObserver {
   // WebContentsObserver:
   void WebContentsDestroyed() override;
 
+  // Collects install errors (unbounded) if the |kRecordWebAppDebugInfo|
+  // flag is enabled to be used by: chrome://web-app-internals
+  base::Value TakeErrorList();
+
   void SetInstallFinalizerForTesting(WebAppInstallFinalizer* install_finalizer);
 
  private:
@@ -255,6 +260,20 @@ class WebAppInstallTask : content::WebContentsObserver {
       IconsDownloadedResult result,
       const DownloadedIconsHttpResults& icons_http_results);
 
+  void LogHeaderIfLogEmpty(const std::string& start_url);
+  void LogErrorObject(const char* stage,
+                      const std::string& start_url,
+                      base::Value object);
+
+  void LogExpectedAppIdError(const char* stage,
+                             const std::string& start_url,
+                             const AppId& app_id);
+  void LogDownloadedIconsErrors(
+      const WebApplicationInfo& web_app_info,
+      IconsDownloadedResult icons_downloaded_result,
+      const IconsMap& icons_map,
+      const DownloadedIconsHttpResults& icons_http_results);
+
   // Whether the install task has been 'initiated' by calling one of the public
   // methods.
   bool initiated_ = false;
@@ -284,6 +303,8 @@ class WebAppInstallTask : content::WebContentsObserver {
   WebAppInstallFinalizer* install_finalizer_;
   Profile* const profile_;
   WebAppRegistrar* registrar_;
+
+  std::unique_ptr<base::Value> error_list_;
 
   base::WeakPtrFactory<WebAppInstallTask> weak_ptr_factory_{this};
 };

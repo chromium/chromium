@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,6 +41,8 @@ WebAppInstallManager::WebAppInstallManager(Profile* profile)
     : profile_(profile), url_loader_(std::make_unique<WebAppUrlLoader>()) {
   data_retriever_factory_ = base::BindRepeating(
       []() { return std::make_unique<WebAppDataRetriever>(); });
+  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo))
+    error_log_ = std::make_unique<ErrorLog>();
 }
 
 WebAppInstallManager::~WebAppInstallManager() = default;
@@ -413,8 +417,17 @@ void WebAppInstallManager::MaybeStartQueuedTask() {
                      weak_ptr_factory_.GetWeakPtr(), std::move(pending_task)));
 }
 
+void WebAppInstallManager::TakeTaskErrorLog(WebAppInstallTask* task) {
+  if (error_log_) {
+    base::Value task_error_list = task->TakeErrorList();
+    if (!task_error_list.GetList().empty())
+      error_log_->push_back(std::move(task_error_list));
+  }
+}
+
 void WebAppInstallManager::DeleteTask(WebAppInstallTask* task) {
   DCHECK(tasks_.contains(task));
+  TakeTaskErrorLog(task);
   tasks_.erase(task);
 }
 

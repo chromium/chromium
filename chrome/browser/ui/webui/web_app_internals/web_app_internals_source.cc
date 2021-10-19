@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -33,6 +34,7 @@ constexpr char kInstalledWebApps[] = "InstalledWebApps";
 constexpr char kPreinstalledWebAppConfigs[] = "PreinstalledWebAppConfigs";
 constexpr char kExternallyManagedWebAppPrefs[] = "ExternallyManagedWebAppPrefs";
 constexpr char kIconErrorLog[] = "IconErrorLog";
+constexpr char kInstallationProcessErrorLog[] = "InstallationProcessErrorLog";
 #if defined(OS_MAC)
 constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
 #endif
@@ -58,6 +60,7 @@ base::Value BuildIndexJson() {
   index.Append(kPreinstalledWebAppConfigs);
   index.Append(kExternallyManagedWebAppPrefs);
   index.Append(kIconErrorLog);
+  index.Append(kInstallationProcessErrorLog);
 #if defined(OS_MAC)
   index.Append(kAppShimRegistryLocalStorage);
 #endif
@@ -200,6 +203,26 @@ base::Value BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
   return root;
 }
 
+base::Value BuildInstallProcessErrorLogJson(web_app::WebAppProvider& provider) {
+  base::Value root(base::Value::Type::DICTIONARY);
+
+  const web_app::WebAppInstallManager::ErrorLog* error_log =
+      provider.install_manager().error_log();
+
+  if (!error_log) {
+    root.SetStringKey(kInstallationProcessErrorLog,
+                      kNeedsRecordWebAppDebugInfo);
+    return root;
+  }
+
+  base::Value& installation_process_error_log = *root.SetKey(
+      kInstallationProcessErrorLog, base::Value(base::Value::Type::LIST));
+  for (const base::Value& error : *error_log)
+    installation_process_error_log.Append(error.Clone());
+
+  return root;
+}
+
 #if defined(OS_MAC)
 base::Value BuildAppShimRegistryLocalStorageJson() {
   base::Value root(base::Value::Type::DICTIONARY);
@@ -235,6 +258,7 @@ void BuildWebAppInternalsJson(
   root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
   root.Append(BuildExternallyManagedWebAppPrefsJson(profile));
   root.Append(BuildIconErrorLogJson(*provider));
+  root.Append(BuildInstallProcessErrorLogJson(*provider));
 #if defined(OS_MAC)
   root.Append(BuildAppShimRegistryLocalStorageJson());
 #endif

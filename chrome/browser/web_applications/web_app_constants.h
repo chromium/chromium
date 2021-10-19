@@ -301,6 +301,8 @@ enum class IconsDownloadedResult {
   kAbortedDueToFailure,
 };
 
+const char* IconsDownloadedResultToString(IconsDownloadedResult result);
+
 // Generic result enumeration to be used for operations that can fail. If more
 // information is needed in a return value, we can move to something similar to
 // `base::FileErrorOr` in the future.

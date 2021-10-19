@@ -14,6 +14,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -130,6 +131,11 @@ class WebAppInstallManager final : public SyncInstallDelegate {
       std::vector<std::unique_ptr<WebApp>> web_apps,
       RepeatingUninstallCallback callback) override;
 
+  // Collects icon read/write errors (unbounded) if the |kRecordWebAppDebugInfo|
+  // flag is enabled to be used by: chrome://web-app-internals
+  using ErrorLog = base::Value::ListStorage;
+  const ErrorLog* error_log() const { return error_log_.get(); }
+
   using DataRetrieverFactory =
       base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()>;
   void SetDataRetrieverFactoryForTesting(
@@ -161,6 +167,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
                    base::OnceClosure start_task);
   void MaybeStartQueuedTask();
 
+  void TakeTaskErrorLog(WebAppInstallTask* task);
   void DeleteTask(WebAppInstallTask* task);
   void OnInstallTaskCompleted(WebAppInstallTask* task,
                               OnceInstallCallback callback,
@@ -218,6 +225,8 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   std::unique_ptr<content::WebContents> web_contents_;
 
   bool started_ = false;
+
+  std::unique_ptr<ErrorLog> error_log_;
 
   base::WeakPtrFactory<WebAppInstallManager> weak_ptr_factory_{this};
 };
