@@ -2089,6 +2089,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.LauncherSearchQueryLengthJumped" enum="Boolean"
     expires_after="2021-10-25">
+  <obsolete>
+    Removed October 2021.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
