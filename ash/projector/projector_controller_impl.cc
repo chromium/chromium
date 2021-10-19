@@ -63,9 +63,13 @@ ProjectorControllerImpl::ProjectorControllerImpl()
     : projector_session_(std::make_unique<ash::ProjectorSessionImpl>()),
       ui_controller_(std::make_unique<ash::ProjectorUiController>(this)),
       metadata_controller_(
-          std::make_unique<ash::ProjectorMetadataController>()) {}
+          std::make_unique<ash::ProjectorMetadataController>()) {
+  projector_session_->AddObserver(this);
+}
 
-ProjectorControllerImpl::~ProjectorControllerImpl() = default;
+ProjectorControllerImpl::~ProjectorControllerImpl() {
+  projector_session_->RemoveObserver(this);
+}
 
 // static
 ProjectorControllerImpl* ProjectorControllerImpl::Get() {
@@ -82,8 +86,9 @@ void ProjectorControllerImpl::StartProjectorSession(
     // DLP, ... etc. We don't start a Projector session until we're sure a
     // capture session started.
     controller->Start(CaptureModeEntryType::kProjector);
-    if (controller->IsActive())
+    if (controller->IsActive()) {
       projector_session_->Start(storage_dir);
+    }
   }
 }
 
@@ -119,6 +124,8 @@ void ProjectorControllerImpl::OnSpeechRecognitionAvailable(bool available) {
     return;
 
   is_speech_recognition_available_ = available;
+
+  OnNewScreencastPreconditionChanged();
 }
 
 void ProjectorControllerImpl::OnTranscription(
@@ -261,6 +268,10 @@ void ProjectorControllerImpl::OnChangeMarkerColorPressed(SkColor new_color) {
   ui_controller_->OnChangeMarkerColorPressed(new_color);
 }
 
+void ProjectorControllerImpl::OnNewScreencastPreconditionChanged() {
+  client_->OnNewScreencastPreconditionChanged(CanStartNewSession());
+}
+
 void ProjectorControllerImpl::SetProjectorUiControllerForTest(
     std::unique_ptr<ProjectorUiController> ui_controller) {
   ui_controller_ = std::move(ui_controller);
@@ -269,6 +280,11 @@ void ProjectorControllerImpl::SetProjectorUiControllerForTest(
 void ProjectorControllerImpl::SetProjectorMetadataControllerForTest(
     std::unique_ptr<ProjectorMetadataController> metadata_controller) {
   metadata_controller_ = std::move(metadata_controller);
+}
+
+void ProjectorControllerImpl::OnProjectorSessionActiveStateChanged(
+    bool active) {
+  OnNewScreencastPreconditionChanged();
 }
 
 void ProjectorControllerImpl::StartSpeechRecognition() {

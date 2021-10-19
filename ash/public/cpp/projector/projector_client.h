@@ -35,6 +35,9 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
   virtual void ShowSelfieCam() = 0;
   virtual void CloseSelfieCam() = 0;
   virtual bool IsSelfieCamVisible() const = 0;
+
+  // Notifies the Projector SWA if it can trigger a new Projector session.
+  virtual void OnNewScreencastPreconditionChanged(bool can_start) const = 0;
 };
 
 }  // namespace ash

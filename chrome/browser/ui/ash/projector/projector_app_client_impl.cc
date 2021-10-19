@@ -46,3 +46,9 @@ ProjectorAppClientImpl::GetUrlLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess()
       .get();
 }
+
+void ProjectorAppClientImpl::OnNewScreencastPreconditionChanged(
+    bool can_start) {
+  for (auto& observer : observers_)
+    observer.OnNewScreencastPreconditionChanged(can_start);
+}

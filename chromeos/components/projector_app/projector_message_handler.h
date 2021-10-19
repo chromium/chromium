@@ -40,6 +40,9 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
 
+  // ProjectorAppClient:Observer:
+  void OnNewScreencastPreconditionChanged(bool can_start) override;
+
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:

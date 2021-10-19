@@ -19,6 +19,8 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -210,7 +212,6 @@ TEST_F(ProjectorControllerTest, RecordingStarted) {
   EXPECT_CALL(mock_client_, StartSpeechRecognition());
   EXPECT_CALL(*mock_ui_controller_, OnRecordingStateChanged(/*started=*/true));
   EXPECT_CALL(*mock_metadata_controller_, OnRecordingStarted());
-
   mock_client_.SetSelfieCamVisible(/*visible=*/true);
   // Verify that |CloseToolbar| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, ShowToolbar()).Times(1);
@@ -222,12 +223,16 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   base::FilePath screencast_container_path;
   ASSERT_TRUE(
       mock_client_.GetDriveFsMountPointPath(&screencast_container_path));
+  ON_CALL(mock_client_, IsDriveFsMounted())
+      .WillByDefault(testing::Return(true));
 
   mock_client_.SetSelfieCamVisible(/*visible=*/true);
   // Verify that |CloseToolbar| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, CloseToolbar()).Times(1);
   EXPECT_CALL(mock_client_, CloseSelfieCam()).Times(1);
   EXPECT_CALL(mock_client_, OpenProjectorApp());
+  EXPECT_CALL(mock_client_,
+              OnNewScreencastPreconditionChanged(/*can_start=*/false));
 
   // Advance clock to 20:02:10 Jan 2nd, 2021.
   base::Time start_time;
@@ -236,25 +241,33 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   task_environment()->AdvanceClock(forward_by);
   controller_->projector_session()->Start("projector_data");
   controller_->OnRecordingStarted();
-  controller_->CreateScreencastContainerFolder(base::BindOnce(
-      [](ProjectorControllerImpl* controller,
-         const base::FilePath& screencast_file_path_no_extension) {
-        controller->OnRecordingEnded();
-      },
-      controller_));
 
-  EXPECT_CALL(mock_client_, StopSpeechRecognition());
-  EXPECT_CALL(*mock_ui_controller_, OnRecordingStateChanged(/*started=*/false));
+  base::RunLoop runLoop;
+  controller_->CreateScreencastContainerFolder(base::BindLambdaForTesting(
+      [&](const base::FilePath& screencast_file_path_no_extension) {
+        EXPECT_CALL(mock_client_,
+                    OnNewScreencastPreconditionChanged(/*can_start=*/true));
 
-  // Verify that |SaveMetadata| in |ProjectorMetadataController| is called with
-  // the expected path.
-  const std::string expected_screencast_name = "Screencast 2021-01-02 20.02.10";
-  EXPECT_CALL(*mock_metadata_controller_,
-              SaveMetadata(screencast_container_path.Append("root")
-                               .Append("projector_data")
-                               // Screencast container folder.
-                               .Append(expected_screencast_name)
-                               // Screencast file name without extension.
-                               .Append(expected_screencast_name)));
+        EXPECT_CALL(mock_client_, StopSpeechRecognition());
+        EXPECT_CALL(*mock_ui_controller_,
+                    OnRecordingStateChanged(/*started=*/false));
+
+        // Verify that |SaveMetadata| in |ProjectorMetadataController| is called
+        // with the expected path.
+        const std::string expected_screencast_name =
+            "Screencast 2021-01-02 20.02.10";
+        EXPECT_CALL(*mock_metadata_controller_,
+                    SaveMetadata(screencast_container_path.Append("root")
+                                     .Append("projector_data")
+                                     // Screencast container folder.
+                                     .Append(expected_screencast_name)
+                                     // Screencast file name without extension.
+                                     .Append(expected_screencast_name)));
+
+        controller_->OnRecordingEnded();
+        runLoop.Quit();
+      }));
+
+  runLoop.Run();
 }
 }  // namespace ash

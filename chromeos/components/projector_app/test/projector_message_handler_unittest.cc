@@ -25,6 +25,7 @@ const char kXhrResponseSuccessPath[] = "success";
 const char kXhrResponseErrorPath[] = "error";
 const char kXhrResponseStringPath[] = "response";
 
+const char kWebUIListenerCall[] = "cr.webUIListenerCallback";
 const char kWebUIResponse[] = "cr.webUIResponse";
 const char kGetAccountsCallback[] = "getAccountsCallback";
 const char kCanStartProjectorSessionCallback[] =
@@ -32,6 +33,8 @@ const char kCanStartProjectorSessionCallback[] =
 const char kStartProjectorSessionCallback[] = "startProjectorSessionCallback";
 const char kGetOAuthTokenCallback[] = "getOAuthTokenCallback";
 const char kSendXhrCallback[] = "sendXhrCallback";
+const char kOnNewScreencastPreconditionChanged[] =
+    "onNewScreencastPreconditionChanged";
 
 }  // namespace
 
@@ -216,6 +219,14 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
   const std::string* error =
       call_data.arg3()->FindStringPath(kXhrResponseErrorPath);
   EXPECT_EQ("UNSUPPORTED_URL", *error);
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, CanStartNewSession) {
+  message_handler()->OnNewScreencastPreconditionChanged(/** canStart = */ true);
+  const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
+  EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
+  EXPECT_EQ(call_data.arg1()->GetString(), kOnNewScreencastPreconditionChanged);
+  EXPECT_TRUE(call_data.arg2()->GetBool());
 }
 
 class ProjectorSessionStartUnitTest

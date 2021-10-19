@@ -29,6 +29,10 @@ class ProjectorAppClient {
     // Observes the pending screencast state change events.
     // TODO(b/201468756): Add list PendingScreencast as argument.
     virtual void OnScreencastsStateChange() = 0;
+
+    // Used to notify the Projector SWA app on whether it can start a new
+    // screencast session.
+    virtual void OnNewScreencastPreconditionChanged(bool can_start) = 0;
   };
 
   ProjectorAppClient(const ProjectorAppClient&) = delete;
@@ -36,13 +40,18 @@ class ProjectorAppClient {
 
   static ProjectorAppClient* Get();
 
-  // Returns the IdentityManager for the primary user profile.
-  virtual signin::IdentityManager* GetIdentityManager() = 0;
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  // Returns the IdentityManager for the primary user profile.
+  virtual signin::IdentityManager* GetIdentityManager() = 0;
+
   // Returns the URLLoaderFactory for the primary user profile.
   virtual network::mojom::URLLoaderFactory* GetUrlLoaderFactory() = 0;
+
+  // Used to notify the Projector SWA app on whether it can start a new
+  // screencast session.
+  virtual void OnNewScreencastPreconditionChanged(bool can_start) = 0;
 
  protected:
   ProjectorAppClient();

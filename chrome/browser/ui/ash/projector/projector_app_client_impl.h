@@ -29,10 +29,11 @@ class ProjectorAppClientImpl : public chromeos::ProjectorAppClient {
   ~ProjectorAppClientImpl() override;
 
   // chromeos::ProjectorAppClient:
-  signin::IdentityManager* GetIdentityManager() override;
-  network::mojom::URLLoaderFactory* GetUrlLoaderFactory() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  signin::IdentityManager* GetIdentityManager() override;
+  network::mojom::URLLoaderFactory* GetUrlLoaderFactory() override;
+  void OnNewScreencastPreconditionChanged(bool can_start) override;
 
  private:
   base::ObserverList<Observer> observers_;

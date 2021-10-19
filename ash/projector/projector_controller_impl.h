@@ -24,7 +24,8 @@ class ProjectorUiController;
 class ProjectorMetadataController;
 
 // A controller to handle projector functionalities.
-class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
+class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
+                                           public ProjectorSessionObserver {
  public:
   // Callback that should be executed when the screencast container directory is
   // created. `screencast_file_path_no_extension` is the path of screencast file
@@ -96,6 +97,16 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   // Invoked when the marker color has been requested to change.
   void OnChangeMarkerColorPressed(SkColor new_color);
 
+  // Notifies the ProjectorClient if the Projector SWA can trigger a
+  // new Projector session. The preconditions are calculated in
+  // ProjectorControllerImpl::CanStartNewSession. The following are
+  // preconditions that are checked:
+  // 1. On device speech recognition availability changes.
+  // 2. Screen recording state changed( whether an active recording is already
+  // taking place or not).
+  // 3. Whether DriveFS is mounted or not.
+  void OnNewScreencastPreconditionChanged();
+
   void SetProjectorUiControllerForTest(
       std::unique_ptr<ProjectorUiController> ui_controller);
   void SetProjectorMetadataControllerForTest(
@@ -105,6 +116,9 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   ProjectorSessionImpl* projector_session() { return projector_session_.get(); }
 
  private:
+  // ProjectorSessionObserver:
+  void OnProjectorSessionActiveStateChanged(bool active) override;
+
   // Starts or stops the speech recognition session.
   void StartSpeechRecognition();
   void StopSpeechRecognition();

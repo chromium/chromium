@@ -104,6 +104,13 @@ void ProjectorMessageHandler::RegisterMessages() {
 
 void ProjectorMessageHandler::OnScreencastsStateChange() {}
 
+void ProjectorMessageHandler::OnNewScreencastPreconditionChanged(
+    bool can_start) {
+  AllowJavascript();
+  FireWebUIListener("onNewScreencastPreconditionChanged",
+                    base::Value(can_start));
+}
+
 void ProjectorMessageHandler::GetAccounts(const base::ListValue* args) {
   AllowJavascript();
 

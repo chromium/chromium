@@ -41,6 +41,7 @@ class MockAppClient : public ProjectorAppClient {
   network::mojom::URLLoaderFactory* GetUrlLoaderFactory() override;
   MOCK_METHOD1(AddObserver, void(Observer*));
   MOCK_METHOD1(RemoveObserver, void(Observer*));
+  MOCK_METHOD1(OnNewScreencastPreconditionChanged, void(bool));
 
   void SetAutomaticIssueOfAccessTokens(bool success);
   void WaitForAccessRequest(const std::string& account_email);
