@@ -4795,7 +4795,7 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
   // If the device is offline, extension2 and onlineonly, and TestPWA should be
   // unpinned.
   ash::DemoSession::Get()->OverrideIgnorePinPolicyAppsForTesting(
-      {extension2_->id(), online_only_appinfo.package_name});
+      {extension2_->id(), online_only_appinfo.package_name, kWebAppUrl});
 
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps,

@@ -24,7 +24,7 @@ namespace app_list {
 
 bool ShouldShowInLauncher(const extensions::Extension* extension,
                           content::BrowserContext* context) {
-  return ash::DemoSession::ShouldDisplayInAppLauncher(extension->id()) &&
+  return ash::DemoSession::ShouldShowExtensionInAppLauncher(extension->id()) &&
          extensions::ui_util::ShouldDisplayInAppLauncher(extension, context);
 }
 

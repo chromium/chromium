@@ -56,6 +56,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -267,12 +268,22 @@ void WebAppPublisherHelper::SetWebAppShowInFields(apps::mojom::AppPtr& app,
                                                   const WebApp* web_app) {
   if (web_app->chromeos_data().has_value()) {
     auto& chromeos_data = web_app->chromeos_data().value();
-    app->show_in_launcher = chromeos_data.show_in_launcher
+    bool should_show_app = true;
+    // TODO(b/201422755): Remove Web app specific hiding for demo mode once icon
+    // load fixed.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (ash::DemoSession::Get()) {
+      should_show_app = ash::DemoSession::Get()->ShouldShowWebApp(
+          web_app->start_url().spec());
+    }
+#endif
+    app->show_in_launcher = chromeos_data.show_in_launcher && should_show_app
                                 ? apps::mojom::OptionalBool::kTrue
                                 : apps::mojom::OptionalBool::kFalse;
     app->show_in_shelf = app->show_in_search =
-        chromeos_data.show_in_search ? apps::mojom::OptionalBool::kTrue
-                                     : apps::mojom::OptionalBool::kFalse;
+        chromeos_data.show_in_search && should_show_app
+            ? apps::mojom::OptionalBool::kTrue
+            : apps::mojom::OptionalBool::kFalse;
     app->show_in_management = chromeos_data.show_in_management
                                   ? apps::mojom::OptionalBool::kTrue
                                   : apps::mojom::OptionalBool::kFalse;

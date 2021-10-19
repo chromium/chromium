@@ -336,11 +336,22 @@ std::string DemoSession::GetScreensaverAppId() {
 }
 
 // static
-bool DemoSession::ShouldDisplayInAppLauncher(const std::string& app_id) {
+bool DemoSession::ShouldShowExtensionInAppLauncher(const std::string& app_id) {
   if (!IsDeviceInDemoMode())
     return true;
   return app_id != GetScreensaverAppId() &&
          app_id != extensions::kWebStoreAppId;
+}
+
+// static
+bool DemoSession::ShouldShowWebApp(const std::string& app_id) {
+  if (IsDeviceInDemoMode() &&
+      content::GetNetworkConnectionTracker()->IsOffline()) {
+    GURL app_id_as_url(app_id);
+    return !app_id_as_url.SchemeIsHTTPOrHTTPS();
+  }
+
+  return true;
 }
 
 // static
@@ -379,22 +390,18 @@ void DemoSession::RecordAppLaunchSourceIfInDemoMode(AppLaunchSource source) {
     UMA_HISTOGRAM_ENUMERATION("DemoMode.AppLaunchSource", source);
 }
 
-bool DemoSession::ShouldIgnorePinPolicy(const std::string& app_id_or_package) {
+bool DemoSession::ShouldShowAndroidOrChromeAppInShelf(
+    const std::string& app_id_or_package) {
   if (!g_demo_session || !g_demo_session->started())
-    return false;
+    return true;
 
   // TODO(michaelpg): Update shelf when network status changes.
   // TODO(michaelpg): Also check for captive portal.
   if (!content::GetNetworkConnectionTracker()->IsOffline())
-    return false;
+    return true;
 
-  GURL app_id_as_url(app_id_or_package);
-
-  // Ignore for specified chrome/android apps, all PWAs ("https://") and any
-  // other "http://" web apps as a catchall (although we don't expect any of
-  // these)
-  return base::Contains(ignore_pin_policy_offline_apps_, app_id_or_package) ||
-         app_id_as_url.SchemeIsHTTPOrHTTPS();
+  // Ignore for specified chrome/android apps.
+  return !base::Contains(ignore_pin_policy_offline_apps_, app_id_or_package);
 }
 
 void DemoSession::SetExtensionsExternalLoader(
