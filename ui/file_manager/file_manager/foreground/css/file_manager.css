@@ -683,7 +683,7 @@ html[dir='rtl'] .dialog-header button.icon-button > files-toggle-ripple {
 .dialog-header.files-ng #search-wrapper.has-cursor,
 .dialog-header.files-ng #search-wrapper.has-text,
 .dialog-header.files-ng #search-wrapper.hide-pending {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-textfield-background-color);
   margin-inline-end: 16px;
 }
 
@@ -1005,9 +1005,9 @@ body.check-select #search-button {
 
 .dialog-header.files-ng #search-box cr-input {
   --cr-input-border-bottom: transparent;
-  --cr-input-color: var(--google-grey-800);
+  --cr-input-color: var(--cros-text-color-primary);
   --cr-input-focus-color: transparent;
-  --cr-input-placeholder-color: rgba(0, 0, 0, 50%);
+  --cr-input-placeholder-color: var(--cros-text-color-secondary);
 }
 
 .dialog-header.files-ng #search-box cr-input::part(input) {
