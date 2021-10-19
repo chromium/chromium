@@ -148,8 +148,9 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   const bool context_alpha = GetParam().alpha;
 
   const auto canvas_resource = CanvasResourceSharedBitmap::Create(
-      offscreen_canvas().Size(), CanvasResourceParams(), nullptr /* provider */,
-      cc::PaintFlags::FilterQuality::kLow);
+      SkImageInfo::MakeN32Premul(offscreen_canvas().Size().width(),
+                                 offscreen_canvas().Size().height()),
+      nullptr /* provider */, cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
 
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),

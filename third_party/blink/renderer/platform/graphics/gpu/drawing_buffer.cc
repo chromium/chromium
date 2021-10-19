@@ -719,14 +719,16 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   scoped_refptr<ColorBuffer> canvas_resource_buffer =
       UsingSwapChain() ? front_color_buffer_ : back_color_buffer_;
 
-  CanvasResourceParams resource_params;
+  SkImageInfo resource_info =
+      SkImageInfo::MakeN32Premul(canvas_resource_buffer->size.width(),
+                                 canvas_resource_buffer->size.height());
   switch (canvas_resource_buffer->format) {
     case viz::RGBA_8888:
     case viz::RGBX_8888:
-      resource_params.SetSkColorType(kRGBA_8888_SkColorType);
+      resource_info = resource_info.makeColorType(kRGBA_8888_SkColorType);
       break;
     case viz::RGBA_F16:
-      resource_params.SetSkColorType(kRGBA_F16_SkColorType);
+      resource_info = resource_info.makeColorType(kRGBA_F16_SkColorType);
       break;
     default:
       NOTREACHED();
@@ -735,9 +737,8 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
 
   return ExternalCanvasResource::Create(
       canvas_resource_buffer->mailbox, viz::ReleaseCallback(), gpu::SyncToken(),
-      canvas_resource_buffer->size, texture_target_, resource_params,
-      context_provider_->GetWeakPtr(), resource_provider,
-      cc::PaintFlags::FilterQuality::kLow,
+      resource_info, texture_target_, context_provider_->GetWeakPtr(),
+      resource_provider, cc::PaintFlags::FilterQuality::kLow,
       /*is_origin_top_left=*/opengl_flip_y_extension_,
       /*is_overlay_candidate=*/true);
 }
@@ -755,16 +756,17 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
           nullptr, &out_resource, &out_release_callback, force_gpu_result))
     return nullptr;
 
-  CanvasResourceParams resource_params;
+  SkImageInfo resource_info = SkImageInfo::MakeN32Premul(
+      out_resource.size.width(), out_resource.size.height());
   switch (out_resource.format) {
     case viz::RGBA_8888:
-      resource_params.SetSkColorType(kRGBA_8888_SkColorType);
+      resource_info = resource_info.makeColorType(kRGBA_8888_SkColorType);
       break;
     case viz::RGBX_8888:
-      resource_params.SetSkColorType(kRGB_888x_SkColorType);
+      resource_info = resource_info.makeColorType(kRGB_888x_SkColorType);
       break;
     case viz::RGBA_F16:
-      resource_params.SetSkColorType(kRGBA_F16_SkColorType);
+      resource_info = resource_info.makeColorType(kRGBA_F16_SkColorType);
       break;
     default:
       NOTREACHED();
@@ -773,8 +775,8 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
 
   return ExternalCanvasResource::Create(
       out_resource.mailbox_holder.mailbox, std::move(out_release_callback),
-      out_resource.mailbox_holder.sync_token, IntSize(out_resource.size),
-      out_resource.mailbox_holder.texture_target, resource_params,
+      out_resource.mailbox_holder.sync_token, resource_info,
+      out_resource.mailbox_holder.texture_target,
       context_provider_->GetWeakPtr(), /*resource_provider=*/nullptr,
       cc::PaintFlags::FilterQuality::kLow,
       /*is_origin_top_left=*/opengl_flip_y_extension_,

@@ -116,15 +116,15 @@ scoped_refptr<CanvasResource> GPUSwapChain::ExportCanvasResource() {
     return nullptr;
   }
 
-  CanvasResourceParams resource_params;
-  resource_params.SetSkColorType(viz::ResourceFormatToClosestSkColorType(
-      /*gpu_compositing=*/true, transferable_resource.format));
-
+  SkImageInfo resource_info = SkImageInfo::Make(
+      transferable_resource.size.width(), transferable_resource.size.height(),
+      viz::ResourceFormatToClosestSkColorType(
+          /*gpu_compositing=*/true, transferable_resource.format),
+      kPremul_SkAlphaType);
   return ExternalCanvasResource::Create(
       transferable_resource.mailbox_holder.mailbox, std::move(release_callback),
-      transferable_resource.mailbox_holder.sync_token,
-      IntSize(transferable_resource.size),
-      transferable_resource.mailbox_holder.texture_target, resource_params,
+      transferable_resource.mailbox_holder.sync_token, resource_info,
+      transferable_resource.mailbox_holder.texture_target,
       swap_buffers_->GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
       cc::PaintFlags::FilterQuality::kLow,
       /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin,

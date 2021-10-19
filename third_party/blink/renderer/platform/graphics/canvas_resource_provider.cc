@@ -173,14 +173,15 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap {
 
  private:
   scoped_refptr<CanvasResource> CreateResource() final {
-    CanvasResourceParams params = ColorParams();
-    if (!IsBitmapFormatSupported(params.TransferableResourceFormat())) {
-      // If the rendering format is not supported, downgrate to 8-bits.
+    SkImageInfo info = GetSkImageInfo();
+    if (!IsBitmapFormatSupported(
+            viz::SkColorTypeToResourceFormat(info.colorType()))) {
+      // If the rendering format is not supported, downgrade to 8-bits.
       // TODO(junov): Should we try 12-12-12-12 and 10-10-10-2?
-      params.SetSkColorType(kN32_SkColorType);
+      info = info.makeColorType(kN32_SkColorType);
     }
 
-    return CanvasResourceSharedBitmap::Create(Size(), params, CreateWeakPtr(),
+    return CanvasResourceSharedBitmap::Create(info, CreateWeakPtr(),
                                               FilterQuality());
   }
 
@@ -304,14 +305,14 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
 #if BUILDFLAG(SKIA_USE_DAWN)
     if (type_ == kSkiaDawnSharedImage) {
       return CanvasResourceSkiaDawnSharedImage::Create(
-          Size(), ContextProviderWrapper(), CreateWeakPtr(), FilterQuality(),
-          ColorParams(), IsOriginTopLeft(), shared_image_usage_flags_);
+          GetSkImageInfo(), ContextProviderWrapper(), CreateWeakPtr(),
+          FilterQuality(), IsOriginTopLeft(), shared_image_usage_flags_);
     }
 #endif
 
     return CanvasResourceRasterSharedImage::Create(
-        Size(), ContextProviderWrapper(), CreateWeakPtr(), FilterQuality(),
-        ColorParams(), IsOriginTopLeft(), is_accelerated_,
+        GetSkImageInfo(), ContextProviderWrapper(), CreateWeakPtr(),
+        FilterQuality(), IsOriginTopLeft(), is_accelerated_,
         shared_image_usage_flags_);
   }
 
@@ -736,7 +737,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                    ->GetCapabilities()
                                    .supports_oop_raster) {
     resource_ = CanvasResourceSwapChain::Create(
-        Size(), ColorParams(), ContextProviderWrapper(), CreateWeakPtr(),
+        GetSkImageInfo(), ContextProviderWrapper(), CreateWeakPtr(),
         FilterQuality());
     // CanvasResourceProviderSwapChain can only operate in a single buffered
     // mode so enable it as soon as possible.

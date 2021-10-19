@@ -425,11 +425,10 @@ TEST_F(CanvasResourceProviderTest,
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   scoped_refptr<ExternalCanvasResource> resource =
       ExternalCanvasResource::Create(
-          mailbox, viz::ReleaseCallback(), gpu::SyncToken(), kSize,
-          GL_TEXTURE_2D, kColorParams,
-          SharedGpuContext::ContextProviderWrapper(), provider->CreateWeakPtr(),
-          cc::PaintFlags::FilterQuality::kMedium, true /*is_origin_top_left*/,
-          true /*is_overlay_candidate*/);
+          mailbox, viz::ReleaseCallback(), gpu::SyncToken(), kInfo,
+          GL_TEXTURE_2D, SharedGpuContext::ContextProviderWrapper(),
+          provider->CreateWeakPtr(), cc::PaintFlags::FilterQuality::kMedium,
+          true /*is_origin_top_left*/, true /*is_overlay_candidate*/);
 
   // NewOrRecycledResource() would return nullptr before an ImportResource().
   EXPECT_TRUE(provider->ImportResource(resource));
