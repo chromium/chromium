@@ -831,8 +831,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     }
 
     // Otherwise, availability depends on the margins.
-    const marginsType =
-        /** @type {!MarginsType} */ (this.getSettingValue('margins'));
+    const marginsType = this.getSettingValue('margins') as MarginsType;
     if (marginsType === MarginsType.NO_MARGINS) {
       return false;
     }
@@ -1035,8 +1034,7 @@ export class PrintPreviewModelElement extends PolymerElement {
 
     let savedSettings;
     try {
-      savedSettings =
-          /** @type {SerializedSettings} */ (JSON.parse(savedSettingsStr));
+      savedSettings = JSON.parse(savedSettingsStr) as SerializedSettings;
     } catch (e) {
       console.warn('Unable to parse state ' + e);
       return;  // use default values rather than updating.
@@ -1080,7 +1078,6 @@ export class PrintPreviewModelElement extends PolymerElement {
    * @param managed Flag showing whether value of setting is managed.
    * @param applyOnDestinationUpdate Flag showing whether policy
    *     should be applied on every destination update.
-   * @private
    */
   private setPolicySetting_(
       settingName: string, value: any, managed: boolean,
@@ -1520,13 +1517,7 @@ export class PrintPreviewModelElement extends PolymerElement {
   createPrintTicket(
       destination: Destination, openPdfInPreview: boolean,
       showSystemDialog: boolean): string {
-    const dpi =
-        /**
-           @type {{horizontal_dpi: (number | undefined),
-                    vertical_dpi: (number | undefined),
-                    vendor_id: (number | undefined)}}
-         */
-        (this.getSettingValue('dpi'));
+    const dpi = this.getSettingValue('dpi') as DpiOption;
     const scalingSettingKey = this.getSetting('scalingTypePdf').available ?
         'scalingTypePdf' :
         'scalingType';
@@ -1555,7 +1546,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       pagesPerSheet: this.getSettingValue('pagesPerSheet'),
       dpiHorizontal: (dpi && 'horizontal_dpi' in dpi) ? dpi.horizontal_dpi : 0,
       dpiVertical: (dpi && 'vertical_dpi' in dpi) ? dpi.vertical_dpi : 0,
-      dpiDefault: (dpi && 'is_default' in dpi) ? dpi.is_default : false,
+      dpiDefault: (dpi && 'is_default' in dpi) ? dpi.is_default! : false,
       deviceName: destination.id,
       pageWidth: this.pageSize.width,
       pageHeight: this.pageSize.height,

@@ -149,8 +149,6 @@ export class PrintPreviewDestinationDropdownCrosElement extends
    * keyboard, the highlight will shift. But once the user moves the mouse,
    * the highlight should be updated based on the location of the mouse
    * cursor.
-   * @param {!Event} event
-   * @private
    */
   private onMouseMove_(event: Event) {
     const item =

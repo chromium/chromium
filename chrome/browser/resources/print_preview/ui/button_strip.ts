@@ -37,16 +37,13 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
 
       sheetCount: Number,
 
-      /** @type {!State} */
       state: Number,
 
-      /** @private */
       printButtonEnabled_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       printButtonLabel_: {
         type: String,
         value() {
@@ -55,7 +52,6 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
       },
 
       // <if expr="chromeos or lacros">
-      /** @private */
       errorMessage_: {
         type: String,
         observer: 'errorMessageChanged_',

@@ -1047,8 +1047,8 @@ export class DestinationStore extends EventTarget {
         assert(origin === DestinationOrigin.EXTENSION);
         return;
       }
-      dest = /** @type {!Destination} */ (
-          parseDestination(originToType(origin), assert(settingsInfo.printer)));
+      dest =
+          parseDestination(originToType(origin), assert(settingsInfo.printer));
     }
     if (dest) {
       if ((origin === DestinationOrigin.LOCAL ||

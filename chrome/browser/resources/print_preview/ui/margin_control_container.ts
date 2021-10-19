@@ -376,7 +376,6 @@ export class PrintPreviewMarginControlContainerElement extends
   /**
    * @param marginSide The margin side. Must be a CustomMarginsOrientation.
    * @param marginValue New value for the margin in points.
-   * @private
    */
   private setMargin_(
       marginSide: CustomMarginsOrientation, marginValue: number) {

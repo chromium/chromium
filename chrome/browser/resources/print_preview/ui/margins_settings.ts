@@ -34,7 +34,6 @@ export class PrintPreviewMarginsSettingsElement extends
         observer: 'updateMarginsDisabled_',
       },
 
-      /** @type {!State} */
       state: {
         type: Number,
         observer: 'onStateChange_',

@@ -371,8 +371,7 @@ export class CloudPrintInterfaceImpl implements CloudPrintInterface {
   private onReadyStateChange_(request: CloudPrintRequest) {
     if (request.xhr.readyState === 4) {
       if (request.xhr.status === 200) {
-        request.result =
-            /** @type {Object} */ (JSON.parse(request.xhr.responseText));
+        request.result = JSON.parse(request.xhr.responseText);
         if (request.origin === DestinationOrigin.COOKIES &&
             request.result!['success']) {
           this.xsrfTokens_[request.result!['request']!['user']!] =

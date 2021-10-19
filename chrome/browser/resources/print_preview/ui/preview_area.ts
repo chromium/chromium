@@ -77,38 +77,30 @@ export class PrintPreviewPreviewAreaElement extends
         notify: true,
       },
 
-      /** @type {Margins} */
       margins: Object,
 
-      /** @type {?MeasurementSystem} */
       measurementSystem: Object,
 
-      /** @type {!Size} */
       pageSize: Object,
 
-      /** @type {!PreviewAreaState} */
       previewState: {
         type: String,
         notify: true,
         value: PreviewAreaState.LOADING,
       },
 
-      /** @type {!State} */
       state: Number,
 
-      /** @private {boolean} Whether the plugin completely loaded the preview */
       pluginLoadComplete_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} Whether the document is ready */
       documentReady_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       previewLoaded_: {
         type: Boolean,
         notify: true,
@@ -251,7 +243,7 @@ export class PrintPreviewPreviewAreaElement extends
   }
 
   /**
-   * @return {string} The current preview area message to display.
+   * @return The current preview area message to display.
    */
   private currentMessage_(): string {
     switch (this.previewState) {

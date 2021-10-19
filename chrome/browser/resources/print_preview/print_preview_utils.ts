@@ -47,7 +47,7 @@ function getStringForLocale(
 
 /**
  * @param localizedStrings An array of strings with corresponding locales.
- * @return {string} A string for the current locale. An empty string if there's
+ * @return A string for the current locale. An empty string if there's
  *     no string for the current locale found.
  */
 export function getStringForCurrentLocale(localizedStrings: LocalizedString[]):

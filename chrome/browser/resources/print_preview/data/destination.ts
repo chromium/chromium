@@ -264,7 +264,6 @@ export class Destination {
 
   /**
    * Printer 2018 certificate status
-   * @private {DestinationCertificateStatus}
    */
   private certificateStatus_: DestinationCertificateStatus;
 
@@ -540,7 +539,6 @@ export class Destination {
   /**
    * Pause for a set timeout then retry the printer status request.
    * @return Promise with destination key.
-   * @private
    */
   private printerStatusWaitForTimerPromise_(): Promise<string> {
     return new Promise<void>((resolve, _reject) => {
@@ -672,8 +670,7 @@ export class Destination {
   /**
    * Matches a query against the destination.
    * @param query Query to match against the destination.
-   * @return {@code true} if the query matches this destination,
-   *     {@code false} otherwise.
+   * @return Whether the query matches this destination.
    */
   matches(query: RegExp): boolean {
     return !!this.displayName_.match(query) ||

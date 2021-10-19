@@ -77,32 +77,27 @@ export class PrintPreviewPagesSettingsElement extends
         observer: 'onPageCountChange_',
       },
 
-      /** @private {boolean} */
       controlsDisabled_: {
         type: Boolean,
         computed: 'computeControlsDisabled_(disabled, hasError_)',
       },
 
-      /** @private {number} */
       errorState_: {
         type: Number,
         reflectToAttribute: true,
         value: PagesInputErrorState.NO_ERROR,
       },
 
-      /** @private {boolean} */
       hasError_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {string} */
       inputString_: {
         type: String,
         value: '',
       },
 
-      /** @private {!Array<number>} */
       pagesToPrint_: {
         type: Array,
         value() {
@@ -110,13 +105,11 @@ export class PrintPreviewPagesSettingsElement extends
         },
       },
 
-      /** @private {!Array<{to: number, from: number}>} */
       rangesToPrint_: {
         type: Array,
         computed: 'computeRangesToPrint_(pagesToPrint_)',
       },
 
-      /** @private {number} */
       selection_: {
         type: Number,
         value: PagesValue.ALL,
@@ -125,7 +118,6 @@ export class PrintPreviewPagesSettingsElement extends
 
       /**
        * Mirroring the enum so that it can be used from HTML bindings.
-       * @private
        */
       pagesValueEnum_: {
         type: Object,
