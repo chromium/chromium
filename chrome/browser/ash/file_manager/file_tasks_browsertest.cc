@@ -154,9 +154,22 @@ class FileTasksBrowserTestBase
 class FileTasksBrowserTest : public FileTasksBrowserTestBase {
  public:
   FileTasksBrowserTest() {
-    // Enable Media App without PDF support.
-    scoped_feature_list_.InitWithFeatures({},
-                                          {ash::features::kMediaAppHandlesPdf});
+    // Enable Media App Audio, but no PDF support.
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kMediaAppHandlesAudio},
+        {ash::features::kMediaAppHandlesPdf});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class FileTasksBrowserTestNoAudio : public FileTasksBrowserTestBase {
+ public:
+  FileTasksBrowserTestNoAudio() {
+    // Enable Media App without Audio support.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {ash::features::kMediaAppHandlesAudio});
   }
 
  private:
@@ -197,8 +210,12 @@ constexpr Expectation kAudioDeprecatedExpectations[] = {
     {"wav", kAudioPlayerAppId},
 };
 
+constexpr Expectation kAudioExpectations[] = {
+    {"flac", kMediaAppId}, {"m4a", kMediaAppId}, {"mp3", kMediaAppId},
+    {"oga", kMediaAppId},  {"ogg", kMediaAppId}, {"wav", kMediaAppId},
+};
+
 constexpr Expectation kVideoExpectations[] = {
-    // Video.
     {"3gp", kMediaAppId, "application/octet-stream"},
     {"avi", kMediaAppId, "application/octet-stream"},
     {"m4v", kMediaAppId},
@@ -212,7 +229,8 @@ constexpr Expectation kVideoExpectations[] = {
     {"ogm", kMediaAppId},
     {"ogv", kMediaAppId},
     {"ogx", kMediaAppId, "video/ogg"},
-    {"webm", kMediaAppId}};
+    {"webm", kMediaAppId},
+};
 
 // PDF handler expectations when |kMediaAppHandlesPdf| is off (the default).
 constexpr Expectation kDefaultPdfExpectations[] = {{"pdf", kFileManagerAppId}};
@@ -294,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExtensionToMimeMapping) {
 // If desires change, we'll need to update ChooseAndSetDefaultTask() with some
 // additional logic.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, DefaultHandlerChangeDetector) {
-  // Media App should handle images and video by default.
+  // Media App should handle images, video and audio by default.
   std::vector<Expectation> expectations = {
       // Images.
       {"bmp", kMediaAppId},
@@ -318,19 +336,20 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, DefaultHandlerChangeDetector) {
   };
   expectations.insert(expectations.end(), std::begin(kVideoExpectations),
                       std::end(kVideoExpectations));
-  expectations.insert(expectations.end(),
-                      std::begin(kAudioDeprecatedExpectations),
-                      std::end(kAudioDeprecatedExpectations));
+  expectations.insert(expectations.end(), std::begin(kAudioExpectations),
+                      std::end(kAudioExpectations));
   expectations.insert(expectations.end(), std::begin(kDefaultPdfExpectations),
                       std::end(kDefaultPdfExpectations));
 
   TestExpectationsAgainstDefaultTasks(expectations);
 }
 
-// Test to ensure the media app handle known video file extensions.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, VideoHandlerChangeDetector) {
-  std::vector<Expectation> expectations(std::begin(kVideoExpectations),
-                                        std::end(kVideoExpectations));
+// Tests the default handlers that are different with Audio support disabled.
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestNoAudio,
+                       AudioHandlerChangeDetector) {
+  std::vector<Expectation> expectations(
+      std::begin(kAudioDeprecatedExpectations),
+      std::end(kAudioDeprecatedExpectations));
   TestExpectationsAgainstDefaultTasks(expectations);
 }
 
@@ -521,6 +540,9 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     FileTasksBrowserTestWithPdf);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
+    FileTasksBrowserTestNoAudio);
 
 }  // namespace file_tasks
 }  // namespace file_manager
