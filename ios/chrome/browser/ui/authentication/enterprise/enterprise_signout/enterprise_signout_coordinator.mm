@@ -73,10 +73,12 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   if (@available(iOS 15, *)) {
     self.viewController.modalPresentationStyle = UIModalPresentationPageSheet;
     UISheetPresentationController* presentationController =
-        base::mac::ObjCCast<UISheetPresentationController>(
-            self.viewController.presentationController);
-    presentationController.detents =
-        @[ UISheetPresentationControllerDetent.mediumDetent ];
+        self.viewController.sheetPresentationController;
+    presentationController.prefersEdgeAttachedInCompactHeight = YES;
+    presentationController.detents = @[
+      UISheetPresentationControllerDetent.mediumDetent,
+      UISheetPresentationControllerDetent.largeDetent
+    ];
     presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
   } else {
 #else

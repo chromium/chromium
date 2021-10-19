@@ -40,6 +40,8 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 27;
 constexpr CGFloat kGeneratedImagePadding = 20;
 // The multiplier used when in regular horizontal size class.
 constexpr CGFloat kSafeAreaMultiplier = 0.8;
+constexpr CGFloat kButtonMaxWidth = 327;
+constexpr CGFloat kContentMaxWidth = 500;
 
 }  // namespace
 
@@ -138,15 +140,29 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   // Constraint the content of the scroll view to the size of the stack view
   // with some bottom margin space in between the two. This defines the content
   // area.
-  AddSameConstraintsWithInsets(
-      self.stackView, scrollView,
-      ChromeDirectionalEdgeInsetsMake(0, 0, kScrollViewBottomInsets, 0));
+  NSLayoutConstraint* stackViewWidth =
+      [self.stackView.widthAnchor constraintEqualToConstant:kContentMaxWidth];
+  stackViewWidth.priority = UILayoutPriorityRequired - 1;
+  [NSLayoutConstraint activateConstraints:@[
+    [self.stackView.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:scrollView.leadingAnchor],
+    [self.stackView.trailingAnchor
+        constraintLessThanOrEqualToAnchor:scrollView.trailingAnchor],
+    [self.stackView.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
+    [self.stackView.bottomAnchor
+        constraintEqualToAnchor:scrollView.bottomAnchor
+                       constant:-kScrollViewBottomInsets],
+    [self.stackView.centerXAnchor
+        constraintEqualToAnchor:scrollView.centerXAnchor],
+    stackViewWidth,
+  ]];
 
   // Disable horizontal scrolling and constraint the content size to the scroll
   // view size.
-  [scrollView.widthAnchor
-      constraintEqualToAnchor:scrollView.contentLayoutGuide.widthAnchor]
-      .active = YES;
+  NSLayoutConstraint* scrollViewWidth = [scrollView.widthAnchor
+      constraintEqualToAnchor:scrollView.contentLayoutGuide.widthAnchor];
+  scrollViewWidth.priority = UILayoutPriorityDefaultHigh;
+  scrollViewWidth.active = YES;
 
   [scrollView.centerXAnchor constraintEqualToAnchor:margins.centerXAnchor]
       .active = YES;
@@ -190,12 +206,23 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
     [self.view addSubview:actionStackView];
     self.buttonStackViewBottomVerticalConstraint = [actionStackView.bottomAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+    // Add a low priority width constraints to make sure that the buttons are
+    // taking as much width as they can.
+    NSLayoutConstraint* lowPriorityWidthConstraint =
+        [actionStackView.widthAnchor constraintEqualToConstant:kButtonMaxWidth];
+    lowPriorityWidthConstraint.priority = UILayoutPriorityDefaultHigh;
+
     [NSLayoutConstraint activateConstraints:@[
       [actionStackView.leadingAnchor
-          constraintEqualToAnchor:scrollView.leadingAnchor],
+          constraintGreaterThanOrEqualToAnchor:scrollView.leadingAnchor],
       [actionStackView.trailingAnchor
-          constraintEqualToAnchor:scrollView.trailingAnchor],
-      self.buttonStackViewBottomVerticalConstraint
+          constraintLessThanOrEqualToAnchor:scrollView.trailingAnchor],
+      self.buttonStackViewBottomVerticalConstraint,
+      [actionStackView.centerXAnchor
+          constraintEqualToAnchor:self.view.centerXAnchor],
+      [actionStackView.widthAnchor
+          constraintLessThanOrEqualToConstant:kButtonMaxWidth],
+      lowPriorityWidthConstraint
     ]];
     scrollViewBottomAnchor = actionStackView.topAnchor;
   }
