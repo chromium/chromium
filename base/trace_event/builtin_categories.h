@@ -131,6 +131,7 @@
   X("ppapi")                                                             \
   X("ppapi_proxy")                                                       \
   X("print")                                                             \
+  X("raf_investigation")                                                 \
   X("rail")                                                              \
   X("renderer")                                                          \
   X("renderer_host")                                                     \
@@ -295,6 +296,7 @@
   X("cc,benchmark")                                                           \
   X("cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))     \
   X("cc,input")                                                               \
+  X("cc,raf_investigation")                                                   \
   X("cc," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))                     \
   X("cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))     \
   X("content,navigation")                                                     \
