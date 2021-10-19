@@ -69,6 +69,8 @@
 
 using device::BluetoothAdapter;
 using device::BluetoothDevice;
+using BatteryInfo = device::BluetoothDevice::BatteryInfo;
+using BatteryType = device::BluetoothDevice::BatteryType;
 using UUIDSet = device::BluetoothDevice::UUIDSet;
 using device::BluetoothDiscoveryFilter;
 using device::BluetoothSocket;
@@ -2153,14 +2155,15 @@ void BluetoothAdapterBlueZ::UpdateDeviceBatteryLevelFromBatteryClient(
           ->GetProperties(object_path);
 
   if (properties && properties->percentage.is_valid()) {
-    device->SetBatteryPercentage(properties->percentage.value());
+    device->SetBatteryInfo(
+        BatteryInfo(BatteryType::kDefault, properties->percentage.value()));
     return;
   }
 
   // |properties| is null or properties->percentage is not valid, that means
   // BlueZ has removed the battery info from the device and we should clear our
   // value as well.
-  device->SetBatteryPercentage(absl::nullopt);
+  device->RemoveBatteryInfo(BatteryType::kDefault);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

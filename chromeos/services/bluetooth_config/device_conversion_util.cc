@@ -77,13 +77,14 @@ mojom::AudioOutputCapability ComputeAudioOutputCapability(
 
 mojom::DeviceBatteryInfoPtr ComputeBatteryInfo(
     const device::BluetoothDevice* device) {
-  const absl::optional<uint8_t>& battery_percentage =
-      device->battery_percentage();
-  if (!battery_percentage)
+  const absl::optional<device::BluetoothDevice::BatteryInfo> battery_info =
+      device->GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
+
+  if (!battery_info || !battery_info->percentage.has_value())
     return nullptr;
 
   return mojom::DeviceBatteryInfo::New(
-      mojom::BatteryProperties::New(*battery_percentage));
+      mojom::BatteryProperties::New(battery_info->percentage.value()));
 }
 
 mojom::DeviceConnectionState ComputeConnectionState(

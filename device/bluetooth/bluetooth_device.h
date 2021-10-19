@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
@@ -100,6 +101,42 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
     ERROR_UNKNOWN,
     ERROR_UNSUPPORTED_DEVICE,
     NUM_CONNECT_ERROR_CODES  // Keep as last enum.
+  };
+
+  // Possible battery types that this device could have information for.
+  enum class BatteryType {
+    // Used for devices who have a single battery.
+    kDefault,
+    // The left bud on a True Wireless device.
+    kLeftBudTrueWireless,
+    // The right bud on a True Wireless device.
+    kRightBudTrueWireless,
+    // The True Wireless device case.
+    kCaseTrueWireless,
+  };
+
+  struct DEVICE_BLUETOOTH_EXPORT BatteryInfo {
+    enum class ChargeState {
+      kUnknown,
+      kCharging,
+      kDischarging,
+    };
+
+    BatteryType type;
+    absl::optional<uint8_t> percentage;
+    ChargeState charge_state;
+
+    BatteryInfo();
+    BatteryInfo(BatteryType type, absl::optional<uint8_t> percentage);
+    BatteryInfo(BatteryType type,
+                absl::optional<uint8_t> percentage,
+                ChargeState charge_state);
+    BatteryInfo(const BatteryInfo&);
+    BatteryInfo& operator=(const BatteryInfo&);
+    BatteryInfo(BatteryInfo&&);
+    BatteryInfo& operator=(BatteryInfo&&);
+    ~BatteryInfo();
+    bool operator==(const BatteryInfo& other);
   };
 
   typedef std::vector<BluetoothUUID> UUIDList;
@@ -609,16 +646,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
 #endif
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
-  // Set the remaining battery of the device to show in the UI. This value must
-  // be between 0 and 100, inclusive.
-  // Only device::BluetoothAdapterBlueZ has control over this field with the
-  // value originating from a single source, the BlueZ Battery API.
-  void SetBatteryPercentage(absl::optional<uint8_t> battery_percentage);
-
-  // Returns the remaining battery for the device.
-  const absl::optional<uint8_t>& battery_percentage() const {
-    return battery_percentage_;
-  }
+  // Set the battery information for the battery type |info.type|. Overrides
+  // previously set value (if any).
+  void SetBatteryInfo(const BatteryInfo& info);
+  // Removes the battery information associated with |type|.
+  // Returns true if removed, otherwise false.
+  bool RemoveBatteryInfo(const BatteryType& type);
+  absl::optional<BatteryInfo> GetBatteryInfo(const BatteryType& type) const;
+  // Returns the list of currently set BatteryTypes.
+  std::vector<BatteryType> GetAvailableBatteryTypes();
 #endif
 
   // Returns whether this device supports discovering specific services, i.e.
@@ -780,11 +816,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   std::u16string GetAddressWithLocalizedDeviceTypeName() const;
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
-  // Remaining battery level of the device.
-  // TODO(https://crbug.com/973237): This field is different from others because
-  // it is not filled by the platform. In the future, when there is a unified
-  // Mojo service, this field will be moved to BluetoothDeviceInfo.
-  absl::optional<uint8_t> battery_percentage_;
+  // Battery information for the known battery types for this device.
+  base::flat_map<BatteryType, BatteryInfo> battery_info_map_;
 #endif
 };
 

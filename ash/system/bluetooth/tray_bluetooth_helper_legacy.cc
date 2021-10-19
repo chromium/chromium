@@ -118,9 +118,12 @@ BluetoothDeviceInfoPtr GetBluetoothDeviceInfo(device::BluetoothDevice* device) {
   info->name = device->GetName();
   info->is_paired = device->IsPaired();
   info->is_blocked_by_policy = device->IsBlockedByPolicy();
-  if (device->battery_percentage()) {
+
+  absl::optional<device::BluetoothDevice::BatteryInfo> battery_info =
+      device->GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
+  if (battery_info && battery_info->percentage.has_value()) {
     info->battery_info =
-        BluetoothDeviceBatteryInfo::New(device->battery_percentage().value());
+        BluetoothDeviceBatteryInfo::New(battery_info->percentage.value());
   }
 
   switch (device->GetDeviceType()) {

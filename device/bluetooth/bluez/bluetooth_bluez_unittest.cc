@@ -62,6 +62,8 @@ namespace {
 using ::device::BluetoothAdapter;
 using ::device::BluetoothAdapterFactory;
 using ::device::BluetoothDevice;
+using BatteryInfo = ::device::BluetoothDevice::BatteryInfo;
+using BatteryType = ::device::BluetoothDevice::BatteryType;
 using ::device::BluetoothDeviceType;
 using ::device::BluetoothDiscoveryFilter;
 using ::device::BluetoothDiscoverySession;
@@ -4663,25 +4665,25 @@ TEST_F(BluetoothBlueZTest, BatteryEvents) {
       adapter_->GetDevice(bluez::FakeBluetoothDeviceClient::kLowEnergyAddress);
   EXPECT_TRUE(device);
   // A new device does not have battery level set.
-  EXPECT_FALSE(device->battery_percentage().has_value());
+  EXPECT_FALSE(device->GetBatteryInfo(BatteryType::kDefault).has_value());
 
   // A battery appears, check that the device battery percentage is updated..
   fake_bluetooth_battery_client_->CreateBattery(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath), 50);
-  EXPECT_TRUE(device->battery_percentage().has_value());
-  EXPECT_EQ(50, device->battery_percentage().value());
+  EXPECT_TRUE(device->GetBatteryInfo(BatteryType::kDefault).has_value());
+  EXPECT_EQ(50, device->GetBatteryInfo(BatteryType::kDefault)->percentage);
 
   // Property percentage changes, check that the corresponding device also
   // updates its battery percentage field.
   fake_bluetooth_battery_client_->ChangeBatteryPercentage(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath), 40);
-  EXPECT_EQ(40, device->battery_percentage().value());
+  EXPECT_EQ(40, device->GetBatteryInfo(BatteryType::kDefault)->percentage);
 
   // Battery object disappears, check that the corresponding device gets its
   // battery percentage field cleared.
   fake_bluetooth_battery_client_->RemoveBattery(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
-  EXPECT_FALSE(device->battery_percentage().has_value());
+  EXPECT_FALSE(device->GetBatteryInfo(BatteryType::kDefault).has_value());
 }
 
 TEST_F(BluetoothBlueZTest, DeviceUUIDsCombinedFromServiceAndAdvertisement) {
