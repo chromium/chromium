@@ -123,11 +123,11 @@ bool WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
 
 bool WebAuthRequestSecurityChecker::IsSameOriginWithAncestors(
     const url::Origin& origin) {
-  RenderFrameHost* parent = render_frame_host_->GetParent();
+  RenderFrameHost* parent = render_frame_host_->GetParentOrOuterDocument();
   while (parent) {
     if (!parent->GetLastCommittedOrigin().IsSameOriginWith(origin))
       return false;
-    parent = parent->GetParent();
+    parent = parent->GetParentOrOuterDocument();
   }
   return true;
 }

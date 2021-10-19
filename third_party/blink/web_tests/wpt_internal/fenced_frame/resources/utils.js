@@ -29,7 +29,9 @@ const KEYS = {
   "data: URL"                    : "00000000-0000-0000-0000-000000000009",
   "204 response"                 : "00000000-0000-0000-0000-00000000000A",
   // Add keys below this list, incrementing the key UUID in hexadecimal:
-  "keyboard.lock"                : "00000000-0000-0000-0000-000000000009",
+  "keyboard.lock"                : "00000000-0000-0000-0000-00000000000B",
+  "credentials.create"           : "00000000-0000-0000-0000-00000000000C",
+  "credentials.create ACK"       : "00000000-0000-0000-0000-00000000000D",
 }
 
 function attachFencedFrame(url) {
