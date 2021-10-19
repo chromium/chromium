@@ -14,7 +14,7 @@ crbug.com/1225860 virtual/layout_ng_block_frag/fast/multicol/dynamic/untransform
 # Slow
 crbug.com/1225893 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/about-blank-iframes.html [ TIMEOUT ]
 crbug.com/1225893 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/activation-start.html [ TIMEOUT ]
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/cross-origin-isolated.https.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/cross-origin-isolated.https.html [ TIMEOUT ]
 crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/purpose-prefetch-header.https.html [ TIMEOUT ]
 crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/session-history-subframe-navigation.https.html [ TIMEOUT ]
 crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/session-history-subframe-reload.https.html [ TIMEOUT ]
