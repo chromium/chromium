@@ -116,6 +116,12 @@ class BackForwardCachePageLoadMetricsObserver
   // back-forward cache.
   bool was_hidden_ = false;
 
+  // Whether the current set of page metrics (CLS, LCP, etc) have already been
+  // logged due to the page being backgrounded. Used to avoid double-logging
+  // these metrics. This value gets re-set to false if the page is restored
+  // from the BFCache.
+  bool page_metrics_logged_due_to_backgrounding_ = false;
+
   // The layout shift score. These are recorded when the page is navigated away.
   // These serve as "deliminators" between back-forward cache navigations.
   absl::optional<double> last_main_frame_layout_shift_score_;

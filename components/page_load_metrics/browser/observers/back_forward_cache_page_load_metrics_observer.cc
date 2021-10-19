@@ -92,6 +92,7 @@ BackForwardCachePageLoadMetricsObserver::OnEnterBackForwardCache(
 void BackForwardCachePageLoadMetricsObserver::OnRestoreFromBackForwardCache(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     content::NavigationHandle* navigation_handle) {
+  page_metrics_logged_due_to_backgrounding_ = false;
   in_back_forward_cache_ = false;
   back_forward_cache_navigation_ids_.push_back(
       navigation_handle->GetNavigationId());
@@ -211,7 +212,8 @@ BackForwardCachePageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!in_back_forward_cache_)
     RecordMetricsOnPageVisitEnd(timing, /*app_entering_background=*/true);
-  return STOP_OBSERVING;
+  page_metrics_logged_due_to_backgrounding_ = true;
+  return CONTINUE_OBSERVING;
 }
 
 void BackForwardCachePageLoadMetricsObserver::OnComplete(
@@ -227,6 +229,8 @@ void BackForwardCachePageLoadMetricsObserver::OnComplete(
 void BackForwardCachePageLoadMetricsObserver::RecordMetricsOnPageVisitEnd(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     bool app_entering_background) {
+  if (page_metrics_logged_due_to_backgrounding_)
+    return;
   MaybeRecordLayoutShiftScoreAfterBackForwardCacheRestore(timing);
   MaybeRecordPageEndAfterBackForwardCacheRestore(app_entering_background);
   MaybeRecordForegroundDurationAfterBackForwardCacheRestore(

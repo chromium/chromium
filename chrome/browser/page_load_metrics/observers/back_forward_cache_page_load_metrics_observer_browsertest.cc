@@ -10,6 +10,7 @@
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -25,6 +26,7 @@
 namespace {
 
 using UkmEntry = ukm::builders::HistoryNavigation;
+using page_load_metrics::PageEndReason;
 
 class BackForwardCachePageLoadMetricsObserverBrowserTest
     : public MetricIntegrationTest {
@@ -92,6 +94,26 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
       count++;
     }
     EXPECT_EQ(count, expected_count);
+  }
+
+  void VerifyHistoryNavPageEndReasons(const std::vector<PageEndReason>& reasons,
+                                      const GURL& url) {
+    unsigned int reason_index = 0;
+    for (auto* entry : ukm_recorder().GetEntriesByName(UkmEntry::kEntryName)) {
+      auto* source = ukm_recorder().GetSourceForSourceId(entry->source_id);
+      if (source->url() != url)
+        continue;
+      if (ukm_recorder().EntryHasMetric(
+              entry,
+              UkmEntry::kPageEndReasonAfterBackForwardCacheRestoreName)) {
+        ASSERT_LT(reason_index, reasons.size());
+        ukm_recorder().ExpectEntryMetric(
+            entry, UkmEntry::kPageEndReasonAfterBackForwardCacheRestoreName,
+            reasons[reason_index++]);
+      }
+    }
+    // Should have been through all the reasons.
+    EXPECT_EQ(reason_index, reasons.size());
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -593,4 +615,69 @@ return score;
       "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
       "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms",
       2);
+}
+
+// Verifies that the app resumes HistoryNavigation logging for a page if the
+// page restores from the bf-cache after the app has backgrounded and
+// re-foregrounded.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCachePageLoadMetricsObserverBrowserTest,
+    ResumesLoggingAfterRestoringFromCacheAfterBackgrounding) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Navigate to A.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+
+  // Navigate to B.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  // Navigate to A again, using history navigation.
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Navigate to B again, using history navigation.
+  web_contents()->GetController().GoForward();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  std::vector<PageEndReason> expected_reasons_a;
+  expected_reasons_a.push_back(page_load_metrics::END_FORWARD_BACK);
+  VerifyHistoryNavPageEndReasons(expected_reasons_a, url_a);
+
+  // No page end expected for url_b.
+  ExpectMetricCountForUrl(
+      url_b, UkmEntry::kPageEndReasonAfterBackForwardCacheRestoreName, 0);
+
+  // Simulate an app background. This is a bit fake but the best we can do in a
+  // browsertest.
+  auto* observer =
+      page_load_metrics::MetricsWebContentsObserver::FromWebContents(
+          web_contents());
+  observer->FlushMetricsOnAppEnterBackground();
+
+  // B's observer should have logged a page end reason.
+  std::vector<PageEndReason> expected_reasons_b;
+  expected_reasons_b.push_back(page_load_metrics::END_APP_ENTER_BACKGROUND);
+  VerifyHistoryNavPageEndReasons(expected_reasons_b, url_b);
+
+  // Go back to A, restoring it from the back-forward cache.
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  // Nothing new should have been logged for url_b - its page end happened
+  // when the backgrounding did.
+  VerifyHistoryNavPageEndReasons(expected_reasons_b, url_b);
+
+  // Navigate to B again - this should trigger the
+  // BackForwardCachePageLoadMetricsObserver for A.
+  web_contents()->GetController().GoForward();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  expected_reasons_a.push_back(page_load_metrics::END_FORWARD_BACK);
+  VerifyHistoryNavPageEndReasons(expected_reasons_a, url_a);
+
+  // Go back to A, restoring it from the back-forward cache (again)
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  expected_reasons_b.push_back(page_load_metrics::END_FORWARD_BACK);
+  VerifyHistoryNavPageEndReasons(expected_reasons_b, url_b);
 }

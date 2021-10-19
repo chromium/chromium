@@ -465,6 +465,12 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   EXPECT_EQ(page_load_metrics::PageEndReason::END_APP_ENTER_BACKGROUND,
             result_metrics.begin()->begin()->second);
 
+  // Observers stop logging after FlushMetricsOnAppEnterBackground is called,
+  // until they're restored.
+  observer_with_fake_delegate_->OnRestoreFromBackForwardCache(
+      timing_, &navigation_handle_);
+  fake_delegate_->AddBackForwardCacheRestore(bf_state);
+
   // Verify that backgrounding does not take precedence over other page end
   // reasons. Note that if there's a page_end_reason, there needs to be a
   // page_end_time as well.
