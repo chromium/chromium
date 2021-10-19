@@ -36,6 +36,7 @@ struct InputDeviceSettingsEvdev {
 
   int touchpad_sensitivity = kDefaultSensitivity;
   int touchpad_scroll_sensitivity = kDefaultSensitivity;
+  int touchpad_haptic_click_sensitivity = kDefaultSensitivity;
   int mouse_sensitivity = kDefaultSensitivity;
   int mouse_scroll_sensitivity = kDefaultSensitivity;
   int pointing_stick_sensitivity = kDefaultSensitivity;

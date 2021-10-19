@@ -237,6 +237,9 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       ::prefs::kTouchpadScrollSensitivity, 3,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
+  registry->RegisterIntegerPref(
+      ::prefs::kTouchpadHapticClickSensitivity, 3,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(
       ::prefs::kUse24HourClock, base::GetHourClockType() == base::k24HourClock,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -523,6 +526,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                                      prefs, callback);
   touchpad_haptic_feedback_.Init(::prefs::kTouchpadHapticFeedback, prefs,
                                  callback);
+  touchpad_haptic_click_sensitivity_.Init(
+      ::prefs::kTouchpadHapticClickSensitivity, prefs, callback);
   download_default_directory_.Init(::prefs::kDownloadDefaultDirectory, prefs,
                                    callback);
   preload_engines_.Init(::prefs::kLanguagePreloadEngines, prefs, callback);
@@ -887,6 +892,15 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       touchpad_settings.SetHapticFeedback(enabled);
     ReportBooleanPrefApplication(reason, "Touchpad.HapticFeedback.Changed",
                                  "Touchpad.HapticFeedback.Started", enabled);
+  }
+  if (reason != REASON_PREF_CHANGED ||
+      pref_name == ::prefs::kTouchpadHapticClickSensitivity) {
+    const int sensitivity_int = touchpad_haptic_click_sensitivity_.GetValue();
+    if (user_is_active)
+      touchpad_settings.SetHapticClickSensitivity(sensitivity_int);
+    ReportSensitivityPrefApplication(
+        reason, "Touchpad.HapticClickSensitivity.Changed",
+        "Touchpad.HapticClickSensitivity.Started", sensitivity_int);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kDownloadDefaultDirectory) {

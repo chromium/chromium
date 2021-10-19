@@ -72,6 +72,10 @@ class TouchpadSettings {
   bool GetHapticFeedback() const;
   bool IsHapticFeedbackSet() const;
 
+  void SetHapticClickSensitivity(int value);
+  int GetHapticClickSensitivity() const;
+  bool IsHapticClickSensitivitySet() const;
+
   // Updates |this| with |settings|. If at least one setting was updated returns
   // true.
   bool Update(const TouchpadSettings& settings);
@@ -83,6 +87,7 @@ class TouchpadSettings {
  private:
   absl::optional<bool> acceleration_;
   absl::optional<bool> haptic_feedback_;
+  absl::optional<int> haptic_click_sensitivity_;
   absl::optional<bool> natural_scroll_;
   absl::optional<int> sensitivity_;
   absl::optional<bool> scroll_acceleration_;
@@ -229,6 +234,10 @@ class InputDeviceSettings {
 
   // Turns touchpad haptic feedback on/off.
   virtual void SetTouchpadHapticFeedback(bool enabled) = 0;
+
+  // Sets the touchpad haptic click sensitivity from Soft feedback to Firm
+  // feedback [1, 3, 5].
+  virtual void SetTouchpadHapticClickSensitivity(int value) = 0;
 
   // Turns tap to click on/off.
   virtual void SetTapToClick(bool enabled) = 0;

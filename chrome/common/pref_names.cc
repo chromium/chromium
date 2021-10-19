@@ -535,6 +535,11 @@ const char kTouchpadScrollAcceleration[] =
 // A boolean pref set to true if touchpad haptic feedback is enabled.
 const char kTouchpadHapticFeedback[] = "settings.touchpad.haptic_feedback";
 
+// A integer pref for the touchpad haptic click sensitivity ranging from Soft
+// feedback to Firm feedback [1, 3, 5].
+const char kTouchpadHapticClickSensitivity[] =
+    "settings.touchpad.haptic_click_sensitivity";
+
 // A integer pref for the touchpad sensitivity.
 const char kMouseSensitivity[] = "settings.mouse.sensitivity2";
 
