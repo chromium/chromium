@@ -46,7 +46,6 @@
 #include "content/browser/about_url_loader_factory.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
-#include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
@@ -7796,15 +7795,6 @@ void RenderFrameHostImpl::CommitNavigation(
       response_head ? std::move(response_head)
                     : network::mojom::URLResponseHead::New();
 
-  if (navigation_request->appcache_handle()) {
-    // AppCache may create a subresource URLLoaderFactory later, so make sure it
-    // has the correct origin to use when calling
-    // ContentBrowserClient::WillCreateURLLoaderFactory().
-    navigation_request->appcache_handle()
-        ->host()
-        ->set_origin_for_url_loader_factory(
-            navigation_request->GetOriginToCommit());
-  }
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories;
   if ((!is_same_document || is_first_navigation) && !is_srcdoc) {
@@ -10343,10 +10333,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   navigation_request->set_transition(params->transition);
 
   UpdateSiteURL(params->url, navigation_request->DidEncounterError());
-
-  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
-  // navigation isn't right. This should be moved to DidCommitNewDocument().
-  appcache_handle_ = navigation_request->TakeAppCacheHandle();
 
   isolation_info_ = navigation_request->isolation_info_for_subresources();
 

@@ -382,9 +382,6 @@ struct CommitNavigationParams {
   // Timing of navigation events.
   NavigationTiming navigation_timing;
 
-  // The AppCache host id to be used to identify this navigation.
-  mojo_base.mojom.UnguessableToken? appcache_host_id;
-
   // Set to |kYes| if a navigation is following the rules of user activation
   // propagation. This is different from |has_user_gesture|
   // (in CommonNavigationParams) as the activation may have happened before

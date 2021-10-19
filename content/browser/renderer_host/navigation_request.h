@@ -81,7 +81,6 @@ struct URLLoaderCompletionStatus;
 
 namespace content {
 
-class AppCacheNavigationHandle;
 class CrossOriginEmbedderPolicyReporter;
 class WebBundleHandleTracker;
 class WebBundleNavigationInfo;
@@ -595,12 +594,6 @@ class CONTENT_EXPORT NavigationRequest
   // can be non-OK before commit and also in cases that didn't result in the
   // navigation being committed (e.g. canceled navigations).
   virtual bool DidEncounterError() const;
-
-  std::unique_ptr<AppCacheNavigationHandle> TakeAppCacheHandle();
-
-  AppCacheNavigationHandle* appcache_handle() const {
-    return appcache_handle_.get();
-  }
 
   void set_complete_callback_for_testing(
       ThrottleChecksFinishedCallback callback) {
@@ -1547,7 +1540,7 @@ class CONTENT_EXPORT NavigationRequest
   base::OnceClosure on_start_checks_complete_closure_;
 
   // Used in the network service world to pass the subressource loader params
-  // to the renderer. Used by AppCache and ServiceWorker, and
+  // to the renderer. Used by ServiceWorker and
   // SignedExchangeSubresourcePrefetch.
   absl::optional<SubresourceLoaderParams> subresource_loader_params_;
 
@@ -1644,11 +1637,6 @@ class CONTENT_EXPORT NavigationRequest
 
   // The time this navigation was ready to commit.
   base::TimeTicks ready_to_commit_time_;
-
-  // Manages the lifetime of a pre-created AppCacheHost until a browser side
-  // navigation is ready to be committed, i.e we have a renderer process ready
-  // to service the navigation request.
-  std::unique_ptr<AppCacheNavigationHandle> appcache_handle_;
 
   // Set in ReadyToCommitNavigation.
   bool is_same_process_ = true;

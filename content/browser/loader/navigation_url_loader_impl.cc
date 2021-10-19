@@ -20,8 +20,6 @@
 #include "build/build_config.h"
 #include "components/download/public/common/download_stats.h"
 #include "content/browser/about_url_loader_factory.h"
-#include "content/browser/appcache/appcache_navigation_handle.h"
-#include "content/browser/appcache/appcache_request_handler.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/data_url_loader_factory.h"
@@ -357,7 +355,6 @@ NavigationURLLoaderImpl::~NavigationURLLoaderImpl() {
 }
 
 void NavigationURLLoaderImpl::StartImpl(
-    AppCacheNavigationHandle* appcache_handle,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
     scoped_refptr<SignedExchangePrefetchMetricRecorder>
@@ -409,13 +406,12 @@ void NavigationURLLoaderImpl::StartImpl(
     }
   }
 
-  CreateInterceptors(appcache_handle, prefetched_signed_exchange_cache,
+  CreateInterceptors(prefetched_signed_exchange_cache,
                      signed_exchange_prefetch_metric_recorder, accept_langs);
   Restart();
 }
 
 void NavigationURLLoaderImpl::CreateInterceptors(
-    AppCacheNavigationHandle* appcache_handle,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
     scoped_refptr<SignedExchangePrefetchMetricRecorder>
@@ -444,18 +440,6 @@ void NavigationURLLoaderImpl::CreateInterceptors(
     // is not secure).
     if (service_worker_interceptor)
       interceptors_.push_back(std::move(service_worker_interceptor));
-  }
-
-  // Set-up an interceptor for AppCache if non-null `appcache_handle` is
-  // given.
-  if (appcache_handle) {
-    CHECK(appcache_handle->host());
-    std::unique_ptr<NavigationLoaderInterceptor> appcache_interceptor =
-        AppCacheRequestHandler::InitializeForMainResourceNetworkService(
-            *resource_request_, appcache_handle->host()->GetWeakPtr(),
-            frame_tree_node_id_);
-    if (appcache_interceptor)
-      interceptors_.push_back(std::move(appcache_interceptor));
   }
 
   // Set-up an interceptor for SignedExchange handling if it is enabled.
@@ -490,7 +474,7 @@ void NavigationURLLoaderImpl::Restart() {
 
   // Clear `url_loader_` if it's not the default one (network). This allows
   // the restarted request to use a new loader, instead of, e.g., reusing the
-  // AppCache or service worker loader. For an optimization, we keep and reuse
+  // service worker loader. For an optimization, we keep and reuse
   // the default url loader if the all `interceptors_` doesn't handle the
   // redirected request. If the network service is enabled, reset the loader
   // if the redirected URL's scheme and the previous URL scheme don't match in
@@ -569,8 +553,7 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
   // to the next interceptors) but send the subresource_loader_params to the
   // child process. This is necessary for correctness in the cases where, e.g.
   // there's a controlling service worker that doesn't have a fetch event
-  // handler so it doesn't intercept requests. In that case we still want to
-  // skip AppCache.
+  // handler so it doesn't intercept requests.
   if (interceptor) {
     subresource_loader_params_ =
         interceptor->MaybeCreateSubresourceLoaderParams();
@@ -711,8 +694,8 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
     default_loader_used_ = true;
 
     // NOTE: We only support embedders proxying network-service-bound requests
-    // not handled by NavigationLoaderInterceptors above (e.g. Service Worker
-    // or AppCache). Hence this code is only reachable when one of the above
+    // not handled by NavigationLoaderInterceptors above (e.g. Service Worker)
+    // Hence this code is only reachable when one of the above
     // interceptors isn't used and the URL is either a data URL or has a
     // scheme which is handled by the network service.
     if (proxied_factory_receiver_.is_valid()) {
@@ -780,7 +763,7 @@ void NavigationURLLoaderImpl::OnStartLoadingResponseBody(
 
   // If the default loader (network) was used to handle the URL load request
   // we need to see if the interceptors want to potentially create a new
-  // loader for the response. e.g. AppCache.
+  // loader for the response. e.g. service workers.
   if (MaybeCreateLoaderForResponse(&head_))
     return;
 
@@ -957,7 +940,7 @@ void NavigationURLLoaderImpl::OnComplete(
 
   // If the default loader (network) was used to handle the URL load request
   // we need to see if the interceptors want to potentially create a new
-  // loader for the response. e.g. AppCache.
+  // loader for the response. e.g. service worker.
   //
   // Note: Despite having received a response, the HTTP_NOT_MODIFIED(304) ones
   //       are ignored using OnComplete(net::ERR_ABORTED). No interceptor must
@@ -1045,7 +1028,7 @@ void NavigationURLLoaderImpl::Clone(
 }
 
 // Returns true if an interceptor wants to handle the response, i.e. return a
-// different response. For e.g. AppCache may have fallback content.
+// different response, e.g. service workers.
 bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
     network::mojom::URLResponseHeadPtr* response) {
   if (!default_loader_used_ &&
@@ -1190,7 +1173,6 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
     std::unique_ptr<NavigationRequestInfo> request_info,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
     ServiceWorkerMainResourceHandle* service_worker_handle,
-    AppCacheNavigationHandle* appcache_handle,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
     NavigationURLLoaderDelegate* delegate,
@@ -1356,7 +1338,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
 
   start_closure_ = base::BindOnce(
       &NavigationURLLoaderImpl::StartImpl, base::Unretained(this),
-      appcache_handle, std::move(prefetched_signed_exchange_cache),
+      std::move(prefetched_signed_exchange_cache),
       std::move(signed_exchange_prefetch_metric_recorder),
       std::move(factory_for_webui), std::move(accept_langs));
 }
@@ -1566,7 +1548,7 @@ void NavigationURLLoaderImpl::
 
   // TODO(lukasza, jam): It is unclear why FileURLLoaderFactory is the only
   // non-http factory that allows DevTools intereception.  For comparison all
-  // non-WebUI, non-AppCache cases in RFHI::CommitNavigation allow DevTools
+  // non-WebUI cases in RFHI::CommitNavigation allow DevTools
   // interception.  Let's try to be more consistent / less ad-hoc.
   if (url.SchemeIs(url::kFileScheme)) {
     if (frame_tree_node) {  // May be nullptr in some unit tests.

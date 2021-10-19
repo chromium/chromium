@@ -193,7 +193,6 @@ class DocumentServiceBase;
 }  // namespace internal
 
 class AgentSchedulingGroupHost;
-class AppCacheNavigationHandle;
 class CodeCacheHostImpl;
 class CrossOriginEmbedderPolicyReporter;
 class CrossOriginOpenerPolicyAccessReportManager;
@@ -1170,7 +1169,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // handled by this RenderFrame.
   // |subresource_loader_params| is used in network service land to pass
   // the parameters to create a custom subresource loader in the renderer
-  // process, e.g. by AppCache etc.
+  // process.
   void CommitNavigation(
       NavigationRequest* navigation_request,
       blink::mojom::CommonNavigationParamsPtr common_params,
@@ -1903,10 +1902,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
   CreateCrossOriginPrefetchLoaderFactoryBundle();
-
-  const AppCacheNavigationHandle* GetAppCacheNavigationHandle() const {
-    return appcache_handle_.get();
-  }
 
   // Returns the BackForwardCacheMetrics associated with the last
   // NavigationEntry this RenderFrameHostImpl committed.
@@ -3516,11 +3511,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Holder of Mojo connection with the HighPriorityLocalFrame in blink.
   mojo::Remote<blink::mojom::HighPriorityLocalFrame> high_priority_local_frame_;
 
-  // Holds AppCacheNavigationHandle after navigation request has been committed,
-  // which keeps corresponding AppCacheHost alive while renderer asks for it.
-  // See AppCacheNavigationHandle comment for more details.
-  std::unique_ptr<AppCacheNavigationHandle> appcache_handle_;
-
   // Holds the cross-document NavigationRequests that are waiting to commit.
   // These are navigations that have passed ReadyToCommit stage and are waiting
   // for a matching commit IPC.
@@ -3726,9 +3716,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network_service_disconnect_handler_holder_;
 
   // Whether UpdateSubresourceLoaderFactories should recreate the default
-  // URLLoaderFactory when handling a NetworkService crash.  In case the frame
-  // is covered by AppCache, only isolated-world-specific factories need to be
-  // refreshed, but the main, AppCache-specific factory shouldn't be refreshed.
+  // URLLoaderFactory when handling a NetworkService crash.
   bool recreate_default_url_loader_factory_after_network_service_crash_ = false;
 
   // Set of isolated world origins that require a separate URLLoaderFactory

@@ -871,7 +871,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           subframe_unique_names, intended_as_new_entry, pending_offset_to_send,
           current_offset_to_send, current_length_to_send, false,
           IsViewSourceMode(), should_clear_history_list(),
-          blink::mojom::NavigationTiming::New(), absl::nullopt,
+          blink::mojom::NavigationTiming::New(),
           blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create(),
           std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>(),

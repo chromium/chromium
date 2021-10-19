@@ -102,7 +102,7 @@ class NavigationURLLoaderTest : public testing::Test {
             false /* is_pdf */));
     return NavigationURLLoader::Create(
         browser_context_.get(), storage_partition, std::move(request_info),
-        nullptr, nullptr, nullptr, nullptr, delegate,
+        nullptr, nullptr, nullptr, delegate,
         NavigationURLLoader::LoaderType::kRegular, mojo::NullRemote(),
         storage_partition->CreateURLLoaderNetworkObserverForNavigationRequest(
             FrameTreeNode::kFrameTreeNodeInvalidId /* frame_tree_node_id */),

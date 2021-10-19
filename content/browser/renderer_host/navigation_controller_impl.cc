@@ -3566,7 +3566,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           false /* was_discarded */, is_view_source_mode,
           params.should_clear_history_list,
           blink::mojom::NavigationTiming::New(),
-          absl::nullopt /* appcache_host_id */,
           blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create() /* navigation_token */,
           std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>(),

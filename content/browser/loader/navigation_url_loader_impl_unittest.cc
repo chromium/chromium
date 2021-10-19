@@ -232,7 +232,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
     return std::make_unique<NavigationURLLoaderImpl>(
         browser_context_.get(), browser_context_->GetDefaultStoragePartition(),
         std::move(request_info), nullptr /* navigation_ui_data */,
-        nullptr /* service_worker_handle */, nullptr /* appcache_handle */,
+        nullptr /* service_worker_handle */,
         nullptr /* prefetched_signed_exchange_cache */, delegate,
         mojo::NullRemote() /* cookie_access_obsever */,
         mojo::NullRemote() /* url_loader_network_observer */,

@@ -53,7 +53,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       std::unique_ptr<NavigationRequestInfo> request_info,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       ServiceWorkerMainResourceHandle* service_worker_handle,
-      AppCacheNavigationHandle* appcache_handle,
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
       NavigationURLLoaderDelegate* delegate,
@@ -96,7 +95,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // This is called only once (while Restart can be called multiple times).
   // Sets `started_` true.
   void StartImpl(
-      AppCacheNavigationHandle* appcache_handle,
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
       scoped_refptr<SignedExchangePrefetchMetricRecorder>
@@ -111,8 +109,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       const GURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
 
-  void CreateInterceptors(AppCacheNavigationHandle* appcache_handle,
-                          scoped_refptr<PrefetchedSignedExchangeCache>
+  void CreateInterceptors(scoped_refptr<PrefetchedSignedExchangeCache>
                               prefetched_signed_exchange_cache,
                           scoped_refptr<SignedExchangePrefetchMetricRecorder>
                               signed_exchange_prefetch_metric_recorder,
@@ -246,8 +243,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   net::HttpRequestHeaders url_loader_modified_headers_;
   net::HttpRequestHeaders url_loader_modified_cors_exempt_headers_;
 
-  // Currently used by the AppCache loader to pass its factory to the
-  // renderer which enables it to handle subresources.
   absl::optional<SubresourceLoaderParams> subresource_loader_params_;
 
   std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors_;

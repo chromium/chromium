@@ -29,8 +29,6 @@
 #include "base/trace_event/trace_conversion_helper.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/appcache/appcache_navigation_handle.h"
-#include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/client_hints/client_hints.h"
@@ -78,7 +76,6 @@
 #include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/browser/web_package/web_bundle_source.h"
 #include "content/browser/web_package/web_bundle_utils.h"
-#include "content/common/appcache_interfaces.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/debug_utils.h"
 #include "content/common/navigation_params_utils.h"
@@ -143,7 +140,6 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/security/address_space_feature.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -1108,7 +1104,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*is_view_source=*/false,
           /*should_clear_history_list=*/false,
           /*navigation_timing=*/blink::mojom::NavigationTiming::New(),
-          /*appcache_host_id=*/absl::nullopt,
           blink::mojom::WasActivatedOption::kUnknown,
           /*navigation_token=*/base::UnguessableToken::Create(),
           /*prefetched_signed_exchanges=*/
@@ -1234,7 +1229,6 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           -1 /* current_history_list_length */, false /* was_discard */,
           false /* is_view_source */, false /* should_clear_history_list */,
           blink::mojom::NavigationTiming::New(),
-          absl::nullopt /* appcache_host_id */,
           blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create() /* navigation_token */,
           std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>(),
@@ -2972,12 +2966,6 @@ void NavigationRequest::OnResponseStarted(
   if (!response_should_be_rendered_)
     net_error_ = net::ERR_ABORTED;
 
-  // Update the AppCache params of the commit params.
-  commit_params_->appcache_host_id =
-      appcache_handle_
-          ? absl::make_optional(appcache_handle_->appcache_host_id())
-          : absl::nullopt;
-
   const bool is_first_response = commit_params_->redirects.empty();
   UpdateNavigationHandleTimingsOnResponseReceived(is_first_response);
 
@@ -3662,20 +3650,6 @@ void NavigationRequest::OnStartChecksComplete(
                             weak_factory_.GetWeakPtr()));
   }
 
-  if (IsSchemeSupportedForAppCache(common_params_->url)) {
-    if (navigating_frame_host->GetOrCreateWebPreferences()
-            .application_cache_enabled) {
-      auto* appcache_service =
-          static_cast<ChromeAppCacheService*>(partition->GetAppCacheService());
-      if (appcache_service) {
-        // The final process id won't be available until
-        // NavigationRequest::ReadyToCommitNavigation.
-        appcache_handle_ = std::make_unique<AppCacheNavigationHandle>(
-            appcache_service, ChildProcessHost::kInvalidUniqueID);
-      }
-    }
-  }
-
   // Initialize the WebBundleHandle.
   if (web_bundle_handle_tracker_) {
     DCHECK(base::FeatureList::IsEnabled(features::kWebBundles) ||
@@ -3853,8 +3827,8 @@ void NavigationRequest::OnStartChecksComplete(
           std::move(cors_exempt_headers), std::move(client_security_state),
           devtools_accepted_stream_types, is_pdf_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
-      appcache_handle_.get(), std::move(prefetched_signed_exchange_cache_),
-      this, loader_type, CreateCookieAccessObserver(),
+      std::move(prefetched_signed_exchange_cache_), this, loader_type,
+      CreateCookieAccessObserver(),
       static_cast<StoragePartitionImpl*>(partition)
           ->CreateURLLoaderNetworkObserverForNavigationRequest(
               frame_tree_node_->frame_tree_node_id()),
@@ -5739,12 +5713,6 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   if (!IsSameDocument() && !IsPageActivation())
     UpdatePrivateNetworkRequestPolicy();
 
-  if (appcache_handle_) {
-    DCHECK(appcache_handle_->host());
-    appcache_handle_->host()->SetProcessId(
-        render_frame_host_->GetProcess()->GetID());
-  }
-
   RenderFrameHostImpl* previous_render_frame_host =
       frame_tree_node_->current_frame_host();
 
@@ -5783,11 +5751,6 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 
   if (ready_to_commit_callback_for_testing_)
     std::move(ready_to_commit_callback_for_testing_).Run();
-}
-
-std::unique_ptr<AppCacheNavigationHandle>
-NavigationRequest::TakeAppCacheHandle() {
-  return std::move(appcache_handle_);
 }
 
 bool NavigationRequest::IsWaitingToCommit() {

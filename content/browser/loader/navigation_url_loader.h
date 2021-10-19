@@ -21,7 +21,6 @@ class HttpRequestHeaders;
 
 namespace content {
 
-class AppCacheNavigationHandle;
 class BrowserContext;
 class NavigationUIData;
 class NavigationURLLoaderDelegate;
@@ -67,7 +66,6 @@ class CONTENT_EXPORT NavigationURLLoader {
       std::unique_ptr<NavigationRequestInfo> request_info,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       ServiceWorkerMainResourceHandle* service_worker_handle,
-      AppCacheNavigationHandle* appcache_handle,
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
       NavigationURLLoaderDelegate* delegate,

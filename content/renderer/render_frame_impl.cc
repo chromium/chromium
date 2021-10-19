@@ -1024,10 +1024,6 @@ void FillMiscNavigationParams(
   }
   navigation_params->storage_key = std::move(commit_params.storage_key);
   navigation_params->sandbox_flags = commit_params.sandbox_flags;
-
-  navigation_params->appcache_host_id =
-      commit_params.appcache_host_id.value_or(base::UnguessableToken());
-
   navigation_params->frame_policy = commit_params.frame_policy;
 
   if (common_params.navigation_type == blink::mojom::NavigationType::RESTORE) {
