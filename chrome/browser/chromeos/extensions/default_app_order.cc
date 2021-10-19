@@ -53,7 +53,7 @@ const char* const kDefaultAppOrder[] = {
 
     web_app::kGoogleChatAppId,
 
-    extension_misc::kGoogleDocAppId,
+    extension_misc::kGoogleDocsAppId,
     web_app::kGoogleDocsAppId,
 
     extension_misc::kGoogleSlidesAppId,
@@ -62,7 +62,7 @@ const char* const kDefaultAppOrder[] = {
     extension_misc::kGoogleSheetsAppId,
     web_app::kGoogleSheetsAppId,
 
-    extension_misc::kDriveHostedAppId,
+    extension_misc::kGoogleDriveAppId,
     web_app::kGoogleDriveAppId,
 
     extension_misc::kGoogleKeepAppId,

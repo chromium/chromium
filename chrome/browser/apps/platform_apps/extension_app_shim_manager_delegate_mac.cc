@@ -170,7 +170,7 @@ bool ExtensionAppShimManagerDelegate::AppUsesRemoteCocoa(
   return extension->from_bookmark() ||
          extension->id() == extension_misc::kYoutubeAppId ||
          extension->id() == extension_misc::kGoogleDriveAppId ||
-         extension->id() == extension_misc::kGMailAppId;
+         extension->id() == extension_misc::kGmailAppId;
 }
 
 void ExtensionAppShimManagerDelegate::EnableExtension(

@@ -47,6 +47,7 @@
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -869,7 +870,7 @@ void ExternalProviderImpl::CreateExternalProviders(
       new ExternalProviderImpl(
           service,
           base::MakeRefCounted<ExtensionMigrator>(
-              profile, extension_misc::kDriveHostedAppId,
+              profile, extension_misc::kGoogleDriveAppId,
               extension_misc::kDocsOfflineExtensionId),
           profile, ManifestLocation::kExternalPref,
           ManifestLocation::kExternalPrefDownload,

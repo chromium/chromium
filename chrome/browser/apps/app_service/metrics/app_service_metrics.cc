@@ -225,9 +225,9 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kMediaApp, launch_source);
   } else if (app_id == extension_misc::kChromeAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kChrome, launch_source);
-  } else if (app_id == extension_misc::kGoogleDocAppId) {
+  } else if (app_id == extension_misc::kGoogleDocsAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kDocs, launch_source);
-  } else if (app_id == extension_misc::kDriveHostedAppId) {
+  } else if (app_id == extension_misc::kGoogleDriveAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kDrive, launch_source);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == arc::kGoogleDuoAppId) {

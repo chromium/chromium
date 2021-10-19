@@ -141,7 +141,7 @@ const char kLacrosAppId[] = "jaimifaeiicidiikhmjedcgdimealfbh";
 const char kFilesManagerAppId[] = "hhaomjibdihmijegdhdafkllkbggdgoj";
 const char kCalculatorAppId[] = "joodangkbfjnajiiifokapkpmhfnpleo";
 const char kCalendarDemoAppId[] = "fpgfohogebplgnamlafljlcidjedbdeb";
-const char kGMailAppId[] = "pjkljhegncpnkpknbcohdijeoejaedia";
+const char kGmailAppId[] = "pjkljhegncpnkpknbcohdijeoejaedia";
 const char kGoogleDocsDemoAppId[] = "chdaoodbokekbiiphekbfjdmiodccljl";
 const char kGoogleDocsPwaAppId[] = "cepkndkdlbllfhpfhledabdcdbidehkd";
 const char kGoogleDriveAppId[] = "apdfllckaahabafndbhieahigkjlhalf";
@@ -157,7 +157,7 @@ const char kBeFunkyAppId[] = "fjoomcalbeohjbnlcneddljemclcekeg";
 const char kClipchampAppId[] = "pfepfhbcedkbjdkanpimmmdjfgoddhkg";
 const char kGeForceNowAppId[] = "egmafekfmcnknbdlbfbhafbllplmjlhn";
 const char kZoomAppId[] = "jldpdkiafafcejhceeincjmlkmibemgj";
-const char kGoogleDocAppId[] = "aohghmighlieiainnegkcijnfilokake";
+const char kGoogleDocsAppId[] = "aohghmighlieiainnegkcijnfilokake";
 const char kGoogleSheetsAppId[] = "felcaaldnbdncclmgdcncolpebgiejap";
 const char kGoogleSlidesAppId[] = "aapocclcgogkmnckokdopfmhonfmgoek";
 
@@ -194,7 +194,7 @@ bool IsSystemUIApp(base::StringPiece extension_id) {
 
 // TODO(https://crbug.com/1257275): remove after default app migration is done.
 bool IsPreinstalledAppId(const std::string& app_id) {
-  return app_id == kGMailAppId || app_id == kGoogleDocAppId ||
+  return app_id == kGmailAppId || app_id == kGoogleDocsAppId ||
          app_id == kGoogleDriveAppId || app_id == kGoogleSheetsAppId ||
          app_id == kGoogleSlidesAppId || app_id == kYoutubeAppId;
 }

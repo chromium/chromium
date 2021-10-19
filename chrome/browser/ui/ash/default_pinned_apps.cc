@@ -22,7 +22,7 @@ base::span<StaticAppId> GetDefaultPinnedApps() {
         extension_misc::kGmailAppId,
         web_app::kGmailAppId,
 
-        extension_misc::kGoogleDocAppId,
+        extension_misc::kGoogleDocsAppId,
         web_app::kGoogleDocsAppId,
 
         extension_misc::kYoutubeAppId,
@@ -64,7 +64,7 @@ base::span<StaticAppId> GetTabletFormFactorDefaultPinnedApps() {
 
         arc::kGmailAppId,
 
-        extension_misc::kGoogleDocAppId,
+        extension_misc::kGoogleDocsAppId,
 
         arc::kYoutubeAppId,
 

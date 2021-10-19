@@ -39,7 +39,7 @@ const struct {
     {"com.google.android.gm", extension_misc::kGmailAppId},
     {"com.google.android.gm", "bjdhhokmhgelphffoafoejjmlfblpdha"},
     // Google Drive
-    {"com.google.android.apps.docs", extension_misc::kDriveHostedAppId},
+    {"com.google.android.apps.docs", extension_misc::kGoogleDriveAppId},
     {"com.google.android.apps.docs", "mdhnphfgagkpdhndljccoackjjhghlif"},
     // Google Maps
     {"com.google.android.apps.maps", "lneaknkopdijkpnocmklfnjbeapigfbh"},
@@ -50,7 +50,7 @@ const struct {
     {"com.google.android.calendar", "fpgfohogebplgnamlafljlcidjedbdeb"},
     // Google Docs
     {"com.google.android.apps.docs.editors.docs",
-     extension_misc::kGoogleDocAppId},
+     extension_misc::kGoogleDocsAppId},
     {"com.google.android.apps.docs.editors.docs",
      "npnjdccdffhdndcbeappiamcehbhjibf"},
     // Google Slides

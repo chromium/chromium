@@ -25,18 +25,13 @@ const char kCalendarAppId[] = "ejjicmeblgpmajnghnpcppodonldlgfn";
 const char kCloudPrintAppId[] = "mfehgcgbbipciphmccgaenjidiccnmng";
 const char kDataSaverExtensionId[] = "pfmgfdlgomnbgkofeojodiodmgpgmkac";
 const char kDocsOfflineExtensionId[] = "ghbmnnjooekpmoecnnnilnnbdlolhkhi";
-const char kDriveHostedAppId[] = "apdfllckaahabafndbhieahigkjlhalf";
 const char kEnterpriseWebStoreAppId[] = "afchcafgojfnemjkcbhfekplkmjaldaa";
-const char kGmailAppId[] = "pjkljhegncpnkpknbcohdijeoejaedia";
-const char kGoogleDocAppId[] = "aohghmighlieiainnegkcijnfilokake";
 const char kGoogleMapsAppId[] = "lneaknkopdijkpnocmklfnjbeapigfbh";
 const char kGooglePhotosAppId[] = "hcglmfcclpfgljeaiahehebeoaiicbko";
 const char kGooglePlayBooksAppId[] = "mmimngoggfoobjdlefbcabngfnmieonb";
 const char kGooglePlayMoviesAppId[] = "gdijeikdkaembjbdobgfkoidjkpbmlkd";
 const char kGooglePlayMusicAppId[] = "icppfcnhkcmnfdhfhphakoifcfokfdhg";
 const char kGooglePlusAppId[] = "dlppkpafhbajpcmmoheippocdidnckmm";
-const char kGoogleSheetsAppId[] = "felcaaldnbdncclmgdcncolpebgiejap";
-const char kGoogleSlidesAppId[] = "aapocclcgogkmnckokdopfmhonfmgoek";
 const char kIdentityApiUiAppId[] = "ahjaciijnoiaklcomgnblndopackapon";
 const char kTextEditorAppId[] = "mmfbcljfglbokpmkimbfghdkjmjhdgbg";
 const char kInAppPaymentsSupportAppId[] = "nmmhkkegccagdldgiimedpiccmgmieda";
@@ -47,10 +42,10 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
     kCloudPrintAppId,
     kDataSaverExtensionId,
     kDocsOfflineExtensionId,
-    kDriveHostedAppId,
+    kGoogleDriveAppId,
     kEnterpriseWebStoreAppId,
     kGmailAppId,
-    kGoogleDocAppId,
+    kGoogleDocsAppId,
     kGoogleMapsAppId,
     kGooglePhotosAppId,
     kGooglePlayBooksAppId,

@@ -265,7 +265,7 @@ extern const char kCalculatorAppId[];
 extern const char kCalendarDemoAppId[];
 
 // The extension id of the GMail application.
-extern const char kGMailAppId[];
+extern const char kGmailAppId[];
 
 // The extension id of the demo Google Docs application.
 extern const char kGoogleDocsDemoAppId[];
@@ -311,6 +311,15 @@ extern const char kGeForceNowAppId[];
 
 // The extension id of the Zoom PWA.
 extern const char kZoomAppId[];
+
+// The extension id of the Google Docs application.
+extern const char kGoogleDocsAppId[];
+
+// The extension id of the Google Sheets application.
+extern const char kGoogleSheetsAppId[];
+
+// The extension id of the Google Slides application.
+extern const char kGoogleSlidesAppId[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the default Demo Mode Highlights app.

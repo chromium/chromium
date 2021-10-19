@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, PinRunning) {
 
   // New shortcuts should come after the item.
   ash::ShelfID bar_id =
-      CreateAppShortcutItem(ash::ShelfID(extension_misc::kGoogleDocAppId));
+      CreateAppShortcutItem(ash::ShelfID(extension_misc::kGoogleDocsAppId));
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
   EXPECT_LT(shelf_model()->ItemIndexByID(id),
