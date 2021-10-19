@@ -210,6 +210,7 @@ void OverviewSession::Init(const WindowList& windows,
       overview_grid->PositionWindows(/*animate=*/true, /*ignored_items=*/{},
                                      OverviewTransition::kEnter);
     }
+    overview_grid->UpdateCreateDesksTemplatesButton();
   }
 
   UpdateNoWindowsWidgetOnEachGrid();

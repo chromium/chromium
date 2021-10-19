@@ -353,6 +353,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // true.
   void RefreshNoWindowsWidgetBounds(bool animate);
 
+  // Updates the button that saves the active desk as a template. Creates the
+  // button if it hasn't been created already, else it just sets its bounds.
+  void UpdateCreateDesksTemplatesButton();
+
   // Returns true if the grid has no more windows.
   bool empty() const { return window_list_.empty(); }
 
@@ -470,9 +474,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Updates frame throttling on overview item windows.
   void UpdateFrameThrottling();
-
-  // Shows the button that saves the active desk as a template.
-  void ShowCreateDesksTemplatesButtons();
 
   // Called back when the button to save a desk template is pressed.
   void OnCreateDesksTemplatesButtonPressed();
