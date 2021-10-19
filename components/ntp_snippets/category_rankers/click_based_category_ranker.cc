@@ -361,19 +361,20 @@ bool ClickBasedCategoryRanker::ReadOrderFromPrefs(
                   << " into dictionary.";
       return false;
     }
-    int category_id, clicks;
-    if (!dictionary->GetInteger(kCategoryIdKey, &category_id)) {
+    absl::optional<int> category_id = dictionary->FindIntKey(kCategoryIdKey);
+    if (!category_id) {
       LOG(DFATAL) << "Dictionary does not have '" << kCategoryIdKey << "' key.";
       return false;
     }
-    if (!dictionary->GetInteger(kClicksKey, &clicks)) {
+    absl::optional<int> clicks = dictionary->FindIntKey(kClicksKey);
+    if (!clicks) {
       LOG(DFATAL) << "Dictionary does not have '" << kClicksKey << "' key.";
       return false;
     }
     base::Time last_dismissed = ParseLastDismissedDate(*dictionary);
-    Category category = Category::FromIDValue(category_id);
+    Category category = Category::FromIDValue(*category_id);
     result_categories->push_back(
-        RankedCategory(category, clicks, last_dismissed));
+        RankedCategory(category, *clicks, last_dismissed));
   }
   return true;
 }

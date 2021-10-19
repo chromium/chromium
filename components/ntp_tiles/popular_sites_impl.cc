@@ -131,19 +131,21 @@ PopularSites::SitesVector ParseSiteList(const base::ListValue& list) {
     item->GetString("large_icon_url", &large_icon_url);
 
     TileTitleSource title_source = TileTitleSource::UNKNOWN;
-    int title_source_int;
-    if (!item->GetInteger("title_source", &title_source_int)) {
+    absl::optional<int> title_source_int = item->FindIntKey("title_source");
+    if (!title_source_int) {
       // Only v6 and later have "title_source". Earlier versions use title tags.
       title_source = TileTitleSource::TITLE_TAG;
-    } else if (title_source_int <= static_cast<int>(TileTitleSource::LAST) &&
-               title_source_int >= 0) {
-      title_source = static_cast<TileTitleSource>(title_source_int);
+    } else if (*title_source_int <= static_cast<int>(TileTitleSource::LAST) &&
+               *title_source_int >= 0) {
+      title_source = static_cast<TileTitleSource>(*title_source_int);
     }
 
     sites.emplace_back(title, GURL(url), GURL(favicon_url),
                        GURL(large_icon_url), title_source);
-    item->GetInteger("default_icon_resource",
-                     &sites.back().default_icon_resource);
+    absl::optional<int> default_icon_resource =
+        item->FindIntKey("default_icon_resource");
+    if (default_icon_resource)
+      sites.back().default_icon_resource = *default_icon_resource;
     item->GetBoolean("baked_in", &sites.back().baked_in);
   }
   return sites;
@@ -166,9 +168,8 @@ std::map<SectionType, PopularSites::SitesVector> ParseVersion6OrAbove(
                    << "section at position " << i << ".";
       continue;
     }
-    int section;
-    if (!item->GetInteger("section", &section) || section < 0 ||
-        section > static_cast<int>(SectionType::LAST)) {
+    int section = item->FindIntKey("section").value_or(-1);
+    if (section < 0 || section > static_cast<int>(SectionType::LAST)) {
       LOG(WARNING) << "Parsed SitesExploration list contained a section with "
                    << "invalid ID (" << section << ")";
       continue;

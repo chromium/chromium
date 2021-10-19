@@ -1563,8 +1563,8 @@ void RemoteSuggestionsProviderImpl::RestoreCategoriesFromPrefs() {
       DLOG(WARNING) << "Invalid category pref value: " << entry;
       continue;
     }
-    int id = 0;
-    if (!dict->GetInteger(kCategoryContentId, &id)) {
+    absl::optional<int> id = dict->FindIntKey(kCategoryContentId);
+    if (!id) {
       DLOG(WARNING) << "Invalid category pref value, missing '"
                     << kCategoryContentId << "': " << entry;
       continue;
@@ -1586,7 +1586,7 @@ void RemoteSuggestionsProviderImpl::RestoreCategoriesFromPrefs() {
     bool allow_fetching_more_results =
         dict->FindBoolKey(kCategoryContentAllowFetchingMore).value_or(false);
 
-    Category category = Category::FromIDValue(id);
+    Category category = Category::FromIDValue(*id);
     // The ranker may not persist the order of remote categories.
     category_ranker_->AppendCategoryIfNecessary(category);
     // TODO(tschumann): The following has a bad smell that category
