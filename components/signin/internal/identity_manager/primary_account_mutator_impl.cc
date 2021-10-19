@@ -120,7 +120,13 @@ bool PrimaryAccountMutatorImpl::RevokeConsentShouldClearPrimaryAccount() const {
 void PrimaryAccountMutatorImpl::RevokeSyncConsent(
     signin_metrics::ProfileSignout source_metric,
     signin_metrics::SignoutDelete delete_metric) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros with Mirror, revoking consent is not supported yet.
+  // TODO(https://crbug.com/1260291): Remove this when it is supported.
+  CHECK_NE(account_consistency_, AccountConsistencyMethod::kMirror);
+#endif
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (RevokeConsentShouldClearPrimaryAccount()) {
     ClearPrimaryAccount(source_metric, delete_metric);
@@ -136,6 +142,12 @@ bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
     signin_metrics::SignoutDelete delete_metric) {
   if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin))
     return false;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros with Mirror, signout is not supported yet.
+  // TODO(https://crbug.com/1260291): Remove this when signout is supported.
+  CHECK_NE(account_consistency_, AccountConsistencyMethod::kMirror);
+#endif
 
   primary_account_manager_->ClearPrimaryAccount(source_metric, delete_metric);
   return true;

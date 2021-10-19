@@ -448,9 +448,13 @@ TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_NotSignedIn) {
 // consistency method.
 TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount) {
   const signin::AccountConsistencyMethod kTestedAccountConsistencyMethods[] = {
-      signin::AccountConsistencyMethod::kDisabled,
-      signin::AccountConsistencyMethod::kMirror,
-      signin::AccountConsistencyMethod::kDice,
+    signin::AccountConsistencyMethod::kDisabled,
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Signout is not supported with Mirror on Lacros.
+    // TODO(https://crbug.com/1260291): Re-enable when signout is supported.
+    signin::AccountConsistencyMethod::kMirror,
+#endif
+    signin::AccountConsistencyMethod::kDice,
   };
   for (signin::AccountConsistencyMethod account_consistency_method :
        kTestedAccountConsistencyMethods) {
@@ -467,10 +471,14 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_DisabledConsistency) {
 
 // Test that revoking sync consent when Mirror account consistency is enabled
 // clears the primary account.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// Revoking sync consent not supported with Mirror on Lacros.
+// TODO(https://crbug.com/1260291): Re-enable when it is supported.
 TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
   RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
                            RemoveAccountExpectation::kRemoveAll);
 }
+#endif
 
 // Test that revoking the sync consent when DICE account consistency is
 // enabled does not clear the primary account.
