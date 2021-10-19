@@ -22,7 +22,7 @@ import org.chromium.base.annotations.JNINamespace;
 public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements SingleThreadTaskRunner {
     @Nullable
     private final Handler mHandler;
-    private final boolean mPostTaskAtFrontOfQueue;
+    private final boolean mPostPreNativeTasksAtFrontOfQueue;
 
     /**
      * @param handler                The backing Handler if any. Note this must run tasks on the
@@ -30,14 +30,15 @@ public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements Single
      *                               If handler is null then tasks won't run until native has
      *                               initialized.
      * @param traits                 The TaskTraits associated with this SingleThreadTaskRunnerImpl.
-     * @param postTaskAtFrontOfQueue If true, tasks posted to the backing Handler will be posted at
-     *                               the front of the queue.
+     * @param postPreNativeTasksAtFrontOfQueue If true, tasks posted to the backing Handler (i.e.,
+     *                               before native initialization) will be posted at the front of
+     *                               the queue.
      */
     public SingleThreadTaskRunnerImpl(
-            Handler handler, TaskTraits traits, boolean postTaskAtFrontOfQueue) {
+            Handler handler, TaskTraits traits, boolean postPreNativeTasksAtFrontOfQueue) {
         super(traits, "SingleThreadTaskRunnerImpl", TaskRunnerType.SINGLE_THREAD);
         mHandler = handler;
-        mPostTaskAtFrontOfQueue = postTaskAtFrontOfQueue;
+        mPostPreNativeTasksAtFrontOfQueue = postPreNativeTasksAtFrontOfQueue;
     }
 
     public SingleThreadTaskRunnerImpl(Handler handler, TaskTraits traits) {
@@ -57,7 +58,7 @@ public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements Single
         // if |mHandler| is null then pre-native task execution is not supported.
         if (mHandler == null) {
             return;
-        } else if (mPostTaskAtFrontOfQueue) {
+        } else if (mPostPreNativeTasksAtFrontOfQueue) {
             postAtFrontOfQueue();
         } else {
             mHandler.post(mRunPreNativeTaskClosure);

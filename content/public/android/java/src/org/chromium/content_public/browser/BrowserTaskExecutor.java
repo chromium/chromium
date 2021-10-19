@@ -53,7 +53,7 @@ public class BrowserTaskExecutor implements TaskExecutor {
             // TODO(alexclarke): ThreadUtils.getUiThreadHandler shouldn't be in base.
             SingleThreadTaskRunner taskRunner =
                     new SingleThreadTaskRunnerImpl(ThreadUtils.getUiThreadHandler(), taskTraits,
-                            shouldPrioritizeTraits(taskTraits));
+                            shouldPostPreNativeTasksAtFrontOfQueue(taskTraits));
             mTaskRunners.put(taskTraits, new WeakReference<>(taskRunner));
             return taskRunner;
         }
@@ -78,16 +78,17 @@ public class BrowserTaskExecutor implements TaskExecutor {
                 UiThreadTaskTraitsImpl.DESCRIPTOR.getId(), new BrowserTaskExecutor());
     }
 
-    public static boolean getShouldPrioritizeBootstrapTasks() {
-        return sShouldPrioritizeBootstrapTasks;
+    public static boolean getShouldPrioritizePreNativeBootstrapTasks() {
+        return sShouldPrioritizePreNativeBootstrapTasks;
     }
 
-    public static void setShouldPrioritizeBootstrapTasks(boolean shouldPrioritizeBootstrapTasks) {
-        sShouldPrioritizeBootstrapTasks = shouldPrioritizeBootstrapTasks;
+    public static void setShouldPrioritizePreNativeBootstrapTasks(
+            boolean shouldPrioritizePreNativeBootstrapTasks) {
+        sShouldPrioritizePreNativeBootstrapTasks = shouldPrioritizePreNativeBootstrapTasks;
     }
 
-    private static boolean shouldPrioritizeTraits(TaskTraits taskTraits) {
-        if (!sShouldPrioritizeBootstrapTasks) return false;
+    private static boolean shouldPostPreNativeTasksAtFrontOfQueue(TaskTraits taskTraits) {
+        if (!sShouldPrioritizePreNativeBootstrapTasks) return false;
 
         UiThreadTaskTraitsImpl impl = taskTraits.getExtension(UiThreadTaskTraitsImpl.DESCRIPTOR);
         if (impl == null) return false;
@@ -106,5 +107,5 @@ public class BrowserTaskExecutor implements TaskExecutor {
             new WeakHashMap<>();
 
     private static boolean sRegistered;
-    private static boolean sShouldPrioritizeBootstrapTasks;
+    private static boolean sShouldPrioritizePreNativeBootstrapTasks;
 }
