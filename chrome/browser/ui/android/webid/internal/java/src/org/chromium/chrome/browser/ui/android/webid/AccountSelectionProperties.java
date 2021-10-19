@@ -77,12 +77,14 @@ class AccountSelectionProperties {
      */
     static class HeaderProperties {
         public enum HeaderType { SINGLE_ACCOUNT, MULTIPLE_ACCOUNT, SIGN_IN }
+        static final ReadableObjectPropertyKey<String> FORMATTED_IDP_URL =
+                new ReadableObjectPropertyKey<>("formatted_idp_url");
+        static final ReadableObjectPropertyKey<String> FORMATTED_RP_URL =
+                new ReadableObjectPropertyKey<>("formatted_rp_url");
         static final ReadableObjectPropertyKey<HeaderType> TYPE =
                 new ReadableObjectPropertyKey<>("type");
-        static final ReadableObjectPropertyKey<String> FORMATTED_URL =
-                new ReadableObjectPropertyKey<>("formatted_url");
 
-        static final PropertyKey[] ALL_KEYS = {TYPE, FORMATTED_URL};
+        static final PropertyKey[] ALL_KEYS = {FORMATTED_IDP_URL, FORMATTED_RP_URL, TYPE};
 
         private HeaderProperties() {}
     }

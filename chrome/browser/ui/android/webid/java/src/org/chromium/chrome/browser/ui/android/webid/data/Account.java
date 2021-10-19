@@ -17,7 +17,6 @@ public class Account {
     private final String mName;
     private final String mGivenName;
     private final GURL mPictureUrl;
-    private final GURL mOriginUrl;
     private final boolean mIsSignIn;
 
     /**
@@ -25,18 +24,16 @@ public class Account {
      * @param email Email shown to the user.
      * @param givenName Given name.
      * @param picture picture URL of the avatar shown to the user.
-     * @param originUrl Origin URL for the IDP.
      */
     @CalledByNative
     public Account(String subject, String email, String name, String givenName, GURL pictureUrl,
-            GURL originUrl, boolean isSignIn) {
+            boolean isSignIn) {
         assert subject != null : "Account subject is null!";
         mSubject = subject;
         mEmail = email;
         mName = name;
         mGivenName = givenName;
         mPictureUrl = pictureUrl;
-        mOriginUrl = originUrl;
         mIsSignIn = isSignIn;
     }
 
@@ -60,16 +57,12 @@ public class Account {
         return mPictureUrl;
     }
 
-    public GURL getOriginUrl() {
-        return mOriginUrl;
-    }
-
     public boolean isSignIn() {
         return mIsSignIn;
     }
 
     // Return all the String fields. Note that this excludes non-string fields in particular
-    // mOriginUrl and mPictureUrl.
+    // mPictureUrl.
     public String[] getStringFields() {
         return new String[] {mSubject, mEmail, mName, mGivenName};
     }

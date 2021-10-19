@@ -63,12 +63,11 @@ import java.util.Collections;
 public class AccountSelectionViewTest {
     private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
-    private static final Account ANA = new Account(
-            "Ana", "ana@email.example", "Ana Doe", "Ana", TEST_PROFILE_PIC, GURL.emptyGURL(), true);
-    private static final Account NO_ONE = new Account("", "", "No Subject", "", TEST_PROFILE_PIC,
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), true);
-    private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC,
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), true);
+    private static final Account ANA =
+            new Account("Ana", "ana@email.example", "Ana Doe", "Ana", TEST_PROFILE_PIC, true);
+    private static final Account NO_ONE =
+            new Account("", "", "No Subject", "", TEST_PROFILE_PIC, true);
+    private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, true);
 
     @Mock
     private Callback<Account> mAccountCallback;
@@ -102,11 +101,11 @@ public class AccountSelectionViewTest {
             mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.SINGLE_ACCOUNT)
-                            .with(HeaderProperties.FORMATTED_URL, "www.example.org")
+                            .with(HeaderProperties.FORMATTED_RP_URL, "www.example.org")
                             .build()));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
-        TextView title = mContentView.findViewById(R.id.account_selection_sheet_title);
+        TextView title = mContentView.findViewById(R.id.header_title);
 
         assertEquals("Incorrect title",
                 mActivity.getString(
@@ -121,11 +120,11 @@ public class AccountSelectionViewTest {
             mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.MULTIPLE_ACCOUNT)
-                            .with(HeaderProperties.FORMATTED_URL, "www.example.org")
+                            .with(HeaderProperties.FORMATTED_RP_URL, "www.example.org")
                             .build()));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
-        TextView title = mContentView.findViewById(R.id.account_selection_sheet_title);
+        TextView title = mContentView.findViewById(R.id.header_title);
 
         assertEquals("Incorrect title",
                 mActivity.getString(R.string.account_selection_sheet_title, "www.example.org"),
@@ -217,11 +216,11 @@ public class AccountSelectionViewTest {
             mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                            .with(HeaderProperties.FORMATTED_URL, "www.example.org")
+                            .with(HeaderProperties.FORMATTED_RP_URL, "www.example.org")
                             .build()));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
-        TextView title = mContentView.findViewById(R.id.account_selection_sheet_title);
+        TextView title = mContentView.findViewById(R.id.header_title);
 
         assertEquals("Incorrect title",
                 mActivity.getString(R.string.sign_in_sheet_title, "www.example.org"),

@@ -87,7 +87,7 @@ class AccountSelectionMediator {
         };
     }
 
-    void addHeader(String url, List<Account> accounts) {
+    void addHeader(GURL rpUrl, GURL idpUrl, List<Account> accounts) {
         boolean useSignInHeader = false;
         for (Account account : accounts) {
             if (!account.isSignIn()) continue;
@@ -101,28 +101,31 @@ class AccountSelectionMediator {
             headerType =
                     accounts.size() == 1 ? HeaderType.SINGLE_ACCOUNT : HeaderType.MULTIPLE_ACCOUNT;
         }
-        String site_url =
-                UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String formattedRpUrl =
+                UrlFormatter.formatUrlForSecurityDisplay(rpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String formattedIdpUrl =
+                UrlFormatter.formatUrlForSecurityDisplay(idpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
         // We remove the HTTPS from URL since it is the only protocol that is
         // allowed with WebID.
         mSheetItems.add(new ListItem(ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.TYPE, headerType)
-                        .with(HeaderProperties.FORMATTED_URL, site_url)
+                        .with(HeaderProperties.FORMATTED_RP_URL, formattedRpUrl)
+                        .with(HeaderProperties.FORMATTED_IDP_URL, formattedIdpUrl)
                         .build()));
     }
 
-    void addAccounts(List<Account> accounts, boolean areAccountsClickable) {
+    void addAccounts(GURL idpUrl, List<Account> accounts, boolean areAccountsClickable) {
         for (Account account : accounts) {
             final PropertyModel model = createAccountItem(account, areAccountsClickable);
             mSheetItems.add(new ListItem(ItemType.ACCOUNT, model));
-            requestIconOrFallbackImage(model);
+            requestIconOrFallbackImage(model, idpUrl);
             requestAvatarImage(model);
         }
     }
 
-    void addButton(Account account, IdentityProviderMetadata idpMetadata,
+    void addButton(Account account, GURL idpUrl, IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata, boolean isAutoSignIn) {
         if (isAutoSignIn) {
             assert account.isSignIn();
@@ -141,20 +144,21 @@ class AccountSelectionMediator {
         // Only show the user data sharing consent text for sign up.
         if (!account.isSignIn()) {
             String provider_url = UrlFormatter.formatUrlForSecurityDisplay(
-                    account.getOriginUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+                    idpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
             mSheetItems.add(new ListItem(ItemType.DATA_SHARING_CONSENT,
                     createDataSharingConsentItem(provider_url, clientMetadata)));
         }
     }
 
-    void showAccounts(String url, List<Account> accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoSignIn) {
+    void showAccounts(GURL rpUrl, GURL idpUrl, List<Account> accounts,
+            IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata,
+            boolean isAutoSignIn) {
         mSheetItems.clear();
-        addHeader(url, accounts);
+        addHeader(rpUrl, idpUrl, accounts);
         boolean hasSingleAccount = (accounts.size() == 1);
-        addAccounts(accounts, /*areAccountsClickable=*/!hasSingleAccount);
+        addAccounts(idpUrl, accounts, /*areAccountsClickable=*/!hasSingleAccount);
         if (hasSingleAccount) {
-            addButton(accounts.get(0), idpMetadata, clientMetadata, isAutoSignIn);
+            addButton(accounts.get(0), idpUrl, idpMetadata, clientMetadata, isAutoSignIn);
         }
 
         showContent();
@@ -203,15 +207,14 @@ class AccountSelectionMediator {
         }
     }
 
-    private void requestIconOrFallbackImage(PropertyModel accountModel) {
+    private void requestIconOrFallbackImage(PropertyModel accountModel, GURL idpUrl) {
         Account account = accountModel.get(AccountProperties.ACCOUNT);
-        final GURL iconOrigin = account.getOriginUrl();
         final LargeIconCallback setIcon = (icon, fallbackColor, hasDefaultColor, type) -> {
             accountModel.set(AccountProperties.FAVICON_OR_FALLBACK,
                     new AccountProperties.FaviconOrFallback(
-                            iconOrigin, icon, fallbackColor, mDesiredIconSize));
+                            idpUrl, icon, fallbackColor, mDesiredIconSize));
         };
-        mLargeIconBridge.getLargeIconForUrl(iconOrigin, mDesiredIconSize, setIcon);
+        mLargeIconBridge.getLargeIconForUrl(idpUrl, mDesiredIconSize, setIcon);
     }
 
     boolean isVisible() {

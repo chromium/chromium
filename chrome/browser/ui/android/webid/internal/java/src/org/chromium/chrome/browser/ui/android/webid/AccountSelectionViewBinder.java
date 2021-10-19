@@ -280,8 +280,8 @@ class AccountSelectionViewBinder {
      * @param key The key of the property to be bound.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == HeaderProperties.FORMATTED_URL || key == HeaderProperties.TYPE) {
-            TextView sheetTitleText = view.findViewById(R.id.account_selection_sheet_title);
+        if (key == HeaderProperties.FORMATTED_RP_URL || key == HeaderProperties.TYPE) {
+            TextView headerTitleText = view.findViewById(R.id.header_title);
             @StringRes
             int titleStringId = R.string.account_selection_sheet_title_single;
             switch (model.get(HeaderProperties.TYPE)) {
@@ -297,8 +297,14 @@ class AccountSelectionViewBinder {
             }
 
             String title = String.format(view.getContext().getString(titleStringId),
-                    model.get(HeaderProperties.FORMATTED_URL));
-            sheetTitleText.setText(title);
+                    model.get(HeaderProperties.FORMATTED_RP_URL));
+            headerTitleText.setText(title);
+        } else if (key == HeaderProperties.FORMATTED_IDP_URL) {
+            String subheadingText = String.format(
+                    view.getContext().getString(R.string.account_selection_sheet_idp_subheader),
+                    model.get(HeaderProperties.FORMATTED_IDP_URL));
+            TextView headerIdpUrlText = view.findViewById(R.id.header_idp_url);
+            headerIdpUrlText.setText(subheadingText);
         } else {
             assert false : "Unhandled update to property:" + key;
         }

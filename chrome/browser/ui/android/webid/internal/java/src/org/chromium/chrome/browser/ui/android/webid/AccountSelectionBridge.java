@@ -55,11 +55,12 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param isAutoSignIn represents whether this is an auto sign in flow.
      */
     @CalledByNative
-    private void showAccounts(String url, Account[] accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientIdMetadata, boolean isAutoSignIn) {
+    private void showAccounts(GURL rpUrl, GURL idpUrl, Account[] accounts,
+            IdentityProviderMetadata idpMetadata, ClientIdMetadata clientIdMetadata,
+            boolean isAutoSignIn) {
         assert accounts != null && accounts.length > 0;
-        mAccountSelectionComponent.showAccounts(
-                url, Arrays.asList(accounts), idpMetadata, clientIdMetadata, isAutoSignIn);
+        mAccountSelectionComponent.showAccounts(rpUrl, idpUrl, Arrays.asList(accounts), idpMetadata,
+                clientIdMetadata, isAutoSignIn);
     }
 
     @Override
