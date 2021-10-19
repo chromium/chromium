@@ -110,38 +110,6 @@ std::string ReplaceCrLfByLf(const std::string& in) {
   return out;
 }
 
-bool StringIsUtf8(const char* data, size_t length) {
-  const char* ptr = data;
-  const char* ptr_end = data + length;
-  while (ptr != ptr_end) {
-    if ((*ptr & 0x80) == 0) {
-      // Single-byte symbol.
-      ++ptr;
-    } else if ((*ptr & 0xc0) == 0x80 || (*ptr & 0xfe) == 0xfe) {
-      // Invalid first byte.
-      return false;
-    } else {
-      // First byte of a multi-byte symbol. The bits from 2 to 6 are the count
-      // of continuation bytes (up to 5 of them).
-      for (char first = *ptr << 1; first & 0x80; first <<= 1) {
-        ++ptr;
-
-        // Missing continuation byte.
-        if (ptr == ptr_end)
-          return false;
-
-        // Invalid continuation byte.
-        if ((*ptr & 0xc0) != 0x80)
-          return false;
-      }
-
-      ++ptr;
-    }
-  }
-
-  return true;
-}
-
 bool DoesRectContain(const webrtc::DesktopRect& a,
                      const webrtc::DesktopRect& b) {
   webrtc::DesktopRect intersection(a);

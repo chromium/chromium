@@ -81,38 +81,4 @@ TEST(ReplaceCrLfByLfTest, Speed) {
   }
 }
 
-TEST(StringIsUtf8Test, Basic) {
-  EXPECT_TRUE(StringIsUtf8("", 0));
-  EXPECT_TRUE(StringIsUtf8("\0", 1));
-  EXPECT_TRUE(StringIsUtf8("abc", 3));
-  EXPECT_TRUE(StringIsUtf8("\xc0\x80", 2));
-  EXPECT_TRUE(StringIsUtf8("\xe0\x80\x80", 3));
-  EXPECT_TRUE(StringIsUtf8("\xf0\x80\x80\x80", 4));
-  EXPECT_TRUE(StringIsUtf8("\xf8\x80\x80\x80\x80", 5));
-  EXPECT_TRUE(StringIsUtf8("\xfc\x80\x80\x80\x80\x80", 6));
-
-  // Not enough continuation characters
-  EXPECT_FALSE(StringIsUtf8("\xc0", 1));
-  EXPECT_FALSE(StringIsUtf8("\xe0\x80", 2));
-  EXPECT_FALSE(StringIsUtf8("\xf0\x80\x80", 3));
-  EXPECT_FALSE(StringIsUtf8("\xf8\x80\x80\x80", 4));
-  EXPECT_FALSE(StringIsUtf8("\xfc\x80\x80\x80\x80", 5));
-
-  // One more continuation character than needed
-  EXPECT_FALSE(StringIsUtf8("\xc0\x80\x80", 3));
-  EXPECT_FALSE(StringIsUtf8("\xe0\x80\x80\x80", 4));
-  EXPECT_FALSE(StringIsUtf8("\xf0\x80\x80\x80\x80", 5));
-  EXPECT_FALSE(StringIsUtf8("\xf8\x80\x80\x80\x80\x80", 6));
-  EXPECT_FALSE(StringIsUtf8("\xfc\x80\x80\x80\x80\x80\x80", 7));
-
-  // Invalid first byte
-  EXPECT_FALSE(StringIsUtf8("\xfe\x80\x80\x80\x80\x80\x80", 7));
-  EXPECT_FALSE(StringIsUtf8("\xff\x80\x80\x80\x80\x80\x80", 7));
-
-  // Invalid continuation byte
-  EXPECT_FALSE(StringIsUtf8("\xc0\x00", 2));
-  EXPECT_FALSE(StringIsUtf8("\xc0\x40", 2));
-  EXPECT_FALSE(StringIsUtf8("\xc0\xc0", 2));
-}
-
 }  // namespace remoting

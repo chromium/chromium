@@ -10,6 +10,7 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/util.h"
@@ -93,7 +94,7 @@ void XServerClipboard::SetClipboard(const std::string& mime_type,
   // Currently only UTF-8 is supported.
   if (mime_type != kMimeTypeTextUtf8)
     return;
-  if (!StringIsUtf8(data.c_str(), data.length())) {
+  if (!base::IsStringUTF8AllowingNoncharacters(data)) {
     LOG(ERROR) << "ClipboardEvent: data is not UTF-8 encoded.";
     return;
   }

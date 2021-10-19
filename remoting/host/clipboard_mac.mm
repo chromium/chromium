@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
 #include "remoting/base/constants.h"
@@ -74,7 +75,7 @@ void ClipboardMac::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
   // Currently we only handle UTF-8 text.
   if (event.mime_type().compare(kMimeTypeTextUtf8) != 0)
     return;
-  if (!StringIsUtf8(event.data().c_str(), event.data().length())) {
+  if (!base::IsStringUTF8AllowingNoncharacters(event.data())) {
     LOG(ERROR) << "ClipboardEvent data is not UTF-8 encoded.";
     return;
   }
