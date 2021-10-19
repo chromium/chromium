@@ -35,6 +35,10 @@ class CORE_EXPORT CascadeMap {
   CascadePriority* Find(const CSSPropertyName&);
   const CascadePriority* Find(const CSSPropertyName&) const;
   const CascadePriority* Find(const CSSPropertyName&, CascadeOrigin) const;
+  // Similar to Find(name, origin), but returns the CascadePriority from cascade
+  // layers below the given priority.
+  const CascadePriority* FindRevertLayer(const CSSPropertyName&,
+                                         CascadePriority) const;
   // Adds an entry to the map if the incoming priority is greater than or equal
   // to the current priority for the same name. Entries must be added in non-
   // decreasing lexicographical order of (origin, tree scope, layer).

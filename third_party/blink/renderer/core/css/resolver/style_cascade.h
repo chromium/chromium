@@ -287,6 +287,7 @@ class CORE_EXPORT StyleCascade {
 
   const CSSValue* Resolve(const CSSProperty&,
                           const CSSValue&,
+                          CascadePriority,
                           CascadeOrigin&,
                           CascadeResolver&);
   const CSSValue* ResolveCustomProperty(const CSSProperty&,
@@ -302,6 +303,11 @@ class CORE_EXPORT StyleCascade {
                                 const CSSValue&,
                                 CascadeOrigin&,
                                 CascadeResolver&);
+  const CSSValue* ResolveRevertLayer(const CSSProperty&,
+                                     const CSSValue&,
+                                     CascadePriority,
+                                     CascadeOrigin&,
+                                     CascadeResolver&);
 
   scoped_refptr<CSSVariableData> ResolveVariableData(CSSVariableData*,
                                                      CascadeResolver&);

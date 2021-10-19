@@ -142,7 +142,8 @@ class TestCascade {
                           const CSSValue& value,
                           CascadeOrigin& origin) {
     TestCascadeResolver resolver;
-    return cascade_.Resolve(property, value, origin, resolver.InnerResolver());
+    return cascade_.Resolve(property, value, CascadePriority(origin), origin,
+                            resolver.InnerResolver());
   }
 
   std::unique_ptr<CSSBitset> GetImportantSet() {

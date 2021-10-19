@@ -60,9 +60,9 @@ bool ConsumeComma(CSSParserTokenRange& range) {
 }
 
 // TODO(crbug.com/1105782): It is currently unclear how to handle 'revert'
-// at computed-value-time. For now we treat it as 'unset'.
+// and 'revert-layer' at computed-value-time. For now we treat it as 'unset'.
 const CSSValue* TreatRevertAsUnset(const CSSValue* value) {
-  if (value && value->IsRevertValue())
+  if (value && (value->IsRevertValue() || value->IsRevertLayerValue()))
     return cssvalue::CSSUnsetValue::Create();
   return value;
 }
@@ -134,6 +134,14 @@ bool IsRevert(const CSSValue& value) {
   return value.IsRevertValue() ||
          (value.IsCustomPropertyDeclaration() &&
           To<CSSCustomPropertyDeclaration>(value).IsRevert());
+}
+
+bool IsRevertLayer(const CSSValue& value) {
+  // TODO(andruud): Don't transport CSS-wide keywords in
+  // CustomPropertyDeclaration.
+  return value.IsRevertLayerValue() ||
+         (value.IsCustomPropertyDeclaration() &&
+          To<CSSCustomPropertyDeclaration>(value).IsRevertLayer());
 }
 
 bool IsInterpolation(CascadePriority priority) {
@@ -257,8 +265,8 @@ const CSSValue* StyleCascade::Resolve(const CSSPropertyName& name,
                                       CascadeResolver& resolver) {
   CSSPropertyRef ref(name, state_.GetDocument());
 
-  const CSSValue* resolved =
-      Resolve(ResolveSurrogate(ref.GetProperty()), value, origin, resolver);
+  const CSSValue* resolved = Resolve(ResolveSurrogate(ref.GetProperty()), value,
+                                     CascadePriority(origin), origin, resolver);
 
   DCHECK(resolved);
 
@@ -437,7 +445,8 @@ void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
         continue;
       *p = priority;
       CascadeOrigin origin = priority.GetOrigin();
-      const CSSValue* value = Resolve(property, e.Value(), origin, resolver);
+      const CSSValue* value =
+          Resolve(property, e.Value(), priority, origin, resolver);
       // TODO(futhark): Use a user scope TreeScope to support tree-scoped names
       // for animations in user stylesheets.
       const TreeScope* tree_scope =
@@ -569,7 +578,7 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   const CSSValue* value = ValueAt(match_result_, priority.GetPosition());
   DCHECK(value);
   CascadeOrigin origin = priority.GetOrigin();
-  value = Resolve(property, *value, origin, resolver);
+  value = Resolve(property, *value, priority, origin, resolver);
   DCHECK(!value->IsVariableReferenceValue());
   DCHECK(!value->IsPendingSubstitutionValue());
   const TreeScope* tree_scope{nullptr};
@@ -641,11 +650,14 @@ StyleCascade::TokenSequence::BuildVariableData() {
 
 const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
                                       const CSSValue& value,
+                                      CascadePriority priority,
                                       CascadeOrigin& origin,
                                       CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
   if (IsRevert(value))
     return ResolveRevert(property, value, origin, resolver);
+  if (IsRevertLayer(value))
+    return ResolveRevertLayer(property, value, priority, origin, resolver);
   resolver.CollectFlags(property, origin);
   if (const auto* v = DynamicTo<CSSCustomPropertyDeclaration>(value))
     return ResolveCustomProperty(property, *v, resolver);
@@ -807,10 +819,26 @@ const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
         return cssvalue::CSSUnsetValue::Create();
       }
       origin = p->GetOrigin();
-      return Resolve(property, *ValueAt(match_result_, p->GetPosition()),
+      return Resolve(property, *ValueAt(match_result_, p->GetPosition()), *p,
                      origin, resolver);
     }
   }
+}
+
+const CSSValue* StyleCascade::ResolveRevertLayer(const CSSProperty& property,
+                                                 const CSSValue& value,
+                                                 CascadePriority priority,
+                                                 CascadeOrigin& origin,
+                                                 CascadeResolver& resolver) {
+  const CascadePriority* p = map_.FindRevertLayer(
+      property.GetCSSPropertyName(), priority.ForLayerComparison());
+  if (!p) {
+    origin = CascadeOrigin::kNone;
+    return cssvalue::CSSUnsetValue::Create();
+  }
+  origin = p->GetOrigin();
+  return Resolve(property, *ValueAt(match_result_, p->GetPosition()), *p,
+                 origin, resolver);
 }
 
 scoped_refptr<CSSVariableData> StyleCascade::ResolveVariableData(

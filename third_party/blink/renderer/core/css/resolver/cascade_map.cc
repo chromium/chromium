@@ -65,6 +65,31 @@ const CascadePriority* CascadeMap::Find(const CSSPropertyName& name,
   return find_origin(native_properties_.Buffer()[index], origin);
 }
 
+const CascadePriority* CascadeMap::FindRevertLayer(
+    const CSSPropertyName& name,
+    CascadePriority revert_from) const {
+  auto find_revert_layer =
+      [this](const CascadeMap::CascadePriorityList& list,
+             CascadePriority revert_from) -> const CascadePriority* {
+    for (auto iter = list.Begin(backing_vector_);
+         iter != list.End(backing_vector_); ++iter) {
+      if (iter->ForLayerComparison() < revert_from)
+        return &(*iter);
+    }
+    return nullptr;
+  };
+
+  if (name.IsCustomProperty()) {
+    DCHECK(custom_properties_.Contains(name));
+    return find_revert_layer(custom_properties_.find(name)->value, revert_from);
+  }
+
+  DCHECK(native_properties_.Bits().Has(name.Id()));
+  size_t index = static_cast<size_t>(name.Id());
+  DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
+  return find_revert_layer(native_properties_.Buffer()[index], revert_from);
+}
+
 void CascadeMap::Add(const CSSPropertyName& name, CascadePriority priority) {
   auto compare_and_add = [this](CascadePriorityList& list,
                                 CascadePriority priority) {
