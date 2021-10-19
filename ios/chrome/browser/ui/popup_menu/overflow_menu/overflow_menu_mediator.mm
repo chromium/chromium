@@ -4,14 +4,27 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::RecordAction;
+using base::UserMetricsAction;
 
 namespace {
 
@@ -41,6 +54,9 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 
 @interface OverflowMenuMediator ()
 
+// The current web state.
+@property(nonatomic, assign) web::WebState* webState;
+
 @property(nonatomic, strong) OverflowMenuDestination* bookmarksDestination;
 @property(nonatomic, strong) OverflowMenuDestination* downloadsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* historyDestination;
@@ -50,24 +66,75 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 @property(nonatomic, strong) OverflowMenuDestination* settingsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* siteInfoDestination;
 
-@property(nonatomic, strong) OverflowMenuAction* reloadAction;
+@property(nonatomic, strong) OverflowMenuAction* reloadStopAction;
 @property(nonatomic, strong) OverflowMenuAction* openIncognitoTabAction;
 @property(nonatomic, strong) OverflowMenuAction* bookmarkAction;
 
 @end
 
-@implementation OverflowMenuMediator
+@implementation OverflowMenuMediator {
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+}
 
 @synthesize overflowMenuModel = _overflowMenuModel;
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
+    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+  }
+  return self;
+}
+
+- (void)dealloc {
+  self.webState = nullptr;
+  self.webStateList = nullptr;
+}
+
+#pragma mark - Property getters/setters
 
 - (OverflowMenuModel*)overflowMenuModel {
   if (!_overflowMenuModel) {
     _overflowMenuModel = [self createModel];
+    [self updateModel];
   }
   return _overflowMenuModel;
 }
 
+- (void)setWebState:(web::WebState*)webState {
+  if (_webState) {
+    _webState->RemoveObserver(_webStateObserver.get());
+  }
+
+  _webState = webState;
+
+  if (_webState) {
+    [self updateModel];
+    _webState->AddObserver(_webStateObserver.get());
+  }
+}
+
+- (void)setWebStateList:(WebStateList*)webStateList {
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+  }
+
+  _webStateList = webStateList;
+
+  self.webState = (_webStateList) ? _webStateList->GetActiveWebState() : nil;
+
+  if (_webStateList) {
+    _webStateList->AddObserver(_webStateListObserver.get());
+  }
+}
+
+#pragma mark - Model Creation
+
 - (OverflowMenuModel*)createModel {
+  __weak __typeof(self) weakSelf = self;
+
   self.bookmarksDestination = CreateOverflowMenuDestination(
       IDS_IOS_TOOLS_MENU_BOOKMARKS, @"overflow_menu_destination_bookmarks",
       ^{
@@ -103,19 +170,21 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                     ^{
                                     });
 
-  self.reloadAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
-                                               @"overflow_menu_action_reload",
-                                               ^{
-                                               });
-  self.openIncognitoTabAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, @"overflow_menu_action_incognito",
+  self.reloadStopAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_RELOAD, @"overflow_menu_action_reload",
       ^{
       });
+
+  self.openIncognitoTabAction =
+      CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB,
+                               @"overflow_menu_action_incognito", ^{
+                                 [weakSelf openIncognitoTab];
+                               });
 
   OverflowMenuActionGroup* appActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"app_actions"
                                                  actions:@[
-                                                   self.reloadAction,
+                                                   self.reloadStopAction,
                                                    self.openIncognitoTabAction,
                                                  ]];
 
@@ -145,4 +214,110 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                               pageActionsGroup,
                                             ]];
 }
+
+#pragma mark - Private
+
+// Make sure the model to match the current page state.
+- (void)updateModel {
+  // If the model hasn't been created, there's no need to update.
+  if (!_overflowMenuModel) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  if ([self isPageLoading]) {
+    self.reloadStopAction.name =
+        l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_STOP);
+    self.reloadStopAction.imageName = @"overflow_menu_action_stop";
+    self.reloadStopAction.handler = ^{
+      [weakSelf stopLoading];
+    };
+  } else {
+    self.reloadStopAction.name =
+        l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_RELOAD);
+    self.reloadStopAction.imageName = @"overflow_menu_action_reload";
+    self.reloadStopAction.handler = ^{
+      [weakSelf reload];
+    };
+  }
+}
+
+// Whether the page is currently loading.
+- (BOOL)isPageLoading {
+  if (!self.webState)
+    return NO;
+  return self.webState->IsLoading();
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
+  DCHECK_EQ(_webState, webState);
+  [self updateModel];
+}
+
+- (void)webState:(web::WebState*)webState
+    didStartNavigation:(web::NavigationContext*)navigation {
+  DCHECK_EQ(_webState, webState);
+  [self updateModel];
+}
+
+- (void)webState:(web::WebState*)webState
+    didFinishNavigation:(web::NavigationContext*)navigation {
+  DCHECK_EQ(_webState, webState);
+  [self updateModel];
+}
+
+- (void)webStateDidStartLoading:(web::WebState*)webState {
+  DCHECK_EQ(_webState, webState);
+  [self updateModel];
+}
+
+- (void)webStateDidStopLoading:(web::WebState*)webState {
+  DCHECK_EQ(_webState, webState);
+  [self updateModel];
+}
+
+- (void)webState:(web::WebState*)webState
+    didChangeLoadingProgress:(double)progress {
+  DCHECK_EQ(_webState, webState);
+  [self updateModel];
+}
+
+- (void)webStateDidChangeBackForwardState:(web::WebState*)webState {
+  DCHECK_EQ(_webState, webState);
+  [self updateModel];
+}
+
+- (void)webStateDidChangeVisibleSecurityState:(web::WebState*)webState {
+  DCHECK_EQ(_webState, webState);
+  [self updateModel];
+}
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  DCHECK_EQ(_webState, webState);
+  self.webState = nullptr;
+}
+
+#pragma mark - Action handlers
+
+- (void)reload {
+  RecordAction(UserMetricsAction("MobileMenuReload"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  self.navigationAgent->Reload();
+}
+
+- (void)stopLoading {
+  RecordAction(UserMetricsAction("MobileMenuStop"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  self.navigationAgent->StopLoading();
+}
+
+- (void)openIncognitoTab {
+  RecordAction(UserMetricsAction("MobileMenuNewIncognitoTab"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher
+      openURLInNewTab:[OpenNewTabCommand commandWithIncognito:YES]];
+}
+
 @end

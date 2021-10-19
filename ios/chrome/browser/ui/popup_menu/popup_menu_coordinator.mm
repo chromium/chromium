@@ -301,6 +301,12 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
   if (type == PopupMenuTypeToolsMenu && IsNewOverflowMenuEnabled()) {
     if (@available(iOS 15, *)) {
       self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
+      self.overflowMenuMediator.dispatcher =
+          static_cast<id<ApplicationCommands, BrowserCommands>>(
+              self.browser->GetCommandDispatcher());
+      self.overflowMenuMediator.webStateList = self.browser->GetWebStateList();
+      self.overflowMenuMediator.navigationAgent =
+          WebNavigationBrowserAgent::FromBrowser(self.browser);
       UIViewController* menu = [OverflowMenuViewProvider
           makeViewControllerWithModel:self.overflowMenuMediator
                                           .overflowMenuModel];

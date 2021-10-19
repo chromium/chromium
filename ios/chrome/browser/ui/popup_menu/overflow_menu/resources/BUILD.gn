@@ -28,6 +28,14 @@ imageset("overflow_menu_action_reload") {
   ]
 }
 
+imageset("overflow_menu_action_stop") {
+  sources = [
+    "overflow_menu_action_stop.imageset/Contents.json",
+    "overflow_menu_action_stop.imageset/overflow_menu_action_stop@2x.png",
+    "overflow_menu_action_stop.imageset/overflow_menu_action_stop@3x.png",
+  ]
+}
+
 imageset("overflow_menu_destination_bookmarks") {
   sources = [
     "overflow_menu_destination_bookmarks.imageset/Contents.json",

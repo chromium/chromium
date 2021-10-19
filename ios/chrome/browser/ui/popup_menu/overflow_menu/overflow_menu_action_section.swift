@@ -6,7 +6,7 @@ import SwiftUI
 
 /// A SwiftUI view for the overflow menu displaying a subsection of the actions list.
 struct OverflowMenuActionSection: View {
-  var actionGroup: OverflowMenuActionGroup
+  @ObservedObject var actionGroup: OverflowMenuActionGroup
 
   var body: some View {
     Section {

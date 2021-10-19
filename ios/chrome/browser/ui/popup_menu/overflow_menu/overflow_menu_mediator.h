@@ -7,7 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ApplicationCommands;
+@protocol BrowserCommands;
 @class OverflowMenuModel;
+class WebNavigationBrowserAgent;
+class WebStateList;
 
 // Mediator for the overflow menu. This object is in charge of creating and
 // updating the items of the overflow menu.
@@ -15,6 +19,16 @@
 
 // The data model for the overflow menu.
 @property(nonatomic, readonly) OverflowMenuModel* overflowMenuModel;
+
+// The WebStateList that this mediator listens for any changes on the current
+// WebState.
+@property(nonatomic, assign) WebStateList* webStateList;
+
+// Dispatcher.
+@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
+
+// Navigation agent for reloading pages.
+@property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
 
 @end
 
