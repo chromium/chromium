@@ -2796,8 +2796,8 @@ Output.RULES = {
     },
     unknown: {speak: ``},
     window: {
-      enter: `@describe_window($name)`,
-      speak: `@describe_window($name) $earcon(OBJECT_OPEN)`
+      enter: `@describe_window($name) $description`,
+      speak: `@describe_window($name) $description $earcon(OBJECT_OPEN)`
     }
   },
   menuStart:
