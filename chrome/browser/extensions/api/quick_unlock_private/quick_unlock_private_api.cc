@@ -12,14 +12,13 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
-#include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
-#include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/login/auth/extended_authenticator.h"
@@ -47,7 +46,6 @@ using QuickUnlockMode = quick_unlock_private::QuickUnlockMode;
 
 using AuthToken = ash::quick_unlock::AuthToken;
 using QuickUnlockModeList = std::vector<QuickUnlockMode>;
-using QuickUnlockStorage = ash::quick_unlock::QuickUnlockStorage;
 
 using ActiveModeCallback = base::OnceCallback<void(const QuickUnlockModeList&)>;
 
@@ -64,7 +62,6 @@ const char kInvalidCredential[] = "Invalid credential.";
 const char kInternalError[] = "Internal error.";
 const char kWeakCredential[] = "Weak credential.";
 
-const char kPasswordIncorrect[] = "Incorrect Password.";
 const char kAuthTokenExpired[] = "Authentication token expired.";
 const char kAuthTokenInvalid[] = "Authentication token invalid.";
 
@@ -233,61 +230,45 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
       quick_unlock_private::GetAuthToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const user_manager::User* const user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(
+  scoped_refptr<QuickUnlockPrivateGetAuthTokenHelper> helper =
+      base::MakeRefCounted<QuickUnlockPrivateGetAuthTokenHelper>(
           GetActiveProfile(browser_context()));
-  chromeos::UserContext user_context(*user);
-  user_context.SetKey(chromeos::Key(params->account_password));
 
   // Lazily allocate the authenticator. We do this here, instead of in the ctor,
   // so that tests can install a fake.
   DCHECK(!extended_authenticator_);
-  if (authenticator_allocator_)
-    extended_authenticator_ = authenticator_allocator_.Run(this);
-  else
-    extended_authenticator_ = chromeos::ExtendedAuthenticator::Create(this);
+  if (authenticator_allocator_) {
+    extended_authenticator_ = authenticator_allocator_.Run(helper.get());
+  } else {
+    extended_authenticator_ =
+        chromeos::ExtendedAuthenticator::Create(helper.get());
+  }
 
-  // The extension function needs to stay alive while the authenticator is
-  // running the password check. Add a ref before the authenticator starts, and
-  // remove the ref after it invokes one of the OnAuth* callbacks. The PostTask
-  // call applies ref management to the extended_authenticator_ instance and not
-  // to the extension function instance, which is why the manual ref management
-  // is needed.
+  // The extension function needs to stay alive while the authenticator runs the
+  // password check via |helper|, so add ref before the authenticator starts,
+  // and remove the ref at the end of OnResult() call
   AddRef();
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&chromeos::ExtendedAuthenticator::AuthenticateToCheck,
-                     extended_authenticator_.get(), user_context,
-                     base::OnceClosure()));
+  helper->Run(extended_authenticator_.get(), params->account_password,
+              base::BindOnce(&QuickUnlockPrivateGetAuthTokenFunction::OnResult,
+                             base::Unretained(this)));
 
   return RespondLater();
 }
 
-void QuickUnlockPrivateGetAuthTokenFunction::OnAuthFailure(
-    const chromeos::AuthFailure& error) {
-  Respond(Error(kPasswordIncorrect));
-  Release();  // Balanced in Run().
-}
+void QuickUnlockPrivateGetAuthTokenFunction::OnResult(
+    bool success,
+    std::unique_ptr<api::quick_unlock_private::TokenInfo> token_info,
+    const std::string& error_message) {
+  if (success) {
+    DCHECK(token_info);
+    Respond(ArgumentList(
+        quick_unlock_private::GetAuthToken::Results::Create(*token_info)));
+  } else {
+    DCHECK(!error_message.empty());
+    Respond(Error(error_message));
+  }
 
-void QuickUnlockPrivateGetAuthTokenFunction::OnAuthSuccess(
-    const chromeos::UserContext& user_context) {
-  auto result = std::make_unique<quick_unlock_private::TokenInfo>();
-
-  Profile* profile = GetActiveProfile(browser_context());
-  QuickUnlockStorage* quick_unlock_storage =
-      ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile);
-  quick_unlock_storage->MarkStrongAuth();
-  result->token = quick_unlock_storage->CreateAuthToken(user_context);
-  result->lifetime_seconds = AuthToken::kTokenExpirationSeconds;
-
-  // The user has successfully authenticated so we should reset pin/fingerprint
-  // attempt counts.
-  quick_unlock_storage->pin_storage_prefs()->ResetUnlockAttemptCount();
-  quick_unlock_storage->fingerprint_storage()->ResetUnlockAttemptCount();
-
-  Respond(ArgumentList(
-      quick_unlock_private::GetAuthToken::Results::Create(*result)));
   Release();  // Balanced in Run().
 }
 

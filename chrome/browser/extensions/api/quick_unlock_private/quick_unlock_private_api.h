@@ -12,18 +12,16 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/quick_unlock_private.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
 #include "extensions/browser/extension_function.h"
 
 namespace chromeos {
+class AuthStatusConsumer;
 class ExtendedAuthenticator;
-}
+}  // namespace chromeos
 
 namespace extensions {
 
-class QuickUnlockPrivateGetAuthTokenFunction
-    : public ExtensionFunction,
-      public chromeos::AuthStatusConsumer {
+class QuickUnlockPrivateGetAuthTokenFunction : public ExtensionFunction {
  public:
   using AuthenticatorAllocator =
       base::RepeatingCallback<chromeos::ExtendedAuthenticator*(
@@ -32,7 +30,7 @@ class QuickUnlockPrivateGetAuthTokenFunction
   QuickUnlockPrivateGetAuthTokenFunction();
   QuickUnlockPrivateGetAuthTokenFunction(
       const QuickUnlockPrivateGetAuthTokenFunction&) = delete;
-  const QuickUnlockPrivateGetAuthTokenFunction& operator=(
+  QuickUnlockPrivateGetAuthTokenFunction& operator=(
       const QuickUnlockPrivateGetAuthTokenFunction&) = delete;
 
   // Use the given |allocator| to create an ExtendedAuthenticator instance. This
@@ -49,9 +47,12 @@ class QuickUnlockPrivateGetAuthTokenFunction
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
-  // AuthStatusConsumer overrides.
-  void OnAuthFailure(const chromeos::AuthFailure& error) override;
-  void OnAuthSuccess(const chromeos::UserContext& user_context) override;
+  // Continuation of Run(). Params match
+  // QuickUnlockPrivateGetAuthTokenHelper::ResultCallback.
+  void OnResult(
+      bool success,
+      std::unique_ptr<api::quick_unlock_private::TokenInfo> token_info,
+      const std::string& error_message);
 
  private:
   ChromeExtensionFunctionDetails chrome_details_;
@@ -65,7 +66,7 @@ class QuickUnlockPrivateSetLockScreenEnabledFunction
   QuickUnlockPrivateSetLockScreenEnabledFunction();
   QuickUnlockPrivateSetLockScreenEnabledFunction(
       const QuickUnlockPrivateSetLockScreenEnabledFunction&) = delete;
-  const QuickUnlockPrivateSetLockScreenEnabledFunction& operator=(
+  QuickUnlockPrivateSetLockScreenEnabledFunction& operator=(
       const QuickUnlockPrivateSetLockScreenEnabledFunction&) = delete;
 
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.setLockScreenEnabled",
@@ -87,7 +88,7 @@ class QuickUnlockPrivateSetPinAutosubmitEnabledFunction
   QuickUnlockPrivateSetPinAutosubmitEnabledFunction();
   QuickUnlockPrivateSetPinAutosubmitEnabledFunction(
       const QuickUnlockPrivateSetPinAutosubmitEnabledFunction&) = delete;
-  const QuickUnlockPrivateSetPinAutosubmitEnabledFunction& operator=(
+  QuickUnlockPrivateSetPinAutosubmitEnabledFunction& operator=(
       const QuickUnlockPrivateSetPinAutosubmitEnabledFunction&) = delete;
 
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.setPinAutosubmitEnabled",
@@ -110,7 +111,7 @@ class QuickUnlockPrivateCanAuthenticatePinFunction : public ExtensionFunction {
   QuickUnlockPrivateCanAuthenticatePinFunction();
   QuickUnlockPrivateCanAuthenticatePinFunction(
       const QuickUnlockPrivateCanAuthenticatePinFunction&) = delete;
-  const QuickUnlockPrivateCanAuthenticatePinFunction& operator=(
+  QuickUnlockPrivateCanAuthenticatePinFunction& operator=(
       const QuickUnlockPrivateCanAuthenticatePinFunction&) = delete;
 
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.canAuthenticatePin",
@@ -133,7 +134,7 @@ class QuickUnlockPrivateGetAvailableModesFunction : public ExtensionFunction {
   QuickUnlockPrivateGetAvailableModesFunction();
   QuickUnlockPrivateGetAvailableModesFunction(
       const QuickUnlockPrivateGetAvailableModesFunction&) = delete;
-  const QuickUnlockPrivateGetAvailableModesFunction& operator=(
+  QuickUnlockPrivateGetAvailableModesFunction& operator=(
       const QuickUnlockPrivateGetAvailableModesFunction&) = delete;
 
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getAvailableModes",
@@ -154,7 +155,7 @@ class QuickUnlockPrivateGetActiveModesFunction : public ExtensionFunction {
   QuickUnlockPrivateGetActiveModesFunction();
   QuickUnlockPrivateGetActiveModesFunction(
       const QuickUnlockPrivateGetActiveModesFunction&) = delete;
-  const QuickUnlockPrivateGetActiveModesFunction& operator=(
+  QuickUnlockPrivateGetActiveModesFunction& operator=(
       const QuickUnlockPrivateGetActiveModesFunction&) = delete;
 
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getActiveModes",
@@ -178,7 +179,7 @@ class QuickUnlockPrivateCheckCredentialFunction : public ExtensionFunction {
   QuickUnlockPrivateCheckCredentialFunction();
   QuickUnlockPrivateCheckCredentialFunction(
       const QuickUnlockPrivateCheckCredentialFunction&) = delete;
-  const QuickUnlockPrivateCheckCredentialFunction& operator=(
+  QuickUnlockPrivateCheckCredentialFunction& operator=(
       const QuickUnlockPrivateCheckCredentialFunction&) = delete;
 
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.checkCredential",
@@ -197,7 +198,7 @@ class QuickUnlockPrivateGetCredentialRequirementsFunction
   QuickUnlockPrivateGetCredentialRequirementsFunction();
   QuickUnlockPrivateGetCredentialRequirementsFunction(
       const QuickUnlockPrivateGetCredentialRequirementsFunction&) = delete;
-  const QuickUnlockPrivateGetCredentialRequirementsFunction& operator=(
+  QuickUnlockPrivateGetCredentialRequirementsFunction& operator=(
       const QuickUnlockPrivateGetCredentialRequirementsFunction&) = delete;
 
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getCredentialRequirements",
@@ -220,7 +221,7 @@ class QuickUnlockPrivateSetModesFunction : public ExtensionFunction {
   QuickUnlockPrivateSetModesFunction();
   QuickUnlockPrivateSetModesFunction(
       const QuickUnlockPrivateSetModesFunction&) = delete;
-  const QuickUnlockPrivateSetModesFunction& operator=(
+  QuickUnlockPrivateSetModesFunction& operator=(
       const QuickUnlockPrivateSetModesFunction&) = delete;
 
   // The given event handler will be called whenever a
