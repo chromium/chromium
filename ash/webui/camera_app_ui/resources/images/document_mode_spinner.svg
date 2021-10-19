@@ -70,10 +70,10 @@
       }
       @keyframes colors {
         from {
-          stroke: #202124;
+          stroke: #C4C4C4;
         }
         to {
-          stroke: #202124;
+          stroke: #C4C4C4;
         }
       }
       .qp-circular-loader-path {

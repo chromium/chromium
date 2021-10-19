@@ -22,6 +22,7 @@ import {
 
 import {assert} from '../chrome_util.js';
 import {reportError} from '../error.js';
+import {Point} from '../geometry.js';
 import {
   ErrorLevel,
   ErrorType,
@@ -291,14 +292,14 @@ export class ChromeHelper {
   /**
    * Scans the blob data and returns the detected document corners.
    * @param {!Blob} blob
-   * @return {!Promise<!Array<!PointF>>}
+   * @return {!Promise<!Array<!Point>>}
    */
   async scanDocumentCorners(blob) {
     const buffer = new Uint8Array(await blob.arrayBuffer());
 
     const {corners} =
         await this.remote_.scanDocumentCorners(castToNumberArray(buffer));
-    return corners;
+    return corners.map(({x, y}) => new Point(x, y));
   }
 
   /**
@@ -306,7 +307,7 @@ export class ChromeHelper {
    * target |corners| to crop. The output will be converted according to given
    * |mimeType|.
    * @param {!Blob} blob
-   * @param {!Array<!PointF>} corners
+   * @param {!Array<!Point>} corners
    * @param {!MimeType} mimeType
    * @return {!Promise<!Blob>}
    */

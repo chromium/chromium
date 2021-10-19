@@ -4,6 +4,8 @@
 
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
+// eslint-disable-next-line no-unused-vars
+import {Point} from '../../../geometry.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import {ChromeHelper} from '../../../mojo/chrome_helper.js';
 import {
@@ -36,16 +38,18 @@ export let DocumentResult;
  */
 export class ScanHandler {
   /**
-   * Plays UI effect shutter effect blocking all UI operation.
+   * Plays UI effect when taking photo.
    */
-  playBlockingShutterEffect() {}
+  playShutterEffect() {}
 
   /**
    * @param {!Blob} blob Jpeg Blob as scanned document.
-   * @return {!Promise<?MimeType>} Returns which mime type user choose to save.
-   *     Null for cancel document.
+   * @param {!Array<!Point>} corners
+   * @return {!Promise<?{docBlob: !Blob, mimeType: !MimeType}>} Returns the
+   *     processed document blob and which mime type user choose to save. Null
+   *     for cancel document.
    */
-  async reviewDocument(blob) {}
+  async reviewDocument(blob, corners) {}
 
   /**
    * Handles case when no document detected in photo result.
@@ -100,15 +104,14 @@ class DocumentPhotoHandler {
       this.handler_.handleNoDocument();
       throw new CanceledError(`Couldn't detect a document`);
     }
-    const jpegBlob =
-        await helper.convertToDocument(rawBlob, corners, MimeType.JPEG);
-    const mimeType = await this.handler_.reviewDocument(jpegBlob);
-    if (mimeType === null) {
+    const reviewResult = await this.handler_.reviewDocument(rawBlob, corners);
+    if (reviewResult === null) {
       this.handler_.handleCancelDocument({resolution});
-      return;
+      throw new CanceledError('Cancelled after review document');
     }
+    const {docBlob, mimeType} = reviewResult;
     const name = namer.newDocumentName(mimeType);
-    let blob = jpegBlob;
+    let blob = docBlob;
     if (mimeType === MimeType.PDF) {
       blob = await helper.convertToPdf(blob);
     }
@@ -120,7 +123,7 @@ class DocumentPhotoHandler {
    * @override
    */
   playShutterEffect() {
-    this.handler_.playBlockingShutterEffect();
+    this.handler_.playShutterEffect();
   }
 
   /**

@@ -20,22 +20,28 @@ export class Option {
   /**
    * @param {!I18nString} text Text string show on the option button.
    * @param {{
-   *   exitValue: (!T|undefined),
+   *   exitValue: (?T|undefined),
    *   callback: (function()|undefined),
+   *   hasPopup: (boolean|undefined),
    * }} handlerParams Sets |exitValue| if the review page will exit with this
    *   value when option selected. Sets |callback| for the function get executed
    *   when option selected.
    */
-  constructor(text, {exitValue, callback}) {
+  constructor(text, {exitValue, callback, hasPopup}) {
     /**
      * @const {!I18nString}
      */
     this.text = text;
 
     /**
-     * @const {?T}
+     * @const {(?T|undefined)}
      */
-    this.exitValue = exitValue ?? null;
+    this.exitValue = exitValue;
+
+    /**
+     * @const {?boolean}
+     */
+    this.hasPopup = hasPopup ?? null;
 
     /**
      * @const {?function()}
@@ -50,19 +56,13 @@ export class Option {
  */
 export class Options {
   /**
-   * @param {!Option} primary
-   * @param {...!Option} others
+   * @param {...!Option<?T>} options
    */
-  constructor(primary, ...others) {
+  constructor(...options) {
     /**
-     * @const {!Option<!T>}
+     * @const {!Array<!Option<?T>>}
      */
-    this.primary = primary;
-
-    /**
-     * @const {!Array<!Option<!T>>}
-     */
-    this.others = others;
+    this.options = options;
   }
 }
 
@@ -71,29 +71,37 @@ export class Options {
  */
 export class Review extends View {
   /**
+   * @param {!ViewName=} viewName
    * @public
    */
-  constructor() {
-    super(ViewName.REVIEW);
+  constructor(viewName = ViewName.REVIEW) {
+    super(viewName);
 
     /**
-     * @private {!HTMLImageElement}
+     * @private {!ViewName}
      * @const
      */
-    this.image_ = dom.get('#review-image', HTMLImageElement);
+    this.viewName_ = viewName;
+
+    /**
+     * @protected {!HTMLImageElement}
+     * @const
+     */
+    this.image_ = dom.getFrom(this.root, '.review-image', HTMLImageElement);
 
     /**
      * @private {!HTMLDivElement}
      * @const
      */
-    this.btnGroups_ =
-        dom.getFrom(this.root, '.positive-button-groups', HTMLDivElement);
+    this.positiveBtns_ =
+        dom.getFrom(this.root, '.positive.button-group', HTMLDivElement);
 
     /**
-     * @private {!HTMLButtonElement}
+     * @private {!HTMLDivElement}
      * @const
      */
-    this.retakeBtn_ = dom.get('#review-retake', HTMLButtonElement);
+    this.negativeBtns_ =
+        dom.getFrom(this.root, '.negative.button-group', HTMLDivElement);
 
     /**
      * @private {?HTMLButtonElement}
@@ -127,52 +135,56 @@ export class Review extends View {
 
   /**
    * @template T
-   * @param {!Options} options
+   * @param {{positive: !Options<?T>, negative: !Options<?T>}} options
    * @return {!Promise<?T>}
    */
-  async startReview({primary, others = []}) {
+  async startReview({positive, negative}) {
     // Remove all existing buttons.
-    while (this.btnGroups_.firstChild) {
-      this.btnGroups_.removeChild(this.btnGroups_.lastChild);
-    }
-
-    const onSelected = new WaitableEvent();
-    /**
-     * @param {!Option<!T>} option
-     * @param {boolean} isPrimary
-     */
-    const addButton = ({text, exitValue, callback}, isPrimary) => {
-      const templ = instantiateTemplate('#text-button-template');
-      const btn = dom.getFrom(templ, 'button', HTMLButtonElement);
-      btn.setAttribute('i18n-text', text);
-      if (isPrimary) {
-        btn.classList.add('primary');
-        this.primaryBtn_ = btn;
-      } else {
-        btn.classList.add('secondary');
+    for (const btnGroup of [this.positiveBtns_, this.negativeBtns_]) {
+      while (btnGroup.firstChild) {
+        btnGroup.removeChild(btnGroup.lastChild);
       }
-      btn.onclick = () => {
-        if (callback !== null) {
-          callback();
-        }
-        if (exitValue !== null) {
-          onSelected.signal(exitValue);
-        }
-      };
-      this.btnGroups_.appendChild(templ);
-    };
-    addButton(primary, true);
-    for (const opt of others) {
-      addButton(opt, false);
     }
-    this.retakeBtn_.onclick = () => {
-      onSelected.signal(null);
-    };
-    setupI18nElements(this.btnGroups_);
 
-    nav.open(ViewName.REVIEW);
+    this.primaryBtn_ = null;
+    const onSelected = new WaitableEvent();
+    for (const btnGroup of [this.positiveBtns_, this.negativeBtns_]) {
+      const options = (btnGroup === this.positiveBtns_ ? positive : negative);
+      /**
+       * @param {!Option<?T>} option
+       */
+      const addButton = ({text, exitValue, callback, hasPopup}) => {
+        const templ = instantiateTemplate('#text-button-template');
+        const btn = dom.getFrom(templ, 'button', HTMLButtonElement);
+        btn.setAttribute('i18n-text', text);
+        if (this.primaryBtn_ === null) {
+          btn.classList.add('primary');
+          this.primaryBtn_ = btn;
+        } else {
+          btn.classList.add('secondary');
+        }
+        if (hasPopup !== null) {
+          btn.setAttribute('aria-haspopup', hasPopup);
+        }
+        btn.onclick = () => {
+          if (callback !== null) {
+            callback();
+          }
+          if (exitValue !== undefined) {
+            onSelected.signal(exitValue);
+          }
+        };
+        btnGroup.appendChild(templ);
+      };
+      for (const opt of options.options) {
+        addButton(opt);
+      }
+      setupI18nElements(btnGroup);
+    }
+
+    nav.open(this.viewName_);
     const result = await onSelected.wait();
-    nav.close(ViewName.REVIEW);
+    nav.close(this.viewName_);
     this.image_.src = '';
     return result;
   }

@@ -7,6 +7,7 @@
   --blue-300-rgb: 138, 180, 248;
   --blue-300: rgb(var(--blue-300-rgb));
   --blue-500: rgb(66, 133, 244);
+  --blue-600: rgb(26, 115, 232);
   --grey-100: rgb(241, 243, 244);
   --grey-200-rgb: 233, 234, 237;
   --grey-200: rgb(var(--grey-200-rgb));
@@ -716,6 +717,7 @@ body.should-handle-intent-result #open-settings {
 }
 
 #view-camera,
+#view-crop-document,
 #view-document-mode-dialog,
 #view-ptz-panel,
 #view-review,
@@ -741,6 +743,7 @@ body.should-handle-intent-result #open-settings {
 }
 
 body.view-camera #view-camera,
+body.view-crop-document #view-crop-document,
 body.view-document-mode-dialog #view-document-mode-dialog,
 body.view-ptz-panel #view-ptz-panel,
 body.view-review #view-review,

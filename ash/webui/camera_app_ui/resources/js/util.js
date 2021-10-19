@@ -244,7 +244,7 @@ export function sleep(ms) {
 
 /**
  * Gets value in px of a property in a StylePropertyMapReadOnly
- * @param {!StylePropertyMapReadOnly} style
+ * @param {(!StylePropertyMapReadOnly|!StylePropertyMap)} style
  * @param {string} prop
  * @return {number}
  */

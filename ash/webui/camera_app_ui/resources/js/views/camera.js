@@ -53,7 +53,7 @@ import {Layout} from './camera/layout.js';
 import {
   Modes,
   PhotoHandler,  // eslint-disable-line no-unused-vars
-  ScanHandler,  // eslint-disable-line no-unused-vars
+  ScanHandler,   // eslint-disable-line no-unused-vars
   setAvc1Parameters,
   Video,
   VideoHandler,  // eslint-disable-line no-unused-vars
@@ -63,6 +63,7 @@ import {Preview} from './camera/preview.js';
 import {ScanOptions} from './camera/scan_options.js';
 import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
+import {CropDocument} from './crop_document.js';
 import {Dialog} from './dialog.js';
 import {PTZPanel} from './ptz_panel.js';
 import * as review from './review.js';
@@ -129,6 +130,12 @@ export class Camera extends View {
     this.review_ = new review.Review();
 
     /**
+     * @type {!CropDocument}
+     * @private
+     */
+    this.cropDocument_ = new CropDocument();
+
+    /**
      * @type {!Dialog}
      * @private
      */
@@ -142,6 +149,7 @@ export class Camera extends View {
       new PrimarySettings(infoUpdater, photoPreferrer, videoPreferrer),
       new PTZPanel(),
       this.review_,
+      this.cropDocument_,
       this.docModeDialogView_,
       new View(ViewName.FLASH),
     ];
@@ -747,20 +755,18 @@ export class Camera extends View {
 
   /**
    * Opens review view to review input blob.
-   * @param {!Blob} blob
-   * @param {!review.Options} options
+   * @param {function(): !Promise} doReview
    * @return {!Promise}
    * @private
    */
-  async doReview_(blob, options) {
+  async prepareReview_(doReview) {
     // Because the review view will cover the whole camera view, prepare for
     // temporarily turn off camera by stopping preview.
     this.constraints_ = this.preview_.getConstraints();
     await this.preview_.close();
     await this.scanOptions_.detachPreview();
     try {
-      await this.review_.setReviewPhoto(blob);
-      return await this.review_.startReview(options);
+      await doReview();
     } finally {
       assert(this.constraints_ !== null);
       await this.modes_.prepareDevice();
@@ -773,17 +779,56 @@ export class Camera extends View {
   /**
    * @override
    */
-  async reviewDocument(blob) {
-    state.addOneTimeObserver(ViewName.REVIEW, () => {
+  async reviewDocument(rawBlob, corners) {
+    nav.open(ViewName.FLASH);
+    const helper = await ChromeHelper.getInstance();
+    let result = null;
+    try {
+      await this.prepareReview_(async () => {
+        const doCrop = (blob, corners) =>
+            helper.convertToDocument(blob, corners, MimeType.JPEG);
+        /**
+         * @type {!Blob}
+         */
+        let docBlob = await doCrop(rawBlob, corners);
+        await this.review_.setReviewPhoto(docBlob);
+        nav.close(ViewName.FLASH);
+        const positive = new review.Options(
+            new review.Option(
+                I18nString.LABEL_SAVE_PDF_DOCUMENT, {exitValue: MimeType.PDF}),
+            new review.Option(
+                I18nString.LABEL_SAVE_PHOTO_DOCUMENT,
+                {exitValue: MimeType.JPEG}),
+        );
+        const negative = new review.Options(
+            new review.Option(I18nString.LABEL_FIX_DOCUMENT, {
+              callback: async () => {
+                await this.cropDocument_.setReviewPhoto(rawBlob);
+                corners = await this.cropDocument_.reviewCropArea(corners);
+                docBlob = await (async () => {
+                  nav.open(ViewName.FLASH);
+                  try {
+                    return await doCrop(rawBlob, corners);
+                  } finally {
+                    nav.close(ViewName.FLASH);
+                  }
+                })();
+                await this.review_.setReviewPhoto(docBlob);
+              },
+              hasPopup: true,
+            }),
+            new review.Option(I18nString.LABEL_RETAKE, {exitValue: null}),
+        );
+        const mimeType = await this.review_.startReview({positive, negative});
+        assert(mimeType !== undefined);
+        if (mimeType !== null) {
+          result = {docBlob, mimeType};
+        }
+      });
+    } finally {
       nav.close(ViewName.FLASH);
-    });
-    const options = new review.Options(
-        new review.Option(
-            I18nString.LABEL_SAVE_PDF_DOCUMENT, {exitValue: MimeType.PDF}),
-        new review.Option(
-            I18nString.LABEL_SAVE_PHOTO_DOCUMENT, {exitValue: MimeType.JPEG}),
-    );
-    return this.doReview_(blob, options);
+    }
+    return result;
   }
 
   /**
@@ -808,14 +853,6 @@ export class Camera extends View {
   playShutterEffect() {
     sound.play(dom.get('#sound-shutter', HTMLAudioElement));
     animate.play(this.preview_.getVideoElement());
-  }
-
-  /**
-   * @override
-   */
-  playBlockingShutterEffect() {
-    sound.play(dom.get('#sound-shutter', HTMLAudioElement));
-    nav.open(ViewName.FLASH);
   }
 
   /**
@@ -860,26 +897,33 @@ export class Camera extends View {
       });
     };
 
-    const options = new review.Options(
-        new review.Option(I18nString.LABEL_SAVE, {exitValue: true}),
-        new review.Option(I18nString.LABEL_SHARE, {
-          callback: async () => {
-            sendEvent(metrics.GifResultType.SHARE);
-            const file = new File([blob], name, {type: MimeType.GIF});
-            const shareData = {files: [file]};
-            try {
-              if (!navigator.canShare(shareData)) {
-                throw new Error('cannot share');
+    let result = false;
+    this.prepareReview_(async () => {
+      await this.review_.setReviewPhoto(blob);
+      const positive = new review.Options(
+          new review.Option(I18nString.LABEL_SAVE, {exitValue: true}),
+          new review.Option(I18nString.LABEL_SHARE, {
+            callback: async () => {
+              sendEvent(metrics.GifResultType.SHARE);
+              const file = new File([blob], name, {type: MimeType.GIF});
+              const shareData = {files: [file]};
+              try {
+                if (!navigator.canShare(shareData)) {
+                  throw new Error('cannot share');
+                }
+                await navigator.share(shareData);
+              } catch (e) {
+                // TODO(b/191950622): Handles all share error case, e.g. no
+                // share target, share abort... with right treatment like toast
+                // message.
               }
-              await navigator.share(shareData);
-            } catch (e) {
-              // TODO(b/191950622): Handles all share error case, e.g. no share
-              // target, share abort... with right treatment like toast message.
-            }
-          },
-        }),
-    );
-    const result = await this.doReview_(blob, options);
+            },
+          }),
+      );
+      const negative = new review.Options(
+          new review.Option(I18nString.LABEL_RETAKE, {exitValue: null}));
+      result = await this.review_.startReview({positive, negative});
+    });
     if (result) {
       sendEvent(metrics.GifResultType.SAVE);
       await this.resultSaver_.saveGif(blob, name);

@@ -2,11 +2,11 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#view-review {
+.review-views {
   background: var(--grey-900);
 }
 
-#review-frame {
+.review-frame {
   align-items: center;
   border: 1px solid rgba(var(--grey-200-rgb), 0.38);
   bottom: calc(var(--bottom-line) * 2);
@@ -18,12 +18,12 @@
   top: 0;
 }
 
-#review-image {
+.review-image {
   max-height: 100%;
   max-width: 100%;
 }
 
-#view-review .button-groups {
+.review-views .button-groups {
   align-items: center;
   bottom: 0;
   display: flex;
@@ -35,25 +35,25 @@
   top: calc(100% - calc(var(--bottom-line) * 2));
 }
 
-#view-review .positive-button-groups {
+.review-views .button-group {
   display: flex;
   flex-direction: row-reverse;
   flex-wrap: wrap;
 }
 
-#view-review .positive-button-groups button {
+.review-views .button-group button {
   margin: 0 8px;
 }
 
-#view-review .positive-button-groups button:first-child {
+.review-views .button-group button:first-child {
   margin-inline-end: 0;
 }
 
-#view-review .positive-button-groups button:last-child {
+.review-views .button-group button:last-child {
   margin-inline-start: 0;
 }
 
-#view-review .positive-button-groups button[i18n-text=label_share]::before {
+.review-views .button-group button[i18n-text=label_share]::before {
   content: url(/images/review_share.svg);
   display: inline-block;
   line-height: normal;

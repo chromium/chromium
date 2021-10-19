@@ -86,6 +86,7 @@ compile_js_files = [
   "views/camera/scan_options.js",
   "views/camera/timertick.js",
   "views/camera/video_encoder_options.js",
+  "views/crop_document.js",
   "views/dialog.js",
   "views/ptz_panel.js",
   "views/review.js",

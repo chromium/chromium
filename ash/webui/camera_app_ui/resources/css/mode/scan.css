@@ -325,3 +325,26 @@ body.enable-scan-barcode .barcode-scan-box {
   transition: visibility var(--fast1-duration) ease-in;
   white-space: nowrap;
 }
+
+#crop-container {
+  overflow: hidden;
+  position: absolute;
+  touch-action: none;
+}
+
+#crop-container .crop-area {
+  background: rgba(var(--blue-300-rgb), 0.4);
+  height: 100%;
+  touch-action: none;
+  width: 100%;
+}
+
+#crop-container .dot {
+  background: var(--blue-600);
+  border-radius: 50%;
+  height: 50px;
+  position: absolute;
+  touch-action: none;
+  transform: translate(-50%, -50%);
+  width: 50px;
+}
