@@ -1083,7 +1083,7 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
         with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
             servers = start(logger, config, routes, mp_context, log_handlers, **kwargs)
 
-            if not kwargs["exit_after_start"]:
+            if not kwargs.get("exit_after_start"):
                 try:
                     # Periodically check if all the servers are alive
                     server_process_exited = False

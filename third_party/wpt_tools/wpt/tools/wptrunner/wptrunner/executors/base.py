@@ -347,7 +347,7 @@ class TestExecutor(object):
         return test.result_cls(status, message), []
 
     def wait(self):
-        self.protocol.base.wait()
+        return self.protocol.base.wait()
 
 
 class TestharnessExecutor(TestExecutor):
@@ -700,7 +700,7 @@ class ConnectionlessBaseProtocolPart(BaseProtocolPart):
         pass
 
     def wait(self):
-        pass
+        return False
 
     def set_window(self, handle):
         pass

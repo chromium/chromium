@@ -172,6 +172,26 @@ wheel: <
   name: "infra/python/wheels/pillow/${vpython_platform}"
   version: "version:8.3.1"
 >
+wheel: <
+  name: "infra/python/wheels/aioquic/${vpython_platform}"
+  version: "version:0.9.15"
+>
+wheel: <
+  name: "infra/python/wheels/pylsqpack/${vpython_platform}"
+  version: "version:0.3.12"
+>
+wheel: <
+  name: "infra/python/wheels/cryptography/${vpython_platform}"
+  version: "version:3.3.1"
+>
+wheel: <
+  name: "infra/python/wheels/cffi/${vpython_platform}"
+  version: "version:1.14.5"
+>
+wheel: <
+  name: "infra/python/wheels/pycparser-py2_py3"
+  version: "version:2.19"
+>
 
 # Used by:
 #   chrome/test/chromedriver/test/run_webdriver_tests.py

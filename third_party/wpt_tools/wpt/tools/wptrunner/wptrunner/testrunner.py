@@ -114,8 +114,8 @@ class TestRunner(object):
             raise
 
     def wait(self):
-        self.executor.wait()
-        self.send_message("wait_finished")
+        rerun = self.executor.wait()
+        self.send_message("wait_finished", rerun)
 
     def send_message(self, command, *args):
         self.result_queue.put((command, args))
@@ -696,17 +696,20 @@ class TestRunnerManager(threading.Thread):
         else:
             return self.after_test_end(test, restart_before_next)
 
-    def wait_finished(self):
+    def wait_finished(self, rerun=False):
         assert isinstance(self.state, RunnerManagerState.running)
         self.logger.debug("Wait finished")
 
         # The browser should be stopped already, but this ensures we do any
         # post-stop processing
-        return self.after_test_end(self.state.test, True)
+        return self.after_test_end(self.state.test, not rerun, force_rerun=rerun)
 
-    def after_test_end(self, test, restart):
+    def after_test_end(self, test, restart, force_rerun=False):
         assert isinstance(self.state, RunnerManagerState.running)
-        if self.run_count == self.rerun:
+        # Mixing manual reruns and automatic reruns is confusing; we currently assume
+        # that as long as we've done at least the automatic run count in total we can
+        # continue with the next test.
+        if not force_rerun and self.run_count >= self.rerun:
             test, test_group, group_metadata = self.get_next_test()
             if test is None:
                 return RunnerManagerState.stop()

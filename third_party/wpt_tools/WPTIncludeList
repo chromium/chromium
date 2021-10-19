@@ -222,7 +222,9 @@
 ./tools/webdriver/webdriver/bidi/error.py
 ./tools/webtransport/README.md
 ./tools/webtransport/__init__.py
+./tools/webtransport/requirements.txt
 ./tools/webtransport/h3/__init__.py
+./tools/webtransport/h3/capsule.py
 ./tools/webtransport/h3/handler.py
 ./tools/webtransport/h3/webtransport_h3_server.py
 ./tools/wpt/__init__.py

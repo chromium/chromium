@@ -69,7 +69,8 @@ class SeleniumBaseProtocolPart(BaseProtocolPart):
     def wait(self):
         while True:
             try:
-                self.webdriver.execute_async_script("")
+                return self.webdriver.execute_async_script("""let callback = arguments[arguments.length - 1];
+addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})""")
             except exceptions.TimeoutException:
                 pass
             except (socket.timeout, exceptions.NoSuchWindowException,
@@ -78,6 +79,7 @@ class SeleniumBaseProtocolPart(BaseProtocolPart):
             except Exception:
                 self.logger.error(traceback.format_exc())
                 break
+        return False
 
 
 class SeleniumTestharnessProtocolPart(TestharnessProtocolPart):

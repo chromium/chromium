@@ -3,6 +3,6 @@ mozinfo==1.2.2  # https://bugzilla.mozilla.org/show_bug.cgi?id=1621226
 mozlog==7.1.0
 mozdebug==0.3.0
 pillow==8.3.2
-urllib3[secure]==1.26.6
+urllib3[secure]==1.26.7
 requests==2.26.0
 six==1.16.0

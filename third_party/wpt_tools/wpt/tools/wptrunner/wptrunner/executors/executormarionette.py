@@ -118,7 +118,8 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
 
         while True:
             try:
-                self.marionette.execute_async_script("")
+                return self.marionette.execute_async_script("""let callback = arguments[arguments.length - 1];
+addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})""")
             except errors.NoSuchWindowException:
                 # The window closed
                 break
@@ -135,6 +136,7 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
             except Exception:
                 self.logger.warning(traceback.format_exc())
                 break
+        return False
 
 
 class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):

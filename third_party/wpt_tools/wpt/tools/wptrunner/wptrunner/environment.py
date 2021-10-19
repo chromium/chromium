@@ -45,6 +45,13 @@ def serve_path(test_paths):
     return test_paths["/"]["tests_path"]
 
 
+def webtranport_h3_server_is_running(host, port, timeout):
+    # TODO(bashi): Move the following import to the beginning of this file
+    # once WebTransportH3Server is enabled by default.
+    from webtransport.h3.webtransport_h3_server import server_is_running  # type: ignore
+    return server_is_running(host, port, timeout)
+
+
 class TestEnvironmentError(Exception):
     pass
 
@@ -271,11 +278,12 @@ class TestEnvironment(object):
 
         if not failed and self.test_server_port:
             for scheme, servers in self.servers.items():
-                if scheme == "webtransport-h3":
-                    # TODO(bashi): Find a way to test WebTransport over HTTP/3
-                    # server's UDP port.
-                    continue
                 for port, server in servers:
+                    if scheme == "webtransport-h3":
+                        if not webtranport_h3_server_is_running(host, port, timeout=1.0):
+                            # TODO(bashi): Consider supporting retry.
+                            failed.append((host, port))
+                        continue
                     s = socket.socket()
                     s.settimeout(0.1)
                     try:

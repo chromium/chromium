@@ -129,7 +129,9 @@ class BaseProtocolPart(ProtocolPart):
 
     @abstractmethod
     def wait(self):
-        """Wait indefinitely for the browser to close"""
+        """Wait indefinitely for the browser to close.
+
+        :returns: True to re-run the test, or False to continue with the next test"""
         pass
 
     @property
