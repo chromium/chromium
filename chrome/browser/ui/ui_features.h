@@ -129,11 +129,9 @@ extern const base::Feature kTabRestoreSubMenus;
 
 extern const base::Feature kTabSearchChevronIcon;
 
-extern const base::Feature kTabSearchFuzzySearch;
-
 extern const base::Feature kTabSearchFeedback;
 
-extern const base::Feature kTabSearchRecentlyClosed;
+extern const base::Feature kTabSearchFuzzySearch;
 
 // Setting this to true will ignore the distance parameter when finding matches.
 // This means that it will not matter where in the string the pattern occurs.
@@ -168,6 +166,8 @@ extern const base::FeatureParam<double> kTabSearchGroupTitleWeight;
 
 // Whether to move the active tab to the bottom of the list.
 extern const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom;
+
+extern const base::Feature kTabSearchRecentlyClosed;
 
 // Default number of recently closed entries to display by default when no
 // search text is provided.

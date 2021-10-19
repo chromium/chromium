@@ -30,9 +30,7 @@ export function fuzzySearch(input, records, options) {
   // if the options indicate an exact matching algorithm should be used.
   performance.mark('tab_search:search_algorithm:metric_begin');
   let result;
-  if (options.threshold === 0.0) {
-    result = exactSearch(input, records, options);
-  } else {
+  if (options.useFuzzySearch) {
     const keyNames = options.keys.reduce((acc, {name}) => {
       acc.push(name);
       return acc;
@@ -50,6 +48,8 @@ export function fuzzySearch(input, records, options) {
 
       return item;
     });
+  } else {
+    result = exactSearch(input, records, options);
   }
   performance.mark('tab_search:search_algorithm:metric_end');
   return result;

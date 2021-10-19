@@ -66,6 +66,7 @@ suite('FuzzySearchTest', () => {
     ];
 
     const options = {
+      useFuzzySearch: true,
       includeScore: true,
       ignoreLocation: true,
       includeMatches: true,
@@ -145,6 +146,7 @@ suite('FuzzySearchTest', () => {
     ];
 
     const options = {
+      useFuzzySearch: true,
       includeScore: true,
       ignoreLocation: true,
       includeMatches: true,
@@ -167,9 +169,7 @@ suite('FuzzySearchTest', () => {
   });
 
   test('Test the exact match ranking order.', () => {
-    // Set threshold to 0.0 to assert an exact match search.
     const options = {
-      threshold: 0.0,
       keys: [
         {
           name: 'tab.title',
@@ -293,9 +293,7 @@ suite('FuzzySearchTest', () => {
   });
 
   test('Test exact search with escaped characters.', () => {
-    // Set threshold to 0.0 to assert an exact match search.
     const options = {
-      threshold: 0.0,
       keys: [
         {
           name: 'tab.title',
@@ -345,7 +343,6 @@ suite('FuzzySearchTest', () => {
 
   test('Test exact match result scoring accounts for match position.', () => {
     const options = {
-      threshold: 0.0,
       keys: [
         {
           name: 'tab.title',
@@ -372,7 +369,6 @@ suite('FuzzySearchTest', () => {
       'Test exact match result scoring takes into account the number of matches per item.',
       () => {
         const options = {
-          threshold: 0.0,
           keys: [
             {
               name: 'tab.title',
@@ -397,7 +393,6 @@ suite('FuzzySearchTest', () => {
 
   test('Test exact match result scoring abides by the key weights.', () => {
     const options = {
-      threshold: 0.0,
       keys: [
         {
           name: 'tab.title',

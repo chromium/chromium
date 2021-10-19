@@ -71,7 +71,7 @@ export class TabSearchAppElement extends PolymerElement {
         value: {
           includeScore: true,
           includeMatches: true,
-          ignoreLocation: true,
+          ignoreLocation: false,
           threshold: 0.0,
           distance: 200,
           keys: [
@@ -155,6 +155,7 @@ export class TabSearchAppElement extends PolymerElement {
 
     // Update option values for fuzzy search from feature params.
     this.fuzzySearchOptions_ = Object.assign({}, this.fuzzySearchOptions_, {
+      useFuzzySearch: loadTimeData.getBoolean('useFuzzySearch'),
       ignoreLocation: loadTimeData.getBoolean('searchIgnoreLocation'),
       threshold: loadTimeData.getValue('searchThreshold'),
       distance: loadTimeData.getInteger('searchDistance'),

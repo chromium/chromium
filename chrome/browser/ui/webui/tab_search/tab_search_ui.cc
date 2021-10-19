@@ -58,6 +58,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
   // Add the configuration parameters for fuzzy search.
+  source->AddBoolean("useFuzzySearch", base::FeatureList::IsEnabled(
+                                           features::kTabSearchFuzzySearch));
   source->AddBoolean("searchIgnoreLocation",
                      features::kTabSearchSearchIgnoreLocation.Get());
   source->AddInteger("searchDistance",
