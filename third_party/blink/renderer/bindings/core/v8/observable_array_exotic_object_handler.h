@@ -248,6 +248,8 @@ class ObservableArrayExoticObjectHandler {
               V8AtomicString(isolate, "length"))) {
         v8::PropertyDescriptor prop_desc(
             v8::Integer::NewFromUnsigned(isolate, backing_list.size()), true);
+        prop_desc.set_configurable(false);
+        prop_desc.set_enumerable(false);
         V8SetReturnValue(info, prop_desc);
         return;
       }
