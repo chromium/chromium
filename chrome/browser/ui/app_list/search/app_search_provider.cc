@@ -347,8 +347,11 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
       // TODO(crbug.com/826982): add the "can load in incognito" concept to
       // the App Service and use it here, similar to ExtensionDataSource.
 
+      const std::string name = app_list_features::IsCategoricalSearchEnabled()
+                                   ? update.Name()
+                                   : update.ShortName();
       apps_vector->emplace_back(std::make_unique<AppSearchProvider::App>(
-          this, update.AppId(), update.ShortName(), update.LastLaunchTime(),
+          this, update.AppId(), name, update.LastLaunchTime(),
           update.InstallTime(),
           update.InstalledInternally() == apps::mojom::OptionalBool::kTrue));
       apps_vector->back()->set_recommendable(
