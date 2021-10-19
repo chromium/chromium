@@ -133,12 +133,6 @@ feedwire::Request CreateFeedQueryRequest(
   if (stream_type.IsWebFeed()) {
     feed_request.add_client_capability(feedwire::Capability::WEB_FEEDS);
   }
-
-  // TODO(crbug.com/1225676): Enable by default once fix is launched.
-  if (!request_metadata.chrome_info.start_surface ||
-      base::FeatureList::IsEnabled(kEnableOpenInNewTabFromStartSurfaceFeed)) {
-    feed_request.add_client_capability(feedwire::Capability::OPEN_IN_TAB);
-  }
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
   if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {
