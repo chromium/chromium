@@ -100,12 +100,6 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 
   NSArray* stackSubviews = @[ self.imageView, title, subtitle ];
   self.stackView = [self createStackViewWithArrangedSubviews:stackSubviews];
-  if (self.tighterLayout) {
-    [title setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                             forAxis:UILayoutConstraintAxisVertical];
-    [subtitle setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                                forAxis:UILayoutConstraintAxisVertical];
-  }
 
   UIScrollView* scrollView = [self createScrollView];
   [scrollView addSubview:self.stackView];
@@ -130,14 +124,16 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   heightConstraint.active = YES;
 
-  // Scroll View constraint to the vertical center. Can be overridden.
-  NSLayoutConstraint* centerYConstraint =
-      [scrollView.centerYAnchor constraintEqualToAnchor:margins.centerYAnchor];
-  // This needs to be lower than the height constraint, so it's deprioritized.
-  // If this breaks, the scroll view is still constrained to the top toolbar and
-  // the bottom safe area or button.
-  centerYConstraint.priority = heightConstraint.priority - 1;
-  centerYConstraint.active = YES;
+  if (!self.tighterLayout) {
+    // Scroll View constraint to the vertical center. Can be overridden.
+    NSLayoutConstraint* centerYConstraint = [scrollView.centerYAnchor
+        constraintEqualToAnchor:margins.centerYAnchor];
+    // This needs to be lower than the height constraint, so it's deprioritized.
+    // If this breaks, the scroll view is still constrained to the top toolbar
+    // and the bottom safe area or button.
+    centerYConstraint.priority = heightConstraint.priority - 1;
+    centerYConstraint.active = YES;
+  }
 
   // Constraint the content of the scroll view to the size of the stack view
   // with some bottom margin space in between the two. This defines the content
@@ -221,24 +217,23 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
                                                   .bottomAnchor];
   }
 
+  NSLayoutYAxisAnchor* scrollViewTopAnchor;
+  CGFloat scrollViewTopConstant = 0;
   if (self.hasTopToolbar) {
-    if (self.tighterLayout) {
-      [NSLayoutConstraint activateConstraints:@[
-        [scrollView.topAnchor
-            constraintEqualToAnchor:self.topToolbar.bottomAnchor],
-      ]];
-    } else {
-      [NSLayoutConstraint activateConstraints:@[
-        [scrollView.topAnchor
-            constraintGreaterThanOrEqualToAnchor:self.topToolbar.bottomAnchor],
-      ]];
-    }
+    scrollViewTopAnchor = self.topToolbar.bottomAnchor;
   } else {
-    [NSLayoutConstraint activateConstraints:@[
-      [scrollView.topAnchor
-          constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
-                         constant:self.customSpacingBeforeImageIfNoToolbar],
-    ]];
+    scrollViewTopAnchor = self.view.safeAreaLayoutGuide.topAnchor;
+    scrollViewTopConstant = self.customSpacingBeforeImageIfNoToolbar;
+  }
+  if (self.tighterLayout) {
+    [scrollView.topAnchor constraintEqualToAnchor:scrollViewTopAnchor
+                                         constant:scrollViewTopConstant]
+        .active = YES;
+  } else {
+    [scrollView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:scrollViewTopAnchor
+                                    constant:scrollViewTopConstant]
+        .active = YES;
   }
 
   if (!self.imageHasFixedSize) {
@@ -258,11 +253,6 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
           constraintEqualToAnchor:self.imageView.heightAnchor
                        multiplier:imageAspectRatio],
     ]];
-  } else if (self.tighterLayout) {
-    [self.imageView setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                                      forAxis:UILayoutConstraintAxisHorizontal];
-    [self.imageView setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                                      forAxis:UILayoutConstraintAxisVertical];
   }
 }
 
