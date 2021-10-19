@@ -66,6 +66,12 @@ struct URLResponseHead {
   // Tools.  Includes socket ID and socket reuse information.
   LoadTimingInfo load_timing;
 
+  // Set to true if the request had devtools_request_id set and OnRawRequest
+  // and OnRawResponse are called on the corresponding DevToolsObserver. This
+  // allows Chrome DevTools Protocol clients to know whether they should wait
+  // for the signals from OnRawRequest and OnRawResponse for this request.
+  bool emitted_extra_info = false;
+
   // True if the response was delivered using SPDY.
   bool was_fetched_via_spdy = false;
 

@@ -16,7 +16,8 @@ mojom::URLResponseHeadDevToolsInfoPtr ExtractDevToolsInfo(
       head.cert_status, head.encoded_data_length, head.was_in_prefetch_cache,
       head.was_fetched_via_service_worker, head.cache_storage_cache_name,
       head.alpn_negotiated_protocol, head.was_fetched_via_spdy,
-      head.service_worker_response_source, head.ssl_info, head.remote_endpoint);
+      head.service_worker_response_source, head.ssl_info, head.remote_endpoint,
+      head.emitted_extra_info);
 }
 
 mojom::URLRequestDevToolsInfoPtr ExtractDevToolsInfo(

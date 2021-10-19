@@ -1958,6 +1958,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
   std::unique_ptr<Network::Response> redirect_response;
   const blink::mojom::CommitNavigationParams& commit_params =
       nav_request.commit_params();
+  bool redirect_emitted_extra_info = false;
   if (!commit_params.redirect_response.empty()) {
     const network::mojom::URLResponseHead& head =
         *commit_params.redirect_response.back();
@@ -1965,6 +1966,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
         network::ExtractDevToolsInfo(head);
     redirect_response =
         BuildResponse(commit_params.redirects.back(), *head_info);
+    redirect_emitted_extra_info = head_info->emitted_extra_info;
   }
   std::string url_fragment;
   std::string url_without_fragment =
@@ -2030,7 +2032,8 @@ void NetworkHandler::NavigationRequestWillBeSent(
   }
   frontend_->RequestWillBeSent(
       id, id, url_without_fragment, std::move(request), current_ticks,
-      current_wall_time, std::move(initiator), std::move(redirect_response),
+      current_wall_time, std::move(initiator), redirect_emitted_extra_info,
+      std::move(redirect_response),
       std::string(Network::ResourceTypeEnum::Document), std::move(frame_token),
       common_params.has_user_gesture);
 }
@@ -2072,10 +2075,13 @@ void NetworkHandler::RequestSent(
     request_object->SetTrustTokenParams(
         BuildTrustTokenParams(*request_info.trust_token_params));
   }
+  // TODO(crbug.com/1261605): Populate redirect_emitted_extra_info instead of
+  // just returning false.
   frontend_->RequestWillBeSent(
       request_id, loader_id, url_without_fragment, std::move(request_object),
       timestamp.since_origin().InSecondsF(), base::Time::Now().ToDoubleT(),
-      std::move(initiator), std::unique_ptr<Network::Response>(),
+      std::move(initiator), /*redirect_emitted_extra_info=*/false,
+      std::unique_ptr<Network::Response>(),
       std::string(Network::ResourceTypeEnum::Other),
       Maybe<std::string>() /* frame_id */, request_info.has_user_gesture);
 }
@@ -2188,7 +2194,8 @@ void NetworkHandler::ResponseReceived(
       request_id, loader_id,
       base::TimeTicks::Now().ToInternalValue() /
           static_cast<double>(base::Time::kMicrosecondsPerSecond),
-      resource_type, std::move(response), std::move(frame_id));
+      resource_type, std::move(response), head.emitted_extra_info,
+      std::move(frame_id));
 }
 
 void NetworkHandler::LoadingComplete(

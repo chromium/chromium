@@ -184,6 +184,10 @@ void WebURLResponse::SetHttpStatusText(const WebString& http_status_text) {
   resource_response_->SetHttpStatusText(http_status_text);
 }
 
+void WebURLResponse::SetEmittedExtraInfo(bool emitted_extra_info) {
+  resource_response_->SetEmittedExtraInfo(emitted_extra_info);
+}
+
 WebString WebURLResponse::HttpHeaderField(const WebString& name) const {
   return resource_response_->HttpHeaderField(name);
 }

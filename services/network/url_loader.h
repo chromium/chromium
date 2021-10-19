@@ -592,6 +592,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Even if this is false but there is a QUIC/H2 stream, the upload is allowed.
   const bool allow_http1_for_streaming_upload_;
 
+  bool emitted_devtools_raw_request_ = false;
+  bool emitted_devtools_raw_response_ = false;
+
   mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
 
   // Globally-unique id identifying this URLLoader for tracing.

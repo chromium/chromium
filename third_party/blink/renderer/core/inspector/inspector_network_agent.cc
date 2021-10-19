@@ -1117,7 +1117,7 @@ void InspectorNetworkAgent::WillSendRequestInternal(
   GetFrontend()->requestWillBeSent(
       request_id, loader_id, documentURL, std::move(request_info),
       timestamp.since_origin().InSecondsF(), base::Time::Now().ToDoubleT(),
-      std::move(initiator_object),
+      std::move(initiator_object), redirect_response.EmittedExtraInfo(),
       BuildObjectForResourceResponse(redirect_response), resource_type,
       std::move(maybe_frame_id), request.HasUserGesture());
   if (options.synchronous_policy == SynchronousPolicy::kRequestSynchronously)
@@ -1325,7 +1325,8 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
         request_id, loader_id,
         base::TimeTicks::Now().since_origin().InSecondsF(),
         InspectorPageAgent::ResourceTypeJson(type),
-        std::move(resource_response), std::move(maybe_frame_id));
+        std::move(resource_response), response.EmittedExtraInfo(),
+        std::move(maybe_frame_id));
   }
   // If we revalidated the resource and got Not modified, send content length
   // following didReceiveResponse as there will be no calls to didReceiveData

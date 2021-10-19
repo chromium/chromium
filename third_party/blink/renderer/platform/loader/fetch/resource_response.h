@@ -319,6 +319,11 @@ class PLATFORM_EXPORT ResourceResponse final {
   const KURL& WebBundleURL() const { return web_bundle_url_; }
   void SetWebBundleURL(const KURL& url) { web_bundle_url_ = url; }
 
+  bool EmittedExtraInfo() const { return emitted_extra_info_; }
+  void SetEmittedExtraInfo(bool emitted_extra_info) {
+    emitted_extra_info_ = emitted_extra_info;
+  }
+
   bool WasFetchedViaSPDY() const { return was_fetched_via_spdy_; }
   void SetWasFetchedViaSPDY(bool value) { was_fetched_via_spdy_ = value; }
 
@@ -707,6 +712,8 @@ class PLATFORM_EXPORT ResourceResponse final {
   KURL web_bundle_url_;
 
   absl::optional<net::AuthChallengeInfo> auth_challenge_info_;
+
+  bool emitted_extra_info_ = false;
 };
 
 }  // namespace blink

@@ -54,6 +54,7 @@ struct URLResponseHeadDevToolsInfo {
   FetchResponseSource service_worker_response_source;
   SSLInfo? ssl_info;
   IPEndPoint remote_endpoint;
+  bool emitted_extra_info;
 };
 
 // Interface for devtools receiving information about individual request

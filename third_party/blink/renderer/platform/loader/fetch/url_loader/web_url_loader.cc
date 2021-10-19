@@ -859,6 +859,8 @@ void WebURLLoader::PopulateURLResponse(
     response->SetLoadTiming(ToMojoLoadTiming(head.load_timing));
   }
 
+  response->SetEmittedExtraInfo(head.emitted_extra_info);
+
   response->SetAuthChallengeInfo(head.auth_challenge_info);
   response->SetRequestIncludeCredentials(head.request_include_credentials);
 

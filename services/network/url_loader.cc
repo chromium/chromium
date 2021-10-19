@@ -1183,6 +1183,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
                           &redirect_info.new_url, *factory_params_,
                           origin_access_list_);
 
+  DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
+  response->emitted_extra_info = emitted_devtools_raw_request_;
   url_loader_client_->OnReceiveRedirect(redirect_info, std::move(response));
 }
 
@@ -1888,6 +1890,8 @@ void URLLoader::DeleteSelf() {
 void URLLoader::SendResponseToClient() {
   TRACE_EVENT("loading", "network::URLLoader::SendResponseToClient",
               perfetto::Flow(trace_id_), "url", url_request_->url());
+  DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
+  response_->emitted_extra_info = emitted_devtools_raw_request_;
   url_loader_client_->OnReceiveResponse(std::move(response_));
   url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle_));
 }
@@ -2005,6 +2009,7 @@ void URLLoader::DispatchOnRawRequest(
   net::LoadTimingInfo load_timing_info;
   url_request_->GetLoadTimingInfo(&load_timing_info);
 
+  emitted_devtools_raw_request_ = true;
   devtools_observer->OnRawRequest(
       devtools_request_id().value(), url_request_->maybe_sent_cookies(),
       std::move(headers), load_timing_info.request_start,
@@ -2062,6 +2067,7 @@ bool URLLoader::DispatchOnRawResponse() {
     DispatchOnRawRequest({});
   }
 
+  emitted_devtools_raw_response_ = true;
   devtools_observer->OnRawResponse(
       devtools_request_id().value(), url_request_->maybe_stored_cookies(),
       std::move(header_array), raw_response_headers,

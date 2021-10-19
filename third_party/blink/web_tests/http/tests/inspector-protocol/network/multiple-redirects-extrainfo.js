@@ -71,6 +71,7 @@
       for (let i = 0; i < requestWillBeSents.length; i++) {
         const requestWillBeSent = requestWillBeSents[i];
         testRunner.log(`  url: ${requestWillBeSent.params.request.url}`);
+        testRunner.log(`  redirectHasExtraInfo: ${requestWillBeSent.params.redirectHasExtraInfo}`);
       }
     } else {
       testRunner.log(`requestWilBeSents: none`);
