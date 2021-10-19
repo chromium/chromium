@@ -504,7 +504,11 @@ js_library("window_node") {
 # Accessibility sprint: Classes that assist in multistep automation.
 js_library("action_recorder") {
   sources = [ "action_recorder.js" ]
-  deps = [ ":node_identifier" ]
+  deps = [
+    ":focus_ring_manager",
+    ":node_identifier",
+    ":switch_access",
+  ]
   externs_list = [ "$externs_path/automation.js" ]
 }
 

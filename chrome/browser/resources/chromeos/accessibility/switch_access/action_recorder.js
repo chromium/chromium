@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FocusRingManager} from './focus_ring_manager.js';
 import {NodeIdentifier} from './node_identifier.js';
 import {SwitchAccess} from './switch_access.js';
 
@@ -32,11 +33,13 @@ export class ActionRecorder {
   start() {
     this.recording_ = true;
     this.macro_ = [];
+    FocusRingManager.setIsRecording(true);
   }
 
   /** Stops recording actions */
   stop() {
     this.recording_ = false;
+    FocusRingManager.setIsRecording(false);
   }
 
   /** @param {!chrome.automation.AutomationNode} node */

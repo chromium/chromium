@@ -174,5 +174,26 @@ export const SAConstants = {
      * @const
      */
     OUTER_COLOR: '#174EA6',  // Google Blue 900
+
+    /**
+     * The inner color of the primary focus ring when recording marcos.
+     * @type {string}
+     * @const
+     */
+    PRIMARY_COLOR_RECORDING_MACRO: '#E57373',  // Google Red 300
+
+    /**
+     * The inner color of the preview focus ring when recording marcos.
+     * @type {string}
+     * @const
+     */
+    PREVIEW_COLOR_RECORDING_MACRO: '#E5737380',  // Google Red 300, 50% opacity
+
+    /**
+     * The outer color of the focus rings when recording marcos.
+     * @type {string}
+     * @const
+     */
+    OUTER_COLOR_RECORDING_MACRO: '#B71C1C',  // Google Red 900
   },
 };
