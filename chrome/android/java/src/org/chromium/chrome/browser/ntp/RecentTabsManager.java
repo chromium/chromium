@@ -112,7 +112,6 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mSigninPromoController = new SigninPromoController(
                 SigninAccessPoint.RECENT_TABS, SyncConsentActivityLauncherImpl.get());
         mSyncService = SyncService.get();
-        updatePromoState();
 
         mRecentlyClosedTabManager.setTabsUpdatedRunnable(() -> {
             updateRecentlyClosedTabs();
@@ -124,6 +123,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         updateForeignSessions();
         mForeignSessionHelper.triggerSessionSync();
         registerObservers();
+        updatePromoState();
 
         SessionsInvalidationManager.get(mProfile).onRecentTabsPageOpened();
     }
