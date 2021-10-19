@@ -59,9 +59,10 @@ public class FirstRunActivitySigninAndSyncTest {
                 @Override
                 public void checkChildAccountStatus(
                         Account account, ChildAccountStatusListener listener) {
-                    listener.onStatusReady(account.name.equals(CHILD_EMAIL)
-                                    ? ChildAccountStatus.REGULAR_CHILD
-                                    : ChildAccountStatus.NOT_CHILD);
+                    boolean accountIsChild = account.name.equals(CHILD_EMAIL);
+                    listener.onStatusReady(accountIsChild ? ChildAccountStatus.REGULAR_CHILD
+                                                          : ChildAccountStatus.NOT_CHILD,
+                            accountIsChild ? account : null);
                 }
             };
 

@@ -118,7 +118,8 @@ public class SigninFirstRunFragmentTest {
                         Account account, ChildAccountStatusListener listener) {
                     listener.onStatusReady(account.name.equals(CHILD_EMAIL)
                                     ? ChildAccountStatus.REGULAR_CHILD
-                                    : ChildAccountStatus.NOT_CHILD);
+                                    : ChildAccountStatus.NOT_CHILD,
+                            account);
                 }
             };
 

@@ -69,9 +69,10 @@ public class FirstRunFlowSequencerTest {
                 @Override
                 public void checkChildAccountStatus(
                         Account account, ChildAccountStatusListener listener) {
-                    listener.onStatusReady(account.name.equals(CHILD_ACCOUNT)
-                                    ? ChildAccountStatus.REGULAR_CHILD
-                                    : ChildAccountStatus.NOT_CHILD);
+                    boolean accountIsChild = account.name.equals(CHILD_ACCOUNT);
+                    listener.onStatusReady(accountIsChild ? ChildAccountStatus.REGULAR_CHILD
+                                                          : ChildAccountStatus.NOT_CHILD,
+                            accountIsChild ? account : null);
                 }
             });
 

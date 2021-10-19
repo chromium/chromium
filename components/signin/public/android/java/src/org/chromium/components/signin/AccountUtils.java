@@ -6,10 +6,12 @@ package org.chromium.components.signin;
 
 import android.accounts.Account;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Promise;
+import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.ArrayList;
@@ -90,6 +92,30 @@ public class AccountUtils {
     public static @Nullable Account getDefaultAccountIfFulfilled(Promise<List<Account>> promise) {
         final List<Account> accounts = getAccountsIfFulfilledOrEmpty(promise);
         return accounts.isEmpty() ? null : accounts.get(0);
+    }
+
+    /**
+     * Checks the child account status on device based on the list of (zero or more) provided
+     * accounts.
+     *
+     * Since child accounts cannot share a device, the listener will be invoked with the status
+     * {@link ChildAccountStatus#NOT_CHILD} if there are no accounts or more than one account on
+     * device. If there is a single account on device, the listener will be passed to
+     * {@link AccountManagerFacade#checkChildAccountStatus} to check the child account status of
+     * the account.
+     *
+     * It should be safe to invoke this method before the native library is initialized.
+     *
+     * @param accounts The list of accounts on device.
+     * @param listener The listener is called when the {@link ChildAccountStatus.Status} is ready.
+     */
+    public static void checkChildAccountStatus(@NonNull AccountManagerFacade accountManagerFacade,
+            @NonNull List<Account> accounts, @NonNull ChildAccountStatusListener listener) {
+        if (accounts.size() == 1) {
+            accountManagerFacade.checkChildAccountStatus(accounts.get(0), listener);
+        } else {
+            listener.onStatusReady(ChildAccountStatus.NOT_CHILD, null);
+        }
     }
 
     /**
