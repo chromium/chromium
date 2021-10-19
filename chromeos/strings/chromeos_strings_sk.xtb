@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Bol zistený firewall</translation>
 <translation id="1075811647922107217">Veľkosť stránky</translation>
-<translation id="110351136513869678">Nakonfigurujte v nastaveniach</translation>
 <translation id="1119447706177454957">Interná chyba</translation>
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">Neplatný kód PUK.</translation>
 <translation id="1510238584712386396">Spúšťač</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1572585716423026576">Nastaviť ako tapetu</translation>
 <translation id="1621067168122174824">Spustiť test nabitia</translation>
 <translation id="1639239467298939599">Prebieha načítavanie</translation>
 <translation id="1641857168437328880">Podávač dokumentov (jednostranný)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">Ruší sa skenovanie</translation>
 <translation id="1851218745569890714">Videokonferencie</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">Adresa IP sa nedá získať</translation>
 <translation id="1887850431809612466">Revízia hardvéru</translation>
-<translation id="1901646112321215184">Nie sú nakonfigurované žiadne servery DNS</translation>
 <translation id="1905710495812624430">Maximálny počet povolených pokusov bol prekročený.</translation>
 <translation id="1908234395526491708">Neúspešné žiadosti UDP</translation>
 <translation id="1930797645656624981">Služba metódy vstupu systému Chrome OS</translation>
 <translation id="1947737735496445907">Vytlačené</translation>
-<translation id="197386857804679933">Prejsť do Nastavení a znova sa pripojiť</translation>
 <translation id="1979103255016296513">Uplynul termín zmeny hesla</translation>
 <translation id="1999615961760456652">Prihlasovací portál</translation>
 <translation id="2006864819935886708">Pripojiteľnosť</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">Položte na skener ďalšiu stranu</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
 <translation id="2878387241690264070">Za <ph name="NUM_SECONDS" /> s sa batéria vybila o <ph name="RATE" /></translation>
-<translation id="2927511423571448384">V zariadení s Androidom sa nepodarilo pripojiť k webom HTTP (port 80) cez firewall</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
 <translation id="3009958530611748826">Vyberte priečinok na uloženie</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Konečný bod</translation>
 <translation id="3069085583900247081">Nepodarilo sa otestovať</translation>
-<translation id="3076387335132326640">Používate otvorenú sieť</translation>
 <translation id="3083667275341675831">Diagnostika pripojenia</translation>
 <translation id="3091839911843451378">Nepodarilo sa – zastavené</translation>
 <translation id="3102119246920354026">Vyrovnávacia pamäť</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
 <translation id="3565064564551103223">Povolené adresy IP</translation>
 <translation id="357889014807611375">Wi‑Fi s meraním dát</translation>
-<translation id="3582041541988388905">Nezistili sa žiadne pripojenia k sieti <ph name="NETWORK_NAME" /></translation>
 <translation id="3595596368722241419">Batéria je nabitá</translation>
 <translation id="360565022852130722">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930">Batéria s kapacitou <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM karta je odomknutá</translation>
 <translation id="4562494484721939086">Žiadny signál</translation>
-<translation id="4567024731344774461">V zariadení s Androidom sa DNS nepodarilo preložiť</translation>
 <translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
 <translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) Preklad DNS</translation>
 <translation id="4848429997038228357">PREBIEHA</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zostávajú {0} pokusy}many{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokusov}}</translation>
-<translation id="4871137769558798671">K webom HTTP (port 443) sa nepodarilo pripojiť cez firewall</translation>
 <translation id="4880328057631981605">Názov prístupového bodu</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Okamžite si zvoľte nové heslo</translation>
@@ -291,7 +283,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5502931783115429516">Android nefunguje</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">Slabý signál. Skúste sa priblížiť k prístupovému bodu.</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skenovať znova</translation>
 <translation id="5669267381087807207">Aktivuje sa</translation>
@@ -299,7 +290,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5691511426247308406">Rodina</translation>
 <translation id="5701381305118179107">Na stred</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">Nie sú nakonfigurované žiadne menné servery</translation>
 <translation id="5760715441271661976">Stav portálu</translation>
 <translation id="5784136236926853061">Vysoká latencia protokolu HTTPS</translation>
 <translation id="5832805196449965646">Pridať osobu</translation>
@@ -343,7 +333,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="636850387210749493">Registrácia podniku</translation>
 <translation id="6379086450106841622">Dotyková obrazovka</translation>
 <translation id="6388847657025262518">Podávač dokumentov skenera je zaseknutý. Skontrolujte ho a skúste to znova.</translation>
-<translation id="6395640744968320699">K webom HTTP (port 80) sa nepodarilo pripojiť cez firewall</translation>
 <translation id="6398765197997659313">Ukončiť zobrazenie na celú obrazovku</translation>
 <translation id="641081527798843608">Zhoda predmetu</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -353,7 +342,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6472207088655375767">Jednorazové heslo</translation>
 <translation id="6480327114083866287">Spravuje <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>
-<translation id="6498608540383876992">Bránu sa nepodarilo kontaktovať</translation>
 <translation id="6516990319416533844">Ak chcete otestovať rýchlosť nabíjania batérie, nechajte batériu chvíľu vybíjať.</translation>
 <translation id="6517239166834772319">Preskúmať</translation>
 <translation id="6527081081771465939">Neznámy protokol zabezpečenia siete Wi‑Fi</translation>
@@ -363,13 +351,11 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6574762126505704998">Výplň</translation>
 <translation id="6575134580692778371">Nenakonfigurované</translation>
 <translation id="6596816719288285829">Adresa IP</translation>
-<translation id="6603230386432466813">Máte problémy s pripojením?</translation>
 <translation id="6618744767048954150">Beží</translation>
 <translation id="6620487321149975369">Tlačové úlohy sa budú zobrazovať v histórii, dokým ich neodstránite ručne</translation>
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6704062477274546131">Prevod adresy IP na názov domény systémom DNS</translation>
-<translation id="6714650824879092633">Sieť <ph name="NETWORK_NAME" /> bol zakázaná</translation>
 <translation id="6747215703636344499">Zastavené – výstup je plný</translation>
 <translation id="6756731097889387912">Skenovanie sa nepodarilo zrušiť</translation>
 <translation id="6766275201586212568">Neúspešné preklady DNS</translation>
@@ -382,7 +368,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6957231940976260713">Názov služby</translation>
 <translation id="6961170852793647506">Začnite položením dokumentu na skener</translation>
 <translation id="6977381486153291903">Revízia firmvéru</translation>
-<translation id="6982876849933694860">Ak chcete nastaviť nové pripojenie, prejdite do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
 <translation id="7040230719604914234">Operátor</translation>
 <translation id="7058278511608979688">Ukončiť a uložiť</translation>
@@ -401,7 +386,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7271040990581020067">Skener sa momentálne používa. Skúste to neskôr.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Zbierky tapiet</translation>
-<translation id="7292680402155138244">Vysoká latencia webov HTTPS (port 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -459,7 +443,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Požiadať o údaje počítadiel návštevnosti</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">DNS sa nepodarilo preložiť</translation>
 <translation id="8206859287963243715">Mobilné</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
@@ -471,7 +454,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8297006494302853456">Slabé</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8318753676953949627">Žiadne obrázky</translation>
-<translation id="8346875532700229909">V zariadení s Androidom sa nepodarilo kontaktovať bránu</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
 <translation id="8352772353338965963">Pridanie účtu pre viacnásobné prihlásenie. Ku všetkým prihláseným účtom môžete pristupovať bez hesla, takže táto funkcia by mala byť použitá iba s dôveryhodnými účtami.</translation>
 <translation id="8364946094152050673">Prázdne DNS servery</translation>

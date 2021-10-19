@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">En firewall blev registreret</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
-<translation id="110351136513869678">Gå til indstillingerne for at konfigurere</translation>
 <translation id="1119447706177454957">Intern fejl</translation>
 <translation id="1124772482545689468">Bruger</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">Ugyldig PUK-kode.</translation>
 <translation id="1510238584712386396">Appliste</translation>
 <translation id="155865706765934889">Touchplade</translation>
+<translation id="1572585716423026576">Angiv som baggrund</translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
 <translation id="1639239467298939599">Indlæser...</translation>
 <translation id="1641857168437328880">Dokumentindføring (én side)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">Annullerer scanning</translation>
 <translation id="1851218745569890714">Videomøder</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">IP-adressen kunne ikke hentes</translation>
 <translation id="1887850431809612466">Hardwarerevision</translation>
-<translation id="1901646112321215184">Der er ikke konfigureret nogen DNS-servere</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-anmodninger</translation>
 <translation id="1930797645656624981">Indtastningsmetodetjeneste for Chrome OS</translation>
 <translation id="1947737735496445907">Udskrevet</translation>
-<translation id="197386857804679933">Gå til Indstillinger for at genoprette forbindelsen</translation>
 <translation id="1979103255016296513">Adgangskoden mangler at blive ændret</translation>
 <translation id="1999615961760456652">Loginportal</translation>
 <translation id="2006864819935886708">Forbindelse</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">Placer en ny side i scanneren</translation>
 <translation id="2872961005593481000">Sluk</translation>
 <translation id="2878387241690264070">Batteriet blev afladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
-<translation id="2927511423571448384">Der kan ikke oprettes forbindelse til HTTP-websites (port 80) gennem firewall på Android-enheder</translation>
 <translation id="3008341117444806826">OPDATER</translation>
 <translation id="3009958530611748826">Vælg en mappe, du vil gemme i</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Slutpunkt</translation>
 <translation id="3069085583900247081">Testen mislykkedes</translation>
-<translation id="3076387335132326640">Du bruger et åbent netværk</translation>
 <translation id="3083667275341675831">Diagnosticering af forbindelse</translation>
 <translation id="3091839911843451378">Handlingen mislykkedes – Stoppede</translation>
 <translation id="3102119246920354026">Cache</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">Ca. <ph name="MIN_REMAINING" /> minutter tilbage</translation>
 <translation id="3565064564551103223">Tilladte IP'er</translation>
 <translation id="357889014807611375">forbrugsafregnet Wi-Fi</translation>
-<translation id="3582041541988388905">Der blev ikke fundet nogen <ph name="NETWORK_NAME" />-forbindelse.</translation>
 <translation id="3595596368722241419">Batteri helt opladet</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3689839747745352263">Testen <ph name="TEST_NAME" /></translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh batteri</translation>
 <translation id="4561801978359312462">SIM-kortet er låst op</translation>
 <translation id="4562494484721939086">Ingen dækning</translation>
-<translation id="4567024731344774461">DNS kan ikke oversættes på Android-enheder</translation>
 <translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) DNS-oversættelse</translation>
 <translation id="4848429997038228357">KØRER</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}one{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}other{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}}</translation>
-<translation id="4871137769558798671">Der kan ikke oprettes forbindelse til HTTP-websites (port 443) gennem firewall</translation>
 <translation id="4880328057631981605">Navn på adgangspunkt</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Vælg omgående en ny adgangskode</translation>
@@ -290,7 +282,6 @@
 <translation id="5502931783115429516">Android kører ikke</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">Signalstyrken er lav. Prøv at gå tættere på adgangspunktet</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Scan igen</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
@@ -298,7 +289,6 @@
 <translation id="5691511426247308406">Familie</translation>
 <translation id="5701381305118179107">Centrér</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">Der er ikke konfigureret nogen navneservere</translation>
 <translation id="5760715441271661976">Tilstand for portal</translation>
 <translation id="5784136236926853061">Stor HTTP-forsinkelse</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
@@ -342,7 +332,6 @@
 <translation id="636850387210749493">Tilmelding af virksomhed</translation>
 <translation id="6379086450106841622">Touchskærm</translation>
 <translation id="6388847657025262518">Scannerens dokumentføder sidder fast. Løs problemet, og prøv igen.</translation>
-<translation id="6395640744968320699">Der kan ikke oprettes forbindelse til HTTP-websites (port 80) gennem firewall</translation>
 <translation id="6398765197997659313">Afslut fuld skærm</translation>
 <translation id="641081527798843608">Emnematch</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -352,7 +341,6 @@
 <translation id="6472207088655375767">Engangskode</translation>
 <translation id="6480327114083866287">Administreres af <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stoppet – Papirstop</translation>
-<translation id="6498608540383876992">Der kan ikke oprettes forbindelse til denne gateway</translation>
 <translation id="6516990319416533844">Du kan teste, hvor hurtigt batteriet oplades, ved at aflade det i en kortere periode</translation>
 <translation id="6517239166834772319">Udforsk</translation>
 <translation id="6527081081771465939">Ukendt Wi-Fi-sikkerhedsprotokol</translation>
@@ -362,13 +350,11 @@
 <translation id="6574762126505704998">Udfyld</translation>
 <translation id="6575134580692778371">Ikke konfigureret</translation>
 <translation id="6596816719288285829">IP-adresse</translation>
-<translation id="6603230386432466813">Har du problemer med at oprette forbindelse?</translation>
 <translation id="6618744767048954150">Kører</translation>
 <translation id="6620487321149975369">Udskriftsjobs vises i historikken, medmindre de fjernes manuelt</translation>
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
 <translation id="6704062477274546131">DNS-udførelse</translation>
-<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> er blevet deaktiveret</translation>
 <translation id="6747215703636344499">Stoppet – Fuld udskriftsbakke</translation>
 <translation id="6756731097889387912">Scanningen kunne ikke annulleres</translation>
 <translation id="6766275201586212568">Mislykkede DNS-opslag</translation>
@@ -381,7 +367,6 @@
 <translation id="6957231940976260713">Tjenestens navn</translation>
 <translation id="6961170852793647506">Kom godt i gang ved at placere dit dokument i scanneren</translation>
 <translation id="6977381486153291903">Firmwarerevision</translation>
-<translation id="6982876849933694860">Du kan konfigurere en ny forbindelse ved at gå til <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
 <translation id="7040230719604914234">Udbyder</translation>
 <translation id="7058278511608979688">Afslut, og gem</translation>
@@ -400,7 +385,6 @@
 <translation id="7271040990581020067">Scanneren bruges i øjeblikket. Prøv igen senere.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Samlinger med baggrunde</translation>
-<translation id="7292680402155138244">Stor forsinkelse til HTTPS-websites (port 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -458,7 +442,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Anmod om trafiktællere</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">DNS kan ikke oversættes</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
@@ -470,7 +453,6 @@
 <translation id="8297006494302853456">Svag</translation>
 <translation id="8302368968391049045">HTTPS-firewall</translation>
 <translation id="8318753676953949627">Der er ingen billeder</translation>
-<translation id="8346875532700229909">Der kan ikke oprettes forbindelse til denne gateway på Android-enheder</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
 <translation id="8352772353338965963">Føj en konto til samlet login fra flere konti. Det er muligt at få adgang til alle de konti, der er logget ind på, uden en adgangskode, så denne funktion bør kun bruges til de konti, du har tillid til.</translation>
 <translation id="8364946094152050673">Navneserverne er ikke angivet</translation>

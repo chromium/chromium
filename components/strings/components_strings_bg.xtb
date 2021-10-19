@@ -124,6 +124,7 @@
 <ph name="LIST_ITEM" />работодателя ви или учебното ви заведение;
 <ph name="LIST_ITEM" />доставчика ви на интернет услуги.
 <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">Споделяне на този раздел</translation>
 <translation id="1339601241726513588">Домейн за записване:</translation>
 <translation id="1340482604681802745">Адрес за вземане</translation>
 <translation id="1346748346194534595">Надясно</translation>
@@ -157,6 +158,7 @@
 <translation id="1428146450423315676">Стакер 7</translation>
 <translation id="1428729058023778569">Виждате това предупреждение, защото сайтът не поддържа HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Печат</translation>
+<translation id="1432581352905426595">Управление на търсещите машини</translation>
 <translation id="1436185428532214179">Може да поиска разрешение да редактира файлове и папки на устройството ви</translation>
 <translation id="1442386063175183758">Сгъване на десния край навътре</translation>
 <translation id="1442987760062738829">Перфориране</translation>
@@ -376,7 +378,6 @@
 <translation id="2130448033692577677">Прилагането на посочените от вас шаблони не е възможно, тъй като правилото DnsOverHttpsMode не е зададено.</translation>
 <translation id="213826338245044447">Мобилни отметки</translation>
 <translation id="214556005048008348">Анулиране на плащането</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да споделите тази страница посредством опциите за изпращане на връзката, създаване на QR код, предаване и др.</translation>
 <translation id="2148613324460538318">Добавяне на карта</translation>
 <translation id="2149968176347646218">Връзката не е защитена</translation>
 <translation id="2154054054215849342">Синхронизирането не е налице за въведения от вас домейн</translation>
@@ -423,7 +424,6 @@
 <translation id="2293443924986248631">Когато тази функция е включена, сайтовете не могат да използват „бисквитки“, които проследяват активността ви в мрежата. Функциите в някои сайтове може да не работят правилно.</translation>
 <translation id="2295290966866883927">URL адресите на страниците, които посещавате, се изпращат до Google Cloud или до трети страни за анализ. Възможно е например да бъдат сканирани за откриване на опасни уебсайтове.</translation>
 <translation id="2297722699537546652">B5 (плик)</translation>
-<translation id="2297822946037605517">Споделяне на тази страница</translation>
 <translation id="2298855485018661510">Бутон „Управление на „бисквитките“. Натиснете Enter, за да управлявате предпочитанията си за „бисквитките“ от настройките на Chrome</translation>
 <translation id="2300306941146563769">Не е качено</translation>
 <translation id="2310021320168182093">Chou2 (плик)</translation>
@@ -501,6 +501,7 @@
 <translation id="2552295903035773204">От сега нататък да се използва опцията за заключване на екрана за потвърждаване на картите</translation>
 <translation id="2553853292994445426">Проверете настройките си за защитен DNS. Възможно е да сте конфигурирали защитен DNS сървър, с който не може да бъде установена връзка.</translation>
 <translation id="2556876185419854533">&amp;Отмяна на редактирането</translation>
+<translation id="2570734079541893434">Управление на настройките</translation>
 <translation id="257674075312929031">Група</translation>
 <translation id="2586657967955657006">Буферна памет</translation>
 <translation id="2587730715158995865">От <ph name="ARTICLE_PUBLISHER" />. Прочетете тази и още <ph name="OTHER_ARTICLE_COUNT" /> статии.</translation>
@@ -509,7 +510,6 @@
 <translation id="2595719060046994702">Устройството и профилът не се управляват от фирма или друга организация.</translation>
 <translation id="2596415276201385844">За установяване на сигурна връзка е необходимо часовникът ви да е верен. Това е така, защото сертификатите, с които уебсайтовете се идентифицират, са валидни само за конкретни периоди от време. Тъй като часовникът на устройството ви не е верен, Chrome не може да потвърди тези сертификати.</translation>
 <translation id="2597378329261239068">Този документ е защитен с парола.  Моля, въведете я.</translation>
-<translation id="2597833655590727265">Бутон за управление на облика на Chrome. Натиснете Enter, за да персонализирате облика на браузъра си с теми.</translation>
 <translation id="2609632851001447353">Вариации</translation>
 <translation id="2610561535971892504">Кликнете, за да копирате</translation>
 <translation id="2618023639789766142">C10 (плик)</translation>
@@ -599,7 +599,6 @@
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; сертификатът му за сигурност е от <ph name="DOMAIN2" />. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="2943895734390379394">Време на качване:</translation>
-<translation id="2948017612172418360">Бутон „Управление на настройките за търсене в сайтовете“. Натиснете Enter, за да управлявате настройките за търсене в сайтовете и основната си търсеща машина</translation>
 <translation id="2948083400971632585">Можете да деактивирате всички конфигурирани за дадена връзка прокси сървъри от страницата „Настройки“.</translation>
 <translation id="2949183777371959169">Игнорирано, защото машината не е регистрирана за управление на облака в браузъра Chrome.</translation>
 <translation id="2951588413176968965">Моята пощенска кутия</translation>
@@ -1023,7 +1022,6 @@
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4277028893293644418">Повторно задаване на паролата</translation>
 <translation id="4278390842282768270">Разрешено</translation>
-<translation id="4286047936834273847">Управление на настройките за търсене в сайтовете и основната ви търсеща машина</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Тази карта е запазена в профила ви в Google}other{Тези карти са запазени в профила ви в Google}}</translation>
 <translation id="4287885627794386150">Отговаря на условията за изпробване, но не е активно</translation>
 <translation id="4297502707443874121">Миниизображение на страницата <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1063,7 +1061,6 @@
 <translation id="4372948949327679948">Очаквана е стойност от тип <ph name="VALUE_TYPE" />.</translation>
 <translation id="4377125064752653719">Направихте опит да се свържете с/ъс <ph name="DOMAIN" />, но сървърът предoстави сертификат, анулиран от издателя си. Това означава, че в никакъв случай не трябва да се доверявате на представените от сървъра идентификационни данни за сигурност. Възможно е да сте се свързали с извършител на атака.</translation>
 <translation id="4378154925671717803">Телефон</translation>
-<translation id="4389652395741935834">Споделяне на тази страница чрез изпращане на връзката, създаване на QR код, предаване и др.</translation>
 <translation id="4390472908992056574">Периферия</translation>
 <translation id="4406883609789734330">Надписи на живо</translation>
 <translation id="4406896451731180161">резултата от търсенето</translation>
@@ -1330,6 +1327,7 @@
 <translation id="5230733896359313003">Адрес за доставка</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12 x 19</translation>
+<translation id="5234764350956374838">Отхвърляне</translation>
 <translation id="5250209940322997802">„Свързване с мрежа“</translation>
 <translation id="52517543715119994">Научете повече за функциите на Chrome</translation>
 <translation id="5251803541071282808">Облак</translation>
@@ -1647,7 +1645,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Проверете конфигурацията на прокси сървъра, защитната стена и защитения DNS<ph name="END_LINK" />.</translation>
 <translation id="6366710531182496394">Двуточково телбодиране отляво</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
-<translation id="6377404662019220017">Бутон „Споделяне на тази страница“. Натиснете Enter, за да споделите страницата посредством опциите за споделяне на връзката, създаване на QR код, предаване и др.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Възможно е таксуване.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{още 1 предложение}other{още # предложения}}</translation>
@@ -1868,7 +1865,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">лавандулово</translation>
 <translation id="7156870133441232244">Сървърът трябва да се надстрои до TLS 1.2 или по-нова версия.</translation>
-<translation id="716939258255825483">Бутон за играене на играта с динозавъра. Натиснете Enter, за да играете играта с динозавъра в Chrome</translation>
 <translation id="717330890047184534">Идентификатор в GAIA:</translation>
 <translation id="7173920250514487165">Заснемане на поверително съдържание на екрана</translation>
 <translation id="7174545416324379297">Обединени стойности</translation>
@@ -1891,7 +1887,6 @@
 <translation id="7220786058474068424">Обработва се</translation>
 <translation id="7221855153210829124">Показва известия</translation>
 <translation id="722454870747268814">Нов раздел в режим „инкогнито“</translation>
-<translation id="7231476387708735839">Управление на настройките за търсене в сайтовете</translation>
 <translation id="7233592378249864828">Отпечатване на лист за потвърждение</translation>
 <translation id="7238585580608191973">Пръстов отпечатък SHA-256</translation>
 <translation id="7240120331469437312">Алтернативно име на субекта на сертификата</translation>
@@ -2487,6 +2482,7 @@
 <translation id="9213433120051936369">Персонализиране на облика</translation>
 <translation id="9215416866750762878">Приложение пречи на Chrome да се свърже безопасно с този сайт</translation>
 <translation id="9219103736887031265">Изображения</translation>
+<translation id="922152298093051471">Персонализиране на Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ИЗЧИСТВАНЕ НА ФОРМУЛЯРА</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2519,5 +2515,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">От Google Pay</translation>
-<translation id="998677222109959694">Управление на настройките на Chrome</translation>
 </translationbundle>

@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detected</translation>
 <translation id="1075811647922107217">Page size</translation>
-<translation id="110351136513869678">Visit settings to configure</translation>
 <translation id="1119447706177454957">Internal error</translation>
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">Invalid PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1572585716423026576">Set as wallpaper</translation>
 <translation id="1621067168122174824">Run charge test</translation>
 <translation id="1639239467298939599">Loading</translation>
 <translation id="1641857168437328880">Document feeder (one-sided)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">Cancelling scanning</translation>
 <translation id="1851218745569890714">Video conferencing</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">Unable to obtain IP address</translation>
 <translation id="1887850431809612466">Hardware revision</translation>
-<translation id="1901646112321215184">No DNS servers are configured</translation>
 <translation id="1905710495812624430">Maximum allowed attempts exceeded.</translation>
 <translation id="1908234395526491708">UDP request failures</translation>
 <translation id="1930797645656624981">Chrome OS Input Method Service</translation>
 <translation id="1947737735496445907">Printed</translation>
-<translation id="197386857804679933">Visit Settings to reconnect</translation>
 <translation id="1979103255016296513">Password change overdue</translation>
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connectivity</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">Place another page on the scanner</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
-<translation id="2927511423571448384">Unable to connect through firewall to HTTP (port 80) websites from Android</translation>
 <translation id="3008341117444806826">REFRESH</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3069085583900247081">Test failed</translation>
-<translation id="3076387335132326640">You are using an open network</translation>
 <translation id="3083667275341675831">Connectivity diagnostics</translation>
 <translation id="3091839911843451378">Failed – Stopped</translation>
 <translation id="3102119246920354026">Cache</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
 <translation id="3565064564551103223">Allowed IPs</translation>
 <translation id="357889014807611375">metered Wi-Fi</translation>
-<translation id="3582041541988388905">No <ph name="NETWORK_NAME" /> connection detected</translation>
 <translation id="3595596368722241419">Battery full</translation>
 <translation id="360565022852130722">Wi-Fi network is secured with weak protocol WEP 802.1x</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh battery</translation>
 <translation id="4561801978359312462">SIM unlocked</translation>
 <translation id="4562494484721939086">No service</translation>
-<translation id="4567024731344774461">Unable to resolve DNS from Android</translation>
 <translation id="458794348635939462">Failed to resolve all hosts</translation>
 <translation id="4593212453765072419">Proxy authentication required</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> out of <ph name="TOTAL_PAGE_NUMBER" />. Press Enter to cancel the print job.</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) DNS resolution</translation>
 <translation id="4848429997038228357">RUNNING</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} attempt left}other{<ph name="ERROR_MESSAGE" /> {0} attempts left}}</translation>
-<translation id="4871137769558798671">Unable to connect through firewall to HTTPS (port 443) websites</translation>
 <translation id="4880328057631981605">Access point name</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Choose a new one immediately</translation>
@@ -291,7 +283,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5502931783115429516">Android not running</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">Low signal strength, try to move closer to the access point</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Rescan</translation>
 <translation id="5669267381087807207">Activating</translation>
@@ -299,7 +290,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5691511426247308406">Family</translation>
 <translation id="5701381305118179107">Centre</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">No name servers are configured</translation>
 <translation id="5760715441271661976">Portal state</translation>
 <translation id="5784136236926853061">High HTTP latency</translation>
 <translation id="5832805196449965646">Add Person</translation>
@@ -343,7 +333,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="636850387210749493">Enterprise enrolment</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6388847657025262518">The scanner’s document feeder is jammed. Check the feeder and try again.</translation>
-<translation id="6395640744968320699">Unable to connect through firewall to HTTP (port 80) websites</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="641081527798843608">Subject match</translation>
 <translation id="6423239382391657905">Open VPN</translation>
@@ -353,7 +342,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Managed by <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stopped – paper jam</translation>
-<translation id="6498608540383876992">Unable to contact gateway</translation>
 <translation id="6516990319416533844">To test battery charging rate, let your battery drain for a short period</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Unknown Wi-Fi security protocol</translation>
@@ -363,13 +351,11 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6574762126505704998">Fill</translation>
 <translation id="6575134580692778371">Not configured</translation>
 <translation id="6596816719288285829">IP Address</translation>
-<translation id="6603230386432466813">Having trouble connecting?</translation>
 <translation id="6618744767048954150">Running</translation>
 <translation id="6620487321149975369">Print jobs will appear in history unless they are removed manually</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6704062477274546131">DNS resolution</translation>
-<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> has been disabled</translation>
 <translation id="6747215703636344499">Stopped – output full</translation>
 <translation id="6756731097889387912">Couldn't cancel scanning</translation>
 <translation id="6766275201586212568">Failed DNS resolutions</translation>
@@ -382,7 +368,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6957231940976260713">Service name</translation>
 <translation id="6961170852793647506">To get started, place your document on the scanner</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
-<translation id="6982876849933694860">To set up a new connection, go to <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">End and save</translation>
@@ -401,7 +386,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Wallpaper collections</translation>
-<translation id="7292680402155138244">High latency to HTTPS (port 443) websites</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -459,7 +443,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Request traffic counters</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">Unable to resolve DNS</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Perks</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
@@ -471,7 +454,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8297006494302853456">Weak</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8318753676953949627">No images</translation>
-<translation id="8346875532700229909">Unable to contact the gateway from Android</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="8352772353338965963">Add an account to multiple sign-in. All signed-in accounts can be accessed without a password, so this feature should only be used with trusted accounts.</translation>
 <translation id="8364946094152050673">Empty name servers</translation>

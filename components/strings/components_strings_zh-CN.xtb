@@ -124,6 +124,7 @@
           <ph name="LIST_ITEM" />您的雇主或您所在的学校
           <ph name="LIST_ITEM" />您的互联网服务提供商
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">分享此标签页</translation>
 <translation id="1339601241726513588">注册域：</translation>
 <translation id="1340482604681802745">取货地址</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -157,6 +158,7 @@
 <translation id="1428146450423315676">堆叠出纸器 7</translation>
 <translation id="1428729058023778569">您之所以会看到此警告，是因为该网站不支持 HTTPS。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">打印</translation>
+<translation id="1432581352905426595">管理搜索引擎</translation>
 <translation id="1436185428532214179">可以询问能否修改您设备上的文件和文件夹</translation>
 <translation id="1442386063175183758">关门折（右侧）</translation>
 <translation id="1442987760062738829">打孔</translation>
@@ -374,7 +376,6 @@
 <translation id="2130448033692577677">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策未设置。</translation>
 <translation id="213826338245044447">移动设备书签</translation>
 <translation id="214556005048008348">取消付款</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可使用“分享链接”、“创建二维码”、“投射”等选项分享此页。</translation>
 <translation id="2148613324460538318">添加支付卡</translation>
 <translation id="2149968176347646218">连接不安全</translation>
 <translation id="2154054054215849342">您的网域不支持同步</translation>
@@ -421,7 +422,6 @@
 <translation id="2293443924986248631">开启此设置后，网站无法使用 Cookie 来跟踪您在网上的活动。某些网站上的功能可能会无法正常运作。</translation>
 <translation id="2295290966866883927">系统会将您所访问网页的网址发送给 Google Cloud 或第三方以供分析。例如，Google Cloud 或第三方可能会扫描这些网址，以检测出不安全的网站。</translation>
 <translation id="2297722699537546652">B5 (Envelope)</translation>
-<translation id="2297822946037605517">分享此页</translation>
 <translation id="2298855485018661510">“管理 Cookie”按钮，按 Enter 键即可在 Chrome 设置中管理您的 Cookie 偏好设置</translation>
 <translation id="2300306941146563769">未上传</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
@@ -499,6 +499,7 @@
 <translation id="2552295903035773204">从现在开始，使用“屏幕锁定”功能确认银行卡</translation>
 <translation id="2553853292994445426">请检查您的安全 DNS 设置。您可能已配置了安全 DNS 服务器但无法连接到它。</translation>
 <translation id="2556876185419854533">撤消修改(&amp;U)</translation>
+<translation id="2570734079541893434">管理设置</translation>
 <translation id="257674075312929031">群组</translation>
 <translation id="2586657967955657006">剪贴板</translation>
 <translation id="2587730715158995865">来自<ph name="ARTICLE_PUBLISHER" />。阅读这篇报道以及其他 <ph name="OTHER_ARTICLE_COUNT" /> 篇报道。</translation>
@@ -507,7 +508,6 @@
 <translation id="2595719060046994702">此设备和帐号不由某个公司或其他组织管理。</translation>
 <translation id="2596415276201385844">要建立安全连接，您的时钟设置必须正确。这是因为，网站用于证明身份的证书仅在特定时间段有效。由于您设备的时钟不正确，因此 Chrome 无法验证这些证书。</translation>
 <translation id="2597378329261239068">本文档设置了密码保护，请输入密码。</translation>
-<translation id="2597833655590727265">“管理 Chrome 外观”按钮，按 Enter 键即可使用各种主题自定义您的浏览器外观。</translation>
 <translation id="2609632851001447353">其他变体</translation>
 <translation id="2610561535971892504">点击复制</translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
@@ -597,7 +597,6 @@
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书来自<ph name="DOMAIN2" />。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2943895734390379394">上传时间：</translation>
-<translation id="2948017612172418360">“管理网站搜索”按钮，按 Enter 键即可管理网站搜索和您的默认搜索引擎</translation>
 <translation id="2948083400971632585">您可以在设置页面中停用任何针对某个连接配置的代理。</translation>
 <translation id="2949183777371959169">被忽略了，因为相应设备未注册“Chrome 浏览器云管理”服务。</translation>
 <translation id="2951588413176968965">我的信箱</translation>
@@ -796,6 +795,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3603507503523709">已被您的管理员禁用的应用</translation>
 <translation id="3608932978122581043">送纸方向</translation>
+<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> 的虚拟卡</translation>
 <translation id="3614103345592970299">大小：2</translation>
 <translation id="361438452008624280">列表条目“<ph name="LANGUAGE_ID" />”：语言未知或不受支持。</translation>
 <translation id="3615877443314183785">请输入有效的失效日期</translation>
@@ -1011,7 +1011,6 @@
 <translation id="4275830172053184480">重启您的设备</translation>
 <translation id="4277028893293644418">重置密码</translation>
 <translation id="4278390842282768270">允许</translation>
-<translation id="4286047936834273847">管理网站搜索和您的默认搜索引擎</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{这张卡已保存到您的 Google 帐号中}other{这些卡已保存到您的 Google 帐号中}}</translation>
 <translation id="4287885627794386150">符合试用条件但处于无效状态</translation>
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 页的缩略图</translation>
@@ -1051,7 +1050,6 @@
 <translation id="4372948949327679948">应使用<ph name="VALUE_TYPE" />值。</translation>
 <translation id="4377125064752653719">您尝试访问的是 <ph name="DOMAIN" />，但服务器出示的证书已被其颁发者吊销。这表明绝对不应该信任此服务器出示的安全凭据。您可能正在与攻击者进行通信。</translation>
 <translation id="4378154925671717803">电话机</translation>
-<translation id="4389652395741935834">通过分享链接、创建二维码、投射等操作分享此页。</translation>
 <translation id="4390472908992056574">帽檐式</translation>
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4406896451731180161">搜索结果</translation>
@@ -1318,6 +1316,7 @@
 <translation id="5230733896359313003">送货地址</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">关闭</translation>
 <translation id="5250209940322997802">“连接到网络”</translation>
 <translation id="52517543715119994">了解各项 Chrome 功能</translation>
 <translation id="5251803541071282808">云端</translation>
@@ -1608,6 +1607,7 @@
 <translation id="6272383483618007430">Google 更新</translation>
 <translation id="6276112860590028508">您的阅读清单中的网页会显示在此处</translation>
 <translation id="627746635834430766">若想在下次购物时更快捷地付款，请将您的付款卡信息和帐单邮寄地址保存到您的 Google 帐号中。</translation>
+<translation id="6279098320682980337">未填充虚拟卡号？点击“信用卡详细信息”即可复制</translation>
 <translation id="6280223929691119688">无法递送到此地址。请另选一个地址。</translation>
 <translation id="6282194474023008486">邮政编码</translation>
 <translation id="6289939620939689042">页面颜色</translation>
@@ -1633,7 +1633,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />检查代理服务器、防火墙和安全 DNS 配置<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">双钉（左侧）</translation>
 <translation id="6377268785556383139">1 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
-<translation id="6377404662019220017">“分享此页”按钮，按 Enter 键即可使用“分享链接”、“创建二维码”、“投射”等选项分享此页。</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">可能产生费用。</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 条其他建议}other{# 条其他建议}}</translation>
@@ -1854,7 +1853,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
 <translation id="7153618581592392745">薰衣草色</translation>
 <translation id="7156870133441232244">服务器应该升级到 TLS 1.2 或更高版本。</translation>
-<translation id="716939258255825483">“玩 Dino Run”按钮，按 Enter 键即可在 Chrome 中玩《Dino Run》游戏</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7173920250514487165">截取/录制屏幕上的机密内容</translation>
 <translation id="7174545416324379297">已合并</translation>
@@ -1877,7 +1875,6 @@
 <translation id="7220786058474068424">正在处理</translation>
 <translation id="7221855153210829124">显示通知</translation>
 <translation id="722454870747268814">打开新的无痕模式标签页</translation>
-<translation id="7231476387708735839">管理网站搜索</translation>
 <translation id="7233592378249864828">打印确认工作表</translation>
 <translation id="7238585580608191973">SHA-256 指纹</translation>
 <translation id="7240120331469437312">证书主题背景的备用名称</translation>
@@ -2474,6 +2471,7 @@
 <translation id="9213433120051936369">自定义外观</translation>
 <translation id="9215416866750762878">有一款应用正在阻止 Chrome 安全地连接到此网站</translation>
 <translation id="9219103736887031265">图片</translation>
+<translation id="922152298093051471">自定义 Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">清除表单内容</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2506,5 +2504,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">来自 Google Pay</translation>
-<translation id="998677222109959694">管理 Chrome 设置</translation>
 </translationbundle>

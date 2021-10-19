@@ -78,18 +78,6 @@
 <translation id="1069489575852947981">Definir a política como "Ativada" ou deixá-la sem definição faz com que uma conta local do dispositivo seja configurada para login automático sem atraso. O <ph name="PRODUCT_OS_NAME" /> aplica o atalho de teclado Ctrl+Alt+S para ignorar o login automático e mostrar a tela de login.
 
       Definir a política como "Desativada" faz com que os usuários não possam ignorar o login automático sem atraso (se configurado).</translation>
-<translation id="1070656322814001059">O Chrome bloqueará a navegação para protocolos externos no
-      iframe dentro do sandbox. Consulte https://chromestatus.com/features/5680742077038592.
-
-      Se esta política for definida como "True" (verdadeira), o Chrome bloqueará esse tipo de navegação.
-
-      Se esta política for definida como "False" (falsa), o Chrome não bloqueará esse tipo de navegação.
-
-      Por padrão, a política é definida como "True", com o recurso de segurança ativado.
-
-      Ela é usada para que empresas afetadas por essas restrições possam
-      as anular temporariamente.
-      </translation>
 <translation id="1073983258515362346">Envia informações sobre as luzes de fundo de um dispositivo.
 
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
@@ -2288,9 +2276,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se ela não for definida, o <ph name="PRODUCT_NAME" /> usará um nome de biblioteca padrão.</translation>
 <translation id="3652670852519271837">Permitir que sites peçam ao usuário para conceder permissão de acesso de leitura de arquivos e diretórios com a API File System</translation>
-<translation id="3653234084868565720">Controla se o <ph name="PRODUCT_OS_NAME" /> permite que novas contas de usuário sejam criadas. Se esta política for definida como falsa, os usuários que ainda não têm uma conta não poderão fazer login.
-
-      Se esta política for definida como verdadeira ou não for configurada, será permitida a criação de novas contas de usuário, desde que <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> não impeça o usuário de fazer login.</translation>
 <translation id="3653237928288822292">Ícone do provedor de pesquisa padrão</translation>
 <translation id="3654906736796256792">Permite a execução do sandbox de áudio.</translation>
 <translation id="3659542706175323490">Se a política for definida como "Ativada", a inicialização em CA ficará ativada, se compatível com o dispositivo. A inicialização em CA oferece uma oportunidade ao sistema de reiniciar do estado "Desligado" ou "Suspenso" após a conexão do cabo de energia.

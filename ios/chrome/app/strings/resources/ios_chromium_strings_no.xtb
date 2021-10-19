@@ -52,7 +52,6 @@
 <translation id="5171868502429358653">Logg på Chromium</translation>
 <translation id="5224391634244552924">Ingen lagrede passord. Chromium kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="5308226104666789935">Chromium kan ikke se etter oppdateringer</translation>
-<translation id="5324242752415821224">Organisasjonen din krever at du logger på for å bruke Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Vil du angi Chromium som standard?</translation>
 <translation id="5521125884468363740">For å se fanene dine overalt hvor du bruker Chromium, logg på og slå på synkronisering</translation>
 <translation id="5573014823074921752">Chromium-tips. For flere fanealternativer, trykk og hold inne Vis faner-knappen på verktøylinjen, som du finner nederst eller øverst på skjermen.</translation>
@@ -73,7 +72,6 @@
 <translation id="6424492062988593837">Chromium har blitt enda bedre. En ny versjon er nå tilgjengelig.</translation>
 <translation id="6752854822223394465">Organisasjonen din konfigurerer Chromium …</translation>
 <translation id="6820823224820483452">Chromium kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
-<translation id="6827294685447036764">Hvis du lar Chromium få vite posisjonen din, sender Chromium den til eventuelle nettsteder hvor du gir tillatelse til dette. Nettsteder kan be om posisjonen din når de har lokal informasjon å vise deg, for eksempel butikker i nærheten eller lokalnyheter.</translation>
 <translation id="7018284295775193585">Kan ikke oppdatere Chromium</translation>
 <translation id="7045244423563602563">Gi Chromium et personlig preg</translation>
 <translation id="7099326575020694068">Chromium kan ikke bruke kameraet i modus for delt visning</translation>

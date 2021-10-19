@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
 <translation id="2021896219286479412">Helskärmskontroller på webbsidan</translation>
 <translation id="2038563949887743358">Aktivera begäran av skrivbordsversion</translation>
-<translation id="2039379262107991683">Lägg till sidor i läslistan om du vill få en påminnelse</translation>
 <translation id="204321170514947529">Data för <ph name="APP_NAME" /> finns även i Chrome</translation>
 <translation id="2046634576464120978">Registreringen misslyckades</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2781151931089541271">1 sekund kvar</translation>
 <translation id="2788468313014644040">Gruppens nummer</translation>
 <translation id="2800066122460699237">Fliken <ph name="TAB_TITLE" /> stängs</translation>
-<translation id="2801022321632964776">Uppdatera och få ditt språk i den senaste versionen av Chrome</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">Information om din användning av Chrome som inte kan kopplas till dig\n\nRelevant data från sällsynta Chrome-krascher som kan innehålla personliga uppgifter\n\nOm du aktiverar synkronisering kan mätvärdena även innehålla information om vilka webbadresser du besöker</translation>
@@ -354,12 +352,10 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromes startsida</translation>
 <translation id="3154863790776532719">Nya funktioner och förbättrad prestanda</translation>
-<translation id="3157387275655328056">Lägg till i läslistan</translation>
 <translation id="3157842584138209013">Under Fler alternativ kan du se hur mycket data du har sparat</translation>
 <translation id="3166827708714933426">Kortkommandon för flikar och fönster</translation>
 <translation id="316694332262407393">Chrome körs redan här.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3205824638308738187">Nästan klart!</translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> raderades</translation>
@@ -450,7 +446,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3739899004075612870">Bokmärket har lagts till i <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Röstsökning är inte tillgängligt på enheten</translation>
 <translation id="3749259744154402564">Stöds inte</translation>
-<translation id="3771001275138982843">Det gick inte att ladda ned uppdateringen</translation>
 <translation id="3771033907050503522">Inkognitoflikar</translation>
 <translation id="3771290962915251154">Inställningen är inaktiverad eftersom föräldrakontroller används</translation>
 <translation id="3771694256347217732">Googles användarvillkor</translation>
@@ -791,7 +786,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5833984609253377421">Dela länk</translation>
 <translation id="5834764604050996579">Tillåt att Chrome använder kameran om du vill skanna en QR-kod.</translation>
-<translation id="5836192821815272682">Uppdatering för Chrome laddas ned …</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">pausad</translation>
 <translation id="5854512288214985237">Varken statistik eller felrapporter skickas till Google</translation>
@@ -863,7 +857,6 @@ Provfunktioner i Privacy Sandbox är för närvarande under utveckling och tillg
 <translation id="6232535412751077445">Om du aktiverar Do Not Track inkluderas en begäran i din surftrafik. Eventuella effekter beror på om webbplatsen svarar på begäran och hur begäran tolkas.
 
 Vissa webbplatser kan till exempel svara på begäran genom att visa annonser som inte baseras på andra webbplatser du har besökt. Många webbplatser samlar ändå in och använder din webbinformation – till exempel för att förbättra säkerheten, tillhandahålla innehåll, annonser och rekommendationer samt generera rapportstatistik.</translation>
-<translation id="624789221780392884">Uppdateringen är klar</translation>
 <translation id="6264376385120300461">Ladda ned ändå</translation>
 <translation id="6277522088822131679">Det gick inte att skriva ut sidan. Försök igen.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -899,7 +892,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6411219469806822692">Markeringen kan inte utökas mer i riktning uppåt. Testa att börja någonstans högre upp på sidan.</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="641643625718530986">Skriv ut …</translation>
-<translation id="6427112570124116297">Översätt webbsidor</translation>
 <translation id="6433501201775827830">Välj sökmotor</translation>
 <translation id="6434309073475700221">Släng</translation>
 <translation id="6437478888915024427">Sidinformation</translation>
@@ -1001,7 +993,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6979737339423435258">Sedan kontot skapades</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="6987047470128880212">Inkognito är inte tillgängligt på den här enheten</translation>
-<translation id="6989267951144302301">Nedladdning misslyckades</translation>
 <translation id="6995899638241819463">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
 <translation id="7001056293070445572">Filen är stor (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Öppna i webbläsaren</translation>
@@ -1033,7 +1024,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="718926126787620637">Lista över bokmärkesmappar som har öppnats över hela skärmen</translation>
 <translation id="7191430249889272776">Fliken öppnades i bakgrunden.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedladdning väntar}other{# nedladdningar väntar}}</translation>
-<translation id="7233236755231902816">Skaffa den senaste versionen av Chrome och få webben översatt till ditt språk</translation>
 <translation id="7242755609445462077">Stiliserad markering <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Kontrollera att synkronisering har aktiverats i Chrome på <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Lägg telefonen nära datorn</translation>
@@ -1056,7 +1046,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Dela 1 markerat objekt}other{Dela # markerade objekt}}</translation>
-<translation id="7356631068872238169">Ta bort från läslistan</translation>
 <translation id="7359002509206457351">Åtkomst till betalningsmetoder</translation>
 <translation id="7375125077091615385">Typ:</translation>
 <translation id="7376560087009844242">Om du tar med mer av sidans text kanske du får bättre resultat när du använder Tryck för att söka. Du kan alltid öppna <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /> om du vill ändra detta.</translation>
@@ -1233,7 +1222,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="829672787777123339">Ansluter till enheten …</translation>
 <translation id="8310344678080805313">Standardflikar</translation>
 <translation id="831192587911042850">Lägger till den aktuella webbplatsen i listan med webbplatser du följer.</translation>
-<translation id="8327155640814342956">Uppdatera Chrome så att du får bästa möjliga surfupplevelse</translation>
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
 <translation id="8349013245300336738">Sortera efter dataförbrukning</translation>
 <translation id="8354977102499939946">Gör en röstsökning snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
@@ -1346,6 +1334,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8951232171465285730">Du har sparat <ph name="MEGABYTES" /> MB med Chrome</translation>
 <translation id="8955719471735800169">Tillbaka till början</translation>
 <translation id="8965591936373831584">väntar</translation>
+<translation id="8967427617812342790">Lägg till i läslistan</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_ONE" /> flik till stängs}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_MANY" /> flikar till stängs}}</translation>
 <translation id="8970887620466824814">Något gick fel.</translation>
 <translation id="8972098258593396643">Vill du ladda ned till standardmappen?</translation>

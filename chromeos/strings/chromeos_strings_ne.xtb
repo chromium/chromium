@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फायरवाल पत्ता लाग्यो</translation>
 <translation id="1075811647922107217">पेजको आकार</translation>
-<translation id="110351136513869678">तपाईं आफ्नो नेटवर्क कन्फिगर गर्न चाहनुहुन्छ भने सेटिङमा जानुहोस्</translation>
 <translation id="1119447706177454957">आन्तरिक त्रुटि</translation>
 <translation id="1124772482545689468">प्रयोगकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">अमान्य PUK।</translation>
 <translation id="1510238584712386396">लन्चर</translation>
 <translation id="155865706765934889">टचप्याड</translation>
+<translation id="1572585716423026576">वालपेपरका रूपमा सेट गर्नुहोस्</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
 <translation id="1641857168437328880">डकुमेन्ट फिडर (एकतर्फी)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">स्क्यान गर्ने कार्य रद्द गरिँदै छ</translation>
 <translation id="1851218745569890714">भिडियो कन्फ्रेन्स</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">IP ठेगाना प्राप्त गर्न सकिएन</translation>
 <translation id="1887850431809612466">हार्डवेयरको पुनरावृत्ति</translation>
-<translation id="1901646112321215184">कुनै पनि DNS सर्भर कन्फिगर गरिएको छैन</translation>
 <translation id="1905710495812624430">अनुमति दिइएका प्रयासहरूको अधिकतम संख्या नाघ्यो।</translation>
 <translation id="1908234395526491708">UDP सम्बन्धी अनुरोध गर्न सकिएन</translation>
 <translation id="1930797645656624981">Chrome OS को इनपुट विधिसम्बन्धी सेवा</translation>
 <translation id="1947737735496445907">प्रिन्ट गरियो</translation>
-<translation id="197386857804679933">तपाईं रिकनेक्ट गर्न चाहनुहुन्छ भने "सेटिङ" मा जानुहोस्</translation>
 <translation id="1979103255016296513">पासवर्ड परिवर्तन गर्न ढिला भइसकेको छ</translation>
 <translation id="1999615961760456652">क्याप्टिभ पोर्टल</translation>
 <translation id="2006864819935886708">कनेक्टिभिटी</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">स्क्यानरमा अर्को पेज राख्नुहोस्</translation>
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> घट्यो।</translation>
-<translation id="2927511423571448384">फायरवालका कारण Android बाट HTTP (पोर्ट ८०) वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>
 <translation id="3008341117444806826">पुनः ताजा गर्नुहोस्</translation>
 <translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">इन्डपोइन्ट</translation>
 <translation id="3069085583900247081">परीक्षण गर्न सकिएन</translation>
-<translation id="3076387335132326640">तपाईं खुला नेटवर्क प्रयोग गर्दै हुनुहुन्छ</translation>
 <translation id="3083667275341675831">कनेक्टिभिटी डाइगोनेस्टिक्स</translation>
 <translation id="3091839911843451378">प्रिन्ट गर्न सकिएन - प्रिन्ट गर्दा गर्दै रोकियो</translation>
 <translation id="3102119246920354026">केस</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> मिनेट जति बाँकी छ</translation>
 <translation id="3565064564551103223">अनुमति दिइएका IP</translation>
 <translation id="357889014807611375">मिटर चढ्ने Wi-Fi</translation>
-<translation id="3582041541988388905">कुनै पनि <ph name="NETWORK_NAME" /> कनेक्सन भेटिएन</translation>
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
 <translation id="360565022852130722">WiFi नेटवर्क WEP 802.1x नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> परीक्षण</translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ब्याट्री</translation>
 <translation id="4561801978359312462">SIM अनलक गरिएको छ</translation>
 <translation id="4562494484721939086">कुनै पनि सेवा छैन</translation>
-<translation id="4567024731344774461">Android बाट DNS समाधान गर्न सकिएन</translation>
 <translation id="458794348635939462">सबै होस्टहरूको समस्या समाधान गर्न सकिएन</translation>
 <translation id="4593212453765072419">प्रोक्सी प्रमाणित गर्नु पर्ने हुन्छ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> मध्ये <ph name="PRINTED_PAGE_NUMBER" />। प्रिन्ट गर्ने कार्य रद्द गर्न enter थिच्नुहोस्।</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) DNS रिजोल्युसन</translation>
 <translation id="4848429997038228357">चलिरहेको छ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> अब {0} पटक प्रयास गर्न मिल्छ}other{<ph name="ERROR_MESSAGE" /> अब {0} पटक प्रयास गर्न मिल्छ}}</translation>
-<translation id="4871137769558798671">फायरवालका कारण HTTPS (पोर्ट ४४३) वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>
 <translation id="4880328057631981605">पहुँच बिन्दुको नाम</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">तुरुन्तै एउटा नयाँ पासवर्ड राख्नुहोस्</translation>
@@ -290,7 +282,6 @@
 <translation id="5502931783115429516">Android चलिरहेको छैन</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">सिग्नल कमजोर छ, एक्सेस पोइन्टको अझ नजिक गई हेर्नुहोस्</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुनः स्क्यान गर्नुहोस्</translation>
 <translation id="5669267381087807207">सक्रिय गर्दै</translation>
@@ -298,7 +289,6 @@
 <translation id="5691511426247308406">परिवार</translation>
 <translation id="5701381305118179107">केन्द्र</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> औँ पेज</translation>
-<translation id="5715997777752246116">कुनै पनि नेम सर्भर कन्फिगर गरिएको छैन</translation>
 <translation id="5760715441271661976">पोर्टलको स्थिति</translation>
 <translation id="5784136236926853061">HTTP को विलम्बता धेरै छ</translation>
 <translation id="5832805196449965646">व्यक्ति थप्नुहोस्</translation>
@@ -342,7 +332,6 @@
 <translation id="636850387210749493">उद्यम भर्ना</translation>
 <translation id="6379086450106841622">टचस्क्रिन</translation>
 <translation id="6388847657025262518">स्क्यानरको डकुमेन्ट फिडर जाम भएको छ। फिडर जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="6395640744968320699">फायरवालका कारण HTTP (पोर्ट ८०) वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
 <translation id="641081527798843608">विषयको मिलान</translation>
 <translation id="6423239382391657905">खुल्लाVPN</translation>
@@ -352,7 +341,6 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ले व्यवस्थापन गर्छ</translation>
 <translation id="649050271426829538">रोकियो - प्रिन्टरमा कागज अड्कियो</translation>
-<translation id="6498608540383876992">गेटवेमा सम्पर्क गर्न सकिएन</translation>
 <translation id="6516990319416533844">ब्याट्री चार्ज हुने गति जाँच्न केही समयका लागि यन्त्र चलाएर ब्याट्री खपत हुन दिनुहोस्</translation>
 <translation id="6517239166834772319">एक्स्प्लोर</translation>
 <translation id="6527081081771465939">अज्ञात WiFi सेक्युरिटी प्रोटोकोल</translation>
@@ -362,13 +350,11 @@
 <translation id="6574762126505704998">भर्नुहोस्</translation>
 <translation id="6575134580692778371">विन्यास गरिएको छैन</translation>
 <translation id="6596816719288285829">IP ​​ठेगाना</translation>
-<translation id="6603230386432466813">कनेक्ट गर्ने क्रममा समस्या भइरहेको छ?</translation>
 <translation id="6618744767048954150">जाँच हुँदै छ</translation>
 <translation id="6620487321149975369">तपाईंले प्रिन्टसम्बन्धी कार्यहरू नहटाउँदासम्म ती कार्यहरू इतिहासमा देखिने छन्</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6704062477274546131">DNS रिजोल्युसन</translation>
-<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> अफ गरिएको छ</translation>
 <translation id="6747215703636344499">रोकियो - प्रिन्टरको आउटपुट ट्रे भरिएको छ</translation>
 <translation id="6756731097889387912">स्क्यान गर्ने कार्य रद्द गर्न सकिएन</translation>
 <translation id="6766275201586212568">DNS रिजोल्युसन पूरा हुन सकेनन्</translation>
@@ -381,7 +367,6 @@
 <translation id="6957231940976260713">सेवाको नाम</translation>
 <translation id="6961170852793647506">कागजात स्क्यान गर्ने कार्य सुरु गर्न उक्त कागजात स्क्यानरमा राख्नुहोस्</translation>
 <translation id="6977381486153291903">फर्मवेयरको पुनरावृत्ति</translation>
-<translation id="6982876849933694860">नयाँ कनेक्सन सेटअप गर्न <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले हेरिएका वेबपेज, पासवर्ड र इमेललगायत प्रयोगकर्ताले गर्ने सबै क्रियाकलाप हेर्न सक्छ।</translation>
 <translation id="7040230719604914234">सेवा प्रदायक</translation>
 <translation id="7058278511608979688">अन्त्य गर्नुहोस् र सेभ गर्नुहोस्</translation>
@@ -400,7 +385,6 @@
 <translation id="7271040990581020067">स्क्यानर हाल प्रयोग भइरहेको छ। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">वालपेपरका सङ्ग्रहहरू</translation>
-<translation id="7292680402155138244">HTTPS (पोर्ट ४४३) वेबसाइटहरूमा कनेक्ट गर्ने क्रममा उच्च विलम्बता भइरहेको छ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -458,7 +442,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8132480444149501833">ट्राफिक काउन्टरसम्बन्धी जानकारी माग्दै अनुरोध पठाउनुहोस्</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">DNS समाधान गर्न सकिएन</translation>
 <translation id="8206859287963243715">सेल्युलर</translation>
 <translation id="8208861521865154048">लाभहरू</translation>
 <translation id="8230672074305416752">डिफल्ट नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
@@ -470,7 +453,6 @@
 <translation id="8297006494302853456">कमजोर</translation>
 <translation id="8302368968391049045">HTTPS फायरवाल</translation>
 <translation id="8318753676953949627">कुनै पनि फोटो छैन</translation>
-<translation id="8346875532700229909">Android बाट गेटवेमा सम्पर्क गर्न सकिएन</translation>
 <translation id="8347227221149377169">प्रिन्टसम्बन्धी कार्यहरू</translation>
 <translation id="8352772353338965963">बहुविध साइन-इन को लागि एउटा खाता थप्नुहोस्। सबै साइन-इन भएका खाताहरू पासवर्ड विना नै पहुँच गर्न सकिन्छ, त्यसैले यो सुविधा विश्वसनीय खाताहरूसँग मात्रै प्रयोग गर्नुपर्छ।</translation>
 <translation id="8364946094152050673">डोमेन नेम सर्भरहरू खाली छन्</translation>

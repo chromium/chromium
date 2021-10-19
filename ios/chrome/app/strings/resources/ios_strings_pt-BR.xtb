@@ -25,7 +25,6 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1145536944570833626">Excluir os dados atuais.</translation>
 <translation id="1147031633655575115">Conta conectada: <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver outras guias</translation>
-<translation id="1157749421655780457">Permitir localização…</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1172898394251786223">Próximo campo</translation>
 <translation id="1176932207622159128">Impossível salvar imagem</translation>
@@ -239,7 +238,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Sua lista de leitura está disponível off-line. Para adicionar uma página à lista, toque em <ph name="SHARE_OPENING_ICON" /> e depois em <ph name="ADD_TO_READING_LIST_TEXT" />.</translation>
 <translation id="3268451620468152448">Guias abertas</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3277021493514034324">Endereço do site copiado</translation>
@@ -262,7 +260,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="345565170154308620">Gerenciar senhas…</translation>
 <translation id="3469166899695866866">Interromper o download?</translation>
 <translation id="3470502288861289375">Copiando...</translation>
-<translation id="3472993688462687965">Quando você ativa a sincronização, os dados podem ser limitados de acordo com o que é permitido pela sua organização.</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mês de vencimento</translation>
 <translation id="3482959374254649722">Sincronizando suas guias...</translation>
@@ -374,7 +371,6 @@ Siga estas etapas:</translation>
 
 Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
 <translation id="4689564913179979534">Gerenciar formas de pagamento…</translation>
-<translation id="469022783543509074">Sua conta foi desconectada</translation>
 <translation id="470966556546083668">Não ative a sincronização</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4747097190499141774">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay. Só alguém com acesso a sua senha longa pode ler seus dados criptografados. Essa senha não é enviada ou armazenada pelo Google. Se você esquecer a senha longa ou quiser alterar essa configuração, será necessário redefinir a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6842136130964845393">Para garantir o acesso às suas senhas salvas, confirme sua identidade</translation>
 <translation id="6851516051005285358">Solicitar site para computador</translation>
-<translation id="6856384753476268833">Gerenciado pela sua organização.</translation>
 <translation id="6858855187367714033">Lido</translation>
 <translation id="6859944681507688231">Para ler um código QR ou cartão de crédito, ative a câmera nas configurações.</translation>
 <translation id="6869389390665537774">Você pode ver as páginas visitadas ou apagá-las do histórico</translation>
@@ -691,7 +686,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7472734401283673885">Nome da empresa</translation>
 <translation id="7473891865547856676">Agora não</translation>
 <translation id="7481312909269577407">Avançar</translation>
-<translation id="7483467499335917849">Usar seu local atual</translation>
 <translation id="750493650310597496">0 selecionados</translation>
 <translation id="7508728395076009983">Para bloquear suas guias anônimas, configure o Touch ID, o Face ID ou uma senha.</translation>
 <translation id="7514365320538308">Fazer o download</translation>
@@ -768,6 +762,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8323906514956095947">Toque no botão e mantenha-o pressionado para ver mais opções da guia</translation>
 <translation id="8328777765163860529">Fechar todos</translation>
+<translation id="8378714024927312812">Gerenciado pela sua organização</translation>
 <translation id="8386068868580335421">Redefinir</translation>
 <translation id="8407669440184693619">Nenhuma senha encontrada para este site</translation>
 <translation id="842017693807136194">Conectado com</translation>
@@ -838,7 +833,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9081058212938299310">Atualizar senha para <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar vários dispositivos, ative a sincronização.</translation>
-<translation id="9084677839771512880">Sua organização limita o que pode ser sincronizado. <ph name="BEGIN_LINK" />Detalhes<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Senha sugerida pelo Chrome:</translation>
 <translation id="9094033019050270033">Atualizar senha</translation>
 <translation id="9100610230175265781">Senha necessária</translation>

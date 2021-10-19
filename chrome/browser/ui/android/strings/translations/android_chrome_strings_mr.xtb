@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइल}}</translation>
 <translation id="2021896219286479412">फुल स्क्रीन साइट नियंत्रणे</translation>
 <translation id="2038563949887743358">डेस्कटॉप साइट विनंती सुरू करा</translation>
-<translation id="2039379262107991683">रिमाइंडर मिळवण्यासाठी तुमच्या वाचन सूची यामध्ये पेज जोडा</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" />चा Chrome मध्ये देखील डेटा आहे</translation>
 <translation id="2046634576464120978">नोंदणी करता आली नाही</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@
 <translation id="2781151931089541271">1 सेकंद शिल्लक</translation>
 <translation id="2788468313014644040">गटाचा नंबर</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> टॅब बंद केला जाईल</translation>
-<translation id="2801022321632964776">Chrome च्या नवीनतम आवृत्तीमध्ये तुमची भाषा मिळवण्यासाठी अपडेट करा</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">तुमच्याशी संबंध लावला जाऊ शकणार नाही अशी तुमच्या Chrome वापराबद्दल माहिती\n\nदुर्मिळ Chrome क्रॅशमधील उपयुक्त डेटा, ज्यात काही वैयक्तिक माहिती समाविष्ट असू शकते\n\nतुम्ही सिंक सुरू केल्यास, मेट्रिकमध्ये तुम्ही भेट दिलेल्या URL बद्दल माहितीदेखील समाविष्ट असू शकते</translation>
@@ -354,12 +352,10 @@
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome चे होम पेज</translation>
 <translation id="3154863790776532719">नवीन वैशिष्ट्ये आणि सुधारित परफॉर्मन्स</translation>
-<translation id="3157387275655328056">वाचन सूचीमध्ये जोडा</translation>
 <translation id="3157842584138209013">आणिखी पर्याय बटणावरून तुम्ही किती डेटा सेव्ह केला आहे ते पहा</translation>
 <translation id="3166827708714933426">टॅब आणि विंडो शॉर्टकट</translation>
 <translation id="316694332262407393">येथे Chrome आधीपासून रन होत आहे.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3205824638308738187">जवळजवळ पूर्ण झाले!</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
 <translation id="3208584281581115441">आता तपासा</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> हटवले</translation>
@@ -450,7 +446,6 @@
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> मध्ये बुकमार्क केले</translation>
 <translation id="3740525748616366977">या डिव्हाइसवर व्हॉइस शोध उपलब्ध नाही</translation>
 <translation id="3749259744154402564">सपोर्ट नसलेली</translation>
-<translation id="3771001275138982843">अपडेट डाउनलोड करता आले नाही</translation>
 <translation id="3771033907050503522">गुप्त टॅब</translation>
 <translation id="3771290962915251154">पालक नियंत्रणे सुरू असल्यामुळे हे सेटिंग बंद केलेले आहे</translation>
 <translation id="3771694256347217732">Google सेवा अटी</translation>
@@ -790,7 +785,6 @@
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5833984609253377421">लिंक शेअर करा</translation>
 <translation id="5834764604050996579">QR कोड स्कॅन करण्यासाठी, Chrome ला तुमचा कॅमेरा वापरू द्या</translation>
-<translation id="5836192821815272682">Chrome अपडेट डाउनलोड करत आहे…</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">थांबवले</translation>
 <translation id="5854512288214985237">Google कडे कोणतीही आकडेवारी किंवा क्रॅश अहवाल पाठवले जात नाहीत</translation>
@@ -862,7 +856,6 @@
 <translation id="6232535412751077445">'Do Not Track' सुरू करणे म्हणजे तुमच्या ब्राउझिंग ट्रॅफिकमध्‍ये एक विनंती समाविष्‍ट केली जाईल. वेबसाइट विनंतीला प्रतिसाद देते किंवा नाही आणि विनंतीचा निष्‍कर्ष कसा काढला जातो यावर कोणताही प्रभाव अवलंबून असतो.
 
 उदाहरणार्थ, काही वेबसाइट तुम्ही भेट दिलेल्‍या इतर वेबसाइटवर आधारित नसलेल्‍या जाहिराती तुम्हाला दर्शवून या विनंतीस प्रतिसाद देऊ शकतात. अनेक वेबसाइट अद्यापही तुमचा ब्राउझिंग डेटा संकलित करून त्‍याचा वापर करतील - उदाहरणार्थ त्‍यांच्‍या वेबसाइटवर सुरक्षितता सुधारणे, आशय, जाहिराती आणि शिफारशी देऊ करणे आणि अहवाल आकडेवारी निर्माण करणे.</translation>
-<translation id="624789221780392884">अपडेट तयार</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
 <translation id="6277522088822131679">पृष्‍ठ प्रिंट करण्‍यात एक समस्‍या होती. कृपया पुन्‍हा प्रयत्न करा.</translation>
 <translation id="6278428485366576908">थीम</translation>
@@ -898,7 +891,6 @@
 <translation id="6411219469806822692">यापेक्षा वर जाऊ शकत नाही. पेजच्या आणखी वरून सुरुवात करून पहा.</translation>
 <translation id="6412673304250309937">Chrome मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीमध्ये URL तपासतो. साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानीकारक फाइल डाउनलोड केल्यावर, Chrome, पेज आशयाच्या भागांसह, URL सुरक्षित ब्राउझिंग कडे पाठवू शकतो.</translation>
 <translation id="641643625718530986">प्रिंट करा...</translation>
-<translation id="6427112570124116297">वेबचे भाषांतर करा</translation>
 <translation id="6433501201775827830">तुमचे शोध इंजीन निवडा</translation>
 <translation id="6434309073475700221">टाकून द्या</translation>
 <translation id="6437478888915024427">पेज माहिती</translation>
@@ -1000,7 +992,6 @@
 <translation id="6979737339423435258">पूर्णवेळ</translation>
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="6987047470128880212">या डिव्हाइसवर गुप्त मोड उपलब्ध नाही</translation>
-<translation id="6989267951144302301">डाउनलोड करता आले नाही</translation>
 <translation id="6995899638241819463">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी द्या</translation>
 <translation id="7001056293070445572">ही फाइल मोठी आहे (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">ब्राउझरमध्ये उघडा</translation>
@@ -1032,7 +1023,6 @@
 <translation id="718926126787620637">पूर्ण उंचीवर उघडलेल्या बुकमार्क फोल्डरची सूची</translation>
 <translation id="7191430249889272776">पार्श्वभूमीवर उघडा असलेला टॅब.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{एक डाउनलोड बाकी आहे}other{# डाउनलोड बाकी आहेत}}</translation>
-<translation id="7233236755231902816">तुमच्या भाषेत वेब पाहण्यासाठी, Chrome ची नवीनतम आवृत्ती मिळवा</translation>
 <translation id="7242755609445462077">स्टाइल केलेले हायलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> ने Chrome मध्ये सिंक सुरू केले असल्याची खात्री करा</translation>
 <translation id="7252076891734325316">तुमचा फोन कॉंप्युटरच्या जवळ ठेवा</translation>
@@ -1055,7 +1045,6 @@
 <translation id="7352651011704765696">काहीतरी चूक झाली</translation>
 <translation id="7352939065658542140">व्हिडिओ</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 निवडलेला आयटम शेअर करा}other{# निवडलेले आयटम शेअर करा}}</translation>
-<translation id="7356631068872238169">वाचन सूचीमधून हटवा</translation>
 <translation id="7359002509206457351">पेमेंट पद्धती अ‍ॅक्सेस करा</translation>
 <translation id="7375125077091615385">प्रकार:</translation>
 <translation id="7376560087009844242">एखाद्या पेजवरील जास्त मजकुराचा समावेश केल्याने, शोधण्यासाठी स्पर्श करा हे वापरताना तुम्हाला आणखी चांगले परिणाम दिसू शकतात. हे बदलण्यासाठी तुम्ही <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> ना कधीही भेट देऊ शकता.</translation>
@@ -1232,7 +1221,6 @@
 <translation id="829672787777123339">तुमच्या डिव्हाइसशी कनेक्ट करत आहे…</translation>
 <translation id="8310344678080805313">मानक टॅब</translation>
 <translation id="831192587911042850">तुम्ही फॉलो करत असलेल्या वेबसाइटच्या सूचीमध्ये सध्याची वेबसाइट जोडते.</translation>
-<translation id="8327155640814342956">उत्तम ब्राउझिंग अनुभव मिळवण्याकरीता, Chrome अपडेट करण्यासाठी उघडा</translation>
 <translation id="834313815369870491">साइटचे कधीही भाषांतर करू नका</translation>
 <translation id="8349013245300336738">वापरलेल्या डेटानुसार क्रमाने लावा</translation>
 <translation id="8354977102499939946">तुमचा आवाज वापरून झटपट शोधा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
@@ -1345,6 +1333,7 @@
 <translation id="8951232171465285730">Chrome ने तुमच्यासाठी <ph name="MEGABYTES" /> MB सेव्ह केले</translation>
 <translation id="8955719471735800169">शीर्षस्थानाकडे परत जा</translation>
 <translation id="8965591936373831584">प्रलंबित</translation>
+<translation id="8967427617812342790">वाचन सूचीमध्ये जोडा</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त आणि आणखी <ph name="TAB_COUNT_ONE" /> टॅब बंद केला जाईल}other{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त आणि आणखी <ph name="TAB_COUNT_MANY" /> टॅब बंद केले जातील}}</translation>
 <translation id="8970887620466824814">काहीतरी चूक झाली.</translation>
 <translation id="8972098258593396643">डीफॉल्ट फोल्डरमध्ये डाउनलोड करायचे?</translation>

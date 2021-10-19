@@ -25,7 +25,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1145536944570833626">Izbrišite postojeće podatke</translation>
 <translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
 <translation id="1154984953698510061">Prikaži druge kartice</translation>
-<translation id="1157749421655780457">Dozvoli lokaciju...</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1172898394251786223">Sledeće polje</translation>
 <translation id="1176932207622159128">Nije moguće sačuvati sliku</translation>
@@ -239,7 +238,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3240426699337459095">Link je kopiran</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> od <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Lista za čitanje je dostupna oflajn. Da biste dodali stranicu na listu za čitanje, dodirnite <ph name="SHARE_OPENING_ICON" />, pa <ph name="ADD_TO_READING_LIST_TEXT" />.</translation>
 <translation id="3268451620468152448">Otvorene kartice</translation>
 <translation id="3272527697863656322">Otkaži</translation>
 <translation id="3277021493514034324">Adresa sajta je kopirana</translation>
@@ -262,7 +260,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="345565170154308620">Upravljajte lozinkama...</translation>
 <translation id="3469166899695866866">Zaustavljate preuzimanje?</translation>
 <translation id="3470502288861289375">Kopiranje...</translation>
-<translation id="3472993688462687965">Kada uključite sinhronizaciju, podaci mogu da budu ograničeni u skladu sa dozvolama vaše organizacije.</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mesec isteka</translation>
 <translation id="3482959374254649722">Sinhronizacija kartica je u toku...</translation>
@@ -374,7 +371,6 @@ Pratite korake u nastavku:</translation>
 
 Podaci se šifruju pomoću pristupne fraze za sinhronizaciju. Unesite je da biste započeli sinhronizaciju.</translation>
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
-<translation id="469022783543509074">Odjavljeni ste</translation>
 <translation id="470966556546083668">Ne uključuj sinhronizaciju</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4747097190499141774">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a. Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti je on čuva. Ako zaboravite pristupnu frazu ili poželite da promenite ovo podešavanje, treba da resetujete sinhronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -624,7 +620,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6842136130964845393">Da biste bili sigurni da uvek možete da pristupate sačuvanim lozinkama, potvrdite da ste to vi</translation>
 <translation id="6851516051005285358">Zahtevaj sajt za računar</translation>
-<translation id="6856384753476268833">Ovim upravlja organizacija.</translation>
 <translation id="6858855187367714033">Skenirano</translation>
 <translation id="6859944681507688231">Da biste skenirali QR kôd ili kreditnu karticu, omogućite kameru u podešavanjima.</translation>
 <translation id="6869389390665537774">Možete da vidite stranice koje ste posetili ili da ih obrišete iz istorije</translation>
@@ -692,7 +687,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7472734401283673885">Naziv kompanije</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7481312909269577407">Prosledi</translation>
-<translation id="7483467499335917849">Koristite trenutnu lokaciju</translation>
 <translation id="750493650310597496">Izabrano je 0 stavki</translation>
 <translation id="7508728395076009983">Da biste zaključali kartice bez arhiviranja, podesite Touch ID, Face ID ili šifru.</translation>
 <translation id="7514365320538308">Preuzmi</translation>
@@ -769,6 +763,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8319076807703933069">Nova pretraga</translation>
 <translation id="8323906514956095947">Dodirnite i zadržite ako želite više opcija za kartice</translation>
 <translation id="8328777765163860529">Zatvori sve</translation>
+<translation id="8378714024927312812">Ovim upravlja organizacija</translation>
 <translation id="8386068868580335421">Resetuj</translation>
 <translation id="8407669440184693619">Nije pronađena nijedna lozinka za ovaj sajt</translation>
 <translation id="842017693807136194">Prijavljeni ste pomoću:</translation>
@@ -839,7 +834,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9081058212938299310">Želite li da ažurirate lozinku za <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 stavka</translation>
 <translation id="9083838294503912307">Da biste sinhronizovali i personalizovali sadržaj na uređajima, uključite sinhronizaciju.</translation>
-<translation id="9084677839771512880">Vaša organizacija ograničava sadržaj koji možete da sinhronizujete. <ph name="BEGIN_LINK" />Detalji<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Predložena lozinka za Chrome:</translation>
 <translation id="9094033019050270033">Ažuriraj lozinku</translation>
 <translation id="9100610230175265781">Potrebna je pristupna fraza</translation>

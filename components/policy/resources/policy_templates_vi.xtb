@@ -78,18 +78,6 @@
 <translation id="1069489575852947981">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì hệ thống sẽ thiết lập phiên tự động đăng nhập có độ trễ bằng 0 cho tài khoản trên thiết bị. <ph name="PRODUCT_OS_NAME" /> dùng phím tắt Ctrl+Alt+S để bỏ qua phiên tự động đăng nhập và hiển thị màn hình đăng nhập.
 
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể bỏ qua phiên tự động đăng nhập có độ trễ bằng 0 (nếu đã định cấu hình).</translation>
-<translation id="1070656322814001059">Chrome sẽ chặn các thao tác di chuyển đến những giao thức bên ngoài nằm bên trong
-       iframe hộp cát. Vui lòng xem tại https://chromestatus.com/features/5680742077038592.
-
-      Khi bạn đặt chính sách này thành Đúng, Chrome sẽ chặn các thao tác di chuyển đó.
-
-      Khi bạn đặt chính sách này thành Sai, Chrome sẽ không chặn các thao tác di chuyển đó.
-
-      Giá trị mặc định của chính sách này là Đúng: tính năng bảo mật được bật.
-
-      Doanh nghiệp bị ảnh hưởng có thể dùng chính sách này để
-      tạm thời gỡ bỏ những hạn chế gặp phải.
-      </translation>
 <translation id="1073983258515362346">Báo cáo thông tin về đèn nền của thiết bị.
 
       Nếu bạn không đặt chính sách này hoặc đặt chính sách thành false, thì thông tin sẽ không được báo cáo.
@@ -2302,9 +2290,6 @@ Khi chính sách này được đặt thành false hoặc không được địn
 
       Nếu bạn không đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ sử dụng tên thư viện mặc định.</translation>
 <translation id="3652670852519271837">Cho phép các trang web yêu cầu người dùng cấp quyền đọc các tệp và thư mục qua API Hệ thống tệp</translation>
-<translation id="3653234084868565720">Kiểm soát việc <ph name="PRODUCT_OS_NAME" /> có cho phép tạo tài khoản người dùng mới hay không. Nếu bạn đặt chính sách này thành tắt, những người dùng chưa có tài khoản sẽ không thể đăng nhập.
-
-      Nếu bạn không định cấu hình chính sách này hoặc nếu bạn đặt thành bật, thì việc tạo tài khoản người dùng mới sẽ được phép thực hiện miễn sao chính sách <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> không ngăn người dùng đăng nhập.</translation>
 <translation id="3653237928288822292">Biểu tượng nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="3654906736796256792">Cho phép chạy hộp cát âm thanh</translation>
 <translation id="3659542706175323490">Khi bạn đặt chính sách này thành Bật, tính năng khởi động khi cắm nguồn AC sẽ bật liên tục nếu được hỗ trợ trên thiết bị này. Tính năng khởi động khi cắm nguồn AC cho phép hệ thống khởi động lại từ trạng thái Tắt hoặc Ngủ đông sau khi người dùng cắm dây nguồn.

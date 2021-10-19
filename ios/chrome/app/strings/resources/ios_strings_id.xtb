@@ -25,7 +25,6 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1145536944570833626">Hapus data yang sudah ada.</translation>
 <translation id="1147031633655575115">Login sebagai <ph name="USER" /></translation>
 <translation id="1154984953698510061">Lihat Tab Lainnya</translation>
-<translation id="1157749421655780457">Izinkan Lokasi...</translation>
 <translation id="1165039591588034296">Kesalahan</translation>
 <translation id="1172898394251786223">Bidang berikutnya</translation>
 <translation id="1176932207622159128">Gambar Tak Disimpan</translation>
@@ -239,7 +238,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3240426699337459095">Tautan disalin</translation>
 <translation id="3244271242291266297">BB</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> dari <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Daftar bacaan Anda tersedia secara offline. Untuk menambahkan halaman ke daftar bacaan, ketuk <ph name="SHARE_OPENING_ICON" /> lalu <ph name="ADD_TO_READING_LIST_TEXT" />.</translation>
 <translation id="3268451620468152448">Tab Terbuka</translation>
 <translation id="3272527697863656322">Batal</translation>
 <translation id="3277021493514034324">Alamat situs disalin</translation>
@@ -262,7 +260,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="345565170154308620">Kelola Sandi...</translation>
 <translation id="3469166899695866866">Berhenti Download?</translation>
 <translation id="3470502288861289375">Menyalin...</translation>
-<translation id="3472993688462687965">Jika Anda mengaktifkan sinkronisasi, data yang dapat disinkronkan mungkin dibatasi oleh organisasi.</translation>
 <translation id="3474624961160222204">Lanjutkan sebagai <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Bulan Masa Berlaku Habis</translation>
 <translation id="3482959374254649722">Menyinkronkan tab Anda...</translation>
@@ -374,7 +371,6 @@ Ikuti langkah di bawah:</translation>
 
 Data Anda dienkripsi dengan frasa sandi sinkronisasi. Loginkan frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="4689564913179979534">Kelola Metode Pembayaran...</translation>
-<translation id="469022783543509074">Anda Telah Logout</translation>
 <translation id="470966556546083668">Jangan Aktifkan Sinkronisasi</translation>
 <translation id="473775607612524610">Perbarui</translation>
 <translation id="4747097190499141774">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran dari Google Pay. Hanya pengguna yang memiliki frasa sandi Anda yang dapat membaca data yang telah Anda enkripsi. Frasa sandi tidak dikirim atau disimpan oleh Google. Jika lupa frasa sandi Anda atau ingin mengubah setelan ini, Anda harus menyetel ulang sinkronisasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="6842136130964845393">Untuk memastikan Anda selalu dapat mengakses sandi tersimpan, verifikasi diri Anda</translation>
 <translation id="6851516051005285358">Minta Situs Desktop</translation>
-<translation id="6856384753476268833">Dikelola oleh organisasi Anda.</translation>
 <translation id="6858855187367714033">Dipindai</translation>
 <translation id="6859944681507688231">Untuk memindai kode QR code atau kartu kredit, aktifkan kamera dari setelan.</translation>
 <translation id="6869389390665537774">Anda dapat melihat halaman yang pernah Anda kunjungi atau menghapusnya dari histori</translation>
@@ -691,7 +686,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7472734401283673885">Nama Perusahaan</translation>
 <translation id="7473891865547856676">Lain Kali</translation>
 <translation id="7481312909269577407">Maju</translation>
-<translation id="7483467499335917849">Menggunakan Lokasi Saat Ini</translation>
 <translation id="750493650310597496">Tak ada yang dipilih</translation>
 <translation id="7508728395076009983">Untuk mengunci tab Samaran, siapkan Touch ID, Face ID, atau Kode Sandi.</translation>
 <translation id="7514365320538308">Download</translation>
@@ -768,6 +762,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8319076807703933069">Penelusuran Baru</translation>
 <translation id="8323906514956095947">Sentuh lama untuk opsi tab lainnya</translation>
 <translation id="8328777765163860529">Tutup Semua</translation>
+<translation id="8378714024927312812">Dikelola oleh organisasi</translation>
 <translation id="8386068868580335421">Reset</translation>
 <translation id="8407669440184693619">Tidak ada sandi yang ditemukan untuk situs ini</translation>
 <translation id="842017693807136194">Login Dengan</translation>
@@ -838,7 +833,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9081058212938299310">Perbarui sandi untuk <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">Untuk menyinkronkan dan mempersonalisasi berbagai perangkat, aktifkan sinkronisasi.</translation>
-<translation id="9084677839771512880">Organisasi membatasi apa saja yang dapat Anda sinkronkan. <ph name="BEGIN_LINK" />Detail<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Sandi yang Disarankan Chrome:</translation>
 <translation id="9094033019050270033">Perbarui sandi</translation>
 <translation id="9100610230175265781">Frasa sandi diwajibkan</translation>

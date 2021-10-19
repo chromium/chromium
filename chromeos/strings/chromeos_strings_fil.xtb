@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">May na-detect na firewall</translation>
 <translation id="1075811647922107217">Laki ng page</translation>
-<translation id="110351136513869678">Bisitahin ang mga setting para i-configure</translation>
 <translation id="1119447706177454957">Panloob na error</translation>
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">Di-wasto ang PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1572585716423026576">Itakda bilang wallpaper</translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
 <translation id="1641857168437328880">Document Feeder (Isang bahagi)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">Kinakansela ang pag-scan</translation>
 <translation id="1851218745569890714">Pakikipagkumperensya Gamit ang Video</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">Hindi makuha ang IP address</translation>
 <translation id="1887850431809612466">Rebisyon ng hardware</translation>
-<translation id="1901646112321215184">Walang naka-configure na DNS server</translation>
 <translation id="1905710495812624430">Nalampasan na ang maximum na pinapahintulutang bilang ng pagsubok</translation>
 <translation id="1908234395526491708">Mga hindi naisagawang kahilingan sa UDP</translation>
 <translation id="1930797645656624981">Serbisyo ng Pamamaraan ng Pag-input ng Chrome OS</translation>
 <translation id="1947737735496445907">Na-print</translation>
-<translation id="197386857804679933">Bisitahin ang Mga Setting para kumonekta ulit</translation>
 <translation id="1979103255016296513">Overdue na ang pagpapalit ng password</translation>
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2006864819935886708">Pagkakakonekta</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">Maglagay ng isa pang pahina sa scanner</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2878387241690264070">Nag-discharge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
-<translation id="2927511423571448384">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTP (port 80) na website mula sa Android</translation>
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3069085583900247081">Nabigo ang pagsubok</translation>
-<translation id="3076387335132326640">Gumagamit ka ng bukas na network</translation>
 <translation id="3083667275341675831">Mga Diagnostic sa Pagkakonekta</translation>
 <translation id="3091839911843451378">Hindi na-print - Huminto</translation>
 <translation id="3102119246920354026">Cache</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">Humigit-kumulang <ph name="MIN_REMAINING" /> (na) minuto ang natitira</translation>
 <translation id="3565064564551103223">Mga pinapayagang IP</translation>
 <translation id="357889014807611375">nakametrong Wi-Fi</translation>
-<translation id="3582041541988388905">Walang na-detect na koneksyon sa <ph name="NETWORK_NAME" /></translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
 <translation id="3689839747745352263">Pagsusuri sa <ph name="TEST_NAME" /></translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ba Baterya</translation>
 <translation id="4561801978359312462">Na-unlock ang SIM</translation>
 <translation id="4562494484721939086">Walang serbisyo</translation>
-<translation id="4567024731344774461">Hindi ma-resolve ang DNS mula sa Android</translation>
 <translation id="458794348635939462">Hindi nalutas ang lahat ng host</translation>
 <translation id="4593212453765072419">Kinakailangan ang pagpapatunay ng proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sa <ph name="TOTAL_PAGE_NUMBER" />. Pindutin ang enter para kanselahin ang pag-print.</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) Resolution ng DNS</translation>
 <translation id="4848429997038228357">TUMATAKBO</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}one{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}other{<ph name="ERROR_MESSAGE" /> {0} na pagsubok na lang ang natitira}}</translation>
-<translation id="4871137769558798671">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTPS (port 443) na website</translation>
 <translation id="4880328057631981605">Access point name</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Pumili agad ng bago</translation>
@@ -276,6 +268,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5332948983412042822">Pumili ng bago ngayon</translation>
 <translation id="5333530671332546086">Hindi alam na status ng portal</translation>
 <translation id="5346687412805619883">Lokal na Network</translation>
+<translation id="5358174242040570474">Nagkaproblema. Subukang pumili ulit ng wallpaper o buksan ulit ang app.</translation>
 <translation id="5372659122375744710">Hindi secure ang WiFi network</translation>
 <translation id="5401938042319910061">Patakbuhin ang Lahat ng Routine</translation>
 <translation id="5423849171846380976">Na-activate</translation>
@@ -290,7 +283,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5502931783115429516">Hindi tumatakbo ang Android</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">Mahina ang signal, subukang lumapit sa access point</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Mag-scan ulit</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
@@ -298,7 +290,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5691511426247308406">Pamilya</translation>
 <translation id="5701381305118179107">Gitna</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">Walang naka-configure na name server</translation>
 <translation id="5760715441271661976">Status ng Portal</translation>
 <translation id="5784136236926853061">Mataas na latency ng HTTP</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
@@ -342,7 +333,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="636850387210749493">Pagpapatala ng negosyo</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6388847657025262518">Nag-jam ang document feeder ng scanner. Tingnan ang feeder at subukan ulit.</translation>
-<translation id="6395640744968320699">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTP (port 80) na website</translation>
 <translation id="6398765197997659313">Lumabas sa buong screen</translation>
 <translation id="641081527798843608">Pagtugma ng paksa</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -352,7 +342,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Pinapamahalaan ng <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Huminto - Nagka-paper jam</translation>
-<translation id="6498608540383876992">Hindi makakonekta sa gateway</translation>
 <translation id="6516990319416533844">Para masubukan ang rate ng pag-charge ng baterya, gumamit ng malaking porsyento ng baterya sa maikling panahon</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Hindi alam na panseguridad na protocol ng WiFi</translation>
@@ -362,13 +351,11 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6574762126505704998">Fill</translation>
 <translation id="6575134580692778371">Hindi na-configure</translation>
 <translation id="6596816719288285829">IP Address</translation>
-<translation id="6603230386432466813">Nagkakaproblema sa pagkonekta?</translation>
 <translation id="6618744767048954150">Tumatakbo</translation>
 <translation id="6620487321149975369">Lalabas sa history ang mga pag-print maliban na lang kung manual na aalisin ang mga ito</translation>
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6704062477274546131">Resolution ng DNS</translation>
-<translation id="6714650824879092633">Na-disable ang <ph name="NETWORK_NAME" /></translation>
 <translation id="6747215703636344499">Huminto - Puno na ang output</translation>
 <translation id="6756731097889387912">Hindi makansela ang pag-scan</translation>
 <translation id="6766275201586212568">May mga hindi naisagawang pagresolba sa DNS</translation>
@@ -381,7 +368,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6957231940976260713">Pangalan ng serbisyo</translation>
 <translation id="6961170852793647506">Para magsimula, ilagay ang iyong dokumento sa scanner</translation>
 <translation id="6977381486153291903">Rebisyon ng firmware</translation>
-<translation id="6982876849933694860">Para mag-set up ng bagong koneksyon, pumunta sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at mayroon itong access sa lahat ng aktibidad ng user, kabilang ang mga webpage na binisita, mga password, at email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">Tapusin at i-save</translation>
@@ -400,7 +386,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7271040990581020067">Kasalukuyang ginagamit ang scanner. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Mga Koleksyon ng Wallpaper</translation>
-<translation id="7292680402155138244">Mataas ang latency sa mga HTTPS (port 443) na website</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -458,7 +443,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Humiling ng Mga Traffic Counter</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">Hindi ma-resolve ang DNS</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">Mga Perk</translation>
 <translation id="8230672074305416752">Hindi na-ping ang default na network gateway</translation>
@@ -470,7 +454,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8297006494302853456">Mahina</translation>
 <translation id="8302368968391049045">Firewall ng HTTPS</translation>
 <translation id="8318753676953949627">Walang Larawan</translation>
-<translation id="8346875532700229909">Hindi makakonekta sa gateway mula sa Android</translation>
 <translation id="8347227221149377169">Mga pag-print</translation>
 <translation id="8352772353338965963">Magdagdag ng account sa multiple na pag-sign in. Maa-access ang lahat ng naka-sign in na account nang walang password, kaya dapat na gamitin lang ang feature na ito sa mga pinagkakatiwalaang account.</translation>
 <translation id="8364946094152050673">Mga walang lamang name server</translation>

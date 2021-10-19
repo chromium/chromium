@@ -78,16 +78,6 @@
 <translation id="1069489575852947981">如果將這項政策設為啟用或不設定，系統會將裝置本機帳戶設為零延遲自動登入。<ph name="PRODUCT_OS_NAME" />會遵循用於略過自動登入並顯示登入畫面的鍵盤快速鍵 Ctrl + Alt + S 鍵。
 
       如果將這項政策設為停用，使用者無法略過零延遲自動登入 (如果已設定)。</translation>
-<translation id="1070656322814001059">Chrome 會封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業，詳情請參閱 https://chromestatus.com/features/5680742077038592。
-
-      如果將這項政策設為 True，就代表允許 Chrome 封鎖這類瀏覽作業。
-
-      如果將這項政策設為 False，則表示禁止 Chrome 封鎖這類瀏覽作業。
-
-      本政策預設為 True，也就是啟用安全性功能。
-
-      如果企業會受到相關限制所影響，可透過此政策暫時解除封鎖。
-      </translation>
 <translation id="1073983258515362346">回報有關裝置背光的資訊。
 
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
@@ -2256,9 +2246,6 @@
 
       如果未設定這項政策，<ph name="PRODUCT_NAME" /> 會使用預設的程式庫名稱。</translation>
 <translation id="3652670852519271837">允許網站要求使用者授予透過 File System API 讀取檔案和目錄的權限</translation>
-<translation id="3653234084868565720">這項政策可控管 <ph name="PRODUCT_OS_NAME" />是否允許建立新的使用者帳戶。如果將這項政策設為 False，沒有帳戶的使用者將無法登入裝置。
-
-      如果將這項政策設為 True 或不設定，只要 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 未禁止使用者登入，使用者就能建立新的使用者帳戶。</translation>
 <translation id="3653237928288822292">預設搜尋引擎圖示</translation>
 <translation id="3654906736796256792">允許執行音訊沙箱</translation>
 <translation id="3659542706175323490">如果將這項政策設為啟用，系統會在支援的裝置上，將「連結 AC 電源時啟動」功能保持啟用。「連接 AC 電源時啟動」功能可讓系統在插入 AC 電源線時，從關閉或休眠狀態中重新啟動。

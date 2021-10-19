@@ -984,6 +984,7 @@
 <translation id="2002109485265116295">En temps real</translation>
 <translation id="200217416291116199">Es recomana fer una còpia de seguretat dels fitxers per si de cas l'actualització no es pot completar. En iniciar l'actualització, Linux s'apagarà. Desa els fitxers oberts abans de continuar.</translation>
 <translation id="2003130567827682533">Per activar les dades del servei <ph name="NAME" />, primer connecta't a una xarxa Wi‑Fi</translation>
+<translation id="2004697686368036666">Pot ser que les funcions d'alguns llocs web no funcionin</translation>
 <translation id="2005199804247617997">Altres perfils</translation>
 <translation id="2006638907958895361">Obre l'enllaç a <ph name="APP" /></translation>
 <translation id="2007404777272201486">Informa d'un problema...</translation>
@@ -1126,7 +1127,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2154484045852737596">Edita la targeta</translation>
 <translation id="2154502158735983655">Llegir informació i dades de dispositius Chrome OS.</translation>
-<translation id="2154710561487035718">Copia l'URL</translation>
 <translation id="2155772377859296191">Resolució: <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">No em preguntis de nou quan s'obri aquest format de fitxer en aquesta aplicació: <ph name="FILE_FORMAT" /></translation>
@@ -2368,6 +2368,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="344630545793878684">Llegir les dades d'una sèrie de llocs web</translation>
 <translation id="3446650212859500694">Aquest fitxer inclou contingut sensible</translation>
 <translation id="3446827946208017735">Entén i revisa les opcions de configuració de privadesa més importants des d'un sol lloc</translation>
+<translation id="3447644283769633681">Bloqueja totes les galetes de tercers</translation>
 <translation id="3448086340637592206">Condicions addicionals de Google Chrome i Chrome OS</translation>
 <translation id="3448492834076427715">Actualitza el compte</translation>
 <translation id="3449393517661170867">Finestra amb pestanyes nova</translation>
@@ -3160,7 +3161,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="428715201724021596">S'està connectant a un perfil. Aquest procés pot tardar uns minuts.</translation>
 <translation id="4287157641315808225">Sí, activa ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostra}other{Mostra-ho tot}}</translation>
-<translation id="4289372044984810120">Gestiona els teus comptes aquí. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Visió general</translation>
 <translation id="4289732974614035569">Tria un PIN</translation>
 <translation id="4290791284969893584">En tancar una pàgina, pot ser que les tasques que hagis començat no finalitzin</translation>
@@ -3236,7 +3236,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4378556263712303865">Sol·licitud de dispositiu</translation>
 <translation id="4379281552162875326">Vols desinstal·lar <ph name="APP_NAME" />?</translation>
 <translation id="4380648069038809855">S'ha entrat en pantalla completa</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" /> i 1 compte més}other{<ph name="EMAIL" /> i <ph name="EXTRA_ACCOUNTS" /> comptes més}}</translation>
 <translation id="4384312707950789900">Afegeix a les preferides</translation>
 <translation id="4384652540891215547">Activa l'extensió</translation>
 <translation id="4384886290276344300">Canvia la configuració del teclat</translation>
@@ -3859,7 +3858,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5053962746715621840">Cerca una imatge amb Google Lens</translation>
 <translation id="5056950756634735043">S'està connectant al contenidor</translation>
 <translation id="5057110919553308744">Quan facis clic a l'extensió</translation>
-<translation id="5057403786441168405">Gestiona els comptes en què tens la sessió iniciada. És possible que els llocs web, les aplicacions i les extensions de Chrome i Google Play utilitzin aquests comptes per personalitzar la teva experiència, en funció dels permisos. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restringeix l'inici de sessió</translation>
 <translation id="5059526285558225588">Selecciona què vols compartir</translation>
 <translation id="5060332552815861872">Hi ha 1 impressora disponible per desar.</translation>
@@ -4990,7 +4988,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6284632978374966585">Activa el tema fosc</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> no se sol baixar i podria ser perillós.</translation>
 <translation id="6285770818046456882">El dispositiu que està compartint contingut amb tu ha cancel·lat la transferència</translation>
-<translation id="6286744355355996781">Assistència a llarg termini</translation>
 <translation id="6290613030083731160">No hi ha cap dispositiu disponible a prop per compartir contingut. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">S'està verificant el codi d'activació. Aquest procés pot tardar uns minuts.</translation>
 <translation id="6291741848715722067">Codi de confirmació</translation>
@@ -5413,7 +5410,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6750757184909117990">Desactiva les funcions per a mòbils</translation>
 <translation id="6750946710563435348">Utilitza un altre nom d'usuari</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incògnit)</translation>
-<translation id="6757101664402245801">S'ha copiat l'URL</translation>
 <translation id="6758056191028427665">Digue'ns si ho estem fent bé.</translation>
 <translation id="6759193508432371551">Restabliment de fàbrica</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
@@ -5590,7 +5586,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="693807610556624488">L'operació d'escriptura supera la longitud màxima de l'atribut a <ph name="DEVICE_NAME" />.</translation>
 <translation id="6938386202199793006">Tens 1 impressora desada.</translation>
 <translation id="6938606182859551396">Per rebre notificacions del telèfon al teu <ph name="DEVICE_TYPE" />, segueix les instruccions al telèfon perquè els Serveis de Google Play puguin accedir accés a les notificacions.</translation>
-<translation id="6938789263968032501">Persones</translation>
 <translation id="6939815295902433669">Revisa el programari del dispositiu</translation>
 <translation id="694168622559714949">L'administrador ha definit un idioma predeterminat que no es pot modificar.</translation>
 <translation id="6941937518557314510">Inicieu la sessió a <ph name="TOKEN_NAME" /> per autenticar-vos a <ph name="HOST_NAME" /> amb el vostre certificat.</translation>
@@ -7636,7 +7631,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9040661932550800571">Vols actualitzar la contrasenya per a <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">L'administrador ha desactivat l'accés als fitxers locals de l'ordinador</translation>
 <translation id="904224458472510106">Aquesta operació no es pot desfer</translation>
-<translation id="9042893549633094279">Privadesa i seguretat</translation>
 <translation id="904451693890288097">Introdueix la clau d'accés per a "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">S'ha produït un error en connectar amb la xarxa: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">La teva llista de lectura s'ha mogut al nou tauler lateral. Prova-ho aquí.</translation>

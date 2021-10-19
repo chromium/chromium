@@ -78,16 +78,6 @@
 <translation id="1069489575852947981">Se il criterio viene impostato su Attivato o se non viene configurato, l'account locale del dispositivo viene configurato per l'accesso automatico senza ritardo. <ph name="PRODUCT_OS_NAME" /> rispetta la scorciatoie da tastiera Ctrl + Alt + S per eludere l'accesso automatico e mostrare la schermata di accesso.
 
       Se il criterio viene impostato su Disattivato, gli utenti non possono eludere l'accesso automatico senza ritardo (se configurato).</translation>
-<translation id="1070656322814001059">Chrome bloccherà le navigazioni verso protocolli esterni all'interno di iframe con sandbox. Visita la pagina https://chromestatus.com/features/5680742077038592.
-
-      Quando il valore è Vero, Chrome può bloccare queste navigazioni.
-
-      Quando il valore è Falso, Chrome non può bloccare queste navigazioni.
-
-      Il valore predefinito è Vero, ossia la funzionalità di sicurezza è attiva.
-
-      Questo criterio può essere usato dalle organizzazioni interessate da queste limitazioni per rimuoverle temporaneamente.
-      </translation>
 <translation id="1073983258515362346">Consente di segnalare informazioni sulla retroilluminazione del dispositivo.
 
       Se il criterio viene impostato su false o non viene impostato, le informazioni non vengono segnalate.
@@ -2280,9 +2270,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> utilizza un nome di libreria predefinito.</translation>
 <translation id="3652670852519271837">Consenti ai siti di richiedere all'utente l'accesso di lettura di file e directory tramite l'API file system</translation>
-<translation id="3653234084868565720">Consente di stabilire se <ph name="PRODUCT_OS_NAME" /> permette la creazione di nuovi account utente. Se questo criterio viene impostato su falso, gli utenti che non hanno ancora un account non potranno accedere.
-
-      Se questo criterio viene impostato su vero o non viene configurato, sarà possibile creare nuovi account utente purché <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> non impedisca all'utente di accedere.</translation>
 <translation id="3653237928288822292">Icona del provider di ricerca predefinito</translation>
 <translation id="3654906736796256792">Consenti l'esecuzione della sandbox dell'audio</translation>
 <translation id="3659542706175323490">Se il criterio viene impostato su Attivato, l'avvio tramite CA rimane abilitato, se supportato dal dispositivo. L'avvio tramite CA consente al sistema di riavviarsi dallo stato Off o Ibernazione quando il dispositivo viene collegato alla corrente.

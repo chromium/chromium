@@ -25,7 +25,6 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1145536944570833626">Elimina los datos actuales.</translation>
 <translation id="1147031633655575115">Has iniciado sesión como <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver otras pestañas</translation>
-<translation id="1157749421655780457">Permitir acceso a tu ubicación...</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Siguiente campo</translation>
 <translation id="1176932207622159128">Error al guardar imagen</translation>
@@ -239,7 +238,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3240426699337459095">Enlace copiado</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Tu lista de lectura está disponible sin conexión. Para añadir una página a la lista, toca <ph name="SHARE_OPENING_ICON" /> y, a continuación, <ph name="ADD_TO_READING_LIST_TEXT" />.</translation>
 <translation id="3268451620468152448">Pestañas abiertas</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3277021493514034324">Se ha copiado la dirección del sitio web</translation>
@@ -262,7 +260,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="345565170154308620">Gestionar contraseñas...</translation>
 <translation id="3469166899695866866">¿Detener descarga?</translation>
 <translation id="3470502288861289375">Copiando...</translation>
-<translation id="3472993688462687965">Cuando actives la sincronización, es posible que los datos que se puedan sincronizar estén restringidos según lo que permita tu organización.</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mes de caducidad</translation>
 <translation id="3482959374254649722">Sincronizando tus pestañas...</translation>
@@ -374,7 +371,6 @@ Sigue los pasos que se indican a continuación:</translation>
 
 Tus datos se han cifrado con tu frase de contraseña de sincronización. Introdúcela para iniciar la sincronización.</translation>
 <translation id="4689564913179979534">Gestionar métodos de pago...</translation>
-<translation id="469022783543509074">Se ha cerrado tu sesión</translation>
 <translation id="470966556546083668">No activar la sincronización</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4747097190499141774">El cifrado mediante frase de contraseña no incluye los métodos de pago ni las direcciones de Google Pay. Solo alguien que tenga tu frase de contraseña puede leer tus datos cifrados. La frase de contraseña no se envía a Google, que tampoco la guarda. Si la olvidas o quieres cambiar esta opción, deberás restablecer la sincronización. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Verifica tu identidad para asegurarte de que siempre tengas acceso a tus contraseñas guardadas</translation>
 <translation id="6851516051005285358">Solicitar sitio para ordenadores</translation>
-<translation id="6856384753476268833">Gestionado por tu organización.</translation>
 <translation id="6858855187367714033">Escaneado</translation>
 <translation id="6859944681507688231">Para escanear un código QR o una tarjeta de crédito, habilita la cámara en la configuración.</translation>
 <translation id="6869389390665537774">Puedes ver las páginas que has visitado o borrarlas de tu historial</translation>
@@ -691,7 +686,6 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="7472734401283673885">Nombre de empresa</translation>
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7481312909269577407">Adelante</translation>
-<translation id="7483467499335917849">Usar la ubicación actual</translation>
 <translation id="750493650310597496">0 seleccionados</translation>
 <translation id="7508728395076009983">Para bloquear tus pestañas de incógnito, configura Touch ID, Face ID o una contraseña.</translation>
 <translation id="7514365320538308">Descargar</translation>
@@ -768,6 +762,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8319076807703933069">Nueva búsqueda</translation>
 <translation id="8323906514956095947">Mantén pulsado el botón para ver más opciones de pestañas</translation>
 <translation id="8328777765163860529">Cerrar todo</translation>
+<translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8386068868580335421">Restablecer</translation>
 <translation id="8407669440184693619">No se han encontrado contraseñas para este sitio web</translation>
 <translation id="842017693807136194">Has iniciado sesión como</translation>
@@ -838,7 +833,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9081058212938299310">¿Quieres actualizar la contraseña de <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 elemento</translation>
 <translation id="9083838294503912307">Activa la sincronización para sincronizar y personalizar todos tus dispositivos.</translation>
-<translation id="9084677839771512880">Tu organización limita lo que puedes sincronizar. <ph name="BEGIN_LINK" />Detalles<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Contraseña sugerida de Chrome:</translation>
 <translation id="9094033019050270033">Actualizar contraseña</translation>
 <translation id="9100610230175265781">La frase de contraseña es obligatoria</translation>

@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Установена е защитна стена</translation>
 <translation id="1075811647922107217">Размер на страницата</translation>
-<translation id="110351136513869678">Отворете настройките, за да конфигурирате</translation>
 <translation id="1119447706177454957">Вътрешна грешка</translation>
 <translation id="1124772482545689468">Потребител</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">Невалиден PUK код.</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
 <translation id="155865706765934889">Сензорен панел</translation>
+<translation id="1572585716423026576">Задаване като тапет</translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">Сканирането се отменя</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">Не бе получен IP адрес</translation>
 <translation id="1887850431809612466">Версия на хардуера</translation>
-<translation id="1901646112321215184">Не са конфигурирани DNS сървъри</translation>
 <translation id="1905710495812624430">Максималният брой опити е надвишен.</translation>
 <translation id="1908234395526491708">Неуспешни заявки през UDP</translation>
 <translation id="1930797645656624981">Услуга за метод на въвеждане в Chrome OS</translation>
 <translation id="1947737735496445907">Отпечатано</translation>
-<translation id="197386857804679933">За повторно свързване отворете настройките</translation>
 <translation id="1979103255016296513">Срокът за промяна на паролата е изтекъл</translation>
 <translation id="1999615961760456652">Портал за удостоверяване</translation>
 <translation id="2006864819935886708">Свързване към мрежата</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">Поставете друга страница върху скенера</translation>
 <translation id="2872961005593481000">Изключване</translation>
 <translation id="2878387241690264070">За <ph name="NUM_SECONDS" /> секунди батерията се разреди с(ъс) <ph name="RATE" />.</translation>
-<translation id="2927511423571448384">През защитната стена не може да се установи връзка от Android с уебсайтове, работещи с HTTP (порт 80)</translation>
 <translation id="3008341117444806826">ОПРЕСНЯВАНЕ</translation>
 <translation id="3009958530611748826">Изберете папка, в която да запазите</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Крайна точка</translation>
 <translation id="3069085583900247081">Тестването не бе успешно</translation>
-<translation id="3076387335132326640">Използвате отворена мрежа</translation>
 <translation id="3083667275341675831">Диагностика на свързаността</translation>
 <translation id="3091839911843451378">Неуспешно – отпечатването спря</translation>
 <translation id="3102119246920354026">Кеш</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">Остават около <ph name="MIN_REMAINING" /> минути</translation>
 <translation id="3565064564551103223">Разрешени IP адреси</translation>
 <translation id="357889014807611375">Wi-Fi мрежа с отчитане</translation>
-<translation id="3582041541988388905">Няма открита връзка с <ph name="NETWORK_NAME" /></translation>
 <translation id="3595596368722241419">Батерията е заредена</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е защитена със слабия протокол WEP 802.1x</translation>
 <translation id="3689839747745352263">Тест: <ph name="TEST_NAME" /></translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930">Батерия с капацитет от <ph name="CHARGE_VALUE" /> мАч</translation>
 <translation id="4561801978359312462">SIM картата е отключена</translation>
 <translation id="4562494484721939086">Няма покритие</translation>
-<translation id="4567024731344774461">Преобразуването от DNS не е възможно от Android</translation>
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) Преобразуване от DNS</translation>
 <translation id="4848429997038228357">ИЗПЪЛНЯВА СЕ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Остава {0} опит}other{<ph name="ERROR_MESSAGE" /> Остават {0} опита}}</translation>
-<translation id="4871137769558798671">През защитната стена не може да се установи връзка с уебсайтове, работещи с HTTPS (порт 443)</translation>
 <translation id="4880328057631981605">Име на точката за достъп</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Изберете нова незабавно</translation>
@@ -291,7 +283,6 @@
 <translation id="5502931783115429516">Android не работи</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">Сигналът е слаб. Опитайте да се приближите до точката за достъп</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Повторно сканиране</translation>
 <translation id="5669267381087807207">Активира се</translation>
@@ -299,7 +290,6 @@
 <translation id="5691511426247308406">Семейство</translation>
 <translation id="5701381305118179107">Центриране</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> от <ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">Не са конфигурирани сървъри за имена</translation>
 <translation id="5760715441271661976">Състояние на портала</translation>
 <translation id="5784136236926853061">Голямо забавяне на HTTP</translation>
 <translation id="5832805196449965646">Добавяне на човек</translation>
@@ -343,7 +333,6 @@
 <translation id="636850387210749493">Корпоративно записване</translation>
 <translation id="6379086450106841622">Сензорен екран</translation>
 <translation id="6388847657025262518">Подавачът на документи на скенера е блокирал. Проверете го и опитайте отново.</translation>
-<translation id="6395640744968320699">През защитната стена не може да се установи връзка с уебсайтове, работещи с HTTP (порт 80)</translation>
 <translation id="6398765197997659313">Изход от цял екран</translation>
 <translation id="641081527798843608">Съвпадение на субекта</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -353,7 +342,6 @@
 <translation id="6472207088655375767">Еднократна парола</translation>
 <translation id="6480327114083866287">Управлява се от <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Спряло – заседнала хартия</translation>
-<translation id="6498608540383876992">Няма връзка с шлюза</translation>
 <translation id="6516990319416533844">За да тествате скоростта на зареждане, трябва да изчакате малко, така че батерията да се изтощи</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Неизвестен протокол за сигурност на Wi-Fi</translation>
@@ -363,13 +351,11 @@
 <translation id="6574762126505704998">Запълване</translation>
 <translation id="6575134580692778371">Не е конфигурирано</translation>
 <translation id="6596816719288285829">IP адрес</translation>
-<translation id="6603230386432466813">Имате проблеми при свързване?</translation>
 <translation id="6618744767048954150">В ход</translation>
 <translation id="6620487321149975369">Заданията за отпечатване ще се показват в историята, освен ако не ги премахнете ръчно</translation>
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6704062477274546131">Преобразуване от DNS</translation>
-<translation id="6714650824879092633">Следната мрежа е деактивирана: <ph name="NETWORK_NAME" /></translation>
 <translation id="6747215703636344499">Спряло – изходният контейнер е пълен</translation>
 <translation id="6756731097889387912">Сканирането не бе отменено</translation>
 <translation id="6766275201586212568">Неуспешни преобразувания от DNS</translation>
@@ -382,7 +368,6 @@
 <translation id="6957231940976260713">Имe на услугата</translation>
 <translation id="6961170852793647506">За да започнете, поставете документа върху скенера</translation>
 <translation id="6977381486153291903">Версия на фърмуера</translation>
-<translation id="6982876849933694860">За да настроите нова връзка, отворете <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7058278511608979688">Край и запазване</translation>
@@ -401,7 +386,6 @@
 <translation id="7271040990581020067">Скенерът се използва понастоящем. Опитайте отново по-късно.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Колекции от тапети</translation>
-<translation id="7292680402155138244">Голямо закъснение на уебсайтове, работещи с HTTPS (порт 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -459,7 +443,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Заявяване на броячи за трафика</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">Преобразуването от DNS не е възможно</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8208861521865154048">Предимства</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
@@ -471,7 +454,6 @@
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8302368968391049045">Защитна стена за HTTPS</translation>
 <translation id="8318753676953949627">Няма изображения</translation>
-<translation id="8346875532700229909">Няма връзка с шлюза от Android</translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
 <translation id="8352772353338965963">Добавете профил към функцията за централизиран вход. Всички профили, в които влезете чрез нея, ще бъдат достъпни без парола, така че трябва да използвате тази функция само с надеждни профили.</translation>
 <translation id="8364946094152050673">Не са посочени сървъри за имена</translation>

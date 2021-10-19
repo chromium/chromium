@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
 <translation id="2038563949887743358">Включить полную версию сайта</translation>
-<translation id="2039379262107991683">Добавляйте страницы в список для чтения и получайте напоминания, чтобы не забыть к ним вернуться</translation>
 <translation id="204321170514947529">Приложение "<ph name="APP_NAME" />" также хранит свои данные в Chrome</translation>
 <translation id="2046634576464120978">Ошибка регистрации</translation>
 <translation id="2049574241039454490"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE_OF_TOTAL" /></translation>
@@ -289,7 +288,6 @@
 <translation id="2781151931089541271">Осталась 1 сек.</translation>
 <translation id="2788468313014644040">Номер группы</translation>
 <translation id="2800066122460699237">Вкладка "<ph name="TAB_TITLE" />" будет закрыта.</translation>
-<translation id="2801022321632964776">Чтобы читать веб-страницы на своем языке, обновите Chrome до последней версии.</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">Информация об использовании Chrome, которую нельзя связать с вами.\n\nСведения о редких сбоях в работе Chrome, которые могут включать некоторые личные данные.\n\nЕсли включить синхронизацию, в показателях может быть также указана информация об URL посещаемых сайтов.</translation>
@@ -354,12 +352,10 @@
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Главная страница Chrome</translation>
 <translation id="3154863790776532719">Новые функции и улучшенная производительность.</translation>
-<translation id="3157387275655328056">Добавить в список для чтения</translation>
 <translation id="3157842584138209013">Чтобы узнать, сколько трафика вы сэкономили, нажмите кнопку "Ещё"</translation>
 <translation id="3166827708714933426">Работа с вкладками и окнами</translation>
 <translation id="316694332262407393">Браузер Chrome уже запущен.</translation>
 <translation id="3169472444629675720">Рекомендации</translation>
-<translation id="3205824638308738187">Почти готово!</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3208584281581115441">Выполнить проверку</translation>
 <translation id="3211426585530211793">Удалено: <ph name="ITEM_TITLE" /></translation>
@@ -450,7 +446,6 @@
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" />: добавлена закладка</translation>
 <translation id="3740525748616366977">Голосовой поиск недоступен на этом устройстве.</translation>
 <translation id="3749259744154402564">Действие не поддерживается.</translation>
-<translation id="3771001275138982843">Не удалось скачать обновление.</translation>
 <translation id="3771033907050503522">Вкладки инкогнито</translation>
 <translation id="3771290962915251154">Эта настройка отключена, так как работает родительский контроль</translation>
 <translation id="3771694256347217732">Условия использования Google</translation>
@@ -790,7 +785,6 @@
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5833984609253377421">Отправить ссылку</translation>
 <translation id="5834764604050996579">Чтобы отсканировать QR-код, разрешите Chrome доступ к камере.</translation>
-<translation id="5836192821815272682">Скачивание обновлений для Chrome…</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">пауза</translation>
 <translation id="5854512288214985237">Не отправлять статистику и отчеты о сбоях в Google</translation>
@@ -862,7 +856,6 @@
 <translation id="6232535412751077445">Если вы запретите отслеживание, в запросы браузера будет включена специальная команда. Сайты могут интерпретировать ее и отвечать на нее по-разному.
 
 Например, некоторые сайты перестанут показывать рекламу, подобранную на основе посещенных вами страниц. Другие сайты продолжат собирать и использовать данные о работе в браузере (например, для повышения уровня безопасности, предоставления контента, демонстрации рекламы и рекомендаций или формирования статистических отчетов).</translation>
-<translation id="624789221780392884">Обновление готово</translation>
 <translation id="6264376385120300461">Все равно скачать</translation>
 <translation id="6277522088822131679">Не удалось распечатать страницу. Повторите попытку.</translation>
 <translation id="6278428485366576908">Тема</translation>
@@ -898,7 +891,6 @@
 <translation id="6411219469806822692">Невозможно прокрутить дальше вверх. Начните делать скриншот выше на этой странице.</translation>
 <translation id="6412673304250309937">Сверяет URL со списком небезопасных сайтов в Chrome. Кроме того, если вы скачаете вредоносный файл или сайт попытается похитить ваш пароль, Chrome может отправить URL с образцами контента на проверку с помощью Безопасного просмотра.</translation>
 <translation id="641643625718530986">Печать</translation>
-<translation id="6427112570124116297">Перевод веб-страниц</translation>
 <translation id="6433501201775827830">Выберите поисковую систему</translation>
 <translation id="6434309073475700221">Закрыть</translation>
 <translation id="6437478888915024427">Информация о странице</translation>
@@ -1000,7 +992,6 @@
 <translation id="6979737339423435258">Все время</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="6987047470128880212">Режим инкогнито недоступен на этом устройстве.</translation>
-<translation id="6989267951144302301">Не удалось скачать</translation>
 <translation id="6995899638241819463">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="7001056293070445572">Файл большого размера (<ph name="FILE_SIZE" />).</translation>
 <translation id="7022756207310403729">Открыть в браузере</translation>
@@ -1032,7 +1023,6 @@
 <translation id="718926126787620637">Список папок с закладками открыт на весь экран</translation>
 <translation id="7191430249889272776">Вкладка открыта в фоновом режиме</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Ожидание скачивания 1 файла…}one{Ожидание скачивания # файла…}few{Ожидание скачивания # файлов…}many{Ожидание скачивания # файлов…}other{Ожидание скачивания # файла…}}</translation>
-<translation id="7233236755231902816">Чтобы просматривать веб-страницы на своем языке, обновите Chrome до последней версии.</translation>
 <translation id="7242755609445462077">Стилизованный контент: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Убедитесь, что в браузере Chrome на устройстве <ph name="TARGET_DEVICE_NAME" /> включена синхронизация.</translation>
 <translation id="7252076891734325316">Поднесите телефон к компьютеру.</translation>
@@ -1055,7 +1045,6 @@
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7352939065658542140">ВИДЕО</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Поделиться 1 выбранным объектом}one{Поделиться # выбранным объектом}few{Поделиться # выбранными объектами}many{Поделиться # выбранными объектами}other{Поделиться # выбранного объекта}}</translation>
-<translation id="7356631068872238169">Убрать из списка для чтения</translation>
 <translation id="7359002509206457351">Доступ к способам оплаты</translation>
 <translation id="7375125077091615385">Тип:</translation>
 <translation id="7376560087009844242">Благодаря этой функции при использовании быстрого поиска результаты могут стать точнее. Включить или отключить ее можно в любое время в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
@@ -1232,7 +1221,6 @@
 <translation id="829672787777123339">Подключение…</translation>
 <translation id="8310344678080805313">Обычные вкладки</translation>
 <translation id="831192587911042850">Добавляет текущий сайт в список сайтов, на которые вы подписаны.</translation>
-<translation id="8327155640814342956">Чтобы работать в браузере было удобнее, откройте Chrome и установите обновление.</translation>
 <translation id="834313815369870491">Никогда не переводить сайты</translation>
 <translation id="8349013245300336738">Сортировать по объему использованного трафика</translation>
 <translation id="8354977102499939946">Выполнить голосовой поиск. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
@@ -1345,6 +1333,7 @@
 <translation id="8951232171465285730">Благодаря Chrome вы сэкономили <ph name="MEGABYTES" /> МБ свободного места</translation>
 <translation id="8955719471735800169">В начало</translation>
 <translation id="8965591936373831584">ожидание</translation>
+<translation id="8967427617812342790">Добавить в список для чтения</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
 <translation id="8970887620466824814">Произошла ошибка</translation>
 <translation id="8972098258593396643">Скачать в папку по умолчанию?</translation>

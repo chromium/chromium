@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">دیوار آتش شناسایی شد</translation>
 <translation id="1075811647922107217">اندازه صفحه</translation>
-<translation id="110351136513869678">رفتن به تنظیمات برای پیکربندی</translation>
 <translation id="1119447706177454957">خطای داخلی</translation>
 <translation id="1124772482545689468">کاربر</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">‏PUK نامعتبر.</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
 <translation id="155865706765934889">صفحه لمسی</translation>
+<translation id="1572585716423026576">تنظیم به‌عنوان کاغذدیواری</translation>
 <translation id="1621067168122174824">اجرای آزمایش شارژ</translation>
 <translation id="1639239467298939599">بارگیری</translation>
 <translation id="1641857168437328880">تغذیه‌کننده سند (یک‌رو)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
 <translation id="1851218745569890714">کنفرانس ویدیویی</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">‏نمی‌توان نشانی IP را دریافت کرد</translation>
 <translation id="1887850431809612466">بازبینی سخت‌افزار</translation>
-<translation id="1901646112321215184">هیچ سرور سانادی پیکربندی نشده است</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
 <translation id="1908234395526491708">‏خطاهای درخواست UDP</translation>
 <translation id="1930797645656624981">‏سرویس روش ورودی سیستم‌عامل Chrome</translation>
 <translation id="1947737735496445907">چاپ‌شده</translation>
-<translation id="197386857804679933">برای اتصال مجدد، به «تنظیمات» بروید</translation>
 <translation id="1979103255016296513">مهلت تغییر گذرواژه به پایان رسید</translation>
 <translation id="1999615961760456652">درگاه مهمان</translation>
 <translation id="2006864819935886708">قابلیت اتصال</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">صفحه دیگری روی اسکنر قرار دهید</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> در <ph name="NUM_SECONDS" /> ثانیه تخلیه شد.</translation>
-<translation id="2927511423571448384">‏اتصال به وب‌سایت‌های HTTP (درگاه ۸۰) در Android ازطریق دیوار آتش ممکن نیست</translation>
 <translation id="3008341117444806826">بازخوانی</translation>
 <translation id="3009958530611748826">پوشه‌ای را برای ذخیره در آن انتخاب کنید</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> میلی‌آمپر</translation>
 <translation id="3056720590588772262">نقطه پایان</translation>
 <translation id="3069085583900247081">آزمایش ناموفق بود</translation>
-<translation id="3076387335132326640">از شبکه باز استفاده می‌کنید</translation>
 <translation id="3083667275341675831">تشخیص خطای اتصال</translation>
 <translation id="3091839911843451378">انجام نشد - متوقف شده است</translation>
 <translation id="3102119246920354026">حافظه پنهان</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> دقیقه باقی مانده است</translation>
 <translation id="3565064564551103223">‏IPهای مجاز</translation>
 <translation id="357889014807611375">‏Wi-Fi کنتوردار</translation>
-<translation id="3582041541988388905">اتصال <ph name="NETWORK_NAME" /> شناسایی نشد</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
 <translation id="3689839747745352263">آزمایش <ph name="TEST_NAME" /></translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930">باتری <ph name="CHARGE_VALUE" /> میلی‌آمپرساعت</translation>
 <translation id="4561801978359312462">قفل سیم‌کارت باز است</translation>
 <translation id="4562494484721939086">بدون سرویس</translation>
-<translation id="4567024731344774461">‏تفکیک ساناد در Android ممکن نیست</translation>
 <translation id="458794348635939462">تبدیل همه میزبانان ناموفق بود</translation>
 <translation id="4593212453765072419">راستی‌آزمایی پروکسی مورد نیاز است</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> از مجموع <ph name="TOTAL_PAGE_NUMBER" />. برای لغو کار چاپ، Enter را فشار دهید.</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">‏(Android) حل‌وفصل ساناد</translation>
 <translation id="4848429997038228357">درحال اجرا</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}one{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}other{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}}</translation>
-<translation id="4871137769558798671">‏اتصال به وب‌سایت‌های HTTP (درگاه ۴۴۳) ازطریق دیوار آتش ممکن نیست</translation>
 <translation id="4880328057631981605">نام نقطه دسترسی</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">انتخاب فوری موردی جدید</translation>
@@ -291,7 +283,6 @@
 <translation id="5502931783115429516">‏Android اجرا نمی‌شود</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">سیگنال ضعیف است، به نقطه دسترسی نزدیک‌تر شوید</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">اسکن مجدد</translation>
 <translation id="5669267381087807207">فعالسازی</translation>
@@ -299,7 +290,6 @@
 <translation id="5691511426247308406">خانواده</translation>
 <translation id="5701381305118179107">مرکز</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">هیچ سرور نامی پیکربندی نشده است</translation>
 <translation id="5760715441271661976">وضعیت درگاه</translation>
 <translation id="5784136236926853061">‏تأخیر زیاد HTTP</translation>
 <translation id="5832805196449965646">افزودن شخص</translation>
@@ -343,7 +333,6 @@
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>
 <translation id="6379086450106841622">صفحه لمسی</translation>
 <translation id="6388847657025262518">تغذیه‌کننده سند اسکنر گیر کرده است. تغذیه‌کننده را بررسی کنید و دوباره امتحان کنید.</translation>
-<translation id="6395640744968320699">‏اتصال به وب‌سایت‌های HTTP (درگاه ۸۰) ازطریق دیوار آتش ممکن نیست</translation>
 <translation id="6398765197997659313">خروج از حالت تمام صفحه</translation>
 <translation id="641081527798843608">مطابقت موضوع</translation>
 <translation id="6423239382391657905">‏باز کردن VPN</translation>
@@ -353,7 +342,6 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">تحت مدیریت <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">متوقف شد - کاغذ گیر کرده است</translation>
-<translation id="6498608540383876992">برقراری ارتباط با دروازه ممکن نیست</translation>
 <translation id="6516990319416533844">برای آزمایش کردن نرخ شارژ شدن باتری، اجازه دهید شارژ باتری برای مدت کوتاهی تخلیه شود</translation>
 <translation id="6517239166834772319">کاوش</translation>
 <translation id="6527081081771465939">‏پروتکل امنیتی Wi-Fi ناشناس است</translation>
@@ -363,13 +351,11 @@
 <translation id="6574762126505704998">پر کردن</translation>
 <translation id="6575134580692778371">پیکربندی نشده</translation>
 <translation id="6596816719288285829">‏نشانی IP</translation>
-<translation id="6603230386432466813">هنگام متصل شدن با مشکل روبه‌رو هستید؟</translation>
 <translation id="6618744767048954150">درحال اجرا</translation>
 <translation id="6620487321149975369">کارهای چاپ تا زمانی‌که به‌طور دستی برداشته نشوند در سابقه نشان داده می‌شوند</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6704062477274546131">وضوح ساناد</translation>
-<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> غیرفعال شده است</translation>
 <translation id="6747215703636344499">متوقف شد - خروجی پُر است</translation>
 <translation id="6756731097889387912">اسکن کردن لغو نشد</translation>
 <translation id="6766275201586212568">تفکیک ساناد انجام نشد</translation>
@@ -382,7 +368,6 @@
 <translation id="6957231940976260713">نام سرویس</translation>
 <translation id="6961170852793647506">برای شروع‌، سند را روی اسکنر قرار دهید</translation>
 <translation id="6977381486153291903">بازبینی سفت‌افزار</translation>
-<translation id="6982876849933694860">برای راه‌اندازی اتصال جدید، به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> بروید.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و به همه فعالیت‌های کاربر، ازجمله صفحه‌های وب بازدیدشده، گذرواژه‌ها، و ایمیل دسترسی دارد.</translation>
 <translation id="7040230719604914234">اپراتور</translation>
 <translation id="7058278511608979688">پایان و ذخیره</translation>
@@ -401,7 +386,6 @@
 <translation id="7271040990581020067">اسکنر درحال استفاده است. بعداً دوباره امتحان کنید.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">مجموعه کاغذدیواری</translation>
-<translation id="7292680402155138244">‏تأخیر زیاد در وب‌سایت‌های HTTPS (درگاه ۴۴۳)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -459,7 +443,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
 <translation id="8132480444149501833">درخواست شمارش‌گرهای ترافیک</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">تفکیک ساناد ممکن نیست</translation>
 <translation id="8206859287963243715">سلولی</translation>
 <translation id="8208861521865154048">هدیه‌ها</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
@@ -471,7 +454,6 @@
 <translation id="8297006494302853456">ضعیف</translation>
 <translation id="8302368968391049045">‏دیواره آتش HTTPS</translation>
 <translation id="8318753676953949627">تصویری وجود ندارد</translation>
-<translation id="8346875532700229909">‏برقراری ارتباط با دروازه در Android ممکن نیست</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="8352772353338965963">افزودن یک حساب برای ورود چندگانه به سیستم. کلیه حساب‌هایی که به سیستم وارد شده‌اند بدون گذرواژه قابل دسترسی هستند، بنابراین این قابلیت فقط باید با حساب‌های مورداعتماد استفاده شود.</translation>
 <translation id="8364946094152050673">سرورهای نام دامنه خالی است</translation>

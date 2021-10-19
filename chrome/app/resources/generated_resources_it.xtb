@@ -984,6 +984,7 @@
 <translation id="2002109485265116295">In tempo reale</translation>
 <translation id="200217416291116199">Consigliamo di effettuare il backup dei file in caso di interruzione dell'upgrade. L'avvio dell'upgrade comporterà l'arresto di Linux. Prima di procedere, salva i file aperti.</translation>
 <translation id="2003130567827682533">Per poter attivare i dati "<ph name="NAME" />", collegati a una rete Wi-Fi.</translation>
+<translation id="2004697686368036666">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="2005199804247617997">Altri profili</translation>
 <translation id="2006638907958895361">Apri link in <ph name="APP" /></translation>
 <translation id="2007404777272201486">Segnala un problema...</translation>
@@ -1126,7 +1127,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2154484045852737596">Modifica la carta</translation>
 <translation id="2154502158735983655">Lettura di dati e informazioni del dispositivo Chrome OS.</translation>
-<translation id="2154710561487035718">Copia URL</translation>
 <translation id="2155772377859296191">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Non chiedermelo più in caso di apertura del seguente formato file in questa app:
@@ -2369,6 +2369,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="344630545793878684">Lettura dei dati su una serie di siti web</translation>
 <translation id="3446650212859500694">Questo file include contenuti sensibili</translation>
 <translation id="3446827946208017735">Scopri e rivedi le impostazioni di privacy più importanti in un unico posto</translation>
+<translation id="3447644283769633681">Blocca tutti i cookie di terze parti</translation>
 <translation id="3448086340637592206">Termini aggiuntivi di Google Chrome e Chrome OS</translation>
 <translation id="3448492834076427715">Aggiorna account</translation>
 <translation id="3449393517661170867">Nuova finestra a schede</translation>
@@ -3162,7 +3163,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="428715201724021596">Connessione al profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="4287157641315808225">Sì, attiva ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostra}other{Mostra tutto}}</translation>
-<translation id="4289372044984810120">Gestisci i tuoi account qui. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Panoramica</translation>
 <translation id="4289732974614035569">Scegli un PIN</translation>
 <translation id="4290791284969893584">Dopo aver chiuso una pagina, le attività che hai avviato potrebbero non concludersi</translation>
@@ -3238,7 +3238,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4378556263712303865">Richiesta dispositivo</translation>
 <translation id="4379281552162875326">Vuoi disinstallare "<ph name="APP_NAME" />"?</translation>
 <translation id="4380648069038809855">Modalità a schermo intero attivata</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" /> e 1 altro account}other{<ph name="EMAIL" /> e altri <ph name="EXTRA_ACCOUNTS" /> account}}</translation>
 <translation id="4384312707950789900">Aggiungi ai preferiti</translation>
 <translation id="4384652540891215547">Attiva l'estensione</translation>
 <translation id="4384886290276344300">Cambia le impostazioni della tastiera</translation>
@@ -3861,7 +3860,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5053962746715621840">Cerca l'immagine con Google Lens</translation>
 <translation id="5056950756634735043">Connessione al contenitore in corso…</translation>
 <translation id="5057110919553308744">Quando fai clic sull'estensione</translation>
-<translation id="5057403786441168405">Gestisci gli account a cui hai eseguito l'accesso. Siti web, app ed estensioni in Chrome e Google Play potrebbero utilizzare questi account per personalizzare la tua esperienza in base alle autorizzazioni. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Limitare accesso</translation>
 <translation id="5059526285558225588">Scegli cosa condividere</translation>
 <translation id="5060332552815861872">C'è una stampante disponibile da salvare.</translation>
@@ -4990,7 +4988,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6284632978374966585">Attiva il tema scuro</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> non viene scaricato spesso e potrebbe essere pericoloso.</translation>
 <translation id="6285770818046456882">Il dispositivo che stava condividendo dei contenuti ha annullato il trasferimento</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Non sono disponibili dispositivi per condividere contenuti nelle vicinanze. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verifica del codice di attivazione in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="6291741848715722067">Codice di conferma</translation>
@@ -5413,7 +5410,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6750757184909117990">Disabilita rete mobile</translation>
 <translation id="6750946710563435348">Usa un altro nome utente</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (In incognito)</translation>
-<translation id="6757101664402245801">URL copiato</translation>
 <translation id="6758056191028427665">Comunicaci la tua opinione sul nostro lavoro.</translation>
 <translation id="6759193508432371551">Ripristino dati di fabbrica</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
@@ -5590,7 +5586,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="693807610556624488">La scrittura supera la lunghezza massima dell'attributo per: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Hai una stampante salvata.</translation>
 <translation id="6938606182859551396">Per ricevere notifiche del telefono sul tuo <ph name="DEVICE_TYPE" />, segui le istruzioni sul telefono per garantire l'accesso delle notifiche a Google Play Services.</translation>
-<translation id="6938789263968032501">Persone</translation>
 <translation id="6939815295902433669">Controlla il software del dispositivo</translation>
 <translation id="694168622559714949">L'amministratore ha impostato una lingua predefinita che non può essere modificata.</translation>
 <translation id="6941937518557314510">Accedi a <ph name="TOKEN_NAME" /> per autenticarti su <ph name="HOST_NAME" /> con il tuo certificato.</translation>
@@ -7635,7 +7630,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9040661932550800571">Aggiornare la password per <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">L'accesso ai file locali sul computer è stato disattivato dall'amministratore</translation>
 <translation id="904224458472510106">Questa operazione non può essere annullata</translation>
-<translation id="9042893549633094279">Privacy e sicurezza</translation>
 <translation id="904451693890288097">Inserisci la passkey di "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Connessione alla rete non riuscita: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Il tuo elenco di lettura è passato al nuovo riquadro laterale. Provalo qui.</translation>

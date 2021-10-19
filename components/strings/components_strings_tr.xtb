@@ -108,6 +108,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Çerezlerinizi temizlemeyi deneyin<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Güvenli DNS ayarlarınızı kontrol edin</translation>
 <translation id="1307966114820526988">Kullanımdan Kaldırılan Özellikler</translation>
+<translation id="1308113895091915999">Teklif mevcut</translation>
 <translation id="1312803275555673949">Bunu destekleyen kanıtlar neler?</translation>
 <translation id="131405271941274527"><ph name="URL" />, bir NFC cihazında telefonunuza dokunduğunuzda bilgi gönderip almak istiyor</translation>
 <translation id="1314509827145471431">Sağdan bağlı</translation>
@@ -124,6 +125,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
           <ph name="LIST_ITEM" />İşvereniniz veya okulunuz
           <ph name="LIST_ITEM" />İnternet servis sağlayıcınız
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">Bu sekmeyi paylaşın</translation>
 <translation id="1339601241726513588">Kayıt alan adı:</translation>
 <translation id="1340482604681802745">Alınacağı adres</translation>
 <translation id="1346748346194534595">Sağa</translation>
@@ -157,6 +159,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1428146450423315676">Yığınlayıcı 7</translation>
 <translation id="1428729058023778569">Bu site HTTPS'yi desteklemediği için bu uyarıyı görüyorsunuz. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Yazdır</translation>
+<translation id="1432581352905426595">Arama motorlarını yönet</translation>
 <translation id="1436185428532214179">Cihazınızdaki dosyaları veya klasörleri düzenlemek isteyebilir</translation>
 <translation id="1442386063175183758">Sağa doğru iki kırımlı katlama</translation>
 <translation id="1442987760062738829">Delik</translation>
@@ -375,7 +378,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2130448033692577677">Belirttiğiniz şablonlar, DnsOverHttpsMode politikası ayarlanmadığı için uygulanamayabilir.</translation>
 <translation id="213826338245044447">Mobil Yer İşaretleri</translation>
 <translation id="214556005048008348">Ödemeyi iptal et</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Bağlantı paylaşma, QR kodu oluşturma, yayınlama ve daha birçok seçenekle bu sayfayı paylaşmak için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="2148613324460538318">Kart Ekle</translation>
 <translation id="2149968176347646218">Bağlantı güvenli değil</translation>
 <translation id="2154054054215849342">Senkronizasyon alan adınızda kullanılamıyor</translation>
@@ -422,7 +424,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2293443924986248631">Etkinleştirildiğinde, siteler sizi web'de takip eden çerezler kullanamaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="2295290966866883927">Ziyaret ettiğiniz sayfaların URL'leri analiz amacıyla Google Cloud'a veya üçüncü taraflara gönderilir. Örneğin, güvenli olmayan web sitelerini tespit etmek için taranabilirler.</translation>
 <translation id="2297722699537546652">B5 (Zarf)</translation>
-<translation id="2297822946037605517">Bu sayfayı paylaş</translation>
 <translation id="2298855485018661510">Çerezleri yönet düğmesi, Chrome ayarlarında çerez tercihlerinizi yönetmek için Enter'a basın</translation>
 <translation id="2300306941146563769">Yüklenmeyenler</translation>
 <translation id="2310021320168182093">Chou2 (Zarf)</translation>
@@ -500,6 +501,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2552295903035773204">Bundan böyle kartları onaylamak için ekran kilidini kullanın</translation>
 <translation id="2553853292994445426">Güvenli DNS ayarlarınızı kontrol edin. Bağlantıların başarısız olduğu bir güvenli DNS sunucusu yapılandırmış olabilirsiniz.</translation>
 <translation id="2556876185419854533">Düzenlemeyi &amp;Geri Al</translation>
+<translation id="2570734079541893434">Ayarları yönet</translation>
 <translation id="257674075312929031">Grup</translation>
 <translation id="2586657967955657006">Pano</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> adlı yayıncıdan. Bunu ve diğer <ph name="OTHER_ARTICLE_COUNT" /> haberi okuyun.</translation>
@@ -508,7 +510,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2595719060046994702">Bu cihaz ve hesap bir şirket veya başka kuruluş tarafından yönetilmiyor.</translation>
 <translation id="2596415276201385844">Güvenli bir bağlantı kurmak için saatinizin doğru ayarlanmış olması gerekir. Bunun sebebi, web sitelerinin kendilerini tanımlamak için kullandıkları sertifikaların sadece belli süreler için geçerli olmasıdır. Cihazınızın saati yanlış olduğundan, Chrome bu sertifikaları doğrulayamıyor.</translation>
 <translation id="2597378329261239068">Doküman şifre korumalı. Lütfen şifreyi girin.</translation>
-<translation id="2597833655590727265">Chrome görünümünü yönet düğmesi, tarayıcınızın görünümünü temalarla özelleştirmek için Enter'a basın</translation>
 <translation id="2609632851001447353">Varyasyonlar</translation>
 <translation id="2610561535971892504">Kopyalamak için tıkla</translation>
 <translation id="2618023639789766142">C10 (Zarf)</translation>
@@ -598,7 +599,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası <ph name="DOMAIN2" /> alan adından geliyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="2943895734390379394">Yükleme Süresi:</translation>
-<translation id="2948017612172418360">Site aramayı yönetin düğmesi, Site aramayı ve varsayılan arama motorunuzu yönetmek için Enter'a basın</translation>
 <translation id="2948083400971632585">Ayarlar sayfasından, bir bağlantı için yapılandırılmış proxy'leri devre dışı bırakabilirsiniz.</translation>
 <translation id="2949183777371959169">Makine, Chrome Tarayıcı Bulut Yönetimi'ne kayıtlı olmadığı için yok sayıldı.</translation>
 <translation id="2951588413176968965">Posta kutum</translation>
@@ -1018,7 +1018,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4275830172053184480">Cihazınızı yeniden başlatın</translation>
 <translation id="4277028893293644418">Şifreyi sıfırla</translation>
 <translation id="4278390842282768270">İzin veriliyor</translation>
-<translation id="4286047936834273847">Site aramayı ve varsayılan arama motorunuzu yönetin</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Bu kart Google Hesabınıza kaydedildi}other{Bu kartlar Google Hesabınıza kaydedildi}}</translation>
 <translation id="4287885627794386150">Deneme için uygun ancak etkin değil</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" />. sayfanın küçük resmi</translation>
@@ -1058,7 +1057,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4372948949327679948">Beklenen <ph name="VALUE_TYPE" /> değeri.</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> adresine ulaşmayı denediniz, ancak sunucunun sağladığı sertifika, sertifikayı veren tarafından iptal edildi. Bu, sunucunun sağladığı güvenlik kimlik bilgilerine kesinlikle güvenilmemesi gerektiği anlamına gelir. Bir saldırganla irtibat kuruyor olabilirsiniz.</translation>
 <translation id="4378154925671717803">Telefon</translation>
-<translation id="4389652395741935834">Bağlantıyı paylaşarak, QR kodu oluşturarak, yayınlayarak ve daha birçok seçenekle bu sayfayı paylaşın.</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4406883609789734330">Canlı Altyazı</translation>
 <translation id="4406896451731180161">arama sonuçları</translation>
@@ -1325,6 +1323,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5230733896359313003">Gönderim Adresi</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">Kapat</translation>
 <translation id="5250209940322997802">"Ağa bağlanın"</translation>
 <translation id="52517543715119994">Chrome özellikleri hakkında bilgi edinin</translation>
 <translation id="5251803541071282808">Bulut</translation>
@@ -1642,7 +1641,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proxy'yi, güvenlik duvarını ve Güvenli DNS yapılandırmasını kontrol etme<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Solda ikili tel zımba</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" için bulunan 1 sonuç gösteriliyor</translation>
-<translation id="6377404662019220017">Bu sayfayı paylaş düğmesi, Bağlantı paylaşma, QR kodu oluşturma, yayınlama ve daha birçok seçenekle bu sayfayı paylaşmak için Enter'a basın</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Devam etmeniz halinde ödeme yapmanız gerekebilir.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 öneri daha}other{# öneri daha}}</translation>
@@ -1863,7 +1861,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> yöntem daha}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> yöntem daha}}</translation>
 <translation id="7153618581592392745">Lavanta</translation>
 <translation id="7156870133441232244">Sunucu, TLS 1.2 veya daha yeni bir sürüme geçmeli.</translation>
-<translation id="716939258255825483">Chrome Dinazor oyna düğmesi, Chrome'da Dinozor oyununu oynamak için Enter'a basın</translation>
 <translation id="717330890047184534">Gaia Kimliği:</translation>
 <translation id="7173920250514487165">Gizli içeriğin ekran görüntüsü alınacak</translation>
 <translation id="7174545416324379297">Birleştirildi</translation>
@@ -1886,7 +1883,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7220786058474068424">İşleme koyuluyor</translation>
 <translation id="7221855153210829124">Bildirimleri gösterme</translation>
 <translation id="722454870747268814">Yeni Gizli Sekme</translation>
-<translation id="7231476387708735839">Site aramayı yönet</translation>
 <translation id="7233592378249864828">Yazdırma onay sayfası</translation>
 <translation id="7238585580608191973">SHA-256 Parmak İzi</translation>
 <translation id="7240120331469437312">Sertifika Konusu Diğer Adı</translation>
@@ -2483,6 +2479,7 @@ Ek ayrıntılar:
 <translation id="9213433120051936369">Görünümü özelleştir</translation>
 <translation id="9215416866750762878">Bir uygulama, Chrome'un bu siteye güvenli bir şekilde bağlanmasını engelliyor</translation>
 <translation id="9219103736887031265">Resimler</translation>
+<translation id="922152298093051471">Chrome'u özelleştirin</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">FORMU TEMİZLE</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2515,5 +2512,4 @@ Ek ayrıntılar:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay'den</translation>
-<translation id="998677222109959694">Chrome ayarlarını yönet</translation>
 </translationbundle>

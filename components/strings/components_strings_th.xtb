@@ -124,6 +124,7 @@
           <ph name="LIST_ITEM" />นายจ้างหรือโรงเรียน
           <ph name="LIST_ITEM" />ผู้ให้บริการอินเทอร์เน็ต
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">แชร์แท็บนี้</translation>
 <translation id="1339601241726513588">โดเมนการลงทะเบียน:</translation>
 <translation id="1340482604681802745">ที่อยู่ในการรับ</translation>
 <translation id="1346748346194534595">ขวา</translation>
@@ -157,6 +158,7 @@
 <translation id="1428146450423315676">สแต็กเกอร์ 7</translation>
 <translation id="1428729058023778569">คุณเห็นคำเตือนนี้เพราะเว็บไซต์ไม่รองรับ HTTPS <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">พิมพ์</translation>
+<translation id="1432581352905426595">จัดการเครื่องมือค้นหา</translation>
 <translation id="1436185428532214179">สามารถขอแก้ไขไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณได้</translation>
 <translation id="1442386063175183758">พับทบด้านขวา</translation>
 <translation id="1442987760062738829">เจาะรู</translation>
@@ -374,7 +376,6 @@
 <translation id="2130448033692577677">เทมเพลตที่คุณระบุอาจใช้ไม่ได้เนื่องจากไม่มีการตั้งค่านโยบาย DnsOverHttpsMode ไว้</translation>
 <translation id="213826338245044447">บุ๊กมาร์กบนอุปกรณ์เคลื่อนที่</translation>
 <translation id="214556005048008348">ยกเลิกการชำระเงิน</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อแชร์หน้านี้ด้วยตัวเลือกในการแชร์ลิงก์ สร้างคิวอาร์โค้ด แคสต์ และอื่นๆ</translation>
 <translation id="2148613324460538318">เพิ่มบัตร</translation>
 <translation id="2149968176347646218">การเชื่อมต่อไม่ปลอดภัย</translation>
 <translation id="2154054054215849342">ไม่มีการซิงค์สำหรับโดเมนของคุณ</translation>
@@ -421,7 +422,6 @@
 <translation id="2293443924986248631">เมื่อเปิดใช้ เว็บไซต์ต่างๆ จะใช้คุกกี้ที่ติดตามคุณในอินเทอร์เน็ตไม่ได้ ฟีเจอร์ในเว็บไซต์บางแห่งอาจใช้งานไม่ได้</translation>
 <translation id="2295290966866883927">URL ของหน้าเว็บที่คุณเข้าชมจะส่งไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ เช่น อาจสแกนเพื่อตรวจหาเว็บไซต์ที่ไม่ปลอดภัย</translation>
 <translation id="2297722699537546652">B5 (ซองจดหมาย)</translation>
-<translation id="2297822946037605517">แชร์หน้าเว็บนี้</translation>
 <translation id="2298855485018661510">ปุ่มจัดการคุกกี้ กด Enter เพื่อจัดการค่ากำหนดของคุกกี้ในการตั้งค่า Chrome</translation>
 <translation id="2300306941146563769">ไม่ได้อัปโหลด</translation>
 <translation id="2310021320168182093">Chou2 (ซองจดหมาย)</translation>
@@ -499,6 +499,7 @@
 <translation id="2552295903035773204">จากนี้ไปให้ใช้ฟีเจอร์ล็อกหน้าจอเพื่อยืนยันบัตร</translation>
 <translation id="2553853292994445426">ตรวจสอบการตั้งค่า DNS ที่ปลอดภัย คุณอาจกำหนดค่าเซิร์ฟเวอร์ DNS ที่ปลอดภัยไว้ซึ่งทำการเชื่อมต่อไม่สำเร็จ</translation>
 <translation id="2556876185419854533">&amp;เลิกทำการแก้ไข</translation>
+<translation id="2570734079541893434">จัดการการตั้งค่า</translation>
 <translation id="257674075312929031">จัดกลุ่ม</translation>
 <translation id="2586657967955657006">คลิปบอร์ด</translation>
 <translation id="2587730715158995865">จาก <ph name="ARTICLE_PUBLISHER" /> อ่านเรื่องราวนี้และอื่นๆ อีก <ph name="OTHER_ARTICLE_COUNT" /> เรื่อง</translation>
@@ -507,7 +508,6 @@
 <translation id="2595719060046994702">อุปกรณ์และบัญชีนี้ไม่ได้จัดการโดยบริษัทหรือองค์กรอื่น</translation>
 <translation id="2596415276201385844">หากต้องการเริ่มการเชื่อมต่อที่ปลอดภัย นาฬิกาจะต้องตั้งค่าไว้อย่างถูกต้อง เนื่องจากใบรับรองที่เว็บไซต์ใช้เพื่อระบุตนเองจะใช้ได้เฉพาะช่วงเวลาหนึ่งเท่านั้น นาฬิกาของอุปกรณ์ไม่ถูกต้อง Chromium จึงไม่สามารถยืนยันใบรับรองเหล่านี้ได้</translation>
 <translation id="2597378329261239068">เอกสารนี้ได้รับการป้องกันด้วยรหัสผ่าน โปรดป้อนรหัสผ่าน</translation>
-<translation id="2597833655590727265">ปุ่มจัดการรูปลักษณ์ของ Chrome กด Enter เพื่อปรับแต่งรูปลักษณ์ของเบราว์เซอร์ด้วยธีม</translation>
 <translation id="2609632851001447353">รูปแบบต่างๆ</translation>
 <translation id="2610561535971892504">คลิกเพื่อคัดลอก</translation>
 <translation id="2618023639789766142">C10 (ซองจดหมาย)</translation>
@@ -597,7 +597,6 @@
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะใบรับรองความปลอดภัยมาจาก <ph name="DOMAIN2" /> โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="2943895734390379394">เวลาที่อัปโหลด:</translation>
-<translation id="2948017612172418360">ปุ่มจัดการการค้นหาเว็บไซต์ กด Enter เพื่อจัดการการค้นหาเว็บไซต์และเครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="2948083400971632585">คุณสามารถปิดใช้งานพร็อกซีที่กำหนดค่าสำหรับการเชื่อมต่อจากหน้าการตั้งค่าได้</translation>
 <translation id="2949183777371959169">ไม่สนใจเนื่องจากไม่ได้ลงทะเบียนเครื่องกับการจัดการระบบคลาวด์ของเบราว์เซอร์ Chrome</translation>
 <translation id="2951588413176968965">กล่องจดหมายของฉัน</translation>
@@ -1015,7 +1014,6 @@
 <translation id="4275830172053184480">รีสตาร์ทอุปกรณ์ของคุณ</translation>
 <translation id="4277028893293644418">รีเซ็ตรหัสผ่าน</translation>
 <translation id="4278390842282768270">อนุญาตแล้ว</translation>
-<translation id="4286047936834273847">จัดการการค้นหาเว็บไซต์และเครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{บันทึกบัตรนี้ลงในบัญชี Google ของคุณแล้ว}other{บันทึกบัตรเหล่านี้ลงในบัญชี Google ของคุณแล้ว}}</translation>
 <translation id="4287885627794386150">มีสิทธิ์สำหรับการทดลองใช้ แต่ใช้งานไม่ได้</translation>
 <translation id="4297502707443874121">ภาพขนาดย่อของหน้า <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1055,7 +1053,6 @@
 <translation id="4372948949327679948">ค่า <ph name="VALUE_TYPE" /> ที่คาดไว้</translation>
 <translation id="4377125064752653719">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่ใบรับรองที่เซิร์ฟเวอร์แจ้งมาถูกเพิกถอนโดยผู้ออกใบรับรอง ซึ่งหมายความว่าข้อมูลรับรองด้านความปลอดภัยที่เซิร์ฟเวอร์แจ้งมานั้นไม่สามารถเชื่อถือได้ คุณอาจกำลังติดต่อกับคนที่คิดจะโจมตีคุณ</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
-<translation id="4389652395741935834">แชร์หน้านี้โดยการแชร์ลิงก์ สร้างคิวอาร์โค้ด แคสต์ และอื่นๆ</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4406883609789734330">คำบรรยายสด</translation>
 <translation id="4406896451731180161">ผลการค้นหา</translation>
@@ -1322,6 +1319,7 @@
 <translation id="5230733896359313003">ที่อยู่ในการจัดส่ง</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">ปิด</translation>
 <translation id="5250209940322997802">"เชื่อมต่อกับเครือข่าย"</translation>
 <translation id="52517543715119994">ดูข้อมูลเกี่ยวกับฟีเจอร์ของ Chrome</translation>
 <translation id="5251803541071282808">ระบบคลาวด์</translation>
@@ -1639,7 +1637,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ตรวจสอบพร็อกซี ไฟร์วอลล์ และการกำหนดค่า DNS ที่ปลอดภัย<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">เย็บด้วยลวดเย็บกระดาษด้านซ้าย 2 ครั้ง</translation>
 <translation id="6377268785556383139">มีผลการค้นหา "<ph name="SEARCH_TEXT" />" 1 รายการ</translation>
-<translation id="6377404662019220017">ปุ่มแชร์หน้านี้ กด Enter เพื่อแชร์หน้านี้ด้วยตัวเลือกในการแชร์ลิงก์ สร้างคิวอาร์โค้ด แคสต์ และอื่นๆ</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">อาจมีการเรียกเก็บเงิน</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{อีก 1 คำแนะนำ}other{อีก # คำแนะนำ}}</translation>
@@ -1860,7 +1857,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> รายการ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> รายการ}}</translation>
 <translation id="7153618581592392745">ลาเวนเดอร์</translation>
 <translation id="7156870133441232244">ควรอัปเกรดเซิร์ฟเวอร์เป็น TLS 1.2 ขึ้นไป</translation>
-<translation id="716939258255825483">ปุ่มเล่นเกมไดโนเสาร์วิ่ง กด Enter เพื่อเล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
 <translation id="717330890047184534">รหัส GAIA:</translation>
 <translation id="7173920250514487165">จับภาพเนื้อหาที่เป็นความลับในหน้าจอ</translation>
 <translation id="7174545416324379297">รวมแล้ว</translation>
@@ -1883,7 +1879,6 @@
 <translation id="7220786058474068424">กำลังดำเนินการ</translation>
 <translation id="7221855153210829124">แสดงการแจ้งเตือน</translation>
 <translation id="722454870747268814">แท็บที่ไม่ระบุตัวตนใหม่</translation>
-<translation id="7231476387708735839">จัดการการค้นหาเว็บไซต์</translation>
 <translation id="7233592378249864828">พิมพ์แผ่นงานยืนยัน</translation>
 <translation id="7238585580608191973">ลายนิ้วมือ SHA-256</translation>
 <translation id="7240120331469437312">ชื่อสำรองของหัวเรื่องใบรับรอง</translation>
@@ -2480,6 +2475,7 @@
 <translation id="9213433120051936369">กำหนดลักษณะที่ปรากฏ</translation>
 <translation id="9215416866750762878">มีแอปพลิเคชันที่ห้ามไม่ให้ Chrome เชื่อมต่อกับไซต์นี้อย่างปลอดภัย</translation>
 <translation id="9219103736887031265">ภาพ</translation>
+<translation id="922152298093051471">ปรับแต่ง Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ล้างฟอร์ม</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2512,5 +2508,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">จาก Google Pay</translation>
-<translation id="998677222109959694">จัดการการตั้งค่า Chrome</translation>
 </translationbundle>

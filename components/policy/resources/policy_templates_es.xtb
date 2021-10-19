@@ -78,16 +78,6 @@
 <translation id="1069489575852947981">Si se asigna el valor "Enabled" a esta política o no se le asigna ninguno, se definirá una cuenta local del dispositivo para el inicio de sesión automático sin retardo. <ph name="PRODUCT_OS_NAME" /> permitirá usar la combinación de teclas Ctrl + Alt + S para omitir el inicio de sesión automático y mostrar la pantalla de inicio de sesión.
 
       Si se le asigna el valor "Disabled", los usuarios no podrán omitir el inicio de sesión automático sin retardo (si se ha configurado).</translation>
-<translation id="1070656322814001059">Chrome bloqueará el acceso a protocolos externos dentro de iframes en entornos aislados. Consulta https://chromestatus.com/features/5680742077038592.
-
-      Si se le asigna el valor True, Chrome podrá bloquear esos accesos.
-
-      Si se le asigna el valor False, Chrome no podrá bloquear esos accesos.
-
-      El valor predeterminado es True (función de seguridad habilitada).
-
-      Esta opción la pueden utilizar los usuarios de Enterprise afectados por las restricciones (para suprimirlas temporalmente).
-      </translation>
 <translation id="1073983258515362346">Enviar información sobre la retroiluminación de un dispositivo.
 
       Si se asigna el valor "false" a esta política o no se establece, no se enviará ninguna información.
@@ -2301,9 +2291,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si no se define esta política, <ph name="PRODUCT_NAME" /> usará un nombre de biblioteca predeterminado.</translation>
 <translation id="3652670852519271837">Permitir que los sitios pidan al usuario que otorgue permiso de lectura a archivos y directorios a través de la API File System</translation>
-<translation id="3653234084868565720">Permite controlar la creación de nuevas cuentas de usuario en <ph name="PRODUCT_OS_NAME" />. Si se asigna el valor false a esta política, los usuarios que no tengan una cuenta no podrán iniciar sesión.
-
-      Si se le asigna el valor true o no se configura, se permitirá crear nuevas cuentas de usuario siempre que <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> no impida que el usuario inicie sesión.</translation>
 <translation id="3653237928288822292">Icono del proveedor de búsquedas predeterminadas</translation>
 <translation id="3654906736796256792">Permite ejecutar el entorno aislado de audio</translation>
 <translation id="3659542706175323490">Si se habilita esta política, el inicio con CA (corriente alterna) siempre estará activado si el dispositivo lo admite. El inicio con CA ofrece la opción de que el sistema se reinicie desde el estado de apagado o hibernación cuando se conecte a una toma de corriente.

@@ -52,7 +52,6 @@
 <translation id="5171868502429358653">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="5224391634244552924">ไม่มีรหัสผ่านที่บันทึกไว้ Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="5308226104666789935">Chromium ตรวจหาอัปเดตไม่ได้</translation>
-<translation id="5324242752415821224">องค์กรกำหนดให้คุณลงชื่อเข้าใช้เพื่อใช้ Chromium <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="5396916991083608703">ตั้งค่า Chromium เป็นค่าเริ่มต้นไหม</translation>
 <translation id="5521125884468363740">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chromium</translation>
 <translation id="5573014823074921752">เคล็ดลับสำหรับ Chromium ถ้าต้องการดูตัวเลือกแท็บเพิ่มเติม ให้แตะปุ่ม "แสดงแท็บ" ค้างไว้ในแถบเครื่องมือ ซึ่งอยู่ที่ด้านล่างหรือด้านบนของหน้าจอ</translation>
@@ -73,7 +72,6 @@
 <translation id="6424492062988593837">Chromium พัฒนาใหม่! มีรุ่นใหม่ให้ใช้งานแล้ว</translation>
 <translation id="6752854822223394465">องค์กรของคุณกำลังตั้งค่า Chromium...</translation>
 <translation id="6820823224820483452">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
-<translation id="6827294685447036764">หากอนุญาตให้ Chromium ทราบตำแหน่งของคุณ Chromium จะส่งตำแหน่งไปยังเว็บไซต์ที่คุณให้สิทธิ์ เว็บไซต์อาจขอตำแหน่งเมื่อมีข้อมูลในพื้นที่ที่จะแสดง เช่น ร้านค้าใกล้เคียงหรือข่าวสาร</translation>
 <translation id="7018284295775193585">อัปเดต Chromium ไม่ได้</translation>
 <translation id="7045244423563602563">ปรับเปลี่ยน Chromium ในแบบของคุณ</translation>
 <translation id="7099326575020694068">Chromium ไม่สามารถใช้กล้องถ่ายรูปในโหมด Split View</translation>

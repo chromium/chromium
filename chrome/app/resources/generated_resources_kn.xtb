@@ -989,6 +989,7 @@
 <translation id="2002109485265116295">ನೈಜ ಸಮಯ</translation>
 <translation id="200217416291116199">ಅಪ್‌ಗ್ರೇಡ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗದಿದ್ದಾಗ ಫೈಲ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಲು ಶಿಫಾರಸು ಮಾಡಲಾಗುವುದು. ಅಪ್‌ಗ್ರೇಡ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸುವುದರಿಂದ Linux ಅನ್ನು ಆಫ್ ಆಗುವಂತೆ ಮಾಡುತ್ತದೆ. ಮುಂದುವರಿಸುವ ಮೊದಲು, ತೆರೆದ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಿ.</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' ಡೇಟಾವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಮೊದಲು ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
+<translation id="2004697686368036666">ಫೀಚರ್‌ಗಳು ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>
 <translation id="2005199804247617997">ಇತರ ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
 <translation id="2006638907958895361">ಲಿಂಕ್‌ ಅನ್ನು <ph name="APP" /> ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="2007404777272201486">ಸಮಸ್ಯೆ ವರದಿಮಾಡಿ...</translation>
@@ -1131,7 +1132,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ಫೋಟೋಗಳು</translation>
 <translation id="2154484045852737596">ಕಾರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2154502158735983655">Chrome OS ಸಾಧನದ ಮಾಹಿತಿ ಮತ್ತು ಸಾಧನದ ಡೇಟಾವನ್ನು ಓದಿ.</translation>
-<translation id="2154710561487035718">URL ನಕಲಿಸಿ</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ನಂತೆ ತೋರುತ್ತಿದೆ</translation>
 <translation id="2156294658807918600">ಸೇವಾ ಕಾರ್ಯಕರ್ತ: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">ಈ ಆ್ಯಪ್‌ನಲ್ಲಿ ಈ ಫೈಲ್ ಸ್ವರೂಪವನ್ನು ತೆರೆಯುವಾಗ ಪುನಃ ಕೇಳಬೇಡಿ:
@@ -2376,6 +2376,7 @@
 <translation id="344630545793878684">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಹಲವಾರು ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ಓದಿ</translation>
 <translation id="3446650212859500694">ಈ ಫೈಲ್ ಸೂಕ್ಷ್ಮ ವಿಷಯವನ್ನು ಒಳಗೊಂಡಿದೆ.</translation>
 <translation id="3446827946208017735">ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ ಅತ್ಯಂತ ನಿರ್ಣಾಯಕ ಗೌಪ್ಯತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ ಮತ್ತು ಪರಿಶೀಲಿಸಿ</translation>
+<translation id="3447644283769633681">ಮೂರನೇ-ವ್ಯಕ್ತಿಯ ಎಲ್ಲ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="3448086340637592206">Google Chrome ಹಾಗೂ Chrome OS ಹೆಚ್ಚುವರಿ ನಿಯಮಗಳು</translation>
 <translation id="3448492834076427715">ಖಾತೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="3449393517661170867">ಹೊಸ ಟ್ಯಾಬ್ ಮಾಡಿರುವ ವಿಂಡೋ</translation>
@@ -3170,7 +3171,6 @@
 <translation id="428715201724021596">ಪ್ರೊಫೈಲ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
 <translation id="4287157641315808225">ಹೌದು, ChromeVox ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ತೋರಿಸಿ}one{ಎಲ್ಲವನ್ನೂ ತೋರಿಸಿ}other{ಎಲ್ಲವನ್ನೂ ತೋರಿಸಿ}}</translation>
-<translation id="4289372044984810120">ನಿಮ್ಮ ಖಾತೆಗಳನ್ನು ಇಲ್ಲಿ ನಿರ್ವಹಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">ಅವಲೋಕನ</translation>
 <translation id="4289732974614035569">ಪಿನ್‌ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="4290791284969893584">ಪುಟವನ್ನು ಮುಚ್ಚಿದ ನಂತರ, ನೀವು ಪ್ರಾರಂಭಿಸಿದ ಕಾರ್ಯಗಳು ಪೂರ್ಣಗೊಳ್ಳದಿರಬಹುದು</translation>
@@ -3246,7 +3246,6 @@
 <translation id="4378556263712303865">ಸಾಧನದ ನಿಯೋಜನೆ</translation>
 <translation id="4379281552162875326">"<ph name="APP_NAME" />" ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="4380648069038809855">ಪೂರ್ಣಪರದೆಗೆ ಪ್ರವೇಶಿಸಲಾಗಿದೆ</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, +1 ಕ್ಕೂ ಹೆಚ್ಚಿನ ಖಾತೆ}one{<ph name="EMAIL" />, +<ph name="EXTRA_ACCOUNTS" /> ಕ್ಕೂ ಹೆಚ್ಚಿನ ಖಾತೆಗಳು}other{<ph name="EMAIL" />, +<ph name="EXTRA_ACCOUNTS" /> ಕ್ಕೂ ಹೆಚ್ಚಿನ ಖಾತೆಗಳು}}</translation>
 <translation id="4384312707950789900">ಆದ್ಯತೆಗೆ ಸೇರಿಸಿ</translation>
 <translation id="4384652540891215547">ವಿಸ್ತರಣೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4384886290276344300">ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
@@ -3870,7 +3869,6 @@
 <translation id="5053962746715621840">Google Lens ಬಳಸಿಕೊಂಡು ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="5056950756634735043">ಕಂಟೇನರ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5057110919553308744">ನೀವು ವಿಸ್ತರಣೆಯನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ</translation>
-<translation id="5057403786441168405">ನಿಮ್ಮ ಸೈನ್ ಇನ್ ಮಾಡಿದ ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ. Chrome ಮತ್ತು Google Play ನಲ್ಲಿನ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ಅನುಮತಿಗಳನ್ನು ಆಧರಿಸಿ, ನಿಮ್ಮ ಅನುಭವವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಈ ಖಾತೆಗಳನ್ನು ಬಳಸಬಹುದು. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">ಸೈನ್-ಇನ್ ನಿಂರ್ಬಂಧಿಸಿ</translation>
 <translation id="5059526285558225588">ಏನನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5060332552815861872">ಉಳಿಸಲು 1 ಪ್ರಿಂಟರ್ ಲಭ್ಯವಿದೆ.</translation>
@@ -5000,7 +4998,6 @@
 <translation id="6284632978374966585">ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ಅನ್ನು ಸಾಮಾನ್ಯವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ ಮತ್ತು ಅಪಾಯಕಾರಿಯಾಗಿರಬಹುದು.</translation>
 <translation id="6285770818046456882">ನಿಮ್ಮ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದ ಸಾಧನವು ವರ್ಗಾವಣೆಯನ್ನು ರದ್ದುಗೊಳಿಸಿದೆ</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">ಯಾವುದೇ ಸಾಧನಗಳು ಸಮೀಪದಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳುತ್ತಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಕೋಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ. ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
 <translation id="6291741848715722067">ದೃಢೀಕರಣ ಕೋಡ್</translation>
@@ -5423,7 +5420,6 @@
 <translation id="6750757184909117990">ಸೆಲ್ಯುಲರ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6750946710563435348">ಇತರೆ ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಬಳಸಿ</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ಅದೃಶ್ಯ)</translation>
-<translation id="6757101664402245801">URL ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="6758056191028427665">ನಮ್ಮ ಕೆಲಸದ ಕುರಿತು ನಿಮ್ಮ ಅಭಿಪ್ರಾಯವನ್ನು ತಿಳಿಸಿ.</translation>
 <translation id="6759193508432371551">ಫ್ಯಾಕ್ಟರಿ ರಿಸೆಟ್‌</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
@@ -5600,7 +5596,6 @@
 <translation id="693807610556624488">ಬರೆಯುವಿಕೆ ಕಾರ್ಯಾಚರಣೆಯು ಈ ಸಾಧನಕ್ಕೆ ಗುಣಲಕ್ಷಣದ ಗರಿಷ್ಠ ಉದ್ದವನ್ನು ಮೀರುತ್ತದೆ: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">ನೀವು 1 ಪ್ರಿಂಟರ್ ಅನ್ನು ಉಳಿಸಿದ್ದೀರಿ.</translation>
 <translation id="6938606182859551396">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ಅಧಿಸೂಚನೆಗಳನ್ನು ಸ್ವೀಕರಿಸಲು, Google Play ಸೇವೆಗಳ ಅಧಿಸೂಚನೆಗಳ ಪ್ರವೇಶವನ್ನು ನೀಡಲು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿನ ಸೂಚನೆಗಳನ್ನು ಅನುಸರಿಸಿ.</translation>
-<translation id="6938789263968032501">ಜನರು</translation>
 <translation id="6939815295902433669">ಸಾಧನದ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="694168622559714949">ಮಾರ್ಪಡಿಸಲಾಗದ ಡೀಫಾಲ್ಟ್ ಭಾಷೆಯನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="6941937518557314510">ನಿಮ್ಮ ಪ್ರಮಾಣಪತ್ರದೊಂದಿಗೆ  <ph name="HOST_NAME" /> ಅನ್ನು ದೃಢೀಕರಿಸಲು ದಯವಿಟ್ಟು <ph name="TOKEN_NAME" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
@@ -7643,7 +7638,6 @@
 <translation id="9040661932550800571"><ph name="ORIGIN" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವುದೇ?</translation>
 <translation id="9041692268811217999">ನಿಮ್ಮ ಯಂತ್ರದಲ್ಲಿ ಸ್ಥಳೀಯ ಫೈಲ್‌ಗಳಿಗೆ ಪ್ರವೇಶಿಸುವುದನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="904224458472510106">ಈ ಕಾರ್ಯಚರಣೆಯನ್ನು ರದ್ದು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
-<translation id="9042893549633094279">ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆ</translation>
 <translation id="904451693890288097">ದಯವಿಟ್ಟು "<ph name="DEVICE_NAME" />" ಗಾಗಿ PIN ಅನ್ನು ನಮೂದಿಸಿ:</translation>
 <translation id="9044646465488564462">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ವಿಫಲವಾಗಿದೆ: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯನ್ನು ಹೊಸ ಸೈಡ್ ಪ್ಯಾನಲ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ. ಇದನ್ನು ಇಲ್ಲಿ ಪ್ರಯತ್ನಿಸಿ.</translation>

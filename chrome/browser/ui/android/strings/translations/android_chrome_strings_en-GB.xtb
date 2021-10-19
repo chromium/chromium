@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# Files}}</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
-<translation id="2039379262107991683">Add pages to your reading list to get a reminder</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> also has data in Chrome</translation>
 <translation id="2046634576464120978">Registration failed</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2781151931089541271">1 sec left</translation>
 <translation id="2788468313014644040">Group number</translation>
 <translation id="2800066122460699237">The tab <ph name="TAB_TITLE" /> will be closed</translation>
-<translation id="2801022321632964776">Update to get your language in the latest version of Chrome</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">Info about your Chrome usage that can\u2019t be tied to you\n\nRelevant data from rare Chrome crashes, which may include some personal info\n\nIf you turn on sync, metrics may also include info about URLs that you visit</translation>
@@ -354,12 +352,10 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3134784203083076891">'</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
 <translation id="3154863790776532719">New features and improved performance</translation>
-<translation id="3157387275655328056">Add to Reading List</translation>
 <translation id="3157842584138209013">See how much data you've saved from the More Options button</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
 <translation id="316694332262407393">Chrome is already running here.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3205824638308738187">Almost finished!</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3211426585530211793">Deleted <ph name="ITEM_TITLE" /></translation>
@@ -450,7 +446,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3739899004075612870">Bookmarked in <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Voice search is not available on this device</translation>
 <translation id="3749259744154402564">Unsupported</translation>
-<translation id="3771001275138982843">Couldn’t download the update</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>
 <translation id="3771290962915251154">This setting is disabled because parental controls are on</translation>
 <translation id="3771694256347217732">Google Terms of Service</translation>
@@ -790,7 +785,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5833984609253377421">Share link</translation>
 <translation id="5834764604050996579">To scan a QR code, let Chrome use your camera</translation>
-<translation id="5836192821815272682">Downloading Chrome update…</translation>
 <translation id="5839058148541733625">Chrome dino</translation>
 <translation id="5853623416121554550">paused</translation>
 <translation id="5854512288214985237">No statistics or crash reports are sent to Google</translation>
@@ -862,7 +856,6 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6232535412751077445">Enabling ‘Do Not Track’ means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request and how the request is interpreted.
 
 For example, some websites may respond to this request by showing you ads that aren’t based on other websites that you’ve visited. Many websites will still collect and use your browsing data – for example to improve security, to provide content, ads and recommendations and to generate reporting statistics.</translation>
-<translation id="624789221780392884">Update ready</translation>
 <translation id="6264376385120300461">Download anyway</translation>
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
 <translation id="6278428485366576908">Theme</translation>
@@ -898,7 +891,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6411219469806822692">Can\u2019t go higher. Try starting from further up the page.</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="641643625718530986">Print…</translation>
-<translation id="6427112570124116297">Translate the Web</translation>
 <translation id="6433501201775827830">Choose your search engine</translation>
 <translation id="6434309073475700221">Discard</translation>
 <translation id="6437478888915024427">Page info</translation>
@@ -1000,7 +992,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6979737339423435258">All time</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="6987047470128880212">Incognito is not available on this device</translation>
-<translation id="6989267951144302301">Couldn’t download</translation>
 <translation id="6995899638241819463">Warn you if passwords are exposed in a data breach</translation>
 <translation id="7001056293070445572">This file is large (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Open in browser</translation>
@@ -1032,7 +1023,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="718926126787620637">List of bookmark folders opened at full height</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
-<translation id="7233236755231902816">To see the web in your language, get the latest version of Chrome</translation>
 <translation id="7242755609445462077">Stylised highlight <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Make sure that <ph name="TARGET_DEVICE_NAME" /> has sync turned on in Chrome</translation>
 <translation id="7252076891734325316">Place your phone close to the computer</translation>
@@ -1055,7 +1045,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Share 1 selected item}other{Share # selected items}}</translation>
-<translation id="7356631068872238169">Delete from reading list</translation>
 <translation id="7359002509206457351">Access payment methods</translation>
 <translation id="7375125077091615385">Type:</translation>
 <translation id="7376560087009844242">By including more of a page’s text, you might see better results when using Touch to Search. You can always visit <ph name="BEGIN_LINK" />settings<ph name="END_LINK" /> to change this.</translation>
@@ -1232,7 +1221,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="829672787777123339">Connecting to your device…</translation>
 <translation id="8310344678080805313">Standard tabs</translation>
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
-<translation id="8327155640814342956">For the best browsing experience, open to update Chrome</translation>
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8349013245300336738">Sort by amount of data used</translation>
 <translation id="8354977102499939946">Quickly search with your voice. To edit this shortcut, go to Settings.</translation>
@@ -1345,6 +1333,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8951232171465285730">Chrome has saved you <ph name="MEGABYTES" /> MB</translation>
 <translation id="8955719471735800169">Back to top</translation>
 <translation id="8965591936373831584">pending</translation>
+<translation id="8967427617812342790">Add to reading list</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognito and <ph name="TAB_COUNT_ONE" /> more tab will be closed}other{<ph name="INCOGNITO_TAB_COUNT" /> incognito and <ph name="TAB_COUNT_MANY" /> more tabs will be closed}}</translation>
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8972098258593396643">Download to default folder?</translation>

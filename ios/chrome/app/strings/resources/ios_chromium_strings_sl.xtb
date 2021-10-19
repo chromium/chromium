@@ -52,7 +52,6 @@
 <translation id="5171868502429358653">Prijavite se v Chromium</translation>
 <translation id="5224391634244552924">Ni shranjenih gesel. Chromium lahko preveri gesla, če jih shranite.</translation>
 <translation id="5308226104666789935">Chromium ne more preveriti, ali so na voljo posodobitve</translation>
-<translation id="5324242752415821224">Vaša organizacija zahteva, da se za uporabo Chromiuma prijavite. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Želite nastaviti Chromium kot privzeto možnost?</translation>
 <translation id="5521125884468363740">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chromium, se prijavite in vklopite sinhronizacijo</translation>
 <translation id="5573014823074921752">Nasvet za Chromium. Če želite več možnosti za zavihke, pridržite gumb za prikaz zavihkov v orodni vrstici na dnu ali vrhu zaslona.</translation>
@@ -73,7 +72,6 @@
 <translation id="6424492062988593837">Chromium je izboljšan! Na voljo je nova različica.</translation>
 <translation id="6752854822223394465">Vaša organizacija nastavlja Chromium …</translation>
 <translation id="6820823224820483452">Chromiumu ni uspelo preveriti vseh gesel. Poskusite znova jutri.</translation>
-<translation id="6827294685447036764">Če Chromiumu omogočite dostop do podatkov o lokaciji, jih Chromium pošlje na spletna mesta, ki jim podelite dovoljenje. Spletna mesta morda zahtevajo podatke o lokaciji, ko želijo prikazati lokalne informacije, na primer trgovine v bližini ali novice.</translation>
 <translation id="7018284295775193585">Chromiuma ni mogoče posodobiti</translation>
 <translation id="7045244423563602563">Prilagodite si Chromium</translation>
 <translation id="7099326575020694068">Chromium ne more uporabljati fotoaparata v načinu razdeljenega pogleda</translation>

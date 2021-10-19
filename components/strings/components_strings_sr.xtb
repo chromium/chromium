@@ -125,6 +125,7 @@
           <ph name="LIST_ITEM" />послодавца или школу
           <ph name="LIST_ITEM" />интернет провајдера
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">Дели ову картицу</translation>
 <translation id="1339601241726513588">Домен уписнице:</translation>
 <translation id="1340482604681802745">Адреса преузимања</translation>
 <translation id="1346748346194534595">Удесно</translation>
@@ -158,6 +159,7 @@
 <translation id="1428146450423315676">7. преграда за слагање</translation>
 <translation id="1428729058023778569">Ово упозорење вам се приказује јер овај сајт не подржава HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Штампај</translation>
+<translation id="1432581352905426595">Управљај претраживачима</translation>
 <translation id="1436185428532214179">Може да тражи да мења фајлове и фолдере на уређају</translation>
 <translation id="1442386063175183758">Пресавијање на десној страни у облику прозора</translation>
 <translation id="1442987760062738829">Бушење</translation>
@@ -379,7 +381,6 @@
 <translation id="2130448033692577677">Није могуће применити шаблоне које сте навели јер DnsOverHttpsMode смернице нису подешене.</translation>
 <translation id="213826338245044447">Мобилни обележивачи</translation>
 <translation id="214556005048008348">Откажи плаћање</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте делили ову страницу, уз опције за дељење линка, прављење QR кода и друго.</translation>
 <translation id="2148613324460538318">Додај картицу</translation>
 <translation id="2149968176347646218">Веза није безбедна</translation>
 <translation id="2154054054215849342">Синхронизација није доступна за домен</translation>
@@ -426,7 +427,6 @@
 <translation id="2293443924986248631">Када је ова опција укључена, сајтови не могу да користе колачиће који вас прате на вебу. Функције на неким сајтовима могу да престану са радом.</translation>
 <translation id="2295290966866883927">URL-ови страница које посећујете се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скенирани да би се открили небезбедни веб-сајтови.</translation>
 <translation id="2297722699537546652">B5 (коверат)</translation>
-<translation id="2297822946037605517">Дели ову страницу</translation>
 <translation id="2298855485018661510">Дугме Управљајте колачићима, притисните Enter да бисте управљали подешавањима колачића у подешавањима Chrome-а</translation>
 <translation id="2300306941146563769">Није отпремљено</translation>
 <translation id="2310021320168182093">Chou2 (коверат)</translation>
@@ -504,6 +504,7 @@
 <translation id="2552295903035773204">Од сада користи закључавање екрана за потврду картица</translation>
 <translation id="2553853292994445426">Проверите подешавања за безбедан DNS. Можда сте конфигурисали безбедан DNS сервер са којим не успевате да се повежете.</translation>
 <translation id="2556876185419854533">&amp;Опозови измену</translation>
+<translation id="2570734079541893434">Управљајте подешавањима</translation>
 <translation id="257674075312929031">Група</translation>
 <translation id="2586657967955657006">Меморија</translation>
 <translation id="2587730715158995865">Од издавача <ph name="ARTICLE_PUBLISHER" />. Прочитајте овај чланак вести и још <ph name="OTHER_ARTICLE_COUNT" /> чланака.</translation>
@@ -512,7 +513,6 @@
 <translation id="2595719060046994702">Овим уређајем и налогом не управља компанија нити друга организација.</translation>
 <translation id="2596415276201385844">Да бисте успоставили безбедну везу, сат на уређају мора да буде тачан. То је зато што сертификати које веб-сајтови користе за идентификацију важе само одређени временски период. Пошто сат на вашем уређају није тачан, Chrome не може да верификује ове сертификате.</translation>
 <translation id="2597378329261239068">Овај документ је заштићен лозинком. Унесите лозинку.</translation>
-<translation id="2597833655590727265">Дугме Управљајте изгледом Chrome-а, притисните Enter да бисте прилагодили изглед прегледача помоћу тема.</translation>
 <translation id="2609632851001447353">Варијације</translation>
 <translation id="2610561535971892504">Кликните да бисте копирали</translation>
 <translation id="2618023639789766142">C10 (коверат)</translation>
@@ -602,7 +602,6 @@
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат је са домена <ph name="DOMAIN2" />. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="2943895734390379394">Време отпремања:</translation>
-<translation id="2948017612172418360">Дугме за управљање претрагом сајта, притисните Tab, па Enter да бисте управљали претрагом сајта и подразумеваним претраживачем</translation>
 <translation id="2948083400971632585">На страници Подешавања можете да онемогућите све проксије конфигурисане за везу.</translation>
 <translation id="2949183777371959169">Занемарено зато што машина није регистрована за управљање клаудом у прегледачу Chrome.</translation>
 <translation id="2951588413176968965">Моје поштанско сандуче</translation>
@@ -1026,7 +1025,6 @@
 <translation id="4275830172053184480">Поновно покретање уређаја</translation>
 <translation id="4277028893293644418">Ресетујте лозинку</translation>
 <translation id="4278390842282768270">Дозвољено</translation>
-<translation id="4286047936834273847">Управљајте претрагом сајтова и подразумеваним претраживачем</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ова картица је сачувана на Google налогу}one{Ове картице су сачуване на Google налогу}few{Ове картице су сачуване на Google налогу}other{Ове картице су сачуване на Google налогу}}</translation>
 <translation id="4287885627794386150">Испуњава услове за пробу, али није активно</translation>
 <translation id="4297502707443874121">Сличица за <ph name="THUMBNAIL_PAGE" />. страницу</translation>
@@ -1066,7 +1064,6 @@
 <translation id="4372948949327679948">Очекивана вредност je <ph name="VALUE_TYPE" />.</translation>
 <translation id="4377125064752653719">Покушали сте да контактирате <ph name="DOMAIN" />, али је издавач опозвао сертификат који је сервер навео. То значи да никако не треба имати поверења у безбедносне акредитиве које је сервер навео. Могуће је да комуницирате са нападачем.</translation>
 <translation id="4378154925671717803">Телефон</translation>
-<translation id="4389652395741935834">Делите ову страницу дељењем линка, прављењем QR кода, пребацивањем и на друге начине.</translation>
 <translation id="4390472908992056574">Обод</translation>
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4406896451731180161">резултати претраге</translation>
@@ -1333,6 +1330,7 @@
 <translation id="5230733896359313003">Адреса за испоруку</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">Одбаци</translation>
 <translation id="5250209940322997802">„Повежите се на мрежу“</translation>
 <translation id="52517543715119994">Сазнајте више о Chrome функцијама</translation>
 <translation id="5251803541071282808">Клауд</translation>
@@ -1649,7 +1647,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />да проверите конфигурацију проксија, заштитног зида и безбедног DNS-а<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Двоструко спајање на левој страни</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
-<translation id="6377404662019220017">Дугме Дели ову страницу, притисните Enter да бисте делили ову страницу уз опције за дељење линка, прављење QR кода и друго.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Очекују вас потенцијални трошкови.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{још 1 предлог}one{још # предлог}few{још # предлога}other{још # предлога}}</translation>
@@ -1870,7 +1867,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Светлољубичаста</translation>
 <translation id="7156870133441232244">Сервер треба да се надогради на TLS 1.2 или новију верзију.</translation>
-<translation id="716939258255825483">Дугме Играјте игру Диносаурус, притисните Enter да бисте играли игру Диносаурус у Chrome-у</translation>
 <translation id="717330890047184534">Gaia ИД:</translation>
 <translation id="7173920250514487165">Снимите поверљив садржај на екрану</translation>
 <translation id="7174545416324379297">Обједињено</translation>
@@ -1893,7 +1889,6 @@
 <translation id="7220786058474068424">Обрада</translation>
 <translation id="7221855153210829124">приказује обавештења</translation>
 <translation id="722454870747268814">Нова картица без архивирањa</translation>
-<translation id="7231476387708735839">Управљајте претрагом сајтова</translation>
 <translation id="7233592378249864828">Лист потврде штампања</translation>
 <translation id="7238585580608191973">SHA-256 Fingerprint</translation>
 <translation id="7240120331469437312">Алтернативно име субјекта сертификата</translation>
@@ -2490,6 +2485,7 @@
 <translation id="9213433120051936369">Прилагодите изглед</translation>
 <translation id="9215416866750762878">Апликација онемогућава Chrome-у да се безбедно повеже са овим сајтом</translation>
 <translation id="9219103736887031265">Слике</translation>
+<translation id="922152298093051471">Прилагодите Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ОБРИШИ ОБРАЗАЦ</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2522,5 +2518,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Са Google Pay-а</translation>
-<translation id="998677222109959694">Управљајте подешавањима Chrome-а</translation>
 </translationbundle>

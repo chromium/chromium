@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 件のファイル}other{# 件のファイル}}</translation>
 <translation id="2021896219286479412">全画面表示時のサイトの操作項目</translation>
 <translation id="2038563949887743358">[PC 版サイトを見る] をオンにします</translation>
-<translation id="2039379262107991683">ページをリーディング リストに追加すると、リマインダーを受け取ることができます</translation>
 <translation id="204321170514947529">Chrome にも <ph name="APP_NAME" /> のデータがあります</translation>
 <translation id="2046634576464120978">登録できませんでした</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@
 <translation id="2781151931089541271">残り 1 秒</translation>
 <translation id="2788468313014644040">グループ番号</translation>
 <translation id="2800066122460699237">「<ph name="TAB_TITLE" />」タブが閉じられます</translation>
-<translation id="2801022321632964776">Chrome を更新し、最新バージョンでお使いの言語を入手してください</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">Chrome の使用に関する情報（ユーザーを識別できる情報は含まない）\n\nChrome のまれな障害に関連するデータ（一部の個人情報を含む）\n\n同期をオンにすると、アクセスした URL に関する情報が指標に含まれる可能性があります</translation>
@@ -354,12 +352,10 @@
 <translation id="3134784203083076891">」</translation>
 <translation id="314939179385989105">Chrome のホームページ</translation>
 <translation id="3154863790776532719">新機能とパフォーマンスの向上</translation>
-<translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="3157842584138209013">[その他のオプション] からデータ削減量を確認できます</translation>
 <translation id="3166827708714933426">タブとウィンドウのショートカット</translation>
 <translation id="316694332262407393">Chrome はここですでに実行中です。</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3205824638308738187">あと少しで完了です</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208584281581115441">今すぐ確認</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> を削除しました</translation>
@@ -450,7 +446,6 @@
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> にブックマークしました</translation>
 <translation id="3740525748616366977">音声検索はこのデバイスではご利用いただけません</translation>
 <translation id="3749259744154402564">サポートされていません</translation>
-<translation id="3771001275138982843">アップデートをダウンロードできませんでした</translation>
 <translation id="3771033907050503522">シークレットタブ</translation>
 <translation id="3771290962915251154">保護者による使用制限が有効なため、この設定は無効になっています</translation>
 <translation id="3771694256347217732">Google 利用規約</translation>
@@ -790,7 +785,6 @@
 <translation id="583281660410589416">不明</translation>
 <translation id="5833984609253377421">リンクを共有</translation>
 <translation id="5834764604050996579">QR コードをスキャンするには、Chrome にカメラの使用を許可してください</translation>
-<translation id="5836192821815272682">Chrome のアップデートをダウンロードしています…</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">一時停止中</translation>
 <translation id="5854512288214985237">統計情報と障害レポートは Google に送信されません</translation>
@@ -862,7 +856,6 @@
 <translation id="6232535412751077445">「トラッキング拒否」を有効にすると、リクエストが閲覧トラフィックに含まれるようになります。ウェブサイトがリクエストに応答するかどうか、またリクエストがどのように解釈されるかによって、この影響は異なります。
 
 たとえば一部のウェブサイトでは、このリクエストに対して、ユーザーが過去にアクセスしたウェブサイトとは関係のない広告が表示されます。トラッキングを拒否しても、実際のところ多くのウェブサイトではユーザーの閲覧データが収集され利用されています。その用途としては、セキュリティの強化や、コンテンツ、サービス、広告、おすすめの表示、レポート統計情報の作成などが挙げられます。</translation>
-<translation id="624789221780392884">アップデート準備完了</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
 <translation id="6277522088822131679">ページの印刷中に問題が発生しました。もう一度お試しください。</translation>
 <translation id="6278428485366576908">テーマ</translation>
@@ -898,7 +891,6 @@
 <translation id="6411219469806822692">上に移動できません。ページの上のほうから始めてみてください。</translation>
 <translation id="6412673304250309937">Chrome に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="641643625718530986">印刷...</translation>
-<translation id="6427112570124116297">ウェブの翻訳</translation>
 <translation id="6433501201775827830">検索エンジンを選択</translation>
 <translation id="6434309073475700221">破棄</translation>
 <translation id="6437478888915024427">ページ情報</translation>
@@ -1000,7 +992,6 @@
 <translation id="6979737339423435258">全期間</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="6987047470128880212">シークレット モードはこのデバイスではご利用いただけません</translation>
-<translation id="6989267951144302301">ダウンロードできませんでした</translation>
 <translation id="6995899638241819463">データ侵害によりパスワードが漏洩した場合に警告する</translation>
 <translation id="7001056293070445572">サイズの大きいファイルです（<ph name="FILE_SIZE" />）</translation>
 <translation id="7022756207310403729">ブラウザで開く</translation>
@@ -1032,7 +1023,6 @@
 <translation id="718926126787620637">ブックマーク フォルダのリストが画面全体に表示されています</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 件のダウンロードが保留中です}other{# 件のダウンロードが保留中です}}</translation>
-<translation id="7233236755231902816">お使いの言語でウェブを表示するには、Chrome の最新バージョンを入手してください</translation>
 <translation id="7242755609445462077">スタイルを設定した選択箇所（<ph name="CURRENT_DATE" />）</translation>
 <translation id="7248069434667874558">Chrome で <ph name="TARGET_DEVICE_NAME" /> の同期がオンになっていることを確認してください</translation>
 <translation id="7252076891734325316">パソコンの近くにスマートフォンを置いてください</translation>
@@ -1055,7 +1045,6 @@
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7352939065658542140">動画</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 件の選択されたアイテムを共有します}other{# 件の選択されたアイテムを共有します}}</translation>
-<translation id="7356631068872238169">リーディング リストから削除</translation>
 <translation id="7359002509206457351">お支払い方法へのアクセス</translation>
 <translation id="7375125077091615385">タイプ:</translation>
 <translation id="7376560087009844242">検索に含めるページのテキストを増やすと、「タップして検索」使用時により正確な結果が得られる可能性があります。<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />からいつでも変更できます。</translation>
@@ -1232,7 +1221,6 @@
 <translation id="829672787777123339">デバイスに接続しています…</translation>
 <translation id="8310344678080805313">標準のタブ</translation>
 <translation id="831192587911042850">現在のウェブサイトを、フォローしているウェブサイトのリストに追加します。</translation>
-<translation id="8327155640814342956">快適にご利用いただけるよう、Chrome を開いて更新することをおすすめします</translation>
 <translation id="834313815369870491">翻訳しないサイト</translation>
 <translation id="8349013245300336738">データ使用量で並べ替え</translation>
 <translation id="8354977102499939946">音声ですばやく検索します。このショートカットは [設定] で編集できます。</translation>
@@ -1345,6 +1333,7 @@
 <translation id="8951232171465285730">Chrome で <ph name="MEGABYTES" /> MB の容量を節約しました</translation>
 <translation id="8955719471735800169">トップへ戻る</translation>
 <translation id="8965591936373831584">保留中</translation>
+<translation id="8967427617812342790">リーディング リストに追加</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_ONE" /> 個以上のタブが閉じられます}other{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_MANY" /> 個以上のタブが閉じられます}}</translation>
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8972098258593396643">デフォルトのフォルダにダウンロードしますか？</translation>

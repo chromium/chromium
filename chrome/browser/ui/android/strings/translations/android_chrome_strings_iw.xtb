@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{קובץ אחד (#)}two{# קבצים}many{# קבצים}other{# קבצים}}</translation>
 <translation id="2021896219286479412">פקדי אתר במסך מלא</translation>
 <translation id="2038563949887743358">הפעלה של 'בקשת אתר עבור מחשב שולחני'</translation>
-<translation id="2039379262107991683">יש להוסיף דפים לרשימת הקריאה כדי לקבל תזכורת</translation>
 <translation id="204321170514947529">‏ל-<ph name="APP_NAME" /> יש נתונים גם ב-Chrome</translation>
 <translation id="2046634576464120978">הרישום נכשל</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@
 <translation id="2781151931089541271">נותרה שנייה אחת</translation>
 <translation id="2788468313014644040">מספר הקבוצה</translation>
 <translation id="2800066122460699237">הכרטיסייה <ph name="TAB_TITLE" /> תיסגר</translation>
-<translation id="2801022321632964776">‏עדכון לגרסה האחרונה של Chrome יאפשר לך לקרוא בשפה שלך</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">‏מידע על השימוש שלך ב-Chrome שלא ניתן לקשר אליך\n\nנתונים רלוונטיים מקריסות של Chrome, שעשויים להכיל פרטים אישיים\n\nאם מפעילים את הסנכרון, המדדים עשויים לכלול מידע על כתובות ה-URL שבהן ביקרת</translation>
@@ -354,12 +352,10 @@
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">‏דף הבית של Chrome</translation>
 <translation id="3154863790776532719">תכונות חדשות וביצועים משופרים</translation>
-<translation id="3157387275655328056">הוסף לרשימת הקריאה</translation>
 <translation id="3157842584138209013">בעזרת הלחצן 'אפשרויות נוספות' אפשר לבדוק את החיסכון בצריכת נתונים</translation>
 <translation id="3166827708714933426">מקשי קיצור לכרטיסיות ולחלונות</translation>
 <translation id="316694332262407393">‏Chrome כבר פועל כאן.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3205824638308738187">כמעט סיימת!</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
 <translation id="3208584281581115441">בדיקה עכשיו</translation>
 <translation id="3211426585530211793">מועד המחיקה: <ph name="ITEM_TITLE" /></translation>
@@ -450,7 +446,6 @@
 <translation id="3739899004075612870">נוסף לסימניות ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">חיפוש קולי לא זמין במכשיר הזה</translation>
 <translation id="3749259744154402564">הפעולה לא נתמכת</translation>
-<translation id="3771001275138982843">לא ניתן היה להוריד את העדכון</translation>
 <translation id="3771033907050503522">כרטיסיות אנונימיות</translation>
 <translation id="3771290962915251154">ההגדרה הזו מושבתת מאחר שבקרת ההורים מופעלת</translation>
 <translation id="3771694256347217732">‏תנאים והגבלות של Google</translation>
@@ -790,7 +785,6 @@
 <translation id="583281660410589416">לא ידוע</translation>
 <translation id="5833984609253377421">שיתוף קישור</translation>
 <translation id="5834764604050996579">‏כדי לסרוק קוד QR, מאשרים ל-Chrome להשתמש במצלמה</translation>
-<translation id="5836192821815272682">‏המערכת מורידה עדכון של Chrome…</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">ההורדה בהשהיה</translation>
 <translation id="5854512288214985237">‏לא נשלחים אל Google נתונים סטטיסטיים או דוחות קריסה כלשהם</translation>
@@ -862,7 +856,6 @@
 <translation id="6232535412751077445">‏אם תופעל התכונה 'לא לעקוב (DNT), בקשה זו תיכלל בתנועת הגלישה שלך. השפעת הבקשה תלויה באופן הפעולה של כל אתר – אם הוא מגיב לבקשה או לא, וכיצד הוא מפרש אותה.
 
 לדוגמה, ייתכן שבתגובה לבקשה, אתרים מסוימים יציגו מודעות שאינן מבוססות על אתרים אחרים שבהם ביקרת. אתרים רבים ימשיכו לאסוף את נתוני הגלישה שלך ולהשתמש בהם, למשל כדי לשפר את האבטחה, כדי לספק תוכן, מודעות והמלצות וכדי ליצור נתונים סטטיסטיים לדיווח.</translation>
-<translation id="624789221780392884">העדכון מוכן</translation>
 <translation id="6264376385120300461">להוריד בכל זאת</translation>
 <translation id="6277522088822131679">אירעה בעיה בעת הדפסת הדף. יש לנסות שוב.</translation>
 <translation id="6278428485366576908">עיצוב</translation>
@@ -898,7 +891,6 @@
 <translation id="6411219469806822692">אי אפשר לזוז למעלה יותר. יש לנסות להתחיל מחלק גבוה יותר בדף.</translation>
 <translation id="6412673304250309937">‏המערכת בודקת כתובות URL ששמורות ב-Chrome ומכילות רשימות של אתרים לא בטוחים. אם אתר מסוים מנסה לגנוב סיסמה או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מהתוכן של הדף.</translation>
 <translation id="641643625718530986">הדפסה…</translation>
-<translation id="6427112570124116297">תרגום התוכן באינטרנט</translation>
 <translation id="6433501201775827830">בחירת מנוע החיפוש</translation>
 <translation id="6434309073475700221">מחיקה</translation>
 <translation id="6437478888915024427">פרטי דף</translation>
@@ -1000,7 +992,6 @@
 <translation id="6979737339423435258">משחר ההיסטוריה</translation>
 <translation id="6981982820502123353">נגישות</translation>
 <translation id="6987047470128880212">מצב אנונימי לא זמין במכשיר הזה</translation>
-<translation id="6989267951144302301">ההורדה נכשלה</translation>
 <translation id="6995899638241819463">הצגת אזהרה אם סיסמאות נחשפות עקב פרצה באבטחת מידע</translation>
 <translation id="7001056293070445572">הקובץ הזה גדול (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">פתיחה בדפדפן</translation>
@@ -1032,7 +1023,6 @@
 <translation id="718926126787620637">רשימת תיקיות הסימניות שפתוחות בגובה מלא</translation>
 <translation id="7191430249889272776">הכרטיסייה נפתחה ברקע.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{הורדה אחת בהמתנה}two{# הורדות בהמתנה}many{# הורדות בהמתנה}other{# הורדות בהמתנה}}</translation>
-<translation id="7233236755231902816">‏כדי לראות באינטרנט תוכן בשפה שלך, יש להוריד את הגרסה האחרונה של Chrome</translation>
 <translation id="7242755609445462077">הדגשה מסוגננת <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">‏יש לוודא שהסנכרון ב-Chrome הופעל ב-<ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">יש להניח את הטלפון בקרבת המחשב</translation>
@@ -1055,7 +1045,6 @@
 <translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="7352939065658542140">סרטון</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{שיתוף פריט אחד שנבחר}two{שיתוף # פריטים שנבחרו}many{שיתוף # פריטים שנבחרו}other{שיתוף # פריטים שנבחרו}}</translation>
-<translation id="7356631068872238169">מחיקה מרשימת הקריאה</translation>
 <translation id="7359002509206457351">גישה לאמצעי תשלום</translation>
 <translation id="7375125077091615385">סוג:</translation>
 <translation id="7376560087009844242">אם כוללים כמה שיותר מהטקסט שמופיע בדף, יכול להיות שיתקבלו תוצאות טובות יותר כשמשתמשים בחיפוש בהקשה. יש לך אפשרות לשנות זאת בכל שלב ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
@@ -1232,7 +1221,6 @@
 <translation id="829672787777123339">מתבצע חיבור למכשיר…</translation>
 <translation id="8310344678080805313">כרטיסיות רגילות</translation>
 <translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
-<translation id="8327155640814342956">‏כדי ליהנות מחוויית הגלישה הטובה ביותר, יש לפתוח את Chrome כדי לעדכן אותו</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
 <translation id="8349013245300336738">מיון לפי כמות הנתונים שבהם נעשה שימוש</translation>
 <translation id="8354977102499939946">חיפוש מהיר באמצעות הקול. ניתן לערוך את קיצור הדרך הזה ב'הגדרות'.</translation>
@@ -1345,6 +1333,7 @@
 <translation id="8951232171465285730">‏Chrome חסך לך ‎<ph name="MEGABYTES" /> MB</translation>
 <translation id="8955719471735800169">חזרה למעלה</translation>
 <translation id="8965591936373831584">בהמתנה</translation>
+<translation id="8967427617812342790">הוסף לרשימת הקריאה</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}two{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}many{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8972098258593396643">האם להוריד לתיקיית ברירת המחדל?</translation>

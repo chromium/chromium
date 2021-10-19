@@ -52,7 +52,6 @@
 <translation id="5171868502429358653">登入 Chromium</translation>
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
 <translation id="5308226104666789935">Chromium 無法檢查更新</translation>
-<translation id="5324242752415821224">您的機構要求您登入才能使用 Chromium。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />。</translation>
 <translation id="5396916991083608703">要將 Chromium 設定為預設瀏覽器嗎？</translation>
 <translation id="5521125884468363740">如要在任何使用 Chromium 的裝置上查看分頁，請登入並開啟同步功能</translation>
 <translation id="5573014823074921752">Chromium 提示。如果要多啲標籤選項，請㩒住螢幕底部或者頂部工具列入面中嘅 [顯示分頁] 掣。</translation>
@@ -73,7 +72,6 @@
 <translation id="6424492062988593837">Chromium 現在更進一步！歡迎您升級使用新版本。</translation>
 <translation id="6752854822223394465">您的機構正在設定 Chromium…</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼。請明天再試。</translation>
-<translation id="6827294685447036764">如果您允許 Chromium 存取您的位置，Chromium 會將位置資料傳送至您允許的任何網站。當網站向您提供附近商家或新聞等本地資訊時，可能會要求您提供位置。</translation>
 <translation id="7018284295775193585">Chromium 無法更新</translation>
 <translation id="7045244423563602563">自訂屬於您的 Chromium</translation>
 <translation id="7099326575020694068">Chromium 無法在「分割檢視」模式中使用相機</translation>

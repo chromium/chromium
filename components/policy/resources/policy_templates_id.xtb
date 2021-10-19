@@ -78,18 +78,6 @@
 <translation id="1069489575852947981">Jika kebijakan disetel ke Aktif atau tidak disetel, akun lokal perangkat akan disiapkan untuk login otomatis tanpa penundaan. <ph name="PRODUCT_OS_NAME" /> akan mematuhi pintasan keyboard Ctrl+Alt+S untuk melewati login otomatis dan menampilkan layar login.
 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat melewati login otomatis tanpa penundaan (jika dikonfigurasikan).</translation>
-<translation id="1070656322814001059">Chrome akan memblokir navigasi ke protokol eksternal di dalam
-      iframe sandbox. Lihat https://chromestatus.com/features/5680742077038592.
-
-      Jika kebijakan disetel ke Benar (True), Chrome akan diizinkan memblokir navigasi tersebut.
-
-      Jika kebijakan disetel ke Salah (False), Chrome tidak akan diizinkan memblokir navigasi tersebut.
-
-      Setelan default untuk kebijakan ini adalah Benar (True): fitur keamanan akan diaktifkan.
-
-      Kebijakan ini dapat digunakan oleh Perusahaan yang terpengaruh oleh pembatasan tersebut untuk
-      sementara waktu menghentikannya.
-      </translation>
 <translation id="1073983258515362346">Melaporkan informasi tentang lampu latar perangkat.
 
       Jika kebijakan ditetapkan ke false, atau tidak ditetapkan, informasi tidak akan dilaporkan.
@@ -2301,9 +2289,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan menggunakan nama library default.</translation>
 <translation id="3652670852519271837">Izinkan situs meminta pengguna memberikan akses baca ke file dan direktori melalui File System API</translation>
-<translation id="3653234084868565720">Mengontrol apakah <ph name="PRODUCT_OS_NAME" /> mengizinkan akun pengguna baru dibuat atau tidak. Jika kebijakan ini disetel ke salah (false), pengguna yang belum memiliki akun tidak akan dapat login.
-
-      Jika kebijakan ini disetel ke benar (true) atau tidak dikonfigurasi, akun pengguna baru akan diizinkan untuk dibuat asalkan kebijakan <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> tidak mencegah pengguna untuk login.</translation>
 <translation id="3653237928288822292">Ikon penyedia penelusuran default</translation>
 <translation id="3654906736796256792">Mengizinkan sandbox audio berjalan</translation>
 <translation id="3659542706175323490">Jika kebijakan disetel ke Aktif, booting pada tegangan AC akan diaktifkan jika didukung di perangkat. Booting pada tegangan AC memungkinkan sistem memulai ulang dari status Nonaktif atau Hibernasi setelah kabel listrik dihubungkan.

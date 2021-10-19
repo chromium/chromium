@@ -51,6 +51,7 @@
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa da <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para axudar a mellorar Chrome</translation>
 <translation id="2151406531797534936">Reinicia Chrome agora</translation>
+<translation id="2189289170880510015">Personaliza algunhas das opcións de privacidade máis importantes de Chrome</translation>
 <translation id="2290014774651636340">Non se atopan as claves da API de Google. Desactivaranse algunhas funcións de Google Chrome.</translation>
 <translation id="2290095356545025170">Seguro que queres desinstalar Google Chrome?</translation>
 <translation id="2309047409763057870">Esta é unha instalación secundaria de Google Chrome e non se pode converter no teu navegador predeterminado.</translation>
@@ -112,6 +113,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{O teu administrador require que reinicies Chrome para aplicar unha actualización}=1{O teu administrador require que reinicies Chrome para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador require que reinicies Chrome para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="3622797965165704966">Agora é máis fácil utilizar Chrome coa túa conta de Google e en ordenadores compartidos.</translation>
 <translation id="3673813398384385993">Chrome detectou que "<ph name="EXTENSION_NAME" />" contén software malicioso</translation>
+<translation id="3678552270983184277">A configuración predeterminada vaille ben a case todo o mundo, pero podes personalizala para que se adapte ao uso que queiras darlle a Chrome</translation>
 <translation id="3718181793972440140">Esta acción eliminará 1 elemento deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">A extensión "<ph name="EXTENSION_NAME" />" cambiou a páxina que se mostra ao iniciar Chrome.</translation>
 <translation id="3779473566290487688">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo OS X 10.11 ou unha versión posterior. Este ordenador ten instalada a versión OS X 10.10.</translation>

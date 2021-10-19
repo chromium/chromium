@@ -990,6 +990,7 @@
 <translation id="2002109485265116295">Sanntid</translation>
 <translation id="200217416291116199">Det anbefales å sikkerhetskopiere filer, i tilfelle oppgraderingen ikke kan fullføres. Når oppgraderingen starter, blir Linux avsluttet. Lagre åpne filer før du fortsetter.</translation>
 <translation id="2003130567827682533">For å aktivere «<ph name="NAME" />»-dataene må du først koble til et Wi-Fi-nettverk</translation>
+<translation id="2004697686368036666">Det kan hende at funksjoner på noen nettsteder ikke fungerer</translation>
 <translation id="2005199804247617997">Andre profiler</translation>
 <translation id="2006638907958895361">Åpne linken i <ph name="APP" /></translation>
 <translation id="2007404777272201486">Rapportér et problem</translation>
@@ -1132,7 +1133,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2152882202543497059"><ph name="NUMBER" /> bilder</translation>
 <translation id="2154484045852737596">Endre kortet</translation>
 <translation id="2154502158735983655">Les Chrome OS-enhetsinformasjon og -enhetsdata.</translation>
-<translation id="2154710561487035718">Kopier nettadresse</translation>
 <translation id="2155772377859296191">Ser ut som <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Ikke spør igjen ved åpning av dette filformatet i denne appen:
@@ -2378,6 +2378,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="344630545793878684">Lesing av dataene dine på en rekke nettsteder</translation>
 <translation id="3446650212859500694">Denne filen har sensitivt innhold</translation>
 <translation id="3446827946208017735">Forstå og gjennomgå de mest kritiske personverninnstillingene på ett sted</translation>
+<translation id="3447644283769633681">Blokkér alle informasjonskapsler fra tredjeparter</translation>
 <translation id="3448086340637592206">Tilleggsvilkår for Google Chrome og Chrome OS</translation>
 <translation id="3448492834076427715">Oppdater kontoen</translation>
 <translation id="3449393517661170867">Nytt vindu med faner</translation>
@@ -3169,7 +3170,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="428715201724021596">Kobler til profilen. Dette kan ta noen minutter.</translation>
 <translation id="4287157641315808225">Ja, slå på ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Vis}other{Vis alle}}</translation>
-<translation id="4289372044984810120">Administrer kontoene dine her. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Oversikt</translation>
 <translation id="4289732974614035569">Velg en PIN-kode</translation>
 <translation id="4290791284969893584">Når du lukker sider, kan det hende at oppgaver du har startet, ikke fullføres</translation>
@@ -3245,7 +3245,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4378556263712303865">Enhetsrekvisisjon</translation>
 <translation id="4379281552162875326">Vil du avinstallere «<ph name="APP_NAME" />»?</translation>
 <translation id="4380648069038809855">Åpnet fullskjerm</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" /> og 1 konto til}other{<ph name="EMAIL" /> og <ph name="EXTRA_ACCOUNTS" /> kontoer til}}</translation>
 <translation id="4384312707950789900">Legg til som et foretrukket nettverk</translation>
 <translation id="4384652540891215547">Aktiver utvidelsen</translation>
 <translation id="4384886290276344300">Endre tastaturinnstillinger</translation>
@@ -3868,7 +3867,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5053962746715621840">Søk etter bildet med Google Lens</translation>
 <translation id="5056950756634735043">Kobler til beholderen</translation>
 <translation id="5057110919553308744">Når du klikker på utvidelsen</translation>
-<translation id="5057403786441168405">Administrer de påloggede kontoene dine. Nettsteder, apper og utvidelser i Chrome og Google Play kan bruke disse kontoene til å tilpasse opplevelsen din, avhengig av tillatelser. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Begrens pålogging</translation>
 <translation id="5059526285558225588">Velg hva du vil dele</translation>
 <translation id="5060332552815861872">1 skriver er tilgjengelig for lagring.</translation>
@@ -4996,7 +4994,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6284632978374966585">Slå på mørkt tema</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> lastes sjelden ned og kan være farlig.</translation>
 <translation id="6285770818046456882">Enheten som deler med deg, avbrøt overføringen</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Ingen tilgjengelige enheter i nærheten deler. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Bekrefter aktiveringskoden. Dette kan ta noen minutter.</translation>
 <translation id="6291741848715722067">Bekreftelseskode</translation>
@@ -5419,7 +5416,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6750757184909117990">Slå av mobildata</translation>
 <translation id="6750946710563435348">Bruk et annet brukernavn</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
-<translation id="6757101664402245801">Nettadressen er kopiert</translation>
 <translation id="6758056191028427665">Gi oss tilbakemelding.</translation>
 <translation id="6759193508432371551">Tilbakestilling til fabrikkstandard</translation>
 <translation id="676158322851696513">«<ph name="EXTENSION_NAME" />»</translation>
@@ -5596,7 +5592,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="693807610556624488">Skriveoperasjonen til den følgende enheten overskrider den maksimale attributtlengden: «<ph name="DEVICE_NAME" />».</translation>
 <translation id="6938386202199793006">Du har 1 lagret skriver.</translation>
 <translation id="6938606182859551396">For å motta varsler fra telefonen din på <ph name="DEVICE_TYPE" />, følg instruksjonene på telefonen for å gi Google Play-tjenester tilgang til varsler.</translation>
-<translation id="6938789263968032501">Personer</translation>
 <translation id="6939815295902433669">Gjennomgå enhetsprogramvaren</translation>
 <translation id="694168622559714949">Administratoren har angitt et standardspråk som ikke kan endres.</translation>
 <translation id="6941937518557314510">Logg på <ph name="TOKEN_NAME" /> for å godkjenne <ph name="HOST_NAME" /> med sertifikatet ditt.</translation>
@@ -7640,7 +7635,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9040661932550800571">Vil du oppdatere passordet for <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Administratoren din har deaktivert tilgang til lokale filer på maskinen din</translation>
 <translation id="904224458472510106">Denne handlingen kan ikke angres</translation>
-<translation id="9042893549633094279">Personvern og sikkerhet</translation>
 <translation id="904451693890288097">Skriv inn passordet for «<ph name="DEVICE_NAME" />»:</translation>
 <translation id="9044646465488564462">Kunne ikke koble til nettverket: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Leselisten din er flyttet til det nye sidepanelet. Prøv det her.</translation>

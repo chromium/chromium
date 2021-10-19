@@ -124,6 +124,7 @@
           <ph name="LIST_ITEM" />雇用主または学校
           <ph name="LIST_ITEM" />ご利用のインターネット サービス プロバイダ
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">このタブを共有</translation>
 <translation id="1339601241726513588">登録ドメイン:</translation>
 <translation id="1340482604681802745">受け取り場所の住所</translation>
 <translation id="1346748346194534595">右</translation>
@@ -157,6 +158,7 @@
 <translation id="1428146450423315676">スタッカー 7</translation>
 <translation id="1428729058023778569">この警告は、サイトが HTTPS に対応していない場合に表示されます。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">印刷</translation>
+<translation id="1432581352905426595">検索エンジンの管理</translation>
 <translation id="1436185428532214179">デバイスのファイルやフォルダの編集を要求できる</translation>
 <translation id="1442386063175183758">右観音折り</translation>
 <translation id="1442987760062738829">パンチ</translation>
@@ -374,7 +376,6 @@
 <translation id="2130448033692577677">DnsOverHttpsMode ポリシーが設定されていないため、指定したテンプレートを適用できない可能性があります。</translation>
 <translation id="213826338245044447">モバイルのブックマーク</translation>
 <translation id="214556005048008348">支払いをキャンセル</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、リンクの共有、QR コードの作成、キャストなどを行ってこのページを共有します</translation>
 <translation id="2148613324460538318">カードを追加</translation>
 <translation id="2149968176347646218">接続は安全ではありません</translation>
 <translation id="2154054054215849342">お使いのドメインでは同期機能をご利用いただけません</translation>
@@ -421,7 +422,6 @@
 <translation id="2293443924986248631">オンにすると、サイトは Cookie を使用してあなたをウェブ上でトラッキングできなくなります。一部サイトの機能が使用できなくなる可能性もあります。</translation>
 <translation id="2295290966866883927">アクセスしたページの URL は分析のため Google Cloud または第三者に送信されます。たとえば、安全でないウェブサイトを検出するためにスキャンされる場合があります。</translation>
 <translation id="2297722699537546652">B5（封筒）</translation>
-<translation id="2297822946037605517">このページを共有</translation>
 <translation id="2298855485018661510">Cookie を管理するボタンです。Enter キーを押して、Chrome の設定で Cookie の設定を管理します</translation>
 <translation id="2300306941146563769">アップロードされていません</translation>
 <translation id="2310021320168182093">長2（封筒）</translation>
@@ -499,6 +499,7 @@
 <translation id="2552295903035773204">今後、画面ロックを使用してカードを確認する</translation>
 <translation id="2553853292994445426">セキュア DNS の設定を確認してください。接続できないセキュア DNS サーバーを設定している可能性があります。</translation>
 <translation id="2556876185419854533">編集の取り消し（&amp;U）</translation>
+<translation id="2570734079541893434">設定を管理</translation>
 <translation id="257674075312929031">グループ化</translation>
 <translation id="2586657967955657006">クリップボード</translation>
 <translation id="2587730715158995865">公開元: <ph name="ARTICLE_PUBLISHER" />。この記事と他 <ph name="OTHER_ARTICLE_COUNT" /> 件の記事を読むことができます。</translation>
@@ -507,7 +508,6 @@
 <translation id="2595719060046994702">このデバイスとアカウントは、会社またはその他の組織によって管理されていません。</translation>
 <translation id="2596415276201385844">安全な接続を確立するには時計が正しく設定されている必要があります。この理由は、本物のウェブサイトであることを示すためにウェブサイトで使用される証明書には、有効期間（発効日時と失効日時）が設定されているためです。デバイスの時計が正しくないため、Chrome ではこれらの証明書を確認できません。</translation>
 <translation id="2597378329261239068">このドキュメントはパスワードで保護されています。パスワードを入力してください。</translation>
-<translation id="2597833655590727265">[Chrome の外観を管理] ボタンです。Enter キーを押すと、テーマを使用してブラウザのデザインをカスタマイズできます</translation>
 <translation id="2609632851001447353">バリエーション</translation>
 <translation id="2610561535971892504">クリックしてコピー</translation>
 <translation id="2618023639789766142">C10（封筒）</translation>
@@ -597,7 +597,6 @@
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は <ph name="DOMAIN2" /> から発行されています。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="2943895734390379394">アップロード時刻:</translation>
-<translation id="2948017612172418360">[サイト内検索を管理] ボタンです。Enter キーを押すとサイト内検索とデフォルトの検索エンジンを管理します</translation>
 <translation id="2948083400971632585">接続用に設定されたプロキシは、設定ページで無効にできます。</translation>
 <translation id="2949183777371959169">マシンが Chrome ブラウザ クラウド管理に登録されていないため、無視されました。</translation>
 <translation id="2951588413176968965">自分の用紙受け</translation>
@@ -1016,7 +1015,6 @@
 <translation id="4275830172053184480">デバイスの再起動</translation>
 <translation id="4277028893293644418">パスワードを再設定</translation>
 <translation id="4278390842282768270">許可</translation>
-<translation id="4286047936834273847">サイト内検索とデフォルトの検索エンジンを管理します</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{このカードを Google アカウントに保存しました}other{これらのカードを Google アカウントに保存しました}}</translation>
 <translation id="4287885627794386150">試用版を使用できますが有効になっていません</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ページのサムネイル</translation>
@@ -1056,7 +1054,6 @@
 <translation id="4372948949327679948"><ph name="VALUE_TYPE" /> 値が想定されます。</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから提示された証明書は発行元により取り消されています。これは、サーバーから提示されたセキュリティ認証情報が信頼できないことを示しており、悪意のあるユーザーと通信しようとしている可能性があります。</translation>
 <translation id="4378154925671717803">電話</translation>
-<translation id="4389652395741935834">リンクの共有、QR コードの作成、キャストなどを行ってこのページを共有します</translation>
 <translation id="4390472908992056574">ブリム</translation>
 <translation id="4406883609789734330">自動字幕起こし</translation>
 <translation id="4406896451731180161">検索結果</translation>
@@ -1323,6 +1320,7 @@
 <translation id="5230733896359313003">配送先住所</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">閉じる</translation>
 <translation id="5250209940322997802">「ネットワークに接続してください」</translation>
 <translation id="52517543715119994">Chrome の機能を確認します</translation>
 <translation id="5251803541071282808">クラウド</translation>
@@ -1640,7 +1638,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />プロキシ、ファイアウォール、セキュア DNS の設定を確認する<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">2 か所のステープル（左）</translation>
 <translation id="6377268785556383139">「<ph name="SEARCH_TEXT" />」に対する 1 件の検索結果</translation>
-<translation id="6377404662019220017">[このページを共有] ボタンです。Enter キーを押すと、リンクの共有、QR コードの作成、キャストなどを行ってこのページを共有できます</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">続行すると料金が請求される可能性があります。</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{他 1 件の候補}other{他 # 件の候補}}</translation>
@@ -1861,7 +1858,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}other{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}}</translation>
 <translation id="7153618581592392745">ラベンダー</translation>
 <translation id="7156870133441232244">サーバーを TLS 1.2 以降にアップグレードする必要があります。</translation>
-<translation id="716939258255825483">[Dino Run をプレイ] ボタンです。Enter キーを押すと Chrome で Dino Run ゲームをプレイできます</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
 <translation id="7173920250514487165">スクリーン キャプチャの対象に機密コンテンツが含まれています。</translation>
 <translation id="7174545416324379297">統合された値</translation>
@@ -1884,7 +1880,6 @@
 <translation id="7220786058474068424">処理しています</translation>
 <translation id="7221855153210829124">通知の表示</translation>
 <translation id="722454870747268814">新しいシークレット タブ</translation>
-<translation id="7231476387708735839">サイト内検索を管理</translation>
 <translation id="7233592378249864828">確認シートの印刷</translation>
 <translation id="7238585580608191973">SHA-256 指紋</translation>
 <translation id="7240120331469437312">証明書のサブジェクトの代替名</translation>
@@ -2481,6 +2476,7 @@
 <translation id="9213433120051936369">デザインをカスタマイズする</translation>
 <translation id="9215416866750762878">アプリケーションが原因で、Chrome からこのサイトに安全に接続することができません</translation>
 <translation id="9219103736887031265">画像</translation>
+<translation id="922152298093051471">Chrome をカスタマイズ</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">フォームをクリア</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2513,5 +2509,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay から</translation>
-<translation id="998677222109959694">Chrome の設定を管理</translation>
 </translationbundle>

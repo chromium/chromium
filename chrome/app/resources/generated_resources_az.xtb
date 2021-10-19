@@ -980,6 +980,7 @@
 <translation id="2002109485265116295">Real zaman</translation>
 <translation id="200217416291116199">Təkmilləşdirmə tamamlanmadığı hallara qarşı faylların yedəklənməsi tövsiyə olunur. Təkmilləşdirmə başladılan zaman Linux sönəcək. Davam etməzdən əvvəl açıq faylları yaddaşda saxlayın.</translation>
 <translation id="2003130567827682533">"<ph name="NAME" />" datasını aktiv etmək üçün əvvəlcə Wi-Fi şəbəkəsinə qoşulun</translation>
+<translation id="2004697686368036666">Bəzi saytlardakı funksiyalar işləməyə bilər</translation>
 <translation id="2005199804247617997">Digər profillər</translation>
 <translation id="2006638907958895361">Linki <ph name="APP" /> tətbiqində açın</translation>
 <translation id="2007404777272201486">Problemi xəbər verin...</translation>
@@ -1122,7 +1123,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2154484045852737596">Kartı redaktə edin</translation>
 <translation id="2154502158735983655">Chrome OS cihaz məlumatlarını və cihaz datasını oxuyun.</translation>
-<translation id="2154710561487035718">Linki Kopyalayın</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Xidmət İşçisi: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Bu tətbiqdə bu fayl formatını açarkən bir daha soruşmayın:
@@ -3158,7 +3158,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="428715201724021596">Profilə qoşulur. Bu, bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="4287157641315808225">Bəli, ChromeVox'u aktiv edin</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Göstərin}other{Hamısını Göstərin}}</translation>
-<translation id="4289372044984810120">Hesablarınızı burada idarə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Baxış</translation>
 <translation id="4289732974614035569">PİN seçin</translation>
 <translation id="4290791284969893584">Bir səhifəni bağladıqdan sonra başlatdığınız tapşırıqlar başa çatmaya bilər</translation>
@@ -3234,7 +3233,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4378556263712303865">Cihaz sifarişi</translation>
 <translation id="4379281552162875326">"<ph name="APP_NAME" />" ləğv edilsin?</translation>
 <translation id="4380648069038809855">Tam ekrana keçdiniz</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, daha 1 hesab}other{<ph name="EMAIL" />, daha <ph name="EXTRA_ACCOUNTS" /> hesab}}</translation>
 <translation id="4384312707950789900">Tərcihlərə əlavə edin</translation>
 <translation id="4384652540891215547">Artırmanı aktivləşdirin</translation>
 <translation id="4384886290276344300">Klaviatura ayarlarını dəyişin</translation>
@@ -3857,7 +3855,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5053962746715621840">Google Linza ilə Şəkil Axtarın</translation>
 <translation id="5056950756634735043">Konteynerə qoşulur</translation>
 <translation id="5057110919553308744">Artırmaya kliklədiyiniz vaxt</translation>
-<translation id="5057403786441168405">Giriş edilən hesablarınızı idarə edin. Chrome və Google Play'dəki veb saytlar, tətbiqlər və artırmalar icazələrdən asılı olaraq təcrübənizi fərdiləşdirmək üçün bu hesablardan istifadə edə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Girişi məhdudlaşdırın</translation>
 <translation id="5059526285558225588">Nəyi paylaşacağınızı seçin</translation>
 <translation id="5060332552815861872">Yadda saxlanıla biləcək 1 printer var.</translation>
@@ -4984,7 +4981,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6284632978374966585">Qaranlıq temanı aktiv edin</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> adətən endirilmir və təhlükəli ola bilər.</translation>
 <translation id="6285770818046456882">Sizinlə paylaşım edən cihaz köçürməni ləğv etdi</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Yaxınlıqda paylaşım edən əlçatan cihaz yoxdur. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktivləşdirmə kodu doğrulanır. Bu, bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="6291741848715722067">Təsdiq kodu</translation>
@@ -5407,7 +5403,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6750757184909117990">Mobil şəbəkəni deaktiv edin</translation>
 <translation id="6750946710563435348">Digər istifadəçi adından istifadə edin</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkoqnito)</translation>
-<translation id="6757101664402245801">URL kopyalandı</translation>
 <translation id="6758056191028427665">Necə işlədiyimizi bizə bildirin.</translation>
 <translation id="6759193508432371551">Zavod Sıfırlaması</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
@@ -5584,7 +5579,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="693807610556624488">Yazı əməliyyatı bu cihazda maksimum atribut sayını keçib: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">1 yadda saxlanmış printeriniz var.</translation>
 <translation id="6938606182859551396"><ph name="DEVICE_TYPE" /> cihazınızda telefonunuzdan bildirişlər almaq üçün telefonunuzdakı təlimatları izləyərək Google Play Xidmətlərinə bildirişlərə giriş icazəsi verin.</translation>
-<translation id="6938789263968032501">Adamlar</translation>
 <translation id="6939815295902433669">Cihaz proqramını nəzərdən keçirin</translation>
 <translation id="694168622559714949">Administratorunuz dəyişdirilə bilməyən bir defolt dil təyin edib.</translation>
 <translation id="6941937518557314510">Sertifikatlarınızla <ph name="HOST_NAME" /> saytını doğrulamaq üçün <ph name="TOKEN_NAME" /> üzərinə daxil olun.</translation>
@@ -7625,7 +7619,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> üçün parol yenilənsin?</translation>
 <translation id="9041692268811217999">Cihazda lokal fayllara giriş administrator tərəfindən deaktiv edilib</translation>
 <translation id="904224458472510106">Bu əməliyyat geri qaytarıla bilməz</translation>
-<translation id="9042893549633094279">Məxfilik və təhlükəsizlik</translation>
 <translation id="904451693890288097">"<ph name="DEVICE_NAME" />" üçün açar daxil edin:</translation>
 <translation id="9044646465488564462"><ph name="DETAILS" /> şəbəkəsinə qoşulmaq uğursuz oldu</translation>
 <translation id="9045160989383249058">Oxu siyahınız yeni yan panelə keçirilib. Burada sınayın.</translation>

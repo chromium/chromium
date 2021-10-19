@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">ডব্লিউইপি</translation>
 <translation id="1071587090247825784">ফায়াৰৱাল চিনাক্ত কৰা হৈছে</translation>
 <translation id="1075811647922107217">পৃষ্ঠাৰ আকাৰ</translation>
-<translation id="110351136513869678">কনফিগাৰ কৰিবলৈ ছেটিঙলৈ যাওক</translation>
 <translation id="1119447706177454957">আভ্যন্তৰীণ আসোঁৱাহ</translation>
 <translation id="1124772482545689468">ব্যৱহাৰকাৰী</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">অমান্য PUK।</translation>
 <translation id="1510238584712386396">লঞ্চাৰ</translation>
 <translation id="155865706765934889">টাচ্চ্‌পেড</translation>
+<translation id="1572585716423026576">ৱালপেপাৰ হিচাপে ছেট কৰক</translation>
 <translation id="1621067168122174824">চাৰ্জ পৰীক্ষা চলাওক</translation>
 <translation id="1639239467298939599">ল'ড কৰি থকা হৈছে</translation>
 <translation id="1641857168437328880">নথি ফীডাৰ (এফাল থকা)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">স্কেন বাতিল কৰি থকা হৈছে</translation>
 <translation id="1851218745569890714">ভিডিঅ’ কনফাৰেন্সিং</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">আইপি ঠিকনা আহৰণ কৰিব পৰা নগ’ল</translation>
 <translation id="1887850431809612466">হাৰ্ডৱেৰৰ পুনৰীক্ষণ</translation>
-<translation id="1901646112321215184">কোনো DNS ছাৰ্ভাৰ কনফিগাৰ কৰা হোৱা নাই</translation>
 <translation id="1905710495812624430">চেষ্টা কৰাৰ সৰ্বাধিক সীমা অতিক্ৰম কৰিছে।</translation>
 <translation id="1908234395526491708">বিফল UDP অনুৰোধসমূহ</translation>
 <translation id="1930797645656624981">Chrome OS ইনপুট পদ্ধতি সেৱা</translation>
 <translation id="1947737735496445907">প্ৰিণ্ট কৰা হ’ল</translation>
-<translation id="197386857804679933">পুনৰ সংযোগ কৰিবলৈ ছেটিঙলৈ যাওক</translation>
 <translation id="1979103255016296513">পাছৱর্ড সলনি কৰাৰ সময় উকলিছে</translation>
 <translation id="1999615961760456652">কেপ্টিভ প’ৰ্টেল</translation>
 <translation id="2006864819935886708">সংযোগ</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">স্কেনাৰটোত অন্য এখন পৃষ্ঠা ৰাখক</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
-<translation id="2927511423571448384">Androidৰ পৰা ফায়াৰৱালৰ জৰিয়তে HTTP (প’ৰ্ট ৮০) ৱেবছাইটসমূহৰ সৈতে সংযোগ কৰিবলৈ সক্ষম নহ’ল</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="3009958530611748826">ছেভ কৰিবলৈ এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />এমএ</translation>
 <translation id="3056720590588772262">এণ্ডপইণ্ট</translation>
 <translation id="3069085583900247081">পৰীক্ষা বিফল হৈছে</translation>
-<translation id="3076387335132326640">আপুনি এটা মুক্ত নেটৱৰ্ক ব্যৱহাৰ কৰি আছে</translation>
 <translation id="3083667275341675831">সংযোগ সম্পৰ্কীয় ডায়গন’ষ্টিক্স</translation>
 <translation id="3091839911843451378">বিফল হৈছে - বন্ধ হৈছে</translation>
 <translation id="3102119246920354026">কেশ্ব</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">প্ৰায় <ph name="MIN_REMAINING" /> মিনিট বাকী আছে</translation>
 <translation id="3565064564551103223">অনুমতিপ্ৰাপ্ত আইপি</translation>
 <translation id="357889014807611375">নিৰিখ-নিৰ্দিষ্ট ৱাই-ফাই</translation>
-<translation id="3582041541988388905">কোনো <ph name="NETWORK_NAME" /> সংযোগ চিনাক্ত কৰা হোৱা নাই</translation>
 <translation id="3595596368722241419">বেটাৰী চ্চাৰ্জ সম্পূৰ্ণ হৈছে</translation>
 <translation id="360565022852130722">ৱাই-ফাই নেটৱৰ্কটো দুৰ্বল প্ৰট’কল WEP 802.1xৰ দ্বাৰা সুৰক্ষিত</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh বেটাৰী</translation>
 <translation id="4561801978359312462">ছিম আনলক কৰা হ’ল</translation>
 <translation id="4562494484721939086">কোনো সেৱা নাই</translation>
-<translation id="4567024731344774461">Androidৰ পৰা DNS সমাধান কৰিবলৈ সক্ষম নহ’ল</translation>
 <translation id="458794348635939462">হ’ষ্ট সম্পৰ্কীয় সকলো সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="4593212453765072419">প্ৰ’ক্সী বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণৰ আৱশ্যক</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />ৰ ভিতৰত <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />। প্ৰিণ্টৰ কাৰ্যটো বাতিল কৰিবলৈ এণ্টাৰ টিপক।</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) DNS ৰিজ’লিউশ্বন</translation>
 <translation id="4848429997038228357">চলি আছে</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}one{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}other{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}}</translation>
-<translation id="4871137769558798671">ফায়াৰৱালৰ জৰিয়তে HTTP (প’ৰ্ট ৪৪৩) ৱেবছাইটসমূহৰ সৈতে সংযোগ কৰিবলৈ সক্ষম নহ’ল</translation>
 <translation id="4880328057631981605">এক্সেছ পইণ্টৰ নাম</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">তৎক্ষণাত নতুন এটা বাছনি কৰক</translation>
@@ -276,6 +268,7 @@
 <translation id="5332948983412042822">এতিয়া নতুন এটা বাছনি কৰক</translation>
 <translation id="5333530671332546086">অজ্ঞাত প’ৰ্টেলৰ স্থিতি</translation>
 <translation id="5346687412805619883">স্থানীয় নেটৱৰ্ক</translation>
+<translation id="5358174242040570474">কিবা ভুল হ’ল। পুনৰ এখন ৱালপেপাৰ বাছনি কৰি অথবা পুনৰ এপ্‌টো খুলি চেষ্টা কৰি চাওক।</translation>
 <translation id="5372659122375744710">ৱাই-ফাইৰ নেটৱৰ্কটো সুৰক্ষিত নহয়</translation>
 <translation id="5401938042319910061">সকলো ৰুটিন চলাওক</translation>
 <translation id="5423849171846380976">সক্ৰিয় কৰা হৈছে</translation>
@@ -290,7 +283,6 @@
 <translation id="5502931783115429516">Android চলি থকা নাই</translation>
 <translation id="5519195206574732858">এলটিই</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">ছিগনেলৰ ক্ষমতা কম, এক্সেছ পইণ্টটোৰ বেছি ওচৰলৈ নিবলৈ চেষ্টা কৰক</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">পুনৰ স্কেন কৰক</translation>
 <translation id="5669267381087807207">সক্ৰিয় কৰা হৈছে</translation>
@@ -298,7 +290,6 @@
 <translation id="5691511426247308406">পৰিয়াল</translation>
 <translation id="5701381305118179107">কেন্দ্ৰ</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ৰ <ph name="CURRENT_PAGE" /></translation>
-<translation id="5715997777752246116">নাম থকা কোনো ছাৰ্ভাৰ কনফিগাৰ কৰা হোৱা নাই</translation>
 <translation id="5760715441271661976">প’ৰ্টেল ষ্টে’ট</translation>
 <translation id="5784136236926853061">HTTPৰ উচ্চ বিলম্বতা</translation>
 <translation id="5832805196449965646">অন্য লোক যোগ কৰক</translation>
@@ -342,7 +333,6 @@
 <translation id="636850387210749493">এন্টাৰপ্ৰাইজৰ পঞ্জীয়ন</translation>
 <translation id="6379086450106841622">টাচ্চস্ক্ৰীন</translation>
 <translation id="6388847657025262518">স্কেনাৰৰ নথিৰ ফীডাৰটো জাম লাগিছে। ফীডাৰটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
-<translation id="6395640744968320699">ফায়াৰৱালৰ জৰিয়তে HTTP (প’ৰ্ট ৮০) ৱেবছাইটসমূহৰ সৈতে সংযোগ কৰিবলৈ সক্ষম নহ’ল</translation>
 <translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীণ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="641081527798843608">বিষয়ৰ মিল</translation>
 <translation id="6423239382391657905">VPN খোলক</translation>
@@ -352,7 +342,6 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
 <translation id="649050271426829538">বন্ধ হৈছে - কাগজ ঠাহ খাই গৈছে</translation>
-<translation id="6498608540383876992">গে’টৱে’ৰ সৈতে যোগাযোগ কৰিবলৈ সক্ষম নহ’ল</translation>
 <translation id="6516990319416533844">বেটাৰীৰ চাৰ্জিঙৰ হাৰ পৰীক্ষা কৰিবলৈ আপোনাৰ বেটাৰীটো এক চুটি সময়ৰ বাবে খৰচ হ’বলৈ দিয়ক</translation>
 <translation id="6517239166834772319">অন্বেষণ</translation>
 <translation id="6527081081771465939">ৱাই-ফাইৰ অজ্ঞাত সুৰক্ষাৰ প্ৰ'টকল</translation>
@@ -362,13 +351,11 @@
 <translation id="6574762126505704998">সম্পূৰ্ণ স্ক্ৰীনজুৰি</translation>
 <translation id="6575134580692778371">কনফিগাৰ কৰা হোৱা নাই</translation>
 <translation id="6596816719288285829">আইপি ঠিকনা</translation>
-<translation id="6603230386432466813">সংযোগ কৰোঁতে সমস্যাৰ সৃষ্টি হৈছে নেকি?</translation>
 <translation id="6618744767048954150">চলি আছে</translation>
 <translation id="6620487321149975369">প্ৰিণ্টিঙৰ কামসমূহ মেনুৱেলভাৱে আঁতৰাই নিদিয়ালৈকে সেইসমূহ ইতিহাসত দেখা পোৱা যাব</translation>
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6704062477274546131">DNS ৰিজ’লিউশ্বন</translation>
-<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> অক্ষম কৰা হৈছে</translation>
 <translation id="6747215703636344499">বন্ধ হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
 <translation id="6756731097889387912">স্কেনিং বাতিল কৰিব পৰা নগ’ল</translation>
 <translation id="6766275201586212568">DNSৰ সমাধান বিফল হৈছে</translation>
@@ -381,7 +368,6 @@
 <translation id="6957231940976260713">সেৱাৰ নাম</translation>
 <translation id="6961170852793647506">আৰম্ভ কৰিবলৈ আপোনাৰ নথি স্কেনাৰটোত ৰাখক</translation>
 <translation id="6977381486153291903">ফাৰ্মৱেৰৰ পুনৰীক্ষণ</translation>
-<translation id="6982876849933694860">এটা নতুন সংযোগ ছেট আপ কৰিবলৈ, <ph name="BEGIN_LINK" />ছেটিং<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে আৰু চোৱা ৱেবপৃষ্ঠা, পাছৱৰ্ড আৰু ইমেইলকে ধৰি ব্যৱহাৰকাৰীৰ আটাইবোৰ কাৰ্যকলাপ এক্সেছ কৰিব পাৰে।</translation>
 <translation id="7040230719604914234">অপাৰেটৰ</translation>
 <translation id="7058278511608979688">সমাপ্ত কৰি ছেভ কৰক</translation>
@@ -400,7 +386,6 @@
 <translation id="7271040990581020067">বৰ্তমান স্কেনাৰটো ব্যৱহাৰ কৰি থকা হৈছে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ৱালপেপাৰৰ সংগ্ৰহ</translation>
-<translation id="7292680402155138244">HTTPS (প’ৰ্ট ৪৪৩) ৱেবছাইটলৈ অধিক বিলম্বতা</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -458,7 +443,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ট্ৰেফিক কাউণ্টাৰৰ অনুৰোধ কৰক</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">DNS সমাধান কৰিবলৈ সক্ষম নহ’ল</translation>
 <translation id="8206859287963243715">চেলুলাৰ</translation>
 <translation id="8208861521865154048">লাভালাভসমূহ</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
@@ -470,7 +454,6 @@
 <translation id="8297006494302853456">দুৰ্বল</translation>
 <translation id="8302368968391049045">HTTPSৰ ফায়াৰৱাল</translation>
 <translation id="8318753676953949627">কোনো প্ৰতিচ্ছবি নাই</translation>
-<translation id="8346875532700229909">Androidৰ পৰা গে’টৱে’ৰ সৈতে যোগাযোগ কৰিবলৈ সক্ষম নহ’ল</translation>
 <translation id="8347227221149377169">প্ৰিণ্টিঙৰ কামসমূহ</translation>
 <translation id="8352772353338965963">একাধিক ছাইন-ইন কৰিবলৈ এটা একাউণ্ট যোগ কৰক। ছাইন ইন কৰি থোৱা সকলো একাউণ্ট পাছৱৰ্ড অবিহনেই এক্সেছ কৰিব পাৰি, সেয়েহে এই সুবিধাটো কেৱল বিশ্বাসযোগ্য একাউণ্টৰ সৈতেহে ব্যৱহাৰ কৰা উচিত।</translation>
 <translation id="8364946094152050673">ড’মেইনৰ নাম থকা ছাৰ্ভাৰসমূহ খালী</translation>

@@ -78,16 +78,6 @@
 <translation id="1069489575852947981">Als je het beleid toepast of niet instelt, wordt een lokaal account op het apparaat ingesteld voor automatisch inloggen zonder vertraging. <ph name="PRODUCT_OS_NAME" /> behoudt de sneltoets Ctrl+Alt+S waarmee automatisch inloggen wordt omzeild en het inlogscherm wordt getoond.
 
       Als je het beleid niet toepast, kunnen gebruikers automatisch inloggen zonder vertraging (indien geconfigureerd) niet omzeilen.</translation>
-<translation id="1070656322814001059">Chrome blokkeert navigatie naar externe protocollen in iframes in sandboxes. Zie https://chromestatus.com/features/5680742077038592.
-
-      Als dit is ingesteld op True, kan Chrome die navigatie blokkeren.
-
-      Als dit is ingesteld op False, wordt voorkomen dat Chrome die navigatie blokkeert.
-
-      Dit is standaard ingesteld op True: beveiligingsfunctie aan.
-
-      Dit kan worden gebruikt door Enterprise-gebruikers die onder deze beperkingen vallen om de beperkingen tijdelijk op te heffen.
-      </translation>
 <translation id="1073983258515362346">Informatie rapporteren over de schermverlichting van een apparaat.
 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
@@ -2262,9 +2252,6 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
 
       Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> een standaard bibliotheeknaam.</translation>
 <translation id="3652670852519271837">Sites toestaan om gebruikers schrijftoegang te vragen tot bestanden en directory's via de File System API</translation>
-<translation id="3653234084868565720">Bepaalt of <ph name="PRODUCT_OS_NAME" /> het maken van nieuwe gebruikersaccounts toestaat. Als dit beleid is ingesteld op False, kunnen gebruikers zonder account niet inloggen.
-
-      Als dit beleid is ingesteld op True of niet is geconfigureerd, kunnen er nieuwe gebruikersaccounts worden gemaakt, mits <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> de gebruiker toestaat in te loggen.</translation>
 <translation id="3653237928288822292">Icoon voor standaardzoekprovider</translation>
 <translation id="3654906736796256792">Toestaan dat de audiosandbox wordt uitgevoerd</translation>
 <translation id="3659542706175323490">Als je het beleid toepast, blijft opstarten bij netstroom aan als het apparaat dit ondersteunt. Dankzij opstarten bij netstroom kan het systeem automatisch opstarten als het is uitgezet of in de slaapstand staat en het systeem is aangesloten op netstroom.

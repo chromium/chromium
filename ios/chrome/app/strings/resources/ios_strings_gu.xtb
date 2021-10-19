@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">અસ્તિત્વમાંના ડેટાને ડિલીટ કરો.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> તરીકે સાઇન ઇન થયા</translation>
 <translation id="1154984953698510061">અન્ય ટૅબ જુઓ</translation>
-<translation id="1157749421655780457">સ્થાનની મંજૂરી આપો...</translation>
 <translation id="1165039591588034296">ભૂલ</translation>
 <translation id="1172898394251786223">આગલું ફીલ્ડ</translation>
 <translation id="1176932207622159128">ફોટા સાચવી શકતું નથી</translation>
@@ -239,7 +238,6 @@
 <translation id="3240426699337459095">લિંક કૉપિ કરી</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="NUM_SUGGESTIONS" /> માનું <ph name="INDEX" /></translation>
-<translation id="3261971309013797455">તમારી વાંચન સૂચિ ઑફલાઇન ઉપલબ્ધ છે. તમારી વાંચન સૂચિમાં પેજ ઉમેરવા માટે, <ph name="SHARE_OPENING_ICON" /> પર અને પછી <ph name="ADD_TO_READING_LIST_TEXT" /> પર ટૅપ કરો.</translation>
 <translation id="3268451620468152448">ઓપન ટેબ્સ</translation>
 <translation id="3272527697863656322">રદ કરો</translation>
 <translation id="3277021493514034324">સાઇટનું ઍડ્રેસ કૉપિ કર્યું</translation>
@@ -262,7 +260,6 @@
 <translation id="345565170154308620">પાસવર્ડ મેનેજ કરો…</translation>
 <translation id="3469166899695866866">ડાઉનલોડ રોકીએ?</translation>
 <translation id="3470502288861289375">કૉપિ કરી રહ્યું છે...</translation>
-<translation id="3472993688462687965">તમે જ્યારે સિંક કરવાની સુવિધા ચાલુ કરો, ત્યારે તમારી સંસ્થા દ્વારા જેટલી મંજૂરી આપવામાં આવી હોય તેના કરતાં ડેટા મર્યાદિત થઈ જાય એવી શક્યતા છે.</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> તરીકે ચાલુ રાખો</translation>
 <translation id="3478058380795961209">સમય સમાપ્તિ મહિનો</translation>
 <translation id="3482959374254649722">તમારા ટેબ્સને સમન્વયિત કરી રહ્યું છે...</translation>
@@ -374,7 +371,6 @@
 
 તમારો ડેટા તમારા સિંક પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. સિંક શરૂ કરવા માટે એ દાખલ કરો.</translation>
 <translation id="4689564913179979534">ચુકવણી પદ્ધતિઓ મેનેજ કરો…</translation>
-<translation id="469022783543509074">તમને સાઇન આઉટ કરવામાં આવ્યા છે</translation>
 <translation id="470966556546083668">સિંક કરવાની સુવિધા ચાલુ કરશો નહીં</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4747097190499141774">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી. માત્ર તમારા પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારા એન્ક્રિપ્ટ કરેલા ડેટાને વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં આવતો નથી કે તેના દ્વારા સંગ્રહિત કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માંગતા હો, તો તમારે સિંકને રીસેટ કરવું પડશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">તમે તમારા સાચવેલા પાસવર્ડ ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6851516051005285358">ડેસ્કટૉપ સાઇટની વિનંતી કરો</translation>
-<translation id="6856384753476268833">તમારી સંસ્થા દ્વારા મેનેજ કરેલું.</translation>
 <translation id="6858855187367714033">સ્કૅન કર્યો</translation>
 <translation id="6859944681507688231">QR કોડ અથવા ક્રેડિટ કાર્ડ સ્કૅન કરવા માટે, સેટિંગમાં કૅમેરા ચાલુ કરો.</translation>
 <translation id="6869389390665537774">તમે જેની મુલાકાત લીધેલી હોય તેવા પેજ તમે તમારા ઇતિહાસમાં જોઈ શકો છો અથવા તેમાંથી તેને સાફ કરી શકો છો</translation>
@@ -691,7 +686,6 @@
 <translation id="7472734401283673885">કંપનીનું નામ</translation>
 <translation id="7473891865547856676">નહીં આભાર</translation>
 <translation id="7481312909269577407">ફોર્વર્ડ કરો</translation>
-<translation id="7483467499335917849">તમારા વર્તમાન સ્થાનનો ઉપયોગ કરો</translation>
 <translation id="750493650310597496">0 પસંદ કર્યાં</translation>
 <translation id="7508728395076009983">તમારી છુપી ટૅબને લૉક કરવા માટે, ટચ ID, ચહેરાના ID કે પાસકોડનું સેટઅપ કરો.</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
@@ -768,6 +762,7 @@
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8323906514956095947">ટૅબના વધુ વિકલ્પો માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="8328777765163860529">બધું બંધ કરો</translation>
+<translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
 <translation id="8386068868580335421">રીસેટ કરો</translation>
 <translation id="8407669440184693619">આ સાઇટ માટે કોઈ પાસવર્ડ મળ્યાં નથી</translation>
 <translation id="842017693807136194">ની સાથે સાઇન ઇન કરેલ</translation>
@@ -838,7 +833,6 @@
 <translation id="9081058212938299310"><ph name="USERNAME" /> માટેનો પાસવર્ડ અપડેટ કરીએ?</translation>
 <translation id="9083392325882095631">1 આઇટમ</translation>
 <translation id="9083838294503912307">એકથી વધુ ડિવાઇસને સિંક અને વ્યક્તિગત કરવા માટે સિંક ચાલુ કરો.</translation>
-<translation id="9084677839771512880">તમે શું સિંક કરી શકો, તે તમારી સંસ્થા નિયંત્રિત કરે છે. <ph name="BEGIN_LINK" />વિગતો<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Chrome દ્વારા સૂચિત પાસવર્ડ:</translation>
 <translation id="9094033019050270033">પાસવર્ડ અપડેટ કરો</translation>
 <translation id="9100610230175265781">પાસફ્રેઝ આવશ્યક છે</translation>

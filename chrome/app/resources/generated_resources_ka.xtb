@@ -984,6 +984,7 @@
 <translation id="2002109485265116295">რეალური დროის</translation>
 <translation id="200217416291116199">რეკომენდებულია ფაილების სარეზერვო ასლების შექმნა, რომ არაფერი დაგეკარგოთ, თუ ვერსიის განახლება ვერ მოხერხდება. ვერსიის განახლების დაწყების შემთხვევაში Linux გამოირთვება. გაგრძელებამდე შეინახეთ გახსნილი ფაილები.</translation>
 <translation id="2003130567827682533">„<ph name="NAME" />“-ის მონაცემთა გადაცემის გასააქტიურებლად, პირველ რიგში, დაუკავშირდით Wi-Fi ქსელს</translation>
+<translation id="2004697686368036666">ფუნქციებმა, შესაძლოა, არ იმუშაოს ზოგიერთ საიტზე</translation>
 <translation id="2005199804247617997">სხვა პროფილები</translation>
 <translation id="2006638907958895361">ბმულის <ph name="APP" />-ში გახსნა</translation>
 <translation id="2007404777272201486">მოხსენება პრობლემის შესახებ…</translation>
@@ -1126,7 +1127,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ფოტო</translation>
 <translation id="2154484045852737596">ბარათის რედაქტირება</translation>
 <translation id="2154502158735983655">Chrome OS მოწყობილობის ინფორმაციისა და მოწყობილობის მონაცემების წაკითხვა.</translation>
-<translation id="2154710561487035718">URL-ის კოპირება</translation>
 <translation id="2155772377859296191">როგორც ჩანს, გარჩევადობა არის <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">სერვისის დამმუშავებელი: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">აღარ მკითხოთ ამ აპში ფაილის შემდეგი ფორმატის გახსნისას:
@@ -3165,7 +3165,6 @@
 <translation id="428715201724021596">მიმდინარეობს პროფილთან დაკავშირება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="4287157641315808225">დიახ, გააქტიურდეს ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ჩვენება}other{ყველას ჩვენება}}</translation>
-<translation id="4289372044984810120">აქ შეგიძლიათ მართოთ თქვენი ანგარიშები. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">მიმოხილვა</translation>
 <translation id="4289732974614035569">აირჩიეთ PIN-კოდი</translation>
 <translation id="4290791284969893584">გვერდის დახურვის შემდეგ, თქვენ მიერ დაყენებული ამოცანები, შესაძლოა, არ დასრულდეს</translation>
@@ -3241,7 +3240,6 @@
 <translation id="4378556263712303865">მოწყობილობის მოთხოვნა</translation>
 <translation id="4379281552162875326">გსურთ „<ph name="APP_NAME" />“-ის დეინსტალაცია?</translation>
 <translation id="4380648069038809855">მოხდა სრულეკრანიან რეჟიმში შესვლა</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" /> და კიდევ 1 სხვა ანგარიში}other{<ph name="EMAIL" /> და კიდევ <ph name="EXTRA_ACCOUNTS" /> სხვა ანგარიში}}</translation>
 <translation id="4384312707950789900">სასურველებში დამატება</translation>
 <translation id="4384652540891215547">გაფართოების გააქტიურება</translation>
 <translation id="4384886290276344300">კლავიატურის პარამეტრების შეცვლა</translation>
@@ -3864,7 +3862,6 @@
 <translation id="5053962746715621840">სურათის ძიება Google Lens-ით</translation>
 <translation id="5056950756634735043">მიმდინარეობს კონტეინერთან დაკავშირება</translation>
 <translation id="5057110919553308744">გაფართოებაზე დაწკაპუნებისას</translation>
-<translation id="5057403786441168405">მართეთ თქვენი სისტემაში შესული ანგარიშები. მინიჭებული ნებართვების მიხედვით, Chrome-სა და Google Play-ში არსებულმა ვებსაიტებმა, აპებმა თუ გაფართოებებმა შეიძლება გამოიყენოს აღნიშნული ანგარიშები სერვისებით სარგებლობის პროცესის თქვენზე მოსარგებად. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">შესვლის შეზღუდვა</translation>
 <translation id="5059526285558225588">აირჩიეთ, რა გაზიარდეს</translation>
 <translation id="5060332552815861872">შესანახად ხელმისაწვდომია 1 პრინტერი.</translation>
@@ -4993,7 +4990,6 @@
 <translation id="6284632978374966585">მუქი თემის გააქტიურება</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> შეიძლება სახიფათო იყოს, რადგან მისი ჩამოტვირთვა ხშირად არ ხორციელდება ხოლმე.</translation>
 <translation id="6285770818046456882">მონაცემთა გადაცემა გაუქმდა მოწყობილობიდან, რომლიდანაც კონტენტი ზიარდებოდა</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">ახლომახლო არ არის მოწყობილობები, რომლებიდანაც რაიმე ზიარდება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">მიმდინარეობს გააქტიურების კოდის დადასტურება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="6291741848715722067">დადასტურების კოდი</translation>
@@ -5416,7 +5412,6 @@
 <translation id="6750757184909117990">მობილური კავშირის გათიშვა</translation>
 <translation id="6750946710563435348">მომხმარებლის სხვა სახელის გამოყენება</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ინკოგნიტო)</translation>
-<translation id="6757101664402245801">URL დაკოპირდა</translation>
 <translation id="6758056191028427665">შეგვატყობინეთ, როგორ ვმუშაობთ.</translation>
 <translation id="6759193508432371551">ქარხნული პარამეტრების დაბრუნება</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
@@ -5593,7 +5588,6 @@
 <translation id="693807610556624488">„<ph name="DEVICE_NAME" />“-ზე ჩაწერის ოპერაცია აღემატება ატრიბუტის მაქსიმალურ სიგრძეს.</translation>
 <translation id="6938386202199793006">თქვენ გაქვთ 1 შენახული პრინტერი.</translation>
 <translation id="6938606182859551396">თქვენი ტელეფონიდან თქვენს <ph name="DEVICE_TYPE" />-ზე შეტყობინებები რომ მიიღოთ, შეასრულეთ თქვენს ტელეფონზე მოცემული ინსტრუქცია და მიანიჭეთ Google Play Services-ს წვდომა თქვენს შეტყობინებებზე.</translation>
-<translation id="6938789263968032501">ადამიანები</translation>
 <translation id="6939815295902433669">მოწყობილობის პროგრამული უზრუნველყოფის მიმოხილვა</translation>
 <translation id="694168622559714949">თქვენმა ადმინისტრატორმა დააყენა ნაგულისხმევი ენა, რომელიც ვერ შეიცვლება.</translation>
 <translation id="6941937518557314510">გთხოვთ შეხვიდეთ <ph name="TOKEN_NAME" /> ავთენტიფიკაციისთვის <ph name="HOST_NAME" /> თქვენი სერთიფიკატით.</translation>
@@ -7636,7 +7630,6 @@
 <translation id="9040661932550800571">გსურთ <ph name="ORIGIN" />-ის პაროლის განახლება?</translation>
 <translation id="9041692268811217999">თქვენს მოწყობილობაზე არსებულ ადგილობრივ ფაილებზე წვდომა გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="904224458472510106">ამ ოპერაციას ვერ გააუქმებთ</translation>
-<translation id="9042893549633094279">კონფიდენციალურობა და უსაფრთხოება</translation>
 <translation id="904451693890288097">გთხოვთ შეიყვანოთ ძირითადი გასაღები „<ph name="DEVICE_NAME" />“-თვის:</translation>
 <translation id="9044646465488564462">ვერ დაუკავშირდა ქსელს: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">თქვენმა საკითხავმა სიამ გადაინაცვლა ახალ გვერდით პანელზე. ცადეთ ის აქ.</translation>

@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">זוהתה חומת אש</translation>
 <translation id="1075811647922107217">גודל הדף</translation>
-<translation id="110351136513869678">צריך להגדיר את הרשת בהגדרות</translation>
 <translation id="1119447706177454957">שגיאה פנימית</translation>
 <translation id="1124772482545689468">משתמש</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">‏PUK לא חוקי.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="155865706765934889">לוח מגע</translation>
+<translation id="1572585716423026576">הגדרה כטפט</translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
 <translation id="1639239467298939599">בטעינה</translation>
 <translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">הסריקה מתבטלת</translation>
 <translation id="1851218745569890714">שיחת ועידה בווידאו</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">‏לא ניתן להשיג את כתובת ה-IP</translation>
 <translation id="1887850431809612466">שכתוב חומרה</translation>
-<translation id="1901646112321215184">‏לא הוגדרו שרתי DNS</translation>
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
 <translation id="1908234395526491708">‏בקשות UDP נכשלו</translation>
 <translation id="1930797645656624981">‏שירות שיטת הקלט של Chrome OS</translation>
 <translation id="1947737735496445907">הודפסה</translation>
-<translation id="197386857804679933">כדי להתחבר מחדש צריך לפתוח את ההגדרות</translation>
 <translation id="1979103255016296513">המועד האחרון לשינוי הסיסמה כבר חלף</translation>
 <translation id="1999615961760456652">פורטל שבוי</translation>
 <translation id="2006864819935886708">קישוריות</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">צריך להניח דף נוסף על הסורק</translation>
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
-<translation id="2927511423571448384">‏לא ניתן להתחבר באמצעות חומת האש לאתרי HTTP ‏(יציאה 80) מ-Android</translation>
 <translation id="3008341117444806826">רענון</translation>
 <translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
 <translation id="3054177598518735801">mA<ph name="CURRENT_VALUE" /></translation>
 <translation id="3056720590588772262">‏נקודת קצה (endpoint)</translation>
 <translation id="3069085583900247081">הבדיקה נכשלה</translation>
-<translation id="3076387335132326640">נעשה על ידך שימוש ברשת פתוחה</translation>
 <translation id="3083667275341675831">אבחון קישוריות</translation>
 <translation id="3091839911843451378">נכשלה – משימת ההדפסה הופסקה</translation>
 <translation id="3102119246920354026">מטמון</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">נותרו <ph name="MIN_REMAINING" /> דקות בערך</translation>
 <translation id="3565064564551103223">‏כתובות IP מורשות</translation>
 <translation id="357889014807611375">‏Wi-Fi עם חיוב לפי שימוש בנתונים</translation>
-<translation id="3582041541988388905">לא זוהה חיבור לרשת <ph name="NETWORK_NAME" /></translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
 <translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930">סוללה בהספק של <ph name="CHARGE_VALUE" /> מיליאמפר לשעה</translation>
 <translation id="4561801978359312462">‏נעילת כרטיס ה-SIM בוטלה</translation>
 <translation id="4562494484721939086">אין שירות</translation>
-<translation id="4567024731344774461">‏לא ניתן ליצור רזולוציית DNS מ-Android</translation>
 <translation id="458794348635939462">לא ניתן היה להתאים את הנתונים של כל המארחים</translation>
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> מתוך <ph name="TOTAL_PAGE_NUMBER" />. ניתן להקיש על Enter כדי לבטל את משימת ההדפסה.</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">‏רזולוציית DNS ‏(Android)</translation>
 <translation id="4848429997038228357">הבדיקה מתבצעת</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />. נותר ניסיון אחד ({0})}two{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}many{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}other{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}}</translation>
-<translation id="4871137769558798671">‏לא ניתן להתחבר דרך חומת אש אל אתרי HTTPS‏ (יציאה 443)</translation>
 <translation id="4880328057631981605">‏שם נקודת גישה (APN)</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">יש לבחור מיד סיסמה חדשה</translation>
@@ -291,7 +283,6 @@
 <translation id="5502931783115429516">‏מערכת Android לא פועלת</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">‏עוצמת אות חלשה, צריך לנסות להתקרב אל נקודת הגישה (AP)</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">סריקה מחדש</translation>
 <translation id="5669267381087807207">ההפעלה מתבצעת</translation>
@@ -299,7 +290,6 @@
 <translation id="5691511426247308406">משפחה</translation>
 <translation id="5701381305118179107">מרכז</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">לא הוגדרו שרתי שמות</translation>
 <translation id="5760715441271661976">מצב הפורטל</translation>
 <translation id="5784136236926853061">‏משך זמן ההמתנה ל-HTTP ארוך</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
@@ -343,7 +333,6 @@
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
 <translation id="6379086450106841622">מסך מגע</translation>
 <translation id="6388847657025262518">מזין המסמכים של הסורק תקוע. יש לבדוק אותו ולנסות שוב.</translation>
-<translation id="6395640744968320699">‏לא ניתן להתחבר באמצעות חומת האש לאתרי HTTP ‏(יציאה 80)</translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="641081527798843608">התאמת נושא</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -353,7 +342,6 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">מנוהל על ידי <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">הפסיקה – חסימת נייר</translation>
-<translation id="6498608540383876992">אין אפשרות ליצור קשר עם השער</translation>
 <translation id="6516990319416533844">כדי לבדוק את מהירות הטעינה של הסוללה, יש להמתין זמן מה שתתרוקן</translation>
 <translation id="6517239166834772319">‏מה חדש ב-Chromebook</translation>
 <translation id="6527081081771465939">‏פרוטוקול אבטחת Wi-Fi לא מזוהה</translation>
@@ -363,13 +351,11 @@
 <translation id="6574762126505704998">מילוי המסך</translation>
 <translation id="6575134580692778371">לא הוגדר</translation>
 <translation id="6596816719288285829">‏כתובת IP</translation>
-<translation id="6603230386432466813">נתקלת בקשיים בהתחברות?</translation>
 <translation id="6618744767048954150">הבדיקה מתבצעת עכשיו</translation>
 <translation id="6620487321149975369">משימות הדפסה יופיעו תחת היסטוריה אלא אם הן הוסרו ידנית</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="6704062477274546131">‏פענוח DNS</translation>
-<translation id="6714650824879092633">הרשת <ph name="NETWORK_NAME" /> הושבתה</translation>
 <translation id="6747215703636344499">הפסיקה – מגש הפלט מלא</translation>
 <translation id="6756731097889387912">לא ניתן היה לבטל את הסריקה</translation>
 <translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
@@ -382,7 +368,6 @@
 <translation id="6957231940976260713">שם שירות</translation>
 <translation id="6961170852793647506">כדי להתחיל, מניחים את המסמך על הסורק</translation>
 <translation id="6977381486153291903">שכתוב קושחה</translation>
-<translation id="6982876849933694860">כדי להגדיר חיבור חדש, עוברים אל <ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="7040230719604914234">ספק</translation>
 <translation id="7058278511608979688">סיום ושמירה</translation>
@@ -401,7 +386,6 @@
 <translation id="7271040990581020067">הסורק נמצא בשימוש כרגע. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">אוספים של טפטים</translation>
-<translation id="7292680402155138244">‏זמן אחזור ארוך לאתרי HTTPS‏ (יציאה 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -459,7 +443,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />‎°‎ C</translation>
 <translation id="8132480444149501833">בקשה למוני תנועה</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">‏אין אפשרות ליצור רזולוציית DNS</translation>
 <translation id="8206859287963243715">סלולארי</translation>
 <translation id="8208861521865154048">הטבות</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
@@ -471,7 +454,6 @@
 <translation id="8297006494302853456">חלש</translation>
 <translation id="8302368968391049045">‏חומת אש מסוג HTTPS</translation>
 <translation id="8318753676953949627">אין תמונות</translation>
-<translation id="8346875532700229909">‏לא ניתן ליצור קשר עם השער מ-Android</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
 <translation id="8352772353338965963">יש להוסיף חשבון לכניסה עם מספר חשבונות. כל החשבונות שאליהם נכנסת נגישים ללא סיסמה, לכן יש להשתמש בתכונה זו עם חשבונות אמינים בלבד.</translation>
 <translation id="8364946094152050673">שרתי שמות ריקים</translation>

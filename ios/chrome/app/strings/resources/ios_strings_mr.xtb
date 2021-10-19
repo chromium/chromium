@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">विद्यमान डेटा हटवा.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> म्हणून साइन इन केले</translation>
 <translation id="1154984953698510061">इतर टॅब पहा</translation>
-<translation id="1157749421655780457">स्थानासाठी अनुमती द्या...</translation>
 <translation id="1165039591588034296">एरर</translation>
 <translation id="1172898394251786223">पुढील फील्ड</translation>
 <translation id="1176932207622159128">इमेज सेव्ह करू शकत नाही</translation>
@@ -239,7 +238,6 @@
 <translation id="3240426699337459095">लिंक कॉपी केला</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> पैकी <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
-<translation id="3261971309013797455">तुमची वाचन सूची ऑफलाइन उपलब्ध आहे. तुमच्या वाचन सूचीमध्‍ये पेज जोडण्‍यासाठी, <ph name="SHARE_OPENING_ICON" /> त्यानंतर <ph name="ADD_TO_READING_LIST_TEXT" /> वर टॅप करा.</translation>
 <translation id="3268451620468152448">उघडे Tabs</translation>
 <translation id="3272527697863656322">रद्द करा</translation>
 <translation id="3277021493514034324">साइट पत्ता कॉपी केला</translation>
@@ -262,7 +260,6 @@
 <translation id="345565170154308620">पासवर्ड व्यवस्थापित करा...</translation>
 <translation id="3469166899695866866">डाउनलोड थांबवायचे?</translation>
 <translation id="3470502288861289375">कॉपी करत आहे...</translation>
-<translation id="3472993688462687965">तुम्ही सिंक करणे सुरू करता तेव्हा, तुमच्या संस्थेने कशाला अनुमती दिली आहे त्यानुसार डेटा मर्यादित असू शकतो.</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> म्हणून सुरू ठेवा</translation>
 <translation id="3478058380795961209">कालबाह्यता महिना:</translation>
 <translation id="3482959374254649722">तुमचे टॅब संकालित करीत आहे...</translation>
@@ -375,7 +372,6 @@
 
 तुमचा डेटा तुमच्या सिंक पासफ्रेझासह एंक्रिप्ट केलेला केला आहे. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="4689564913179979534">पेमेंट पद्धती व्यवस्थापित करा...</translation>
-<translation id="469022783543509074">तुम्हाला साइन आउट केले गेले आहे</translation>
 <translation id="470966556546083668">सिंक करा हे सुरू करू नका</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4747097190499141774">पासफ्रेज एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो. फक्त तुमचा पासफ्रेज असलेली एखादी व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेज Google कडे पाठवला किंवा त्याद्वारे स्टोअर केला जात नाही. तुम्ही तुमचा पासफ्रेज विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, तुम्हाला सिंक रीसेट करण्याची आवश्यकता असेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -625,7 +621,6 @@
 <translation id="6831043979455480757">भाषांतर करा</translation>
 <translation id="6842136130964845393">तुम्ही तुमचे सेव्ह केलेले पासवर्ड कधीही ॲक्सेस करू शकता याची खात्री करण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="6851516051005285358">डेस्कटॉप साइटची विनंती करा</translation>
-<translation id="6856384753476268833">तुमच्या संस्थेकडून व्यवस्थापित केलेले.</translation>
 <translation id="6858855187367714033">स्कॅन केलेले</translation>
 <translation id="6859944681507688231">QR कोड किंवा क्रेडिट कार्ड स्कॅन करण्यासाठी सेटिंग्जमध्ये कॅमेरा सुरू करा.</translation>
 <translation id="6869389390665537774">तुम्ही भेट दिलेली पेज पाहू शकता किंवा ती तुमच्या इतिहासामधून साफ करू शकता</translation>
@@ -693,7 +688,6 @@
 <translation id="7472734401283673885">कंपनीचे नाव</translation>
 <translation id="7473891865547856676">नाही, नको</translation>
 <translation id="7481312909269577407">पुढील</translation>
-<translation id="7483467499335917849">तुमचे सध्याचे स्थान वापरा</translation>
 <translation id="750493650310597496">0 निवडले</translation>
 <translation id="7508728395076009983">तुमचे गुप्त टॅब लॉक करण्यासाठी, टच आयडी, फेस आयडी किंवा पासकोड सेट करा.</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
@@ -770,6 +764,7 @@
 <translation id="8319076807703933069">नवीन शोध</translation>
 <translation id="8323906514956095947">आणखी टॅब पर्यायांसाठी स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="8328777765163860529">सर्व बंद करा</translation>
+<translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>
 <translation id="8386068868580335421">रीसेट करा</translation>
 <translation id="8407669440184693619">या साइटसाठी पासवर्ड सापडले नाहीत</translation>
 <translation id="842017693807136194">यासह साइन इन केले</translation>
@@ -818,6 +813,7 @@
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="8840513115188359703">तुम्हाला आपल्या Google खात्यामधून साइन आउट केले जाणार नाही.</translation>
+<translation id="8843129975935593190">तुम्ही काय सिंक करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} टॅब}other{{count} टॅब}}</translation>
 <translation id="8870413625673593573">अलीकडे बंद</translation>
 <translation id="8876882697946675716">तुमची डिव्हाइस सिंकमध्ये ठेवा</translation>
@@ -839,7 +835,6 @@
 <translation id="9081058212938299310"><ph name="USERNAME" /> साठी पासवर्ड अपडेट करायचा?</translation>
 <translation id="9083392325882095631">1 आयटम</translation>
 <translation id="9083838294503912307">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, सिंक सुरू करा.</translation>
-<translation id="9084677839771512880">तुम्ही काय सिंक करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत. <ph name="BEGIN_LINK" />तपशील<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Chrome ने सुचवलेला पासवर्ड:</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट करा</translation>
 <translation id="9100610230175265781">सांकेतिक पासफ्रेझ आवश्यक</translation>

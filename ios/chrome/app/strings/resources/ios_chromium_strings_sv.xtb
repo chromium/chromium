@@ -52,7 +52,6 @@
 <translation id="5171868502429358653">Logga in i Chromium</translation>
 <translation id="5224391634244552924">Inga sparade lösenord. Chromium kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="5308226104666789935">Chromium kan inte söka efter uppdateringar</translation>
-<translation id="5324242752415821224">Organisationen kräver att du loggar in för att använda Chromium. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Vill du ställa in Chromium som standardwebbläsare?</translation>
 <translation id="5521125884468363740">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
 <translation id="5573014823074921752">Tips för Chromium. Tryck länge på Visa flikar i verktygsfältet så visas fler flikalternativ. Du hittar verktygsfältet längst ned eller högst upp på skärmen.</translation>
@@ -73,7 +72,6 @@
 <translation id="6424492062988593837">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
 <translation id="6752854822223394465">Organisationen konfigurerar Chromium …</translation>
 <translation id="6820823224820483452">Chromium kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
-<translation id="6827294685447036764">När du ger Chromium åtkomst till din plats skickas den från Chromium till alla webbplatser som du ger behörighet. Webbplatser kan fråga efter din plats när det finns lokal information att visa, till exempel butiker i närheten eller nyheter.</translation>
 <translation id="7018284295775193585">Chromium kan inte uppdateras</translation>
 <translation id="7045244423563602563">Anpassa Chromium</translation>
 <translation id="7099326575020694068">Chromium kan inte använda kameran i delad vy</translation>

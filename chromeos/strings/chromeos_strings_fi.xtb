@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Palomuuri havaittu</translation>
 <translation id="1075811647922107217">Sivun koko</translation>
-<translation id="110351136513869678">Määritä avaamalla asetukset</translation>
 <translation id="1119447706177454957">Sisäinen virhe</translation>
 <translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">Virheellinen PUK-koodi</translation>
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
 <translation id="155865706765934889">Kosketuslevy</translation>
+<translation id="1572585716423026576">Aseta taustakuvaksi</translation>
 <translation id="1621067168122174824">Suorita lataustesti</translation>
 <translation id="1639239467298939599">Ladataan</translation>
 <translation id="1641857168437328880">Syöttölaite (yksipuolinen)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">Perutaan skannausta</translation>
 <translation id="1851218745569890714">Videokonferenssit</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">IP-osoitteen noutaminen ei onnistu</translation>
 <translation id="1887850431809612466">Laitteistoversio</translation>
-<translation id="1901646112321215184">DNS-palvelimia ei ole määritetty</translation>
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
 <translation id="1908234395526491708">Epäonnistuneita UDP-pyyntöjä</translation>
 <translation id="1930797645656624981">Chrome-käyttöjärjestelmän syöttöpalvelu</translation>
 <translation id="1947737735496445907">Tulostettu</translation>
-<translation id="197386857804679933">Yhdistä asetusten kautta</translation>
 <translation id="1979103255016296513">Salasanan vaihto myöhässä</translation>
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Yhteys</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">Aseta toinen sivu skanneriin</translation>
 <translation id="2872961005593481000">Sammuta</translation>
 <translation id="2878387241690264070">Tyhjentynyt <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekunnissa.</translation>
-<translation id="2927511423571448384">HTTP (portti 80) ‑sivustoihin yhdistäminen palomuurin läpi ei onnistu Android-laitteelta</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Päätepiste</translation>
 <translation id="3069085583900247081">Testi epäonnistui</translation>
-<translation id="3076387335132326640">Käytät avointa verkkoa</translation>
 <translation id="3083667275341675831">Yhteysdiagnostiikka</translation>
 <translation id="3091839911843451378">Epäonnistui – Pysäytetty</translation>
 <translation id="3102119246920354026">Välimuisti</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">Noin <ph name="MIN_REMAINING" /> minuuttia jäljellä</translation>
 <translation id="3565064564551103223">Sallitut IP-osoitteet</translation>
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
-<translation id="3582041541988388905">Yhteyttä ei havaittu: <ph name="NETWORK_NAME" /></translation>
 <translation id="3595596368722241419">Akku täynnä</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
 <translation id="3689839747745352263">Testi: <ph name="TEST_NAME" /></translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930">Akku: <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM-lukitus avattu</translation>
 <translation id="4562494484721939086">Ei yhteyttä</translation>
-<translation id="4567024731344774461">DNS:n selvitys ei onnistu Android-laitteella</translation>
 <translation id="458794348635939462">Kaikkien isäntien selvittäminen epäonnistui</translation>
 <translation id="4593212453765072419">Välityspalvelimen todennus vaaditaan</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peru tulostustyö painamalla Enter.</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) DNS-selvitys</translation>
 <translation id="4848429997038228357">KÄYNNISSÄ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} yritys jäljellä}other{<ph name="ERROR_MESSAGE" /> {0} yritystä jäljellä}}</translation>
-<translation id="4871137769558798671">HTTPS (portti 443) ‑sivustoihin yhdistäminen palomuurin läpi ei onnistu</translation>
 <translation id="4880328057631981605">Tukiaseman nimi</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Valitse uusi välittömästi</translation>
@@ -291,7 +283,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5502931783115429516">Android ei käynnissä</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">Heikko signaali, siirry lähemmäs tukiasemaa</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skannaa uudelleen</translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
@@ -299,7 +290,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5691511426247308406">Perhe</translation>
 <translation id="5701381305118179107">Keskitä</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">Nimipalvelimia ei ole määritetty</translation>
 <translation id="5760715441271661976">Portaalitila</translation>
 <translation id="5784136236926853061">Suuri HTTP-viive</translation>
 <translation id="5832805196449965646">Lisää henkilö</translation>
@@ -343,7 +333,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>
 <translation id="6379086450106841622">Kosketusnäyttö</translation>
 <translation id="6388847657025262518">Skannerin syöttölaite on tukossa. Tarkista syöttölaite ja yritä uudelleen.</translation>
-<translation id="6395640744968320699">HTTP (portti 80) ‑sivustoihin yhdistäminen palomuurin läpi ei onnistu</translation>
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
 <translation id="641081527798843608">Aiheen vastaavuus</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -353,7 +342,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Ylläpitäjä: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Pysähtynyt – Paperitukos</translation>
-<translation id="6498608540383876992">Yhdyskäytävään ei saada yhteyttä</translation>
 <translation id="6516990319416533844">Anna akun tyhjentyä hetken aikaa, jotta voit testata sen latautumisnopeutta</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Tuntematon Wi-Fi-suojausprotokolla</translation>
@@ -363,13 +351,11 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6574762126505704998">Täytä</translation>
 <translation id="6575134580692778371">Ei määritetty</translation>
 <translation id="6596816719288285829">IP-osoite</translation>
-<translation id="6603230386432466813">Eikö yhdistäminen onnistu?</translation>
 <translation id="6618744767048954150">Käynnissä</translation>
 <translation id="6620487321149975369">Tulostustyöt näkyvät historiassa, ellei niitä poisteta manuaalisesti</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6704062477274546131">DNS-ratkaisu</translation>
-<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> on poistettu käytöstä</translation>
 <translation id="6747215703636344499">Pysähtynyt – Syöte täynnä</translation>
 <translation id="6756731097889387912">Skannausta ei voitu perua</translation>
 <translation id="6766275201586212568">Hylätyt DNS-selvitykset</translation>
@@ -382,7 +368,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6957231940976260713">Palvelun nimi</translation>
 <translation id="6961170852793647506">Aloita asettamalla dokumentti skanneriin</translation>
 <translation id="6977381486153291903">Laiteohjelmiston versio</translation>
-<translation id="6982876849933694860">Jos haluat määrittää uuden yhteyden, siirry <ph name="BEGIN_LINK" />asetuksiin<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>
 <translation id="7040230719604914234">Operaattori</translation>
 <translation id="7058278511608979688">Lopeta ja tallenna</translation>
@@ -401,7 +386,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7271040990581020067">Skanneri on tällä hetkellä käytössä. Yritä myöhemmin uudelleen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Taustakuvakokoelmat</translation>
-<translation id="7292680402155138244">Pitkä viive HTTPS (portti 443) ‑sivustoille</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -459,7 +443,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Pyydä liikennelaskureita</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">DNS:n selvitys ei onnistu</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
 <translation id="8208861521865154048">Edut</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
@@ -471,7 +454,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8302368968391049045">HTTPS-palomuuri</translation>
 <translation id="8318753676953949627">Ei kuvia</translation>
-<translation id="8346875532700229909">Yhdyskäytävään ei saada yhteyttä Android-laitteella</translation>
 <translation id="8347227221149377169">Tulostustyöt</translation>
 <translation id="8352772353338965963">Lisää tili useaan tiliin kirjautumiseen. Kaikkia tilejä, joihin on kirjauduttu sisään, voi käyttää ilman salasanaa. Käytä siis ominaisuutta vain luotetuilla tileillä.</translation>
 <translation id="8364946094152050673">Nimipalvelimet tyhjiä</translation>

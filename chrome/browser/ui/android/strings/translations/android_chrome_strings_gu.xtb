@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ફાઇલ}one{# ફાઇલો}other{# ફાઇલો}}</translation>
 <translation id="2021896219286479412">પૂર્ણ સ્ક્રીન સાઇટ નિયંત્રણો</translation>
 <translation id="2038563949887743358">વિનંતી ડેસ્કટૉપ સાઇટ ચાલુ કરો</translation>
-<translation id="2039379262107991683">રિમાઇન્ડર મેળવવા માટે, તમારી વાંચન સૂચિમાં પેજ ઉમેરો</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> નો ડેટા Chromeમાં પણ છે</translation>
 <translation id="2046634576464120978">નોંધણી કરવામાં નિષ્ફળ થયા</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@
 <translation id="2781151931089541271">1 સેકંડ બાકી</translation>
 <translation id="2788468313014644040">ગ્રૂપ નંબર</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ટૅબ બંધ કરવામાં આવશે</translation>
-<translation id="2801022321632964776">Chromeના એકદમ નવા વર્ઝનમાં તમારી ભાષા મેળવવા માટે અપડેટ કરો</translation>
 <translation id="2805756323405976993">ઍપ</translation>
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">તમારા Chromeના વપરાશ વિશેની માહિતી કે જે કદાચ તમારાથી સંબંધિત ન હોઈ શકે\n\nજો કોઈ કારણસર Chrome ક્રૅશ થાય, તો તેના સંબંધિત ડેટામાં તમારી કેટલીક વ્યક્તિગત માહિતી શામેલ હોઈ શકે છે\n\nજો તમે સિંક કરવાની સુવિધા ચાલુ કરો, તો મેટ્રિકમાં તમે મુલાકાત લીધેલા URL વિશેની માહિતી પણ શામેલ હોઈ શકે છે</translation>
@@ -354,12 +352,10 @@
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromeનું હોમપેજ</translation>
 <translation id="3154863790776532719">નવી સુવિધાઓ અને બહેતર કાર્યપ્રદર્શન</translation>
-<translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="3157842584138209013">વધુ વિકલ્પો બટનની મદદથી તમે કેટલો ડેટા સાચવ્યો તે જુઓ</translation>
 <translation id="3166827708714933426">ટૅબ અને વિંડો શૉર્ટકટ્સ</translation>
 <translation id="316694332262407393">અહીં Chrome પહેલાથી જ ચાલુ છે.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3205824638308738187">લગભગ સમાપ્ત થયું!</translation>
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
 <translation id="3208584281581115441">હમણાં ચેક કરો</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> કાઢી નાખી</translation>
@@ -450,7 +446,6 @@
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> માં બુકમાર્ક કર્યું</translation>
 <translation id="3740525748616366977">આ ડિવાઇસ પર વૉઇસ શોધ ઉપલબ્ધ નથી</translation>
 <translation id="3749259744154402564">અનસપોર્ટેડ</translation>
-<translation id="3771001275138982843">અપડેટ ડાઉનલોડ કરી શકાઈ નથી</translation>
 <translation id="3771033907050503522">છૂપા ટેબ્સ</translation>
 <translation id="3771290962915251154">માતાપિતા યોગ્ય નિયંત્રણો ચાલુ હોવાને કારણે આ સેટિંગ બંધ કરવામાં આવ્યું છે</translation>
 <translation id="3771694256347217732">Googleની સેવાની શરતો</translation>
@@ -790,7 +785,6 @@
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5833984609253377421">લિંક શેર કરો</translation>
 <translation id="5834764604050996579">કોઈ QR કોડને સ્કૅન કરવા માટે, Chromeને તમારા કૅમેરાનો ઉપયોગ કરવા દો</translation>
-<translation id="5836192821815272682">Chrome અપડેટ ડાઉનલોડ કરી રહ્યાં છીએ…</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">થોભાવેલ</translation>
 <translation id="5854512288214985237">Googleને કોઈ આંકડા કે ક્રૅશ રિપોર્ટ મોકલવામાં આવતા નથી</translation>
@@ -862,7 +856,6 @@
 <translation id="6232535412751077445">'ટ્રૅક કરશો નહીં’ ને સક્ષમ કરવાનો અર્થ છે કે તમારા બ્રાઉઝિંગ ટ્રાફિકમાં વિનંતી શામેલ કરવામાં આવશે. કોઈ વેબસાઇટ, વિનંતી પર પ્રતિસાદ કરે છે કે નહીં અને વિનંતીનું અર્થઘટન કેવી રીતે કર્યું તેના પર કોઈ પણ અસર આધારિત હોય છે.
 
 ઉદાહરણ તરીકે, કેટલીક વેબસાઇટ, તમે મુલાકાત લીધેલી બીજા વેબસાઇટ પર આધારિત ન હોય તેવી જાહેરાતો તમને બતાવીને આ વિનંતી પર પ્રતિસાદ આપી શકે છે. ઘણી વેબસાઇટ હજી પણ તમારા બ્રાઉઝિંગ ડેટાને ભેગો કરશે અને ઉપયોગ કરશે — ઉદાહરણ તરીકે સુરક્ષાને બહેતર બનાવવા, કન્ટેન્ટ, જાહેરાતો અને ભલામણો આપવા અને રિપોર્ટિંગ આંકડા જનરેટ કરવા માટે.</translation>
-<translation id="624789221780392884">અપડેટ તૈયાર</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
 <translation id="6277522088822131679">પૃષ્ઠને છાપવામાં સમસ્યા હતી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6278428485366576908">થીમ</translation>
@@ -898,7 +891,6 @@
 <translation id="6411219469806822692">વધુ ઉપર જઈ શકાતું નથી. પેજ પર વધુ ઉપરથી શરૂ કરીને જુઓ.</translation>
 <translation id="6412673304250309937">URLsને Chromeમાં સંગ્રહિત અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
 <translation id="641643625718530986">પ્રિન્ટ…</translation>
-<translation id="6427112570124116297">વેબનો અનુવાદ કરો</translation>
 <translation id="6433501201775827830">તમારું શોધ એંજિન પસંદ કરો</translation>
 <translation id="6434309073475700221">કાઢી નાખો</translation>
 <translation id="6437478888915024427">પેજ વિશે માહિતી</translation>
@@ -1000,7 +992,6 @@
 <translation id="6979737339423435258">હંમેશાં</translation>
 <translation id="6981982820502123353">ઍક્સેસિબિલિટી</translation>
 <translation id="6987047470128880212">છૂપી ટૅબ આ ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
-<translation id="6989267951144302301">ડાઉનલોડ ન કરી શક્યા</translation>
 <translation id="6995899638241819463">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
 <translation id="7001056293070445572">જ્યારે ફાઇલ (<ph name="FILE_SIZE" />)થી મોટી હોય</translation>
 <translation id="7022756207310403729">બ્રાઉઝરમાં ખોલો</translation>
@@ -1032,7 +1023,6 @@
 <translation id="718926126787620637">બુકમાર્ક ફોલ્ડરોની સૂચિ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>
 <translation id="7191430249889272776">ટેબ પૃષ્ઠભૂમિમાં ખોલવામાં આવ્યું છે.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ડાઉનલોડ બાકી}one{# ડાઉનલોડ બાકી}other{# ડાઉનલોડ બાકી}}</translation>
-<translation id="7233236755231902816">વેબ તમારી ભાષામાં જોવા માટે Chromeનું એકદમ નવું વર્ઝન મેળવો</translation>
 <translation id="7242755609445462077">સ્ટાઇલિશ હાઇલાઇટ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">ખાતરી કરો કે <ph name="TARGET_DEVICE_NAME" />માં Chromeમાં સિંક ચાલુ કરેલું છે</translation>
 <translation id="7252076891734325316">તમારા ફોનને કમ્પ્યુટરની નજીક રાખો</translation>
@@ -1055,7 +1045,6 @@
 <translation id="7352651011704765696">કંઈક ખોટું થયું હતું</translation>
 <translation id="7352939065658542140">વીડિયો</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{પસંદ કરેલ 1 આઇટમ શેર કરો}one{પસંદ કરેલ # આઇટમ શેર કરો}other{પસંદ કરેલ # આઇટમ શેર કરો}}</translation>
-<translation id="7356631068872238169">વાંચન સૂચિમાંથી ડિલીટ કરો</translation>
 <translation id="7359002509206457351">ચુકવણી પદ્ધતિઓને ઍક્સેસ કરો</translation>
 <translation id="7375125077091615385">પ્રકાર:</translation>
 <translation id="7376560087009844242">પેજની વધુ ટેક્સ્ટને શામેલ કરીને, 'શોધવા માટે ટચ કરો'માં તમે કદાચ બહેતર પરિણામો જોઈ શકશો. આમાં ફેરફાર કરવા માટે, તમે કોઈપણ સમયે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />ની મુલાકાત લઈ શકો છો.</translation>
@@ -1232,7 +1221,6 @@
 <translation id="829672787777123339">તમારા ડિવાઇસ સાથે કનેક્ટ કરી રહ્યાં છીએ…</translation>
 <translation id="8310344678080805313">માનક ટેબ્સ</translation>
 <translation id="831192587911042850">તમે ફૉલો કરતા હો તે વેબસાઇટની સૂચિમાં હાલની વેબસાઇટને ઉમેરે છે.</translation>
-<translation id="8327155640814342956">બ્રાઉઝિંગનો શ્રેષ્ઠ અનુભવ મેળવવા અપડેટ કરવા માટે Chrome ખોલો</translation>
 <translation id="834313815369870491">સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="8349013245300336738">વપરાયેલ ડેટાના પ્રમાણ અનુસાર સૉર્ટ કરો</translation>
 <translation id="8354977102499939946">તમારા અવાજ વડે ઝડપથી શોધો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, સેટિંગ પર જાઓ.</translation>
@@ -1345,6 +1333,7 @@
 <translation id="8951232171465285730">Chrome એ તમારો <ph name="MEGABYTES" /> MB ડેટા બચાવ્યો</translation>
 <translation id="8955719471735800169">સૌથી ઉપર પાછા જાઓ</translation>
 <translation id="8965591936373831584">બાકી</translation>
+<translation id="8967427617812342790">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> છૂપું અને વધુ <ph name="TAB_COUNT_ONE" /> ટૅબ બંધ કરવામાં આવશે}one{<ph name="INCOGNITO_TAB_COUNT" /> છૂપું અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}other{<ph name="INCOGNITO_TAB_COUNT" /> છૂપા અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}}</translation>
 <translation id="8970887620466824814">કંઈક ખોટું થયું.</translation>
 <translation id="8972098258593396643">ડિફૉલ્ટ ફોલ્ડરમાં ડાઉનલોડ કરીએ?</translation>

@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1147031633655575115">已使用「<ph name="USER" />」的身分登入</translation>
 <translation id="1154984953698510061">查看其他分頁</translation>
-<translation id="1157749421655780457">允許存取位置資訊...</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1172898394251786223">下一個欄位</translation>
 <translation id="1176932207622159128">無法儲存圖片</translation>
@@ -239,7 +238,6 @@
 <translation id="3240426699337459095">連結已複製</translation>
 <translation id="3244271242291266297">月</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /> (第 <ph name="INDEX" /> 項建議，共 <ph name="NUM_SUGGESTIONS" /> 項)</translation>
-<translation id="3261971309013797455">閱讀清單可供離線存取。如要將網頁加入閱讀清單，請依序輕觸 <ph name="SHARE_OPENING_ICON" /> &gt; [<ph name="ADD_TO_READING_LIST_TEXT" />]。</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3277021493514034324">已複製網站網址</translation>
@@ -262,7 +260,6 @@
 <translation id="345565170154308620">管理密碼...</translation>
 <translation id="3469166899695866866">要停止下載嗎？</translation>
 <translation id="3470502288861289375">複製中...</translation>
-<translation id="3472993688462687965">開啟同步處理功能後，系統會根據貴機構允許的設定限制資料存取權。</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478058380795961209">到期月份</translation>
 <translation id="3482959374254649722">正在同步處理您的分頁...</translation>
@@ -374,7 +371,6 @@
 
 您已使用同步通關密語對資料進行加密，請輸入通關密語開始進行同步。</translation>
 <translation id="4689564913179979534">管理付款方式...</translation>
-<translation id="469022783543509074">你已登出</translation>
 <translation id="470966556546083668">請勿開啟同步功能</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">通關密語加密保護的資料不包括 Google Pay 的付款方式和地址。只有知道你通關密語的人，才能讀取加密保護的資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記自己的通關密語，或是想變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6842136130964845393">為確保你可以隨時存取已儲存的密碼，請驗證你的身分</translation>
 <translation id="6851516051005285358">切換為電腦版網站</translation>
-<translation id="6856384753476268833">由貴機構管理。</translation>
 <translation id="6858855187367714033">已掃描</translation>
 <translation id="6859944681507688231">如要掃描 QR 圖碼或信用卡，請在設定中啟用相機。</translation>
 <translation id="6869389390665537774">系統會顯示造訪過的網頁，你也可以將這些網頁從歷史記錄中清除</translation>
@@ -691,7 +686,6 @@
 <translation id="7472734401283673885">公司名稱</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7481312909269577407">往前</translation>
-<translation id="7483467499335917849">使用你目前所在的位置</translation>
 <translation id="750493650310597496">已選取 0 個項目</translation>
 <translation id="7508728395076009983">如要鎖定無痕分頁，請設定 Touch ID、Face ID 或密碼。</translation>
 <translation id="7514365320538308">下載</translation>
@@ -768,6 +762,7 @@
 <translation id="8319076807703933069">新搜尋</translation>
 <translation id="8323906514956095947">輕觸並按住即可查看更多分頁選項</translation>
 <translation id="8328777765163860529">關閉全部</translation>
+<translation id="8378714024927312812">由貴機構管理</translation>
 <translation id="8386068868580335421">重設</translation>
 <translation id="8407669440184693619">找不到這個網站的密碼</translation>
 <translation id="842017693807136194">目前登入身分</translation>
@@ -838,7 +833,6 @@
 <translation id="9081058212938299310">要更新 <ph name="USERNAME" /> 的密碼嗎？</translation>
 <translation id="9083392325882095631">1 個項目</translation>
 <translation id="9083838294503912307">想在所有裝置上保持同步並享有個人化體驗，請開啟同步功能。</translation>
-<translation id="9084677839771512880">貴機構對你能同步處理的內容設有限制。<ph name="BEGIN_LINK" />詳細資料<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Chrome 建議的密碼：</translation>
 <translation id="9094033019050270033">更新密碼</translation>
 <translation id="9100610230175265781">請提供通關密語</translation>

@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall ਦਾ ਪਤਾ ਲੱਗਾ</translation>
 <translation id="1075811647922107217">ਪੰਨੇ ਦਾ ਆਕਾਰ</translation>
-<translation id="110351136513869678">ਸੰਰੂਪਣ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="1119447706177454957">ਅੰਦਰੂਨੀ ਗੜਬੜ</translation>
 <translation id="1124772482545689468">ਵਰਤੋਂਕਾਰ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">ਅਵੈਧ PUK।</translation>
 <translation id="1510238584712386396">ਲੌਂਚਰ</translation>
 <translation id="155865706765934889">ਟਚਪੈਡ</translation>
+<translation id="1572585716423026576">ਵਾਲਪੇਪਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="1621067168122174824">ਚਾਰਜ ਟੈਸਟ ਚਲਾਓ</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="1641857168437328880">ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ (ਇੱਕ ਪਾਸੜ)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1851218745569890714">ਵੀਡੀਓ ਕਾਨਫਰੰਸਿੰਗ</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">IP ਪਤਾ ਹਾਸਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="1887850431809612466">ਹਾਰਡਵੇਅਰ ਸੰਸ਼ੋਧਨ</translation>
-<translation id="1901646112321215184">ਕਿਸੇ ਵੀ DNS ਸਰਵਰ ਦਾ ਸੰਰੂਪਣ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1905710495812624430">ਅਧਿਕਤਮ ਮਨਜ਼ੂਰ ਕੀਤੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਵਧੀਆਂ।</translation>
 <translation id="1908234395526491708">UDP ਬੇਨਤੀ ਦੀਆਂ ਅਸਫਲਤਾਵਾਂ</translation>
 <translation id="1930797645656624981">Chrome OS ਇਨਪੁੱਟ ਵਿਧੀ ਸੇਵਾ</translation>
 <translation id="1947737735496445907">ਪ੍ਰਿੰਟ ਕੀਤੀ ਗਈ</translation>
-<translation id="197386857804679933">ਮੁੜ-ਕਨੈਕਟ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="1979103255016296513">ਪਾਸਵਰਡ ਬਦਲਣਾ ਬਾਕੀ ਹੈ</translation>
 <translation id="1999615961760456652">ਕੈਪਟਿਵ ਪੋਰਟਲ</translation>
 <translation id="2006864819935886708">ਕਨੈਕਟੀਵਿਟੀ</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">ਕਿਸੇ ਹੋਰ ਪੰਨੇ ਨੂੰ ਸਕੈਨਰ 'ਤੇ ਰੱਖੋ</translation>
 <translation id="2872961005593481000">ਸ਼ਟ ਡਾਊਨ</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ਸਕਿੰਟਾਂ ਵਿੱਚ <ph name="RATE" /> ਖਤਮ ਹੋਈ।</translation>
-<translation id="2927511423571448384">Android ਤੋਂ ਫ਼ਾਇਰਵਾਲ ਰਾਹੀਂ HTTP (ਪੋਰਟ 80) ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="3008341117444806826">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="3009958530611748826">ਇੱਥੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਕੋਈ ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ਅਖੀਰਲਾ ਬਿੰਦੂ</translation>
 <translation id="3069085583900247081">ਟੈਸਟ ਅਸਫਲ ਰਿਹਾ</translation>
-<translation id="3076387335132326640">ਤੁਸੀਂ ਖੁੱਲ੍ਹੇ ਨੈੱਟਵਰਕ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="3083667275341675831">ਕਨੈਕਟੀਵਿਟੀ ਤਸ਼ਖੀਸ</translation>
 <translation id="3091839911843451378">ਅਸਫਲ ਰਹੀ - ਪ੍ਰਿੰਟਰ ਰੁਕ ਗਿਆ ਹੈ</translation>
 <translation id="3102119246920354026">ਕੈਚ</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">ਲਗਭਗ <ph name="MIN_REMAINING" /> ਮਿੰਟ ਬਾਕੀ</translation>
 <translation id="3565064564551103223">ਮਨਜ਼ੂਰਸ਼ੁਦਾ IP</translation>
 <translation id="357889014807611375">ਮੀਟਰਡ ਵਾਈ-ਫਾਈ</translation>
-<translation id="3582041541988388905">ਕਿਸੇ <ph name="NETWORK_NAME" /> ਕਨੈਕਸ਼ਨ ਦਾ ਪਤਾ ਨਹੀਂ ਲੱਗਿਆ</translation>
 <translation id="3595596368722241419">ਬੈਟਰੀ ਪੂਰੀ</translation>
 <translation id="360565022852130722">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਕਮਜ਼ੋਰ ਪ੍ਰੋਟੋਕੋਲ WEP 802.1x ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ਟੈਸਟ</translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ਬੈਟਰੀ</translation>
 <translation id="4561801978359312462">ਸਿਮ ਅਣਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4562494484721939086">ਕੋਈ ਸੇਵਾ ਨਹੀਂ</translation>
-<translation id="4567024731344774461">Android ਤੋਂ DNS ਦਾ ਹੱਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="458794348635939462">ਸਾਰੇ ਹੋਸਟਾਂ ਨੂੰ ਹੱਲ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4593212453765072419">ਪ੍ਰੌਕਸੀ ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ਵਿੱਚੋਂ <ph name="PRINTED_PAGE_NUMBER" />। ਪ੍ਰਿੰਟ ਜੌਬ ਨੂੰ ਰੱਦ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="4848429997038228357">ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ ਬਾਕੀ}one{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ ਬਾਕੀ}other{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ}}</translation>
-<translation id="4871137769558798671">ਫ਼ਾਇਰਵਾਲ ਰਾਹੀਂ HTTPS (port 443) ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="4880328057631981605">ਐਕਸੈੱਸ ਪੁਆਇੰਟ ਨਾਮ</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">ਛੇਤੀ ਇੱਕ ਨਵਾਂ ਪਾਸਵਰਡ ਚੁਣੋ</translation>
@@ -290,7 +282,6 @@
 <translation id="5502931783115429516">Android ਨਹੀਂ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ ਘੱਟ ਹੈ, ਪਹੁੰਚ ਬਿੰਦੂ ਦੇ ਨੇੜੇ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ਮੁੜ-ਸਕੈਨ ਕਰੋ</translation>
 <translation id="5669267381087807207">ਸਕਿਰਿਆ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -298,7 +289,6 @@
 <translation id="5691511426247308406">ਪਰਿਵਾਰ</translation>
 <translation id="5701381305118179107">ਕੇਂਦਰ</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ਵਿੱਚੋਂ <ph name="CURRENT_PAGE" /></translation>
-<translation id="5715997777752246116">ਬਿਨਾਂ ਨਾਮ ਵਾਲੇ ਸਰਵਰਾਂ ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="5760715441271661976">ਪੋਰਟਲ ਸਥਿਤੀ</translation>
 <translation id="5784136236926853061">ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="5832805196449965646">ਵਿਅਕਤੀ ਜੋੜੋ</translation>
@@ -342,7 +332,6 @@
 <translation id="636850387210749493">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਐਨਰੌਲਮੈਂਟ</translation>
 <translation id="6379086450106841622">ਟੱਚਸਕ੍ਰੀਨ</translation>
 <translation id="6388847657025262518">ਸਕੈਨਰ ਦਾ ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ ਜਾਮ ਹੋ ਗਿਆ ਹੈ। ਫ਼ੀਡਰ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="6395640744968320699">ਫ਼ਾਇਰਵਾਲ ਰਾਹੀਂ HTTP (ਪੋਰਟ 80) ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="6398765197997659313">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="641081527798843608">ਵਿਸ਼ਾ ਮਿਲਾਨ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -352,7 +341,6 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="649050271426829538">ਬੰਦ ਹੋ ਗਿਆ - ਕਾਗਜ਼ ਫਸ ਗਿਆ ਹੈ</translation>
-<translation id="6498608540383876992">ਗੇਟਵੇ ਨਾਲ ਸੰਪਰਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="6516990319416533844">ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਦਰ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ, ਥੋੜ੍ਹੇ ਸਮੇਂ ਲਈ ਆਪਣੀ ਬੈਟਰੀ ਦੀ ਖਪਤ ਹੋਣ ਦਿਓ</translation>
 <translation id="6517239166834772319">ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="6527081081771465939">ਅਗਿਆਤ ਵਾਈ-ਫਾਈ ਦੀ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਪ੍ਰੋਟੋਕੋਲ</translation>
@@ -362,13 +350,11 @@
 <translation id="6574762126505704998">ਭਰੋ</translation>
 <translation id="6575134580692778371">ਕੌਂਫਿਗਰ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="6596816719288285829">IP ਪਤਾ</translation>
-<translation id="6603230386432466813">ਕੀ ਕਨੈਕਟ ਕਰਨ ਵਿੱਚ ਸਮੱਸਿਆ ਆ ਰਹੀ ਹੈ?</translation>
 <translation id="6618744767048954150">ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="6620487321149975369">ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਉਦੋਂ ਤੱਕ ਇਤਿਹਾਸ ਵਿੱਚ ਦਿਸਣਗੀਆਂ, ਜਦੋਂ ਤੱਕ ਉਹਨਾਂ ਨੂੰ ਹੱਥੀਂ ਨਹੀਂ ਹਟਾਇਆ ਜਾਂਦਾ</translation>
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
 <translation id="6704062477274546131">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
-<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6747215703636344499">ਬੰਦ ਹੋ ਗਿਆ - ਆਊਟਪੁੱਟ ਭਰ ਗਿਆ ਹੈ</translation>
 <translation id="6756731097889387912">ਸਕੈਨਿੰਗ ਨੂੰ ਰੱਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="6766275201586212568">ਅਸਫਲ DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
@@ -381,7 +367,6 @@
 <translation id="6957231940976260713">ਸੇਵਾ ਦਾ ਨਾਮ</translation>
 <translation id="6961170852793647506">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ, ਆਪਣੇ ਦਸਤਾਵੇਜ਼ ਨੂੰ ਸਕੈਨਰ 'ਤੇ ਰੱਖੋ</translation>
 <translation id="6977381486153291903">ਫਰਮਵੇਅਰ ਸੁਧਾਈ</translation>
-<translation id="6982876849933694860">ਨਵੇਂ ਕਨੈਕਸ਼ਨ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ਇਸ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ ਅਤੇ ਇਸਨੂੰ ਦੇਖੇ ਗਏ ਵੈੱਬ-ਪੰਨਿਆਂ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਈਮੇਲ ਸਮੇਤ ਵਰਤੋਂਕਾਰ ਦੀਆਂ ਸਾਰੀਆਂ ਸਰਗਰਮੀਆਂ ਤੱਕ ਪਹੁੰਚ ਹਾਸਲ ਹੈ।</translation>
 <translation id="7040230719604914234">ਓਪਰੇਟਰ</translation>
 <translation id="7058278511608979688">ਸਮਾਪਤ ਕਰੋ ਅਤੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -400,7 +385,6 @@
 <translation id="7271040990581020067">ਫ਼ਿਲਹਾਲ ਸਕੈਨਰ ਵਰਤੋਂ ਵਿੱਚ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ਵਾਲਪੇਪਰ ਸੰਗ੍ਰਹਿ</translation>
-<translation id="7292680402155138244">HTTPS (port 443) ਵੈੱਬਸਾਈਟਾਂ ਲਈ ਉੱਚ ਵਿਲੰਬਤਾ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -458,7 +442,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">DNS ਦਾ ਹੱਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">ਫ਼ਾਇਦੇ</translation>
 <translation id="8230672074305416752">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
@@ -470,7 +453,6 @@
 <translation id="8297006494302853456">ਕਮਜ਼ੋਰ</translation>
 <translation id="8302368968391049045">HTTPS ਫ਼ਾਇਰਵਾਲ</translation>
 <translation id="8318753676953949627">ਕੋਈ ਚਿੱਤਰ ਨਹੀਂ</translation>
-<translation id="8346875532700229909">Android ਤੋਂ ਗੇਟਵੇ ਨਾਲ ਸੰਪਰਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="8347227221149377169">ਪ੍ਰਿੰਟ ਜੌਬਾਂ</translation>
 <translation id="8352772353338965963">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਲਈ ਇੱਕ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ। ਸਾਰੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਖਾਤਿਆਂ ਤੱਕ ਬਿਨਾਂ ਕਿਸੇ ਪਾਸਵਰਡ ਦੇ ਪਹੁੰਚਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਇਸਲਈ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਸਿਰਫ਼ ਭਰੋਸੇਯੋਗ ਖਾਤਿਆਂ ਨਾਲ ਵਰਤੀ ਜਾਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="8364946094152050673">ਖਾਲੀ ਨਾਮ ਸਰਵਰ</translation>

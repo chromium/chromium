@@ -996,6 +996,7 @@
 <translation id="2002109485265116295">Realtid</translation>
 <translation id="200217416291116199">Vi rekommenderar att du säkerhetskopierar filer ifall det inte skulle gå att slutföra uppgraderingen. Linux avslutas när du startar uppgraderingen. Spara öppna filer innan du fortsätter.</translation>
 <translation id="2003130567827682533">Om du vill aktivera data från <ph name="NAME" /> ansluter du först till ett wifi-nätverk</translation>
+<translation id="2004697686368036666">Vissa webbplatsers funktioner kanske inte fungerar</translation>
 <translation id="2005199804247617997">Andra profiler</translation>
 <translation id="2006638907958895361">Öppna länken i <ph name="APP" /></translation>
 <translation id="2007404777272201486">Rapportera ett problem...</translation>
@@ -1138,7 +1139,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2152882202543497059"><ph name="NUMBER" /> foton</translation>
 <translation id="2154484045852737596">Redigera kortet</translation>
 <translation id="2154502158735983655">Läs Chrome OS-enhetsinformation och enhetsdata.</translation>
-<translation id="2154710561487035718">Kopiera webbadress</translation>
 <translation id="2155772377859296191">Ser ut som <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Tjänstefunktion: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Fråga inte igen om att öppna följande filformat i appen:
@@ -2384,6 +2384,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="344630545793878684">Läsa din data på ett antal webbplatser</translation>
 <translation id="3446650212859500694">Filen har känsligt innehåll</translation>
 <translation id="3446827946208017735">Förstå och granska de viktigaste integritetsinställningarna från ett ställe</translation>
+<translation id="3447644283769633681">Blockera alla cookies från tredje part</translation>
 <translation id="3448086340637592206">Ytterligare villkor för Google Chrome och Chrome OS</translation>
 <translation id="3448492834076427715">Uppdatera kontot</translation>
 <translation id="3449393517661170867">Nytt fönster med flikar</translation>
@@ -3177,7 +3178,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="428715201724021596">Ansluter till profilen. Det kan ta några minuter.</translation>
 <translation id="4287157641315808225">Ja, aktivera ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Visa}other{Visa alla}}</translation>
-<translation id="4289372044984810120">Hantera dina konton här. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Översikt</translation>
 <translation id="4289732974614035569">Välj pinkod</translation>
 <translation id="4290791284969893584">När du stänger en sida kanske åtgärder som du startat inte slutförs</translation>
@@ -3253,7 +3253,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4378556263712303865">Enhetsrekvirering</translation>
 <translation id="4379281552162875326">Vill du avinstallera <ph name="APP_NAME" />?</translation>
 <translation id="4380648069038809855">Helskärmsläget aktiverades</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" /> och 1 till konto}other{<ph name="EMAIL" /> och <ph name="EXTRA_ACCOUNTS" /> fler konton}}</translation>
 <translation id="4384312707950789900">Lägg till i prioriterade nätverk</translation>
 <translation id="4384652540891215547">Aktivera tillägget</translation>
 <translation id="4384886290276344300">Ändra inställningarna för tangentbordet</translation>
@@ -3877,7 +3876,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5053962746715621840">Sök på bilden med Google Lens</translation>
 <translation id="5056950756634735043">Ansluter till behållaren</translation>
 <translation id="5057110919553308744">När du klickar på tillägget</translation>
-<translation id="5057403786441168405">Hantera konton där du är inloggad. Webbplatser, appar och tillägg i Chrome och på Google Play kan anpassa din upplevelse utifrån dessa konton beroende på behörighet. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Begränsa inloggning</translation>
 <translation id="5059526285558225588">Välj vad du vill dela</translation>
 <translation id="5060332552815861872">Det finns 1 skrivare att spara.</translation>
@@ -5006,7 +5004,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6284632978374966585">Aktivera mörkt tema</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> brukar inte laddas ned och kan vara skadlig.</translation>
 <translation id="6285770818046456882">Enheten som delar med dig har avbrutit överföringen</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Det finns inga enheter i närheten som delar. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktiveringskoden verifieras. Det kan ta några minuter.</translation>
 <translation id="6291741848715722067">Bekräftelsekod</translation>
@@ -5429,7 +5426,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6750757184909117990">Inaktivera mobilnätverk</translation>
 <translation id="6750946710563435348">Använda ett annat användarnamn</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
-<translation id="6757101664402245801">Webbadressen har kopierats</translation>
 <translation id="6758056191028427665">Berätta hur vi sköter oss.</translation>
 <translation id="6759193508432371551">Återställ standardinställningar</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
@@ -5606,7 +5602,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="693807610556624488">Skrivåtgärden överstiger maxlängden för attributet till: <ph name="DEVICE_NAME" />.</translation>
 <translation id="6938386202199793006">Du har 1 sparad skrivare.</translation>
 <translation id="6938606182859551396">Om du vill få aviseringar från telefonen på <ph name="DEVICE_TYPE" /> följer du anvisningarna på telefonen för att ge aviseringsåtkomst till Google Play-tjänsterna.</translation>
-<translation id="6938789263968032501">Personer</translation>
 <translation id="6939815295902433669">Granska enhetens programvara</translation>
 <translation id="694168622559714949">Administratören har ställt in ett standardspråk som inte kan ändras.</translation>
 <translation id="6941937518557314510">Logga in på <ph name="TOKEN_NAME" /> om du vill autentisera till <ph name="HOST_NAME" /> med ditt certifikat.</translation>
@@ -7651,7 +7646,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9040661932550800571">Vill du uppdatera lösenordet för <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Administratören har inaktiverat åtkomsten till lokala filer på datorn</translation>
 <translation id="904224458472510106">Åtgärden kan inte ångras</translation>
-<translation id="9042893549633094279">Integritet och säkerhet</translation>
 <translation id="904451693890288097">Ange lösenordet för <ph name="DEVICE_NAME" />:</translation>
 <translation id="9044646465488564462">Det gick inte att ansluta till nätverket: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Läslistan har flyttats till den nya sidopanelen. Testa här.</translation>

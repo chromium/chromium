@@ -992,6 +992,7 @@
 <translation id="2002109485265116295">Тухайн агшин</translation>
 <translation id="200217416291116199">Сайжруулалтыг дуусгах боломжгүй тохиолдолд файлуудыг хуулбарлахыг зөвлөдөг. Сайжруулалтыг эхлүүлснээр Linux-г унтраана. Үргэлжлүүлэхээсээ өмнө нээлттэй файлуудыг хадгална уу.</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />'-н датаг идэвхжүүлэхийн тулд эхлээд Wi-Fi сүлжээнд холбогдоно уу</translation>
+<translation id="2004697686368036666">Зарим сайтын онцлогууд ажиллахгүй байж болзошгүй</translation>
 <translation id="2005199804247617997">Бусад профайл</translation>
 <translation id="2006638907958895361">Холбоосыг <ph name="APP" />-д нээх</translation>
 <translation id="2007404777272201486">Асуудлыг тайлагнах...</translation>
@@ -1134,7 +1135,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> зураг</translation>
 <translation id="2154484045852737596">Картыг засах</translation>
 <translation id="2154502158735983655">Chrome OS төхөөрөмжийн мэдээлэл болон төхөөрөмжийн өгөгдлийг унших.</translation>
-<translation id="2154710561487035718">URL-ийг хуул</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> юм шиг харагдаж байна</translation>
 <translation id="2156294658807918600">Үйлчилгээний ажилтан: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Энэ аппад уг файл форматыг нээх үед дахин бүү асуу:
@@ -2078,6 +2078,7 @@
 <translation id="310671807099593501">Сайт bluetooth-г ашиглаж байна</translation>
 <translation id="3108931485517391283">Хүлээн авах боломжгүй</translation>
 <translation id="3109724472072898302">Задарсан</translation>
+<translation id="311214366526552035">Ямартай ч татах</translation>
 <translation id="311394601889664316">Сайтуудад таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг бүү зөвшөөр</translation>
 <translation id="3115147772012638511">Кэш хүлээж байна...</translation>
 <translation id="3115580024857770654">Бүгдийг буулгах</translation>
@@ -2356,6 +2357,7 @@
 <translation id="3429160811076349561">Туршилтын онцлог унтраалттай байна</translation>
 <translation id="3429271624041785769">Веб контентын хэлнүүд</translation>
 <translation id="3429275422858276529">Энэ хуудсыг дараа хялбар олохын тулд тэмдэглэнэ үү</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" />-г татах уу? Үүнийг төхөөрөмжийг ашиглаж байгаа дурын хүн харах боломжтой.</translation>
 <translation id="3432227430032737297">Харуулсан бүх зүйлийг устгах</translation>
 <translation id="3432762828853624962">Хуваалцсан ажилчид</translation>
 <translation id="3433621910545056227">Анхаарна уу! Систем төхөөрөмжийг суурьлуулж чадахгүй байна.</translation>
@@ -2697,6 +2699,7 @@
 <translation id="3777806571986431400">Өргөтгөлийг идэвхжүүлсэн.</translation>
 <translation id="3778152852029592020">Татаж авах ажиллагаа цуцлагдсан байна.</translation>
 <translation id="3778208826288864398">ПИН-г хэт олон удаа буруу оруулсан тул энэ аюулгүй байдлын түлхүүрийг түгжлээ. Та аюулгүй байдлын түлхүүрийг шинэчлэх шаардлагатай.</translation>
+<translation id="3778369586810509692">Энэ файлыг төхөөрөмж дээр хадгалах бөгөөд үүнийг хүн бүр харах боломжтой.</translation>
 <translation id="3778740492972734840">&amp; Хөгжүүлэгч хэрэгслүүд</translation>
 <translation id="3778868487658107119">Асуулт асууж, хийх зүйлийг нь хэлнэ үү. Таны хувийн Google танд туслахад хэзээд бэлэн байна.</translation>
 <translation id="3781742599892759500">Linux-н микрофоны хандалт</translation>
@@ -3172,7 +3175,6 @@
 <translation id="428715201724021596">Профайлд холбогдож байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="4287157641315808225">Тийм, ChromeVox-г идэвхжүүлнэ</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Харуулах}other{Бүгдийг харуулах}}</translation>
-<translation id="4289372044984810120">Бүртгэлүүдээ энд удирдана уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Тойм</translation>
 <translation id="4289732974614035569">ПИН сонгоно уу</translation>
 <translation id="4290791284969893584">Хуудсыг хаасны дараа таны эхлүүлсэн ажлууд дуусахгүй байж болзошгүй</translation>
@@ -3248,7 +3250,6 @@
 <translation id="4378556263712303865">Төхөөрөмжийн шаардлага</translation>
 <translation id="4379281552162875326">"<ph name="APP_NAME" />"-г устгах уу?</translation>
 <translation id="4380648069038809855">Бүтэн дэлгэцэд орсон</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, нэмэлт +1 бүртгэл}other{<ph name="EMAIL" />, нэмэлт +<ph name="EXTRA_ACCOUNTS" /> бүртгэл}}</translation>
 <translation id="4384312707950789900">Сонгосон жагсаалтад нэмэх</translation>
 <translation id="4384652540891215547">Өргөтгөлийг идэвхжүүлэх</translation>
 <translation id="4384886290276344300">Гарын тохиргоог өөрчлөх</translation>
@@ -3872,7 +3873,6 @@
 <translation id="5053962746715621840">Google Дурангаар зураг хайх</translation>
 <translation id="5056950756634735043">Агуулагчтай холбогдож байна</translation>
 <translation id="5057110919553308744">Та өргөтгөл гэснийг товших үед</translation>
-<translation id="5057403786441168405">Нэвтэрсэн бүртгэлүүдээ удирдана уу. Chrome болон Google Play-н вебсайт, апп болон өргөтгөл нь зөвшөөрлөөс хамаарч, таны хэрэглээг өөрчлөхийн тулд эдгээр бүртгэлийг ашиглаж болзошгүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Нэвтрэхийг хязгаарлах</translation>
 <translation id="5059526285558225588">Юу хуваалцахаа сонгоно уу</translation>
 <translation id="5060332552815861872">Хадгалах боломжтой 1 хэвлэгч байна.</translation>
@@ -5001,7 +5001,6 @@
 <translation id="6284632978374966585">Бараан загварыг асаах</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" />-г тогтмол татдаггүй бөгөөд аюултай байж болзошгүй.</translation>
 <translation id="6285770818046456882">Тантай хуваалцаж буй төхөөрөмж шилжүүлгийг цуцалсан</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Ойролцоо хуваалцаж буй боломжтой төхөөрөмж алга. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Идэвхжүүлэх кодыг бататгаж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="6291741848715722067">Баталгаажуулах код</translation>
@@ -5424,7 +5423,6 @@
 <translation id="6750757184909117990">Үүрэн холбоог идэвхгүй болгох</translation>
 <translation id="6750946710563435348">Хэрэглэгчийн өөр нэр ашиглах</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Нууцлал)</translation>
-<translation id="6757101664402245801">URL-г хуулсан</translation>
 <translation id="6758056191028427665">Биднийг хэр ажиллаж байгааг мэдэгдэнэ үү.</translation>
 <translation id="6759193508432371551">Үйлдвэрийн тохиргоонд нь буцааж оруулах</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
@@ -5601,7 +5599,6 @@
 <translation id="693807610556624488">Бичих үйлдэл нь атрибутын уртаас хэтэрсэн байна: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Танд хадгалсан 1 хэвлэгч байна.</translation>
 <translation id="6938606182859551396">Утасныхаа мэдэгдлийг <ph name="DEVICE_TYPE" /> дээрээ хүлээн авахын тулд утсан дээрх зааварчилгааг дагаж, Google Play-н үйлчилгээнүүдэд мэдэгдэлд хандах эрх өгнө үү.</translation>
-<translation id="6938789263968032501">Хүмүүс</translation>
 <translation id="6939815295902433669">Төхөөрөмжийн программ хангамжийг шалгах</translation>
 <translation id="694168622559714949">Танай администратор өөрчлөх боломжгүй өгөгдмөл хэлийг тохируулсан байна.</translation>
 <translation id="6941937518557314510"><ph name="HOST_NAME" />-д гэрчилгээтэйгээ баталгаажуулахын тулд <ph name="TOKEN_NAME" />-д нэвтэрнэ үү.</translation>
@@ -7641,7 +7638,6 @@
 <translation id="9040661932550800571"><ph name="ORIGIN" />-н нууц үгийг шинэчлэх үү?</translation>
 <translation id="9041692268811217999">Таны админ төхөөрөмжийн дотоод файлд хандах тохиргоог идэвхгүй болгосон</translation>
 <translation id="904224458472510106">Энэ үйлдлийг буцаах боломжгүй</translation>
-<translation id="9042893549633094279">Нууцлал, аюулгүй байдал</translation>
 <translation id="904451693890288097">"<ph name="DEVICE_NAME" />"-д нэвтрэх түлхүүрийг оруулна уу. Үүнд:</translation>
 <translation id="9044646465488564462">Сүлжээнд холбогдож чадсангүй: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Таны унших жагсаалтыг шинэ хажуугийн самбар луу зөөсөн. Энд туршиж үзнэ үү.</translation>

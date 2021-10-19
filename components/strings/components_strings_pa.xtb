@@ -124,6 +124,7 @@
           <ph name="LIST_ITEM" />ਤੁਹਾਡੇ ਰੁਜ਼ਗਾਰਦਾਤੇ ਜਾਂ ਸਕੂਲ ਨੂੰ
           <ph name="LIST_ITEM" />ਤੁਹਾਡੇ ਇੰਟਰਨੈੱਟ ਸੇਵਾ ਪ੍ਰਦਾਨਕ ਨੂੰ
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">ਇਸ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="1339601241726513588">ਦਾਖਲਾ ਡੋਮੇਨ:</translation>
 <translation id="1340482604681802745">ਪਿਕਅੱਪ ਪਤਾ</translation>
 <translation id="1346748346194534595">ਸੱਜਾ</translation>
@@ -157,6 +158,7 @@
 <translation id="1428146450423315676">ਸਟੈਕਰ 7</translation>
 <translation id="1428729058023778569">ਤੁਹਾਨੂੰ ਇਹ ਚਿਤਾਵਨੀ ਇਸ ਲਈ ਦਿਸ ਰਹੀ ਹੈ ਕਿਉਂਕਿ ਇਹ ਸਾਈਟ HTTPS ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ। <ph name="BEGIN_LEARN_MORE_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
+<translation id="1432581352905426595">ਖੋਜ ਇੰਜਣਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1436185428532214179">ਸਾਈਟ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਫੋਲਡਰਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1442386063175183758">ਸੱਜੇ ਪੱਲੇ ਵਾਲੀ ਤਹਿ</translation>
 <translation id="1442987760062738829">ਮੋਰੀ</translation>
@@ -374,7 +376,6 @@
 <translation id="2130448033692577677">ਤੁਹਾਡੇ ਵੱਲੋਂ ਨਿਰਧਾਰਤ ਕੀਤੇ ਟੈਮਪਲੇਟ DnsOverHttpsMode ਨੀਤੀ ਸੈੱਟ ਨਾ ਕੀਤੇ ਜਾਣ ਕਾਰਨ ਸ਼ਾਇਦ ਲਾਗੂ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕਦੇ।</translation>
 <translation id="213826338245044447">ਮੋਬਾਈਲ ਬੁੱਕਮਾਰਕਸ</translation>
 <translation id="214556005048008348">ਭੁਗਤਾਨ ਰੱਦ ਕਰੋ</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ਇਸ ਪੰਨੇ ਨੂੰ ਲਿੰਕ ਸਾਂਝਾ ਕਰਨ ਦੇ ਵਿਕਲਪਾਂ ਦੇ ਨਾਲ ਸਾਂਝਾ ਕਰਨ, QR ਕੋਡ ਬਣਾਉਣ, ਕਾਸਟ ਕਰਨ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਕਰਨ ਲਈ Tab ਅਤੇ ਫਿਰ Enter ਦਬਾਓ।</translation>
 <translation id="2148613324460538318">ਕਾਰਡ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2149968176347646218">ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="2154054054215849342">ਸਮਕਾਲੀਕਰਨ ਤੁਹਾਡੀ ਡੋਮੇਨ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
@@ -421,7 +422,6 @@
 <translation id="2293443924986248631">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਉਹਨਾਂ ਕੁਕੀਜ਼ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਜੋ ਵੈੱਬ 'ਤੇ ਤੁਹਾਨੂੰ ਟਰੈਕ ਕਰਦੀਆਂ ਹਨ। ਸ਼ਾਇਦ ਕੁਝ ਸਾਈਟਾਂ 'ਤੇ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਠੀਕ ਤਰੀਕੇ ਨਾਲ ਕੰਮ ਨਾ ਕਰਨ।</translation>
 <translation id="2295290966866883927">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨਿਆਂ ਦੇ URL ਨੂੰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ Google ਕਲਾਊਡ ਜਾਂ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਅਸੁਰੱਖਿਅਤ ਵੈੱਬਸਾਈਟਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਉਹਨਾਂ ਨੂੰ ਸਕੈਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="2297722699537546652">B5 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
-<translation id="2297822946037605517">ਇਹ ਪੰਨਾ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="2298855485018661510">'ਕੁਕੀਜ਼' ਬਟਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ, Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕੁਕੀ ਤਰਜੀਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="2300306941146563769">ਅੱਪਲੋਡ ਨਹੀਂ ਕੀਤੀ ਗਈ</translation>
 <translation id="2310021320168182093">Chou2 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
@@ -499,6 +499,7 @@
 <translation id="2552295903035773204">ਹੁਣ ਤੋਂ ਕਾਰਡਾਂ ਦੀ ਤਸਦੀਕ ਕਰਨ ਲਈ ਸਕ੍ਰੀਨ ਲਾਕ ਵਰਤੋ</translation>
 <translation id="2553853292994445426">ਸੁਰੱਖਿਅਤ DNS ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ। ਤੁਸੀਂ ਸ਼ਾਇਦ ਅਜਿਹੇ ਸੁਰੱਖਿਅਤ DNS ਸਰਵਰ ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਹੋਵੇ, ਜਿਸਦੇ ਕਨੈਕਸ਼ਨ ਠੀਕ ਤਰ੍ਹਾਂ ਨਾਲ ਕੰਮ ਨਹੀਂ ਕਰ ਰਹੇ ਹਨ।</translation>
 <translation id="2556876185419854533">&amp;ਸੰਪਾਦਨ ਅਣਕੀਤਾ ਕਰੋ</translation>
+<translation id="2570734079541893434">ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="257674075312929031">ਸਮੂਹ</translation>
 <translation id="2586657967955657006">ਕਲਿੱਪਬੋਰਡ</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> ਵੱਲੋਂ। ਇਸਨੂੰ ਅਤੇ <ph name="OTHER_ARTICLE_COUNT" /> ਹੋਰ ਖਬਰ ਲੇਖਾਂ ਨੂੰ ਪੜ੍ਹੋ।</translation>
@@ -507,7 +508,6 @@
 <translation id="2595719060046994702">ਇਸ ਡੀਵਾਈਸ ਅਤੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਿਸੇ ਕੰਪਨੀ ਜਾਂ ਹੋਰ ਸੰਸਥਾ ਵੱਲੋਂ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="2596415276201385844">ਇੱਕ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਸਥਾਪਿਤ ਕਰਨ ਲਈ, ਤੁਹਾਡੀ ਘੜੀ ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਸੈਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।To ਅਜਿਹਾ ਇਸਲਈ ਕਿਉਂਕਿ ਸਰਟੀਫਿਕੇਟ, ਜਿਸਨੂੰ ਵੈਬਸਾਈਟਾਂ ਖੁਦ ਦੀ ਪਛਾਣ ਕਰਨ ਲਈ ਵਰਤਦੀਆਂ ਹਨ, ਕੇਵਲ ਖ਼ਾਸ ਮਿਆਦ ਲਈ ਪ੍ਰਮਾਣਿਕ ਹੁੰਦੇ ਹਨ। ਕਿਉਂਕਿ ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਦੀ ਘੜੀ ਦਾ ਸਮਾਂ ਗ਼ਲਤ ਹੈ, Chrome ਇਹਨਾਂ ਸਰਟੀਫਿਕੇਟਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
 <translation id="2597378329261239068">ਇਹ ਦਸਤਾਵੇਜ਼ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ।</translation>
-<translation id="2597833655590727265">'Chrome ਦੀ ਦਿੱਖ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਦਿੱਖ ਨੂੰ ਥੀਮਾਂ ਨਾਲ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="2609632851001447353">ਵੈਰੀਏਸ਼ੰਸ</translation>
 <translation id="2610561535971892504">ਕਾਪੀ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2618023639789766142">C10 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
@@ -597,7 +597,6 @@
 <translation id="2934466151127459956">ਸਰਕਾਰੀ ਚਿੱਠੀ</translation>
 <translation id="2941952326391522266">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ <ph name="DOMAIN2" /> ਵੱਲੋਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2943895734390379394">ਅੱਪਲੋਡ ਦਾ ਸਮਾਂ:</translation>
-<translation id="2948017612172418360">'ਸਾਈਟ ਖੋਜ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, ਸਾਈਟ ਖੋਜ ਅਤੇ ਆਪਣੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="2948083400971632585">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਪੰਨੇ ਤੋਂ ਇੱਕ ਕਨੈਕਸ਼ਨ ਲਈ ਸੰਰੂਪਣ ਕੀਤੀਆਂ ਕੋਈ ਵੀ ਪ੍ਰੌਕਸੀਆਂ ਨੂੰ ਅਸਮਰੱਥ ਬਣਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2949183777371959169">ਇਸ ਲਈ ਅਣਡਿੱਠ ਕੀਤੀ ਗਈ ਕਿਉਂਕਿ ਮਸ਼ੀਨ Chrome ਬ੍ਰਾਊਜ਼ਰ ਕਲਾਊਡ ਪ੍ਰਬੰਧਨ ਨਾਲ ਦਰਜ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2951588413176968965">ਮੇਰਾ ਮੇਲਬਾਕਸ</translation>
@@ -1013,7 +1012,6 @@
 <translation id="4275830172053184480">ਆਪਣੀ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="4277028893293644418">ਪਾਸਵਰਡ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="4278390842282768270">ਆਗਿਆ ਦਿੱਤੀ</translation>
-<translation id="4286047936834273847">ਸਾਈਟ ਖੋਜ ਅਤੇ ਆਪਣੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ਇਸ ਕਾਰਡ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ}one{ਇਸ ਕਾਰਡ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ}other{ਇਹਨਾਂ ਕਾਰਡਾਂ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ}}</translation>
 <translation id="4287885627794386150">ਪਰਖ ਲਈ ਯੋਗ ਹੈ, ਪਰ ਕਿਰਿਆਸ਼ੀਲ ਨਹੀਂ ਹੈ</translation>
 <translation id="4297502707443874121">ਪੰਨਾ <ph name="THUMBNAIL_PAGE" /> ਲਈ ਲਘੂ-ਚਿੱਤਰ</translation>
@@ -1053,7 +1051,6 @@
 <translation id="4372948949327679948">ਸੰਭਾਵਿਤ <ph name="VALUE_TYPE" /> ਵੈਲਯੂ।</translation>
 <translation id="4377125064752653719">ਤੁਸੀਂ <ph name="DOMAIN" />, ਤੱਕ ਪਹੁੰਚਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਹੈ, ਪਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਜੋ ਸਰਵਰ ਨੇ ਪੇਸ਼ ਕੀਤਾ ਹੈ, ਉਹ ਜਾਰੀਕਰਤਾ ਵੱਲੋਂ ਰੱਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਇਸਦਾ ਮਤਲਬ ਇਹ ਹੈ ਕਿ ਸਰਵਰ ਵੱਲੋਂ ਪੇਸ਼ ਕੀਤੇ ਗਏ ਸੁਰੱਖਿਆ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ 'ਤੇ ਬਿਲਕੁਲ ਵੀ ਭਰੋਸਾ ਨਹੀਂ ਕੀਤਾ ਜਾਣਾ ਚਾਹੀਦਾ। ਸ਼ਾਇਦ ਤੁਸੀਂ ਇੱਕ ਹਮਲਾਵਰ ਨਾਲ ਸੰਚਾਰ ਕਰ ਰਹੇ ਹੋ।</translation>
 <translation id="4378154925671717803">ਫ਼ੋਨ</translation>
-<translation id="4389652395741935834">ਲਿੰਕ ਨੂੰ ਸਾਂਝਾ ਕਰਕੇ ਇਸ ਪੰਨੇ ਨੂੰ ਸਾਂਝਾ ਕਰੋ, QR ਕੋਡ ਬਣਾਓ, ਕਾਸਟ ਕਰੋ, ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ।</translation>
 <translation id="4390472908992056574">ਬ੍ਰਿਮ</translation>
 <translation id="4406883609789734330">ਲਾਈਵ ਸੁਰਖੀਆਂ</translation>
 <translation id="4406896451731180161">ਖੋਜ ਨਤੀਜੇ</translation>
@@ -1320,6 +1317,7 @@
 <translation id="5230733896359313003">ਸ਼ਿਪਿੰਗ ਪਤਾ</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
 <translation id="5250209940322997802">"ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ"</translation>
 <translation id="52517543715119994">Chrome ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="5251803541071282808">ਕਲਾਊਡ</translation>
@@ -1636,7 +1634,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ਪ੍ਰੌਕਸੀ, ਫ਼ਾਇਰਵਾਲ, ਅਤੇ ਸੁਰੱਖਿਅਤ DNS ਦੇ ਸੰਰੂਪਣ ਦੀ ਜਾਂਚ ਕਰਨਾ<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">ਖੱਬੇ ਦੋ ਪਿੰਨਾਂ</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' ਲਈ 1 ਨਤੀਜਾ</translation>
-<translation id="6377404662019220017">'ਇਸ ਪੰਨੇ ਨੂੰ ਸਾਂਝਾ ਕਰੋ' ਬਟਨ, ਇਸ ਪੰਨੇ ਨੂੰ ਲਿੰਕ ਸਾਂਝਾ ਕਰਨ ਦੇ ਵਿਕਲਪਾਂ ਦੇ ਨਾਲ ਸਾਂਝਾ ਕਰਨ, QR ਕੋਡ ਬਣਾਉਣ, ਕਾਸਟ ਕਰਨ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਕਰਕੇ ਸੰਭਾਵਿਤ ਤੌਰ 'ਤੇ ਖਰਚਾ ਪੈ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 ਹੋਰ ਸੁਝਾਅ}one{# ਹੋਰ ਸੁਝਾਅ}other{# ਹੋਰ ਸੁਝਾਅ}}</translation>
@@ -1857,7 +1854,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}}</translation>
 <translation id="7153618581592392745">ਲਵਿੰਡਰ</translation>
 <translation id="7156870133441232244">ਸਰਵਰ, TLS 1.2 ਜਾਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
-<translation id="716939258255825483">'Dino Run ਖੇਡੋ' ਬਟਨ, Chrome ਵਿੱਚ Dino Run ਗੇਮ ਖੇਡਣ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="717330890047184534">GAIA ਆਈ.ਡੀ.:</translation>
 <translation id="7173920250514487165">ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਗੁਪਤ ਸਮੱਗਰੀ ਕੈਪਚਰ ਕਰੋ</translation>
 <translation id="7174545416324379297">ਵਿਲੀਨ ਕੀਤਾ ਗਿਆ</translation>
@@ -1880,7 +1876,6 @@
 <translation id="7220786058474068424">ਪ੍ਰਕਿਰਿਆ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="7221855153210829124">ਸੂਚਨਾਵਾਂ ਦਿਖਾਓ</translation>
 <translation id="722454870747268814">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
-<translation id="7231476387708735839">ਸਾਈਟ ਖੋਜ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7233592378249864828">ਪੁਸ਼ਟੀਕਰਨ ਸ਼ੀਟ ਨੂੰ ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="7238585580608191973">SHA-256 ਫਿੰਗਰਪ੍ਰਿੰਟ</translation>
 <translation id="7240120331469437312">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵਿਸ਼ਾ ਵਿਕਲਪਕ ਨਾਮ</translation>
@@ -2476,6 +2471,7 @@
 <translation id="9213433120051936369">ਦਿੱਖ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="9215416866750762878">ਕੋਈ ਐਪਲੀਕੇਸ਼ਨ Chrome ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਇਸ ਸਾਈਟ ਨਾਲ ਕਨੈਕਟ ਹੋਣ ਤੋਂ ਰੋਕ ਰਹੀ ਹੈ</translation>
 <translation id="9219103736887031265">ਚਿੱਤਰ</translation>
+<translation id="922152298093051471">Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ਫ਼ਾਰਮ ਹਟਾਓ</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2508,5 +2504,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay ਤੋਂ</translation>
-<translation id="998677222109959694">Chrome ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 </translationbundle>

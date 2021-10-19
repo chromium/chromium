@@ -124,6 +124,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
           <ph name="LIST_ITEM" />Ihren Arbeitgeber oder Ihre Bildungseinrichtung
           <ph name="LIST_ITEM" />Ihren Internetanbieter
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">Tab teilen</translation>
 <translation id="1339601241726513588">Registrierungsdomain:</translation>
 <translation id="1340482604681802745">Abholadresse</translation>
 <translation id="1346748346194534595">Rechts</translation>
@@ -157,6 +158,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1428146450423315676">Stapelfach 7</translation>
 <translation id="1428729058023778569">Sie sehen diese Warnung, weil diese Website kein HTTPS unterstützt. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Drucken</translation>
+<translation id="1432581352905426595">Suchmaschinen verwalten</translation>
 <translation id="1436185428532214179">Darf nachfragen, wenn sie Dateien oder Ordner auf meinem Gerät bearbeiten möchte</translation>
 <translation id="1442386063175183758">Rechtsseitige Fensterfaltung</translation>
 <translation id="1442987760062738829">Lochen</translation>
@@ -374,7 +376,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2130448033692577677">Die von Ihnen angegebenen Vorlagen können nicht angewendet werden, weil die Richtlinie "DnsOverHttpsMode" nicht konfiguriert ist.</translation>
 <translation id="213826338245044447">Mobile Lesezeichen</translation>
 <translation id="214556005048008348">Zahlung abbrechen</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um diese Seite zu teilen und dabei u. a. Optionen zum Teilen des Links, zum Erstellen eines QR-Codes und zum Streamen zu haben.</translation>
 <translation id="2148613324460538318">Karte hinzufügen</translation>
 <translation id="2149968176347646218">Verbindung ist nicht sicher</translation>
 <translation id="2154054054215849342">Die Synchronisierung ist für Ihre Domain nicht verfügbar</translation>
@@ -421,7 +422,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2293443924986248631">Wenn diese Funktion aktiviert ist, können Websites keine Cookies nutzen, die Sie durch das Web verfolgen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="2295290966866883927">URLs von Seiten, die Sie besuchen, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie werden beispielsweise gescannt, um unsichere Websites zu identifizieren.</translation>
 <translation id="2297722699537546652">B5 (Umschlag)</translation>
-<translation id="2297822946037605517">Seite teilen</translation>
 <translation id="2298855485018661510">Schaltfläche zum Verwalten von Cookies – drücken Sie die Eingabetaste, um Ihre Cookie-Einstellungen in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="2300306941146563769">Nicht hochgeladen</translation>
 <translation id="2310021320168182093">Chou2 (Umschlag)</translation>
@@ -499,6 +499,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2552295903035773204">Von jetzt an Displaysperre verwenden, um Karten zu bestätigen</translation>
 <translation id="2553853292994445426">Prüfen Sie die Einstellungen für sichere DNS-Abfragen. Sie haben möglicherweise einen sicheren DNS-Server konfiguriert, zu dem keine Verbindung aufgebaut werden kann.</translation>
 <translation id="2556876185419854533">&amp;Bearbeiten rückgängig machen</translation>
+<translation id="2570734079541893434">Einstellungen verwalten</translation>
 <translation id="257674075312929031">Gruppe</translation>
 <translation id="2586657967955657006">Zwischenablage</translation>
 <translation id="2587730715158995865">Von <ph name="ARTICLE_PUBLISHER" />. Diese Meldung und <ph name="OTHER_ARTICLE_COUNT" /> weitere Meldungen lesen.</translation>
@@ -507,7 +508,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2595719060046994702">Dieses Gerät und dieses Konto werden nicht von einem Unternehmen oder einer anderen Organisation verwaltet.</translation>
 <translation id="2596415276201385844">Zum Aufbau einer sicheren Verbindung muss die Uhrzeit richtig eingestellt sein. Der Grund hierfür ist, dass Websites sich mithilfe von Zertifikaten identifizieren, die nur für einen bestimmten Zeitraum gelten. Da die Uhrzeit Ihres Geräts falsch ist, kann Chrome diese Zertifikate nicht bestätigen.</translation>
 <translation id="2597378329261239068">Dieses Dokument ist passwortgeschützt. Geben Sie ein Passwort ein.</translation>
-<translation id="2597833655590727265">Schaltfläche zum Verwalten des Erscheinungsbilds von Chrome – drücken Sie die Eingabetaste, um das Erscheinungsbild Ihres Browsers mit Designs anzupassen.</translation>
 <translation id="2609632851001447353">Varianten</translation>
 <translation id="2610561535971892504">Zum Kopieren klicken</translation>
 <translation id="2618023639789766142">C10 (Umschlag)</translation>
@@ -597,7 +597,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat stammt von <ph name="DOMAIN2" />. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der Ihre Verbindung abfängt.</translation>
 <translation id="2943895734390379394">Uhrzeit des Uploads:</translation>
-<translation id="2948017612172418360">Schaltfläche zum Verwalten der Website-Suche – drücken Sie die Eingabetaste, um die Website-Suche und Ihre Standardsuchmaschine zu verwalten</translation>
 <translation id="2948083400971632585">Sie können alle für eine Verbindung konfigurierten Proxys auf der Seite "Einstellungen" deaktivieren.</translation>
 <translation id="2949183777371959169">Ignoriert, da der Computer nicht bei der Chrome-Verwaltung über die Cloud angemeldet ist.</translation>
 <translation id="2951588413176968965">Meine Ablage</translation>
@@ -1014,7 +1013,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4275830172053184480">Gerät neu starten</translation>
 <translation id="4277028893293644418">Passwort zurücksetzen</translation>
 <translation id="4278390842282768270">Zugelassen</translation>
-<translation id="4286047936834273847">Website-Suche und Standardsuchmaschine verwalten</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Diese Karte wurde in Ihrem Google-Konto gespeichert}other{Diese Karten wurden in Ihrem Google-Konto gespeichert}}</translation>
 <translation id="4287885627794386150">Testversion möglich, aber nicht aktiv</translation>
 <translation id="4297502707443874121">Miniaturansicht für Seite <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1054,7 +1052,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4372948949327679948">Erwarteter <ph name="VALUE_TYPE" />-Wert</translation>
 <translation id="4377125064752653719">Sie haben versucht, auf <ph name="DOMAIN" /> zuzugreifen, das vom Server übermittelte Zertifikat wurde jedoch vom entsprechenden Aussteller widerrufen. Das bedeutet, dass die vom Server übermittelten Sicherheitsinformationen nicht vertrauenswürdig sind. Möglicherweise kommunizieren Sie mit einem Hacker.</translation>
 <translation id="4378154925671717803">Telefon</translation>
-<translation id="4389652395741935834">Diese Seite über den Link, über einen QR-Code, über Streamen usw. teilen.</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4406883609789734330">Automatische Untertitel</translation>
 <translation id="4406896451731180161">Suchergebnisse</translation>
@@ -1321,6 +1318,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5230733896359313003">Versandadresse</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">Schließen</translation>
 <translation id="5250209940322997802">"Mit Netzwerk verbinden"</translation>
 <translation id="52517543715119994">Informationen zu Chrome-Funktionen</translation>
 <translation id="5251803541071282808">Cloud</translation>
@@ -1638,7 +1636,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proxy- und Firewallkonfiguration sowie Konfiguration sicherer DNS-Abfragen überprüfen<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Zwei Heftklammern links</translation>
 <translation id="6377268785556383139">1 Ergebnis für "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="6377404662019220017">Schaltfläche zum Teilen dieser Seite – drücken Sie die Eingabetaste, um diese Seite zu teilen und dabei u. a. Optionen zum Teilen des Links, zum Erstellen eines QR-Codes und zum Streamen zu haben.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Warnung vor möglichen Kosten.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 weiterer Vorschlag}other{# weitere Vorschläge}}</translation>
@@ -1859,7 +1856,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">Der Server sollte auf TLS 1.2 oder höher aktualisiert werden.</translation>
-<translation id="716939258255825483">Schaltfläche „Chrome Dino spielen“ – drücken Sie die Eingabetaste, um Chrome Dino zu spielen</translation>
 <translation id="717330890047184534">GAIA-ID: </translation>
 <translation id="7173920250514487165">Vertrauliche Inhalte auf dem Bildschirm aufnehmen</translation>
 <translation id="7174545416324379297">Zusammengeführt</translation>
@@ -1882,7 +1878,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="7220786058474068424">Verarbeitung läuft</translation>
 <translation id="7221855153210829124">Benachrichtigungen anzeigen</translation>
 <translation id="722454870747268814">Neuer Inkognito-Tab</translation>
-<translation id="7231476387708735839">Website-Suche verwalten</translation>
 <translation id="7233592378249864828">Bestätigungsblatt drucken</translation>
 <translation id="7238585580608191973">SHA-256-Fingerabdruck</translation>
 <translation id="7240120331469437312">Alternativer Name für den Zertifikatsinhaber</translation>
@@ -2480,6 +2475,7 @@ Weitere Details:
 <translation id="9213433120051936369">Layout anpassen</translation>
 <translation id="9215416866750762878">Eine Anwendung verhindert, dass Chrome eine sichere Internetverbindung zu dieser Website herstellt</translation>
 <translation id="9219103736887031265">Bilder</translation>
+<translation id="922152298093051471">Chrome anpassen</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">Formular leeren</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2512,5 +2508,4 @@ Weitere Details:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Aus Google Pay</translation>
-<translation id="998677222109959694">Chrome-Einstellungen verwalten</translation>
 </translationbundle>

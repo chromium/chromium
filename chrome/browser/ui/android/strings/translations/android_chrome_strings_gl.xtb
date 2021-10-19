@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
 <translation id="2021896219286479412">Controis de pantalla completa</translation>
 <translation id="2038563949887743358">Activa a opción Ver como ordenador</translation>
-<translation id="2039379262107991683">Engade páxinas á túa lista de lectura para recibir un recordatorio</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> tamén ten datos en Chrome</translation>
 <translation id="2046634576464120978">Produciuse un erro ao rexistrar o teléfono</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2781151931089541271">Queda 1 segundo</translation>
 <translation id="2788468313014644040">Número do grupo</translation>
 <translation id="2800066122460699237">Pecharase a pestana <ph name="TAB_TITLE" /></translation>
-<translation id="2801022321632964776">Descarga a última versión de Chrome para poder navegar no teu idioma</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">Información sobre o uso que fas de Chrome que non pode vincularse contigo\n\nDatos importantes relacionados con fallos pouco comúns de Chrome entre os que poida incluírse algunha información persoal\n\nSe activas a sincronización, nas métricas tamén podería reflectirse información sobre os URL que visitas</translation>
@@ -354,12 +352,10 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Páxina de inicio de Chrome</translation>
 <translation id="3154863790776532719">Novas funcións e melloras no rendemento</translation>
-<translation id="3157387275655328056">Engadir á lista de lectura</translation>
 <translation id="3157842584138209013">Comproba a cantidade de datos que aforraches a través do botón Máis opcións</translation>
 <translation id="3166827708714933426">Atallos da ventá e da pestana</translation>
 <translation id="316694332262407393">Chrome xa se está executando aquí.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3205824638308738187">Xa case está!</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3208584281581115441">Comprobar agora</translation>
 <translation id="3211426585530211793">Eliminouse <ph name="ITEM_TITLE" /></translation>
@@ -405,6 +401,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3398320232533725830">Abre o xestor de marcadores</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3429160811076349561">As funcións de proba están desactivadas</translation>
+<translation id="3435465986463792564">Tes varias ventás? Podes xestionalas desde aquí</translation>
 <translation id="3440975416244667276">Mantén premidas as palabras para ver información relevante</translation>
 <translation id="3443221991560634068">Volver cargar a páxina actual</translation>
 <translation id="3444179773590444986">Queres compartir comentarios sobre o tema escuro para os sitios?</translation>
@@ -450,7 +447,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3739899004075612870">Engadiuse aos marcadores en <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">A busca por voz non está dispoñible neste dispositivo</translation>
 <translation id="3749259744154402564">Acción non admitida</translation>
-<translation id="3771001275138982843">Non se puido descargar a actualización</translation>
 <translation id="3771033907050503522">Pestanas de incógnito</translation>
 <translation id="3771290962915251154">Esta opción de configuración está desactivada porque os controis parentais están activados</translation>
 <translation id="3771694256347217732">Condicións de servizo de Google</translation>
@@ -790,7 +786,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="583281660410589416">Descoñecido</translation>
 <translation id="5833984609253377421">Compartir ligazón</translation>
 <translation id="5834764604050996579">Para escanear un código QR, permite que Chrome utilice a cámara</translation>
-<translation id="5836192821815272682">Descargando actualización de Chrome…</translation>
 <translation id="5839058148541733625">O dinosauro de Chrome</translation>
 <translation id="5853623416121554550">en pausa</translation>
 <translation id="5854512288214985237">Non se envían estatísticas nin informes de fallos a Google</translation>
@@ -862,7 +857,6 @@ As probas de Privacy Sandbox aínda se atopan nunha fase de desenvolvemento acti
 <translation id="6232535412751077445">Se activas a opción Do Not Track, incluirase unha solicitude no teu tráfico de navegación. O efecto producido depende de se o sitio web responde á solicitude e da interpretación desta.
 
 Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche anuncios que non estean baseados noutros sitios web que visitases. Moitos sitios web seguirán recompilando e utilizando os teus datos de navegación para, por exemplo, mellorar a seguranza, fornecer contido, anuncios e recomendacións e para crear estatísticas de informes.</translation>
-<translation id="624789221780392884">Actualización lista</translation>
 <translation id="6264376385120300461">Descargar de todos os modos</translation>
 <translation id="6277522088822131679">Produciuse un problema ao imprimir a páxina. Téntao de novo.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -898,7 +892,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6411219469806822692">Non se pode seguir subindo. Proba a comezar desde máis arriba na páxina.</translation>
 <translation id="6412673304250309937">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="641643625718530986">Imprimir...</translation>
-<translation id="6427112570124116297">Traduce a Web</translation>
 <translation id="6433501201775827830">Selecciona o motor de busca</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6437478888915024427">Información sobre a páxina</translation>
@@ -1000,7 +993,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6979737339423435258">Desde sempre</translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
 <translation id="6987047470128880212">O modo de incógnito non está dispoñible neste dispositivo</translation>
-<translation id="6989267951144302301">Non se puido descargar</translation>
 <translation id="6995899638241819463">Avisarte se os teus contrasinais están en risco debido a unha violación da seguranza dos datos</translation>
 <translation id="7001056293070445572">Este ficheiro é grande (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Abrir no navegador</translation>
@@ -1032,7 +1024,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="718926126787620637">A lista de cartafoles de marcadores está aberta completamente</translation>
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendente}other{# descargas pendentes}}</translation>
-<translation id="7233236755231902816">Para ver a Web no teu idioma, descarga a última versión de Chrome</translation>
 <translation id="7242755609445462077">Nota estilizada (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Asegúrate de que a sincronización de Chrome do dispositivo <ph name="TARGET_DEVICE_NAME" /> estea activada</translation>
 <translation id="7252076891734325316">Coloca o teléfono preto do ordenador</translation>
@@ -1055,7 +1046,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7352651011704765696">Produciuse un erro</translation>
 <translation id="7352939065658542140">VÍDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Compartir 1 elemento seleccionado}other{Compartir # elementos seleccionados}}</translation>
-<translation id="7356631068872238169">Quitar da lista de lectura</translation>
 <translation id="7359002509206457351">Acceso a métodos de pago</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Se inclúes máis texto dunha páxina cando utilizas a función Tocar para buscar, poderías obter mellores resultados. Sempre podes ir á <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> para cambiar esta preferencia.</translation>
@@ -1232,7 +1222,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="829672787777123339">Conectando co teu dispositivo…</translation>
 <translation id="8310344678080805313">Pestanas estándar</translation>
 <translation id="831192587911042850">Engade o sitio web actual á lista de sitios web que estás seguindo.</translation>
-<translation id="8327155640814342956">Para desfrutar da mellor experiencia de navegación, actualiza Chrome</translation>
 <translation id="834313815369870491">Sitios que non quero que se traduzan nunca</translation>
 <translation id="8349013245300336738">Ordenar por cantidade de datos usados</translation>
 <translation id="8354977102499939946">Fai buscas rapidamente coa voz. Para editar este atallo, vai a Configuración.</translation>
@@ -1345,6 +1334,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8951232171465285730">Chrome permitiuche aforrar <ph name="MEGABYTES" /> MB</translation>
 <translation id="8955719471735800169">Volver ao principio</translation>
 <translation id="8965591936373831584">pendente</translation>
+<translation id="8967427617812342790">Engadir á lista de lectura</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_ONE" /> pestana máis}other{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_MANY" /> pestanas máis}}</translation>
 <translation id="8970887620466824814">Produciuse un erro.</translation>
 <translation id="8972098258593396643">Queres gardar a descarga no cartafol predeterminado?</translation>

@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">Выдаліць існуючыя даныя.</translation>
 <translation id="1147031633655575115">Вы ўвайшлі як <ph name="USER" /></translation>
 <translation id="1154984953698510061">Паглядзець іншыя ўкладкі</translation>
-<translation id="1157749421655780457">Дазволіць выкарыстанне месцазнаходжання...</translation>
 <translation id="1165039591588034296">Памылка</translation>
 <translation id="1172898394251786223">Наступнае поле</translation>
 <translation id="1176932207622159128">Не ўдалося захаваць відарыс</translation>
@@ -239,7 +238,6 @@
 <translation id="3240426699337459095">Спасылка скапіравана</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> з <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Спіс на прагляд даступны ў пазасеткавым рэжыме. Каб дадаць старонку ў спіс на прагляд, націсніце значок <ph name="SHARE_OPENING_ICON" />, а затым "<ph name="ADD_TO_READING_LIST_TEXT" />".</translation>
 <translation id="3268451620468152448">Адкрытыя ўкладкі</translation>
 <translation id="3272527697863656322">Скасаваць</translation>
 <translation id="3277021493514034324">Адрас сайта скапіраваны</translation>
@@ -262,7 +260,6 @@
 <translation id="345565170154308620">Кіраваць паролямі...</translation>
 <translation id="3469166899695866866">Спыніць спампоўку?</translation>
 <translation id="3470502288861289375">Ідзе капіраванне...</translation>
-<translation id="3472993688462687965">Пасля ўключэння сінхранізацыі ў дачыненні да даных могуць дзейнічаць абмежаванні, зададзеныя вашай арганізацыяй.</translation>
 <translation id="3474624961160222204">Працягнуць як <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Месяц заканчэння дзеяння</translation>
 <translation id="3482959374254649722">Ідзе сінхранізацыя ўкладак...</translation>
@@ -374,7 +371,6 @@
 
 Вашы даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="4689564913179979534">Наладзіць спосабы аплаты...</translation>
-<translation id="469022783543509074">Вы выйшлі з сістэмы</translation>
 <translation id="470966556546083668">Не ўключаць сінхранізацыю</translation>
 <translation id="473775607612524610">Абнавіць</translation>
 <translation id="4747097190499141774">Шыфраванне з дапамогай фразы-пароля не прымяняецца для спосабаў аплаты і адрасоў з Google Pay. Доступ да зашыфраваных даных маюць толькі карыстальнікі, якія ведаюць фразу-пароль. Яна не адпраўляецца і не захоўваецца ў Google. Калі вы забудзеце фразу-пароль або захочаце змяніць гэту наладу, вам спатрэбіцца скінуць параметры сінхранізацыі. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -624,7 +620,6 @@
 <translation id="6831043979455480757">Перакласці</translation>
 <translation id="6842136130964845393">Каб не страціць доступ да сваіх захаваных пароляў, пацвердзіце сваю асобу</translation>
 <translation id="6851516051005285358">Запытаць версію для настольнага камп'ютара</translation>
-<translation id="6856384753476268833">Пад кіраваннем вашай арганізацыі.</translation>
 <translation id="6858855187367714033">Сканіраваны</translation>
 <translation id="6859944681507688231">Каб сканіраваць QR-код ці крэдытную картку, уключыце ў наладах камеру.</translation>
 <translation id="6869389390665537774">Вы можаце прагледзець наведаныя старонкі або выдаліць іх з гісторыі</translation>
@@ -692,7 +687,6 @@
 <translation id="7472734401283673885">Назва кампаніі</translation>
 <translation id="7473891865547856676">Не, дзякуй</translation>
 <translation id="7481312909269577407">Далей</translation>
-<translation id="7483467499335917849">Выкарыстанне вашага бягучага месцазнаходжання</translation>
 <translation id="750493650310597496">Выбрана: 0</translation>
 <translation id="7508728395076009983">Каб блакіраваць свае ўкладкі ў рэжыме інкогніта, наладзьце Touch ID, Face ID або код доступу.</translation>
 <translation id="7514365320538308">Спампаваць</translation>
@@ -769,6 +763,7 @@
 <translation id="8319076807703933069">Новы пошук</translation>
 <translation id="8323906514956095947">Каб адкрыць дадатковыя параметры ўкладкі, націсніце і ўтрымлівайце гэту кнопку</translation>
 <translation id="8328777765163860529">Закрыць усе</translation>
+<translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="8386068868580335421">Скінуць</translation>
 <translation id="8407669440184693619">Паролі для гэтага сайта не знойдзены</translation>
 <translation id="842017693807136194">Вы ўвайшлі праз</translation>
@@ -839,7 +834,6 @@
 <translation id="9081058212938299310">Змяніць пароль для карыстальніка <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 элемент</translation>
 <translation id="9083838294503912307">Уключыце сінхранізацыю, каб сінхранізаваць некалькі прылад і персаналізаваць іх.</translation>
-<translation id="9084677839771512880">Тыпы даных для сінхранізацыі вызначаюцца вашай арганізацыяй. <ph name="BEGIN_LINK" />Падрабязныя звесткі<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Прапанаваны браўзерам Chrome пароль:</translation>
 <translation id="9094033019050270033">Абнавіць пароль</translation>
 <translation id="9100610230175265781">Патрабуецца фраза-пароль</translation>

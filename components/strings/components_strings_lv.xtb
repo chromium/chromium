@@ -125,6 +125,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
           <ph name="LIST_ITEM" />jūsu darba devējam vai mācību iestādei;
           <ph name="LIST_ITEM" />jūsu interneta pakalpojumu sniedzējam.
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">Koplietot šo cilni</translation>
 <translation id="1339601241726513588">Reģistrācijas domēns:</translation>
 <translation id="1340482604681802745">Saņemšanas adrese</translation>
 <translation id="1346748346194534595">Pa labi</translation>
@@ -158,6 +159,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1428146450423315676">7. izvades vieta</translation>
 <translation id="1428729058023778569">Šis brīdinājums tiek rādīts, jo šajā vietnē netiek atbalstīts HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="1430915738399379752">Drukāt</translation>
+<translation id="1432581352905426595">Pārvaldīt meklējumprogrammas</translation>
 <translation id="1436185428532214179">Var pieprasīt atļauju rediģēt failus un mapes jūsu ierīcē</translation>
 <translation id="1442386063175183758">Abpusējs locījums pa labi</translation>
 <translation id="1442987760062738829">Caurums</translation>
@@ -379,7 +381,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2130448033692577677">Norādītās veidnes, iespējams, netiks lietotas, jo nav iestatīta politika DnsOverHttpsMode.</translation>
 <translation id="213826338245044447">Mobilās grāmatzīmes</translation>
 <translation id="214556005048008348">Atcelt maksājumu</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai kopīgotu šo lapu, nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu. Varēsiet kopīgot saiti, izveidot QR kodu, sākt apraidi un izmantot citus kopīgošanas veidus.</translation>
 <translation id="2148613324460538318">Pievienot karti</translation>
 <translation id="2149968176347646218">Savienojums nav drošs</translation>
 <translation id="2154054054215849342">Sinhronizācija jūsu domēnam nav pieejama.</translation>
@@ -426,7 +427,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2293443924986248631">Ja šis iestatījums ir ieslēgts, vietnes nevar izmantot sīkfailus, lai izsekotu jūsu darbības tīmeklī. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="2295290966866883927">Jūsu apmeklēto lapu vietrāži URL tiek nosūtīti uz pakalpojumu Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, šie vietrāži var tikt pārmeklēti, lai konstatētu nedrošas vietnes.</translation>
 <translation id="2297722699537546652">B5 (aploksne)</translation>
-<translation id="2297822946037605517">Kopīgot šo lapu</translation>
 <translation id="2298855485018661510">Poga “Pārvaldīt sīkfailus”: nospiediet ievadīšanas taustiņu, lai Chrome iestatījumos pārvaldītu savas sīkfailu preferences.</translation>
 <translation id="2300306941146563769">Nav augšupielādēts</translation>
 <translation id="2310021320168182093">Chou2 (aploksne)</translation>
@@ -504,6 +504,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2552295903035773204">Turpmāk izmantot ekrāna bloķēšanu, lai ātrāk apstiprinātu kartes</translation>
 <translation id="2553853292994445426">Pārbaudiet droša DNS servera iestatījumus. Iespējams, esat konfigurējis drošu DNS serveri, ar kuru neizdodas izveidot savienojumu.</translation>
 <translation id="2556876185419854533">&amp;Labojuma atsaukšana</translation>
+<translation id="2570734079541893434">Pārvaldīt iestatījumus</translation>
 <translation id="257674075312929031">Grupa</translation>
 <translation id="2586657967955657006">Starpliktuve</translation>
 <translation id="2587730715158995865">No: <ph name="ARTICLE_PUBLISHER" />. Lasiet šo un vēl <ph name="OTHER_ARTICLE_COUNT" /> rakstus.</translation>
@@ -512,7 +513,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2595719060046994702">Šī ierīce un konts netiek pārvaldīts uzņēmumā vai citā organizācijā.</translation>
 <translation id="2596415276201385844">Lai izveidotu drošu savienojumu, ir jāiestata pareizs pulksteņa laiks. Tas ir nepieciešams, jo sertifikāti, kurus vietnes izmanto, lai tiktu identificētas, ir derīgi tikai noteiktos laika periodos. Tā kā jūsu ierīces pulkstenis nav pareizi iestatīts, Chrome nevar verificēt šos sertifikātus.</translation>
 <translation id="2597378329261239068">Šis dokuments ir aizsargāts ar paroli. Lūdzu, ievadiet paroli.</translation>
-<translation id="2597833655590727265">Poga Pārvaldīt Chrome izskatu. Lai pielāgotu pārlūka izskatu, izmantojot motīvus, nospiediet taustiņu Enter.</translation>
 <translation id="2609632851001447353">Varianti</translation>
 <translation id="2610561535971892504">Noklikšķināt, lai kopētu</translation>
 <translation id="2618023639789766142">C10 (aploksne)</translation>
@@ -602,7 +602,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts ir saistīts ar domēnu <ph name="DOMAIN2" />. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="2943895734390379394">Augšupielādes laiks:</translation>
-<translation id="2948017612172418360">Poga vietņu meklēšanas pārvaldībai, lai pārvaldītu meklēšanu vietnēs un noklusējuma meklētājprogrammu, nospiediet taustiņu Enter</translation>
 <translation id="2948083400971632585">Iestatījumu lapā varat atspējot jebkurus starpniekserverus, kas konfigurēti savienojuma izveidei.</translation>
 <translation id="2949183777371959169">Tiek ignorēta, jo iekārta nav reģistrēta pārlūka Chrome mākoņa pārvaldībā.</translation>
 <translation id="2951588413176968965">Mana pastkaste</translation>
@@ -1025,7 +1024,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4275830172053184480">Ierīces restartēšana</translation>
 <translation id="4277028893293644418">Atiestatīt paroli</translation>
 <translation id="4278390842282768270">Atļauts</translation>
-<translation id="4286047936834273847">Pārvaldīt meklēšanu vietnēs un noklusējuma meklētājprogrammu</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Šī karte tika saglabāta jūsu Google kontā}zero{Šīs kartes tika saglabātas jūsu Google kontā}one{Šīs kartes tika saglabātas jūsu Google kontā}other{Šīs kartes tika saglabātas jūsu Google kontā}}</translation>
 <translation id="4287885627794386150">Varat piedalīties izmēģinājumā, taču tas nav aktīvs</translation>
 <translation id="4297502707443874121">Lappuses numur <ph name="THUMBNAIL_PAGE" /> sīktēls</translation>
@@ -1065,7 +1063,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4372948949327679948">Tika gaidīta vērtība <ph name="VALUE_TYPE" />.</translation>
 <translation id="4377125064752653719">Jūs mēģinājāt sasniegt <ph name="DOMAIN" />, bet izdevējs atsauca servera uzrādīto sertifikātu. Tas nozīmē, ka servera uzrādītie drošības akreditācijas dati itin nemaz nav uzticami. Iespējams, jūs sazināties ar uzbrucēju.</translation>
 <translation id="4378154925671717803">Tālrunis</translation>
-<translation id="4389652395741935834">Kopīgot šo lapu, piemēram, kopīgot saiti, izveidot QR kodu, sākt apraidi vai izmantotu citu kopīgošanas veidu.</translation>
 <translation id="4390472908992056574">Apmale</translation>
 <translation id="4406883609789734330">Subtitri reāllaikā</translation>
 <translation id="4406896451731180161">meklēšanas rezultāti</translation>
@@ -1332,6 +1329,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5230733896359313003">Piegādes adrese</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">Nerādīt</translation>
 <translation id="5250209940322997802">“Izveidojiet savienojumu ar tīklu”</translation>
 <translation id="52517543715119994">Uzzināt vairāk par Chrome funkcijām</translation>
 <translation id="5251803541071282808">Mākonis</translation>
@@ -1649,7 +1647,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Pārbaudiet starpniekserveri, ugunsmūri un droša DNS servera konfigurāciju<ph name="END_LINK" />.</translation>
 <translation id="6366710531182496394">Divkāršs skavojums kreisajā pusē</translation>
 <translation id="6377268785556383139">1 rezultāts vaicājumam “<ph name="SEARCH_TEXT" />”</translation>
-<translation id="6377404662019220017">Poga Kopīgot šo lapu. Lai kopīgotu šo lapu, piemēram, kopīgotu saiti, izveidotu QR kodu, sāktu apraidi vai izmantotu citu kopīgošanas veidu, nospiediet taustiņu Enter.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Iespējams, tiks pieprasīta maksa.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{vēl 1 ieteikums}zero{vēl # ieteikumi}one{vēl # ieteikums}other{vēl # ieteikumi}}</translation>
@@ -1870,7 +1867,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}zero{<ph name="PAYMENT_METHOD_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavandas krāsa</translation>
 <translation id="7156870133441232244">Serveris ir jājaunina uz protokolu TLS 1.2 vai jaunāku versiju.</translation>
-<translation id="716939258255825483">Poga Spēlēt dinozaura skriešanas spēli. Lai pārlūkā Chrome spēlētu dinozaura skriešanas spēli, nospiediet taustiņu Enter.</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
 <translation id="7173920250514487165">Konfidenciāla satura tveršana jūsu ekrānā</translation>
 <translation id="7174545416324379297">Apvienota</translation>
@@ -1893,7 +1889,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7220786058474068424">Notiek apstrāde</translation>
 <translation id="7221855153210829124">Rādīt paziņojumus</translation>
 <translation id="722454870747268814">Jauna inkognito cilne</translation>
-<translation id="7231476387708735839">Pārvaldīt meklēšanu vietnēs</translation>
 <translation id="7233592378249864828">Drukāšanas apstiprinājuma lapa</translation>
 <translation id="7238585580608191973">SHA-256 pirkstu nospiedums</translation>
 <translation id="7240120331469437312">Sertifikāta subjekta cits nosaukums</translation>
@@ -2490,6 +2485,7 @@ Papildu informācija:
 <translation id="9213433120051936369">Izskata pielāgošana</translation>
 <translation id="9215416866750762878">Lietojumprogrammas darbības dēļ pārlūkā Chrome nevar izveidot drošu savienojumu ar šo vietni</translation>
 <translation id="9219103736887031265">Attēli</translation>
+<translation id="922152298093051471">Pielāgot pārlūkprogrammu Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">NOTĪRĪT VEIDLAPU</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2522,5 +2518,4 @@ Papildu informācija:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">No pakalpojuma Google Pay</translation>
-<translation id="998677222109959694">Pārvaldīt Chrome iestatījumus</translation>
 </translationbundle>

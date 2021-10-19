@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">Удалить сохраненные данные</translation>
 <translation id="1147031633655575115">Вы вошли как <ph name="USER" /></translation>
 <translation id="1154984953698510061">Посмотреть другие вкладки</translation>
-<translation id="1157749421655780457">Разрешить передачу геоданных</translation>
 <translation id="1165039591588034296">Ошибка</translation>
 <translation id="1172898394251786223">Следующее поле</translation>
 <translation id="1176932207622159128">Не удалось сохранить</translation>
@@ -239,7 +238,6 @@
 <translation id="3240426699337459095">Готово</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> из <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Список для чтения доступен без подключения к интернету. Чтобы добавить в него страницу, нажмите <ph name="SHARE_OPENING_ICON" />, а затем "<ph name="ADD_TO_READING_LIST_TEXT" />".</translation>
 <translation id="3268451620468152448">Вкладки</translation>
 <translation id="3272527697863656322">Отмена</translation>
 <translation id="3277021493514034324">Адрес сайта скопирован</translation>
@@ -262,7 +260,6 @@
 <translation id="345565170154308620">Настроить пароли</translation>
 <translation id="3469166899695866866">Остановить скачивание?</translation>
 <translation id="3470502288861289375">Копирование…</translation>
-<translation id="3472993688462687965">Организация может ограничивать список типов данных, доступных для синхронизации.</translation>
 <translation id="3474624961160222204">Продолжить как <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Месяц</translation>
 <translation id="3482959374254649722">Синхронизация вкладок...</translation>
@@ -374,7 +371,6 @@
 
 Данные зашифрованы с помощью кодовой фразы. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="4689564913179979534">Настроить способы оплаты</translation>
-<translation id="469022783543509074">Вы вышли из аккаунта</translation>
 <translation id="470966556546083668">Не включать синхронизацию</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4747097190499141774">Шифрование с помощью кодовой фразы не применяется к способам оплаты и адресам из Google Pay. Доступ к зашифрованным данным будет только у тех, кто знает кодовую фразу. Она не пересылается и не хранится в Google. Если вы забудете фразу или решите изменить эту настройку, вам придется сбросить параметры синхронизации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@
 <translation id="6831043979455480757">Перевести</translation>
 <translation id="6842136130964845393">Чтобы всегда иметь доступ к сохраненным паролям, подтвердите свою личность.</translation>
 <translation id="6851516051005285358">Версия для ПК</translation>
-<translation id="6856384753476268833">Управляется вашей организацией.</translation>
 <translation id="6858855187367714033">Просканировано</translation>
 <translation id="6859944681507688231">Чтобы сканировать QR-код или банковскую карту, разрешите приложению доступ к камере.</translation>
 <translation id="6869389390665537774">Вы можете посмотреть посещенные страницы или удалить их из истории.</translation>
@@ -691,7 +686,6 @@
 <translation id="7472734401283673885">Название компании</translation>
 <translation id="7473891865547856676">Пропустить</translation>
 <translation id="7481312909269577407">Вперед</translation>
-<translation id="7483467499335917849">Использование данных о текущем местоположении</translation>
 <translation id="750493650310597496">Закладки не выбраны</translation>
 <translation id="7508728395076009983">Чтобы закреплять вкладки инкогнито, настройте Touch ID, Face ID или код доступа.</translation>
 <translation id="7514365320538308">Скачать</translation>
@@ -768,6 +762,7 @@
 <translation id="8319076807703933069">Новый поиск</translation>
 <translation id="8323906514956095947">Нажмите и удерживайте, чтобы открыть список дополнительных действий с вкладками</translation>
 <translation id="8328777765163860529">Закрыть все</translation>
+<translation id="8378714024927312812">Управляется вашей организацией</translation>
 <translation id="8386068868580335421">Сбросить</translation>
 <translation id="8407669440184693619">Паролей для этого сайта не найдено</translation>
 <translation id="842017693807136194">Выполнен вход через</translation>
@@ -838,7 +833,6 @@
 <translation id="9081058212938299310">Обновить пароль для аккаунта <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">Закладок: 1</translation>
 <translation id="9083838294503912307">Чтобы синхронизировать и персонализировать данные на всех устройствах, включите синхронизацию.</translation>
-<translation id="9084677839771512880">Ваша организация разрешила синхронизировать не все данные. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Сгенерированный в Chrome пароль:</translation>
 <translation id="9094033019050270033">Обновить пароль</translation>
 <translation id="9100610230175265781">Необходима кодовая фраза</translation>

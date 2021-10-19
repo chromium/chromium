@@ -984,6 +984,7 @@
 <translation id="2002109485265116295">Realtime</translation>
 <translation id="200217416291116199">Het wordt aanbevolen om een back-up van je bestanden te maken voor het geval de upgrade niet kan worden afgerond. Als je de upgrade start, wordt Linux afgesloten. Sla geopende bestanden op voordat je verdergaat.</translation>
 <translation id="2003130567827682533">Als je data van '<ph name="NAME" />' wilt activeren, maak je eerst verbinding met een wifi-netwerk</translation>
+<translation id="2004697686368036666">Functies op bepaalde sites werken misschien niet</translation>
 <translation id="2005199804247617997">Andere profielen</translation>
 <translation id="2006638907958895361">Link openen in <ph name="APP" /></translation>
 <translation id="2007404777272201486">Een probleem melden...</translation>
@@ -1126,7 +1127,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2154484045852737596">Pas bewerken</translation>
 <translation id="2154502158735983655">Chrome OS-apparaatinformatie en apparaatgegevens lezen.</translation>
-<translation id="2154710561487035718">URL kopiëren</translation>
 <translation id="2155772377859296191">Ziet eruit als <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Niet opnieuw vragen als je deze bestandsindeling in deze app opent:
@@ -2368,6 +2368,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="344630545793878684">Je gegevens voor een aantal websites lezen</translation>
 <translation id="3446650212859500694">Dit bestand bevat gevoelige content</translation>
 <translation id="3446827946208017735">Je kunt op 1 plaats inzicht krijgen in de meest essentiële privacyinstellingen en ze controleren</translation>
+<translation id="3447644283769633681">Alle cookies van derden blokkeren</translation>
 <translation id="3448086340637592206">Aanvullende voorwaarden van Google Chrome en Chrome OS</translation>
 <translation id="3448492834076427715">Account updaten</translation>
 <translation id="3449393517661170867">Nieuw venster met tabbladen</translation>
@@ -3161,7 +3162,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="428715201724021596">Verbinding maken met profiel. Dit kan een paar minuten duren.</translation>
 <translation id="4287157641315808225">Ja, ChromeVox activeren</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Weergeven}other{Alles tonen}}</translation>
-<translation id="4289372044984810120">Je kunt hier je accounts beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Overzicht</translation>
 <translation id="4289732974614035569">Een pincode kiezen</translation>
 <translation id="4290791284969893584">Nadat je een pagina hebt gesloten, kan het zijn dat gestarte taken niet worden afgerond</translation>
@@ -3237,7 +3237,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4378556263712303865">Apparaataanvraag</translation>
 <translation id="4379281552162875326">'<ph name="APP_NAME" />' verwijderen?</translation>
 <translation id="4380648069038809855">Volledig scherm geopend</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, +1 ander account}other{<ph name="EMAIL" />, +<ph name="EXTRA_ACCOUNTS" /> andere accounts}}</translation>
 <translation id="4384312707950789900">Toevoegen aan voorkeursnetwerken</translation>
 <translation id="4384652540891215547">Activeer de extensie</translation>
 <translation id="4384886290276344300">Toetsenbordinstellingen wijzigen</translation>
@@ -3858,7 +3857,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5053962746715621840">Afbeelding zoeken met Google Lens</translation>
 <translation id="5056950756634735043">Verbinding maken met de container</translation>
 <translation id="5057110919553308744">Wanneer je op de extensie klikt</translation>
-<translation id="5057403786441168405">Beheer je ingelogde accounts. Websites, apps en extensies in Chrome en Google Play kunnen deze accounts gebruiken om de functionaliteit te personaliseren, afhankelijk van de rechten. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Inloggen beperken</translation>
 <translation id="5059526285558225588">Kies wat je wilt delen</translation>
 <translation id="5060332552815861872">Er kan 1 printer worden opgeslagen.</translation>
@@ -4987,7 +4985,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6284632978374966585">Donker thema aanzetten</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> wordt niet vaak gedownload en kan gevaarlijk zijn.</translation>
 <translation id="6285770818046456882">Het apparaat dat met je deelt, heeft de overdracht geannuleerd</translation>
-<translation id="6286744355355996781">LDS</translation>
 <translation id="6290613030083731160">Geen beschikbare apparaten die delen in de buurt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Activeringscode verifiëren. Dit kan een paar minuten duren.</translation>
 <translation id="6291741848715722067">Bevestigingscode</translation>
@@ -5410,7 +5407,6 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6750757184909117990">Mobiel netwerk uitzetten</translation>
 <translation id="6750946710563435348">Andere gebruikersnaam gebruiken</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
-<translation id="6757101664402245801">URL gekopieerd</translation>
 <translation id="6758056191028427665">Laat ons weten of we goed bezig zijn.</translation>
 <translation id="6759193508432371551">Terugzetten op fabrieksinstellingen</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
@@ -5587,7 +5583,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="693807610556624488">Schrijfbewerking overschrijdt de maximumlengte van het kenmerk voor: <ph name="DEVICE_NAME" />.</translation>
 <translation id="6938386202199793006">Je hebt 1 opgeslagen printer.</translation>
 <translation id="6938606182859551396">Als je meldingen van je telefoon op je <ph name="DEVICE_TYPE" /> wilt krijgen, volg je de instructies op je telefoon om Google Play-services toegang te geven tot meldingen.</translation>
-<translation id="6938789263968032501">Mensen</translation>
 <translation id="6939815295902433669">Apparaatsoftware bekijken</translation>
 <translation id="694168622559714949">Je beheerder heeft een standaardtaal ingesteld die je niet kunt aanpassen.</translation>
 <translation id="6941937518557314510">Log in bij <ph name="TOKEN_NAME" /> om uzelf bij <ph name="HOST_NAME" /> te verifiëren met je certificaat.</translation>
@@ -7631,7 +7626,6 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="9040661932550800571">Wachtwoord updaten voor <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Toegang tot lokale bestanden op je computer is ingetrokken door je beheerder</translation>
 <translation id="904224458472510106">Deze bewerking kan niet ongedaan worden gemaakt</translation>
-<translation id="9042893549633094279">Privacy en beveiliging</translation>
 <translation id="904451693890288097">Voer de toegangscode voor '<ph name="DEVICE_NAME" />' in:</translation>
 <translation id="9044646465488564462">Kan geen verbinding maken met netwerk: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Je leeslijst is verplaatst naar het nieuwe zijvenster. Probeer het hier.</translation>

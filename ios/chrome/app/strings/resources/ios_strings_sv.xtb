@@ -25,7 +25,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1145536944570833626">Radera befintlig data.</translation>
 <translation id="1147031633655575115">Inloggad som <ph name="USER" /></translation>
 <translation id="1154984953698510061">Se andra flikar</translation>
-<translation id="1157749421655780457">Tillåt plats …</translation>
 <translation id="1165039591588034296">Fel</translation>
 <translation id="1172898394251786223">Nästa fält</translation>
 <translation id="1176932207622159128">Bilden sparades inte</translation>
@@ -239,7 +238,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3240426699337459095">Länken har kopierats</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Läslistan är tillgänglig offline. Om du vill lägga till en sida i läslistan trycker du på <ph name="SHARE_OPENING_ICON" /> följt av <ph name="ADD_TO_READING_LIST_TEXT" />.</translation>
 <translation id="3268451620468152448">Öppna flikar</translation>
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3277021493514034324">Webbplatsens webbadress har kopierats</translation>
@@ -262,7 +260,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="345565170154308620">Hantera lösenord …</translation>
 <translation id="3469166899695866866">Vill du avbryta nedladdningen?</translation>
 <translation id="3470502288861289375">Kopierar ...</translation>
-<translation id="3472993688462687965">När du aktiverar synkronisering kan data begränsas av vad organisationen har tillåtit.</translation>
 <translation id="3474624961160222204">Fortsätt som <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Sista giltighetsmånad</translation>
 <translation id="3482959374254649722">Flikarna synkroniseras ...</translation>
@@ -374,7 +371,6 @@ Följ stegen nedan:</translation>
 
 Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vill starta synkroniseringen.</translation>
 <translation id="4689564913179979534">Hantera betalningsmetoder …</translation>
-<translation id="469022783543509074">Du har loggats ut</translation>
 <translation id="470966556546083668">Aktivera inte synkronisering</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4747097190499141774">Betalningsmetoder och adresser från Google Pay omfattas inte av kryptering med lösenfras. Endast personer som har ditt lösenord kan läsa dina krypterade uppgifter. Lösenfrasen skickas inte till och sparas inte av Google. Om du glömmer lösenfrasen måste du återställa synkroniseringen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6842136130964845393">Verifiera din identitet så att du alltid får åtkomst till dina sparade lösenord</translation>
 <translation id="6851516051005285358">Använd skrivbordsversion</translation>
-<translation id="6856384753476268833">Hanteras av organisationen.</translation>
 <translation id="6858855187367714033">Skannat</translation>
 <translation id="6859944681507688231">Aktivera kameran i inställningarna om du vill skanna en QR-kod eller ett kreditkort.</translation>
 <translation id="6869389390665537774">Du kan se sidor som du har besökt eller ta bort dem från historiken</translation>
@@ -691,7 +686,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7472734401283673885">Företagets namn</translation>
 <translation id="7473891865547856676">Nej tack</translation>
 <translation id="7481312909269577407">Framåt</translation>
-<translation id="7483467499335917849">Använd din aktuella plats</translation>
 <translation id="750493650310597496">0 valda</translation>
 <translation id="7508728395076009983">Konfigurera Touch ID, Face ID eller ett lösenord om du vill låsa flikar i inkognitoläget.</translation>
 <translation id="7514365320538308">Ladda ned</translation>
@@ -768,6 +762,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8319076807703933069">Ny sökning</translation>
 <translation id="8323906514956095947">Tryck länge för fler flikalternatv</translation>
 <translation id="8328777765163860529">Stäng alla</translation>
+<translation id="8378714024927312812">Hanteras av organisationen</translation>
 <translation id="8386068868580335421">Återställ</translation>
 <translation id="8407669440184693619">Inga lösenord hittades för webbplatsen</translation>
 <translation id="842017693807136194">Inloggad med</translation>
@@ -838,7 +833,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9081058212938299310">Vill du uppdatera lösenordet för <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 objekt</translation>
 <translation id="9083838294503912307">Aktivera synkronisering om du vill synkronisera och anpassa alla dina enheter.</translation>
-<translation id="9084677839771512880">Organisationen begränsar vad du kan synkronisera. <ph name="BEGIN_LINK" />Detaljer<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Föreslaget lösenord:</translation>
 <translation id="9094033019050270033">Uppdatera lösenordet</translation>
 <translation id="9100610230175265781">Lösenfras krävs</translation>

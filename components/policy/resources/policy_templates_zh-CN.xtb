@@ -78,16 +78,6 @@
 <translation id="1069489575852947981">如果此政策已启用或未设置，系统将设置设备本地帐号以实现零延迟的自动登录。<ph name="PRODUCT_OS_NAME" />支持利用键盘快捷键 Ctrl + Alt + S 绕过自动登录并显示登录屏幕。
 
       如果此政策已停用，用户则无法绕过零延迟的自动登录（若已配置）。</translation>
-<translation id="1070656322814001059">Chrome 将阻止导航到沙盒化 iframe 内的外部协议。请参阅 https://chromestatus.com/features/5680742077038592。
-
-      如果此政策设为 True，Chrome 将会阻止此类导航。
-
-      如果此政策设为 False，Chrome 将无法阻止此类导航。
-
-      此政策默认设为 True：安全功能已启用。
-
-      受这些限制影响的企业可以使用此政策暂时解除相应限制。
-      </translation>
 <translation id="1073983258515362346">报告与设备背光有关的信息。
 
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
@@ -2257,9 +2247,6 @@
 
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 便会使用默认库名称。</translation>
 <translation id="3652670852519271837">允许网站通过 File System API 请求用户授予对文件和目录的读取权限</translation>
-<translation id="3653234084868565720">控制 <ph name="PRODUCT_OS_NAME" />是否允许创建新的用户帐号。如果此政策设为 false，尚无帐号的用户将无法登录。
-
-      如果此政策设为 true 或未配置，只要 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 不阻止登录，用户便能创建新的用户帐号。</translation>
 <translation id="3653237928288822292">默认搜索服务提供商图标</translation>
 <translation id="3654906736796256792">允许音频沙盒运行</translation>
 <translation id="3659542706175323490">如果此政策已启用，“接入交流电时启动”功能会保持开启状态（如果相应设备支持的话）。借助“接入交流电时启动”，在连接电源线后，系统可从关机/休眠状态重启。

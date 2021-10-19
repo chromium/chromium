@@ -52,7 +52,6 @@
 <translation id="5171868502429358653">Sign In to Chromium</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
 <translation id="5308226104666789935">Chromium can't check for updates</translation>
-<translation id="5324242752415821224">Your organisation requires you to sign in to use Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Set Chromium as default?</translation>
 <translation id="5521125884468363740">To see your tabs from wherever you use Chromium, sign in and turn on sync</translation>
 <translation id="5573014823074921752">Chromium tip. For more tab options, touch and hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.</translation>
@@ -73,7 +72,6 @@
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
 <translation id="6752854822223394465">Your organisation is setting up Chromium…</translation>
 <translation id="6820823224820483452">Chromium couldn't check all passwords. Try again tomorrow.</translation>
-<translation id="6827294685447036764">If you allow Chromium to know your location, Chromium sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.</translation>
 <translation id="7018284295775193585">Chromium can't update</translation>
 <translation id="7045244423563602563">Make Chromium your own</translation>
 <translation id="7099326575020694068">Chromium can't use your camera in Split View mode</translation>

@@ -996,6 +996,7 @@
 <translation id="2002109485265116295">Intyds</translation>
 <translation id="200217416291116199">Dit word aanbeveel dat lêers gerugsteun word ingeval die opgradering nie voltooi kan word nie. As die opgradering begin word, sal dit veroorsaak dat Linux afgeskakel word. Stoor asseblief oop lêers voordat jy voortgaan.</translation>
 <translation id="2003130567827682533">Om "<ph name="NAME" />"-data te aktiveer, koppel eers aan 'n Wi-Fi-netwerk</translation>
+<translation id="2004697686368036666">Kenmerke op sommige webwerwe sal dalk nie werk nie</translation>
 <translation id="2005199804247617997">Ander profiele</translation>
 <translation id="2006638907958895361">Maak skakel in <ph name="APP" /> oop</translation>
 <translation id="2007404777272201486">Gee 'n probleem aan …</translation>
@@ -1138,7 +1139,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2154484045852737596">Wysig kaart</translation>
 <translation id="2154502158735983655">Lees Chrome-bedryfstelselinligting en -toesteldata.</translation>
-<translation id="2154710561487035718">Kopieer URL</translation>
 <translation id="2155772377859296191">Lyk soos <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Dienswerker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Moenie weer vra wanneer hierdie lêerformaat in hierdie program oopgemaak word nie:
@@ -3177,7 +3177,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="428715201724021596">Koppel tans aan profiel. Dit kan 'n paar minute neem.</translation>
 <translation id="4287157641315808225">Ja, aktiveer ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Wys}other{Wys almal}}</translation>
-<translation id="4289372044984810120">Bestuur jou rekeninge hier. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Oorsig</translation>
 <translation id="4289732974614035569">Kies 'n PIN</translation>
 <translation id="4290791284969893584">Take wat jy begin het, sal dalk nie klaarmaak as jy 'n bladsy toemaak nie</translation>
@@ -3253,7 +3252,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4378556263712303865">Toestelrekwisisie</translation>
 <translation id="4379281552162875326">Deïnstalleer "<ph name="APP_NAME" />"?</translation>
 <translation id="4380648069038809855">Het na volskerm gegaan</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, + nog 1 rekening}other{<ph name="EMAIL" />, + nog <ph name="EXTRA_ACCOUNTS" /> rekeninge}}</translation>
 <translation id="4384312707950789900">Voeg by voorkeure</translation>
 <translation id="4384652540891215547">Aktiveer die uitbreiding</translation>
 <translation id="4384886290276344300">Verander sleutelbordinstellings</translation>
@@ -3877,7 +3875,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5053962746715621840">Soek prent met Google Lens</translation>
 <translation id="5056950756634735043">Koppel tans aan die houer</translation>
 <translation id="5057110919553308744">Wanneer jy die uitbreiding klik</translation>
-<translation id="5057403786441168405">Bestuur jou aangemelde rekeninge. Webwerwe, programme en uitbreidings in Chrome en Google Play kan hierdie rekeninge gebruik om jou ervaring te pasmaak, na gelang van jou toestemmings. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Beperk aanmelding</translation>
 <translation id="5059526285558225588">Kies wat om te deel</translation>
 <translation id="5060332552815861872">Daar is 1 drukker beskikbaar om te stoor.</translation>
@@ -5007,7 +5004,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6284632978374966585">Skakel donkertema aan</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> word nie gewoonlik afgelaai nie en kan gevaarlik wees.</translation>
 <translation id="6285770818046456882">Die toestel wat tans met jou deel, het die oordrag gekanselleer</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Geen beskikbare toestelle in die omtrek deel tans nie <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verifieer tans aktiveringkode. Dit kan 'n paar minute neem.</translation>
 <translation id="6291741848715722067">Bevestigingkode</translation>
@@ -5430,7 +5426,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6750757184909117990">Deaktiveer sellulêre netwerk</translation>
 <translation id="6750946710563435348">Gebruik ander gebruikernaam</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
-<translation id="6757101664402245801">URL is gekopieer</translation>
 <translation id="6758056191028427665">Sê vir ons hoe ons vaar.</translation>
 <translation id="6759193508432371551">Fabriekterugstelling</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
@@ -5607,7 +5602,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="693807610556624488">Skryftaak oorskry die maksimum lengte van die kenmerk by: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Jy het 1 gestoorde drukker.</translation>
 <translation id="6938606182859551396">Volg die instruksies op jou foon om kennisgewings toegang tot Google Play Dienste te gee as jy kennisgewings van jou foon af op jou <ph name="DEVICE_TYPE" /> wil ontvang.</translation>
-<translation id="6938789263968032501">Mense</translation>
 <translation id="6939815295902433669">Gaan toestelsagteware na</translation>
 <translation id="694168622559714949">Jou administrateur het 'n verstektaal gestel wat nie gewysig kan word nie.</translation>
 <translation id="6941937518557314510">Meld asseblief aan by <ph name="TOKEN_NAME" /> om <ph name="HOST_NAME" /> met jou sertifikaat te staaf.</translation>
@@ -7651,7 +7645,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9040661932550800571">Dateer wagwoord op vir <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Toegang tot plaaslike lêers op jou masjien is deur jou administrateur gedeaktiveer</translation>
 <translation id="904224458472510106">Hierdie handeling kan nie ontdoen word nie</translation>
-<translation id="9042893549633094279">Privaatheid en sekuriteit</translation>
 <translation id="904451693890288097">Voer asseblief die wagfrase vir "<ph name="DEVICE_NAME" />" in:</translation>
 <translation id="9044646465488564462">Kon nie aan die netwerk koppel nie: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Jou leeslys het na die nuwe kantpaneel toe geskuif. Probeer dit hier.</translation>

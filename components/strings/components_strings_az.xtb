@@ -124,6 +124,7 @@
           <ph name="LIST_ITEM" />Şirkət və ya məktəbinizə
           <ph name="LIST_ITEM" />İnternet xidmət provayderinə        
          <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">Bu tabı paylaşın</translation>
 <translation id="1339601241726513588">Qeydiyyat domeni:</translation>
 <translation id="1340482604681802745">Götürmə ünvanı</translation>
 <translation id="1346748346194534595">Sağ</translation>
@@ -157,6 +158,7 @@
 <translation id="1428146450423315676">Yığıcı 7</translation>
 <translation id="1428729058023778569">Bu sayt HTTPS-i dəstəkləmədiyinə görə bu xəbərdarlığı görürsünüz. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Çap edin</translation>
+<translation id="1432581352905426595">Axtarış sistemlərini idarə edin</translation>
 <translation id="1436185428532214179">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
 <translation id="1442386063175183758">Sağ küncə qatlayın</translation>
 <translation id="1442987760062738829">Deşik açın</translation>
@@ -378,7 +380,6 @@
 <translation id="2130448033692577677">DnsOverHttpsMode siyasətinin ayarlanmamasına görə qeyd etdiyiniz şablonlar tətbiq edilməyə bilər.</translation>
 <translation id="213826338245044447">Mobil Əlfəcinlər</translation>
 <translation id="214556005048008348">Ödənişi ləğv edin</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq keçid paylaşma, QR kodu yaratma, yayımlama kimi seçimlərlə bu səhifəni paylaşın.</translation>
 <translation id="2148613324460538318">Kart Əlavə Edin</translation>
 <translation id="2149968176347646218">Bağlantı güvənli deyil</translation>
 <translation id="2154054054215849342">Sinxronlaşma domeniniz üçün əlçatan deyil</translation>
@@ -425,7 +426,6 @@
 <translation id="2293443924986248631">Aktiv edildiyi zaman saytlar vebdə sizi izləyən kukilərdən istifadə edə bilmir. Bəzi saytlardakı funksiyalar dayandırıla bilər.</translation>
 <translation id="2295290966866883927">Ziyarət etdiyiniz səhifələrin keçidləri təhlil üçün Google Cloud'a və ya üçüncü tərəflərə göndərilir. Məsələn, onlar güvənli olmayan vebsaytları aşkarlamaq üçün skanlana bilər.</translation>
 <translation id="2297722699537546652">B5 (Zərf)</translation>
-<translation id="2297822946037605517">Bu səhifəni paylaşın</translation>
 <translation id="2298855485018661510">"Kukiləri idarə edin" düyməsi, Chrome ayarlarında kuki tərcihlərinizi idarə etmək üçün Enter düyməsinə basın</translation>
 <translation id="2300306941146563769">Yüklənməyib</translation>
 <translation id="2310021320168182093">Chou2 (Zərf)</translation>
@@ -503,6 +503,7 @@
 <translation id="2552295903035773204">Bundan sonra kartları təsdiqləmək üçün ekran kilidi istifadə edin</translation>
 <translation id="2553853292994445426">Təhlükəsiz DNS ayarlarınızı yoxlayın. Bağlanmaq mümkün olmayan təhlükəsiz DNS serveri konfiqurasiya etmiş ola bilərsiniz.</translation>
 <translation id="2556876185419854533">Düzəlişi ləğv edin</translation>
+<translation id="2570734079541893434">Ayarları idarə edin</translation>
 <translation id="257674075312929031">Qrup</translation>
 <translation id="2586657967955657006">Mübadilə buferi</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> adlı şəxsdən. Bunu və digər <ph name="OTHER_ARTICLE_COUNT" /> hekayəni oxuyun.</translation>
@@ -511,7 +512,6 @@
 <translation id="2595719060046994702">Bu cihaz və hesab şirkət və ya başqa təşkilat tərəfindən idarə olunmur.</translation>
 <translation id="2596415276201385844">Güvənli bağlantı yaratmaq üçün saatınız düzgün ayarlanmalıdır. Çünki saytların işlətdikləri sertifikatlar zamana bağlıdır. Saatınız düzgün işləmədiyi halda Chrome bu sertifikatları doğrulaya bilmir.</translation>
 <translation id="2597378329261239068">Bu sənəd parol ilə qorunur. Parolu yazın.</translation>
-<translation id="2597833655590727265">"Chrome görünüşünü idarə edin" düyməsi, Enter düyməsinə basaraq temalarla brauzerinizin görünüşünü fərdiləşdirin.</translation>
 <translation id="2609632851001447353">Variasiyalar</translation>
 <translation id="2610561535971892504">Kopyalamaq üçün klikləyin</translation>
 <translation id="2618023639789766142">C10 (Zərf)</translation>
@@ -601,7 +601,6 @@
 <translation id="2934466151127459956">Hökumət Məktubu</translation>
 <translation id="2941952326391522266">Server <ph name="DOMAIN" /> olmasını sübut edə bilmədi; güvənlik sertifikatı <ph name="DOMAIN2" /> domenindəndir.</translation>
 <translation id="2943895734390379394">Yükləmə Vaxtı:</translation>
-<translation id="2948017612172418360">"Sayt axtarışını idarə edin" düyməsi, Enter düyməsinə basaraq sayt axtarışı və defolt axtarış sisteminizi idarə edin</translation>
 <translation id="2948083400971632585">Ayarlar səhifəsindən bağlantı üçün sazlanmış istənilən proksini deaktiv edə bilərsiniz.</translation>
 <translation id="2949183777371959169">Cihaz Chrome Brauzer Bulud İdarəetməsində qeydiyyatdan keçirilmədiyi üçün nəzərə alınmayıb.</translation>
 <translation id="2951588413176968965">Poçt qutum</translation>
@@ -1020,7 +1019,6 @@
 <translation id="4275830172053184480">Cihazınızı yenidən başladın</translation>
 <translation id="4277028893293644418">Parolu sıfırlayın</translation>
 <translation id="4278390842282768270">İcazə verilib</translation>
-<translation id="4286047936834273847">Sayt axtarışı və defolt axtarış sisteminizi idarə edin</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Bu kart Google Hesabında yadda saxlanılıb}other{Bu kartlar Google Hesabında yadda saxlanılıb}}</translation>
 <translation id="4287885627794386150">Sınaq üçün uyğundur, lakin aktiv deyil</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> səhifəsi üçün miniatür</translation>
@@ -1060,7 +1058,6 @@
 <translation id="4372948949327679948">Gözlənilən <ph name="VALUE_TYPE" /> dəyəri.</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> domeninə daxil olmağa çalışdınız, onun sertifikatı geri alınıb. Bu o deməkdir ki, güvənlik kredensiallarına kəsinliklə inanmaq olmaz. Ola bilər ki, hücumçu ilə əlaqəyə girirsiniz.</translation>
 <translation id="4378154925671717803">Telefon</translation>
-<translation id="4389652395741935834">Keçid paylaşaraq, QR kodu yaradaraq, yayımlayaraq və digər əməliyyatları edərək bu səhifəni paylaşın.</translation>
 <translation id="4390472908992056574">Xətlər</translation>
 <translation id="4406883609789734330">Avtomatik subtitrlər</translation>
 <translation id="4406896451731180161">axtarış nəticələri</translation>
@@ -1327,6 +1324,7 @@
 <translation id="5230733896359313003">Göndəriş Ünvanı</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="5250209940322997802">"Şəbəkəyə qoşulun"</translation>
 <translation id="52517543715119994">Chrome funksiyaları haqqında öyrənin</translation>
 <translation id="5251803541071282808">Bulud</translation>
@@ -1644,7 +1642,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proksi, qoruyucu divar və DNS konfiqurasiyası yoxlanılır<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Soldan qoşa ştapel vurun</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" üçün 1 nəticə</translation>
-<translation id="6377404662019220017">"Bu səhifəni paylaşın" düyməsi, Enter düyməsinə basaraq keçid paylaşma, QR kodu yaratma, yayımlama kimi seçimlərlə bu səhifəni paylaşın.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Potensial ödəniş tutula bilər.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 digər təklif}other{# digər təkliflər}}</translation>
@@ -1865,7 +1862,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Yasəmən</translation>
 <translation id="7156870133441232244">Server TLS 1.2 və ya daha sonrakı versiyaya güncəlləməlidir.</translation>
-<translation id="716939258255825483">"Dinozavr Qaçış oyununu oynayın" düyməsi, Enter düyməsinə basaraq Chrome'da Dinozavr Qaçış oyununu oynayın</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7173920250514487165">Ekranınızda məxfi məzmunu çəkin</translation>
 <translation id="7174545416324379297">Birləşdirildi</translation>
@@ -1888,7 +1884,6 @@
 <translation id="7220786058474068424">Prosesdən keçirilir...</translation>
 <translation id="7221855153210829124">Bildirişləri göstərin</translation>
 <translation id="722454870747268814">Yeni Gizli Panel</translation>
-<translation id="7231476387708735839">Sayt axtarışını idarə edin</translation>
 <translation id="7233592378249864828">Təsdiq vərəqini çap edin</translation>
 <translation id="7238585580608191973">SHA-256 Barmaqizi</translation>
 <translation id="7240120331469437312">Sertifikat Subyekti Alternativ Adı</translation>
@@ -2484,6 +2479,7 @@
 <translation id="9213433120051936369">Görünüşü fərdiləşdirin</translation>
 <translation id="9215416866750762878">Tətbiq Chrome'un bu sayta təhlükəsiz şəkildə qoşulmasını dayandırır</translation>
 <translation id="9219103736887031265">Şəkillər</translation>
+<translation id="922152298093051471">Chrome'u fərdiləşdirin</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">FORMU TƏMİZLƏYİN</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2516,5 +2512,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay'dən</translation>
-<translation id="998677222109959694">Chrome ayarlarını idarə edin</translation>
 </translationbundle>

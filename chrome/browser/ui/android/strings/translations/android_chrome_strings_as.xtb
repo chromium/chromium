@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{#টা ফাইল}one{#টা ফাইল}other{#টা ফাইল}}</translation>
 <translation id="2021896219286479412">সম্পূর্ণ স্ক্ৰীণ ছাইটৰ নিয়ন্ত্ৰণ</translation>
 <translation id="2038563949887743358">ডেস্কটপ ছাইট অনুৰোধ কৰা সুবিধাটো অন কৰক</translation>
-<translation id="2039379262107991683">ৰিমাইণ্ডাৰ পাবলৈ আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠা যোগ দিয়ক</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" />ও Chromeত ডেটা আছে</translation>
 <translation id="2046634576464120978">পঞ্জীয়ন কৰিব পৰা নগ’ল</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@
 <translation id="2781151931089541271">১ ছেকেণ্ড বাকী আছে</translation>
 <translation id="2788468313014644040">গোটৰ সদস্য</translation>
 <translation id="2800066122460699237">টেবটো <ph name="TAB_TITLE" /> বন্ধ কৰা হ’ব</translation>
-<translation id="2801022321632964776">Chromeৰ সকলোতকৈ শেহতীয়া সংস্কৰণটোত নিজৰ ভাষাটো পাবলৈ আপগ্ৰেড কৰক</translation>
 <translation id="2805756323405976993">এপ্</translation>
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">আপোনাৰ Chromeৰ ব্যৱহাৰৰ বিষয়ে তথ্য যিখিনি আপোনাৰ সৈতে জড়িত কৰিব নোৱাৰি\n\nবিৰল Chrome ক্ৰেশ্বৰ প্ৰাসংগিক ডেটা য’ত হয়তো কিছুমান ব্যক্তিগত তথ্যও অন্তৰ্ভুক্ত হ’ব পাৰে\n\nআপুনি ছিংক অন কৰিলে, মেট্ৰিক্সত হয়তো আপুনি চোৱা URLৰ বিষয়ে তথ্যও অন্তৰ্ভুক্ত হ’ব পাৰে</translation>
@@ -354,12 +352,10 @@
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromeৰ গৃহপৃষ্ঠা</translation>
 <translation id="3154863790776532719">নতুন সুবিধা আৰু উন্নত কাৰ্যক্ষমতা</translation>
-<translation id="3157387275655328056">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
 <translation id="3157842584138209013">অধিক বিকল্প বুটামটোলৈ গৈ আপুনি কিমান ডেটা ৰাহি কৰিলে সেয়া চাওক</translation>
 <translation id="3166827708714933426">টেব আৰু ৱিণ্ড’ৰ শ্বৰ্টকাট</translation>
 <translation id="316694332262407393">ইয়াত ইতিমধ্যে Chrome চলি আছে।</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3205824638308738187">প্ৰায় সম্পূর্ণ হৈছে!</translation>
 <translation id="3207960819495026254">বুকমার্ক কৰা হৈছে</translation>
 <translation id="3208584281581115441">এতিয়াই পৰীক্ষা কৰক</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> মচা হ’ল</translation>
@@ -450,7 +446,6 @@
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" />ত বুকমার্ক কৰা হৈছে</translation>
 <translation id="3740525748616366977">এই ডিভাইচটোত কণ্ঠধ্বনিৰ দ্বাৰা সন্ধান কৰাৰ সুবিধাটো উপলব্ধ নহয়</translation>
 <translation id="3749259744154402564">অসমৰ্থিত</translation>
-<translation id="3771001275138982843">আপডে’টটো ডাউনল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="3771033907050503522">ইনক’গনিট’ টেব</translation>
 <translation id="3771290962915251154">অভিভাৱকীয় নিয়ন্ত্ৰণসমূহ অন হৈ থকাৰ বাবে এই ছেটিংটো অক্ষম কৰা হৈছে</translation>
 <translation id="3771694256347217732">Google সেৱাৰ চৰ্তাৱলী</translation>
@@ -790,7 +785,6 @@
 <translation id="583281660410589416">অজ্ঞাত</translation>
 <translation id="5833984609253377421">লিংক শ্বেয়াৰ কৰক</translation>
 <translation id="5834764604050996579">কোনো কিউআৰ ক’ড স্কেন কৰিবলৈ, Chromeক আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ দিয়ক</translation>
-<translation id="5836192821815272682">Chromeৰ আপডে’ট ডাউনল’ড কৰি থকা হৈছে…</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">পজ কৰা হ’ল</translation>
 <translation id="5854512288214985237">কোনো পৰিসংখ্যা অথবা ক্ৰেশ্ব ৰিপ’ৰ্ট Googleলৈ পঠিওৱা নহয়</translation>
@@ -862,7 +856,6 @@
 <translation id="6232535412751077445">"ট্ৰেক নকৰিব" সুবিধাটো সক্ষম কৰা মানে আপোনাৰ ব্ৰাউজিং ট্ৰেফিকৰ সৈতে এটা অনুৰোধ অন্তর্ভুক্ত কৰা হ’ব। কোনো ৱেবছাইটে অনুৰোধটোক সঁহাৰি জনোৱা বা নজনোৱা আৰু অনুৰোধটো কেনেকৈ কার্যকৰী কৰে তাৰ ওপৰত ফলাফলসমূহ নির্ভৰ কৰে।
 
 উদাহৰণস্বৰূপে, কিছুমান ৱেবছাইটে আপোনাক আপুনি চোৱা অন্য ৱেবছাইটসমূহৰ ওপৰত আধাৰিত নোহোৱা কিছুমান বিজ্ঞাপন প্ৰদর্শন কৰি এই অনুৰোধলৈ সঁহাৰি জনাব পাৰে। বহুতো ৱেবছাইটে তথাপিও আপোনাৰ ব্ৰাউজিং ডেটা সংগ্ৰহ আৰু ব্যৱহাৰ কৰিব - উদাহৰণস্বৰূপে সুৰক্ষা উন্নত কৰিবলৈ, সমলৰ লগতে বিজ্ঞাপন তথা চুপাৰিছ প্ৰদান কৰিবলৈ আৰু ৰিপ’র্টিং কৰা পৰিসংখ্যা সৃষ্টি কৰিবলৈ ডেটা সংগ্ৰহ আৰু ব্যৱহাৰ কৰিব।</translation>
-<translation id="624789221780392884">আপডে’ট সাজু</translation>
 <translation id="6264376385120300461">তথাপি ডাউনল’ড কৰক</translation>
 <translation id="6277522088822131679">এই পৃষ্ঠাটো প্ৰিণ্ট কৰোঁতে কিবা সমস্যা হৈছিল। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="6278428485366576908">থীম</translation>
@@ -898,7 +891,6 @@
 <translation id="6411219469806822692">ইয়াতকৈ ওপৰলৈ যাব নোৱাৰি। পৃষ্ঠাখনৰ অধিক ওপৰৰ পৰা চেষ্টা কৰি চাওক।</translation>
 <translation id="6412673304250309937">Chromeত ষ্ট'ৰ কৰি ৰখা অসুৰক্ষিত ছাইটসমূহৰ এখন সূচীৰ সৈতে URLসমূহ পৰীক্ষা কৰে। যদি কোনোবা ছাইটে আপোনাৰ পাছৱর্ড চুৰি কৰিবলৈ চেষ্টা কৰে অথবা আপুনি কোনো ক্ষতিকাৰক ফাইল ডাউনল'ড কৰাৰ সময়ত Chromeএ পৃষ্ঠাৰ সমলৰ বিটসমূহকে ধৰি URLসমূহ সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াব পাৰে।</translation>
 <translation id="641643625718530986">প্ৰিণ্ট কৰক…</translation>
-<translation id="6427112570124116297">ৱেবটো অনুবাদ কৰক</translation>
 <translation id="6433501201775827830">আপোনাৰ সন্ধানৰ ইঞ্জিন বাছনি কৰক</translation>
 <translation id="6434309073475700221">প্ৰত্যাখ্যান কৰক</translation>
 <translation id="6437478888915024427">পৃষ্ঠাৰ তথ্য</translation>
@@ -1000,7 +992,6 @@
 <translation id="6979737339423435258">সকলো সময়তে</translation>
 <translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
 <translation id="6987047470128880212">এই ডিভাইচটোত ইনক’গনিট’ উপলব্ধ নহয়</translation>
-<translation id="6989267951144302301">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="6995899638241819463">ডেটা উলংঘনৰ ফলত পাছৱৰ্ডসমূহ ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="7001056293070445572">ফাইলটোৰ আকাৰ অতি বেছি ডাঙৰ (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">ব্ৰাউজাৰত খোলক</translation>
@@ -1032,7 +1023,6 @@
 <translation id="718926126787620637">পূৰ্ণ উচ্চতাত খোলা বুকমাৰ্ক ফ'ল্ডাৰৰ সূচী</translation>
 <translation id="7191430249889272776">নেপথ্যত খোলা থকা টেব।</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১ টা ডাউনল’ড বাকী আছে}one{# টা ডাউনল’ড বাকী আছে}other{# টা ডাউনল’ড বাকী আছে}}</translation>
-<translation id="7233236755231902816">আপোনাৰ ভাষাত ৱেবটো চাবলৈ, Chromeৰ সকলোতকৈ শেহতীয়া সংস্কৰণটো ব্যৱহাৰ কৰক</translation>
 <translation id="7242755609445462077">শৈলীকৰণ কৰা হাইলাইট <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">নিশ্চিত হৈ লওক যে Chromeত <ph name="TARGET_DEVICE_NAME" />ৰ ছিংক অন কৰা আছে</translation>
 <translation id="7252076891734325316">আপোনাৰ ফ'নটো কম্পিউটাৰটোৰ ওচৰত ৰাখক</translation>
@@ -1055,7 +1045,6 @@
 <translation id="7352651011704765696">কিবা সমস্যা হৈছে</translation>
 <translation id="7352939065658542140">ভিডিঅ’</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{বাছনি কৰা ১টা বস্তু শ্বেয়াৰ কৰক}one{বাছনি কৰা #টা বস্তু শ্বেয়াৰ কৰক}other{বাছনি কৰা #টা বস্তু শ্বেয়াৰ কৰক}}</translation>
-<translation id="7356631068872238169">পঢ়াৰ সূচীৰ পৰা মচক</translation>
 <translation id="7359002509206457351">পৰিশোধৰ পদ্ধতি এক্সেছ কৰক</translation>
 <translation id="7375125077091615385">ধৰণ:</translation>
 <translation id="7376560087009844242">কোনো পৃষ্ঠাৰ অধিক পাঠ অন্তৰ্ভুক্ত কৰি, সন্ধান কৰিবলৈ স্পৰ্শ কৰক সুবিধাটো ব্যৱহাৰ কৰোঁতে আপুনি হয়তো উন্নত ফলাফল দেখা পাব পাৰে। এইটো সলনি কৰিবলৈ আপুনি যিকোনো সময়তে <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" /> লৈ যাব পাৰে।</translation>
@@ -1232,7 +1221,6 @@
 <translation id="829672787777123339">আপোনাৰ ডিভাইচটোৰ সৈতে সংযোগ কৰি থকা হৈছে…</translation>
 <translation id="8310344678080805313">মান্য টেব</translation>
 <translation id="831192587911042850">বৰ্তমানৰ ৱেবছাইটটোক আপুনি ফ’ল’ কৰি থকা ৱেবছাইটসমূহৰ সূচীত যোগ দিয়ে।</translation>
-<translation id="8327155640814342956">সকলোতকৈ ভালকৈ ব্ৰাউজিং কৰাৰ অভিজ্ঞতা পাবলৈ Chrome আপডে'ট কৰক</translation>
 <translation id="834313815369870491">কেতিয়াও অনুবাদ কৰিব নলগীয়া ছাইট</translation>
 <translation id="8349013245300336738">ব্যৱহাৰ কৰা ডেটাৰ পৰিমাণ অনুসৰি সজাওক</translation>
 <translation id="8354977102499939946">আপোনাৰ কণ্ঠস্বৰৰ দ্বাৰা ক্ষিপ্ৰভাৱে সন্ধান কৰক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
@@ -1345,6 +1333,7 @@
 <translation id="8951232171465285730">Chromeএ আপোনাৰ <ph name="MEGABYTES" /> এমবি ডেটা ৰাহি কৰিছে</translation>
 <translation id="8955719471735800169">ওপৰলৈ যাওক</translation>
 <translation id="8965591936373831584">বিবেচনাধীন হৈ আছে</translation>
+<translation id="8967427617812342790">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> টা ইনক’গনিট’ আৰু <ph name="TAB_COUNT_ONE" /> টা টেব বন্ধ কৰা হ’ব}one{<ph name="INCOGNITO_TAB_COUNT" /> টা ইনক’গনিট’ আৰু <ph name="TAB_COUNT_MANY" /> টা টেব বন্ধ কৰা হ’ব}other{<ph name="INCOGNITO_TAB_COUNT" /> টা ইনক’গনিট’ আৰু <ph name="TAB_COUNT_MANY" /> টা টেব বন্ধ কৰা হ’ব}}</translation>
 <translation id="8970887620466824814">কিবা ভুল হ’ল।</translation>
 <translation id="8972098258593396643">ডিফ’ল্ট ফ’ল্ডাৰলৈ ডাউনল’ড কৰিবনে?</translation>

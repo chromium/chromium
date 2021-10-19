@@ -25,7 +25,6 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1145536944570833626">Padam data sedia ada.</translation>
 <translation id="1147031633655575115">Dilog masuk sebagai <ph name="USER" /></translation>
 <translation id="1154984953698510061">Lihat Tab Lain</translation>
-<translation id="1157749421655780457">Benarkan Lokasi...</translation>
 <translation id="1165039591588034296">Ralat</translation>
 <translation id="1172898394251786223">Medan seterusnya</translation>
 <translation id="1176932207622159128">Gagal Simpan Imej</translation>
@@ -239,7 +238,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3240426699337459095">Pautan disalin</translation>
 <translation id="3244271242291266297">BB</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> daripada <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Senarai bacaan anda tersedia di luar talian. Untuk menambahkan halaman pada senarai bacaan anda, ketik  <ph name="SHARE_OPENING_ICON" /> kemudian <ph name="ADD_TO_READING_LIST_TEXT" />.</translation>
 <translation id="3268451620468152448">Tab Terbuka</translation>
 <translation id="3272527697863656322">Batal</translation>
 <translation id="3277021493514034324">Alamat tapak disalin</translation>
@@ -262,7 +260,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="345565170154308620">Urus Kata Laluan...</translation>
 <translation id="3469166899695866866">Hentikan Muat Turun?</translation>
 <translation id="3470502288861289375">Menyalin...</translation>
-<translation id="3472993688462687965">Apabila anda menghidupkan penyegerakan, data mungkin dihadkan mengikut perkara yang dibenarkan oleh organisasi anda.</translation>
 <translation id="3474624961160222204">Teruskan sebagai <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Bulan Tamat Tempoh</translation>
 <translation id="3482959374254649722">Menyegerakkan tab anda...</translation>
@@ -374,7 +371,6 @@ Ikut langkah di bawah:</translation>
 
 Data anda disulitkan dengan ungkapan laluan segerak anda. Masukkannya untuk memulakan penyegerakan.</translation>
 <translation id="4689564913179979534">Urus Kaedah Pembayaran...</translation>
-<translation id="469022783543509074">Anda Telah Dilog Keluar</translation>
 <translation id="470966556546083668">Jangan Hidupkan Penyegerakan</translation>
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4747097190499141774">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat daripada Google Pay. Hanya orang yang mempunyai ungkapan laluan anda boleh membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar atau disimpan oleh Google. Jika anda terlupa ungkapan laluan atau ingin menukar tetapan ini, anda perlu menetapkan semula penyegerakan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6831043979455480757">Terjemah</translation>
 <translation id="6842136130964845393">Untuk memastikan anda dapat mengakses kata laluan anda yang disimpan pada bila-bila masa, sahkan itu anda</translation>
 <translation id="6851516051005285358">Minta Tapak Versi Komputer</translation>
-<translation id="6856384753476268833">Diurus oleh organisasi anda.</translation>
 <translation id="6858855187367714033">Diimbas</translation>
 <translation id="6859944681507688231">Untuk mengimbas kod QR atau kad kredit, dayakan kamera daripada tetapan.</translation>
 <translation id="6869389390665537774">Anda dapat melihat halaman yang telah dilawati atau memadamkan halaman tersebut daripada sejarah anda</translation>
@@ -691,7 +686,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7472734401283673885">Nama Syarikat</translation>
 <translation id="7473891865547856676">Tidak, Terima Kasih</translation>
 <translation id="7481312909269577407">Majukan</translation>
-<translation id="7483467499335917849">Gunakan Lokasi Semasa Anda</translation>
 <translation id="750493650310597496">0 dipilih</translation>
 <translation id="7508728395076009983">Untuk mengunci tab Inkognito anda, sediakan Touch ID, Face ID atau Kod Laluan.</translation>
 <translation id="7514365320538308">Muat Turun</translation>
@@ -768,6 +762,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8319076807703933069">Carian Baharu</translation>
 <translation id="8323906514956095947">Sentuh &amp; tahan untuk melihat lagi pilihan tab</translation>
 <translation id="8328777765163860529">Tutup Semua</translation>
+<translation id="8378714024927312812">Diurus oleh organisasi anda</translation>
 <translation id="8386068868580335421">Tetapkan semula</translation>
 <translation id="8407669440184693619">Tiada kata laluan ditemui untuk tapak ini</translation>
 <translation id="842017693807136194">Dilog Masuk dengan</translation>
@@ -838,7 +833,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="9081058212938299310">Kemas kini kata laluan untuk <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">Hidupkan penyegerakan untuk melakukan penyegerakan dan pemperibadian pada semua peranti.</translation>
-<translation id="9084677839771512880">Organisasi anda mengehadkan item yang boleh anda segerakkan. <ph name="BEGIN_LINK" />Butiran<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Kata Laluan yang Dicadangkan oleh Chrome:</translation>
 <translation id="9094033019050270033">Kemaskinikan kata laluan</translation>
 <translation id="9100610230175265781">Frasa laluan diperlukan</translation>

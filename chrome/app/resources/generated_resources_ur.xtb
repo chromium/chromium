@@ -984,6 +984,7 @@
 <translation id="2002109485265116295">ریئل ٹائم</translation>
 <translation id="200217416291116199">‏اپ گریڈ مکمل نہ ہو پانے کی صورت میں فائلز کا بیک اپ لینے کی تجویز کی جاتی ہے۔ اپ گریڈ شروع ہونے کی وجہ سے Linux شٹ ڈاؤن ہو جائے گا۔ آگے بڑھنے سے پہلے براہ کرم کھلی ہوئی فائلز کو محفوظ کریں۔</translation>
 <translation id="2003130567827682533">‏'<ph name="NAME" />' کے ڈیٹا کو فعال کرنے کیلئے، پہلے Wi-Fi نیٹ ورک سے منسلک ہوں</translation>
+<translation id="2004697686368036666">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں</translation>
 <translation id="2005199804247617997">دیگر پروفائلز</translation>
 <translation id="2006638907958895361">لنک کو <ph name="APP" /> میں کھولیں</translation>
 <translation id="2007404777272201486">مسئلہ کی اطلاع دیں…</translation>
@@ -1126,7 +1127,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> تصاویر</translation>
 <translation id="2154484045852737596">کارڈ میں ترمیم کریں</translation>
 <translation id="2154502158735983655">‏Chrome OS آلے کی معلومات اور آلے کا ڈیٹا پڑھیں۔</translation>
-<translation id="2154710561487035718">‏URL کاپی کریں</translation>
 <translation id="2155772377859296191">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> جیسا نظر آتا ہے</translation>
 <translation id="2156294658807918600">سروس ورکر: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">اس ایپ میں فائل فارمیٹ کھولتے ہوئے دوبارہ نہ پوچھیں:
@@ -3161,7 +3161,6 @@
 <translation id="428715201724021596">پروفائل سے منسلک کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="4287157641315808225">‏ہاں، ChromeVox کو فعال کریں</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{دکھائیں}other{سبھی دکھائیں}}</translation>
-<translation id="4289372044984810120">یہاں اپنے اکاؤنٹس کا نظم کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">عمومی جائزہ</translation>
 <translation id="4289732974614035569">‏PIN منتخب کریں</translation>
 <translation id="4290791284969893584">صفحہ بند کرنے کے بعد، آپ کی شروع کردہ ٹاسکس شاید مکمل نہ ہوں</translation>
@@ -3237,7 +3236,6 @@
 <translation id="4378556263712303865">آلہ کی درخواست</translation>
 <translation id="4379281552162875326">"<ph name="APP_NAME" />" ان انسٹال کریں؟</translation>
 <translation id="4380648069038809855">پوری اسکرین میں داخل ہو گئی</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{‏<ph name="EMAIL" />، ‎+1 مزید اکاؤنٹ}other{‏<ph name="EMAIL" />، ‎+<ph name="EXTRA_ACCOUNTS" />‎ مزید اکاؤنٹس}}</translation>
 <translation id="4384312707950789900">ترجیحی میں شامل کریں</translation>
 <translation id="4384652540891215547">ایکسٹینشن فعال کریں</translation>
 <translation id="4384886290276344300">کی بورڈ کی ترتیبات تبدیل کریں</translation>
@@ -3860,7 +3858,6 @@
 <translation id="5053962746715621840">‏Google لینز کے ساتھ تصویر تلاش کریں</translation>
 <translation id="5056950756634735043">کنٹینر سے منسلک ہو رہا ہے</translation>
 <translation id="5057110919553308744">جب آپ ایکسٹینشن پر کلک کرتے ہیں</translation>
-<translation id="5057403786441168405">‏اپنے سائن ان کردہ اکاؤنٹس کا نظم کریں۔ ویب سائٹس، ایپس اور Chrome اور Google Play میں ایکسٹینشنز اجازتوں کی بنیاد پر آپ کے تجربہ کو حسب ضرورت بنانے کیلئے ان اکاؤنٹس کا استعمال کر سکتی ہیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">سائن ان کو محدود کریں</translation>
 <translation id="5059526285558225588">منتخب کریں کہ کیا اشتراک کرنا ہے</translation>
 <translation id="5060332552815861872">محفوظ کرنے کے لیے 1 پرنٹر دستیاب ہے۔</translation>
@@ -4988,7 +4985,6 @@
 <translation id="6284632978374966585">گہری تھیم آن کریں</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> عام طور پر ڈاؤن لوڈ نہیں کی جاتی ہے اور یہ خطرناک ہو سکتی ہے۔</translation>
 <translation id="6285770818046456882">آپ کے ساتھ اشتراک کرنے والے آلے نے منتقلی کو منسوخ کر دیا</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">قریبی اشتراک کرنے والا کوئی بھی آلہ دستیاب نہیں ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">فعالیت کے کوڈ کی توثیق کی جا رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="6291741848715722067">توثیقی کوڈ</translation>
@@ -5411,7 +5407,6 @@
 <translation id="6750757184909117990">سیلولر کو غیرفعال کریں</translation>
 <translation id="6750946710563435348">دوسرے صارف کا نام استعمال کریں</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (پوشیدگی)</translation>
-<translation id="6757101664402245801">‏URL کاپی ہوگیا</translation>
 <translation id="6758056191028427665">ہماری کارکردگی کے بارے میں ہمیں بتائیں۔</translation>
 <translation id="6759193508432371551">فیکٹری ری سیٹ</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
@@ -5588,7 +5583,6 @@
 <translation id="693807610556624488">لکھنے کی کارروائی اس کے انتساب کی زیادہ سے زیادہ طوالت سے زیادہ ہے: "<ph name="DEVICE_NAME" />"۔</translation>
 <translation id="6938386202199793006">آپ کے پاس 1 محفوظ کردہ پرنٹر ہے۔</translation>
 <translation id="6938606182859551396">‏اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات وصول کرنے کی خاطر، Google Play سروسز کو اطلاعات تک رسائی فراہم کرنے کیلئے اپنے فون پر ہدایات کی پیروی کریں۔</translation>
-<translation id="6938789263968032501">لوگ</translation>
 <translation id="6939815295902433669">آلے کے سافٹ ویئر کا جائزہ لیں</translation>
 <translation id="694168622559714949">آپ کے منتظم نے ایک ایسی ڈیفالٹ زبان سیٹ کی ہے جس میں ترمیم نہیں کی جا سکتی۔</translation>
 <translation id="6941937518557314510">براہ کرم اپنے سرٹیفکیٹ کے ساتھ <ph name="HOST_NAME" /> کی توثیق کرنے کیلئے <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
@@ -7632,7 +7626,6 @@
 <translation id="9040661932550800571"><ph name="ORIGIN" /> کے لیے پاس ورڈ کو اپ ڈیٹ کریں؟</translation>
 <translation id="9041692268811217999">آپ کے منتظم نے آپ کی مشین پر مقامی فائلوں تک رسائی کو غیر فعال کر دیا ہے</translation>
 <translation id="904224458472510106">اس عمل کو کالعدم نہیں کیا جا سکتا</translation>
-<translation id="9042893549633094279">رازداری اور سیکیورٹی</translation>
 <translation id="904451693890288097">براہ کرم "<ph name="DEVICE_NAME" />" کیلئے پاس کلید درج کریں:</translation>
 <translation id="9044646465488564462">نیٹ ورک سے منسلک ہونے میں ناکام ہوگیا: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">آپ کی پڑھنے کی فہرست نئے سائیڈ پینل میں منتقل ہو گئی ہے۔ اسے یہاں آزمائیں۔</translation>

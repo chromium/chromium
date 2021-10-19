@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall တွေ့ရှိသည်</translation>
 <translation id="1075811647922107217">စာမျက်နှာ အရွယ်အစား</translation>
-<translation id="110351136513869678">စီစဉ်သတ်မှတ်ရန် ဆက်တင်များသို့ ဝင်ကြည့်ပါ</translation>
 <translation id="1119447706177454957">အတွင်းပိုင်း အမှား။</translation>
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">PUK မမှန်ကန်ပါ။</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="155865706765934889">တို့ထိရန် အပြား</translation>
+<translation id="1572585716423026576">နောက်ခံအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
 <translation id="1641857168437328880">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (တစ်ဘက်သုံး)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်နေသည်</translation>
 <translation id="1851218745569890714">ဗီဒီယိုအစည်းအဝေး</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">အိုင်ပီလိပ်စာ မရယူနိုင်ပါ</translation>
 <translation id="1887850431809612466">စက်ပစ္စည်း စိစစ်သုံးသပ်ခြင်း</translation>
-<translation id="1901646112321215184">DNS ဆာဗာတစ်ခုမျှ စီစဉ်သတ်မှတ်မထားပါ</translation>
 <translation id="1905710495812624430">အများဆုံးခွင့်ပြုပေးထားသည့် အခေါက်အရေအတွက်ထက် ကျော်လွန်သွားပါပြီ။</translation>
 <translation id="1908234395526491708">UDP တောင်းဆိုချက် ချွတ်ယွင်းမှုများ</translation>
 <translation id="1930797645656624981">Chrome OS လက်ကွက်ဝန်ဆောင်မှု</translation>
 <translation id="1947737735496445907">ပုံနှိပ်ထုတ်ပြီးပြီ</translation>
-<translation id="197386857804679933">ပြန်ချိတ်ဆက်ရန် ‘ဆက်တင်များ’ သို့ဝင်ကြည့်ပါ</translation>
 <translation id="1979103255016296513">စကားဝှက်ပြောင်းလဲမှု သက်တမ်းကုန်သွားပါပြီ</translation>
 <translation id="1999615961760456652">စတင်ဝင်ရန် စာမျက်နှာ</translation>
 <translation id="2006864819935886708">ချိတ်ဆက်နိုင်မှု</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">စကင်နာပေါ် နောက်စာမျက်နှာတစ်ရွက်တင်ပါ</translation>
 <translation id="2872961005593481000">ပိတ်ရန်</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားလျော့သွားသည်။</translation>
-<translation id="2927511423571448384">Android မှ HTTP (ပို့တ် 80) ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
 <translation id="3008341117444806826">ပြန်လည်စတင်ရန်</translation>
 <translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">အဆုံးမှတ်</translation>
 <translation id="3069085583900247081">စစ်ဆေးမှု မအောင်မြင်ပါ</translation>
-<translation id="3076387335132326640">သင်သည် အများသုံးကွန်ရက် သုံးနေသည်</translation>
 <translation id="3083667275341675831">ချိတ်ဆက်နိုင်မှုဆိုင်ရာ အမှားရှာဖွေမှုများ</translation>
 <translation id="3091839911843451378">မအောင်မြင်ပါ - ရပ်သွားသည်</translation>
 <translation id="3102119246920354026">Cache</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> မိနစ်ခန့် ကျန်သည်</translation>
 <translation id="3565064564551103223">ခွင့်ပြုထားသည့် IP များ</translation>
 <translation id="357889014807611375">အခမဲ့မဟုတ်သော Wi-Fi</translation>
-<translation id="3582041541988388905"><ph name="NETWORK_NAME" /> ချိတ်ဆက်မှု မတွေ့ပါ</translation>
 <translation id="3595596368722241419">ဘက်ထရီ အားပြည့်နေ</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> စစ်ဆေးမှု</translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ဘက်ထရီ</translation>
 <translation id="4561801978359312462">ဆင်းမ် လော့ခ်ဖွင့်ထားသည်</translation>
 <translation id="4562494484721939086">ဝန်ဆောင်မှု မရှိပါ</translation>
-<translation id="4567024731344774461">Android မှ DNS ကို ဖြေရှင်း၍မရပါ</translation>
 <translation id="458794348635939462">ဆာဗာပင်ရင်းအားလုံးကို ဖြေရှင်း၍မရပါ</translation>
 <translation id="4593212453765072419">ပရောက်စီ အထောက်အထားစိစစ်ရန် လိုအပ်သည်</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ စာမျက်နှာ <ph name="TOTAL_PAGE_NUMBER" /> မျက်နှာအနက် <ph name="PRINTED_PAGE_NUMBER" /> မျက်နှာ။ ပရင့်ထုတ်ရန်ဖိုင် ပယ်ဖျက်ရန် enter နှိပ်ပါ။</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) DNS ဖြေရှင်းချက်</translation>
 <translation id="4848429997038228357">လုပ်ဆောင်နေသည်</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ကြိမ် ကြိုးပမ်းနိုင်သည်}other{<ph name="ERROR_MESSAGE" /> {0} ကြိမ် ကြိုးပမ်းနိုင်သည်}}</translation>
-<translation id="4871137769558798671">HTTP (ပို့တ် 443) ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
 <translation id="4880328057631981605">ချိတ်ဆက်မှတ်၏ အမည်</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">ချက်ချင်း အသစ်တစ်ခု ‌ရွေးပါ</translation>
@@ -290,7 +282,6 @@
 <translation id="5502931783115429516">Android မလုပ်ဆောင်တော့ပါ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">လိုင်းဆွဲအားနိမ့်သည်။ ချိတ်ဆက်ရန် နေရာအနီးသို့ ရွှေ့ကြည့်ပါ</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">စကင်ပြန်ဖတ်ရန်</translation>
 <translation id="5669267381087807207">အစပြုနေသည်</translation>
@@ -298,7 +289,6 @@
 <translation id="5691511426247308406">မိသားစု</translation>
 <translation id="5701381305118179107">အလယ်</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> အနက် <ph name="CURRENT_PAGE" /></translation>
-<translation id="5715997777752246116">အမည်ဆာဗာတစ်ခုမျှ စီစဉ်သတ်မှတ်မထားပါ</translation>
 <translation id="5760715441271661976">စာမျက်နှာအခြေအနေ</translation>
 <translation id="5784136236926853061">HTTP တုံ့ပြန်ချိန် ကြာနေသည်</translation>
 <translation id="5832805196449965646">လူကို ထည့်ပေးရန်</translation>
@@ -342,7 +332,6 @@
 <translation id="636850387210749493">လုပ်ငန်း အမည်စာရင်းသွင်းခြင်း</translation>
 <translation id="6379086450106841622">တို့ထိမျက်နှာပြင်</translation>
 <translation id="6388847657025262518">စကင်ဖတ်စက်၏ စာရွက်ထည့်ရန်ဗန်း ညပ်နေသည်။ ဗန်းကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
-<translation id="6395640744968320699">HTTP (ပို့တ် 80) ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
 <translation id="6398765197997659313">မျက်နှာပြင် အပြည့်မှ ထွက်ရန်</translation>
 <translation id="641081527798843608">တိုက်ဆိုင်သည့် အကြောင်းအရာ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -352,7 +341,6 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> က စီမံခန့်ခွဲသည်</translation>
 <translation id="649050271426829538">ရပ်သွားသည် - စာရွက်ညပ်နေသည်</translation>
-<translation id="6498608540383876992">ဂိတ်ဝသို့ ဆက်သွယ်၍မရပါ</translation>
 <translation id="6516990319416533844">ဘက်ထရီအားသွင်းနှုန်းကို စစ်ဆေးရန် ခဏတာမျှ သင့်ဘက်ထရီ အားကုန်အောင်လုပ်ပါ</translation>
 <translation id="6517239166834772319">စူးစမ်းလေ့လာခြင်း</translation>
 <translation id="6527081081771465939">အမည်မသိ WiFi လုံခြုံရေးပရိုတိုကော</translation>
@@ -362,13 +350,11 @@
 <translation id="6574762126505704998">ဖြည့်ရန်</translation>
 <translation id="6575134580692778371">စီစဉ်မဖွဲ့စည်းရသေး</translation>
 <translation id="6596816719288285829">IP လိပ်စာ</translation>
-<translation id="6603230386432466813">ချိတ်ဆက်ရာတွင် ပြဿနာရှိသလား။</translation>
 <translation id="6618744767048954150">လုပ်ဆောင်နေသည်</translation>
 <translation id="6620487321149975369">ပရင့်ထုတ်ရန်ဖိုင်များကို ကိုယ်တိုင်မဖယ်ရှားပါက မှတ်တမ်းတွင် ပြပါမည်</translation>
 <translation id="6643016212128521049">ရှင်းရန်</translation>
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="6704062477274546131">DNS ဖြေရှင်းချက်</translation>
-<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> ကိုပိတ်ထားသည်</translation>
 <translation id="6747215703636344499">ရပ်ထားသည် - အထွက်ပြည့်နေသည်</translation>
 <translation id="6756731097889387912">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်၍မရပါ</translation>
 <translation id="6766275201586212568">DNS ဖြေရှင်းချက်များ မအောင်မြင်ပါ</translation>
@@ -381,7 +367,6 @@
 <translation id="6957231940976260713">ဝန်ဆောင်မှုအမည်</translation>
 <translation id="6961170852793647506">စတင်ရန် စာရွက်စာတမ်းကို စကင်နာပေါ်တင်ပါ</translation>
 <translation id="6977381486153291903">ဖာမ်းဝဲ ပြန်လည်စိစစ်ခြင်း</translation>
-<translation id="6982876849933694860">ချိတ်ဆက်မှုအသစ် စနစ်ထည့်သွင်းရန် <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> သို့ သွားပါ။</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> က ဤကိရိယာကို စီမံခန့်ခွဲပြီး ဝင်ကြည့်ထားသည့် ဝဘ်စာမျက်နှာများ၊ စကားဝှက်များနှင့် အီးမေးလ်အပါအဝင် အသုံးပြုသူ၏ လုပ်ဆောင်ချက်အားလုံးကို အသုံးပြုခွင့်ရှိပါသည်။</translation>
 <translation id="7040230719604914234">မိုဘိုင်းဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="7058278511608979688">သိမ်းပြီး အဆုံးသတ်ရန်</translation>
@@ -400,7 +385,6 @@
 <translation id="7271040990581020067">စကင်ဖတ်စက်ကို လက်ရှိ သုံးနေသည်။ နောက်မှ ထပ်စမ်းပါ။</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">နောက်ခံပုံ စုစည်းမှုများ</translation>
-<translation id="7292680402155138244">HTTPS (ပို့တ် 443) ဝဘ်ဆိုက်များသို့ တုံ့ပြန်ချိန်မြင့်သည်</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -458,7 +442,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° စင်တီဂရိတ်</translation>
 <translation id="8132480444149501833">ကွန်ရက်ဒေတာ ရေတွက်စနစ်များ တောင်းဆိုရန်</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">DNS ကို ဖြေရှင်း၍မရပါ</translation>
 <translation id="8206859287963243715">ဆဲလ်လူလာ</translation>
 <translation id="8208861521865154048">ခံစားခွင့်များ</translation>
 <translation id="8230672074305416752">မူလကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
@@ -470,7 +453,6 @@
 <translation id="8297006494302853456">အားမကောင်းပါ</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8318753676953949627">ပုံများ မရှိပါ</translation>
-<translation id="8346875532700229909">Android မှ ဂိတ်ဝသို့ ဆက်သွယ်၍မရပါ</translation>
 <translation id="8347227221149377169">ပရင့်ထုတ်ရန် ဖိုင်များ</translation>
 <translation id="8352772353338965963">အရာ အများအပြားထဲသို့ လက်မှတ်ထိုး ဝင်နိုင်ရန် အတွက် အကောင့် တစ်ခုကို ထည့်ပါ။ လက်မှတ်ထိုး ဝင်ထားသည့် အကောင့်များ အားလုံးကို စကားဝှက် မသုံးရဘဲ သုံးနိုင်မည် ဖြစ်ရာ၊ ဒီအင်္ဂါရပ်ကို ယုံကြည်ရသည့် အကောင့်များ အတွက်သာ အသုံးပြသင့်သည်။</translation>
 <translation id="8364946094152050673">အမည်ဆာဗာအလွတ်များ</translation>

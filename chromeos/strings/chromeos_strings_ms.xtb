@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tembok api dikesan</translation>
 <translation id="1075811647922107217">Saiz halaman</translation>
-<translation id="110351136513869678">Lawati tetapan untuk mengkonfigurasikan</translation>
 <translation id="1119447706177454957">Ralat dalaman</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">PUK tidak sah.</translation>
 <translation id="1510238584712386396">Pelancar</translation>
 <translation id="155865706765934889">Pad sentuh</translation>
+<translation id="1572585716423026576">Tetapkan sebagai kertas dinding</translation>
 <translation id="1621067168122174824">Jalankan Ujian cas</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
 <translation id="1641857168437328880">Penyuap Dokumen (Satu sisi)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">Membatalkan pengimbasan</translation>
 <translation id="1851218745569890714">Persidangan Video</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">Tidak dapat memperoleh alamat IP</translation>
 <translation id="1887850431809612466">Semakan perkakasan</translation>
-<translation id="1901646112321215184">Tiada pelayan DNS dikonfigurasikan</translation>
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
 <translation id="1930797645656624981">Perkhidmatan Kaedah Input OS Chrome</translation>
 <translation id="1947737735496445907">Dicetak</translation>
-<translation id="197386857804679933">Lawati Tetapan untuk menyambung semula</translation>
 <translation id="1979103255016296513">Kata laluan perlu ditukar</translation>
 <translation id="1999615961760456652">Portal Terbolot</translation>
 <translation id="2006864819935886708">Kesambungan</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">Letakkan halaman lain di atas pengimbas</translation>
 <translation id="2872961005593481000">Mematikan</translation>
 <translation id="2878387241690264070">Dinyahcas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
-<translation id="2927511423571448384">Tidak dapat menyambung kepada laman web HTTP (port 80) daripada Android melalui tembok api</translation>
 <translation id="3008341117444806826">MUAT SEMULA</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan imbasan</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Titik akhir</translation>
 <translation id="3069085583900247081">Ujian gagal</translation>
-<translation id="3076387335132326640">Anda sedang menggunakan rangkaian terbuka</translation>
 <translation id="3083667275341675831">Diagnostik Ketersambungan</translation>
 <translation id="3091839911843451378">Gagal - Dihentikan</translation>
 <translation id="3102119246920354026">Cache</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">Kira-kira <ph name="MIN_REMAINING" /> minit lagi</translation>
 <translation id="3565064564551103223">IP dibenarkan</translation>
 <translation id="357889014807611375">Wi-Fi bermeter</translation>
-<translation id="3582041541988388905">Tiada sambungan <ph name="NETWORK_NAME" /> dikesan</translation>
 <translation id="3595596368722241419">Bateri penuh</translation>
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930">Bateri <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM Dibuka Kunci</translation>
 <translation id="4562494484721939086">Tiada perkhidmatan</translation>
-<translation id="4567024731344774461">Tidak dapat menyelesaikan DNS daripada Android</translation>
 <translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">Peleraian DNS (Android)</translation>
 <translation id="4848429997038228357">BERJALAN</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} percubaan lagi}other{<ph name="ERROR_MESSAGE" /> {0} percubaan lagi}}</translation>
-<translation id="4871137769558798671">Tidak dapat menyambung kepada laman web HTTPS (port 443) melalui tembok api</translation>
 <translation id="4880328057631981605">Nama titik capaian</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Pilih kata laluan baharu secepat mungkin</translation>
@@ -291,7 +283,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5502931783115429516">Android tidak berjalan</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">Kekuatan isyarat rendah, cuba beralih lebih dekat ke titik akses</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Imbas semula</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
@@ -299,7 +290,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5691511426247308406">Keluarga</translation>
 <translation id="5701381305118179107">Tengah</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">Tiada nama pelayan dikonfigurasikan</translation>
 <translation id="5760715441271661976">Keadaan Portal</translation>
 <translation id="5784136236926853061">Kependaman HTTP tinggi</translation>
 <translation id="5832805196449965646">Tambah Orang</translation>
@@ -343,7 +333,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="6379086450106841622">Skrin sentuh</translation>
 <translation id="6388847657025262518">Penyuap dokumen pengimbas tersekat. Semak penyuap dan cuba lagi.</translation>
-<translation id="6395640744968320699">Tidak dapat menyambung kepada laman web HTTP (port 80) melalui tembok api</translation>
 <translation id="6398765197997659313">Keluar daripada skrin penuh</translation>
 <translation id="641081527798843608">Padanan subjek</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -353,7 +342,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Diurus oleh <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Dihentikan - Kertas tersangkut</translation>
-<translation id="6498608540383876992">Tidak dapat menghubungi get laluan</translation>
 <translation id="6516990319416533844">Untuk menguji kadar pengecasan bateri, biarkan cas bateri anda habis dalam tempoh yang singkat</translation>
 <translation id="6517239166834772319">Teroka</translation>
 <translation id="6527081081771465939">Protokol keselamatan Wi-Fi tidak diketahui</translation>
@@ -363,13 +351,11 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6574762126505704998">Isi</translation>
 <translation id="6575134580692778371">Tidak dikonfigurasi</translation>
 <translation id="6596816719288285829">Alamat IP</translation>
-<translation id="6603230386432466813">Ada masalah membuat sambungan?</translation>
 <translation id="6618744767048954150">Berjalan</translation>
 <translation id="6620487321149975369">Tugas cetak akan dipaparkan dalam sejarah melainkan dialih keluar secara manual</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6657585470893396449">Kata laluan</translation>
 <translation id="6704062477274546131">Peleraian DNS</translation>
-<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> telah dilumpuhkan</translation>
 <translation id="6747215703636344499">Dihentikan - Output penuh</translation>
 <translation id="6756731097889387912">Tidak dapat membatalkan pengimbasan</translation>
 <translation id="6766275201586212568">Penyelesaian DNS gagal</translation>
@@ -382,7 +368,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6957231940976260713">Nama perkhidmatan</translation>
 <translation id="6961170852793647506">Untuk bermula, letakkan dokumen anda di atas pengimbas</translation>
 <translation id="6977381486153291903">Semakan perisian tegar</translation>
-<translation id="6982876849933694860">Untuk menyediakan sambungan baharu, pergi ke <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> mengurus peranti ini dan mempunyai akses kepada semua aktiviti pengguna, termasuk halaman web yang dilawati, kata laluan dan e-mel.</translation>
 <translation id="7040230719604914234">Pengendali</translation>
 <translation id="7058278511608979688">Tamatkan &amp; simpan</translation>
@@ -401,7 +386,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Koleksi Kertas Dinding</translation>
-<translation id="7292680402155138244">Kependaman tinggi ke laman web HTTPS (port 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -459,7 +443,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">Tidak dapat menyelesaikan DNS</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8208861521865154048">Manfaat</translation>
 <translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>
@@ -471,7 +454,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8297006494302853456">Lemah</translation>
 <translation id="8302368968391049045">Tembok Api HTTPS</translation>
 <translation id="8318753676953949627">Tiada Imej</translation>
-<translation id="8346875532700229909">Tidak dapat menghubungi get laluan daripada Android</translation>
 <translation id="8347227221149377169">Tugas cetak</translation>
 <translation id="8352772353338965963">Tambahkan akaun untuk berbilang log masuk. Semua akaun dilog masuk boleh diakses tanpa kata laluan, jadi ciri ini mesti digunakan dengan akaun yang dipercayai sahaja.</translation>
 <translation id="8364946094152050673">Pelayan tiada nama</translation>

@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">حذف داده‌های موجود.</translation>
 <translation id="1147031633655575115">با <ph name="USER" /> به سیستم وارد شده‌اید</translation>
 <translation id="1154984953698510061">دیدن برگه‌های دیگر</translation>
-<translation id="1157749421655780457">مجاز کردن مکان…</translation>
 <translation id="1165039591588034296">خطا</translation>
 <translation id="1172898394251786223">فیلد بعدی</translation>
 <translation id="1176932207622159128">ذخیره تصویر ممکن نشد</translation>
@@ -239,7 +238,6 @@
 <translation id="3240426699337459095">پیوند کپی شد</translation>
 <translation id="3244271242291266297">ماه</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />، ‏<ph name="ADDITIONAL_INFO" />، ‏<ph name="INDEX" /> از <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">فهرست خواندن درحالت آفلاین دردسترس است. برای اضافه کردن صفحه به فهرست خواندن، روی <ph name="SHARE_OPENING_ICON" /> و سپس <ph name="ADD_TO_READING_LIST_TEXT" /> ضربه بزنید.</translation>
 <translation id="3268451620468152448">برگه‌های باز</translation>
 <translation id="3272527697863656322">لغو</translation>
 <translation id="3277021493514034324">نشانی سایت کپی شد</translation>
@@ -262,7 +260,6 @@
 <translation id="345565170154308620">مدیریت گذرواژه‌ها…</translation>
 <translation id="3469166899695866866">بارگیری متوقف شود؟</translation>
 <translation id="3470502288861289375">در حال کپی کردن...</translation>
-<translation id="3472993688462687965">وقتی همگام‌سازی را روشن می‌کنید، ممکن است داده براساس آنچه سازمانتان مجاز کرده محدود شود.</translation>
 <translation id="3474624961160222204">ادامه به‌عنوان <ph name="NAME" /></translation>
 <translation id="3478058380795961209">ماه انقضا</translation>
 <translation id="3482959374254649722">درحال همگام‌سازی برگه‌های شما...</translation>
@@ -374,7 +371,6 @@
 
 داده‌های شما با گذرعبارت همگام‌سازی رمزگذاری می‌شود. برای شروع همگام‌سازی آن را وارد کنید.</translation>
 <translation id="4689564913179979534">مدیریت روش‌های پرداخت…</translation>
-<translation id="469022783543509074">از سیستم خارج شده‌اید</translation>
 <translation id="470966556546083668">همگام‌سازی روشن نشود</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4747097190499141774">‏رمزگذاری گذرعبارت شامل روش‌های پرداخت و نشانی‌های موجود در Google Pay نمی‌شود. فقط افرادی که گذرعبارتتان را داشته باشند می‌توانند داده‌های رمزگذاری‌شده‌تان را بخوانند. گذرعبارت به Google ارسال یا در سرورهای آن ذخیره نمی‌شود. اگر گذرعبارتتان را فراموش کنید یا بخواهید این تنظیم را تغییر دهید، باید همگام‌سازی را بازنشانی کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -475,6 +471,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5711039611392265845">‏برای تنظیمات بیشتری که با حریم‌خصوصی، امنیت و جمع‌آوری داده مرتبط هستند، <ph name="BEGIN_LINK" />همگام‌سازی و سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
 <translation id="5724941645893276623">برای مرور خصوصی وب، برگه جدیدی اضافه کنید</translation>
 <translation id="5728700505257787410">متأسفیم، مشکلی در ورود به حساب شما وجود داشت.</translation>
+<translation id="5731784586962650619">گذرواژه‌ها در برنامه‌های دیگر</translation>
 <translation id="5737974891429562743">جزئیات ورود به سیستم قدیمی است. برای شروع همگام‌سازی، به‌روزرسانی کنید.</translation>
 <translation id="5738887413654608789">با این کار می‌توانید صفحه‌های وب مرتبط را براساس محیط اطرافتان کاوش کنید.</translation>
 <translation id="5758631781033351321">فهرست مطالعه را اینجا خواهید دید</translation>
@@ -623,7 +620,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="6842136130964845393">برای اینکه مطمئن شوید همیشه می‌توانید به گذرواژه‌های ذخیره‌شده دسترسی داشته باشید، هویتتان را به‌تأیید برسانید</translation>
 <translation id="6851516051005285358">درخواست سایت میزکار</translation>
-<translation id="6856384753476268833">توسط سازمانتان مدیریت می‌شود.</translation>
 <translation id="6858855187367714033">اسکن‌شده</translation>
 <translation id="6859944681507688231">برای اسکن کردن رمزینه پاسخ‌سریع یا کارت اعتباری، دوربین را در تنظیمات فعال کنید.</translation>
 <translation id="6869389390665537774">‏می‌توانید صفحه‌هایی را که از آن‌‎ها بازدید کرده‌اید ببینید یا آن‌ها را از سابقه پاک کنید</translation>
@@ -691,7 +687,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7472734401283673885">نام شرکت</translation>
 <translation id="7473891865547856676">نه متشکرم</translation>
 <translation id="7481312909269577407">ارسال کردن</translation>
-<translation id="7483467499335917849">استفاده از مکان کنونی شما</translation>
 <translation id="750493650310597496">۰ نشانک انتخاب شده است</translation>
 <translation id="7508728395076009983">برای قفل کردن برگه‌های ناشناس، راه‌اندازی شناسه لمسی، شناسه چهره، یا گذرنویسه.</translation>
 <translation id="7514365320538308">بارگیری</translation>
@@ -768,6 +763,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8319076807703933069">جستجوی جدید</translation>
 <translation id="8323906514956095947">برای دیدن گزینه‌های بیشتر برگه، لمس کنید و نگه دارید</translation>
 <translation id="8328777765163860529">بستن همه</translation>
+<translation id="8378714024927312812">توسط سازمانتان مدیریت می‌شود</translation>
 <translation id="8386068868580335421">بازنشانی</translation>
 <translation id="8407669440184693619">هیچ گذرواژه‌ای برای این سایت پیدا نشد</translation>
 <translation id="842017693807136194">ورود به سیستم با</translation>
@@ -838,7 +834,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9081058212938299310">گذرواژه <ph name="USERNAME" /> به‌روزرسانی شود؟</translation>
 <translation id="9083392325882095631">۱ مورد</translation>
 <translation id="9083838294503912307">برای همگام‌سازی و شخصی‌سازی در همه دستگاه‌ها، همگام‌سازی را روشن کنید.</translation>
-<translation id="9084677839771512880">سازمان شما آنچه را می‌توانید همگام‌سازی کنید محدود می‌کند. <ph name="BEGIN_LINK" />جزئیات<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">‏گذرواژه پیشنهادی Chrome:</translation>
 <translation id="9094033019050270033">به‌روزرسانی گذرواژه</translation>
 <translation id="9100610230175265781">گذرعبارت لازم است</translation>

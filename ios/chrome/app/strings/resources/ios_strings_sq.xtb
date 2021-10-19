@@ -25,7 +25,6 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1145536944570833626">Fshi të dhënat ekzistuese.</translation>
 <translation id="1147031633655575115">Identifikuar si <ph name="USER" /></translation>
 <translation id="1154984953698510061">Shiko skedat e tjera</translation>
-<translation id="1157749421655780457">Lejo vendndodhjen...</translation>
 <translation id="1165039591588034296">Gabim</translation>
 <translation id="1172898394251786223">Fusha tjetër</translation>
 <translation id="1176932207622159128">Imazhi nuk mund të ruhet</translation>
@@ -239,7 +238,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3240426699337459095">Lidhja u kopjua</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> nga <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Lista jote e leximit ofrohet jashtë linje. Për të shtuar një faqe në listën tënde të leximit, trokit te <ph name="SHARE_OPENING_ICON" /> dhe më pas te <ph name="ADD_TO_READING_LIST_TEXT" />.</translation>
 <translation id="3268451620468152448">Hap skedat</translation>
 <translation id="3272527697863656322">Anulo</translation>
 <translation id="3277021493514034324">Adresa e sajtit u kopjua</translation>
@@ -262,7 +260,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="345565170154308620">Menaxho fjalëkalimet...</translation>
 <translation id="3469166899695866866">Të ndalohet shkarkimi?</translation>
 <translation id="3470502288861289375">Po kopjon...</translation>
-<translation id="3472993688462687965">Kur aktivizon sinkronizimin, të dhënat mund të kufizohen nga ato që organizata jote ka lejuar.</translation>
 <translation id="3474624961160222204">Vazhdo si <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Muaji i skadimit</translation>
 <translation id="3482959374254649722">Po sinkronizon skedat e tua...</translation>
@@ -374,7 +371,6 @@ Ndiq hapat më poshtë:</translation>
 
 Të dhënat e tua janë të koduara me frazën tënde të kalimit për sinkronizimin. Fute atë për të nisur sinkronizimin.</translation>
 <translation id="4689564913179979534">Menaxho mënyrat e pagesës...</translation>
-<translation id="469022783543509074">Ke dalë nga llogaria</translation>
 <translation id="470966556546083668">Mos e aktivizo sinkronizimin</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4747097190499141774">Enkriptimi i frazës së kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay. Vetëm dikush me frazën tënde të kalimit mund t'i lexojë të dhënat e enkriptuara. Fraza e kalimit nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën e kalimit ose dëshiron ta ndryshosh këtë cilësim, do të duhet të rivendosësh sinkronizimin. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6842136130964845393">Për t'u siguruar që mund të qasesh gjithmonë në fjalëkalimet e tua të ruajtura, verifiko që je ti</translation>
 <translation id="6851516051005285358">Kërko sajtin për desktop</translation>
-<translation id="6856384753476268833">Menaxhohet nga organizata jote.</translation>
 <translation id="6858855187367714033">Skanuar</translation>
 <translation id="6859944681507688231">Për të skanuar një kod QR ose kartë krediti, aktivizo kamerën nga cilësimet.</translation>
 <translation id="6869389390665537774">Mund të shikosh faqet që ke vizituar ose pastroji ato nga historiku yt</translation>
@@ -691,7 +686,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7472734401283673885">Emri i kompanisë</translation>
 <translation id="7473891865547856676">Jo, faleminderit</translation>
 <translation id="7481312909269577407">Përpara</translation>
-<translation id="7483467499335917849">Përdor vendndodhjen tënde aktuale</translation>
 <translation id="750493650310597496">0 të përzgjedhura</translation>
 <translation id="7508728395076009983">Për të kyçur skedat e tua "e fshehta", konfiguro Touch ID, Face ID, ose Passcode.</translation>
 <translation id="7514365320538308">Shkarko</translation>
@@ -768,6 +762,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8319076807703933069">Kërkim i ri</translation>
 <translation id="8323906514956095947">Prek dhe mbaj të shtypur për opsione të tjera të skedës</translation>
 <translation id="8328777765163860529">Mbylli të gjitha</translation>
+<translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>
 <translation id="8386068868580335421">Rivendos</translation>
 <translation id="8407669440184693619">Nuk u gjetën fjalëkalime për këtë sajt</translation>
 <translation id="842017693807136194">Identifikuar me</translation>
@@ -838,7 +833,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9081058212938299310">Të përditësohet fjalëkalimi për <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 artikull</translation>
 <translation id="9083838294503912307">Për të sinkronizuar dhe personalizuar mes pajisjeve, aktivizo sinkronizimin.</translation>
-<translation id="9084677839771512880">Organizata jote kufizon se çfarë mund të sinkronizosh. <ph name="BEGIN_LINK" />Detajet<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Fjalëkalimi i sugjeruar nga Chrome:</translation>
 <translation id="9094033019050270033">Përditëso fjalëkalimin</translation>
 <translation id="9100610230175265781">Kërkohet shprehja e kalimit</translation>

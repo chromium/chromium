@@ -52,7 +52,6 @@
 <translation id="5171868502429358653">Zaloguj się w Chromium</translation>
 <translation id="5224391634244552924">Brak zapisanych haseł. Chromium może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="5308226104666789935">Chromium nie może sprawdzić dostępności aktualizacji</translation>
-<translation id="5324242752415821224">Twoja organizacja wymaga od Ciebie zalogowania się w Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="5396916991083608703">Ustawić Chromium jako domyślną przeglądarkę?</translation>
 <translation id="5521125884468363740">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chromium, zaloguj się i włącz synchronizację</translation>
 <translation id="5573014823074921752">Wskazówka dla użytkowników Chromium. Aby zobaczyć więcej opcji kart, naciśnij i przytrzymaj przycisk Pokaż karty na pasku narzędzi, który znajduje się na dole lub na górze ekranu.</translation>
@@ -73,7 +72,6 @@
 <translation id="6424492062988593837">Chromium jest teraz jeszcze lepsze! Dostępna jest nowa wersja.</translation>
 <translation id="6752854822223394465">Twoja organizacja konfiguruje Chromium…</translation>
 <translation id="6820823224820483452">Przeglądarce Chromium nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>
-<translation id="6827294685447036764">Jeśli zezwolisz na dostęp do swojej lokalizacji, Chromium będzie wysyłać ją do witryn, którym przyznasz dostęp. O dostęp do Twojej lokalizacji mogą prosić witryny pokazujące treści lokalne, np. wiadomości z regionu czy informacje o sklepach w pobliżu.</translation>
 <translation id="7018284295775193585">Nie udało się zaktualizować Chromium</translation>
 <translation id="7045244423563602563">Dostosuj Chromium do swoich potrzeb</translation>
 <translation id="7099326575020694068">Chromium nie może używać aparatu w trybie widoku dzielonego</translation>

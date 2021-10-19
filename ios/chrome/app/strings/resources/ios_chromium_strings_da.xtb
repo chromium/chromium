@@ -52,7 +52,6 @@
 <translation id="5171868502429358653">Log ind på Chromium</translation>
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5308226104666789935">Chromium kan ikke søge efter opdateringer</translation>
-<translation id="5324242752415821224">Din organisation kræver, at du logger ind for at bruge Chromium. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Vil du angive Chromium som standard?</translation>
 <translation id="5521125884468363740">Log ind, og aktivér synkronisering på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>
 <translation id="5573014823074921752">Chromium-tip. Hvis du vil se flere faneindstillinger, skal du trykke på knappen Vis faner på værktøjslinjen og holde fingeren nede. Du finder knappen nederst eller øverst på skærmen.</translation>
@@ -73,7 +72,6 @@
 <translation id="6424492062988593837">Chromium er lige blevet bedre! Der er en ny tilgængelig version.</translation>
 <translation id="6752854822223394465">Din organisation konfigurer Chromium...</translation>
 <translation id="6820823224820483452">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
-<translation id="6827294685447036764">Hvis du giver Chromium tilladelse til at kende din lokation, sender Chromium den til de websites, du giver tilladelse til. Websites kan anmode om adgang til din lokation, når de vil vise dig lokale oplysninger, f.eks. butikker i nærheden eller nyheder.</translation>
 <translation id="7018284295775193585">Chromium kan ikke opdateres</translation>
 <translation id="7045244423563602563">Tilpas Chromium</translation>
 <translation id="7099326575020694068">Chromium kan ikke bruge dit kamera i tilstanden Opdelt visning</translation>

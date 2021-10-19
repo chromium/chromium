@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">ነባሩን ውሂብ ይሰርዙ።</translation>
 <translation id="1147031633655575115">እንደ <ph name="USER" /> ሆነው ገብተዋል</translation>
 <translation id="1154984953698510061">ሌሎች ትሮችን ይመልከቱ</translation>
-<translation id="1157749421655780457">አካባቢን ፍቀድ...</translation>
 <translation id="1165039591588034296">ስህተት</translation>
 <translation id="1172898394251786223">ቀጣይ መስክ</translation>
 <translation id="1176932207622159128">ምስሉን ማስቀመጥ አልተቻለም</translation>
@@ -239,7 +238,6 @@
 <translation id="3240426699337459095">አገናኝ ተቀድቷል</translation>
 <translation id="3244271242291266297">ወወ</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />፣ <ph name="ADDITIONAL_INFO" />፣ <ph name="INDEX" /> ከ<ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">የንባብ ዝርዝርዎ ከመስመር ውጭ ይገኛል። አንድ ገጽ ወደ የንባብ ዝርዝርዎ ለማከል መጀመሪያ <ph name="SHARE_OPENING_ICON" />ን ከዚያም <ph name="ADD_TO_READING_LIST_TEXT" />ን መታ ያድርጉ።</translation>
 <translation id="3268451620468152448">ክፍት ትሮች</translation>
 <translation id="3272527697863656322">ይቅር</translation>
 <translation id="3277021493514034324">የድር ጣቢያ አድራሻ ተቀድቷል</translation>
@@ -262,7 +260,6 @@
 <translation id="345565170154308620">የይለፍ ቃላትን አቀናብር...</translation>
 <translation id="3469166899695866866">ማውረድ ይቁም?</translation>
 <translation id="3470502288861289375">በመቅዳት ላይ...</translation>
-<translation id="3472993688462687965">አስምርን ሲያበሩ ውሂቡ የእርስዎ ድርጅት በፈቀደው ሊገደብ ይችላል።</translation>
 <translation id="3474624961160222204">እንደ <ph name="NAME" /> ይቀጥሉ</translation>
 <translation id="3478058380795961209">ጊዜው የሚያልፍበት ወር</translation>
 <translation id="3482959374254649722">የእርስዎን ትሮች በማሰመር ላይ...</translation>
@@ -374,7 +371,6 @@
 
 የእርስዎ ውሂብ በእርስዎ የስምረት የይለፍ ቃል ተመስጥሯል። ስምረትን ለመጀመር ያስገቡት።</translation>
 <translation id="4689564913179979534">የክፍያ ዘዴዎችን ያስተዳድሩ...</translation>
-<translation id="469022783543509074">ዘግተው ወጥተው ነበር።</translation>
 <translation id="470966556546083668">ስምረትን አያብሩ</translation>
 <translation id="473775607612524610">አዘምን</translation>
 <translation id="4747097190499141774">የእርስዎ የይለፍ ሐረግ ያለው ሰው ብቻ ነው የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው። የይለፍ ሐረጉ ወደ Google አይላክም እንዲሁም አይከማችም። የእርስዎን የይለፍ ሐረግ ከረሱት ወይም ይህን ቅንብር መለወጥ ከፈለጉ ማሥመሩን ዳግም ማስጀመር ያስፈልገዎታል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6831043979455480757">መተርጎም</translation>
 <translation id="6842136130964845393">የተቀመጡ የይለፍ ቃላትዎን ሁልጊዜ መድረስ መቻልዎን ለማረጋገጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="6851516051005285358">የዴስክቶፕ ጣቢያን ጠይቅ</translation>
-<translation id="6856384753476268833">በእርስዎ ድርጅት የሚተዳደር።</translation>
 <translation id="6858855187367714033">ተቃኝቷል</translation>
 <translation id="6859944681507688231">አንድ QR ኮድ ወይም ክሬዲት ካርድ ለመቃኘት ከቅንብሮች ሆነው ካሜራውን ያንቁት።</translation>
 <translation id="6869389390665537774">የጎበኟቸዉን ገጾች ማየት ወይም ከታሪክዎ ውስጥ ማፅዳት ይችላሉ</translation>
@@ -691,7 +686,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7472734401283673885">የኩባንያ ስም</translation>
 <translation id="7473891865547856676">አይ፣ አመሰግናለሁ</translation>
 <translation id="7481312909269577407">ወደ ፊት</translation>
-<translation id="7483467499335917849">የአሁኑ አካባቢዎን ይጠቀሙ።</translation>
 <translation id="750493650310597496">0 ተመርጧል</translation>
 <translation id="7508728395076009983">ማንነት የማያሳውቁ ትሮችዎን ለመቆለፍ። የንኪ መታወቂያ፣ የፊት መታወቂያ፣ ወይም የይለፍ ኮድ ያዘጋጁ።</translation>
 <translation id="7514365320538308">አውርድ</translation>
@@ -768,6 +762,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8319076807703933069">አዲስ ፍለጋ</translation>
 <translation id="8323906514956095947">ተጨማሪ የትር አማራጮችን ለማግኘት ነክተው ይያዙ</translation>
 <translation id="8328777765163860529">ሁሉንም ዝጋ</translation>
+<translation id="8378714024927312812">በእርስዎ ድርጅት የሚተዳደር</translation>
 <translation id="8386068868580335421">ዳግም አስጀምር</translation>
 <translation id="8407669440184693619">ለዚህ ጣቢያ ምንም የይለፍ ቃላት አልተገኙም</translation>
 <translation id="842017693807136194">በሚከተለው በመለያ ተገብቷል፦</translation>
@@ -838,7 +833,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9081058212938299310">የ<ph name="USERNAME" /> ይለፍ ቃል ይዘመን?</translation>
 <translation id="9083392325882095631">1 ንጥል</translation>
 <translation id="9083838294503912307">በመላ መሣሪያዎች ላይ ለማስመር እና ግላዊነትን ለማላበስ ስምረትን ያብሩ።</translation>
-<translation id="9084677839771512880">የእርስዎ ድርጅት ማስመር የሚችሉትን ይገድባል። <ph name="BEGIN_LINK" />ዝርዝሮች<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">በChrome የጠቆመ ይለፍ ቃል፦</translation>
 <translation id="9094033019050270033">የይለፍ ቃል ያዘምኑ</translation>
 <translation id="9100610230175265781">የይለፍ ሐረግ ያስፈልጋል</translation>

@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Brandmuur is bespeur</translation>
 <translation id="1075811647922107217">Bladsygrootte</translation>
-<translation id="110351136513869678">Besoek instellings vir opstelling</translation>
 <translation id="1119447706177454957">Interne fout</translation>
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">Ongeldige PUK.</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
 <translation id="155865706765934889">Raakpaneel</translation>
+<translation id="1572585716423026576">Stel as muurpapier</translation>
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
 <translation id="1639239467298939599">Laai tans</translation>
 <translation id="1641857168437328880">Dokumentvoerder (een kant)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">Kanselleer skandering</translation>
 <translation id="1851218745569890714">Videokonferensies</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">Kan nie IP-adres kry nie</translation>
 <translation id="1887850431809612466">Hardewarehersiening</translation>
-<translation id="1901646112321215184">Geen DNS-bedieners is opgestel nie</translation>
 <translation id="1905710495812624430">Maksimum toegelate pogings is oorskry.</translation>
 <translation id="1908234395526491708">Mislukte UDP-versoeke</translation>
 <translation id="1930797645656624981">Chrome-bedryfstelsel se invoermetodediens</translation>
 <translation id="1947737735496445907">Gedruk</translation>
-<translation id="197386857804679933">Besoek Instellings om weer te koppel</translation>
 <translation id="1979103255016296513">Wagwoord moes al verander geword het</translation>
 <translation id="1999615961760456652">Kontroleringsportaal</translation>
 <translation id="2006864819935886708">Konnektiwiteit</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">Plaas 'n ander bladsy op die skandeerder</translation>
 <translation id="2872961005593481000">Skakel af</translation>
 <translation id="2878387241690264070">Het <ph name="RATE" /> ontlaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
-<translation id="2927511423571448384">Kan nie deur brandmuur aan HTTP-webwerwe (poort 80) koppel vanaf Android nie</translation>
 <translation id="3008341117444806826">HERLAAI</translation>
 <translation id="3009958530611748826">Kies 'n vouer om in te stoor</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Eindpunt</translation>
 <translation id="3069085583900247081">Toets het misluk</translation>
-<translation id="3076387335132326640">Jy gebruik tans 'n oop netwerk</translation>
 <translation id="3083667275341675831">Konnektiwiteitdiagnostiek</translation>
 <translation id="3091839911843451378">Misluk – Gestop</translation>
 <translation id="3102119246920354026">Kas</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">Ongeveer <ph name="MIN_REMAINING" /> minute oor</translation>
 <translation id="3565064564551103223">Toegelate IP's</translation>
 <translation id="357889014807611375">betaalde Wi-Fi</translation>
-<translation id="3582041541988388905">Geen <ph name="NETWORK_NAME" />-verbinding bespeur nie</translation>
 <translation id="3595596368722241419">Battery is vol</translation>
 <translation id="360565022852130722">Wi-Fi-netwerk is met swak protokol WEP 802.1x beveilig</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />-toets</translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-battery</translation>
 <translation id="4561801978359312462">SIM is ontsluit</translation>
 <translation id="4562494484721939086">Geen diens nie</translation>
-<translation id="4567024731344774461">Kan nie DNS vanaf Android oplos nie</translation>
 <translation id="458794348635939462">Kon nie alle gashere bepaal nie</translation>
 <translation id="4593212453765072419">Instaanstawing word vereis</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk om die druktaak te kanselleer.</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) DNS-resolusie</translation>
 <translation id="4848429997038228357">LOOP TANS</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} poging oor}other{<ph name="ERROR_MESSAGE" /> {0} pogings oor}}</translation>
-<translation id="4871137769558798671">Kan nie deur brandmuur aan HTTPS-webwerwe (poort 443) koppel nie</translation>
 <translation id="4880328057631981605">Toegangspuntnaam</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Kies onmiddellik 'n nuwe een</translation>
@@ -291,7 +283,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5502931783115429516">Android werk tans nie</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">Swak seinsterkte; probeer om nader aan die toegangspunt te beweeg</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Herskandeer</translation>
 <translation id="5669267381087807207">Aktiveer tans</translation>
@@ -299,7 +290,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5691511426247308406">Familie</translation>
 <translation id="5701381305118179107">Sentreer</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">Geen naambedieners is opgestel nie</translation>
 <translation id="5760715441271661976">Portaalstatus</translation>
 <translation id="5784136236926853061">Hoë HTTP-traagheid</translation>
 <translation id="5832805196449965646">Voeg persoon by</translation>
@@ -343,7 +333,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="636850387210749493">Onderneminginskrywing</translation>
 <translation id="6379086450106841622">Raakskerm</translation>
 <translation id="6388847657025262518">Die skandeerder se dokumentvoerder is geblokkeer. Gaan die dokumentvoerder na en probeer weer.</translation>
-<translation id="6395640744968320699">Kan nie deur brandmuur aan HTTP-webwerwe (poort 80) koppel nie</translation>
 <translation id="6398765197997659313">Gaan by volskerm uit</translation>
 <translation id="641081527798843608">Voorwerppassing</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -353,7 +342,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6472207088655375767">EW</translation>
 <translation id="6480327114083866287">Bestuur deur <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Gestop – papierknoop</translation>
-<translation id="6498608540383876992">Kan nie deurgang kontak nie</translation>
 <translation id="6516990319416533844">Laat jou battery 'n rukkie afloop om die batterylaaikoers te toets</translation>
 <translation id="6517239166834772319">Verken</translation>
 <translation id="6527081081771465939">Onbekende wi-fi-sekuriteitprotokol</translation>
@@ -363,13 +351,11 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6574762126505704998">Vul</translation>
 <translation id="6575134580692778371">Nie opgestel nie</translation>
 <translation id="6596816719288285829">IP-adres</translation>
-<translation id="6603230386432466813">Sukkel jy om te koppel?</translation>
 <translation id="6618744767048954150">Werk tans</translation>
 <translation id="6620487321149975369">Druktake sal in geskiedenis verskyn tensy hulle handmatig verwyder word</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6704062477274546131">DNS-ontbinding</translation>
-<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> is gedeaktiveer</translation>
 <translation id="6747215703636344499">Gestop – uitvoer is vol</translation>
 <translation id="6756731097889387912">Kon nie skandering kanselleer nie</translation>
 <translation id="6766275201586212568">Mislukte DNS-resolusies</translation>
@@ -382,7 +368,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6957231940976260713">Diensnaam</translation>
 <translation id="6961170852793647506">Plaas jou dokument op die skandeerder om te begin</translation>
 <translation id="6977381486153291903">Fermwarehersiening</translation>
-<translation id="6982876849933694860">Gaan na <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om 'n nuwe verbinding op te stel.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
 <translation id="7040230719604914234">Diensverskaffer</translation>
 <translation id="7058278511608979688">Beëindig en stoor</translation>
@@ -401,7 +386,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7271040990581020067">Skandeerder word tans gebruik Probeer later weer.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Muurpapierversamelings</translation>
-<translation id="7292680402155138244">Hoë traagheid na HTTPS-webwerwe (poort 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -459,7 +443,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Versoek verkeertellers</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">Kan nie DNS oplos nie</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
 <translation id="8230672074305416752">Kon nie die versteknetwerkdeurgang pieng nie</translation>
@@ -471,7 +454,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8297006494302853456">Swak</translation>
 <translation id="8302368968391049045">HTTPS-brandmuur</translation>
 <translation id="8318753676953949627">Geen prente nie</translation>
-<translation id="8346875532700229909">Kan nie die deurgang kontak vanaf Android nie</translation>
 <translation id="8347227221149377169">Druktake</translation>
 <translation id="8352772353338965963">Voeg 'n rekening by meervuldige aanmelding. Daar kan sonder 'n wagwoord by alle aangemelde rekeninge ingegaan word, en daarom moet hierdie kenmerk net met vertroude rekeninge gebruik word.</translation>
 <translation id="8364946094152050673">Leë naambedieners</translation>

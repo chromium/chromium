@@ -985,6 +985,7 @@
 <translation id="2002109485265116295">En temps réel</translation>
 <translation id="200217416291116199">Nous vous recommandons de sauvegarder vos fichiers au cas où la mise à niveau échouerait. Le démarrage de la mise à niveau va entraîner l'arrêt de Linux. Veuillez enregistrer les fichiers ouverts avant de continuer.</translation>
 <translation id="2003130567827682533">Pour activer les données "<ph name="NAME" />", connectez-vous tout d'abord à un réseau Wi-Fi</translation>
+<translation id="2004697686368036666">Les fonctionnalités de certains sites peuvent ne pas fonctionner</translation>
 <translation id="2005199804247617997">Autres profils</translation>
 <translation id="2006638907958895361">Ouvrir le lien dans <ph name="APP" /></translation>
 <translation id="2007404777272201486">Signaler un problème...</translation>
@@ -1127,7 +1128,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2154484045852737596">Modifier la carte</translation>
 <translation id="2154502158735983655">Lire les infos provenant de l'appareil Chrome OS et ses données.</translation>
-<translation id="2154710561487035718">Copier l'URL</translation>
 <translation id="2155772377859296191">La résolution est de <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker : <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Ne plus demander lors de l'ouverture d'un fichier de ce format dans cette appli :
@@ -2370,6 +2370,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="344630545793878684">Lire vos données sur plusieurs sites web</translation>
 <translation id="3446650212859500694">Le contenu de ce fichier est sensible</translation>
 <translation id="3446827946208017735">Retrouvez vos paramètres de confidentialité les plus importants au même endroit</translation>
+<translation id="3447644283769633681">Bloquer tous les cookies tiers</translation>
 <translation id="3448086340637592206">Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS</translation>
 <translation id="3448492834076427715">Mettre à jour le compte</translation>
 <translation id="3449393517661170867">Nouvelle fenêtre à onglets</translation>
@@ -3163,7 +3164,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="428715201724021596">Connexion au profil… Cela peut prendre quelques minutes.</translation>
 <translation id="4287157641315808225">Oui, activer ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Afficher}one{Tout afficher}other{Tout afficher}}</translation>
-<translation id="4289372044984810120">Tu peux gérer ton compte sur cette page. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Présentation</translation>
 <translation id="4289732974614035569">Sélectionner un code</translation>
 <translation id="4290791284969893584">Si vous fermez une page, les tâches lancées risquent de ne pas être terminées</translation>
@@ -3239,7 +3239,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4378556263712303865">Réquisition de l'appareil</translation>
 <translation id="4379281552162875326">Désinstaller <ph name="APP_NAME" /> ?</translation>
 <translation id="4380648069038809855">Mode plein écran activé</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" /> et 1 autre compte}one{<ph name="EMAIL" /> et <ph name="EXTRA_ACCOUNTS" /> autre compte}other{<ph name="EMAIL" /> et <ph name="EXTRA_ACCOUNTS" /> autres comptes}}</translation>
 <translation id="4384312707950789900">Ajouter aux réseaux préférés</translation>
 <translation id="4384652540891215547">Activer l'extension</translation>
 <translation id="4384886290276344300">Modifier les paramètres du clavier</translation>
@@ -3862,7 +3861,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5053962746715621840">Rechercher l'image avec Google Lens</translation>
 <translation id="5056950756634735043">Connexion au conteneur</translation>
 <translation id="5057110919553308744">Lorsque vous cliquez sur l'extension</translation>
-<translation id="5057403786441168405">Gérez les comptes auxquels vous êtes connecté. Les sites Web, les applications ainsi que les extensions Chrome et Google Play peuvent utiliser ces comptes pour personnaliser votre expérience, en fonction des autorisations accordées. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restreindre les connexions</translation>
 <translation id="5059526285558225588">Choisir ce que vous partagez</translation>
 <translation id="5060332552815861872">1 imprimante peut être enregistrée.</translation>
@@ -4992,7 +4990,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6284632978374966585">Appliquer le thème sombre</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> n'est pas un fichier couramment téléchargé. Il est peut-être dangereux.</translation>
 <translation id="6285770818046456882">L'appareil qui partage du contenu avec vous a annulé le transfert</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Aucun appareil disponible pour partager du contenu à proximité. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Vérification du code d'activation… Cela peut prendre quelques minutes.</translation>
 <translation id="6291741848715722067">Code de confirmation</translation>
@@ -5415,7 +5412,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6750757184909117990">Désactiver le réseau mobile</translation>
 <translation id="6750946710563435348">Utiliser un autre nom d'utilisateur</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Navigation privée)</translation>
-<translation id="6757101664402245801">URL copiée</translation>
 <translation id="6758056191028427665">Faites-nous part de vos commentaires.</translation>
 <translation id="6759193508432371551">Rétablir la configuration d'usine</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
@@ -5592,7 +5588,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="693807610556624488">L'opération d'écriture dépasse la longueur maximale de l'attribut sur l'appareil <ph name="DEVICE_NAME" />.</translation>
 <translation id="6938386202199793006">Vous avez 1 imprimante enregistrée.</translation>
 <translation id="6938606182859551396">Pour recevoir sur votre <ph name="DEVICE_TYPE" /> les notifications de votre téléphone, suivez les instructions à l'écran afin d'autoriser les services Google Play à y accéder.</translation>
-<translation id="6938789263968032501">Personnes</translation>
 <translation id="6939815295902433669">Examiner les logiciels de l'appareil</translation>
 <translation id="694168622559714949">Votre administrateur a défini une langue par défaut non modifiable.</translation>
 <translation id="6941937518557314510">Connectez-vous à <ph name="TOKEN_NAME" /> pour vous authentifier auprès de <ph name="HOST_NAME" /> avec votre certificat.</translation>
@@ -7638,7 +7633,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9040661932550800571">Mettre à jour le mot de passe pour <ph name="ORIGIN" /> ?</translation>
 <translation id="9041692268811217999">Votre administrateur a désactivé l'accès aux fichiers locaux sur votre ordinateur</translation>
 <translation id="904224458472510106">Cette opération est irréversible</translation>
-<translation id="9042893549633094279">Confidentialité et sécurité</translation>
 <translation id="904451693890288097">Veuillez saisir la clé d'accès de "<ph name="DEVICE_NAME" />" :</translation>
 <translation id="9044646465488564462">Échec de la connexion au réseau : <ph name="DETAILS" />.</translation>
 <translation id="9045160989383249058">Votre liste de lecture a été déplacée vers le nouveau panneau latéral. Faites un essai.</translation>

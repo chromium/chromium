@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">বিদ্যমান ডেটা মুছুন।</translation>
 <translation id="1147031633655575115"><ph name="USER" /> হিসেবে সাইন-ইন করেছেন</translation>
 <translation id="1154984953698510061">অন্যান্য ট্যাব দেখুন</translation>
-<translation id="1157749421655780457">লোকেশন অ্যাক্সেস করার অনুমতি দিন...</translation>
 <translation id="1165039591588034296">ত্রুটি</translation>
 <translation id="1172898394251786223">পরবর্তী ফিল্ড</translation>
 <translation id="1176932207622159128">ছবি সেভ করা যায়নি</translation>
@@ -239,7 +238,6 @@
 <translation id="3240426699337459095">লিঙ্ক কপি করা হয়েছে</translation>
 <translation id="3244271242291266297">মিমি</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="NUM_SUGGESTIONS" /> এর <ph name="INDEX" /></translation>
-<translation id="3261971309013797455">আপনার পড়ার তালিকাটি অফলাইনে উপলভ্য। পড়ার তালিকায় কোনও পৃষ্ঠা যোগ করতে, <ph name="SHARE_OPENING_ICON" />-এ এবং তারপরে <ph name="ADD_TO_READING_LIST_TEXT" />-এ ট্যাপ করুন।</translation>
 <translation id="3268451620468152448">ওপেন ট্যাব</translation>
 <translation id="3272527697863656322">বাতিল করুন</translation>
 <translation id="3277021493514034324">সাইটের ঠিকানা কপি করা হয়েছে</translation>
@@ -262,7 +260,6 @@
 <translation id="345565170154308620">পাসওয়ার্ড পরিচালনা করুন…</translation>
 <translation id="3469166899695866866">ডাউনলোড বন্ধ করবেন?</translation>
 <translation id="3470502288861289375">অনুলিপি করা হচ্ছে...</translation>
-<translation id="3472993688462687965">সিঙ্ক চালু করলে, আপনার সংস্থা কিসের জন্য অনুমতি দিয়েছে সেটির উপর নির্ভর করে সীমিত ডেটা সিঙ্ক করা হতে পারে।</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> হিসাবে চালিয়ে যান</translation>
 <translation id="3478058380795961209">মেয়াদপূর্তির মাস</translation>
 <translation id="3482959374254649722">আপনার ট্যাবগুলি সিঙ্ক করা হচ্ছে ...</translation>
@@ -374,7 +371,6 @@
 
 আপনার সিঙ্ক পাসফ্রেজের মাধ্যমে আপনার ডেটা এনক্রিপটেড হয়েছে। সিঙ্ক শুরু করতে এটি লিখুন।</translation>
 <translation id="4689564913179979534">পেমেন্ট পদ্ধতিগুলি ম্যানেজ করুন...</translation>
-<translation id="469022783543509074">আপনাকে সাইন-আউট করে দেওয়া হয়েছে</translation>
 <translation id="470966556546083668">সিঙ্ক চালু করবেন না</translation>
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4747097190499141774">পাসফ্রেজ এনক্রিপশনে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না। আপনার পাসফ্রেজ আছে এমন কেউই শুধু আপনার এনক্রিপ্ট করা ডেটা পড়তে পারবেন। পাসফ্রেজ Google-এ পাঠানো হয় না বা Google তা সংরক্ষণ করে না। আপনার পাসফ্রেজ ভুলে গেলে বা এই সেটিং পরিবর্তন করতে চাইলে, আপনাকে সিঙ্ক রিসেট করতে হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -624,7 +620,6 @@
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="6842136130964845393">আপনার সেভ করা পাসওয়ার্ড সবসময় যাতে অ্যাক্সেস করতে পারেন তা নিশ্চিত করতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="6851516051005285358">ডেস্কটপ সাইটের জন্য অনুরোধ করুন</translation>
-<translation id="6856384753476268833">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা হয়।</translation>
 <translation id="6858855187367714033">স্ক্যান করা হয়েছে</translation>
 <translation id="6859944681507688231">কোনও QR কোড বা ক্রেডিট কার্ড স্ক্যান করতে সেটিংস থেকে ক্যামেরা চালু করুন।</translation>
 <translation id="6869389390665537774">আপনি যেসব পৃষ্ঠাতে গেছেন, সেগুলি এখানে দেখতে পারেন বা আপনার দেখার ইতিহাস থেকে সেগুলি সরিয়ে দিতে পারেন</translation>
@@ -692,7 +687,6 @@
 <translation id="7472734401283673885">কোম্পানির নাম:</translation>
 <translation id="7473891865547856676">না থাক</translation>
 <translation id="7481312909269577407">ফরওয়ার্ড</translation>
-<translation id="7483467499335917849">আপনার বর্তমান লোকেশন ব্যবহার করুন</translation>
 <translation id="750493650310597496">০টি নির্বাচিত</translation>
 <translation id="7508728395076009983">আপনার 'ছদ্মবেশী' ট্যাব লক করতে 'টাচ আইডি', 'ফেস আইডি' বা 'পাসকোড' সেট করুন।</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
@@ -769,6 +763,7 @@
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>
 <translation id="8323906514956095947">আরও ট্যাবের বিকল্প দেখতে টাচ করে ধরে থাকুন</translation>
 <translation id="8328777765163860529">সমস্ত বন্ধ করুন</translation>
+<translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>
 <translation id="8386068868580335421">রিসেট করুন</translation>
 <translation id="8407669440184693619">এই সাইটের জন্য কোনও পাসওয়ার্ড পাওয়া যায়নি</translation>
 <translation id="842017693807136194">এটি দিয়ে সাইন-ইন করেছেন</translation>
@@ -817,6 +812,7 @@
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8840513115188359703">আপনাকে Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না।</translation>
+<translation id="8843129975935593190">আপনি কী সিঙ্ক করতে পারবেন সেটি আপনার প্রতিষ্ঠান সীমিত করে।</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count}টি ট্যাব}one{{count}টি ট্যাব}other{{count}টি ট্যাব}}</translation>
 <translation id="8870413625673593573">সম্প্রতি বন্ধ হয়েছে</translation>
 <translation id="8876882697946675716">আপনার ডিভাইস সিঙ্ক করে রাখুন</translation>
@@ -838,7 +834,6 @@
 <translation id="9081058212938299310"><ph name="USERNAME" />-এর পাসওয়ার্ড আপডেট করবেন?</translation>
 <translation id="9083392325882095631">১টি আইটেম</translation>
 <translation id="9083838294503912307">সমগ্র ডিভাইস জুড়ে সিঙ্ক এবং নিজের মতো সাজিয়ে নিতে সিঙ্ক বিকল্পটি চালু করুন।</translation>
-<translation id="9084677839771512880">আপনি কী সিঙ্ক করতে পারবেন সেটির উপর আপনার সংস্থা সীমাবদ্ধতা আরোপ করেছে। <ph name="BEGIN_LINK" />বিবরণ<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Chrome-এর সাজেস্ট করা পাসওয়ার্ড:</translation>
 <translation id="9094033019050270033">পাসওয়ার্ড আপডেট করুন</translation>
 <translation id="9100610230175265781">পাসফ্রেজের প্রয়োজন</translation>

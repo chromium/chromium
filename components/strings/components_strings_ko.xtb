@@ -124,6 +124,7 @@
           <ph name="LIST_ITEM" />고용주 또는 학교
           <ph name="LIST_ITEM" />인터넷 서비스 제공업체
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">탭 공유</translation>
 <translation id="1339601241726513588">등록 도메인:</translation>
 <translation id="1340482604681802745">수령 주소</translation>
 <translation id="1346748346194534595">오른쪽</translation>
@@ -157,6 +158,7 @@
 <translation id="1428146450423315676">스태커 7</translation>
 <translation id="1428729058023778569">이 사이트에서 HTTPS를 지원하지 않기 때문에 경고가 표시되었습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">인쇄</translation>
+<translation id="1432581352905426595">검색엔진 관리</translation>
 <translation id="1436185428532214179">기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="1442386063175183758">오른쪽 게이트 폴드</translation>
 <translation id="1442987760062738829">펀칭</translation>
@@ -374,7 +376,6 @@
 <translation id="2130448033692577677">DnsOverHttpsMode 정책이 설정되지 않았기 때문에 지정한 템플릿이 적용되지 않을 수 있습니다.</translation>
 <translation id="213826338245044447">모바일 북마크</translation>
 <translation id="214556005048008348">결제 취소</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 링크 공유, QR 코드 생성, 전송 등의 옵션으로 이 페이지 공유</translation>
 <translation id="2148613324460538318">카드 추가</translation>
 <translation id="2149968176347646218">연결이 안전하지 않음</translation>
 <translation id="2154054054215849342">도메인에 대해 동기화를 사용할 수 없습니다.</translation>
@@ -421,7 +422,6 @@
 <translation id="2293443924986248631">이 옵션을 사용 설정하면 사이트가 웹 전반에서 사용자를 추적하는 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="2295290966866883927">방문한 페이지의 URL은 분석을 위해 Google Cloud 또는 타사로 전송됩니다. 예를 들어, 안전하지 않은 웹사이트를 감지하기 위해 URL을 검사할 수 있습니다.</translation>
 <translation id="2297722699537546652">B5(봉투)</translation>
-<translation id="2297822946037605517">이 페이지 공유</translation>
 <translation id="2298855485018661510">쿠키 관리 버튼, Enter를 눌러 Chrome 설정에서 쿠키 환경설정 관리</translation>
 <translation id="2300306941146563769">업로드되지 않음</translation>
 <translation id="2310021320168182093">Chou2(봉투)</translation>
@@ -499,6 +499,7 @@
 <translation id="2552295903035773204">지금부터 화면 잠금을 사용하여 카드 확인</translation>
 <translation id="2553853292994445426">보안 DNS 설정을 확인하세요. 연결되지 않는 보안 DNS 서버를 설정했을 수도 있습니다.</translation>
 <translation id="2556876185419854533">수정 실행 취소(&amp;U)</translation>
+<translation id="2570734079541893434">설정 관리하기</translation>
 <translation id="257674075312929031">그룹화</translation>
 <translation id="2586657967955657006">클립보드</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" />에서 제공한 기사입니다. <ph name="OTHER_ARTICLE_COUNT" />개의 다른 뉴스도 읽어 보세요.</translation>
@@ -507,7 +508,6 @@
 <translation id="2595719060046994702">회사 또는 다른 조직에서 관리하지 않는 기기 및 계정입니다.</translation>
 <translation id="2596415276201385844">보안 연결을 설정하려면 시계가 올바로 설정되어 있어야 합니다. 웹사이트가 자신을 식별하는 데 사용하는 인증서는 특정 기간에만 유효하기 때문입니다. 기기의 시계가 잘못 설정되어 Chrome에서 이 인증서를 확인할 수 없습니다.</translation>
 <translation id="2597378329261239068">문서가 비밀번호로 보호되고 있습니다. 비밀번호를 입력하세요.</translation>
-<translation id="2597833655590727265">Chrome 테마 관리 버튼, 브라우저 테마를 맞춤설정하려면 Enter를 누르세요.</translation>
 <translation id="2609632851001447353">유사 버전</translation>
 <translation id="2610561535971892504">클릭하여 복사</translation>
 <translation id="2618023639789766142">C10(봉투)</translation>
@@ -597,7 +597,6 @@
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서가 <ph name="DOMAIN2" />에서 제공한 것입니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="2943895734390379394">업로드 시간:</translation>
-<translation id="2948017612172418360">사이트 검색 관리 버튼, Enter를 눌러 사이트 검색과 기본 검색엔진 관리</translation>
 <translation id="2948083400971632585">설정 페이지의 연결을 구성하는 프록시를 사용 중지할 수 있습니다.</translation>
 <translation id="2949183777371959169">Chrome 브라우저 클라우드 관리에 등록되지 않은 컴퓨터이므로 무시되었습니다.</translation>
 <translation id="2951588413176968965">내 메일박스</translation>
@@ -1016,7 +1015,6 @@
 <translation id="4275830172053184480">기기 다시 시작</translation>
 <translation id="4277028893293644418">비밀번호 재설정</translation>
 <translation id="4278390842282768270">허용</translation>
-<translation id="4286047936834273847">사이트 검색 및 기본 검색엔진 관리</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{다음 카드가 Google 계정에 저장되었습니다.}other{다음 카드가 Google 계정에 저장되었습니다.}}</translation>
 <translation id="4287885627794386150">무료 체험을 이용할 수 있으나 활성화되어 있지 않음</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> 페이지 미리보기 이미지</translation>
@@ -1056,7 +1054,6 @@
 <translation id="4372948949327679948">예상 <ph name="VALUE_TYPE" /> 값입니다.</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" />에 접속하려 했으나 발행기관에서 서버가 전달한 인증서를 폐기했습니다. 이는 서버가 제시한 보안 자격증명 정보를 신뢰할 수 없음을 의미합니다. 사용자는 현재 공격자와 통신 중일 수도 있습니다.</translation>
 <translation id="4378154925671717803">전화기</translation>
-<translation id="4389652395741935834">링크 공유, QR 코드 생성, 전송 등의 옵션으로 이 페이지 공유</translation>
 <translation id="4390472908992056574">브림</translation>
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4406896451731180161">검색결과</translation>
@@ -1323,6 +1320,7 @@
 <translation id="5230733896359313003">배송지 주소</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">닫기</translation>
 <translation id="5250209940322997802">'네트워크에 연결'</translation>
 <translation id="52517543715119994">Chrome 기능 자세히 알아보기</translation>
 <translation id="5251803541071282808">클라우드</translation>
@@ -1640,7 +1638,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />프록시, 방화벽, 보안 DNS 설정 확인<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">왼쪽 듀얼 스테이플</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' 검색결과 1개</translation>
-<translation id="6377404662019220017">이 페이지 공유 버튼, 링크 공유, QR 코드 생성, 전송 등의 옵션으로 이 페이지 공유하려면 Enter를 누르세요.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">해당 사이트에서 비용이 청구될 수 있음</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{그 외 제안 1건}other{그 외 제안 #건}}</translation>
@@ -1861,7 +1858,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}}</translation>
 <translation id="7153618581592392745">라벤더색</translation>
 <translation id="7156870133441232244">서버를 TLS 1.2 이상으로 업그레이드해야 합니다.</translation>
-<translation id="716939258255825483">공룡 게임 플레이 버튼, Chrome 공룡 게임을 플레이하려면 Enter를 누르세요</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
 <translation id="7173920250514487165">화면의 기밀 콘텐츠 캡처</translation>
 <translation id="7174545416324379297">병합됨</translation>
@@ -1884,7 +1880,6 @@
 <translation id="7220786058474068424">처리 중</translation>
 <translation id="7221855153210829124">알림 표시</translation>
 <translation id="722454870747268814">새 시크릿 탭</translation>
-<translation id="7231476387708735839">사이트 검색 관리</translation>
 <translation id="7233592378249864828">인쇄 확인 시트</translation>
 <translation id="7238585580608191973">SHA-256 지문</translation>
 <translation id="7240120331469437312">인증서 대상 대체 이름</translation>
@@ -2479,6 +2474,7 @@
 <translation id="9213433120051936369">디자인 사용자설정</translation>
 <translation id="9215416866750762878">애플리케이션으로 인해 Chrome이 안전하게 이 사이트에 접속할 수 없음</translation>
 <translation id="9219103736887031265">이미지</translation>
+<translation id="922152298093051471">Chrome 맞춤설정</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">양식 지우기</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2511,5 +2507,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">출처: Google Pay</translation>
-<translation id="998677222109959694">Chrome 설정 관리</translation>
 </translationbundle>

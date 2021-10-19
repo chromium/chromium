@@ -124,6 +124,7 @@
           <ph name="LIST_ITEM" />သင်၏အလုပ်ရှင် သို့မဟုတ် ကျောင်း
           <ph name="LIST_ITEM" />သင်၏ အင်တာနက်ဝန်ဆောင်မှုပေးသူ
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">ဤတဘ်ကို မျှဝေရန်</translation>
 <translation id="1339601241726513588">စာရင်းသွင်းရန် ဒိုမိန်း</translation>
 <translation id="1340482604681802745">ထုတ်ယူရန် လိပ်စာ</translation>
 <translation id="1346748346194534595">ညာ</translation>
@@ -157,6 +158,7 @@
 <translation id="1428146450423315676">စီထည့်သည့်ပုံး ၇</translation>
 <translation id="1428729058023778569">ဤဝဘ်ဆိုက်သည် HTTPS မပံ့ပိုးသည့်အတွက် ဤသတိပေးချက်ကို မြင်နေရခြင်းဖြစ်သည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ပရင့်</translation>
+<translation id="1432581352905426595">ရှာဖွေမှုအင်ဂျင်များကို စီမံခန့်ခွဲရန်</translation>
 <translation id="1436185428532214179">သင့်စက်ပေါ်ရှိ ဖိုင်နှင့် ဖိုင်တွဲများ တည်းဖြတ်ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="1442386063175183758">ညာတံခါးရွက်ပုံစံ ခေါက်ရန်</translation>
 <translation id="1442987760062738829">ဖောက်ရန်</translation>
@@ -379,7 +381,6 @@
 <translation id="2130448033692577677">DnsOverHttpsMode မူဝါဒကို ထည့်သွင်းမထားသောကြောင့် သင်သတ်မှတ်ထားသော နမူနာပုံစံများကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။</translation>
 <translation id="213826338245044447">မိုဘိုင်း စာညှပ်များ</translation>
 <translation id="214556005048008348">ငွေပေးချေမှုကို ပယ်ဖျက်ရန်</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ လင့်ခ်ကို မျှဝေရန် နည်းလမ်းများဖြင့် ဤစာမျက်နှာကို မျှဝေခြင်း၊ ‘QR ကုဒ်’ ဖန်တီးခြင်း၊ ကာစ်လုပ်ခြင်းနှင့် အခြားလုပ်ဆောင်စရာများအတွက် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ။</translation>
 <translation id="2148613324460538318">ကတ်ထည့်ရန်…</translation>
 <translation id="2149968176347646218">ချိတ်ဆက်မှုသည် မလုံခြုံပါ</translation>
 <translation id="2154054054215849342">သင့်ဒိုမိန်း အတွက် စင့်ခ်လုပ်ခြင်း မရနိုင်ပါ</translation>
@@ -426,7 +427,6 @@
 <translation id="2293443924986248631">ဖွင့်ထားသည့်အခါ ဝဘ်တစ်လျှောက် သင့်အားခြေရာခံသည့် ကွတ်ကီးများကို ဝဘ်ဆိုက်များက အသုံးမပြုနိုင်ပါ။ အချို့ဝဘ်ဆိုက်များပေါ်ရှိ ဝန်ဆောင်မှုများ ရပ်သွားနိုင်ပါသည်။</translation>
 <translation id="2295290966866883927">သင်ကြည့်ရှုခဲ့သည့် စာမျက်နှာများ၏ URL များကို လေ့လာဆန်းစစ်ရန်အတွက် Google Cloud သို့မဟုတ် ပြင်ပအဖွဲ့များသို့ ပို့သည်။ ဥပမာ - မလုံခြုံသောဝဘ်ဆိုက်များကို ရှာရန်အတွက် ၎င်းတို့ကို စကင်ဖတ်နိုင်ပါသည်။</translation>
 <translation id="2297722699537546652">B5 (စာအိတ်)</translation>
-<translation id="2297822946037605517">ဤစာမျက်နှာကို မျှဝေရန်</translation>
 <translation id="2298855485018661510">ကွတ်ကီးများ စီမံရန် ခလုတ်၊ Chrome ဆက်တင်များတွင် သင်၏ကွတ်ကီး သတ်မှတ်ချက်များကို စီမံရန် Enter နှိပ်ပါ</translation>
 <translation id="2300306941146563769">အပ်လုဒ်လုပ်မထားပါ</translation>
 <translation id="2310021320168182093">Chou2 (စာအိတ်)</translation>
@@ -504,6 +504,7 @@
 <translation id="2552295903035773204">ယခုမှစ၍ ကတ်များကို အတည်ပြရန် ဖုန်းမျက်နှာပြင် လော့ခ်ကို အသုံးပြုရန်</translation>
 <translation id="2553853292994445426">သင်၏ လုံခြုံသော DNS ဆက်တင်များကို စစ်ဆေးပါ။ ချိတ်ဆက်၍မရသည့် လုံခြုံသော DNS ဆာဗာကို သင်စီစဉ်သတ်မှတ်ထားခြင်း ဖြစ်နိုင်သည်။</translation>
 <translation id="2556876185419854533">&amp;တည်းဖြတ်မှုကို ပြန်လုပ်ရန်</translation>
+<translation id="2570734079541893434">ဆက်တင်များ စီမံခန့်ခွဲရန်</translation>
 <translation id="257674075312929031">အုပ်စု</translation>
 <translation id="2586657967955657006">ကလစ်ဘုတ်</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> မှ။ ၎င်းနှင့် အခြားသတင်း <ph name="OTHER_ARTICLE_COUNT" /> ပုဒ်ကို ဖတ်ပါ။</translation>
@@ -516,7 +517,6 @@
 သက်တမ်းရှိကြ၍ ဖြစ်ပါသည်။ သင့်ကိရိယာ၏ နာရီချိန် မမှန်သောကြောင့်၊ Chromium
  က ထိုလက်မှတ်များကို စိစစ်မရနိုင်ပါ။</translation>
 <translation id="2597378329261239068">ဒီစာတမ်းကို စကားဝှက်ဖြင့် ကာကွယ်ထားသည်။ ကျေးဇူးပြုပြီး စကားဝှက် ရိုက်ထည့်ပါ။</translation>
-<translation id="2597833655590727265">Chrome အပြင်အဆင် စီမံရန်ခလုတ်၊ ဘရောင်ဇာ၏အသွင်ကို အပြင်အဆင်များဖြင့် စိတ်ကြိုက်ပြင်ရန် Enter နှိပ်ပါ။</translation>
 <translation id="2609632851001447353">မူကွဲများ</translation>
 <translation id="2610561535971892504">မိတ္တူကူးရန် နှိပ်ပါ</translation>
 <translation id="2618023639789766142">C10 (စာအိတ်)</translation>
@@ -606,7 +606,6 @@
 <translation id="2934466151127459956">အစိုးရရုံးသုံး Letter စာရွက်</translation>
 <translation id="2941952326391522266">ဒီဆာဗာက <ph name="DOMAIN" /> ဖြစ်တာကို သက်သေထူ မပြနိုင်ခဲ့ပါ၊ ၎င်း၏ လုံခြုံရေး လက်မှတ်မှာ<ph name="DOMAIN2" />ထံမှ ဖြစ်သည်။ ဖွဲ့စည်းစီစဉ်မှု အမှားကြောင့် သို့မဟုတ် တိုက်ခိုက်လိုသူက သင်၏ ချိတ်ဆက်မှုကို ကြားဖြတ်ယူနေ၍ ထိုသို့ ဖြစ်လာနိုင်ခဲ့ပါသည်။</translation>
 <translation id="2943895734390379394">အပ်လုဒ်လုပ်ချိန်-</translation>
-<translation id="2948017612172418360">site search ကို စီမံရန်ခလုတ်၊ site search နှင့် သင့်ပုံသေ ရှာဖွေရေး အင်ဂျင်ကို စီမံရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="2948083400971632585">ကြိုတင်ပြင်ဆင်ခြင်း စာမျက်နှာမှ ချိတ်ဆက်မှုတစ်ခုအတွက် ပရောက်စီပြုပြင်ချက်များအား ပိတ်နိုင်သည်။</translation>
 <translation id="2949183777371959169">စက်ကို ‘Chrome ဘရောင်ဇာ Cloud စီမံခန့်ခွဲရေး’ ဖြင့် စာရင်းသွင်းမထားသဖြင့် လျစ်လျူရှုထားသည်။</translation>
 <translation id="2951588413176968965">ကျွန်ုပ်၏စာတိုက်ပုံး</translation>
@@ -1026,7 +1025,6 @@
 <translation id="4275830172053184480">သင့်စက်ပစ္စည်းကို ပြန်လည် အစပြုပါ</translation>
 <translation id="4277028893293644418">စကားဝှက် ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="4278390842282768270">ခွင့်ပြုထား</translation>
-<translation id="4286047936834273847">site search နှင့် သင့်ပုံသေ ရှာဖွေရေး အင်ဂျင်ကို စီမံပါ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ဤကတ်ကို သင်၏ Google အကောင့်တွင် သိမ်းပြီးပါပြီ}other{ဤကတ်များကို သင်၏ Google အကောင့်တွင် သိမ်းပြီးပါပြီ}}</translation>
 <translation id="4287885627794386150">အစမ်းသုံးရန် အကျုံးဝင်သော်လည်း သုံးမနေပါ</translation>
 <translation id="4297502707443874121">စာမျက်နှာ <ph name="THUMBNAIL_PAGE" /> အတွက် ပုံသေး</translation>
@@ -1066,7 +1064,6 @@
 <translation id="4372948949327679948">မျှော်လင့်ထားသည့် <ph name="VALUE_TYPE" /> တန်ဖိုး။</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> သို့ရောက်ရှိရန် သင်ချဉ်းကပ်ခဲ့သည်၊ သို့သော် ဆာဗာမှပြသသည့် အသိမှတ်ပြုလက်မှတ်အား ၎င်း၏လျှောက်တင်သူမှ ရုတ်သိမ်းလိုက်သည်။ ဆိုလိုသည်မှာ ဆာဗာမှ ပြသသည့် လုံခြုံရေးလျှို့ဝက် အချက်များမှာ လုံးဝမယုံကြည်သင့်ပါ။ သင်သည် တိုက်ခိုက်သူနှင့်သာ ဆက်သွယ်ပါလိမ့်မည်။</translation>
 <translation id="4378154925671717803">ဖုန်း</translation>
-<translation id="4389652395741935834">လင့်ခ်ကို မျှဝေခြင်းဖြင့် ဤစာမျက်နှာကို မျှဝေခြင်း၊ ‘QR ကုဒ်’ ဖန်တီးခြင်း၊ ကာစ်လုပ်ခြင်းနှင့် အခြားလုပ်ဆောင်စရာများ လုပ်လိုက်ပါ။</translation>
 <translation id="4390472908992056574">အစွန်အနား</translation>
 <translation id="4406883609789734330">တိုက်ရိုက်စာတန်း</translation>
 <translation id="4406896451731180161">ရှာဖွေမှု ရလဒ်များ</translation>
@@ -1333,6 +1330,7 @@
 <translation id="5230733896359313003">ပစ္စည်းပို့ရမည့်လိပ်စာ</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">၁၂x၁၉</translation>
+<translation id="5234764350956374838">ပယ်ရန်</translation>
 <translation id="5250209940322997802">"ကွန်ရက်သို့ ချိတ်ဆက်ရန်"</translation>
 <translation id="52517543715119994">Chrome ဝန်ဆောင်မှုများအကြောင်း လေ့လာရန်</translation>
 <translation id="5251803541071282808">မိုးတိမ်</translation>
@@ -1649,7 +1647,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ပရောက်စီ၊ firewall နှင့် လုံခြုံသော DNS စီစဉ်သတ်မှတ်မှုကို စစ်ဆေးနေသည်<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">ဘယ်ဘက်တွင် ချုပ်စက်ဖြင့် နှစ်ချက်ချုပ်ရန်</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' အတွက် ရလဒ် ၁ ခု</translation>
-<translation id="6377404662019220017">ဤစာမျက်နှာကို မျှဝေရန်ခလုတ်၊ လင့်ခ်မျှဝေရန် နည်းလမ်းများဖြင့် ဤစာမျက်နှာကို မျှဝေခြင်း၊ QR ကုဒ် ပြုလုပ်ခြင်း၊ ကာစ်လုပ်ခြင်း စသည်တို့အတွက် Enter နှိပ်ပါ။</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">အခကြေးငွေ ပေးရနိုင်ခြေရှိသည်။</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{အခြားအကြံပြုချက် ၁ ခု}other{အခြားအကြံပြုချက် # ခု}}</translation>
@@ -1870,7 +1867,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}other{<ph name="PAYMENT_METHOD_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}}</translation>
 <translation id="7153618581592392745">လာဗင်ဒါ</translation>
 <translation id="7156870133441232244">ဆာဗာကို TLS 1.2 နှင့်နောက်ပိုင်းသို့ အဆင့်မြှင့်တင်ရမည်။</translation>
-<translation id="716939258255825483">Dino Run ကစားရန်ခလုတ်၊ Chrome တွင် Dino Run ဂိမ်းကစားရန် Enter နှိပ်ပါ</translation>
 <translation id="717330890047184534">Gaia ID−</translation>
 <translation id="7173920250514487165">သင့်ဖန်သားပြင်ပေါ်တွင် လျှို့ဝှက်အကြောင်းအရာကို ပုံဖမ်းခြင်း</translation>
 <translation id="7174545416324379297">ပေါင်းစည်းထားသည်</translation>
@@ -1893,7 +1889,6 @@
 <translation id="7220786058474068424">ဆောင်ရွက်နေသည်</translation>
 <translation id="7221855153210829124">သတိပေးချက်များ ပြရန်</translation>
 <translation id="722454870747268814">ရုပ်ဖျက်တဘ်အသစ်</translation>
-<translation id="7231476387708735839">site search ကို စီမံရန်</translation>
 <translation id="7233592378249864828">အတည်ပြု စာမျက်နှာကို ပုံနှိပ်ရန်</translation>
 <translation id="7238585580608191973">SHA-256 လက်ဗွေ</translation>
 <translation id="7240120331469437312">လက်မှတ် အကြောင်းအရာ အစားထိုးရေး အမည်</translation>
@@ -2491,6 +2486,7 @@
 <translation id="9213433120051936369">အသွင်အပြင် စိတ်ကြိုက်ပြုလုပ်ခြင်း</translation>
 <translation id="9215416866750762878">ဤဝဘ်ဆိုက်သို့ လုံခြုံစွာချိတ်ဆက်မှု မပြုလုပ်နိုင်ရန် အပလီကေးရှင်းတစ်ခုက Chrome ကို တားဆီးထားပါသည်</translation>
 <translation id="9219103736887031265">ပုံများ</translation>
+<translation id="922152298093051471">Chrome ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ပုံစံ ရှင်းရန်</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2523,5 +2519,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay မှ</translation>
-<translation id="998677222109959694">Chrome ဆက်တင်များ စီမံရန်</translation>
 </translationbundle>

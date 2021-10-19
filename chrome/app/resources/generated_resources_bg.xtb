@@ -992,6 +992,7 @@
 <translation id="2002109485265116295">В реално време</translation>
 <translation id="200217416291116199">Препоръчваме да създадете резервно копие на файловете, в случай че надстройването не може да завърши успешно. Linux ще се изключи при стартиране на надстройването. Преди да продължите, запазете отворените файлове.</translation>
 <translation id="2003130567827682533">За да активирате данните от „<ph name="NAME" />“, първо се свържете с Wi-Fi мрежа</translation>
+<translation id="2004697686368036666">Функциите в някои сайтове може да не работят</translation>
 <translation id="2005199804247617997">Други потребителски профили</translation>
 <translation id="2006638907958895361">Отваряне на връзката чрез <ph name="APP" /></translation>
 <translation id="2007404777272201486">Подаване на сигнал за проблем...</translation>
@@ -1134,7 +1135,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> снимки</translation>
 <translation id="2154484045852737596">Редактиране на картата</translation>
 <translation id="2154502158735983655">Четене на информация за устройствата с Chrome OS и данните от тях.</translation>
-<translation id="2154710561487035718">Копиране на URL адреса</translation>
 <translation id="2155772377859296191">Разделителната способност е <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Без повторно питане при отваряне на следния файлов формат в това приложение:
@@ -2380,6 +2380,7 @@
 <translation id="344630545793878684">Четене на данните ви от редица уебсайтове</translation>
 <translation id="3446650212859500694">В този файл има деликатно съдържание</translation>
 <translation id="3446827946208017735">Прегледайте най-важните настройки за поверителност и научете повече за тях на едно място</translation>
+<translation id="3447644283769633681">Блокиране на всички „бисквитки“ на трети страни</translation>
 <translation id="3448086340637592206">Допълнителни условия на Google Chrome и Chrome OS</translation>
 <translation id="3448492834076427715">Актуализиране на профила</translation>
 <translation id="3449393517661170867">Нов прозорец с раздели</translation>
@@ -3174,7 +3175,6 @@
 <translation id="428715201724021596">Установява се връзка с профил за мобилна мрежа. Това може да отнеме няколко минути.</translation>
 <translation id="4287157641315808225">Да, активиране на ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Показване}other{Показване на всички}}</translation>
-<translation id="4289372044984810120">Управлявайте профилите си оттук. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="4289732974614035569">Изберете ПИН</translation>
 <translation id="4290791284969893584">След като затворите дадена страница, стартираните от вас задачи може да не бъдат завършени</translation>
@@ -3250,7 +3250,6 @@
 <translation id="4378556263712303865">Заявка за устройството</translation>
 <translation id="4379281552162875326">Да се деинсталира ли <ph name="APP_NAME" />?</translation>
 <translation id="4380648069038809855">Влязохте в режима на цял екран</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" /> и още 1 профил}other{<ph name="EMAIL" /> и още <ph name="EXTRA_ACCOUNTS" /> профила}}</translation>
 <translation id="4384312707950789900">Добавяне към предпочитаните</translation>
 <translation id="4384652540891215547">Активиране на разширението</translation>
 <translation id="4384886290276344300">Промяна на настройките на клавиатурата</translation>
@@ -3874,7 +3873,6 @@
 <translation id="5053962746715621840">Търсене на изображението с Google Обектив</translation>
 <translation id="5056950756634735043">Установява се връзка с контейнера</translation>
 <translation id="5057110919553308744">При кликване върху разширението</translation>
-<translation id="5057403786441168405">Управлявайте профилите, в които сте влезли. В зависимост от разрешенията уебсайтовете, приложенията и разширенията в Chrome и Google Play може да използват тези профили, за да персонализират практическата ви работа. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Ограничаване на влизането в профил</translation>
 <translation id="5059526285558225588">Изберете какво да споделите</translation>
 <translation id="5060332552815861872">За запазване е налице 1 принтер.</translation>
@@ -5004,7 +5002,6 @@
 <translation id="6284632978374966585">Включване на тъмната тема</translation>
 <translation id="6285120108426285413">Файлът „<ph name="FILE_NAME" />“ не е често изтеглян и може да е опасен.</translation>
 <translation id="6285770818046456882">Устройството, което споделя с вас, анулира прехвърлянето</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">В близост няма налични споделящи устройства. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Кодът за активиране се проверява. Това може да отнеме няколко минути.</translation>
 <translation id="6291741848715722067">Код за потвърждение</translation>
@@ -5427,7 +5424,6 @@
 <translation id="6750757184909117990">Деактивиране на мобилната мрежа</translation>
 <translation id="6750946710563435348">Използване на друго потребителско име</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Инкогнито)</translation>
-<translation id="6757101664402245801">URL адресът е копиран</translation>
 <translation id="6758056191028427665">Уведомете ни как се справяме.</translation>
 <translation id="6759193508432371551">Възстановяване на фабричните настройки</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
@@ -5604,7 +5600,6 @@
 <translation id="693807610556624488">Операцията за запис надвишава максималната дължина на атрибута за: <ph name="DEVICE_NAME" />.</translation>
 <translation id="6938386202199793006">Имате 1 запазен принтер.</translation>
 <translation id="6938606182859551396">За да получавате на устройството си <ph name="DEVICE_TYPE" /> известия от телефона си, изпълнете инструкциите на телефона, така че да предоставите на услугите за Google Play достъп до известията.</translation>
-<translation id="6938789263968032501">Хора</translation>
 <translation id="6939815295902433669">Преглед на софтуера на устройството</translation>
 <translation id="694168622559714949">Основният език е зададен от администратора ви и не може да се променя.</translation>
 <translation id="6941937518557314510">Моля, влезте в(ъв) <ph name="TOKEN_NAME" />, за да удостоверите самоличността си пред <ph name="HOST_NAME" /> със сертификата си.</translation>
@@ -7649,7 +7644,6 @@
 <translation id="9040661932550800571">Да се актуализира ли паролата за <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Достъпът до локални файлове на компютъра ви е деактивиран от администратора ви</translation>
 <translation id="904224458472510106">Това действие не може да бъде отменено</translation>
-<translation id="9042893549633094279">Поверителност и сигурност</translation>
 <translation id="904451693890288097">Моля, въведете ключа за достъп за „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="9044646465488564462">Свързването с мрежата не бе успешно: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Списъкът ви за четене е преместен в новия страничен панел. Изпробвайте го тук.</translation>

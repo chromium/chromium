@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
 <translation id="2021896219286479412">Navigering i full skjerm</translation>
 <translation id="2038563949887743358">Slå på Bruk skrivebordsversjon</translation>
-<translation id="2039379262107991683">Legg til sider på leselisten for å få påminnelser</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> har også data i Chrome</translation>
 <translation id="2046634576464120978">Registrering mislyktes</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2781151931089541271">1 sekund igjen</translation>
 <translation id="2788468313014644040">Gruppenummer</translation>
 <translation id="2800066122460699237">Fanen <ph name="TAB_TITLE" /> blir lukket</translation>
-<translation id="2801022321632964776">Oppdater for å få språket ditt i den nyeste versjonen av Chrome</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2806840421670364300">FLoC (samlet læring i kohorter)</translation>
 <translation id="2809150421034843096">Informasjon om bruken din av Chrome som ikke kan knyttes til deg\n\nRelevante data fra sjeldne Chrome-krasj, som kan inneholde visse personopplysninger\n\nHvis du slår på synkronisering, kan målingene også inneholde informasjon om nettadressene du besøker</translation>
@@ -354,12 +352,10 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3134784203083076891">»</translation>
 <translation id="314939179385989105">Startsiden for Chrome</translation>
 <translation id="3154863790776532719">Nye funksjoner og høyere ytelse</translation>
-<translation id="3157387275655328056">Legg til i leselisten</translation>
 <translation id="3157842584138209013">Se hvor mye data du har spart, via Flere alternativer-knappen</translation>
 <translation id="3166827708714933426">Hurtigtaster for vinduer og faner</translation>
 <translation id="316694332262407393">Chrome kjører allerede her.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3205824638308738187">Nesten ferdig!</translation>
 <translation id="3207960819495026254">Bokmerket</translation>
 <translation id="3208584281581115441">Sjekk nå</translation>
 <translation id="3211426585530211793">Slettet <ph name="ITEM_TITLE" /></translation>
@@ -450,7 +446,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3739899004075612870">Satt som bokmerke i <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Talesøk er ikke tilgjengelig på denne enheten</translation>
 <translation id="3749259744154402564">Støttes ikke</translation>
-<translation id="3771001275138982843">Kunne ikke laste ned oppdateringen</translation>
 <translation id="3771033907050503522">Inkognitofaner</translation>
 <translation id="3771290962915251154">Denne innstillingen er avslått fordi foreldrekontroll er på</translation>
 <translation id="3771694256347217732">Googles vilkår for bruk</translation>
@@ -790,7 +785,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5833984609253377421">Del en link</translation>
 <translation id="5834764604050996579">For å skanne QR-koder, la Chrome bruke kameraet</translation>
-<translation id="5836192821815272682">Laster ned en Chrome-oppdatering …</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">på pause</translation>
 <translation id="5854512288214985237">Ingen statistikk eller programstopprapporter blir sendt til Google</translation>
@@ -862,7 +856,6 @@ Utprøving av Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjenge
 <translation id="6232535412751077445">Hvis du slår på «Deaktivering av sporing», blir det sendt en forespørsel sammen med nettrafikken din. Hvilke virkninger dette eventuelt får, avhenger av om det aktuelle nettstedet svarer på forespørselen eller ikke, samt hvordan forespørselen tolkes.
 
 Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg annonser som ikke er basert på andre nettsteder du har besøkt. Mange nettsteder samler likevel inn og bruker nettlesingsdataene dine – for eksempel for å forbedre sikkerheten, for å levere innhold, annonser og anbefalinger og for å generere rapporteringsstatistikk.</translation>
-<translation id="624789221780392884">Oppdateringen er klar</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6277522088822131679">Det oppsto et problem med å skrive ut siden. Prøv på nytt.</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -898,7 +891,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6411219469806822692">Kan ikke gå høyere. Prøv å starte fra lenger opp på siden.</translation>
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="641643625718530986">Skriv ut</translation>
-<translation id="6427112570124116297">Oversett nettet</translation>
 <translation id="6433501201775827830">Velg søkemotor</translation>
 <translation id="6434309073475700221">Forkast</translation>
 <translation id="6437478888915024427">Sideinformasjon</translation>
@@ -1000,7 +992,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6979737339423435258">Alle datoer</translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>
 <translation id="6987047470128880212">Inkognito er ikke tilgjengelig på denne enheten</translation>
-<translation id="6989267951144302301">Kunne ikke laste ned</translation>
 <translation id="6995899638241819463">Få en advarsel hvis passord blir avdekket i databrudd</translation>
 <translation id="7001056293070445572">Denne filen er stor (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Åpne i nettleseren</translation>
@@ -1032,7 +1023,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="718926126787620637">Listen over bokmerkemapper er åpnet i full høyde</translation>
 <translation id="7191430249889272776">En fane ble åpnet i bakgrunnen.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedlasting venter}other{# nedlastinger venter}}</translation>
-<translation id="7233236755231902816">For å se nettet på ditt eget språk, skaff den nyeste versjonen av Chrome</translation>
 <translation id="7242755609445462077">Stilisert fremheving <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Kontrollér at <ph name="TARGET_DEVICE_NAME" /> har synkronisering påslått i Chrome</translation>
 <translation id="7252076891734325316">Plassér telefonen i nærheten av datamaskinen</translation>
@@ -1055,7 +1045,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Del 1 valgt element}other{Del # valgte elementer}}</translation>
-<translation id="7356631068872238169">Slett fra leselisten</translation>
 <translation id="7359002509206457351">Gå til betalingsmåter</translation>
 <translation id="7375125077091615385">Type:</translation>
 <translation id="7376560087009844242">Hvis du inkluderer mer av teksten på siden, kan det hende du får bedre resultater når du bruker Trykk for å søke. Du kan når som helst gå til <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" /> for å endre dette.</translation>
@@ -1232,7 +1221,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="829672787777123339">Kobler til enheten din …</translation>
 <translation id="8310344678080805313">Standardfaner</translation>
 <translation id="831192587911042850">Legger til det nåværende nettstedet på listen over nettsteder du følger.</translation>
-<translation id="8327155640814342956">For å få den beste surfeopplevelsen, åpne for å oppdatere Chrome</translation>
 <translation id="834313815369870491">Oversett aldri nettsteder</translation>
 <translation id="8349013245300336738">Sortér etter mengden data som er brukt</translation>
 <translation id="8354977102499939946">Søk raskt med stemmen din. For å redigere denne snarveien, gå til Innstillinger.</translation>
@@ -1345,6 +1333,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8951232171465285730">Chrome har spart deg for <ph name="MEGABYTES" /> MB</translation>
 <translation id="8955719471735800169">Tilbake til toppen</translation>
 <translation id="8965591936373831584">venter</translation>
+<translation id="8967427617812342790">Legg til på leselisten</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_ONE" /> annen fane blir lukket}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_MANY" /> andre faner blir lukket}}</translation>
 <translation id="8970887620466824814">Noe gikk galt.</translation>
 <translation id="8972098258593396643">Vil du laste ned til standardmappen?</translation>

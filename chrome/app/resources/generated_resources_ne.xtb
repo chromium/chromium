@@ -981,6 +981,7 @@
 <translation id="2002109485265116295">वास्तविक समय</translation>
 <translation id="200217416291116199">अपग्रेड गर्ने कार्य पूरा हुन नसकेका खण्डमा फाइलहरू नगुमुन् भन्नाका खातिर अपग्रेड गर्नुअघि फाइलहरू ब्याकअप गर्नुहोस्। तपाईंले अपग्रेड सुरु गर्नुभयो भने Linux बन्द हुने छ। कृपया सुरु गर्नुअघि खोलिएका फाइलहरू सेभ गर्नुहोस्।</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' नामक मोबाइल डेटा सेवा सक्रिय गर्न सर्वप्रथम कुनै Wi-Fi नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
+<translation id="2004697686368036666">केही साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="2005199804247617997">अन्य प्रोफाइलहरू</translation>
 <translation id="2006638907958895361">लिंकलाई <ph name="APP" /> मा खोल्नुहोस्</translation>
 <translation id="2007404777272201486">एउटा मामिला प्रतिवेदन गर्नुहोस्...</translation>
@@ -1123,7 +1124,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> वटा फोटो</translation>
 <translation id="2154484045852737596">कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="2154502158735983655">Chrome OS चल्ने डिभाइससम्बन्धी जानकारी र डिभाइसमा भएको डेटा रिड गर्ने।</translation>
-<translation id="2154710561487035718">URL प्रतिलिपि गर्नुहोस्</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> जस्तो देखिन्छ</translation>
 <translation id="2156294658807918600">सेवातर्फका कर्मचारी: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">यस एपमा यो फर्म्याटको फाइल खोल्दा फेरि अनुमति नमागियोस्:
@@ -3159,7 +3159,6 @@
 <translation id="428715201724021596">प्रोफाइलमा कनेक्ट गरिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="4287157641315808225">अँ, ChromeVox सक्रिय गर्नुहोस्</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{देखाउनुहोस्}other{सबै देखाउनुहोस्}}</translation>
-<translation id="4289372044984810120">आफ्ना खाताहरू यहाँ व्यवस्थापन गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">समीक्षा</translation>
 <translation id="4289732974614035569">PIN छान्नुहोस्</translation>
 <translation id="4290791284969893584">पेज बन्द गरेपछि तपाईंले सुरु गर्नुभएका कार्यहरू समाप्त नहुन सक्छन्</translation>
@@ -3235,7 +3234,6 @@
 <translation id="4378556263712303865">यन्त्रसम्बन्धी माग</translation>
 <translation id="4379281552162875326">"<ph name="APP_NAME" />" को स्थापना रद्द गर्ने हो?</translation>
 <translation id="4380648069038809855">फुल स्क्रिन मोडमा प्रविष्टि गरियो</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, +१ थप खाता}other{<ph name="EMAIL" />, +<ph name="EXTRA_ACCOUNTS" /> थप खाताहरू}}</translation>
 <translation id="4384312707950789900">रुचाइएकोमा थप्नुहोस्</translation>
 <translation id="4384652540891215547">विस्तार सक्रिय गर्नुहोस्</translation>
 <translation id="4384886290276344300">किबोर्डसम्बन्धी सेटिङ मिलाउनुहोस्</translation>
@@ -3858,7 +3856,6 @@
 <translation id="5053962746715621840">Google लेन्समार्फत फोटो खोज्नुहोस्</translation>
 <translation id="5056950756634735043">कन्टेनरमा कनेक्ट गरिँदै छ</translation>
 <translation id="5057110919553308744">तपाईंले विस्तारमा क्लिक गर्दा</translation>
-<translation id="5057403786441168405">आफ्ना साइन इन गरिएका खाताहरू व्यवस्थापन गर्नुहोस्। Chrome तथा Google Play मा रहेका वेबसाइट, एप र एक्स्टेन्सनहरूले तपाईंले अनुमति दिएअनुसार तपाईंको अनुभव तपाईं अनुकूल पार्न यी खाताहरू प्रयोग गर्न सक्छन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">साइन इन गर्ने कार्य प्रतिबन्धित गर्नुहोस्</translation>
 <translation id="5059526285558225588">सेयर गरिनु पर्ने जानकारी छनौट गर्नुहोस्</translation>
 <translation id="5060332552815861872">सुरक्षित गर्नका लागि १ प्रिन्टर उपलब्ध छ।</translation>
@@ -4986,7 +4983,6 @@
 <translation id="6284632978374966585">अँध्यारो थिम अन गर्नुहोस्‌</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> लाई सामान्यत: डाउनलोड गरिँदैन र यो खतरनाक हुन सक्छ।</translation>
 <translation id="6285770818046456882">तपाईंको डिभाइसमा फाइल सेयर गरिरहेको यन्त्रले सार्ने काम रद्द गरेको छ</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">वरपर सामग्री सेयर गर्नका निम्ति कुनै पनि यन्त्र उपलब्ध छैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">एक्टिभेसन कोड पुष्टि गरिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="6291741848715722067">पुष्टि कोड</translation>
@@ -5409,7 +5405,6 @@
 <translation id="6750757184909117990">सेलुलर नेटवर्क असक्षम पार्नुहोस्</translation>
 <translation id="6750946710563435348">अर्को युजरनेम प्रयोग गर्नुहोस्</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (गुप्त)</translation>
-<translation id="6757101664402245801">URL प्रतिलिपि गरियो</translation>
 <translation id="6758056191028427665">हामी कस्तो काम गर्दैछौं भन्नेबारे प्रतिक्रिया दिनुहोस्।</translation>
 <translation id="6759193508432371551">कारखाना रिसेट</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
@@ -5586,7 +5581,6 @@
 <translation id="693807610556624488">लेख्ने कार्यले "<ph name="DEVICE_NAME" />" मा विशेषताको अधिकतम लम्बाइ नाघ्छ</translation>
 <translation id="6938386202199793006">तपाईंसँग १ प्रिन्टर छ।</translation>
 <translation id="6938606182859551396">आफ्नो फोनमा आएका सूचनाहरू <ph name="DEVICE_TYPE" /> मा प्राप्त गर्ने प्रयोजनका लागि Google Play Services लाई सूचनाहरू हेर्ने अनुमति दिन आफ्नो फोनमा दिइएका निर्देशनहरूको पालना गर्नुहोस्।</translation>
-<translation id="6938789263968032501">मान्छेहरू</translation>
 <translation id="6939815295902433669">यन्त्रमा हानिकारक सफ्टवेयर छन् कि छैनन् हेर्नुहोस् र छन् भने हटाउनुहोस्</translation>
 <translation id="694168622559714949">तपाईंका एड्मिनले डिफल्ट भाषा तय गर्नुभएको छ र सो भाषा परिवर्तन गर्न सकिँदैन।</translation>
 <translation id="6941937518557314510">आफ्नो प्रमाणपत्र मार्फत <ph name="HOST_NAME" /> मा प्रमाणित ठहराउन <ph name="TOKEN_NAME" /> मा साइन इन गर्नुहोस्।</translation>
@@ -7630,7 +7624,6 @@
 <translation id="9040661932550800571"><ph name="ORIGIN" /> को पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="9041692268811217999">तपाईंको प्रशासकले तपाईंको डिभाइसमा रहेका स्थानीय फाइलहरूमाथिको पहुँचलाई असक्षम पार्नुभएको छ</translation>
 <translation id="904224458472510106">यो कारबाही अन्डू गर्न सकिँदैन</translation>
-<translation id="9042893549633094279">गोपनीयता र सुरक्षा</translation>
 <translation id="904451693890288097">कृपया "<ph name="DEVICE_NAME" />" को लागि पासकि प्रविष्टि गर्नुहोस्:</translation>
 <translation id="9044646465488564462">सञ्जालमा जडान गर्न असफल भयो: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">पछि पढ्न सेभ गरिएका वेबपेजको तपाईंको सूची सारेर नयाँ साइड प्यानलमा लगिएको छ। यहाँ प्रयोग गरी हेर्नुहोस्।</translation>

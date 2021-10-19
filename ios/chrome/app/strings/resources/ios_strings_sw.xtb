@@ -25,7 +25,6 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1145536944570833626">Futa data iliyopo.</translation>
 <translation id="1147031633655575115">Umeingia katika akaunti kama <ph name="USER" /></translation>
 <translation id="1154984953698510061">Angalia Vichupo Vingine</translation>
-<translation id="1157749421655780457">Ruhusu Maelezo ya mahali yafikiwe...</translation>
 <translation id="1165039591588034296">Hitilafu</translation>
 <translation id="1172898394251786223">Sehemu inayofuata</translation>
 <translation id="1176932207622159128">Haiwezi Kuhifadhi Picha</translation>
@@ -239,7 +238,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3240426699337459095">Kiungo kimenakiliwa</translation>
 <translation id="3244271242291266297">MW</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> kati ya <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Orodha yako ya kusoma inapatikana nje ya mtandao. Ili uongeze ukurasa kwenye orodha yako ya kusoma, gusa <ph name="SHARE_OPENING_ICON" /> kisha <ph name="ADD_TO_READING_LIST_TEXT" />.</translation>
 <translation id="3268451620468152448">Fungua Vichupo</translation>
 <translation id="3272527697863656322">Ghairi</translation>
 <translation id="3277021493514034324">Anwani ya tovuti imenakiliwa</translation>
@@ -262,7 +260,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="345565170154308620">Dhibiti Manenosiri...</translation>
 <translation id="3469166899695866866">Ungependa Kuacha Kupakua?</translation>
 <translation id="3470502288861289375">Inanakili...</translation>
-<translation id="3472993688462687965">Ukiwasha kipengele cha kusawazisha, huenda data itakayosawazishwa ikategemea kile kilichoruhusiwa na shirika lako.</translation>
 <translation id="3474624961160222204">Endelea ukitumia <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mwezi wa Muda wa Matumizi Kuisha</translation>
 <translation id="3482959374254649722">Inasawazisha vichupo vyako...</translation>
@@ -374,7 +371,6 @@ Fuata hatua zifuatazo:</translation>
 
 Data yako imesimbwa kwa njia fiche kwa kauli yako ya siri ya usawazishaji. Iweke ili uanze kusawazisha.</translation>
 <translation id="4689564913179979534">Dhibiti Njia za Kulipa...</translation>
-<translation id="469022783543509074">Umeondoka Katika Akaunti</translation>
 <translation id="470966556546083668">Usiwashe Kipengele cha Kusawazisha</translation>
 <translation id="473775607612524610">Sasisha</translation>
 <translation id="4747097190499141774">Usimbaji fiche kwa kutumia kauli ya siri haujumuishi njia za kulipa na anwani kutoka Google Pay. Mtu aliye na kauli yako ya siri pekee ndiye anayeweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi kwa au kuhifadhiwa na Google. Ukisahau kauli yako ya siri au utake kubadilisha mipangilio hii, utahitaji kufanya usawazishaji upya. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6831043979455480757">Tafsiri</translation>
 <translation id="6842136130964845393">Ili uhakikishe kwamba unaweza kufikia manenosiri uliyoyahifadhi kila wakati, thibitisha kwamba ni wewe</translation>
 <translation id="6851516051005285358">Omba Tovuti ya Kompyuta ya Mezani</translation>
-<translation id="6856384753476268833">Inadhibitiwa na shirika lako.</translation>
 <translation id="6858855187367714033">Umechanganuliwa</translation>
 <translation id="6859944681507688231">Ili kuchanganua msimbo wa QR au kadi ya mikopo, washa kamera katika Mipangilio.</translation>
 <translation id="6869389390665537774">Unaweza kuona kurasa ambazo umetembelea au uzifute kwenye historia yako</translation>
@@ -691,7 +686,6 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7472734401283673885">Jina la Kampuni</translation>
 <translation id="7473891865547856676">La Asante</translation>
 <translation id="7481312909269577407">Mbele</translation>
-<translation id="7483467499335917849">Tumia Maelezo ya Mahali Ulipo</translation>
 <translation id="750493650310597496">Hakuna zilizochaguliwa</translation>
 <translation id="7508728395076009983">Ili uweze kufunga vichupo vyako Fiche, weka mipangilio ya Touch ID, Face ID au Nambari ya siri.</translation>
 <translation id="7514365320538308">Pakua</translation>
@@ -768,6 +762,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8319076807703933069">Utafutaji Mpya</translation>
 <translation id="8323906514956095947">Gusa na ushikilie ili upate chaguo zaidi za kichupo</translation>
 <translation id="8328777765163860529">Funga Vyote</translation>
+<translation id="8378714024927312812">Inasimamiwa na shirika lako</translation>
 <translation id="8386068868580335421">Weka upya</translation>
 <translation id="8407669440184693619">Hatukupata manenosiri yoyote ya tovuti hii</translation>
 <translation id="842017693807136194">Umeingia katika Akaunti Ukitumia</translation>
@@ -838,7 +833,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9081058212938299310">Ungependa kubadilisha nenosiri la <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">Kipengee 1</translation>
 <translation id="9083838294503912307">Ili usawazishe na uweke mapendeleo kwenye vifaa vyote, washa kipengele cha kusawazisha.</translation>
-<translation id="9084677839771512880">Shirika lako linadhibiti maudhui unayoweza kuyasawazisha. <ph name="BEGIN_LINK" />Maelezo<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Nenosiri Linalopendekezwa na Chrome:</translation>
 <translation id="9094033019050270033">Sasisha nenosiri</translation>
 <translation id="9100610230175265781">Kaulisiri inahitajika</translation>

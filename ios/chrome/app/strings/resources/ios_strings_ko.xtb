@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">기존 데이터 삭제</translation>
 <translation id="1147031633655575115"><ph name="USER" />님의 계정으로 로그인됨</translation>
 <translation id="1154984953698510061">다른 탭 보기</translation>
-<translation id="1157749421655780457">위치 권한 허용...</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1172898394251786223">다음 필드</translation>
 <translation id="1176932207622159128">이미지를 저장할 수 없음</translation>
@@ -239,7 +238,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3240426699337459095">링크 복사됨</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">읽기 목록을 오프라인으로 사용할 수 있습니다. 읽기 목록에 페이지를 추가하려면 <ph name="SHARE_OPENING_ICON" />, <ph name="ADD_TO_READING_LIST_TEXT" /> 옵션을 차례로 탭하세요.</translation>
 <translation id="3268451620468152448">열린 탭</translation>
 <translation id="3272527697863656322">취소</translation>
 <translation id="3277021493514034324">사이트 주소가 복사되었습니다.</translation>
@@ -262,7 +260,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="345565170154308620">비밀번호 관리...</translation>
 <translation id="3469166899695866866">다운로드를 중지하시겠습니까?</translation>
 <translation id="3470502288861289375">복사 중...</translation>
-<translation id="3472993688462687965">동기화를 사용 설정하면 조직에서 허용한 항목에 따라 데이터가 제한될 수 있습니다.</translation>
 <translation id="3474624961160222204"><ph name="NAME" />(으)로 계속</translation>
 <translation id="3478058380795961209">만료 월</translation>
 <translation id="3482959374254649722">탭을 동기화하는 중...</translation>
@@ -374,7 +371,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 
 동기화 암호로 데이터가 암호화되어 있습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="4689564913179979534">결제 수단 관리...</translation>
-<translation id="469022783543509074">로그아웃했습니다.</translation>
 <translation id="470966556546083668">동기화를 켜지 않음</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4747097190499141774">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다. 암호를 아는 사람만 암호화된 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 동기화를 재설정해야 합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6831043979455480757">번역</translation>
 <translation id="6842136130964845393">저장된 비밀번호에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="6851516051005285358">데스크톱 버전으로 보기</translation>
-<translation id="6856384753476268833">조직에서 관리합니다.</translation>
 <translation id="6858855187367714033">스캔됨</translation>
 <translation id="6859944681507688231">QR 코드 또는 신용카드를 스캔하려면 설정에서 카메라를 사용 설정하세요.</translation>
 <translation id="6869389390665537774">방문한 페이지를 확인하거나 방문 기록에서 삭제할 수 있습니다.</translation>
@@ -691,7 +686,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7472734401283673885">회사명</translation>
 <translation id="7473891865547856676">건너뛰기</translation>
 <translation id="7481312909269577407">앞으로</translation>
-<translation id="7483467499335917849">현재 위치 사용</translation>
 <translation id="750493650310597496">선택된 항목 없음</translation>
 <translation id="7508728395076009983">시크릿 탭을 잠그려면 Touch ID, Face ID 또는 비밀번호를 설정하세요.</translation>
 <translation id="7514365320538308">다운로드</translation>
@@ -768,6 +762,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8319076807703933069">새 검색</translation>
 <translation id="8323906514956095947">더 많은 탭 옵션을 보려면 길게 터치하세요.</translation>
 <translation id="8328777765163860529">모두 닫기</translation>
+<translation id="8378714024927312812">조직에서 관리</translation>
 <translation id="8386068868580335421">재설정</translation>
 <translation id="8407669440184693619">이 사이트의 비밀번호를 찾을 수 없음</translation>
 <translation id="842017693807136194">다음을 사용하여 로그인함</translation>
@@ -838,7 +833,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9081058212938299310"><ph name="USERNAME" />님의 비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="9083392325882095631">항목 1개</translation>
 <translation id="9083838294503912307">모든 기기에서 동기화 및 맞춤설정하려면 동기화를 사용 설정하세요.</translation>
-<translation id="9084677839771512880">조직에서 내가 동기화할 수 있는 항목을 제한합니다. <ph name="BEGIN_LINK" />세부정보<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Chrome 추천 비밀번호:</translation>
 <translation id="9094033019050270033">비밀번호 업데이트</translation>
 <translation id="9100610230175265781">암호를 입력해야 합니다.</translation>

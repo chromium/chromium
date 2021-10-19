@@ -981,6 +981,7 @@
 <translation id="2002109485265116295">Kohë reale</translation>
 <translation id="200217416291116199">Rezervimi i skedarëve rekomandohet në rast se përmirësimi nuk mund të kryhet. Fillimi i përmirësimit do të shkaktojë fikjen e sistemit Linux. Ruaj skedarët e hapur përpara se të vazhdosh.</translation>
 <translation id="2003130567827682533">Për të aktivizuar të dhënat e "<ph name="NAME" />", në fillim lidhu me një rrjet Wi-Fi</translation>
+<translation id="2004697686368036666">Veçoritë në disa sajte mund të mos funksionojnë</translation>
 <translation id="2005199804247617997">Profilet e tjera</translation>
 <translation id="2006638907958895361">Hape lidhjen në <ph name="APP" /></translation>
 <translation id="2007404777272201486">Raporto një problem...</translation>
@@ -1123,7 +1124,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografi</translation>
 <translation id="2154484045852737596">Redakto kartën</translation>
 <translation id="2154502158735983655">Lexo informacionin e pajisjes së Chrome OS dhe të dhënat e pajisjes.</translation>
-<translation id="2154710561487035718">Kopjo URL-në</translation>
 <translation id="2155772377859296191">Duket si <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Punonjësi i shërbimit: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Mos pyet përsëri kur hapet ky skedar në këtë aplikacion:
@@ -3159,7 +3159,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="428715201724021596">Po lidhet me profilin. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="4287157641315808225">Po, aktivizo ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Shfaq}other{Shfaqi të gjitha}}</translation>
-<translation id="4289372044984810120">Menaxho llogaritë e tua këtu. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="4289732974614035569">Zgjidh një PIN</translation>
 <translation id="4290791284969893584">Pasi të mbyllësh një faqe, detyrat që ke nisur mund të mos përfundojnë</translation>
@@ -3235,7 +3234,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4378556263712303865">Kërkesa e pajisjes</translation>
 <translation id="4379281552162875326">Të çinstalohet "<ph name="APP_NAME" />"?</translation>
 <translation id="4380648069038809855">Hyre në ekranin e plotë</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, edhe 1 llogari tjetër}other{<ph name="EMAIL" />, edhe <ph name="EXTRA_ACCOUNTS" /> llogari të tjera}}</translation>
 <translation id="4384312707950789900">Shto te të preferuarat</translation>
 <translation id="4384652540891215547">Aktivizo shtesën</translation>
 <translation id="4384886290276344300">Ndrysho cilësimet e tastierës</translation>
@@ -3858,7 +3856,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5053962746715621840">Kërko imazhin me "Lenten e Google"</translation>
 <translation id="5056950756634735043">Lidhja me kontejnerin</translation>
 <translation id="5057110919553308744">Kur klikon te shtesa</translation>
-<translation id="5057403786441168405">Menaxho llogaritë ku je identifikuar. Sajtet e uebit, aplikacionet dhe shtesat në Chrome dhe Google Play mund t'i përdorin këto llogari për të personalizuar përvojën tënde, në varësi të lejeve. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Kufizo identifikimin</translation>
 <translation id="5059526285558225588">Zgjidh se çfarë do të ndash</translation>
 <translation id="5060332552815861872">Disponohet 1 printer për ruajtje.</translation>
@@ -4987,7 +4984,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6284632978374966585">Aktivizo temën e errët</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm.</translation>
 <translation id="6285770818046456882">Pajisja që po ndan me ty e anuloi transfertën</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Asnjë pajisje e disponueshme nuk po ndan në afërsi. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Po verifikon kodin e aktivizimit. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="6291741848715722067">Kodi i konfirmimit</translation>
@@ -5410,7 +5406,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6750757184909117990">Çaktivizo "Rrjetin celular"</translation>
 <translation id="6750946710563435348">Përdor emrin tjetër të përdoruesit</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (e fshehtë)</translation>
-<translation id="6757101664402245801">URL-ja u kopjua</translation>
 <translation id="6758056191028427665">Na trego se si po ecim.</translation>
 <translation id="6759193508432371551">Rivendosje në gjendje fabrike</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
@@ -5587,7 +5582,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="693807610556624488">Veprimi i shkrimit e kalon gjatësinë maksimale të atributit te: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Ke 1 printer të ruajtur.</translation>
 <translation id="6938606182859551396">Për të marrë njoftime nga telefoni yt në pajisjen tënde <ph name="DEVICE_TYPE" />, ndiq udhëzimet në telefon për t'u dhënë njoftimeve qasje në shërbimet e Google Play.</translation>
-<translation id="6938789263968032501">Personat</translation>
 <translation id="6939815295902433669">Rishiko softuerin e pajisjes</translation>
 <translation id="694168622559714949">Administratori yt ka caktuar një gjuhë të parazgjedhur e cila nuk mund të modifikohet.</translation>
 <translation id="6941937518557314510">Identifikohu te <ph name="TOKEN_NAME" /> për t'u verifikuar te <ph name="HOST_NAME" /> me certifikatën tënde.</translation>
@@ -7629,7 +7623,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="9040661932550800571">Të përditësohet fjalëkalimi për <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Qasja në skedarët lokalë në kompjuterin tënd është çaktivizuar nga administratori yt</translation>
 <translation id="904224458472510106">Ky operacion nuk mund të zhbëhet</translation>
-<translation id="9042893549633094279">Privatësia dhe siguria</translation>
 <translation id="904451693890288097">Fut çelësin e kalimit për "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Dështoi lidhja me rrjetin: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lista jote e leximit është zhvendosur në panelin e ri anësor. Provoje këtu.</translation>

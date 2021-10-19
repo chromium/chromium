@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">cortafuegos detectado</translation>
 <translation id="1075811647922107217">Tamaño de página</translation>
-<translation id="110351136513869678">Ve a los ajustes para configurar tu red</translation>
 <translation id="1119447706177454957">Error interno</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">El PUK no es válido.</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
 <translation id="155865706765934889">Panel táctil</translation>
+<translation id="1572585716423026576">Configurar como fondo de pantalla</translation>
 <translation id="1621067168122174824">Realizar prueba de carga</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (una cara)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">Cancelando análisis</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">No se ha podido obtener la dirección IP</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
-<translation id="1901646112321215184">No se ha configurado ningún servidor DNS</translation>
 <translation id="1905710495812624430">Se ha superado el máximo de intentos permitidos.</translation>
 <translation id="1908234395526491708">Errores de solicitud UDP</translation>
 <translation id="1930797645656624981">Servicio de método de introducción de Chrome OS</translation>
 <translation id="1947737735496445907">Impreso</translation>
-<translation id="197386857804679933">Ve a los ajustes para volver a conectarla</translation>
 <translation id="1979103255016296513">Ya ha terminado el plazo para cambiar la contraseña</translation>
 <translation id="1999615961760456652">Portal cautivo</translation>
 <translation id="2006864819935886708">Conectividad</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">Coloca otra página en el escáner</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2878387241690264070">Se ha descargado un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
-<translation id="2927511423571448384">No se puede conectar con sitios web HTTP (puerto 80) usando un cortafuegos desde Android</translation>
 <translation id="3008341117444806826">RENOVAR</translation>
 <translation id="3009958530611748826">Selecciona la carpeta donde quieras guardar</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punto final</translation>
 <translation id="3069085583900247081">Error en la prueba</translation>
-<translation id="3076387335132326640">Estás usando una red abierta</translation>
 <translation id="3083667275341675831">Diagnóstico de conectividad</translation>
 <translation id="3091839911843451378">No se ha podido imprimir - Se ha detenido</translation>
 <translation id="3102119246920354026">Caché</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">Quedan unos <ph name="MIN_REMAINING" /> minutos</translation>
 <translation id="3565064564551103223">IPs permitidas</translation>
 <translation id="357889014807611375">Wi‑Fi de uso medido</translation>
-<translation id="3582041541988388905">No se ha detectado ninguna conexión <ph name="NETWORK_NAME" />.</translation>
 <translation id="3595596368722241419">Batería al máximo</translation>
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
 <translation id="3689839747745352263">Prueba <ph name="TEST_NAME" /></translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM desbloqueada</translation>
 <translation id="4562494484721939086">Sin servicio</translation>
-<translation id="4567024731344774461">No se puede resolver el DNS desde Android</translation>
 <translation id="458794348635939462">No se han podido resolver todos los hosts</translation>
 <translation id="4593212453765072419">Se requiere autenticación de proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pulsa Intro para cancelar el trabajo de impresión.</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">(Android) Resolución de DNS</translation>
 <translation id="4848429997038228357">EN CURSO</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos.}}</translation>
-<translation id="4871137769558798671">No se puede conectar con sitios web HTTPS (puerto 443) usando un cortafuegos</translation>
 <translation id="4880328057631981605">Nombre del punto de acceso</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Selecciona otra inmediatamente</translation>
@@ -290,7 +282,6 @@
 <translation id="5502931783115429516">Android no se está ejecutando</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">La intensidad de la señal es débil. Acércate al punto de acceso.</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Escanear de nuevo</translation>
 <translation id="5669267381087807207">Activando</translation>
@@ -298,7 +289,6 @@
 <translation id="5691511426247308406">Familia</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">No se ha configurado ningún servidor de nombres</translation>
 <translation id="5760715441271661976">Estado de portal</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
 <translation id="5832805196449965646">Añadir perfil</translation>
@@ -342,7 +332,6 @@
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6388847657025262518">El alimentador de documentos del escáner está atascado. Revisa el alimentador y vuelve a intentarlo.</translation>
-<translation id="6395640744968320699">No se puede conectar con sitios web HTTP (puerto 80) usando un cortafuegos</translation>
 <translation id="6398765197997659313">Salir del modo de pantalla completa</translation>
 <translation id="641081527798843608">Coincidencia de asunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -352,7 +341,6 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestionado por <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Detenido: atasco de papel</translation>
-<translation id="6498608540383876992">No se puede contactar con la pasarela</translation>
 <translation id="6516990319416533844">Para comprobar la velocidad de carga de la batería, deja que se use un poco</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">Protocolo de seguridad Wi-Fi desconocido</translation>
@@ -362,13 +350,11 @@
 <translation id="6574762126505704998">Rellenar</translation>
 <translation id="6575134580692778371">Sin configurar</translation>
 <translation id="6596816719288285829">Dirección IP</translation>
-<translation id="6603230386432466813">¿No puedes conectarte?</translation>
 <translation id="6618744767048954150">En curso</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial a menos que se quiten de forma manual</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
-<translation id="6714650824879092633">Se ha inhabilitado <ph name="NETWORK_NAME" /></translation>
 <translation id="6747215703636344499">Detenido: bandeja de salida llena</translation>
 <translation id="6756731097889387912">No se ha podido cancelar el análisis</translation>
 <translation id="6766275201586212568">Errores de resoluciones de DNS</translation>
@@ -381,7 +367,6 @@
 <translation id="6957231940976260713">Nombre de servicio</translation>
 <translation id="6961170852793647506">Para empezar, coloca el documento en el escáner</translation>
 <translation id="6977381486153291903">Revisión del firmware</translation>
-<translation id="6982876849933694860">Para configurar una nueva conexión, ve a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona este dispositivo y tiene acceso a toda la actividad del usuario, incluidas las páginas web visitadas, las contraseñas y el correo electrónico.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7058278511608979688">Finalizar y guardar</translation>
@@ -400,7 +385,6 @@
 <translation id="7271040990581020067">El escáner se está usando en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Colecciones de fondos de pantalla</translation>
-<translation id="7292680402155138244">Latencia alta a sitios web HTTPS (puerto 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -458,7 +442,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
-<translation id="8177708084858970226">No se puede resolver el DNS</translation>
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8208861521865154048">Ventajas</translation>
 <translation id="8230672074305416752">Se ha producido un error al hacer ping en la puerta de enlace de red predeterminada</translation>
@@ -470,7 +453,6 @@
 <translation id="8297006494302853456">Débil</translation>
 <translation id="8302368968391049045">Cortafuegos de HTTPS</translation>
 <translation id="8318753676953949627">Sin imágenes</translation>
-<translation id="8346875532700229909">No se puede contactar con la pasarela desde Android</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8352772353338965963">Se puede añadir una cuenta al inicio de sesión múltiple y acceder a todas las cuentas en las que se haya iniciado sesión sin una contraseña, por lo que esta función solo se debe utilizar con cuentas de confianza.</translation>
 <translation id="8364946094152050673">Servidores de nombres vacíos</translation>

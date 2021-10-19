@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ไฟล์}other{# ไฟล์}}</translation>
 <translation id="2021896219286479412">ส่วนควบคุมเว็บไซต์แบบเต็มหน้าจอ</translation>
 <translation id="2038563949887743358">เปิดการขอเว็บไซต์เดสก์ท็อป</translation>
-<translation id="2039379262107991683">เพิ่มหน้าเว็บในเรื่องรออ่านเพื่อรับการช่วยเตือน</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> มีข้อมูลอยู่ใน Chrome ด้วย</translation>
 <translation id="2046634576464120978">ลงทะเบียนไม่สำเร็จ</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@
 <translation id="2781151931089541271">เหลือ 1 วิ</translation>
 <translation id="2788468313014644040">หมายเลขกลุ่ม</translation>
 <translation id="2800066122460699237">ระบบจะปิดแท็บ <ph name="TAB_TITLE" /></translation>
-<translation id="2801022321632964776">อัปเดตเพื่อใช้ภาษาของคุณใน Chrome เวอร์ชันล่าสุด</translation>
 <translation id="2805756323405976993">แอป</translation>
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">ข้อมูลเกี่ยวกับการใช้งาน Chrome ที่เชื่อมโยงกับคุณไม่ได้\n\nข้อมูลที่เกี่ยวข้องจากข้อขัดข้องของ Chrome ที่พบไม่บ่อยนัก ซึ่งอาจรวมข้อมูลส่วนบุคคลบางอย่าง\n\nหากเปิดการซิงค์ เมตริกอาจรวมถึงข้อมูลเกี่ยวกับ URL ที่คุณเข้าชมด้วย</translation>
@@ -354,12 +352,10 @@
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">หน้าแรกของ Chrome</translation>
 <translation id="3154863790776532719">ฟีเจอร์ใหม่และประสิทธิภาพที่ดียิ่งขึ้น</translation>
-<translation id="3157387275655328056">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="3157842584138209013">ดูปริมาณอินเทอร์เน็ตที่คุณประหยัดไปได้จากปุ่มตัวเลือกเพิ่มเติม</translation>
 <translation id="3166827708714933426">แป้นพิมพ์ลัดสำหรับแท็บและหน้าต่าง</translation>
 <translation id="316694332262407393">Chrome ทำงานอยู่แล้วที่นี่</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3205824638308738187">เกือบเสร็จแล้ว!</translation>
 <translation id="3207960819495026254">บุ๊กมาร์กแล้ว</translation>
 <translation id="3208584281581115441">ตรวจสอบเลย</translation>
 <translation id="3211426585530211793">ลบ <ph name="ITEM_TITLE" /> แล้ว</translation>
@@ -450,7 +446,6 @@
 <translation id="3739899004075612870">บุ๊กมาร์กไว้ใน <ph name="PRODUCT_NAME" /> แล้ว</translation>
 <translation id="3740525748616366977">การค้นหาด้วยเสียงไม่พร้อมใช้งานในอุปกรณ์นี้</translation>
 <translation id="3749259744154402564">ไม่รองรับ</translation>
-<translation id="3771001275138982843">ดาวน์โหลดอัปเดตไม่ได้</translation>
 <translation id="3771033907050503522">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="3771290962915251154">การตั้งค่านี้ปิดใช้อยู่เนื่องจากการควบคุมโดยผู้ปกครองเปิดอยู่</translation>
 <translation id="3771694256347217732">ข้อกำหนดในการให้บริการของ Google</translation>
@@ -790,7 +785,6 @@
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5833984609253377421">แชร์ลิงก์</translation>
 <translation id="5834764604050996579">อนุญาตให้ Chrome ใช้กล้องเพื่อสแกนคิวอาร์โค้ด</translation>
-<translation id="5836192821815272682">กำลังดาวน์โหลดอัปเดต Chrome…</translation>
 <translation id="5839058148541733625">ไดโนเสาร์ Chrome</translation>
 <translation id="5853623416121554550">หยุดชั่วคราว</translation>
 <translation id="5854512288214985237">ไม่มีการส่งสถิติหรือรายงานข้อขัดข้องไปยัง Google</translation>
@@ -862,7 +856,6 @@
 <translation id="6232535412751077445">การเปิดใช้ "ไม่ติดตาม" หมายความว่าจะมีการรวมคำขอหนึ่งไว้กับการเข้าชมของคุณ ผลกระทบทั้งหมดขึ้นอยู่กับว่าเว็บไซต์ตอบสนองต่อคำขอนั้นไหม และวิธีตีความคำขอ
 
 ตัวอย่างเช่น บางเว็บไซต์อาจตอบสนองต่อคำขอนี้โดยแสดงให้คุณเห็นโฆษณาที่ไม่ได้อิงอยู่กับเว็บไซต์อื่นๆ ที่คุณเข้าชม เว็บไซต์จำนวนมากจะยังคงรวบรวมและใช้ข้อมูลการท่องเว็บของคุณเพื่อปรับปรุงความปลอดภัย เพื่อแสดงเนื้อหา โฆษณา และคำแนะนำ และเพื่อสร้างสถิติในการรายงาน เป็นต้น</translation>
-<translation id="624789221780392884">พร้อมอัปเดต</translation>
 <translation id="6264376385120300461">ดาวน์โหลดต่อไป</translation>
 <translation id="6277522088822131679">เกิดปัญหาในการพิมพ์หน้านี้ โปรดลองอีกครั้ง</translation>
 <translation id="6278428485366576908">ธีม</translation>
@@ -898,7 +891,6 @@
 <translation id="6411219469806822692">ขึ้นไปสูงกว่านี้ไม่ได้ ลองเริ่มลากจากด้านบนของหน้า</translation>
 <translation id="6412673304250309937">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chrome หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
 <translation id="641643625718530986">พิมพ์…</translation>
-<translation id="6427112570124116297">แปลเว็บ</translation>
 <translation id="6433501201775827830">เลือกเครื่องมือค้นหา</translation>
 <translation id="6434309073475700221">ทิ้ง</translation>
 <translation id="6437478888915024427">ข้อมูลหน้าเว็บ</translation>
@@ -1000,7 +992,6 @@
 <translation id="6979737339423435258">ตั้งแต่ต้น</translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
 <translation id="6987047470128880212">แท็บที่ไม่ระบุตัวตนไม่พร้อมใช้งานในอุปกรณ์นี้</translation>
-<translation id="6989267951144302301">ดาวน์โหลดไม่ได้</translation>
 <translation id="6995899638241819463">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="7001056293070445572">ไฟล์นี้มีขนาดใหญ่ (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">เปิดในเบราว์เซอร์</translation>
@@ -1032,7 +1023,6 @@
 <translation id="718926126787620637">รายการโฟลเดอร์บุ๊กมาร์กเปิดอยู่ที่ระดับเต็มความสูงของหน้าจอ</translation>
 <translation id="7191430249889272776">แท็บเปิดในพื้นหลัง</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ดาวน์โหลดรอดำเนินการ 1 รายการ}other{ดาวน์โหลดรอดำเนินการ # รายการ}}</translation>
-<translation id="7233236755231902816">โปรดอัปเดต Chrome เป็นเวอร์ชันล่าสุดเพื่อดูเว็บเป็นภาษาของคุณ</translation>
 <translation id="7242755609445462077">ทำสไตไลซ์ไฮไลต์วันที่ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">ตรวจสอบว่าการซิงค์ <ph name="TARGET_DEVICE_NAME" /> ใน Chrome เปิดอยู่</translation>
 <translation id="7252076891734325316">วางโทรศัพท์ไว้ใกล้กับคอมพิวเตอร์</translation>
@@ -1055,7 +1045,6 @@
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7352939065658542140">วิดีโอ</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{แชร์ 1 รายการที่เลือก}other{แชร์ # รายการที่เลือก}}</translation>
-<translation id="7356631068872238169">ลบออกจากเรื่องรออ่าน</translation>
 <translation id="7359002509206457351">เข้าถึงวิธีการชำระเงิน</translation>
 <translation id="7375125077091615385">ประเภท:</translation>
 <translation id="7376560087009844242">การรวมข้อความของหน้ามากขึ้นอาจช่วยให้คุณเห็นผลการค้นหาที่ดีขึ้นเมื่อใช้ฟีเจอร์แตะเพื่อค้นหา คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อโดยไปที่<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
@@ -1232,7 +1221,6 @@
 <translation id="829672787777123339">กำลังเชื่อมต่อกับอุปกรณ์…</translation>
 <translation id="8310344678080805313">แท็บมาตรฐาน</translation>
 <translation id="831192587911042850">เพิ่มเว็บไซต์ปัจจุบันลงในรายการเว็บไซต์ที่คุณกำลังติดตาม</translation>
-<translation id="8327155640814342956">โปรดเปิดเพื่ออัปเดต Chrome เพื่อให้ได้รับประสบการณ์การท่องเว็บที่ดีที่สุด</translation>
 <translation id="834313815369870491">ไม่ต้องแปลเว็บไซต์</translation>
 <translation id="8349013245300336738">จัดเรียงตามปริมาณเน็ตมือถือที่ใช้</translation>
 <translation id="8354977102499939946">ค้นหาด้วยเสียงอย่างรวดเร็ว ไปที่การตั้งค่าเพื่อแก้ไขทางลัดนี้</translation>
@@ -1345,6 +1333,7 @@
 <translation id="8951232171465285730">Chrome ได้ประหยัดพื้นที่ให้คุณไป <ph name="MEGABYTES" /> MB</translation>
 <translation id="8955719471735800169">กลับไปด้านบน</translation>
 <translation id="8965591936373831584">รอดำเนินการ</translation>
+<translation id="8967427617812342790">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{ระบบจะปิดแท็บที่ไม่ระบุตัวตน <ph name="INCOGNITO_TAB_COUNT" /> แท็บและแท็บอื่นอีก <ph name="TAB_COUNT_ONE" /> แท็บ}other{ระบบจะปิดแท็บที่ไม่ระบุตัวตน <ph name="INCOGNITO_TAB_COUNT" /> แท็บและแท็บอื่นอีก <ph name="TAB_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="8970887620466824814">มีบางอย่างผิดพลาด</translation>
 <translation id="8972098258593396643">ดาวน์โหลดลงโฟลเดอร์เริ่มต้นไหม</translation>

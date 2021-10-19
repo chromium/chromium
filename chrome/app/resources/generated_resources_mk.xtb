@@ -997,6 +997,7 @@
 <translation id="2002109485265116295">Реално време</translation>
 <translation id="200217416291116199">Се препорачува да направите бекап на датотеките ако не може да се доврши надградбата. Стартувањето на надградбата ќе предизвика исклучување на Linux. Пред да продолжите, зачувајте ги отворените датотеки.</translation>
 <translation id="2003130567827682533">За да ја активирате мобилната мрежа <ph name="NAME" />, најпрво поврзете се на Wi-Fi мрежа</translation>
+<translation id="2004697686368036666">Функциите на некои сајтови може да не функционираат</translation>
 <translation id="2005199804247617997">Други профили</translation>
 <translation id="2006638907958895361">Отвори го линкот во <ph name="APP" /></translation>
 <translation id="2007404777272201486">Пријави проблем…</translation>
@@ -1139,7 +1140,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> фотографии</translation>
 <translation id="2154484045852737596">Уредете ја картичката</translation>
 <translation id="2154502158735983655">да чита податоци за уред со Chrome OS и податоци за уред</translation>
-<translation id="2154710561487035718">Копирај URL</translation>
 <translation id="2155772377859296191">Изгледа како <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Услужен работник: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Не прашувај повторно при отворање на овој формат на датотека во апликацијава:
@@ -3181,7 +3181,6 @@
 <translation id="428715201724021596">Се поврзува со профилот. Може да потрае неколку минути.</translation>
 <translation id="4287157641315808225">Да, активирај ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Прикажи}one{Прикажи ги сите}other{Прикажи ги сите}}</translation>
-<translation id="4289372044984810120">Управувајте со сметките тука. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4289732974614035569">Изберете PIN</translation>
 <translation id="4290791284969893584">По затворањето на страницата, започнатите задачи можеби нема да се завршат</translation>
@@ -3257,7 +3256,6 @@
 <translation id="4378556263712303865">Барање на уредот</translation>
 <translation id="4379281552162875326">Да се деинсталира „<ph name="APP_NAME" />“?</translation>
 <translation id="4380648069038809855">Се влезе во цел екран</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, уште 1 сметка}one{<ph name="EMAIL" />, уште <ph name="EXTRA_ACCOUNTS" /> сметка}other{<ph name="EMAIL" />, уште <ph name="EXTRA_ACCOUNTS" /> сметки}}</translation>
 <translation id="4384312707950789900">Додај во претпочитани</translation>
 <translation id="4384652540891215547">Активирајте ја наставката</translation>
 <translation id="4384886290276344300">Променете ги поставките за тастатура</translation>
@@ -3881,7 +3879,6 @@
 <translation id="5053962746715621840">Пребарај ја сликата со Google Lens</translation>
 <translation id="5056950756634735043">Се поврзува со контејнерот</translation>
 <translation id="5057110919553308744">Кога ќе кликнете на екстензијата</translation>
-<translation id="5057403786441168405">Управувајте со најавените сметки. Веб-сајтовите, апликациите и екстензиите во Chrome и Google Play може да ги користат сметкиве за приспособување на вашето доживување, зависно од дозволите. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Ограничи најавување</translation>
 <translation id="5059526285558225588">Изберете што да се сподели</translation>
 <translation id="5060332552815861872">Има 1 печатач достапен за зачувување.</translation>
@@ -5010,7 +5007,6 @@
 <translation id="6284632978374966585">Вклучи темна тема</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> обично не се презема и може да биде опасно.</translation>
 <translation id="6285770818046456882">Уредот што споделуваше со вас го откажа преносот</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Нема достапни уреди што споделуваат во близина. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Се потврдува кодот за активација. Може да потрае неколку минути.</translation>
 <translation id="6291741848715722067">Код за потврда</translation>
@@ -5433,7 +5429,6 @@
 <translation id="6750757184909117990">Оневозможување мобилна мрежа</translation>
 <translation id="6750946710563435348">Користете друго корисничко име</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Инкогнито)</translation>
-<translation id="6757101664402245801">Линкот е копиран</translation>
 <translation id="6758056191028427665">Оценете ја нашата работа.</translation>
 <translation id="6759193508432371551">Ресетирање до фабрички вредности</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
@@ -5610,7 +5605,6 @@
 <translation id="693807610556624488">Операцијата за пишување ја надминува максималната должина на атрибутот на: „<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Имате 1 зачуван печатач.</translation>
 <translation id="6938606182859551396">За да примате известувања од телефонот на вашиот <ph name="DEVICE_TYPE" />, следете ги упатствата на телефонот за да дозволите пристап до известувањата за услугите на Google Play.</translation>
-<translation id="6938789263968032501">Луѓе</translation>
 <translation id="6939815295902433669">Прегледајте го софтверот на уредот</translation>
 <translation id="694168622559714949">Вашиот администратор поставил стандарден јазик што не може да се менува.</translation>
 <translation id="6941937518557314510">Најавете се со <ph name="TOKEN_NAME" /> за автентикација на <ph name="HOST_NAME" /> со вашиот сертификат.</translation>
@@ -7658,7 +7652,6 @@
 <translation id="9040661932550800571">Дали да се ажурира лозинката за <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Администраторот го оневозможил пристапот до локалните датотеки на вашата машина</translation>
 <translation id="904224458472510106">Операцијава не може да се врати</translation>
-<translation id="9042893549633094279">Приватност и безбедност</translation>
 <translation id="904451693890288097">Внесете лозинка за „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="9044646465488564462">Не успеа да се поврзе на мрежа: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Списокот за читање е преместен во новата странична табла. Испробајте тука.</translation>

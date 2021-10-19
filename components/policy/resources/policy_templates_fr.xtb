@@ -78,16 +78,6 @@
 <translation id="1069489575852947981">Si cette règle est activée ou qu'elle n'est pas configurée, la connexion sans délai au compte local de l'appareil concerné s'effectue automatiquement. <ph name="PRODUCT_OS_NAME" /> permet d'utiliser le raccourci clavier Ctrl+Alt+S pour contourner la connexion automatique et afficher l'écran de connexion.
 
       Si cette règle est désactivée, les utilisateurs ne peuvent pas contourner la connexion automatique sans délai (si celle-ci est configurée).</translation>
-<translation id="1070656322814001059">Chrome bloquera les navigations vers des protocoles externes dans un iFrame en bac à sable. Voir https://chromestatus.com/features/5680742077038592.
-
-      Si cette règle est définie sur "True", Chrome bloque ces navigations.
-
-      Si cette règle est définie sur "False", Chrome ne peut pas les bloquer.
-
-      Elle est définie par défaut sur "True" (fonctionnalité de sécurité activée).
-
-      L'entreprise concernée par ces restrictions peut utiliser cette règle pour les retirer temporairement.
-      </translation>
 <translation id="1073983258515362346">Transmettre les informations concernant le rétroéclairage d'un appareil.
 
       Si la règle est définie sur "False" ou n'est pas définie, ces informations ne sont pas transmises.
@@ -2292,9 +2282,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise un nom de bibliothèque par défaut.</translation>
 <translation id="3652670852519271837">Autoriser les sites à demander aux utilisateurs l'accès en lecture aux fichiers et répertoires via l'API File System</translation>
-<translation id="3653234084868565720">Permet de spécifier si <ph name="PRODUCT_OS_NAME" /> autorise la création de comptes utilisateur. Si cette règle est définie sur "False", les utilisateurs qui n'ont pas de compte ne pourront pas se connecter.
-
-      Si cette règle est définie sur "True" ou si elle n'est pas configurée, la création de comptes utilisateur est autorisée à condition que <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> n'empêche pas l'utilisateur de se connecter.</translation>
 <translation id="3653237928288822292">Icône du moteur de recherche par défaut</translation>
 <translation id="3654906736796256792">Autoriser l'exécution en bac à sable du processus audio</translation>
 <translation id="3659542706175323490">Si cette règle est activée, le démarrage au branchement de l'alimentation CA l'est également si l'appareil le permet. Une fois le cordon d'alimentation branché, le système, qui était alors complètement éteint ou en veille prolongée, redémarre.

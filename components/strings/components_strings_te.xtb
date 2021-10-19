@@ -126,6 +126,7 @@
 
           <ph name="LIST_ITEM" />మీ ఇంటర్నెట్ సేవా ప్రదాత
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">ఈ ట్యాబ్‌ను షేర్ చేయి</translation>
 <translation id="1339601241726513588">నమోదిత డొమైన్:</translation>
 <translation id="1340482604681802745">పికప్ అడ్రస్‌</translation>
 <translation id="1346748346194534595">కుడి</translation>
@@ -159,6 +160,7 @@
 <translation id="1428146450423315676">స్టాకర్ 7</translation>
 <translation id="1428729058023778569">ఈ సైట్ HTTPS‌కు సపోర్ట్ చేయనందున మీరు ఈ హెచ్చరికను చూస్తున్నారు. <ph name="BEGIN_LEARN_MORE_LINK" />మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ప్రింట్</translation>
+<translation id="1432581352905426595">సెర్చ్ ఇంజిన్‌లను మేనేజ్ చేయండి</translation>
 <translation id="1436185428532214179">మీ పరికరంలో ఫైళ్లు, అలాగే ఫోల్డర్‌లను ఎడిట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="1442386063175183758">కుడివైపు గేట్ ఫోల్డ్</translation>
 <translation id="1442987760062738829">రంధ్రం</translation>
@@ -380,7 +382,6 @@
 <translation id="2130448033692577677">DnsOverHttpsMode విధానాన్ని సెట్ చేయని కారణంగా, మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలుకాకపోవచ్చు.</translation>
 <translation id="213826338245044447">మొబైల్ బుక్‌మార్క్‌లు</translation>
 <translation id="214556005048008348">పేమెంట్‌ను రద్దు చేయి</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, 'లింక్‌ను షేర్ చేయడం', 'QR కోడ్‌ను క్రియేట్ చేయడం', 'కాస్ట్ చేయడం' ఇంకా మరెన్నో ఆప్షన్‌ల ద్వారా ఈ పేజీని షేర్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి.</translation>
 <translation id="2148613324460538318">కార్డ్‌ని జోడించు</translation>
 <translation id="2149968176347646218">కనెక్షన్ సురక్షితంగా లేదు</translation>
 <translation id="2154054054215849342">సింక్‌ మీ డొమైన్‌కు అందుబాటులో లేదు</translation>
@@ -427,7 +428,6 @@
 <translation id="2293443924986248631">ఆన్‌లో ఉన్నప్పుడు, వెబ్ అంతటా మిమ్మల్ని ట్రాక్ చేయడానికి ఉపయోగించే కుక్కీలను సైట్‌లు ఉపయోగించడం సాధ్యం కాదు. కొన్ని సైట్‌లలోని ఫీచర్‌లు సరిగ్గా పని చేయకపోవచ్చు.</translation>
 <translation id="2295290966866883927">మీరు సందర్శించే పేజీల URLలు విశ్లేషణ కోసం Google క్లౌడ్ లేదా థర్డ్ పార్టీలకు పంపబడతాయి. ఉదాహరణకు, సురక్షితం కాని వెబ్‌సైట్‌లను గుర్తించడానికి అవి స్కాన్ చేయబడతాయి.</translation>
 <translation id="2297722699537546652">B5 (ఎన్వలప్)</translation>
-<translation id="2297822946037605517">ఈ పేజీని భాగస్వామ్యం చేయి</translation>
 <translation id="2298855485018661510">'కుక్కీలను మేనేజ్ చేయి' బటన్, Chrome సెట్టింగ్‌లలో మీ కుక్కీ ప్రాధాన్యతలను మేనేజ్ చేయడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="2300306941146563769">అప్‌లోడ్ చేయలేదు</translation>
 <translation id="2310021320168182093">Chou2 (ఎన్వలప్)</translation>
@@ -505,6 +505,7 @@
 <translation id="2552295903035773204">ఇప్పటి నుండి కార్డ్‌లను నిర్ధారించడానికి స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
 <translation id="2553853292994445426">మీ సెక్యూర్ DNS సెట్టింగ్‌లను తనిఖీ చేయండి. మీరు కాన్ఫిగర్ చేసిన సెక్యూర్ సర్వర్‌కు కనెక్ట్ కావడంలో వైఫల్యం ఎదురవుతూ ఉన్నట్టుంది.</translation>
 <translation id="2556876185419854533">&amp;సవరించడాన్ని రద్దు చేయి</translation>
+<translation id="2570734079541893434">సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="257674075312929031">గ్రూప్‌గా చేయి</translation>
 <translation id="2586657967955657006">క్లిప్‌బోర్డ్</translation>
 <translation id="2587730715158995865">ప్రచురణకర్త <ph name="ARTICLE_PUBLISHER" />. దీన్ని మరియు మరో <ph name="OTHER_ARTICLE_COUNT" /> ఇతర కథనాలను చదవండి.</translation>
@@ -513,7 +514,6 @@
 <translation id="2595719060046994702">ఈ పరికరం మరియు ఖాతా రెండూ కూడా కంపెనీ లేదా ఇతర సంస్థ నిర్వహణలో లేవు.</translation>
 <translation id="2596415276201385844">సురక్షిత కనెక్షన్‌ను ఏర్పాటు చేయడానికి, మీ గడియారాన్ని సరైన సమయానికి సెట్ చేయాలి. ఎందుకంటే వెబ్‌సైట్‌లు వాటిని గుర్తించడానికి ఉపయోగించే ప్రమాణపత్రాలు నిర్దిష్ట కాలవ్యవధుల్లో మాత్రమే చెల్లుబాటు అవుతాయి. మీ పరికరం గడియారం సమయం తప్పుగా ఉన్నందున, Chrome ఈ ప్రమాణపత్రాలను ధృవీకరించడానికి వీలుపడలేదు.</translation>
 <translation id="2597378329261239068">ఈ పత్రం అనుమతి పదంచే రక్షించబడింది. దయచేసి అనుమతి పదాన్ని నమోదు చేయండి.</translation>
-<translation id="2597833655590727265">'Chrome కనిపించే తీరును మేనేజ్ చేయండి' బటన్, రూపాల ద్వారా మీ బ్రౌజర్ రూపాన్ని అనుకూలీకరించడానికి Enterను నొక్కండి.</translation>
 <translation id="2609632851001447353">వ్యత్యాసాలు</translation>
 <translation id="2610561535971892504">కాపీ చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="2618023639789766142">C10 (ఎన్వలప్)</translation>
@@ -603,7 +603,6 @@
 <translation id="2934466151127459956">ప్రభుత్వ-లెటర్</translation>
 <translation id="2941952326391522266">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రం <ph name="DOMAIN2" /> నుండి జారీ చేయబడింది. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="2943895734390379394">అప్‌లోడ్ సమయం:</translation>
-<translation id="2948017612172418360">'సైట్ సెర్చ్‌ను మేనేజ్ చేయండి' బటన్, మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను, సైట్ సెర్చ్‌ను మేనేజ్ చేయడానికి Enterను నొక్కండి</translation>
 <translation id="2948083400971632585">మీరు సెట్టింగ్‌ల పేజీ నుండి కనెక్షన్ కోసం కాన్ఫిగర్ చేయబడిన ఏ ప్రాక్సీలను అయినా నిలిపివేయవచ్చు.</translation>
 <translation id="2949183777371959169">'Chrome బ్రౌజర్ Cloud మేనేజ్‌మెంట్‌'తో మెషిన్ ఎన్‌రోల్ చేయబడలేదు కాబట్టి, తిరస్కరించబడింది.</translation>
 <translation id="2951588413176968965">నా మెయిల్‌బాక్స్</translation>
@@ -1027,7 +1026,6 @@
 <translation id="4275830172053184480">మీ పరికరాన్ని పునఃప్రారంభించండి</translation>
 <translation id="4277028893293644418">పాస్‌వర్డ్‌ను రీసెట్ చేయి</translation>
 <translation id="4278390842282768270">అనుమతించబడింది</translation>
-<translation id="4286047936834273847">మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను, సైట్ సెర్చ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ఈ కార్డ్ మీ Google ఖాతాలో సేవ్ చేయబడింది}other{ఈ కార్డ్‌లు మీ Google ఖాతాలో సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="4287885627794386150">ట్రయల్‌కు అర్హత పొందారు, కానీ యాక్టివ్‌లో లేదు</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> పేజీ కోసం థంబ్‌నెయిల్</translation>
@@ -1067,7 +1065,6 @@
 <translation id="4372948949327679948">ఆశిస్తున్న <ph name="VALUE_TYPE" /> విలువ.</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" />ను చేరుకోవడానికి మీరు ప్రయత్నించారు, కానీ సర్వర్ అందించిన ప్రమాణపత్రాన్ని దాన్ని జారీ చేసినవారు రద్దు చేశారు. సర్వర్ అందించిన భద్రత ఆధారాలు ఖచ్చితంగా విశ్వసించబడలేదని దీని అర్థం. మీరు దాడి చేసే వారితో కమ్యూనికేట్ చేస్తూ ఉండవచ్చు.</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
-<translation id="4389652395741935834">'లింక్‌ను షేర్ చేయడం', 'QR కోడ్‌ను క్రియేట్ చేయడం', 'కాస్ట్ చేయడం' ఇంకా మరెన్నో ఆప్షన్‌ల ద్వారా ఈ పేజీని షేర్ చేయండి.</translation>
 <translation id="4390472908992056574">బ్రిమ్</translation>
 <translation id="4406883609789734330">లైవ్ క్యాప్షన్</translation>
 <translation id="4406896451731180161">శోధన ఫలితాలు</translation>
@@ -1334,6 +1331,7 @@
 <translation id="5230733896359313003">బట్వాడా అడ్రస్‌</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">తొలగించు</translation>
 <translation id="5250209940322997802">"నెట్‌వర్క్‌కు కనెక్ట్ చేయండి"</translation>
 <translation id="52517543715119994">Chrome ఫీచర్‌ల గురించి తెలుసుకోండి</translation>
 <translation id="5251803541071282808">క్లౌడ్</translation>
@@ -1651,7 +1649,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ప్రాక్సీ, ఫైర్‌వాల్ మరియు సెక్యూర్ DNS కాన్ఫిగరేషన్‌ను తనిఖీ చేయడం<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">ఎడమవైపు డ్యుయల్ స్టేపుల్</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' అనే దానికి 1 ఫలితం మాత్రమే లభించింది</translation>
-<translation id="6377404662019220017">'ఈ పేజీని షేర్ చేయండి' బటన్, 'లింక్‌ను షేర్ చేయడం', 'QR కోడ్‌ను క్రియేట్ చేయడం', 'కాస్ట్ చేయడం' ఇంకా మరెన్నో ఆప్షన్‌ల ద్వారా ఈ పేజీని షేర్ చేయడానికి Enterను నొక్కండి.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">కొనసాగించడం వల్ల ఛార్జ్‌లు చెల్లించాల్సి రావచ్చు.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 ఇతర సూచన}other{# ఇతర సూచనలు}}</translation>
@@ -1872,7 +1869,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">లావెండర్ రంగు</translation>
 <translation id="7156870133441232244">సర్వర్‌ను TLS 1.2 లేదా ఆపై వెర్షన్‌లకు అప్‌గ్రేడ్ చేయాలి.</translation>
-<translation id="716939258255825483">'Dino Run గేమ్‌ను ఆడండి' బటన్, Chromeలో Dino Run గేమ్‌ను ఆడటానికి Enterను నొక్కండి</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7173920250514487165">మీ స్క్రీన్‌పై ఉన్న గోప్యమైన కంటెంట్‌ను క్యాప్చర్ చేయండి</translation>
 <translation id="7174545416324379297">విలీనం చేయబడ్డాయి</translation>
@@ -1895,7 +1891,6 @@
 <translation id="7220786058474068424">ప్రాసెస్ చేస్తోంది</translation>
 <translation id="7221855153210829124">నోటిఫికేషన్‌లను చూపాలనుకుంటోంది</translation>
 <translation id="722454870747268814">కొత్త అజ్ఞాత ట్యాబ్</translation>
-<translation id="7231476387708735839">సైట్ సెర్చ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="7233592378249864828">ప్రింట్ చేయడాన్ని నిర్ధారించే షీట్</translation>
 <translation id="7238585580608191973">SHA-256 వేలిముద్ర</translation>
 <translation id="7240120331469437312">సర్టిఫికెట్ విషయ ప్రత్యామ్నాయ పేరు</translation>
@@ -2491,6 +2486,7 @@
 <translation id="9213433120051936369">కనిపించే తీరును అనుకూలంగా మార్చండి</translation>
 <translation id="9215416866750762878">ఒక అప్లికేషన్ కారణంగా Chrome ఈ సైట్‌కు సురక్షితంగా కనెక్ట్ కాలేకపోతోంది</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
+<translation id="922152298093051471">Chromeను అనుకూలంగా మార్చు</translation>
 <translation id="933712198907837967">డైనర్స్ క్లబ్</translation>
 <translation id="935608979562296692">ఫారమ్‌ను తీసివేయండి</translation>
 <translation id="936474030629450166">సూపర్-B</translation>
@@ -2523,5 +2519,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay నుండి</translation>
-<translation id="998677222109959694">Chrome సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 </translationbundle>

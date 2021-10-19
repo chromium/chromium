@@ -124,6 +124,7 @@
           <ph name="LIST_ITEM" />നിങ്ങളുടെ നെറ്റ്‌വർക്ക് അഡ്‌മിനിസ്ട്രേറ്ററിന്
           <ph name="LIST_ITEM" />നിങ്ങളുടെ ഇന്റർനെറ്റ് സേവന ദാതാവിന്
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">ഈ ടാബ് പങ്കിടുക</translation>
 <translation id="1339601241726513588">എൻറോൾമെന്റ് ഡൊമെയ്ൻ:</translation>
 <translation id="1340482604681802745">പിക്കപ്പ് വിലാസം</translation>
 <translation id="1346748346194534595">ശരി</translation>
@@ -157,6 +158,7 @@
 <translation id="1428146450423315676">സ്റ്റാക്കർ 7</translation>
 <translation id="1428729058023778569">ഈ സൈറ്റ് HTTPS പിന്തുണയ്‌ക്കാത്തതിനാലാണ് നിങ്ങൾ ഈ മുന്നറിയിപ്പ് കാണുന്നത്. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">അച്ചടിക്കുക</translation>
+<translation id="1432581352905426595">തിരയൽ യന്ത്രം മാനേജ് ചെയ്യുക</translation>
 <translation id="1436185428532214179">നിങ്ങളുടെ ഉപകരണത്തിലെ ഫയലുകളും ഫോൾഡറുകളും എഡിറ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="1442386063175183758">റൈറ്റ് ഗേറ്റ് മടക്ക്</translation>
 <translation id="1442987760062738829">പഞ്ച് ചെയ്യുക</translation>
@@ -377,7 +379,6 @@
 <translation id="2130448033692577677">DnsOverHttpsMode നയം സജ്ജീകരിക്കാത്തതിനാൽ നിങ്ങൾ വ്യക്തമാക്കിയ ടെംപ്ലേറ്റുകൾ ബാധകമാക്കാനായേക്കില്ല.</translation>
 <translation id="213826338245044447">മൊബൈൽ ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="214556005048008348">പേയ്‌മെന്‍റ് റദ്ദാക്കുക</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ലിങ്ക് പങ്കിടാനും QR കോഡ് സൃഷ്ടിക്കാനും കാസ്റ്റ് ചെയ്യാനും മറ്റുമുള്ള ഓപ്ഷനുകൾ ഉപയോഗിച്ച് ഈ പേജ് പങ്കിടാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക.</translation>
 <translation id="2148613324460538318">കാർഡ് ചേർക്കുക</translation>
 <translation id="2149968176347646218">കണക്ഷൻ സുരക്ഷിതമല്ല</translation>
 <translation id="2154054054215849342">നിങ്ങളുടെ ഡൊമെയ്‌നിന് വേണ്ടി സമന്വയം ലഭ്യമല്ല</translation>
@@ -424,7 +425,6 @@
 <translation id="2293443924986248631">ഓണായിരിക്കുമ്പോൾ, വെബിലുടനീളം നിങ്ങളെ ട്രാക്ക് ചെയ്യുന്ന കുക്കികൾ ഉപയോഗിക്കാൻ സെെറ്റുകൾക്കാവില്ല. ചില സൈറ്റുകളിലെ ഫീച്ചറുകൾക്ക് പ്രവർത്തനം നടത്താനായേക്കില്ല.</translation>
 <translation id="2295290966866883927">നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കൾ വിശകലനം ചെയ്യുന്നതിന് Google Cloud-ലേക്കോ മൂന്നാം കക്ഷികൾക്കോ അയയ്ക്കുന്നു. ഉദാഹരണത്തിന്, സുരക്ഷിതമല്ലാത്ത വെബ്സൈറ്റുകൾ തിരിച്ചറിയാൻ അവ സ്‌കാൻ ചെയ്‌തേക്കാം.</translation>
 <translation id="2297722699537546652">B5 (എൻവലപ്പ്)</translation>
-<translation id="2297822946037605517">ഈ പേജ് പങ്കിടുക</translation>
 <translation id="2298855485018661510">കുക്കികൾ ബട്ടൺ മാനേജ് ചെയ്യുക, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ കുക്കി മുൻഗണനകൾ മാനേജ് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
 <translation id="2300306941146563769">അപ്‌ലോഡ് ചെയ്‌തില്ല</translation>
 <translation id="2310021320168182093">Chou2 (എൻവലപ്പ്)</translation>
@@ -502,6 +502,7 @@
 <translation id="2552295903035773204">ഇപ്പോൾ മുതൽ, സ്ക്രീൻ ലോക്ക് ഉപയോഗിച്ച് കാർഡുകൾ സ്ഥിരീകരിക്കുക</translation>
 <translation id="2553853292994445426">നിങ്ങളുടെ സുരക്ഷിത DNS ക്രമീകരണം പരിശോധിക്കുക. കണക്ഷനുകളിൽ തകരാർ ഉള്ള സുരക്ഷിത DNS സെർവറായിരിക്കാം നിങ്ങൾ കോൺഫിഗർ ചെയ്തിരിക്കുന്നത്.</translation>
 <translation id="2556876185419854533">&amp;എഡിറ്റുചെയ്യുന്നത് പഴയപടിയാക്കുക</translation>
+<translation id="2570734079541893434">ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="257674075312929031">ഗ്രൂപ്പ്</translation>
 <translation id="2586657967955657006">ക്ലിപ്പ്ബോർഡ്</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> എന്നയാളുടെ ലേഖനം. ഇതും മറ്റ് <ph name="OTHER_ARTICLE_COUNT" /> ലേഖനങ്ങളും വായിക്കുക.</translation>
@@ -510,7 +511,6 @@
 <translation id="2595719060046994702">ഏതെങ്കിലും കമ്പനിയോ മറ്റ് സ്ഥാപനമോ മാനേജ് ചെയ്യുന്നതല്ല ഈ ഉപകരണവും അക്കൗണ്ടും.</translation>
 <translation id="2596415276201385844">ഒരു സുരക്ഷിത കണക്ഷൻ സ്ഥാപിക്കുന്നതിന്, നിങ്ങളുടെ ക്ലോക്ക് ശരിയായി സജ്ജീകരിക്കേണ്ടതുണ്ട്. വെബ്‌സൈറ്റുകൾ സ്വയം തിരിച്ചറിയുന്നതിന് ഉപയോഗിക്കുന്ന സർട്ടിഫിക്കറ്റുകൾ, നിർദ്ദിഷ്‌ട സമയ പരിധിയിൽ മാത്രം സാധുതയുള്ളതിനാലാണിത്. നിങ്ങളുടെ ഉപകരണത്തിന്റെ ക്ലോക്ക് തെറ്റായിരിക്കുന്നതിനാൽ, Chrome-ന് ഈ സർട്ടിഫിക്കറ്റുകൾ പരിശോധിച്ചുറപ്പിക്കാനാവില്ല.</translation>
 <translation id="2597378329261239068">ഈ പ്രമാണം പാസ്‌വേഡ് പരിരക്ഷിതമാണ്. പാസ്‌വേഡ് നല്‍‌കുക.</translation>
-<translation id="2597833655590727265">'Chrome-ന്റെ ദൃശ്യപരത മാനേജ് ചെയ്യുക' ബട്ടൺ, തീമുകൾ ഉപയോഗിച്ച് നിങ്ങളുടെ ബ്രൗസറിന്റെ രൂപം ഇഷ്ടാനുസൃതമാക്കാൻ Enter അമർത്തുക.</translation>
 <translation id="2609632851001447353">വേരിയേഷനുകൾ</translation>
 <translation id="2610561535971892504">പകർത്താൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="2618023639789766142">C10 (എൻവലപ്പ്)</translation>
@@ -600,7 +600,6 @@
 <translation id="2934466151127459956">ഗവൺമെൻ്റ്-ലെറ്റർ</translation>
 <translation id="2941952326391522266">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; <ph name="DOMAIN2" /> എന്നതിൽ നിന്നുള്ളതാണ് അതിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="2943895734390379394">അപ്‌ലോഡ് ചെയ്ത സമയം:</translation>
-<translation id="2948017612172418360">സൈറ്റ് തിരയൽ മാനേജ് ചെയ്യുക ബട്ടൺ, സൈറ്റ് തിരയലും നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രവും മാനേജ് ചെയ്യാൻ Enter അമർത്തുക</translation>
 <translation id="2948083400971632585">കണക്ഷനായി കോൺഫിഗർ ചെയ്‌ത ഏതൊരു പ്രോക്‌സികളും ക്രമീകരണങ്ങൾ പേജിൽ നിന്ന് നിങ്ങൾക്ക് പ്രവർത്തനരഹിതമാക്കാനാകും.</translation>
 <translation id="2949183777371959169">മെഷീൻ, Chrome ബ്രൗസർ ക്ലൗഡ് മാനേജ്‌മെന്റുമായി എൻറോൾ ചെയ്യാത്തതിനാൽ നിരസിച്ചു.</translation>
 <translation id="2951588413176968965">എന്റെ മെയിൽബോക്സ്</translation>
@@ -1021,7 +1020,6 @@
 <translation id="4275830172053184480">നിങ്ങളുടെ ഉപകരണം പുനരാരംഭിക്കുക</translation>
 <translation id="4277028893293644418">പാസ്‌വേഡ് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="4278390842282768270">അനുവദനീയം</translation>
-<translation id="4286047936834273847">സൈറ്റ് തിരയലും നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രവും മാനേജ് ചെയ്യുക</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ഈ കാർഡ് നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചു}other{ഈ കാർഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചു}}</translation>
 <translation id="4287885627794386150">ട്രയലിന് യോഗ്യതയുണ്ട്, എന്നാൽ സജീവമല്ല</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" />-ാം പേജിനുള്ള ലഘുചിത്രം</translation>
@@ -1061,7 +1059,6 @@
 <translation id="4372948949327679948">പ്രതീക്ഷിച്ച <ph name="VALUE_TYPE" /> മൂല്യം.</translation>
 <translation id="4377125064752653719">നിങ്ങള്‍‌ <ph name="DOMAIN" /> എന്നതില്‍‌ എത്താന്‍‌ ശ്രമിച്ചു, പക്ഷേ സെര്‍‌വര്‍‌ നൽകിയ സര്‍‌ട്ടിഫിക്കറ്റ് അത് നല്‍‌കിയ ആള്‍‌ അസാധുവാക്കി. സെര്‍‌വര്‍‌ നല്‍‌കിയ സുരക്ഷാ ക്രെഡന്‍‌ഷ്യലുകള്‍‌ തികച്ചും വിശ്വാ‍സയോഗ്യമല്ല എന്നാണ് ഇതിനര്‍‌ത്ഥം. നിങ്ങള്‍‌ ഒരു ആക്രമണകാരിയുമായിട്ടാകാം ആശയവിനിമയം നടത്തുന്നത്.</translation>
 <translation id="4378154925671717803">ഫോൺ</translation>
-<translation id="4389652395741935834">ലിങ്ക് പങ്കിടുക, QR കോഡ് സൃഷ്ടിക്കുക, കാസ്റ്റ് ചെയ്യുക എന്നിവയും മറ്റും ഉപയോഗിച്ച് ഈ പേജ് പങ്കിടുക.</translation>
 <translation id="4390472908992056574">ബ്രിം</translation>
 <translation id="4406883609789734330">തത്സമയ ക്യാപ്ഷൻ</translation>
 <translation id="4406896451731180161">തിരയൽ ഫലങ്ങൾ</translation>
@@ -1328,6 +1325,7 @@
 <translation id="5230733896359313003">ഷിപ്പിംഗ് വിലാസം</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
 <translation id="5250209940322997802">"നെറ്റ്‌വർക്കിലേക്ക് കണക്‌റ്റ് ചെയ്യുക"</translation>
 <translation id="52517543715119994">Chrome ഫീച്ചറുകളെ കുറിച്ച് അറിയുക</translation>
 <translation id="5251803541071282808">ക്ലൗഡ്</translation>
@@ -1645,7 +1643,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />പ്രോക്‌സിയും ഫയർവാളും സുരക്ഷിത DNS കോൺഫിഗറേഷനും പരിശോധിക്കുന്നു<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">ഇടതുവശത്ത് ഇരട്ട സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' എന്നതിനായി ഒരു ഫലം</translation>
-<translation id="6377404662019220017">'ഈ പേജ് പങ്കിടുക' ബട്ടൺ, ലിങ്ക് പങ്കിടാനും QR കോഡ് സൃഷ്ടിക്കാനും കാസ്റ്റ് ചെയ്യാനും മറ്റുമുള്ള ഓപ്ഷനുകൾ ഉപയോഗിച്ച് ഈ പേജ് പങ്കിടാൻ Enter അമർത്തുക.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">ഭാവിയില്‍ നിരക്കുകള്‍ ഈടാക്കാനിടയുണ്ട്.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{മറ്റൊരു നിർദ്ദേശം}other{മറ്റ് # നിർദ്ദേശങ്ങൾ}}</translation>
@@ -1866,7 +1863,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> എണ്ണവും}other{<ph name="PAYMENT_METHOD_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> എണ്ണവും}}</translation>
 <translation id="7153618581592392745">ലാവെൻഡർ</translation>
 <translation id="7156870133441232244">സെർവർ TLS 1.2 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ള പതിപ്പിലേക്ക് അപ്‌ഗ്രേഡ് ചെയ്യേണ്ടതുണ്ട്.</translation>
-<translation id="716939258255825483">ദിനോസർ റൺ കളിക്കുക ബട്ടൺ, Chrome-ൽ ദിനോസർ റൺ ഗെയിം കളിക്കാൻ 'Enter' അമർത്തുക</translation>
 <translation id="717330890047184534">Gaia ഐഡി:</translation>
 <translation id="7173920250514487165">നിങ്ങളുടെ സ്ക്രീനിലെ രഹസ്യാത്മക ഉള്ളടക്കം ക്യാപ്‌ചർ ചെയ്യുക</translation>
 <translation id="7174545416324379297">ലയിപ്പിച്ചു</translation>
@@ -1889,7 +1885,6 @@
 <translation id="7220786058474068424">പ്രോസസ്സുചെയ്യുന്നു</translation>
 <translation id="7221855153210829124">അറിയിപ്പുകൾ കാണിക്കുക</translation>
 <translation id="722454870747268814">പുതിയ ആൾമാറാട്ട ടാബ്</translation>
-<translation id="7231476387708735839">സൈറ്റ് തിരയൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="7233592378249864828">സ്ഥിരീകരണ ഷീറ്റ് പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="7238585580608191973">SHA-256 ഫിംഗര്‍പ്രിന്‍റ്</translation>
 <translation id="7240120331469437312">സര്‍‌ട്ടിഫിക്കറ്റ് വിഷയേതര നാമം</translation>
@@ -2483,6 +2478,7 @@
 <translation id="9213433120051936369">ദൃശ്യമാകുന്ന രീതി ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="9215416866750762878">ഈ സൈറ്റിലേക്ക് സുരക്ഷിതമായി കണക്റ്റ് ചെയ്യുന്നതിൽ നിന്ന് Chrome-നെ ഒരു ആപ്പ് തടയുന്നു</translation>
 <translation id="9219103736887031265">Images</translation>
+<translation id="922152298093051471">Chrome ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ഫോം മായ്‌ക്കുക</translation>
 <translation id="936474030629450166">സൂപ്പർ-B</translation>
@@ -2515,5 +2511,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay-യിൽ നിന്ന്</translation>
-<translation id="998677222109959694">Chrome ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 </translationbundle>

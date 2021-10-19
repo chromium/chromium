@@ -78,16 +78,6 @@
 <translation id="1069489575852947981">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird ein lokales Gerätekonto für die verzögerungsfreie automatische Anmeldung eingerichtet. <ph name="PRODUCT_OS_NAME" /> verwendet die Tastenkombination Strg + Alt + S, um die automatische Anmeldung zu umgehen und stattdessen den Anmeldebildschirm aufzurufen.
 
       Wenn die Richtlinie deaktiviert ist, kann eine verzögerungsfreie automatische Anmeldung, sofern konfiguriert, nicht umgangen werden.</translation>
-<translation id="1070656322814001059">Chrome blockiert das Aufrufen externer Protokolle in einem Sandbox-iFrame. Weitere Informationen finden Sie unter https://chromestatus.com/features/5680742077038592.
-
-      Wird die Richtline auf „true“ gesetzt, blockiert Chrome diese Aufrufe.
-
-      Wird die Richtline auf „false“ gesetzt, kann Chrome diese Aufrufe nicht blockieren.
-
-      Standardmäßig ist der Wert auf „true“ gesetzt: Sicherheitsfunktion aktiviert.
-
-      Sie kann von Unternehmen verwendet werden, die diese Einschränkungen vorübergehend aufheben möchten.
-      </translation>
 <translation id="1073983258515362346">Diese Richtlinie gibt Informationen zur Hintergrundbeleuchtung eines Geräts aus.
 
       Wenn sie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
@@ -2277,9 +2267,6 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 
       Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> einen Standardnamen für die Bibliothek.</translation>
 <translation id="3652670852519271837">Websites dürfen den Nutzer um Lesezugriff auf Dateien und Verzeichnisse über die File System API bitten</translation>
-<translation id="3653234084868565720">Legt fest, ob unter <ph name="PRODUCT_OS_NAME" /> das Erstellen neuer Nutzerkonten erlaubt ist. Wenn diese Richtlinie auf "false" gesetzt ist, können sich nur Nutzer mit bereits bestehenden Konten anmelden.
-
-      Ist die Richtlinie auf "true" gesetzt oder nicht konfiguriert, dürfen neue Nutzerkonten erstellt werden, falls die Nutzer nicht durch <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> an einer Anmeldung gehindert werden.</translation>
 <translation id="3653237928288822292">Symbol der Standardsuchmaschine</translation>
 <translation id="3654906736796256792">Ausführen der Audio-Sandbox zulassen</translation>
 <translation id="3659542706175323490">Wenn die Richtlinie aktiviert ist, ist das Starten bei anliegender Netzspannung aktiviert, sofern die Funktion vom Gerät unterstützt wird. Diese Energieverwaltungsrichtlinie erlaubt den Neustart des Systems aus dem abgeschalteten oder dem Ruhezustand bei Verbindung mit einer Netzspannungsquelle.

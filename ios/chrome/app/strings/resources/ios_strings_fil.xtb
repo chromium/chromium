@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">I-delete ang kasalukuyang data.</translation>
 <translation id="1147031633655575115">Naka-sign in bilang <ph name="USER" /></translation>
 <translation id="1154984953698510061">Tingnan ang Iba pang Tab</translation>
-<translation id="1157749421655780457">Payagan ang Lokasyon...</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Susunod na field</translation>
 <translation id="1176932207622159128">Di Ma-save Larawan</translation>
@@ -239,7 +238,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3240426699337459095">Nakopya ang link</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> ng <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Available offline ang iyong listahan ng babasahin. Para magdagdag ng page sa listahan ng babasahin mo, i-tap ang <ph name="SHARE_OPENING_ICON" /> at pagkatapos ay i-tap ang <ph name="ADD_TO_READING_LIST_TEXT" />.</translation>
 <translation id="3268451620468152448">Mga Bukas na Tab</translation>
 <translation id="3272527697863656322">Kanselahin</translation>
 <translation id="3277021493514034324">Nakopya ang address ng site</translation>
@@ -262,7 +260,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="345565170154308620">Pamahalaan ang Mga Password...</translation>
 <translation id="3469166899695866866">Ihinto ang Pag-download?</translation>
 <translation id="3470502288861289375">Kinokopya...</translation>
-<translation id="3472993688462687965">Kapag na-on mo ang pag-sync, posibleng malimitahan ang data ng kung ano ang pinahintulutan ng iyong organisasyon.</translation>
 <translation id="3474624961160222204">Magpatuloy bilang si <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Buwan ng Pag-expire</translation>
 <translation id="3482959374254649722">Sini-sync ang iyong mga tab...</translation>
@@ -374,7 +371,6 @@ Sundin ang mga hakbang sa ibaba:</translation>
 
 Na-encrypt ang iyong data gamit ang iyong passphrase sa pag-sync. Ilagay ito upang simulan ang pag-sync.</translation>
 <translation id="4689564913179979534">I-manage ang Payment Method...</translation>
-<translation id="469022783543509074">Na-sign Out Ka</translation>
 <translation id="470966556546083668">Huwag I-on ang Pag-sync</translation>
 <translation id="473775607612524610">I-update</translation>
 <translation id="4747097190499141774">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay. Ang tao lang na may alam ng iyong passphrase ang makakabasa sa naka-encrypt mong data. Hindi ipinapadala sa Google ang passphrase at hindi nito ito sino-store. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong i-reset ang pag-sync. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -623,7 +619,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="6842136130964845393">Para matiyak na maa-access mo anumang oras ang iyong mga naka-save na password, i-verify na ikaw ito</translation>
 <translation id="6851516051005285358">Hilingin ang Site sa Desktop</translation>
-<translation id="6856384753476268833">Pinapamahalaan ng iyong organisasyon.</translation>
 <translation id="6858855187367714033">Na-scan</translation>
 <translation id="6859944681507688231">Para mag-scan ng QR code o credit card, i-enable ang camera mula sa mga setting.</translation>
 <translation id="6869389390665537774">Makikita mo ang mga page na binisita mo o maki-clear mo ang mga ito sa iyong history</translation>
@@ -691,7 +686,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7472734401283673885">Pangalan ng Kumpanya</translation>
 <translation id="7473891865547856676">Hindi, Salamat</translation>
 <translation id="7481312909269577407">Sumulong</translation>
-<translation id="7483467499335917849">Gamitin ang Iyong Kasalukuyang Lokasyon</translation>
 <translation id="750493650310597496">0 ang napili</translation>
 <translation id="7508728395076009983">Para ma-lock ang iyong mga tab na Incognito, ma-set up ang Touch ID, Face ID, o Passcode.</translation>
 <translation id="7514365320538308">I-download</translation>
@@ -768,6 +762,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8319076807703933069">Bagong Paghahanap</translation>
 <translation id="8323906514956095947">Pindutin nang matagal para sa higit pang opsyon sa tab</translation>
 <translation id="8328777765163860529">Isara Lahat</translation>
+<translation id="8378714024927312812">Pinapamahalaan ng iyong organisasyon</translation>
 <translation id="8386068868580335421">I-reset</translation>
 <translation id="8407669440184693619">Walang nahanap na password para sa site na ito</translation>
 <translation id="842017693807136194">Naka-sign In Gamit ang</translation>
@@ -816,6 +811,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Mga Bookmark</translation>
 <translation id="8840513115188359703">Hindi ka masa-sign out sa iyong Google Account.</translation>
+<translation id="8843129975935593190">Nililimitahan ng iyong organisasyon kung ano ang puwede mong i-sync.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} Tab}one{{count} Tab}other{{count} na Tab}}</translation>
 <translation id="8870413625673593573">Recently Closed</translation>
 <translation id="8876882697946675716">Panatilihing Naka-sync ang Iyong Mga Device</translation>
@@ -837,7 +833,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9081058212938299310">I-update ang password para sa <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">Para mag-sync at mag-personalize sa mga device, i-on ang pag-sync.</translation>
-<translation id="9084677839771512880">Nililimitahan ng iyong organisasyon kung ano ang puwede mong i-sync. <ph name="BEGIN_LINK" />Mga Detalye<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Iminungkahing Password ng Chrome:</translation>
 <translation id="9094033019050270033">I-update ang password</translation>
 <translation id="9100610230175265781">Kinakailangan ang passphrase</translation>

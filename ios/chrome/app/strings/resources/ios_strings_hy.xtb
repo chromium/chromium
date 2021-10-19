@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">Առկա տվյալների ջնջում։</translation>
 <translation id="1147031633655575115">Դուք մուտք եք գործել որպես <ph name="USER" /></translation>
 <translation id="1154984953698510061">Տեսնել մյուս ներդիրները</translation>
-<translation id="1157749421655780457">Թույլատրել տեղորոշումը…</translation>
 <translation id="1165039591588034296">Սխալ</translation>
 <translation id="1172898394251786223">Հաջորդ դաշտը</translation>
 <translation id="1176932207622159128">Չհաջողվեց պահել պատկերը</translation>
@@ -239,7 +238,6 @@
 <translation id="3240426699337459095">Հղումը պատճենվեց</translation>
 <translation id="3244271242291266297">ամիս</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" />-ը <ph name="NUM_SUGGESTIONS" />-ից</translation>
-<translation id="3261971309013797455">Ձեր ընթերցանության ցանկը հասանելի է նաև անցանց ռեժիմում։ Ընթերցանության ցանկում էջ ավելացնելու համար սեղմեք <ph name="SHARE_OPENING_ICON" />, ապա «<ph name="ADD_TO_READING_LIST_TEXT" />»։</translation>
 <translation id="3268451620468152448">Բաց ներդիրները</translation>
 <translation id="3272527697863656322">Չեղարկել</translation>
 <translation id="3277021493514034324">Կայքի հասցեն պատճենվել է</translation>
@@ -262,7 +260,6 @@
 <translation id="345565170154308620">Կառավարել գաղտնաբառերը…</translation>
 <translation id="3469166899695866866">Դադարեցնե՞լ ներբեռնումը</translation>
 <translation id="3470502288861289375">Պատճենում…</translation>
-<translation id="3472993688462687965">Կազմակերպությունը կարող է սահմանափակել տվյալները, որոնք կարելի է համաժամացնել։</translation>
 <translation id="3474624961160222204">Շարունակել <ph name="NAME" /> հաշվով</translation>
 <translation id="3478058380795961209">Ժամկետի սպառման ամիսը</translation>
 <translation id="3482959374254649722">Ներդիրների համաժամացում...</translation>
@@ -374,7 +371,6 @@
 
 Ձեր տվյալները գաղտնագրված են համաժամացման անցաբառով: Համաժամացման համար մուտքագրեք անցաբառը:</translation>
 <translation id="4689564913179979534">Վճարման եղանակների կառավարում…</translation>
-<translation id="469022783543509074">Դուք դուրս եք գրվել հաշվից</translation>
 <translation id="470966556546083668">Չմիացնել համաժամացումը</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
 <translation id="4747097190499141774">Անցաբառով գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։ Միայն ձեր անցաբառն ունեցող օգտատերը կարող է կարդալ ձեր գաղտնագրված տվյալները: Անցաբառը չի ուղարկվում Google-ին, և Google-ը չի պահում այն: Անցաբառը մոռանալու դեպքում ձեզ անհրաժեշտ կլինի վերակայել համաժամացումը: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -624,7 +620,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6831043979455480757">Թարգմանել</translation>
 <translation id="6842136130964845393">Հաստատեք ձեր ինքնությունը, որպեսզի պահված գաղտնաբառերը միշտ հասանելի լինեն ձեզ</translation>
 <translation id="6851516051005285358">Համակարգչային տարբերակ</translation>
-<translation id="6856384753476268833">Կառավարվում է ձեր կազմակերպության կողմից։</translation>
 <translation id="6858855187367714033">Սկանավորվեց</translation>
 <translation id="6859944681507688231">QR կոդ կամ վարկային քարտ սկանավորելու համար կարգավորումներում միացրեք ֆոտոխցիկը:</translation>
 <translation id="6869389390665537774">Դուք կարող եք տեսնել ձեր այցելած էջերը կամ ջնջել դրանք պատմությունից</translation>
@@ -692,7 +687,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7472734401283673885">Ընկերության անունը</translation>
 <translation id="7473891865547856676">Ոչ</translation>
 <translation id="7481312909269577407">Forward</translation>
-<translation id="7483467499335917849">Ընթացիկ տեղադրության մասին տվյալների օգտագործում</translation>
 <translation id="750493650310597496">Ընտրվել է 0 էջանիշ</translation>
 <translation id="7508728395076009983">Ինկոգնիտո ներդիրները կողպելու համար սահմանեք Touch ID, Face ID կամ անցաբառ։</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
@@ -769,6 +763,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8319076807703933069">Նոր որոնում</translation>
 <translation id="8323906514956095947">Հպեք և պահեք՝ ներդիրներին առնչվող այլ ընտրանքներ տեսնելու համար</translation>
 <translation id="8328777765163860529">Փակել բոլորը</translation>
+<translation id="8378714024927312812">Կառավարվում է ձեր կազմակերպության կողմից</translation>
 <translation id="8386068868580335421">Վերակայել</translation>
 <translation id="8407669440184693619">Այս կայքի համար գաղտնաբառեր չեն գտնվել</translation>
 <translation id="842017693807136194">Մուտք եք գործել որպես</translation>
@@ -839,7 +834,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9081058212938299310">Թարմացնե՞լ օգտանվան (<ph name="USERNAME" />) գաղտնաբառը։</translation>
 <translation id="9083392325882095631">1 տարր</translation>
 <translation id="9083838294503912307">Սարքերը համաժամացնելու և անհատականացնելու համար միացրեք համաժամացումը:</translation>
-<translation id="9084677839771512880">Ձեր կազմակերպությունը սահմանափակել է տվյալները, որոնք կարելի է համաժամացնել։ <ph name="BEGIN_LINK" />Մանրամասներ<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Chrome-ի առաջարկած գաղտնաբառը՝</translation>
 <translation id="9094033019050270033">Թարմացնել գաղտնաբառը</translation>
 <translation id="9100610230175265781">Անհրաժեշտ է անցաբառ</translation>

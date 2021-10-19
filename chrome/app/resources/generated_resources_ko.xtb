@@ -996,6 +996,7 @@
 <translation id="2002109485265116295">실시간</translation>
 <translation id="200217416291116199">업그레이드를 완료할 수 없는 경우에 대비해 파일을 백업해 두는 것이 좋습니다. 업그레이드를 시작하면 Linux가 종료됩니다. 진행하기 전에 열려 있는 파일을 저장하세요.</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' 데이터를 활성화하려면 먼저 Wi-Fi 네트워크에 연결하세요.</translation>
+<translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="2005199804247617997">기타 프로필</translation>
 <translation id="2006638907958895361"><ph name="APP" />에서 링크 열기</translation>
 <translation id="2007404777272201486">문제 신고...</translation>
@@ -1138,7 +1139,6 @@
 <translation id="2152882202543497059">사진 <ph name="NUMBER" />장</translation>
 <translation id="2154484045852737596">카드 수정</translation>
 <translation id="2154502158735983655">Chrome OS 기기 정보 및 기기 데이터를 읽습니다.</translation>
-<translation id="2154710561487035718">URL 복사</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" />x<ph name="HEIGHT" />처럼 보입니다.</translation>
 <translation id="2156294658807918600">서비스 워커: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">이 앱에서 다음 파일 형식을 열 때 다시 묻지 않습니다.
@@ -2384,6 +2384,7 @@
 <translation id="344630545793878684">다수의 웹사이트에서 데이터 읽기</translation>
 <translation id="3446650212859500694">민감한 콘텐츠가 있는 파일입니다.</translation>
 <translation id="3446827946208017735">한곳에서 가장 중요한 개인 정보 보호 설정을 확인하고 검토하세요.</translation>
+<translation id="3447644283769633681">모든 타사 쿠키 차단</translation>
 <translation id="3448086340637592206">Chrome 및 Chrome OS 추가 약관</translation>
 <translation id="3448492834076427715">계정 업데이트</translation>
 <translation id="3449393517661170867">새 탭 창</translation>
@@ -3175,7 +3176,6 @@
 <translation id="428715201724021596">프로필에 연결하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="4287157641315808225">예, ChromeVox 활성화</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{표시}other{모두 표시}}</translation>
-<translation id="4289372044984810120">여기에서 계정을 관리하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">개요</translation>
 <translation id="4289732974614035569">PIN 선택</translation>
 <translation id="4290791284969893584">페이지를 닫으면 시작한 작업이 완료되지 않을 수 있습니다</translation>
@@ -3251,7 +3251,6 @@
 <translation id="4378556263712303865">기기 요청</translation>
 <translation id="4379281552162875326">‘<ph name="APP_NAME" />’ 앱을 제거하시겠습니까?</translation>
 <translation id="4380648069038809855">전체 화면으로 전환됨</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" /> 외 계정 1개}other{<ph name="EMAIL" /> 외 계정 <ph name="EXTRA_ACCOUNTS" />개}}</translation>
 <translation id="4384312707950789900">기본 네트워크에 추가</translation>
 <translation id="4384652540891215547">확장 프로그램 활성화</translation>
 <translation id="4384886290276344300">키보드 설정 변경</translation>
@@ -3874,7 +3873,6 @@
 <translation id="5053962746715621840">Google 렌즈로 이미지 검색하기</translation>
 <translation id="5056950756634735043">컨테이너에 연결 중입니다.</translation>
 <translation id="5057110919553308744">확장 프로그램을 클릭할 경우</translation>
-<translation id="5057403786441168405">로그인된 계정을 관리하세요. 웹사이트, 앱, Chrome 확장 프로그램 및 Google Play에서 권한에 따라 이 계정을 사용하여 사용 환경을 맞춤설정할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">로그인 제한</translation>
 <translation id="5059526285558225588">공유할 정보 선택</translation>
 <translation id="5060332552815861872">저장할 수 있는 프린터가 1대 있습니다.</translation>
@@ -5003,7 +5001,6 @@
 <translation id="6284632978374966585">어두운 테마 사용 설정</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 다운로드하지 않습니다.</translation>
 <translation id="6285770818046456882">나와 공유 중인 기기에서 전송을 취소했습니다.</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">근처에 공유 가능한 기기가 없습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">활성화 코드를 확인하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="6291741848715722067">확인 코드</translation>
@@ -5426,7 +5423,6 @@
 <translation id="6750757184909117990">셀룰러 사용 중지</translation>
 <translation id="6750946710563435348">다른 사용자 이름 사용</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (시크릿 모드)</translation>
-<translation id="6757101664402245801">URL을 복사했습니다</translation>
 <translation id="6758056191028427665">개선할 점이나 격려하고 싶은 점을 알려주세요.</translation>
 <translation id="6759193508432371551">초기화</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
@@ -5603,7 +5599,6 @@
 <translation id="693807610556624488">기기(<ph name="DEVICE_NAME" />)의 쓰기 작업이 최대 속성 길이를 초과합니다.</translation>
 <translation id="6938386202199793006">저장된 프린터가 1대 있습니다.</translation>
 <translation id="6938606182859551396"><ph name="DEVICE_TYPE" />에서 휴대전화 알림을 받으려면 휴대전화에 표시된 안내에 따라 알림에 Google Play 서비스 액세스 권한을 부여하세요.</translation>
-<translation id="6938789263968032501">사용자</translation>
 <translation id="6939815295902433669">기기 소프트웨어 검토</translation>
 <translation id="694168622559714949">관리자가 기본 언어를 설정했으며 수정할 수 없습니다.</translation>
 <translation id="6941937518557314510"><ph name="TOKEN_NAME" />에 로그인하여 인증서로 <ph name="HOST_NAME" />에서 인증을 받으세요.</translation>
@@ -7648,7 +7643,6 @@
 <translation id="9040661932550800571"><ph name="ORIGIN" /> 비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="9041692268811217999">관리자가 시스템의 로컬 파일 액세스를 차단했습니다</translation>
 <translation id="904224458472510106">이 작업은 되돌릴 수 없습니다.</translation>
-<translation id="9042893549633094279">개인정보 및 보안</translation>
 <translation id="904451693890288097">'<ph name="DEVICE_NAME" />'의 암호를 입력하세요:</translation>
 <translation id="9044646465488564462">네트워크 연결 실패: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">읽기 목록을 새 측면 패널로 이동했습니다. 여기에서 사용해 보세요.</translation>

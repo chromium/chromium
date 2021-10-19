@@ -996,6 +996,7 @@
 <translation id="2002109485265116295">Real-time</translation>
 <translation id="200217416291116199">Backing up files is recommended in case the upgrade cannot be completed. Starting the upgrade will cause Linux to shut down. Please save open files before proceeding.</translation>
 <translation id="2003130567827682533">To activate '<ph name="NAME" />' data, first connect to a Wi-Fi network</translation>
+<translation id="2004697686368036666">Features on some sites may not work</translation>
 <translation id="2005199804247617997">Other profiles</translation>
 <translation id="2006638907958895361">Open Link in <ph name="APP" /></translation>
 <translation id="2007404777272201486">Report an Issue...</translation>
@@ -1138,7 +1139,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2154484045852737596">Edit card</translation>
 <translation id="2154502158735983655">Read Chrome OS device information and device data.</translation>
-<translation id="2154710561487035718">Copy URL</translation>
 <translation id="2155772377859296191">Looks like <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Don't ask again when opening this file format in this app:
@@ -2384,6 +2384,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="344630545793878684">Read your data on a number of websites</translation>
 <translation id="3446650212859500694">This file has sensitive content</translation>
 <translation id="3446827946208017735">Understand and review the most critical privacy settings in one place</translation>
+<translation id="3447644283769633681">Block all third-party cookies</translation>
 <translation id="3448086340637592206">Google Chrome and Chrome OS additional terms</translation>
 <translation id="3448492834076427715">Update account</translation>
 <translation id="3449393517661170867">New tabbed window</translation>
@@ -3177,7 +3178,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="428715201724021596">Connecting to profile. This may take a few minutes.</translation>
 <translation id="4287157641315808225">Yes, activate ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Show}other{Show All}}</translation>
-<translation id="4289372044984810120">Manage your accounts here. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Overview</translation>
 <translation id="4289732974614035569">Choose a PIN</translation>
 <translation id="4290791284969893584">After closing a page, tasks that you started might not finish</translation>
@@ -3253,7 +3253,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4378556263712303865">Device requisition</translation>
 <translation id="4379281552162875326">Uninstall '<ph name="APP_NAME" />'?</translation>
 <translation id="4380648069038809855">Entered full screen</translation>
-<translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, +1 more account}other{<ph name="EMAIL" />, +<ph name="EXTRA_ACCOUNTS" /> more accounts}}</translation>
 <translation id="4384312707950789900">Add to preferred</translation>
 <translation id="4384652540891215547">Activate the extension</translation>
 <translation id="4384886290276344300">Change keyboard settings</translation>
@@ -3877,7 +3876,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5053962746715621840">Search Image with Google Lens</translation>
 <translation id="5056950756634735043">Connecting to the container</translation>
 <translation id="5057110919553308744">When you click the extension</translation>
-<translation id="5057403786441168405">Manage your signed-in accounts. Websites, apps and extensions in Chrome and Google Play may use these accounts to customise your experience, depending on permissions. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restrict sign-in</translation>
 <translation id="5059526285558225588">Choose what to share</translation>
 <translation id="5060332552815861872">There is 1 printer available to save.</translation>
@@ -5006,7 +5004,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6284632978374966585">Turn Dark theme on</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> is not commonly downloaded and may be dangerous.</translation>
 <translation id="6285770818046456882">The device sharing with you cancelled the transfer</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">No available devices sharing nearby. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verifying activation code. This may take a few minutes.</translation>
 <translation id="6291741848715722067">Confirmation code</translation>
@@ -5429,7 +5426,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6750757184909117990">Disable mobile</translation>
 <translation id="6750946710563435348">Use other username</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
-<translation id="6757101664402245801">URL copied</translation>
 <translation id="6758056191028427665">Let us know how we’re doing.</translation>
 <translation id="6759193508432371551">Factory reset</translation>
 <translation id="676158322851696513">‘<ph name="EXTENSION_NAME" />’</translation>
@@ -5606,7 +5602,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="693807610556624488">Write operation exceeds the maximum length of the attribute to: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">You have 1 saved printer.</translation>
 <translation id="6938606182859551396">To receive notifications from your phone on your <ph name="DEVICE_TYPE" />, follow the instructions on your phone to grant notifications access to Google Play services.</translation>
-<translation id="6938789263968032501">People</translation>
 <translation id="6939815295902433669">Review device software</translation>
 <translation id="694168622559714949">Your administrator has set a default language which cannot be modified.</translation>
 <translation id="6941937518557314510">Please sign in to <ph name="TOKEN_NAME" /> to authenticate to <ph name="HOST_NAME" /> with your certificate.</translation>
@@ -7651,7 +7646,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9040661932550800571">Update password for <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Access to local files on your machine is disabled by your administrator</translation>
 <translation id="904224458472510106">This operation cannot be undone</translation>
-<translation id="9042893549633094279">Privacy and security</translation>
 <translation id="904451693890288097">Please enter the passkey for "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Failed to connect to network: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Your reading list has moved to the new side panel. Try it here.</translation>

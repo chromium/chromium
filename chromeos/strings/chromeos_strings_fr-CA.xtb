@@ -7,7 +7,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Pare-feu détecté</translation>
 <translation id="1075811647922107217">Taille de la page</translation>
-<translation id="110351136513869678">Accédez aux paramètres pour effectuer la configuration</translation>
 <translation id="1119447706177454957">Erreur interne</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -40,6 +39,7 @@
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
+<translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
@@ -58,14 +58,11 @@
 <translation id="1792647875738159689">Annulation de la numérisation en cours…</translation>
 <translation id="1851218745569890714">Vidéoconférence</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1881378885488531302">Impossible d'afficher l'adresse IP</translation>
 <translation id="1887850431809612466">Révision du matériel</translation>
-<translation id="1901646112321215184">Aucun serveur DNS n'est configuré</translation>
 <translation id="1905710495812624430">Nombre maximal autorisé de tentatives atteint.</translation>
 <translation id="1908234395526491708">Échecs des demandes UDP</translation>
 <translation id="1930797645656624981">Service de méthode d'entrée Chrome OS</translation>
 <translation id="1947737735496445907">Imprimée</translation>
-<translation id="197386857804679933">Accédez aux paramètres pour vous reconnecter</translation>
 <translation id="1979103255016296513">Le mot de passe est expiré; vous devez le changer</translation>
 <translation id="1999615961760456652">Portail captif</translation>
 <translation id="2006864819935886708">Connectivité</translation>
@@ -113,13 +110,11 @@
 <translation id="2860473693272905224">Placez une autre page sur le numériseur</translation>
 <translation id="2872961005593481000">Arrêter</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
-<translation id="2927511423571448384">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTP (port 80) à partir d'Android</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionnez un dossier dans lequel enregistrer les fichiers</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Point d'extrémité</translation>
 <translation id="3069085583900247081">Échec du test</translation>
-<translation id="3076387335132326640">Vous utilisez un réseau ouvert</translation>
 <translation id="3083667275341675831">Diagnostics de connectivité</translation>
 <translation id="3091839911843451378">Échec : imprimante arrêtée</translation>
 <translation id="3102119246920354026">Cache</translation>
@@ -150,7 +145,6 @@
 <translation id="3532980081107202182">Il reste environ <ph name="MIN_REMAINING" /> minutes</translation>
 <translation id="3565064564551103223">Adresses IP autorisées</translation>
 <translation id="357889014807611375">réseau Wi-Fi mesuré</translation>
-<translation id="3582041541988388905">Aucune connexion <ph name="NETWORK_NAME" /> détectée</translation>
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -207,7 +201,6 @@
 <translation id="455835558791489930">Pile de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Carte SIM déverrouillée</translation>
 <translation id="4562494484721939086">Aucun service</translation>
-<translation id="4567024731344774461">Impossible de résoudre la requête DNS à partir d'Android</translation>
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
@@ -232,7 +225,6 @@
 <translation id="484790837831576105">Résolution DNS (Android)</translation>
 <translation id="4848429997038228357">EXÉCUTION EN COURS…</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}one{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}other{<ph name="ERROR_MESSAGE" /> Il reste {0} tentatives}}</translation>
-<translation id="4871137769558798671">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTPS (port 443)</translation>
 <translation id="4880328057631981605">Nom du point d'accès</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Choisissez-en un immédiatement</translation>
@@ -291,7 +283,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5502931783115429516">Android n'est pas en cours d'exécution</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">La puissance du signal est faible; essayez de vous rapprocher du point d'accès</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Numériser de nouveau</translation>
 <translation id="5669267381087807207">Activation…</translation>
@@ -299,7 +290,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5691511426247308406">Famille</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
-<translation id="5715997777752246116">Aucun serveur de noms n'est configuré</translation>
 <translation id="5760715441271661976">État du portail</translation>
 <translation id="5784136236926853061">Latence HTTP élevée</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
@@ -343,7 +333,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="636850387210749493">Inscription d'entreprise</translation>
 <translation id="6379086450106841622">Écran tactile</translation>
 <translation id="6388847657025262518">Le chargeur de documents du numériseur est bloqué. Vérifiez le chargeur de documents et réessayez.</translation>
-<translation id="6395640744968320699">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTP (port 80)</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
 <translation id="641081527798843608">Correspondance d'objet</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -353,7 +342,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6472207088655375767">Phr passe usage uniq</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Tâche arrêtée : bourrage de papier</translation>
-<translation id="6498608540383876992">Impossible de communiquer avec la passerelle</translation>
 <translation id="6516990319416533844">Pour évaluer la vitesse de recharge de la pile, laissez votre pile se décharger pendant une courte période</translation>
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6527081081771465939">Protocole de sécurité Wi-Fi inconnu</translation>
@@ -363,13 +351,11 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6574762126505704998">Remplir</translation>
 <translation id="6575134580692778371">Non configuré</translation>
 <translation id="6596816719288285829">Adresse IP</translation>
-<translation id="6603230386432466813">Vous éprouvez des problèmes de connexion?</translation>
 <translation id="6618744767048954150">En cours…</translation>
 <translation id="6620487321149975369">Les tâches d'impression s'afficheront dans l'historique, sauf si vous les retirez manuellement</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
-<translation id="6714650824879092633">Le réseau <ph name="NETWORK_NAME" /> a été désactivé</translation>
 <translation id="6747215703636344499">Tâche arrêtée : le plateau de sortie est plein</translation>
 <translation id="6756731097889387912">Impossible d'annuler la numérisation</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
@@ -382,7 +368,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6957231940976260713">Nom du service</translation>
 <translation id="6961170852793647506">Pour commencer, placez le document sur le numériseur</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
-<translation id="6982876849933694860">Pour configurer une nouvelle connexion, accédez aux <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
 <translation id="7040230719604914234">Opérateur</translation>
 <translation id="7058278511608979688">Terminer et enregistrer</translation>
@@ -401,7 +386,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7271040990581020067">Le numériseur est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>
-<translation id="7292680402155138244">Latence élevée pour les sites Web utilisant le protocole HTTPS (port 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -459,7 +443,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Demander des compteurs de trafic</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8177708084858970226">Impossible de résoudre la requête DNS</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>
@@ -471,7 +454,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8297006494302853456">Faible</translation>
 <translation id="8302368968391049045">Pare-feu HTTPS</translation>
 <translation id="8318753676953949627">Aucune image</translation>
-<translation id="8346875532700229909">Impossible de communiquer avec la passerelle à partir d'Android</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="8352772353338965963">Ajouter un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
 <translation id="8364946094152050673">Le champ des serveurs de nom est vide</translation>

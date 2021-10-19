@@ -124,6 +124,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
           <ph name="LIST_ITEM" />seu empregador ou sua escola
           <ph name="LIST_ITEM" />seu provedor de acesso à Internet
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">Compartilhar esta guia</translation>
 <translation id="1339601241726513588">Domínio de inscrição:</translation>
 <translation id="1340482604681802745">Endereço de retirada</translation>
 <translation id="1346748346194534595">À direita</translation>
@@ -157,6 +158,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1428146450423315676">Empilhador 7</translation>
 <translation id="1428729058023778569">Este aviso está sendo exibido porque o site não é compatível com HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
 <translation id="1436185428532214179">Pode pedir para editar arquivos e pastas no dispositivo</translation>
 <translation id="1442386063175183758">Dobra janela à direita</translation>
 <translation id="1442987760062738829">Perfurar</translation>
@@ -374,7 +376,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2130448033692577677">Os modelos que você especificou podem não ser aplicados, porque a política DnsOverHttpsMode não foi definida.</translation>
 <translation id="213826338245044447">Favoritos nos dispositivos móveis</translation>
 <translation id="214556005048008348">Cancelar pagamento</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para compartilhar esta página, com opções para compartilhar o link, criar um código QR, transmitir e muito mais.</translation>
 <translation id="2148613324460538318">Adicionar Cartão</translation>
 <translation id="2149968176347646218">A conexão não é segura</translation>
 <translation id="2154054054215849342">O serviço de sincronização não está disponível para seu domínio</translation>
@@ -421,7 +422,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2293443924986248631">Com esse recurso ativado, os sites não podem usar cookies que rastreiem você pela Internet. Algumas funções dos sites podem não funcionar.</translation>
 <translation id="2295290966866883927">Os URLs das páginas que você acessa são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados para detectar sites perigosos.</translation>
 <translation id="2297722699537546652">B5 (Envelope)</translation>
-<translation id="2297822946037605517">Compartilhar esta página</translation>
 <translation id="2298855485018661510">Botão "Gerenciar cookies". Pressione "Enter" para gerenciar suas preferências de cookies nas configurações do Chrome</translation>
 <translation id="2300306941146563769">Não enviado</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
@@ -499,6 +499,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2552295903035773204">Usar o bloqueio de tela para confirmar os cartões de agora em diante</translation>
 <translation id="2553853292994445426">Verifique suas configurações de DNS seguro. Você pode ter configurado um servidor DNS seguro em que as conexões estão falhando.</translation>
 <translation id="2556876185419854533">&amp;Desfazer editar</translation>
+<translation id="2570734079541893434">Gerenciar configurações</translation>
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2587730715158995865">De <ph name="ARTICLE_PUBLISHER" />. Leia essa matéria e <ph name="OTHER_ARTICLE_COUNT" /> outras.</translation>
@@ -507,7 +508,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2595719060046994702">Este dispositivo e conta não são gerenciados por uma empresa ou outra organização.</translation>
 <translation id="2596415276201385844">Para estabelecer uma conexão segura, o relógio precisa ser ajustado corretamente. Isso ocorre porque os certificados que os websites usam para se identificar são válidos apenas por períodos específicos. Como o relógio do seu dispositivo está incorreto, o Chrome não pode verificar esses certificados.</translation>
 <translation id="2597378329261239068">Este documento está protegido por senha.  Digite a senha.</translation>
-<translation id="2597833655590727265">Botão "Gerenciar aparência do Chrome". Pressione Enter para personalizar a aparência do navegador com temas.</translation>
 <translation id="2609632851001447353">Variações</translation>
 <translation id="2610561535971892504">Clique para copiar</translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
@@ -597,7 +597,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2934466151127459956">Government Letter</translation>
 <translation id="2941952326391522266">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança é de <ph name="DOMAIN2" />. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="2943895734390379394">Tempo de upload:</translation>
-<translation id="2948017612172418360">Botão "Gerenciar pesquisa no site". Pressione Enter para gerenciar a pesquisa no site e o mecanismo de pesquisa padrão</translation>
 <translation id="2948083400971632585">Na página "Configurações", você pode desativar quaisquer proxies configurados para uma conexão.</translation>
 <translation id="2949183777371959169">Ignorado porque a máquina não está registrada no Gerenciamento de nuvem do navegador Chrome.</translation>
 <translation id="2951588413176968965">Minha caixa de e-mails</translation>
@@ -1016,7 +1015,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4275830172053184480">Reiniciar seu dispositivo</translation>
 <translation id="4277028893293644418">Redefinir senha</translation>
 <translation id="4278390842282768270">Permitido</translation>
-<translation id="4286047936834273847">Gerenciar a pesquisa no site e o mecanismo de pesquisa padrão</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Esse cartão foi adicionado à sua Conta do Google}one{Esse cartão foi adicionado à sua Conta do Google}other{Esses cartões foram adicionados à sua Conta do Google}}</translation>
 <translation id="4287885627794386150">Qualificado para testes, mas inativo</translation>
 <translation id="4297502707443874121">Miniatura da página <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1056,7 +1054,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="4377125064752653719">Você tentou acessar <ph name="DOMAIN" />, mas o certificado que o servidor apresentou foi revogado pelo seu emissor. Isso significa que as credenciais de segurança que o servidor apresentou não são nem um pouco seguras. Talvez você esteja se comunicando com um invasor.</translation>
 <translation id="4378154925671717803">Telefone</translation>
-<translation id="4389652395741935834">Compartilhar esta página usando um link, criando um código QR, transmitindo e muito mais.</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4406883609789734330">Legenda instantânea</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
@@ -1323,6 +1320,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5230733896359313003">Endereço de entrega</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">Dispensar</translation>
 <translation id="5250209940322997802">"Conectar à rede"</translation>
 <translation id="52517543715119994">Saiba mais sobre os recursos do Chrome</translation>
 <translation id="5251803541071282808">Nuvem</translation>
@@ -1640,7 +1638,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />verificar o proxy, o firewall e a configuração de DNS seguro<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Dois grampos no lado esquerdo</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="6377404662019220017">Botão "Compartilhar esta página". Pressione Enter para compartilhar esta página, com opções para compartilhar o link, criar um código QR, transmitir e muito mais.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Acesso sujeito a cobranças.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 outra sugestão}one{# outra sugestão}other{# outras sugestões}}</translation>
@@ -1861,7 +1858,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">É necessário fazer o upgrade do servidor para o TLS 1.2 ou mais recente.</translation>
-<translation id="716939258255825483">Botão para iniciar o jogo do Dinossauro do Chrome. Pressione Enter para iniciar o jogo do Dinossauro do Chrome no navegador</translation>
 <translation id="717330890047184534">Código Gaia:</translation>
 <translation id="7173920250514487165">Captura de conteúdo confidencial na tela</translation>
 <translation id="7174545416324379297">Mescla</translation>
@@ -1884,7 +1880,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7220786058474068424">Processando</translation>
 <translation id="7221855153210829124">Mostrar notificações</translation>
 <translation id="722454870747268814">Nova guia anônima</translation>
-<translation id="7231476387708735839">Gerenciar a pesquisa no site</translation>
 <translation id="7233592378249864828">Imprimir página de confirmação</translation>
 <translation id="7238585580608191973">Assinatura digital SHA-256</translation>
 <translation id="7240120331469437312">Nome alternativo do requerente do certificado</translation>
@@ -2482,6 +2477,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9213433120051936369">Personalizar aparência</translation>
 <translation id="9215416866750762878">Um aplicativo está impedindo que o Chrome se conecte com segurança a este site</translation>
 <translation id="9219103736887031265">Imagens</translation>
+<translation id="922152298093051471">Personalizar o Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">LIMPAR FORMULÁRIO</translation>
 <translation id="936474030629450166">Super B</translation>
@@ -2514,5 +2510,4 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Do Google Pay</translation>
-<translation id="998677222109959694">Gerenciar as configurações do Chrome</translation>
 </translationbundle>

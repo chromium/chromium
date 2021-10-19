@@ -25,7 +25,6 @@
 <translation id="1145536944570833626">Одоо байгаа өгөгдлийг устгана уу.</translation>
 <translation id="1147031633655575115"><ph name="USER" />-р нэвтэрсэн</translation>
 <translation id="1154984953698510061">Бусад табыг харах</translation>
-<translation id="1157749421655780457">Байршлыг зөвшөөрөх...</translation>
 <translation id="1165039591588034296">Алдаа</translation>
 <translation id="1172898394251786223">Дараагийн талбар</translation>
 <translation id="1176932207622159128">Зургийг хадгалж чадахгүй байна</translation>
@@ -239,7 +238,6 @@
 <translation id="3240426699337459095">Холбоосыг хуулсан</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" />-н <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
-<translation id="3261971309013797455">Таны унших жагсаалт офлайнаар боломжтой байна. Унших жагсаалтдаа хуудас нэмэхийн тулд  <ph name="SHARE_OPENING_ICON" />-г, дараа нь <ph name="ADD_TO_READING_LIST_TEXT" />-г товшино уу.</translation>
 <translation id="3268451620468152448">Цонхнуудыг нээх</translation>
 <translation id="3272527697863656322">Цуцлах</translation>
 <translation id="3277021493514034324">Сайтын хаягийг хуулсан</translation>
@@ -262,7 +260,6 @@
 <translation id="345565170154308620">Нууц үгнүүдийг удирдах...</translation>
 <translation id="3469166899695866866">Tаталтыг зогсоох уу?</translation>
 <translation id="3470502288861289375">Хуулж байна ...</translation>
-<translation id="3472993688462687965">Таныг синк хийхийг асаасан үед тухайн өгөгдлийг танай байгууллагын зөвшөөрснөөр хязгаарлаж болзошгүй.</translation>
 <translation id="3474624961160222204"><ph name="NAME" />-р үргэлжлүүлэх</translation>
 <translation id="3478058380795961209">Дуусах сар:</translation>
 <translation id="3482959374254649722">Таны цонхыг синхрончилж байна...</translation>
@@ -374,7 +371,6 @@
 
 Таны өгөгдлийг таны синк хийх нэвтрэх үгтэй шифрлэсэн байна. Синкийг эхлүүлэхийн тулд үүнийг оруулна уу.</translation>
 <translation id="4689564913179979534">Төлбөрийн хэрэгслийг удирдах...</translation>
-<translation id="469022783543509074">Таныг гаргасан байна</translation>
 <translation id="470966556546083668">Синк хийхийг бүү асаа</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4747097190499141774">Нэвтрэх үгийн шифрлэлтэд Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг агуулдаггүй. Зөвхөн таны нэвтрэх үгийг мэддэг хүн л таны шифрлэсэн өгөгдлийг унших боломжтой. Нэвтрэх үгийг Google-д илгээхгүй бөгөөд Google-с хадгалахгүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл синкийг шинэчлэх шаардлагатай. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -474,6 +470,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5711039611392265845">Нууцлал, аюулгүй байдал болон өгөгдөл цуглуулахтай холбоотой бусад тохиргоог <ph name="BEGIN_LINK" />Синк хийх болон Google-н үйлчилгээ<ph name="END_LINK" />-с харна уу.</translation>
 <translation id="5724941645893276623">Вебийг хувийн байдлаар үзэхийн тулд шинэ таб нэмнэ үү</translation>
 <translation id="5728700505257787410">Уучлаарай, таны акаунт руу нэвтрэх үед алдаа гарсан байна.</translation>
+<translation id="5731784586962650619">Бусад апп дахь нууц үгнүүд</translation>
 <translation id="5737974891429562743">Бүртгэлийн нэвтрэх мэдээлэл хуучирсан байна. Синкийг эхлүүлэхийн тулд шинэчилнэ үү.</translation>
 <translation id="5738887413654608789">Та үүгээр ойролцоох хамааралтай веб хуудсыг олох боломжтой.</translation>
 <translation id="5758631781033351321">Та унших жагсаалтаа эндээс олох болно</translation>
@@ -622,7 +619,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6831043979455480757">Хөрвүүлэх</translation>
 <translation id="6842136130964845393">Та хадгалсан нууц үгнүүддээ үргэлж хандах боломжтой эсэхээ баталгаажуулахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="6851516051005285358">Дэлгэцийн сайтын хүсэлт тавих</translation>
-<translation id="6856384753476268833">Танай байгууллагаас удирддаг.</translation>
 <translation id="6858855187367714033">Скан хийсэн</translation>
 <translation id="6859944681507688231">QR код эсвэл кредит картыг скан хийхийн тулд тохиргоо хэсгээс камерыг идэвхжүүлнэ үү.</translation>
 <translation id="6869389390665537774">Та түүхээсээ зочилсон хуудаснуудаа харах эсвэл арилгах боломжтой</translation>
@@ -690,7 +686,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7472734401283673885">Компанийн нэр</translation>
 <translation id="7473891865547856676">Үгүй, баярлалаа</translation>
 <translation id="7481312909269577407">Forward</translation>
-<translation id="7483467499335917849">Одоогийн байршлаа ашиглах</translation>
 <translation id="750493650310597496">0 сонгогдсон</translation>
 <translation id="7508728395076009983">Нууцлалтай табуудаа түгжихийн тулд Touch ID, Face ID эсвэл нууц код тохируулна уу.</translation>
 <translation id="7514365320538308">Татаж авах</translation>
@@ -767,6 +762,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8319076807703933069">Шинэ хайлт</translation>
 <translation id="8323906514956095947">Табын бусад сонголтыг харахын тулд удаан дарна уу</translation>
 <translation id="8328777765163860529">Бүгдийг хаах</translation>
+<translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>
 <translation id="8386068868580335421">Шинэчлэх</translation>
 <translation id="8407669440184693619">Энэ сайтад нууц үг олдсонгүй</translation>
 <translation id="842017693807136194">Дараахаар нэвтэрсэн</translation>
@@ -837,7 +833,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9081058212938299310"><ph name="USERNAME" />-н нууц үгийг шинэчлэх үү?</translation>
 <translation id="9083392325882095631">1 зүйл</translation>
 <translation id="9083838294503912307">Төхөөрөмжүүдэд синк хийж, хувийн болгохын тулд синкийг асаана уу.</translation>
-<translation id="9084677839771512880">Танай байгууллага таны юу синк хийж болохыг хязгаарлана. <ph name="BEGIN_LINK" />Дэлгэрэнгүй<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Chrome-с санал болгосон нууц үг:</translation>
 <translation id="9094033019050270033">Нууц үг шинэчлэх</translation>
 <translation id="9100610230175265781">Нэвтрэх үг шаардлагатай</translation>

@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fails}zero{# faili}one{# fails}other{# faili}}</translation>
 <translation id="2021896219286479412">Pilnekrāna vietnes vadīklas</translation>
 <translation id="2038563949887743358">Ieslēgt iestatījumu “Pieprasīt datora vietni”</translation>
-<translation id="2039379262107991683">Pievienojiet lapas savam lasīšanas sarakstam, lai saņemtu atgādinājumu.</translation>
 <translation id="204321170514947529">Pārlūkā Chrome ir arī “<ph name="APP_NAME" />” dati</translation>
 <translation id="2046634576464120978">Reģistrēšanās neizdevās</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="2781151931089541271">Atlikusi 1 s</translation>
 <translation id="2788468313014644040">Grupas numurs</translation>
 <translation id="2800066122460699237">Cilne “<ph name="TAB_TITLE" />” tiks aizvērta.</translation>
-<translation id="2801022321632964776">Veiciet atjaunināšanu, lai varētu lasīt savā valodā jaunākajā pārlūka Chrome versijā</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="2806840421670364300">FPK</translation>
 <translation id="2809150421034843096">Informācija par to, kā izmantojat Chrome (šo informāciju nevar saistīt ar jums).\n\nAtbilstoši dati no Chrome avārijām, kas notiek paretam (šeit var būt iekļauta noteikta personas informācija).\n\nJa ieslēgsiet sinhronizāciju, rādītājos var tikt iekļauta arī informācija par jūsu apmeklētajiem URL.</translation>
@@ -354,12 +352,10 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome sākumlapa</translation>
 <translation id="3154863790776532719">Jaunas funkcijas un labāka veiktspēja</translation>
-<translation id="3157387275655328056">Pievienot lasīšanas sarakstam</translation>
 <translation id="3157842584138209013">Izmantojiet pogu Vairāk opciju, lai uzzinātu ietaupīto datu apjomu</translation>
 <translation id="3166827708714933426">Ciļņu un logu īsinājumtaustiņi</translation>
 <translation id="316694332262407393">Šajā ierīcē jau darbojas pārlūks Chrome.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3205824638308738187">Gandrīz pabeigts!</translation>
 <translation id="3207960819495026254">Atzīmēts kā grāmatzīme</translation>
 <translation id="3208584281581115441">Pārbaudīt tūlīt</translation>
 <translation id="3211426585530211793">Vienums <ph name="ITEM_TITLE" /> tika izdzēsts</translation>
@@ -384,7 +380,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3284510035090979597">Aktīva palīdzība</translation>
 <translation id="3285080554353377245">Video pamācības par Chrome lietošanu</translation>
-<translation id="3285850955330478827">Rediģēt lasīšanas sarakstu</translation>
 <translation id="3288003805934695103">Atkārtoti ielādējiet lapu.</translation>
 <translation id="32895400574683172">Paziņojumi ir atļauti.</translation>
 <translation id="3290991969712132877">Lai varētu šeit nokļūt ātrāk, pievienojiet šo lapu sākuma ekrānam, izmantojot pogu Citas opcijas</translation>
@@ -452,7 +447,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3739899004075612870">Pievienota grāmatzīme pārlūkā <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Meklēšana ar balsi šajā ierīcē nav pieejama.</translation>
 <translation id="3749259744154402564">Darbība netiek atbalstīta</translation>
-<translation id="3771001275138982843">Nevarēja lejupielādēt atjauninājumu</translation>
 <translation id="3771033907050503522">Inkognito režīma cilnes</translation>
 <translation id="3771290962915251154">Šis iestatījums ir atspējots, jo ir ieslēgta vecāku kontrole</translation>
 <translation id="3771694256347217732">Google pakalpojumu sniegšanas noteikumi</translation>
@@ -792,7 +786,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="583281660410589416">Nezināms</translation>
 <translation id="5833984609253377421">Kopīgot saiti</translation>
 <translation id="5834764604050996579">Lai skenētu QR kodu, atļaujiet pārlūkprogrammai Chrome izmantot jūsu kameru</translation>
-<translation id="5836192821815272682">Lejupielādē Chrome atjauninājumu…</translation>
 <translation id="5839058148541733625">Chrome dinozaurs</translation>
 <translation id="5853623416121554550">apturēta</translation>
 <translation id="5854512288214985237">Uzņēmumam Google netiek sūtīta statistika un avāriju pārskati</translation>
@@ -864,7 +857,6 @@ Konfidencialitātes smilškastes izmēģinājuma versijas joprojām tiek izstrā
 <translation id="6232535412751077445">Iespējojot funkciju “Nesekot”, jūsu pārlūkošanas datplūsmā tiks iekļauts pieprasījums. Rezultāts būs atkarīgs no tā, vai vietne nodrošinās atbildi uz pieprasījumu un kā pieprasījums tiks interpretēts.
 
 Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums reklāmas, kuru pamatā nav citas jūsu apmeklētās vietnes. Tomēr daudzas vietnes vāks un izmantos jūsu pārlūkošanas datus, piemēram, lai uzlabotu drošību, nodrošinātu saturu, reklāmas un ieteikumus un ģenerētu pārskatu statistiku.</translation>
-<translation id="624789221780392884">Var veikt atjaunināšanu</translation>
 <translation id="6264376385120300461">Tomēr lejupielādēt</translation>
 <translation id="6277522088822131679">Drukājot lapu, radās problēma. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="6278428485366576908">Motīvs</translation>
@@ -900,7 +892,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6411219469806822692">Augstāku ekrāna daļu nevar ietvert. Mēģiniet iegūt ekrānuzņēmumu no augstākas vietas lapā.</translation>
 <translation id="6412673304250309937">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošu vietņu sarakstu, kas glabājas pārlūkprogrammā Chrome. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chrome var nosūtīt attiecīgo URL un lapas satura fragmentus uz funkciju Droša pārlūkošana.</translation>
 <translation id="641643625718530986">Drukāt...</translation>
-<translation id="6427112570124116297">Iztulkojiet tīmekli</translation>
 <translation id="6433501201775827830">Meklētājprogrammas izvēle</translation>
 <translation id="6434309073475700221">Atmest</translation>
 <translation id="6437478888915024427">Lapas informācija</translation>
@@ -1002,7 +993,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6979737339423435258">Visā periodā</translation>
 <translation id="6981982820502123353">Pieejamība</translation>
 <translation id="6987047470128880212">Inkognito režīms šajā ierīcē nav pieejams.</translation>
-<translation id="6989267951144302301">Nevarēja lejupielādēt</translation>
 <translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu noplūdes dēļ</translation>
 <translation id="7001056293070445572">Šis fails ir liels (<ph name="FILE_SIZE" />).</translation>
 <translation id="7022756207310403729">Atvērt pārlūkā</translation>
@@ -1034,7 +1024,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="718926126787620637">Grāmatzīmju mapju saraksts atvērts pilna ekrāna augstumā</translation>
 <translation id="7191430249889272776">Cilne tika atvērta fonā.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Tiek gaidīta 1 lejupielāde}zero{Tiek gaidītas # lejupielādes}one{Tiek gaidīta # lejupielāde}other{Tiek gaidītas # lejupielādes}}</translation>
-<translation id="7233236755231902816">Lai skatītu tīmekli savā valodā, iegūstiet jaunāko Chrome versiju</translation>
 <translation id="7242755609445462077">Stilizēts izcēlums: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Ierīcē <ph name="TARGET_DEVICE_NAME" /> ieslēdziet Chrome sinhronizāciju</translation>
 <translation id="7252076891734325316">Novietojiet tālruni blakus datoram</translation>
@@ -1057,7 +1046,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7352651011704765696">Radās problēma</translation>
 <translation id="7352939065658542140">VIDEOKLIPS</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Kopīgot 1 atlasīto vienumu}zero{Kopīgot # atlasītos vienumus}one{Kopīgot # atlasīto vienumu}other{Kopīgot # atlasītos vienumus}}</translation>
-<translation id="7356631068872238169">Dzēst no lasīšanas saraksta</translation>
 <translation id="7359002509206457351">Piekļuve maksājumu veidiem</translation>
 <translation id="7375125077091615385">Veids:</translation>
 <translation id="7376560087009844242">Iekļaujot vairāk lapas teksta, varat iegūt labākus rezultātus, kad izmantojat funkciju “Meklēt pieskaroties”. <ph name="BEGIN_LINK" />Iestatījumos<ph name="END_LINK" /> varat jebkurā laikā mainīt šo opciju.</translation>
@@ -1234,7 +1222,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="829672787777123339">Notiek savienojuma izveide ar jūsu ierīci…</translation>
 <translation id="8310344678080805313">Standarta cilnes</translation>
 <translation id="831192587911042850">Pašlaik atvērtā tīmekļa vietne tiek pievienota to tīmekļa vietņu sarakstam, kurām sekojat.</translation>
-<translation id="8327155640814342956">Atveriet, lai uzlabotu pārlūkošanas ērtības, atjauninot pārlūku Chrome</translation>
 <translation id="834313815369870491">Nekad netulkot vietnes</translation>
 <translation id="8349013245300336738">Kārtot pēc izmantoto datu apjoma</translation>
 <translation id="8354977102499939946">Ātra meklēšana ar balsi. Lai rediģētu šo saīsni, pārejiet uz iestatījumiem.</translation>
@@ -1345,9 +1332,9 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8942627711005830162">Atvērt citā logā</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> — šo valodu nevarēja lejupielādēt. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="8951232171465285730">Pārlūkā Chrome esat ietaupījis <ph name="MEGABYTES" /> MB.</translation>
-<translation id="895518431932062177">Iekļaut lasīš. sarakstā <ph name="BEGIN_NEW" />Jauns<ph name="END_NEW" /></translation>
 <translation id="8955719471735800169">Augšup</translation>
 <translation id="8965591936373831584">gaida</translation>
+<translation id="8967427617812342790">Pievienot sarakstam</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_ONE" /> cilne.}zero{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilnes.}one{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilne.}other{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="8970887620466824814">Radās kļūda.</translation>
 <translation id="8972098258593396643">Vai lejupielādēt noklusējuma mapē?</translation>

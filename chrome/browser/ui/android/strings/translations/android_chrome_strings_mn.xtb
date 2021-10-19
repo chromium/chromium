@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Файл}other{# Файл}}</translation>
 <translation id="2021896219286479412">Бүтэн дэлгэцийн сайтын хяналт</translation>
 <translation id="2038563949887743358">Сайтыг компьютерийн горимоор харах хүсэлтийг асаах</translation>
-<translation id="2039379262107991683">Сануулагч авахын тулд хуудаснуудыг Унших жагсаалтдаа нэмнэ үү</translation>
 <translation id="204321170514947529">Мөн Chrome-д <ph name="APP_NAME" />-н өгөгдөл байна</translation>
 <translation id="2046634576464120978">Бүртгэл амжилтгүй</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -289,7 +288,6 @@
 <translation id="2781151931089541271">1 секунд үлдсэн</translation>
 <translation id="2788468313014644040">Бүлгийн тоо</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> табыг хаана</translation>
-<translation id="2801022321632964776">Chrome-н хамгийн сүүлийн хувилбарт хэлээ авахын тулд шинэчилнэ үү</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">Тантай холбох боломжгүй таны Chrome-н ашиглалтын талаарх мэдээлэл\n\nЗарим хувийн мэдээлэл агуулж магадгүй Chrome-н ховорхон гэмтлийн хамааралтай өгөгдөл\n\nХэрэв та синк хийхийг асаавал хэмжигдэхүүнд мөн таны зочилсон URL-уудын талаарх мэдээлэл багтаж магадгүй</translation>
@@ -354,12 +352,10 @@
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome-н нүүр хуудас</translation>
 <translation id="3154863790776532719">Шинэ онцлогууд болон сайжруулсан гүйцэтгэл</translation>
-<translation id="3157387275655328056">Унших жагсаалтад нэмэх</translation>
 <translation id="3157842584138209013">Бусад сонголт товчлуураас ямар хэмжээний дата хэмнэснээ харах</translation>
 <translation id="3166827708714933426">Таб, цонхны товчлол</translation>
 <translation id="316694332262407393">Энд Chrome аль хэдийн ажиллаж байна.</translation>
 <translation id="3169472444629675720">Олох</translation>
-<translation id="3205824638308738187">Бараг дууслаа!</translation>
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
 <translation id="3208584281581115441">Одоо шалгах</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" />-г устгасан</translation>
@@ -405,6 +401,7 @@
 <translation id="3398320232533725830">Хавчуургын менежерийг нээх</translation>
 <translation id="3414952576877147120">Хэмжээ:</translation>
 <translation id="3429160811076349561">Туршилтын онцлог унтраалттай байна</translation>
+<translation id="3435465986463792564">Олон цонхтой юу? Та тэдгээрийг эндээс удирдах боломжтой</translation>
 <translation id="3440975416244667276">Илүү хамааралтай мэдээлэл авах бол удаан дарна уу</translation>
 <translation id="3443221991560634068">Одоогийн хуудсыг дахин ачаалах</translation>
 <translation id="3444179773590444986">Сайтуудад зориулсан бараан загварын талаар cанал хүсэлт хуваалцах уу?</translation>
@@ -450,7 +447,6 @@
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" />-д хавчуулсан</translation>
 <translation id="3740525748616366977">Энэ төхөөрөмж дээр дуут хайлт боломжгүй</translation>
 <translation id="3749259744154402564">Дэмждэггүй</translation>
-<translation id="3771001275138982843">Шинэчлэлтийг татаж чадсангүй</translation>
 <translation id="3771033907050503522">Мэдээний нууцлалтай цонх</translation>
 <translation id="3771290962915251154">Эцэг эхийн хяналт асаалттай байгаа тул энэ тохиргоог идэвхгүй болгосон</translation>
 <translation id="3771694256347217732">Google-н Үйлчилгээний нөхцөл</translation>
@@ -789,7 +785,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
 <translation id="5833984609253377421">Холбоосыг хуваалцах</translation>
 <translation id="5834764604050996579">QR кодыг скан хийхийн тулд Chrome-д таны камерыг ашиглахыг зөвшөөрнө үү</translation>
-<translation id="5836192821815272682">Chrome-н шинэчлэлтийг татаж байна…</translation>
 <translation id="5839058148541733625">Chrome-н Дино</translation>
 <translation id="5853623416121554550">түр зогсоосон</translation>
 <translation id="5854512288214985237">Google-д илгээсэн статистик эсвэл гэмтлийн тайлан алга</translation>
@@ -861,7 +856,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6232535412751077445">"Бүү дага" тохиргоог идэвхжүүлснээр тухайн хүсэлтийг таны хайлтын хэсэгт хадгална. Гарах үр дүн нь веб хуудаснаас тухайн хүсэлтэд хариу өгч байгаа эсэх, тухайн хүсэлтийг хэрхэн тайлбарлаж байна гэдгээс хамаарна.
 
 Жишээ нь: зарим веб хуудас тухайн хүсэлтэд таны өмнө нь зочилж байсан бусад веб хуудаснаас хамаарахгүйгээр зар сурталчилгаа үзүүлэх замаар хариу өгч болно. Ихэнх веб хуудас нь аюулгүй байдлыг сайжруулах, веб хуудасны мэдээлэл, зар, зөвлөгөөг харуулах, мөн тайлагнах статистик мэдээлэл гаргах зорилгоор таны хөтчийн мэдээллийг цуглуулан ашиглаж магадгүй.</translation>
-<translation id="624789221780392884">Шинэчлэлт хийхэд бэлэн</translation>
 <translation id="6264376385120300461">Ямартай ч татах</translation>
 <translation id="6277522088822131679">Энэ хуудсыг хэвлэхэд алдаа гарсан байна. Та дахин ачаална уу.</translation>
 <translation id="6278428485366576908">Загвар</translation>
@@ -897,7 +891,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6411219469806822692">Илүү дээшлэх боломжгүй. Дараагийн хуудасны дээд хэсгээс эхлүүлж үзнэ үү.</translation>
 <translation id="6412673304250309937">URL-г Chrome-д хадгалсан аюултай сайтын жагсаалттай харьцуулж шалгадаг. Хэрэв сайт таны нууц үгийг хулгайлах гэж оролдвол эсвэл таныг аюултай файл татах үед Chrome нь хуудасны бага зэрэг контентын хамт URL-г Аюулгүй хайлт руу мөн илгээж болзошгүй.</translation>
 <translation id="641643625718530986">Хэвлэх...</translation>
-<translation id="6427112570124116297">Вебийг орчуулах</translation>
 <translation id="6433501201775827830">Хайлтын системээ сонгоно уу</translation>
 <translation id="6434309073475700221">Хэрэгсэхгүй байх</translation>
 <translation id="6437478888915024427">Хуудасны мэдээлэл</translation>
@@ -999,7 +992,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6979737339423435258">Бүх цаг</translation>
 <translation id="6981982820502123353">Хандалт</translation>
 <translation id="6987047470128880212">Нууцлалтай таб энэ төхөөрөмж дээр боломжгүй</translation>
-<translation id="6989267951144302301">Татаж чадсангүй</translation>
 <translation id="6995899638241819463">Өгөгдлийн зөрчлийн улмаас нууц үгийг задруулсан бол танд анхааруулах</translation>
 <translation id="7001056293070445572">Энэ файл том байна (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Хөтчид нээх</translation>
@@ -1031,7 +1023,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="718926126787620637">Бүтэн хэмжээтэйгээр нээсэн хавчуурганы фолдерын жагсаалт</translation>
 <translation id="7191430249889272776">Арын дэвсгэр дээр нээсэн цонх.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 таталт хүлээгдэж байна}other{# таталт хүлээгдэж байна}}</translation>
-<translation id="7233236755231902816">Вебийг өөрийн хэлээр үзэхийн тулд Chrome-н хамгийн сүүлийн үеийн хувилбарыг авна уу</translation>
 <translation id="7242755609445462077">Стильжүүлсэн тодруулга <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> нь Chrome дээр синк хийхийг асаасан эсэхийг шалгана уу</translation>
 <translation id="7252076891734325316">Утсаа компьютертой ойр байрлуулна уу</translation>
@@ -1054,7 +1045,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7352651011704765696">Алдаа гарсан байна</translation>
 <translation id="7352939065658542140">ВИДЕО</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Сонгосон 1 зүйлийг хуваалцах}other{Сонгосон # зүйлийг хуваалцах }}</translation>
-<translation id="7356631068872238169">Унших жагсаалтаас устгах</translation>
 <translation id="7359002509206457351">Төлбөрийн хэрэгсэлд хандах</translation>
 <translation id="7375125077091615385">Бичих:</translation>
 <translation id="7376560087009844242">Хайхын тулд хүрэхийг ашиглаж байхдаа хуудасны текстээс илүү ихийг багтааснаар та илүү сайн илэрцүүд харж магадгүй. Та үүнийг өөрчлөхийн тулд хүссэн үедээ <ph name="BEGIN_LINK" />тохиргоонд<ph name="END_LINK" /> зочлох боломжтой.</translation>
@@ -1231,7 +1221,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="829672787777123339">Таны төхөөрөмжид холбогдож байна…</translation>
 <translation id="8310344678080805313">Стандарт цонхууд</translation>
 <translation id="831192587911042850">Одоогийн веб сайтыг таны дагаж буй веб сайтуудын жагсаалтад нэмнэ.</translation>
-<translation id="8327155640814342956">Хамгийн сайн хайлт хийхийн тулд Chrome-г шинэчлэхээр нээнэ үү</translation>
 <translation id="834313815369870491">Сайтуудыг хэзээ ч бүү орчуул</translation>
 <translation id="8349013245300336738">Ашигласан өгөгдлийг хэмжээгээр нь эрэмбэлэх</translation>
 <translation id="8354977102499939946">Дуу хоолойгоороо шуурхай хайгаарай. Энэ товчлолыг засахын тулд Тохиргоо руу очно уу.</translation>
@@ -1344,6 +1333,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8951232171465285730">Chrome <ph name="MEGABYTES" /> МБ-ыг хэмнэсэн</translation>
 <translation id="8955719471735800169">Дээшээ очих</translation>
 <translation id="8965591936373831584">хүлээгдэж байна</translation>
+<translation id="8967427617812342790">Унших жагсаалтад нэмэх</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> нууцлалтай таб болон бусад <ph name="TAB_COUNT_ONE" /> табыг хаана}other{<ph name="INCOGNITO_TAB_COUNT" /> нууцлалтай таб болон бусад <ph name="TAB_COUNT_MANY" /> табыг хаана}}</translation>
 <translation id="8970887620466824814">Алдаа гарлаа.</translation>
 <translation id="8972098258593396643">Өгөгдмөл фолдерт татаж авах уу?</translation>

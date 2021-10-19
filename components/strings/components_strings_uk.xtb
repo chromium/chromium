@@ -124,6 +124,7 @@
           <ph name="LIST_ITEM" />роботодавець або керівник закладу освіти
           <ph name="LIST_ITEM" />постачальник послуг Інтернету
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">Поділитися цією вкладкою</translation>
 <translation id="1339601241726513588">Домен реєстрації:</translation>
 <translation id="1340482604681802745">Адреса отримання</translation>
 <translation id="1346748346194534595">Праворуч</translation>
@@ -157,6 +158,7 @@
 <translation id="1428146450423315676">Накопичувач 7</translation>
 <translation id="1428729058023778569">Ви бачите це попередження, оскільки цей сайт не підтримує HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Друк</translation>
+<translation id="1432581352905426595">Керування пошуковими системами</translation>
 <translation id="1436185428532214179">Може просити дозвіл змінювати файли та папки на пристрої</translation>
 <translation id="1442386063175183758">Зігнути за типом "ворота праворуч"</translation>
 <translation id="1442987760062738829">Пробити отвір</translation>
@@ -378,7 +380,6 @@
 <translation id="2130448033692577677">Вибрані шаблони можуть не застосовуватися, оскільки правило DnsOverHttpsMode не налаштовано.</translation>
 <translation id="213826338245044447">Закладки на мобільному</translation>
 <translation id="214556005048008348">Скасувати оплату</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб поділитися цією сторінкою (надіслати посилання, створити QR-код, транслювати її тощо).</translation>
 <translation id="2148613324460538318">Додати картку</translation>
 <translation id="2149968176347646218">З'єднання ненадійне</translation>
 <translation id="2154054054215849342">Синхронізація недоступна для вашого домену</translation>
@@ -425,7 +426,6 @@
 <translation id="2293443924986248631">Якщо цей параметр увімкнено, сайти не можуть використовувати файли cookie, через які відстежуються ваші дії в Інтернеті. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="2295290966866883927">URL-адреси сторінок, які ви відвідуєте, надсилаються на платформу Google Cloud або стороннім сервісам на аналіз. Наприклад, їх можуть сканувати, щоб виявити ненадійні веб-сайти.</translation>
 <translation id="2297722699537546652">B5 (конверт)</translation>
-<translation id="2297822946037605517">Поділитися цією сторінкою</translation>
 <translation id="2298855485018661510">Кнопка "Керувати файлами cookie"; натисніть Enter, щоб керувати параметрами файлів cookie в налаштуваннях Chrome</translation>
 <translation id="2300306941146563769">Не завантажено</translation>
 <translation id="2310021320168182093">Chou2 (конверт)</translation>
@@ -503,6 +503,7 @@
 <translation id="2552295903035773204">Використовувати блокування екрана, щоб підтверджувати картки</translation>
 <translation id="2553853292994445426">Перевірте налаштування безпеки DNS. Можливо, ви налаштували безпечний DNS-сервер, до якого не вдається підключитися.</translation>
 <translation id="2556876185419854533">&amp;Відмінити редагування</translation>
+<translation id="2570734079541893434">Керувати налаштуваннями</translation>
 <translation id="257674075312929031">Група</translation>
 <translation id="2586657967955657006">Буфер обміну</translation>
 <translation id="2587730715158995865">Видавець: <ph name="ARTICLE_PUBLISHER" />. Читайте цю та ще <ph name="OTHER_ARTICLE_COUNT" /> статей.</translation>
@@ -511,7 +512,6 @@
 <translation id="2595719060046994702">Цими пристроєм і обліковим записом не керує компанія чи інша організація.</translation>
 <translation id="2596415276201385844">Щоб установити безпечне з’єднання, потрібно правильно вказати час, оскільки сертифікати, які веб-сайти використовують для самоідентифікації дійсні лише протягом певного періоду часу. Час на вашому пристрої неправильний, тому Chrome не може перевірити сертифікати.</translation>
 <translation id="2597378329261239068">Цей документ захищено паролем. Введіть пароль.</translation>
-<translation id="2597833655590727265">Кнопка "Керувати виглядом Chrome"; натисніть Enter, щоб налаштувати вигляд веб-переглядача за допомогою тем.</translation>
 <translation id="2609632851001447353">Різновиди</translation>
 <translation id="2610561535971892504">Натиснути, щоб скопіювати</translation>
 <translation id="2618023639789766142">C10 (конверт)</translation>
@@ -601,7 +601,6 @@
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Його сертифікат безпеки походить із домену <ph name="DOMAIN2" />. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="2943895734390379394">Час завантаження:</translation>
-<translation id="2948017612172418360">Кнопка "Керувати пошуком на сайті"; натисніть Enter, щоб керувати пошуком на сайті та пошуковою системою за умовчанням</translation>
 <translation id="2948083400971632585">Усі проксі-сервери, налаштовані для з’єднання, можна вимкнути на сторінці налаштувань.</translation>
 <translation id="2949183777371959169">Ігнорується, оскільки пристрій не зареєстровано для хмарного керування веб-переглядачем Chrome.</translation>
 <translation id="2951588413176968965">Моя поштова скринька</translation>
@@ -1025,7 +1024,6 @@
 <translation id="4275830172053184480">Перезапустіть пристрій</translation>
 <translation id="4277028893293644418">Скинути пароль</translation>
 <translation id="4278390842282768270">Дозволено</translation>
-<translation id="4286047936834273847">Керуйте пошуком на сайті та пошуковою системою за умовчанням</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Цю картку збережено у вашому обліковому записі Google}one{Ці картки збережено у вашому обліковому записі Google}few{Ці картки збережено у вашому обліковому записі Google}many{Ці картки збережено у вашому обліковому записі Google}other{Ці картки збережено у вашому обліковому записі Google}}</translation>
 <translation id="4287885627794386150">Доступно в пробній версії, але не активовано</translation>
 <translation id="4297502707443874121">Ескіз для сторінки <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1065,7 +1063,6 @@
 <translation id="4372948949327679948">Очікуване значення: <ph name="VALUE_TYPE" />.</translation>
 <translation id="4377125064752653719">Ви пробували зв’язатися з доменом <ph name="DOMAIN" />, проте сервер надав сертифікат, відкликаний його видавцем. Це означає, що не варто довіряти обліковим даним системи захисту, наданим сервером. Можливо, ви обмінюєтеся даними зі зловмисником.</translation>
 <translation id="4378154925671717803">Телефон</translation>
-<translation id="4389652395741935834">Поділитися цією сторінкою (надіслати посилання, створити QR-код, транслювати її тощо).</translation>
 <translation id="4390472908992056574">До полів</translation>
 <translation id="4406883609789734330">Живі субтитри</translation>
 <translation id="4406896451731180161">результати пошуку</translation>
@@ -1332,6 +1329,7 @@
 <translation id="5230733896359313003">Адреса доставки</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
+<translation id="5234764350956374838">Закрити</translation>
 <translation id="5250209940322997802">"Під’єднайте пристрій до мережі"</translation>
 <translation id="52517543715119994">Докладніше про функції Chrome</translation>
 <translation id="5251803541071282808">Хмара</translation>
@@ -1649,7 +1647,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />перевірити конфігурацію проксі-сервера, брандмауера та DNS-сервера<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Двічі скріпити ліворуч</translation>
 <translation id="6377268785556383139">1 результат для запиту "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="6377404662019220017">Кнопка "Поділитися цією сторінкою"; натисніть Enter, щоб поділитися цією сторінкою (надіслати посилання, створити QR-код, транслювати її тощо).</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Можливе стягнення плати.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{і ще 1 пропозиція}one{і ще # пропозиція}few{і ще # пропозиції}many{і ще # пропозицій}other{і ще # пропозиції}}</translation>
@@ -1870,7 +1867,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Лавандовий</translation>
 <translation id="7156870133441232244">На сервері має бути встановлено протокол TLS 1.2 або новішої версії.</translation>
-<translation id="716939258255825483">Кнопка "Грати в Dino Run"; натисніть Enter, щоб грати в гру Dino Run у Chrome.</translation>
 <translation id="717330890047184534">Ідентифікатор GAIA:</translation>
 <translation id="7173920250514487165">Запис конфіденційного контенту на екрані</translation>
 <translation id="7174545416324379297">Об'єднано</translation>
@@ -1893,7 +1889,6 @@
 <translation id="7220786058474068424">Обробка</translation>
 <translation id="7221855153210829124">показувати сповіщення</translation>
 <translation id="722454870747268814">Нова анонімна вкладка</translation>
-<translation id="7231476387708735839">Керувати пошуком на сайті</translation>
 <translation id="7233592378249864828">Друкувати аркуш підтвердження</translation>
 <translation id="7238585580608191973">Відбиток SHA-256</translation>
 <translation id="7240120331469437312">Альтернативне ім'я суб'єкта сертифіката</translation>
@@ -2490,6 +2485,7 @@
 <translation id="9213433120051936369">Налаштувати оформлення</translation>
 <translation id="9215416866750762878">Додаток перешкоджає Chrome безпечно під’єднуватися до цього сайту</translation>
 <translation id="9219103736887031265">Зображення</translation>
+<translation id="922152298093051471">Налаштувати Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ОЧИСТИТИ ФОРМУ</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2522,5 +2518,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">З Google Pay</translation>
-<translation id="998677222109959694">Керувати налаштуваннями Chrome</translation>
 </translationbundle>
