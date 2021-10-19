@@ -53,6 +53,12 @@ config("tflite_flags") {
       "/DTFL_COMPILE_LIBRARY",
       "/wd4018",
     ]
+
+    if (is_clang) {
+      # Remove this once https://gitlab.com/libeigen/eigen/-/issues/2353 is
+      # fixed and rolled in.
+      cflags += [ "-Wno-bitwise-instead-of-logical" ]
+    }
   }
 
   if (is_android) {
