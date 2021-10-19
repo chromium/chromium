@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharesheet/share_action/drive_share_action.h"
+#include "chrome/browser/ash/sharesheet/drive_share_action.h"
 
 #include <memory>
 #include <vector>
@@ -21,6 +21,7 @@
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "url/gurl.h"
 
+namespace ash {
 namespace sharesheet {
 
 DriveShareAction::DriveShareAction(Profile* profile) : profile_(profile) {}
@@ -32,22 +33,25 @@ const std::u16string DriveShareAction::GetActionName() {
 }
 
 const gfx::VectorIcon& DriveShareAction::GetActionIcon() {
+  // TODO(crbug.com/1212806): Update to CrOS icon.
   return kPersonAddIcon;
 }
 
-void DriveShareAction::LaunchAction(SharesheetController* controller,
-                                    views::View* root_view,
-                                    apps::mojom::IntentPtr intent) {
+void DriveShareAction::LaunchAction(
+    ::sharesheet::SharesheetController* controller,
+    views::View* root_view,
+    apps::mojom::IntentPtr intent) {
   controller_ = controller;
   DCHECK(intent->drive_share_url.has_value());
   NavigateParams params(profile_, intent->drive_share_url.value(),
                         ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
-  controller_->CloseBubble(SharesheetResult::kSuccess);
+  controller_->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
 }
 
-void DriveShareAction::OnClosing(SharesheetController* controller) {
+void DriveShareAction::OnClosing(
+    ::sharesheet::SharesheetController* controller) {
   controller_ = nullptr;
 }
 
@@ -58,3 +62,4 @@ bool DriveShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
 }
 
 }  // namespace sharesheet
+}  // namespace ash

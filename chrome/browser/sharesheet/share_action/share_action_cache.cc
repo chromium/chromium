@@ -14,10 +14,10 @@
 #include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/sharesheet/copy_to_clipboard_share_action.h"
+#include "chrome/browser/ash/sharesheet/drive_share_action.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/sharesheet/nearby_share_action.h"
-#include "chrome/browser/sharesheet/share_action/copy_to_clipboard_share_action.h"
-#include "chrome/browser/sharesheet/share_action/drive_share_action.h"
 #endif
 
 namespace sharesheet {
@@ -29,9 +29,10 @@ ShareActionCache::ShareActionCache(Profile* profile) {
           profile)) {
     AddShareAction(std::make_unique<NearbyShareAction>(profile));
   }
-  AddShareAction(std::make_unique<DriveShareAction>(profile));
+  AddShareAction(std::make_unique<ash::sharesheet::DriveShareAction>(profile));
   if (base::FeatureList::IsEnabled(features::kSharesheetCopyToClipboard)) {
-    AddShareAction(std::make_unique<CopyToClipboardShareAction>());
+    AddShareAction(
+        std::make_unique<ash::sharesheet::CopyToClipboardShareAction>());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

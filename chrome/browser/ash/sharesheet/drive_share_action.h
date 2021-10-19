@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SHARESHEET_SHARE_ACTION_DRIVE_SHARE_ACTION_H_
-#define CHROME_BROWSER_SHARESHEET_SHARE_ACTION_DRIVE_SHARE_ACTION_H_
+#ifndef CHROME_BROWSER_ASH_SHARESHEET_DRIVE_SHARE_ACTION_H_
+#define CHROME_BROWSER_ASH_SHARESHEET_DRIVE_SHARE_ACTION_H_
 
 #include "chrome/browser/sharesheet/share_action/share_action.h"
 
 class Profile;
 
+namespace ash {
 namespace sharesheet {
 
-class DriveShareAction : public ShareAction {
+class DriveShareAction : public ::sharesheet::ShareAction {
  public:
   explicit DriveShareAction(Profile* profile);
   ~DriveShareAction() override;
@@ -21,18 +22,19 @@ class DriveShareAction : public ShareAction {
   // ShareAction:
   const std::u16string GetActionName() override;
   const gfx::VectorIcon& GetActionIcon() override;
-  void LaunchAction(SharesheetController* controller,
+  void LaunchAction(::sharesheet::SharesheetController* controller,
                     views::View* root_view,
                     apps::mojom::IntentPtr intent) override;
-  void OnClosing(SharesheetController* controller) override;
+  void OnClosing(::sharesheet::SharesheetController* controller) override;
   bool ShouldShowAction(const apps::mojom::IntentPtr& intent,
                         bool contains_hosted_document) override;
 
  private:
   Profile* profile_;
-  SharesheetController* controller_ = nullptr;
+  ::sharesheet::SharesheetController* controller_ = nullptr;
 };
 
 }  // namespace sharesheet
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_SHARESHEET_SHARE_ACTION_DRIVE_SHARE_ACTION_H_
+#endif  // CHROME_BROWSER_ASH_SHARESHEET_DRIVE_SHARE_ACTION_H_
