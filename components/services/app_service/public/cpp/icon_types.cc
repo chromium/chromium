@@ -58,10 +58,6 @@ apps::mojom::IconValuePtr ConvertIconValueToMojomIconValue(
     case IconType::kUnknown:
       break;
     case IconType::kCompressed:
-      // For a compressed icon, the uncompressed image might be used to apply
-      // icon effects, so both `uncompressed` and `compressed` need to be
-      // copied.
-      iv->uncompressed = icon_value->uncompressed;
       iv->compressed = std::move(icon_value->compressed);
       break;
     case IconType::kUncompressed:
@@ -88,10 +84,6 @@ std::unique_ptr<IconValue> ConvertMojomIconValueToIconValue(
       break;
     case mojom::IconType::kCompressed:
       DCHECK(mojom_icon_value->compressed.has_value());
-      // For a compressed icon, the uncompressed image might be used to apply
-      // icon effects, so both `uncompressed` and `compressed` need to be
-      // copied.
-      iv->uncompressed = mojom_icon_value->uncompressed;
       iv->compressed = std::move(mojom_icon_value->compressed.value());
       break;
     case mojom::IconType::kUncompressed:
@@ -103,4 +95,15 @@ std::unique_ptr<IconValue> ConvertMojomIconValueToIconValue(
   return iv;
 }
 
+base::OnceCallback<void(std::unique_ptr<IconValue>)>
+IconValueToMojomIconValueCallback(
+    base::OnceCallback<void(apps::mojom::IconValuePtr)> callback) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(apps::mojom::IconValuePtr)> inner_callback,
+         std::unique_ptr<IconValue> icon_value) {
+        std::move(inner_callback)
+            .Run(ConvertIconValueToMojomIconValue(std::move(icon_value)));
+      },
+      std::move(callback));
+}
 }  // namespace apps

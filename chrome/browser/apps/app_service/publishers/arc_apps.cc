@@ -69,22 +69,22 @@
 
 namespace {
 
-void CompleteWithCompressed(apps::mojom::Publisher::LoadIconCallback callback,
+void CompleteWithCompressed(apps::LoadIconCallback callback,
                             std::vector<uint8_t> data) {
   if (data.empty()) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
+    std::move(callback).Run(std::make_unique<apps::IconValue>());
     return;
   }
-  apps::mojom::IconValuePtr iv = apps::mojom::IconValue::New();
-  iv->icon_type = apps::mojom::IconType::kCompressed;
+  std::unique_ptr<apps::IconValue> iv = std::make_unique<apps::IconValue>();
+  iv->icon_type = apps::IconType::kCompressed;
   iv->compressed = std::move(data);
   iv->is_placeholder_icon = false;
   std::move(callback).Run(std::move(iv));
 }
 
-void UpdateIconImage(apps::mojom::Publisher::LoadIconCallback callback,
-                     apps::mojom::IconValuePtr iv) {
-  if (iv->icon_type == apps::mojom::IconType::kCompressed) {
+void UpdateIconImage(apps::LoadIconCallback callback,
+                     std::unique_ptr<apps::IconValue> iv) {
+  if (iv->icon_type == apps::IconType::kCompressed) {
     iv->uncompressed.MakeThreadSafe();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -96,27 +96,26 @@ void UpdateIconImage(apps::mojom::Publisher::LoadIconCallback callback,
   std::move(callback).Run(std::move(iv));
 }
 
-void OnArcAppIconCompletelyLoaded(
-    apps::mojom::IconType icon_type,
-    int32_t size_hint_in_dip,
-    apps::IconEffects icon_effects,
-    apps::mojom::Publisher::LoadIconCallback callback,
-    ArcAppIcon* icon) {
+void OnArcAppIconCompletelyLoaded(apps::IconType icon_type,
+                                  int32_t size_hint_in_dip,
+                                  apps::IconEffects icon_effects,
+                                  apps::LoadIconCallback callback,
+                                  ArcAppIcon* icon) {
   if (!icon) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
+    std::move(callback).Run(std::make_unique<apps::IconValue>());
     return;
   }
 
-  apps::mojom::IconValuePtr iv = apps::mojom::IconValue::New();
+  std::unique_ptr<apps::IconValue> iv = std::make_unique<apps::IconValue>();
   iv->icon_type = icon_type;
   iv->is_placeholder_icon = false;
 
   switch (icon_type) {
-    case apps::mojom::IconType::kCompressed:
+    case apps::IconType::kCompressed:
       FALLTHROUGH;
-    case apps::mojom::IconType::kUncompressed:
+    case apps::IconType::kUncompressed:
       FALLTHROUGH;
-    case apps::mojom::IconType::kStandard: {
+    case apps::IconType::kStandard: {
       iv->uncompressed =
           icon->is_adaptive_icon()
               ? apps::CompositeImagesAndApplyMask(icon->foreground_image_skia(),
@@ -125,14 +124,13 @@ void OnArcAppIconCompletelyLoaded(
 
       if (icon_effects != apps::IconEffects::kNone) {
         apps::ApplyIconEffects(
-            icon_effects, size_hint_in_dip,
-            apps::ConvertMojomIconValueToIconValue(std::move(iv)),
+            icon_effects, size_hint_in_dip, std::move(iv),
             base::BindOnce(&UpdateIconImage, std::move(callback)));
         return;
       }
       break;
     }
-    case apps::mojom::IconType::kUnknown:
+    case apps::IconType::kUnknown:
       NOTREACHED();
       break;
   }
@@ -684,8 +682,10 @@ void ArcApps::LoadIcon(const std::string& app_id,
 
     arc_icon_once_loader_.LoadIcon(
         app_id, size_hint_in_dip, icon_type,
-        base::BindOnce(&OnArcAppIconCompletelyLoaded, icon_type,
-                       size_hint_in_dip, icon_effects, std::move(callback)));
+        base::BindOnce(&OnArcAppIconCompletelyLoaded,
+                       ConvertMojomIconTypeToIconType(icon_type),
+                       size_hint_in_dip, icon_effects,
+                       IconValueToMojomIconValueCallback(std::move(callback))));
   }
 }
 
@@ -1392,7 +1392,8 @@ void ArcApps::LoadPlayStoreIcon(apps::mojom::IconType icon_type,
   constexpr bool is_placeholder_icon = false;
   LoadIconFromResource(ConvertMojomIconTypeToIconType(icon_type),
                        size_hint_in_dip, resource_id, is_placeholder_icon,
-                       icon_effects, std::move(callback));
+                       icon_effects,
+                       IconValueToMojomIconValueCallback(std::move(callback)));
 }
 
 apps::mojom::InstallReason GetInstallReason(

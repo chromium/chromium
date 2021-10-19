@@ -16,7 +16,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -61,17 +60,15 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
                 bool is_placeholder_icon,
                 apps::IconEffects icon_effects,
                 int fallback_icon_resource,
-                apps::mojom::Publisher::LoadIconCallback callback);
+                LoadIconCallback callback);
 
-  AppIconLoader(
-      IconType icon_type,
-      int size_hint_in_dip,
-      bool is_placeholder_icon,
-      apps::IconEffects icon_effects,
-      int fallback_icon_resource,
-      base::OnceCallback<void(apps::mojom::Publisher::LoadIconCallback)>
-          fallback,
-      apps::mojom::Publisher::LoadIconCallback callback);
+  AppIconLoader(IconType icon_type,
+                int size_hint_in_dip,
+                bool is_placeholder_icon,
+                apps::IconEffects icon_effects,
+                int fallback_icon_resource,
+                base::OnceCallback<void(LoadIconCallback)> fallback,
+                LoadIconCallback callback);
 
   AppIconLoader(int size_hint_in_dip,
                 base::OnceCallback<void(const gfx::ImageSkia& icon)> callback);
@@ -80,8 +77,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
       base::OnceCallback<void(const std::vector<gfx::ImageSkia>& icons)>
           callback);
 
-  AppIconLoader(int size_hint_in_dip,
-                apps::mojom::Publisher::LoadIconCallback callback);
+  AppIconLoader(int size_hint_in_dip, LoadIconCallback callback);
 
   void ApplyIconEffects(IconEffects icon_effects,
                         std::unique_ptr<IconValue> iv);
@@ -140,9 +136,9 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void CompleteWithCompressed(std::vector<uint8_t> data);
 
-  void CompleteWithUncompressed(apps::mojom::IconValuePtr iv);
+  void CompleteWithUncompressed(std::unique_ptr<IconValue> iv);
 
-  void CompleteWithIconValue(apps::mojom::IconValuePtr iv);
+  void CompleteWithIconValue(std::unique_ptr<IconValue> iv);
 
   void OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps);
 
@@ -173,11 +169,10 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   // (after the favicon service).
   int fallback_icon_resource_;
 
-  apps::mojom::Publisher::LoadIconCallback callback_;
+  LoadIconCallback callback_;
 
   // A custom fallback operation to try.
-  base::OnceCallback<void(apps::mojom::Publisher::LoadIconCallback)>
-      fallback_callback_;
+  base::OnceCallback<void(LoadIconCallback)> fallback_callback_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
 

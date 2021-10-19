@@ -92,6 +92,8 @@ struct COMPONENT_EXPORT(APP_UPDATE) IconValue {
   bool is_placeholder_icon = false;
 };
 
+using LoadIconCallback = base::OnceCallback<void(std::unique_ptr<IconValue>)>;
+
 // TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
 // AppService.
 COMPONENT_EXPORT(APP_UPDATE)
@@ -107,6 +109,11 @@ apps::mojom::IconValuePtr ConvertIconValueToMojomIconValue(
 COMPONENT_EXPORT(APP_UPDATE)
 std::unique_ptr<IconValue> ConvertMojomIconValueToIconValue(
     apps::mojom::IconValuePtr mojom_icon_value);
+
+COMPONENT_EXPORT(APP_UPDATE)
+base::OnceCallback<void(std::unique_ptr<IconValue>)>
+IconValueToMojomIconValueCallback(
+    base::OnceCallback<void(apps::mojom::IconValuePtr)> callback);
 
 }  // namespace apps
 

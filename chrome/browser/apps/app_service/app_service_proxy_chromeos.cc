@@ -429,7 +429,8 @@ void AppServiceProxyChromeOs::LoadIconForDialog(
   // block dialog for the child profile.
   LoadIconFromResource(ConvertMojomIconTypeToIconType(icon_type), kIconSize,
                        IDR_SUPERVISED_USER_ICON, kAllowPlaceholderIcon,
-                       IconEffects::kNone, std::move(callback));
+                       IconEffects::kNone,
+                       IconValueToMojomIconValueCallback(std::move(callback)));
 }
 
 void AppServiceProxyChromeOs::OnLoadIconForBlockDialog(

@@ -119,7 +119,7 @@ void LacrosExtensionAppsController::LoadIcon(const std::string& app_id,
         apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
         profile, extension->id(),
         static_cast<apps::IconEffects>(icon_key->icon_effects),
-        std::move(callback));
+        apps::IconValueToMojomIconValueCallback(std::move(callback)));
     return;
   }
 

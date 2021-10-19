@@ -337,10 +337,10 @@ void ExtensionAppsBase::LoadIcon(const std::string& app_id,
                                  bool allow_placeholder_icon,
                                  LoadIconCallback callback) {
   if (icon_key) {
-    LoadIconFromExtension(ConvertMojomIconTypeToIconType(icon_type),
-                          size_hint_in_dip, profile_, app_id,
-                          static_cast<IconEffects>(icon_key->icon_effects),
-                          std::move(callback));
+    LoadIconFromExtension(
+        ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip, profile_,
+        app_id, static_cast<IconEffects>(icon_key->icon_effects),
+        IconValueToMojomIconValueCallback(std::move(callback)));
     return;
   }
   // On failure, we still run the callback, with the zero IconValue.

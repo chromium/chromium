@@ -70,7 +70,7 @@ void LoadDefaultIcon(gfx::ImageSkia& output_image_skia) {
       false /* is_placeholder_icon */, apps::IconEffects::kNone,
       base::BindOnce(
           [](gfx::ImageSkia* image, base::OnceClosure load_app_icon_callback,
-             apps::mojom::IconValuePtr icon) {
+             std::unique_ptr<apps::IconValue> icon) {
             *image = icon->uncompressed;
             std::move(load_app_icon_callback).Run();
           },
@@ -98,14 +98,11 @@ void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
 }
 
 void VerifyCompressedIcon(const std::vector<uint8_t>& src_data,
-                          apps::mojom::IconValuePtr& icon) {
-  ASSERT_FALSE(icon.is_null());
-  ASSERT_EQ(apps::mojom::IconType::kCompressed, icon->icon_type);
-  ASSERT_FALSE(icon->is_placeholder_icon);
-  ASSERT_TRUE(icon->compressed.has_value());
-  ASSERT_FALSE(icon->compressed.value().empty());
-
-  ASSERT_EQ(src_data, icon->compressed.value());
+                          const apps::IconValue& icon) {
+  ASSERT_EQ(apps::IconType::kCompressed, icon.icon_type);
+  ASSERT_FALSE(icon.is_placeholder_icon);
+  ASSERT_FALSE(icon.compressed.empty());
+  ASSERT_EQ(src_data, icon.compressed);
 }
 
 }  // namespace
@@ -120,18 +117,18 @@ class AppIconFactoryTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir()); }
 
   void RunLoadIconFromFileWithFallback(
-      apps::mojom::IconValuePtr fallback_response,
+      std::unique_ptr<apps::IconValue> fallback_response,
       bool* callback_called,
       bool* fallback_called,
-      apps::mojom::IconValuePtr* result) {
+      std::unique_ptr<apps::IconValue>* result) {
     *callback_called = false;
     *fallback_called = false;
 
     apps::LoadIconFromFileWithFallback(
         apps::IconType::kUncompressed, 200, GetPath(), apps::IconEffects::kNone,
         base::BindOnce(
-            [](bool* called, apps::mojom::IconValuePtr* result,
-               base::OnceClosure quit, apps::mojom::IconValuePtr icon) {
+            [](bool* called, std::unique_ptr<apps::IconValue>* result,
+               base::OnceClosure quit, std::unique_ptr<apps::IconValue> icon) {
               *called = true;
               *result = std::move(icon);
               std::move(quit).Run();
@@ -139,8 +136,8 @@ class AppIconFactoryTest : public testing::Test {
             base::Unretained(callback_called), base::Unretained(result),
             run_loop_.QuitClosure()),
         base::BindOnce(
-            [](bool* called, apps::mojom::IconValuePtr response,
-               apps::mojom::Publisher::LoadIconCallback callback) {
+            [](bool* called, std::unique_ptr<apps::IconValue> response,
+               apps::LoadIconCallback callback) {
               *called = true;
               std::move(callback).Run(std::move(response));
             },
@@ -163,25 +160,25 @@ class AppIconFactoryTest : public testing::Test {
     return png_data_as_string;
   }
 
-  void RunLoadIconFromCompressedData(const std::string png_data_as_string,
-                                     apps::IconType icon_type,
-                                     apps::IconEffects icon_effects,
-                                     apps::mojom::IconValuePtr& output_icon) {
+  void RunLoadIconFromCompressedData(
+      const std::string png_data_as_string,
+      apps::IconType icon_type,
+      apps::IconEffects icon_effects,
+      std::unique_ptr<apps::IconValue>& output_icon) {
     apps::LoadIconFromCompressedData(
         icon_type, kSizeInDip, icon_effects, png_data_as_string,
         base::BindOnce(
-            [](apps::mojom::IconValuePtr* result,
+            [](std::unique_ptr<apps::IconValue>* result,
                base::OnceClosure load_app_icon_callback,
-               apps::mojom::IconValuePtr icon) {
+               std::unique_ptr<apps::IconValue> icon) {
               *result = std::move(icon);
               std::move(load_app_icon_callback).Run();
             },
             &output_icon, run_loop_.QuitClosure()));
     run_loop_.Run();
 
-    ASSERT_FALSE(output_icon.is_null());
-    ASSERT_EQ(icon_type,
-              apps::ConvertMojomIconTypeToIconType(output_icon->icon_type));
+    ASSERT_TRUE(output_icon);
+    ASSERT_EQ(icon_type, output_icon->icon_type);
     ASSERT_FALSE(output_icon->is_placeholder_icon);
     ASSERT_FALSE(output_icon->uncompressed.isNull());
 
@@ -206,21 +203,20 @@ class AppIconFactoryTest : public testing::Test {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void RunLoadIconFromResource(apps::IconType icon_type,
-                               apps::IconEffects icon_effects,
-                               apps::mojom::IconValuePtr& output_icon) {
+  std::unique_ptr<apps::IconValue> RunLoadIconFromResource(
+      apps::IconType icon_type,
+      apps::IconEffects icon_effects) {
     bool is_placeholder_icon = false;
-    apps::LoadIconFromResource(icon_type, kSizeInDip, IDR_LOGO_CROSTINI_DEFAULT,
-                               is_placeholder_icon, icon_effects,
-                               base::BindOnce(
-                                   [](apps::mojom::IconValuePtr* result,
-                                      base::OnceClosure load_app_icon_callback,
-                                      apps::mojom::IconValuePtr icon) {
-                                     *result = std::move(icon);
-                                     std::move(load_app_icon_callback).Run();
-                                   },
-                                   &output_icon, run_loop_.QuitClosure()));
+    std::unique_ptr<apps::IconValue> icon_value;
+    apps::LoadIconFromResource(
+        icon_type, kSizeInDip, IDR_LOGO_CROSTINI_DEFAULT, is_placeholder_icon,
+        icon_effects,
+        base::BindLambdaForTesting([&](std::unique_ptr<apps::IconValue> icon) {
+          icon_value = std::move(icon);
+          run_loop_.Quit();
+        }));
     run_loop_.Run();
+    return icon_value;
   }
 
   void GenerateCrostiniPenguinIcon(gfx::ImageSkia& output_image_skia) {
@@ -254,13 +250,15 @@ TEST_F(AppIconFactoryTest, LoadFromFileSuccess) {
   const SkBitmap* bitmap = image.bitmap();
   cc::WritePNGFile(*bitmap, GetPath(), /*discard_transparency=*/false);
 
-  apps::mojom::IconValuePtr fallback_response, result;
+  std::unique_ptr<apps::IconValue> fallback_response =
+      std::make_unique<apps::IconValue>();
+  std::unique_ptr<apps::IconValue> result = std::make_unique<apps::IconValue>();
   bool callback_called, fallback_called;
-  RunLoadIconFromFileWithFallback(fallback_response.Clone(), &callback_called,
-                                  &fallback_called, &result);
+  RunLoadIconFromFileWithFallback(std::move(fallback_response),
+                                  &callback_called, &fallback_called, &result);
   EXPECT_TRUE(callback_called);
   EXPECT_FALSE(fallback_called);
-  EXPECT_FALSE(result.is_null());
+  ASSERT_TRUE(result);
 
   EXPECT_TRUE(
       cc::MatchesBitmap(*bitmap, *result->uncompressed.bitmap(),
@@ -268,60 +266,58 @@ TEST_F(AppIconFactoryTest, LoadFromFileSuccess) {
 }
 
 TEST_F(AppIconFactoryTest, LoadFromFileFallback) {
-  apps::mojom::IconValuePtr fallback_response = apps::mojom::IconValue::New();
-  // Create a non-null image so we can check if we get the same image back.
-  fallback_response->uncompressed =
+  auto expect_image =
       gfx::ImageSkia(gfx::ImageSkiaRep(gfx::Size(20, 20), 0.0f));
 
-  apps::mojom::IconValuePtr result;
+  std::unique_ptr<apps::IconValue> fallback_response =
+      std::make_unique<apps::IconValue>();
+  fallback_response->icon_type = apps::IconType::kUncompressed;
+  // Create a non-null image so we can check if we get the same image back.
+  fallback_response->uncompressed = expect_image;
+
+  std::unique_ptr<apps::IconValue> result = std::make_unique<apps::IconValue>();
   bool callback_called, fallback_called;
-  RunLoadIconFromFileWithFallback(fallback_response.Clone(), &callback_called,
-                                  &fallback_called, &result);
+  RunLoadIconFromFileWithFallback(std::move(fallback_response),
+                                  &callback_called, &fallback_called, &result);
   EXPECT_TRUE(callback_called);
   EXPECT_TRUE(fallback_called);
-  EXPECT_FALSE(result.is_null());
-  EXPECT_TRUE(result->uncompressed.BackedBySameObjectAs(
-      fallback_response->uncompressed));
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->uncompressed.BackedBySameObjectAs(expect_image));
 }
 
 TEST_F(AppIconFactoryTest, LoadFromFileFallbackFailure) {
-  apps::mojom::IconValuePtr fallback_response, result;
+  std::unique_ptr<apps::IconValue> fallback_response =
+      std::make_unique<apps::IconValue>();
+  std::unique_ptr<apps::IconValue> result = std::make_unique<apps::IconValue>();
   bool callback_called, fallback_called;
-  RunLoadIconFromFileWithFallback(fallback_response.Clone(), &callback_called,
-                                  &fallback_called, &result);
+  RunLoadIconFromFileWithFallback(std::move(fallback_response),
+                                  &callback_called, &fallback_called, &result);
   EXPECT_TRUE(callback_called);
   EXPECT_TRUE(fallback_called);
-  EXPECT_FALSE(result.is_null());
-  EXPECT_TRUE(fallback_response.is_null());
+  ASSERT_TRUE(result);
 }
 
 TEST_F(AppIconFactoryTest, LoadFromFileFallbackDoesNotReturn) {
-  apps::mojom::IconValuePtr result;
+  std::unique_ptr<apps::IconValue> result = std::make_unique<apps::IconValue>();
   bool callback_called = false, fallback_called = false;
 
   apps::LoadIconFromFileWithFallback(
       apps::IconType::kUncompressed, 200, GetPath(), apps::IconEffects::kNone,
-      base::BindOnce(
-          [](bool* called, apps::mojom::IconValuePtr* result,
-             base::OnceClosure quit, apps::mojom::IconValuePtr icon) {
-            *called = true;
-            *result = std::move(icon);
-            std::move(quit).Run();
-          },
-          base::Unretained(&callback_called), base::Unretained(&result),
-          run_loop_.QuitClosure()),
-      base::BindOnce(
-          [](bool* called, apps::mojom::Publisher::LoadIconCallback callback) {
-            *called = true;
-            // Drop the callback here, like a buggy fallback might.
-          },
-          base::Unretained(&fallback_called)));
+      base::BindLambdaForTesting([&](std::unique_ptr<apps::IconValue> icon) {
+        callback_called = true;
+        result = std::move(icon);
+        run_loop_.Quit();
+      }),
+      base::BindLambdaForTesting([&](apps::LoadIconCallback callback) {
+        fallback_called = true;
+        // Drop the callback here, like a buggy fallback might.
+      }));
 
   run_loop_.Run();
 
   EXPECT_TRUE(callback_called);
   EXPECT_TRUE(fallback_called);
-  EXPECT_FALSE(result.is_null());
+  ASSERT_TRUE(result);
 }
 
 TEST_F(AppIconFactoryTest, LoadIconFromCompressedData) {
@@ -330,7 +326,7 @@ TEST_F(AppIconFactoryTest, LoadIconFromCompressedData) {
   auto icon_type = apps::IconType::kStandard;
   auto icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
-  apps::mojom::IconValuePtr result;
+  std::unique_ptr<apps::IconValue> result = std::make_unique<apps::IconValue>();
   RunLoadIconFromCompressedData(png_data_as_string, icon_type, icon_effects,
                                 result);
 
@@ -351,11 +347,10 @@ TEST_F(AppIconFactoryTest, LoadCrostiniPenguinIcon) {
   auto icon_type = apps::IconType::kStandard;
   auto icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
-  apps::mojom::IconValuePtr result;
-  RunLoadIconFromResource(icon_type, icon_effects, result);
+  auto result = RunLoadIconFromResource(icon_type, icon_effects);
 
-  EXPECT_FALSE(result.is_null());
-  EXPECT_EQ(icon_type, apps::ConvertMojomIconTypeToIconType(result->icon_type));
+  ASSERT_TRUE(result);
+  EXPECT_EQ(icon_type, result->icon_type);
   EXPECT_FALSE(result->is_placeholder_icon);
 
   EnsureRepresentationsLoaded(result->uncompressed);
@@ -370,13 +365,13 @@ TEST_F(AppIconFactoryTest, LoadCrostiniPenguinCompressedIcon) {
   auto icon_effects = apps::IconEffects::kNone;
   icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
-  apps::mojom::IconValuePtr result;
-  RunLoadIconFromResource(apps::IconType::kCompressed, icon_effects, result);
+  auto result =
+      RunLoadIconFromResource(apps::IconType::kCompressed, icon_effects);
 
   std::vector<uint8_t> src_data;
   GenerateCrostiniPenguinCompressedIcon(src_data);
 
-  VerifyCompressedIcon(src_data, result);
+  VerifyCompressedIcon(src_data, *result);
 }
 
 TEST_F(AppIconFactoryTest, ArcNonAdaptiveIconToImageSkia) {
@@ -637,7 +632,7 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
         profile(), icon_type, kSizeInDip, app_id, icon_effects,
         base::BindOnce(
             [](gfx::ImageSkia* image, base::OnceClosure load_app_icon_callback,
-               apps::mojom::IconValuePtr icon) {
+               std::unique_ptr<apps::IconValue> icon) {
               *image = icon->uncompressed;
               std::move(load_app_icon_callback).Run();
             },
@@ -647,23 +642,20 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
     EnsureRepresentationsLoaded(output_image_skia);
   }
 
-  void LoadCompressedIconBlockingFromWebApp(
+  std::unique_ptr<apps::IconValue> LoadCompressedIconBlockingFromWebApp(
       const std::string& app_id,
-      apps::IconEffects icon_effects,
-      apps::mojom::IconValuePtr& output_data) {
+      apps::IconEffects icon_effects) {
     base::RunLoop run_loop;
-
-    apps::LoadIconFromWebApp(profile(), apps::IconType::kCompressed, kSizeInDip,
-                             app_id, icon_effects,
-                             base::BindOnce(
-                                 [](apps::mojom::IconValuePtr* result,
-                                    base::OnceClosure load_app_icon_callback,
-                                    apps::mojom::IconValuePtr icon) {
-                                   *result = std::move(icon);
-                                   std::move(load_app_icon_callback).Run();
-                                 },
-                                 &output_data, run_loop.QuitClosure()));
+    std::unique_ptr<apps::IconValue> icon_value;
+    apps::LoadIconFromWebApp(
+        profile(), apps::IconType::kCompressed, kSizeInDip, app_id,
+        icon_effects,
+        base::BindLambdaForTesting([&](std::unique_ptr<apps::IconValue> icon) {
+          icon_value = std::move(icon);
+          run_loop.Quit();
+        }));
     run_loop.Run();
+    return icon_value;
   }
 
   web_app::WebAppIconManager& icon_manager() { return *icon_manager_; }
@@ -729,16 +721,14 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableCompressedIcon) {
                                {{1.0, kIconSize1}, {2.0, kIconSize2}},
                                src_data);
 
-  apps::mojom::IconValuePtr icon;
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   icon_effect |= apps::IconEffects::kCrOsStandardIcon;
 #endif
 
-  LoadCompressedIconBlockingFromWebApp(app_id, icon_effect, icon);
+  auto icon = LoadCompressedIconBlockingFromWebApp(app_id, icon_effect);
 
-  VerifyCompressedIcon(src_data, icon);
+  VerifyCompressedIcon(src_data, *icon);
 }
 
 TEST_F(WebAppIconFactoryTest, LoadMaskableIcon) {
@@ -803,8 +793,9 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
   RegisterApp(std::move(web_app));
 
   std::vector<uint8_t> src_data;
-  apps::mojom::IconValuePtr icon;
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
+  std::unique_ptr<apps::IconValue> icon;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   icon_effect |= apps::IconEffects::kCrOsStandardBackground |
                  apps::IconEffects::kCrOsStandardMask;
@@ -815,8 +806,9 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
                                {{1.0, kIconSize2}, {2.0, kIconSize2}},
                                src_data);
 
-  LoadCompressedIconBlockingFromWebApp(app_id, icon_effect, icon);
-  VerifyCompressedIcon(src_data, icon);
+  icon = LoadCompressedIconBlockingFromWebApp(app_id, icon_effect);
+
+  VerifyCompressedIcon(src_data, *icon);
   return;
 #endif
 
@@ -826,9 +818,9 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
                                {{1.0, kIconSize1}, {2.0, kIconSize1}},
                                src_data);
 
-  LoadCompressedIconBlockingFromWebApp(app_id, icon_effect, icon);
+  icon = LoadCompressedIconBlockingFromWebApp(app_id, icon_effect);
 
-  VerifyCompressedIcon(src_data, icon);
+  VerifyCompressedIcon(src_data, *icon);
 }
 
 TEST_F(WebAppIconFactoryTest, LoadNonMaskableIconWithMaskableIcon) {

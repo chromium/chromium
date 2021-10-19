@@ -14,8 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -133,7 +131,7 @@ gfx::ImageSkia ConvertIconBitmapsToImageSkia(
 void ApplyIconEffects(IconEffects icon_effects,
                       int size_hint_in_dip,
                       std::unique_ptr<IconValue> iv,
-                      apps::mojom::Publisher::LoadIconCallback callback);
+                      LoadIconCallback callback);
 
 // Loads an icon from an extension.
 void LoadIconFromExtension(IconType icon_type,
@@ -141,7 +139,7 @@ void LoadIconFromExtension(IconType icon_type,
                            content::BrowserContext* context,
                            const std::string& extension_id,
                            IconEffects icon_effects,
-                           apps::mojom::Publisher::LoadIconCallback callback);
+                           LoadIconCallback callback);
 
 // Loads an icon from a web app.
 void LoadIconFromWebApp(content::BrowserContext* context,
@@ -149,7 +147,7 @@ void LoadIconFromWebApp(content::BrowserContext* context,
                         int size_hint_in_dip,
                         const std::string& web_app_id,
                         IconEffects icon_effects,
-                        apps::mojom::Publisher::LoadIconCallback callback);
+                        LoadIconCallback callback);
 
 // Loads an icon from a FilePath. If that fails, it calls the fallback.
 //
@@ -165,17 +163,15 @@ void LoadIconFromFileWithFallback(
     int size_hint_in_dip,
     const base::FilePath& path,
     IconEffects icon_effects,
-    apps::mojom::Publisher::LoadIconCallback callback,
-    base::OnceCallback<void(apps::mojom::Publisher::LoadIconCallback)>
-        fallback);
+    LoadIconCallback callback,
+    base::OnceCallback<void(LoadIconCallback)> fallback);
 
 // Creates an icon with the specified effects from |compressed_icon_data|.
-void LoadIconFromCompressedData(
-    IconType icon_type,
-    int size_hint_in_dip,
-    IconEffects icon_effects,
-    const std::string& compressed_icon_data,
-    apps::mojom::Publisher::LoadIconCallback callback);
+void LoadIconFromCompressedData(IconType icon_type,
+                                int size_hint_in_dip,
+                                IconEffects icon_effects,
+                                const std::string& compressed_icon_data,
+                                LoadIconCallback callback);
 
 // Loads an icon from a compiled-into-the-binary resource, with a resource_id
 // named IDR_XXX, for some value of XXX.
@@ -184,7 +180,7 @@ void LoadIconFromResource(IconType icon_type,
                           int resource_id,
                           bool is_placeholder_icon,
                           IconEffects icon_effects,
-                          apps::mojom::Publisher::LoadIconCallback callback);
+                          LoadIconCallback callback);
 
 }  // namespace apps
 

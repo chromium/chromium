@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -598,14 +599,11 @@ TEST_F(ExtensionAppTest, LoadCompressedIcon) {
       apps::IconType::kCompressed,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       profile(), kPackagedApp1Id, icon_effects,
-      base::BindOnce(
-          [](apps::mojom::IconValuePtr* output_icon,
-             base::OnceClosure load_app_icon_callback,
-             apps::mojom::IconValuePtr icon) {
-            *output_icon = std::move(icon);
-            std::move(load_app_icon_callback).Run();
-          },
-          &dst_icon, run_loop.QuitClosure()));
+      apps::IconValueToMojomIconValueCallback(
+          base::BindLambdaForTesting([&](apps::mojom::IconValuePtr icon) {
+            dst_icon = std::move(icon);
+            run_loop.Quit();
+          })));
   run_loop.Run();
 
   ASSERT_FALSE(dst_icon.is_null());

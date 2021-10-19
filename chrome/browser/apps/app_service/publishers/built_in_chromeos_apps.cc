@@ -116,7 +116,8 @@ void BuiltInChromeOsApps::LoadIcon(const std::string& app_id,
     LoadIconFromResource(
         ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
         icon_key->resource_id, is_placeholder_icon,
-        static_cast<IconEffects>(icon_key->icon_effects), std::move(callback));
+        static_cast<IconEffects>(icon_key->icon_effects),
+        IconValueToMojomIconValueCallback(std::move(callback)));
     return;
   }
   // On failure, we still run the callback, with the zero IconValue.

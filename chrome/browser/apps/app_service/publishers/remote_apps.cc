@@ -107,8 +107,9 @@ void RemoteApps::LoadIcon(const std::string& app_id,
   IconEffects icon_effects = (icon_type == mojom::IconType::kStandard)
                                  ? IconEffects::kCrOsStandardIcon
                                  : IconEffects::kResizeAndPad;
-  apps::ApplyIconEffects(icon_effects, size_hint_in_dip, std::move(icon),
-                         std::move(callback));
+  apps::ApplyIconEffects(
+      icon_effects, size_hint_in_dip, std::move(icon),
+      IconValueToMojomIconValueCallback(std::move(callback)));
 }
 
 void RemoteApps::Launch(const std::string& app_id,

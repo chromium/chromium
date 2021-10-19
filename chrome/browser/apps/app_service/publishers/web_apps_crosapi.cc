@@ -372,7 +372,7 @@ void WebAppsCrosapi::OnLoadIcon(uint32_t icon_effects,
   // We apply the masking effect here, as masking is not implemented in Lacros.
   ApplyIconEffects(static_cast<IconEffects>(icon_effects), size_hint_in_dip,
                    ConvertMojomIconValueToIconValue(std::move(icon_value)),
-                   std::move(callback));
+                   IconValueToMojomIconValueCallback(std::move(callback)));
 }
 
 }  // namespace apps

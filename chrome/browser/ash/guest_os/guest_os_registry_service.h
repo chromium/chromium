@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
@@ -175,19 +176,19 @@ class GuestOsRegistryService : public KeyedService {
                 apps::mojom::Publisher::LoadIconCallback callback);
 
   void LoadIconFromVM(const std::string& app_id,
-                      apps::mojom::IconType icon_type,
+                      apps::IconType icon_type,
                       int32_t size_hint_in_dip,
                       ui::ResourceScaleFactor scale_factor,
                       apps::IconEffects icon_effects,
                       int fallback_icon_resource_id,
-                      apps::mojom::Publisher::LoadIconCallback callback);
+                      apps::LoadIconCallback callback);
 
   void OnLoadIconFromVM(const std::string& app_id,
-                        apps::mojom::IconType icon_type,
+                        apps::IconType icon_type,
                         int32_t size_hint_in_dip,
                         apps::IconEffects icon_effects,
                         int fallback_icon_resource_id,
-                        apps::mojom::Publisher::LoadIconCallback callback,
+                        apps::LoadIconCallback callback,
                         std::string compressed_icon_data);
 
   // Fetches icons from container.

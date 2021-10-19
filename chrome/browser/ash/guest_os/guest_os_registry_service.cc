@@ -706,20 +706,22 @@ base::FilePath GuestOsRegistryService::GetIconPath(
 void GuestOsRegistryService::LoadIcon(
     const std::string& app_id,
     apps::mojom::IconKeyPtr icon_key,
-    apps::mojom::IconType icon_type,
+    apps::mojom::IconType mojom_icon_type,
     int32_t size_hint_in_dip,
     bool allow_placeholder_icon,
     int fallback_icon_resource_id,
     apps::mojom::Publisher::LoadIconCallback callback) {
   if (icon_key) {
+    apps::IconType icon_type =
+        apps::ConvertMojomIconTypeToIconType(mojom_icon_type);
     if (icon_key->resource_id != apps::mojom::IconKey::kInvalidResourceId) {
       // The icon is a resource built into the Chrome OS binary.
       constexpr bool is_placeholder_icon = false;
       apps::LoadIconFromResource(
-          apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
-          icon_key->resource_id, is_placeholder_icon,
+          icon_type, size_hint_in_dip, icon_key->resource_id,
+          is_placeholder_icon,
           static_cast<apps::IconEffects>(icon_key->icon_effects),
-          std::move(callback));
+          apps::IconValueToMojomIconValueCallback(std::move(callback)));
       return;
     } else {
       // There are paths where nothing higher up the call stack will resize so
@@ -731,10 +733,9 @@ void GuestOsRegistryService::LoadIcon(
       // Try loading the icon from an on-disk cache. If that fails, fall back
       // to LoadIconFromVM.
       apps::LoadIconFromFileWithFallback(
-          apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
-          GetIconPath(app_id, scale_factor),
+          icon_type, size_hint_in_dip, GetIconPath(app_id, scale_factor),
           static_cast<apps::IconEffects>(icon_key->icon_effects),
-          std::move(callback),
+          apps::IconValueToMojomIconValueCallback(std::move(callback)),
           base::BindOnce(&GuestOsRegistryService::LoadIconFromVM,
                          weak_ptr_factory_.GetWeakPtr(), app_id, icon_type,
                          size_hint_in_dip, scale_factor,
@@ -750,12 +751,12 @@ void GuestOsRegistryService::LoadIcon(
 
 void GuestOsRegistryService::LoadIconFromVM(
     const std::string& app_id,
-    apps::mojom::IconType icon_type,
+    apps::IconType icon_type,
     int32_t size_hint_in_dip,
     ui::ResourceScaleFactor scale_factor,
     apps::IconEffects icon_effects,
     int fallback_icon_resource_id,
-    apps::mojom::Publisher::LoadIconCallback callback) {
+    apps::LoadIconCallback callback) {
   RequestIcon(app_id, scale_factor,
               base::BindOnce(&GuestOsRegistryService::OnLoadIconFromVM,
                              weak_ptr_factory_.GetWeakPtr(), app_id, icon_type,
@@ -765,11 +766,11 @@ void GuestOsRegistryService::LoadIconFromVM(
 
 void GuestOsRegistryService::OnLoadIconFromVM(
     const std::string& app_id,
-    apps::mojom::IconType icon_type,
+    apps::IconType icon_type,
     int32_t size_hint_in_dip,
     apps::IconEffects icon_effects,
     int fallback_icon_resource_id,
-    apps::mojom::Publisher::LoadIconCallback callback,
+    apps::LoadIconCallback callback,
     std::string compressed_icon_data) {
   if (compressed_icon_data.empty()) {
     if (fallback_icon_resource_id != apps::mojom::IconKey::kInvalidResourceId) {
@@ -777,16 +778,14 @@ void GuestOsRegistryService::OnLoadIconFromVM(
       // a placeholder to avoid endless repeat calls since we don't expect to
       // find a better icon than this any time soon.
       apps::LoadIconFromResource(
-          apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
-          fallback_icon_resource_id,
+          icon_type, size_hint_in_dip, fallback_icon_resource_id,
           /*is_placeholder_icon=*/false, icon_effects, std::move(callback));
     } else {
-      std::move(callback).Run(apps::mojom::IconValue::New());
+      std::move(callback).Run(std::make_unique<apps::IconValue>());
     }
   } else {
-    apps::LoadIconFromCompressedData(
-        apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
-        icon_effects, compressed_icon_data, std::move(callback));
+    apps::LoadIconFromCompressedData(icon_type, size_hint_in_dip, icon_effects,
+                                     compressed_icon_data, std::move(callback));
   }
 }
 

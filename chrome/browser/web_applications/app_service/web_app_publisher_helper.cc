@@ -529,7 +529,8 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
     LoadIconFromWebApp(
         profile_, apps::ConvertMojomIconTypeToIconType(icon_type),
         size_hint_in_dip, app_id,
-        static_cast<IconEffects>(icon_key->icon_effects), std::move(callback));
+        static_cast<IconEffects>(icon_key->icon_effects),
+        apps::IconValueToMojomIconValueCallback(std::move(callback)));
     return;
   }
   // On failure, we still run the callback, with the zero IconValue.

@@ -102,11 +102,12 @@ void StandaloneBrowserApps::LoadIcon(const std::string& app_id,
                                      LoadIconCallback callback) {
   if (icon_key &&
       icon_key->resource_id != apps::mojom::IconKey::kInvalidResourceId) {
-    LoadIconFromResource(ConvertMojomIconTypeToIconType(icon_type),
-                         size_hint_in_dip, icon_key->resource_id,
-                         /*is_placeholder_icon=*/false,
-                         static_cast<IconEffects>(icon_key->icon_effects),
-                         std::move(callback));
+    LoadIconFromResource(
+        ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
+        icon_key->resource_id,
+        /*is_placeholder_icon=*/false,
+        static_cast<IconEffects>(icon_key->icon_effects),
+        apps::IconValueToMojomIconValueCallback(std::move(callback)));
     return;
   }
   // On failure, we still run the callback, with the zero IconValue.
