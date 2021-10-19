@@ -5077,7 +5077,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         with <ph name="IDENTITY_PROVIDER_URL">%1$s<ex>idp.com</ex></ph>
       </message>
       <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT" desc="The consent text shown to the user before sign up." translateable="false">
-        To sign up, <ph name="PROVIDER_NAME">%1$s<ex>provider.example</ex></ph> will share your name, email, address, and profile picture with the site. See <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Privacy Policy<ph name="END_LINK1">&lt;/link1&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>Terms of service<ph name="END_LINK2">&lt;/link2&gt;</ph>.
+        To sign up, <ph name="PROVIDER_NAME">%1$s<ex>provider.example</ex></ph> will share your name, email, address, and profile picture with the site. See <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>privacy policy<ph name="END_LINK1">&lt;/link1&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>terms of service<ph name="END_LINK2">&lt;/link2&gt;</ph>.
       </message>
 
       <message name="IDS_ACCOUNT_SELECTION_CONTINUE" desc="Title of the button that continues filling with the only available set of credentials." translateable="false">
