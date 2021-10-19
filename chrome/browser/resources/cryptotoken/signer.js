@@ -510,7 +510,12 @@ Signer.prototype.doSignWebAuthn_ = function(encodedChallenges, challengeVal) {
     this.doSignWebAuthnContinue_(decodedChallenge, credentialList, appid);
   } else {
     chrome.cryptotokenPrivate.canMakeU2fApiRequest(
-        {tabId: this.sender_.tabId, origin: this.sender_.origin, appId: appid},
+        {
+          tabId: this.sender_.tabId,
+          frameId: this.sender_.frameId,
+          origin: this.sender_.origin,
+          appId: appid
+        },
         (result) => {
           if (!result) {
             this.notifyError_({

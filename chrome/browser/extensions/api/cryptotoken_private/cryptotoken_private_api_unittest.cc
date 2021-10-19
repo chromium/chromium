@@ -270,6 +270,7 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
     base::Value::DictStorage dict;
     dict.emplace("appId", app_id);
     dict.emplace("tabId", tab_id_);
+    dict.emplace("frameId", -1);  // Ignored.
     dict.emplace("origin", app_id);
     auto args = std::make_unique<base::Value>(base::Value::Type::LIST);
     args->Append(base::Value(std::move(dict)));
@@ -304,6 +305,7 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
     base::Value::DictStorage dict;
     dict.emplace("appId", origin);
     dict.emplace("tabId", tab_id_);
+    dict.emplace("frameId", 0 /* main frame */);
     dict.emplace("origin", origin);
     auto args = std::make_unique<base::Value>(base::Value::Type::LIST);
     args->Append(base::Value(std::move(dict)));
