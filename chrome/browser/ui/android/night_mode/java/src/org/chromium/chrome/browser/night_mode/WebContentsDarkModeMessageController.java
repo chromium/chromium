@@ -16,6 +16,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -44,6 +46,11 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
  * feature.
  */
 public class WebContentsDarkModeMessageController {
+    private static final String FEEDBACK_CATEGORY_TAG = "USER_INITIATED_FEEDBACK_REPORT_AUTO_DARK";
+    private static final String FEEDBACK_CONTEXT = "chrome_auto_dark";
+    @VisibleForTesting
+    static final String FEEDBACK_DIALOG_PARAM = "feedback_dialog";
+
     /**
      * Checks if auto-dark theming is enabled. Also checks if the feature engagement system
      * requirements are met. If both are true, returns true indicating the user education message
@@ -141,25 +148,44 @@ public class WebContentsDarkModeMessageController {
      * disabled enough times (determined by the feature engagement system), show dialog informing
      * user how to disable the feature globally and how to give feedback.
      *
-     * @param context The context from which to launch theme settings.
+     * @param activity The activity from which to launch theme settings.
+     * @param profile The current profile.
+     * @param url The url the user is currently on.
      * @param modalDialogManager Manager that triggers the dialog.
      * @param settingsLauncher Launcher for theme settings.
+     * @param feedbackLauncher Launcher for feedback flow.
      */
-    public static void attemptToShowDialog(Context context, Profile profile,
-            ModalDialogManager modalDialogManager, SettingsLauncher settingsLauncher) {
+    public static void attemptToShowDialog(Activity activity, Profile profile, String url,
+            ModalDialogManager modalDialogManager, SettingsLauncher settingsLauncher,
+            HelpAndFeedbackLauncher feedbackLauncher) {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.notifyEvent(EventConstants.AUTO_DARK_DISABLED_IN_APP_MENU);
         if (!tracker.shouldTriggerHelpUI(FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE)) return;
 
-        // Set the properties (icon, text, etc.) for the dialog.
-        Resources resources = context.getResources();
+        // Set values and click action based on whether or not the feedback flow is enabled.
+        Resources resources = activity.getResources();
+        boolean feedbackDialogEnabled = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING, FEEDBACK_DIALOG_PARAM,
+                false);
+        int titleId = feedbackDialogEnabled ? R.string.auto_dark_dialog_title
+                                            : R.string.auto_dark_dialog_no_feedback_title;
+        CharSequence message = feedbackDialogEnabled
+                ? getFormattedMessageText(activity, settingsLauncher)
+                : resources.getString(R.string.auto_dark_dialog_no_feedback_message);
+        int positiveButtonId = feedbackDialogEnabled
+                ? R.string.auto_dark_dialog_positive_button
+                : R.string.auto_dark_dialog_no_feedback_positive_button;
         Controller controller = new Controller() {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 // TODO(crbug.com/1257260): Set clickable to false for title icon.
                 if (buttonType == ButtonType.TITLE_ICON) return;
                 if (buttonType == ButtonType.POSITIVE) {
-                    // TODO(1255301): Implement feedback logic
+                    if (feedbackDialogEnabled) {
+                        showFeedback(feedbackLauncher, activity, profile, url);
+                    } else {
+                        openSettings(settingsLauncher, activity);
+                    }
                 }
 
                 modalDialogManager.dismissDialog(model,
@@ -173,22 +199,45 @@ public class WebContentsDarkModeMessageController {
                 tracker.dismissed(FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE);
             }
         };
+
+        // Set the properties (icon, text, etc.) for the dialog.
         PropertyModel dialog = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                                        .with(ModalDialogProperties.CONTROLLER, controller)
-                                       .with(ModalDialogProperties.TITLE, resources,
-                                               R.string.auto_dark_dialog_title)
+                                       .with(ModalDialogProperties.TITLE, resources, titleId)
                                        .with(ModalDialogProperties.TITLE_ICON,
-                                               AppCompatResources.getDrawable(context,
+                                               AppCompatResources.getDrawable(activity,
                                                        R.drawable.ic_brightness_medium_24dp))
-                                       .with(ModalDialogProperties.MESSAGE,
-                                               getFormattedMessageText(context, settingsLauncher))
+                                       .with(ModalDialogProperties.MESSAGE, message)
                                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
-                                               R.string.auto_dark_dialog_positive_button)
+                                               positiveButtonId)
                                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                                R.string.cancel)
                                        .build();
 
         modalDialogManager.showDialog(dialog, ModalDialogType.TAB);
+    }
+
+    /**
+     * Show feedback.
+     */
+    private static void showFeedback(
+            HelpAndFeedbackLauncher launcher, Activity activity, Profile profile, String url) {
+        // TODO(crbug.com/1260152): Import ScreenshotMode instead of hardcoding value once new build
+        //  target added.
+        // TODO(crbug.com/1261168): Include URL as PSD in feedback reports.
+        launcher.showFeedback(activity, profile, url,
+                activity.getPackageName() + FEEDBACK_CATEGORY_TAG,
+                /* ScreenshotMode.DEFAULT */ 0, FEEDBACK_CONTEXT);
+    }
+
+    /**
+     * Open settings
+     */
+    private static void openSettings(SettingsLauncher launcher, Context context) {
+        Bundle args = new Bundle();
+        args.putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
+                ThemeSettingsEntry.AUTO_DARK_MODE_DIALOG);
+        launcher.launchSettingsActivity(context, ThemeSettingsFragment.class, args);
     }
 
     /**
@@ -215,10 +264,7 @@ public class WebContentsDarkModeMessageController {
 
         @Override
         public void onClick(@NonNull View view) {
-            Bundle args = new Bundle();
-            args.putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
-                    ThemeSettingsEntry.AUTO_DARK_MODE_DIALOG);
-            mSettingsLauncher.launchSettingsActivity(mContext, ThemeSettingsFragment.class, args);
+            openSettings(mSettingsLauncher, mContext);
         }
     }
 }
