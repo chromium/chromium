@@ -80,11 +80,10 @@ struct COMPONENT_EXPORT(APP_UPDATE) IconValue {
 
   IconType icon_type = IconType::kUnknown;
 
-  union {
-    gfx::ImageSkia uncompressed;
-    // PNG-encoded bytes for the icon
-    std::vector<uint8_t> compressed;
-  };
+  gfx::ImageSkia uncompressed;
+
+  // PNG-encoded bytes for the icon
+  std::vector<uint8_t> compressed;
 
   // Specifies whether the icon provided is a placeholder. That field should
   // only be true if the corresponding `LoadIcon` call had
@@ -100,6 +99,14 @@ apps::mojom::IconType ConvertIconTypeToMojomIconType(IconType icon_type);
 
 COMPONENT_EXPORT(APP_UPDATE)
 IconType ConvertMojomIconTypeToIconType(apps::mojom::IconType mojom_icon_type);
+
+COMPONENT_EXPORT(APP_UPDATE)
+apps::mojom::IconValuePtr ConvertIconValueToMojomIconValue(
+    std::unique_ptr<IconValue> icon_value);
+
+COMPONENT_EXPORT(APP_UPDATE)
+std::unique_ptr<IconValue> ConvertMojomIconValueToIconValue(
+    apps::mojom::IconValuePtr mojom_icon_value);
 
 }  // namespace apps
 

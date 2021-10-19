@@ -186,10 +186,11 @@ absl::optional<IconPurpose> GetIconPurpose(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-apps::mojom::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
-                                       int size_hint_in_dip,
-                                       apps::mojom::IconValuePtr iv,
-                                       gfx::ImageSkia mask_image) {
+std::unique_ptr<apps::IconValue> ApplyEffects(
+    apps::IconEffects icon_effects,
+    int size_hint_in_dip,
+    std::unique_ptr<apps::IconValue> iv,
+    gfx::ImageSkia mask_image) {
   base::AssertLongCPUWorkAllowed();
 
   extensions::ChromeAppIcon::ResizeFunction resize_function;
@@ -222,8 +223,9 @@ apps::mojom::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
                         &iv->uncompressed);
   }
 
-  if (!iv->uncompressed.isNull())
+  if (!iv->uncompressed.isNull()) {
     iv->uncompressed.MakeThreadSafe();
+  }
 
   return iv;
 }
@@ -295,8 +297,8 @@ AppIconLoader::~AppIconLoader() {
   }
 }
 
-void AppIconLoader::ApplyIconEffects(apps::IconEffects icon_effects,
-                                     apps::mojom::IconValuePtr iv) {
+void AppIconLoader::ApplyIconEffects(IconEffects icon_effects,
+                                     std::unique_ptr<IconValue> iv) {
   if (!iv || iv->uncompressed.isNull())
     return;
 
@@ -326,8 +328,8 @@ void AppIconLoader::ApplyIconEffects(apps::IconEffects icon_effects,
 #endif
 }
 
-void AppIconLoader::ApplyBadges(apps::IconEffects icon_effects,
-                                apps::mojom::IconValuePtr iv) {
+void AppIconLoader::ApplyBadges(IconEffects icon_effects,
+                                std::unique_ptr<IconValue> iv) {
   const bool from_bookmark = icon_effects & apps::IconEffects::kRoundCorners;
 
   bool app_launchable = true;
@@ -351,7 +353,7 @@ void AppIconLoader::ApplyBadges(apps::IconEffects icon_effects,
       size_hint_in_dip_, extensions::ChromeAppIcon::ResizeFunction(),
       app_launchable, from_bookmark, badge_type, &iv->uncompressed);
 
-  std::move(callback_).Run(std::move(iv));
+  std::move(callback_).Run(ConvertIconValueToMojomIconValue(std::move(iv)));
 }
 
 void AppIconLoader::LoadWebAppIcon(
@@ -723,8 +725,8 @@ void AppIconLoader::MaybeApplyEffectsAndComplete(const gfx::ImageSkia image) {
     return;
   }
 
-  apps::mojom::IconValuePtr iv = apps::mojom::IconValue::New();
-  iv->icon_type = ConvertIconTypeToMojomIconType(icon_type_);
+  std::unique_ptr<IconValue> iv = std::make_unique<IconValue>();
+  iv->icon_type = icon_type_;
   iv->uncompressed = image;
   iv->is_placeholder_icon = is_placeholder_icon_;
 
@@ -738,7 +740,7 @@ void AppIconLoader::MaybeApplyEffectsAndComplete(const gfx::ImageSkia image) {
     return;
   }
 
-  CompleteWithIconValue(std::move(iv));
+  CompleteWithIconValue(ConvertIconValueToMojomIconValue(std::move(iv)));
 }
 
 void AppIconLoader::CompleteWithCompressed(std::vector<uint8_t> data) {
@@ -747,11 +749,11 @@ void AppIconLoader::CompleteWithCompressed(std::vector<uint8_t> data) {
     MaybeLoadFallbackOrCompleteEmpty();
     return;
   }
-  apps::mojom::IconValuePtr iv = apps::mojom::IconValue::New();
-  iv->icon_type = apps::mojom::IconType::kCompressed;
+  std::unique_ptr<IconValue> iv = std::make_unique<IconValue>();
+  iv->icon_type = IconType::kCompressed;
   iv->compressed = std::move(data);
   iv->is_placeholder_icon = is_placeholder_icon_;
-  std::move(callback_).Run(std::move(iv));
+  std::move(callback_).Run(ConvertIconValueToMojomIconValue(std::move(iv)));
 }
 
 void AppIconLoader::CompleteWithUncompressed(apps::mojom::IconValuePtr iv) {

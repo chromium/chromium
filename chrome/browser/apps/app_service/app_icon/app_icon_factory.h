@@ -132,7 +132,7 @@ gfx::ImageSkia ConvertIconBitmapsToImageSkia(
 // desaturation to gray.
 void ApplyIconEffects(IconEffects icon_effects,
                       int size_hint_in_dip,
-                      apps::mojom::IconValuePtr iv,
+                      std::unique_ptr<IconValue> iv,
                       apps::mojom::Publisher::LoadIconCallback callback);
 
 // Loads an icon from an extension.

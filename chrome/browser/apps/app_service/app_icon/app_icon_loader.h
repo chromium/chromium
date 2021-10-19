@@ -83,11 +83,10 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   AppIconLoader(int size_hint_in_dip,
                 apps::mojom::Publisher::LoadIconCallback callback);
 
-  void ApplyIconEffects(apps::IconEffects icon_effects,
-                        apps::mojom::IconValuePtr iv);
+  void ApplyIconEffects(IconEffects icon_effects,
+                        std::unique_ptr<IconValue> iv);
 
-  void ApplyBadges(apps::IconEffects icon_effects,
-                   apps::mojom::IconValuePtr iv);
+  void ApplyBadges(IconEffects icon_effects, std::unique_ptr<IconValue> iv);
 
   void LoadWebAppIcon(const std::string& web_app_id,
                       const GURL& launch_url,

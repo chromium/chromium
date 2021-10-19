@@ -125,7 +125,8 @@ void OnArcAppIconCompletelyLoaded(
 
       if (icon_effects != apps::IconEffects::kNone) {
         apps::ApplyIconEffects(
-            icon_effects, size_hint_in_dip, std::move(iv),
+            icon_effects, size_hint_in_dip,
+            apps::ConvertMojomIconValueToIconValue(std::move(iv)),
             base::BindOnce(&UpdateIconImage, std::move(callback)));
         return;
       }

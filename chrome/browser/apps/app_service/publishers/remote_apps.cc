@@ -87,7 +87,6 @@ void RemoteApps::LoadIcon(const std::string& app_id,
                           LoadIconCallback callback) {
   DCHECK(icon_type != mojom::IconType::kCompressed)
       << "Remote app should not be shown in management";
-  mojom::IconValuePtr icon = mojom::IconValue::New();
 
   bool is_placeholder_icon = false;
   gfx::ImageSkia icon_image = delegate_->GetIcon(app_id);
@@ -97,11 +96,12 @@ void RemoteApps::LoadIcon(const std::string& app_id,
   }
 
   if (icon_image.isNull()) {
-    std::move(callback).Run(std::move(icon));
+    std::move(callback).Run(mojom::IconValue::New());
     return;
   }
 
-  icon->icon_type = icon_type;
+  std::unique_ptr<IconValue> icon = std::make_unique<IconValue>();
+  icon->icon_type = ConvertMojomIconTypeToIconType(icon_type);
   icon->uncompressed = icon_image;
   icon->is_placeholder_icon = is_placeholder_icon;
   IconEffects icon_effects = (icon_type == mojom::IconType::kStandard)
