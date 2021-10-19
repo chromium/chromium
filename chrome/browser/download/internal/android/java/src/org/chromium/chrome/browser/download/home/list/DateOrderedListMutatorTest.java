@@ -1198,7 +1198,6 @@ public class DateOrderedListMutatorTest {
 
     private DownloadManagerUiConfig createConfig() {
         return new DownloadManagerUiConfig.Builder()
-                .setUseNewDownloadPath(true)
                 .setSupportsGrouping(true)
                 .setShowPaginationHeaders(mAccessibilityMode)
                 .build();

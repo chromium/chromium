@@ -62,17 +62,15 @@ class DownloadManagerCoordinatorImpl
             Callback<Context> settingsLauncher, SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager, PrefService prefService, Tracker tracker,
             FaviconProvider faviconProvider, OfflineContentProvider provider,
-            LegacyDownloadProvider legacyProvider,
             DiscardableReferencePool discardableReferencePool) {
         mActivity = activity;
         mSettingsLauncher = settingsLauncher;
         mDeleteCoordinator = new DeleteUndoCoordinator(snackbarManager);
         mSelectionDelegate = new SelectionDelegate<ListItem>();
         mListCoordinator = new DateOrderedListCoordinator(mActivity, config,
-                exploreOfflineTabVisibilitySupplier, provider, legacyProvider,
-                mDeleteCoordinator::showSnackbar, mSelectionDelegate, this::notifyFilterChanged,
-                createDateOrderedListObserver(), modalDialogManager, prefService, faviconProvider,
-                discardableReferencePool);
+                exploreOfflineTabVisibilitySupplier, provider, mDeleteCoordinator::showSnackbar,
+                mSelectionDelegate, this::notifyFilterChanged, createDateOrderedListObserver(),
+                modalDialogManager, prefService, faviconProvider, discardableReferencePool);
         mToolbarCoordinator = new ToolbarCoordinator(mActivity, this, mListCoordinator,
                 mSelectionDelegate, config.isSeparateActivity, tracker);
 

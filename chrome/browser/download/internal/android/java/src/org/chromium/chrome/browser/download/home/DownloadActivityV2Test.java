@@ -177,8 +177,6 @@ public class DownloadActivityV2Test extends DummyUiChromeActivityTestCase {
         DownloadManagerUiConfig config = DownloadManagerUiConfigHelper.fromFlags()
                                                  .setOTRProfileID(null)
                                                  .setIsSeparateActivity(true)
-                                                 .setUseNewDownloadPath(true)
-                                                 .setUseNewDownloadPathThumbnails(true)
                                                  .build();
 
         mAppModalPresenter = new AppModalPresenter(getActivity());
@@ -194,7 +192,7 @@ public class DownloadActivityV2Test extends DummyUiChromeActivityTestCase {
         mDownloadCoordinator = new DownloadManagerCoordinatorImpl(getActivity(), config,
                 isPrefetchEnabledSupplier, settingsLauncher, mSnackbarManager, mModalDialogManager,
                 mPrefService, mTracker, faviconProvider, mStubbedOfflineContentProvider,
-                /* LegacyDownloadProvider */ null, mDiscardableReferencePool);
+                mDiscardableReferencePool);
         getActivity().setContentView(mDownloadCoordinator.getView());
 
         mDownloadCoordinator.updateForUrl(UrlConstants.DOWNLOADS_URL);

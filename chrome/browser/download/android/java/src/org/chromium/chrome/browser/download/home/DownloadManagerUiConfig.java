@@ -25,15 +25,6 @@ public class DownloadManagerUiConfig {
     /** Whether showing full width images should be supported. */
     public final boolean supportFullWidthImages;
 
-    /** Whether or not to use the legacy download path or use the new OfflineContentProvider. */
-    public final boolean useNewDownloadPath;
-
-    /**
-     * Whether or not to use the legacy download thumbnail path or use the new
-     * OfflineContentProvider.
-     */
-    public final boolean useNewDownloadPathThumbnails;
-
     /**
      * The in-memory thumbnail size in bytes.
      */
@@ -66,8 +57,6 @@ public class DownloadManagerUiConfig {
         isSeparateActivity = builder.mIsSeparateActivity;
         useGenericViewTypes = builder.mUseGenericViewTypes;
         supportFullWidthImages = builder.mSupportFullWidthImages;
-        useNewDownloadPath = builder.mUseNewDownloadPath;
-        useNewDownloadPathThumbnails = builder.mUseNewDownloadPathThumbnails;
         inMemoryThumbnailCacheSizeBytes = builder.mInMemoryThumbnailCacheSizeBytes;
         maxThumbnailScaleFactor = builder.mMaxThumbnailScaleFactor;
         justNowThresholdSeconds = builder.mJustNowThresholdSeconds;
@@ -89,8 +78,6 @@ public class DownloadManagerUiConfig {
         private boolean mIsSeparateActivity;
         private boolean mUseGenericViewTypes;
         private boolean mSupportFullWidthImages;
-        private boolean mUseNewDownloadPath;
-        private boolean mUseNewDownloadPathThumbnails;
         private int mInMemoryThumbnailCacheSizeBytes = IN_MEMORY_THUMBNAIL_CACHE_SIZE_BYTES;
         private float mMaxThumbnailScaleFactor = MAX_THUMBNAIL_SCALE_FACTOR;
         private long mJustNowThresholdSeconds = JUST_NOW_THRESHOLD_SECONDS;
@@ -121,16 +108,6 @@ public class DownloadManagerUiConfig {
 
         public Builder setSupportFullWidthImages(boolean supportFullWidthImages) {
             mSupportFullWidthImages = supportFullWidthImages;
-            return this;
-        }
-
-        public Builder setUseNewDownloadPath(boolean useNewDownloadPath) {
-            mUseNewDownloadPath = useNewDownloadPath;
-            return this;
-        }
-
-        public Builder setUseNewDownloadPathThumbnails(boolean useNewDownloadPathThumbnails) {
-            mUseNewDownloadPathThumbnails = useNewDownloadPathThumbnails;
             return this;
         }
 

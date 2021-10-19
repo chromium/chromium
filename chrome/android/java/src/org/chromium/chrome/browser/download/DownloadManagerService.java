@@ -135,7 +135,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         void onDownloadItemRemoved(String guid);
 
         /** Only for testing */
-        default void broadcastDownloadSuccessfulForTesting(DownloadInfo downloadInfo) {}
+        default void broadcastDownloadSuccessful(DownloadInfo downloadInfo) {}
     }
 
     @VisibleForTesting protected final List<String> mAutoResumableDownloadIds =
@@ -459,7 +459,7 @@ public class DownloadManagerService implements DownloadController.Observer,
     // For testing only.
     protected void broadcastDownloadSuccessful(DownloadInfo downloadInfo) {
         for (DownloadObserver observer : mDownloadObservers) {
-            observer.broadcastDownloadSuccessfulForTesting(downloadInfo);
+            observer.broadcastDownloadSuccessful(downloadInfo);
         }
     }
 

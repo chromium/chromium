@@ -26,11 +26,10 @@ public class DownloadManagerCoordinatorFactory {
             Callback<Context> settingsLauncher, SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager, PrefService prefService, Tracker tracker,
             FaviconProvider faviconProvider, OfflineContentProvider provider,
-            LegacyDownloadProvider legacyProvider,
             DiscardableReferencePool discardableReferencePool) {
         return new DownloadManagerCoordinatorImpl(activity, config,
                 exploreOfflineTabVisibilitySupplier, settingsLauncher, snackbarManager,
-                modalDialogManager, prefService, tracker, faviconProvider, provider, legacyProvider,
+                modalDialogManager, prefService, tracker, faviconProvider, provider,
                 discardableReferencePool);
     }
 }

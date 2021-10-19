@@ -19,7 +19,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.FaviconProvider;
-import org.chromium.chrome.browser.download.home.LegacyDownloadProvider;
 import org.chromium.chrome.browser.download.home.StableIds;
 import org.chromium.chrome.browser.download.home.empty.EmptyCoordinator;
 import org.chromium.chrome.browser.download.home.filter.FilterCoordinator;
@@ -100,7 +99,6 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
      * @param exploreOfflineTabVisiblitySupplier A supplier that indicates whether or not explore
      *         offline tab should be shown.
      * @param provider                  The {@link OfflineContentProvider} to visually represent.
-     * @param legacyProvider            A legacy version of a provider for downloads.
      * @param deleteController          A class to manage whether or not items can be deleted.
      * @param filterObserver            A {@link FilterCoordinator.Observer} that should be notified
      *                                  of filter changes.  This is meant to be used for external
@@ -113,8 +111,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
      */
     public DateOrderedListCoordinator(Context context, DownloadManagerUiConfig config,
             Supplier<Boolean> exploreOfflineTabVisibilitySupplier, OfflineContentProvider provider,
-            LegacyDownloadProvider legacyProvider, DeleteController deleteController,
-            SelectionDelegate<ListItem> selectionDelegate,
+            DeleteController deleteController, SelectionDelegate<ListItem> selectionDelegate,
             FilterCoordinator.Observer filterObserver,
             DateOrderedListObserver dateOrderedListObserver, ModalDialogManager modalDialogManager,
             PrefService prefService, FaviconProvider faviconProvider,
@@ -126,8 +123,8 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
         mListView =
                 new DateOrderedListView(context, config, decoratedModel, dateOrderedListObserver);
         mRenameDialogManager = new RenameDialogManager(context, modalDialogManager);
-        mMediator = new DateOrderedListMediator(provider, legacyProvider, faviconProvider,
-                this::startShareIntent, deleteController, this::startRename, selectionDelegate,
+        mMediator = new DateOrderedListMediator(provider, faviconProvider, this::startShareIntent,
+                deleteController, this::startRename, selectionDelegate,
                 DownloadLaterDialogHelper.create(context, modalDialogManager, prefService), config,
                 dateOrderedListObserver, model, discardableReferencePool);
 

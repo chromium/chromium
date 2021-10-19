@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper.So
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.FaviconProvider;
 import org.chromium.chrome.browser.download.home.JustNowProvider;
-import org.chromium.chrome.browser.download.home.LegacyDownloadProvider;
 import org.chromium.chrome.browser.download.home.OfflineItemSource;
 import org.chromium.chrome.browser.download.home.filter.DeleteUndoOfflineItemFilter;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
@@ -32,7 +31,6 @@ import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserve
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
 import org.chromium.chrome.browser.download.home.filter.SearchOfflineItemFilter;
 import org.chromium.chrome.browser.download.home.filter.TypeOfflineItemFilter;
-import org.chromium.chrome.browser.download.home.glue.OfflineContentProviderGlue;
 import org.chromium.chrome.browser.download.home.glue.ThumbnailRequestGlue;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DateOrderedListObserver;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DeleteController;
@@ -46,9 +44,11 @@ import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider.ThumbnailRequest;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProviderImpl;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemShareInfo;
+import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.components.offline_items_collection.VisualsCallback;
 
 import java.io.Closeable;
@@ -99,7 +99,7 @@ class DateOrderedListMediator {
 
     private final Handler mHandler = new Handler();
 
-    private final OfflineContentProviderGlue mProvider;
+    private final OfflineContentProvider mProvider;
     private final FaviconProvider mFaviconProvider;
     private final ShareController mShareController;
     private final ListItemModel mModel;
@@ -152,7 +152,6 @@ class DateOrderedListMediator {
      * Creates an instance of a DateOrderedListMediator that will push {@code provider} into
      * {@code model}.
      * @param provider                 The {@link OfflineContentProvider} to visually represent.
-     * @param legacyProvider           A legacy version of a provider for downloads.
      * @param faviconProvider          The {@link FaviconProvider} to handle favicon requests.
      * @param deleteController         A class to manage whether or not items can be deleted.
      * @param shareController          A class responsible for sharing downloaded item {@link
@@ -165,8 +164,7 @@ class DateOrderedListMediator {
      * @param discardableReferencePool A {@linK DiscardableReferencePool} reference to use for large
      *                                 objects (e.g. bitmaps) in the UI.
      */
-    public DateOrderedListMediator(OfflineContentProvider provider,
-            LegacyDownloadProvider legacyProvider, FaviconProvider faviconProvider,
+    public DateOrderedListMediator(OfflineContentProvider provider, FaviconProvider faviconProvider,
             ShareController shareController, DeleteController deleteController,
             RenameController renameController, SelectionDelegate<ListItem> selectionDelegate,
             DownloadLaterDialogHelper downloadLaterDialogHelper, DownloadManagerUiConfig config,
@@ -185,7 +183,7 @@ class DateOrderedListMediator {
         // TODO(shaktisahu): Look into replacing mutator chain by
         // sorter -> label adder -> property setter -> paginator -> model
 
-        mProvider = new OfflineContentProviderGlue(provider, legacyProvider, config);
+        mProvider = provider;
         mFaviconProvider = faviconProvider;
         mShareController = shareController;
         mModel = model;
@@ -237,7 +235,6 @@ class DateOrderedListMediator {
     /** Tears down this mediator. */
     public void destroy() {
         mSource.destroy();
-        mProvider.destroy();
         mThumbnailProvider.destroy();
         mDownloadLaterDialogHelper.destroy();
     }
@@ -316,22 +313,24 @@ class DateOrderedListMediator {
 
     private void onOpenItem(OfflineItem item) {
         UmaUtils.recordItemAction(ViewAction.OPEN);
-        mProvider.openItem(item);
+        OpenParams openParams = new OpenParams(LaunchLocation.DOWNLOAD_HOME);
+        openParams.openInIncognito = OTRProfileID.isOffTheRecord(mUiConfig.otrProfileID);
+        mProvider.openItem(openParams, item.id);
     }
 
     private void onPauseItem(OfflineItem item) {
         UmaUtils.recordItemAction(ViewAction.PAUSE);
-        mProvider.pauseDownload(item);
+        mProvider.pauseDownload(item.id);
     }
 
     private void onResumeItem(OfflineItem item) {
         UmaUtils.recordItemAction(ViewAction.RESUME);
-        mProvider.resumeDownload(item, true /* hasUserGesture */);
+        mProvider.resumeDownload(item.id, true /* hasUserGesture */);
     }
 
     private void onCancelItem(OfflineItem item) {
         UmaUtils.recordItemAction(ViewAction.CANCEL);
-        mProvider.cancelDownload(item);
+        mProvider.cancelDownload(item.id);
     }
 
     private void onDeleteItem(OfflineItem item) {
@@ -347,7 +346,7 @@ class DateOrderedListMediator {
     private void onRenameItem(OfflineItem item) {
         UmaUtils.recordItemAction(ViewAction.MENU_RENAME);
         mRenameController.rename(item.title, (newName, renameCallback) -> {
-            mProvider.renameItem(item, newName, renameCallback);
+            mProvider.renameItem(item.id, newName, renameCallback);
         });
     }
 
@@ -358,7 +357,7 @@ class DateOrderedListMediator {
         mDownloadLaterDialogHelper.showChangeScheduleDialog(
                 item.schedule, Source.DOWNLOAD_HOME, (newSchedule) -> {
                     if (newSchedule == null) return;
-                    mProvider.changeSchedule(item, newSchedule);
+                    mProvider.changeSchedule(item.id, newSchedule);
                 });
     }
 
@@ -375,11 +374,7 @@ class DateOrderedListMediator {
         mDeleteController.canDelete(items, delete -> {
             if (delete) {
                 for (OfflineItem item : itemsToDelete) {
-                    mProvider.removeItem(item);
-
-                    // Remove and have a single decision path for cleaning up thumbnails when the
-                    // glue layer is no longer needed.
-                    mProvider.removeVisualsForItem(mThumbnailProvider, item.id);
+                    mProvider.removeItem(item.id);
                 }
             } else {
                 mDeleteUndoFilter.removePendingDeletions(itemsToDelete);
@@ -392,7 +387,7 @@ class DateOrderedListMediator {
 
         final Collection<Pair<OfflineItem, OfflineItemShareInfo>> shareInfo = new ArrayList<>();
         for (OfflineItem item : items) {
-            mProvider.getShareInfoForItem(item, (id, info) -> {
+            mProvider.getShareInfoForItem(item.id, (id, info) -> {
                 shareInfo.add(Pair.create(item, info));
 
                 // When we've gotten callbacks for all items, create and share the intent.

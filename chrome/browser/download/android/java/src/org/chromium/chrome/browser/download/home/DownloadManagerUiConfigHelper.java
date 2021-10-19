@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.download.home;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-
 /** Helper class to build default or base {@link DownloadManagerUiConfig.Builder} instances. */
 public class DownloadManagerUiConfigHelper {
     private DownloadManagerUiConfigHelper() {}
@@ -13,8 +11,6 @@ public class DownloadManagerUiConfigHelper {
     /** Creates a {@link DownloadManagerUiConfig.Builder} based on feature flags. */
     public static DownloadManagerUiConfig.Builder fromFlags() {
         return new DownloadManagerUiConfig.Builder()
-                .setUseNewDownloadPath(ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER))
                 .setSupportsGrouping(true);
     }
 }
