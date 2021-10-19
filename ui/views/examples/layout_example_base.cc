@@ -63,6 +63,8 @@ std::unique_ptr<Textfield> CreateCommonTextfield(
   textfield->SetDefaultWidthInChars(3);
   textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_NUMBER);
   textfield->SetText(u"0");
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  textfield->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
   textfield->set_controller(container);
   return textfield;
 }
@@ -201,6 +203,8 @@ Combobox* LayoutExampleBase::CreateAndAddCombobox(
   auto* const combobox = row->AddChildView(std::make_unique<Combobox>(
       std::make_unique<ExampleComboboxModel>(items, count)));
   combobox->SetCallback(std::move(combobox_callback));
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  combobox->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
   return combobox;
 }
 

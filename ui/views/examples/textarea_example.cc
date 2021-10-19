@@ -28,6 +28,8 @@ void TextareaExample::CreateExampleView(View* container) {
       u"culpa qui officia deserunt mollit anim id est laborum.";
   auto textarea = std::make_unique<Textarea>();
   textarea->SetText(kLongText);
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  textarea->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
   container->SetLayoutManager(std::make_unique<views::FillLayout>());
   container->AddChildView(std::move(textarea));
 }

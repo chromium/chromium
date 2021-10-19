@@ -132,6 +132,8 @@ Combobox* TextExample::AddCombobox(GridLayout* layout,
       kNumColumns - 1, 1);
   combobox->SetCallback(
       base::BindRepeating(combobox_callback, base::Unretained(this)));
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  combobox->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
   return combobox;
 }
 

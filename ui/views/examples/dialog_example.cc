@@ -153,6 +153,8 @@ void DialogExample::CreateExampleView(View* container) {
   mode_ = layout->AddView(std::make_unique<Combobox>(&mode_model_));
   mode_->SetCallback(base::BindRepeating(&DialogExample::OnPerformAction,
                                          base::Unretained(this)));
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  mode_->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
   mode_->SetSelectedIndex(ui::MODAL_TYPE_CHILD);
 
   StartRowWithLabel(layout, "Bubble");
@@ -190,6 +192,8 @@ void DialogExample::StartTextfieldRow(GridLayout* layout,
   auto textfield = std::make_unique<Textfield>();
   textfield->set_controller(this);
   textfield->SetText(base::ASCIIToUTF16(value));
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  textfield->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
   *member = layout->AddView(std::move(textfield));
 }
 
@@ -199,6 +203,8 @@ void DialogExample::AddCheckbox(GridLayout* layout, Checkbox** member) {
   auto checkbox = std::make_unique<Checkbox>(
       std::u16string(), base::BindRepeating(callback, base::Unretained(this)));
   checkbox->SetChecked(true);
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  checkbox->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
   *member = layout->AddView(std::move(checkbox));
 }
 

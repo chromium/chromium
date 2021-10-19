@@ -51,21 +51,38 @@ TextfieldExample::~TextfieldExample() = default;
 void TextfieldExample::CreateExampleView(View* container) {
   auto name = std::make_unique<Textfield>();
   name->set_controller(this);
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  name->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+
   auto password = std::make_unique<Textfield>();
   password->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   password->SetPlaceholderText(
       GetStringUTF16(IDS_TEXTFIELD_PASSWORD_PLACEHOLDER));
   password->set_controller(this);
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  password->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+
   auto disabled = std::make_unique<Textfield>();
   disabled->SetEnabled(false);
   disabled->SetText(GetStringUTF16(IDS_TEXTFIELD_DISABLED_PLACEHOLDER));
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  disabled->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+
   auto read_only = std::make_unique<Textfield>();
   read_only->SetReadOnly(true);
   read_only->SetText(GetStringUTF16(IDS_TEXTFFIELD_READ_ONLY_PLACEHOLDER));
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  read_only->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+
   auto invalid = std::make_unique<Textfield>();
   invalid->SetInvalid(true);
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  invalid->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+
   auto rtl = std::make_unique<Textfield>();
   rtl->ChangeTextDirectionAndLayoutAlignment(base::i18n::RIGHT_TO_LEFT);
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  rtl->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
 
   GridLayout* layout =
       container->SetLayoutManager(std::make_unique<views::GridLayout>());

@@ -176,6 +176,8 @@ void MultilineExample::CreateExampleView(View* container) {
   auto textfield = std::make_unique<Textfield>();
   textfield->set_controller(this);
   textfield->SetText(kTestString);
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  textfield->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
 
   GridLayout* layout =
       container->SetLayoutManager(std::make_unique<views::GridLayout>());

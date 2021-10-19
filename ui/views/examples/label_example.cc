@@ -167,6 +167,8 @@ void LabelExample::AddCustomLabel(View* container) {
       u"this custom label.");
   textfield->SetEditableSelectionRange(gfx::Range());
   textfield->set_controller(this);
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  textfield->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
   textfield_ = layout->AddView(std::move(textfield));
 
   alignment_ =
@@ -225,6 +227,8 @@ Combobox* LabelExample::AddCombobox(GridLayout* layout,
       std::make_unique<ExampleComboboxModel>(strings, count));
   combobox->SetSelectedIndex(0);
   combobox->SetCallback(base::BindRepeating(function, base::Unretained(this)));
+  // TODO(pbos): Figure out a reasonable accessible name here.
+  combobox->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
   return layout->AddView(std::move(combobox));
 }
 

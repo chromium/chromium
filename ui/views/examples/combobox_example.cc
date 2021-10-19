@@ -55,12 +55,16 @@ void ComboboxExample::CreateExampleView(View* container) {
                   .CopyAddressTo(&combobox_)
                   .SetOwnedModel(std::make_unique<ComboboxModelExample>())
                   .SetSelectedIndex(3)
+                  // TODO(pbos): Figure out a reasonable accessible name here.
+                  .SetAccessibleName(u"TODO: Add a reasonable Accessible Name")
                   .SetCallback(base::BindRepeating(
                       &ComboboxExample::ValueChanged, base::Unretained(this))),
               Builder<Combobox>()
                   .SetOwnedModel(std::make_unique<ComboboxModelExample>())
                   .SetEnabled(false)
                   .SetSelectedIndex(4)
+                  // TODO(pbos): Figure out a reasonable accessible name here.
+                  .SetAccessibleName(u"TODO: Add a reasonable Accessible Name")
                   .SetCallback(base::BindRepeating(
                       &ComboboxExample::ValueChanged, base::Unretained(this))))
           .Build();

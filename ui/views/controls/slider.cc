@@ -30,6 +30,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -81,6 +82,10 @@ Slider::Slider(SliderListener* listener) : listener_(listener) {
 #else
   SetFocusBehavior(FocusBehavior::ALWAYS);
 #endif
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks, but this focusable View needs to
+  // add a name so that the screen reader knows what to announce.
+  SetProperty(views::kSkipAccessibilityPaintChecks, true);
 
   SchedulePaint();
 }
