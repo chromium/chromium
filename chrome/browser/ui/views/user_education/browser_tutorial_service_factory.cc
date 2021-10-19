@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/user_education/tutorial/tutorial_service_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/user_education/tutorial_bubble_factory_views.h"
 #include "chrome/common/chrome_constants.h"
@@ -90,15 +91,31 @@ void BrowserTutorialRegistry::RegisterTutorials() {
         absl::nullopt,
         u"Right Click on a Tab and select \"Add Tab To new Group\".",
         ui::InteractionSequence::StepType::kShown,
-        TabStrip::kTabStripIdentifier, TutorialDescription::Step::Arrow::TOP);
+        TabStrip::kTabStripIdentifier, TutorialDescription::Step::Arrow::TOP,
+        absl::nullopt);
     description->steps.emplace_back(step1);
 
     TutorialDescription::Step step2(
         absl::nullopt, u"Select \"Enter a name for your Tab Group\".",
         ui::InteractionSequence::StepType::kShown,
         TabGroupEditorBubbleView::kEditorBubbleIdentifier,
-        TutorialDescription::Step::Arrow::CENTER_HORIZONTAL);
-    description->steps.emplace_back(step2);
+        TutorialDescription::Step::Arrow::CENTER_HORIZONTAL,
+        false /*must_remain_visible*/);
+    description->steps.emplace_back(std::move(step2));
+
+    TutorialDescription::Step step3(
+        absl::nullopt, absl::nullopt,
+        ui::InteractionSequence::StepType::kHidden,
+        TabGroupEditorBubbleView::kEditorBubbleIdentifier,
+        TutorialDescription::Step::Arrow::NONE, false /*must_remain_visible*/);
+    description->steps.emplace_back(std::move(step3));
+
+    TutorialDescription::Step step4(
+        absl::nullopt, u"Congratulations, you've made your first tab group.",
+        ui::InteractionSequence::StepType::kShown,
+        TabGroupHeader::kTabGroupHeaderIdentifier,
+        TutorialDescription::Step::Arrow::TOP, absl::nullopt);
+    description->steps.emplace_back(std::move(step4));
 
     AddTutorial("Tab Group Tutorial", *description);
   }

@@ -40,15 +40,19 @@ bool TutorialService::StartTutorialImpl(std::unique_ptr<Tutorial> tutorial) {
 void TutorialService::AbortTutorial() {
   // TODO (dpenning): Add in hooks to listen for abort
   running_tutorial_.reset();
+  currently_displayed_bubble_.reset();
 }
 
 void TutorialService::CompleteTutorial() {
   // TODO (dpenning): Add in hooks to listen for complete
   running_tutorial_.reset();
+
+  // TODO (dpenning): decide what to do with the currently displayed bubble, we
+  // want it to stick around for a while, but we also want to cleanup the
+  // tutorial at some point.
 }
 
 void TutorialService::SetCurrentBubble(std::unique_ptr<TutorialBubble> bubble) {
-  HideCurrentBubbleIfShowing();
   currently_displayed_bubble_ = std::move(bubble);
 }
 

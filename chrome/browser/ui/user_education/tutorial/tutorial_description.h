@@ -36,9 +36,11 @@ struct TutorialDescription {
          absl::optional<std::u16string> body_text_,
          ui::InteractionSequence::StepType step_type_,
          ui::ElementIdentifier element_id_,
-         Arrow arrow_);
-    ~Step();
+         Arrow arrow_,
+         absl::optional<bool> must_remain_visible_ = absl::nullopt);
     Step(const Step& step);
+    Step& operator=(const Step& step) = default;
+    ~Step();
 
     absl::optional<std::u16string> title_text;
 
@@ -53,6 +55,13 @@ struct TutorialDescription {
 
     // the positioning of the bubble arrow
     Arrow arrow;
+
+    // Should the element remain visible through the entire step, this should be
+    // set to false for hidden steps and for shown steps that precede hidden
+    // steps on the same element. if left empty the interaction sequence will
+    // decide what its value should be based on the generated
+    // InteractionSequence::StepBuilder
+    absl::optional<bool> must_remain_visible;
 
     // returns true iff all of the required parameters exist to display a
     // bubble.
