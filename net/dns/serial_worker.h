@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -45,10 +46,15 @@ class NET_EXPORT_PRIVATE SerialWorker {
   // then passed back to the origin thread on completion. Expected usage is to
   // store any parameters, results, and helper objects in the `WorkItem` and
   // read results from it when passed back to the origin thread.
-  class WorkItem {
+  //
+  // `SerialWorker` calls `FollowupWork()` *on the origin thread* after calling
+  // `DoWork()` on the `ThreadPool` to asynchronously handle any work that must
+  // be part of the serialization but that cannot run on a worker thread.
+  class NET_EXPORT_PRIVATE WorkItem {
    public:
     virtual ~WorkItem() = default;
     virtual void DoWork() = 0;
+    virtual void FollowupWork(base::OnceClosure closure);
   };
 
   SerialWorker();
@@ -89,8 +95,13 @@ class NET_EXPORT_PRIVATE SerialWorker {
     kPending,  // |WorkNow| while WORKING, must re-do work
   };
 
-  // Called on the the origin thread after |DoWork| completes.
-  void OnWorkJobFinished(std::unique_ptr<WorkItem> work_item);
+  // Called on the origin thread after `WorkItem::DoWork()` completes.
+  void OnDoWorkFinished(std::unique_ptr<WorkItem> work_item);
+
+  // Called on the origin thread after `WorkItem::FollowupWork()` completes.
+  void OnFollowupWorkFinished(std::unique_ptr<WorkItem> work_item);
+
+  void RerunWork(std::unique_ptr<WorkItem> work_item);
 
   State state_;
 
