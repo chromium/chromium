@@ -249,8 +249,8 @@ class FieldTrialTest : public ::testing::Test {
     EXPECT_TRUE(IsCrashingSubTestOutput(output))
         << "Did not find crash signals in output:\n"
         << output;
-    // TODO(crbug/1259550): Remove DLOG once resolved.
-    DLOG(WARNING) << "output: " << output;
+    // TODO(crbug/1259550): Remove LOG once resolved.
+    LOG(ERROR) << "output: " << output;
   }
 
   std::unique_ptr<PrefService> LoadLocalState(const base::FilePath& path) {
