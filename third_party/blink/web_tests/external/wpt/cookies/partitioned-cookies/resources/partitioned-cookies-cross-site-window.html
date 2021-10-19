@@ -21,11 +21,23 @@ test(() => {
 
 // Test that the request to the parent window's origin does not contain the
 // partitioned cookie.
-testHttpPartitionedCookie({
+testHttpPartitionedCookies({
   origin,
-  cookieName: '__Host-pchttp',
+  cookieNames: ['__Host-pchttp', '__Host-pcdom'],
   expectsCookie: false,
 });
+
+promise_test(async t => {
+  // Create a cross-site <iframe> which embeds the cookies' origin into this
+  // page.
+  const iframe = document.createElement('iframe');
+  const url = new URL(
+      '/cookies/partitioned-cookies/resources/partitioned-cookies-cross-site-embed.html', origin);
+  iframe.src = String(url);
+  document.body.appendChild(iframe);
+
+  fetch_tests_from_window(iframe.contentWindow);
+}, 'Opening embedded cookie site frame');
 
 </script>
 </body>

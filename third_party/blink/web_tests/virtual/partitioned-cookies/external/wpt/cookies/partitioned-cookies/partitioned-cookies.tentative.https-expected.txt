@@ -1,7 +1,10 @@
 This is a testharness.js-based test.
 PASS Test partitioned cookies
-PASS HTTP partitioned cookie on the top-level site it was created in
+PASS Partitioned cookies accessible on the top-level site they are created in via HTTP
+PASS Partitioned cookies accessible on the top-level site they are created in via DOM
 PASS Cross-site window opened correctly
-PASS HTTP partitioned cookie on a different top-level site
+PASS Partitioned cookies are not accessible on a different top-level site via HTTP
+PASS Opening embedded cookie site frame
+PASS Partitioned cookies are not accessible on a different top-level site via DOM
 Harness: the test ran to completion.
 

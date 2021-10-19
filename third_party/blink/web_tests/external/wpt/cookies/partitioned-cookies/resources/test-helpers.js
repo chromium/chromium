@@ -3,28 +3,42 @@
 //
 // If |expectsCookie| is true, then the test cookie should be present in the
 // request.
-function testHttpPartitionedCookie({origin, cookieName, expectsCookie}) {
+function testHttpPartitionedCookies({origin, cookieNames, expectsCookie}) {
   promise_test(async () => {
     const resp = await credFetch(`${origin}/cookies/resources/list.py`);
     const cookies = await resp.json();
-    assert_equals(
-        cookies.hasOwnProperty(cookieName), expectsCookie,
-        getPartitionedCookieAssertDesc(expectsCookie));
-  }, getHttpPartitionedCookieTestName(expectsCookie));
+    for (const cookieName of cookieNames) {
+      assert_equals(
+          cookies.hasOwnProperty(cookieName), expectsCookie,
+          getPartitionedCookieAssertDesc(expectsCookie, cookieName));
+    }
+  }, getPartitionedCookieTestName(expectsCookie, 'HTTP'));
 }
 
-function getHttpPartitionedCookieTestName(expectsCookie) {
+function getPartitionedCookieTestName(expectsCookie, cookieType) {
   if (expectsCookie) {
-    return 'HTTP partitioned cookie on the top-level site it was created in';
+    return 'Partitioned cookies accessible on the top-level site they are ' +
+        `created in via ${cookieType}`;
   }
-  return 'HTTP partitioned cookie on a different top-level site';
+  return 'Partitioned cookies are not accessible on a different top-level ' +
+      `site via ${cookieType}`;
 }
 
-function getPartitionedCookieAssertDesc(expectsCookie) {
+function getPartitionedCookieAssertDesc(expectsCookie, cookieName) {
   if (expectsCookie) {
-    return 'Expected partitioned cookie to be available on the top-level ' +
-        'site it was created in';
+    return `Expected ${cookieName} to be available on the top-level site it ` +
+        'was created in';
   }
-  return 'Expected the partitioned cookie to not be available on a ' +
-      'different top-level site';
+  return `Expected ${cookieName} to not be available on a different ` +
+      'top-level site';
+}
+
+function testDomPartitionedCookies({cookieNames, expectsCookie}) {
+  test(() => {
+    for (const cookieName of cookieNames) {
+      assert_equals(
+          document.cookie.includes(cookieName), expectsCookie,
+          getPartitionedCookieAssertDesc(expectsCookie, cookieName));
+    }
+  }, getPartitionedCookieTestName(expectsCookie, 'DOM'));
 }
