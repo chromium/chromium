@@ -52,10 +52,16 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 }
 }  // namespace
 
+#if !TARGET_OS_MACCATALYST
 @interface PopupMenuCoordinator () <PopupMenuCommands,
                                     PopupMenuPresenterDelegate,
                                     UIPopoverPresentationControllerDelegate,
                                     UISheetPresentationControllerDelegate>
+#else
+@interface PopupMenuCoordinator () <PopupMenuCommands,
+                                    PopupMenuPresenterDelegate,
+                                    UIPopoverPresentationControllerDelegate>
+#endif
 
 // Presenter for the popup menu, managing the animations.
 @property(nonatomic, strong) PopupMenuPresenter* presenter;
@@ -291,6 +297,7 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   tableViewController.delegate = self.actionHandler;
 
+#if !TARGET_OS_MACCATALYST
   if (type == PopupMenuTypeToolsMenu && IsNewOverflowMenuEnabled()) {
     if (@available(iOS 15, *)) {
       self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
@@ -333,6 +340,7 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
       return;
     }
   }
+#endif
 
   self.presenter = [[PopupMenuPresenter alloc] init];
   self.presenter.baseViewController = self.baseViewController;
