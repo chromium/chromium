@@ -154,25 +154,13 @@ TEST_F(InstallableManagerUnitTest, ManifestSupportsImageSVG) {
   // If the type is null, the icon src will be checked instead.
   manifest->icons[0].type.clear();
   manifest->icons[0].src = GURL("http://example.com/icon.svg");
-// TODO(https://crbug.com/578122): Add SVG support for Android.
-#if defined(OS_ANDROID)
-  EXPECT_FALSE(IsManifestValid(*manifest));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
-#else
   EXPECT_TRUE(IsManifestValid(*manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-#endif
 
   // Capital file extension is also permissible.
   manifest->icons[0].src = GURL("http://example.com/icon.SVG");
-// TODO(https://crbug.com/578122): Add SVG support for Android.
-#if defined(OS_ANDROID)
-  EXPECT_FALSE(IsManifestValid(*manifest));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
-#else
   EXPECT_TRUE(IsManifestValid(*manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-#endif
 }
 
 TEST_F(InstallableManagerUnitTest, ManifestSupportsImageWebP) {

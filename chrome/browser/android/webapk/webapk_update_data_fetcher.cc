@@ -179,7 +179,8 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),
-      url::Origin::Create(last_fetched_url_), urls,
+      web_contents()->GetWeakPtr(), url::Origin::Create(last_fetched_url_),
+      urls,
       base::BindOnce(&WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes,
                      weak_ptr_factory_.GetWeakPtr()));
 }

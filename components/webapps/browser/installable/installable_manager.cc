@@ -127,10 +127,9 @@ struct ImageTypeDetails {
 
 constexpr ImageTypeDetails kSupportedImageTypes[] = {
     {".png", "image/png"},
-// TODO(https://crbug.com/578122): Add SVG support for Android.
+    {".svg", "image/svg+xml"},
 // TODO(https://crbug.com/466958): Add WebP support for Android.
 #if !defined(OS_ANDROID)
-    {".svg", "image/svg+xml"},
     {".webp", "image/webp"},
 #endif
 };

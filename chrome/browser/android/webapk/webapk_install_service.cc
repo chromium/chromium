@@ -55,7 +55,8 @@ void WebApkInstallService::InstallAsync(
   // installation may take more than 10 seconds so there is a chance that the
   // WebContents has been destroyed before the install is finished.
   WebApkInstaller::InstallAsync(
-      browser_context_, shortcut_info, primary_icon, is_primary_icon_maskable,
+      browser_context_, web_contents, shortcut_info, primary_icon,
+      is_primary_icon_maskable,
       base::BindOnce(&WebApkInstallService::OnFinishedInstall,
                      weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
                      shortcut_info, primary_icon, is_primary_icon_maskable));

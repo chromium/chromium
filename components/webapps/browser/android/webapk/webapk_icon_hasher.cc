@@ -11,12 +11,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/data_url.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/smhasher/src/MurmurHash2.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace webapps {
 namespace {
@@ -63,6 +66,7 @@ void OnAllMurmur2Hashes(
 // static
 void WebApkIconHasher::DownloadAndComputeMurmur2Hash(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    base::WeakPtr<content::WebContents> web_contents,
     const url::Origin& request_initiator,
     const std::set<GURL>& icon_urls,
     Murmur2HashMultipleCallback callback) {
@@ -77,7 +81,7 @@ void WebApkIconHasher::DownloadAndComputeMurmur2Hash(
   for (const auto& icon_url : icon_urls) {
     // |hashes| is owned by |barrier_closure|.
     DownloadAndComputeMurmur2HashWithTimeout(
-        url_loader_factory, request_initiator, icon_url,
+        url_loader_factory, web_contents, request_initiator, icon_url,
         kDownloadTimeoutInMilliseconds,
         base::BindOnce(&OnMurmur2Hash, &icons[icon_url.spec()],
                        barrier_closure));
@@ -87,6 +91,7 @@ void WebApkIconHasher::DownloadAndComputeMurmur2Hash(
 // static
 void WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    base::WeakPtr<content::WebContents> web_contents,
     const url::Origin& request_initiator,
     const GURL& icon_url,
     int timeout_ms,
@@ -111,12 +116,14 @@ void WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
   }
 
   // The icon hasher will delete itself when it is done.
-  new WebApkIconHasher(url_loader_factory, request_initiator, icon_url,
-                       timeout_ms, std::move(callback));
+  new WebApkIconHasher(url_loader_factory, std::move(web_contents),
+                       request_initiator, icon_url, timeout_ms,
+                       std::move(callback));
 }
 
 WebApkIconHasher::WebApkIconHasher(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    base::WeakPtr<content::WebContents> web_contents,
     const url::Origin& request_initiator,
     const GURL& icon_url,
     int timeout_ms,
@@ -142,18 +149,46 @@ WebApkIconHasher::WebApkIconHasher(
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory,
       base::BindOnce(&WebApkIconHasher::OnSimpleLoaderComplete,
-                     base::Unretained(this)));
+                     base::Unretained(this), std::move(web_contents),
+                     timeout_ms));
 }
 
 WebApkIconHasher::~WebApkIconHasher() {}
 
 void WebApkIconHasher::OnSimpleLoaderComplete(
+    base::WeakPtr<content::WebContents> web_contents,
+    int timeout_ms,
     std::unique_ptr<std::string> response_body) {
   download_timeout_timer_.Stop();
 
   // Check for non-empty body in case of HTTP 204 (no content) response.
   if (!response_body || response_body->empty()) {
     RunCallback({});
+    return;
+  }
+
+  // If it's an SVG file, decode the image using Blink's image decoder.
+  auto simple_url_loader = std::move(simple_url_loader_);
+  if (simple_url_loader->ResponseInfo() &&
+      simple_url_loader->ResponseInfo()->mime_type == "image/svg+xml") {
+    if (!web_contents) {
+      RunCallback({});
+      return;
+    }
+
+    download_timeout_timer_.Start(
+        FROM_HERE, base::Milliseconds(timeout_ms),
+        base::BindOnce(&WebApkIconHasher::OnDownloadTimedOut,
+                       base::Unretained(this)));
+
+    web_contents->DownloadImage(
+        simple_url_loader->GetFinalURL(),
+        false,        // is_favicon
+        gfx::Size(),  // no preferred size
+        0,            // no max size
+        false,        // normal cache policy
+        base::BindOnce(&WebApkIconHasher::OnImageDownloaded,
+                       base::Unretained(this), std::move(response_body)));
     return;
   }
 
@@ -164,6 +199,29 @@ void WebApkIconHasher::OnSimpleLoaderComplete(
   Icon icon;
   icon.unsafe_data = std::move(*response_body);
   icon.hash = ComputeMurmur2Hash(icon.unsafe_data);
+  RunCallback(std::move(icon));
+}
+
+void WebApkIconHasher::OnImageDownloaded(
+    std::unique_ptr<std::string> response_body,
+    int id,
+    int http_status_code,
+    const GURL& url,
+    const std::vector<SkBitmap>& bitmaps,
+    const std::vector<gfx::Size>& sizes) {
+  download_timeout_timer_.Stop();
+
+  if (bitmaps.empty()) {
+    RunCallback({});
+    return;
+  }
+
+  std::vector<unsigned char> png_bytes;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmaps[0], false, &png_bytes);
+
+  Icon icon;
+  icon.unsafe_data = std::string(png_bytes.begin(), png_bytes.end());
+  icon.hash = ComputeMurmur2Hash(*response_body);
   RunCallback(std::move(icon));
 }
 

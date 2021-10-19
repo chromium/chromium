@@ -46,6 +46,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -127,14 +128,15 @@ WebApkInstaller::~WebApkInstaller() {
 
 // static
 void WebApkInstaller::InstallAsync(content::BrowserContext* context,
+                                   content::WebContents* web_contents,
                                    const webapps::ShortcutInfo& shortcut_info,
                                    const SkBitmap& primary_icon,
                                    bool is_primary_icon_maskable,
                                    FinishCallback finish_callback) {
   // The installer will delete itself when it is done.
   WebApkInstaller* installer = new WebApkInstaller(context);
-  installer->InstallAsync(shortcut_info, primary_icon, is_primary_icon_maskable,
-                          std::move(finish_callback));
+  installer->InstallAsync(web_contents, shortcut_info, primary_icon,
+                          is_primary_icon_maskable, std::move(finish_callback));
 }
 
 // static
@@ -149,12 +151,13 @@ void WebApkInstaller::UpdateAsync(content::BrowserContext* context,
 // static
 void WebApkInstaller::InstallAsyncForTesting(
     WebApkInstaller* installer,
+    content::WebContents* web_contents,
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
     FinishCallback callback) {
-  installer->InstallAsync(shortcut_info, primary_icon, is_primary_icon_maskable,
-                          std::move(callback));
+  installer->InstallAsync(web_contents, shortcut_info, primary_icon,
+                          is_primary_icon_maskable, std::move(callback));
 }
 
 // static
@@ -286,12 +289,14 @@ void WebApkInstaller::CreateJavaRef() {
       Java_WebApkInstaller_create(env, reinterpret_cast<intptr_t>(this)));
 }
 
-void WebApkInstaller::InstallAsync(const webapps::ShortcutInfo& shortcut_info,
+void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
+                                   const webapps::ShortcutInfo& shortcut_info,
                                    const SkBitmap& primary_icon,
                                    bool is_primary_icon_maskable,
                                    FinishCallback finish_callback) {
   install_duration_timer_ = std::make_unique<base::ElapsedTimer>();
 
+  web_contents_ = web_contents->GetWeakPtr();
   install_shortcut_info_ =
       std::make_unique<webapps::ShortcutInfo>(shortcut_info);
   install_primary_icon_ = primary_icon;
@@ -436,7 +441,7 @@ void WebApkInstaller::OnHaveSufficientSpaceForInstall() {
   }
 
   webapps::WebApkIconHasher::DownloadAndComputeMurmur2Hash(
-      GetURLLoaderFactory(browser_context_),
+      GetURLLoaderFactory(browser_context_), web_contents_,
       url::Origin::Create(install_shortcut_info_->url), icons,
       base::BindOnce(&WebApkInstaller::OnGotIconMurmur2Hashes,
                      weak_ptr_factory_.GetWeakPtr()));
