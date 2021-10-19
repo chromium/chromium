@@ -64,8 +64,6 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
 
-  void GetSyncStatus(base::OnceCallback<void(bool)> callback) override;
-
   PasswordStoreBackend* const main_backend_;
   PasswordStoreBackend* const shadow_backend_;
 };

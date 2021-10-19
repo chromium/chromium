@@ -153,11 +153,6 @@ PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
   return active_backend_->CreateSyncControllerDelegate();
 }
 
-void PasswordStoreBackendMigrationDecorator::GetSyncStatus(
-    base::OnceCallback<void(bool)> callback) {
-  return active_backend_->GetSyncStatus(std::move(callback));
-}
-
 void PasswordStoreBackendMigrationDecorator::StartMigration() {
   migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(prefs_);
   migrator_->StartMigrationIfNecessary();
