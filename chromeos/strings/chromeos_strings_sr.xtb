@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1018219910092211213">DNS не може да се разреши</translation>
 <translation id="1018656279737460067">Отказано</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нити, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Покретање скенирања није успело</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Откривен је заштитни зид</translation>
 <translation id="1075811647922107217">Величина странице</translation>
+<translation id="1094693127011229778">IP адреса није доступна</translation>
 <translation id="1119447706177454957">Интерна грешка</translation>
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">Могућ улазни портал</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">Ниједна <ph name="NETWORK_NAME" /> мрежа није доступна</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Матична мрежа, није у ромингу</translation>
 <translation id="1327977588028644528">Мрежни пролаз</translation>
@@ -67,6 +70,7 @@
 <translation id="1999615961760456652">Улазни портал</translation>
 <translation id="2006864819935886708">Успостављање везе</translation>
 <translation id="2008685064673031089">Примарна претрага</translation>
+<translation id="2016697457005847575">Испробајте кораке за решавање проблема</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Више подешавања</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +103,7 @@
 <translation id="2505327257735685095">Освежите актуелну слику позадине</translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2570743873672969996">Покреће се тест <ph name="TEST_NAME" />...</translation>
+<translation id="2584559707064218956">Да бисте подесили мрежу, идите у Подешавања</translation>
 <translation id="2585245331261708204">Ново у вези Chrome ОС-а</translation>
 <translation id="2619761439309613843">Дневно освежавање</translation>
 <translation id="2620436844016719705">Систем</translation>
@@ -145,8 +150,10 @@
 <translation id="3532980081107202182">Преостало је још око <ph name="MIN_REMAINING" /> минута</translation>
 <translation id="3565064564551103223">Дозвољене IPа адресе</translation>
 <translation id="357889014807611375">WiFi са ограничењем</translation>
+<translation id="3583278742022654445">Сигнал је слаб. Пробајте да приђете ближе извору WiFi сигнала.</translation>
 <translation id="3595596368722241419">Батерија је пуна</translation>
 <translation id="360565022852130722">WiFi мрежа је обезбеђена слабим протоколом WEP 802.1x</translation>
+<translation id="3606583719724308068">Велико кашњење до HTTPS веб-сајтова</translation>
 <translation id="3689839747745352263">Тест <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Претходно повезани</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (рецензије: <ph name="AGGREGATED_COUNT" />)</translation>
@@ -166,6 +173,7 @@
 <translation id="39823212440917567">Задаци штампања старији од <ph name="NUMBER_OF_DAYS" /> дана се уклањају</translation>
 <translation id="4003384961948020559">Није успело – излаз је пун</translation>
 <translation id="4034824040120875894">Штампач</translation>
+<translation id="4044093238444069296">Контакт са мрежним пролазом не успева</translation>
 <translation id="404928562651467259">УПОЗОРЕЊЕ</translation>
 <translation id="409427325554347132">Сачувај детаље теста</translation>
 <translation id="4111761024568264522">USB тачпед</translation>
@@ -187,6 +195,7 @@
 <translation id="4378551569595875038">Повезује се...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мој диск</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> мрежа је искључена</translation>
 <translation id="4429881212383817840">Kerberos тикет ускоро истиче</translation>
 <translation id="4431821876790500265">Прикажи извештај</translation>
 <translation id="445059817448385655">Стара лозинка</translation>
@@ -232,6 +241,7 @@
 <translation id="4917385247580444890">Јак</translation>
 <translation id="4917889632206600977">Заустављено – нема више папира</translation>
 <translation id="4921665434385737356">Напуњено <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
+<translation id="4930320165497208503">Да бисте подесили или ажурирали везу, идите у <ph name="BEGIN_LINK" />Подешавања<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Датум</translation>
 <translation id="498186245079027698">Проверите скенер и пробајте поново. Уверите се да има довољно локалне меморије за чување скенираних фајлова.</translation>
 <translation id="4985509611418653372">Покрени</translation>
@@ -374,6 +384,7 @@
 <translation id="7059230779847288458">Пуни се. <ph name="TIME_VALUE" /> до краја пуњења</translation>
 <translation id="708426984172631313">ЗАУСТАВЉЕНО</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Неуспешно – овлашћење није успело</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер имена}one{Сервери имена}few{Сервери имена}other{Сервери имена}}</translation>
 <translation id="7143207342074048698">Повезивање</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
@@ -386,6 +397,7 @@
 <translation id="7271040990581020067">Скенер се тренутно користи. Пробајте поново касније.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Колекције позадина</translation>
+<translation id="7297226631177386107">Не можете да се повежете са HTTPS веб-сајтовима кроз заштитни зид</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -418,6 +430,7 @@
 <translation id="7762130827864645708">Лозинка је промењена. Од сада користите нову лозинку.</translation>
 <translation id="7763470514545477072">Подударање суфикса домена</translation>
 <translation id="7769672763586021400">ИД модела</translation>
+<translation id="7784116172884276937">Није подешен ниједан DNS сервер</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7835501727204647447">Инсталирај CloudReady</translation>
@@ -432,13 +445,16 @@
 <translation id="7943235353293548836">Трајни интервал одржавања линка</translation>
 <translation id="7955587717700691983">Bluetooth тастатура</translation>
 <translation id="7960831585769876809">Температура</translation>
+<translation id="7977800524392185497">Да бисте се придружили <ph name="NETWORK_NAME" /> мрежи, идите у Подешавања</translation>
 <translation id="7978412674231730200">Приватни кључ</translation>
 <translation id="7994702968232966508">EAP метод</translation>
 <translation id="802154636333426148">Преузимање није успело</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
+<translation id="8082366717211101304">DNS не може да се разреши из Android апликација</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
+<translation id="8104083085214006426">Користите отворену и необезбеђену мрежу</translation>
 <translation id="811820734797650957">(Android) Мрежни пролаз може да се пингује</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Затражи бројаче саобраћаја</translation>
@@ -463,10 +479,12 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Интерна тастатура</translation>
 <translation id="843568408673868420">Повезивање на интернет</translation>
+<translation id="844521431886043384">DNS није подешен</translation>
 <translation id="8461329675984532579">Назив добављача за Home</translation>
 <translation id="8475690821716466388">WiFi мрежа је обезбеђена слабим протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Кашњење DNS-а у мањој мери премашује дозвољену граничну вредност</translation>
 <translation id="8483248364096924578">IP адреса</translation>
+<translation id="8491311378305535241">Не можете да се повежете са HTTP веб-сајтовима из Android апликација кроз заштитни зид</translation>
 <translation id="8498220429738806196">Бројачи саобраћаја</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8503836310948963452">Још само пар минута…</translation>
@@ -492,6 +510,7 @@
 <translation id="8818152010000655963">Позадина</translation>
 <translation id="8834539327799336565">Тренутно повезани</translation>
 <translation id="8845001906332463065">Затражите помоћ</translation>
+<translation id="8855781559874488009">Не можете да се повежете са HTTP веб-сајтовима кроз заштитни зид</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Тест је успео</translation>
 <translation id="8898840733695078011">Јачина сигнала</translation>
@@ -517,12 +536,14 @@
 <translation id="910415269708673980">Освежите тикет за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Скенира се <ph name="PAGE_NUMBER" />. страница</translation>
 <translation id="9111102763498581341">Откључај</translation>
+<translation id="9122602430962285795">Да бисте се поново повезали, идите у Подешавања</translation>
 <translation id="9126720536733509015">Сачувајте више страница у један PDF документ</translation>
 <translation id="9137526406337347448">Google услуге</translation>
 <translation id="9149391708638971077">Покрени тест меморије</translation>
 <translation id="9173638680043580060">Преостало је мање од минута</translation>
 <translation id="917720651393141712">Тестирај</translation>
 <translation id="9190063653747922532">L2TP/IPsec + тајни кључ</translation>
+<translation id="9204237731135241582">Контакт са мрежним пролазом не успева из Android апликација</translation>
 <translation id="9211490828691860325">Све радне површине</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Није активирано</translation>

@@ -26,6 +26,7 @@
 <translation id="1142732900304639782">Don’t offer to translate these sites</translation>
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1146678959555564648">Enter VR</translation>
+<translation id="114825011539563458">The most important privacy and security controls in one place</translation>
 <translation id="1154704303112745282">Page unavailable offline: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Used</translation>
 <translation id="1171770572613082465">See popular websites by tapping the 'Top sites' button</translation>
@@ -318,6 +319,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2932222164150889403">Your keyboard won’t change</translation>
 <translation id="2942036813789421260">Preview tab is closed</translation>
 <translation id="2946420957526726953">Updating Chrome to connect to other devices</translation>
+<translation id="2951071800649516099">Add pages to your reading list for later</translation>
 <translation id="2956410042958133412">This account is managed by <ph name="PARENT_NAME_1" /> and <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> unread page}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> unread pages}}</translation>
 <translation id="2961210776189273067">Title</translation>
@@ -549,6 +551,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4452411734226507615">Close <ph name="TAB_TITLE" /> tab</translation>
 <translation id="4452548195519783679">Bookmarked to <ph name="FOLDER_NAME" /></translation>
 <translation id="4472118726404937099">To sync and personalise across devices, sign in and turn on sync</translation>
+<translation id="4479839115899251637">Delete from reading list</translation>
 <translation id="4479972344484327217">Installing <ph name="MODULE" /> for Chrome…</translation>
 <translation id="4487967297491345095">All Chrome’s app data will be deleted permanently. This includes all files, settings, accounts, databases, etc.</translation>
 <translation id="449126573531210296">Encrypt synced passwords with your Google Account</translation>
@@ -570,9 +573,11 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4558311620361989323">Web page shortcuts</translation>
 <translation id="4561730552726921821">Registration succeeded</translation>
 <translation id="4561979708150884304">No connection</translation>
+<translation id="4562008740775511591">Chrome provides reasonable defaults, but you can customise it to best fit your browsing habit</translation>
 <translation id="4565377596337484307">Hide password</translation>
 <translation id="4572422548854449519">Sign in to managed account</translation>
 <translation id="4576892426230499203">Try another verification option</translation>
+<translation id="4578289292431526768">Let’s go</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minute ago}other{# minutes ago}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">This offline page is from <ph name="CREATION_TIME" /> and may differ from the online version.</translation>
@@ -809,6 +814,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5956665950594638604">Open the Chrome Help Centre in a new tab</translation>
 <translation id="5957442310066583693">To see your top sites, tap the Home button</translation>
 <translation id="5958275228015807058">Find your files and pages in Downloads</translation>
+<translation id="5962272973076519240">Verify that it's you to unlock Incognito</translation>
 <translation id="5962718611393537961">Tap to collapse</translation>
 <translation id="5964805880140440652">To share this page to another device, turn on sync in Chrome settings</translation>
 <translation id="5964869237734432770">Stop image descriptions</translation>
@@ -933,6 +939,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6618554661997243500">To see top sites and stories for you, tap the Home button</translation>
 <translation id="6627583120233659107">Edit folder</translation>
+<translation id="6633067410344541938">Unlock Incognito</translation>
 <translation id="663674369910034433">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK1" />Sync<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Google services<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6643649862576733715">Sort by amount of data saved</translation>
@@ -988,12 +995,14 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6945221475159498467">Select</translation>
 <translation id="6955535239952325894">This setting is disabled on managed browsers</translation>
 <translation id="6963766334940102469">Delete bookmarks</translation>
+<translation id="6964116075545915250">Edit reading list</translation>
 <translation id="696447261358045621">Leave Incognito mode</translation>
 <translation id="6979737339423435258">All time</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="6987047470128880212">Incognito is not available on this device</translation>
 <translation id="6995899638241819463">Warn you if passwords are exposed in a data breach</translation>
 <translation id="7001056293070445572">This file is large (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">Add to reading list <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Open in browser</translation>
 <translation id="702463548815491781">Recommended when TalkBack or Switch Access are on</translation>
 <translation id="7027549951530753705">Restored <ph name="ITEM_TITLE" /></translation>
@@ -1213,6 +1222,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="825412236959742607">This page uses too much memory, so Chrome removed some content.</translation>
 <translation id="8260126382462817229">Try signing in again</translation>
 <translation id="8261506727792406068">Delete</translation>
+<translation id="82619448491672958">See other tabs</translation>
 <translation id="8266862848225348053">Download location</translation>
 <translation id="8274165955039650276">See downloads</translation>
 <translation id="8281886186245836920">Skip</translation>

@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Sea shell</translation>
 <translation id="6551185905438378412">Ivory</translation>
 <translation id="6561818612645211875">Go to beginning of the current row</translation>
+<translation id="6563126228219321999">No invalid item</translation>
 <translation id="6579990219486187401">Light pink</translation>
 <translation id="6583174818554398774">Move to next at granularity</translation>
 <translation id="6584162722998608255">Next, you’ll learn how to move around the screen. You can swipe one finger from left to right to move to the next item. Try it now to move to the next step.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Lemon Chiffon</translation>
 <translation id="6816066673340002913">Pale Goldenrod</translation>
 <translation id="6826226459053491773">Swipe two fingers down</translation>
+<translation id="6826669432862053130">Next invalid item</translation>
 <translation id="6833103209700200188">Footer</translation>
 <translation id="6837853484260746864">Select a voice:</translation>
 <translation id="6858047746862060282">Prologue</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">No previous level 5 heading</translation>
 <translation id="812886159861361726">Download stopped <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">No cell above</translation>
+<translation id="8132248161074464367">Previous invalid item</translation>
 <translation id="8138880386467279117">Tap</translation>
 <translation id="8146613869421949343">Next, you’ll learn about the search key. The search key is used in combination with other keys for ChromeVox commands. The search key is immediately above the left shift key. To continue, press the search key.</translation>
 <translation id="8158033275290782295">select all</translation>

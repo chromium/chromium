@@ -612,6 +612,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5465662442746197494">Yordam kerakmi?</translation>
 <translation id="5496819745535887422">Administrator qurilmani rejadagi versiyaga qaytarmoqda. Qurilma qayta ishga tushirilganda barcha ma’lumotlar tozalanadi.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Administrator barcha eSIM profillarni olib tashladi. Batafsil axborot uchun administratorga murojaat qiling.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> ulanmoqda.</translation>
 <translation id="5532994612895037630">Butun ekranni yozib olish uchun istalgan joyga bosing</translation>
 <translation id="553675580533261935">Seans yakunlanmoqda</translation>
@@ -741,6 +742,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6537924328260219877">Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Telefon quvvati: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinmoqda</translation>
 <translation id="6559976592393364813">Administratorga murojaat qiling</translation>
+<translation id="6565007273808762236">eSIM aloqasi mavjud emas</translation>
 <translation id="6570902864550063460">USB orqali quvvat olmoqda</translation>
 <translation id="6585808820553845416">Sessiya yakunlanishiga <ph name="SESSION_TIME_REMAINING" /> qoldi.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

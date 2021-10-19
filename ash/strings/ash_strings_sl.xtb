@@ -612,6 +612,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5465662442746197494">Potrebujete pomoč?</translation>
 <translation id="5496819745535887422">Skrbnik vrača napravo na prejšnjo različico. Ko bo naprava znova zagnana, bodo vsi podatki izbrisani.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Skrbnik je odstranil vse profile za eSIM. Če želite več informacij, se obrnite na skrbnika.</translation>
 <translation id="5523434445161341166">Vzpostavljanje povezave s funkcijo <ph name="FEATURE_NAME" />.</translation>
 <translation id="5532994612895037630">Dotaknite se kjer koli za snemanje celotnega zaslona.</translation>
 <translation id="553675580533261935">Odjava iz seje</translation>
@@ -741,6 +742,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6537924328260219877">Moč signala je <ph name="SIGNAL_STRENGTH" />, stanje baterije telefona je <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Predvajanje v napravi <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Vprašajte skrbnika</translation>
+<translation id="6565007273808762236">Povezava prek kartice eSIM ni na voljo</translation>
 <translation id="6570902864550063460">Polnjenje prek USB-ja</translation>
 <translation id="6585808820553845416">Seja se konča čez <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

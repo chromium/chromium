@@ -615,6 +615,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2987034854559945715">Nema funkcija koje se podudaraju</translation>
 <translation id="2989742184762224133">Dvostruko spajanje na gornjoj strani</translation>
 <translation id="2991174974383378012">Dijeljenje s web-lokacijama</translation>
+<translation id="299122504639061328">Upravljajte zadanim pretraživačem i pretraživanjem web lokacija</translation>
 <translation id="2991571918955627853">Trenutno ne možete posjetiti web lokaciju <ph name="SITE" /> jer web lokacija koristi HSTS. Greške i napadi na mreži su obično privremenog karaktera tako da će ova stranica vjerovatno funkcionirati kasnije.</translation>
 <translation id="2995517112308048736">Veličina fajla:</translation>
 <translation id="3002501248619246229">Provjerite medije na ulaznoj ladici</translation>
@@ -946,6 +947,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4088981014127559358">Pomak slike Y sa strane 1</translation>
 <translation id="4089152113577680600">Ladica 14</translation>
 <translation id="4098354747657067197">Pred vama je obmanjujuća web lokacija</translation>
+<translation id="4099048595830172239">Pravila administratora ne preporučuju dijeljenje ekrana s aplikacijom <ph name="APPLICATION_TITLE" /> kada je vidljiv povjerljiv sadržaj:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da prilagodite veličine i stilove fontova u Chromeu</translation>
 <translation id="4101413244023615925">Tekst i grafika</translation>
 <translation id="4103249731201008433">Serijski broj uređaja nije važeći</translation>
@@ -960,6 +962,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4123572138124678573">Trostruko bušenje na donjoj strani</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{i još 1}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="4130226655945681476">Provjeriti mrežne kablove, modem i ruter</translation>
+<translation id="4133224101597112888">Dugme Dijeli ovu karticu, pritisnite Enter da dijelite ovu karticu dijeljenjem linka, kreiranjem QR koda, emitiranjem i drugo.</translation>
 <translation id="4134123981501319574">Kreiraj dokument</translation>
 <translation id="413544239732274901">Saznajte više</translation>
 <translation id="4142935452406587478">Ladica 10</translation>
@@ -986,6 +989,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
     isporučiti pravila, što sprečava preglednik da ispuni vaš zahtjev
     za web lokaciju <ph name="SITE" />. Operateri web lokacija mogu koristiti izvorna pravila
     za konfiguriranje sigurnosti i drugih osobina web lokacije.</translation>
+<translation id="4210602799576081649">Kôd za potvrdu je istekao. Zatražite novi</translation>
 <translation id="421066178035138955">Koristi uređaje za virtuelnu realnost i podatke</translation>
 <translation id="4214357935346142455">profil ekrana za prijavu</translation>
 <translation id="4215751373031079683">7 x 9 (koverta)</translation>
@@ -1298,6 +1302,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5126510351761255129">Potvrdite karticu</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> možda neće dobro promijeniti veličinu. Koristite zadane postavke veličina prozora da spriječite probleme s aplikacijom.</translation>
 <translation id="5135404736266831032">Upravljaj adresama...</translation>
+<translation id="5136841603454277753">Unesite tačan kôd</translation>
 <translation id="5138014172396933048">Virtuelna kartica trenutno nije dostupna. Kontaktirajte banku</translation>
 <translation id="5138227688689900538">Prikaži manje</translation>
 <translation id="5145883236150621069">Odgovor na pravilo sadrži kȏd greške</translation>
@@ -1391,6 +1396,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5426179911063097041">Web lokacija <ph name="SITE" /> vam želi slati obavještenja</translation>
 <translation id="5428105026674456456">Španska</translation>
 <translation id="5430298929874300616">Ukloni oznaku</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da dijelite ovu karticu dijeljenjem linka, kreiranjem QR koda, emitiranjem i drugo.</translation>
 <translation id="5439770059721715174">Greška potvrđivanja šeme na "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Obrnuti redoslijed s odštampanom stranom prema gore</translation>
 <translation id="5447765697759493033">Ova web lokacija se neće prevoditi</translation>
@@ -1489,6 +1495,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5785756445106461925">Dalje, ova stranica obuhvata druge resurse koji nisu sigurni. Te resurse mogu vidjeti drugi dok su u tranzitu, a može ih promijeniti napadač kako bi promijenio izgled stranice.</translation>
 <translation id="5786044859038896871">Želite li popuniti informacije o svojoj kartici?</translation>
 <translation id="578633867165174378">Chrome je u narušavanju podataka pronašao lozinku koju ste upravo koristili. Preporučujemo da odmah promijenite tu lozinku.</translation>
+<translation id="5797429178165847917">Snimite povjerljiv sadržaj</translation>
 <translation id="5803412860119678065">Želite li popuniti svoju karticu <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Odobrenja</translation>
 <translation id="5810442152076338065">Veza s domenom <ph name="DOMAIN" /> je šifrirana pomoću zastarjelog paketa šifriranja.</translation>
@@ -1999,6 +2006,7 @@ Dodatni detalji:
 <translation id="7559278538486662777">Nije moguće promijeniti veličinu ove aplikacije.</translation>
 <translation id="7564049878696755256">Možete izgubiti pristup svom <ph name="ORG_NAME" /> računu ili doživjeti krađu identiteta. Chrome preporučuje da odmah promijenite lozinku.</translation>
 <translation id="7567204685887185387">Ovaj server nije uspio dokazati da je <ph name="DOMAIN" />; njegova potvrda sigurnosti je možda izdana lažno. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
+<translation id="7569761772822664555">Dugme za upravljanje pretraživačima, pritisnite Enter da upravljate zadanim pretraživačem i pretraživanjem web lokacija</translation>
 <translation id="7569952961197462199">Želite li s Chromea ukloniti kreditnu karticu?</translation>
 <translation id="7569983096843329377">Crna</translation>
 <translation id="7575207903026901870">Dugme za uklanjanje prijedloga. Pritisnite Enter da uklonite ovaj prijedlog</translation>
@@ -2116,6 +2124,7 @@ Dodatni detalji:
 <translation id="7950027195171824198">Upravljajte preferencama za kolačiće u postavkama Chromea</translation>
 <translation id="7951415247503192394">(32-bitno)</translation>
 <translation id="7953569069500808819">Uvez gornjeg ruba</translation>
+<translation id="7954041596401851904">Dijelite ovu karticu dijeljenjem linka, kreiranjem QR koda, emitiranjem i drugo.</translation>
 <translation id="7956713633345437162">Mobilne oznake</translation>
 <translation id="7961015016161918242">Nikada</translation>
 <translation id="7966803981046576691">Vrsta računa za posao</translation>
@@ -2189,6 +2198,7 @@ Dodatni detalji:
 <translation id="8202370299023114387">Neslaganje</translation>
 <translation id="8206978196348664717">Prc4 (koverta)</translation>
 <translation id="8211406090763984747">Veza je sigurna</translation>
+<translation id="8215696832828595581">Dugme Prilagodi Chrome, pritisnite Enter da prilagodite izgled preglednika.</translation>
 <translation id="8218327578424803826">Dodijeljena lokacija:</translation>
 <translation id="8220146938470311105">C7/C6 (koverta)</translation>
 <translation id="8225771182978767009">Osoba koja je postavila računalo blokirala je tu web-lokaciju.</translation>
@@ -2328,6 +2338,7 @@ Dodatni detalji:
 <translation id="868922510921656628">Broj stranica po skupu</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699041776323235191">uređaj HID</translation>
+<translation id="8699899385443889493">Dugme za igranje igre Dinosaur na Chromeu, pritisnite Enter da igrate igru Dino Run na Chromeu</translation>
 <translation id="8703575177326907206">Vaša veza na domenu <ph name="DOMAIN" /> nije šifrirana.</translation>
 <translation id="8705331520020532516">Serijski broj</translation>
 <translation id="8708134712139312373">Može tražiti da se poveže s Bluetooth uređajima</translation>

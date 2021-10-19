@@ -612,6 +612,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5465662442746197494">Ai nevoie de ajutor?</translation>
 <translation id="5496819745535887422">Administratorul restabilește o versiune anterioară a SO de pe dispozitiv. Toate datele vor fi șterse după repornirea dispozitivului.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Administratorul a eliminat toate profilurile eSIM. Contactează administratorul pentru mai multe informații.</translation>
 <translation id="5523434445161341166">Opțiunea <ph name="FEATURE_NAME" /> se conectează.</translation>
 <translation id="5532994612895037630">Atinge oriunde pentru a înregistra ecranul complet</translation>
 <translation id="553675580533261935">Se iese din sesiune</translation>
@@ -741,6 +742,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6537924328260219877">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, bateria telefonului: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Se proiectează conținut la <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Întreabă administratorul</translation>
+<translation id="6565007273808762236">Nu este disponibilă o conexiune eSIM</translation>
 <translation id="6570902864550063460">Se încarcă prin USB</translation>
 <translation id="6585808820553845416">Sesiunea se încheie peste <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>

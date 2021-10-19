@@ -25,6 +25,7 @@
 <translation id="1017280919048282932">&amp;Add to dictionary</translation>
 <translation id="1018656279737460067">Cancelled</translation>
 <translation id="1022489261739821355">Showing passwords from your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
+<translation id="1024304340821219537">What you share with websites</translation>
 <translation id="1026655690966755180">Add port</translation>
 <translation id="1026822031284433028">Load Image</translation>
 <translation id="1029317248976101138">Zoom</translation>
@@ -92,6 +93,7 @@
 <translation id="1088654056000736875">Chrome is removing harmful software from your computer…</translation>
 <translation id="1088659085457112967">Enter Reader Mode</translation>
 <translation id="1090126737595388931">No background apps running</translation>
+<translation id="1090541560108055381">Before pairing, make sure that this code is the same on both devices</translation>
 <translation id="1091767800771861448">Press ESCAPE to skip (Non-official builds only).</translation>
 <translation id="1093457606523402488">Visible Networks:</translation>
 <translation id="1094607894174825014">Read or write operation was requested with an invalid offset on: "<ph name="DEVICE_NAME" />".</translation>
@@ -371,6 +373,7 @@
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> will restart when updates are complete.</translation>
 <translation id="139013308650923562">Allowed to use fonts installed on your device</translation>
 <translation id="1390548061267426325">Open as a standard tab</translation>
+<translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> is not authorised to print to <ph name="PRINTER_NAME" />. Please contact your administrator.</translation>
 <translation id="1393283411312835250">Sun and clouds</translation>
 <translation id="1395730723686586365">Updater started</translation>
 <translation id="1396139853388185343">Error setting up printer</translation>
@@ -427,6 +430,7 @@
 <translation id="1436390408194692385">Valid for <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Removed</translation>
 <translation id="1437986450143295708">Describe the issue in detail</translation>
+<translation id="1439671507542716852">long-term support</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selected</translation>
 <translation id="1442851588227551435">Set active Kerberos ticket</translation>
 <translation id="1444628761356461360">This setting is managed by the device owner, <ph name="OWNER_EMAIL" />.</translation>
@@ -1428,6 +1432,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="244231003699905658">Invalid address. Please check the address and try again.</translation>
 <translation id="2442916515643169563">Text shadow</translation>
 <translation id="2443487764245141020">Sites may also need to recognise your device using an identifier</translation>
+<translation id="244475495405467108">Close Tabs to the Left</translation>
 <translation id="2445081178310039857">Extension root directory is required.</translation>
 <translation id="2445484935443597917">Create a new profile</translation>
 <translation id="244641233057214044">Related to your search</translation>
@@ -1443,6 +1448,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2454264884354864965">Camera is off</translation>
 <translation id="245650153866130664">To automatically refresh a ticket, tick 'Remember password'. Your password will be stored on your device only.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> wants to copy files from <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Currently on <ph name="CHANNEL_NAME" /> channel</translation>
 <translation id="2458379781610688953">Update account, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Device management token is invalid.</translation>
 <translation id="2459703812219683497">Activation code detected</translation>
@@ -2127,6 +2133,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3154351730702813399">The device admin may monitor your browsing activity.</translation>
 <translation id="3154429428035006212">Offline for more than a month</translation>
 <translation id="3157387275655328056">Add to Reading List</translation>
+<translation id="3157665603750177985">When you aren't in Incognito mode, sites can use cookies to see your browsing activity across different sites; for example, to personalise ads</translation>
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3158033540161634471">Set up your fingerprint</translation>
 <translation id="3158770568048368350">This may cause your mobile network to briefly disconnect</translation>
@@ -2142,6 +2149,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3165390001037658081">Some operators might block this feature.</translation>
 <translation id="316652501498554287">G Suite for Education accounts</translation>
 <translation id="3170072451822350649">You may also skip signing in and <ph name="LINK_START" />browse as Guest<ph name="LINK_END" />.</translation>
+<translation id="31774765611822736">New tab to the left</translation>
 <translation id="3177909033752230686">Page language:</translation>
 <translation id="3179982752812949580">Text font</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
@@ -2295,6 +2303,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> is sharing <ph name="ATTACHMENTS" /> with you.}other{<ph name="DEVICE_NAME" /> is sharing <ph name="ATTACHMENTS" /> with you.}}</translation>
 <translation id="3364986687961713424">From your administrator: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Use either Ctrl or Alt</translation>
+<translation id="3367057768351048705">Sites can only use your cookies to see your browsing activity on their own site</translation>
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3369067987974711168">Show more actions for this port</translation>
 <translation id="3369624026883419694">Resolving host...</translation>
@@ -2349,6 +2358,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3420501302812554910">Internal security key requires reset</translation>
 <translation id="3421387094817716717">Elliptic Curve Public Key</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results or your Assistant.</translation>
+<translation id="3421726884497337397">Choose when to block third-party cookies</translation>
 <translation id="3422291238483866753">Ask when a site wants to create a 3D map of your surroundings or track camera position (recommended)</translation>
 <translation id="3423463006624419153">On your '<ph name="PHONE_NAME_1" />' and '<ph name="PHONE_NAME_2" />':</translation>
 <translation id="3423858849633684918">Please Relaunch <ph name="PRODUCT_NAME" /></translation>
@@ -2749,6 +2759,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3819800052061700452">&amp;Full screen</translation>
 <translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Show}other{Show all}}</translation>
 <translation id="3820749202859700794">SECG elliptic curve secp521r1 (aka NIST P-521)</translation>
+<translation id="3821074617718452587">Phone Hub notifications</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{An extension has been approved}other{# extensions have been approved}}</translation>
 <translation id="3823310065043511710">At least <ph name="INSTALL_SIZE" /> of space is recommended for Linux.</translation>
 <translation id="3824621460022590830">Device enrolment token is invalid. Please contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
@@ -2957,6 +2968,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Copy build details</translation>
+<translation id="4021941025609472374">Close tabs to the left</translation>
 <translation id="4022426551683927403">&amp;Add to Dictionary</translation>
 <translation id="4023146161712577481">Determining device configuration.</translation>
 <translation id="4025039777635956441">Mute Selected Site</translation>
@@ -3876,6 +3888,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5053962746715621840">Search Image with Google Lens</translation>
 <translation id="5056950756634735043">Connecting to the container</translation>
 <translation id="5057110919553308744">When you click the extension</translation>
+<translation id="505776528429481161">Easily connect and set up devices close by</translation>
 <translation id="5059241099014281248">Restrict sign-in</translation>
 <translation id="5059526285558225588">Choose what to share</translation>
 <translation id="5060332552815861872">There is 1 printer available to save.</translation>
@@ -4740,6 +4753,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6002452033851752583">Password deleted from your Google Account</translation>
 <translation id="6002458620803359783">Preferred Voices</translation>
 <translation id="6003143259071779217">Remove eSIM mobile network</translation>
+<translation id="6003479444341796444">Title bar is now showing</translation>
 <translation id="6003582434972667631">Theme is set by your organisation</translation>
 <translation id="6006484371116297560">Classic</translation>
 <translation id="6007240208646052708">Voice search in your language is not available.</translation>
@@ -4907,6 +4921,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6184099524311454384">Search tabs</translation>
 <translation id="6185132558746749656">Device Location</translation>
 <translation id="6186394437969115158">Sites usually show ads so that they can provide content or services for free. But, some sites are known to show intrusive or misleading ads.</translation>
+<translation id="6190953336330058278">Phone Hub apps</translation>
 <translation id="6195005504600220730">Read information about your browser, OS and device</translation>
 <translation id="6195693561221576702">This device cannot be set up in offline demo mode.</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
@@ -5124,6 +5139,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6418160186546245112">Reverting to the previously installed version of <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="6418481728190846787">Permanently remove access for all apps</translation>
 <translation id="6418511932144861495">Install critical update</translation>
+<translation id="641899100123938294">Scan for new devices</translation>
 <translation id="6419524191360800346">An upgrade to Debian 11 (Bullseye) is available</translation>
 <translation id="6419546358665792306">Load unpacked</translation>
 <translation id="6419843101460769608">Do not allow any sites to access HID devices</translation>
@@ -5668,6 +5684,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> is connected but needs configuration</translation>
 <translation id="7000347579424117903">Include Ctrl, Alt or Search</translation>
 <translation id="7001036685275644873">Backing up Linux apps &amp; files</translation>
+<translation id="7001066449188684145">Identification required to print to <ph name="PRINTER_NAME" />. Please contact your administrator.</translation>
 <translation id="7002055706763150362">To set up Smart Lock for Chromebook, Google needs to make sure that it’s you – type your password to get started.</translation>
 <translation id="7003339318920871147">Web Databases</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} file}other{{COUNT} files}}</translation>
@@ -6252,6 +6269,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7622966771025050155">Switch to captured tab</translation>
 <translation id="7624337243375417909">caps lock off</translation>
 <translation id="7625568159987162309">View permissions and data stored across sites</translation>
+<translation id="7625823789272218216">New Tab to the Left</translation>
 <translation id="7628201176665550262">Refresh rate</translation>
 <translation id="7629827748548208700">Tab: <ph name="TAB_NAME" /></translation>
 <translation id="7631014249255418691">Linux apps &amp; files have been successfully backed up</translation>
@@ -6282,6 +6300,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingerprint set up}other{{COUNT} fingerprints set up}}</translation>
 <translation id="7650677314924139716">Current data usage setting is Wi-Fi only</translation>
 <translation id="7650920359639954963">Not enabled: <ph name="REASON" /></translation>
+<translation id="7651784568388208829">Phone Hub task continuation</translation>
 <translation id="765293928828334535">Apps, extensions and user scripts cannot be added from this website</translation>
 <translation id="7652954539215530680">Create a PIN</translation>
 <translation id="7654941827281939388">This account is already being used on this computer.</translation>
@@ -7077,6 +7096,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8460932807646981183">Manage search engines and site search</translation>
 <translation id="84613761564611563">Network configure UI requested, please wait...</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8463001014623882202">Authorisation failed</translation>
 <translation id="8463215747450521436">This supervised user may have been deleted or disabled by the manager. Please contact the manager if you would like to continue signing in as this user.</translation>
 <translation id="846374874681391779">Downloads bar</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> disabled.</translation>
@@ -7523,6 +7543,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />'s <ph name="DEVICE_TYPE" /></translation>
 <translation id="8922624386829239660">Move screen when mouse touches edges of screen</translation>
 <translation id="8923880975836399332">Dark teal</translation>
+<translation id="8925124370124776087">Title bar is now hidden</translation>
 <translation id="8925458182817574960">&amp;Settings</translation>
 <translation id="8926389886865778422">Don't ask again</translation>
 <translation id="892706138619340876">Some settings were reset</translation>

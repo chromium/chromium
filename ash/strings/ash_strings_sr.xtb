@@ -612,6 +612,7 @@
 <translation id="5465662442746197494">Потребна вам је помоћ?</translation>
 <translation id="5496819745535887422">Администратор враћа уређај на ранију верзију. Сви подаци ће бити избрисани када се уређај рестартује.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Администратор је уклонио све eSIM профиле. Додатне информације потражите од администратора.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> се повезује.</translation>
 <translation id="5532994612895037630">Додирните било где да бисте снимили цео екран</translation>
 <translation id="553675580533261935">Напуштање сесије</translation>
@@ -741,6 +742,7 @@
 <translation id="6537924328260219877">Јачина сигнала <ph name="SIGNAL_STRENGTH" />, батерија телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Пребацује се на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Питајте администратора</translation>
+<translation id="6565007273808762236">eSIM веза није доступна</translation>
 <translation id="6570902864550063460">Пуни се преко USB-а</translation>
 <translation id="6585808820553845416">Сесија се завршава за <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

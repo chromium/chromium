@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Belonarandžasta</translation>
 <translation id="6551185905438378412">Boja slonovače</translation>
 <translation id="6561818612645211875">Prelazak na početak aktuelnog reda</translation>
+<translation id="6563126228219321999">Nema nevažećih stavki</translation>
 <translation id="6579990219486187401">Svetloroze</translation>
 <translation id="6583174818554398774">Pređite na sledeći element granularnosti</translation>
 <translation id="6584162722998608255">Zatim ćete naučiti kako da se krećete po ekranu. Možete da prevučete pomoću jednog prsta sleva nadesno da biste prešli na sledeću stavku. Isprobajte to odmah da biste prešli na sledeći korak.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Bledožuta</translation>
 <translation id="6816066673340002913">Otvorena zlatnožuta</translation>
 <translation id="6826226459053491773">Prevlačite nadole pomoću dva prsta</translation>
+<translation id="6826669432862053130">Sledeća nevažeća stavka</translation>
 <translation id="6833103209700200188">Podnožje</translation>
 <translation id="6837853484260746864">Izaberite glas:</translation>
 <translation id="6858047746862060282">Prolog</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Nema prethodnog zaglavlja 5. nivoa</translation>
 <translation id="812886159861361726">Preuzimanje je zaustavljeno <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Nema ćelija iznad</translation>
+<translation id="8132248161074464367">Prethodna nevažeća stavka</translation>
 <translation id="8138880386467279117">Za dodirni ekran</translation>
 <translation id="8146613869421949343">Zatim ćete saznati više o tasteru za pretragu. Taster za pretragu se koristi u kombinaciji sa drugim tasterima za ChromeVox komande. Taster za pretragu se nalazi odmah iznad levog tastera Shift. Da biste nastavili, pritisnite taster za pretragu.</translation>
 <translation id="8158033275290782295">izaberite sve</translation>

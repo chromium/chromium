@@ -613,6 +613,7 @@
 <translation id="5465662442746197494">Танд тусламж хэрэгтэй байна уу?</translation>
 <translation id="5496819745535887422">Tаны админ төхөөрөмжийг тань буцаан шилжүүлж байна. Төхөөрөмжийг дахин эхлүүлсний дараа бүх өгөгдөл устсан байх болно.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Танай администратор бүх eSIM профайлыг хассан. Нэмэлт мэдээлэл авах бол администратортайгаа холбогдоно уу.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> холбогдож байна.</translation>
 <translation id="5532994612895037630">Бүтэн дэлгэцийг бичихийн тулд дурын газар товшино уу</translation>
 <translation id="553675580533261935">Харилцан үйлдлээс гарч байна</translation>
@@ -742,6 +743,7 @@
 <translation id="6537924328260219877">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, утасны батарей <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />-д дамжуулж байна</translation>
 <translation id="6559976592393364813">Админаас асуух</translation>
+<translation id="6565007273808762236">eSIM холболт боломжгүй</translation>
 <translation id="6570902864550063460">USB-р цэнэглэж байна</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> хугацааны дараа таны цаг дуусна.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

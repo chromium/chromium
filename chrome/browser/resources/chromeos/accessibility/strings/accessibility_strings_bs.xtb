@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Svijetlonarandžasta</translation>
 <translation id="6551185905438378412">Boja slonovače</translation>
 <translation id="6561818612645211875">Prelazak na početak trenutnog reda</translation>
+<translation id="6563126228219321999">Nema nevažećih stavki</translation>
 <translation id="6579990219486187401">Svijetlo ružičasta</translation>
 <translation id="6583174818554398774">Pomjerite se na sljedeće s nivoom granulacije</translation>
 <translation id="6584162722998608255">Dalje ćete naučiti kako se kretati po ekranu. Možete prevući jednim prstom slijeva udesno da pređete na sljedeću stavku. Isprobajte sada da pređete na sljedeći korak.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Kremasto žuta</translation>
 <translation id="6816066673340002913">Blijeda zlatnožuta</translation>
 <translation id="6826226459053491773">Prevucite s dva prsta prema dolje</translation>
+<translation id="6826669432862053130">Sljedeća nevažeća stavka</translation>
 <translation id="6833103209700200188">Podnožje</translation>
 <translation id="6837853484260746864">Odaberite glas:</translation>
 <translation id="6858047746862060282">Prolog</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Nema prethodnog naslova 5. nivoa</translation>
 <translation id="812886159861361726">Preuzimanje je zaustavljeno – <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Nema ćelije iznad</translation>
+<translation id="8132248161074464367">Prethodna nevažeća stavka</translation>
 <translation id="8138880386467279117">Dodirnuti</translation>
 <translation id="8146613869421949343">Zatim ćete saznati nešto o tipki za pretraživanje. Tipka za pretraživanje se koristi u kombinaciji s drugim tipkama za komande ChromeVoxa. Tipka za pretraživanje se nalazi odmah iznad lijeve tipke Shift. Da nastavite, pritisnite tipku za pretraživanje.</translation>
 <translation id="8158033275290782295">odabir svih stavki</translation>

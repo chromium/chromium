@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
+<translation id="1018219910092211213">Ni mogoče razrešiti DNS-ja.</translation>
 <translation id="1018656279737460067">Preklicano</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (št. niti: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Ni bilo mogoče začeti optično brati</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Zaznan je požarni zid</translation>
 <translation id="1075811647922107217">Velikost strani</translation>
+<translation id="1094693127011229778">Naslov IP ni na voljo.</translation>
 <translation id="1119447706177454957">Notranja napaka</translation>
 <translation id="1124772482545689468">Uporabnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">Sum na prestrezni portal</translation>
 <translation id="1290331692326790741">Šibek signal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">Na voljo ni nobenega omrežja <ph name="NETWORK_NAME" />.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Domače omrežje, brez gostovanja</translation>
 <translation id="1327977588028644528">Prehod</translation>
@@ -67,6 +70,7 @@
 <translation id="1999615961760456652">Prestrezni portal</translation>
 <translation id="2006864819935886708">Povezljivost</translation>
 <translation id="2008685064673031089">Začetno iskanje</translation>
+<translation id="2016697457005847575">Poskusite postopke za odpravljanje težav.</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Več nastavitev</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, različica: <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +103,7 @@
 <translation id="2505327257735685095">Osveži trenutno sliko zaslonskega ozadja</translation>
 <translation id="2517472476991765520">Išči</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
+<translation id="2584559707064218956">Če želite nastaviti, odprite nastavitve.</translation>
 <translation id="2585245331261708204">Novosti v Chromu OS</translation>
 <translation id="2619761439309613843">Dnevno osveževanje</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -145,8 +150,10 @@
 <translation id="3532980081107202182">Še približno <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3565064564551103223">Dovoljeni IP-ji</translation>
 <translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
+<translation id="3583278742022654445">Šibka moč signala. Poskusite se premakniti bliže viru signala omrežja Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterija je polna</translation>
 <translation id="360565022852130722">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP 802.1x</translation>
+<translation id="3606583719724308068">Visoka zakasnitev do spletnih mest HTTPS.</translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Predhodno povezane naprave</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (število mnenj: <ph name="AGGREGATED_COUNT" />)</translation>
@@ -166,6 +173,7 @@
 <translation id="39823212440917567">Odstranjena bodo tiskalna opravila, starejša od toliko dni: <ph name="NUMBER_OF_DAYS" /></translation>
 <translation id="4003384961948020559">Napaka – izhodni pladenj je poln</translation>
 <translation id="4034824040120875894">Tiskalnik</translation>
+<translation id="4044093238444069296">Ni mogoče vzpostaviti stika s prehodom.</translation>
 <translation id="404928562651467259">OPOZORILO</translation>
 <translation id="409427325554347132">Shrani podrobnosti preizkusa</translation>
 <translation id="4111761024568264522">Sledilna ploščica USB</translation>
@@ -187,6 +195,7 @@
 <translation id="4378551569595875038">Povezovanje …</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Moj disk</translation>
+<translation id="4428374560396076622">Omrežje <ph name="NETWORK_NAME" /> je izklopljeno.</translation>
 <translation id="4429881212383817840">Kartonček za Kerberos kmalu poteče</translation>
 <translation id="4431821876790500265">Ogled poročila</translation>
 <translation id="445059817448385655">Staro geslo</translation>
@@ -232,6 +241,7 @@
 <translation id="4917385247580444890">Močan</translation>
 <translation id="4917889632206600977">Ustavljeno – zmanjkalo je papirja</translation>
 <translation id="4921665434385737356">Napolnjeno <ph name="RATE" /> v <ph name="NUM_SECONDS" /> s.</translation>
+<translation id="4930320165497208503">Če želite nastaviti ali posodobiti povezavo, odprite <ph name="BEGIN_LINK" />nastavitve<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Preverite optični bralnik in poskusite znova. Poskrbite, da je na lokalnem disku dovolj prostora za shranjevanje optično prebranih datotek.</translation>
 <translation id="4985509611418653372">Izvedi</translation>
@@ -374,6 +384,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7059230779847288458">Polnjenje; do napolnjenosti še <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">USTAVLJENO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Ni uspelo – Pooblastitev ni uspela.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Imenski strežnik}one{Imenski strežniki}two{Imenski strežniki}few{Imenski strežniki}other{Imenski strežniki}}</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
@@ -386,6 +397,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7271040990581020067">Optični bralnik je trenutno v uporabi. Poskusite pozneje.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Zbirke zaslonskih ozadij</translation>
+<translation id="7297226631177386107">Ni mogoče vzpostaviti povezave s spletnimi mesti HTTPS prek požarnega zidu.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -418,6 +430,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7762130827864645708">Sprememba gesla je bila uspešna. Od zdaj naprej uporabljajte novo geslo.</translation>
 <translation id="7763470514545477072">Ujemanje pripone domene</translation>
 <translation id="7769672763586021400">ID modela</translation>
+<translation id="7784116172884276937">Strežniki DNS niso nastavljeni.</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7819857487979277519">PSK (WPA ali RSN)</translation>
 <translation id="7835501727204647447">Namesti CloudReady</translation>
@@ -432,13 +445,16 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7943235353293548836">Trajni interval ohranjanja povezave</translation>
 <translation id="7955587717700691983">Tipkovnica Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7977800524392185497">Če se želite pridružiti omrežju <ph name="NETWORK_NAME" />, odprite nastavitve.</translation>
 <translation id="7978412674231730200">Zasebni ključ</translation>
 <translation id="7994702968232966508">Način EAP</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
 <translation id="8075838845814659848">Preostanek polnjenja</translation>
+<translation id="8082366717211101304">Iz aplikacij za Android ni mogoče razrešiti DNS-ja.</translation>
 <translation id="808894953321890993">Sprememba gesla</translation>
+<translation id="8104083085214006426">Uporabljate odprto omrežje, ki ni varno.</translation>
 <translation id="811820734797650957">Prehod je mogoče preveriti (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zahtevaj števce prometa</translation>
@@ -463,10 +479,12 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Notranja tipkovnica</translation>
 <translation id="843568408673868420">Internetna povezava</translation>
+<translation id="844521431886043384">DNS ni nastavljen.</translation>
 <translation id="8461329675984532579">Ime domačega ponudnika</translation>
 <translation id="8475690821716466388">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP PSK</translation>
 <translation id="8477551185774834963">Zakasnitev DNS-ja je nekoliko nad dovoljenim pragom</translation>
 <translation id="8483248364096924578">Naslov IP</translation>
+<translation id="8491311378305535241">Iz aplikacij za Android ni mogoče vzpostaviti povezave s spletnimi mesti HTTPS prek požarnega zidu.</translation>
 <translation id="8498220429738806196">Števci prometa</translation>
 <translation id="8503813439785031346">Uporabniško ime</translation>
 <translation id="8503836310948963452">Samo še nekaj minut …</translation>
@@ -492,6 +510,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8818152010000655963">Ozadje</translation>
 <translation id="8834539327799336565">Trenutno povezano</translation>
 <translation id="8845001906332463065">Poiščite pomoč</translation>
+<translation id="8855781559874488009">Ni mogoče vzpostaviti povezave s spletnimi mesti HTTP prek požarnega zidu.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Preizkus je uspel</translation>
 <translation id="8898840733695078011">Moč signala</translation>
@@ -517,12 +536,14 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>
 <translation id="9111102763498581341">Odkleni</translation>
+<translation id="9122602430962285795">Če želite znova vzpostaviti povezavo, odprite nastavitve.</translation>
 <translation id="9126720536733509015">Shrani več strani v eno datoteko PDF.</translation>
 <translation id="9137526406337347448">Googlove storitve</translation>
 <translation id="9149391708638971077">Zaženi preizkus pomnilnika</translation>
 <translation id="9173638680043580060">Še manj kot minuta</translation>
 <translation id="917720651393141712">Preizkus</translation>
 <translation id="9190063653747922532">L2TP/IPsec + ključ v vnaprejšnji skupni rabi</translation>
+<translation id="9204237731135241582">Iz aplikacij za Android ni mogoče vzpostaviti stika s prehodom.</translation>
 <translation id="9211490828691860325">Vsa namizja</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Ni aktivirano</translation>

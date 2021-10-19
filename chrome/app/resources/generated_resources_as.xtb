@@ -1053,7 +1053,7 @@
 <translation id="2071692954027939183">জাননীসমূহ স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে কাৰণ আপুনি সাধাৰণতে সেইসমূহক অনুমতি নিদিয়ে</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{এক্সটেনশ্বনটো ইনষ্টল কৰিবলৈ ক্লিক কৰক}one{এই এক্সটেনশ্বনসমূহ ইনষ্টল কৰিবলৈ ক্লিক কৰক}other{এই এক্সটেনশ্বনসমূহ ইনষ্টল কৰিবলৈ ক্লিক কৰক}}</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> অথবা তাতকৈ কম বর্ণ ব্যৱহাৰ কৰক</translation>
-<translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% বেটাৰি</translation>
+<translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% বেটাৰী</translation>
 <translation id="2075959085554270910">আপোনাক ক্লিক কৰিবলৈ টিপা সুবিধাটো আৰু সমল টানি আনি এৰিবলৈ টিপা সুবিধাটো সক্ষম/অক্ষম কৰিবলৈ দিয়ে</translation>
 <translation id="2076269580855484719">এই প্লাগইনটো লুকুৱাওক</translation>
 <translation id="2076672359661571384">মধ্যম (আমি চুপাৰিছ কৰোঁ)</translation>
@@ -4713,7 +4713,7 @@
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />"এ এই ব্ৰাউজাৰটো ডিবাগ কৰা আৰম্ভ কৰিছে</translation>
 <translation id="5973605538625120605">পিন সলনি কৰক</translation>
 <translation id="5975056890546437204">{COUNT,plural, =0{আটাইবোৰ &amp;ইনক’গনিট’ ৱিণ্ড’ত খোলক}=1{&amp;ইনক’গনিট’ ৱিণ্ড’ত খোলক}one{আটাইবোৰ ({COUNT}) &amp;ইনক’গনিট’ ৱিণ্ড’ত খোলক}other{আটাইবোৰ ({COUNT}) &amp;ইনক’গনিট’ ৱিণ্ড’ত খোলক}}</translation>
-<translation id="5975792506968920132">বেটাৰি চ্চাৰ্জ হোৱাৰ শতাংশ</translation>
+<translation id="5975792506968920132">বেটাৰী চাৰ্জ হোৱাৰ শতাংশ</translation>
 <translation id="5976160379964388480">অন্য</translation>
 <translation id="5978277834170881274">&amp;সাধাৰণ বানান পৰীক্ষক ব্যৱহাৰ কৰক</translation>
 <translation id="5979084224081478209">পাছৱৰ্ডবোৰ পৰীক্ষা কৰক</translation>
@@ -6198,7 +6198,7 @@
 <translation id="7568790562536448087">আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="7569983096843329377">ক'লা</translation>
 <translation id="7571643774869182231">আপডে’টৰ বাবে পর্যাপ্ত খালী ঠাই নাই</translation>
-<translation id="7573172247376861652">বেটাৰিৰ চাৰ্জ</translation>
+<translation id="7573172247376861652">বেটাৰীৰ চাৰ্জ</translation>
 <translation id="7573594921350120855">ছাইটসমূহে সচৰাচৰ ভিডিঅ' চাটৰ দৰে সুবিধাসমূহৰ বাবে আপোনাৰ ভিডিঅ' কেমেৰা ব্যৱহাৰ কৰে</translation>
 <translation id="7574650250151586813">পাঠ টাইপ কৰিবলৈ Daydream কীব'ৰ্ড এপ্‌টো আপডে'ট কৰক</translation>
 <translation id="7576690715254076113">ক্ৰম অনুসৰি সজাওক</translation>
@@ -7535,7 +7535,7 @@
 <translation id="8940381019874223173">আপোনাৰ Google Photosৰ পৰা</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' অনুমতিটো প্ৰত্যাহাৰ কৰক</translation>
 <translation id="894360074127026135">নেটস্কেপৰ আন্তঃৰাষ্ট্ৰীয় ষ্টেপ আপ</translation>
-<translation id="8944099748578356325">বেটাৰি খৰকৈ ব্যৱহাৰ কৰক (বৰ্তমান <ph name="BATTERY_PERCENTAGE" />%)</translation>
+<translation id="8944099748578356325">বেটাৰী খৰকৈ ব্যৱহাৰ কৰক (বৰ্তমান <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944964446326379280"><ph name="APP_NAME" />এ <ph name="TAB_NAME" />ৰ সৈতে এখন ৱিণ্ড’ শ্বেয়াৰ কৰিছে।</translation>
 <translation id="8945274638472141382">চিহ্নৰ আকাৰ</translation>
 <translation id="8946359700442089734">ডিবাগিঙৰ সুবিধাসমূহ এই <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইচটোত সম্পূৰ্ণৰূপে সক্ষম কৰা হোৱা নাছিল।</translation>

@@ -797,6 +797,7 @@
 <translation id="6544923685317771506">Oq tuproqrang</translation>
 <translation id="6551185905438378412">Fil suyagi rangi</translation>
 <translation id="6561818612645211875">Joriy qator boshiga o‘tish</translation>
+<translation id="6563126228219321999">Yaroqsiz element topilmadi</translation>
 <translation id="6579990219486187401">Och pushti</translation>
 <translation id="6583174818554398774">Keyingi tafsilotlarga qaytarish</translation>
 <translation id="6584162722998608255">Keyingi darsda ekrandagi narsalarni varaqlash bilan tanishasiz. Bir barmoqni chapdan oʻngga surish orqali keyingi elementga oʻtish mumkin. Hozir keyingi qadamga oʻtishga urining.</translation>
@@ -827,6 +828,7 @@
 <translation id="6815255864998354418">Och limonrang</translation>
 <translation id="6816066673340002913">Och xira sariq</translation>
 <translation id="6826226459053491773">Ikkita barmoq bilan pastga suring</translation>
+<translation id="6826669432862053130">Keyingi yaroqsiz element</translation>
 <translation id="6833103209700200188">Futer</translation>
 <translation id="6837853484260746864">Ovozni tanlang:</translation>
 <translation id="6858047746862060282">Muqaddima</translation>
@@ -1017,6 +1019,7 @@
 <translation id="8126386426083591964">Bundan oldin boshqa 4-darajali sarlavha mavjud emas</translation>
 <translation id="812886159861361726"><ph name="FILE_NAME" /> faylini yuklab olish toʻxtatildi</translation>
 <translation id="8129445297241948503">Tepada katak mavjud emas</translation>
+<translation id="8132248161074464367">Avvalgi yaroqsiz element</translation>
 <translation id="8138880386467279117">Teginish</translation>
 <translation id="8146613869421949343">Endi esa Qidiruv tugmasini oʻrganasiz. Qdiiruv tugmasi ChromeVox buyruqlari uchun boshqa tugmalari bilgan birga ishlatish uchun foydalaniladi. Qidiruv tugmasi chap Shift tugmasi ustida joylashgan. Davom etish uchun Qidiruv tugmasini bosing.</translation>
 <translation id="8158033275290782295">hammasini tanlash</translation>

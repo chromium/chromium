@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Barva školjk</translation>
 <translation id="6551185905438378412">Slonokoščena</translation>
 <translation id="6561818612645211875">Pomik na začetek trenutne vrstice</translation>
+<translation id="6563126228219321999">Ni neveljavnih elementov</translation>
 <translation id="6579990219486187401">Svetlo rožnata</translation>
 <translation id="6583174818554398774">Premik na naslednji element na ravni podrobnosti</translation>
 <translation id="6584162722998608255">Nato boste izvedeli, kako se pomikate po zaslonu. Na naslednji element se pomaknete tako, da z enim prstom povlečete z leve proti desni. Preizkusite zdaj, da se pomaknete na naslednji korak.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Svetlo rumena</translation>
 <translation id="6816066673340002913">Bleda zlatorumena</translation>
 <translation id="6826226459053491773">Z dvema prstoma povlecite dol</translation>
+<translation id="6826669432862053130">Naslednji neveljavni element</translation>
 <translation id="6833103209700200188">Noga</translation>
 <translation id="6837853484260746864">Izberite glas:</translation>
 <translation id="6858047746862060282">Uvod</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Ni prejšnjega naslova na ravni 5</translation>
 <translation id="812886159861361726">Prenos je ustavljen (<ph name="FILE_NAME" />)</translation>
 <translation id="8129445297241948503">Ni celice zgoraj</translation>
+<translation id="8132248161074464367">Prejšnji neveljavni element</translation>
 <translation id="8138880386467279117">Dotik</translation>
 <translation id="8146613869421949343">Zdaj boste izvedeli več o tipki za iskanje. Tipka za iskanje se uporablja skupaj z drugimi tipkami za ukaze ChromeVoxa. Tipko za iskanje najdete neposredno nad levo tipko Shift. Če želite nadaljevati, pritisnite tipko za iskanje.</translation>
 <translation id="8158033275290782295">izbira vseh</translation>
