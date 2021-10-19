@@ -740,6 +740,7 @@ cc_test("cc_unittests") {
     "paint/paint_worklet_input_unittest.cc",
     "paint/scoped_raster_flags_unittest.cc",
     "paint/skia_paint_canvas_unittest.cc",
+    "paint/skottie_resource_metadata_unittest.cc",
     "paint/skottie_wrapper_unittest.cc",
     "paint/solid_color_analyzer_unittest.cc",
     "paint/transfer_cache_unittest.cc",

@@ -81,6 +81,8 @@ cc_component("paint") {
     "skia_paint_canvas.h",
     "skia_paint_image_generator.cc",
     "skia_paint_image_generator.h",
+    "skottie_resource_metadata.cc",
+    "skottie_resource_metadata.h",
     "skottie_wrapper.cc",
     "skottie_wrapper.h",
     "solid_color_analyzer.cc",
