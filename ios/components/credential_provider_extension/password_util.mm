@@ -25,15 +25,19 @@ NSString* PasswordWithKeychainIdentifier(NSString* identifier) {
   };
 
   // Get the keychain item containing the password.
-  CFDataRef secDataRef;
+  CFDataRef sec_data_ref = nullptr;
   OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query,
-                                        (CFTypeRef*)&secDataRef);
-  NSData* data = (__bridge_transfer NSData*)secDataRef;
-  if (status == errSecSuccess) {
-    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                                        (CFTypeRef*)&sec_data_ref);
+
+  if (status != errSecSuccess) {
+    DLOG(ERROR) << "Error retrieving password, OSStatus: " << status;
+    return nil;
   }
-  DLOG(ERROR) << "Error retrieving password, OSStatus: " << status;
-  return nil;
+
+  // This is safe because SecItemCopyMatching either assign an owned reference
+  // to sec_data_ref, or leave it unchanged, and bridging maps nullptr to nil.
+  NSData* data = (__bridge_transfer NSData*)sec_data_ref;
+  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
 BOOL StorePasswordInKeychain(NSString* password, NSString* identifier) {

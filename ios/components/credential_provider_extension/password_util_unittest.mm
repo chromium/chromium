@@ -103,7 +103,7 @@ TEST_F(PasswordUtilKeychainTest, CheckRestoreOfSavedPasswords) {
 }
 
 // Tests retrieval of saved passwords, using an empty string as arg.
-TEST_F(PasswordUtilKeychainTest, DISABLED_EmptyArgument) {
+TEST_F(PasswordUtilKeychainTest, EmptyArgument) {
   ASSERT_TRUE([PasswordWithKeychainIdentifier(@"") isEqualToString:@""]);
 }
 
