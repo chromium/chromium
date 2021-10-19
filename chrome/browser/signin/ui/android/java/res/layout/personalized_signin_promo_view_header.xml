@@ -13,17 +13,19 @@
         android:layout_width="@dimen/signin_promo_account_image_size"
         android:layout_height="@dimen/signin_promo_account_image_size"
         android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
         tools:ignore="ContentDescription"
         android:scaleType="fitCenter"/>
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/signin_promo_close_button"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="top|end"
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/close"
-        android:scaleType="fitCenter"
+        android:scaleType="center"
         android:src="@drawable/btn_close"
         android:visibility="gone"
         app:tint="?attr/default_icon_color" />
