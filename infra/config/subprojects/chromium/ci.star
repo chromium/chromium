@@ -4219,65 +4219,6 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
-    name = "TSAN Release (deps-cache) (reclient)",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux tsan",
-        short_name = "rre",
-    ),
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 3,
-    ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_rewrapper_env = {"RBE_cache_silo": "TSAN Release (deps-cache) (reclient)"},
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.fyi_builder(
-    name = "TSAN Release (j-250) (reclient)",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux tsan",
-        short_name = "rre",
-    ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = 250,
-    reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-    schedule = "triggered",  # triggered manually via Scheduler UI
-)
-
-ci.fyi_builder(
-    name = "TSAN Release (g-ip) (reclient)",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux tsan",
-        short_name = "rreg",
-    ),
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 1,
-    ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.fyi_builder(
-    name = "TSAN Release (reclient)",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux tsan",
-        short_name = "rre",
-    ),
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 1,
-    ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.fyi_builder(
     name = "ASAN Debug (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",

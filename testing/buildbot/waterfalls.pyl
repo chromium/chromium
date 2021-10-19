@@ -2678,26 +2678,6 @@
           'chromium_builder_asan',
         ],
       },
-      'TSAN Release (deps-cache) (reclient)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'TSAN Release (g-ip) (reclient)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'TSAN Release (j-250) (reclient)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'TSAN Release (reclient)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
       'UBSan Release (reclient)': {
         'additional_compile_targets': [
           'chromium_builder_asan',
