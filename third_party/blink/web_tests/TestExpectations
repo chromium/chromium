@@ -3007,7 +3007,6 @@ crbug.com/626703 [ Mac11-arm64 ] virtual/delayed-animation-updates/external/wpt/
 crbug.com/626703 [ Mac11-arm64 ] virtual/disable-ua-ch-platform-feature/external/wpt/client-hints/accept-ch-non-secure.http.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemFileHandle-sync-access-handle-writable-lock.https.tentative.worker.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/delayed-animation-updates/external/wpt/css/css-transitions/parsing/transition-invalid.html [ Crash ]
-crbug.com/626703 [ Mac11-arm64 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/backdrop-stacking-order.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/delayed-animation-updates/external/wpt/scroll-animations/scroll-timelines/idlharness.window.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/disable-user-agent-client-hint-feature/wpt_internal/client-hints/accept_ch_feature_policy_allow_legacy_hints.tentative.sub.https.html [ Crash ]
@@ -7241,3 +7240,4 @@ crbug.com/1256763 [ Linux ] images/color-profile-background-image-cross-fade.htm
 crbug.com/1256763 [ Linux ] images/color-profile-background-clip-text.html [ Failure Pass ]
 crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-svg-fill-text.html [ Failure Pass ]
 crbug.com/1259277 [ Mac ] fast/events/message-port-multi.html [ Failure Pass ]
+crbug.com/1261457 [ Mac11-arm64 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure Pass ]
