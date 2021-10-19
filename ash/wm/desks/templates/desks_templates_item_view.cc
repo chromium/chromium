@@ -10,6 +10,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/desks_templates_delete_button.h"
+#include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,13 +24,10 @@ namespace ash {
 
 namespace {
 
-constexpr int kMaxIcons = 5;
-
 // TODO(richui): Replace these temporary values once specs come out.
 constexpr gfx::Size kViewSize(250, 40);
 constexpr gfx::Size kPreferredSize(250, 150);
 constexpr int kIconSpacingDp = 10;
-constexpr gfx::Size kPreviewIconSize(40, 40);
 constexpr int kDeleteButtonMargin = 8;
 constexpr int kDeleteButtonSize = 24;
 
@@ -121,12 +119,24 @@ void DesksTemplatesItemView::Layout() {
 }
 
 void DesksTemplatesItemView::SetIcons() {
-  for (int i = 0; i < kMaxIcons; ++i) {
-    preview_view_->AddChildView(views::Builder<views::View>()
-                                    .SetPreferredSize(kPreviewIconSize)
-                                    .SetBorder(views::CreateSolidBorder(
-                                        /*thickness=*/2, SK_ColorLTGRAY))
-                                    .Build());
+  // TODO(chinsenj): Currently the desk templates backend isn't hooked up so we
+  // can't retrieve the urls/app. For now hardcode some values.
+  const std::vector<std::string> kIdentifiers{
+      "https://www.google.com", "https://www.facebook.com",
+      "mgndgikekgjfcpckkfioiadnlibdjbkf", "hhaomjibdihmijegdhdafkllkbggdgoj"};
+  constexpr size_t kNumUrls = 2;
+
+  for (size_t i = 0; i < kIdentifiers.size(); ++i) {
+    DesksTemplatesIconView* icon_view = preview_view_->AddChildView(
+        views::Builder<DesksTemplatesIconView>()
+            .SetIconIdentifier(kIdentifiers[i])
+            .SetIsUrl(i < kNumUrls)
+            .SetPreferredSize(gfx::Size(DesksTemplatesIconView::kIconSize,
+                                        DesksTemplatesIconView::kIconSize))
+            .SetBorder(views::CreateSolidBorder(
+                /*thickness=*/2, SK_ColorLTGRAY))
+            .Build());
+    icon_view->LoadIcon();
   }
 }
 

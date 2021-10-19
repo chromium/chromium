@@ -8,7 +8,14 @@
 #include <memory>
 
 #include "ash/shell_delegate.h"
+#include "base/callback_forward.h"
 #include "base/macros.h"
+#include "components/favicon_base/favicon_callback.h"
+#include "components/services/app_service/public/mojom/app_service.mojom.h"
+
+namespace base {
+class CancelableTaskTracker;
+}  // namespace base
 
 class ChromeShellDelegate : public ash::ShellDelegate {
  public:
@@ -58,6 +65,14 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
       aura::Window* window) const override;
   desks_storage::DeskModel* GetDeskModel() override;
+  void GetFaviconForUrl(const std::string& page_url,
+                        favicon_base::FaviconImageCallback callback,
+                        base::CancelableTaskTracker* tracker) const override;
+  void GetIconForAppId(
+      const std::string& app_id,
+      int desired_icon_size,
+      base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
+      const override;
 
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();

@@ -98,4 +98,15 @@ TestShellDelegate::GetAppLaunchDataForDeskTemplate(aura::Window* window) const {
   return nullptr;
 }
 
+void TestShellDelegate::GetFaviconForUrl(
+    const std::string& page_url,
+    favicon_base::FaviconImageCallback callback,
+    base::CancelableTaskTracker* tracker) const {}
+
+void TestShellDelegate::GetIconForAppId(
+    const std::string& app_id,
+    int desired_icon_size,
+    base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
+    const {}
+
 }  // namespace ash

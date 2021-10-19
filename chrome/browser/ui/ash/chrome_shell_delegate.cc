@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_share_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -60,6 +61,9 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
@@ -424,6 +428,37 @@ void ChromeShellDelegate::OpenFeedbackPageForPersistentDesksBar() {
   chrome::OpenFeedbackDialog(/*browser=*/nullptr,
                              chrome::kFeedbackSourceBentoBar,
                              /*description_template=*/"#BentoBar\n\n");
+}
+
+void ChromeShellDelegate::GetFaviconForUrl(
+    const std::string& page_url,
+    favicon_base::FaviconImageCallback callback,
+    base::CancelableTaskTracker* tracker) const {
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(
+          ProfileManager::GetActiveUserProfile(),
+          ServiceAccessType::EXPLICIT_ACCESS);
+
+  favicon_service->GetFaviconImageForPageURL(GURL(page_url),
+                                             std::move(callback), tracker);
+}
+
+void ChromeShellDelegate::GetIconForAppId(
+    const std::string& app_id,
+    int desired_icon_size,
+    base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
+    const {
+  auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
+      ProfileManager::GetActiveUserProfile());
+  if (!app_service_proxy) {
+    std::move(callback).Run(apps::mojom::IconValue::New());
+    return;
+  }
+
+  app_service_proxy->LoadIcon(
+      app_service_proxy->AppRegistryCache().GetAppType(app_id), app_id,
+      apps::mojom::IconType::kStandard, desired_icon_size,
+      /*allow_placeholder_icon=*/false, std::move(callback));
 }
 
 // static
