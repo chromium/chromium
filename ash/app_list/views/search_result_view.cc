@@ -246,8 +246,7 @@ void SearchResultView::StyleTitleLabel() {
               AshColorProvider::ContentLayerType::kTextColorURL);
       title_label_->AddStyleRange(tag.range, url_text_color);
     }
-    if (tag.styles & SearchResult::Tag::MATCH &&
-        app_list_features::IsLauncherQueryHighlightingEnabled()) {
+    if (tag.styles & SearchResult::Tag::MATCH) {
       views::StyledLabel::RangeStyleInfo selected_text_bold;
       selected_text_bold.text_style = ash::AshTextStyle::STYLE_EMPHASIZED;
       title_label_->AddStyleRange(tag.range, selected_text_bold);
@@ -289,8 +288,7 @@ void SearchResultView::StyleDetailsLabel() {
               AshColorProvider::ContentLayerType::kTextColorURL);
       details_label_->AddStyleRange(tag.range, url_text_color);
     }
-    if (tag.styles & SearchResult::Tag::MATCH &&
-        app_list_features::IsLauncherQueryHighlightingEnabled()) {
+    if (tag.styles & SearchResult::Tag::MATCH) {
       views::StyledLabel::RangeStyleInfo selected_text_bold;
       selected_text_bold.text_style = ash::AshTextStyle::STYLE_EMPHASIZED;
       details_label_->AddStyleRange(tag.range, selected_text_bold);

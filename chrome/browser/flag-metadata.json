@@ -3602,11 +3602,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "launcher-query-highlighting",
-    "owners": ["wrong", "tby", "thanhdng"],
-    "expiry_milestone": 95
-  },
-  {
     "name": "launcher-search-normalization",
     "owners": ["wrong", "tby"],
     "expiry_milestone": 96

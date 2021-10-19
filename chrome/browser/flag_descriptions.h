@@ -2781,9 +2781,6 @@ extern const char kLacrosSelectionStatefulDescription[];
 extern const char kLacrosSupportName[];
 extern const char kLacrosSupportDescription[];
 
-extern const char kLauncherQueryHighlightingName[];
-extern const char kLauncherQueryHighlightingDescription[];
-
 extern const char kLimitShelfItemsToActiveDeskName[];
 extern const char kLimitShelfItemsToActiveDeskDescription[];
 

@@ -73,9 +73,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableLauncherSearchNormalization;
 // Enables categorical search in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kCategoricalSearch;
 
-// Enables search query highlighting in the launcher.
-ASH_PUBLIC_EXPORT extern const base::Feature kLauncherQueryHighlighting;
-
 // Forces the launcher to show the continue section even if there are no file
 // suggestions.
 ASH_PUBLIC_EXPORT extern const base::Feature kForceShowContinueSection;
@@ -97,7 +94,6 @@ bool ASH_PUBLIC_EXPORT IsAggregatedMlSearchRankingEnabled();
 bool ASH_PUBLIC_EXPORT IsNewDragSpecInLauncherEnabled();
 bool ASH_PUBLIC_EXPORT IsLauncherSearchNormalizationEnabled();
 bool ASH_PUBLIC_EXPORT IsCategoricalSearchEnabled();
-bool ASH_PUBLIC_EXPORT IsLauncherQueryHighlightingEnabled();
 
 std::string ASH_PUBLIC_EXPORT AnswerServerUrl();
 std::string ASH_PUBLIC_EXPORT AnswerServerQuerySuffix();

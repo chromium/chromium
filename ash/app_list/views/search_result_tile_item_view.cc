@@ -464,9 +464,6 @@ void SearchResultTileItemView::SetTitle(const std::u16string& title) {
 }
 
 void SearchResultTileItemView::SetTitleTags(const SearchResultTags& tags) {
-  if (!app_list_features::IsLauncherQueryHighlightingEnabled())
-    return;
-
   for (const auto& tag : tags) {
     if (tag.styles & SearchResult::Tag::MATCH) {
       title_->SetTextStyleRange(AshTextStyle::STYLE_EMPHASIZED, tag.range);
