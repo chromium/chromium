@@ -283,6 +283,20 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
       cryptotoken_private::CanMakeU2fApiRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // The `chrome.tabs` API doesn't work in Chrome OS sign-in contexts (e.g.
+  // device login with some SAML provider making a U2F request). This means that
+  // in these contexts we can't figure out the sender frame of the original U2F
+  // API request and therefore can't show a permission prompt or check for
+  // origin trial enrollment. Hence, just let these requests succeed without
+  // further checks.
+  if (!ash::ProfileHelper::IsRegularProfile(
+          Profile::FromBrowserContext(browser_context()))) {
+    DCHECK_EQ(params->options.tab_id, api::tabs::TAB_ID_NONE);
+    return RespondNow(OneArgument(base::Value(true)));
+  }
+#endif
+
   content::WebContents* web_contents = nullptr;
   if (!ExtensionTabUtil::GetTabById(params->options.tab_id, browser_context(),
                                     true /* include incognito windows */,
@@ -316,15 +330,6 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
       base::FeatureList::IsEnabled(extensions_features::kU2FSecurityKeyAPI) ||
       u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled);
 
-  const bool is_chromeos_signin_or_lockscreen_profile =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // Note that this is not the same as `Profile::IsRegularProfile()`.
-      !ash::ProfileHelper::IsRegularProfile(
-          Profile::FromBrowserContext(browser_context()));
-#else
-      false;
-#endif
-
   // Don't show a permission prompt if its feature flag is disabled, or if the
   // site enrolled in the deprecation trial (since they're obviously aware of
   // the deprecation), or if the enterprise policy to override U2F
@@ -334,8 +339,7 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
   // includes CrOS SAML sign-in context that doesn't support permission prompts
   // (crbug.com/1257293).
   if (!base::FeatureList::IsEnabled(device::kU2fPermissionPrompt) ||
-      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled ||
-      is_chromeos_signin_or_lockscreen_profile) {
+      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled) {
     return RespondNow(OneArgument(base::Value(true)));
   }
 
