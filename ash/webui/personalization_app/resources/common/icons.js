@@ -93,6 +93,12 @@ template.innerHTML = `
          17.5H7.5V15.625H5.625V17.5ZM2.5 10.625H4.375V8.75H2.5V10.625ZM2.5
          4.375H4.375V2.5C3.34375 2.5 2.5 3.34375 2.5 4.375Z"/>
        </g>
+       <g id="exit_fullscreen">
+         <path fill="#E8EAED" d="m6.43718,8.65127l5.01667,-4.76625l-1.27436,-1.23375l-7.17949,7l7.17949,7l1.26538,-1.2338l-5.00769,-4.7662l10.56282,0l0,-2l-10.56282,0z" clip-rule="evenodd" fill-rule="evenodd"/>
+       </g>
+       <g id="confirm_selection">
+         <path fill="#E8EAED" d="M 6.402 14.334 L 1.738 9.67 L 0.15 11.247 L 6.402 17.5 L 19.825 4.078 L 18.247 2.5 L 6.402 14.334 Z"></path>
+       </g>
      </defs>
    </svg>
  </iron-iconset-svg>

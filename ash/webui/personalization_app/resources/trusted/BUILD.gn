@@ -49,7 +49,11 @@ js_library("local_images_element") {
 js_library("wallpaper_fullscreen_element") {
   deps = [
     ":personalization_store",
+    "../common:icons",
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
+    "//third_party/polymer/v3_0/components-chromium/iron-iconset-svg:iron-iconset-svg",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
 }
 

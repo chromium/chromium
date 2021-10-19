@@ -7,6 +7,10 @@
  * viewing mode of the currently selected wallpaper.
  */
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+import '../common/icons.js';
 import {assert} from 'chrome://resources/js/assert.m.js'
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getWallpaperLayoutEnum} from '../common/utils.js';
@@ -36,11 +40,6 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
       },
       /** @private */
       showLayoutOptions_: {
-        type: Boolean,
-        value: false,
-      },
-      /** @private */
-      showDailyRefresh_: {
         type: Boolean,
         value: false,
       },
@@ -148,9 +147,16 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     setCustomWallpaperLayout(layout, this.wallpaperProvider_, this.getStore());
   }
 
-  /** @private */
-  onClickUpdateDailyRefresh_() {
-    updateDailyRefreshWallpaper(this.wallpaperProvider_, this.getStore());
+  /**
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {string} str
+   * @return {string}
+   * @private
+   */
+  getLayoutAriaSelected_(image, str) {
+    assert(str === 'FILL' || str === 'CENTER');
+    const layout = getWallpaperLayoutEnum(str);
+    return (image?.layout === layout).toString();
   }
 }
 

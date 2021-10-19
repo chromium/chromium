@@ -79,6 +79,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"ariaLabelViewFullScreen",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_VIEW_FULL_SCREEN},
       {"exitFullscreen", IDS_PERSONALIZATION_APP_EXIT_FULL_SCREEN},
+      {"ariaLabelExitFullscreen",
+       IDS_PERSONALIZATION_APP_ARIA_LABEL_EXIT_FULL_SCREEN},
       {"setAsWallpaper", IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER}};
   source->AddLocalizedStrings(kLocalizedStrings);
 
