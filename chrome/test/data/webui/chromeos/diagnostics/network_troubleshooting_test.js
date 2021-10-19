@@ -6,7 +6,7 @@ import {TroubleshootingInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {NetworkTroubleshootingElement} from 'chrome://diagnostics/network_troubleshooting.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -22,6 +22,27 @@ export function networkTroubleshootingTestSuite() {
     networkTroubleshootingElement.remove();
     networkTroubleshootingElement = null;
   });
+
+  /** @return {!HTMLElement} */
+  function getLinkTextElement() {
+    assertTrue(!!networkTroubleshootingElement);
+
+    return /** @type {!HTMLElement} */ (
+        networkTroubleshootingElement.shadowRoot.querySelector(
+            '#troubleshootingLinkText'));
+  }
+
+  /**
+   * @suppress {visibility}
+   * @param {boolean} state
+   * @return {!Promise}
+   */
+  function setIsLoggedIn(state) {
+    assertTrue(!!networkTroubleshootingElement);
+    networkTroubleshootingElement.isLoggedIn_ = state;
+
+    return flushTasks();
+  }
 
   /**
    * @param {!TroubleshootingInfo} info
@@ -56,6 +77,24 @@ export function networkTroubleshootingTestSuite() {
               networkTroubleshootingElement.shadowRoot.querySelector(
                   '#troubleshootingLinkText'),
               'linkText');
+        });
+  });
+
+  test('IsLoggedInFalseThenLinkTextHidden', () => {
+    /** @type {TroubleshootingInfo} */
+    const troubleShootingInfo = {
+      header: 'header',
+      linkText: 'linkText',
+      url: 'https://google.com',
+    };
+    return initializeNetworkTroubleshooting(troubleShootingInfo)
+        .then(() => setIsLoggedIn(false))
+        .then(() => {
+          dx_utils.assertElementContainsText(
+              networkTroubleshootingElement.shadowRoot.querySelector(
+                  '#troubleshootingText'),
+              'header');
+          assertFalse(isVisible(getLinkTextElement()));
         });
   });
 }
