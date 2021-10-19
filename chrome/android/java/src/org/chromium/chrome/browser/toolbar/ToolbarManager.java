@@ -363,6 +363,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param snackbarManager Manages the display of snackbars.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *         MerchantTrustSignalsCoordinator}.
+     * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
+     *         colors.
      */
     public ToolbarManager(AppCompatActivity activity, BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager, ToolbarControlContainer controlContainer,
@@ -396,7 +398,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             @NonNull SnackbarManager snackbarManager, JankTracker jankTracker,
             @NonNull Supplier<MerchantTrustSignalsCoordinator>
-                    merchantTrustSignalsCoordinatorSupplier) {
+                    merchantTrustSignalsCoordinatorSupplier,
+            boolean initializeWithIncognitoColors) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -550,7 +553,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 browsingModeThemeColorProvider, startSurfaceMenuButtonCoordinator,
                 mCompositorViewHolder.getInvalidator(), identityDiscController,
                 isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled, isStartSurfaceEnabled,
-                isTabGroupsAndroidContinuationEnabled);
+                isTabGroupsAndroidContinuationEnabled, initializeWithIncognitoColors);
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
 
@@ -980,7 +983,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             MenuButtonCoordinator startSurfaceMenuButtonCoordinator, Invalidator invalidator,
             IdentityDiscController identityDiscController, boolean isGridTabSwitcherEnabled,
             boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled,
-            boolean isTabGroupsAndroidContinuationEnabled) {
+            boolean isTabGroupsAndroidContinuationEnabled, boolean initializeWithIncognitoColors) {
         // clang-format off
         TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer, toolbarLayout,
                 mLocationBarModel, mToolbarTabController,
@@ -1002,7 +1005,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled, isStartSurfaceEnabled,
                 isTabGroupsAndroidContinuationEnabled, HistoryManagerUtils::showHistoryManager,
                 PartnerBrowserCustomizations.getInstance()::isHomepageProviderAvailableAndEnabled,
-                DownloadUtils::downloadOfflinePage);
+                DownloadUtils::downloadOfflinePage, initializeWithIncognitoColors);
         // clang-format on
         mHomepageStateListener = () -> {
             mHomepageEnabledSupplier.set(HomepageManager.isHomepageEnabled());

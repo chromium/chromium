@@ -1615,7 +1615,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 /* appMenuDelegate= */ this, /* statusBarColorProvider= */ this,
                 mEphemeralTabCoordinatorSupplier, getIntentRequestTracker(),
                 getControlContainerHeightResource(), this::getInsetObserverView,
-                this::backShouldCloseTab);
+                this::backShouldCloseTab,
+                // TODO(sinansahin): This currently only checks for incognito extras in the intent.
+                // We should make it more robust by using more signals.
+                IntentHandler.hasAnyIncognitoExtra(getIntent().getExtras()));
     }
 
     @Override
