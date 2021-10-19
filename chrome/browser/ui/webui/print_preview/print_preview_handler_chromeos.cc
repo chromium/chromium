@@ -181,11 +181,10 @@ void PrintPreviewHandlerChromeOS::OnJavascriptDisallowed() {
 
 void PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess(
     const base::ListValue* args) {
-  std::string callback_id;
-  std::string printer_id;
-  bool ok = args->GetString(0, &callback_id) &&
-            args->GetString(1, &printer_id) && !callback_id.empty();
-  DCHECK(ok);
+  DCHECK(args->GetList()[0].is_string() && args->GetList()[1].is_string());
+  std::string callback_id = args->GetList()[0].GetString();
+  std::string printer_id = args->GetList()[1].GetString();
+  DCHECK(!callback_id.empty());
   MaybeAllowJavascript();
 
   PrinterHandler* handler = GetPrinterHandler(mojom::PrinterType::kExtension);
@@ -202,8 +201,12 @@ void PrintPreviewHandlerChromeOS::HandlePrinterSetup(
   std::string callback_id;
   std::string printer_name;
   MaybeAllowJavascript();
-  if (!args->GetString(0, &callback_id) || !args->GetString(1, &printer_name) ||
-      callback_id.empty() || printer_name.empty()) {
+  if (args->GetList()[0].is_string() && args->GetList()[1].is_string()) {
+    callback_id = args->GetList()[0].GetString();
+    printer_name = args->GetList()[1].GetString();
+  }
+
+  if (callback_id.empty() || printer_name.empty()) {
     RejectJavascriptCallback(base::Value(callback_id),
                              base::Value(printer_name));
     return;
@@ -218,10 +221,10 @@ void PrintPreviewHandlerChromeOS::HandlePrinterSetup(
 
 void PrintPreviewHandlerChromeOS::HandleGetAccessToken(
     const base::ListValue* args) {
-  std::string callback_id;
+  DCHECK(args->GetList()[0].is_string());
 
-  bool ok = args->GetString(0, &callback_id) && !callback_id.empty();
-  DCHECK(ok);
+  std::string callback_id = args->GetList()[0].GetString();
+  DCHECK(!callback_id.empty());
   MaybeAllowJavascript();
 
   if (!token_service_)
@@ -355,8 +358,8 @@ void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(
 
 void PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig(
     const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK(args->GetList()[0].is_string());
+  std::string callback_id = args->GetList()[0].GetString();
   CHECK(!callback_id.empty());
   MaybeAllowJavascript();
   if (!local_printer_) {

@@ -703,9 +703,9 @@ void PrintPreviewHandler::HandleGetPreview(const base::ListValue* args) {
 
   // All of the conditions below should be guaranteed by the print preview
   // javascript.
-  args->GetString(0, &callback_id);
+  callback_id = args->GetList()[0].GetString();
   CHECK(!callback_id.empty());
-  args->GetString(1, &json_str);
+  json_str = args->GetList()[1].GetString();
   base::Value settings = GetSettingsDictionary(json_str);
   CHECK(settings.is_dict());
   int request_id = settings.FindIntKey(kPreviewRequestID).value();
@@ -771,11 +771,11 @@ void PrintPreviewHandler::HandleGetPreview(const base::ListValue* args) {
 void PrintPreviewHandler::HandlePrint(const base::ListValue* args) {
   ReportRegeneratePreviewRequestCountBeforePrint(
       regenerate_preview_request_count_);
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK(args->GetList()[0].is_string());
+  std::string callback_id = args->GetList()[0].GetString();
   CHECK(!callback_id.empty());
-  std::string json_str;
-  CHECK(args->GetString(1, &json_str));
+  CHECK(args->GetList()[1].is_string());
+  std::string json_str = args->GetList()[1].GetString();
 
   base::Value settings = GetSettingsDictionary(json_str);
   if (!settings.is_dict()) {
@@ -847,7 +847,9 @@ void PrintPreviewHandler::HandleSaveAppState(const base::ListValue* args) {
   std::string data_to_save;
   PrintPreviewStickySettings* sticky_settings =
       PrintPreviewStickySettings::GetInstance();
-  if (args->GetString(0, &data_to_save) && !data_to_save.empty())
+  if (args->GetList()[0].is_string())
+    data_to_save = args->GetList()[0].GetString();
+  if (!data_to_save.empty())
     sticky_settings->StoreAppState(data_to_save);
   sticky_settings->SaveInPrefs(GetPrefs());
 }
@@ -938,8 +940,8 @@ void PrintPreviewHandler::GetLocaleInformation(base::Value* settings) {
 
 void PrintPreviewHandler::HandleGetInitialSettings(
     const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK(args->GetList()[0].is_string());
+  std::string callback_id = args->GetList()[0].GetString();
   CHECK(!callback_id.empty());
 
   AllowJavascript();
