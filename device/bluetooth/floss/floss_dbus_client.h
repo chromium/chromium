@@ -38,6 +38,8 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnAddressChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceFound[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDiscoveringChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnSspRequest[];
+
+extern DEVICE_BLUETOOTH_EXPORT const char kOnBondStateChanged[];
 }  // namespace adapter
 
 namespace manager {

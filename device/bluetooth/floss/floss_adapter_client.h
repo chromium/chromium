@@ -45,6 +45,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kPasskeyNotification = 3,
   };
 
+  enum class BondState {
+    kNotBonded = 0,
+    kBondingInProgress = 1,
+    kBonded = 2,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     Observer(const Observer&) = delete;
@@ -69,6 +75,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
                                    uint32_t cod,
                                    BluetoothSspVariant variant,
                                    uint32_t passkey) {}
+
+    // Notification sent when a bonding state changes for a remote device.
+    // TODO(b:202334519): Change status type to enum once Floss has the enum.
+    virtual void DeviceBondStateChanged(const FlossDeviceId& remote_device,
+                                        uint32_t status,
+                                        BondState bond_state) {}
   };
 
   // Error: No such adapter.
@@ -142,6 +154,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Handle callback |OnSspRequest| on exported object path.
   void OnSspRequest(dbus::MethodCall* method_call,
                     dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnBondStateChanged| on exported object path.
+  void OnBondStateChanged(dbus::MethodCall* method_call,
+                          dbus::ExportedObject::ResponseSender response_sender);
 
   // List of observers interested in event notifications from this client.
   base::ObserverList<Observer> observers_;

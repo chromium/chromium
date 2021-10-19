@@ -31,6 +31,8 @@ const char kOnAddressChanged[] = "OnBluetoothAddressChanged";
 const char kOnDeviceFound[] = "OnDeviceFound";
 const char kOnDiscoveringChanged[] = "OnDiscoveringChanged";
 const char kOnSspRequest[] = "OnSspRequest";
+
+const char kOnBondStateChanged[] = "OnBondStateChanged";
 }  // namespace adapter
 
 namespace manager {

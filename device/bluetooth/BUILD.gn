@@ -502,6 +502,10 @@ component("bluetooth") {
           "dbus/fake_bluetooth_profile_manager_client.h",
           "dbus/fake_bluetooth_profile_service_provider.cc",
           "dbus/fake_bluetooth_profile_service_provider.h",
+          "floss/fake_floss_adapter_client.cc",
+          "floss/fake_floss_adapter_client.h",
+          "floss/fake_floss_manager_client.cc",
+          "floss/fake_floss_manager_client.h",
         ]
       }
       deps += [ "//dbus" ]

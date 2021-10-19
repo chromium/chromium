@@ -1,0 +1,19 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "device/bluetooth/floss/fake_floss_manager_client.h"
+
+#include "base/logging.h"
+
+namespace floss {
+
+FakeFlossManagerClient::FakeFlossManagerClient() = default;
+
+FakeFlossManagerClient::~FakeFlossManagerClient() = default;
+
+void FakeFlossManagerClient::SetAdapterPowered(int adapter, bool powered) {
+  adapter_to_powered_.emplace(adapter, powered);
+}
+
+}  // namespace floss

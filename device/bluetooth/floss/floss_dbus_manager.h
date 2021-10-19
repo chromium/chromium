@@ -29,6 +29,7 @@ namespace floss {
 class FlossAdapterClient;
 class FlossManagerClient;
 class FlossClientBundle;
+class FlossDBusManagerSetter;
 
 // FlossDBusManager manages the lifetimes of D-Bus connections and clients. It
 // ensures the proper ordering of shutdowns for the D-Bus thread, connections
@@ -47,6 +48,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   // Initializes the global instance with a fake client
   // TODO(b/193712484) - Implement this. Only added here to fix debug build.
   static void InitializeFake();
+
+  // Returns a FlossDBusManagerSetter instance that allows tests to
+  // replace individual D-Bus clients with their own implementations.
+  // Also initializes the main FlossDBusManager for testing if necessary.
+  static std::unique_ptr<FlossDBusManagerSetter> GetSetterForTesting();
 
   // Returns true if FlossDBusManager has been initialized. Call this to
   // avoid initializing + shutting down FlossDBusManager more than once.
@@ -72,6 +78,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   // will return false.
   bool CallWhenObjectManagerSupportIsKnown(base::OnceClosure callback);
 
+  // Returns true if Object Manager is support is known.
+  bool IsObjectManagerSupportKnown() const {
+    return object_manager_support_known_;
+  }
+
   // Returns true if Object Manager is supported.
   bool IsObjectManagerSupported() const { return object_manager_supported_; }
 
@@ -91,11 +102,13 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   FlossAdapterClient* GetAdapterClient();
 
  private:
+  friend class FlossDBusManagerSetter;
+
   // Creates a global instance of FlossDBusManager. Cannot be called more than
   // once.
-  static void CreateGlobalInstance(dbus::Bus* bus);
+  static void CreateGlobalInstance(dbus::Bus* bus, bool use_stubs);
 
-  explicit FlossDBusManager(dbus::Bus* bus);
+  FlossDBusManager(dbus::Bus* bus, bool use_stubs);
   ~FlossDBusManager();
 
   void OnObjectManagerSupported(dbus::Response* response);
@@ -127,6 +140,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   int active_adapter_ = kInvalidAdapter;
 
   base::WeakPtrFactory<FlossDBusManager> weak_ptr_factory_{this};
+};
+
+class DEVICE_BLUETOOTH_EXPORT FlossDBusManagerSetter {
+ public:
+  void SetFlossManagerClient(std::unique_ptr<FlossManagerClient> client);
+  void SetFlossAdapterClient(std::unique_ptr<FlossAdapterClient> client);
 };
 
 // FlossDBusThreadManager manages the D-Bus thread, the thread dedicated to
@@ -166,7 +185,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
   FlossClientBundle(const FlossClientBundle&) = delete;
   FlossClientBundle& operator=(const FlossClientBundle&) = delete;
 
-  FlossClientBundle();
+  explicit FlossClientBundle(bool use_stubs);
   ~FlossClientBundle();
 
   FlossManagerClient* manager_client() { return manager_client_.get(); }
@@ -174,10 +193,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
   FlossAdapterClient* adapter_client() { return adapter_client_.get(); }
 
  private:
+  friend FlossDBusManagerSetter;
   friend FlossDBusManager;
 
   void ResetAdapterClients();
 
+  bool use_stubs_;
   std::unique_ptr<FlossManagerClient> manager_client_;
   std::unique_ptr<FlossAdapterClient> adapter_client_;
 };

@@ -52,6 +52,15 @@ void BluetoothAdapterFloss::Initialize(base::OnceClosure callback) {
   BLUETOOTH_LOG(EVENT) << "BluetoothAdapterFloss::Initialize";
   init_callback_ = std::move(callback);
 
+  // Go ahead to Init() if object manager support is already known (e.g. when
+  // using fake clients), otherwise find out object manager support first below.
+  if (floss::FlossDBusManager::Get()->IsObjectManagerSupportKnown()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&BluetoothAdapterFloss::Init,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   // Queue a task to check for ObjectManager support and init once the support
   // is known.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -92,6 +101,8 @@ void BluetoothAdapterFloss::AddAdapterObservers() {
 void BluetoothAdapterFloss::RemoveAdapter() {
   if (!FlossDBusManager::Get()->HasActiveAdapter())
     return;
+
+  devices_.clear();
 
   // Remove adapter by switching to an invalid adapter (cleans up DBus clients)
   // and then emitting |AdapterPresentChanged| to observers.
@@ -379,6 +390,8 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
       base::WrapUnique(new BluetoothDeviceFloss(this, device_found));
 
   if (!base::Contains(devices_, device_floss->GetAddress())) {
+    // TODO(b/202334519): Populate initial device properties first.
+
     // Take copy of pointer before moving ownership.
     BluetoothDeviceFloss* device_ptr = device_floss.get();
     devices_.emplace(device_floss->GetAddress(), std::move(device_floss));
@@ -399,6 +412,29 @@ void BluetoothAdapterFloss::AdapterSspRequest(
     FlossAdapterClient::BluetoothSspVariant variant,
     uint32_t passkey) {
   NOTIMPLEMENTED();
+}
+
+void BluetoothAdapterFloss::DeviceBondStateChanged(
+    const FlossDeviceId& remote_device,
+    uint32_t status,
+    FlossAdapterClient::BondState bond_state) {
+  if (!base::Contains(devices_, remote_device.address)) {
+    LOG(WARNING) << "Received BondStateChanged for a non-existent device";
+    return;
+  }
+
+  if (status != 0) {
+    LOG(ERROR) << "Received BondStateChanged with error status = " << status;
+    return;
+  }
+
+  BLUETOOTH_LOG(EVENT) << "BondStateChanged " << remote_device.address << " = "
+                       << static_cast<uint32_t>(bond_state);
+
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(devices_[remote_device.address].get());
+  device->SetBondState(bond_state);
+  NotifyDevicePairedChanged(device, device->IsPaired());
 }
 
 std::unordered_map<device::BluetoothDevice*, device::BluetoothDevice::UUIDSet>

@@ -8,13 +8,38 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
+#include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
 
 namespace floss {
+
+namespace {
+
+void OnCreateBond(BluetoothDeviceFloss::ConnectCallback callback,
+                  const absl::optional<Error>& error) {
+  if (error.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed to create bond: " << error->name << ": "
+                         << error->message;
+  }
+
+  // In Floss API, |error| is not the error code of the pairing result, but only
+  // the error code of the pairing request.
+  // TODO(b/202874707): Handle the pairing result properly.
+  // TODO(b/192289534): Record UMA metrics.
+  auto connect_error =
+      error ? absl::optional<BluetoothDeviceFloss::ConnectErrorCode>(
+                  BluetoothDeviceFloss::ConnectErrorCode::ERROR_UNKNOWN)
+            : absl::nullopt;
+
+  std::move(callback).Run(connect_error);
+}
+
+}  // namespace
 
 using AddressType = device::BluetoothDevice::AddressType;
 using VendorIDSource = device::BluetoothDevice::VendorIDSource;
@@ -81,9 +106,7 @@ absl::optional<std::string> BluetoothDeviceFloss::GetName() const {
 }
 
 bool BluetoothDeviceFloss::IsPaired() const {
-  NOTIMPLEMENTED();
-
-  return false;
+  return bond_state_ == FlossAdapterClient::BondState::kBonded;
 }
 
 bool BluetoothDeviceFloss::IsConnected() const {
@@ -168,7 +191,17 @@ void BluetoothDeviceFloss::SetConnectionLatency(
 void BluetoothDeviceFloss::Connect(
     device::BluetoothDevice::PairingDelegate* pairing_delegate,
     ConnectCallback callback) {
-  NOTIMPLEMENTED();
+  BLUETOOTH_LOG(EVENT) << "Connecting to " << address_;
+
+  if (IsPaired() || !pairing_delegate) {
+    // No need to pair, or unable to, skip straight to connection.
+    // TODO(b/202334519): Support connection flow without pairing.
+  } else {
+    FlossDBusManager::Get()->GetAdapterClient()->CreateBond(
+        base::BindOnce(&OnCreateBond, std::move(callback)),
+        FlossDeviceId({address_, name_}),
+        FlossAdapterClient::BluetoothTransport::kAuto);
+  }
 }
 
 void BluetoothDeviceFloss::SetPinCode(const std::string& pincode) {
@@ -253,6 +286,11 @@ void BluetoothDeviceFloss::AbortWrite(base::OnceClosure callback,
 
 void BluetoothDeviceFloss::SetName(const std::string& name) {
   name_ = name;
+}
+
+void BluetoothDeviceFloss::SetBondState(
+    FlossAdapterClient::BondState bond_state) {
+  bond_state_ = bond_state;
 }
 
 void BluetoothDeviceFloss::CreateGattConnectionImpl(

@@ -13,6 +13,7 @@
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "device/bluetooth/floss/floss_adapter_client.h"
 
 namespace floss {
 
@@ -96,6 +97,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 #endif
 
   void SetName(const std::string& name);
+  void SetBondState(FlossAdapterClient::BondState bond_state);
 
  protected:
   // BluetoothDevice override
@@ -128,6 +130,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   // Name of this device. Can be queried later and isn't mandatory for creation.
   std::string name_;
+
+  // Whether the device is bonded/paired.
+  FlossAdapterClient::BondState bond_state_ =
+      FlossAdapterClient::BondState::kNotBonded;
 
   base::WeakPtrFactory<BluetoothDeviceFloss> weak_ptr_factory_{this};
 };
