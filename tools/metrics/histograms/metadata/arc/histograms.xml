@@ -1341,7 +1341,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Provisioning.CheckInError{ArcUserTypes}"
-    enum="ArcProvisioningCheckInError" expires_after="2021-12-01">
+    enum="ArcProvisioningCheckInError" expires_after="2022-05-01">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1358,7 +1358,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Provisioning.CloudFlowError{ArcUserTypes}"
-    enum="ArcProvisioningCloudFlowError" expires_after="2021-12-01">
+    enum="ArcProvisioningCloudFlowError" expires_after="2022-05-01">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1396,7 +1396,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Provisioning.SignInError{ArcUserTypes}"
-    enum="ArcProvisioningSignInError" expires_after="2021-12-01">
+    enum="ArcProvisioningSignInError" expires_after="2022-05-01">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1413,7 +1413,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Provisioning.Status{ArcUserTypes}"
-    enum="ArcProvisioningStatus" expires_after="2021-12-01">
+    enum="ArcProvisioningStatus" expires_after="2022-05-01">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1631,7 +1631,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Session.StopReason{ArcUserTypes}" enum="ArcStopReason"
-    expires_after="2021-12-19">
+    expires_after="2022-05-01">
   <owner>shaochuan@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>mmatena@google.com</owner>
