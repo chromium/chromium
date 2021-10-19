@@ -690,8 +690,15 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
   ASSERT_FALSE(test_api().IsShowing());
 }
 
+// Disabled due to flakiness. http://crbug.com/1261364
+#if defined(OS_CHROMEOS)
+#define MAYBE_DragAndDropToPin DISABLED_DragAndDropToPin
+#else
+#define MAYBE_DragAndDropToPin DragAndDropToPin
+#endif
 // Verifies that drag-and-drop to pin holding space items works.
-IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
+IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
+                       MAYBE_DragAndDropToPin) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
