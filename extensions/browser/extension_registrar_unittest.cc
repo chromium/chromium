@@ -100,9 +100,6 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     notification_tracker_.ListenFor(
         extensions::NOTIFICATION_EXTENSION_UPDATE_DISABLED,
         content::Source<content::BrowserContext>(browser_context()));
-    notification_tracker_.ListenFor(
-        extensions::NOTIFICATION_EXTENSION_REMOVED,
-        content::Source<content::BrowserContext>(browser_context()));
 
     // Mock defaults.
     ON_CALL(delegate_, CanEnableExtension(extension_.get()))
@@ -198,10 +195,6 @@ class ExtensionRegistrarTest : public ExtensionsTest {
                                 UnloadedExtensionReason::UNINSTALL);
     ExpectInSet(ExtensionRegistry::NONE);
 
-    // Removing an enabled extension should trigger a notification.
-    EXPECT_TRUE(notification_tracker_.Check1AndReset(
-        extensions::NOTIFICATION_EXTENSION_REMOVED));
-
     VerifyMock();
   }
 
@@ -216,9 +209,6 @@ class ExtensionRegistrarTest : public ExtensionsTest {
 
     ExtensionPrefs::Get(browser_context())
         ->DeleteExtensionPrefs(extension_->id());
-    // Removing a disabled extension should trigger a notification.
-    EXPECT_TRUE(notification_tracker_.Check1AndReset(
-        extensions::NOTIFICATION_EXTENSION_REMOVED));
   }
 
   // Removes a blocklisted extension and verifies the result.
@@ -233,10 +223,6 @@ class ExtensionRegistrarTest : public ExtensionsTest {
 
     // RemoveExtension does not un-blocklist the extension.
     ExpectInSet(ExtensionRegistry::BLOCKLISTED);
-
-    // Removing a blocklisted extension should trigger a notification.
-    EXPECT_TRUE(notification_tracker_.Check1AndReset(
-        extensions::NOTIFICATION_EXTENSION_REMOVED));
 
     VerifyMock();
   }
@@ -253,10 +239,6 @@ class ExtensionRegistrarTest : public ExtensionsTest {
 
     // RemoveExtension does not un-block the extension.
     ExpectInSet(ExtensionRegistry::BLOCKED);
-
-    // Removing a blocked extension should trigger a notification.
-    EXPECT_TRUE(notification_tracker_.Check1AndReset(
-        extensions::NOTIFICATION_EXTENSION_REMOVED));
 
     VerifyMock();
   }
@@ -311,8 +293,6 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     SCOPED_TRACE("UntrackTerminatedExtension");
     registrar()->UntrackTerminatedExtension(extension()->id());
     ExpectInSet(ExtensionRegistry::NONE);
-    EXPECT_TRUE(notification_tracker_.Check1AndReset(
-        extensions::NOTIFICATION_EXTENSION_REMOVED));
   }
 
   // Directs ExtensionRegistrar to reload the extension and verifies the

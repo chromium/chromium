@@ -183,11 +183,6 @@ void ExtensionRegistrar::RemoveExtension(const ExtensionId& extension_id,
     registry_->RemoveEnabled(extension_id);
     DeactivateExtension(extension.get(), reason);
   }
-
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_REMOVED,
-      content::Source<content::BrowserContext>(browser_context_),
-      content::Details<const Extension>(extension.get()));
 }
 
 void ExtensionRegistrar::EnableExtension(const ExtensionId& extension_id) {
@@ -421,14 +416,6 @@ void ExtensionRegistrar::UntrackTerminatedExtension(
     return;
 
   registry_->RemoveTerminated(extension_id);
-
-  // TODO(michaelpg): This notification was already sent when the extension was
-  // unloaded as part of being terminated. But we send it again as observers
-  // may be tracking the terminated extension. See crbug.com/708230.
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_REMOVED,
-      content::Source<content::BrowserContext>(browser_context_),
-      content::Details<const Extension>(extension.get()));
 }
 
 bool ExtensionRegistrar::IsExtensionEnabled(
