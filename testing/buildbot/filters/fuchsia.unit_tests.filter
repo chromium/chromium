@@ -36,6 +36,7 @@
 -DownloadProtectionServiceTest.CheckClientDownloadSuccess
 -DownloadProtectionServiceTest.CheckClientDownloadValidate*
 -DownloadProtectionServiceTest.CheckClientDownloadZip
+-DownloadProtectionServiceTest.DifferentProfilesUseDifferentNetworkContexts
 -DownloadProtectionServiceTest.Does*
 -DownloadProtectionServiceTest.E*
 -DownloadProtectionServiceTest.FileSystemAccessWriteRequest_Check*
@@ -49,7 +50,6 @@
 -DownloadProtectionServiceTest.PPAPIDownloadRequest_Supported*
 -DownloadProtectionServiceTest.PPAPIDownloadRequest_Timeout
 -DownloadProtectionServiceTest.TestDownloadRequest*
--DownloadSeparate*
 -Enhanced*
 -EnterpriseCsdDownloadTest.PopulatesCsdFieldWhenEnabled/0
 -EnterpriseCsdDownloadTest.SkipsConsumerCsdWhenEnabled/0
