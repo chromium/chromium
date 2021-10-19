@@ -286,6 +286,18 @@
       "use_remoteexec": true
     }
   },
+  "Mac Builder (reclient compare)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "Mac Builder (reclient)": {
     "gn_args": {
       "dcheck_always_on": false,

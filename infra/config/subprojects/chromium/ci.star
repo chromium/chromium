@@ -4415,7 +4415,22 @@ ci.fyi_mac_builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    description_html = "experiment reclient on mac. removed after the migration. crbug.com/1244441",
+    description_html = "experiment reclient on mac. should be removed after the migration. crbug.com/1244441",
+)
+
+ci.fyi_mac_builder(
+    name = "Mac Builder (reclient compare)",
+    builderless = True,
+    cores = None,  # crbug.com/1245114
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+        short_name = "cmp",
+    ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_rewrapper_env = {"RBE_compare": "true"},
+    reclient_ensure_verified = True,
+    description_html = "verify artifacts. should be removed after the migration. crbug.com/1260232",
 )
 
 ci.fyi_mac_builder(
@@ -4431,7 +4446,7 @@ ci.fyi_mac_builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    description_html = "experiment reclient on mac-arm. removed after the migration. crbug.com/1252626",
+    description_html = "experiment reclient on mac-arm. should be removed after the migration. crbug.com/1252626",
 )
 
 ci.fyi_builder(
@@ -4466,7 +4481,7 @@ ci.fyi_builder(
     os = os.LINUX_BIONIC_REMOVE,
     reclient_rewrapper_env = {"RBE_compare": "true"},
     reclient_ensure_verified = True,
-    description_html = "verify artifacts. removed after the migration. crbug.com/1235218",
+    description_html = "verify artifacts. should be removed after the migration. crbug.com/1235218",
 )
 
 ci.fyi_builder(
