@@ -9,7 +9,7 @@ import {AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, A
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
-import {CreateDefaultAccelerator} from './shortcut_customization_test_util.js';
+import {CreateUserAccelerator} from './shortcut_customization_test_util.js';
 
 export function acceleratorRowTest() {
   /** @type {?AcceleratorRowElement} */
@@ -27,13 +27,13 @@ export function acceleratorRowTest() {
   });
 
   test('LoadsBasicRow', async () => {
-    const acceleratorInfo1 = CreateDefaultAccelerator(
+    const acceleratorInfo1 = CreateUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
         /*key_display=*/ 'g');
 
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo2 = CreateDefaultAccelerator(
+    const acceleratorInfo2 = CreateUserAccelerator(
         Modifier.CONTROL,
         /*key=*/ 67,
         /*key_display=*/ 'c');
@@ -74,7 +74,7 @@ export function acceleratorRowTest() {
   });
 
   test('LockIcon', async () => {
-    const acceleratorInfo1 = CreateDefaultAccelerator(
+    const acceleratorInfo1 = CreateUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
         /*key_display=*/ 'g');

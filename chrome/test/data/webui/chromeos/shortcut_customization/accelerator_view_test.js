@@ -10,7 +10,7 @@ import {AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, A
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
 
-import {CreateDefaultAccelerator} from './shortcut_customization_test_util.js';
+import {CreateDefaultAccelerator, CreateUserAccelerator} from './shortcut_customization_test_util.js';
 
 export function acceleratorViewTest() {
   /** @type {?AcceleratorViewElement} */
@@ -38,7 +38,7 @@ export function acceleratorViewTest() {
 
   test('LoadsBasicAccelerator', async () => {
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo = CreateDefaultAccelerator(
+    const acceleratorInfo = CreateUserAccelerator(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
         /*key_display=*/ 'g');

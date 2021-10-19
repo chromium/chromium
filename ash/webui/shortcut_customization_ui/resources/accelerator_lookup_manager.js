@@ -164,12 +164,37 @@ export class AcceleratorLookupManager {
       assertNotReached();
     }
 
-    // Check to see if there is a pre-existing accelerator to remove first.
+    if (JSON.stringify(oldAccelerator) === JSON.stringify(newAccelerator)) {
+      // Attempted to replace with the same accelerator.
+      return;
+    }
+
+    // Check to see if there is a pre-existing accelerator to remove or disable
+    // first.
     this.maybeRemoveOrDisableAccelerator_(newAccelerator);
 
-    // Update the old accelerator with the new one.
     const accelInfos = this.getAccelerators(source, action);
-    accelInfos[foundIdx].accelerator = newAccelerator;
+    const currentAccelerator = accelInfos[foundIdx];
+
+    // Handle the edge case in which the user is attempting to replace an
+    // existing accelerator with a disabled default accelerator.
+    if (this.maybeReenableDefaultAccelerator(accelInfos, newAccelerator)) {
+      // User replaced a non-default accelerator with a default accelerator.
+      // Remove the non-default accelerator.
+      accelInfos.splice(foundIdx, 1);
+    } else {
+      // If the old accelerator is a default accelerator, disable it and add a
+      // new accelerator.
+      if (currentAccelerator.type === AcceleratorType.kDefault) {
+        // The default accelerator should be disabled.
+        currentAccelerator.state = AcceleratorState.kDisabledByUser;
+
+        this.addAccelerator(source, action, newAccelerator);
+      } else {
+        // Update the old accelerator with the new one.
+        currentAccelerator.accelerator = newAccelerator;
+      }
+    }
 
     // Update the reverse look up maps.
     this.reverseAcceleratorLookup_
@@ -189,13 +214,22 @@ export class AcceleratorLookupManager {
     // Get the matching accelerator and add the new accelerator to its
     // container.
     const accelInfos = this.getAccelerators(source, action);
-    const newAccelInfo = /** @type {!AcceleratorInfo} */ ({
-      accelerator: newAccelerator,
-      type: AcceleratorType.kUserDefined,
-      state: AcceleratorState.kEnabled,
-      locked: false,
-    });
-    accelInfos.push(newAccelInfo);
+
+    // Handle edge case in which the user attempts to add a disabled default
+    // accelerator.
+    const addedDefault =
+        this.maybeReenableDefaultAccelerator(accelInfos, newAccelerator);
+
+    if (!addedDefault) {
+      // No matching default accelerator, add the new accelerator directly.
+      const newAccelInfo = /** @type {!AcceleratorInfo} */ ({
+        accelerator: newAccelerator,
+        type: AcceleratorType.kUserDefined,
+        state: AcceleratorState.kEnabled,
+        locked: false,
+      });
+      accelInfos.push(newAccelInfo);
+    }
 
     // Update the reverse look up maps.
     this.reverseAcceleratorLookup_.set(
@@ -213,6 +247,15 @@ export class AcceleratorLookupManager {
     // Can only remove an existing accelerator.
     assert(foundAccel != null);
 
+    // Remove from reverse lookup.
+    this.reverseAcceleratorLookup_.delete(JSON.stringify(keys));
+
+    // Default accelerators are only disabled, not removed.
+    if (foundAccel.type === AcceleratorType.kDefault) {
+      foundAccel.state = AcceleratorState.kDisabledByUser;
+      return;
+    }
+
     if (foundAccel.locked) {
       // Not possible to remove a locked accelerator manually.
       assertNotReached();
@@ -222,9 +265,29 @@ export class AcceleratorLookupManager {
     const foundIdx = this.getAcceleratorInfoIndex_(source, action, keys);
     // Remove accelerator from main map.
     accelInfos.splice(foundIdx, 1);
+  }
 
-    // Remove from reverse lookup.
-    this.reverseAcceleratorLookup_.delete(JSON.stringify(keys));
+  /**
+   * @param {!Array<!AcceleratorInfo>} accelInfos
+   * @param {!AcceleratorKeys} accelerator
+   * @return {boolean} returns true if `accelerator` is a default accelerator
+   * and has been re-enabled.
+   */
+  maybeReenableDefaultAccelerator(accelInfos, accelerator) {
+    // Check if `accelerator` matches a default accelerator.
+    const defaultIdx = accelInfos.findIndex(accel => {
+      return accel.type === AcceleratorType.kDefault &&
+          JSON.stringify(accel.accelerator) === JSON.stringify(accelerator);
+    });
+
+    if (defaultIdx === -1) {
+      return false;
+    }
+
+    // Re-enable the default accelerator.
+    accelInfos[defaultIdx].state = AcceleratorState.kEnabled;
+
+    return true;
   }
 
   /**
@@ -259,8 +322,19 @@ export class AcceleratorLookupManager {
     const accelInfos = this.getAccelerators(source, action);
     const foundIdx = this.getAcceleratorInfoIndex_(source, action, accelKeys);
 
+    const accelerator = accelInfos[foundIdx];
+    assert(accelerator);
+
     // Cannot remove a locked accelerator.
-    assert(!accelInfos[foundIdx].locked);
+    if (accelInfos[foundIdx].locked) {
+      return;
+    }
+
+    // Default accelerators are only disabled, not removed.
+    if (accelerator.type === AcceleratorType.kDefault) {
+      accelerator.state = AcceleratorState.kDisabledByUser;
+      return;
+    }
 
     // Otherwise, remove the accelerator.
     accelInfos.splice(foundIdx, 1);

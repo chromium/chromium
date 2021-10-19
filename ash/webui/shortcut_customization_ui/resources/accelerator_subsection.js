@@ -9,7 +9,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {fakeSubCategories} from './fake_data.js';
-import {AcceleratorInfo} from './shortcut_types.js';
+import {AcceleratorInfo, AcceleratorState, AcceleratorType} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -97,8 +97,12 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     let tempAccelContainer = [];
     layoutInfos.forEach((value) => {
       const acceleratorInfos =
-          this.lookupManager_.getAccelerators(value.source, value.action);
-
+          this.lookupManager_.getAccelerators(value.source, value.action)
+              .filter((accel) => {
+                // Hide accelerators that are default and disabled.
+                return !(accel.type === AcceleratorType.kDefault &&
+                    accel.state === AcceleratorState.kDisabledByUser);
+              });
       const accel =
           /**@type {!Object<string, number, number, Array<!AcceleratorInfo>>}*/
           ({

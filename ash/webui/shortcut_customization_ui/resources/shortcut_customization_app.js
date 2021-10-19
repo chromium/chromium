@@ -13,7 +13,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {AcceleratorConfig, AcceleratorSource, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorConfig, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
 import {AcceleratorInfo} from './shortcut_types.js';
 
 /**
@@ -187,8 +187,14 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
    */
   onRequestUpdateAccelerators_(detail) {
     this.$.navigationPanel.notifyEvent('updateSubsections');
-    const updatedAccels = this.acceleratorLookupManager_.getAccelerators(
-        detail.source, detail.action);
+    const updatedAccels =
+        this.acceleratorLookupManager_
+            .getAccelerators(detail.source, detail.action)
+            .filter((accel) => {
+              // Hide accelerators that are default and disabled.
+              return !(accel.type === AcceleratorType.kDefault &&
+                  accel.state === AcceleratorState.kDisabledByUser);
+            });
     this.shadowRoot.querySelector('#editDialog')
         .updateDialogAccelerators(updatedAccels);
   }
