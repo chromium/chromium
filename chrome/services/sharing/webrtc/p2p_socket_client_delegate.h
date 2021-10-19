@@ -12,8 +12,6 @@
 
 namespace sharing {
 
-class P2PSocketClient;
-
 // TODO(crbug.com/1044522): reuse code from blink instead.
 class P2PSocketClientDelegate {
  public:
@@ -24,12 +22,6 @@ class P2PSocketClientDelegate {
   // you should not rely on the local endpoint address if possible.
   virtual void OnOpen(const net::IPEndPoint& local_address,
                       const net::IPEndPoint& remote_address) = 0;
-
-  // For a socket that is listening on incoming TCP connection, this function is
-  // called when a new client connects.
-  virtual void OnIncomingTcpConnection(
-      const net::IPEndPoint& address,
-      std::unique_ptr<P2PSocketClient> client) = 0;
 
   // Called once for each Send() call after the send is complete.
   virtual void OnSendComplete(

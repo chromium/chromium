@@ -186,8 +186,6 @@ component("network_service") {
       "p2p/socket_manager.h",
       "p2p/socket_tcp.cc",
       "p2p/socket_tcp.h",
-      "p2p/socket_tcp_server.cc",
-      "p2p/socket_tcp_server.h",
       "p2p/socket_throttler.cc",
       "p2p/socket_throttler.h",
       "p2p/socket_udp.cc",
@@ -378,7 +376,6 @@ source_set("tests") {
 
   if (is_p2p_enabled) {
     sources += [
-      "p2p/socket_tcp_server_unittest.cc",
       "p2p/socket_tcp_unittest.cc",
       "p2p/socket_test_utils.cc",
       "p2p/socket_test_utils.h",

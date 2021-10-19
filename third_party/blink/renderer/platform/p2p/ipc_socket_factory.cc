@@ -121,9 +121,6 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
   // P2PSocketClientDelegate implementation.
   void OnOpen(const net::IPEndPoint& local_address,
               const net::IPEndPoint& remote_address) override;
-  void OnIncomingTcpConnection(
-      const net::IPEndPoint& address,
-      std::unique_ptr<blink::P2PSocketClient> client) override;
   void OnSendComplete(
       const network::P2PSendPacketMetrics& send_metrics) override;
   void OnError() override;
@@ -562,13 +559,6 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
     // can get the resolved remote address.
     SignalConnect(this);
   }
-}
-
-void IpcPacketSocket::OnIncomingTcpConnection(
-    const net::IPEndPoint& address,
-    std::unique_ptr<blink::P2PSocketClient> client) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTREACHED();
 }
 
 void IpcPacketSocket::OnSendComplete(
