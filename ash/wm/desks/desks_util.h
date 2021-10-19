@@ -64,7 +64,7 @@ ui::Compositor* GetSelectedCompositorForPerformanceMetrics();
 ASH_EXPORT bool IsDraggingAnyDesk();
 
 // Returns whether a |window| is visible on all workspaces.
-ASH_EXPORT bool IsWindowVisibleOnAllWorkspaces(aura::Window* window);
+ASH_EXPORT bool IsWindowVisibleOnAllWorkspaces(const aura::Window* window);
 
 // Move an item at |old_index| to |new_index|.
 template <typename T>

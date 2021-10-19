@@ -176,7 +176,7 @@ bool IsDraggingAnyDesk() {
   return false;
 }
 
-bool IsWindowVisibleOnAllWorkspaces(aura::Window* window) {
+bool IsWindowVisibleOnAllWorkspaces(const aura::Window* window) {
   return window->GetProperty(aura::client::kWindowWorkspaceKey) ==
          aura::client::kWindowWorkspaceVisibleOnAllWorkspaces;
 }
