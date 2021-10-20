@@ -324,8 +324,8 @@ crbug.com/dawn/995 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,c
 # Validation of max dispatch size isn't implemented for dispatchIndirect
 crbug.com/dawn/1039 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,compute_pass:dispatch_sizes:dispatchType="indirect";* [ Skip ]
 
-# Validation for drawIndexedIndirect isn't implemented
-crbug.com/dawn/809 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=true;indirect=true;* [ Skip ]
+# baseVertex not implemented for indirect draws
+crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=true;indirect=true;drawCallTestParameter="baseVertex";* [ Failure ]
 
 # Dawn validation requires that aspects of attachments is "all", which the tests don't do.
 # See also crbug.com/dawn/603 for missing resource state D3D12_RESOURCE_STATE_DEPTH_WRITE that happens on the same tests.
