@@ -123,7 +123,7 @@ suite('settings system page', function() {
     // settings.
     expectFalse(control.hasAttribute('actionable'));
     expectEquals(null, control.querySelector('cr-policy-pref-indicator'));
-    expectFalse(showProxyButton.hidden);
+    expectTrue(showProxyButton.hidden);
 
     systemPage.set('prefs.proxy', {
       key: 'proxy',
