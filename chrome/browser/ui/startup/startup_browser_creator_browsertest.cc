@@ -2360,17 +2360,19 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
     return WebAppProvider::GetForTest(browser()->profile());
   }
 
-  // Install a web app with protocol_handlers then register it with the
-  // ProtocolHandlerRegistry. This is sufficient for testing URL translation and
-  // launch at startup.
+  // Install a web app with `protocol_handlers` (and optionally `file_handlers`)
+  // then register it with the ProtocolHandlerRegistry. This is sufficient for
+  // testing URL translation and launch at startup.
   web_app::AppId InstallWebAppWithProtocolHandlers(
-      const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers) {
+      const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers,
+      const std::vector<apps::FileHandler>& file_handlers = {}) {
     std::unique_ptr<WebApplicationInfo> info =
         std::make_unique<WebApplicationInfo>();
     info->start_url = GURL(kStartUrl);
     info->title = kAppName;
     info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     info->protocol_handlers = protocol_handlers;
+    info->file_handlers = file_handlers;
     web_app::AppId app_id =
         web_app::test::InstallWebApp(browser()->profile(), std::move(info));
 
@@ -2386,6 +2388,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
           run_loop.Quit();
         }));
     run_loop.Run();
+
     return app_id;
   }
 
@@ -2749,6 +2752,60 @@ IN_PROC_BROWSER_TEST_F(
   }
   // There should be only 1 browser window opened at the moment.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+}
+
+class StartupBrowserWebAppProtocolAndFileHandlingTest
+    : public StartupBrowserWebAppProtocolHandlingTest {
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kFileHandlingAPI};
+  base::test::ScopedFeatureList feature_list2_{
+      features::kDesktopPWAsFileHandlingSettingsGated};
+};
+
+// Verifies that a "file://" URL on the command line is treated as a file
+// handling launch, not a protocol handling or URL launch.
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
+                       WebAppLaunch_FileProtocol) {
+  // Install an app with protocol handlers and a handler for plain text files.
+  apps::ProtocolHandlerInfo protocol_handler;
+  const std::string handler_url = std::string(kStartUrl) + "/protocol=%s";
+  protocol_handler.url = GURL(handler_url);
+  protocol_handler.protocol = "web+test";
+  apps::FileHandler file_handler;
+  file_handler.action = GURL(std::string(kStartUrl) + "/file_handler");
+  file_handler.accept.push_back({});
+  file_handler.accept.back().mime_type = "text/plain";
+  file_handler.accept.back().file_extensions = {".txt"};
+  web_app::AppId app_id =
+      InstallWebAppWithProtocolHandlers({protocol_handler}, {file_handler});
+
+  // Skip the file handler dialog by simulating prior user approval of the API.
+  {
+    web_app::ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->UpdateApp(app_id)->SetFileHandlerApprovalState(
+        web_app::ApiApprovalState::kAllowed);
+  }
+
+  // Pass a file:// url on the command line.
+  SetUpCommandlineAndStart("file:///C:/test.txt", app_id);
+
+  // Wait for app launch task to complete.
+  content::RunAllTasksUntilIdle();
+
+  // Check an app window is launched.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  Browser* app_browser = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(app_browser);
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  // Check the app is launched to the file handler URL and not the protocol URL.
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(file_handler.action, web_contents->GetVisibleURL());
+
+  app_browser->window()->Close();
+  ui_test_utils::WaitForBrowserToClose(app_browser);
 }
 
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
