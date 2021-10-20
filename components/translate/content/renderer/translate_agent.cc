@@ -24,7 +24,6 @@
 #include "components/translate/content/renderer/isolated_world_util.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
-#include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
@@ -74,6 +73,16 @@ constexpr char kCLDModelVersion[] = "CLD3";
 translate::LanguageDetectionModel& GetLanguageDetectionModel() {
   static base::NoDestructor<translate::LanguageDetectionModel> instance;
   return *instance;
+}
+
+// Returns if the language detection should be overridden so that a default
+// result is returned immediately.
+bool ShouldOverrideLanguageDetectionForTesting() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kOverrideLanguageDetection)) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -197,6 +206,19 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
   bool is_model_reliable = false;
   std::string detection_model_version;
   float model_reliability_score = 0.0;
+
+  if (ShouldOverrideLanguageDetectionForTesting()) {
+    std::string language = "fr";
+    LanguageDetectionDetails details;
+    details.adopted_language = language;
+    details.contents = contents;
+    ResetPage();
+    GetTranslateHandler()->RegisterPage(
+        receiver_.BindNewPipeAndPassRemote(
+            main_frame->GetTaskRunner(blink::TaskType::kInternalTranslation)),
+        details, !details.has_notranslate && !language.empty());
+    return;
+  }
 
   std::string language;
   if (translate::IsTFLiteLanguageDetectionEnabled()) {

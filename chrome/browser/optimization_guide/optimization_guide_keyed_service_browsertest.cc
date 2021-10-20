@@ -301,14 +301,6 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate away so UKM get recorded.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_with_hints()));
-
-  auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::OptimizationGuide::kEntryName);
-  for (const auto* entry : entries) {
-    EXPECT_FALSE(ukm_recorder.EntryHasMetric(
-        entry,
-        ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName));
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,

@@ -24,6 +24,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/common/translate_switches.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -55,6 +56,9 @@ class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitchASCII(
         switches::kTranslateScriptURL,
         embedded_test_server()->GetURL("/mock_translate_script.js").spec());
+    // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+    // language detection.
+    command_line->AppendSwitch(::switches::kOverrideLanguageDetection);
   }
 
   void SetUpOnMainThread() override {

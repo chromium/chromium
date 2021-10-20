@@ -66,7 +66,14 @@ TranslateModelService::TranslateModelService(
       /*model_metadata=*/absl::nullopt, this);
 }
 
-TranslateModelService::~TranslateModelService() = default;
+TranslateModelService::~TranslateModelService() {
+  for (auto& pending_request : pending_model_requests_) {
+    // Clear any pending requests, no model file is acceptable as shutdown is
+    // happening.
+    std::move(pending_request).Run(base::File());
+  }
+  pending_model_requests_.clear();
+}
 
 void TranslateModelService::Shutdown() {
   // This and the optimization guide are keyed services, currently optimization
@@ -79,6 +86,12 @@ void TranslateModelService::Shutdown() {
         FROM_HERE, base::BindOnce(&CloseModelFile,
                                   std::move(*language_detection_model_file_)));
   }
+  for (auto& pending_request : pending_model_requests_) {
+    // Clear any pending requests, no model file is acceptable as shutdown is
+    // happening.
+    std::move(pending_request).Run(base::File());
+  }
+  pending_model_requests_.clear();
 }
 
 void TranslateModelService::OnModelUpdated(
@@ -124,7 +137,9 @@ void TranslateModelService::GetLanguageDetectionModelFile(
   if (!language_detection_model_file_) {
     if (pending_model_requests_.size() < kMaxPendingRequestsAllowed) {
       pending_model_requests_.emplace_back(std::move(callback));
+      return;
     }
+    std::move(callback).Run(base::File());
     return;
   }
   // The model must be valid at this point.

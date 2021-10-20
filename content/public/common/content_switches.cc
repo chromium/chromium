@@ -615,6 +615,10 @@ const char kNoZygote[] = "no-zygote";
 // Number of worker threads used to rasterize content.
 const char kNumRasterThreads[]              = "num-raster-threads";
 
+// Overrides the language detection result determined based on the page
+// contents.
+const char kOverrideLanguageDetection[] = "override-language-detection";
+
 // Runs PPAPI (Pepper) plugins in-process.
 const char kPpapiInProcess[]                = "ppapi-in-process";
 

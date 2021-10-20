@@ -328,6 +328,9 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     cert_verifier_.SetUpCommandLine(command_line);
     // Needed to allow input before commit on various builders.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+    // TODO(crbug.com/1258185): Migrate to a better mechanism for testing around
+    // language detection.
+    command_line->AppendSwitch(switches::kOverrideLanguageDetection);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -2017,11 +2020,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
 
   static const char kForm[] =
       "<form action=\"https://www.example.com/\" method=\"POST\">"
-      "<label for=\"fn\">なまえ</label>"
+      "<label for=\"fn\">Nom</label>"
       " <input type=\"text\" id=\"fn\""
       "        onfocus=\"domAutomationController.send(true)\""
       "><br>"
-      "<label for=\"ln\">みょうじ</label>"
+      "<label for=\"ln\">Nom de famille</label>"
       " <input type=\"text\" id=\"ln\"><br>"
       "<label for=\"a1\">Address line 1:</label>"
       " <input type=\"text\" id=\"a1\"><br>"
@@ -2046,16 +2049,24 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
       "<label for=\"ph\">Phone number:</label>"
       " <input type=\"text\" id=\"ph\"><br>"
       "</form>"
-      // Add additional Japanese characters to ensure the translate bar
+      // Add additional French characters to ensure the translate bar
       // will appear.
-      "我々は重要な、興味深いものになるが、時折状況が発生するため苦労や痛みは"
-      "彼にいくつかの素晴らしいを調達することができます。それから、いくつかの"
-      "利";
+      //
+      // TODO(crbug.com/1258185): The current translate testing overrides the
+      // result to be Adopted Language: 'fr' (the language the Chrome's
+      // translate feature believes the page language to be in). The behavior
+      // required here is to only force a translation which should not rely on
+      // language detection. The override simply just seeds the translate code
+      // so that a translate event occurs in a more testable way.
+      "Nous serons importants et intéressants, mais les épreuves et les peines"
+      "peuvent lui en procurer de grandes en raison de situations "
+      "occasionnelles."
+      "Puis quelques avantages";
 
   NavigateToContentAndWaitForLanguageDetection(kForm);
-  ASSERT_EQ("ja", GetLanguageState().current_language());
+  ASSERT_EQ("fr", GetLanguageState().current_language());
   ASSERT_NO_FATAL_FAILURE(Translate(true));
-  ASSERT_EQ("ja", GetLanguageState().source_language());
+  ASSERT_EQ("fr", GetLanguageState().source_language());
   ASSERT_EQ("en", GetLanguageState().current_language());
   TryBasicFormFill();
 }

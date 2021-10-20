@@ -388,7 +388,6 @@ void ContentTranslateDriver::GetLanguageDetectionModel(
 void ContentTranslateDriver::OnLanguageDetectionModelFile(
     GetLanguageDetectionModelCallback callback,
     base::File model_file) {
-  DCHECK(model_file.IsValid());
   std::move(callback).Run(std::move(model_file));
 }
 

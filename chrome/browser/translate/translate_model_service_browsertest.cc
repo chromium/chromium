@@ -77,7 +77,10 @@ int RetryForHistogramUntilCountReached(
 
 class TranslateModelServiceDisabledBrowserTest : public InProcessBrowserTest {
  public:
-  TranslateModelServiceDisabledBrowserTest() = default;
+  TranslateModelServiceDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        translate::kTFLiteLanguageDetectionEnabled);
+  }
 
   void SetUp() override {
     origin_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -97,6 +100,7 @@ class TranslateModelServiceDisabledBrowserTest : public InProcessBrowserTest {
  private:
   GURL english_url_;
   std::unique_ptr<net::EmbeddedTestServer> origin_server_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceDisabledBrowserTest,
