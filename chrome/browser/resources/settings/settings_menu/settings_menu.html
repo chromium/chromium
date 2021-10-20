@@ -43,6 +43,13 @@
         outline: auto 5px -webkit-focus-ring-color;
       }
 
+      :host-context([enable-branding-update]) #advancedButton {
+        /* Override the border-radius: initial on #advancedButton. Can be
+         * removed once enable-branding-update launches. */
+        border-end-end-radius: 100px;
+        border-start-end-radius: 100px;
+      }
+
       #advancedButton > span,
       #extensionsLink > span {
         flex: 1;
