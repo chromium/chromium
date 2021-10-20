@@ -939,8 +939,13 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
   EXPECT_TRUE(registry_->GetInstalledExtension(scoper.extension_id()));
 }
 
-// TODO(crbug.com/1056953): Fix and enable.
-TEST_P(ThemeProviderRedirectedEquivalenceTest, DISABLED_GetColor) {
+// TODO(crbug.com/1056953): Enable on Mac.
+#if defined(OS_MAC)
+#define MAYBE_GetColor DISABLED_GetColor
+#else
+#define MAYBE_GetColor GetColor
+#endif
+TEST_P(ThemeProviderRedirectedEquivalenceTest, MAYBE_GetColor) {
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile());
   auto param_tuple = GetParam();

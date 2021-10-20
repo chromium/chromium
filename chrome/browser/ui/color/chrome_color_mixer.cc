@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/color/chrome_color_mixer.h"
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
@@ -12,40 +13,50 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 
 namespace {
 
-constexpr float kMinOmniboxToolbarContrast = 1.3f;
+void AddBaseColors(bool dark_mode, ui::ColorMixer& mixer) {
+  if (dark_mode) {
+    mixer[kColorOmniboxBackground] = {gfx::kGoogleGrey900};
+    mixer[kColorOmniboxText] = {SK_ColorWHITE};
 
-ui::ColorTransform ChooseOmniboxBgBlendTarget() {
-  return base::BindRepeating(
-      [](SkColor input_color, const ui::ColorMixer& mixer) {
-        const SkColor toolbar_color = mixer.GetResultColor(kColorToolbar);
-        const SkColor endpoint_color =
-            color_utils::GetEndpointColorWithMinContrast(toolbar_color);
-        return (color_utils::GetContrastRatio(toolbar_color, endpoint_color) >=
-                kMinOmniboxToolbarContrast)
-                   ? endpoint_color
-                   : color_utils::GetColorWithMaxContrast(endpoint_color);
-      });
+    mixer[kColorToolbar] = {SkColorSetRGB(0x35, 0x36, 0x3A)};
+  } else {
+    mixer[kColorOmniboxBackground] = {gfx::kGoogleGrey100};
+    mixer[kColorOmniboxText] = {gfx::kGoogleGrey900};
+
+    mixer[kColorToolbar] = {SK_ColorWHITE};
+  }
 }
 
 }  // namespace
 
-void AddChromeColorMixer(ui::ColorProvider* provider) {
+void AddChromeColorMixer(ui::ColorProvider* provider,
+                         const ui::ColorProviderManager::Key& key) {
+  const bool dark_mode =
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
   ui::ColorMixer& mixer = provider->AddMixer();
 
-  // TODO(pkasting): Pre-color pipeline this is only enabled for custom themes.
-  // Agree on consistent behavior before enabling this.
-  mixer[kColorOmniboxBackground] = ui::BlendForMinContrast(
-      kColorToolbar, kColorToolbar, ChooseOmniboxBgBlendTarget(),
-      kMinOmniboxToolbarContrast);
-  mixer[kColorOmniboxText] =
-      ui::GetColorWithMaxContrast(kColorOmniboxBackground);
-  // TODO(tluk) Behavior change for dark mode to a darker toolbar color for
-  // better color semantics. Follow up with UX team before landing change.
-  mixer[kColorToolbar] = {ui::kColorPrimaryBackground};
+#if defined(OS_WIN)
+  const bool high_contrast_mode =
+      key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh;
+  if (high_contrast_mode) {
+    // High contrast uses system colors.
+    mixer[kColorOmniboxBackground] = {ui::kColorNativeBtnFace};
+    mixer[kColorOmniboxText] = {ui::kColorNativeBtnText};
+
+    mixer[kColorToolbar] = {ui::kColorNativeWindow};
+  } else {
+    AddBaseColors(dark_mode, mixer);
+  }
+#else
+  AddBaseColors(dark_mode, mixer);
+#endif
+
+  // Download shelf colors.
   mixer[kColorDownloadShelf] = {kColorToolbar};
   mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelf};
   mixer[kColorDownloadShelfButtonText] =

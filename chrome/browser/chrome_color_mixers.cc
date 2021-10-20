@@ -10,10 +10,8 @@
 
 void AddChromeColorMixers(ui::ColorProvider* provider,
                           const ui::ColorProviderManager::Key& key) {
-  AddChromeColorMixer(provider);
-  AddOmniboxColorMixer(
-      provider,
-      key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh);
+  AddChromeColorMixer(provider, key);
+  AddOmniboxColorMixer(provider, key);
 
   if (key.custom_theme) {
     key.custom_theme->AddColorMixers(provider, key);

@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_UI_COLOR_OMNIBOX_COLOR_MIXER_H_
 #define CHROME_BROWSER_UI_COLOR_OMNIBOX_COLOR_MIXER_H_
 
+#include "ui/color/color_provider_manager.h"
+
 namespace ui {
 class ColorProvider;
 }
 
-// Adds a color mixer to |provider| that contains recipes for omnibox colors,
-// given whether they should be |high_contrast|.
-// TODO(pkasting): Perhaps |high_contrast| should be a bit on the ColorProvider.
-void AddOmniboxColorMixer(ui::ColorProvider* provider, bool high_contrast);
+// Adds a color mixer that contains recipes for omnibox colors to |provider|
+// with |key|.
+void AddOmniboxColorMixer(ui::ColorProvider* provider,
+                          const ui::ColorProviderManager::Key& key);
 
 #endif  // CHROME_BROWSER_UI_COLOR_OMNIBOX_COLOR_MIXER_H_
