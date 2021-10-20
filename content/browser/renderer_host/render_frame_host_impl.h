@@ -607,7 +607,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FrameTreeNode* child_at(size_t index) const { return children_[index].get(); }
   FrameTreeNode* AddChild(
       std::unique_ptr<FrameTreeNode> child,
-      int process_id,
       int frame_routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const blink::LocalFrameToken& frame_token);

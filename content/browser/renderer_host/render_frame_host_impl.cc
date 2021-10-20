@@ -3763,13 +3763,9 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
 
 FrameTreeNode* RenderFrameHostImpl::AddChild(
     std::unique_ptr<FrameTreeNode> child,
-    int process_id,
     int frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token) {
-  // Child frame must always be created in the same process as the parent.
-  CHECK_EQ(process_id, GetProcess()->GetID());
-
   // Initialize the RenderFrameHost for the new node.  We always create child
   // frames in the same SiteInstance as the current frame, and they can swap to
   // a different one if they navigate away.

@@ -408,8 +408,7 @@ FrameTreeNode* FrameTree::AddFrame(
   // it is in the same SiteInstance as the parent frame. Ensure that the process
   // which requested a child frame to be added is the same as the process of the
   // parent node.
-  if (parent->GetProcess()->GetID() != process_id)
-    return nullptr;
+  CHECK_EQ(parent->GetProcess()->GetID(), process_id);
 
   std::unique_ptr<FrameTreeNode> new_node = base::WrapUnique(new FrameTreeNode(
       this, parent, scope, frame_name, frame_unique_name, is_created_by_script,
@@ -431,7 +430,7 @@ FrameTreeNode* FrameTree::AddFrame(
 
   // Add the new node to the FrameTree, creating the RenderFrameHost.
   FrameTreeNode* added_node =
-      parent->AddChild(std::move(new_node), process_id, new_routing_id,
+      parent->AddChild(std::move(new_node), new_routing_id,
                        std::move(frame_remote), frame_token);
 
   added_node->SetFencedFrameNonceIfNeeded();

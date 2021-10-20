@@ -635,14 +635,16 @@ TEST_F(FrameTreeTest, FailAddFrameWithWrongProcessId) {
   ASSERT_EQ("1: []", GetTreeState(frame_tree));
 
   // Simulate attaching a frame from mismatched process id.
-  ASSERT_FALSE(frame_tree->AddFrame(
-      root->current_frame_host(), process_id + 1, 1, CreateStubFrameRemote(),
-      CreateStubBrowserInterfaceBrokerReceiver(),
-      CreateStubPolicyContainerBindParams(),
-      blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
-      false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
-      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
-      blink::FrameOwnerElementType::kIframe, false));
+  EXPECT_DEATH_IF_SUPPORTED(
+      frame_tree->AddFrame(
+          root->current_frame_host(), process_id + 1, 1,
+          CreateStubFrameRemote(), CreateStubBrowserInterfaceBrokerReceiver(),
+          CreateStubPolicyContainerBindParams(),
+          blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
+          false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
+          blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
+          blink::FrameOwnerElementType::kIframe, false),
+      "");
   ASSERT_EQ("1: []", GetTreeState(frame_tree));
 }
 
