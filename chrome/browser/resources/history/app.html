@@ -7,19 +7,14 @@
         overflow: hidden;
       }
 
-      /* Sizing this with flex causes slow load performance, see
-       * crbug.com/618153. TODO(dbeam): is this still an issue? */
       #main-container {
+        display: flex;
         height: calc(100% - var(--toolbar-height));
         position: relative;
       }
 
-      #content-side-bar {
-        float: left;
-      }
-
-      :host-context([dir='rtl']) #content-side-bar {
-        float: right;
+      #content {
+        flex-grow: 1;
       }
 
       #content,
@@ -29,14 +24,16 @@
 
       #tabs-container {
         --cr-tabs-height: 48px;
+        --tabs-margin-top: 16px;
       }
 
       #tabs {
-        --cr-tabs-icon-margin-end: 8px;
+        --cr-tabs-icon-margin-end: 12px;
+        --cr-tabs-selection-bar-width: 3px;
         --cr-tabs-tab-inline-padding: 16px;
-        border-bottom: 1px solid var(--separator-color);
         display: flex;
         justify-content: center;
+        margin-top: var(--tabs-margin-top);
       }
 
       #tabs-content,
@@ -45,7 +42,7 @@
       }
 
       :host([show-history-clusters_]) #tabs-content {
-        height: calc(100% - var(--cr-tabs-height));
+        height: calc(100% - var(--cr-tabs-height) - var(--tabs-margin-top));
       }
 
       :host([toolbar-shadow_]) #drop-shadow {
