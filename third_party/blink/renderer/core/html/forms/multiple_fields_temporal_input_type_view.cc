@@ -106,6 +106,8 @@ void DateTimeFormatValidator::VisitField(DateTimeFormat::FieldType field_type,
       has_day_ = true;
       break;
     case DateTimeFormat::kFieldTypePeriod:
+    case DateTimeFormat::kFieldTypePeriodAmPmNoonMidnight:
+    case DateTimeFormat::kFieldTypePeriodFlexible:
       has_ampm_ = true;
       break;
     case DateTimeFormat::kFieldTypeHour11:  // Fallthrough.

@@ -292,7 +292,12 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
       return;
     }
 
-    case DateTimeFormat::kFieldTypePeriod: {
+    // TODO(crbug.com/1261272): We don't support UI for
+    // kFieldTypePeriodAmPmNoonMidnight and kFieldTypePeriodFlexible. Apply
+    // the normal am/pm UI instead.
+    case DateTimeFormat::kFieldTypePeriod:
+    case DateTimeFormat::kFieldTypePeriodAmPmNoonMidnight:
+    case DateTimeFormat::kFieldTypePeriodFlexible: {
       DateTimeFieldElement* field =
           MakeGarbageCollected<DateTimeAMPMFieldElement>(
               document, EditElement(), parameters_.locale.TimeAMPMLabels());
