@@ -1,6 +1,6 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXGroup AXSubrole=AXDocumentMath AXRoleDescription='math' AXTitle='%F0%9D%90%B4 2 + %F0%9D%90%B5 2'
+++++AXGroup AXSubrole=AXDocumentMath AXRoleDescription='math'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXStaticText AXRoleDescription='text' AXValue='%F0%9D%90%B4'
 ++++++AXGroup AXRoleDescription='group'

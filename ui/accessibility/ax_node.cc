@@ -1707,7 +1707,9 @@ bool AXNode::IsLeaf() const {
       return true;
     case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kListBoxOption:
-    case ax::mojom::Role::kMath:  // role="math" is flat, unlike <math>.
+    // role="math" is flat. But always return false for kMathMLMath since the
+    // children of a <math> tag should be exposed to make MathML accessible.
+    case ax::mojom::Role::kMath:
     case ax::mojom::Role::kMenuListOption:
     case ax::mojom::Role::kMenuItem:
     case ax::mojom::Role::kMenuItemCheckBox:

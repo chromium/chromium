@@ -267,6 +267,7 @@
     mark,
     marquee,
     math,
+    mathMLMath,
     menu,
     menuBar,
     menuItem,

@@ -2081,6 +2081,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       return base::SysUTF16ToNSString(
           content_client->GetLocalizedString(IDS_AX_ROLE_MARK));
     case ax::mojom::Role::kMath:
+    case ax::mojom::Role::kMathMLMath:
       return base::SysUTF16ToNSString(
           content_client->GetLocalizedString(IDS_AX_ROLE_MATH));
     case ax::mojom::Role::kNavigation:

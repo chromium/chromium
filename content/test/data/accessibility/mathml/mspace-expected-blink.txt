@@ -4,4 +4,4 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='This test passes if the 'math' node in the accessibility tree is empty:'
 ++++++++++inlineTextBox name='This test passes if the 'math' node in the accessibility tree is empty:'
-++++++math
+++++++mathMLMath

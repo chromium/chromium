@@ -2851,6 +2851,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kMark:
       return kStaticRole;
     case ax::mojom::Role::kMath:
+    case ax::mojom::Role::kMathMLMath:
       return ATK_ROLE_MATH;
     case ax::mojom::Role::kMarquee:
       return ATK_ROLE_MARQUEE;

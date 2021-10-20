@@ -1527,7 +1527,8 @@ void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) {
 // TODO(nektar): Turn off kHTMLAccessibilityMode for automation and Mac
 // and remove ifdef.
 #if defined(OS_WIN) || defined(OS_CHROMEOS)
-  if (node_data->role == ax::mojom::blink::Role::kMath &&
+  if ((node_data->role == ax::mojom::blink::Role::kMath ||
+       node_data->role == ax::mojom::blink::Role::kMathMLMath) &&
       element->innerHTML().length()) {
     TruncateAndAddStringAttribute(node_data,
                                   ax::mojom::blink::StringAttribute::kInnerHtml,
@@ -5639,6 +5640,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kLog:
     case ax::mojom::blink::Role::kMain:
     case ax::mojom::blink::Role::kMarquee:
+    case ax::mojom::blink::Role::kMathMLMath:
     case ax::mojom::blink::Role::kMenuListPopup:
     case ax::mojom::blink::Role::kMenu:
     case ax::mojom::blink::Role::kMenuBar:

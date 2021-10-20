@@ -1461,6 +1461,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
       message_id = IDS_AX_ROLE_MARQUEE;
       break;
     case ax::mojom::Role::kMath:
+    case ax::mojom::Role::kMathMLMath:
       message_id = IDS_AX_ROLE_MATH;
       break;
     case ax::mojom::Role::kMenu:

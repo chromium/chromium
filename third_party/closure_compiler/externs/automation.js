@@ -266,6 +266,7 @@ chrome.automation.RoleType = {
   MARK: 'mark',
   MARQUEE: 'marquee',
   MATH: 'math',
+  MATH_MLMATH: 'mathMLMath',
   MENU: 'menu',
   MENU_BAR: 'menuBar',
   MENU_ITEM: 'menuItem',

@@ -1,6 +1,6 @@
 [document web]
 ++[section]
-++++[math] name='%F0%9D%90%B4 2 + %F0%9D%90%B5 2'
+++++[math]
 ++++++[section]
 ++++++++[static] name='%F0%9D%90%B4'
 ++++++[section]

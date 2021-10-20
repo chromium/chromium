@@ -1200,7 +1200,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_innerHTML(BSTR* innerHTML) {
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!owner())
     return E_FAIL;
-  if (owner()->GetRole() != ax::mojom::Role::kMath)
+  if (owner()->GetRole() != ax::mojom::Role::kMath &&
+      owner()->GetRole() != ax::mojom::Role::kMathMLMath)
     return E_NOTIMPL;
 
   std::u16string inner_html =

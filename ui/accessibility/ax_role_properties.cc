@@ -39,6 +39,8 @@ bool HasPresentationalChildren(const ax::mojom::Role role) {
     case ax::mojom::Role::kButton:
     case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kMath:
+    // Return false for kMathMLMath, since the children of a <math> tag should
+    // be exposed to make MathML accessible.
     case ax::mojom::Role::kMenuItemCheckBox:
     case ax::mojom::Role::kMenuItemRadio:
     case ax::mojom::Role::kMenuListOption:
@@ -570,6 +572,7 @@ bool IsSection(const ax::mojom::Role role) {
     case ax::mojom::Role::kLog:
     case ax::mojom::Role::kMarquee:
     case ax::mojom::Role::kMath:
+    case ax::mojom::Role::kMathMLMath:
     case ax::mojom::Role::kNote:
     case ax::mojom::Role::kProgressIndicator:  // Subclass of kStatus.
     case ax::mojom::Role::kRow:                // Subclass of kGroup.

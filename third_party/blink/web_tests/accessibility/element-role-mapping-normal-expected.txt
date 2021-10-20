@@ -14,6 +14,12 @@ x
 a
 /
 b
+ 
+𝑥
++
+𝑎
+/
+𝑏
 Most important heading here
 Google Chrome
 
@@ -99,6 +105,24 @@ AXRole: AXGenericContainer
                 AXRole: AXGenericContainer
                     AXRole: AXStaticText "b"
                         AXRole: AXInlineTextBox "b"
+    AXRole: AXMathMLMath
+        AXRole: AXGenericContainer
+            AXRole: AXGenericContainer
+                AXRole: AXStaticText "𝑥"
+                    AXRole: AXInlineTextBox "𝑥"
+            AXRole: AXGenericContainer
+                AXRole: AXStaticText "+"
+                    AXRole: AXInlineTextBox "+"
+            AXRole: AXGenericContainer
+                AXRole: AXGenericContainer
+                    AXRole: AXStaticText "𝑎"
+                        AXRole: AXInlineTextBox "𝑎"
+                AXRole: AXGenericContainer
+                    AXRole: AXStaticText "/"
+                        AXRole: AXInlineTextBox "/"
+                AXRole: AXGenericContainer
+                    AXRole: AXStaticText "𝑏"
+                        AXRole: AXInlineTextBox "𝑏"
     AXRole: AXMain
         AXRole: AXArticle
             AXRole: AXHeaderAsNonLandmark

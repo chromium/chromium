@@ -126,6 +126,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -557,6 +558,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kMain,
           ax::mojom::blink::Role::kMark,
           ax::mojom::blink::Role::kMath,
+          ax::mojom::blink::Role::kMathMLMath,
           ax::mojom::blink::Role::kMeter,
           ax::mojom::blink::Role::kNavigation,
           ax::mojom::blink::Role::kPluginObject,
@@ -1066,8 +1068,11 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   // Mapping of MathML elements. See https://w3c.github.io/mathml-aam/
   if (auto* element = DynamicTo<MathMLElement>(GetNode())) {
-    if (element->HasTagName(mathml_names::kMathTag))
-      return ax::mojom::blink::Role::kMath;
+    if (element->HasTagName(mathml_names::kMathTag)) {
+      return RuntimeEnabledFeatures::MathMLCoreEnabled()
+                 ? ax::mojom::blink::Role::kMathMLMath
+                 : ax::mojom::blink::Role::kMath;
+    }
     // TODO(crbug.com/6606): Map more MathML elements.
     if (element->HasTagName(mathml_names::kMspaceTag))
       return ax::mojom::blink::Role::kNone;

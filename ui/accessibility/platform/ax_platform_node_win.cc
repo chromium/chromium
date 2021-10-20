@@ -5537,6 +5537,7 @@ int AXPlatformNodeWin::MSAARole() {
       return ROLE_SYSTEM_ANIMATION;
 
     case ax::mojom::Role::kMath:
+    case ax::mojom::Role::kMathMLMath:
       return ROLE_SYSTEM_EQUATION;
 
     case ax::mojom::Role::kMenu:
@@ -6367,6 +6368,7 @@ std::wstring AXPlatformNodeWin::UIAAriaRole() {
       return L"marquee";
 
     case ax::mojom::Role::kMath:
+    case ax::mojom::Role::kMathMLMath:
       return L"group";
 
     case ax::mojom::Role::kMenu:
@@ -7030,6 +7032,7 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
       return UIA_TextControlTypeId;
 
     case ax::mojom::Role::kMath:
+    case ax::mojom::Role::kMathMLMath:
       return UIA_GroupControlTypeId;
 
     case ax::mojom::Role::kMenu:

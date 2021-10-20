@@ -382,6 +382,8 @@ const char* ToString(ax::mojom::Role role) {
       return "marquee";
     case ax::mojom::Role::kMath:
       return "math";
+    case ax::mojom::Role::kMathMLMath:
+      return "mathMLMath";
     case ax::mojom::Role::kMenu:
       return "menu";
     case ax::mojom::Role::kMenuBar:
