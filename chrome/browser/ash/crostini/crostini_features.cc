@@ -350,4 +350,9 @@ bool CrostiniFeatures::IsPortForwardingAllowed(Profile* profile) {
   return true;
 }
 
+bool CrostiniFeatures::IsMultiContainerAllowed(Profile* profile) {
+  return g_crostini_features->IsAllowedNow(profile) &&
+         base::FeatureList::IsEnabled(ash::features::kCrostiniMultiContainer);
+}
+
 }  // namespace crostini

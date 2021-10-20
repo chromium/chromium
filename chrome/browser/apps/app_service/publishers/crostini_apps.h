@@ -59,6 +59,11 @@ class CrostiniApps : public KeyedService,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
               apps::mojom::WindowInfoPtr window_info) override;
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           apps::mojom::IntentPtr intent,
+                           apps::mojom::LaunchSource launch_source,
+                           apps::mojom::WindowInfoPtr window_info) override;
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,
@@ -67,6 +72,10 @@ class CrostiniApps : public KeyedService,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
+  void ExecuteContextMenuCommand(const std::string& app_id,
+                                 int command_id,
+                                 const std::string& shortcut_id,
+                                 int64_t display_id) override;
 
   // GuestOsRegistryService::Observer overrides.
   void OnRegistryUpdated(
@@ -80,6 +89,8 @@ class CrostiniApps : public KeyedService,
   // TODO(crbug.com/1028898): Move this code into System Apps
   // once it can support hiding apps.
   void OnCrostiniEnabledChanged();
+
+  void AddTerminalShortcuts(apps::mojom::MenuItemsPtr* menu_items);
 
   apps::mojom::AppPtr Convert(
       const guest_os::GuestOsRegistryService::Registration& registration,

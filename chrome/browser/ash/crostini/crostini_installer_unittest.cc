@@ -100,6 +100,14 @@ class CrostiniInstallerTest : public testing::Test {
   CrostiniInstallerTest(const CrostiniInstallerTest&) = delete;
   CrostiniInstallerTest& operator=(const CrostiniInstallerTest&) = delete;
 
+  void SetOSRelease() {
+    vm_tools::cicerone::OsRelease os_release;
+    os_release.set_id("debian");
+    os_release.set_version_id("10");
+    chromeos::FakeCiceroneClient::Get()->set_lxd_container_os_release(
+        os_release);
+  }
+
   void SetUp() override {
     component_manager_ =
         base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
@@ -114,8 +122,10 @@ class CrostiniInstallerTest : public testing::Test {
     chromeos::DlcserviceClient::InitializeFake();
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
+    SetOSRelease();
     waiting_fake_concierge_client_ =
         new WaitingFakeConciergeClient(chromeos::FakeCiceroneClient::Get());
+
     chromeos::SeneschalClient::InitializeFake();
 
     disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;

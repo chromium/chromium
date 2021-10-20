@@ -215,6 +215,27 @@ ContainerId::ContainerId(std::string vm_name,
                          std::string container_name) noexcept
     : vm_name(std::move(vm_name)), container_name(std::move(container_name)) {}
 
+ContainerId::ContainerId(const base::Value& dict) {
+  const std::string* vm = dict.FindStringKey(prefs::kVmKey);
+  const std::string* container = dict.FindStringKey(prefs::kContainerKey);
+  vm_name = vm ? *vm : "";
+  container_name = container ? *container : "";
+}
+
+base::flat_map<std::string, std::string> ContainerId::ToMap() const {
+  base::flat_map<std::string, std::string> extras;
+  extras[prefs::kVmKey] = vm_name;
+  extras[prefs::kContainerKey] = container_name;
+  return extras;
+}
+
+base::Value ContainerId::ToDictValue() const {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey(prefs::kVmKey, vm_name);
+  dict.SetStringKey(prefs::kContainerKey, container_name);
+  return dict;
+}
+
 bool operator<(const ContainerId& lhs, const ContainerId& rhs) noexcept {
   const auto result = lhs.vm_name.compare(rhs.vm_name);
   return result < 0 || (result == 0 && lhs.container_name < rhs.container_name);
@@ -297,15 +318,13 @@ void LaunchCrostiniAppImpl(
     Profile* profile,
     const std::string& app_id,
     guest_os::GuestOsRegistryService::Registration registration,
+    const ContainerId container_id,
     int64_t display_id,
     const std::vector<LaunchArg>& args,
     CrostiniSuccessCallback callback) {
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-  // Store these as we move |registration| into LaunchContainerApplication().
-  const ContainerId container_id(registration.VmName(),
-                                 registration.ContainerName());
 
   if (app_id == kCrostiniTerminalSystemAppId) {
     // If terminal is launched with a 'cwd' file, we may need to launch the VM
@@ -369,37 +388,57 @@ void LaunchCrostiniAppImpl(
       base::Milliseconds(kDelayBeforeSpinnerMs));
 }
 
-void LaunchCrostiniApp(Profile* profile,
-                       const std::string& app_id,
-                       int64_t display_id,
-                       const std::vector<LaunchArg>& args,
-                       CrostiniSuccessCallback callback) {
+void LaunchCrostiniAppWithIntent(Profile* profile,
+                                 const std::string& app_id,
+                                 int64_t display_id,
+                                 apps::mojom::IntentPtr intent,
+                                 const std::vector<LaunchArg>& args,
+                                 CrostiniSuccessCallback callback) {
   // Policies can change under us, and crostini may now be forbidden.
   std::string reason;
   if (!CrostiniFeatures::Get()->IsAllowedNow(profile, &reason)) {
     LOG(ERROR) << "Crostini not allowed: " << reason;
     return std::move(callback).Run(false, "Crostini UI not allowed");
   }
+
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
+  auto* registry_service =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
+  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
+      registry_service->GetRegistration(app_id);
+
+  bool is_terminal_app_id = app_id == kCrostiniTerminalSystemAppId;
 
   // At this point, we know that Crostini UI is allowed.
-  if (app_id == kCrostiniTerminalSystemAppId &&
-      !CrostiniFeatures::Get()->IsEnabled(profile)) {
+  if (is_terminal_app_id && !CrostiniFeatures::Get()->IsEnabled(profile)) {
     crostini::CrostiniInstaller::GetForProfile(profile)->ShowDialog(
         CrostiniUISurface::kAppList);
     return std::move(callback).Run(false, "Crostini not installed");
   }
 
-  auto* registry_service =
-      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
-      registry_service->GetRegistration(app_id);
   if (!registration) {
     RecordAppLaunchHistogram(CrostiniAppLaunchAppType::kUnknownApp);
     RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType::kUnknownApp,
                                    CrostiniResult::UNREGISTERED_APPLICATION);
     return std::move(callback).Run(
         false, "LaunchCrostiniApp called with an unknown app_id: " + app_id);
+  }
+  ContainerId container_id(registration->VmName(),
+                           registration->ContainerName());
+
+  if (intent && intent->extras.has_value()) {
+    for (const auto& extra : intent->extras.value()) {
+      // Possibly override the registration vm_name and container_name.
+      if (extra.first == "vm_name") {
+        if (is_terminal_app_id) {
+          container_id.vm_name = extra.second;
+        }
+      } else if (extra.first == "container_name") {
+        if (is_terminal_app_id) {
+          container_id.container_name = extra.second;
+        }
+      }
+    }
   }
 
   if (crostini_manager->IsUncleanStartup()) {
@@ -417,8 +456,18 @@ void LaunchCrostiniApp(Profile* profile,
         false, "LaunchCrostiniApp called while upgrade dialog showing");
     return;
   }
-  LaunchCrostiniAppImpl(profile, app_id, std::move(*registration), display_id,
-                        args, std::move(callback));
+
+  LaunchCrostiniAppImpl(profile, app_id, std::move(*registration), container_id,
+                        display_id, args, std::move(callback));
+}
+
+void LaunchCrostiniApp(Profile* profile,
+                       const std::string& app_id,
+                       int64_t display_id,
+                       const std::vector<LaunchArg>& args,
+                       CrostiniSuccessCallback callback) {
+  LaunchCrostiniAppWithIntent(profile, app_id, display_id, nullptr, args,
+                              std::move(callback));
 }
 
 std::string CryptohomeIdForProfile(Profile* profile) {

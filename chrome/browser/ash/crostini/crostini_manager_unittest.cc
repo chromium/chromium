@@ -250,6 +250,13 @@ class CrostiniManagerTest : public testing::Test {
     policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
+
+    vm_tools::cicerone::OsRelease os_release;
+    base::HistogramTester histogram_tester{};
+    os_release.set_pretty_name("Debian GNU/Linux 10 (bullseye)");
+    os_release.set_version_id("11");
+    os_release.set_id("debian");
+    fake_cicerone_client_->set_lxd_container_os_release(os_release);
   }
 
   void TearDown() override {

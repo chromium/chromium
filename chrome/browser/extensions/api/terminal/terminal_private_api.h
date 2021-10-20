@@ -17,6 +17,10 @@
 
 class PrefChangeRegistrar;
 
+namespace crostini {
+struct ContainerId;
+}  // namespace crostini
+
 namespace extensions {
 
 class CrostiniStartupStatus;
@@ -92,6 +96,7 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
                                 const std::string& user_id_hash);
   void RespondOnUIThread(bool success, const std::string& terminal_id);
   std::unique_ptr<CrostiniStartupStatus> startup_status_;
+  std::unique_ptr<crostini::ContainerId> container_id_;
 };
 
 // Opens new vmshell process. Returns the new terminal id.

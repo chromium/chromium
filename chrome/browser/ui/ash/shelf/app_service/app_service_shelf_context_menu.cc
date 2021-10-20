@@ -340,7 +340,8 @@ void AppServiceShelfContextMenu::OnGetMenuModel(
   }
 
   if (app_type_ == apps::mojom::AppType::kWeb ||
-      app_type_ == apps::mojom::AppType::kSystemWeb) {
+      app_type_ == apps::mojom::AppType::kSystemWeb ||
+      app_type_ == apps::mojom::AppType::kCrostini) {
     BuildAppShortcutsMenu(std::move(menu_items), std::move(menu_model),
                           std::move(callback), shortcut_index);
     return;

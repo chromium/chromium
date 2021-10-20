@@ -289,6 +289,7 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
       args = std::make_unique<std::vector<std::string>>();
     args->insert(args->begin(), kVmShellCommand);
     base::CommandLine params_args(*args);
+    VLOG(1) << "Original cmdline= " << params_args.GetCommandLineString();
     std::string owner_id =
         GetSwitch(params_args, &cmdline, kSwitchOwnerId, user_id_hash);
     std::string vm_name = GetSwitch(params_args, &cmdline, kSwitchVmName,
@@ -298,10 +299,13 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
                   crostini::kCrostiniDefaultContainerName);
     GetSwitch(params_args, &cmdline, kSwitchCurrentWorkingDir, "");
     std::string startup_id = params_args.GetSwitchValueASCII(kSwitchStartupId);
-    crostini::ContainerId container_id(vm_name, container_name);
+    container_id_ =
+        std::make_unique<crostini::ContainerId>(vm_name, container_name);
+    VLOG(1) << "Starting " << *container_id_
+            << ", cmdline=" << cmdline.GetCommandLineString();
 
     auto* mgr = crostini::CrostiniManager::GetForProfile(profile);
-    bool verbose = !mgr->GetContainerInfo(container_id).has_value();
+    bool verbose = !mgr->GetContainerInfo(*container_id_).has_value();
     startup_status_ = std::make_unique<CrostiniStartupStatus>(
         base::BindRepeating(&NotifyProcessOutput, browser_context(), startup_id,
                             api::terminal_private::ToString(
@@ -309,7 +313,7 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
         verbose);
     startup_status_->ShowProgressAtInterval();
     mgr->RestartCrostini(
-        container_id,
+        *container_id_,
         base::BindOnce(
             &TerminalPrivateOpenTerminalProcessFunction::OnCrostiniRestarted,
             this, user_id_hash, std::move(cmdline)),
@@ -362,7 +366,7 @@ void TerminalPrivateOpenTerminalProcessFunction::OpenVmshellProcess(
   crostini::CrostiniManager::GetForProfile(
       Profile::FromBrowserContext(browser_context()))
       ->GetVshSession(
-          crostini::ContainerId::GetDefault(), host_pid,
+          *container_id_, host_pid,
           base::BindOnce(
               &TerminalPrivateOpenTerminalProcessFunction::OnGetVshSession,
               this, user_id_hash, std::move(cmdline), /*terminal_id=*/cwd));

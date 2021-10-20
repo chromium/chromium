@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -74,6 +75,10 @@ struct LinuxPackageInfo;
 // A unique identifier for our containers.
 struct ContainerId {
   ContainerId(std::string vm_name, std::string container_name) noexcept;
+  explicit ContainerId(const base::Value&) noexcept;
+
+  base::flat_map<std::string, std::string> ToMap() const;
+  base::Value ToDictValue() const;
 
   static ContainerId GetDefault();
 
@@ -118,6 +123,14 @@ void LaunchCrostiniApp(Profile* profile,
                        int64_t display_id,
                        const std::vector<LaunchArg>& args = {},
                        CrostiniSuccessCallback callback = base::DoNothing());
+
+void LaunchCrostiniAppWithIntent(
+    Profile* profile,
+    const std::string& app_id,
+    int64_t display_id,
+    apps::mojom::IntentPtr intent,
+    const std::vector<LaunchArg>& args = {},
+    CrostiniSuccessCallback callback = base::DoNothing());
 
 // Retrieves cryptohome_id from profile.
 std::string CryptohomeIdForProfile(Profile* profile);
