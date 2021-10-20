@@ -114,6 +114,8 @@ class SigninScreenMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+
   SigninScreenMediator* mediator_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   ios::FakeChromeIdentityService* identity_service_;
