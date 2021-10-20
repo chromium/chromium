@@ -7,26 +7,34 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/strings/string_split.h"
+#include "base/values.h"
 #include "tools/aggregation_service/aggregation_service_tool_network_initializer.h"
+#include "url/origin.h"
 
 class GURL;
 
 namespace base {
 class FilePath;
-class Value;
 }  // namespace base
 
 namespace content {
 class TestAggregationService;
 }  // namespace content
 
-namespace url {
-class Origin;
-}  // namespace url
-
 namespace aggregation_service {
+
+struct OriginKeyFile {
+  OriginKeyFile(url::Origin origin, std::string key_file);
+  OriginKeyFile(const OriginKeyFile& other);
+  OriginKeyFile& operator=(const OriginKeyFile& other);
+  ~OriginKeyFile();
+
+  url::Origin origin;
+  std::string key_file;
+};
 
 // This class is a wrapper for aggregation service tool.
 class AggregationServiceTool {
@@ -40,7 +48,19 @@ class AggregationServiceTool {
 
   // Sets public keys to storage from the origin-filename pairs and returns
   // whether it's successful.
-  bool SetPublicKeys(const base::StringPairs& kv_pairs);
+  bool SetPublicKeys(const std::vector<OriginKeyFile>& key_files);
+
+  // Construct an aggregatable report from the specified information and returns
+  // a base::Value::DictStorage for its JSON representation. Empty
+  // base::Value::DictStorage will be returned in case of error.
+  base::Value::DictStorage AssembleReport(
+      std::string operation_str,
+      std::string bucket_str,
+      std::string value_str,
+      std::string processing_type_str,
+      url::Origin reporting_origin,
+      std::string privacy_budget_key,
+      std::vector<url::Origin> processing_origins);
 
   // Sends the contents of the aggregatable report to the specified reporting
   // url `url` and returns whether it's successful.
