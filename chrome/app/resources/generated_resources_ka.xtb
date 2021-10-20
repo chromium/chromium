@@ -1147,6 +1147,7 @@
 <translation id="2173302385160625112">შეამოწმეთ თქვენი ინტერნეტ-კავშირი</translation>
 <translation id="2173801458090845390">ამ მოწყობილობაზე მოთხოვნის იდენტიფიკატორის დამატება</translation>
 <translation id="2174948148799307353">ანგარიშს მართავს <ph name="PARENT_EMAIL" />. ამ მოწყობილობაზე ძირითადი ანგარიშიდან რომ გამოხვიდეთ, ეკრანზე დააწკაპუნეთ დროზე. გამოჩენილ მენიუში დააწკაპუნეთ „გასვლაზე“.</translation>
+<translation id="2175384018164129879">საძიებო სისტემებისა და Site Search-ის &amp;მართვა</translation>
 <translation id="2175607476662778685">სწრაფი გაშვების ზოლი</translation>
 <translation id="217576141146192373">პრინტერის დამატება ვერ მოხერხდა. შეამოწმეთ პრინტერის კონფიგურაცია და ცადეთ ხელახლა.</translation>
 <translation id="2175927920773552910">QR კოდი</translation>
@@ -6211,6 +6212,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (შეცდომის კოდი: <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">კომპიუტერის გადატვირთვა</translation>
 <translation id="7599527631045201165">მოწყობილობის სახელი ძალიან გრძელია. ხელახლა საცდელად შეიყვანეთ უფრო მოკლე სახელი.</translation>
+<translation id="7600054753482800821">საძიებო სისტემებისა და Site Search-ის &amp;მართვა</translation>
 <translation id="7600965453749440009">არასოდეს თარგმნო <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">დასაკავშირებლად მოინახულეთ <ph name="LANDING_PAGE" />.</translation>
 <translation id="7602079150116086782">ჩანართები სხვა მოწყობილობებიდან არ არის</translation>

@@ -1159,6 +1159,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2173302385160625112">Check your Internet connection</translation>
 <translation id="2173801458090845390">Add requisition ID to this device</translation>
 <translation id="2174948148799307353">Account managed by <ph name="PARENT_EMAIL" />. To sign out of the primary account on this device, click the time on your screen. In the menu that appears, click 'Sign out'.</translation>
+<translation id="2175384018164129879">&amp;Manage search engines and Site Search</translation>
 <translation id="2175607476662778685">Quick launch bar</translation>
 <translation id="217576141146192373">Unable to add printer. Please check your printer's configuration and try again.</translation>
 <translation id="2175927920773552910">QR code</translation>
@@ -6223,6 +6224,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (error code <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Restart computer</translation>
 <translation id="7599527631045201165">The device name is too long. Enter a shorter name to try again.</translation>
+<translation id="7600054753482800821">&amp;Manage search engines and Site Search</translation>
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">Go to <ph name="LANDING_PAGE" /> to connect.</translation>
 <translation id="7602079150116086782">No tabs from other devices</translation>

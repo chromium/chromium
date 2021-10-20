@@ -1144,6 +1144,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2173302385160625112">Kontrollo lidhjen e internetit</translation>
 <translation id="2173801458090845390">Shto ID-në e kërkesës në këtë pajisje</translation>
 <translation id="2174948148799307353">Llogaria menaxhohet nga <ph name="PARENT_EMAIL" />. Për të dalë nga llogaria parësore në këtë pajisje, kliko te koha në ekran. Në menynë që shfaqet, kliko te "Dil".</translation>
+<translation id="2175384018164129879">&amp;Menaxho motorët e kërkimit dhe kërkimin në sajte</translation>
 <translation id="2175607476662778685">Shiriti i nisjes së shpejtë</translation>
 <translation id="217576141146192373">Printeri nuk mund të shtohet. Kontrollo konfigurimin e printerit dhe provo përsëri.</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
@@ -6204,6 +6205,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (kodi i gabimit <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Rinis kompjuterin</translation>
 <translation id="7599527631045201165">Emri i pajisjes është shumë i gjatë. Fut një emër më të shkurtër për të provuar sërish.</translation>
+<translation id="7600054753482800821">&amp;Menaxho motorët e kërkimit dhe kërkimin në sajte</translation>
 <translation id="7600965453749440009">Asnjëherë mos përkthe <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">Shko te <ph name="LANDING_PAGE" /> për t'u lidhur.</translation>
 <translation id="7602079150116086782">Asnjë skedë nga pajisjet e tjera</translation>

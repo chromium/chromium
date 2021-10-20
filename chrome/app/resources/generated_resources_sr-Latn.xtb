@@ -1146,6 +1146,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2173302385160625112">Proverite internet vezu</translation>
 <translation id="2173801458090845390">Dodajte ID zahteva na ovaj uređaj</translation>
 <translation id="2174948148799307353">Nalogom upravlja <ph name="PARENT_EMAIL" />. Da biste se odjavili sa primarnog naloga na ovom uređaju, kliknite na vreme na ekranu. U meniju koji se pojavljuje kliknite na Odjavi me.</translation>
+<translation id="2175384018164129879">&amp;Upravljajte pretraživačima i pretragom sajta</translation>
 <translation id="2175607476662778685">Traka „Brzo pokretanje“</translation>
 <translation id="217576141146192373">Dodavanje štampača nije uspelo. Proverite konfiguraciju štampača i probajte ponovo.</translation>
 <translation id="2175927920773552910">QR kôd</translation>
@@ -6210,6 +6211,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (kôd greške <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Restartuj računar</translation>
 <translation id="7599527631045201165">Naziv uređaja je predugačak. Unesite kraći i probajte ponovo.</translation>
+<translation id="7600054753482800821">&amp;Upravljajte pretraživačima i pretragom sajta</translation>
 <translation id="7600965453749440009">Nikad ne prevodi <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">Idite na <ph name="LANDING_PAGE" /> da biste se povezali.</translation>
 <translation id="7602079150116086782">Nema kartica sa drugih uređaja</translation>

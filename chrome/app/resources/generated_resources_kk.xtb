@@ -1144,6 +1144,7 @@
 <translation id="2173302385160625112">Интернет байланысын тексеріңіз</translation>
 <translation id="2173801458090845390">Осы құрылғыға сұрау идентификаторын енгізу</translation>
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" /> басқаратын аккаунт. Құрылғыдағы негізгі аккаунтдан шығу үшін экрандағы уақытты басыңыз. Мәзірден "Шығу" опциясын таңдаңыз.</translation>
+<translation id="2175384018164129879">&amp;Іздеу жүйелерін және сайттан іздеу әрекетін басқару</translation>
 <translation id="2175607476662778685">Жылдам іске қосу жолағы</translation>
 <translation id="217576141146192373">Принтер енгізілмеді. Принтердің конфигурациясын тексеріп, қайталап көріңіз.</translation>
 <translation id="2175927920773552910">QR коды</translation>
@@ -6203,6 +6204,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (қате коды <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Компьютерді қайта іске қосу</translation>
 <translation id="7599527631045201165">Құрылғының атауы тым ұзын. Қысқасын енгізіп, қайта көріңіз.</translation>
+<translation id="7600054753482800821">&amp;Іздеу жүйелерін және сайттан іздеу әрекетін басқару</translation>
 <translation id="7600965453749440009">Ешқашан <ph name="LANGUAGE" /> тіліне аудармау</translation>
 <translation id="760197030861754408">Қосылу үшін өтіңіз: <ph name="LANDING_PAGE" />.</translation>
 <translation id="7602079150116086782">Басқа құрылғылардан қойындылар жоқ</translation>

@@ -1147,6 +1147,7 @@
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
 <translation id="2173801458090845390">登録 ID をこのデバイスに追加します</translation>
 <translation id="2174948148799307353">アカウントは <ph name="PARENT_EMAIL" /> によって管理されています。このデバイスでメイン アカウントからログアウトするには、画面上にある時間をクリックして表示されるメニューで [ログアウト] をクリックします。</translation>
+<translation id="2175384018164129879">検索エンジンとサイト内検索を管理する(&amp;M)</translation>
 <translation id="2175607476662778685">クイック起動バー</translation>
 <translation id="217576141146192373">プリンタを追加できません。プリンタの設定を確認して、もう一度お試しください。</translation>
 <translation id="2175927920773552910">QR コード</translation>
@@ -6201,6 +6202,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" />（エラーコード <ph name="ERROR_CODE" />）。</translation>
 <translation id="7598466960084663009">パソコンを再起動</translation>
 <translation id="7599527631045201165">デバイス名が長すぎます。短い名前を入力して、もう一度お試しください。</translation>
+<translation id="7600054753482800821">検索エンジンとサイト内検索を管理する(&amp;M)</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
 <translation id="760197030861754408"><ph name="LANDING_PAGE" /> で接続してください。</translation>
 <translation id="7602079150116086782">他のデバイスからのタブなし</translation>

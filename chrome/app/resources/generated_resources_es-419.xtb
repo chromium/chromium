@@ -1144,6 +1144,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2173302385160625112">Comprueba tu conexión a Internet</translation>
 <translation id="2173801458090845390">Agregar la ID de la solicitud a este dispositivo</translation>
 <translation id="2174948148799307353">Cuenta administrada por <ph name="PARENT_EMAIL" />. Para salir de la cuenta principal en este dispositivo, haz clic en la hora que se encuentra en la pantalla. En el menú que aparece, haz clic en "Salir".</translation>
+<translation id="2175384018164129879">&amp;Administrar búsqueda en sitios y motores de búsqueda</translation>
 <translation id="2175607476662778685">Barra de inicio rápido</translation>
 <translation id="217576141146192373">No se puede agregar la impresora. Revisa la configuración de la impresora y vuelve a intentarlo.</translation>
 <translation id="2175927920773552910">Código QR</translation>
@@ -6204,6 +6205,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (código de error <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Reiniciar la computadora</translation>
 <translation id="7599527631045201165">El nombre del dispositivo es demasiado largo. Ingresa uno más corto y vuelve a intentarlo.</translation>
+<translation id="7600054753482800821">&amp;Administrar búsqueda en sitios y motores de búsqueda</translation>
 <translation id="7600965453749440009">Nunca traducir <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">Accede a <ph name="LANDING_PAGE" /> para conectarte.</translation>
 <translation id="7602079150116086782">No hay pestañas de otros dispositivos.</translation>

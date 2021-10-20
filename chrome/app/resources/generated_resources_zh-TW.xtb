@@ -1147,6 +1147,7 @@
 <translation id="2173302385160625112">檢查你的網際網路連線</translation>
 <translation id="2173801458090845390">新增這部裝置的申請 ID</translation>
 <translation id="2174948148799307353">這個帳戶是由 <ph name="PARENT_EMAIL" /> 管理。如要登出這部裝置上的主要帳戶，請按一下畫面上的時間，然後在隨即顯示的選單中按一下 [登出]。</translation>
+<translation id="2175384018164129879">管理搜尋引擎和站內搜尋</translation>
 <translation id="2175607476662778685">快速啟動列</translation>
 <translation id="217576141146192373">無法新增印表機。請檢查你的印表機設定，然後再試一次。</translation>
 <translation id="2175927920773552910">QR 圖碼</translation>
@@ -6206,6 +6207,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (錯誤代碼 <ph name="ERROR_CODE" />)。</translation>
 <translation id="7598466960084663009">重新開機</translation>
 <translation id="7599527631045201165">裝置名稱過長。請輸入較短的名稱，然後再試一次。</translation>
+<translation id="7600054753482800821">管理搜尋引擎和站內搜尋</translation>
 <translation id="7600965453749440009">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">如要連線，請前往 <ph name="LANDING_PAGE" />。</translation>
 <translation id="7602079150116086782">沒有在其他裝置上開啟的分頁</translation>

@@ -124,6 +124,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
           <ph name="LIST_ITEM" />Tu empleador o institución educativa
           <ph name="LIST_ITEM" />El proveedor de servicios de Internet
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">Compartir esta pestaña</translation>
 <translation id="1339601241726513588">Inscripción de dominio:</translation>
 <translation id="1340482604681802745">Dirección de retiro</translation>
 <translation id="1346748346194534595">Derecha</translation>
@@ -157,6 +158,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1428146450423315676">Apilador 7</translation>
 <translation id="1428729058023778569">Se muestra esta advertencia porque este sitio no admite HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1432581352905426595">Administrar motores de búsqueda</translation>
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas del dispositivo</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
 <translation id="1442987760062738829">Perforar</translation>
@@ -373,7 +375,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2130448033692577677">Debido a que no se estableció la política DnsOverHttpsMode, es posible que no se apliquen las plantillas que especificaste.</translation>
 <translation id="213826338245044447">Favoritos del celular</translation>
 <translation id="214556005048008348">Cancelar pago</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para compartir esta página, con opciones para compartir el vínculo, crear un código QR, transmitir la página y más.</translation>
 <translation id="2148613324460538318">Agregar tarjeta</translation>
 <translation id="2149968176347646218">La conexión no es segura</translation>
 <translation id="2154054054215849342">El servicio de sincronización no está disponible para tu dominio</translation>
@@ -419,7 +420,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2293443924986248631">Cuando esta opción está activada, los sitios no pueden usar cookies para rastrearte en la Web. Es posible que las características de algunos sitios no funcionen de forma adecuada.</translation>
 <translation id="2295290966866883927">Se envían las URL de las páginas que visitas a Google Cloud o a terceros para su análisis. Por ejemplo, es posible que se analicen para detectar sitios web inseguros.</translation>
 <translation id="2297722699537546652">B5 (Envelope)</translation>
-<translation id="2297822946037605517">Compartir esta página</translation>
 <translation id="2298855485018661510">Botón Administrar cookies: presiona Intro para administrar tus preferencias de cookies en la configuración de Chrome</translation>
 <translation id="2300306941146563769">No se subió</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
@@ -497,6 +497,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2552295903035773204">Usar el bloqueo de pantalla para confirmar las tarjetas a partir de este momento</translation>
 <translation id="2553853292994445426">Revisa la configuración de DNS seguro. Es posible que hayas configurado un servidor DNS seguro y que sus conexiones estén fallando.</translation>
 <translation id="2556876185419854533">&amp;Deshacer Editar</translation>
+<translation id="2570734079541893434">Administrar configuración</translation>
 <translation id="257674075312929031">Agrupar</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2587730715158995865">De <ph name="ARTICLE_PUBLISHER" />. Lee este artículo y <ph name="OTHER_ARTICLE_COUNT" /> más.</translation>
@@ -505,7 +506,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2595719060046994702">Este dispositivo y esta cuenta no están administrados por una empresa ni otra organización.</translation>
 <translation id="2596415276201385844">Para establecer una conexión segura, el reloj debe estar configurado correctamente. Esto se debe a que los certificados que usan los sitios web para su identificación solo son válidos por períodos de tiempo específicos. Debido a que la configuración del reloj del dispositivo es incorrecta, Chrome no puede verificar estos certificados.</translation>
 <translation id="2597378329261239068">Este documento está protegido por contraseña. Ingresa una contraseña.</translation>
-<translation id="2597833655590727265">Botón Administrar la apariencia de Chrome, presiona Intro para personalizar el estilo del navegador mediante temas.</translation>
 <translation id="2609632851001447353">Variaciones</translation>
 <translation id="2610561535971892504">Haz clic para copiar.</translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
@@ -595,7 +595,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad proviene de <ph name="DOMAIN2" />. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="2943895734390379394">Hora de carga:</translation>
-<translation id="2948017612172418360">Botón Administrar la búsqueda de sitios, presiona Intro para administrar la búsqueda de sitios y tu motor de búsqueda predeterminado</translation>
 <translation id="2948083400971632585">Puedes inhabilitar los servidores proxy configurados para una conexión desde la página de configuración.</translation>
 <translation id="2949183777371959169">Se ignoró porque la máquina no está inscrita en la Administración en la nube para el navegador Chrome.</translation>
 <translation id="2951588413176968965">Mi buzón</translation>
@@ -798,6 +797,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">El administrador bloqueó la aplicación</translation>
 <translation id="3608932978122581043">Orientación de la entrada</translation>
+<translation id="3611395257124510155">Tarjeta virtual para <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Tamaño 2</translation>
 <translation id="361438452008624280">Entrada de lista "<ph name="LANGUAGE_ID" />": El idioma es desconocido o no es compatible.</translation>
 <translation id="3615877443314183785">Ingresa una fecha de vencimiento válida</translation>
@@ -860,7 +860,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3781428340399460090">Fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
-<translation id="3787675388804467730">Número de la tarjeta virtual</translation>
 <translation id="3787705759683870569">Vencimiento: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamaño 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
@@ -1015,7 +1014,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4277028893293644418">Restablecer contraseña</translation>
 <translation id="4278390842282768270">Permitido</translation>
-<translation id="4286047936834273847">Administrar la búsqueda de sitios y tu motor de búsqueda predeterminado</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Se guardó esta tarjeta en tu Cuenta de Google}other{Se guardaron estas tarjetas en tu Cuenta de Google}}</translation>
 <translation id="4287885627794386150">Apta para pruebas, pero no está activada</translation>
 <translation id="4297502707443874121">Miniatura para la página <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1055,7 +1053,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="4377125064752653719">Intentaste acceder a <ph name="DOMAIN" />, pero el emisor anuló el certificado que presentó el servidor. Esto significa que no se debe confiar en absoluto en las credenciales de seguridad que presentó el servidor. Te puedes estar comunicando con un atacante.</translation>
 <translation id="4378154925671717803">Teléfono</translation>
-<translation id="4389652395741935834">Para compartir esta página, comparte el vínculo, crea un código QR, transmite la página y más.</translation>
 <translation id="4390472908992056574">Borde</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4406896451731180161">resultados de búsqueda</translation>
@@ -1611,6 +1608,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6272383483618007430">Google Actualización</translation>
 <translation id="6276112860590028508">Las páginas de tu lista de lectura aparecen aquí</translation>
 <translation id="627746635834430766">Para realizar pagos de forma más rápida la próxima vez, guarda tu tarjeta y dirección de facturación en tu Cuenta de Google.</translation>
+<translation id="6279098320682980337">¿No se completó el número de la tarjeta virtual? Haz clic en los detalles de la tarjeta para copiarlos.</translation>
 <translation id="6280223929691119688">La dirección de envío no es válida. Selecciona una dirección diferente.</translation>
 <translation id="6282194474023008486">Código postal</translation>
 <translation id="6289939620939689042">Color de la página</translation>
@@ -1636,7 +1634,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Comprobar la configuración del proxy, firewall o DNS seguro<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Grapas dobles a la izquierda</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="6377404662019220017">Botón Compartir esta página, presiona Intro para compartir esta página. Esta opción te permite compartir el vínculo, crear un código QR, transmitir la página y más</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Es posible que se cobren cargos.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 sugerencia más}other{# sugerencias más}}</translation>
@@ -1857,7 +1854,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">El servidor debe actualizarse a TLS 1.2 o versiones posteriores.</translation>
-<translation id="716939258255825483">Botón Jugar al juego del dinosaurio, presiona Intro para jugar el juego del dinosaurio de Chrome</translation>
 <translation id="717330890047184534">ID de GAIA:</translation>
 <translation id="7173920250514487165">Captura de contenido confidencial en la pantalla</translation>
 <translation id="7174545416324379297">Combinados</translation>
@@ -1880,7 +1876,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7220786058474068424">Procesando</translation>
 <translation id="7221855153210829124">Mostrar notificaciones</translation>
 <translation id="722454870747268814">Nueva pestaña de incógnito</translation>
-<translation id="7231476387708735839">Administrar la búsqueda de sitios</translation>
 <translation id="7233592378249864828">Imprimir hoja de confirmación</translation>
 <translation id="7238585580608191973">Huella digital SHA-256</translation>
 <translation id="7240120331469437312">Nombre alternativo del sujeto del certificado</translation>
@@ -2477,6 +2472,7 @@ Detalles adicionales:
 <translation id="9213433120051936369">Personalizar el aspecto</translation>
 <translation id="9215416866750762878">Una aplicación impide que Chrome se conecte de forma segura a este sitio</translation>
 <translation id="9219103736887031265">Imágenes</translation>
+<translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">BORRAR FORMULARIO</translation>
 <translation id="936474030629450166">Super-B</translation>
@@ -2509,5 +2505,4 @@ Detalles adicionales:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">De Google Pay</translation>
-<translation id="998677222109959694">Administrar la configuración de Chrome</translation>
 </translationbundle>

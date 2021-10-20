@@ -124,6 +124,7 @@
           <ph name="LIST_ITEM" />आपका नियोक्ता या स्कूल
           <ph name="LIST_ITEM" />आपको इंटरनेट सेवा देने वाली कंपनी
         <ph name="END_LIST" /></translation>
+<translation id="1337692097987160377">इस टैब को शेयर करें</translation>
 <translation id="1339601241726513588">नामांकन डोमेन:</translation>
 <translation id="1340482604681802745">पिकअप पता</translation>
 <translation id="1346748346194534595">दाएं</translation>
@@ -157,6 +158,7 @@
 <translation id="1428146450423315676">स्टैकर 7</translation>
 <translation id="1428729058023778569">यह साइट एचटीटीपीएस पर काम नहीं करती, इसलिए आपको यह चेतावनी दिख रही है. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">प्रिंट करें</translation>
+<translation id="1432581352905426595">सर्च इंजन प्रबंधित करें</translation>
 <translation id="1436185428532214179">साइट, आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती है</translation>
 <translation id="1442386063175183758">दायां गेट फ़ोल्ड</translation>
 <translation id="1442987760062738829">पंच</translation>
@@ -378,7 +380,6 @@
 <translation id="2130448033692577677">आपकी ओर से तय किए गए टेम्प्लेट, DnsOverHttpsMode नीति के सेट न हाेने की वजह से लागू नहीं हो सकते.</translation>
 <translation id="213826338245044447">मोबाइल बुकमार्क</translation>
 <translation id="214556005048008348">भुगतान न करें</translation>
-<translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, इस पेज को शेयर करने के लिए, पहले Tab और फिर Enter दबाएं. इसमें लिंक शेयर करने, क्यूआर कोड बनाने, कास्ट करने, और अन्य विकल्प शामिल हैं.</translation>
 <translation id="2148613324460538318">कार्ड जोड़ें</translation>
 <translation id="2149968176347646218">कनेक्शन सुरक्षित नहीं है</translation>
 <translation id="2154054054215849342">आपके डोमेन के लिए सिंक करने की सुविधा उपलब्‍ध नहीं है</translation>
@@ -424,7 +425,6 @@
 <translation id="2293443924986248631">इसके चालू होने पर, साइटें उन कुकी का इस्तेमाल नहीं कर सकतीं जो आपको वेब पर ट्रैक करती हैं. शायद कुछ साइटों पर सुविधाएं ठीक से काम न करें.</translation>
 <translation id="2295290966866883927">आप जिन पेजों पर जाते हैं उनके यूआरएल को 'Google क्लाउड' या तीसरे पक्षों को भेजा जाता है, ताकि विश्लेषण किया जा सके. उदाहरण के लिए, इन्हें ऐसी वेबसाइटों की जांच करने के लिए स्कैन किया जा सकता है जो नुकसान पहुंचा सकती हैं.</translation>
 <translation id="2297722699537546652">बी5 (एन्वेलप)</translation>
-<translation id="2297822946037605517">यह पेज शेयर करें</translation>
 <translation id="2298855485018661510">कुकी बटन मैनेज करें, Chrome की सेटिंग में कुकी की सेटिंग मैनेज करने के लिए, Enter दबाएं</translation>
 <translation id="2300306941146563769">अपलोड नहीं किया गया</translation>
 <translation id="2310021320168182093">शू2 (एन्वेलप)</translation>
@@ -502,6 +502,7 @@
 <translation id="2552295903035773204">अब से, कार्ड की पुष्टि करने के लिए स्क्रीन लॉक इस्तेमाल करें</translation>
 <translation id="2553853292994445426">अपने सुरक्षित डीएनएस की सेटिंग की जांच करें. शायद आपने सुरक्षित डीएनएस सर्वर को कॉन्फ़िगर किया होगा, जिससे आप कनेक्ट नहीं हो पा रहे.</translation>
 <translation id="2556876185419854533">&amp;बदलाव को पहले जैसा करें</translation>
+<translation id="2570734079541893434">सेटिंग को प्रबंधित करें</translation>
 <translation id="257674075312929031">ग्रुप</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> की ओर से. यह और <ph name="OTHER_ARTICLE_COUNT" /> दूसरे समाचार पढ़ें.</translation>
@@ -510,7 +511,6 @@
 <translation id="2595719060046994702">इस डिवाइस और खाते का प्रबंधन कोई कंपनी या दूसरा संगठन नहीं करता है.</translation>
 <translation id="2596415276201385844">सुरक्षित कनेक्‍शन स्‍थापित करने के लिए, आपकी घड़ी को सही तरीके से सेट किए जाने की आवश्‍यकता है. ऐसा इसलिए क्‍योंकि वेबसाइटों द्वारा स्‍वयं की पहचान करने के लिए उपयोग किए जाने वाले प्रमाणपत्र केवल विशिष्‍ट समयावधियों के लिए ही मान्‍य होते हैं. चूंकि आपके डिवाइस की घड़ी गलत है, इसलिए Chrome इन प्रमाणपत्रों का सत्‍यापन नहीं कर सकता.</translation>
 <translation id="2597378329261239068">यह दस्तावेज़ पासवर्ड सुरक्षित है.  कृपया पासवर्ड डालें.</translation>
-<translation id="2597833655590727265">Chrome का अपीयरेंस बटन (दिखने का तरीका बदलने वाला बटन) मैनेज करें, थीम के इस्तेमाल से अपने ब्राउज़र का लुक पसंद के मुताबिक बनाने के लिए, Enter दबाएं.</translation>
 <translation id="2609632851001447353">विविधताएं</translation>
 <translation id="2610561535971892504">क्लिक टू कॉपी</translation>
 <translation id="2618023639789766142">सी10 (एन्वेलप)</translation>
@@ -600,7 +600,6 @@
 <translation id="2934466151127459956">सरकारी-पत्र</translation>
 <translation id="2941952326391522266">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र <ph name="DOMAIN2" /> की ओर से है. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="2943895734390379394">अपलोड करने का समय:</translation>
-<translation id="2948017612172418360">साइट खोज के बटन को मैनेज करें, साइट खोज और अपने डिफ़ॉल्ट सर्च इंजन को मैनेज करने के लिए, Enter दबाएं</translation>
 <translation id="2948083400971632585">आप किसी कनेक्शन के लिए कॉन्फ़िगर की गई किसी भी प्रॉक्सी को सेटिंग पेज से बंद कर सकते हैं.</translation>
 <translation id="2949183777371959169">'Chrome ब्राउज़र क्लाउड मैनेजमेंट' के लिए मशीन का नाम दर्ज नहीं है, इसलिए यह कार्रवाई पूरी नहीं हो पाई.</translation>
 <translation id="2951588413176968965">मेरा मेलबॉक्स</translation>
@@ -801,6 +800,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">आपके एडमिन ने ऐप्लिकेशन को ब्लॉक कर दिया है</translation>
 <translation id="3608932978122581043">फ़ीड ओरिएंटेशन</translation>
+<translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> का वर्चुअल कार्ड</translation>
 <translation id="3614103345592970299">आकार 2</translation>
 <translation id="361438452008624280">सूची एंट्री "<ph name="LANGUAGE_ID" />": अनजान या काम नहीं करने वाली भाषा.</translation>
 <translation id="3615877443314183785">खत्म होने की मान्य तारीख डालें</translation>
@@ -863,7 +863,6 @@
 <translation id="3781428340399460090">चमकीला गुलाबी</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ब्लूटूथ डिवाइस</translation>
-<translation id="3787675388804467730">वर्चुअल कार्ड नंबर</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> में खत्म होगा</translation>
 <translation id="3789155188480882154">आकार 16</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
@@ -1023,7 +1022,6 @@
 <translation id="4275830172053184480">अपना डिवाइस फिर से प्रारंभ करें</translation>
 <translation id="4277028893293644418">पासवर्ड रीसेट करें</translation>
 <translation id="4278390842282768270">अनुमति है</translation>
-<translation id="4286047936834273847">साइट खोज और अपने डिफ़ॉल्ट सर्च इंजन को मैनेज करें</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{यह कार्ड आपके Google खाते में सेव कर लिया गया है}one{ये कार्ड आपके Google खाते में सेव कर लिए गए हैं}other{ये कार्ड आपके Google खाते में सेव कर लिए गए हैं}}</translation>
 <translation id="4287885627794386150">आज़माया जा सकता है, लेकिन चालू नहीं है</translation>
 <translation id="4297502707443874121">पेज <ph name="THUMBNAIL_PAGE" /> का थंबनेल</translation>
@@ -1063,7 +1061,6 @@
 <translation id="4372948949327679948">अपेक्षित <ph name="VALUE_TYPE" /> मान.</translation>
 <translation id="4377125064752653719">आपने <ph name="DOMAIN" /> तक पहुंचने की कोशिश की, लेकिन सर्वर से मिले प्रमाणपत्र को उसके जारीकर्ता ने रद्द कर दिया है. इसका मतलब है कि सर्वर से मिली सुरक्षा प्रमाणिकता पर पूरी तरह भरोसा नहीं करना चाहिए. हो सकता है कि आप किसी हमलावर से बातचीत कर रहे हों.</translation>
 <translation id="4378154925671717803">फ़ोन</translation>
-<translation id="4389652395741935834">लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों से इस पेज को शेयर करें.</translation>
 <translation id="4390472908992056574">ब्रिम</translation>
 <translation id="4406883609789734330">लाइव कैप्शन</translation>
 <translation id="4406896451731180161">खोज नतीजे</translation>
@@ -1619,6 +1616,7 @@
 <translation id="6272383483618007430">Google अपडेट</translation>
 <translation id="6276112860590028508">आपकी रीडिंग लिस्ट के पेज यहां दिखाई देंगे</translation>
 <translation id="627746635834430766">अगली बार तेज़ी से भुगतान करने के लिए, अपने कार्ड और बिलिंग पते को अपने Google खाते में सेव करें.</translation>
+<translation id="6279098320682980337">वर्चुअल कार्ड नंबर नहीं भरा गया? कार्ड का ब्यौरा कॉपी करने के लिए उस पर क्लिक करें</translation>
 <translation id="6280223929691119688">इस पते पर वितरित नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
 <translation id="6282194474023008486">पोस्टल कोड</translation>
 <translation id="6289939620939689042">पेज का रंग</translation>
@@ -1644,7 +1642,6 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रॉक्सी, फ़ायरवॉल, और सुरक्षित डीएनएस कॉन्फ़िगरेशन की जांच करें<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">बाईं ओर ड्युएल स्टेपल</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' के लिए एक नतीजा मिला है</translation>
-<translation id="6377404662019220017">पेज को शेयर करने वाला बटन, इस पेज को शेयर करने के लिए, Enter दबाएं. इसमें लिंक शेयर करने, क्यूआर कोड बनाने, कास्ट करने जैसी कई सुविधाएं शामिल हैं.</translation>
 <translation id="6380497234672085559">ए0</translation>
 <translation id="6383221683286411806">आगे शुल्क लग सकते हैं.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 अन्‍य सुझाव}one{# अन्‍य सुझाव}other{# अन्‍य सुझाव}}</translation>
@@ -1865,7 +1862,6 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
 <translation id="7153618581592392745">हल्का बैंगनी</translation>
 <translation id="7156870133441232244">इस सर्वर को TLS 1.2 या इसके बाद वाले वर्शन पर अपग्रेड करना होगा.</translation>
-<translation id="716939258255825483">Dino Run बटन को चालू करें, Dino Run गेम को Chrome में चलाने के लिए, Enter दबाएं</translation>
 <translation id="717330890047184534">Gaia आईडी:</translation>
 <translation id="7173920250514487165">अपनी स्क्रीन पर मौजूद गोपनीय कॉन्टेंट को कैप्चर करें</translation>
 <translation id="7174545416324379297">आपस में मिला दिया गया</translation>
@@ -1888,7 +1884,6 @@
 <translation id="7220786058474068424">संसाधित हो रहा है</translation>
 <translation id="7221855153210829124">नोटिफ़िकेशन दिखाएं</translation>
 <translation id="722454870747268814">नया गुप्त टैब</translation>
-<translation id="7231476387708735839">साइट खोज को मैनेज करें</translation>
 <translation id="7233592378249864828">जिस शीट की पुष्टि की गई है उसे प्रिंट करें</translation>
 <translation id="7238585580608191973">SHA-256 फ़िंगरप्रिंट</translation>
 <translation id="7240120331469437312">प्रमाणपत्र विषय वैकल्पिक नाम</translation>
@@ -2485,6 +2480,7 @@
 <translation id="9213433120051936369">दिखने का तरीका अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="9215416866750762878">एक ऐप्‍लिकेशन Chrome को इस साइट से सुरक्षित तरीके से कनेक्‍ट होने से रोक रहा है</translation>
 <translation id="9219103736887031265">Images</translation>
+<translation id="922152298093051471">Chrome को पसंद के मुताबिक बनाएं</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">फ़ॉर्म साफ़ करें</translation>
 <translation id="936474030629450166">सुपर-बी</translation>
@@ -2517,5 +2513,4 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay से</translation>
-<translation id="998677222109959694">Chrome की सेटिंग मैनेज करें</translation>
 </translationbundle>

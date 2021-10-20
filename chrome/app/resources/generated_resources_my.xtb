@@ -1157,6 +1157,7 @@
 <translation id="2173302385160625112">သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="2173801458090845390">ဤစက်ပစ္စည်းသို့ လိုအပ်ချက် ID ကို ထည့်ရန်</translation>
 <translation id="2174948148799307353">အကောင့်ကို <ph name="PARENT_EMAIL" /> က စီမံပါသည်။ ဤစက်ရှိ ပင်မအကောင့်မှထွက်ရန် ဖန်သားပြင်ပေါ်ရှိ အချိန်ကို နှိပ်ပါ။ ပေါ်လာသည့် မီနူးတွင် "ထွက်ရန်" ကို နှိပ်ပါ။</translation>
+<translation id="2175384018164129879">&amp;ရှာဖွေရေး အင်ဂျင်များနှင့် Site Search ကို စီမံရန်</translation>
 <translation id="2175607476662778685">အမြန် ဖွင့်တင်ရေး ဘား</translation>
 <translation id="217576141146192373">ပရင်တာကို ထည့်၍မရပါ။ သင့်ပရင်တာ၏ စီစဉ်သတ်မှတ်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
@@ -6218,6 +6219,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (အမှားကုဒ် <ph name="ERROR_CODE" />)။</translation>
 <translation id="7598466960084663009">ကွန်ပျူတာကို ပိတ်ပြီးပြန်ဖွင့်ရန်</translation>
 <translation id="7599527631045201165">စက်ပစ္စည်းအမည် အလွန်ရှည်သည်။ ထပ်စမ်းကြည့်ရန် အမည်တိုတိုပေးပါ။</translation>
+<translation id="7600054753482800821">&amp;ရှာဖွေရေး အင်ဂျင်များနှင့် Site Search ကို စီမံရန်</translation>
 <translation id="7600965453749440009">ဘာသာပြန်အသစ် <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">ချိတ်ဆက်ရန် <ph name="LANDING_PAGE" /> သို့ သွားပါ။</translation>
 <translation id="7602079150116086782">အခြား ကိရိယာများမှ တဲဘ်များ မရှိ</translation>

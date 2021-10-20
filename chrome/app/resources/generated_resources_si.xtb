@@ -1148,6 +1148,7 @@
 <translation id="2173302385160625112">ඔබේ අන්තර්ජාල සබැඳුම පරීක්ෂා කරන්න</translation>
 <translation id="2173801458090845390">මෙම උපාංගයට අධිග්‍රහණ ID එක් කරන්න</translation>
 <translation id="2174948148799307353">ගිණුම <ph name="PARENT_EMAIL" /> විසින් කළමනා කෙරේ. මෙම උපාංගයේ ඇති මූලික ගිණුමෙන් වැරෙන්නට, ඔබේ තිරයේ ඇති වේලාවට ක්ලික් කරන්න. දිස් වන මෙනුව තුළ, "වරන්න" ක්ලික් කරන්න.</translation>
+<translation id="2175384018164129879">සෙවීම් යන්ත්‍ර සහ අඩවි සෙවීම &amp;කළමනාකරණය කරන්න</translation>
 <translation id="2175607476662778685">ක්ෂණික දියත් කිරීමේ බාර් එක</translation>
 <translation id="217576141146192373">මුද්‍රකය එක් කළ නොහැක. ඔබේ මුද්‍රකයේ වින්‍යාසය පරීක්‍ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="2175927920773552910">QR කේතය</translation>
@@ -6214,6 +6215,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7595547011743502844"><ph name="ERROR" /> (දෝෂ කේතය <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">පරිගණකය යළි අරඹන්න</translation>
 <translation id="7599527631045201165">උපාංගයේ නම දිග වැඩිය. කෙටි නමක් ඇතුළු කර නැවත උත්සාහ කරන්න.</translation>
+<translation id="7600054753482800821">සෙවීම් යන්ත්‍ර සහ අඩවි සෙවීම &amp;කළමනාකරණය කරන්න</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> කිසිදා පරිවර්තනය නොකරන්න</translation>
 <translation id="760197030861754408">සබැඳීමට <ph name="LANDING_PAGE" /> වෙත යන්න</translation>
 <translation id="7602079150116086782">වෙනත් උපාංග වෙතින් ටැබ නොමැත</translation>

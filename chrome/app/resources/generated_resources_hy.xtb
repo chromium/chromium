@@ -1149,6 +1149,7 @@
 <translation id="2173302385160625112">Ստուգեք կապը</translation>
 <translation id="2173801458090845390">Ավելացնել սարքին հայտի ID-ն</translation>
 <translation id="2174948148799307353">Հաշվի կառավարիչ՝ <ph name="PARENT_EMAIL" />։ Այս սարքում հիմնական հաշվից դուրս գալու համար սեղմեք ժամի վրա ձեր էկրանին։ Բացվող ընտրացանկում սեղմեք «Դուրս գալ»։</translation>
+<translation id="2175384018164129879">&amp;Որոնողական համակարգերի և կայքերում որոնման կառավարում</translation>
 <translation id="2175607476662778685">Արագ գործարկման գոտի</translation>
 <translation id="217576141146192373">Չհաջողվեց ավելացնել տպիչը: Ստուգեք դրա կարգավորումները և նորից փորձեք:</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
@@ -6215,6 +6216,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (սխալի կոդ՝ <ph name="ERROR_CODE" />):</translation>
 <translation id="7598466960084663009">Վերագործարկել համակարգիչը</translation>
 <translation id="7599527631045201165">Սարքի անունը չափազանց երկար է: Մուտքագրեք ավելի կարճ անուն՝ նորից փորձելու համար:</translation>
+<translation id="7600054753482800821">&amp;Որոնողական համակարգերի և կայքերում որոնման կառավարում</translation>
 <translation id="7600965453749440009">Երբեք չթարգմանել <ph name="LANGUAGE" /> էջերը</translation>
 <translation id="760197030861754408">Անցեք <ph name="LANDING_PAGE" />՝ միանալու համար:</translation>
 <translation id="7602079150116086782">Այլ սարքերից ներդիրներ չկան</translation>

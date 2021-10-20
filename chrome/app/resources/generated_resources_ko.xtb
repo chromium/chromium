@@ -1159,6 +1159,7 @@
 <translation id="2173302385160625112">인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2173801458090845390">이 기기에 요청 ID 추가</translation>
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" />님이 관리하는 계정입니다. 기기의 기본 계정에서 로그아웃하려면 화면에 표시된 시간을 클릭하세요. 이때 표시되는 메뉴에서 '로그아웃'을 클릭합니다.</translation>
+<translation id="2175384018164129879">검색엔진 및 사이트 검색 관리</translation>
 <translation id="2175607476662778685">빠른 실행 표시줄</translation>
 <translation id="217576141146192373">프린터를 추가할 수 없습니다. 프린터 설정을 확인하고 다시 시도해 보세요.</translation>
 <translation id="2175927920773552910">QR 코드</translation>
@@ -6220,6 +6221,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" />(오류 코드: <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">컴퓨터 다시 시작</translation>
 <translation id="7599527631045201165">기기 이름이 너무 깁니다. 더 짧은 이름을 입력하고 다시 시도해 보세요.</translation>
+<translation id="7600054753482800821">검색엔진 및 사이트 검색 관리</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> 번역 안함</translation>
 <translation id="760197030861754408">연결하려면 <ph name="LANDING_PAGE" />(으)로 이동하세요.</translation>
 <translation id="7602079150116086782">다른 기기의 탭 없음</translation>

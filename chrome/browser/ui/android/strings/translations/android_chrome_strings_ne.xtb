@@ -157,7 +157,6 @@
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइलहरू}}</translation>
 <translation id="2021896219286479412">पूर्ण स्क्रिनको साइटका नियन्त्रणहरू</translation>
 <translation id="2038563949887743358">अनुरोध डेस्कटप साइट खोल्नुहोस्</translation>
-<translation id="2039379262107991683">पेजहरूबारे रिमाइन्डर प्राप्त गर्न ती पेजहरू आफ्नो अध्ययन सूचीमा हाल्नुहोस्।</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> ले Chrome मा पनि डेटा राखेको छ</translation>
 <translation id="2046634576464120978">दर्ता गर्न सकिएन</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -354,7 +353,6 @@
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome को गृहपृष्ठ</translation>
 <translation id="3154863790776532719">नयाँ सुविधाहरू र सुधारिएको कार्यसम्पादन</translation>
-<translation id="3157387275655328056">पाठ्य सूचीमा थप्नुहोस्</translation>
 <translation id="3157842584138209013">थप विकल्पहरू नामक बटनमार्फत आफूले सुरक्षित गरेको डेटाको मात्रा हेर्नुहोस्</translation>
 <translation id="3166827708714933426">ट्याब र विन्डोका सर्टकटहरू</translation>
 <translation id="316694332262407393">यसमा अहिले Chrome चलिरहेको छ।</translation>
@@ -405,6 +403,7 @@
 <translation id="3398320232533725830">पुस्तक चिन्ह प्रबन्धक खोल्नुहोस्</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3429160811076349561">ट्रायल सुविधाहरू अफ गरिएका छन्</translation>
+<translation id="3435465986463792564">थुप्रै विन्डो छन्? तपाईं यहाँबाट ती विन्डोहरू व्यवस्थापन गर्न सक्नुहुन्छ</translation>
 <translation id="3440975416244667276">अझ सान्दर्भिक जानकारी प्राप्त गर्न टच एण्ड होल्ड गर्नुहोस्</translation>
 <translation id="3443221991560634068">हालको पृष्ठलाई पुनःलोड गर्नुहोस्</translation>
 <translation id="3444179773590444986">साइटहरूमा लागू हुने अँध्यारो थिमका बारेमा प्रतिक्रिया दिने हो?</translation>
@@ -1054,7 +1053,6 @@
 <translation id="7352651011704765696">केही गल्ती भयो</translation>
 <translation id="7352939065658542140">भिडियो</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{चयन गरिएको १ वस्तु सेयर गर्नुहोस्}other{चयन गरिएका # वस्तुहरू सेयर गर्नुहोस्}}</translation>
-<translation id="7356631068872238169">पछि पढ्न सेभ गरिएका वेबपेजको सूचीबाट हटाउनु…</translation>
 <translation id="7359002509206457351">भुक्तानी विधिहरूमाथि पहुँच राख्नुहोस्</translation>
 <translation id="7375125077091615385">प्रकार:</translation>
 <translation id="7376560087009844242">तपाईंले पेजमा भएका थप पाठहरू समावेश गर्नुभयो भने तपाईंले ट्याप गरेर थप जानकारी हेर्ने सुविधा चलाउँदा तपाईं अझ सान्दर्भिक परिणामहरू देख्न सक्नुहुन्छ। तपाईं <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा गई जुनसुकै बेला यो सेटिङ बदल्न सक्नुहुन्छ।</translation>
@@ -1344,6 +1342,7 @@
 <translation id="8951232171465285730">Chrome ले तपाईंको <ph name="MEGABYTES" /> एम.बि. बचाएको छ</translation>
 <translation id="8955719471735800169">सबैभन्दा माथि फर्कनुहोस्</translation>
 <translation id="8965591936373831584">विचाराधीन</translation>
+<translation id="8967427617812342790">पाठ्य सूचीमा थप्नुहोस्</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
 <translation id="8970887620466824814">केही चिज गडबड भयो।</translation>
 <translation id="8972098258593396643">डिफल्ट फोल्डरमा डाउनलोड गर्ने हो?</translation>
