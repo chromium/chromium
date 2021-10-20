@@ -160,6 +160,8 @@ const char kGoAwayOnPathDegrading[] = "go_away_on_path_degrading";
 
 const char kAllowPortMigration[] = "allow_port_migration";
 
+const char kDisableTlsZeroRtt[] = "disable_tls_zero_rtt";
+
 // "goaway_sessions_on_ip_change" is default on for iOS unless overrided via
 // experimental options explicitly.
 #if defined(OS_IOS)
@@ -502,6 +504,10 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
       quic_params->allow_port_migration =
           quic_args->FindBoolKey(kAllowPortMigration)
               .value_or(quic_params->allow_port_migration);
+
+      quic_params->disable_tls_zero_rtt =
+          quic_args->FindBoolKey(kDisableTlsZeroRtt)
+              .value_or(quic_params->disable_tls_zero_rtt);
 
       quic_params->disable_bidirectional_streams =
           quic_args->FindBoolKey(kQuicDisableBidirectionalStreams)
