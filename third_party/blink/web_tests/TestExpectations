@@ -7276,3 +7276,6 @@ crbug.com/1256763 [ Linux ] images/color-profile-background-clip-text.html [ Fai
 crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-svg-fill-text.html [ Failure Pass ]
 crbug.com/1259277 [ Mac ] fast/events/message-port-multi.html [ Failure Pass ]
 crbug.com/1261457 [ Mac11-arm64 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure Pass ]
+
+# Sheriff 2021-10-20
+crbug.com/1261744 [ Mac11-arm64 ] external/wpt/url/a-element-origin.html [ Failure Pass ]
