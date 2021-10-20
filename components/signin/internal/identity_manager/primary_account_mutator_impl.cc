@@ -45,13 +45,13 @@ PrimaryAccountMutatorImpl::PrimaryAccountMutatorImpl(
 
 PrimaryAccountMutatorImpl::~PrimaryAccountMutatorImpl() {}
 
-bool PrimaryAccountMutatorImpl::SetPrimaryAccount(
-    const CoreAccountId& account_id,
-    ConsentLevel consent_level) {
+PrimaryAccountMutator::PrimaryAccountError
+PrimaryAccountMutatorImpl::SetPrimaryAccount(const CoreAccountId& account_id,
+                                             ConsentLevel consent_level) {
   DCHECK(!account_id.empty());
   AccountInfo account_info = account_tracker_->GetAccountInfo(account_id);
   if (account_info.IsEmpty())
-    return false;
+    return PrimaryAccountError::kAccountInfoEmpty;
 
   DCHECK_EQ(account_info.account_id, account_id);
   DCHECK(!account_info.email.empty());
@@ -66,17 +66,17 @@ bool PrimaryAccountMutatorImpl::SetPrimaryAccount(
   DCHECK(is_signin_allowed);
 #endif
   if (!is_signin_allowed)
-    return false;
+    return PrimaryAccountError::kSigninNotAllowed;
 #endif
 
   switch (consent_level) {
     case ConsentLevel::kSync:
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       if (primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync))
-        return false;
+        return PrimaryAccountError::kSyncConsentAlreadySet;
 #endif
       primary_account_manager_->SetSyncPrimaryAccountInfo(account_info);
-      return true;
+      return PrimaryAccountError::kNoError;
     case ConsentLevel::kSignin:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // On Chrome OS the UPA can only be set once and never removed or changed.
@@ -85,9 +85,10 @@ bool PrimaryAccountMutatorImpl::SetPrimaryAccount(
 #endif
       DCHECK(!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
       primary_account_manager_->SetUnconsentedPrimaryAccountInfo(account_info);
-      return true;
+      return PrimaryAccountError::kNoError;
   }
-  return false;
+  CHECK(false) << "Unknown consent level: " << static_cast<int>(consent_level);
+  return PrimaryAccountError::kNoError;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -76,8 +76,11 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
         signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE,
         signin_metrics::SignoutDelete::kIgnoreMetric);
   }
-  CHECK(identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      device_account_id, ConsentLevel::kSync));
+  PrimaryAccountMutator::PrimaryAccountError error =
+      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          device_account_id, ConsentLevel::kSync);
+  CHECK_EQ(PrimaryAccountMutator::PrimaryAccountError::kNoError, error)
+      << "SetPrimaryAccount error: " << static_cast<int>(error);
   CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
   CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia,
            device_account.key.id());
