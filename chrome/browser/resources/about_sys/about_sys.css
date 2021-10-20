@@ -2,10 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#anchor {
-  display: none;
-}
-
 body {
   font-size: 84%;
   margin: 0;
@@ -145,6 +141,18 @@ tr > *:nth-child(2) {
 .name {
   background-position: 5em center;
   background-repeat: no-repeat;
+}
+
+a.anchor {
+  text-decoration: none;
+}
+
+a.anchor::before {
+  content: '🔗';
+}
+
+a.anchor:hover {
+  text-decoration: underline;
 }
 
 .stat-value {
