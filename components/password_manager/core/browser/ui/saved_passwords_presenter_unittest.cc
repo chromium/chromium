@@ -141,7 +141,7 @@ TEST_F(SavedPasswordsPresenterTest, AddPasswordFailWhenInvalidUrl) {
 
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  form.url = GURL("invalid");
+  form.url = GURL("https://;/invalid");
   EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
   EXPECT_FALSE(presenter().AddPassword(form));
   RunUntilIdle();

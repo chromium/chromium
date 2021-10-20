@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -92,8 +93,7 @@ void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
 }
 
 bool SavedPasswordsPresenter::AddPassword(const PasswordForm& form) {
-  // TODO(crbug.com/1236053): Clarify URL requirements.
-  if (!form.url.is_valid() || !form.url.SchemeIsHTTPOrHTTPS())
+  if (!password_manager_util::IsValidPasswordURL(form.url))
     return false;
   if (form.password_value.empty())
     return false;

@@ -406,4 +406,8 @@ GURL ConstructGURLWithScheme(const std::string& url) {
   return gurl;
 }
 
+bool IsValidPasswordURL(const GURL& url) {
+  return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
+}
+
 }  // namespace password_manager_util

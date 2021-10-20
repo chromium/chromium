@@ -168,6 +168,9 @@ GURL StripAuthAndParams(const GURL& gurl);
 // by default. For ip-addresses, scheme "http://" is used.
 GURL ConstructGURLWithScheme(const std::string& url);
 
+// Returns whether |url| has valid format and either an HTTP or HTTPS scheme.
+bool IsValidPasswordURL(const GURL& url);
+
 }  // namespace password_manager_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_UTIL_H_
