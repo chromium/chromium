@@ -2,40 +2,56 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-self.onmessage =
-    async (message) => {
-  switch (message.data.test) {
-    case 'expectSessionEstablished':
-      await expectSessionEstablished(message.data.url);
-      return;
-    case 'expectSessionFailed':
-      await expectSessionFailed(message.data.url);
-      return;
-    default:
-      postMessage(`Unknown test name: ${message.data.test}`);
-  }
+if ('DedicatedWorkerGlobalScope' in self &&
+    self instanceof DedicatedWorkerGlobalScope) {
+  registerOnMessage(self);
+} else if (
+    'SharedWorkerGlobalScope' in self &&
+    self instanceof SharedWorkerGlobalScope) {
+  // self is SharedWorkerGlobalScope.
+  self.onconnect = (e) => {
+    var port = e.ports[0];
+    registerOnMessage(port);
+    port.start();
+  };
 }
 
-async function expectSessionEstablished(url) {
+function registerOnMessage(target) {
+  target.onmessage = async (message) => {
+    switch (message.data.test) {
+      case 'expectSessionEstablished':
+        await expectSessionEstablished(message.data.url, target);
+        return;
+      case 'expectSessionFailed':
+        await expectSessionFailed(message.data.url, target);
+        return;
+      default:
+        target.postMessage(`Unknown test name: ${message.data.test}`);
+    }
+  };
+}
+
+async function expectSessionEstablished(url, target) {
   const transport = new WebTransport(url);
   try {
     await transport.ready;
-    postMessage('PASS');
+    target.postMessage('PASS');
   } catch (e) {
-    postMessage(`Ready should not be rejected: ${e}`);
+    target.postMessage(`Ready should not be rejected: ${e}`);
   }
 }
 
-async function expectSessionFailed(url) {
+async function expectSessionFailed(url, target) {
   const transport = new WebTransport(url);
   try {
     await transport.ready;
-    postMessage('Ready should be rejected.');
+    target.postMessage('Ready should be rejected.');
   } catch (e) {
    if (e.name !== 'WebTransportError') {
-      postMessage(`Error name should be WebTransportError but is ${e.name}.`);
+     target.postMessage(
+         `Error name should be WebTransportError but is ${e.name}.`);
     } else {
-      postMessage('PASS');
+      target.postMessage('PASS');
     }
   }
 }

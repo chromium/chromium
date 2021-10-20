@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 const callbackPass = chrome.test.callbackPass;
+const hasFrame = !('isSharedWorkerTest' in self);
 
 chrome.tabs.getCurrent(function(tab) {
   runTestsForTab(
@@ -11,6 +12,8 @@ chrome.tabs.getCurrent(function(tab) {
         // established.
         async function sessionEstablished() {
           const url = `https://localhost:${testWebTransportPort}/echo`;
+          const frameId = hasFrame ? 0 : -1;
+          const tabId = hasFrame ? 0 : -1;
           expect(
               [
                 // events
@@ -23,6 +26,8 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'webtransport',
                     // TODO(crbug.com/1243196): Return valid frame URL.
                     frameUrl: 'unknown frame URL',
+                    frameId: frameId,
+                    tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
                 },
@@ -33,6 +38,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
                   },
                 },
@@ -43,6 +50,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
                   },
                 },
@@ -53,6 +62,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     statusCode: 200,
                     statusLine: 'HTTP/1.1 200',
                     initiator: getDomain(initiators.WEB_INITIATED)
@@ -65,6 +76,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     statusCode: 200,
                     statusLine: 'HTTP/1.1 200',
                     fromCache: false,
@@ -78,6 +91,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     statusCode: 200,
                     statusLine: 'HTTP/1.1 200',
                     fromCache: false,
@@ -104,6 +119,8 @@ chrome.tabs.getCurrent(function(tab) {
         // established.
         async function blockedByOnBeforeRequest() {
           const url = `https://localhost:${testWebTransportPort}/echo`;
+          const frameId = hasFrame ? 0 : -1;
+          const tabId = hasFrame ? 0 : -1;
 
           expect(
               [
@@ -115,6 +132,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     frameUrl: 'unknown frame URL',
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
@@ -127,6 +146,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
                     error: 'net::ERR_BLOCKED_BY_CLIENT'
@@ -147,6 +168,8 @@ chrome.tabs.getCurrent(function(tab) {
         // The handshake is cancelled in onBeforeSendHeaders.
         async function blockedByOnBeforeSendHeaders() {
           const url = `https://localhost:${testWebTransportPort}/invalid`;
+          const frameId = hasFrame ? 0 : -1;
+          const tabId = hasFrame ? 0 : -1;
           expect(
               [
                 // events
@@ -157,6 +180,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     frameUrl: 'unknown frame URL',
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
@@ -168,6 +193,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
                   retval: {cancel: true}
@@ -179,6 +206,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
                     error: 'net::ERR_BLOCKED_BY_CLIENT'
@@ -252,6 +281,8 @@ chrome.tabs.getCurrent(function(tab) {
         // The connection will not be established.
         async function serverRejected() {
           const url = `https://localhost:${testWebTransportPort}/invalid`;
+          const frameId = hasFrame ? 0 : -1;
+          const tabId = hasFrame ? 0 : -1;
 
           expect(
               [
@@ -263,6 +294,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     frameUrl: 'unknown frame URL',
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
@@ -274,6 +307,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
                 },
@@ -284,6 +319,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
                 },
@@ -294,6 +331,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
                     error: 'net::ERR_METHOD_NOT_SUPPORTED'
@@ -320,6 +359,8 @@ chrome.tabs.getCurrent(function(tab) {
         // established.
         async function blockedByOnHeadersReceived() {
           const url = `https://localhost:${testWebTransportPort}/echo`;
+          const frameId = hasFrame ? 0 : -1;
+          const tabId = hasFrame ? 0 : -1;
 
           expect(
               [
@@ -331,6 +372,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     frameUrl: 'unknown frame URL',
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
@@ -342,6 +385,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
                 },
@@ -352,6 +397,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
                 },
@@ -362,6 +409,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     statusCode: 200,
                     statusLine: 'HTTP/1.1 200',
                     initiator: getDomain(initiators.WEB_INITIATED)
@@ -375,6 +424,8 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
+                    frameId: frameId,
+                    tabId: tabId,
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
                     error: 'net::ERR_BLOCKED_BY_CLIENT'

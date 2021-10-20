@@ -95,7 +95,8 @@ void WebTransportConnectorImpl::Connect(
       handshake_client_to_pass.InitWithNewPipeAndPassReceiver());
 
   GetContentClient()->browser()->WillCreateWebTransport(
-      frame_.get(), url, std::move(handshake_client_to_pass),
+      process_id_, frame_ ? frame_->GetRoutingID() : MSG_ROUTING_NONE, url,
+      origin_, std::move(handshake_client_to_pass),
       base::BindOnce(
           &WebTransportConnectorImpl::OnWillCreateWebTransportCompleted,
           weak_factory_.GetWeakPtr(), url, std::move(fingerprints)));

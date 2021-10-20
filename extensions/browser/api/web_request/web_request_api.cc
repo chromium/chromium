@@ -808,8 +808,10 @@ void WebRequestAPI::ProxyWebSocket(
 }
 
 void WebRequestAPI::ProxyWebTransport(
-    content::RenderFrameHost& frame,
+    content::RenderProcessHost& render_process_host,
+    int frame_routing_id,
     const GURL& url,
+    const url::Origin& initiator_origin,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
     content::ContentBrowserClient::WillCreateWebTransportCallback callback) {
@@ -820,7 +822,8 @@ void WebRequestAPI::ProxyWebTransport(
   }
   DCHECK(proxies_);
   StartWebRequestProxyingWebTransport(
-      frame, url, std::move(handshake_client),
+      render_process_host, frame_routing_id, url, initiator_origin,
+      std::move(handshake_client),
       request_id_generator_.Generate(MSG_ROUTING_NONE, 0), *proxies_.get(),
       std::move(callback));
 }

@@ -530,8 +530,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client) override;
   void WillCreateWebTransport(
-      content::RenderFrameHost* frame,
+      int process_id,
+      int frame_routing_id,
       const GURL& url,
+      const url::Origin& initiator_origin,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       WillCreateWebTransportCallback callback) override;
@@ -823,15 +825,19 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void SafeBrowsingWebApiHandshakeChecked(
       std::unique_ptr<safe_browsing::WebApiHandshakeChecker> checker,
-      const content::GlobalRenderFrameHostId& frame_id,
+      int process_id,
+      int frame_routing_id,
       const GURL& url,
+      const url::Origin& initiator_origin,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       WillCreateWebTransportCallback callback,
       safe_browsing::WebApiHandshakeChecker::CheckResult result);
   void MaybeInterceptWebTransport(
-      const content::GlobalRenderFrameHostId& frame_id,
+      int process_id,
+      int frame_routing_id,
       const GURL& url,
+      const url::Origin& initiator_origin,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       WillCreateWebTransportCallback callback);

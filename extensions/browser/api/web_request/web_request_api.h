@@ -239,8 +239,10 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
 
   // Starts proxying WebTransport handshake.
   void ProxyWebTransport(
-      content::RenderFrameHost& frame,
+      content::RenderProcessHost& render_process_host,
+      int frame_routing_id,
       const GURL& url,
+      const url::Origin& initiator_origin,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       content::ContentBrowserClient::WillCreateWebTransportCallback callback);

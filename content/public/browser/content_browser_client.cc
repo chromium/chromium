@@ -835,8 +835,10 @@ void ContentBrowserClient::CreateWebSocket(
 }
 
 void ContentBrowserClient::WillCreateWebTransport(
-    RenderFrameHost* frame,
+    int process_id,
+    int frame_routing_id,
     const GURL& url,
+    const url::Origin& initiator_origin,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
     WillCreateWebTransportCallback callback) {

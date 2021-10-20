@@ -10,17 +10,15 @@
 
 class GURL;
 
-namespace content {
-class RenderFrameHost;
-}
-
 namespace extensions {
 
 // Starts proxying WebTransport handshake if the extensions want to listen it
 // by overrinding `handshake_client`.
 void StartWebRequestProxyingWebTransport(
-    content::RenderFrameHost& frame,
+    content::RenderProcessHost& render_process_host,
+    int frame_routing_id,
     const GURL& url,
+    const url::Origin& initiator_origin,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
     int64_t request_id,

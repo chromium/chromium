@@ -1508,7 +1508,14 @@ class CONTENT_EXPORT ContentBrowserClient {
           handshake_client);
 
   // Allows the embedder to control if establishing a WebTransport connection is
-  // allowed. When the connection is blocked, `callback` is called with `error`.
+  // allowed.
+  //
+  // `process_id` is the ID of the process which hosts the initiator context.
+  // `frame_routing_id` is the ID of the frame with which the initiator context
+  // is associated, or MSG_ROUTING_NONE if there is no associated frame.
+  // `url` is the destination URL and
+  // `initiator_origin` is the origin of the initiator context.
+  // When the connection is blocked, `callback` is called with `error`.
   // `handshake_client` will be proxied to block the connection while
   // handshaking.
   using WillCreateWebTransportCallback = base::OnceCallback<void(
@@ -1516,8 +1523,10 @@ class CONTENT_EXPORT ContentBrowserClient {
           handshake_client,
       absl::optional<network::mojom::WebTransportErrorPtr> error)>;
   virtual void WillCreateWebTransport(
-      RenderFrameHost* frame,
+      int process_id,
+      int frame_routing_id,
       const GURL& url,
+      const url::Origin& initiator_origin,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       WillCreateWebTransportCallback callback);

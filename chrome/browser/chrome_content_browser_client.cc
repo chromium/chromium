@@ -5165,56 +5165,63 @@ void ChromeContentBrowserClient::CreateWebSocket(
 }
 
 void ChromeContentBrowserClient::WillCreateWebTransport(
-    content::RenderFrameHost* frame,
+    int process_id,
+    int frame_routing_id,
     const GURL& url,
+    const url::Origin& initiator_origin,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
     WillCreateWebTransportCallback callback) {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  if (!frame) {
-    std::move(callback).Run(std::move(handshake_client), absl::nullopt);
+  content::RenderFrameHost* frame =
+      content::RenderFrameHost::FromID(process_id, frame_routing_id);
+  if (frame) {
+    int frame_tree_node_id = frame->GetFrameTreeNodeId();
+    content::WebContents* web_contents =
+        content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+    DCHECK(web_contents);
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    DCHECK(profile);
+    auto checker = std::make_unique<safe_browsing::WebApiHandshakeChecker>(
+        base::BindOnce(
+            &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
+            base::Unretained(this),
+            safe_browsing::IsSafeBrowsingEnabled(*profile->GetPrefs()),
+            /*should_check_on_sb_disabled=*/false,
+            safe_browsing::GetURLAllowlistByPolicy(profile->GetPrefs())),
+        base::BindRepeating(&content::WebContents::FromFrameTreeNodeId,
+                            frame_tree_node_id),
+        frame_tree_node_id);
+    auto* raw_checker = checker.get();
+    raw_checker->Check(
+        url,
+        base::BindOnce(
+            &ChromeContentBrowserClient::SafeBrowsingWebApiHandshakeChecked,
+            weak_factory_.GetWeakPtr(), std::move(checker), process_id,
+            frame_routing_id, url, initiator_origin,
+            std::move(handshake_client), std::move(callback)));
     return;
   }
-  int frame_tree_node_id = frame->GetFrameTreeNodeId();
-  content::WebContents* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  DCHECK(web_contents);
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  DCHECK(profile);
-  auto checker = std::make_unique<safe_browsing::WebApiHandshakeChecker>(
-      base::BindOnce(
-          &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
-          base::Unretained(this),
-          safe_browsing::IsSafeBrowsingEnabled(*profile->GetPrefs()),
-          /*should_check_on_sb_disabled=*/false,
-          safe_browsing::GetURLAllowlistByPolicy(profile->GetPrefs())),
-      base::BindRepeating(&content::WebContents::FromFrameTreeNodeId,
-                          frame_tree_node_id),
-      frame_tree_node_id);
-  auto* raw_checker = checker.get();
-  raw_checker->Check(
-      url,
-      base::BindOnce(
-          &ChromeContentBrowserClient::SafeBrowsingWebApiHandshakeChecked,
-          weak_factory_.GetWeakPtr(), std::move(checker), frame->GetGlobalId(),
-          url, std::move(handshake_client), std::move(callback)));
-#else
-  MaybeInterceptWebTransport(frame->GetGlobalId(), url,
-                             std::move(handshake_client), std::move(callback));
 #endif
+  MaybeInterceptWebTransport(process_id, frame_routing_id, url,
+                             initiator_origin, std::move(handshake_client),
+                             std::move(callback));
 }
 
 void ChromeContentBrowserClient::SafeBrowsingWebApiHandshakeChecked(
     std::unique_ptr<safe_browsing::WebApiHandshakeChecker> checker,
-    const content::GlobalRenderFrameHostId& frame_id,
+    int process_id,
+    int frame_routing_id,
     const GURL& url,
+    const url::Origin& initiator_origin,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
     WillCreateWebTransportCallback callback,
     safe_browsing::WebApiHandshakeChecker::CheckResult result) {
   if (result == safe_browsing::WebApiHandshakeChecker::CheckResult::kProceed) {
-    MaybeInterceptWebTransport(frame_id, url, std::move(handshake_client),
+    MaybeInterceptWebTransport(process_id, frame_routing_id, url,
+                               initiator_origin, std::move(handshake_client),
                                std::move(callback));
   } else {
     std::move(callback).Run(std::move(handshake_client),
@@ -5225,21 +5232,25 @@ void ChromeContentBrowserClient::SafeBrowsingWebApiHandshakeChecked(
 }
 
 void ChromeContentBrowserClient::MaybeInterceptWebTransport(
-    const content::GlobalRenderFrameHostId& frame_id,
+    int process_id,
+    int frame_routing_id,
     const GURL& url,
+    const url::Origin& initiator_origin,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
     WillCreateWebTransportCallback callback) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::RenderFrameHost* frame = RenderFrameHost::FromID(frame_id);
-  // TODO(crbug.com/1243518): Request w/o a frame also should be proxied.
-  if (!frame) {
+  // TODO(1243518): Add a unit test which calls
+  // ChromeContentBrowserClient::WillCreateWebTransport() with invalid process
+  // id and routing id.
+  auto* render_process_host = content::RenderProcessHost::FromID(process_id);
+  if (!render_process_host) {
     std::move(callback).Run(std::move(handshake_client), absl::nullopt);
     return;
   }
-
-  content::BrowserContext* browser_context = frame->GetBrowserContext();
+  content::BrowserContext* browser_context =
+      render_process_host->GetBrowserContext();
   auto* web_request_api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
           browser_context);
@@ -5249,8 +5260,9 @@ void ChromeContentBrowserClient::MaybeInterceptWebTransport(
     std::move(callback).Run(std::move(handshake_client), absl::nullopt);
     return;
   }
-  web_request_api->ProxyWebTransport(*frame, url, std::move(handshake_client),
-                                     std::move(callback));
+  web_request_api->ProxyWebTransport(
+      *render_process_host, frame_routing_id, url, initiator_origin,
+      std::move(handshake_client), std::move(callback));
 #else
   std::move(callback).Run(std::move(handshake_client), absl::nullopt);
 #endif
