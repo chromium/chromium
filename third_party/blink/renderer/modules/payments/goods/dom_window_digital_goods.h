@@ -30,6 +30,7 @@ class DOMWindowDigitalGoods final
                                               const String& payment_method);
 
   ScriptPromise GetDigitalGoodsService(ScriptState*,
+                                       LocalDOMWindow&,
                                        const String& payment_method);
   void Trace(Visitor* visitor) const override;
 

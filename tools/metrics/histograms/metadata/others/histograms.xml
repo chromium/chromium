@@ -4874,6 +4874,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="DigitalGoods.CrossSite" units="Boolean"
+    expires_after="2022-03-29">
+  <owner>glenrob@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records whether the |GetDigitalGoodsService| method was called from a
+    cross-site sub-frame. This metric is emitted when the cross-site check is
+    made in the renderer, i.e. only when the payment method is non-empty and the
+    script context is not being destroyed.
+  </summary>
+</histogram>
+
 <histogram name="DirectSockets.PermissionDeniedFailures"
     enum="DirectSocketPermissionFailureType" expires_after="2022-1-20">
   <owner>ericwilligers@chromium.org</owner>

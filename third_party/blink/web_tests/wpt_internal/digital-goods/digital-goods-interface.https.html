@@ -8,6 +8,7 @@
 <body>
 <script type="module">
 import {digital_goods_test} from './resources/mock-digital-goods-service.js';
+import {CROSS_SITE_HELPER_URL, SUBDOMAIN_HELPER_URL} from './resources/iframe-helper.sub.js';
 
 digital_goods_test(async service => {
   assert_not_equals(service, undefined);
@@ -38,6 +39,46 @@ promise_test(async () => {
     assert_equals(error.message, 'unsupported payment method');
   }
 }, 'Digital goods service rejects for unknown payment method.');
+
+promise_test(() => {
+  let iframe = document.createElement('iframe');
+  iframe.src = CROSS_SITE_HELPER_URL;
+  iframe.allow = 'payment';
+  iframe.onload = () => {
+    iframe.contentWindow.postMessage('Ready', '*');
+  }
+  document.body.appendChild(iframe);
+
+  return new Promise((resolve, reject) => {
+    window.onmessage = message => {
+      if (message.data == 'Failure: NotAllowedError: Access denied from cross-site frames') {
+        resolve();
+      } else {
+        reject(message.data)
+      }
+    }
+  });
+}, 'Digital goods service rejects from within cross-site iframe.');
+
+promise_test(() => {
+  let iframe = document.createElement('iframe');
+  iframe.src = SUBDOMAIN_HELPER_URL;
+  iframe.allow = 'payment';
+  iframe.onload = () => {
+    iframe.contentWindow.postMessage('Ready', '*');
+  }
+  document.body.appendChild(iframe);
+
+  return new Promise((resolve, reject) => {
+    window.onmessage = message => {
+      if (message.data == 'Success') {
+        resolve();
+      } else {
+        reject(message.data)
+      }
+    }
+  });
+}, 'Digital goods service passes same-site check from within subdomain iframe.');
 
 digital_goods_test(async service => {
   const response = await service.getDetails(['id2']);

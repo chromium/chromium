@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -53,12 +54,13 @@ ScriptPromise DOMWindowDigitalGoods::getDigitalGoodsService(
     ScriptState* script_state,
     LocalDOMWindow& window,
     const String& payment_method) {
-  return FromState(&window)->GetDigitalGoodsService(script_state,
+  return FromState(&window)->GetDigitalGoodsService(script_state, window,
                                                     payment_method);
 }
 
 ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
     ScriptState* script_state,
+    LocalDOMWindow& window,
     const String& payment_method) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto promise = resolver->Promise();
@@ -81,6 +83,15 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
   if (execution_context->IsContextDestroyed()) {
     resolver->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError));
+    return promise;
+  }
+
+  base::UmaHistogramBoolean("DigitalGoods.CrossSite",
+                            window.IsCrossSiteSubframeIncludingScheme());
+  if (window.IsCrossSiteSubframeIncludingScheme()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "Access denied from cross-site frames"));
     return promise;
   }
 
