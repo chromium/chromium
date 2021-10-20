@@ -90,3 +90,6 @@ per-file chrome_back_forward_cache_browsertest.cc=file://content/OWNERS
 
 # Web Platform security metrics tests:
 per-file chrome_web_platform_security_metrics_browsertest.cc=file://content/OWNERS
+
+# Color pipeline
+per-file chrome_color_mixers.*=file://ui/color/OWNERS
