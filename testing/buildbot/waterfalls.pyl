@@ -713,8 +713,8 @@
       'android-bfcache-rel': {
         'mixins': [
           'has_native_resultdb_integration',
-          'lollipop',
-          'hammerhead',
+          'marshmallow',
+          'bullhead',
         ],
         'os_type': 'android',
         'test_suites': {
@@ -1665,8 +1665,8 @@
         # TODO(crbug/1255748): Move to Pie/Pixel2.
         'mixins': [
           'has_native_resultdb_integration',
-          'lollipop',
-          'hammerhead',
+          'marshmallow',
+          'bullhead',
         ],
         'additional_compile_targets': [
           'all',
@@ -6628,8 +6628,8 @@
     'machines': {
       'android-opus-arm-rel': {
         'mixins': [
-          'lollipop',
-          'hammerhead',
+          'marshmallow',
+          'bullhead',
         ],
         'test_suites': {
           'gtest_tests': 'opus_tests',
@@ -6638,8 +6638,8 @@
       },
       'android_blink_rel': {
         'mixins': [
-          'lollipop',
-          'hammerhead',
+          'marshmallow',
+          'bullhead',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_android_webkit_gtests',
