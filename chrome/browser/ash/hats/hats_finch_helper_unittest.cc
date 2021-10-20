@@ -122,8 +122,8 @@ TEST_F(HatsFinchHelperTest, TestComputeNextDate) {
 }
 
 TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
-  base::FieldTrialParams params =
-      CreateParamMap("0.5", "7", "1475613895337", "true", "0", kValidTriggerId);
+  base::FieldTrialParams params = CreateParamMap(
+      "0.5", "7", "1475613895337", "true", "false", kValidTriggerId);
   SetFeatureParams(params);
 
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();
@@ -146,8 +146,8 @@ TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
 }
 
 TEST_F(HatsFinchHelperTest, ResetHats) {
-  base::FieldTrialParams params =
-      CreateParamMap("0.5", "7", "1475613895337", "0", "true", kValidTriggerId);
+  base::FieldTrialParams params = CreateParamMap(
+      "0.5", "7", "1475613895337", "false", "true", kValidTriggerId);
   SetFeatureParams(params);
 
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();

@@ -46,10 +46,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_210920",
+                    "name": "Enabled_211019",
                     "params": {
                         "DisableUI": "true",
-                        "TimeBetweenPrompts": "1d"
+                        "TimeBetweenPrompts": "24h"
                     },
                     "enable_features": [
                         "AccuracyTips"
@@ -5878,10 +5878,10 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledGroupA_20210722",
+                    "name": "EnabledGroupA_20211019",
                     "params": {
-                        "ArcVmInactivityTimeMs": "300",
-                        "ArcVmTrimBackoffTimeMs": "450",
+                        "ArcVmInactivityTimeMs": "300s",
+                        "ArcVmTrimBackoffTimeMs": "450s",
                         "TrimArcVmOnCriticalPressure": "false"
                     },
                     "enable_features": [
@@ -5889,10 +5889,10 @@
                     ]
                 },
                 {
-                    "name": "EnabledGroupB_20210722",
+                    "name": "EnabledGroupB_20211019",
                     "params": {
-                        "ArcVmInactivityTimeMs": "600",
-                        "ArcVmTrimBackoffTimeMs": "900",
+                        "ArcVmInactivityTimeMs": "600s",
+                        "ArcVmTrimBackoffTimeMs": "900s",
                         "TrimArcVmOnCriticalPressure": "false"
                     },
                     "enable_features": [
@@ -5900,10 +5900,10 @@
                     ]
                 },
                 {
-                    "name": "EnabledGroupC_20210722",
+                    "name": "EnabledGroupC_20211019",
                     "params": {
-                        "ArcVmInactivityTimeMs": "1200",
-                        "ArcVmTrimBackoffTimeMs": "1800",
+                        "ArcVmInactivityTimeMs": "1200s",
+                        "ArcVmTrimBackoffTimeMs": "1800s",
                         "TrimArcVmOnCriticalPressure": "false"
                     },
                     "enable_features": [
