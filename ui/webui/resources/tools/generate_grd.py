@@ -49,13 +49,13 @@ GRD_BEGIN_TEMPLATE = '<?xml version="1.0" encoding="UTF-8"?>\n'\
                      '<grit latest_public_release="0" current_release="1" '\
                      'output_all_resource_defines="false">\n'\
                      '  <outputs>\n'\
-                     '    <output filename="grit/{prefix}_resources.h" '\
+                     '    <output filename="{out_dir}/{prefix}_resources.h" '\
                      'type="rc_header">\n'\
                      '      <emit emit_type=\'prepend\'></emit>\n'\
                      '    </output>\n'\
-                     '    <output filename="grit/{prefix}_resources_map.cc"\n'\
+                     '    <output filename="{out_dir}/{prefix}_resources_map.cc"\n'\
                      '            type="resource_file_map_source" />\n'\
-                     '    <output filename="grit/{prefix}_resources_map.h"\n'\
+                     '    <output filename="{out_dir}/{prefix}_resources_map.h"\n'\
                      '            type="resource_map_header" />\n'\
                      '    <output filename="{prefix}_resources.pak" '\
                      'type="data_package" />\n'\
@@ -124,6 +124,7 @@ def main(argv):
   parser.add_argument('--root-gen-dir', required=True)
   parser.add_argument('--input-files', nargs="*")
   parser.add_argument('--input-files-base-dir')
+  parser.add_argument('--output-files-base-dir', default='grit')
   parser.add_argument('--grdp-files', nargs="*")
   parser.add_argument('--resource-path-rewrites', nargs="*")
   parser.add_argument('--resource-path-prefix')
@@ -132,7 +133,8 @@ def main(argv):
   grd_file = open(os.path.normpath(os.path.join(_CWD, args.out_grd)), 'w')
   begin_template = GRDP_BEGIN_TEMPLATE if args.out_grd.endswith('.grdp') else \
       GRD_BEGIN_TEMPLATE
-  grd_file.write(begin_template.format(prefix=args.grd_prefix))
+  grd_file.write(begin_template.format(prefix=args.grd_prefix,
+      out_dir=args.output_files_base_dir))
 
   if args.grdp_files != None:
     for grdp_file in args.grdp_files:
