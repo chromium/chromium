@@ -112,6 +112,9 @@ class CORE_EXPORT CSSAnimations final {
   }
   void ClearPendingUpdate() { pending_update_.Clear(); }
   void MaybeApplyPendingUpdate(Element*);
+  bool HasPreviousActiveInterpolationsForAnimations() const {
+    return !previous_active_interpolations_for_animations_.IsEmpty();
+  }
   bool IsEmpty() const {
     return running_animations_.IsEmpty() && transitions_.IsEmpty() &&
            pending_update_.IsEmpty();

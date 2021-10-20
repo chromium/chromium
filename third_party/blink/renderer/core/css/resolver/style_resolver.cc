@@ -127,6 +127,21 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   return style_recalc_context.container && state.CanAffectAnimations();
 }
 
+bool ShouldSetPendingUpdate(StyleResolverState& state, Element& element) {
+  if (!state.AnimationUpdate().IsEmpty())
+    return true;
+  // Even when the animation update is empty, we must still set the pending
+  // update in order to clear PreviousActiveInterpolationsForAnimations.
+  //
+  // See CSSAnimations::MaybeApplyPendingUpdate
+  if (const ElementAnimations* element_animations =
+          element.GetElementAnimations()) {
+    return element_animations->CssAnimations()
+        .HasPreviousActiveInterpolationsForAnimations();
+  }
+  return false;
+}
+
 void SetAnimationUpdateIfNeeded(const StyleRecalcContext& style_recalc_context,
                                 StyleResolverState& state,
                                 Element& element) {
@@ -140,7 +155,7 @@ void SetAnimationUpdateIfNeeded(const StyleRecalcContext& style_recalc_context,
   // If any changes to CSS Animations were detected, stash the update away for
   // application after the layout object is updated if we're in the appropriate
   // scope.
-  if (state.AnimationUpdate().IsEmpty())
+  if (!ShouldSetPendingUpdate(state, element))
     return;
 
   if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
