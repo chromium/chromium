@@ -44,11 +44,8 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
     // Quantization parameter. They are vp9 ac/dc indices and their ranges are
     // 0-255.
-    uint8_t initial_qp;
     uint8_t min_qp;
     uint8_t max_qp;
-
-    bool error_resilient_mode;
   };
 
   VP9VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,

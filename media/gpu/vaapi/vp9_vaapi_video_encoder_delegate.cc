@@ -184,10 +184,8 @@ scoped_refptr<VP9Picture> GetVP9Picture(
 VP9VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
     : kf_period_frames(kKFPeriod),
       framerate(0),
-      initial_qp(kDefaultQP),
       min_qp(kMinQP),
-      max_qp(kMaxQP),
-      error_resilient_mode(false) {}
+      max_qp(kMaxQP) {}
 
 void VP9VaapiVideoEncoderDelegate::set_rate_ctrl_for_testing(
     std::unique_ptr<VP9RateControl> rate_ctrl) {
