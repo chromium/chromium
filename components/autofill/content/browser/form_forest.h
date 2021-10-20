@@ -14,6 +14,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 namespace internal {
@@ -245,9 +246,12 @@ class FormForest {
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       const;
 
-  // Deletes all forms and fields that originate from |frame|. Fields from
-  // descendant frames of |frame| are not erased because EraseFrame() will be or
-  // has been called for them individually.
+  // Deletes all forms and fields that originate from |form| and unsets the
+  // FrameData::parent_form pointers of all child forms.
+  void EraseForm(FormGlobalId form);
+
+  // Deletes all forms and fields that originate from |frame| and unsets the
+  // FrameData::parent_form pointers of all child forms.
   void EraseFrame(LocalFrameToken frame);
 
   // Resets the object to the initial state.
@@ -332,15 +336,26 @@ class FormForest {
   // May be used in const qualified methods if the return value is not mutated.
   FrameAndForm GetRoot(FormGlobalId form);
 
+  // Helper for EraseFrame() and EraseForm() that removes all fields that
+  // originate from |frame_or_form| and unsets FrameData::parent_form pointer of
+  // |frame_or_form|'s children. We intentionally iterate over all frames and
+  // forms to search for fields from |frame_or_form|. Alternatively, we could
+  // limit this to the root form of |frame_or_form|. However, this would rely on
+  // |frame_or_form| being erased before its ancestors, since otherwise
+  // |frame_or_form| is disconnected from its root already.
+  void EraseReferencesTo(
+      absl::variant<LocalFrameToken, FormGlobalId> frame_or_form);
+
   // Adds |renderer_form| and |driver| to the relevant tree, where |driver| must
   // be the ContentAutofillDriver of the |renderer_form|'s FormData::host_frame.
   // Leaves `*renderer_form` in a valid but unspecified state (like after a
   // move). In particular, `*renderer_form` and its members can be reassigned.
   void UpdateTreeOfRendererForm(FormData* renderer_form,
                                 ContentAutofillDriver* driver);
+
   // The URL of a main frame managed by the FormForest.
   // TODO(crbug.com/1240247): Remove and make Resolve() static.
-  GURL MainUrlForDebugging() const;
+  std::string MainUrlForDebugging() const;
 
   // The frame managed by the FormForest that was last passed to
   // UpdateTreeOfRendererForm().
