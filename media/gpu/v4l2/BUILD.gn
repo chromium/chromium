@@ -156,5 +156,6 @@ executable("v4l2_stateless_decoder") {
     "//base",
     "//media",
     "//media:test_support",
+    "//media/gpu:common",
   ]
 }
