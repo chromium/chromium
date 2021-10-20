@@ -214,7 +214,7 @@
     }
   }
 
-  Root.Runtime.experiments.enableForTest('blackboxJSFramesOnTimeline');
+  Root.Runtime.experiments.enableForTest('ignoreListJSFramesOnTimeline');
   const dataProvider = new Timeline.TimelineFlameChartDataProvider();
   dataProvider.setModel(PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 

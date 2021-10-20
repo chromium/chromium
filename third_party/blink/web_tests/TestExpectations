@@ -7210,9 +7210,6 @@ crbug.com/1222126 http/tests/devtools/network/network-choose-preview-view.js [ S
 crbug.com/1222126 http/tests/devtools/network/json-preview.js [ Skip ]
 crbug.com/1215072 http/tests/devtools/elements/copy-styles.js [ Skip ]
 
-# Temporarily disable to allow updating DevTools experiment name
-crbug.com/1161439 http/tests/devtools/tracing/timeline-js/timeline-js-ignore-list.js [ Failure Pass ]
-
 # Skip devtools test hitting an unexpected tracing infrastructure exception 2021-10-04
 crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.js [ Skip ]
 
