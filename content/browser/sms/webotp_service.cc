@@ -156,8 +156,9 @@ bool WebOTPService::Create(
   // error occurs, the render frame host is deleted, or the render frame host
   // navigates to a new document.
   new WebOTPService(fetcher, origin_list, host, std::move(receiver));
-  static_cast<RenderFrameHostImpl*>(host)->OnSchedulerTrackedFeatureUsed(
-      blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService);
+  static_cast<RenderFrameHostImpl*>(host)
+      ->OnBackForwardCacheDisablingStickyFeatureUsed(
+          blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService);
   return true;
 }
 

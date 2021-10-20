@@ -3139,7 +3139,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   DCHECK_EQ(main_frame->GetBackForwardCacheDisablingFeatures().ToEnumBitmask(),
             0b1u);
   // Simulate the browser side reporting a feature usage.
-  main_frame->OnSchedulerTrackedFeatureUsed(
+  main_frame->OnBackForwardCacheDisablingStickyFeatureUsed(
       static_cast<blink::scheduler::WebSchedulerTrackedFeature>(1));
   DCHECK_EQ(main_frame->GetBackForwardCacheDisablingFeatures().ToEnumBitmask(),
             0b11u);

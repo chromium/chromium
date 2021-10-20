@@ -105,7 +105,7 @@ void SensorProviderProxyImpl::OnPermissionRequestCompleted(
       break;
     default:
       static_cast<RenderFrameHostImpl*>(render_frame_host_)
-          ->OnSchedulerTrackedFeatureUsed(
+          ->OnBackForwardCacheDisablingStickyFeatureUsed(
               blink::scheduler::WebSchedulerTrackedFeature::
                   kRequestedBackForwardCacheBlockedSensors);
   }

@@ -51,7 +51,7 @@ void PictureInPictureServiceImpl::StartSession(
     // picture-in-picture continues to be displayed while the page is in the
     // cache instead of closing.
     static_cast<RenderFrameHostImpl*>(render_frame_host())
-        ->OnSchedulerTrackedFeatureUsed(
+        ->OnBackForwardCacheDisablingStickyFeatureUsed(
             blink::scheduler::WebSchedulerTrackedFeature::kPictureInPicture);
   }
 

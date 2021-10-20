@@ -108,7 +108,7 @@ void KeyboardLockServiceImpl::RequestKeyboardLock(
     std::move(callback).Run(KeyboardLockRequestResult::kSuccess);
     feature_handle_ =
         static_cast<RenderFrameHostImpl*>(render_frame_host_)
-            ->RegisterBackForwardCacheDisablingFeature(
+            ->RegisterBackForwardCacheDisablingNonStickyFeature(
                 blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock);
   } else {
     std::move(callback).Run(KeyboardLockRequestResult::kRequestFailedError);

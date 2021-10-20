@@ -29,7 +29,7 @@
 #include "base/process/kill.h"
 #include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -1604,21 +1604,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
     BackForwardCacheDisablingFeature feature_;
   };
 
+  // A feature that blocks back/forward cache is used. This function is used for
+  // non sticky blocking features.
   BackForwardCacheDisablingFeatureHandle
-  RegisterBackForwardCacheDisablingFeature(
+  RegisterBackForwardCacheDisablingNonStickyFeature(
       BackForwardCacheDisablingFeature feature);
 
-  // A feature that blocks back/forward cache is used. Count the usage and evict
-  // the entry if necessary. When the feature is no longer used, call |reset()|
-  // for |BackForwardCacheDisablingFeatureHandle|.
-  // TODO(crbug.com/1254588): Do not use this function unless the feature is
-  // sticky, i.e., page can never be eligible for bfcache again for back/forward
-  // cache once the feature is used. Features that are non-sticky (might be
-  // removed later, causing the page to become eligible for bfcache again)
-  // should use |BackForwardCacheDisablingFeatureHandle| instead.
-  // TODO(crbug.com/1257067): Rename this to OnBackForwardCacheDisablingFeature
-  // Used.
-  void OnSchedulerTrackedFeatureUsed(BackForwardCacheDisablingFeature feature);
+  // A feature that blocks back/forward cache is used. This function is used for
+  // sticky blocking features.
+  void OnBackForwardCacheDisablingStickyFeatureUsed(
+      BackForwardCacheDisablingFeature feature);
 
   // Returns true if the frame is frozen.
   bool IsFrozen();
@@ -3214,6 +3209,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // to call them on a speculative frame.  One such example is
   // JavaScriptExecuteRequestInIsolatedWorld.
   void AssertNonSpeculativeFrame() const;
+
+  // A feature that blocks back/forward cache is used. Count the usage and evict
+  // the entry if necessary.
+  void OnBackForwardCacheDisablingFeatureUsed(
+      BackForwardCacheDisablingFeature feature);
 
   // A feature that blocks back/forward cache is removed. Update the count of
   // feature usage. This should only be called from

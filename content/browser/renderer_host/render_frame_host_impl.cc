@@ -4020,14 +4020,19 @@ BackForwardCacheDisablingFeatureHandle::BackForwardCacheDisablingFeatureHandle(
     BackForwardCacheDisablingFeature feature)
     : render_frame_host_(render_frame_host->GetWeakPtr()), feature_(feature) {
   CHECK(render_frame_host_);
-  render_frame_host_->OnSchedulerTrackedFeatureUsed(feature_);
+  render_frame_host_->OnBackForwardCacheDisablingFeatureUsed(feature_);
 }
 
-void RenderFrameHostImpl::OnSchedulerTrackedFeatureUsed(
+void RenderFrameHostImpl::OnBackForwardCacheDisablingFeatureUsed(
     BackForwardCacheDisablingFeature feature) {
   ++browser_reported_bfcache_disabling_features_counts_[feature];
 
   MaybeEvictFromBackForwardCache();
+}
+
+void RenderFrameHostImpl::OnBackForwardCacheDisablingStickyFeatureUsed(
+    BackForwardCacheDisablingFeature feature) {
+  OnBackForwardCacheDisablingFeatureUsed(feature);
 }
 
 void RenderFrameHostImpl::OnBackForwardCacheDisablingFeatureRemoved(
@@ -4041,12 +4046,7 @@ void RenderFrameHostImpl::OnBackForwardCacheDisablingFeatureRemoved(
   }
 }
 
-using BackForwardCacheDisablingFeatures =
-    blink::scheduler::WebSchedulerTrackedFeatures;
-using BackForwardCacheDisablingFeature =
-    blink::scheduler::WebSchedulerTrackedFeature;
-
-BackForwardCacheDisablingFeatures
+RenderFrameHostImpl::BackForwardCacheDisablingFeatures
 RenderFrameHostImpl::GetBackForwardCacheDisablingFeatures() const {
   BackForwardCacheDisablingFeatures features =
       renderer_reported_bfcache_disabling_features_;
@@ -4057,7 +4057,7 @@ RenderFrameHostImpl::GetBackForwardCacheDisablingFeatures() const {
 }
 
 RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
-RenderFrameHostImpl::RegisterBackForwardCacheDisablingFeature(
+RenderFrameHostImpl::RegisterBackForwardCacheDisablingNonStickyFeature(
     BackForwardCacheDisablingFeature feature) {
   return BackForwardCacheDisablingFeatureHandle(this, feature);
 }
@@ -5842,7 +5842,8 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
 
 void RenderFrameHostImpl::
     UseDummyStickyBackForwardCacheDisablingFeatureForTesting() {
-  OnSchedulerTrackedFeatureUsed(BackForwardCacheDisablingFeature::kDummy);
+  OnBackForwardCacheDisablingFeatureUsed(
+      BackForwardCacheDisablingFeature::kDummy);
 }
 
 bool RenderFrameHostImpl::HasSeenRecentXrOverlaySetup() {
@@ -9082,7 +9083,7 @@ void RenderFrameHostImpl::CreatePaymentManager(
   // Blocklist PaymentManager from the back-forward cache as at the moment we
   // don't cancel pending payment requests when the RenderFrameHost is stored
   // in back-forward cache.
-  OnSchedulerTrackedFeatureUsed(
+  OnBackForwardCacheDisablingStickyFeatureUsed(
       BackForwardCacheDisablingFeature::kPaymentManager);
 }
 
@@ -9406,7 +9407,8 @@ void RenderFrameHostImpl::BindIdleManager(
   }
 
   idle_manager_->CreateService(std::move(receiver));
-  OnSchedulerTrackedFeatureUsed(BackForwardCacheDisablingFeature::kIdleManager);
+  OnBackForwardCacheDisablingStickyFeatureUsed(
+      BackForwardCacheDisablingFeature::kIdleManager);
 }
 
 void RenderFrameHostImpl::GetPresentationService(
@@ -9433,7 +9435,7 @@ void RenderFrameHostImpl::GetSpeechSynthesis(
   // Blocklist SpeechSynthesis for BackForwardCache, because currently we do not
   // handle speech synthesis after placing the page in BackForwardCache.
   // TODO(sreejakshetty): Make SpeechSynthesis compatible with BackForwardCache.
-  OnSchedulerTrackedFeatureUsed(
+  OnBackForwardCacheDisablingFeatureUsed(
       BackForwardCacheDisablingFeature::kSpeechSynthesis);
 }
 
