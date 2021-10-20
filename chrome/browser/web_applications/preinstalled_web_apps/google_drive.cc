@@ -104,11 +104,7 @@ ExternalInstallOptions GetConfigForGoogleDrive() {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://drive.google.com/drive/installwebapp?usp=chrome_default"),
-#if defined(OS_CHROMEOS)
-      /*user_display_mode=*/DisplayMode::kStandalone,
-#else
       /*user_display_mode=*/DisplayMode::kBrowser,
-#endif  // defined(OS_CHROMEOS)
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
