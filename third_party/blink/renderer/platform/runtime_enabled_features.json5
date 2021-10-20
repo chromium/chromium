@@ -221,6 +221,10 @@
       status: "experimental",
     },
     {
+      name: "AutoDarkMode",
+      origin_trial_feature_name: "AutoDarkMode",
+    },
+    {
       name: "AutoExpandDetailsElement",
       status: "experimental",
     },
@@ -549,6 +553,7 @@
     {
       // Support the 'only' keyword for the color-scheme property.
       name: "CSSColorSchemeOnly",
+      origin_trial_feature_name: "AutoDarkMode",
       status: "test",
     },
     {
