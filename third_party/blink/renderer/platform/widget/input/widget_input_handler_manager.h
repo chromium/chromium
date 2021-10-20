@@ -231,10 +231,11 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // will be ACKed immediately when added to the main thread event queue.
   void DidHandleInputEventSentToMain(
       mojom::blink::WidgetInputHandler::DispatchEventCallback callback,
+      absl::optional<cc::TouchAction> touch_action_from_compositor,
       mojom::blink::InputEventResultState ack_state,
       const ui::LatencyInfo& latency_info,
       mojom::blink::DidOverscrollParamsPtr overscroll_params,
-      absl::optional<cc::TouchAction> touch_action);
+      absl::optional<cc::TouchAction> touch_action_from_main);
 
   // This method calls into DidHandleInputEventSentToMain but has a
   // slightly different signature. TODO(dtapuska): Remove this
@@ -290,7 +291,9 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   scoped_refptr<base::SingleThreadTaskRunner>
       compositor_thread_input_blocking_task_runner_;
 
-  absl::optional<cc::TouchAction> allowed_touch_action_;
+  // The touch action that InputHandlerProxy has asked us to allow. This should
+  // only be accessed on the compositor thread!
+  absl::optional<cc::TouchAction> compositor_allowed_touch_action_;
 
   // Callback used to respond to the WaitForInputProcessed Mojo message. This
   // callback is set from and must be invoked from the Mojo-bound thread (i.e.
