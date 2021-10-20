@@ -4212,7 +4212,7 @@
   {
     "name": "optimization-guide-push-notifications",
     "owners": [ "robertogden", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "os-settings-app-notifications-page",
