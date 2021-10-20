@@ -204,14 +204,7 @@ constexpr int kMinWordCount_ = 3;
 
 TextFragmentSelectorGenerator::TextFragmentSelectorGenerator(
     LocalFrame* main_frame)
-    : frame_(main_frame) {
-  // Links are generally generated in the main frame except when the main frame
-  // delegates the text fragment to an iframe (e.g AMP Viewer pages).
-  if (!base::FeatureList::IsEnabled(
-          shared_highlighting::kSharedHighlightingAmp)) {
-    DCHECK(main_frame->IsMainFrame());
-  }
-}
+    : frame_(main_frame) {}
 
 void TextFragmentSelectorGenerator::Generate(const RangeInFlatTree& range,
                                              GenerateCallback callback) {

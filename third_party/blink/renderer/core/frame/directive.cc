@@ -1,0 +1,36 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/core/frame/directive.h"
+
+namespace blink {
+
+Directive::Directive(Type type) : type_(type) {}
+Directive::~Directive() = default;
+
+Directive::Type Directive::GetType() const {
+  return type_;
+}
+
+String Directive::type() const {
+  DEFINE_STATIC_LOCAL(const String, text, ("text"));
+
+  switch (type_) {
+    case kText:
+      return text;
+  }
+
+  NOTREACHED();
+  return String();
+}
+
+String Directive::toString() const {
+  return ToStringImpl();
+}
+
+void Directive::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+}
+
+}  // namespace blink

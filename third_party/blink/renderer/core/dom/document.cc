@@ -751,7 +751,7 @@ Document::Document(const DocumentInit& initializer,
                          : initializer.UkmSourceId()),
       viewport_data_(MakeGarbageCollected<ViewportData>(*this)),
       is_for_external_handler_(initializer.IsForExternalHandler()),
-      fragment_directive_(MakeGarbageCollected<FragmentDirective>()),
+      fragment_directive_(MakeGarbageCollected<FragmentDirective>(*this)),
       display_lock_document_state_(
           MakeGarbageCollected<DisplayLockDocumentState>(this)),
       font_preload_manager_(MakeGarbageCollected<FontPreloadManager>(*this)),
@@ -4013,6 +4013,7 @@ void Document::SetURL(const KURL& url) {
   // --> "#id". See https://github.com/WICG/scroll-to-text-fragment.
   String fragment = new_url.FragmentIdentifier();
   wtf_size_t start_pos = fragment.Find(kFragmentDirectivePrefix);
+  fragment_directive_string_ = String();
   if (start_pos != kNotFound) {
     fragment_directive_string_ =
         fragment.Substring(start_pos + kFragmentDirectivePrefixStringLength);

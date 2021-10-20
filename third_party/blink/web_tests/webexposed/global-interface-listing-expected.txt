@@ -1739,6 +1739,11 @@ interface DevicePosture : EventTarget
     getter type
     method constructor
     setter onchange
+interface Directive
+    attribute @@toStringTag
+    getter type
+    method constructor
+    method toString
 interface Document : Node
     attribute @@toStringTag
     attribute @@unscopables
@@ -2750,7 +2755,9 @@ interface FormDataEvent : Event
     method constructor
 interface FragmentDirective
     attribute @@toStringTag
+    getter items
     method constructor
+    method createSelectorDirective
 interface GainNode : AudioNode
     attribute @@toStringTag
     getter gain
@@ -8267,6 +8274,10 @@ interface Selection
     method setBaseAndExtent
     method setPosition
     method toString
+interface SelectorDirective : Directive
+    attribute @@toStringTag
+    method constructor
+    method getMatchingRange
 interface Sensor : EventTarget
     attribute @@toStringTag
     getter activated
@@ -8634,6 +8645,13 @@ interface TextDetector
     attribute @@toStringTag
     method constructor
     method detect
+interface TextDirective : SelectorDirective
+    attribute @@toStringTag
+    getter prefix
+    getter suffix
+    getter textEnd
+    getter textStart
+    method constructor
 interface TextEncoder
     attribute @@toStringTag
     getter encoding

@@ -60,7 +60,7 @@ class CORE_EXPORT TextFragmentFinder
 
   const RangeInFlatTree* FirstMatch() const { return first_match_.Get(); }
 
-  TextFragmentSelector GetSelector() const { return selector_; }
+  const TextFragmentSelector& GetSelector() const { return selector_; }
 
  protected:
   friend class TextFragmentFinderTest;

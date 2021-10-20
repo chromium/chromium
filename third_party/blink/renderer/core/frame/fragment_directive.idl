@@ -7,4 +7,6 @@
     Exposed=Window,
     RuntimeEnabled=TextFragmentIdentifiers
 ] interface FragmentDirective {
+  [Measure, RuntimeEnabled=TextFragmentAPI, SameObject] readonly attribute FrozenArray<Directive> items;
+  [Measure, CallWith=ScriptState, RuntimeEnabled=TextFragmentAPI, NewObject] Promise<SelectorDirective> createSelectorDirective((Range or Selection) arg);
 };

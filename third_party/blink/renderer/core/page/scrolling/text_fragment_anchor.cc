@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/text_directive.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -152,6 +153,7 @@ bool TextFragmentAnchor::GenerateNewTokenForSameDocument(
   return true;
 }
 
+// static
 TextFragmentAnchor* TextFragmentAnchor::TryCreateFragmentDirective(
     const KURL& url,
     LocalFrame& frame,
@@ -169,6 +171,8 @@ TextFragmentAnchor* TextFragmentAnchor::TryCreateFragmentDirective(
                       WebFeature::kInvalidFragmentDirective);
     return nullptr;
   }
+
+  frame.GetDocument()->fragmentDirective().ClearDirectives();
 
   if (!CheckSecurityRestrictions(frame)) {
     return nullptr;
@@ -212,6 +216,11 @@ TextFragmentAnchor::TextFragmentAnchor(
     text_fragment_finders_.push_back(MakeGarbageCollected<TextFragmentFinder>(
         *this, selector, frame_->GetDocument(),
         TextFragmentFinder::FindBufferRunnerType::kSynchronous));
+
+    dom_text_directives_.push_back(
+        MakeGarbageCollected<TextDirective>(selector));
+    frame_->GetDocument()->fragmentDirective().AddDirective(
+        dom_text_directives_.back().Get());
   }
 }
 
@@ -253,7 +262,7 @@ bool TextFragmentAnchor::Invoke() {
   // If we're done searching, return true if this hasn't been dismissed yet so
   // that this is kept alive.
   if (search_finished_)
-    return !dismissed_;
+    return !dismissed_ || needs_perform_pre_raf_actions_;
 
   frame_->GetDocument()->Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::TextFragment());
@@ -289,7 +298,9 @@ bool TextFragmentAnchor::Invoke() {
 
   // We return true to keep this anchor alive as long as we need another invoke,
   // are waiting to be dismissed, or are proxying an element fragment anchor.
-  return !search_finished_ || !dismissed_ || element_fragment_anchor_ ||
+  // TODO(bokan): There's a lot of implicit state here, lets clean this up into
+  // a more explicit state machine.
+  return !search_finished_ || !dismissed_ || needs_perform_pre_raf_actions_ ||
          beforematch_state_ == kEventQueued;
 }
 
@@ -312,11 +323,25 @@ void TextFragmentAnchor::DidScroll(mojom::blink::ScrollType type) {
 }
 
 void TextFragmentAnchor::PerformPreRafActions() {
+  if (!needs_perform_pre_raf_actions_)
+    return;
+
+  needs_perform_pre_raf_actions_ = false;
+
   if (element_fragment_anchor_) {
     element_fragment_anchor_->Installed();
     element_fragment_anchor_->Invoke();
     element_fragment_anchor_->PerformPreRafActions();
     element_fragment_anchor_ = nullptr;
+  }
+
+  // Notify the DOM object exposed to JavaScript that we've completed the
+  // search and pass it the range we found. This can invoke script so it needs
+  // to happen here.
+  for (wtf_size_t i = 0; i < text_fragment_finders_.size(); ++i) {
+    TextFragmentFinder* finder = text_fragment_finders_.at(i).Get();
+    TextDirective* dom_text_directive = dom_text_directives_.at(i).Get();
+    dom_text_directive->DidFinishMatching(finder->FirstMatch());
   }
 }
 
@@ -325,6 +350,7 @@ void TextFragmentAnchor::Trace(Visitor* visitor) const {
   visitor->Trace(element_fragment_anchor_);
   visitor->Trace(metrics_);
   visitor->Trace(text_fragment_finders_);
+  visitor->Trace(dom_text_directives_);
   FragmentAnchor::Trace(visitor);
 }
 
@@ -332,6 +358,7 @@ void TextFragmentAnchor::DidFindMatch(
     const RangeInFlatTree& range,
     const TextFragmentAnchorMetrics::Match match_metrics,
     bool is_unique) {
+  // TODO(bokan): Can this happen or should this be a DCHECK?
   if (search_finished_)
     return;
 
@@ -469,6 +496,7 @@ void TextFragmentAnchor::DidFindMatch(
 void TextFragmentAnchor::DidFinishSearch() {
   DCHECK(!search_finished_);
   search_finished_ = true;
+  needs_perform_pre_raf_actions_ = true;
 
   metrics_->SetSearchEngineSource(HasSearchEngineSource());
   metrics_->ReportMetrics();
@@ -477,14 +505,14 @@ void TextFragmentAnchor::DidFinishSearch() {
     dismissed_ = true;
 
     DCHECK(!element_fragment_anchor_);
+    // ElementFragmentAnchor needs to be invoked from PerformPreRafActions
+    // since it can cause script to run and we may be in a ScriptForbiddenScope
+    // here.
     element_fragment_anchor_ = ElementFragmentAnchor::TryCreate(
         frame_->GetDocument()->Url(), *frame_, should_scroll_);
-    if (element_fragment_anchor_) {
-      // Schedule a frame so we can invoke the element anchor in
-      // PerformPreRafActions.
-      frame_->GetPage()->GetChromeClient().ScheduleAnimation(frame_->View());
-    }
   }
+
+  frame_->GetPage()->GetChromeClient().ScheduleAnimation(frame_->View());
 }
 
 bool TextFragmentAnchor::Dismiss() {

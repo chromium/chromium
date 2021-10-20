@@ -22,6 +22,7 @@ namespace blink {
 class DocumentLoader;
 class LocalFrame;
 class KURL;
+class TextDirective;
 
 constexpr char kFragmentDirectivePrefix[] = ":~:";
 // Subtract 1 because base::size includes the \0 string terminator.
@@ -107,6 +108,7 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
   bool HasSearchEngineSource();
 
   HeapVector<Member<TextFragmentFinder>> text_fragment_finders_;
+  HeapVector<Member<TextDirective>> dom_text_directives_;
 
   Member<LocalFrame> frame_;
 
@@ -139,6 +141,8 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
   // Whether we performed a non-zero scroll to scroll a match into view. Used
   // to determine whether the user subsequently scrolls back to the top.
   bool did_non_zero_scroll_ = false;
+  // Whether PerformPreRafActions should run at the next rAF.
+  bool needs_perform_pre_raf_actions_ = false;
 
   // Whether a text fragment finder was run.
   bool has_performed_first_text_search_ = false;

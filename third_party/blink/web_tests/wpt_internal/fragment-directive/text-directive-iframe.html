@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<title>Tests the TextDirective type from an iframe</title>
+<meta charset="utf-8">
+<link rel="help" href="https://wicg.github.io/ScrollToTextFragment/issues/160">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+</style>
+<script>
+  function reset() {
+
+  }
+</script>
+<body>
+  <iframe src="resources/simple-frame.html"></iframe>
+  <script>
+    onload = () => {
+      promise_test(async (t) => {
+        const iframeDoc = frames[0].document;
+
+        frames[0].location.hash = ':~:text=inside%20an';
+        assert_equals(iframeDoc.fragmentDirective.items.length, 1, '[PRECONDITION] items.length');
+
+        const promise = iframeDoc.fragmentDirective.items[0].getMatchingRange();
+        assert_true(promise instanceof frames[0].Promise, 'Returned value is a Promise');
+
+        const range = await promise;
+
+        assert_true(range instanceof frames[0].Range, 'Returned value is Range');
+        assert_equals(range.toString(), 'inside an', 'Found correct text');
+      }, 'getMatchingRange() inside iframe.');
+
+      // Ensure the selector remains alive and usable after the document is
+      // navigated away.
+      promise_test(async (t) => {
+        const iframeDoc = frames[0].document;
+
+        frames[0].location.hash = ':~:text=inside%20an';
+        assert_equals(iframeDoc.fragmentDirective.items.length, 1, '[PRECONDITION] items.length');
+        const selector = iframeDoc.fragmentDirective.items[0];
+
+        // Navigate away
+        frames[0].location = 'about:blank';
+        await t.step_wait(() => frames[0].document != iframeDoc, "Wait for about:blank");
+        const blankDoc = frames[0].document;
+        assert_equals(blankDoc.fragmentDirective.items.length, 0, '[PRECONDITION] about:blank items');
+
+        // The selector should still return its values.
+        assert_equals(selector.toString(), 'text=inside%20an');
+
+        // But we should not get a valid promise from getMatchingRange.
+        const promise = selector.getMatchingRange();
+        assert_equals(promise, undefined, 'getMatchingRange returns undefined');
+      }, 'getMatchingRange() for inactive document.');
+    };
+  </script>
