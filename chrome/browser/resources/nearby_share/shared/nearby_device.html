@@ -29,9 +29,9 @@
         outline: none;
       }
 
-      /* TODO(crbug.com/1256695) Focus is not properly handled */
-      :host(:focus) #wrapper {
-        border-color: var(--google-grey-refresh-700);
+      :host(:focus) #wrapper,
+      :host([is-selected]:focus) #wrapper {
+        border-color: var(--cros-color-secondary);
       }
 
       :host([is-selected]) #wrapper {
