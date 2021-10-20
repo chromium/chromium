@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/first_run/default_browser/instruction_view.h"
+#import "ios/chrome/browser/ui/elements/instruction_view.h"
 
-#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "ios/chrome/browser/ui/elements/instruction_view_constants.h"
 #include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -25,16 +24,31 @@ constexpr CGFloat kTrailingMargin = 16;
 constexpr CGFloat kCornerRadius = 12;
 constexpr CGFloat kSeparatorLeadingMargin = 60;
 constexpr CGFloat kSeparatorHeight = 0.5;
+constexpr CGFloat kIconLabelWidth = 30;
 
 }  // namespace
+
+@interface InstructionView ()
+
+@property(nonatomic, assign) InstructionViewStyle style;
+
+// A list of step number labels for color reset on trait collection change.
+@property(nonatomic, strong) NSMutableArray<UILabel*>* stepNumberLabels;
+
+@end
 
 @implementation InstructionView
 
 #pragma mark - Public
 
-- (instancetype)initWithList:(NSArray<NSString*>*)instructionList {
-  self = [super init];
+- (instancetype)initWithList:(NSArray<NSString*>*)instructionList
+                       style:(InstructionViewStyle)style {
+  self = [super initWithFrame:CGRectZero];
   if (self) {
+    _style = style;
+    _stepNumberLabels =
+        [[NSMutableArray alloc] initWithCapacity:instructionList.count];
+
     UIStackView* stackView = [[UIStackView alloc] init];
     stackView.translatesAutoresizingMaskIntoConstraints = NO;
     stackView.axis = UILayoutConstraintAxisVertical;
@@ -48,10 +62,32 @@ constexpr CGFloat kSeparatorHeight = 0.5;
     }
     [self addSubview:stackView];
     AddSameConstraints(self, stackView);
-    self.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    switch (style) {
+      case InstructionViewStyleGrayscale:
+        self.backgroundColor =
+            [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+        break;
+      case InstructionViewStyleDefault:
+        self.backgroundColor = [UIColor colorNamed:kGrey100Color];
+        break;
+    }
     self.layer.cornerRadius = kCornerRadius;
   }
   return self;
+}
+
+- (instancetype)initWithList:(NSArray<NSString*>*)instructionList {
+  return [self initWithList:instructionList style:InstructionViewStyleDefault];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (self.traitCollection.userInterfaceStyle !=
+      previousTraitCollection.userInterfaceStyle) {
+    for (UILabel* stepNumberLabel in self.stepNumberLabels) {
+      [self updateColorForStepNumberLabel:stepNumberLabel];
+    }
+  }
 }
 
 #pragma mark - Private
@@ -119,8 +155,9 @@ constexpr CGFloat kSeparatorHeight = 0.5;
 // Parses a string with an embedded bold part inside, delineated by
 // "BEGIN_BOLD" and "END_BOLD". Returns an attributed string with bold part.
 - (NSAttributedString*)putBoldPartInString:(NSString*)string {
-  StringWithTag parsedString = ParseStringWithTag(
-      string, first_run::kBeginBoldTag, first_run::kEndBoldTag);
+  StringWithTag parsedString =
+      ParseStringWithTag(string, instruction_view::kInstructionViewBeginBoldTag,
+                         instruction_view::kInstructionViewEndBoldTag);
 
   NSMutableAttributedString* attributedString =
       [[NSMutableAttributedString alloc] initWithString:parsedString.string];
@@ -149,7 +186,6 @@ constexpr CGFloat kSeparatorHeight = 0.5;
 - (UIView*)createStepNumberView:(NSInteger)stepNumber {
   UILabel* stepNumberLabel = [[UILabel alloc] initWithFrame:CGRectZero];
   stepNumberLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  stepNumberLabel.textColor = [UIColor colorNamed:kBlueColor];
   stepNumberLabel.textAlignment = NSTextAlignmentCenter;
   stepNumberLabel.text = [@(stepNumber) stringValue];
   stepNumberLabel.font = PreferredFontForTextStyleWithMaxCategory(
@@ -162,8 +198,8 @@ constexpr CGFloat kSeparatorHeight = 0.5;
   stepNumberLabel.font = [UIFont fontWithDescriptor:boldFontDescriptor size:0];
 
   stepNumberLabel.layer.cornerRadius = kStepNumberLabelSize / 2;
-  stepNumberLabel.layer.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor].CGColor;
+  [self updateColorForStepNumberLabel:stepNumberLabel];
+  [self.stepNumberLabels addObject:stepNumberLabel];
 
   UIView* labelContainer = [[UIView alloc] initWithFrame:CGRectZero];
   labelContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -180,13 +216,29 @@ constexpr CGFloat kSeparatorHeight = 0.5;
     [stepNumberLabel.heightAnchor
         constraintEqualToConstant:kStepNumberLabelSize],
 
-    [labelContainer.widthAnchor
-        constraintEqualToConstant:kTableViewIconImageSize],
+    [labelContainer.widthAnchor constraintEqualToConstant:kIconLabelWidth],
     [labelContainer.heightAnchor
         constraintEqualToAnchor:labelContainer.widthAnchor],
   ]];
 
   return labelContainer;
+}
+
+// Sets and update the background color of the step number label on
+// initialization and when entering or exiting dark mode.
+- (void)updateColorForStepNumberLabel:(UILabel*)stepNumberLabel {
+  switch (self.style) {
+    case InstructionViewStyleGrayscale:
+      stepNumberLabel.textColor = [UIColor colorNamed:kGrey600Color];
+      stepNumberLabel.layer.backgroundColor =
+          [UIColor colorNamed:kGroupedPrimaryBackgroundColor].CGColor;
+      break;
+    case InstructionViewStyleDefault:
+      stepNumberLabel.textColor = [UIColor colorNamed:kBlueColor];
+      stepNumberLabel.layer.backgroundColor =
+          [UIColor colorNamed:kPrimaryBackgroundColor].CGColor;
+      break;
+  }
 }
 
 @end

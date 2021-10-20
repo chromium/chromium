@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
+#import "ios/chrome/browser/ui/elements/instruction_view_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -370,15 +371,18 @@ GREYLayoutConstraint* BelowConstraint() {
   StringWithTag firstInstructionParsed = ParseStringWithTag(
       l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
-      first_run::kBeginBoldTag, first_run::kEndBoldTag);
+      instruction_view::kInstructionViewBeginBoldTag,
+      instruction_view::kInstructionViewEndBoldTag);
   StringWithTag secondInstructionParsed = ParseStringWithTag(
       l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
-      first_run::kBeginBoldTag, first_run::kEndBoldTag);
+      instruction_view::kInstructionViewBeginBoldTag,
+      instruction_view::kInstructionViewEndBoldTag);
   StringWithTag thirdInstructionParsed = ParseStringWithTag(
       l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP),
-      first_run::kBeginBoldTag, first_run::kEndBoldTag);
+      instruction_view::kInstructionViewBeginBoldTag,
+      instruction_view::kInstructionViewEndBoldTag);
 
   // Verify instruction order.
   id<GREYMatcher> firstInstruction = grey_text(firstInstructionParsed.string);
