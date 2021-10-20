@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -1327,9 +1327,6 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
     ConsumeVariableValue(tokenized_value, variable_name, important,
                          is_animation_tainted);
   } else if (unresolved_property != CSSPropertyID::kInvalid) {
-    if (style_sheet_ && style_sheet_->SingleOwnerDocument())
-      Deprecation::WarnOnDeprecatedProperties(
-          style_sheet_->SingleOwnerDocument()->GetFrame(), unresolved_property);
     ConsumeDeclarationValue(tokenized_value, unresolved_property, important,
                             rule_type);
   }

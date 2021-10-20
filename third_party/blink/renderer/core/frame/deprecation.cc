@@ -13,8 +13,6 @@
 #include "third_party/blink/renderer/core/frame/deprecation_report_body.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -661,7 +659,6 @@ Report* CreateReportInternal(const KURL& context_url,
 Deprecation::Deprecation() : mute_count_(0) {}
 
 void Deprecation::ClearSuppression() {
-  css_property_deprecation_bits_.reset();
   features_deprecation_bits_.reset();
 }
 
@@ -673,48 +670,12 @@ void Deprecation::UnmuteForInspector() {
   mute_count_--;
 }
 
-void Deprecation::Suppress(CSSPropertyID unresolved_property) {
-  DCHECK(IsCSSPropertyIDWithName(unresolved_property));
-  css_property_deprecation_bits_.set(static_cast<size_t>(unresolved_property));
-}
-
-bool Deprecation::IsSuppressed(CSSPropertyID unresolved_property) {
-  DCHECK(IsCSSPropertyIDWithName(unresolved_property));
-  return css_property_deprecation_bits_[static_cast<size_t>(
-      unresolved_property)];
-}
-
 void Deprecation::SetReported(WebFeature feature) {
   features_deprecation_bits_.set(static_cast<size_t>(feature));
 }
 
 bool Deprecation::GetReported(WebFeature feature) const {
   return features_deprecation_bits_[static_cast<size_t>(feature)];
-}
-
-void Deprecation::WarnOnDeprecatedProperties(
-    const LocalFrame* frame,
-    CSSPropertyID unresolved_property) {
-  Page* page = frame ? frame->GetPage() : nullptr;
-  if (!page || page->GetDeprecation().mute_count_ ||
-      page->GetDeprecation().IsSuppressed(unresolved_property))
-    return;
-
-  String message = DeprecationMessage(unresolved_property);
-  if (!message.IsEmpty()) {
-    page->GetDeprecation().Suppress(unresolved_property);
-    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kDeprecation,
-        mojom::ConsoleMessageLevel::kWarning, message);
-    frame->Console().AddMessage(console_message);
-  }
-}
-
-String Deprecation::DeprecationMessage(CSSPropertyID unresolved_property) {
-  // TODO: Add a switch here when there are properties that we intend to
-  // deprecate.
-  // Returning an empty string for now.
-  return g_empty_string;
 }
 
 void Deprecation::CountDeprecationCrossOriginIframe(LocalDOMWindow* window,
