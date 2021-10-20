@@ -1999,7 +1999,8 @@ class LoginDatabaseUndecryptableLoginsTest : public testing::Test {
   // |should_be_corrupted| flag is active.
   PasswordForm AddDummyLogin(const std::string& unique_string,
                              const GURL& origin,
-                             bool should_be_corrupted);
+                             bool should_be_corrupted,
+                             bool blocklisted);
 
   base::FilePath database_path() const { return database_path_; }
 
@@ -2019,7 +2020,8 @@ class LoginDatabaseUndecryptableLoginsTest : public testing::Test {
 PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
     const std::string& unique_string,
     const GURL& origin,
-    bool should_be_corrupted) {
+    bool should_be_corrupted,
+    bool blocklisted) {
   // Create a dummy password form.
   const std::u16string unique_string16 = ASCIIToUTF16(unique_string);
   PasswordForm form;
@@ -2029,6 +2031,7 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
   form.password_element = unique_string16;
   form.password_value = unique_string16;
   form.signon_realm = origin.DeprecatedGetOriginAsURL().spec();
+  form.blocked_by_user = blocklisted;
 
   {
     LoginDatabase db(database_path(), IsAccountStore(false));
@@ -2061,9 +2064,15 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
-  auto form1 = AddDummyLogin("foo1", GURL("https://foo1.com/"), false);
-  auto form2 = AddDummyLogin("foo2", GURL("https://foo2.com/"), true);
-  auto form3 = AddDummyLogin("foo3", GURL("https://foo3.com/"), false);
+  auto form1 =
+      AddDummyLogin("foo1", GURL("https://foo1.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("foo2", GURL("https://foo2.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  auto form3 =
+      AddDummyLogin("foo3", GURL("https://foo3.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/true);
 
   LoginDatabase db(database_path(), IsAccountStore(false));
   base::HistogramTester histogram_tester;
@@ -2074,12 +2083,16 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   std::vector<std::unique_ptr<PasswordForm>> result;
   EXPECT_FALSE(db.GetAutofillableLogins(&result));
   EXPECT_TRUE(result.empty());
+  EXPECT_FALSE(db.GetBlocklistLogins(&result));
+  EXPECT_TRUE(result.empty());
 
   // Delete undecryptable logins and make sure we can get valid logins.
   EXPECT_EQ(DatabaseCleanupResult::kSuccess, db.DeleteUndecryptableLogins());
   EXPECT_TRUE(db.GetAutofillableLogins(&result));
+  EXPECT_THAT(result, UnorderedElementsAre(Pointee(form1)));
 
-  EXPECT_THAT(result, UnorderedElementsAre(Pointee(form1), Pointee(form3)));
+  EXPECT_TRUE(db.GetBlocklistLogins(&result));
+  EXPECT_THAT(result, IsEmpty());
 
   RunUntilIdle();
 #else
@@ -2088,7 +2101,7 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
 
 // Check histograms.
 #if defined(OS_MAC)
-  histogram_tester.ExpectUniqueSample("PasswordManager.CleanedUpPasswords", 1,
+  histogram_tester.ExpectUniqueSample("PasswordManager.CleanedUpPasswords", 2,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue",
@@ -2104,8 +2117,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
 #if defined(OS_MAC)
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
        PasswordRecoveryDisabledGetLogins) {
-  AddDummyLogin("foo1", GURL("https://foo1.com/"), false);
-  AddDummyLogin("foo2", GURL("https://foo2.com/"), true);
+  AddDummyLogin("foo1", GURL("https://foo1.com/"), false,
+                /*blocklisted=*/false);
+  AddDummyLogin("foo2", GURL("https://foo2.com/"), true, /*blocklisted=*/false);
 
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init());
@@ -2118,8 +2132,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest, KeychainLockedTest) {
-  AddDummyLogin("foo1", GURL("https://foo1.com/"), false);
-  AddDummyLogin("foo2", GURL("https://foo2.com/"), true);
+  AddDummyLogin("foo1", GURL("https://foo1.com/"), false,
+                /*blocklisted=*/false);
+  AddDummyLogin("foo2", GURL("https://foo2.com/"), true, /*blocklisted=*/false);
 
   OSCryptMocker::SetBackendLocked(true);
   LoginDatabase db(database_path(), IsAccountStore(false));

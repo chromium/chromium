@@ -1477,10 +1477,7 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
 
   DCHECK(db_.is_open());
 
-  // Get all autofillable (not blocklisted) logins.
-  sql::Statement s(
-      db_.GetCachedStatement(SQL_FROM_HERE, blocklisted_statement_.c_str()));
-  s.BindInt(0, 0);  // blocklisted = false
+  sql::Statement s(db_.GetUniqueStatement("SELECT * FROM logins"));
 
   std::vector<PasswordForm> forms_to_be_deleted;
 
@@ -1770,7 +1767,6 @@ FormRetrievalResult LoginDatabase::StatementToForms(
         *statement, /*decrypt_and_fill_password_value=*/true, &primary_key,
         new_form.get());
     if (result == ENCRYPTION_RESULT_SERVICE_FAILURE) {
-      LOG(ERROR) << "Encryption service unavailable";
       return FormRetrievalResult::kEncrytionServiceFailure;
     }
     if (result == ENCRYPTION_RESULT_ITEM_FAILURE) {
@@ -1796,9 +1792,6 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   }
 
   if (!statement->Succeeded()) {
-    LOG(ERROR) << "is_valid()=" << statement->is_valid();
-    LOG(ERROR) << "Error=" << db_.GetErrorCode();
-    LOG(ERROR) << db_.GetErrorMessage();
     return FormRetrievalResult::kDbError;
   }
   return FormRetrievalResult::kSuccess;
