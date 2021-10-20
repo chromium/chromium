@@ -129,6 +129,20 @@ class CouponServiceTest : public testing::Test {
         EXPECT_EQ(expected_coupon.coupon_code(), found_coupon.coupon_code());
       }
     }
+    std::move(closure).Run();
+  }
+
+  void GetEvaluationCouponTimestamp(base::OnceClosure closure,
+                                    base::Time time_to_compare,
+                                    bool should_be_equal,
+                                    bool result,
+                                    CouponProto found) {
+    EXPECT_TRUE(result);
+    DCHECK_EQ(found.size(), 1u);
+    DCHECK_EQ(found[0].second.free_listing_coupons()[0].last_display_time() ==
+                  time_to_compare.ToJavaTime(),
+              should_be_equal);
+    std::move(closure).Run();
   }
 
   void TearDown() override {
@@ -137,7 +151,7 @@ class CouponServiceTest : public testing::Test {
   }
 
  protected:
-  void SetupCouponMap(std::vector<CouponDataStruct> coupons) {
+  void SetUpCouponMap(std::vector<CouponDataStruct> coupons) {
     CouponsMap coupon_map;
     for (auto coupon : coupons) {
       auto offer = std::make_unique<autofill::AutofillOfferData>();
@@ -169,7 +183,7 @@ class CouponServiceTest : public testing::Test {
 TEST_F(CouponServiceTest, TestGetCouponForUrl) {
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetupCouponMap(
+  SetUpCouponMap(
       {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
        {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
 
@@ -190,7 +204,7 @@ TEST_F(CouponServiceTest, TestGetCouponForUrl) {
 TEST_F(CouponServiceTest, TestUpdateCoupons) {
   base::RunLoop run_loop[1];
   GURL origin = GURL(kMockMerchantA);
-  SetupCouponMap(
+  SetUpCouponMap(
       {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
 
   Coupons result = service_->GetFreeListingCouponsForUrl(origin);
@@ -206,7 +220,7 @@ TEST_F(CouponServiceTest, TestDeleteCouponForUrl) {
   base::RunLoop run_loop[4];
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetupCouponMap(
+  SetUpCouponMap(
       {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
        {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
 
@@ -262,7 +276,7 @@ TEST_F(CouponServiceTest, TestDeleteAllCoupons) {
   base::RunLoop run_loop[1];
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetupCouponMap(
+  SetUpCouponMap(
       {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
        {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
 
@@ -278,10 +292,92 @@ TEST_F(CouponServiceTest, TestDeleteAllCoupons) {
 }
 
 TEST_F(CouponServiceTest, TestIsUrlEligible) {
-  SetupCouponMap({{kMockCouponIdA, GURL("https://www.example.com"),
+  SetUpCouponMap({{kMockCouponIdA, GURL("https://www.example.com"),
                    kMockCouponDescriptionA, kMockCouponCodeA}});
 
   EXPECT_TRUE(service_->IsUrlEligible(GURL("https://www.example.com")));
   EXPECT_TRUE(service_->IsUrlEligible(GURL("https://www.example.com/first")));
   EXPECT_FALSE(service_->IsUrlEligible(GURL("https://www.test.com")));
+}
+
+TEST_F(CouponServiceTest, TestRecordCouponDisplayTimestamp) {
+  base::RunLoop run_loop[3];
+  GURL origin = GURL(kMockMerchantA);
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
+  Coupons result = service_->GetFreeListingCouponsForUrl(origin);
+  EXPECT_EQ(result.size(), 1u);
+  autofill::AutofillOfferData* offer = result[0];
+  EXPECT_EQ(*offer, couponDataA);
+  EXPECT_EQ(service_->GetCouponDisplayTimestamp(*offer), base::Time());
+  coupon_db_->LoadCoupon(
+      origin, base::BindOnce(&CouponServiceTest::GetEvaluationCouponTimestamp,
+                             base::Unretained(this), run_loop[0].QuitClosure(),
+                             base::Time(), true));
+
+  service_->RecordCouponDisplayTimestamp(*offer);
+  task_environment_.RunUntilIdle();
+
+  result = service_->GetFreeListingCouponsForUrl(origin);
+  EXPECT_EQ(result.size(), 1u);
+  offer = result[0];
+  EXPECT_EQ(*offer, couponDataA);
+  EXPECT_GT(service_->GetCouponDisplayTimestamp(*offer), base::Time());
+  EXPECT_LT(service_->GetCouponDisplayTimestamp(*offer), base::Time::Now());
+  coupon_db_->LoadCoupon(
+      origin,
+      base::BindOnce(&CouponServiceTest::GetEvaluationCouponTimestamp,
+                     base::Unretained(this), run_loop[2].QuitClosure(),
+                     service_->GetCouponDisplayTimestamp(*offer), true));
+}
+
+TEST_F(CouponServiceTest, TestUpdateCoupons_NotOverwriteLastDisplayTime) {
+  base::RunLoop run_loop[1];
+  GURL origin = GURL(kMockMerchantA);
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
+  Coupons result = service_->GetFreeListingCouponsForUrl(origin);
+  base::Time timestamp = service_->GetCouponDisplayTimestamp(*result[0]);
+  EXPECT_EQ(timestamp, base::Time());
+
+  service_->RecordCouponDisplayTimestamp(*result[0]);
+  task_environment_.RunUntilIdle();
+  result = service_->GetFreeListingCouponsForUrl(origin);
+  EXPECT_EQ(result.size(), 1u);
+  timestamp = service_->GetCouponDisplayTimestamp(*result[0]);
+  EXPECT_NE(timestamp, base::Time());
+
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
+
+  result = service_->GetFreeListingCouponsForUrl(origin);
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(service_->GetCouponDisplayTimestamp(*result[0]), timestamp);
+  coupon_db_->LoadCoupon(
+      origin, base::BindOnce(&CouponServiceTest::GetEvaluationCouponTimestamp,
+                             base::Unretained(this), run_loop[0].QuitClosure(),
+                             timestamp, true));
+}
+
+TEST_F(CouponServiceTest, TestUpdateCoupons_OldCouponDisplayTimeRemoved) {
+  GURL origin_A = GURL(kMockMerchantA);
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin_A, kMockCouponDescriptionA, kMockCouponCodeA}});
+  Coupons result = service_->GetFreeListingCouponsForUrl(origin_A);
+  EXPECT_EQ(service_->GetCouponDisplayTimestamp(*result[0]), base::Time());
+
+  service_->RecordCouponDisplayTimestamp(*result[0]);
+  task_environment_.RunUntilIdle();
+  result = service_->GetFreeListingCouponsForUrl(origin_A);
+  EXPECT_EQ(result.size(), 1u);
+  autofill::AutofillOfferData offer_A = *result[0];
+  EXPECT_NE(service_->GetCouponDisplayTimestamp(offer_A), base::Time());
+
+  // Set up with new coupons where the existing coupon is no longer valid.
+  GURL origin_B = GURL(kMockMerchantB);
+  SetUpCouponMap(
+      {{kMockCouponIdB, origin_B, kMockCouponDescriptionB, kMockCouponCodeB}});
+
+  EXPECT_EQ(service_->GetFreeListingCouponsForUrl(origin_A).size(), 0u);
+  EXPECT_EQ(service_->GetCouponDisplayTimestamp(offer_A), base::Time());
 }

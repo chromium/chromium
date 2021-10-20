@@ -22,6 +22,10 @@ class CouponService : public KeyedService,
   using CouponsMap =
       base::flat_map<GURL,
                      std::vector<std::unique_ptr<autofill::AutofillOfferData>>>;
+  // Key is a pair of the origin of the merchant that a coupon belongs to and
+  // the coupon ID.
+  using CouponDisplayTimeMap =
+      base::flat_map<std::pair<GURL, int64_t>, base::Time>;
 
   CouponService(const CouponService&) = delete;
   CouponService& operator=(const CouponService&) = delete;
@@ -37,6 +41,15 @@ class CouponService : public KeyedService,
 
   // Delete all the Freelisting coupons in the cache layer and storage.
   virtual void DeleteAllFreeListingCoupons();
+
+  // Get the last time that |offer| has shown in infobar bubble.
+  base::Time GetCouponDisplayTimestamp(
+      const autofill::AutofillOfferData& offer);
+
+  // Record the last display timestamp of a coupon in the cache layer and
+  // storage.
+  virtual void RecordCouponDisplayTimestamp(
+      const autofill::AutofillOfferData& offer);
 
   // autofill::CouponServiceDelegate:
   // Get FreeListing coupons for the given URL. Will return an empty
@@ -62,10 +75,17 @@ class CouponService : public KeyedService,
   // Callback to initialize the coupon map.
   void OnInitializeCouponsMap(bool success,
                               std::vector<CouponDB::KeyAndValue> proto_pairs);
+
+  // Callback to update coupon last display timestamp.
+  void OnUpdateCouponTimestamp(int64_t coupon_id,
+                               base::Time timestamp,
+                               bool success,
+                               std::vector<CouponDB::KeyAndValue> proto_pairs);
   CouponDB* GetDB();
 
   std::unique_ptr<CouponDB> coupon_db_;
   CouponsMap coupon_map_;
+  CouponDisplayTimeMap coupon_time_map_;
   base::WeakPtrFactory<CouponService> weak_ptr_factory_{this};
 };
 
