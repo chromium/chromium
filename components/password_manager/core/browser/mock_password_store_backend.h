@@ -79,6 +79,10 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               CreateSyncControllerDelegate,
               (),
               (override));
+  MOCK_METHOD(void,
+              GetSyncStatus,
+              (base::OnceCallback<void(bool)>),
+              (override));
 };
 
 }  // namespace password_manager

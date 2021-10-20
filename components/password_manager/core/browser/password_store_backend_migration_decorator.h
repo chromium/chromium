@@ -73,6 +73,7 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
+  void GetSyncStatus(base::OnceCallback<void(bool)> callback) override;
 
   // Creates 'migrator_' and starts migration process.
   void StartMigration();

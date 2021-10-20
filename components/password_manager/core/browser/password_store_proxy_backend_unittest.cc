@@ -12,10 +12,12 @@
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -66,6 +68,9 @@ class PasswordStoreProxyBackendTest : public testing::Test {
   PasswordStoreProxyBackendTest() {
     proxy_backend_ = std::make_unique<PasswordStoreProxyBackend>(
         &main_backend_, &shadow_backend_);
+
+    feature_list_.InitAndEnableFeature(
+        features::kUnifiedPasswordManagerShadowAndroid);
   }
 
   void TearDown() override {
@@ -81,6 +86,7 @@ class PasswordStoreProxyBackendTest : public testing::Test {
   MockPasswordStoreBackend& shadow_backend() { return shadow_backend_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<PasswordStoreProxyBackend> proxy_backend_;
   StrictMock<MockPasswordStoreBackend> main_backend_;
   StrictMock<MockPasswordStoreBackend> shadow_backend_;
@@ -135,6 +141,9 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToGetAllLoginsAsync) {
       .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
+  EXPECT_CALL(main_backend(), GetSyncStatus)
+      .WillOnce(WithArg<0>(
+          Invoke([](auto callback) { std::move(callback).Run(true); })));
   EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
@@ -278,6 +287,36 @@ TEST_F(PasswordStoreProxyBackendTest,
   proxy_backend().CreateSyncControllerDelegate();
 }
 
+TEST_F(PasswordStoreProxyBackendTest, NoShadowGetAllLoginsWhenSyncDisabled) {
+  base::HistogramTester histogram_tester;
+  base::MockCallback<LoginsReply> mock_reply;
+  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
+      CreateTestLogins();
+  EXPECT_CALL(mock_reply,
+              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+  EXPECT_CALL(main_backend(), GetAllLoginsAsync)
+      .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
+        std::move(reply).Run(CreateTestLogins());
+      })));
+  EXPECT_CALL(main_backend(), GetSyncStatus)
+      .WillOnce(WithArg<0>(
+          Invoke([](auto callback) { std::move(callback).Run(false); })));
+  EXPECT_CALL(shadow_backend(), GetAllLoginsAsync).Times(0);
+  proxy_backend().GetAllLoginsAsync(mock_reply.Get());
+
+  std::string prefix =
+      "PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.";
+
+  histogram_tester.ExpectTotalCount(prefix + "Diff.Abs", 0);
+  histogram_tester.ExpectTotalCount(prefix + "MainMinusShadow.Abs", 0);
+  histogram_tester.ExpectTotalCount(prefix + "ShadowMinusMain.Abs", 0);
+  histogram_tester.ExpectTotalCount(prefix + "InconsistentPasswords.Abs", 0);
+  histogram_tester.ExpectTotalCount(prefix + "Diff.Rel", 0);
+  histogram_tester.ExpectTotalCount(prefix + "MainMinusShadow.Rel", 0);
+  histogram_tester.ExpectTotalCount(prefix + "ShadowMinusMain.Rel", 0);
+  histogram_tester.ExpectTotalCount(prefix + "InconsistentPasswords.Rel", 0);
+}
+
 // Holds the main and shadow backend's logins and the expected number of common
 // and different logins.
 struct LoginsMetricsParam {
@@ -331,6 +370,9 @@ TEST_P(PasswordStoreProxyBackendTestWithLoginsParams,
         .WillOnce(WithArg<0>(Invoke([&p](LoginsReply reply) -> void {
           std::move(reply).Run(p.GetMainLogins());
         })));
+    EXPECT_CALL(main_backend(), GetSyncStatus)
+        .WillOnce(WithArg<0>(
+            Invoke([](auto callback) { std::move(callback).Run(true); })));
     EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
         .WillOnce(WithArg<0>(Invoke([&p](LoginsReply reply) -> void {
           std::move(reply).Run(p.GetShadowLogins());
