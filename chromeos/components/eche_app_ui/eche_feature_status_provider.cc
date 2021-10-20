@@ -25,11 +25,11 @@ using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
 
-bool IsEligibleHost(const RemoteDeviceRef& device) {
+bool IsEnabledHost(const RemoteDeviceRef& device) {
   return device.GetSoftwareFeatureState(SoftwareFeature::kBetterTogetherHost) !=
              SoftwareFeatureState::kNotSupported &&
-         device.GetSoftwareFeatureState(SoftwareFeature::kEcheHost) !=
-             SoftwareFeatureState::kNotSupported;
+         device.GetSoftwareFeatureState(SoftwareFeature::kEcheHost) ==
+             SoftwareFeatureState::kEnabled;
 }
 
 bool IsEligibleForFeature(
@@ -49,10 +49,10 @@ bool IsEligibleForFeature(
   if (host_status.first == HostStatus::kNoEligibleHosts)
     return false;
   if (host_status.second.has_value()) {
-    return IsEligibleHost(*(host_status.second));
+    return IsEnabledHost(*(host_status.second));
   }
   for (const RemoteDeviceRef& device : remote_devices) {
-    if (IsEligibleHost(device))
+    if (IsEnabledHost(device))
       return true;
   }
   return false;
@@ -158,8 +158,11 @@ FeatureStatus EcheFeatureStatusProvider::ComputeStatus() {
   FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(Feature::kEche);
 
-  if (!device_sync_client_->is_ready() ||
-      !IsEligibleForFeature(device_sync_client_->GetLocalDeviceMetadata(),
+  if (!device_sync_client_->is_ready()) {
+    return FeatureStatus::kIneligible;
+  }
+
+  if (!IsEligibleForFeature(device_sync_client_->GetLocalDeviceMetadata(),
                             multidevice_setup_client_->GetHostStatus(),
                             device_sync_client_->GetSyncedDevices(),
                             feature_state)) {

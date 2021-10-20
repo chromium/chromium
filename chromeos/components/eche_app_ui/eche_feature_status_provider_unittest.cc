@@ -34,15 +34,21 @@ multidevice::RemoteDeviceRef CreateLocalDevice(bool supports_eche_client) {
   return builder.Build();
 }
 
-multidevice::RemoteDeviceRef CreatePhoneDevice(bool supports_eche_host) {
+multidevice::RemoteDeviceRef CreatePhoneDevice(bool eche_host_supported,
+                                               bool eche_host_enabled) {
+  multidevice::SoftwareFeatureState state =
+      multidevice::SoftwareFeatureState::kNotSupported;
+  if (eche_host_enabled) {
+    state = multidevice::SoftwareFeatureState::kEnabled;
+  } else if (eche_host_supported) {
+    state = multidevice::SoftwareFeatureState::kSupported;
+  }
   multidevice::RemoteDeviceRefBuilder builder;
   builder.SetSoftwareFeatureState(
       multidevice::SoftwareFeature::kBetterTogetherHost,
       multidevice::SoftwareFeatureState::kSupported);
-  builder.SetSoftwareFeatureState(
-      multidevice::SoftwareFeature::kEcheHost,
-      supports_eche_host ? multidevice::SoftwareFeatureState::kSupported
-                         : multidevice::SoftwareFeatureState::kNotSupported);
+  builder.SetSoftwareFeatureState(multidevice::SoftwareFeature::kEcheHost,
+                                  state);
   return builder.Build();
 }
 
@@ -101,14 +107,17 @@ class EcheFeatureStatusProviderTest : public testing::Test {
 
   void SetEligibleSyncedDevices() {
     SetSyncedDevices(CreateLocalDevice(/*supports_eche_client=*/true),
-                     {CreatePhoneDevice(/*supports_eche_host=*/true)});
+                     {CreatePhoneDevice(/*eche_host_supported=*/true,
+                                        /*eche_host_enabled=*/true)});
   }
 
   void SetMultiDeviceState(HostStatus host_status,
                            FeatureState feature_state,
-                           bool supports_eche) {
-    fake_multidevice_setup_client_.SetHostStatusWithDevice(
-        std::make_pair(host_status, CreatePhoneDevice(supports_eche)));
+                           bool eche_host_supported,
+                           bool eche_host_enabled) {
+    fake_multidevice_setup_client_.SetHostStatusWithDevice(std::make_pair(
+        host_status,
+        CreatePhoneDevice(eche_host_supported, eche_host_enabled)));
     fake_multidevice_setup_client_.SetFeatureState(Feature::kEche,
                                                    feature_state);
   }
@@ -166,21 +175,29 @@ TEST_F(EcheFeatureStatusProviderTest, IneligibleForFeature) {
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_eche_client=*/true),
-                   {CreatePhoneDevice(/*supports_eche_host=*/false)});
+                   {CreatePhoneDevice(/*eche_host_supported=*/false,
+                                      /*eche_host_enabled=*/false)});
+  EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
+
+  SetSyncedDevices(CreateLocalDevice(/*supports_eche_client=*/true),
+                   {CreatePhoneDevice(/*eche_host_supported=*/true,
+                                      /*eche_host_enabled=*/false)});
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 
   // Set all properties to true so that there is an eligible phone. Since
   // |fake_multidevice_setup_client_| defaults to kProhibitedByPolicy, the
   // status should still be kIneligible.
   SetSyncedDevices(CreateLocalDevice(/*supports_eche_client=*/true),
-                   {CreatePhoneDevice(/*supports_eche_host=*/true)});
+                   {CreatePhoneDevice(/*eche_host_supported=*/true,
+                                      /*eche_host_enabled=*/true)});
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 }
 
 TEST_F(EcheFeatureStatusProviderTest, NoEligiblePhones) {
   SetMultiDeviceState(HostStatus::kNoEligibleHosts,
                       FeatureState::kUnavailableNoVerifiedHost,
-                      /*supports_eche_host=*/true);
+                      /*eche_host_supported=*/true,
+                      /*eche_host_enabled=*/false);
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 }
 
@@ -188,17 +205,20 @@ TEST_F(EcheFeatureStatusProviderTest, Disabled) {
   SetEligibleSyncedDevices();
 
   SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kDisabledByUser,
-                      /*supports_eche_host=*/true);
+                      /*eche_host_supported=*/true,
+                      /*eche_host_enabled=*/true);
   EXPECT_EQ(FeatureStatus::kDisabled, GetStatus());
 
   SetMultiDeviceState(HostStatus::kHostVerified,
                       FeatureState::kUnavailableSuiteDisabled,
-                      /*supports_eche_host=*/true);
+                      /*eche_host_supported=*/true,
+                      /*eche_host_enabled=*/true);
   EXPECT_EQ(FeatureStatus::kDisabled, GetStatus());
 
   SetMultiDeviceState(HostStatus::kHostVerified,
                       FeatureState::kUnavailableTopLevelFeatureDisabled,
-                      /*supports_eche_host=*/true);
+                      /*eche_host_supported=*/true,
+                      /*eche_host_enabled=*/true);
   EXPECT_EQ(FeatureStatus::kDisabled, GetStatus());
 }
 
@@ -207,13 +227,15 @@ TEST_F(EcheFeatureStatusProviderTest, TransitionBetweenAllStatuses) {
 
   SetMultiDeviceState(HostStatus::kNoEligibleHosts,
                       FeatureState::kUnavailableNoVerifiedHost,
-                      /*supports_eche_host=*/true);
+                      /*eche_host_supported=*/true,
+                      /*eche_host_enabled=*/true);
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
   EXPECT_EQ(0u, GetNumObserverCalls());
 
   SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
                       FeatureState::kUnavailableNoVerifiedHost,
-                      /*supports_eche_host=*/true);
+                      /*eche_host_supported=*/true,
+                      /*eche_host_enabled=*/true);
   SetEligibleSyncedDevices();
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
   EXPECT_EQ(0u, GetNumObserverCalls());
@@ -224,17 +246,20 @@ TEST_F(EcheFeatureStatusProviderTest, TransitionBetweenAllStatuses) {
 
   SetMultiDeviceState(HostStatus::kHostSetButNotYetVerified,
                       FeatureState::kNotSupportedByPhone,
-                      /*supports_eche_host=*/true);
+                      /*eche_host_supported=*/true,
+                      /*eche_host_enabled=*/true);
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
   EXPECT_EQ(0u, GetNumObserverCalls());
 
   SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kDisabledByUser,
-                      /*supports_eche_host=*/true);
+                      /*eche_host_supported=*/true,
+                      /*eche_host_enabled=*/true);
   EXPECT_EQ(FeatureStatus::kDisabled, GetStatus());
   EXPECT_EQ(1u, GetNumObserverCalls());
 
   SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser,
-                      /*supports_eche_host=*/true);
+                      /*eche_host_supported=*/true,
+                      /*eche_host_enabled=*/true);
   EXPECT_EQ(2u, GetNumObserverCalls());
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
   EXPECT_EQ(FeatureStatus::kConnecting, GetStatus());
