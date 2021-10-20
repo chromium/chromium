@@ -54,7 +54,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -253,15 +252,6 @@ std::set<TabImpl*>& GetTabs() {
   static base::NoDestructor<std::set<TabImpl*>> s_all_tab_impl;
   return *s_all_tab_impl;
 }
-
-// Simulates a WeakPtr for WebContents. Specifically if the WebContents
-// supplied to the constructor is destroyed then web_contents() returns
-// null.
-class WebContentsTracker : public content::WebContentsObserver {
- public:
-  explicit WebContentsTracker(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
-};
 
 // Returns a scoped refptr to the SafeBrowsingService's database manager, if
 // available. Otherwise returns nullptr.
@@ -955,15 +945,16 @@ content::WebContents* TabImpl::OpenURLFromTab(
   std::unique_ptr<content::WebContents> new_tab_contents =
       content::WebContents::Create(content::WebContents::CreateParams(
           web_contents()->GetBrowserContext()));
-  WebContentsTracker tracker(new_tab_contents.get());
+  base::WeakPtr<content::WebContents> new_tab_contents_weak_ptr(
+      new_tab_contents->GetWeakPtr());
   bool was_blocked = false;
   AddNewContents(web_contents(), std::move(new_tab_contents), params.url,
                  params.disposition, {}, params.user_gesture, &was_blocked);
-  if (was_blocked || !tracker.web_contents())
+  if (was_blocked || !new_tab_contents_weak_ptr)
     return nullptr;
-  tracker.web_contents()->GetController().LoadURLWithParams(
+  new_tab_contents_weak_ptr->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
-  return tracker.web_contents();
+  return new_tab_contents_weak_ptr.get();
 }
 
 void TabImpl::ShowRepostFormWarningDialog(content::WebContents* source) {
