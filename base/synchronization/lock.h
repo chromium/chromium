@@ -114,6 +114,10 @@ class LOCKABLE BASE_EXPORT Lock {
 // A helper class that acquires the given Lock while the AutoLock is in scope.
 using AutoLock = internal::BasicAutoLock<Lock>;
 
+// A helper class that tries to acquire the given Lock while the AutoTryLock is
+// in scope.
+using AutoTryLock = internal::BasicAutoTryLock<Lock>;
+
 // AutoUnlock is a helper that will Release() the |lock| argument in the
 // constructor, and re-Acquire() it in the destructor.
 using AutoUnlock = internal::BasicAutoUnlock<Lock>;

@@ -22,36 +22,6 @@
 
 namespace blink {
 
-namespace {
-
-// Simple helper class for Try() locks.  Lock is Try()'d on construction and
-// must be checked via the locked() attribute.  If acquisition was successful
-// the lock will be released upon destruction.
-// TODO(dalecurtis): This should probably move to base/ if others start using
-// this pattern.
-class AutoTryLock {
- public:
-  explicit AutoTryLock(base::Lock& lock)
-      : lock_(lock), acquired_(lock_.Try()) {}
-  AutoTryLock(const AutoTryLock&) = delete;
-  AutoTryLock& operator=(const AutoTryLock&) = delete;
-
-  bool locked() const { return acquired_; }
-
-  ~AutoTryLock() {
-    if (acquired_) {
-      lock_.AssertAcquired();
-      lock_.Release();
-    }
-  }
-
- private:
-  base::Lock& lock_;
-  const bool acquired_;
-};
-
-}  // namespace
-
 // TeeFilter is a RenderCallback implementation that allows for a client to get
 // a copy of the data being rendered by the |renderer_| on Render(). This class
 // also holds on to the necessary audio parameters.
@@ -216,8 +186,8 @@ void WebAudioSourceProviderImpl::ProvideInput(
     bus_wrapper_->SetChannelData(static_cast<int>(i), audio_data[i]);
 
   // Use a try lock to avoid contention in the real-time audio thread.
-  AutoTryLock auto_try_lock(sink_lock_);
-  if (!auto_try_lock.locked() || state_ != kPlaying) {
+  base::AutoTryLock auto_try_lock(sink_lock_);
+  if (!auto_try_lock.is_acquired() || state_ != kPlaying) {
     // Provide silence if we failed to acquire the lock or the source is not
     // running.
     bus_wrapper_->Zero();

@@ -152,6 +152,30 @@ class SCOPED_LOCKABLE BasicAutoLock {
   LockType& lock_;
 };
 
+// This is an implementation used for AutoTryLock templated on the lock type.
+template <class LockType>
+class SCOPED_LOCKABLE BasicAutoTryLock {
+ public:
+  explicit BasicAutoTryLock(LockType& lock) EXCLUSIVE_LOCK_FUNCTION(lock)
+      : lock_(lock), is_acquired_(lock_.Try()) {}
+
+  BasicAutoTryLock(const BasicAutoTryLock&) = delete;
+  BasicAutoTryLock& operator=(const BasicAutoTryLock&) = delete;
+
+  ~BasicAutoTryLock() UNLOCK_FUNCTION() {
+    if (is_acquired_) {
+      lock_.AssertAcquired();
+      lock_.Release();
+    }
+  }
+
+  bool is_acquired() const { return is_acquired_; }
+
+ private:
+  LockType& lock_;
+  const bool is_acquired_;
+};
+
 // This is an implementation used for AutoUnlock templated on the lock type.
 template <class LockType>
 class BasicAutoUnlock {
