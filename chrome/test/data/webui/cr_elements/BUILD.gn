@@ -413,7 +413,7 @@ if (is_chromeos_ash) {
       "..:chai_assert",
       "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
       "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-      "//ui/webui/resources/cr_elements/cr_searchable_drop_down:cr_searchable_drop_down.m",
+      "//ui/webui/resources/cr_elements/cr_searchable_drop_down:cr_searchable_drop_down",
     ]
     externs_list = [ "$externs_path/mocha-2.5.js" ]
   }

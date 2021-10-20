@@ -13,7 +13,7 @@ import '../../../cr_elements/cr_button/cr_button.m.js';
 import '../../../cr_elements/cr_checkbox/cr_checkbox.m.js';
 import '../../../cr_elements/cr_dialog/cr_dialog.m.js';
 import '../../../cr_elements/cr_input/cr_input.m.js';
-import '../../../cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.m.js';
+import '../../../cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
 import '../../../cr_elements/icons.m.js';
 import '../../../cr_elements/shared_style_css.m.js';
 import '../../../cr_elements/shared_vars_css.m.js';

@@ -9,7 +9,7 @@
 
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.m.js';
+import '//resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/cr_components/chromeos/localized_link/localized_link.js';

@@ -116,14 +116,6 @@ preprocess_if_expr("preprocess_polymer2") {
     "shared_vars_css.html",
   ]
 
-  # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
-  if (is_chromeos) {
-    in_files += [
-      "cr_searchable_drop_down/cr_searchable_drop_down.html",
-      "cr_searchable_drop_down/cr_searchable_drop_down.js",
-    ]
-  }
-
   if (is_chromeos_ash) {
     in_files += [
       "chromeos/cros_color_overrides.html",
@@ -205,9 +197,8 @@ preprocess_if_expr("preprocess_generated") {
     "shared_vars_css.m.js",
   ]
 
-  # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
   if (is_chromeos) {
-    in_files += [ "cr_searchable_drop_down/cr_searchable_drop_down.m.js" ]
+    in_files += [ "cr_searchable_drop_down/cr_searchable_drop_down.js" ]
   }
 
   if (is_chromeos_ash) {
@@ -277,7 +268,6 @@ group("closure_compile") {
 
       # cr-searchable-drop-down is only used in smb and cups dialogs, both of
       # which are chromeos only.
-      "cr_searchable_drop_down:closure_compile",
       "cr_searchable_drop_down:closure_compile_module",
     ]
   }
@@ -408,7 +398,7 @@ group("polymer3_elements") {
 
       # cr-searchable-drop-down is only used in smb and cups dialogs, both of
       # which are chromeos only.
-      "cr_searchable_drop_down:cr_searchable_drop_down_module",
+      "cr_searchable_drop_down:web_components",
     ]
   }
 }
