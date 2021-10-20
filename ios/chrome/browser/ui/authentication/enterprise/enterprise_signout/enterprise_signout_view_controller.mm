@@ -21,8 +21,6 @@
   self.imageHasFixedSize = YES;
   self.customSpacingAfterImage = 30;
 
-  self.primaryActionAvailable = YES;
-  self.secondaryActionAvailable = NO;
   self.showDismissBarButton = NO;
   self.titleString = l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT);
   self.subtitleString = l10n_util::GetNSString(
@@ -30,14 +28,13 @@
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
-  self.pointerInteractionEnabled = YES;
 
   if (@available(iOS 15, *)) {
     self.titleTextStyle = UIFontTextStyleTitle2;
     // Icon already contains some spacing for the shadow.
     self.customSpacingBeforeImageIfNoToolbar = 24;
     self.customSpacingAfterImage = 1;
-    self.tighterLayout = YES;
+    self.topAlignedLayout = YES;
   }
 
   [super loadView];

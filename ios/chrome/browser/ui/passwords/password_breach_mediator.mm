@@ -57,11 +57,12 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
     NSString* subtitle = SysUTF16ToNSString(GetDescription(leakType));
     NSString* primaryActionString =
-        SysUTF16ToNSString(GetAcceptButtonLabel(leakType));
+        ShouldCheckPasswords(leakType)
+            ? SysUTF16ToNSString(GetAcceptButtonLabel(leakType))
+            : nil;
     [consumer setTitleString:SysUTF16ToNSString(GetTitle(leakType))
-                subtitleString:subtitle
-           primaryActionString:primaryActionString
-        primaryActionAvailable:ShouldCheckPasswords(leakType)];
+              subtitleString:subtitle
+         primaryActionString:primaryActionString];
   }
   return self;
 }

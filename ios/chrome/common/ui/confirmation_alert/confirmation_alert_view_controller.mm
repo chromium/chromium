@@ -126,7 +126,7 @@ constexpr CGFloat kContentMaxWidth = 500;
   heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   heightConstraint.active = YES;
 
-  if (!self.tighterLayout) {
+  if (!self.topAlignedLayout) {
     // Scroll View constraint to the vertical center. Can be overridden.
     NSLayoutConstraint* centerYConstraint = [scrollView.centerYAnchor
         constraintEqualToAnchor:margins.centerYAnchor];
@@ -179,26 +179,26 @@ constexpr CGFloat kContentMaxWidth = 500;
   // The bottom anchor for the scroll view.
   NSLayoutYAxisAnchor* scrollViewBottomAnchor =
       self.view.safeAreaLayoutGuide.bottomAnchor;
-  BOOL hasActionButton = self.primaryActionAvailable ||
-                         self.secondaryActionAvailable ||
-                         self.tertiaryActionAvailable;
+  BOOL hasActionButton = self.primaryActionString ||
+                         self.secondaryActionString ||
+                         self.tertiaryActionString;
   if (hasActionButton) {
     UIStackView* actionStackView = [[UIStackView alloc] init];
     actionStackView.alignment = UIStackViewAlignmentFill;
     actionStackView.axis = UILayoutConstraintAxisVertical;
     actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    if (self.primaryActionAvailable) {
+    if (self.primaryActionString) {
       self.primaryActionButton = [self createPrimaryActionButton];
       [actionStackView addArrangedSubview:self.primaryActionButton];
     }
 
-    if (self.secondaryActionAvailable) {
+    if (self.secondaryActionString) {
       self.secondaryActionButton = [self createSecondaryActionButton];
       [actionStackView addArrangedSubview:self.secondaryActionButton];
     }
 
-    if (self.tertiaryActionAvailable) {
+    if (self.tertiaryActionString) {
       self.tertiaryActionButton = [self createTertiaryButton];
       [actionStackView addArrangedSubview:self.tertiaryActionButton];
     }
@@ -234,7 +234,7 @@ constexpr CGFloat kContentMaxWidth = 500;
       [scrollView.bottomAnchor
           constraintLessThanOrEqualToAnchor:scrollViewBottomAnchor];
 
-  if (self.alwaysShowImage && self.primaryActionAvailable) {
+  if (self.alwaysShowImage && self.primaryActionString) {
     // If we always want to show the image, then it means we must hide the
     // button when in compact height mode - meaning we have to constraint the
     // scrollview's bottom to the safeArea's bottom.
@@ -252,7 +252,7 @@ constexpr CGFloat kContentMaxWidth = 500;
     scrollViewTopAnchor = self.view.safeAreaLayoutGuide.topAnchor;
     scrollViewTopConstant = self.customSpacingBeforeImageIfNoToolbar;
   }
-  if (self.tighterLayout) {
+  if (self.topAlignedLayout) {
     [scrollView.topAnchor constraintEqualToAnchor:scrollViewTopAnchor
                                          constant:scrollViewTopConstant]
         .active = YES;
@@ -321,7 +321,7 @@ constexpr CGFloat kContentMaxWidth = 500;
 - (void)updateViewConstraints {
   CGFloat marginValue =
       self.view.layoutMargins.left - self.view.safeAreaInsets.left;
-  if (!self.secondaryActionAvailable) {
+  if (!self.secondaryActionString) {
     // Do not add margin padding between the bottom button and the containing
     // view if the primary button is the bottom button to allow for more visual
     // spacing between the content and the button. The secondary button has a
@@ -358,7 +358,7 @@ constexpr CGFloat kContentMaxWidth = 500;
     [self.topToolbar setItems:self.regularHeightToolbarItems animated:YES];
   }
 
-  if (!self.secondaryActionAvailable) {
+  if (!self.secondaryActionString) {
     newBottomConstraint.constant = -marginValue;
   }
   [NSLayoutConstraint deactivateConstraints:@[ oldBottomConstraint ]];
@@ -416,7 +416,7 @@ constexpr CGFloat kContentMaxWidth = 500;
 
 // Handle taps on the secondary action button
 - (void)didTapSecondaryActionButton {
-  DCHECK(self.secondaryActionAvailable);
+  DCHECK(self.secondaryActionString);
   if ([self.actionHandler
           respondsToSelector:@selector(confirmationAlertSecondaryAction)]) {
     [self.actionHandler confirmationAlertSecondaryAction];
@@ -424,7 +424,7 @@ constexpr CGFloat kContentMaxWidth = 500;
 }
 
 - (void)didTapTertiaryActionButton {
-  DCHECK(self.tertiaryActionAvailable);
+  DCHECK(self.tertiaryActionString);
   if ([self.actionHandler
           respondsToSelector:@selector(confirmationAlertTertiaryAction)]) {
     [self.actionHandler confirmationAlertTertiaryAction];
@@ -463,7 +463,7 @@ constexpr CGFloat kContentMaxWidth = 500;
     _helpButton = helpButton;
   }
 
-  if (self.alwaysShowImage && self.primaryActionAvailable) {
+  if (self.alwaysShowImage && self.primaryActionString) {
     if (self.helpButtonAvailable) {
       // Add margin with help button.
       UIBarButtonItem* fixedSpacer = [[UIBarButtonItem alloc]
@@ -597,10 +597,7 @@ constexpr CGFloat kContentMaxWidth = 500;
 
 // Helper to create the primary action button.
 - (UIButton*)createPrimaryActionButton {
-  BOOL pointerInteractionEnabled = NO;
-  pointerInteractionEnabled = self.pointerInteractionEnabled;
-  UIButton* primaryActionButton =
-      PrimaryActionButton(pointerInteractionEnabled);
+  UIButton* primaryActionButton = PrimaryActionButton(YES);
   [primaryActionButton addTarget:self
                           action:@selector(didTapPrimaryActionButton)
                 forControlEvents:UIControlEventTouchUpInside];
@@ -615,7 +612,7 @@ constexpr CGFloat kContentMaxWidth = 500;
 
 // Helper to create the primary action button.
 - (UIButton*)createSecondaryActionButton {
-  DCHECK(self.secondaryActionAvailable);
+  DCHECK(self.secondaryActionString);
   UIButton* secondaryActionButton =
       [UIButton buttonWithType:UIButtonTypeSystem];
   [secondaryActionButton addTarget:self
@@ -637,17 +634,15 @@ constexpr CGFloat kContentMaxWidth = 500;
       kConfirmationAlertSecondaryActionAccessibilityIdentifier;
   secondaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
 
-  if (self.pointerInteractionEnabled) {
-    secondaryActionButton.pointerInteractionEnabled = YES;
-    secondaryActionButton.pointerStyleProvider =
-        CreateOpaqueButtonPointerStyleProvider();
-  }
+  secondaryActionButton.pointerInteractionEnabled = YES;
+  secondaryActionButton.pointerStyleProvider =
+      CreateOpaqueButtonPointerStyleProvider();
 
   return secondaryActionButton;
 }
 
 - (UIButton*)createTertiaryButton {
-  DCHECK(self.tertiaryActionAvailable);
+  DCHECK(self.tertiaryActionString);
   UIButton* tertiaryActionButton = [UIButton buttonWithType:UIButtonTypeSystem];
   [tertiaryActionButton addTarget:self
                            action:@selector(didTapTertiaryActionButton)
@@ -666,11 +661,9 @@ constexpr CGFloat kContentMaxWidth = 500;
   tertiaryActionButton.accessibilityIdentifier =
       kConfirmationAlertTertiaryActionAccessibilityIdentifier;
 
-  if (self.pointerInteractionEnabled) {
-    tertiaryActionButton.pointerInteractionEnabled = YES;
-    tertiaryActionButton.pointerStyleProvider =
-        CreateOpaqueButtonPointerStyleProvider();
-  }
+  tertiaryActionButton.pointerInteractionEnabled = YES;
+  tertiaryActionButton.pointerStyleProvider =
+      CreateOpaqueButtonPointerStyleProvider();
 
   return tertiaryActionButton;
 }

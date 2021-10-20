@@ -28,8 +28,6 @@
   self.helpButtonAccessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_HELP_ACCESSIBILITY_LABEL);
 
-  self.primaryActionAvailable = YES;
-  self.secondaryActionAvailable = YES;
   self.showDismissBarButton = NO;
   self.titleString = GetDefaultBrowserPromoTitle();
   self.subtitleString =
@@ -44,7 +42,6 @@
     // group and this isn't the second impression.
     self.secondaryActionString = l10n_util::GetNSString(
         IDS_IOS_DEFAULT_BROWSER_REMIND_ME_LATER_BUTTON_TEXT);
-    self.tertiaryActionAvailable = YES;
     self.tertiaryActionString =
         l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT);
   } else {
@@ -52,7 +49,6 @@
         l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT);
   }
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemCancel;
-  self.pointerInteractionEnabled = YES;
   [super loadView];
 }
 

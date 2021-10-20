@@ -21,7 +21,6 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 32;
   self.customSpacingAfterImage = kStackViewSpacingAfterIllustration;
 
   self.helpButtonAvailable = NO;
-  self.primaryActionAvailable = NO;
   NSString* titleString =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_STALE_CREDENTIALS_TITLE",
                         @"The title in the stale credentials screen.");
@@ -30,8 +29,6 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 32;
       @"The subtitle in the stale credentials screen.");
   self.titleString = titleString;
   self.subtitleString = subtitleString;
-
-  self.pointerInteractionEnabled = YES;
 
   [super loadView];
 }

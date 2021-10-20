@@ -13,9 +13,8 @@
 
 // Sets the respective state in the consumer.
 - (void)setTitleString:(NSString*)titleString
-            subtitleString:(NSString*)subtitleString
-       primaryActionString:(NSString*)primaryActionString
-    primaryActionAvailable:(BOOL)primaryActionAvailable;
+         subtitleString:(NSString*)subtitleString
+    primaryActionString:(NSString*)primaryActionString;
 
 @end
 

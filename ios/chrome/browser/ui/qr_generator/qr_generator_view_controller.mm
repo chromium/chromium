@@ -34,7 +34,6 @@ const CGFloat kQRCodeImageSize = 200.0;
 
   self.subtitleString = [self.pageURL host];
 
-  self.primaryActionAvailable = YES;
   self.primaryActionString = l10n_util::GetNSString(IDS_IOS_SHARE_BUTTON_LABEL);
 
   self.helpButtonAvailable = YES;
@@ -43,8 +42,6 @@ const CGFloat kQRCodeImageSize = 200.0;
 
   self.alwaysShowImage = YES;
   self.primaryActionBarButtonStyle = UIBarButtonSystemItemAction;
-
-  self.pointerInteractionEnabled = YES;
 
   [super loadView];
 }

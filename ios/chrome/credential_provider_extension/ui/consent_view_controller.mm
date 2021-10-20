@@ -24,7 +24,6 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 37;
   self.helpButtonAccessibilityLabel = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_HELP_ACCESSIBILITY_LABEL", @"Help.");
 
-  self.primaryActionAvailable = YES;
   NSString* titleString =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_TITLE",
                         @"The title in the consent screen.");
@@ -39,7 +38,6 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 37;
   self.subtitleString = subtitleString;
   self.primaryActionString = primaryActionString;
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemCancel;
-  self.pointerInteractionEnabled = YES;
   [super loadView];
 }
 

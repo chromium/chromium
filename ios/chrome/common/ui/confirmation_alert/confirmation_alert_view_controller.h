@@ -23,9 +23,9 @@ extern NSString* const
 // in a scroll view for cases when the content doesn't fit in the screen.
 // The view controller can have up to three action buttons, which are position
 // in the bottom. They are arranged, from top to bottom,
-// |primaryActionAvailable|, |secondaryActionAvailable|,
-// |tertiaryActionAvailable|. Setting those properties to YES will make those
-// buttons be added to the view controller.
+// |primaryActionString|, |secondaryActionString|, |tertiaryActionString|.
+// Setting those properties will make those buttons be added to the view
+// controller.
 @interface ConfirmationAlertViewController : UIViewController
 
 // The headline below the image. Must be set before the view is loaded.
@@ -37,23 +37,11 @@ extern NSString* const
 // The subtitle below the title. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* subtitleString;
 
-// Controls if there is a primary action in the view. Must be set before the
-// view is loaded.
-@property(nonatomic) BOOL primaryActionAvailable;
-
 // The text for the primary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* primaryActionString;
 
-// Controls if there is a secondary action in the view. Must be set before the
-// view is loaded.
-@property(nonatomic) BOOL secondaryActionAvailable;
-
 // The text for the secondary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* secondaryActionString;
-
-// Controls if there is a tertiary action in the view. Must be set before the
-// view is loaded.
-@property(nonatomic) BOOL tertiaryActionAvailable;
 
 // The text for the tertiary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* tertiaryActionString;
@@ -69,9 +57,9 @@ extern NSString* const
 // set before the view is loaded.
 @property(nonatomic, assign) CGFloat customSpacingAfterImage;
 
-// When YES, the image, title and subtitle are set to high hugging priority,
-// leaving spaces for the customSpacing defined.
-@property(nonatomic) BOOL tighterLayout;
+// When YES, the content is attached to the top of the view instead of being
+// centered.
+@property(nonatomic) BOOL topAlignedLayout;
 
 // The accessibility label for the image view. If nil, the image won't be
 // accessible.
@@ -85,7 +73,7 @@ extern NSString* const
 @property(nonatomic) BOOL alwaysShowImage;
 
 // The style of the primary action button added to the toolbar. Must be set if
-// both alwaysShowImage and primaryActionAvailable are set to YES.
+// both alwaysShowImage is set to YES and primaryActionString is set.
 @property(nonatomic) UIBarButtonSystemItem primaryActionBarButtonStyle;
 
 // Controls if there is a help button in the view. Must be set before the
@@ -115,9 +103,6 @@ extern NSString* const
 
 // The button for the primary action. Nil if not available.
 @property(nonatomic, readonly) UIButton* primaryActionButton;
-
-// Enables pointer support.
-@property(nonatomic) BOOL pointerInteractionEnabled API_AVAILABLE(ios(13.4));
 
 @end
 

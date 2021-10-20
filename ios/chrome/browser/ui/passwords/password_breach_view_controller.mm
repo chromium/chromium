@@ -23,8 +23,6 @@
   self.helpButtonAccessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_HELP_ACCESSIBILITY_LABEL);
 
-  self.pointerInteractionEnabled = YES;
-
   [super loadView];
 }
 
@@ -37,13 +35,11 @@
 #pragma mark - PasswordBreachConsumer
 
 - (void)setTitleString:(NSString*)titleString
-            subtitleString:(NSString*)subtitleString
-       primaryActionString:(NSString*)primaryActionString
-    primaryActionAvailable:(BOOL)primaryActionAvailable {
+         subtitleString:(NSString*)subtitleString
+    primaryActionString:(NSString*)primaryActionString {
   self.titleString = titleString;
   self.subtitleString = subtitleString;
   self.primaryActionString = primaryActionString;
-  self.primaryActionAvailable = primaryActionAvailable;
 }
 
 @end
