@@ -242,18 +242,22 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   const AtomicString& getAttributeNS(const AtomicString& namespace_uri,
                                      const AtomicString& local_name) const;
 
-  void setAttribute(const AtomicString& name,
+  void setAttribute(AtomicString name,
                     AtomicString value,
                     ExceptionState& exception_state = ASSERT_NO_EXCEPTION) {
-    SetAttributeHinted(name, WeakLowercaseIfNecessary(name), value,
+    WTF::AtomicStringTable::WeakResult weak_lowercase_name =
+        WeakLowercaseIfNecessary(name);
+    SetAttributeHinted(std::move(name), weak_lowercase_name, value,
                        exception_state);
   }
 
   // Trusted Types variant for explicit setAttribute() use.
-  void setAttribute(const AtomicString& name,
+  void setAttribute(AtomicString name,
                     const V8TrustedString* trusted_string,
                     ExceptionState& exception_state) {
-    SetAttributeHinted(name, WeakLowercaseIfNecessary(name), trusted_string,
+    WTF::AtomicStringTable::WeakResult weak_lowercase_name =
+        WeakLowercaseIfNecessary(name);
+    SetAttributeHinted(std::move(name), weak_lowercase_name, trusted_string,
                        exception_state);
   }
 
@@ -1237,16 +1241,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SynchronizeAttributeHinted(
       const AtomicString& name,
       WTF::AtomicStringTable::WeakResult hint) const;
-  void SetAttributeHinted(const AtomicString& name,
+  void SetAttributeHinted(AtomicString name,
                           WTF::AtomicStringTable::WeakResult hint,
                           const AtomicString& value,
                           ExceptionState& = ASSERT_NO_EXCEPTION);
-  void SetAttributeHinted(const AtomicString& name,
+  void SetAttributeHinted(AtomicString name,
                           WTF::AtomicStringTable::WeakResult hint,
                           const V8TrustedString* trusted_string,
                           ExceptionState& exception_state);
   std::pair<wtf_size_t, const QualifiedName> LookupAttributeQNameHinted(
-      const AtomicString& name,
+      AtomicString name,
       WTF::AtomicStringTable::WeakResult hint) const;
 
   void CancelFocusAppearanceUpdate();
