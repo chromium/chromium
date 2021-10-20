@@ -7752,6 +7752,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kEnableIdleInhibit)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_ANDROID)
+    {"enable-chrome-management-page-android",
+     flag_descriptions::kChromeManagementPageAndroidName,
+     flag_descriptions::kChromeManagementPageAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(policy::features::kChromeManagementPageAndroid)},
+#endif  // defined(OS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -47964,6 +47964,7 @@ from previous Chrome versions.
       label="ImprovedCookieControlsForThirdPartyCookieBlocking:disabled"/>
   <int value="-2122048316"
       label="DisplayPersistenceToggleInPermissionPrompts:enabled"/>
+  <int value="-2120118296" label="ChromeManagementPageAndroid:enabled"/>
   <int value="-2119958901" label="WebXRAnchors:disabled"/>
   <int value="-2119827860" label="ash-disable-maximize-mode-window-backdrop"/>
   <int value="-2119530966" label="enable-webrtc-dtls12"/>
@@ -53304,6 +53305,7 @@ from previous Chrome versions.
   <int value="1927259098" label="TranslateLanguageByULP:enabled"/>
   <int value="1927374573" label="EnterpriseRealtimeExtensionRequest:enabled"/>
   <int value="1928944156" label="ReadLaterNewBadgePromo:disabled"/>
+  <int value="1929174284" label="ChromeManagementPageAndroid:disabled"/>
   <int value="1929535031" label="LanguageSettingsUpdate2:enabled"/>
   <int value="1929603041" label="HideShelfControlsInTabletMode:disabled"/>
   <int value="1930185502"
