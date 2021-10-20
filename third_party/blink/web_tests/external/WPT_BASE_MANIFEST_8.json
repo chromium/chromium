@@ -292351,6 +292351,10 @@
       "b8a1947b77e25ac6b0d100c75932e8c0a67d846f",
       []
      ],
+     "iframe-post-load.html": [
+      "5c8f2e3a08fc7a21f1c7abaddba6cb2ea8677607",
+      []
+     ],
      "iframe-with-subframes.html": [
       "febb954369995bc184156d631d72d18eb3051147",
       []
@@ -300002,6 +300006,10 @@
       ],
       "cache.txt": [
        "89164cfabed56b5852445eb70470cfd1331bdb48",
+       []
+      ],
+      "cookies-access.html": [
+       "43b636c0a5a31fb59e4f64305fb6f2cea223e1e2",
        []
       ],
       "cross-origin-isolated-iframe.https.html": [
@@ -364042,6 +364050,20 @@
      ],
      "hypot-pow-sqrt-serialize.html": [
       "d3a0bc607399bf047cebfab46d74aeb4bbd429a2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "integer_interpolation_round_half_towards_positive_infinity_order.html": [
+      "60c439ebcf4cb5e6e7a412326b4333a163a6bd60",
+      [
+       null,
+       {}
+      ]
+     ],
+     "integer_interpolation_round_half_towards_positive_infinity_z_index.html": [
+      "c9b042ccb8f2d08e04dca56df9715b4081c4d19d",
       [
        null,
        {}
@@ -458238,6 +458260,15 @@
       }
      ]
     ],
+    "iframe-session-history.html": [
+     "e0232153167e680b66e6d5eb1ca637f31ea7c934",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "iframe-unload.html": [
      "6d049a846daab6f803fcc64c1e816bac11bf0a99",
      [
@@ -483795,6 +483826,15 @@
        }
       ]
      ],
+     "cookies.html": [
+      "6e83532cce6ef16e845738ba229b89cde426c003",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "cross-origin-isolated.https.html": [
       "7c201cd6bfad7e745cdc7b33e479d6b9889f0298",
       [
@@ -501357,6 +501397,13 @@
        {}
       ]
      ],
+     "script-reuse-web-bundle-resource.https.tentative.html": [
+      "e07ee7bbbd406b3691f57122c282b5d32acec44f",
+      [
+       null,
+       {}
+      ]
+     ],
      "script-service-worker-controlled.https.tentative.html": [
       "f2d1a401a3410fb13f689b08426dbb0539044db3",
       [
@@ -501387,6 +501434,13 @@
      ],
      "script-subresource-load.https.tentative.sub.html": [
       "fc9efe412b020cdb0e426b226f97554c6e12a98f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "script-supports-webbundle.https.tentative.html": [
+      "b211a662158403c1c80ba9aebd3d7b06eb425bb0",
       [
        null,
        {}
