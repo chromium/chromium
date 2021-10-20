@@ -126,8 +126,9 @@ gfx::Size ScrollableAppsGridView::GetTileGridSize() const {
   const bool is_last_row_full = (items % cols() == 0);
   const int rows = is_last_row_full ? items / cols() : items / cols() + 1;
   gfx::Size tile_size = GetTotalTileSize();
-  gfx::Size grid_size(tile_size.width() * cols(), tile_size.height() * rows);
-  return grid_size;
+  gfx::Rect grid(tile_size.width() * cols(), tile_size.height() * rows);
+  grid.Inset(-GetTilePadding());
+  return grid.size();
 }
 
 int ScrollableAppsGridView::GetPaddingBetweenPages() const {

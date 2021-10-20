@@ -39,9 +39,10 @@ namespace {
 // The max folder name length.
 constexpr int kMaxFolderNameChars = 28;
 
-// The folder header dimensions:
+// Folder header dimensions. The max header width is based on the width of a
+// folder with 2 items.
 constexpr int kMinFolderHeaderWidth = 24;
-constexpr int kMaxFolderHeaderWidth = 200;
+constexpr int kMaxFolderHeaderWidth = 168;
 constexpr int kFolderHeaderHeight = 32;
 
 // The min width of folder name - ensures the folder name is easily tappable.

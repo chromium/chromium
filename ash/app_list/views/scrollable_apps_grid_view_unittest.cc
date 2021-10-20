@@ -23,6 +23,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
@@ -169,10 +170,10 @@ TEST_F(ScrollableAppsGridViewTest, PageBreaksDoNotCauseExtraRowsInLayout) {
   ShowAppList();
 
   ScrollableAppsGridView* view = GetScrollableAppsGridView();
-  const gfx::Size tile_size = view->GetTotalTileSize();
+  const int tile_height = view->app_list_config()->grid_tile_height();
   const gfx::Size grid_size = view->GetTileGridSize();
   // The layout is one tile tall because it has only one row.
-  EXPECT_EQ(grid_size.height(), tile_size.height());
+  EXPECT_EQ(grid_size.height(), tile_height);
 }
 
 TEST_F(ScrollableAppsGridViewTest, ClickOnApp) {
@@ -498,6 +499,30 @@ TEST_F(ScrollableAppsGridViewTest, ChangingAppListModelUpdatesAppsGridHeight) {
   DeleteApps(5);
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
   EXPECT_LT(apps_grid_view_->height(), height_before_removing);
+}
+
+TEST_F(ScrollableAppsGridViewTest, SmallFolderHasCorrectWidth) {
+  CreateAndPopulateFolderWithApps(2);
+  ShowAppList();
+
+  // Enter the folder view.
+  auto* generator = GetEventGenerator();
+  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
+  auto* items_grid_view = folder_view->items_grid_view();
+  const int tile_width = items_grid_view->app_list_config()->grid_tile_width();
+
+  // Spec calls for 8 dips of padding at edges and between tiles.
+  EXPECT_EQ(folder_view->width(), 8 + tile_width + 8 + tile_width + 8);
+
+  // The leftmost item is flush to the left of the grid.
+  EXPECT_EQ(items_grid_view->GetItemViewAt(0)->bounds().x(), 0);
+
+  // The rightmost item is flush to the right of the grid.
+  EXPECT_EQ(items_grid_view->GetItemViewAt(1)->bounds().right(),
+            items_grid_view->GetLocalBounds().right());
 }
 
 TEST_F(ScrollableAppsGridViewTest, DragItemToReorderInFolderRecordsHistogram) {
