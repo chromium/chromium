@@ -5,6 +5,8 @@
 #include "components/lens/lens_entrypoints.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 
 namespace {
 
@@ -15,6 +17,7 @@ constexpr char kChromeSearchWithGoogleLensContextMenuItem[] = "ccm";
 constexpr char kChromeOpenNewTabSidePanel[] = "cnts";
 
 constexpr char kSurfaceQueryParameter[] = "s";
+constexpr char kStartTimeQueryParameter[] = "st";
 constexpr char kSidePanel[] = "csp";
 
 void AppendQueryParam(std::string* query_string,
@@ -53,6 +56,9 @@ std::string GetQueryParametersForLensRequest(EntryPoint ep,
   if (is_side_panel_request) {
     AppendQueryParam(&query_string, kSurfaceQueryParameter, kSidePanel);
   }
+  int64_t current_time_ms = base::Time::Now().ToJavaTime();
+  AppendQueryParam(&query_string, kStartTimeQueryParameter,
+                   base::NumberToString(current_time_ms).c_str());
   return query_string;
 }
 

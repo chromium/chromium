@@ -1618,7 +1618,15 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
   // The browser should open a new tab for an image search.
   content::WebContents* new_tab = add_tab.Wait();
   content::WaitForLoadStop(new_tab);
-  EXPECT_EQ(GetLensImageSearchURL(), new_tab->GetURL());
+
+  std::string expected_content = GetLensImageSearchURL().GetContent();
+  std::string new_tab_content = new_tab->GetURL().GetContent();
+  // Match strings up to the query.
+  std::size_t query_start_pos = new_tab_content.find("?");
+  EXPECT_EQ(expected_content.substr(0, query_start_pos),
+            new_tab_content.substr(0, query_start_pos));
+  // Match the query parameters, without the value of start_time.
+  EXPECT_THAT(new_tab_content, testing::MatchesRegex(".*ep=ccm&st=\\d+"));
 }
 
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithUnseasonedOverride,
