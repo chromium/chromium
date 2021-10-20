@@ -84,7 +84,7 @@ class FrameSequenceTrackerTest : public testing::Test {
 
     if (damage_type & kImplDamage) {
       if (!(damage_type & kMainDamage)) {
-        collection_.NotifyMainFrameCausedNoDamage(args);
+        collection_.NotifyMainFrameCausedNoDamage(args, false);
       } else {
         collection_.NotifyMainFrameProcessed(args);
       }
@@ -96,7 +96,7 @@ class FrameSequenceTrackerTest : public testing::Test {
     } else {
       collection_.NotifyImplFrameCausedNoDamage(
           viz::BeginFrameAck(args, false));
-      collection_.NotifyMainFrameCausedNoDamage(args);
+      collection_.NotifyMainFrameCausedNoDamage(args, true);
       collection_.NotifyFrameEnd(args, args);
     }
     return 0;
@@ -234,7 +234,7 @@ class FrameSequenceTrackerTest : public testing::Test {
 
         case 'N':
           collection_.NotifyMainFrameCausedNoDamage(
-              CreateBeginFrameArgs(source_id, sequence));
+              CreateBeginFrameArgs(source_id, sequence), true);
           break;
 
         default:
@@ -331,7 +331,7 @@ TEST_F(FrameSequenceTrackerTest, SourceIdChangeDuringSequence) {
   auto args_2 = CreateBeginFrameArgs(source_2, ++sequence_2);
   collection_.NotifyBeginImplFrame(args_2);
   collection_.NotifyBeginMainFrame(args_2);
-  collection_.NotifyMainFrameCausedNoDamage(args_2);
+  collection_.NotifyMainFrameCausedNoDamage(args_2, true);
   // Since the main-frame did not have any new damage from the latest
   // BeginFrameArgs, the submit-frame will carry the previous BeginFrameArgs
   // (from source_1);
@@ -801,6 +801,18 @@ TEST_F(FrameSequenceTrackerTest, DelayedMainFrameNoDamageFromOlderFrame) {
   // Start a sequence, and receive a 'no damage' from an earlier frame.
   const char second_sequence[] = "b(2)B(0,2)N(2,1)n(2)N(2,2)e(2,0)";
   GenerateSequence(second_sequence);
+  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
+  EXPECT_EQ(MainThroughput().frames_expected, 0u);
+  EXPECT_EQ(ImplThroughput().frames_produced, 0u);
+  EXPECT_EQ(MainThroughput().frames_produced, 0u);
+}
+
+// This tests when a BeginMainFrame leads to No Damage, after the next Main
+// Frame has started. This should not crash.
+TEST_F(FrameSequenceTrackerTest, DelayedMainFrameNoDamageAfterNextMainFrame) {
+  const char sequence[] =
+      "b(1)B(0,1)n(1)e(1,0)E(1)b(2)B(0,2)N(0,1)n(2)N(0,2)e(2,0)";
+  GenerateSequence(sequence);
   EXPECT_EQ(ImplThroughput().frames_expected, 0u);
   EXPECT_EQ(MainThroughput().frames_expected, 0u);
   EXPECT_EQ(ImplThroughput().frames_produced, 0u);

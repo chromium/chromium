@@ -99,9 +99,10 @@ FrameSequenceTracker::FrameSequenceTracker(
 }
 
 FrameSequenceTracker::~FrameSequenceTracker() {
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP2(
       "cc,benchmark", "TrackerValidation", TRACE_ID_LOCAL(this),
-      base::TimeTicks::Now());
+      base::TimeTicks::Now(), "aborted_main", aborted_main_frame_,
+      "no_damage_main", no_damage_draw_main_frames_);
   CleanUp();
 }
 
@@ -186,9 +187,8 @@ void FrameSequenceTracker::ReportBeginMainFrame(
   }
 #endif
 
-  DCHECK_EQ(awaiting_main_response_sequence_, 0u) << TRACKER_DCHECK_MSG;
   last_processed_main_sequence_latency_ = 0;
-  awaiting_main_response_sequence_ = args.frame_id.sequence_number;
+  pending_main_sequences_.push_back(args.frame_id.sequence_number);
 
   UpdateTrackedFrameData(&begin_main_frame_data_, args.frame_id.source_id,
                          args.frame_id.sequence_number,
@@ -232,16 +232,11 @@ void FrameSequenceTracker::ReportMainFrameProcessed(
 
   if (first_received_main_sequence_ &&
       args.frame_id.sequence_number >= first_received_main_sequence_) {
-    if (awaiting_main_response_sequence_) {
-      DCHECK_EQ(awaiting_main_response_sequence_, args.frame_id.sequence_number)
-          << TRACKER_DCHECK_MSG;
-    }
     DCHECK_EQ(last_processed_main_sequence_latency_, 0u) << TRACKER_DCHECK_MSG;
     last_processed_main_sequence_ = args.frame_id.sequence_number;
     last_processed_main_sequence_latency_ =
         std::max(last_started_impl_sequence_, last_processed_impl_sequence_) -
         args.frame_id.sequence_number;
-    awaiting_main_response_sequence_ = 0;
   }
 }
 
@@ -337,6 +332,16 @@ void FrameSequenceTracker::ReportFrameEnd(
   if (ShouldIgnoreBeginFrameSource(args.frame_id.source_id))
     return;
 
+  // We only update the `pending_main_sequences` when the frame has successfully
+  // submitted, or when we determine that it has no damage. See
+  // ReportMainFrameCausedNoDamage. We do not do this in
+  // NotifyMainFrameProcessed, as that can occur during Commit, and we may yet
+  // determine at Draw that there was no damage.
+  while (!pending_main_sequences_.empty() &&
+         pending_main_sequences_.front() <=
+             main_args.frame_id.sequence_number) {
+    pending_main_sequences_.pop_front();
+  }
   TRACKER_TRACE_STREAM << "e(" << args.frame_id.sequence_number % kDebugStrMod
                        << ","
                        << main_args.frame_id.sequence_number % kDebugStrMod
@@ -568,7 +573,8 @@ void FrameSequenceTracker::ReportImplFrameCausedNoDamage(
 }
 
 void FrameSequenceTracker::ReportMainFrameCausedNoDamage(
-    const viz::BeginFrameArgs& args) {
+    const viz::BeginFrameArgs& args,
+    bool aborted) {
   if (termination_status_ != TerminationStatus::kActive)
     return;
 
@@ -589,17 +595,28 @@ void FrameSequenceTracker::ReportMainFrameCausedNoDamage(
   if (last_no_main_damage_sequence_ == args.frame_id.sequence_number)
     return;
 
-  // It is possible for |awaiting_main_response_sequence_| to be zero here if a
-  // commit had already happened before (e.g. B(x)E(x)N(x)). So check that case
-  // here.
-  if (awaiting_main_response_sequence_) {
-    DCHECK_EQ(awaiting_main_response_sequence_, args.frame_id.sequence_number)
-        << TRACKER_DCHECK_MSG;
-  } else {
-    DCHECK_EQ(last_processed_main_sequence_, args.frame_id.sequence_number)
-        << TRACKER_DCHECK_MSG;
+  auto initial_pending_size = pending_main_sequences_.size();
+  while (!pending_main_sequences_.empty() &&
+         pending_main_sequences_.front() <= args.frame_id.sequence_number) {
+    pending_main_sequences_.pop_front();
   }
-  awaiting_main_response_sequence_ = 0;
+  // If we didn't remove any `pending_main_sequences`, then we have previously
+  // submitted a CompositorFrame with damage for `args.frame_id.sequence_number`
+  // and the sequence is being re-used on a subsequent Impl frame. Which just
+  // happens to have no damage.
+  //
+  // This can occur when there is a Compositor Animation that is offscreen, and
+  // when we are awaiting the next BeginMainFrame to be Committed and Activated.
+  //
+  // We do not change the `main_throughput` expectations when the sequence is
+  // re-used.
+  if (pending_main_sequences_.size() == initial_pending_size)
+    return;
+
+  if (aborted)
+    ++aborted_main_frame_;
+  else
+    ++no_damage_draw_main_frames_;
 
   DCHECK_GT(main_throughput().frames_expected, 0u) << TRACKER_DCHECK_MSG;
   DCHECK_GT(main_throughput().frames_expected,
@@ -618,7 +635,7 @@ void FrameSequenceTracker::ReportMainFrameCausedNoDamage(
 
   // Could be 0 if there were a pause frame production.
   if (begin_main_frame_data_.previous_sequence != 0) {
-    DCHECK_EQ(begin_main_frame_data_.previous_sequence,
+    DCHECK_GE(begin_main_frame_data_.previous_sequence,
               args.frame_id.sequence_number)
         << TRACKER_DCHECK_MSG;
   }

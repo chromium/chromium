@@ -5,6 +5,7 @@
 #ifndef CC_METRICS_FRAME_SEQUENCE_TRACKER_H_
 #define CC_METRICS_FRAME_SEQUENCE_TRACKER_H_
 
+#include <deque>
 #include <memory>
 #include <sstream>
 
@@ -85,7 +86,8 @@ class CC_EXPORT FrameSequenceTracker {
   // Notifies the tracker that a |BeginFrameArgs| either was not dispatched to
   // the main-thread (because it did not ask for it), or that a |BeginFrameArgs|
   // that was dispatched to the main-thread did not cause any updates/damage.
-  void ReportMainFrameCausedNoDamage(const viz::BeginFrameArgs& args);
+  void ReportMainFrameCausedNoDamage(const viz::BeginFrameArgs& args,
+                                     bool aborted);
 
   // Notifies that frame production has currently paused. This is typically used
   // for interactive frame-sequences, e.g. during touch-scroll.
@@ -193,8 +195,14 @@ class CC_EXPORT FrameSequenceTracker {
   // This is used to decide when to terminate this FrameSequenceTracker object.
   uint32_t last_submitted_frame_ = 0;
 
-  // Keeps track of the begin-main-frame that needs to be processed next.
-  uint64_t awaiting_main_response_sequence_ = 0;
+  // Keeps track of the begin-main-frames that need to be processed. There can
+  // be multiple in-flight, as BeginMainFrame to ReadyToCommit can be longer
+  // than one `viz::BeginFrameArgs.interval`. When this occurs the Compositor
+  // can send the `n+1` sequence_number, only for the Commit for `n` to arrive
+  // and lead to frame production.
+  std::deque<uint64_t> pending_main_sequences_;
+  uint64_t aborted_main_frame_ = 0;
+  uint64_t no_damage_draw_main_frames_ = 0;
 
   // Keeps track of the last sequence-number that produced a frame from the
   // main-thread.
