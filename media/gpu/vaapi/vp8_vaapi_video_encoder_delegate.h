@@ -74,7 +74,7 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
  private:
   void InitializeFrameHeader();
-  void UpdateFrameHeader(bool keyframe);
+  void SetFrameHeader(VP8Picture& picture, bool keyframe);
   void UpdateReferenceFrames(scoped_refptr<VP8Picture> picture);
   void Reset();
 
@@ -96,7 +96,6 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   EncodeParams current_params_;
 
-  Vp8FrameHeader current_frame_hdr_;
   Vp8ReferenceFrameVector reference_frames_;
 
   using VP8RateControl = VPXRateControl<libvpx::VP8RateControlRtcConfig,
