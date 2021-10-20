@@ -189,12 +189,13 @@ TEST_F(ProxyServiceMojoTest, DnsResolution) {
 TEST_F(ProxyServiceMojoTest, Error) {
   net::ProxyInfo info;
   net::TestCompletionCallback callback;
-  net::RecordingBoundTestNetLog test_net_log;
+  net::NetLogWithSource net_log_with_source =
+      net::NetLogWithSource::Make(net::NetLogSourceType::NONE);
   std::unique_ptr<net::ProxyResolutionRequest> request;
   EXPECT_EQ(net::ERR_IO_PENDING,
             proxy_resolution_service_->ResolveProxy(
                 GURL("http://foo"), std::string(), net::NetworkIsolationKey(),
-                &info, callback.callback(), &request, test_net_log.bound()));
+                &info, callback.callback(), &request, net_log_with_source));
 
   // PAC file fetcher should have a fetch triggered by the first
   // |ResolveProxy()| request.
@@ -208,8 +209,8 @@ TEST_F(ProxyServiceMojoTest, Error) {
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_EQ("DIRECT", info.ToPacString());
   EXPECT_EQ(0u, mock_host_resolver_.num_resolve());
-
-  CheckCapturedNetLogEntries(test_net_log.GetEntries());
+  CheckCapturedNetLogEntries(
+      net_log_observer_.GetEntriesForSource(net_log_with_source.source()));
   CheckCapturedNetLogEntries(net_log_observer_.GetEntries());
 }
 

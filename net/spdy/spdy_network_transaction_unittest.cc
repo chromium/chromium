@@ -4812,12 +4812,13 @@ TEST_F(SpdyNetworkTransactionTest, NetLog) {
       MockRead(ASYNC, 0, 3)  // EOF
   };
 
-  RecordingBoundTestNetLog log;
+  RecordingNetLogObserver net_log_observer;
 
   SequencedSocketData data(reads, writes);
   request_.extra_headers.SetHeader("User-Agent", "Chrome");
-  NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log.bound(),
-                                     nullptr);
+  NormalSpdyTransactionHelper helper(
+      request_, DEFAULT_PRIORITY,
+      NetLogWithSource::Make(NetLogSourceType::NONE), nullptr);
   helper.RunToCompletion(&data);
   TransactionHelperResult out = helper.output();
   EXPECT_THAT(out.rv, IsOk());
@@ -4828,7 +4829,7 @@ TEST_F(SpdyNetworkTransactionTest, NetLog) {
   // This test is intentionally non-specific about the exact ordering of the
   // log; instead we just check to make sure that certain events exist, and that
   // they are in the right order.
-  auto entries = log.GetEntries();
+  auto entries = net_log_observer.GetEntries();
 
   EXPECT_LT(0u, entries.size());
   int pos = 0;

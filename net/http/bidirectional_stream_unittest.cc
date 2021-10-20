@@ -28,6 +28,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_server_properties.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
@@ -414,7 +415,7 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
     ssl_data_.next_proto = kProtoHTTP2;
     ssl_data_.ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
-    net_log_.SetObserverCaptureMode(NetLogCaptureMode::kEverything);
+    net_log_observer_.SetObserverCaptureMode(NetLogCaptureMode::kEverything);
     socket_factory_ = new MockTaggingClientSocketFactory();
     session_deps_.socket_factory.reset(socket_factory_);
   }
@@ -435,16 +436,18 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
     session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data_);
     sequenced_data_ = std::make_unique<SequencedSocketData>(reads, writes);
     session_deps_.socket_factory->AddSocketDataProvider(sequenced_data_.get());
-    session_deps_.net_log = net_log_.bound().net_log();
+    session_deps_.net_log = NetLog::Get();
     http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
     SpdySessionKey key(host_port_pair_, ProxyServer::Direct(),
                        PRIVACY_MODE_DISABLED,
                        SpdySessionKey::IsProxySession::kFalse, socket_tag,
                        NetworkIsolationKey(), SecureDnsPolicy::kAllow);
-    session_ = CreateSpdySession(http_session_.get(), key, net_log_.bound());
+    session_ =
+        CreateSpdySession(http_session_.get(), key,
+                          NetLogWithSource::Make(NetLogSourceType::NONE));
   }
 
-  RecordingBoundTestNetLog net_log_;
+  RecordingNetLogObserver net_log_observer_;
   SpdyTestUtil spdy_util_;
   SpdySessionDependencies session_deps_;
   const GURL default_url_;
@@ -838,7 +841,7 @@ TEST_F(BidirectionalStreamTest, TestNetLogContainEntries) {
   // Destroy the delegate will destroy the stream, so we can get an end event
   // for BIDIRECTIONAL_STREAM_ALIVE.
   delegate.reset();
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
 
   size_t index = ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::BIDIRECTIONAL_STREAM_ALIVE,
@@ -1052,7 +1055,7 @@ TEST_F(BidirectionalStreamTest, TestCoalesceSmallDataBuffers) {
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   size_t index = ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::BIDIRECTIONAL_STREAM_SENDV_DATA,
       NetLogEventPhase::NONE);
@@ -1466,7 +1469,7 @@ TEST_F(BidirectionalStreamTest, PropagateProtocolError) {
             delegate->GetTotalSentBytes());
   EXPECT_EQ(0, delegate->GetTotalReceivedBytes());
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
 
   size_t index = ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::BIDIRECTIONAL_STREAM_READY,

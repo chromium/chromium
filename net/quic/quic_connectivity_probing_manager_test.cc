@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/test/test_mock_time_task_runner.h"
-#include "net/log/test_net_log.h"
+#include "net/log/net_log.h"
 #include "net/quic/address_utils.h"
 #include "net/socket/socket_test_util.h"
 #include "net/test/gtest_util.h"
@@ -132,7 +132,7 @@ class QuicConnectivityProbingManagerTest : public ::testing::Test {
         socket_.get(), &clock_, &session_, kQuicYieldAfterPacketsRead,
         quic::QuicTime::Delta::FromMilliseconds(
             kQuicYieldAfterDurationMilliseconds),
-        bound_test_net_log_.bound());
+        net_log_with_source_);
   }
 
   QuicConnectivityProbingManagerTest(
@@ -157,7 +157,8 @@ class QuicConnectivityProbingManagerTest : public ::testing::Test {
 
   quic::MockClock clock_;
   MockClientSocketFactory socket_factory_;
-  RecordingBoundTestNetLog bound_test_net_log_;
+  NetLogWithSource net_log_with_source_{
+      NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE)};
 };
 
 TEST_F(QuicConnectivityProbingManagerTest, ReceiveProbingResponseOnSamePath) {
@@ -171,7 +172,7 @@ TEST_F(QuicConnectivityProbingManagerTest, ReceiveProbingResponseOnSamePath) {
   probing_manager_.StartProbing(
       testNetworkHandle, testPeerAddress, std::move(socket_),
       std::move(writer_), std::move(reader_),
-      base::Milliseconds(initial_timeout_ms), bound_test_net_log_.bound());
+      base::Milliseconds(initial_timeout_ms), net_log_with_source_);
 
   // Fast forward initial_timeout_ms, timeout the first connectivity probing
   // packet, cause another probing packet to be sent with timeout set to
@@ -219,7 +220,7 @@ TEST_F(QuicConnectivityProbingManagerTest,
   probing_manager_.StartProbing(
       testNetworkHandle, testPeerAddress, std::move(socket_),
       std::move(writer_), std::move(reader_),
-      base::Milliseconds(initial_timeout_ms), bound_test_net_log_.bound());
+      base::Milliseconds(initial_timeout_ms), net_log_with_source_);
 
   // Fast forward initial_timeout_ms, timeout the first connectivity probing
   // packet, cause another probing packet to be sent with timeout set to
@@ -281,7 +282,7 @@ TEST_F(QuicConnectivityProbingManagerTest,
   probing_manager_.StartProbing(
       NetworkChangeNotifier::kInvalidNetworkHandle, testPeerAddress,
       std::move(socket_), std::move(writer_), std::move(reader_),
-      base::Milliseconds(initial_timeout_ms), bound_test_net_log_.bound());
+      base::Milliseconds(initial_timeout_ms), net_log_with_source_);
 
   // Fast forward initial_timeout_ms, timeout the first connectivity probing
   // packet, cause another probing packet to be sent with timeout set to
@@ -345,7 +346,7 @@ TEST_F(QuicConnectivityProbingManagerTest, RetryProbingWithExponentailBackoff) {
   probing_manager_.StartProbing(
       testNetworkHandle, testPeerAddress, std::move(socket_),
       std::move(writer_), std::move(reader_),
-      base::Milliseconds(initial_timeout_ms), bound_test_net_log_.bound());
+      base::Milliseconds(initial_timeout_ms), net_log_with_source_);
 
   // For expential backoff, this will try to resend: 100ms, 200ms, 400ms, 800ms,
   // 1600ms.
@@ -373,7 +374,7 @@ TEST_F(QuicConnectivityProbingManagerTest, ProbingReceivedStatelessReset) {
   probing_manager_.StartProbing(
       testNetworkHandle, testPeerAddress, std::move(socket_),
       std::move(writer_), std::move(reader_),
-      base::Milliseconds(initial_timeout_ms), bound_test_net_log_.bound());
+      base::Milliseconds(initial_timeout_ms), net_log_with_source_);
 
   // Fast forward initial_timeout_ms, timeout the first connectivity probing
   // packet, cause another probing packet to be sent with timeout set to
@@ -409,7 +410,7 @@ TEST_F(QuicConnectivityProbingManagerTest,
   probing_manager_.StartProbing(
       testNetworkHandle, testPeerAddress, std::move(socket_),
       std::move(writer_), std::move(reader_),
-      base::Milliseconds(initial_timeout_ms), bound_test_net_log_.bound());
+      base::Milliseconds(initial_timeout_ms), net_log_with_source_);
 
   // Fast forward initial_timeout_ms, timeout the first connectivity probing
   // packet, cause another probing packet to be sent with timeout set to
@@ -451,7 +452,7 @@ TEST_F(QuicConnectivityProbingManagerTest, CancelProbing) {
   probing_manager_.StartProbing(
       testNetworkHandle, testPeerAddress, std::move(socket_),
       std::move(writer_), std::move(reader_),
-      base::Milliseconds(initial_timeout_ms), bound_test_net_log_.bound());
+      base::Milliseconds(initial_timeout_ms), net_log_with_source_);
 
   // Fast forward initial_timeout_ms, timeout the first connectivity probing
   // packet, cause another probing packet to be sent with timeout set to
@@ -487,7 +488,7 @@ TEST_F(QuicConnectivityProbingManagerTest, DoNotCancelProbing) {
   probing_manager_.StartProbing(
       testNetworkHandle, testPeerAddress, std::move(socket_),
       std::move(writer_), std::move(reader_),
-      base::Milliseconds(initial_timeout_ms), bound_test_net_log_.bound());
+      base::Milliseconds(initial_timeout_ms), net_log_with_source_);
 
   // Request cancel probing for |newPeerAddress| on |testNetworkHandle| doesn't
   // affect the existing probing.
@@ -520,7 +521,7 @@ TEST_F(QuicConnectivityProbingManagerTest, ProbingWriterError) {
   probing_manager_.StartProbing(
       testNetworkHandle, testPeerAddress, std::move(socket_),
       std::move(writer_), std::move(reader_),
-      base::Milliseconds(initial_timeout_ms), bound_test_net_log_.bound());
+      base::Milliseconds(initial_timeout_ms), net_log_with_source_);
 
   // Fast forward initial_timeout_ms, timeout the first connectivity probing
   // packet, cause another probing packet to be sent with timeout set to
@@ -558,7 +559,7 @@ TEST_F(QuicConnectivityProbingManagerTest,
   probing_manager_.StartProbing(
       NetworkChangeNotifier::kInvalidNetworkHandle, testPeerAddress,
       std::move(socket_), std::move(writer_), std::move(reader_),
-      base::Milliseconds(initial_timeout_ms), bound_test_net_log_.bound());
+      base::Milliseconds(initial_timeout_ms), net_log_with_source_);
   EXPECT_CALL(session_, OnSendConnectivityProbingPacket(_, testPeerAddress))
       .WillOnce(Return(true));
 
@@ -603,7 +604,7 @@ TEST_F(QuicConnectivityProbingManagerTest, ProbeServerPreferredAddressFailed) {
   probing_manager_.StartProbing(
       NetworkChangeNotifier::kInvalidNetworkHandle, testPeerAddress,
       std::move(socket_), std::move(writer_), std::move(reader_),
-      base::Milliseconds(initial_timeout_ms), bound_test_net_log_.bound());
+      base::Milliseconds(initial_timeout_ms), net_log_with_source_);
 
   EXPECT_CALL(session_, OnSendConnectivityProbingPacket(_, testPeerAddress))
       .WillOnce(Return(true));

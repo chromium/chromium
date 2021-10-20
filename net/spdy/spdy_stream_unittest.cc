@@ -434,7 +434,7 @@ TEST_F(SpdyStreamTest, StreamError) {
 
   AddReadEOF();
 
-  RecordingBoundTestNetLog log;
+  RecordingNetLogObserver net_log_observer;
 
   SequencedSocketData data(GetReads(), GetWrites());
   MockConnect connect_data(SYNCHRONOUS, OK);
@@ -446,7 +446,8 @@ TEST_F(SpdyStreamTest, StreamError) {
   base::WeakPtr<SpdySession> session(CreateDefaultSpdySession());
 
   base::WeakPtr<SpdyStream> stream = CreateStreamSynchronously(
-      SPDY_BIDIRECTIONAL_STREAM, session, url_, LOWEST, log.bound());
+      SPDY_BIDIRECTIONAL_STREAM, session, url_, LOWEST,
+      NetLogWithSource::Make(NetLogSourceType::NONE));
   ASSERT_TRUE(stream);
   EXPECT_EQ(kDefaultUrl, stream->url().spec());
 
@@ -469,7 +470,7 @@ TEST_F(SpdyStreamTest, StreamError) {
   EXPECT_TRUE(data.AllWriteDataConsumed());
 
   // Check that the NetLog was filled reasonably.
-  auto entries = log.GetEntries();
+  auto entries = net_log_observer.GetEntries();
   EXPECT_LT(0u, entries.size());
 
   // Check that we logged SPDY_STREAM_ERROR correctly.
@@ -1556,8 +1557,6 @@ TEST_F(SpdyStreamTest, IncreaseSendWindowSizeOverflow) {
 
   AddReadEOF();
 
-  RecordingBoundTestNetLog log;
-
   SequencedSocketData data(GetReads(), GetWrites());
   MockConnect connect_data(SYNCHRONOUS, OK);
   data.set_connect_data(connect_data);
@@ -1568,7 +1567,8 @@ TEST_F(SpdyStreamTest, IncreaseSendWindowSizeOverflow) {
   base::WeakPtr<SpdySession> session(CreateDefaultSpdySession());
 
   base::WeakPtr<SpdyStream> stream = CreateStreamSynchronously(
-      SPDY_BIDIRECTIONAL_STREAM, session, url_, LOWEST, log.bound());
+      SPDY_BIDIRECTIONAL_STREAM, session, url_, LOWEST,
+      NetLogWithSource::Make(NetLogSourceType::NONE));
   ASSERT_TRUE(stream);
   EXPECT_EQ(kDefaultUrl, stream->url().spec());
 

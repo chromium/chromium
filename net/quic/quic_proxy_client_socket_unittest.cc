@@ -25,6 +25,7 @@
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/transport_security_state.h"
+#include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
 #include "net/quic/address_utils.h"
@@ -210,8 +211,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
 
   void Initialize() {
     std::unique_ptr<MockUDPClientSocket> socket(new MockUDPClientSocket(
-        mock_quic_data_.InitializeAndGetSequencedSocketData(),
-        net_log_.bound().net_log()));
+        mock_quic_data_.InitializeAndGetSequencedSocketData(), NetLog::Get()));
     socket->Connect(peer_addr_);
     runner_ = new TestTaskRunner(&clock_);
     send_algorithm_ = new quic::test::MockSendAlgorithm();
@@ -287,7 +287,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
         base::DefaultTickClock::GetInstance(),
         base::ThreadTaskRunnerHandle::Get().get(),
-        /*socket_performance_watcher=*/nullptr, net_log_.bound().net_log());
+        /*socket_performance_watcher=*/nullptr, NetLog::Get());
 
     writer->set_delegate(session_.get());
 
@@ -323,7 +323,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         // TODO(crbug.com/1206799) Construct `QuicProxyClientSocket` with plain
         // `proxy_endpoint_` once it supports `url::SchemeHostPort`.
         HostPortPair::FromSchemeHostPort(destination_endpoint_),
-        net_log_.bound(),
+        NetLogWithSource::Make(NetLogSourceType::NONE),
         new HttpAuthController(HttpAuth::AUTH_PROXY, proxy_endpoint_.GetURL(),
                                NetworkIsolationKey(), &http_auth_cache_,
                                http_auth_handler_factory_.get(),
@@ -609,7 +609,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
     return std::string(buffer.data(), buffer.size());
   }
 
-  RecordingBoundTestNetLog net_log_;
+  RecordingNetLogObserver net_log_observer_;
   QuicFlagSaver saver_;
   const quic::ParsedQuicVersion version_;
   const quic::QuicStreamId client_data_stream_id1_;
@@ -1959,7 +1959,7 @@ TEST_P(QuicProxyClientSocketTest, NetLog) {
   NetLogSource sock_source = sock_->NetLog().source();
   sock_.reset();
 
-  auto entry_list = net_log_.GetEntriesForSource(sock_source);
+  auto entry_list = net_log_observer_.GetEntriesForSource(sock_source);
 
   ASSERT_EQ(entry_list.size(), 10u);
   EXPECT_TRUE(

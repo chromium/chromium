@@ -22,8 +22,8 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_source.h"
-#include "net/log/test_net_log.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
@@ -296,7 +296,8 @@ class QuicChromiumClientSessionTest
   QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   quic::QuicConfig config_;
   quic::QuicCryptoClientConfig crypto_config_;
-  RecordingBoundTestNetLog bound_test_net_log_;
+  NetLogWithSource net_log_with_source_{
+      NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE)};
   MockClientSocketFactory socket_factory_;
   std::unique_ptr<MockRead> default_read_;
   std::unique_ptr<SequencedSocketData> socket_data_;
@@ -1954,7 +1955,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
                                    kQuicYieldAfterPacketsRead,
                                    quic::QuicTime::Delta::FromMilliseconds(
                                        kQuicYieldAfterDurationMilliseconds),
-                                   bound_test_net_log_.bound()));
+                                   net_log_with_source_));
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
@@ -2064,7 +2065,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
                                      kQuicYieldAfterPacketsRead,
                                      quic::QuicTime::Delta::FromMilliseconds(
                                          kQuicYieldAfterDurationMilliseconds),
-                                     bound_test_net_log_.bound()));
+                                     net_log_with_source_));
     new_reader->StartReading();
     std::unique_ptr<QuicChromiumPacketWriter> new_writer(
         CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
@@ -2107,7 +2108,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
                                    kQuicYieldAfterPacketsRead,
                                    quic::QuicTime::Delta::FromMilliseconds(
                                        kQuicYieldAfterDurationMilliseconds),
-                                   bound_test_net_log_.bound()));
+                                   net_log_with_source_));
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
@@ -2197,7 +2198,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
                                    kQuicYieldAfterPacketsRead,
                                    quic::QuicTime::Delta::FromMilliseconds(
                                        kQuicYieldAfterDurationMilliseconds),
-                                   bound_test_net_log_.bound()));
+                                   net_log_with_source_));
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));

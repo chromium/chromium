@@ -124,7 +124,7 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
     EXPECT_FALSE(loaded_event_.IsSignaled());
     store_->Load(base::BindOnce(&SQLitePersistentCookieStoreTest::OnLoaded,
                                 base::Unretained(this)),
-                 net_log_.bound());
+                 NetLogWithSource::Make(NetLogSourceType::NONE));
     loaded_event_.Wait();
     cookies->swap(cookies_);
   }
@@ -224,7 +224,6 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
   base::ScopedTempDir temp_dir_;
   scoped_refptr<SQLitePersistentCookieStore> store_;
   std::unique_ptr<CookieCryptor> cookie_crypto_delegate_;
-  RecordingBoundTestNetLog net_log_;
 };
 
 TEST_F(SQLitePersistentCookieStoreTest, TestInvalidMetaTableRecovery) {
@@ -395,12 +394,12 @@ TEST_F(SQLitePersistentCookieStoreTest, TestLoadCookiesForKey) {
   background_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SQLitePersistentCookieStoreTest::WaitOnDBEvent,
                                 base::Unretained(this)));
-  RecordingBoundTestNetLog net_log;
+  RecordingNetLogObserver net_log_observer;
   store_->Load(base::BindOnce(&SQLitePersistentCookieStoreTest::OnLoaded,
                               base::Unretained(this)),
-               net_log.bound());
+               NetLogWithSource::Make(NetLogSourceType::NONE));
   base::RunLoop run_loop;
-  net_log.SetObserverCaptureMode(NetLogCaptureMode::kDefault);
+  net_log_observer.SetObserverCaptureMode(NetLogCaptureMode::kDefault);
   store_->LoadCookiesForKey(
       "aaa.com",
       base::BindOnce(&SQLitePersistentCookieStoreTest::OnKeyLoaded,
@@ -448,7 +447,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestLoadCookiesForKey) {
   cookies_.clear();
 
   store_ = nullptr;
-  auto entries = net_log.GetEntries();
+  auto entries = net_log_observer.GetEntries();
   size_t pos = ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::COOKIE_PERSISTENT_STORE_LOAD,
       NetLogEventPhase::BEGIN);

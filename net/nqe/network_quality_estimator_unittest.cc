@@ -720,9 +720,7 @@ TEST_F(NetworkQualityEstimatorTest, DefaultObservations) {
   TestRTTObserver rtt_observer;
   TestThroughputObserver throughput_observer;
   std::map<std::string, std::string> variation_params;
-  TestNetworkQualityEstimator estimator(
-      variation_params, false, false,
-      std::make_unique<RecordingBoundTestNetLog>());
+  TestNetworkQualityEstimator estimator(variation_params, false, false);
 
   // Default observations should be added when constructing the |estimator|.
   histogram_tester.ExpectBucketCount(
@@ -854,9 +852,7 @@ TEST_F(NetworkQualityEstimatorTest, DefaultObservationsOverridden) {
   // Negative variation value should not be used.
   variation_params["2G.DefaultMedianTransportRTTMsec"] = "-5";
 
-  TestNetworkQualityEstimator estimator(
-      variation_params, false, false,
-      std::make_unique<RecordingBoundTestNetLog>());
+  TestNetworkQualityEstimator estimator(variation_params, false, false);
   estimator.SimulateNetworkChange(
       NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN, "unknown-1");
 
@@ -1298,10 +1294,9 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestThroughputNoRequestOverlap) {
   };
 
   for (const auto& test : tests) {
-    TestNetworkQualityEstimator estimator(
-        variation_params, test.allow_small_localhost_requests,
-        test.allow_small_localhost_requests,
-        std::make_unique<RecordingBoundTestNetLog>());
+    TestNetworkQualityEstimator estimator(variation_params,
+                                          test.allow_small_localhost_requests,
+                                          test.allow_small_localhost_requests);
 
     base::TimeDelta rtt;
     EXPECT_FALSE(
@@ -2029,9 +2024,7 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestTCPSocketRTT) {
   std::map<std::string, std::string> variation_params;
   variation_params["persistent_cache_reading_enabled"] = "true";
   variation_params["throughput_min_requests_in_flight"] = "1";
-  TestNetworkQualityEstimator estimator(
-      variation_params, true, true,
-      std::make_unique<RecordingBoundTestNetLog>());
+  TestNetworkQualityEstimator estimator(variation_params, true, true);
   estimator.SetTickClockForTesting(&tick_clock);
   estimator.SimulateNetworkChange(
       NetworkChangeNotifier::ConnectionType::CONNECTION_2G, "test");
@@ -2417,9 +2410,7 @@ TEST_F(NetworkQualityEstimatorTest, OnPrefsRead) {
   variation_params["add_default_platform_observations"] = "false";
   // Disable default platform values so that the effect of cached estimates
   // at the time of startup can be studied in isolation.
-  TestNetworkQualityEstimator estimator(
-      variation_params, true, true,
-      std::make_unique<RecordingBoundTestNetLog>());
+  TestNetworkQualityEstimator estimator(variation_params, true, true);
 
   // Add observers.
   TestRTTObserver rtt_observer;
@@ -2525,9 +2516,7 @@ TEST_F(NetworkQualityEstimatorTest, OnPrefsReadWithReadingDisabled) {
 
   // Disable default platform values so that the effect of cached estimates
   // at the time of startup can be studied in isolation.
-  TestNetworkQualityEstimator estimator(
-      variation_params, true, true,
-      std::make_unique<RecordingBoundTestNetLog>());
+  TestNetworkQualityEstimator estimator(variation_params, true, true);
 
   // Add observers.
   TestRTTObserver rtt_observer;
@@ -2616,9 +2605,7 @@ TEST_F(NetworkQualityEstimatorTest,
   variation_params["add_default_platform_observations"] = "false";
   // Disable default platform values so that the effect of cached estimates
   // at the time of startup can be studied in isolation.
-  TestNetworkQualityEstimator estimator(
-      variation_params, true, true,
-      std::make_unique<RecordingBoundTestNetLog>());
+  TestNetworkQualityEstimator estimator(variation_params, true, true);
 
   // Add observers.
   TestRTTObserver rtt_observer;

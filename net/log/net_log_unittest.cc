@@ -89,7 +89,7 @@ TEST(NetLogTest, BasicEventsWithSource) {
   base::TimeTicks source0_start_ticks = base::TimeTicks::Now();
 
   NetLogWithSource source0 =
-      NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::URL_REQUEST);
+      NetLogWithSource::Make(NetLogSourceType::URL_REQUEST);
   task_environment.FastForwardBy(base::Seconds(1));
   base::TimeTicks source0_event0_ticks = base::TimeTicks::Now();
   source0.BeginEvent(NetLogEventType::REQUEST_ALIVE);
@@ -97,8 +97,7 @@ TEST(NetLogTest, BasicEventsWithSource) {
   task_environment.FastForwardBy(base::Seconds(5432));
   base::TimeTicks source1_start_ticks = base::TimeTicks::Now();
 
-  NetLogWithSource source1 =
-      NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::SOCKET);
+  NetLogWithSource source1 = NetLogWithSource::Make(NetLogSourceType::SOCKET);
   task_environment.FastForwardBy(base::Seconds(1));
   base::TimeTicks source1_event0_ticks = base::TimeTicks::Now();
   source1.BeginEvent(NetLogEventType::SOCKET_ALIVE);

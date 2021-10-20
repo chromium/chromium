@@ -123,10 +123,19 @@ class NET_EXPORT NetLogWithSource {
   // net_log.
   static NetLogWithSource Make(NetLog* net_log, NetLogSourceType source_type);
 
+  // Helper to create a NetLogWithSource given a NetLogSourceType.
+  // Equivalent to calling Make(NetLog*, NetLogSourceType) with NetLog::Get()
+  static NetLogWithSource Make(NetLogSourceType source_type);
+
   // Creates a NetLogWithSource with an already initialized NetLogSource. If
   // |net_log| is null or |source| is not valid, creates an unbound
   // NetLogWithSource.
   static NetLogWithSource Make(NetLog* net_log, const NetLogSource& source);
+
+  // Creates a NetLogWithSource with an already initialized NetLogSource.
+  // Equivalent to calling Make(NetLog*, NetLogSource&) with NetLog::Get().
+  // If |source| is not valid, creates an unbound NetLogWithSource.
+  static NetLogWithSource Make(const NetLogSource& source);
 
   const NetLogSource& source() const { return source_; }
 

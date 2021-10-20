@@ -275,11 +275,12 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThread_Basic) {
   // Start request 0.
   int rv;
   TestCompletionCallback callback0;
-  RecordingBoundTestNetLog log0;
+  RecordingNetLogObserver net_log_observer;
   ProxyInfo results0;
-  rv = resolver().GetProxyForURL(GURL("http://request0"), NetworkIsolationKey(),
-                                 &results0, callback0.callback(), nullptr,
-                                 log0.bound());
+  rv =
+      resolver().GetProxyForURL(GURL("http://request0"), NetworkIsolationKey(),
+                                &results0, callback0.callback(), nullptr,
+                                NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Wait for request 0 to finish.
@@ -291,7 +292,7 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThread_Basic) {
   // on completion, this should have been copied into |log0|.
   // We also have 1 log entry that was emitted by the
   // MultiThreadedProxyResolver.
-  auto entries0 = log0.GetEntries();
+  auto entries0 = net_log_observer.GetEntries();
 
   ASSERT_EQ(2u, entries0.size());
   EXPECT_EQ(NetLogEventType::SUBMITTED_TO_RESOLVER_THREAD, entries0[0].type);
@@ -351,29 +352,33 @@ TEST_F(MultiThreadedProxyResolverTest,
   std::unique_ptr<ProxyResolver::Request> request0;
   TestCompletionCallback callback0;
   ProxyInfo results0;
-  RecordingBoundTestNetLog log0;
+  RecordingNetLogObserver net_log_observer;
+  NetLogWithSource log_with_source0 =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   rv = resolver().GetProxyForURL(GURL("http://request0"), NetworkIsolationKey(),
                                  &results0, callback0.callback(), &request0,
-                                 log0.bound());
+                                 log_with_source0);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Start 2 more requests (request1 and request2).
 
   TestCompletionCallback callback1;
   ProxyInfo results1;
-  RecordingBoundTestNetLog log1;
+  NetLogWithSource log_with_source1 =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   rv = resolver().GetProxyForURL(GURL("http://request1"), NetworkIsolationKey(),
                                  &results1, callback1.callback(), nullptr,
-                                 log1.bound());
+                                 log_with_source1);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   std::unique_ptr<ProxyResolver::Request> request2;
   TestCompletionCallback callback2;
   ProxyInfo results2;
-  RecordingBoundTestNetLog log2;
+  NetLogWithSource log_with_source2 =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   rv = resolver().GetProxyForURL(GURL("http://request2"), NetworkIsolationKey(),
                                  &results2, callback2.callback(), &request2,
-                                 log2.bound());
+                                 log_with_source2);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Unblock the worker thread so the requests can continue running.
@@ -386,7 +391,8 @@ TEST_F(MultiThreadedProxyResolverTest,
   EXPECT_EQ(0, callback0.WaitForResult());
   EXPECT_EQ("PROXY request0:80", results0.ToPacString());
 
-  auto entries0 = log0.GetEntries();
+  auto entries0 =
+      net_log_observer.GetEntriesForSource(log_with_source0.source());
 
   ASSERT_EQ(2u, entries0.size());
   EXPECT_EQ(NetLogEventType::SUBMITTED_TO_RESOLVER_THREAD, entries0[0].type);
@@ -395,7 +401,8 @@ TEST_F(MultiThreadedProxyResolverTest,
   EXPECT_EQ(1, callback1.WaitForResult());
   EXPECT_EQ("PROXY request1:80", results1.ToPacString());
 
-  auto entries1 = log1.GetEntries();
+  auto entries1 =
+      net_log_observer.GetEntriesForSource(log_with_source1.source());
 
   ASSERT_EQ(4u, entries1.size());
   EXPECT_TRUE(LogContainsBeginEvent(
@@ -407,7 +414,8 @@ TEST_F(MultiThreadedProxyResolverTest,
   EXPECT_EQ(2, callback2.WaitForResult());
   EXPECT_EQ("PROXY request2:80", results2.ToPacString());
 
-  auto entries2 = log2.GetEntries();
+  auto entries2 =
+      net_log_observer.GetEntriesForSource(log_with_source2.source());
 
   ASSERT_EQ(4u, entries2.size());
   EXPECT_TRUE(LogContainsBeginEvent(

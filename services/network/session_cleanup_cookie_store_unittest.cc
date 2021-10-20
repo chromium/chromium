@@ -46,7 +46,7 @@ class SessionCleanupCookieStoreTest : public testing::Test {
     CanonicalCookieVector cookies;
     store_->Load(base::BindOnce(&SessionCleanupCookieStoreTest::OnLoaded,
                                 base::Unretained(this), &run_loop, &cookies),
-                 net_log_.bound());
+                 net::NetLogWithSource::Make(net::NetLogSourceType::NONE));
     run_loop.Run();
     return cookies;
   }
@@ -89,7 +89,7 @@ class SessionCleanupCookieStoreTest : public testing::Test {
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   base::ScopedTempDir temp_dir_;
   scoped_refptr<SessionCleanupCookieStore> store_;
-  net::RecordingBoundTestNetLog net_log_;
+  net::RecordingNetLogObserver net_log_observer_;
 };
 
 TEST_F(SessionCleanupCookieStoreTest, TestPersistence) {
@@ -144,7 +144,7 @@ TEST_F(SessionCleanupCookieStoreTest, TestNetLogIncludeCookies) {
       }));
   DestroyStore();
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   size_t pos = net::ExpectLogContainsSomewhere(
       entries, 0, net::NetLogEventType::COOKIE_PERSISTENT_STORE_ORIGIN_FILTERED,
       net::NetLogEventPhase::NONE);
@@ -163,7 +163,7 @@ TEST_F(SessionCleanupCookieStoreTest, TestNetLogDoNotIncludeCookies) {
   base::Time t = base::Time::Now();
   AddCookie("A", "B", "nonpersistent.com", "/", t);
 
-  net_log_.SetObserverCaptureMode(net::NetLogCaptureMode::kDefault);
+  net_log_observer_.SetObserverCaptureMode(net::NetLogCaptureMode::kDefault);
   // Cookies from "nonpersistent.com" should be deleted.
   store_->DeleteSessionCookies(
       base::BindRepeating([](const std::string& domain, bool is_https) {
@@ -171,7 +171,7 @@ TEST_F(SessionCleanupCookieStoreTest, TestNetLogDoNotIncludeCookies) {
       }));
   DestroyStore();
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   size_t pos = net::ExpectLogContainsSomewhere(
       entries, 0, net::NetLogEventType::COOKIE_PERSISTENT_STORE_ORIGIN_FILTERED,
       net::NetLogEventPhase::NONE);

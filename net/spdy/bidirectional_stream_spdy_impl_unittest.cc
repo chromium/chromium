@@ -21,7 +21,7 @@
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
-#include "net/log/test_net_log.h"
+#include "net/log/net_log.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_session.h"
@@ -275,12 +275,14 @@ class BidirectionalStreamSpdyImplTest : public testing::TestWithParam<bool>,
     session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data_);
     sequenced_data_ = std::make_unique<SequencedSocketData>(reads, writes);
     session_deps_.socket_factory->AddSocketDataProvider(sequenced_data_.get());
-    session_deps_.net_log = net_log_.bound().net_log();
+    session_deps_.net_log = NetLog::Get();
     http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
-    session_ = CreateSpdySession(http_session_.get(), key_, net_log_.bound());
+    session_ =
+        CreateSpdySession(http_session_.get(), key_, net_log_with_source_);
   }
 
-  RecordingBoundTestNetLog net_log_;
+  NetLogWithSource net_log_with_source_{
+      NetLogWithSource::Make(NetLogSourceType::NONE)};
   SpdyTestUtil spdy_util_;
   SpdySessionDependencies session_deps_;
   const GURL default_url_;
@@ -323,7 +325,7 @@ TEST_F(BidirectionalStreamSpdyImplTest, SimplePostRequest) {
   auto delegate = std::make_unique<TestDelegateBase>(
       session_, read_buffer.get(), kReadBufferSize);
   delegate->SetRunUntilCompletion(true);
-  delegate->Start(&request_info, net_log_.bound());
+  delegate->Start(&request_info, net_log_with_source_);
   sequenced_data_->RunUntilPaused();
 
   scoped_refptr<StringIOBuffer> write_buffer =
@@ -380,8 +382,8 @@ TEST_F(BidirectionalStreamSpdyImplTest, LoadTimingTwoRequests) {
       session_, read_buffer2.get(), kReadBufferSize);
   delegate->SetRunUntilCompletion(true);
   delegate2->SetRunUntilCompletion(true);
-  delegate->Start(&request_info, net_log_.bound());
-  delegate2->Start(&request_info, net_log_.bound());
+  delegate->Start(&request_info, net_log_with_source_);
+  delegate2->Start(&request_info, net_log_with_source_);
 
   base::RunLoop().RunUntilIdle();
   delegate->WaitUntilCompletion();
@@ -425,7 +427,7 @@ TEST_F(BidirectionalStreamSpdyImplTest, SendDataAfterStreamFailed) {
   auto delegate = std::make_unique<TestDelegateBase>(
       session_, read_buffer.get(), kReadBufferSize);
   delegate->SetRunUntilCompletion(true);
-  delegate->Start(&request_info, net_log_.bound());
+  delegate->Start(&request_info, net_log_with_source_);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(delegate->on_failed_called());
@@ -479,7 +481,7 @@ TEST_P(BidirectionalStreamSpdyImplTest, RstWithNoErrorBeforeSendIsComplete) {
   auto delegate = std::make_unique<TestDelegateBase>(
       session_, read_buffer.get(), kReadBufferSize);
   delegate->SetRunUntilCompletion(true);
-  delegate->Start(&request_info, net_log_.bound());
+  delegate->Start(&request_info, net_log_with_source_);
   sequenced_data_->RunUntilPaused();
   // Make a write pending before receiving RST_STREAM.
   scoped_refptr<StringIOBuffer> write_buffer =

@@ -723,7 +723,7 @@ TEST_F(SpdySessionPoolTest, IPPoolingNetLog) {
       http_session_.get(), test_hosts[0].key, NetLogWithSource());
 
   // The second host should pool to the existing connection.
-  RecordingBoundTestNetLog net_log;
+  RecordingNetLogObserver net_log_observer;
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(TryCreateAliasedSpdySession(spdy_session_pool_, test_hosts[1].key,
                                           test_hosts[1].iplist));
@@ -732,15 +732,16 @@ TEST_F(SpdySessionPoolTest, IPPoolingNetLog) {
   base::WeakPtr<SpdySession> session1 =
       spdy_session_pool_->FindAvailableSession(
           test_hosts[1].key, /* enable_ip_based_pooling = */ true,
-          /* is_websocket = */ false, net_log.bound());
+          /* is_websocket = */ false,
+          NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_EQ(session0.get(), session1.get());
 
-  ASSERT_EQ(1u, net_log.GetSize());
+  ASSERT_EQ(1u, net_log_observer.GetSize());
   histogram_tester.ExpectTotalCount("Net.SpdySessionGet", 2);
 
   // FindAvailableSession() should have logged a netlog event indicating IP
   // pooling.
-  auto entry_list = net_log.GetEntries();
+  auto entry_list = net_log_observer.GetEntries();
   EXPECT_EQ(
       NetLogEventType::HTTP2_SESSION_POOL_FOUND_EXISTING_SESSION_FROM_IP_POOL,
       entry_list[0].type);
@@ -1126,7 +1127,8 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
 
   // SpdySession does not support Websocket before SETTINGS frame is read.
   EXPECT_FALSE(session->support_websocket());
-  RecordingBoundTestNetLog net_log;
+  NetLogWithSource net_log_with_source{
+      NetLogWithSource::Make(NetLogSourceType::NONE)};
   // TryCreateAliasedSpdySession should not find |session| for either
   // SpdySessionKeys if |is_websocket| argument is set.
   EXPECT_FALSE(TryCreateAliasedSpdySession(
@@ -1158,7 +1160,7 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
   // now set up aliases for |session| for the second one.
   base::WeakPtr<SpdySession> result = spdy_session_pool_->FindAvailableSession(
       test_hosts[0].key, /* enable_ip_based_pooling = */ true,
-      /* is_websocket = */ true, net_log.bound());
+      /* is_websocket = */ true, net_log_with_source);
   EXPECT_EQ(session.get(), result.get());
   EXPECT_TRUE(TryCreateAliasedSpdySession(spdy_session_pool_, test_hosts[1].key,
                                           test_hosts[1].iplist,
@@ -1169,22 +1171,22 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
   // when IP based pooling is enabled.
   result = spdy_session_pool_->FindAvailableSession(
       test_hosts[0].key, /* enable_ip_based_pooling = */ true,
-      /* is_websocket = */ true, net_log.bound());
+      /* is_websocket = */ true, net_log_with_source);
   EXPECT_EQ(session.get(), result.get());
   result = spdy_session_pool_->FindAvailableSession(
       test_hosts[1].key, /* enable_ip_based_pooling = */ true,
-      /* is_websocket = */ true, net_log.bound());
+      /* is_websocket = */ true, net_log_with_source);
   EXPECT_EQ(session.get(), result.get());
 
   // FindAvailableSession() should only return |session| for the first
   // SpdySessionKey when IP based pooling is disabled.
   result = spdy_session_pool_->FindAvailableSession(
       test_hosts[0].key, /* enable_ip_based_pooling = */ false,
-      /* is_websocket = */ true, net_log.bound());
+      /* is_websocket = */ true, net_log_with_source);
   EXPECT_EQ(session.get(), result.get());
   result = spdy_session_pool_->FindAvailableSession(
       test_hosts[1].key, /* enable_ip_based_pooling = */ false,
-      /* is_websocket = */ true, net_log.bound());
+      /* is_websocket = */ true, net_log_with_source);
   EXPECT_FALSE(result);
 
   // Read EOF.

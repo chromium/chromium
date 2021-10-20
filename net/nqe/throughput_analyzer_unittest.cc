@@ -32,7 +32,6 @@
 #include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/log/test_net_log.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/nqe/network_quality_estimator_test_util.h"
@@ -63,7 +62,7 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
                 &TestThroughputAnalyzer::OnNewThroughputObservationAvailable,
                 base::Unretained(this)),
             tick_clock,
-            std::make_unique<RecordingBoundTestNetLog>()->bound()),
+            NetLogWithSource::Make(NetLogSourceType::NONE)),
         throughput_observations_received_(0),
         bits_received_(0) {}
 

@@ -700,7 +700,7 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
   // It should be logged for the provided source and have the indicated reason.
   void ExpectSocketClosedWithReason(NetLogSource expected_source,
                                     const char* expected_reason) {
-    auto entries = observer_.GetEntriesForSourceWithType(
+    auto entries = net_log_observer_.GetEntriesForSourceWithType(
         expected_source, NetLogEventType::SOCKET_POOL_CLOSING_SOCKET,
         NetLogEventPhase::NONE);
     ASSERT_EQ(1u, entries.size());
@@ -738,7 +738,7 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
   bool connect_backup_jobs_enabled_;
   MockClientSocketFactory client_socket_factory_;
   TestConnectJobFactory* connect_job_factory_;
-  RecordingNetLogObserver observer_;
+  RecordingNetLogObserver net_log_observer_;
   // These parameters are never actually used to create a TransportConnectJob.
   scoped_refptr<ClientSocketPool::SocketParams> params_;
   std::unique_ptr<TransportClientSocketPool> pool_;
@@ -750,14 +750,16 @@ TEST_F(ClientSocketPoolBaseTest, BasicSynchronous) {
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
-  RecordingBoundTestNetLog log;
+  NetLogWithSource net_log_with_source =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
+
   TestLoadTimingInfoNotConnected(handle);
 
   EXPECT_EQ(OK, handle.Init(
                     TestGroupId("a"), params_, absl::nullopt, DEFAULT_PRIORITY,
                     SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                     callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-                    pool_.get(), log.bound()));
+                    pool_.get(), net_log_with_source));
   EXPECT_TRUE(handle.is_initialized());
   EXPECT_TRUE(handle.socket());
   TestLoadTimingInfoConnectedNotReused(handle);
@@ -765,7 +767,8 @@ TEST_F(ClientSocketPoolBaseTest, BasicSynchronous) {
   handle.Reset();
   TestLoadTimingInfoNotConnected(handle);
 
-  auto entries = log.GetEntries();
+  auto entries =
+      net_log_observer_.GetEntriesForSource(net_log_with_source.source());
 
   EXPECT_EQ(5u, entries.size());
   EXPECT_TRUE(LogContainsEvent(
@@ -785,7 +788,8 @@ TEST_F(ClientSocketPoolBaseTest, InitConnectionFailure) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);
 
   connect_job_factory_->set_job_type(TestConnectJob::kMockFailingJob);
-  RecordingBoundTestNetLog log;
+  NetLogWithSource net_log_with_source =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
 
   ClientSocketHandle handle;
   TestCompletionCallback callback;
@@ -797,13 +801,14 @@ TEST_F(ClientSocketPoolBaseTest, InitConnectionFailure) {
       handle.Init(TestGroupId("a"), params_, absl::nullopt, DEFAULT_PRIORITY,
                   SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                   callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-                  pool_.get(), log.bound()));
+                  pool_.get(), net_log_with_source));
   EXPECT_FALSE(handle.socket());
   EXPECT_FALSE(handle.is_ssl_error());
   EXPECT_FALSE(handle.ssl_cert_request_info());
   TestLoadTimingInfoNotConnected(handle);
 
-  auto entries = log.GetEntries();
+  auto entries =
+      net_log_observer_.GetEntriesForSource(net_log_with_source.source());
 
   EXPECT_EQ(4u, entries.size());
   EXPECT_TRUE(LogContainsEvent(
@@ -1965,11 +1970,11 @@ TEST_F(ClientSocketPoolBaseTest, CloseIdleSocketsForced) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
-  RecordingBoundTestNetLog log;
-  int rv = handle.Init(
-      TestGroupId("a"), params_, absl::nullopt, LOWEST, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), pool_.get(), log.bound());
+  int rv =
+      handle.Init(TestGroupId("a"), params_, absl::nullopt, LOWEST, SocketTag(),
+                  ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
+                  ClientSocketPool::ProxyAuthCallback(), pool_.get(),
+                  NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsOk());
   ASSERT_TRUE(handle.socket());
   NetLogSource source = handle.socket()->NetLog().source();
@@ -1982,23 +1987,24 @@ TEST_F(ClientSocketPoolBaseTest, CloseIdleSocketsForced) {
 TEST_F(ClientSocketPoolBaseTest, CloseIdleSocketsInGroupForced) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);
   TestCompletionCallback callback;
-  RecordingBoundTestNetLog log;
+  NetLogWithSource net_log_with_source =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   ClientSocketHandle handle1;
   int rv = handle1.Init(
       TestGroupId("a"), params_, absl::nullopt, LOWEST, SocketTag(),
       ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), pool_.get(), log.bound());
+      ClientSocketPool::ProxyAuthCallback(), pool_.get(), net_log_with_source);
   EXPECT_THAT(rv, IsOk());
   ClientSocketHandle handle2;
   rv = handle2.Init(TestGroupId("a"), params_, absl::nullopt, LOWEST,
                     SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                     callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-                    pool_.get(), log.bound());
+                    pool_.get(), net_log_with_source);
   ClientSocketHandle handle3;
   rv = handle3.Init(TestGroupId("b"), params_, absl::nullopt, LOWEST,
                     SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                     callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-                    pool_.get(), log.bound());
+                    pool_.get(), net_log_with_source);
   EXPECT_THAT(rv, IsOk());
   handle1.Reset();
   handle2.Reset();
@@ -2012,11 +2018,12 @@ TEST_F(ClientSocketPoolBaseTest, CleanUpUnusableIdleSockets) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
-  RecordingBoundTestNetLog log;
+  NetLogWithSource net_log_with_source =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   int rv = handle.Init(
       TestGroupId("a"), params_, absl::nullopt, LOWEST, SocketTag(),
       ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), pool_.get(), log.bound());
+      ClientSocketPool::ProxyAuthCallback(), pool_.get(), net_log_with_source);
   EXPECT_THAT(rv, IsOk());
   StreamSocket* socket = handle.socket();
   ASSERT_TRUE(socket);
@@ -2030,7 +2037,7 @@ TEST_F(ClientSocketPoolBaseTest, CleanUpUnusableIdleSockets) {
   rv = handle2.Init(TestGroupId("a"), params_, absl::nullopt, LOWEST,
                     SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                     callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-                    pool_.get(), log.bound());
+                    pool_.get(), net_log_with_source);
   EXPECT_THAT(rv, IsOk());
   EXPECT_FALSE(handle2.is_reused());
 
@@ -2088,11 +2095,12 @@ TEST_F(ClientSocketPoolBaseTest, BasicAsynchronous) {
   connect_job_factory_->set_job_type(TestConnectJob::kMockPendingJob);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
-  RecordingBoundTestNetLog log;
+  NetLogWithSource net_log_with_source =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   int rv = handle.Init(
       TestGroupId("a"), params_, absl::nullopt, LOWEST, SocketTag(),
       ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), pool_.get(), log.bound());
+      ClientSocketPool::ProxyAuthCallback(), pool_.get(), net_log_with_source);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_EQ(LOAD_STATE_CONNECTING,
             pool_->GetLoadState(TestGroupId("a"), &handle));
@@ -2106,7 +2114,8 @@ TEST_F(ClientSocketPoolBaseTest, BasicAsynchronous) {
   handle.Reset();
   TestLoadTimingInfoNotConnected(handle);
 
-  auto entries = log.GetEntries();
+  auto entries =
+      net_log_observer_.GetEntriesForSource(net_log_with_source.source());
 
   EXPECT_EQ(5u, entries.size());
   EXPECT_TRUE(LogContainsEvent(
@@ -2129,7 +2138,8 @@ TEST_F(ClientSocketPoolBaseTest,
   connect_job_factory_->set_job_type(TestConnectJob::kMockPendingFailingJob);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
-  RecordingBoundTestNetLog log;
+  NetLogWithSource net_log_with_source =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   // Set the additional error state members to ensure that they get cleared.
   handle.set_is_ssl_error(true);
   handle.set_ssl_cert_request_info(base::MakeRefCounted<SSLCertRequestInfo>());
@@ -2138,14 +2148,15 @@ TEST_F(ClientSocketPoolBaseTest,
       handle.Init(TestGroupId("a"), params_, absl::nullopt, DEFAULT_PRIORITY,
                   SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                   callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-                  pool_.get(), log.bound()));
+                  pool_.get(), net_log_with_source));
   EXPECT_EQ(LOAD_STATE_CONNECTING,
             pool_->GetLoadState(TestGroupId("a"), &handle));
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_CONNECTION_FAILED));
   EXPECT_FALSE(handle.is_ssl_error());
   EXPECT_FALSE(handle.ssl_cert_request_info());
 
-  auto entries = log.GetEntries();
+  auto entries =
+      net_log_observer_.GetEntriesForSource(net_log_with_source.source());
 
   EXPECT_EQ(4u, entries.size());
   EXPECT_TRUE(LogContainsEvent(
@@ -2193,7 +2204,7 @@ TEST_F(ClientSocketPoolBaseTest, TwoRequestsCancelOne) {
                   SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                   callback.callback(), ClientSocketPool::ProxyAuthCallback(),
                   pool_.get(), NetLogWithSource()));
-  RecordingBoundTestNetLog log2;
+  RecordingNetLogObserver log2;
   EXPECT_EQ(
       ERR_IO_PENDING,
       handle2.Init(TestGroupId("a"), params_, absl::nullopt, DEFAULT_PRIORITY,
@@ -2615,11 +2626,12 @@ TEST_F(ClientSocketPoolBaseTest, CleanupTimedOutIdleSocketsReuse) {
 
   // Request a new socket. This should reuse the old socket and complete
   // synchronously.
-  RecordingBoundTestNetLog log;
+  NetLogWithSource net_log_with_source =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   rv = handle.Init(
       TestGroupId("a"), params_, absl::nullopt, LOWEST, SocketTag(),
       ClientSocketPool::RespectLimits::ENABLED, CompletionOnceCallback(),
-      ClientSocketPool::ProxyAuthCallback(), pool_.get(), log.bound());
+      ClientSocketPool::ProxyAuthCallback(), pool_.get(), net_log_with_source);
   ASSERT_THAT(rv, IsOk());
   EXPECT_TRUE(handle.is_reused());
   TestLoadTimingInfoConnectedReused(handle);
@@ -2628,7 +2640,8 @@ TEST_F(ClientSocketPoolBaseTest, CleanupTimedOutIdleSocketsReuse) {
   EXPECT_EQ(0u, pool_->IdleSocketCountInGroup(TestGroupId("a")));
   EXPECT_EQ(1, pool_->NumActiveSocketsInGroupForTesting(TestGroupId("a")));
 
-  auto entries = log.GetEntries();
+  auto entries =
+      net_log_observer_.GetEntriesForSource(net_log_with_source.source());
   EXPECT_TRUE(LogContainsEvent(
       entries, 0, NetLogEventType::TCP_CLIENT_SOCKET_POOL_REQUESTED_SOCKET,
       NetLogEventPhase::NONE));
@@ -2694,12 +2707,13 @@ TEST_F(ClientSocketPoolBaseTest, CleanupTimedOutIdleSocketsNoReuse) {
 
   // Request a new socket. This should cleanup the unused and timed out ones.
   // A new socket will be created rather than reusing the idle one.
-  RecordingBoundTestNetLog log;
+  NetLogWithSource net_log_with_source =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   TestCompletionCallback callback3;
   rv = handle.Init(TestGroupId("a"), params_, absl::nullopt, LOWEST,
                    SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                    callback3.callback(), ClientSocketPool::ProxyAuthCallback(),
-                   pool_.get(), log.bound());
+                   pool_.get(), net_log_with_source);
   ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
   ASSERT_THAT(callback3.WaitForResult(), IsOk());
   EXPECT_FALSE(handle.is_reused());
@@ -2709,7 +2723,8 @@ TEST_F(ClientSocketPoolBaseTest, CleanupTimedOutIdleSocketsNoReuse) {
   EXPECT_EQ(0u, pool_->IdleSocketCountInGroup(TestGroupId("a")));
   EXPECT_EQ(1, pool_->NumActiveSocketsInGroupForTesting(TestGroupId("a")));
 
-  auto entries = log.GetEntries();
+  auto entries =
+      net_log_observer_.GetEntriesForSource(net_log_with_source.source());
   EXPECT_FALSE(LogContainsEntryWithType(
       entries, 1, NetLogEventType::SOCKET_POOL_REUSED_AN_EXISTING_SOCKET));
   ExpectSocketClosedWithReason(

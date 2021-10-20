@@ -18,7 +18,7 @@
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/log/test_net_log.h"
+#include "net/log/net_log.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -199,15 +199,10 @@ TEST(NetworkQualityEstimatorUtilTest,
 TEST(NetworkQualityEstimatorUtilTest, MAYBE_Localhost) {
   base::test::TaskEnvironment task_environment;
 
-  std::unique_ptr<RecordingBoundTestNetLog> net_log =
-      std::make_unique<RecordingBoundTestNetLog>();
-  RecordingBoundTestNetLog* net_log_ptr = net_log.get();
-
   // Use actual HostResolver since MockCachingHostResolver does not determine
   // the correct answer for localhosts.
   std::unique_ptr<ContextHostResolver> resolver =
-      HostResolver::CreateStandaloneContextResolver(
-          net_log_ptr->bound().net_log());
+      HostResolver::CreateStandaloneContextResolver(NetLog::Get());
 
   scoped_refptr<net::RuleBasedHostResolverProc> rules(
       new net::RuleBasedHostResolverProc(nullptr));

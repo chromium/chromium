@@ -309,7 +309,7 @@ class Request {
 
   const net::ProxyInfo& results() const { return results_; }
   net::LoadState load_state() { return request_->GetLoadState(); }
-  net::RecordingBoundTestNetLog& net_log() { return net_log_; }
+  net::NetLogWithSource& net_log_with_source() { return net_log_with_source_; }
   const net::TestCompletionCallback& callback() const { return callback_; }
 
  private:
@@ -320,7 +320,8 @@ class Request {
   std::unique_ptr<net::ProxyResolver::Request> request_;
   int error_;
   net::TestCompletionCallback callback_;
-  net::RecordingBoundTestNetLog net_log_;
+  net::NetLogWithSource net_log_with_source_{
+      net::NetLogWithSource::Make(net::NetLogSourceType::NONE)};
 };
 
 Request::Request(net::ProxyResolver* resolver,
@@ -334,7 +335,7 @@ Request::Request(net::ProxyResolver* resolver,
 int Request::Resolve() {
   error_ = resolver_->GetProxyForURL(url_, network_isolation_key_, &results_,
                                      callback_.callback(), &request_,
-                                     net_log_.bound());
+                                     net_log_with_source_);
   return error_;
 }
 
@@ -783,9 +784,9 @@ TEST_F(ProxyResolverFactoryMojoTest, GetProxyForURL) {
   EXPECT_THAT(request->WaitForResult(), IsOk());
 
   EXPECT_EQ("DIRECT", request->results().ToPacString());
-
-  CheckCapturedNetLogEntries(url.spec(), net_log_observer_.GetEntries());
-  CheckCapturedNetLogEntries(url.spec(), request->net_log().GetEntries());
+  CheckCapturedNetLogEntries(url.spec(),
+                             net_log_observer_.GetEntriesForSource(
+                                 request->net_log_with_source().source()));
 }
 
 TEST_F(ProxyResolverFactoryMojoTest, GetProxyForURL_MultipleResults) {
