@@ -69763,6 +69763,19 @@
        {}
       ]
      ],
+     "flip-running-animation-via-variable.html": [
+      "22d23c1f72603f465b0550b74a3e2367c88684ab",
+      [
+       null,
+       [
+        [
+         "/css/css-animations/flip-running-animation-via-variable-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "nested-scale-animations.html": [
       "8793e044b703e1bc30a710142d310f1f28c3350a",
       [
@@ -229021,6 +229034,10 @@
       "a1bc0ba1d25d22cf0cbc8ad41723921843c0ec78",
       []
      ],
+     "flip-running-animation-via-variable-ref.html": [
+      "411d09d43392a713e728673187fb4543b61a346d",
+      []
+     ],
      "idlharness-expected.txt": [
       "62fd2a7def53a7e4ebd1c3220c0945ed0afb5ca2",
       []
@@ -298033,6 +298050,10 @@
       "002474415b16b6a2fadc92c78ba872760e0e90ae",
       []
      ],
+     "resource-timing-fetch-variants.https-expected.txt": [
+      "9166fc4ca8b5f871a390c16fc033e373d86602e2",
+      []
+     ],
      "resources": {
       "404.py": [
        "1ee4af169e75bd185d91df78ccb51571bc124747",
@@ -298598,6 +298619,10 @@
        "4631e83e0ceaab5092a9b84dcbb429a991c91446",
        []
       ],
+      "fetch-variants-worker.js": [
+       "b950b9a18a6ab83cf3eadf5bfdca490d054ede78",
+       []
+      ],
       "fetch-waits-for-activate-worker.js": [
        "92a96ff88fb903748aebf6d6a0efaeb529c7ad39",
        []
@@ -298612,6 +298637,10 @@
       ],
       "http-to-https-redirect-and-register-iframe.html": [
        "bcab35364dff6f4494d73adfa150d800efc6bf70",
+       []
+      ],
+      "iframe-with-fetch-variants.html": [
+       "3a61d7bb890b4267c48553a8f7cf35f86f7c203e",
        []
       ],
       "iframe-with-image.html": [
@@ -478392,21 +478421,21 @@
     ]
    },
    "secure-payment-confirmation": {
-    "secure-payment-confirmation-enrollment.https.html": [
-     "7aaeee47d527c7412f01c10ca80a742a3fb1fe78",
+    "secure-payment-confirmation-constructor.https.html": [
+     "88b250511d07365b721b64d7999d5d9e1198f0d9",
      [
       null,
       {
-       "testdriver": true,
        "timeout": "long"
       }
      ]
     ],
-    "secure-payment-confirmation.tentative.https.html": [
-     "a4580918b9f34e3f3cbc37ce614af2f8878ca915",
+    "secure-payment-confirmation-enrollment.https.html": [
+     "ab553d4a7905926ffa4853ccf0a94dcae238f786",
      [
       null,
       {
+       "testdriver": true,
        "timeout": "long"
       }
      ]
@@ -481719,6 +481748,13 @@
      ],
      "resource-timing-cross-origin.https.html": [
       "827688df011ea9be216a7414b161dbb730f1b975",
+      [
+       null,
+       {}
+      ]
+     ],
+     "resource-timing-fetch-variants.https.html": [
+      "8d4f0be01a8aad03af9de54441550d9e84d976a0",
       [
        null,
        {}
