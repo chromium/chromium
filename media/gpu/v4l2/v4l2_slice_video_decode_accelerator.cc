@@ -274,16 +274,6 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   if (reqbufs.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS) {
     supports_requests_ = true;
     VLOGF(1) << "Using request API";
-    DCHECK(!media_fd_.is_valid());
-    // Let's try to open the media device
-    // TODO(crbug.com/985230): remove this hardcoding, replace with V4L2Device
-    // integration.
-    int media_fd = open("/dev/media-dec0", O_RDWR, 0);
-    if (media_fd < 0) {
-      PLOG(ERROR) << "Failed to open media device";
-      NOTIFY_ERROR(PLATFORM_FAILURE);
-    }
-    media_fd_ = base::ScopedFD(media_fd);
   } else {
     VLOGF(1) << "Using config store";
   }
@@ -455,8 +445,6 @@ void V4L2SliceVideoDecodeAccelerator::DestroyTask() {
 
   DestroyInputBuffers();
   DestroyOutputs(false);
-
-  media_fd_.reset();
 
   input_queue_ = nullptr;
   output_queue_ = nullptr;

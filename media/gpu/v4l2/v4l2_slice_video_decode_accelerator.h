@@ -405,8 +405,6 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
   scoped_refptr<V4L2Queue> input_queue_;
   // Set to true by CreateInputBuffers() if the codec driver supports requests
   bool supports_requests_ = false;
-  // Stores the media file descriptor if request API is used
-  base::ScopedFD media_fd_;
 
   scoped_refptr<V4L2Queue> output_queue_;
   // Buffers that have been allocated but are awaiting an ImportBuffer
