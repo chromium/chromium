@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -113,12 +112,6 @@ MojoWebUIBrowserTest::~MojoWebUIBrowserTest() = default;
 
 void MojoWebUIBrowserTest::SetUpOnMainThread() {
   BaseWebUIBrowserTest::SetUpOnMainThread();
-
-  base::FilePath pak_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
-  pak_path = pak_path.AppendASCII("browser_tests.pak");
-  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      pak_path, ui::kScaleFactorNone);
 
   content::SetBrowserClientForTesting(test_content_browser_client_.get());
 }

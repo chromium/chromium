@@ -49,6 +49,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
 
 using content::RenderFrameHost;
@@ -499,6 +500,12 @@ void BaseWebUIBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void BaseWebUIBrowserTest::SetUpOnMainThread() {
   JavaScriptBrowserTest::SetUpOnMainThread();
+
+  base::FilePath pak_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
+  pak_path = pak_path.AppendASCII("browser_tests.pak");
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+      pak_path, ui::kScaleFactorNone);
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage)) {
