@@ -119,7 +119,7 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
 
     case CSSPropertyID::kOrder:
     case CSSPropertyID::kZIndex:
-      return ClampTo<int>(round(value));
+      return ClampTo<int>(RoundHalfTowardsPositiveInfinity(value));
 
     default:
       NOTREACHED();
