@@ -328,7 +328,7 @@ or node type directly.
 #### background.js
 
 This file is the first one run. Its primary job is to create an instance of
-SwitchAccess, although it als overifies that there is not more than one instance
+SwitchAccess, although it also overifies that there is not more than one instance
 of Switch Access running simultaneously (this would normally happen on the sign
 in page).
 

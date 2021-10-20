@@ -63,7 +63,7 @@ ninja -C out/RelNgSym
 ```
 
 You probably will want to add some more command line options to this,
-depending on your usual build paralellism.
+depending on your usual build parallelism.
 
 ## Getting the right objdump
 

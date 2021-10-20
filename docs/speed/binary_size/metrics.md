@@ -14,7 +14,7 @@ This document lists metrics used to track binary size.
 
 ### Alerting
 
- * Alerts are sheriffed as part of the main perf sherif rotation.
+ * Alerts are sheriffed as part of the main perf sheriff rotation.
  * Alerts generally fire for ~100kb jumps.
 
 ## Metrics for Android

@@ -31,7 +31,7 @@ For example, the staticText node here is offscreen:
 
 As background, [MSDN](https://msdn.microsoft.com/en-us/library/dd373609(VS.85).aspx)
 defines Offscreen as an object is not rendered, but not because it was
-programatically hidden:
+programmatically hidden:
 
 >The object is clipped or has scrolled out of view, but it is not
 programmatically hidden. If the user makes the viewport larger, more of the
@@ -51,7 +51,7 @@ overflow:hidden, overflow:scroll, or it is a rootWebArea), offscreen is set to
 true.
 
 ## Invisible
-A node is marked Invisible in Chrome if it is hidden programatically. In some
+A node is marked Invisible in Chrome if it is hidden programmatically. In some
 cases, invisible nodes are simply excluded from the accessibility tree. Chrome
 defines invisible as:
 

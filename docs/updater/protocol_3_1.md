@@ -150,7 +150,7 @@ Additions to the protocol that specify backward-compatible default values (often
 with a semantic meaning of "unknown") do not need to increase the protocol
 version. Removals of values with specified defaults from the protocol do not
 need to increase the protocol version, since the default value can be assumed by
-compatible enpoints. All other changes to the protocol may require a new version
+compatible endpoints. All other changes to the protocol may require a new version
 number.
 
 ### Timing & Backoff

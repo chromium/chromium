@@ -146,7 +146,7 @@ There are several requirements for a builder to be added to the Commit Queue.
 * It should be possible for any committer to replicate any testing run; i.e.
   tests and their data must be in the public repository.
 * Median cycle time needs to be under 40 minutes for trybots. 90th percentile
-  should be around an hour (preferrably shorter).
+  should be around an hour (preferably shorter).
 * Configurations need to catch enough failures to be worth adding to the CQ.
   Running builds on every CL requires a significant amount of compute resources.
   If a configuration only fails once every couple of weeks on the waterfalls,

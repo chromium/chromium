@@ -237,7 +237,7 @@ installed that could sign the `ios_web_shell.app` bundle with the identity
 request such a mobile provisioning profile from Apple.
 
 You can inspect the file passed via the `-e` flag to the `codesign.py` script
-to check which capabilites are required for the mobile provisioning profile
+to check which capabilities are required for the mobile provisioning profile
 (e.g. `src/build/config/ios/entitlements.plist` for the above build error,
 remember that the paths are relative to the build directory, not to the source
 directory).

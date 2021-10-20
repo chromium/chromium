@@ -145,7 +145,7 @@ marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=
 *   `Ctrl+K, Ctrl+S` opens the key bindings editor.
 *   ``Ctrl+` `` toggles the built-in terminal.
 *   `Ctrl+Shift+M` toggles the problems view (linter warnings, compile errors
-    and warnings). You'll swicth a lot between terminal and problem view during
+    and warnings). You'll switch a lot between terminal and problem view during
     compilation.
 *   `Alt+O` switches between the source/header file.
 *   `Ctrl+G` jumps to a line.

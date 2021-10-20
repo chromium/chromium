@@ -222,7 +222,7 @@ libbrlapi could require additional so versions be added to our loader.
 
 2. modify the way in which brltty gets run.
 
-In particular, look at the invokation of the minijail in
+In particular, look at the invocation of the minijail in
 
 third_party/chromiumos-overlay/app-accessibility/brltty/files/brltty
 

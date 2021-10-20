@@ -55,7 +55,7 @@ default status):
 \[1]: `base::FeatureList::IsEnabled(features::kNewFeatureX)` is still
 false. These combinations are suitable for features there are fully implemented
 at blink side. Otherwise normally the blink feature should not have a status so
-that the Chromium feature can fully controll the feature.
+that the Chromium feature can fully control the feature.
 
 \[2]: This combination is counter-intuitive and should be avoided.
 

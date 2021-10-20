@@ -1,7 +1,7 @@
 # Proxy Auto Config Using WPAD
 
 Most systems support manually configuring a proxy for web access, but this is
-cumbersome and kind of techical, so Chrome also supports
+cumbersome and kind of technical, so Chrome also supports
 [WPAD](http://en.wikipedia.org/wiki/Web_Proxy_Autodiscovery_Protocol) for proxy
 configuration (enabled if "automatically detect proxy settings" is enabled on
 Windows).

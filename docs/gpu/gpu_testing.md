@@ -551,7 +551,7 @@ itself will contain links. In either case, these links will direct to Gold
 pages showing the image produced by the image and the approved image that most
 closely matches it.
 
-Note that for the tests which programatically check colors in certain regions of
+Note that for the tests which programmatically check colors in certain regions of
 the image (tests with `expected_colors` fields in [pixel_test_pages]), there
 likely won't be a closest approved image since those tests only upload data to
 Gold in the event of a failure.

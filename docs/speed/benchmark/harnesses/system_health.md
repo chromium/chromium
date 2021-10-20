@@ -151,7 +151,7 @@ to see if your intended user stories are already covered by existing ones.
 If there is a good reason for your stories to be added, please make one CL for
 each of the new stories so they can be landed (and reverted if needed)
 individually. On each CL, make sure that the perf trybots all pass before
-comitting.
+committing.
 
 Once your patch makes it through the CQ, you’re done… unless your story starts
 failing on some random platform, in which case the perf bot sheriff will very
