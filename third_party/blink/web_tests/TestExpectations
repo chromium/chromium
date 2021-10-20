@@ -5109,6 +5109,22 @@ crbug.com/966345 external/wpt/webvtt/rendering/cues-with-video/processing-model/
 crbug.com/966345 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue_function/class_object/class_white-space_normal_wrapped.html [ Failure ]
 crbug.com/966345 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue_function/class_object/class_white-space_pre-line_wrapped.html [ Failure ]
 
+# Temporarily disabled to land https://crrev.com/c/3234177
+crbug.com/1073064 http/tests/devtools/console/console-format-classes.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/console/console-linkify-relative-links.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/console/console-log-linkify-stack-in-errors.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/console/console-message-from-inline-with-url.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/console/console-repeat-count.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/console/console-stack-overflow.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/console/console-uncaught-exception-in-eval.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/console/console-uncaught-exception.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/console/console-worker-nested-imports-syntax-error.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/console/exception-objects.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/sources/debugger/rethrow-error-from-bindings-crash.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/sources/debugger-async/async-callstack-in-console.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/sources/debugger-pause/debugger-eval-on-call-frame-inside-iframe.js [ Skip ]
+crbug.com/1073064 http/tests/devtools/sources/debugger-pause/debugger-eval-while-paused-throws.js [ Skip ]
+
 # Sheriff 2019-06-04
 crbug.com/970135 [ Mac ] virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-interested-element-indicated.html [ Failure ]
 crbug.com/970334 [ Mac ] fast/spatial-navigation/snav-tiny-table-traversal.html [ Failure ]
