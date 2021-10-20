@@ -2367,6 +2367,13 @@
       status: "experimental",
     },
     {
+      name: "WebAppLaunchQueue",
+      // This is not going into origin trial, "origin_trial_feature_name" is
+      // required for using the "implied_by" behaviour.
+      origin_trial_feature_name: "WebAppLaunchQueue",
+      implied_by: ["WebAppLaunchHandler", "FileHandling"],
+    },
+    {
       name: "WebAppLinkCapturing",
       origin_trial_feature_name: "WebAppLinkCapturing",
       origin_trial_os: ["chromeos"],

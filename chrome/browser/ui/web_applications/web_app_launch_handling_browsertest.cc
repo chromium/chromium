@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 
@@ -46,7 +47,7 @@ class WebAppLaunchHanderBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList enable_launch_handler{
+  base::test::ScopedFeatureList feature_list_{
       blink::features::kWebAppEnableLaunchHandler};
   ScopedOsHooksSuppress os_hooks_suppress_{
       OsIntegrationManager::ScopedSuppressOsHooksForTesting()};
@@ -113,6 +114,54 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderBrowserTest, RouteToExistingClient) {
   Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
   EXPECT_EQ(browser_1, browser_2);
   EXPECT_EQ(web_contents->GetVisibleURL(), start_url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderBrowserTest, GlobalLaunchQueue) {
+  AppId app_id = InstallWebAppFromPage(
+      browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
+
+  Browser* app_browser = LaunchWebAppBrowser(profile(), app_id);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(EvalJs(web_contents, "!!window.LaunchQueue").ExtractBool());
+  EXPECT_TRUE(EvalJs(web_contents, "!!window.launchQueue").ExtractBool());
+}
+
+class WebAppLaunchHanderDisabledBrowserTest : public InProcessBrowserTest {
+ public:
+  WebAppLaunchHanderDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kWebAppEnableLaunchHandler);
+  }
+  ~WebAppLaunchHanderDisabledBrowserTest() override = default;
+
+  Profile* profile() { return browser()->profile(); }
+
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(profile()));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  ScopedOsHooksSuppress os_hooks_suppress_{
+      OsIntegrationManager::ScopedSuppressOsHooksForTesting()};
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderDisabledBrowserTest, NoLaunchQueue) {
+  AppId app_id = InstallWebAppFromPage(
+      browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
+
+  Browser* app_browser = LaunchWebAppBrowser(profile(), app_id);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_FALSE(EvalJs(web_contents, "!!window.LaunchQueue").ExtractBool());
+  EXPECT_FALSE(EvalJs(web_contents, "!!window.launchQueue").ExtractBool());
 }
 
 }  // namespace web_app
