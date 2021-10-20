@@ -116,7 +116,7 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
   }
 
   const bool result = file_manager::file_tasks::ExecuteFileTask(
-      profile, source_url(), task, urls,
+      profile, task, urls,
       base::BindOnce(
           &FileManagerPrivateInternalExecuteTaskFunction::OnTaskExecuted,
           this));

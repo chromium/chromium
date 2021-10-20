@@ -251,14 +251,12 @@ typedef base::OnceCallback<void(
 //
 // Parameters:
 // profile    - The profile used for making this function call.
-// source_url - The source URL which originates this function call.
 // task       - See the comment at TaskDescriptor struct.
 // file_urls  - URLs of the target files.
 // done       - The callback which will be called on completion.
 //              The callback won't be called if the function returns
 //              false.
 bool ExecuteFileTask(Profile* profile,
-                     const GURL& source_url,
                      const TaskDescriptor& task,
                      const std::vector<storage::FileSystemURL>& file_urls,
                      FileTaskFinishedCallback done);

@@ -534,8 +534,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
   std::vector<storage::FileSystemURL> files;
   files.push_back(storage::FileSystemURL::CreateForTest(url1));
   files.push_back(storage::FileSystemURL::CreateForTest(url2));
-  ExecuteFileTask(profile, GURL("https://www.example.com/"), task_descriptor,
-                  files, base::DoNothing());
+  ExecuteFileTask(profile, task_descriptor, files, base::DoNothing());
   run_loop.Run();
 }
 
@@ -570,8 +569,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteChromeApp) {
   files.push_back(storage::FileSystemURL::CreateForTest(tiff_url));
 
   content::DOMMessageQueue message_queue;
-  ExecuteFileTask(profile, GURL("https://www.example.com/"), task_descriptor,
-                  files, base::DoNothing());
+  ExecuteFileTask(profile, task_descriptor, files, base::DoNothing());
 
   std::string message;
   ASSERT_TRUE(message_queue.WaitForMessage(&message));

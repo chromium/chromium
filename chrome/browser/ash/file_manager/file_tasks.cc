@@ -526,7 +526,6 @@ bool ParseTaskID(const std::string& task_id, TaskDescriptor* task) {
 }
 
 bool ExecuteFileTask(Profile* profile,
-                     const GURL& source_url,
                      const TaskDescriptor& task,
                      const std::vector<FileSystemURL>& file_urls,
                      FileTaskFinishedCallback done) {
