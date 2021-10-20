@@ -82,6 +82,7 @@
       "symbol_level": 1,
       "target_os": "chromeos",
       "use_goma": true,
+      "use_py3_for_perf": true,
       "use_thin_lto": true
     }
   },

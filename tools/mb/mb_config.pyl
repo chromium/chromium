@@ -576,7 +576,7 @@
       'android_arm64-builder-perf': 'official_goma_minimal_symbols_android_arm64',
       'android-builder-perf': 'official_goma_minimal_symbols_android',
       'chromecast-linux-builder-perf': 'cast_binary_size',
-      'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official',
+      'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official_py3',
       'linux-builder-perf': 'official_goma_linux_perf',
       'linux-builder-perf-rel': 'official_goma_linux_perf',
       'mac-builder-perf': 'official_goma_mac_perf',
@@ -1788,6 +1788,10 @@
 
     'chromeos_amd64-generic_lacros_official': [
       'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
+    ],
+
+    'chromeos_amd64-generic_lacros_official_py3': [
+      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'use_py3_for_perf',
     ],
 
     # This is the same as 'chromeos_amd64-generic_lacros_official', except for
