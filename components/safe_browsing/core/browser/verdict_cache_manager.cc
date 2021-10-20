@@ -52,7 +52,7 @@ const int kCacheDurationUpperBoundSecond = 7 * 24 * 60 * 60;  // 7 days
 const int kPageLoadTokenBytes = 32;
 
 // The expiration time of a page load token.
-const int kPageLoadTokenExpireMinute = 30;
+const int kPageLoadTokenExpireMinute = 5;
 
 // A helper class to include all match params. It is used as a centralized
 // place to determine if the current cache entry should be considered as a
@@ -374,6 +374,11 @@ typename T::VerdictType GetMostMatchingCachedVerdictWithHostAndPathMatching(
   return most_matching_verdict_type;
 }
 
+bool HasPageLoadTokenExpired(int64_t token_time_msec) {
+  return base::Time::Now() - base::Time::FromJavaTime(token_time_msec) >
+         base::Minutes(kPageLoadTokenExpireMinute);
+}
+
 }  // namespace
 
 VerdictCacheManager::VerdictCacheManager(
@@ -605,9 +610,14 @@ ChromeUserPopulation::PageLoadToken VerdictCacheManager::CreatePageLoadToken(
 ChromeUserPopulation::PageLoadToken VerdictCacheManager::GetPageLoadToken(
     const GURL& url) {
   std::string hostname = url.host();
-  return base::Contains(page_load_token_map_, hostname)
-             ? page_load_token_map_[hostname]
-             : ChromeUserPopulation::PageLoadToken();
+  if (!base::Contains(page_load_token_map_, hostname)) {
+    return ChromeUserPopulation::PageLoadToken();
+  }
+
+  ChromeUserPopulation::PageLoadToken token = page_load_token_map_[hostname];
+  return HasPageLoadTokenExpired(token.token_time_msec())
+             ? ChromeUserPopulation::PageLoadToken()
+             : token;
 }
 
 void VerdictCacheManager::ScheduleNextCleanUpAfterInterval(
@@ -706,9 +716,7 @@ void VerdictCacheManager::CleanUpExpiredRealTimeUrlCheckVerdicts() {
 void VerdictCacheManager::CleanUpExpiredPageLoadTokens() {
   base::EraseIf(page_load_token_map_, [&](const auto& hostname_token_pair) {
     ChromeUserPopulation::PageLoadToken token = hostname_token_pair.second;
-    return base::Time::Now() -
-               base::Time::FromJavaTime(token.token_time_msec()) >
-           base::Minutes(kPageLoadTokenExpireMinute);
+    return HasPageLoadTokenExpired(token.token_time_msec());
   });
   base::UmaHistogramCounts10000("SafeBrowsing.PageLoadToken.TokenCount",
                                 page_load_token_map_.size());
