@@ -37,7 +37,7 @@ Usually you need a policy when
         sure you get the version and feature flags (such as dynamic_refresh and
         supported_on) right.
     -   Here are the most used attributes. Please note that, all attributes
-        below other than `supported_on`, `future_on' and
+        below other than `supported_on`, `future_on` and
         `default_for_enterprise_users` do not change the code behavior.
         -   `supported_on` and `future_on`: They control the platforms that the
             policy supports. `supported_on` is used for released platforms with
