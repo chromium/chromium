@@ -2933,6 +2933,7 @@ if (!is_android && !is_fuchsia) {
         sources += [ "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc" ]
       }
       deps += [
+        ":test_support_ui",
         "//ui/base/dragdrop:types",
         "//ui/views",
         "//url",
@@ -3466,11 +3467,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/web_applications/app_service/web_apps_chromeos_browsertest.cc",
         "../browser/webshare/chromeos/sharesheet_client_browsertest.cc",
         "base/chromeos/demo_ash_requires_lacros_browsertest.cc",
-        "base/interactive_test_utils.cc",
-        "base/interactive_test_utils.h",
-        "base/interactive_test_utils_aura.cc",
-        "base/interactive_test_utils_aura.h",
-        "base/interactive_test_utils_views.cc",
       ]
       data += [
         # TODO(GYP): figure out which of these things are
@@ -3566,6 +3562,7 @@ if (!is_android && !is_fuchsia) {
       ]
 
       deps += [
+        ":test_support_ui",
         "//ash:test_support",
         "//ash/app_list",
         "//ash/app_list:test_support",
@@ -7923,6 +7920,9 @@ if (!is_android) {
       "base/devtools_listener.h",
       "base/in_process_browser_test.cc",
       "base/in_process_browser_test.h",
+      "base/interactive_test_utils.cc",
+      "base/interactive_test_utils.h",
+      "base/interactive_test_utils_views.cc",
       "base/javascript_browser_test.cc",
       "base/javascript_browser_test.h",
       "base/mixin_based_in_process_browser_test.cc",
@@ -8033,6 +8033,26 @@ if (!is_android) {
 
     if (use_aura) {
       deps += [ "//ui/aura:test_support" ]
+      sources += [
+        "base/interactive_test_utils_aura.cc",
+        "base/interactive_test_utils_aura.h",
+      ]
+    }
+
+    if (is_mac) {
+      sources += [ "base/interactive_test_utils_mac.mm" ]
+    }
+
+    if (is_win) {
+      sources += [
+        "base/always_on_top_window_killer_win.cc",
+        "base/always_on_top_window_killer_win.h",
+        "base/interactive_test_utils_win.cc",
+        "base/save_desktop_snapshot_win.cc",
+        "base/save_desktop_snapshot_win.h",
+        "base/window_contents_as_string_win.cc",
+        "base/window_contents_as_string_win.h",
+      ]
     }
 
     if (enable_plugins) {
@@ -8089,11 +8109,6 @@ if (!is_android) {
     test("accessibility_live_site_tests") {
       sources = [
         "../browser/ash/accessibility/accessibility_live_site_browsertest.cc",
-        "base/interactive_test_utils.cc",
-        "base/interactive_test_utils.h",
-        "base/interactive_test_utils_aura.cc",
-        "base/interactive_test_utils_aura.h",
-        "base/interactive_test_utils_views.cc",
         "base/interactive_ui_tests_main.cc",
       ]
       configs += [ "//build/config:precompiled_headers" ]
@@ -8245,11 +8260,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/views/web_dialog_view_browsertest.cc",
       "../browser/webauth_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
-      "base/interactive_test_utils.cc",
-      "base/interactive_test_utils.h",
-      "base/interactive_test_utils_aura.cc",
-      "base/interactive_test_utils_aura.h",
-      "base/interactive_test_utils_views.cc",
       "base/interactive_ui_tests_main.cc",
       "ppapi/ppapi_interactive_browsertest.cc",
     ]
@@ -8417,11 +8427,6 @@ if (!is_android && !is_fuchsia) {
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",
       ]
-    } else {
-      sources -= [
-        "base/interactive_test_utils_aura.cc",
-        "base/interactive_test_utils_aura.h",
-      ]
     }
 
     if (toolkit_views) {
@@ -8583,13 +8588,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/accessibility/uia_accessibility_event_waiter.cc",
         "../browser/ui/views/accessibility/uia_accessibility_event_waiter.h",
         "../browser/ui/views/touch_events_interactive_uitest_win.cc",
-        "base/always_on_top_window_killer_win.cc",
-        "base/always_on_top_window_killer_win.h",
-        "base/interactive_test_utils_win.cc",
-        "base/save_desktop_snapshot_win.cc",
-        "base/save_desktop_snapshot_win.h",
-        "base/window_contents_as_string_win.cc",
-        "base/window_contents_as_string_win.h",
       ]
 
       if (use_aura) {
@@ -8628,7 +8626,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm",
         "../browser/ui/cocoa/tab_contents/web_contents_view_mac_interactive_uitest.mm",
         "../browser/ui/find_bar/find_bar_platform_helper_mac_interactive_uitest.mm",
-        "base/interactive_test_utils_mac.mm",
       ]
 
       sources -= [
@@ -9181,34 +9178,8 @@ if (!is_android && !is_fuchsia) {
       "../browser/password_manager/password_manager_captured_sites_interactive_uitest.cc",
       "../browser/password_manager/password_manager_test_base.cc",
       "../browser/password_manager/password_manager_test_base.h",
-      "base/interactive_test_utils.cc",
-      "base/interactive_test_utils.h",
-      "base/interactive_test_utils_views.cc",
       "base/interactive_ui_tests_main.cc",
     ]
-
-    if (use_aura) {
-      sources += [
-        "base/interactive_test_utils_aura.cc",
-        "base/interactive_test_utils_aura.h",
-      ]
-    }
-
-    if (is_mac) {
-      sources += [ "base/interactive_test_utils_mac.mm" ]
-    }
-
-    if (is_win) {
-      sources += [
-        "base/always_on_top_window_killer_win.cc",
-        "base/always_on_top_window_killer_win.h",
-        "base/interactive_test_utils_win.cc",
-        "base/save_desktop_snapshot_win.cc",
-        "base/save_desktop_snapshot_win.h",
-        "base/window_contents_as_string_win.cc",
-        "base/window_contents_as_string_win.h",
-      ]
-    }
 
     configs += [ "//build/config:precompiled_headers" ]
 
@@ -9311,34 +9282,8 @@ if (!is_android && !is_fuchsia) {
         "../browser/enterprise/connectors/file_system/browsertest_helper.cc",
         "../browser/enterprise/connectors/file_system/browsertest_helper.h",
         "//chrome/browser/enterprise/connectors/internal/enterprise_connectors_interactive_uitest_test_accounts.h",
-        "base/interactive_test_utils.cc",
-        "base/interactive_test_utils.h",
-        "base/interactive_test_utils_views.cc",
         "base/interactive_ui_tests_main.cc",
       ]
-
-      if (use_aura) {
-        sources += [
-          "base/interactive_test_utils_aura.cc",
-          "base/interactive_test_utils_aura.h",
-        ]
-      }
-
-      if (is_mac) {
-        sources += [ "base/interactive_test_utils_mac.mm" ]
-      }
-
-      if (is_win) {
-        sources += [
-          "base/always_on_top_window_killer_win.cc",
-          "base/always_on_top_window_killer_win.h",
-          "base/interactive_test_utils_win.cc",
-          "base/save_desktop_snapshot_win.cc",
-          "base/save_desktop_snapshot_win.h",
-          "base/window_contents_as_string_win.cc",
-          "base/window_contents_as_string_win.h",
-        ]
-      }
 
       configs += [ "//build/config:precompiled_headers" ]
 

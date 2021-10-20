@@ -127,7 +127,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
  private:
   friend class CastDialogViewTest;
-  friend class MediaRouterUiForTest;
+  friend class MediaRouterCastUiForTest;
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, CancelLocalFileSelection);
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, CastLocalFile);
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, DisableUnsupportedSinks);

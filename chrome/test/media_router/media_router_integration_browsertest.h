@@ -18,14 +18,47 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/media_router/media_router_ui_for_test.h"
+#include "chrome/test/media_router/media_router_ui_for_test_base.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 
 namespace media_router {
 
-class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
+enum class UiForBrowserTest {
+  // The dedicated Cast dialog
+  kCast,
+  // The Global Media Controls UI
+  kGmc,
+};
+
+inline std::string PrintToString(UiForBrowserTest val) {
+  switch (val) {
+    case UiForBrowserTest::kCast:
+      return "Cast";
+    case UiForBrowserTest::kGmc:
+      return "Gmc";
+  }
+}
+
+#define INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(name)    \
+  INSTANTIATE_TEST_SUITE_P(                                             \
+      /* no prefix */, name,                                            \
+      testing::Values(UiForBrowserTest::kCast, UiForBrowserTest::kGmc), \
+      testing::PrintToStringParamName())
+
+// Macro used to skip tests that are only supported with the Cast dialog.
+//
+// TODO(crbug.com/1229305): Eliminate as many uses of this macro as possible.
+#define MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY() \
+  if (GetParam() != UiForBrowserTest::kCast) {           \
+    GTEST_SKIP() << "Skipping Cast-only test.";          \
+    return;                                              \
+  }
+
+class MediaRouterIntegrationBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<UiForBrowserTest> {
  public:
   MediaRouterIntegrationBrowserTest();
   ~MediaRouterIntegrationBrowserTest() override;
@@ -34,6 +67,8 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
   void SetUp() override;
 
  protected:
+  void InitTestUi();
+
   // InProcessBrowserTest Overrides
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
@@ -41,8 +76,9 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
 
   virtual void ParseCommandLine();
 
-  // Checks that the request initiated from |web_contents| to start presentation
-  // failed with expected |error_name| and |error_message_substring|.
+  // Checks that the request initiated from |web_contents| to start
+  // presentation failed with expected |error_name| and
+  // |error_message_substring|.
   void CheckStartFailed(content::WebContents* web_contents,
                         const std::string& error_name,
                         const std::string& error_message_substring);
@@ -66,28 +102,29 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
   static void ExecuteScript(const content::ToRenderFrameHost& adapter,
                             const std::string& script);
 
-  // Opens "basic_test.html" and asserts that attempting to start a presentation
-  // fails with NotFoundError due to no sinks available.
+  // Opens "basic_test.html" and asserts that attempting to start a
+  // presentation fails with NotFoundError due to no sinks available.
   void StartSessionAndAssertNotFoundError();
 
-  // Opens "basic_test.html," waits for sinks to be available, and starts a
-  // presentation.
+  // Opens "basic_test.html," waits for sinks to be available, and
+  // starts a presentation.
   content::WebContents* StartSessionWithTestPageAndSink();
 
-  // Opens "basic_test.html," waits for sinks to be available, starts a
-  // presentation, and chooses a sink with the name |kTestSinkName|. Also checks
-  // that the presentation has successfully started if |should_succeed| is true.
+  // Opens "basic_test.html," waits for sinks to be available, starts
+  // a presentation, and chooses a sink with the name |kTestSinkName|.
+  // Also checks that the presentation has successfully started if
+  // |should_succeed| is true.
   virtual content::WebContents* StartSessionWithTestPageAndChooseSink();
 
-  // Opens the MR dialog and clicks through the motions of casting a file. Sets
-  // up the route provider to succeed or otherwise based on |route_success|.
-  // Note: The system dialog portion has to be mocked out as it cannot be
-  // simulated.
+  // Opens the MR dialog and clicks through the motions of casting a
+  // file. Sets up the route provider to succeed or otherwise based on
+  // |route_success|. Note: The system dialog portion has to be mocked
+  // out as it cannot be simulated.
   void OpenDialogAndCastFile();
 
-  // Opens the MR dialog and clicks through the motions of choosing to cast
-  // file, file returns an issue. Note: The system dialog portion has to be
-  // mocked out as it cannot be simulated.
+  // Opens the MR dialog and clicks through the motions of choosing to
+  // cast file, file returns an issue. Note: The system dialog portion
+  // has to be mocked out as it cannot be simulated.
   void OpenDialogAndCastFileFails();
 
   void OpenTestPage(base::FilePath::StringPieceType file);
@@ -106,8 +143,8 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
   // Returns the route ID for the specific sink.
   std::string GetRouteId(const std::string& sink_id);
 
-  // Checks that the presentation started for |web_contents| has connected and
-  // is the default presentation.
+  // Checks that the presentation started for |web_contents| has
+  // connected and is the default presentation.
   void CheckSessionValidity(content::WebContents* web_contents);
 
   // Returns the active WebContents for the current window.
@@ -120,19 +157,20 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
   // Runs a test in which we start a presentation and send a message.
   void RunSendMessageTest(const std::string& message);
 
-  // Runs a test in which we start a presentation, close it and send a message.
+  // Runs a test in which we start a presentation, close it and send a
+  // message.
   void RunFailToSendMessageTest();
 
-  // Runs a test in which we start a presentation and reconnect to it from
-  // another tab.
+  // Runs a test in which we start a presentation and reconnect to it
+  // from another tab.
   void RunReconnectSessionTest();
 
-  // Runs a test in which we start a presentation and failed to reconnect it
-  // from another tab.
+  // Runs a test in which we start a presentation and failed to
+  // reconnect it from another tab.
   void RunFailedReconnectSessionTest();
 
-  // Runs a test in which we start a presentation and reconnect to it from the
-  // same tab.
+  // Runs a test in which we start a presentation and reconnect to it
+  // from the same tab.
   void RunReconnectSessionSameTabTest();
 
   // Sets whether media router is enabled.
@@ -149,7 +187,7 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
   void Wait(base::TimeDelta timeout);
 
   // Test API for manipulating the UI.
-  MediaRouterUiForTest* test_ui_ = nullptr;
+  MediaRouterUiForTestBase* test_ui_ = nullptr;
 
   // Enabled features.
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -161,8 +199,8 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
 
   bool is_incognito() { return browser()->profile()->IsOffTheRecord(); }
 
-  // Returns the superclass' browser(). Marked virtual so that it can be
-  // overridden by MediaRouterIntegrationIncognitoBrowserTest.
+  // Returns the superclass' browser(). Marked virtual so that it can
+  // be overridden by MediaRouterIntegrationIncognitoBrowserTest.
   virtual Browser* browser();
 
  private:

@@ -51,7 +51,7 @@ class MediaRouterDialogControllerViews
 
  private:
   friend class content::WebContentsUserData<MediaRouterDialogControllerViews>;
-  friend class MediaRouterUiForTest;
+  friend class MediaRouterCastUiForTest;
 
   // Use MediaRouterDialogController::GetOrCreateForWebContents() to create
   // an instance.

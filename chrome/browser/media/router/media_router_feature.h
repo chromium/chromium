@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -91,6 +92,7 @@ bool GetAccessCodeCastEnabledPref(PrefService* pref_service);
 // Returns the duration that a scanned cast device is allowed to remain
 // in the cast list.
 base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service);
+
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace media_router

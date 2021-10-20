@@ -142,7 +142,7 @@ class MediaRouterUI
 
  private:
   friend class MediaRouterViewsUITest;
-  friend class MediaRouterUiForTest;
+  friend class MediaRouterCastUiForTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, SetDialogHeader);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest,
                            UpdateSinksWhenDialogMovesToAnotherDisplay);

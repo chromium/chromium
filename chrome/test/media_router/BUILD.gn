@@ -14,15 +14,19 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "media_router_cast_ui_for_test.cc",
+    "media_router_cast_ui_for_test.h",
     "media_router_e2e_browsertest.cc",
     "media_router_e2e_browsertest.h",
     "media_router_e2e_ui_browsertest.cc",
+    "media_router_gmc_ui_for_test.cc",
+    "media_router_gmc_ui_for_test.h",
     "media_router_integration_browsertest.cc",
     "media_router_integration_browsertest.h",
     "media_router_integration_ui_browsertest.cc",
     "media_router_one_ua_integration_browsertest.cc",
-    "media_router_ui_for_test.cc",
-    "media_router_ui_for_test.h",
+    "media_router_ui_for_test_base.cc",
+    "media_router_ui_for_test_base.h",
   ]
   deps = [
     ":test_support",
