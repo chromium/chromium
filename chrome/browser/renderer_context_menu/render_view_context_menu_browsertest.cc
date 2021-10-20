@@ -543,15 +543,15 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
-                       OpenInAppPresentForURLsInScopeOfNonWindowedWebApp) {
-  InstallTestWebApp(GURL(kAppUrl1), false);
+                       OpenInAppAbsentForURLsInScopeOfNonWindowedWebApp) {
+  InstallTestWebApp(GURL(kAppUrl1), /*open_as_window=*/false);
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeNone(GURL(kAppUrl1), GURL(kAppUrl1));
 
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW));
-  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
+  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE));
   ASSERT_FALSE(menu->IsItemInRangePresent(IDC_OPEN_LINK_IN_PROFILE_FIRST,

@@ -943,6 +943,23 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
             kEnabled);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NoOpenInAppForBrowserTabPwa) {
+  GURL app_url = https_server()->GetURL(
+      "/web_apps/get_manifest.html?display_browser.json");
+  AppId app_id = InstallWebAppFromPage(browser(), app_url);
+
+  // Change display mode to open in tab.
+  auto* provider = WebAppProvider::GetForTest(profile());
+  provider->sync_bridge().SetAppUserDisplayMode(
+      app_id, blink::mojom::DisplayMode::kBrowser, /*is_user_action=*/false);
+
+  NavigateToURLAndWait(browser(), app_url);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kNotPresent);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
+            kNotPresent);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallWithPolicyPwa) {
   ExternalInstallOptions options = CreateInstallOptions(GetInstallableAppURL());
   options.install_source = ExternalInstallSource::kExternalPolicy;
@@ -1230,14 +1247,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentLastBrowserTab) {
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 }
 
-// Tests that reparenting a shortcut app tab results in a minimal-ui app window.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentShortcutApp) {
+// Tests that reparenting a display: browser app tab results in a minimal-ui
+// app window.
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
   const GURL app_url = GetSecureAppURL();
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = app_url;
   web_app_info->scope = app_url.GetWithoutFilename();
   web_app_info->display_mode = DisplayMode::kBrowser;
-  web_app_info->user_display_mode = DisplayMode::kBrowser;
+  web_app_info->user_display_mode = DisplayMode::kStandalone;
   web_app_info->title = u"A Shortcut App";
   const AppId app_id = InstallWebApp(std::move(web_app_info));
 
@@ -1254,12 +1272,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentShortcutApp) {
   ASSERT_EQ(app_browser->app_controller()->app_id(), app_id);
   EXPECT_TRUE(app_browser->app_controller()->HasMinimalUiButtons());
 
-  // User preference remains unchanged. Future instances will open in tabs.
   auto* provider = WebAppProvider::GetForTest(profile());
   EXPECT_EQ(provider->registrar().GetAppUserDisplayMode(app_id),
-            DisplayMode::kBrowser);
+            DisplayMode::kStandalone);
   EXPECT_EQ(provider->registrar().GetAppEffectiveDisplayMode(app_id),
-            DisplayMode::kBrowser);
+            DisplayMode::kMinimalUi);
 }
 
 // Tests that the manifest name of the current installable site is used in the

@@ -873,12 +873,17 @@ void AppMenuModel::Build() {
                  web_app::GetWebAppForActiveTab(browser_)) {
     auto* provider =
         web_app::WebAppProvider::GetForLocalAppsUnchecked(browser_->profile());
-    const std::u16string short_name =
-        base::UTF8ToUTF16(provider->registrar().GetAppShortName(*app_id));
-    const std::u16string truncated_name = gfx::TruncateString(
-        short_name, kMaxAppNameLength, gfx::CHARACTER_BREAK);
-    AddItem(IDC_OPEN_IN_PWA_WINDOW,
-            l10n_util::GetStringFUTF16(IDS_OPEN_IN_APP_WINDOW, truncated_name));
+    // Only applies to apps that open in an app window.
+    if (provider->registrar().GetAppUserDisplayMode(*app_id) !=
+        web_app::DisplayMode::kBrowser) {
+      const std::u16string short_name =
+          base::UTF8ToUTF16(provider->registrar().GetAppShortName(*app_id));
+      const std::u16string truncated_name = gfx::TruncateString(
+          short_name, kMaxAppNameLength, gfx::CHARACTER_BREAK);
+      AddItem(
+          IDC_OPEN_IN_PWA_WINDOW,
+          l10n_util::GetStringFUTF16(IDS_OPEN_IN_APP_WINDOW, truncated_name));
+    }
   }
 
   if (dom_distiller::IsDomDistillerEnabled() &&
