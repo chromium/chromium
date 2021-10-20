@@ -25,6 +25,7 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_types.h"
+#include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/media_gpu_export.h"
@@ -143,9 +144,13 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
 
   // After the pipeline finished flushing frames, reconfigure the resolution
   // setting of V4L2 device and the frame pool.
-  void ContinueChangeResolution(const gfx::Size& pic_size,
-                                const gfx::Rect& visible_rect,
-                                const size_t num_output_frames);
+  // Return CroStatus::Codes::kOk if the process is done successfully.
+  // Return CroStatus::Codes::kResetRequired if the process is aborted by reset.
+  // Return CroStatus::Codes::kFailedToChangeResolution if any error occurs.
+  CroStatus ContinueChangeResolution(const gfx::Size& pic_size,
+                                     const gfx::Rect& visible_rect,
+                                     const size_t num_output_frames);
+  void OnChangeResolutionDone(CroStatus status);
 
   // Change the state and check the state transition is valid.
   void SetState(State new_state);

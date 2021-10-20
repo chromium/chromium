@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/base/decode_status.h"
 #include "media/base/video_decoder.h"
+#include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -88,9 +89,9 @@ class V4L2VideoDecoderBackend {
   virtual bool ApplyResolution(const gfx::Size& pic_size,
                                const gfx::Rect& visible_rect,
                                const size_t num_output_frames) = 0;
-  // Called when ChangeResolution is done. |success| indicates whether there is
+  // Called when ChangeResolution is done. |status| indicates whether there is
   // any error occurs during the resolution change.
-  virtual void OnChangeResolutionDone(bool success) = 0;
+  virtual void OnChangeResolutionDone(CroStatus status) = 0;
   // Clear all pending decoding tasks and call all pending decode callbacks
   // with |status| as argument.
   virtual void ClearPendingRequests(DecodeStatus status) = 0;

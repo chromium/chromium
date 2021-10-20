@@ -579,8 +579,12 @@ bool V4L2StatelessVideoDecoderBackend::ApplyResolution(
   return true;
 }
 
-void V4L2StatelessVideoDecoderBackend::OnChangeResolutionDone(bool success) {
-  if (!success) {
+void V4L2StatelessVideoDecoderBackend::OnChangeResolutionDone(
+    CroStatus status) {
+  if (status == CroStatus::Codes::kResetRequired)
+    return;
+
+  if (status != CroStatus::Codes::kOk) {
     client_->OnBackendError();
     return;
   }

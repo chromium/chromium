@@ -19,6 +19,7 @@ enum class ChromeosStatusCode : StatusCodeType {
   kFailedToCreateImageProcessor = 6,
   kResetRequired = 7,
   kInvalidLayoutSize = 8,
+  kFailedToChangeResolution = 9,
 };
 
 struct CroStatusTraits {

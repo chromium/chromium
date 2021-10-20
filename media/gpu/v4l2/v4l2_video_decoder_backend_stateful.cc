@@ -620,11 +620,16 @@ bool V4L2StatefulVideoDecoderBackend::ApplyResolution(
   return true;
 }
 
-void V4L2StatefulVideoDecoderBackend::OnChangeResolutionDone(bool success) {
+void V4L2StatefulVideoDecoderBackend::OnChangeResolutionDone(CroStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
-  if (!success) {
+  if (status == CroStatus::Codes::kResetRequired) {
+    // TODO(b/192523692): Handle the aborted situation.
+    return;
+  }
+
+  if (status != CroStatus::Codes::kOk) {
     client_->OnBackendError();
     return;
   }
