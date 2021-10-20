@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
+import org.chromium.chrome.browser.signin.ui.SigninPromoController.SyncPromoState;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -480,16 +481,16 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
             mPromoHeaderType = ViewType.INVALID;
         } else {
             switch (mPromoHeaderManager.getPromoState()) {
-                case BookmarkPromoHeader.PromoState.PROMO_NONE:
+                case SyncPromoState.NO_PROMO:
                     mPromoHeaderType = ViewType.INVALID;
                     break;
-                case BookmarkPromoHeader.PromoState.PROMO_SIGNIN_PERSONALIZED:
+                case SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE:
                     mPromoHeaderType = ViewType.PERSONALIZED_SIGNIN_PROMO;
                     break;
-                case BookmarkPromoHeader.PromoState.PROMO_SYNC_PERSONALIZED:
+                case SyncPromoState.PROMO_FOR_SIGNED_IN_STATE:
                     mPromoHeaderType = ViewType.PERSONALIZED_SYNC_PROMO;
                     break;
-                case BookmarkPromoHeader.PromoState.PROMO_SYNC:
+                case SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE:
                     mPromoHeaderType = ViewType.SYNC_PROMO;
                     break;
                 default:

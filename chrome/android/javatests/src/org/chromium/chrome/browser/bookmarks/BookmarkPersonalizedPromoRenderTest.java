@@ -27,6 +27,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.ui.SigninPromoController.SyncPromoState;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.BookmarkTestRule;
@@ -103,8 +104,7 @@ public class BookmarkPersonalizedPromoRenderTest {
     public void testPersonalizedSigninPromoInBookmarkPage(boolean nightModeEnabled)
             throws Exception {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        BookmarkPromoHeader.forcePromoStateForTests(
-                BookmarkPromoHeader.PromoState.PROMO_SIGNIN_PERSONALIZED);
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
         mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
         mRenderTestRule.render(getPersonalizedPromoView(), "bookmark_personalized_signin_promo");
     }
@@ -115,8 +115,7 @@ public class BookmarkPersonalizedPromoRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testPersonalizedSyncPromoInBookmarkPage(boolean nightModeEnabled) throws Exception {
         mAccountManagerTestRule.addTestAccountThenSignin();
-        BookmarkPromoHeader.forcePromoStateForTests(
-                BookmarkPromoHeader.PromoState.PROMO_SYNC_PERSONALIZED);
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
         mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
         mRenderTestRule.render(getPersonalizedPromoView(), "bookmark_personalized_sync_promo");
     }

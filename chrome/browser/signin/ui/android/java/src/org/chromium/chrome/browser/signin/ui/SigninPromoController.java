@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -37,6 +38,9 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * A controller for configuring the sign in promo. It sets up the sign in promo depending on the
  * context: whether there are any Google accounts on the device which have been previously signed in
@@ -44,6 +48,24 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
  * actions and histograms.
  */
 public class SigninPromoController {
+    /** Specifies the various states of sync promo. */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            SyncPromoState.NO_PROMO,
+            SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE,
+            SyncPromoState.PROMO_FOR_SIGNED_IN_STATE,
+            SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE,
+    })
+    public @interface SyncPromoState {
+        /** Promo is hidden. */
+        int NO_PROMO = 0;
+        /** Promo is shown when a user is signed out. */
+        int PROMO_FOR_SIGNED_OUT_STATE = 1;
+        /** Promo is shown when a user is signed in without sync consent. */
+        int PROMO_FOR_SIGNED_IN_STATE = 2;
+        /** Promo is shown when a user is signed in with sync consent but has turned off sync. */
+        int PROMO_FOR_SYNC_TURNED_OFF_STATE = 3;
+    }
     /**
      * Receives notifications when user clicks close button in the promo.
      */

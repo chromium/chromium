@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.signin.SyncPromoView;
+import org.chromium.chrome.browser.signin.ui.SigninPromoController.SyncPromoState;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -846,15 +847,15 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
 
         switch (mRecentTabsManager.getPromoState()) {
-            case RecentTabsManager.PromoState.PROMO_NONE:
+            case SyncPromoState.NO_PROMO:
                 break;
-            case RecentTabsManager.PromoState.PROMO_SIGNIN_PERSONALIZED:
+            case SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE:
                 addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SIGNIN_PROMO));
                 break;
-            case RecentTabsManager.PromoState.PROMO_SYNC_PERSONALIZED:
+            case SyncPromoState.PROMO_FOR_SIGNED_IN_STATE:
                 addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SYNC_PROMO));
                 break;
-            case RecentTabsManager.PromoState.PROMO_SYNC:
+            case SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE:
                 addGroup(new SyncPromoGroup());
                 break;
             default:

@@ -36,6 +36,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.ui.SigninPromoController.SyncPromoState;
 import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -76,8 +77,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Before
     public void setUp() {
-        BookmarkPromoHeader.forcePromoStateForTests(
-                BookmarkPromoHeader.PromoState.PROMO_SIGNIN_PERSONALIZED);
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
     }
 
