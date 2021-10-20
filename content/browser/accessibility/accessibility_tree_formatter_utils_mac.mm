@@ -189,6 +189,9 @@ OptionalNSObject AttributeInvoker::InvokeFor(
   if ([target isKindOfClass:[NSArray class]])
     return InvokeForArray(target, property_node);
 
+  if ([target isKindOfClass:[NSDictionary class]])
+    return InvokeForDictionary(target, property_node);
+
   LOG(ERROR) << "Unexpected target type for " << property_node.ToFlatString();
   return OptionalNSObject::Error();
 }
@@ -319,6 +322,20 @@ OptionalNSObject AttributeInvoker::InvokeForArray(
   }
 
   return OptionalNSObject(target[*maybe_index]);
+}
+
+OptionalNSObject AttributeInvoker::InvokeForDictionary(
+    const id target,
+    const AXPropertyNode& property_node) const {
+  if (property_node.arguments.size() > 0) {
+    LOG(ERROR) << "dictionary key is expected, got: "
+               << property_node.ToString();
+    return OptionalNSObject::Error();
+  }
+
+  NSString* key = PropertyNodeToString(property_node);
+  NSDictionary* dictionary = target;
+  return OptionalNSObject::NotNilOrError(dictionary[key]);
 }
 
 OptionalNSObject AttributeInvoker::GetValue(

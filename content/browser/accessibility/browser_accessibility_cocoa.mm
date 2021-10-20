@@ -211,6 +211,8 @@ NSString* const NSAccessibilityMathSubscriptAttribute = @"AXMathSubscript";
 NSString* const NSAccessibilityMathSuperscriptAttribute = @"AXMathSuperscript";
 NSString* const NSAccessibilityMathUnderAttribute = @"AXMathUnder";
 NSString* const NSAccessibilityMathOverAttribute = @"AXMathOver";
+NSString* const NSAccessibilityMathPostscriptsAttribute = @"AXMathPostscripts";
+NSString* const NSAccessibilityMathPrescriptsAttribute = @"AXMathPrescripts";
 
 // Private attributes that can be used for testing text markers, e.g. in dump
 // tree tests.
@@ -863,6 +865,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
        @"mathFractionDenominator"},
       {NSAccessibilityMathFractionNumeratorAttribute, @"mathFractionNumerator"},
       {NSAccessibilityMathOverAttribute, @"mathOver"},
+      {NSAccessibilityMathPostscriptsAttribute, @"mathPostscripts"},
+      {NSAccessibilityMathPrescriptsAttribute, @"mathPrescripts"},
       {NSAccessibilityMathRootIndexAttribute, @"mathRootIndex"},
       {NSAccessibilityMathRootRadicandAttribute, @"mathRootRadicand"},
       {NSAccessibilityMathSubscriptAttribute, @"mathSubscript"},
@@ -1146,6 +1150,74 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return children[2];
   }
   return nil;
+}
+
+static NSDictionary* createMathSubSupScriptsPair(
+    BrowserAccessibilityCocoa* subscript,
+    BrowserAccessibilityCocoa* superscript) {
+  BrowserAccessibilityCocoa* nodes[2];
+  NSString* keys[2];
+  NSUInteger count = 0;
+  if (subscript) {
+    nodes[count] = subscript;
+    keys[count] = NSAccessibilityMathSubscriptAttribute;
+    count++;
+  }
+  if (superscript) {
+    nodes[count] = superscript;
+    keys[count] = NSAccessibilityMathSuperscriptAttribute;
+    count++;
+  }
+  return [[NSDictionary alloc] initWithObjects:nodes forKeys:keys count:count];
+}
+
+- (NSArray*)mathPostscripts {
+  if (![self instanceActive] ||
+      [self internalRole] != ax::mojom::Role::kMathMLMultiscripts)
+    return nil;
+  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
+  bool foundBaseElement = false;
+  BrowserAccessibilityCocoa* subscript = nullptr;
+  for (BrowserAccessibilityCocoa* child in [self children]) {
+    if ([child internalRole] == ax::mojom::Role::kMathMLPrescriptDelimiter)
+      break;
+    if (!foundBaseElement) {
+      foundBaseElement = true;
+      continue;
+    }
+    if (!subscript) {
+      subscript = child;
+      continue;
+    }
+    BrowserAccessibilityCocoa* superscript = child;
+    [ret addObject:createMathSubSupScriptsPair(subscript, superscript)];
+    subscript = nullptr;
+  }
+  return [ret count] ? ret : nil;
+}
+
+- (NSArray*)mathPrescripts {
+  if (![self instanceActive] ||
+      [self internalRole] != ax::mojom::Role::kMathMLMultiscripts)
+    return nil;
+  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
+  bool foundPrescriptDelimiter = false;
+  BrowserAccessibilityCocoa* subscript = nullptr;
+  for (BrowserAccessibilityCocoa* child in [self children]) {
+    if (!foundPrescriptDelimiter) {
+      foundPrescriptDelimiter =
+          ([child internalRole] == ax::mojom::Role::kMathMLPrescriptDelimiter);
+      continue;
+    }
+    if (!subscript) {
+      subscript = child;
+      continue;
+    }
+    BrowserAccessibilityCocoa* superscript = child;
+    [ret addObject:createMathSubSupScriptsPair(subscript, superscript)];
+    subscript = nullptr;
+  }
+  return [ret count] ? ret : nil;
 }
 
 - (NSArray*)AXChildren {
@@ -3725,6 +3797,11 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     [ret addObjectsFromArray:@[
       NSAccessibilityMathBaseAttribute, NSAccessibilityMathUnderAttribute,
       NSAccessibilityMathOverAttribute
+    ]];
+  } else if ([self internalRole] == ax::mojom::Role::kMathMLMultiscripts) {
+    [ret addObjectsFromArray:@[
+      NSAccessibilityMathPostscriptsAttribute,
+      NSAccessibilityMathPrescriptsAttribute
     ]];
   }
 

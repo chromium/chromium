@@ -237,6 +237,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, MathMLSubSupAttributes) {
   RunTypedTest<kMacMathML>(FILE_PATH_LITERAL("subsup-attributes.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       MathMLMultiscriptsAttributes) {
+  RunTypedTest<kMacMathML>(FILE_PATH_LITERAL("multiscripts-attributes.html"));
+}
+
 #endif
 
 }  // namespace content
