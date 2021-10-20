@@ -12,6 +12,7 @@
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/templates/desks_templates_delete_button.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
@@ -116,6 +117,10 @@ class DesksTemplatesItemViewTestApi {
 
   const views::Label* time_view() const { return item_view_->time_view_; }
 
+  const DesksTemplatesDeleteButton* delete_button() const {
+    return item_view_->delete_button_;
+  }
+
   const base::GUID uuid() const { return item_view_->uuid_; }
 
  private:
@@ -154,6 +159,24 @@ class DesksTemplatesTest : public OverviewTestBase {
               loop.Quit();
             }));
     loop.Run();
+  }
+
+  // Gets the current list of template entries from the desk model directly
+  // without updating the UI.
+  const std::vector<DeskTemplate*> GetAllEntries() {
+    std::vector<DeskTemplate*> templates;
+
+    base::RunLoop loop;
+    desk_model()->GetAllEntries(base::BindLambdaForTesting(
+        [&](desks_storage::DeskModel::GetAllEntriesStatus status,
+            std::vector<DeskTemplate*> entries) {
+          EXPECT_EQ(desks_storage::DeskModel::GetAllEntriesStatus::kOk, status);
+          templates = entries;
+          loop.Quit();
+        }));
+    loop.Run();
+
+    return templates;
   }
 
   // Deletes an entry to the desks model directly without interacting with the
@@ -200,7 +223,7 @@ class DesksTemplatesTest : public OverviewTestBase {
   // Shows the desks templates grid by emulating a click on the templates
   // button. It is required to have at least one entry in the desk model for the
   // button to be visible and clickable.
-  void ShowDesksTemplatesGrid() {
+  void ShowDesksTemplatesGrids() {
     auto* root_window = Shell::GetPrimaryRootWindow();
     auto* zero_button =
         GetDesksTemplatesButtonForRoot(root_window, /*zero_state=*/true);
@@ -266,30 +289,14 @@ TEST_F(DesksTemplatesTest, AddDeleteEntry) {
   base::Time expected_time = base::Time::Now();
   AddEntry(expected_uuid, expected_name, expected_time);
 
-  base::RunLoop add_loop;
-  desk_model()->GetAllEntries(base::BindLambdaForTesting(
-      [&](desks_storage::DeskModel::GetAllEntriesStatus status,
-          std::vector<ash::DeskTemplate*> entries) {
-        EXPECT_EQ(desks_storage::DeskModel::GetAllEntriesStatus::kOk, status);
-        ASSERT_EQ(1ul, entries.size());
-        EXPECT_EQ(expected_uuid, entries[0]->uuid());
-        EXPECT_EQ(base::UTF8ToUTF16(expected_name),
-                  entries[0]->template_name());
-        EXPECT_EQ(expected_time, entries[0]->created_time());
-        add_loop.Quit();
-      }));
-  add_loop.Run();
+  std::vector<DeskTemplate*> entries = GetAllEntries();
+  ASSERT_EQ(1ul, entries.size());
+  EXPECT_EQ(expected_uuid, entries[0]->uuid());
+  EXPECT_EQ(base::UTF8ToUTF16(expected_name), entries[0]->template_name());
+  EXPECT_EQ(expected_time, entries[0]->created_time());
 
   DeleteEntry(expected_uuid);
-  base::RunLoop delete_loop;
-  desk_model()->GetAllEntries(base::BindLambdaForTesting(
-      [&](desks_storage::DeskModel::GetAllEntriesStatus status,
-          std::vector<ash::DeskTemplate*> entries) {
-        EXPECT_EQ(desks_storage::DeskModel::GetAllEntriesStatus::kOk, status);
-        EXPECT_EQ(0ul, entries.size());
-        delete_loop.Quit();
-      }));
-  delete_loop.Run();
+  EXPECT_EQ(0ul, desk_model()->GetEntryCount());
 }
 
 // Tests the desks templates button visibility.
@@ -378,7 +385,7 @@ TEST_F(DesksTemplatesTest, NoWindowsLabelOnTemplateGridShow) {
   EXPECT_TRUE(grid_list[1]->no_windows_widget());
 
   // Open the desk templates grid. The no windows widget should now be hidden.
-  ShowDesksTemplatesGrid();
+  ShowDesksTemplatesGrids();
   EXPECT_FALSE(grid_list[0]->no_windows_widget());
   EXPECT_FALSE(grid_list[1]->no_windows_widget());
 }
@@ -401,7 +408,7 @@ TEST_F(DesksTemplatesTest, HideOverviewItemsOnTemplateGridShow) {
   EXPECT_EQ(1.0f, test_window->layer()->opacity());
 
   // Open the desk templates grid. This should hide the window.
-  GetOverviewSession()->ShowDesksTemplatesGrids();
+  ShowDesksTemplatesGrids();
   EXPECT_EQ(0.0f, test_window->layer()->opacity());
 
   // Exit overview mode. The window is restored and visible again.
@@ -460,7 +467,7 @@ TEST_F(DesksTemplatesTest, DesksTemplatesGridItems) {
   // Enter overview and show the Desks Templates Grid.
   ToggleOverview();
   WaitForUI();
-  ShowDesksTemplatesGrid();
+  ShowDesksTemplatesGrids();
   WaitForUI();
 
   // Check that the grid is populated with the correct number of items, as
@@ -495,6 +502,90 @@ TEST_F(DesksTemplatesTest, DesksTemplatesGridItems) {
     verify_template_grid_item(uuid_1, name_1);
     verify_template_grid_item(uuid_2, name_2);
   }
+}
+
+// Tests that deleting templates in the templates grid functions correctly.
+TEST_F(DesksTemplatesTest, DeleteTemplate) {
+  UpdateDisplay("800x600,800x600");
+
+  // Populate with several entries.
+  const base::GUID uuid_1 = base::GUID::GenerateRandomV4();
+  AddEntry(uuid_1, "template_1", base::Time::Now());
+
+  const base::GUID uuid_2 = base::GUID::GenerateRandomV4();
+  AddEntry(uuid_2, "template_2", base::Time::Now() + base::Hours(13));
+
+  // This window should be hidden whenever the desk templates grid is open.
+  auto test_window = CreateTestWindow();
+
+  // Enter overview and show the Desks Templates Grid.
+  ToggleOverview();
+  WaitForUI();
+  ShowDesksTemplatesGrids();
+  WaitForUI();
+
+  // The window is hidden because the desk templates grid is open.
+  EXPECT_EQ(0.0f, test_window->layer()->opacity());
+
+  auto& grid_list = GetOverviewGridList();
+  ASSERT_EQ(2u, grid_list.size());
+  views::Widget* grid_widget = grid_list[0]->desks_templates_grid_widget();
+  DCHECK(grid_widget);
+  const DesksTemplatesGridView* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+  DCHECK(templates_grid_view);
+
+  // Helper function for attempting to delete a template based on its uuid. Also
+  // checks if the grid item count is as expected before deleting.
+  auto delete_template = [&](const base::GUID uuid,
+                             const size_t expected_current_item_count,
+                             bool expect_template_exists = true) {
+    std::vector<DesksTemplatesItemView*> grid_items =
+        DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
+
+    // Check the current grid item count.
+    ASSERT_EQ(expected_current_item_count, grid_items.size());
+
+    auto iter =
+        std::find_if(grid_items.cbegin(), grid_items.cend(),
+                     [&](const DesksTemplatesItemView* v) {
+                       return DesksTemplatesItemViewTestApi(v).uuid() == uuid;
+                     });
+
+    if (!expect_template_exists) {
+      ASSERT_EQ(grid_items.end(), iter);
+      return;
+    }
+
+    ASSERT_NE(grid_items.end(), iter);
+
+    ClickOnView(DesksTemplatesItemViewTestApi(*iter).delete_button());
+    WaitForUI();
+  };
+
+  EXPECT_EQ(2ul, desk_model()->GetEntryCount());
+
+  // Delete the template with `uuid_1`.
+  delete_template(uuid_1, /*expected_current_item_count=*/2);
+  EXPECT_EQ(0.0f, test_window->layer()->opacity());
+  EXPECT_EQ(1ul, desk_model()->GetEntryCount());
+
+  // Verifies that the template with `uuid_1`, doesn't exist anymore.
+  delete_template(uuid_1, /*expected_current_item_count=*/1,
+                  /*expect_template_exists=*/false);
+  EXPECT_EQ(0.0f, test_window->layer()->opacity());
+  EXPECT_EQ(1ul, desk_model()->GetEntryCount());
+
+  // Delete the template with `uuid_2`.
+  delete_template(uuid_2, /*expected_current_item_count=*/1);
+  EXPECT_EQ(0ul, desk_model()->GetEntryCount());
+
+  // After all templates have been deleted, check to ensure we have exited the
+  // Desks Templates Grid on all displays. Also check to make sure the hidden
+  // windows are shown again.
+  EXPECT_EQ(1.0f, test_window->layer()->opacity());
+  for (auto& overview_grid : GetOverviewGridList())
+    EXPECT_FALSE(overview_grid->IsShowingDesksTemplatesGrid());
 }
 
 }  // namespace ash

@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/desks_templates_delete_button.h"
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
+#include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -141,8 +142,7 @@ void DesksTemplatesItemView::SetIcons() {
 }
 
 void DesksTemplatesItemView::OnDeleteButtonPressed() {
-  // TODO(richui): Hook this up to the presenter.
-  NOTIMPLEMENTED();
+  DesksTemplatesPresenter::Get()->DeleteEntry(uuid_.AsLowercaseString());
 }
 
 BEGIN_METADATA(DesksTemplatesItemView, views::View)

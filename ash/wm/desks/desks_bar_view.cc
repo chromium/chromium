@@ -954,7 +954,7 @@ void DesksBarView::OnNewDeskButtonPressed(
   expanded_state_new_desk_button_->UpdateButtonState();
 }
 
-void DesksBarView::UpdateButtonsAfterShowingDesksTemplatesGrid() {
+void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
   // TODO(chinsenj): When the grid is shown, we should expand the zero state
   // desks bar so `IsZeroState()` should never be true here. Currently the
   // aforementioned behavior is WIP so leave this as an early return for now to

@@ -30,9 +30,16 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   DesksTemplatesPresenter& operator=(const DesksTemplatesPresenter&) = delete;
   ~DesksTemplatesPresenter() override;
 
+  // Convenience function to get the presenter instance, which is created and
+  // owned by `OverviewSession`.
+  static DesksTemplatesPresenter* Get();
+
   // Calls the DeskModel to get all the template entries, with a callback to
   // `OnGetAllEntries`.
   void GetAllEntries();
+
+  // Calls the DeskModel to delete the template with the provided uuid.
+  void DeleteEntry(const std::string& template_uuid);
 
   // desks_storage::DeskModelObserver:
   // TODO(sammiequon): Implement these once the model starts sending these
@@ -53,6 +60,10 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // also contains logic for updating the UI.
   void OnGetAllEntries(desks_storage::DeskModel::GetAllEntriesStatus status,
                        std::vector<DeskTemplate*> entries);
+
+  // Callback after deleting an entry. Will then call `GetAllEntries` to update
+  // the UI with the most up to date list of templates.
+  void OnDeleteEntry(desks_storage::DeskModel::DeleteEntryStatus status);
 
   // Pointer to the session which owns `this`.
   OverviewSession* const overview_session_;

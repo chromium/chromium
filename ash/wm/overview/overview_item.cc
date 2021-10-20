@@ -221,6 +221,18 @@ void OverviewItem::HideForDesksTemplatesGrid() {
           item_widget_->GetNativeWindow());
 }
 
+void OverviewItem::RevertHideForDesksTemplatesGrid() {
+  transform_window_.window()->layer()->SetOpacity(1.0f);
+  item_widget_->GetLayer()->SetOpacity(1.0f);
+
+  for (aura::Window* transient_child :
+       GetTransientTreeIterator(transform_window_.window())) {
+    transient_child->layer()->SetOpacity(1.0f);
+  }
+
+  item_widget_event_blocker_.reset();
+}
+
 void OverviewItem::OnMovingWindowToAnotherDesk() {
   is_moving_to_another_desk_ = true;
   // Restore the dragged item window, so that its transform is reset to

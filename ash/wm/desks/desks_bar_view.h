@@ -192,7 +192,7 @@ class ASH_EXPORT DesksBarView : public views::View,
   // after the desk templates grid has been shown. If not in expanded state,
   // updates the background color of the `zero_state_desks_templates_button_`
   // and the `zero_state_default_desk_button_`.
-  void UpdateButtonsAfterShowingDesksTemplatesGrid();
+  void UpdateButtonsForDesksTemplatesGrid();
 
   // Returns the mini_view associated with `desk` or nullptr if no mini_view
   // has been created for it yet.

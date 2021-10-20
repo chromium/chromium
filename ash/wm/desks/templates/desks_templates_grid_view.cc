@@ -30,23 +30,7 @@ constexpr int kGridPaddingDp = 25;
 
 }  // namespace
 
-DesksTemplatesGridView::DesksTemplatesGridView() {
-  layout_ = SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* column_set = layout_->AddColumnSet(kColumnSetId);
-
-  // Add `kNumColumns` and some padding between each one.
-  const float fixed_size = views::GridLayout::kFixedSize;
-  for (int i = 0; i < kNumColumns; ++i) {
-    // Add a padding column in front of each column except the first one.
-    if (i != 0)
-      column_set->AddPaddingColumn(fixed_size, kGridPaddingDp);
-
-    column_set->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
-                          fixed_size,
-                          views::GridLayout::ColumnSize::kUsePreferred,
-                          /*fixed_width=*/0, /*min_width=*/0);
-  }
-}
+DesksTemplatesGridView::DesksTemplatesGridView() = default;
 
 DesksTemplatesGridView::~DesksTemplatesGridView() = default;
 
@@ -81,6 +65,7 @@ views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
 void DesksTemplatesGridView::UpdateGridUI(
     const std::vector<DeskTemplate*>& desk_templates,
     const gfx::Rect& grid_bounds) {
+  RemoveAllChildViews();
   grid_items_.clear();
 
   if (desk_templates.empty())
@@ -88,8 +73,23 @@ void DesksTemplatesGridView::UpdateGridUI(
 
   DCHECK_LE(desk_templates.size(), kMaxTemplateCount);
 
-  // Add each of the templates to the grid.
+  layout_ = SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::ColumnSet* column_set = layout_->AddColumnSet(kColumnSetId);
+
+  // Add `kNumColumns` and some padding between each one.
   const float fixed_size = views::GridLayout::kFixedSize;
+  for (int i = 0; i < kNumColumns; ++i) {
+    // Add a padding column in front of each column except the first one.
+    if (i != 0)
+      column_set->AddPaddingColumn(fixed_size, kGridPaddingDp);
+
+    column_set->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
+                          fixed_size,
+                          views::GridLayout::ColumnSize::kUsePreferred,
+                          /*fixed_width=*/0, /*min_width=*/0);
+  }
+
+  // Add each of the templates to the grid.
   for (size_t i = 0; i < desk_templates.size(); ++i) {
     // Add padding in front of each row except the first one.
     if (i == 0) {

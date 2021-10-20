@@ -19,6 +19,8 @@ namespace ash {
 
 namespace {
 
+DesksTemplatesPresenter* g_instance = nullptr;
+
 // Helper to get the desk model from the shell delegate. Should always return a
 // usable desk model, either from chrome sync, or a local storage.
 // TODO(sammiequon): Investigate if we can cache this.
@@ -35,13 +37,25 @@ DesksTemplatesPresenter::DesksTemplatesPresenter(
     : overview_session_(overview_session) {
   DCHECK(overview_session_);
 
+  DCHECK_EQ(g_instance, nullptr);
+  g_instance = this;
+
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
   if (desk_model->IsReady())
     GetAllEntries();
 }
 
-DesksTemplatesPresenter::~DesksTemplatesPresenter() = default;
+DesksTemplatesPresenter::~DesksTemplatesPresenter() {
+  DCHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
+// static
+DesksTemplatesPresenter* DesksTemplatesPresenter::Get() {
+  DCHECK(g_instance);
+  return g_instance;
+}
 
 void DesksTemplatesPresenter::GetAllEntries() {
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -52,6 +66,13 @@ void DesksTemplatesPresenter::GetAllEntries() {
 
 void DesksTemplatesPresenter::DeskModelLoaded() {
   GetAllEntries();
+}
+
+void DesksTemplatesPresenter::DeleteEntry(const std::string& template_uuid) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  GetDeskModel()->DeleteEntry(
+      template_uuid, base::BindOnce(&DesksTemplatesPresenter::OnDeleteEntry,
+                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DesksTemplatesPresenter::OnDeskModelDestroying() {
@@ -76,22 +97,33 @@ void DesksTemplatesPresenter::OnGetAllEntries(
           !is_zero_state && visible);
     }
 
+    if (!overview_grid->IsShowingDesksTemplatesGrid())
+      continue;
+
     if (!visible) {
-      // TODO(richui): When deleting, it is possible to delete the last
-      // template. In this case, close the template grid and go back to
-      // overview.
+      // When deleting, it is possible to delete the last template. In this
+      // case, close the template grid and go back to overview.
+      overview_grid->HideDesksTemplatesGrid();
+      continue;
     }
 
     // Populate `DesksTemplatesGridView` with the desk template entries.
     views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
-    if (grid_widget) {
-      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
-          ->UpdateGridUI(entries, overview_grid->GetGridEffectiveBounds());
-    }
+    DCHECK(grid_widget);
+    static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
+        ->UpdateGridUI(entries, overview_grid->GetGridEffectiveBounds());
   }
 
   if (on_update_ui_closure_for_testing_)
     std::move(on_update_ui_closure_for_testing_).Run();
+}
+
+void DesksTemplatesPresenter::OnDeleteEntry(
+    desks_storage::DeskModel::DeleteEntryStatus status) {
+  if (status != desks_storage::DeskModel::DeleteEntryStatus::kOk)
+    return;
+
+  GetAllEntries();
 }
 
 }  // namespace ash

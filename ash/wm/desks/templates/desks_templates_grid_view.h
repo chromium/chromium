@@ -36,8 +36,8 @@ class DesksTemplatesGridView : public views::View {
   static views::UniqueWidgetPtr CreateDesksTemplatesGridWidget(
       aura::Window* root);
 
-  // Updates the UI by populating the grid with the provided list of desk
-  // templates.
+  // Updates the UI by creating a grid layout and populating the grid with the
+  // provided list of desk templates.
   void UpdateGridUI(const std::vector<DeskTemplate*>& desk_templates,
                     const gfx::Rect& grid_bounds);
 

@@ -889,7 +889,17 @@ void OverviewGrid::ShowDesksTemplatesGrid() {
     overview_mode_item->HideForDesksTemplatesGrid();
 
   desks_templates_grid_widget_->Show();
-  desks_bar_view_->UpdateButtonsAfterShowingDesksTemplatesGrid();
+  desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
+}
+
+void OverviewGrid::HideDesksTemplatesGrid() {
+  desks_templates_grid_widget_->CloseNow();
+
+  // Un-hide the overview mode items.
+  for (auto& overview_mode_item : window_list_)
+    overview_mode_item->RevertHideForDesksTemplatesGrid();
+
+  desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
 }
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {
