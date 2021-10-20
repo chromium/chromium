@@ -436,6 +436,12 @@ class MODULES_EXPORT ManifestParser {
   mojom::blink::ManifestLaunchHandlerPtr ParseLaunchHandler(
       const JSONObject* object);
 
+  // Parses the 'translations' field of the manifest as defined in:
+  // https://github.com/w3c/manifest/issues/676#issuecomment-810628993
+  // Returns empty map if parsing fails.
+  HashMap<String, mojom::blink::ManifestTranslationItemPtr> ParseTranslations(
+      const JSONObject* object);
+
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,
                     int error_line = 0,

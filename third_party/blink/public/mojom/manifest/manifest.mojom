@@ -103,6 +103,11 @@ struct Manifest {
   // experiment. See:
   // https://github.com/WICG/sw-launch/blob/main/launch_handler.md
   ManifestLaunchHandler? launch_handler;
+
+  // TODO(crbug.com/1259777): This field is non-standard and part of a Chrome
+  // experiment. See: https://github.com/w3c/manifest/issues/676#issuecomment-810628993
+  // A mapping of locales to their translations.
+  map<mojo_base.mojom.String16, ManifestTranslationItem> translations;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:
@@ -270,6 +275,18 @@ struct ManifestLaunchHandler {
     kNever,
   };
   NavigateExistingClient navigate_existing_client;
+};
+
+// Structure representing the translated manifest fields. Each field corresponds
+// to a translatable field in the Web App Manifest and contains a translation of
+// that field. Each field is optional as there is no mandatory field which must
+// be translated in any locale.
+struct ManifestTranslationItem {
+  mojo_base.mojom.String16? name;
+
+  mojo_base.mojom.String16? short_name;
+
+  mojo_base.mojom.String16? description;
 };
 
 // Debug information for a parsed manifest.

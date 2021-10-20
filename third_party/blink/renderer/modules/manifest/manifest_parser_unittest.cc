@@ -4958,4 +4958,151 @@ TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, TranslationsParseRules) {
+  {
+    ScopedWebAppTranslationsForTest feature(false);
+
+    // Feature not enabled, should not be parsed.
+    auto& manifest =
+        ParseManifest(R"({ "translations": {"fr": {"name": "french name"}} })");
+    EXPECT_TRUE(manifest->translations.IsEmpty());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  {
+    ScopedWebAppTranslationsForTest feature(true);
+
+    // Manifest does not contain a 'translations' field.
+    {
+      auto& manifest = ParseManifest(R"({ })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Don't parse if translations object is empty.
+    {
+      auto& manifest = ParseManifest(R"({ "translations": {} })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Empty translation is ignored.
+    {
+      auto& manifest = ParseManifest(R"({ "translations": {"fr": {}} })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_FALSE(manifest->translations.Contains("fr"));
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Valid name, short_name and description should be parsed
+    {
+      auto& manifest = ParseManifest(
+          R"({ "translations": {"fr": {"name": "french name", "short_name":
+           "fr name", "description": "french description"}} })");
+      EXPECT_FALSE(manifest->translations.IsEmpty());
+      EXPECT_TRUE(manifest->translations.Contains("fr"));
+      EXPECT_EQ(manifest->translations.find("fr")->value->name, "french name");
+      EXPECT_EQ(manifest->translations.find("fr")->value->short_name,
+                "fr name");
+      EXPECT_EQ(manifest->translations.find("fr")->value->description,
+                "french description");
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Don't parse if the property isn't an object.
+    {
+      auto& manifest = ParseManifest(R"({ "translations": [] })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("property 'translations' ignored, object expected.",
+                errors()[0]);
+    }
+
+    // Ignore translation if it isn't an object.
+    {
+      auto& manifest = ParseManifest(R"({ "translations": {"fr": []} })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("skipping translation, object expected.", errors()[0]);
+    }
+
+    // Multiple valid translations should all be parsed.
+    {
+      auto& manifest = ParseManifest(
+          R"({ "translations": {"fr": {"name": "french name"},
+          "es": {"name": "spanish name"}} })");
+      EXPECT_FALSE(manifest->translations.IsEmpty());
+      EXPECT_TRUE(manifest->translations.Contains("fr"));
+      EXPECT_TRUE(manifest->translations.Contains("es"));
+      EXPECT_EQ(manifest->translations.find("fr")->value->name, "french name");
+      EXPECT_EQ(manifest->translations.find("es")->value->name, "spanish name");
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Empty locale string should be ignored.
+    {
+      auto& manifest = ParseManifest(
+          R"({ "translations": {"": {"name": "translated name"}} })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("skipping translation, non-empty locale string expected.",
+                errors()[0]);
+    }
+  }
+}
+
+TEST_F(ManifestParserTest, TranslationsStringsParseRules) {
+  ScopedWebAppTranslationsForTest feature(true);
+
+  // Ignore non-string translations name.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "translations": {"fr": {"name": {}}} })");
+    EXPECT_TRUE(manifest->translations.IsEmpty());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'name' of 'translations' ignored, type string expected.",
+        errors()[0]);
+  }
+
+  // Ignore non-string translations short_name.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "translations": {"fr": {"short_name": []}} })");
+    EXPECT_TRUE(manifest->translations.IsEmpty());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'short_name' of 'translations' ignored, type string "
+        "expected.",
+        errors()[0]);
+  }
+
+  // Ignore non-string translations description.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "translations": {"fr": {"description": 42}} })");
+    EXPECT_TRUE(manifest->translations.IsEmpty());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'description' of 'translations' ignored, type string "
+        "expected.",
+        errors()[0]);
+  }
+
+  // Translation with empty strings is ignored.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "translations": {"fr": {"name": "", "short_name": "",
+        "description": ""}} })");
+    EXPECT_TRUE(manifest->translations.IsEmpty());
+    EXPECT_FALSE(manifest->translations.Contains("fr"));
+    EXPECT_EQ(3u, GetErrorCount());
+    EXPECT_EQ("property 'name' of 'translations' is an empty string.",
+              errors()[0]);
+    EXPECT_EQ("property 'short_name' of 'translations' is an empty string.",
+              errors()[1]);
+    EXPECT_EQ("property 'description' of 'translations' is an empty string.",
+              errors()[2]);
+  }
+}
+
 }  // namespace blink

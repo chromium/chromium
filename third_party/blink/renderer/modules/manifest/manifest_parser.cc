@@ -167,6 +167,10 @@ void ManifestParser::Parse() {
 
   manifest_->launch_handler = ParseLaunchHandler(root_object.get());
 
+  if (RuntimeEnabledFeatures::WebAppTranslationsEnabled(feature_context_)) {
+    manifest_->translations = ParseTranslations(root_object.get());
+  }
+
   ManifestUmaUtil::ParseSucceeded(manifest_);
 }
 
@@ -1481,6 +1485,63 @@ mojom::blink::ManifestLaunchHandlerPtr ManifestParser::ParseLaunchHandler(
 
   return mojom::blink::ManifestLaunchHandler::New(route_to,
                                                   navigate_existing_client);
+}
+
+HashMap<String, mojom::blink::ManifestTranslationItemPtr>
+ManifestParser::ParseTranslations(const JSONObject* object) {
+  HashMap<String, mojom::blink::ManifestTranslationItemPtr> result;
+
+  if (!object->Get("translations"))
+    return result;
+
+  JSONObject* translations_map = object->GetJSONObject("translations");
+  if (!translations_map) {
+    AddErrorInfo("property 'translations' ignored, object expected.");
+    return result;
+  }
+
+  for (wtf_size_t i = 0; i < translations_map->size(); ++i) {
+    JSONObject::Entry entry = translations_map->at(i);
+    String locale = entry.first;
+    if (locale == "") {
+      AddErrorInfo("skipping translation, non-empty locale string expected.");
+      continue;
+    }
+    JSONObject* translation = JSONObject::Cast(entry.second);
+    if (!translation) {
+      AddErrorInfo("skipping translation, object expected.");
+      continue;
+    }
+
+    auto translation_item = mojom::blink::ManifestTranslationItem::New();
+
+    absl::optional<String> name =
+        ParseStringForMember(translation, "translations", "name", false, Trim);
+    translation_item->name =
+        name.has_value() && name->length() != 0 ? *name : String();
+
+    absl::optional<String> short_name = ParseStringForMember(
+        translation, "translations", "short_name", false, Trim);
+    translation_item->short_name =
+        short_name.has_value() && short_name->length() != 0 ? *short_name
+                                                            : String();
+
+    absl::optional<String> description = ParseStringForMember(
+        translation, "translations", "description", false, Trim);
+    translation_item->description =
+        description.has_value() && description->length() != 0 ? *description
+                                                              : String();
+
+    // A translation may be specified for any combination of translatable fields
+    // in the manifest. If no translations are supplied, we skip this item.
+    if (!translation_item->name && !translation_item->short_name &&
+        !translation_item->description) {
+      continue;
+    }
+
+    result.Set(locale, std::move(translation_item));
+  }
+  return result;
 }
 
 void ManifestParser::AddErrorInfo(const String& error_msg,

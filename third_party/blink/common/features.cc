@@ -819,6 +819,10 @@ const base::Feature kWebAppEnableLinkCapturing{
 const base::Feature kWebAppEnableManifestId{"WebAppEnableManifestId",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the "translations" manifest field for web apps.
+const base::Feature kWebAppEnableTranslations{
+    "WebAppEnableTranslations", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls URL handling feature in web apps. Controls parsing of "url_handlers"
 // field in web app manifests. See explainer for more information:
 // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md

@@ -2394,6 +2394,10 @@
       status: "experimental",
     },
     {
+      name: "WebAppTranslations",
+      status: "experimental",
+    },
+    {
       // This flag enables the Manifest parser to handle URL Handlers.
       // Also enabled when blink::features::kWebAppEnableUrlHandlers is
       // overridden on the command line (or via chrome://flags).

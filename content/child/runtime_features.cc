@@ -389,6 +389,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAppLaunchHandler", blink::features::kWebAppEnableLaunchHandler},
           {"WebAppLinkCapturing", blink::features::kWebAppEnableLinkCapturing},
           {"WebAppTabStrip", features::kDesktopPWAsTabStrip},
+          {"WebAppTranslations", blink::features::kWebAppEnableTranslations},
           {"WebAppWindowControlsOverlay",
            features::kWebAppWindowControlsOverlay},
           {"WebAuthAuthenticatorAttachment",
