@@ -1033,7 +1033,8 @@ public class InstantStartTest {
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
-            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single",
+            FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH})
     public void testScrollToSelectedTab() throws IOException {
         // clang-format on
         StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, null, 5);

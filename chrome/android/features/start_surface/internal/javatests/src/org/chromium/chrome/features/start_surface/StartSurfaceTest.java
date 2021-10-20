@@ -348,7 +348,7 @@ public class StartSurfaceTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single" +
@@ -399,7 +399,7 @@ public class StartSurfaceTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true" +
