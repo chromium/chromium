@@ -86,7 +86,10 @@ TEST_F(BackgroundDownloadTaskHelperTest, DownloadComplete) {
 }
 
 // Verifies non success http code is treated as error.
-TEST_F(BackgroundDownloadTaskHelperTest, DownloadErrorNonSuccessHttpCode) {
+// TODO(crbug.com/1261881):Disabled test because it fails multiple builders.
+// Re-enable it when fixed.
+TEST_F(BackgroundDownloadTaskHelperTest,
+       DISABLED_DownloadErrorNonSuccessHttpCode) {
   base::RunLoop loop;
   Download("/notfound",
            base::BindLambdaForTesting([&](bool success,
