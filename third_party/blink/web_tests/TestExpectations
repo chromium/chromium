@@ -2346,15 +2346,6 @@ crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-naviga
 crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/cross-document-traversal-same-document-nav.html [ Failure Timeout ]
 crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/same-document-traversal-same-document-nav.html [ Failure Timeout ]
 
-# Disabling test to checkin associated frontend changes on DevTools
-crbug.com/1252049 http/tests/devtools/forced-layout-in-microtask.js [ Failure Pass ]
-crbug.com/1252049 [ Linux ] http/tests/devtools/tracing/timeline-js/timeline-script-id.js [ Failure Pass ]
-crbug.com/1252049 [ Win ] http/tests/devtools/tracing/timeline-js/timeline-script-id.js [ Failure Pass ]
-crbug.com/1252049 http/tests/devtools/tracing/timeline-layout/timeline-layout.js [ Failure Pass ]
-crbug.com/1252049 http/tests/devtools/tracing/timeline-misc/timeline-animation-frame.js [ Failure Pass ]
-crbug.com/1252049 http/tests/devtools/tracing/timeline-network/timeline-network-resource-details.js [ Failure Pass ]
-crbug.com/1252049 http/tests/devtools/tracing/timeline-time/timeline-timer.js [ Failure Pass ]
-
 crbug.com/876485 fast/performance/performance-measure-null-exception.html [ Failure ]
 
 crbug.com/713587 external/wpt/css/css-ui/caret-color-006.html [ Skip ]
