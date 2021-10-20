@@ -1110,17 +1110,9 @@ testcase.transferToUsbHasDestinationText = async () => {
   const panel = await remoteCall.waitForElement(
       appId, ['#progress-panel', 'xf-panel-item']);
 
-  // Get FilesTransferDetails enabled state by checking detailed-panel
-  // attribute.
-  const isTransferDetailsEnabled = panel.attributes['detailed-panel'];
-
-  if (isTransferDetailsEnabled) {
-    chrome.test.assertTrue(
-        panel.attributes['primary-text'].includes('to fake-usb'),
-        'Feedback panel does not contain device name.');
-  } else {
-    chrome.test.assertEq('To fake-usb', panel.attributes['secondary-text']);
-  }
+  chrome.test.assertTrue(
+      panel.attributes['primary-text'].includes('to fake-usb'),
+      'Feedback panel does not contain device name.');
 };
 
 /**
