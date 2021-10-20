@@ -67,7 +67,7 @@ class TabUrlProviderImplTest : public PlatformTest {
     web::NavigationItem* item = fake_navigation_manager->GetItemAtIndex(
         fake_navigation_manager->GetItemCount() - 1);
     item->SetTimestamp(timestamp);
-    fake_navigation_manager->SetLastCommittedItem(item);
+    fake_navigation_manager->SetVisibleItem(item);
     fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
     browser->GetWebStateList()->InsertWebState(
         browser->GetWebStateList()->count(), std::move(fake_web_state),
