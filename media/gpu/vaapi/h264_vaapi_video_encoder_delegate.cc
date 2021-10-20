@@ -450,9 +450,6 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
     }
   }
 
-  for (const auto& ref_pic : ref_pic_list0_)
-    encode_job.AddReferencePicture(ref_pic);
-
   // Store the picture on the list of reference pictures and keep the list
   // below maximum size, dropping oldest references.
   if (pic->ref) {

@@ -70,7 +70,7 @@ class VaapiVideoEncoderDelegate {
   // while the accelerator-specific callbacks required to set up and execute it
   // are provided by the accelerator itself, based on these parameters.
   // Accelerators are also responsible for providing any resources (such as
-  // memory for output and reference pictures, etc.) as needed.
+  // memory for output, etc.) as needed.
   class EncodeJob {
    public:
     // Creates an EncodeJob to encode |input_frame|, which will be executed by
@@ -88,11 +88,6 @@ class VaapiVideoEncoderDelegate {
     EncodeJob& operator=(const EncodeJob&) = delete;
 
     ~EncodeJob();
-
-    // Adds |ref_pic| to the list of pictures to be used as reference pictures
-    // for this frame, to ensure they remain valid until the job is executed
-    // (or discarded).
-    void AddReferencePicture(scoped_refptr<CodecPicture> ref_pic);
 
     // Requests this job to produce a keyframe; requesting a keyframe may not
     // always result in one being produced by the encoder (e.g. if it would
@@ -128,9 +123,6 @@ class VaapiVideoEncoderDelegate {
     const scoped_refptr<CodecPicture> picture_;
     // Buffer that will contain the output bitstream data for this frame.
     const std::unique_ptr<ScopedVABuffer> coded_buffer_;
-
-    // Reference pictures required for this job.
-    std::vector<scoped_refptr<CodecPicture>> reference_pictures_;
   };
 
   // EncodeResult owns the necessary resource to keep the encoded buffer. The

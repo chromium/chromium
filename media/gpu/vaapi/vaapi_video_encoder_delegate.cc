@@ -44,12 +44,6 @@ VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
 
 VaapiVideoEncoderDelegate::EncodeJob::~EncodeJob() = default;
 
-void VaapiVideoEncoderDelegate::EncodeJob::AddReferencePicture(
-    scoped_refptr<CodecPicture> ref_pic) {
-  DCHECK(ref_pic);
-  reference_pictures_.push_back(ref_pic);
-}
-
 const scoped_refptr<VideoFrame>&
 VaapiVideoEncoderDelegate::EncodeJob::input_frame() const {
   return input_frame_;
