@@ -577,6 +577,7 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/accessibility/TestViewStructureInterface.java",
     "javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityEventsTest.java",
     "javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityTest.java",
+    "javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityTreeTest.java",
     "javatests/src/org/chromium/content/browser/accessibility/captioning/CaptioningChangeDelegateTest.java",
     "javatests/src/org/chromium/content/browser/androidoverlay/DialogOverlayImplPixelTest.java",
     "javatests/src/org/chromium/content/browser/androidoverlay/DialogOverlayImplTest.java",
@@ -604,6 +605,7 @@ android_library("content_javatests") {
 
   data = [
     "//content/test/data/accessibility/event/",
+    "//content/test/data/accessibility/html/",
     "//content/test/data/android/",
     "//content/test/data/media/",
   ]
