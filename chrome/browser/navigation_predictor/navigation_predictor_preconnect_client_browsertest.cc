@@ -28,6 +28,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -504,6 +505,63 @@ IN_PROC_BROWSER_TEST_F(
   // preconnect, none from Prerenders.
   WaitForPreresolveCount(3);
   EXPECT_EQ(3, preresolve_done_count_);
+}
+
+class NavigationPredictorPreconnectClientFencedFrameBrowserTest
+    : public NavigationPredictorPreconnectClientBrowserTest {
+ public:
+  NavigationPredictorPreconnectClientFencedFrameBrowserTest() = default;
+  ~NavigationPredictorPreconnectClientFencedFrameBrowserTest() override =
+      default;
+  NavigationPredictorPreconnectClientFencedFrameBrowserTest(
+      const NavigationPredictorPreconnectClientFencedFrameBrowserTest&) =
+      delete;
+
+  NavigationPredictorPreconnectClientFencedFrameBrowserTest& operator=(
+      const NavigationPredictorPreconnectClientFencedFrameBrowserTest&) =
+      delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationPredictorPreconnectClientFencedFrameBrowserTest,
+    FencedFrameDoesNotCountIsPubliclyRoutable) {
+  base::HistogramTester histogram_tester;
+  const GURL& url = GetTestURL("/anchors_different_area.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // There should be one preconnect from navigation and one from preconnect
+  // client.
+  WaitForPreresolveCount(2);
+  EXPECT_EQ(2, preresolve_done_count_);
+  histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
+                                    1);
+
+  // Create a fenced frame.
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), url);
+  // OnVisibilityChanged callback method increases the histogram count to 2.
+  // And, the count should not increase in DidFinishLoad method.
+  histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
+                                    2);
+
+  // Navigate the fenced frame.
+  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
+                                                            url);
+  // Histogram count should not increase after navigating the fenced frame.
+  histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
+                                    2);
 }
 
 }  // namespace

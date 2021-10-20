@@ -150,8 +150,8 @@ void NavigationPredictorPreconnectClient::OnVisibilityChanged(
 void NavigationPredictorPreconnectClient::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  // Ignore sub-frame loads.
-  if (render_frame_host->GetParent())
+  // Ignore sub-frames and non-primary mainframes load.
+  if (!render_frame_host->IsInPrimaryMainFrame())
     return;
 
   MaybePreconnectNow(/*preconnects_attempted=*/0u);
