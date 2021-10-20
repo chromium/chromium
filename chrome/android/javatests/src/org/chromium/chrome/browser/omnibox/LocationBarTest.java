@@ -397,23 +397,20 @@ public class LocationBarTest {
         mActivityTestRule.loadUrl(url);
 
         onView(withId(R.id.url_action_container)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.lens_camera_button_start)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
 
         ViewUtils.waitForView(allOf(withId(R.id.url_action_container), isDisplayed()));
-        onView(withId(R.id.lens_camera_button_end)).check((matches(not(isDisplayed()))));
-        onView(withId(R.id.lens_camera_button_start)).check((matches(not(isDisplayed()))));
+        onView(withId(R.id.lens_camera_button)).check((matches(not(isDisplayed()))));
         onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
         assertTheLastVisibleButtonInSearchBoxById(R.id.mic_button);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mLocationBarCoordinator.setOmniboxEditingText(url); });
 
-        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.lens_camera_button_start)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.delete_button)).check(matches(isDisplayed()));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
@@ -433,62 +430,20 @@ public class LocationBarTest {
         mActivityTestRule.loadUrl(url);
 
         onView(withId(R.id.url_action_container)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
 
         ViewUtils.waitForView(allOf(withId(R.id.url_action_container), isDisplayed()));
-        onView(withId(R.id.lens_camera_button_end)).check((matches(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check((matches(isDisplayed())));
         onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
-        assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button_end);
+        assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mLocationBarCoordinator.setOmniboxEditingText(url); });
 
-        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.delete_button)).check(matches(isDisplayed()));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
-
-        ViewUtils.waitForView(allOf(withId(R.id.url_action_container), not(isDisplayed())));
-    }
-
-    @Test
-    @MediumTest
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:"
-                    + "searchBoxStartVariantForLensCameraAssistedSearch/true"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void
-    testFocusLogic_lenButtonOnTheStartOfSearchBoxBtnGroupVisibilityPhone() {
-        startActivityNormally();
-        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-        doReturn(true).when(mLensController).isLensEnabled(any());
-        String url = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURLWithHostName(
-                HOSTNAME, "/");
-        mActivityTestRule.loadUrl(url);
-
-        onView(withId(R.id.url_action_container)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.lens_camera_button_start)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-
-        ViewUtils.waitForView(allOf(withId(R.id.url_action_container), isDisplayed()));
-        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.lens_camera_button_start)).check((matches(isDisplayed())));
-        onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
-        assertTheLastVisibleButtonInSearchBoxById(R.id.mic_button);
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mLocationBarCoordinator.setOmniboxEditingText(url); });
-
-        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.lens_camera_button_start)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.delete_button)).check(matches(isDisplayed()));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
@@ -507,9 +462,8 @@ public class LocationBarTest {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
         ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), isDisplayed()));
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_start), not(isDisplayed())));
-        assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button_end);
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), isDisplayed()));
+        assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button);
     }
 
     @Test
@@ -522,8 +476,7 @@ public class LocationBarTest {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
         ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), isDisplayed()));
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_start), not(isDisplayed())));
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), isDisplayed()));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Mockito.reset(mVoiceRecognitionHandler);
@@ -551,9 +504,9 @@ public class LocationBarTest {
         // Test when incognito is true.
         mActivityTestRule.loadUrlInNewTab(url, /** incognito = */ true);
         updateLocationBar();
-        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), not(isDisplayed())));
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), not(isDisplayed())));
         ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
         assertTheLastVisibleButtonInSearchBoxById(R.id.mic_button);
 
@@ -561,10 +514,10 @@ public class LocationBarTest {
         doReturn(true).when(mLensController).isLensEnabled(any());
         mActivityTestRule.loadUrlInNewTab(url, /** incognito = */ false);
         updateLocationBar();
-        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), isDisplayed()));
-        assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button_end);
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), isDisplayed()));
+        assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button);
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
     }
 
@@ -580,9 +533,9 @@ public class LocationBarTest {
                 HOSTNAME, "/");
         // Test when search engine is not Google.
         mActivityTestRule.loadUrlInNewTab(url, /** incognito = */ false);
-        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), not(isDisplayed())));
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), not(isDisplayed())));
         ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
         assertTheLastVisibleButtonInSearchBoxById(R.id.mic_button);
 
@@ -591,32 +544,11 @@ public class LocationBarTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mActivityTestRule.loadUrlInNewTab(url, /** incognito = */ false);
         updateLocationBar();
-        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), isDisplayed()));
-        assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button_end);
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), isDisplayed()));
+        assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button);
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
-    }
-
-    @Test
-    @MediumTest
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:"
-                    + "searchBoxStartVariantForLensCameraAssistedSearch/true"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void
-    testFocusLogic_lenButtonOnTheStartOfSearchBoxBtnGroupVisibilityOnStartNtpPhone() {
-        startActivityNormally();
-        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-        doReturn(true).when(mLensController).isLensEnabled(any());
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-
-        ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), not(isDisplayed())));
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_start), isDisplayed()));
-        assertTheLastVisibleButtonInSearchBoxById(R.id.mic_button);
     }
 
     @Test
