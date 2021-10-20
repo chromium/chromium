@@ -265,6 +265,7 @@ absl::optional<Timing::Phase> TimelinePhaseToTimingPhase(
 void AnimationEffect::UpdateInheritedTime(
     absl::optional<AnimationTimeDelta> inherited_time,
     absl::optional<TimelinePhase> inherited_timeline_phase,
+    bool at_progress_timeline_boundary,
     double inherited_playback_rate,
     TimingUpdateReason reason) const {
   const Timing::AnimationDirection direction =
@@ -283,8 +284,9 @@ void AnimationEffect::UpdateInheritedTime(
 
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
-        inherited_time, timeline_phase, NormalizedTiming(), direction,
-        IsA<KeyframeEffect>(this), inherited_playback_rate);
+        inherited_time, timeline_phase, at_progress_timeline_boundary,
+        NormalizedTiming(), direction, IsA<KeyframeEffect>(this),
+        inherited_playback_rate);
 
     const bool was_canceled = calculated.phase != calculated_.phase &&
                               calculated.phase == Timing::kPhaseNone;

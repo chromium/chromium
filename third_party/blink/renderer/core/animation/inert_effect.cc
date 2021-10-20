@@ -50,7 +50,7 @@ InertEffect::InertEffect(KeyframeEffectModelBase* model,
       playback_rate_(playback_rate) {}
 
 void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
-  UpdateInheritedTime(inherited_time_, inherited_phase_, playback_rate_,
+  UpdateInheritedTime(inherited_time_, inherited_phase_, false, playback_rate_,
                       kTimingUpdateOnDemand);
   if (!IsInEffect()) {
     result.clear();

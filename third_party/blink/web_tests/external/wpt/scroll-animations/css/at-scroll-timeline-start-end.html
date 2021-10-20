@@ -144,18 +144,14 @@
   test_approximate_width_at_fraction(element_auto_auto, 0.1, '110px');
   test_approximate_width_at_fraction(element_auto_auto, 0.5, '150px');
   test_approximate_width_at_fraction(element_auto_auto, 0.9, '190px');
-  // TODO: Effects for scroll linked animations are not inclusive at max scroll
-  // https://github.com/w3c/csswg-drafts/issues/5223
-  test_approximate_width_at_fraction(element_auto_auto, 1, '0px');
+  test_approximate_width_at_fraction(element_auto_auto, 1, '200px');
 
   // [auto, auto] (implicit)
   test_approximate_width_at_fraction(element_auto_auto_implicit, 0, '100px');
   test_approximate_width_at_fraction(element_auto_auto_implicit, 0.1, '110px');
   test_approximate_width_at_fraction(element_auto_auto_implicit, 0.5, '150px');
   test_approximate_width_at_fraction(element_auto_auto_implicit, 0.9, '190px');
-  // TODO: Effects for scroll linked animations are not inclusive at max scroll
-  // https://github.com/w3c/csswg-drafts/issues/5223
-  test_approximate_width_at_fraction(element_auto_auto_implicit, 1, '0px');
+  test_approximate_width_at_fraction(element_auto_auto_implicit, 1, '200px');
 
   // [50px, auto]
   {
@@ -165,7 +161,7 @@
     test_width_at_scroll_top(element_50px_auto, 50, '100px');
     test_approximate_width_at_fraction(element_50px_auto, offset(0.5), '150px');
     test_approximate_width_at_fraction(element_50px_auto, offset(0.9), '190px');
-    test_approximate_width_at_fraction(element_50px_auto, 1, '0px');
+    test_approximate_width_at_fraction(element_50px_auto, 1, '200px');
   }
 
   // [auto, 100px]

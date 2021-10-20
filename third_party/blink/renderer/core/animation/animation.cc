@@ -2234,6 +2234,44 @@ bool Animation::HasActiveAnimationsOnCompositor() {
   return keyframe_effect->HasActiveAnimationsOnCompositor();
 }
 
+bool Animation::AtScrollTimelineBoundary() {
+  // Based on changed defined in: https://github.com/w3c/csswg-drafts/pull/6702
+  // 1.  If any of the following conditions are true:
+  //     * the associated animation's timeline is not a progress-based timeline,
+  //     or
+  //     * the associated animation's timeline duration is unresolved or zero,
+  //     or
+  //     * the animation's playback rate is zero
+  //     return false
+  absl::optional<AnimationTimeDelta> timeline_duration =
+      timeline_ ? timeline_->GetDuration() : absl::nullopt;
+  if (!timeline_ || !timeline_->IsScrollTimeline() || !timeline_duration ||
+      timeline_duration->is_zero() || playback_rate_ == 0)
+    return false;
+
+  // 2.  Let effective start time be the animation's start time if resolved, or
+  // zero otherwise.
+  AnimationTimeDelta effective_start_time =
+      start_time_.value_or(AnimationTimeDelta());
+  // 3.  Let effective timeline time be (animation's current time / animation's
+  // playback rate) + effective start time
+  AnimationTimeDelta effective_timeline_time =
+      (CurrentTimeInternal().value_or(AnimationTimeDelta()) / playback_rate_) +
+      effective_start_time;
+  // 4.  Let effective timeline progress be (effective timeline time / timeline
+  // duration)
+  // 5.  If effective timeline progress is 0 or 1, return true,
+  // We avoid the division here but it is effectively the same as 4 & 5 above.
+  return effective_timeline_time.is_zero() ||
+         IsWithinAnimationTimeTolerance(effective_timeline_time,
+                                        timeline_duration.value());
+
+  // Issue: This procedure is not strictly correct for a paused
+  // animation if the animation's current time is explicitly set, as this can
+  // introduce a lead or lag, between the timeline's current time and
+  // animation's current time.
+}
+
 // Update current time of the animation. Refer to step 1 in:
 // https://drafts.csswg.org/web-animations/#update-animations-and-send-events
 bool Animation::Update(TimingUpdateReason reason) {
@@ -2265,7 +2303,8 @@ bool Animation::Update(TimingUpdateReason reason) {
     }
 
     content_->UpdateInheritedTime(inherited_time, inherited_phase,
-                                  playback_rate_, reason);
+                                  AtScrollTimelineBoundary(), playback_rate_,
+                                  reason);
 
     // After updating the animation time if the animation is no longer current
     // blink will no longer composite the element (see

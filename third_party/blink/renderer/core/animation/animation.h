@@ -313,6 +313,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
     return compositor_property_animations_have_no_effect_;
   }
   bool AnimationHasNoEffect() const { return animation_has_no_effect_; }
+  bool AtScrollTimelineBoundary();
 
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
