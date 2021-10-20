@@ -74,9 +74,7 @@ class CanvasResourceProviderTest : public Test {
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT |
@@ -93,16 +91,15 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   EXPECT_TRUE(provider->SupportsSingleBuffering());
-  EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
 #if defined(OS_MAC)
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(), kBGRA_8888_SkColorType);
+  EXPECT_TRUE(provider->GetSkImageInfo() ==
+              kInfo.makeColorType(kBGRA_8888_SkColorType));
 #else
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(), kRGBA_8888_SkColorType);
+  EXPECT_TRUE(provider->GetSkImageInfo() ==
+              kInfo.makeColorType(kRGBA_8888_SkColorType));
 #endif
-  EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
-            kColorParams.GetSkAlphaType());
 
   EXPECT_FALSE(provider->IsSingleBuffered());
   provider->TryEnableSingleBuffering();
@@ -111,9 +108,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
   const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       kInfo, cc::PaintFlags::FilterQuality::kLow,
@@ -126,21 +121,17 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   EXPECT_FALSE(provider->SupportsSingleBuffering());
-  EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to kRGBA8
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(), kRGBA_8888_SkColorType);
-  EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
-            kColorParams.GetSkAlphaType());
+  EXPECT_EQ(provider->GetSkImageInfo(),
+            kInfo.makeColorType(kRGBA_8888_SkColorType));
 
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -159,11 +150,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   // We do not support single buffering for unaccelerated low latency canvas.
   EXPECT_FALSE(provider->SupportsSingleBuffering());
 
-  EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(),
-            kColorParams.GetSkColorType());
-  EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
-            kColorParams.GetSkAlphaType());
+  EXPECT_EQ(provider->GetSkImageInfo(), kInfo);
 
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
@@ -171,9 +158,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageResourceRecycling) {
   const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -189,16 +174,15 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_FALSE(provider->IsSingleBuffered());
   EXPECT_FALSE(provider->SupportsSingleBuffering());
-  EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
 #if defined(OS_MAC)
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(), kBGRA_8888_SkColorType);
+  EXPECT_TRUE(provider->GetSkImageInfo() ==
+              kInfo.makeColorType(kBGRA_8888_SkColorType));
 #else
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(), kRGBA_8888_SkColorType);
+  EXPECT_TRUE(provider->GetSkImageInfo() ==
+              kInfo.makeColorType(kRGBA_8888_SkColorType));
 #endif
-  EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
-            kColorParams.GetSkAlphaType());
 
   // Same resource and sync token if we query again without updating.
   auto resource = provider->ProduceCanvasResource();
@@ -230,10 +214,7 @@ TEST_F(CanvasResourceProviderTest,
 
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageStaticBitmapImage) {
-  const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -279,10 +260,7 @@ TEST_F(CanvasResourceProviderTest,
   caps.disable_2d_canvas_copy_on_write = true;
   fake_context->SetCapabilities(caps);
 
-  const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -304,9 +282,7 @@ TEST_F(CanvasResourceProviderTest,
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
   const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
       kInfo, cc::PaintFlags::FilterQuality::kLow,
@@ -317,20 +293,14 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
   EXPECT_FALSE(provider->IsAccelerated());
   EXPECT_FALSE(provider->SupportsDirectCompositing());
   EXPECT_FALSE(provider->SupportsSingleBuffering());
-  EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(),
-            kColorParams.GetSkColorType());
-  EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
-            kColorParams.GetSkAlphaType());
+  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
 
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
   const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   MockCanvasResourceDispatcherClient client;
   CanvasResourceDispatcher resource_dispatcher(
@@ -347,11 +317,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
   EXPECT_FALSE(provider->IsAccelerated());
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   EXPECT_FALSE(provider->SupportsSingleBuffering());
-  EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(),
-            kColorParams.GetSkColorType());
-  EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
-            kColorParams.GetSkAlphaType());
+  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
 
   EXPECT_FALSE(provider->IsSingleBuffered());
   provider->TryEnableSingleBuffering();
@@ -361,9 +327,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderDirect2DGpuMemoryBuffer) {
   const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT |
@@ -380,16 +344,15 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   EXPECT_TRUE(provider->SupportsSingleBuffering());
-  EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
 #if defined(OS_MAC)
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(), kBGRA_8888_SkColorType);
+  EXPECT_TRUE(provider->GetSkImageInfo() ==
+              kInfo.makeColorType(kBGRA_8888_SkColorType));
 #else
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(), kRGBA_8888_SkColorType);
+  EXPECT_TRUE(provider->GetSkImageInfo() ==
+              kInfo.makeColorType(kRGBA_8888_SkColorType));
 #endif
-  EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
-            kColorParams.GetSkAlphaType());
 
   EXPECT_FALSE(provider->IsSingleBuffered());
   provider->TryEnableSingleBuffering();
@@ -399,9 +362,7 @@ TEST_F(CanvasResourceProviderTest,
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderDirect3DGpuMemoryBuffer) {
   const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
       kInfo, cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
@@ -412,11 +373,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   EXPECT_TRUE(provider->SupportsSingleBuffering());
-  EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(),
-            kColorParams.GetSkColorType());
-  EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
-            kColorParams.GetSkAlphaType());
+  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
 
   EXPECT_FALSE(provider->IsSingleBuffered());
   provider->TryEnableSingleBuffering();
@@ -530,9 +487,7 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_PassThrough) {
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
       kInfo, cc::PaintFlags::FilterQuality::kLow,
@@ -547,18 +502,11 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   EXPECT_TRUE(provider->SupportsSingleBuffering());
   EXPECT_TRUE(provider->IsSingleBuffered());
-  EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
-  EXPECT_EQ(provider->ColorParams().GetSkColorType(),
-            kColorParams.GetSkColorType());
-  EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
-            kColorParams.GetSkAlphaType());
+  EXPECT_EQ(provider->GetSkImageInfo(), kInfo);
 }
 
 TEST_F(CanvasResourceProviderTest, FlushForImage) {
-  const IntSize kSize(10, 10);
-  const CanvasResourceParams kColorParams(
-      CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
-  const SkImageInfo kInfo = kColorParams.MakeSkImageInfo(kSize);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto src_provider = CanvasResourceProvider::CreateSharedImageProvider(
       kInfo, cc::PaintFlags::FilterQuality::kMedium,

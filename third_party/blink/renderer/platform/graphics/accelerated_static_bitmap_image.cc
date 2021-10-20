@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "components/viz/common/resources/release_callback.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -302,8 +303,8 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   GrGLTextureInfo texture_info;
   texture_info.fTarget = texture_target_;
   texture_info.fID = shared_context_texture_id;
-  texture_info.fFormat =
-      CanvasResourceParams(sk_image_info_).GLSizedInternalFormat();
+  texture_info.fFormat = viz::TextureStorageFormat(
+      viz::SkColorTypeToResourceFormat(sk_image_info_.colorType()));
   GrBackendTexture backend_texture(sk_image_info_.width(),
                                    sk_image_info_.height(), GrMipMapped::kNo,
                                    texture_info);
@@ -390,16 +391,16 @@ AcceleratedStaticBitmapImage::ConvertToColorSpace(
       color_type == image_info.colorType()) {
     return this;
   }
-
-  image_info = image_info.makeColorSpace(color_space).makeColorType(color_type);
+  image_info = image_info.makeColorSpace(color_space)
+                   .makeColorType(color_type)
+                   .makeWH(Size().width(), Size().height());
 
   auto usage_flags = ContextProviderWrapper()
                          ->ContextProvider()
                          ->SharedImageInterface()
                          ->UsageForMailbox(mailbox_);
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      Size(), cc::PaintFlags::FilterQuality::kLow,
-      CanvasResourceParams(image_info),
+      image_info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, ContextProviderWrapper(),
       RasterMode::kGPU, IsOriginTopLeft(), usage_flags);
   if (!provider) {

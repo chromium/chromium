@@ -6074,7 +6074,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 
   // TODO(crbug.com/1175907): Double check that the premultiply alpha settings
   // are all correct below. When we go through the CanvasResourceProvider for
-  // Image creation, CanvasResourceParams { kPremul_SkAlphaType } is used.
+  // Image creation, SkImageInfo { kPremul_SkAlphaType } is used.
   //
   // We probably need some stronger checks on the accelerated upload path if
   // unmultiply has been requested or we need to never premultiply for Image
@@ -8697,7 +8697,8 @@ CanvasResourceProvider* WebGLRenderingContextBase::
   } else {
     // TODO(fserb): why is this a BITMAP?
     temp = CanvasResourceProvider::CreateBitmapProvider(
-        size, cc::PaintFlags::FilterQuality::kLow, CanvasResourceParams(),
+        SkImageInfo::MakeN32Premul(size.width(), size.height()),
+        cc::PaintFlags::FilterQuality::kLow,
         CanvasResourceProvider::ShouldInitialize::kNo);  // TODO: should this
                                                          // use the canvas's
   }

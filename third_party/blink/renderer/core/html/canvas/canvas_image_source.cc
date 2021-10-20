@@ -16,21 +16,17 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
     const SkImageInfo& info,
     const scoped_refptr<StaticBitmapImage>& source_image,
     bool fallback_to_software) {
-  IntSize size(info.width(), info.height());
-
   const cc::PaintFlags::FilterQuality filter_quality =
       cc::PaintFlags::FilterQuality::kLow;
-  const CanvasResourceParams resource_params(info);
-
   if (context_provider) {
     uint32_t usage_flags =
         context_provider->ContextProvider()
             ->SharedImageInterface()
             ->UsageForMailbox(source_image->GetMailboxHolder().mailbox);
     auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-        size, filter_quality, resource_params,
-        CanvasResourceProvider::ShouldInitialize::kNo, context_provider,
-        RasterMode::kGPU, source_image->IsOriginTopLeft(), usage_flags);
+        info, filter_quality, CanvasResourceProvider::ShouldInitialize::kNo,
+        context_provider, RasterMode::kGPU, source_image->IsOriginTopLeft(),
+        usage_flags);
     if (resource_provider)
       return resource_provider;
 
@@ -39,8 +35,7 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
   }
 
   return CanvasResourceProvider::CreateBitmapProvider(
-      size, filter_quality, resource_params,
-      CanvasResourceProvider::ShouldInitialize::kNo);
+      info, filter_quality, CanvasResourceProvider::ShouldInitialize::kNo);
 }
 
 }  // anonymous namespace

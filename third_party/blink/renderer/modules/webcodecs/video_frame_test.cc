@@ -264,9 +264,8 @@ TEST_F(VideoFrameTest, VideoFrameFromGPUImageBitmap) {
   V8TestingScope scope;
 
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
-  CanvasResourceParams resource_params;
   auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-      IntSize(100, 100), cc::PaintFlags::FilterQuality::kLow, resource_params,
+      SkImageInfo::MakeN32Premul(100, 100), cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
       RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);

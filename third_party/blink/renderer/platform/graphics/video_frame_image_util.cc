@@ -322,12 +322,14 @@ std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
     viz::RasterContextProvider* raster_context_provider) {
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
     return CanvasResourceProvider::CreateBitmapProvider(
-        size, cc::PaintFlags::FilterQuality::kLow, CanvasResourceParams(),
+        SkImageInfo::MakeN32Premul(size.width(), size.height()),
+        cc::PaintFlags::FilterQuality::kLow,
         CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
   return CanvasResourceProvider::CreateSharedImageProvider(
-      size, cc::PaintFlags::FilterQuality::kLow, CanvasResourceParams(),
+      SkImageInfo::MakeN32Premul(size.width(), size.height()),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo,
       SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
       false,  // Origin of GL texture is bottom left on screen
