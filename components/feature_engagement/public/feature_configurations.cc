@@ -464,7 +464,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     // disables the feature for a site in the app menu when:
     // * They have not yet opened auto dark settings.
     // * The dialog has been shown 0 times before.
-    // * They have done so more than 5 times.
+    // * They have done so at least 3 times.
     // TODO(crbug.com/1251737): Update this config from test values; Will
     // likely depend on giving feedback instead of opening settings, since the
     // primary purpose  of the dialog has changed.
@@ -476,8 +476,9 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("auto_dark_settings_opened", Comparator(EQUAL, 0), 90, 90);
     config->trigger = EventConfig("auto_dark_opt_out_iph_trigger",
                                   Comparator(EQUAL, 0), 90, 90);
-    config->event_configs.insert(EventConfig(
-        "auto_dark_disabled_in_app_menu", Comparator(GREATER_THAN, 5), 90, 90));
+    config->event_configs.insert(
+        EventConfig("auto_dark_disabled_in_app_menu",
+                    Comparator(GREATER_THAN_OR_EQUAL, 3), 90, 90));
     return config;
   }
 
