@@ -23,6 +23,7 @@ struct Mailbox;
 
 namespace cc {
 
+class DecodedDrawImage;
 class DrawImage;
 class PaintShader;
 

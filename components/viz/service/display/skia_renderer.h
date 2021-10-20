@@ -18,6 +18,7 @@
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/sync_query_collection.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/latency/latency_info.h"
 
 class SkColorFilter;

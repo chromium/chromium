@@ -10,10 +10,13 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "cc/paint/draw_image.h"
 #include "cc/paint/filter_operations.h"
+#include "cc/paint/image_provider.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/scoped_raster_flags.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkMath.h"
 #include "third_party/skia/include/core/SkString.h"

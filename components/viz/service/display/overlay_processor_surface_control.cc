@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "cc/base/math_util.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
