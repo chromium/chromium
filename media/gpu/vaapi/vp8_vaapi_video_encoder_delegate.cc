@@ -20,17 +20,12 @@ namespace {
 // Keyframe period.
 constexpr size_t kKFPeriod = 3000;
 
-// Arbitrarily chosen bitrate window size for rate control, in ms.
-constexpr int kCPBWindowSizeMs = 1500;
-
 // Quantization parameter. They are vp8 ac/dc indices and their ranges are
 // 0-127. Based on WebRTC's defaults.
 constexpr uint8_t kMinQP = 4;
 // b/110059922, crbug.com/1001900: Tuned 112->117 for bitrate issue in a lower
 // resolution (180p).
 constexpr uint8_t kMaxQP = 117;
-// This stands for 32 as a real ac value (see rfc 14.1. table ac_qlookup).
-constexpr uint8_t kDefaultQP = 28;
 
 // The upper limitation of the quantization parameter for the software rate
 // controller. This is larger than |kMaxQP| because a driver might ignore the
@@ -145,12 +140,8 @@ Vp8FrameHeader GetDefaultVp8FrameHeader(bool keyframe,
 VP8VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
     : kf_period_frames(kKFPeriod),
       framerate(0),
-      cpb_window_size_ms(kCPBWindowSizeMs),
-      cpb_size_bits(0),
-      initial_qp(kDefaultQP),
       min_qp(kMinQP),
-      max_qp(kMaxQP),
-      error_resilient_mode(false) {}
+      max_qp(kMaxQP) {}
 
 void VP8VaapiVideoEncoderDelegate::Reset() {
   current_params_ = EncodeParams();
@@ -300,14 +291,6 @@ bool VP8VaapiVideoEncoderDelegate::UpdateRates(
 
   current_params_.bitrate_allocation = bitrate_allocation;
   current_params_.framerate = framerate;
-
-  base::CheckedNumeric<uint32_t> cpb_size_bits(bitrate);
-  cpb_size_bits /= 1000;
-  cpb_size_bits *= current_params_.cpb_window_size_ms;
-  if (!cpb_size_bits.AssignIfValid(&current_params_.cpb_size_bits)) {
-    VLOGF(1) << "Too large bitrate: " << bitrate_allocation.GetSumBps();
-    return false;
-  }
 
   rate_ctrl_->UpdateRateControl(CreateRateControlConfig(
       visible_size_, current_params_, bitrate_allocation));
