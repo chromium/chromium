@@ -15,6 +15,7 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 
 namespace {
 
@@ -28,6 +29,8 @@ SideSearchTabContentsHelper::~SideSearchTabContentsHelper() = default;
 
 void SideSearchTabContentsHelper::NavigateInTabContents(
     const content::OpenURLParams& params) {
+  web_contents()->GetMainFrame()->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kInteraction);
   web_contents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
 }
