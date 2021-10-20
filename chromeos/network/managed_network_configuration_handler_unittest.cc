@@ -996,9 +996,10 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   InitializeStandardProfiles();
   InitializeEuicc();
 
-  // Check transfer to NetworkStateHandler
+  // Check transfer to NetworkStateHandler. Expect one call for each policy
+  // application.
   EXPECT_CALL(*network_state_handler_, UpdateBlockedCellularNetworks(true))
-      .Times(1);
+      .Times(2);
 
   // Set 'AllowOnlyPolicyCellularNetworks' policy and another arbitrary cellular
   // policy.
