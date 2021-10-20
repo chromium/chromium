@@ -68,7 +68,16 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 
 @property(nonatomic, strong) OverflowMenuAction* reloadStopAction;
 @property(nonatomic, strong) OverflowMenuAction* openIncognitoTabAction;
+
 @property(nonatomic, strong) OverflowMenuAction* bookmarkAction;
+@property(nonatomic, strong) OverflowMenuAction* readLaterAction;
+@property(nonatomic, strong) OverflowMenuAction* translateAction;
+@property(nonatomic, strong) OverflowMenuAction* requestSiteAction;
+@property(nonatomic, strong) OverflowMenuAction* findInPageAction;
+@property(nonatomic, strong) OverflowMenuAction* textZoomAction;
+
+@property(nonatomic, strong) OverflowMenuAction* reportIssueAction;
+@property(nonatomic, strong) OverflowMenuAction* helpAction;
 
 @end
 
@@ -170,6 +179,8 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                     ^{
                                     });
 
+  // The reload action's handler depends on the page state, so it's set
+  // elsewhere.
   self.reloadStopAction = CreateOverflowMenuAction(
       IDS_IOS_TOOLS_MENU_RELOAD, @"overflow_menu_action_reload",
       ^{
@@ -192,11 +203,54 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
       IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark",
       ^{
       });
+  self.readLaterAction =
+      CreateOverflowMenuAction(IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST,
+                               @"overflow_menu_action_read_later",
+                               ^{
+                               });
+  self.translateAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_TRANSLATE, @"overflow_menu_action_bookmark",
+      ^{
+      });
+  self.requestSiteAction =
+      CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_REQUEST_DESKTOP_SITE,
+                               @"overflow_menu_action_request_desktop",
+                               ^{
+                               });
+  self.findInPageAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_FIND_IN_PAGE, @"overflow_menu_action_find_in_page",
+      ^{
+      });
+  self.textZoomAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_TEXT_ZOOM, @"overflow_menu_action_text_zoom",
+      ^{
+      });
 
   OverflowMenuActionGroup* pageActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"page_actions"
                                                  actions:@[
                                                    self.bookmarkAction,
+                                                   self.readLaterAction,
+                                                   self.translateAction,
+                                                   self.requestSiteAction,
+                                                   self.findInPageAction,
+                                                   self.textZoomAction,
+                                                 ]];
+
+  self.reportIssueAction = CreateOverflowMenuAction(
+      IDS_IOS_OPTIONS_REPORT_AN_ISSUE, @"overflow_menu_action_report_issue",
+      ^{
+      });
+  self.helpAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_HELP_MOBILE,
+                                             @"overflow_menu_action_help",
+                                             ^{
+                                             });
+
+  OverflowMenuActionGroup* helpActionsGroup =
+      [[OverflowMenuActionGroup alloc] initWithGroupName:@"help_actions"
+                                                 actions:@[
+                                                   self.reportIssueAction,
+                                                   self.helpAction,
                                                  ]];
 
   return [[OverflowMenuModel alloc] initWithDestinations:@[
@@ -212,6 +266,7 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                             actionGroups:@[
                                               appActionsGroup,
                                               pageActionsGroup,
+                                              helpActionsGroup,
                                             ]];
 }
 

@@ -12,11 +12,43 @@ imageset("overflow_menu_action_bookmark") {
   ]
 }
 
+imageset("overflow_menu_action_find_in_page") {
+  sources = [
+    "overflow_menu_action_find_in_page.imageset/Contents.json",
+    "overflow_menu_action_find_in_page.imageset/overflow_menu_action_find_in_page@2x.png",
+    "overflow_menu_action_find_in_page.imageset/overflow_menu_action_find_in_page@3x.png",
+  ]
+}
+
+imageset("overflow_menu_action_help") {
+  sources = [
+    "overflow_menu_action_help.imageset/Contents.json",
+    "overflow_menu_action_help.imageset/overflow_menu_action_help@2x.png",
+    "overflow_menu_action_help.imageset/overflow_menu_action_help@3x.png",
+  ]
+}
+
 imageset("overflow_menu_action_incognito") {
   sources = [
     "overflow_menu_action_incognito.imageset/Contents.json",
     "overflow_menu_action_incognito.imageset/overflow_menu_action_incognito@2x.png",
     "overflow_menu_action_incognito.imageset/overflow_menu_action_incognito@3x.png",
+  ]
+}
+
+imageset("overflow_menu_action_new_window") {
+  sources = [
+    "overflow_menu_action_new_window.imageset/Contents.json",
+    "overflow_menu_action_new_window.imageset/overflow_menu_action_new_window@2x.png",
+    "overflow_menu_action_new_window.imageset/overflow_menu_action_new_window@3x.png",
+  ]
+}
+
+imageset("overflow_menu_action_read_later") {
+  sources = [
+    "overflow_menu_action_read_later.imageset/Contents.json",
+    "overflow_menu_action_read_later.imageset/overflow_menu_action_read_later@2x.png",
+    "overflow_menu_action_read_later.imageset/overflow_menu_action_read_later@3x.png",
   ]
 }
 
@@ -28,11 +60,51 @@ imageset("overflow_menu_action_reload") {
   ]
 }
 
+imageset("overflow_menu_action_report_issue") {
+  sources = [
+    "overflow_menu_action_report_issue.imageset/Contents.json",
+    "overflow_menu_action_report_issue.imageset/overflow_menu_action_report_issue@2x.png",
+    "overflow_menu_action_report_issue.imageset/overflow_menu_action_report_issue@3x.png",
+  ]
+}
+
+imageset("overflow_menu_action_request_desktop") {
+  sources = [
+    "overflow_menu_action_request_desktop.imageset/Contents.json",
+    "overflow_menu_action_request_desktop.imageset/overflow_menu_action_request_desktop@2x.png",
+    "overflow_menu_action_request_desktop.imageset/overflow_menu_action_request_desktop@3x.png",
+  ]
+}
+
+imageset("overflow_menu_action_request_mobile") {
+  sources = [
+    "overflow_menu_action_request_mobile.imageset/Contents.json",
+    "overflow_menu_action_request_mobile.imageset/overflow_menu_action_request_mobile@2x.png",
+    "overflow_menu_action_request_mobile.imageset/overflow_menu_action_request_mobile@3x.png",
+  ]
+}
+
 imageset("overflow_menu_action_stop") {
   sources = [
     "overflow_menu_action_stop.imageset/Contents.json",
     "overflow_menu_action_stop.imageset/overflow_menu_action_stop@2x.png",
     "overflow_menu_action_stop.imageset/overflow_menu_action_stop@3x.png",
+  ]
+}
+
+imageset("overflow_menu_action_text_zoom") {
+  sources = [
+    "overflow_menu_action_text_zoom.imageset/Contents.json",
+    "overflow_menu_action_text_zoom.imageset/overflow_menu_action_text_zoom@2x.png",
+    "overflow_menu_action_text_zoom.imageset/overflow_menu_action_text_zoom@3x.png",
+  ]
+}
+
+imageset("overflow_menu_action_translate") {
+  sources = [
+    "overflow_menu_action_translate.imageset/Contents.json",
+    "overflow_menu_action_translate.imageset/overflow_menu_action_translate@2x.png",
+    "overflow_menu_action_translate.imageset/overflow_menu_action_translate@3x.png",
   ]
 }
 
