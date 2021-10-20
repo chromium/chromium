@@ -27,7 +27,6 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   When changing this variant changes need to verified against histograms there.
 -->
 
-  <variant name="" summary="Any scenario."/>
   <variant name=".AllTabsHidden" summary="Chrome had tabs, but none visible"/>
   <variant name=".Audio"
       summary="Chrome had at least 1 visible tab and was audible, but there
@@ -129,14 +128,25 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryDischargeMode{UsageScenario}"
-    enum="BatteryDischargeMode" expires_after="2021-11-26">
+<histogram name="Power.BatteryDischargeMode" enum="BatteryDischargeMode"
+    expires_after="2021-11-26">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
     Battery discharge mode describing whether BatteryDischargeRate2 could be
     reported or not, and why. Reported every time the battery charge level is
     sampled. This is reported on Mac and Windows. See
+    go/chrome_power_use_per_scenario for more details.
+  </summary>
+</histogram>
+
+<histogram name="Power.BatteryDischargeMode{UsageScenario}"
+    enum="BatteryDischargeMode" expires_after="2021-11-26">
+  <owner>etiennep@chromium.org</owner>
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    See definition of Power.BatteryDischargeMode. This histogram is reported
+    when the browser is under the {UsageScenario} usage scenario. See
     go/chrome_power_use_per_scenario for more details.
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
@@ -152,8 +162,8 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryDischargeRate2{UsageScenario}"
-    units="hundredth of percent" expires_after="2021-11-26">
+<histogram name="Power.BatteryDischargeRate2" units="hundredth of percent"
+    expires_after="2021-11-26">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -164,6 +174,18 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
     mAh; - Discharge proportion: (3900-3700) / 4000 = 0.05 - Reported value:
     500. This metric is only recorded when on battery power. This is reported on
     Mac and Windows. See go/chrome_power_use_per_scenario for more details.
+  </summary>
+</histogram>
+
+<histogram name="Power.BatteryDischargeRate2{UsageScenario}"
+    units="hundredth of percent" expires_after="2021-11-26">
+  <owner>etiennep@chromium.org</owner>
+  <owner>olivierli@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    See definition of Power.BatteryDischargeRate2. This histogram is reported
+    when the browser is under the {UsageScenario} usage scenario. See
+    go/chrome_power_use_per_scenario for more details.
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
