@@ -30,14 +30,14 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
-  int divisor = 0;
-  if (!base::StringToInt(argv[1], &divisor)) {
-    LOG(INFO) << argv[0] << ": invalid divisor '" << argv[1] << "'";
+  int dividend = 0;
+  if (!base::StringToInt(argv[1], &dividend)) {
+    LOG(INFO) << argv[0] << ": invalid dividend '" << argv[1] << "'";
     return -1;
   }
 
-  int dividend = 0;
-  if (!base::StringToInt(argv[2], &dividend) || dividend == 0) {
+  int divisor = 0;
+  if (!base::StringToInt(argv[2], &divisor) || divisor == 0) {
     LOG(INFO) << argv[0] << ": invalid divisor '" << argv[2] << "'";
     return -1;
   }
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
   math::MathService math_service_impl(
       math_service.BindNewPipeAndPassReceiver());
 
-  math_service->Divide(divisor, dividend,
+  math_service->Divide(dividend, divisor,
                        base::BindOnce(
                            [](base::OnceClosure quit, int32_t quotient) {
                              LOG(INFO) << "Quotient: " << quotient;
