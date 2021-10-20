@@ -956,7 +956,16 @@ const FeatureEntry::Choice kMemlogSamplingRateChoices[] = {
      heap_profiling::kMemlogSamplingRate5MB},
 };
 
-const FeatureEntry::FeatureParam kPageContentAnnotationsParams[] = {
+const FeatureEntry::FeatureParam kPageContentAnnotationsContentParams[] = {
+    {"annotate_title_instead_of_page_content", "false"},
+    {"extract_related_searches", "true"},
+    {"max_size_for_text_dump_in_bytes", "5120"},
+    {"models_to_execute",
+     "OPTIMIZATION_TARGET_PAGE_TOPICS,OPTIMIZATION_TARGET_PAGE_ENTITIES"},
+    {"write_to_history_service", "true"},
+};
+const FeatureEntry::FeatureParam kPageContentAnnotationsTitleParams[] = {
+    {"annotate_title_instead_of_page_content", "true"},
     {"extract_related_searches", "true"},
     {"max_size_for_text_dump_in_bytes", "5120"},
     {"models_to_execute",
@@ -964,8 +973,12 @@ const FeatureEntry::FeatureParam kPageContentAnnotationsParams[] = {
     {"write_to_history_service", "true"},
 };
 const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
-    {"All Annotations and Persistence", kPageContentAnnotationsParams,
-     base::size(kPageContentAnnotationsParams), nullptr},
+    {"All Annotations and Persistence on Content",
+     kPageContentAnnotationsContentParams,
+     base::size(kPageContentAnnotationsContentParams), nullptr},
+    {"All Annotations and Persistence on Title",
+     kPageContentAnnotationsTitleParams,
+     base::size(kPageContentAnnotationsTitleParams), nullptr},
 };
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
