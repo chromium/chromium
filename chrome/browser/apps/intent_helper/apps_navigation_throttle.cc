@@ -184,16 +184,6 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
       provider->registrar().IsTabbedWindowModeEnabled(*app_id);
   bool tabbed_link_capturing =
       base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripLinkCapturing);
-  bool web_apps_integrated_into_intent_handling =
-      base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence);
-
-  // This particular link capturing code path only applies to tabbed web app
-  // link capturing and the version of declarative link capturing that has not
-  // yet integrated with app service's intent handling system.
-  if ((!app_in_tabbed_mode || !tabbed_link_capturing) &&
-      web_apps_integrated_into_intent_handling) {
-    return absl::nullopt;
-  }
 
   auto* tab_helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
   if (tab_helper && tab_helper->GetAppId() == *app_id) {
