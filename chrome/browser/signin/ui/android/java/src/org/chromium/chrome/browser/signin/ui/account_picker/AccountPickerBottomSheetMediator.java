@@ -9,7 +9,6 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.view.View.OnClickListener;
 
 import androidx.annotation.Nullable;
 
@@ -50,16 +49,14 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     private @Nullable String mAddedAccountName;
 
     AccountPickerBottomSheetMediator(WindowAndroid windowAndroid,
-            AccountPickerDelegate accountPickerDelegate, Runnable dismissBottomSheetRunnable) {
+            AccountPickerDelegate accountPickerDelegate, Runnable onDismissButtonClicked) {
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
         mAccountPickerDelegate = accountPickerDelegate;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity);
 
-        OnClickListener onDismissClicked = v -> dismissBottomSheetRunnable.run();
-
-        mModel = AccountPickerBottomSheetProperties.createModel(
-                this::onSelectedAccountClicked, this::onContinueAsClicked, onDismissClicked);
+        mModel = AccountPickerBottomSheetProperties.createModel(this::onSelectedAccountClicked,
+                this::onContinueAsClicked, view -> onDismissButtonClicked.run());
         mProfileDataCache.addObserver(this);
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
