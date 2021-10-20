@@ -84,8 +84,9 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
 
   void UnregisterDataSource(const std::string& name) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // TODO(skyostil): Implement data source unregistering.
-    NOTREACHED();
+    // TODO(skyostil): Implement data source unregistering. Data sources are
+    // currently only unregistered in tests, and because the tracing service is
+    // also torn down at the same time, we can ignore unregistrations here.
   }
 
   void RegisterTraceWriter(uint32_t writer_id,

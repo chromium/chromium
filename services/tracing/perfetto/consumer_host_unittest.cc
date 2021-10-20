@@ -302,6 +302,7 @@ class TracingConsumerTest : public testing::Test,
                             public mojo::DataPipeDrainer::Client {
  public:
   void SetUp() override {
+    task_environment_ = std::make_unique<base::test::TaskEnvironment>();
     PerfettoTracedProcess::ResetTaskRunnerForTesting();
     PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
     threaded_service_ = std::make_unique<ThreadedPerfettoService>();
@@ -310,7 +311,12 @@ class TracingConsumerTest : public testing::Test,
     total_bytes_received_ = 0;
   }
 
-  void TearDown() override { threaded_service_.reset(); }
+  void TearDown() override {
+    threaded_service_.reset();
+    task_environment_->RunUntilIdle();
+    PerfettoTracedProcess::TearDownForTesting();
+    task_environment_.reset();
+  }
 
   // mojo::DataPipeDrainer::Client
   void OnDataAvailable(const void* data, size_t num_bytes) override {
@@ -420,7 +426,7 @@ class TracingConsumerTest : public testing::Test,
   bool IsTracingEnabled() {
     // Flush any other pending tasks on the perfetto task runner to ensure that
     // any pending data source start callbacks have propagated.
-    task_environment_.RunUntilIdle();
+    task_environment_->RunUntilIdle();
 
     return threaded_service_->IsTracingEnabled();
   }
@@ -433,7 +439,7 @@ class TracingConsumerTest : public testing::Test,
 
  private:
   std::unique_ptr<ThreadedPerfettoService> threaded_service_;
-  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   base::OnceClosure on_data_complete_;
   std::unique_ptr<mojo::DataPipeDrainer> drainer_;
   std::vector<uint8_t> received_data_;

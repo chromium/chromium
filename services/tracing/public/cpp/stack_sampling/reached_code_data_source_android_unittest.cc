@@ -53,6 +53,7 @@ class ReachedCodeDataSourceTest : public testing::Test {
   void TearDown() override {
     // Be sure there is no pending/running tasks.
     task_environment_.RunUntilIdle();
+    PerfettoTracedProcess::TearDownForTesting();
   }
 
   void BeginTrace() {

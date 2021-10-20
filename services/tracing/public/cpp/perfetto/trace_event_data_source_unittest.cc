@@ -2007,8 +2007,6 @@ TEST_F(TraceEventDataSourceNoInterningTest, MAYBE_InterningScopedToPackets) {
 #define MAYBE_StartupTracingTimeout StartupTracingTimeout
 #endif
 TEST_F(TraceEventDataSourceTest, MAYBE_StartupTracingTimeout) {
-  PerfettoTracedProcess::ResetTaskRunnerForTesting(
-      base::SequencedTaskRunnerHandle::Get());
   constexpr char kStartupTestEvent1[] = "startup_registry";
   auto* data_source = TraceEventDataSource::GetInstance();
   PerfettoTracedProcess::Get()->AddDataSource(data_source);

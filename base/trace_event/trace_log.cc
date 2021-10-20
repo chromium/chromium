@@ -1172,7 +1172,20 @@ void TraceLog::SetDisabledWhileLocked(uint8_t modes_to_disable) {
   metadata_events_.clear();
 
   perfetto::TrackEvent::Flush();
-  tracing_session_->StopBlocking();
+  // If the current thread has an active task runner, allow nested tasks to run
+  // while stopping the session. This is needed by some tests, e.g., to allow
+  // data sources to properly flush themselves.
+  if (ThreadTaskRunnerHandle::IsSet()) {
+    RunLoop stop_loop(RunLoop::Type::kNestableTasksAllowed);
+    auto quit_closure = stop_loop.QuitClosure();
+    tracing_session_->SetOnStopCallback(
+        [&quit_closure] { quit_closure.Run(); });
+    tracing_session_->Stop();
+    AutoUnlock unlock(lock_);
+    stop_loop.Run();
+  } else {
+    tracing_session_->StopBlocking();
+  }
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (!(enabled_modes_ & modes_to_disable))
     return;
@@ -2217,10 +2230,12 @@ void TraceLog::set_process_name(const std::string& process_name) {
     process_name_ = process_name;
   }
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  auto track = perfetto::ProcessTrack::Current();
-  auto desc = track.Serialize();
-  desc.mutable_process()->set_process_name(process_name);
-  perfetto::TrackEvent::SetTrackDescriptor(track, std::move(desc));
+  if (perfetto::Tracing::IsInitialized()) {
+    auto track = perfetto::ProcessTrack::Current();
+    auto desc = track.Serialize();
+    desc.mutable_process()->set_process_name(process_name);
+    perfetto::TrackEvent::SetTrackDescriptor(track, std::move(desc));
+  }
 #endif
 }
 

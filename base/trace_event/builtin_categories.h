@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/tracing_buildflags.h"
+#include "build/build_config.h"
 
 // List of builtin category names. If you want to use a new category name in
 // your code and you get a static assert, this is the right place to register
@@ -294,6 +295,7 @@
   X("browser,startup")                                                        \
   X("category1,category2")                                                    \
   X("cc,benchmark")                                                           \
+  X("cc,benchmark,input")                                                     \
   X("cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))     \
   X("cc,input")                                                               \
   X("cc,raf_investigation")                                                   \

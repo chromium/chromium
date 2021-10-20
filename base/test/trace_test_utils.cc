@@ -93,6 +93,7 @@ TracingEnvironment::~TracingEnvironment() {
     // Wait for any posted destruction tasks to execute.
     task_environment_->RunUntilIdle();
   }
+  perfetto::Tracing::ResetForTesting();
 }
 
 // static

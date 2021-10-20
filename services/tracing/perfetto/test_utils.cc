@@ -444,6 +444,7 @@ void TracingUnitTest::SetUp() {
   PerfettoTracedProcess::ResetTaskRunnerForTesting(
       base::ThreadTaskRunnerHandle::Get());
   PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
+  PerfettoTracedProcess::Get()->OnThreadPoolAvailable();
 
   // Wait for any posted construction tasks to execute.
   RunUntilIdle();
@@ -463,6 +464,7 @@ void TracingUnitTest::TearDown() {
   PerfettoTracedProcess::Get()->GetTaskRunner()->ResetTaskRunnerForTesting(
       nullptr);
   PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
+  PerfettoTracedProcess::TearDownForTesting();
 }
 
 }  // namespace tracing

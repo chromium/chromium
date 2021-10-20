@@ -52,6 +52,8 @@ class SystemTracingServiceTest : public testing::Test {
     } else {
       ASSERT_EQ(0, unsetenv(kProducerSockEnvName));
     }
+    task_environment_.RunUntilIdle();
+    PerfettoTracedProcess::TearDownForTesting();
   }
 
  protected:

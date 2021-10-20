@@ -170,7 +170,6 @@ DataSourceTester::DataSourceTester(
 {
   features_.InitAndDisableFeature(features::kEnablePerfettoSystemTracing);
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  tracing::PerfettoTracedProcess::ResetTaskRunnerForTesting();
   auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
       base::ThreadTaskRunnerHandle::Get());
 
@@ -179,11 +178,7 @@ DataSourceTester::DataSourceTester(
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
-DataSourceTester::~DataSourceTester() {
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  tracing::PerfettoTracedProcess::ResetTaskRunnerForTesting();
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-}
+DataSourceTester::~DataSourceTester() = default;
 
 void DataSourceTester::BeginTrace(
     const base::trace_event::TraceConfig& trace_config) {
