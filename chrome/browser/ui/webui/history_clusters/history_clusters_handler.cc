@@ -114,6 +114,8 @@ absl::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
   return search_query_mojom;
 }
 
+}  // namespace
+
 // Creates a `mojom::QueryResultPtr` using the original `query`, if the query
 // was a continuation one, and the result of querying HistoryClustersService.
 mojom::QueryResultPtr QueryClustersResultToMojom(Profile* profile,
@@ -176,8 +178,6 @@ mojom::QueryResultPtr QueryClustersResultToMojom(Profile* profile,
   result_mojom->clusters = std::move(cluster_mojoms);
   return result_mojom;
 }
-
-}  // namespace
 
 HistoryClustersHandler::HistoryClustersHandler(
     mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,

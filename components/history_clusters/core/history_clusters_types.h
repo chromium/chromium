@@ -30,7 +30,7 @@ struct Visit {
   // A list of visits that have been de-duplicated into this visit.
   std::vector<Visit> duplicate_visits;
 
-  // The normalized URL for the visit (i.e. a SRP URL normalized based on the
+  // The normalized URL for the visit (i.e. an SRP URL normalized based on the
   // user's default search provider).
   GURL normalized_url;
 };
@@ -51,7 +51,7 @@ struct Cluster {
   // The keywords associated with this cluster that should never be explicitly
   // presented within the UI.
   // TODO(tommycli): Eliminate this field after removing the usage in
-  // `PopulateClusterKeywordCache()`.
+  //  `PopulateClusterKeywordCache()`.
   std::vector<std::u16string> keywords;
 };
 
