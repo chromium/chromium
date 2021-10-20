@@ -185,6 +185,8 @@ source_set("wayland") {
       "zcr_remote_shell_v2.h",
       "zcr_stylus_tools.cc",
       "zcr_stylus_tools.h",
+      "zwp_idle_inhibit_manager.cc",
+      "zwp_idle_inhibit_manager.h",
       "zwp_input_timestamps_manager.cc",
       "zwp_input_timestamps_manager.h",
       "zwp_pointer_constraints.cc",
@@ -210,7 +212,10 @@ source_set("wayland") {
       ]
     }
 
-    deps += [ "//ui/base/cursor/mojom:cursor_type" ]
+    deps += [
+      "//third_party/wayland-protocols:idle_inhibit_protocol",
+      "//ui/base/cursor/mojom:cursor_type",
+    ]
 
     if (enable_weston_test) {
       testonly = true

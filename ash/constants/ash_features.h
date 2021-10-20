@@ -173,6 +173,8 @@ extern const base::Feature kEnableFilesAppCopyImage;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableHostnameSetting;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEnableIdleInhibit;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableInputInDiagnosticsApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableInputNoiseCancellationUi;
@@ -515,6 +517,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsHoldingSpaceIncognitoProfileIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHpsNotifyEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsIdleInhibitEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputNoiseCancellationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

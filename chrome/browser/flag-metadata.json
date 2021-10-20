@@ -2072,6 +2072,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "enable-idle-inhibit",
+    "owners": [ "aswolfers" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-image-reader",
     "owners": [ "vikassoni", "liberato" ],
     "expiry_milestone": 115

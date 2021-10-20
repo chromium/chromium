@@ -4541,6 +4541,10 @@ const char kEcheSWAResizingDescription[] =
 const char kEcheSWADebugModeName[] = "Enable Eche Debug Mode";
 const char kEcheSWADebugModeDescription[] = "Enable the Debug Mode of the Eche";
 
+const char kEnableIdleInhibitName[] = "Enable Idle Inhibit Protocol";
+const char kEnableIdleInhibitDescription[] =
+    "Enables the Wayland idle-inhibit-unstable-v1 protocol";
+
 const char kEnableNetworkingInDiagnosticsAppName[] =
     "Enable networking cards in the Diagnostics App";
 const char kEnableNetworkingInDiagnosticsAppDescription[] =

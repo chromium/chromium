@@ -73,6 +73,8 @@
 #include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <idle-inhibit-unstable-v1-server-protocol.h>
+#include "ash/constants/ash_features.h"
 #include "base/system/sys_info.h"
 #include "components/exo/wayland/wl_shell.h"
 #include "components/exo/wayland/xdg_shell.h"
@@ -86,6 +88,7 @@
 #include "components/exo/wayland/zcr_remote_shell.h"
 #include "components/exo/wayland/zcr_remote_shell_v2.h"
 #include "components/exo/wayland/zcr_stylus_tools.h"
+#include "components/exo/wayland/zwp_idle_inhibit_manager.h"
 #include "components/exo/wayland/zwp_input_timestamps_manager.h"
 #include "components/exo/wayland/zwp_pointer_constraints.h"
 #include "components/exo/wayland/zwp_pointer_gestures.h"
@@ -104,6 +107,7 @@
 #include <color-management-unstable-v1-server-protocol.h>
 #include "components/exo/wayland/zwp_color_manager.h"
 #endif
+
 #endif
 
 #if defined(USE_OZONE)
@@ -125,7 +129,8 @@ namespace switches {
 // useful when another wayland server is already running and using the
 // default name.
 constexpr char kWaylandServerSocket[] = "wayland-server-socket";
-}
+
+}  // namespace switches
 
 namespace {
 
@@ -262,6 +267,10 @@ void Server::Initialize() {
                    display_, bind_extended_drag);
   wl_global_create(wl_display_.get(), &zxdg_output_manager_v1_interface, 3,
                    display_, bind_zxdg_output_manager);
+  if (ash::features::IsIdleInhibitEnabled()) {
+    wl_global_create(wl_display_.get(), &zwp_idle_inhibit_manager_v1_interface,
+                     1, display_, bind_zwp_idle_inhibit_manager);
+  }
 
 #if BUILDFLAG(ENABLE_WESTON_TEST)
   weston_test_data_ = std::make_unique<WestonTestState>();

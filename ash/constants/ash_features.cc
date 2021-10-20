@@ -433,6 +433,13 @@ const base::Feature kEnableDnsProxy{"EnableDnsProxy",
 const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the Wayland idle-inhibit-unstable-v1 protocol is enabled.
+// On Ash, it determines whether the idle inhibit manager is bound by the exo
+// Wayland server. On Lacros, it determines whether the power save blocker is
+// invoked via Ozone Wayland (if enabled) or via crosapi (if disabled).
+const base::Feature kEnableIdleInhibit{"EnableIdleInhibit",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the input device cards will be shown in the diagnostics app.
 const base::Feature kEnableInputInDiagnosticsApp{
     "EnableInputInDiagnosticsApp", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1440,6 +1447,10 @@ bool IsHostnameSettingEnabled() {
 
 bool IsHpsNotifyEnabled() {
   return base::FeatureList::IsEnabled(kHpsNotify);
+}
+
+bool IsIdleInhibitEnabled() {
+  return base::FeatureList::IsEnabled(kEnableIdleInhibit);
 }
 
 bool IsInputInDiagnosticsAppEnabled() {

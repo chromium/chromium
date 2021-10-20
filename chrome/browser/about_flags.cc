@@ -13,7 +13,6 @@
 #include <set>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
@@ -7751,6 +7750,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharesheetCopyToClipboardName,
      flag_descriptions::kSharesheetCopyToClipboardDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kSharesheetCopyToClipboard)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-idle-inhibit", flag_descriptions::kEnableIdleInhibitName,
+     flag_descriptions::kEnableIdleInhibitDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableIdleInhibit)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
