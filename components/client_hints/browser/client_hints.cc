@@ -8,17 +8,76 @@
 
 #include "components/client_hints/browser/client_hints.h"
 
+#include "base/command_line.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/client_hints/common/client_hints.h"
+#include "components/client_hints/common/switches.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace client_hints {
+
+namespace {
+base::flat_map<url::Origin, std::vector<network::mojom::WebClientHintsType>>
+ParseInitializeClientHintsStroage() {
+  auto results =
+      base::flat_map<url::Origin,
+                     std::vector<network::mojom::WebClientHintsType>>();
+
+  std::string raw_client_hint_json =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kInitializeClientHintsStorage);
+
+  absl::optional<base::Value> maybe_value =
+      base::JSONReader::Read(raw_client_hint_json);
+
+  if (!maybe_value || !maybe_value->is_dict()) {
+    LOG(WARNING)
+        << "The 'initialize-client-hints-storage' switch value could not be "
+        << "properly parsed.";
+    return {};
+  }
+
+  for (auto entry : maybe_value->DictItems()) {
+    url::Origin origin = url::Origin::Create(GURL(entry.first));
+    if (origin.opaque() || origin.scheme() != url::kHttpsScheme) {
+      LOG(WARNING)
+          << "The url '" << entry.first
+          << "' cannot be associated to client hints and will be ignored.";
+      continue;
+    }
+
+    if (!entry.second.is_string()) {
+      LOG(WARNING) << "The value associated with the origin \""
+                   << origin.Serialize() << "\" could not be recognized as a "
+                   << "valid string and will be ignored.";
+      continue;
+    }
+
+    absl::optional<std::vector<network::mojom::WebClientHintsType>>
+        maybe_parsed_accept_ch =
+            network::ParseClientHintsHeader(entry.second.GetString());
+
+    if (!maybe_parsed_accept_ch) {
+      LOG(WARNING) << "Could not parse the following client hint token list: "
+                   << entry.second.GetString();
+      continue;
+    }
+
+    results[origin] = maybe_parsed_accept_ch.value();
+  }
+
+  return results;
+}
+
+}  // namespace
 
 ClientHints::ClientHints(
     content::BrowserContext* context,
@@ -35,6 +94,17 @@ ClientHints::ClientHints(
   DCHECK(network_quality_tracker_);
   DCHECK(settings_map_);
   DCHECK(cookie_settings_);
+
+  if (!context->IsOffTheRecord() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kInitializeClientHintsStorage)) {
+    auto command_line_hints = ParseInitializeClientHintsStroage();
+
+    for (const auto& origin_hints_pair : command_line_hints) {
+      PersistClientHints(origin_hints_pair.first, origin_hints_pair.second,
+                         base::Days(1000000));
+    }
+  }
 }
 
 ClientHints::~ClientHints() = default;

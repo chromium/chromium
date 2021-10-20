@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cctype>
+#include <cstddef>
 #include <memory>
 
 #include "base/base_switches.h"
@@ -17,15 +18,19 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/client_hints/common/switches.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -168,6 +173,13 @@ bool IsSimilarToIntABNF(const std::string& header_value) {
   return true;
 }
 
+void OnUnblockOnProfileCreation(base::RunLoop* run_loop,
+                                Profile* profile,
+                                Profile::CreateStatus status) {
+  if (status == Profile::CREATE_STATUS_INITIALIZED)
+    run_loop->Quit();
+}
+
 }  // namespace
 
 class ClientHintsBrowserTest : public InProcessBrowserTest,
@@ -293,6 +305,10 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
     accept_ch_empty_ = https_server_.GetURL("/accept_ch_empty.html");
     http_equiv_accept_ch_merge_ =
         https_server_.GetURL("/http_equiv_accept_ch_merge.html");
+
+    without_accept_ch_without_lifetime_cross_origin_ =
+        https_cross_origin_server_.GetURL(
+            "/without_accept_ch_without_lifetime.html");
   }
 
   ClientHintsBrowserTest(const ClientHintsBrowserTest&) = delete;
@@ -368,6 +384,8 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
   }
 
   void TestProfilesIndependent(Browser* browser_a, Browser* browser_b);
+  void TestSwitchWithNewProfile(const std::string& switch_value,
+                                size_t origins_stored);
 
   const GURL& accept_ch_with_lifetime_http_local_url() const {
     return accept_ch_with_lifetime_http_local_url_;
@@ -476,6 +494,10 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
     return http_equiv_accept_ch_merge_;
   }
 
+  const GURL& without_accept_ch_without_lifetime_cross_origin() {
+    return without_accept_ch_without_lifetime_cross_origin_;
+  }
+
   GURL GetHttp2Url(const std::string& relative_url) const {
     return http2_server_.GetURL(relative_url);
   }
@@ -529,6 +551,21 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
   std::string intercept_iframe_resource_;
   bool intercept_to_http_equiv_iframe_ = false;
   mutable base::Lock count_headers_lock_;
+
+  Profile* GenerateNewProfile() {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    base::FilePath current_profile_path = browser()->profile()->GetPath();
+
+    // Create an additional profile.
+    base::FilePath new_path =
+        profile_manager->GenerateNextProfileDirectoryPath();
+    base::RunLoop run_loop;
+    profile_manager->CreateProfileAsync(
+        new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop));
+    run_loop.Run();
+
+    return profile_manager->GetProfile(new_path);
+  }
 
  private:
   // Intercepts only the main frame requests that contain
@@ -849,6 +886,7 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
   GURL redirect_url_;
   GURL accept_ch_empty_;
   GURL http_equiv_accept_ch_merge_;
+  GURL without_accept_ch_without_lifetime_cross_origin_;
 
   std::string main_frame_ua_observed_;
   std::string main_frame_ua_full_version_observed_;
@@ -3575,4 +3613,117 @@ IN_PROC_BROWSER_TEST_F(
                           /*ch_ua_reduced_expected=*/true);
   NavigateAndCheckHeaders(top_level_with_iframe_redirect_url(),
                           /*ch_ua_reduced_expected=*/true);
+}
+
+// CrOS multi-profiles implementation is too different for these tests.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
+void ClientHintsBrowserTest::TestSwitchWithNewProfile(
+    const std::string& switch_value,
+    size_t origins_stored) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      client_hints::switches::kInitializeClientHintsStorage, switch_value);
+
+  Profile* profile = GenerateNewProfile();
+  Browser* browser = CreateBrowser(profile);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser, without_accept_ch_without_lifetime_url()));
+
+  ContentSettingsForOneType host_settings;
+
+  // Clients hints preferences for one origin should be persisted.
+  HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
+      ContentSettingsType::CLIENT_HINTS, &host_settings);
+  EXPECT_EQ(origins_stored, host_settings.size());
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, SwitchAppliesStorage) {
+  TestSwitchWithNewProfile(
+      "{\"https://a.test\":\"Sec-CH-UA-Full-Version\", "
+      "\"https://b.test\":\"Sec-CH-UA-Full-Version\"}",
+      2);
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, SwitchNotJson) {
+  TestSwitchWithNewProfile("foo", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, SwitchOriginNotSecure) {
+  TestSwitchWithNewProfile("{\"http://a.test\":\"Sec-CH-UA-Full-Version\"}", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, SwitchAcceptCHInvalid) {
+  TestSwitchWithNewProfile("{\"https://a.test\":\"Not Valid\"}", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, SwitchAppliesStorageOneOrigin) {
+  TestSwitchWithNewProfile(
+      "{\"https://a.test\":\"Sec-CH-UA-Full-Version\", "
+      "\"https://b.test\":\"Not Valid\"}",
+      1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+class ClientHintsCommandLineSwitchBrowserTest : public ClientHintsBrowserTest {
+ public:
+  ClientHintsCommandLineSwitchBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    ClientHintsBrowserTest::SetUpCommandLine(cmd);
+    std::string server_origin =
+        url::Origin::Create(accept_ch_with_lifetime_url()).Serialize();
+
+    std::vector<std::string> accept_ch_tokens;
+    for (const auto& pair : network::GetClientHintToNameMap())
+      accept_ch_tokens.push_back(pair.second);
+
+    cmd->AppendSwitchASCII(
+        client_hints::switches::kInitializeClientHintsStorage,
+        base::StringPrintf("{\"%s\":\"%s\"}", server_origin.c_str(),
+                           base::JoinString(accept_ch_tokens, ",").c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ClientHintsCommandLineSwitchBrowserTest,
+                       NavigationToDifferentOrigins) {
+  SetClientHintExpectationsOnMainFrame(true);
+  SetClientHintExpectationsOnSubresources(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), without_accept_ch_without_lifetime_url()));
+
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), without_accept_ch_without_lifetime_cross_origin()));
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsCommandLineSwitchBrowserTest,
+                       ClearHintsWithAcceptCH) {
+  SetClientHintExpectationsOnMainFrame(true);
+  SetClientHintExpectationsOnSubresources(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), without_accept_ch_without_lifetime_url()));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), accept_ch_empty()));
+
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), without_accept_ch_without_lifetime_url()));
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsCommandLineSwitchBrowserTest,
+                       StorageNotPresentInOffTheRecordProfile) {
+  SetClientHintExpectationsOnMainFrame(true);
+  SetClientHintExpectationsOnSubresources(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), without_accept_ch_without_lifetime_url()));
+
+  // OTR profile should get neither.
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      otr_browser, without_accept_ch_without_lifetime_url()));
 }

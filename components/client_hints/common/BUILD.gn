@@ -6,6 +6,8 @@ source_set("common") {
   sources = [
     "client_hints.cc",
     "client_hints.h",
+    "switches.cc",
+    "switches.h",
   ]
   deps = [
     "//components/content_settings/core/common",
