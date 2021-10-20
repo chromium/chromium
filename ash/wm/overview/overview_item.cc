@@ -211,6 +211,11 @@ void OverviewItem::HideForDesksTemplatesGrid() {
   transform_window_.window()->layer()->SetOpacity(0.0f);
   item_widget_->GetLayer()->SetOpacity(0.0f);
 
+  for (aura::Window* transient_child :
+       GetTransientTreeIterator(transform_window_.window())) {
+    transient_child->layer()->SetOpacity(0.0f);
+  }
+
   item_widget_event_blocker_ =
       std::make_unique<aura::ScopedWindowEventTargetingBlocker>(
           item_widget_->GetNativeWindow());
