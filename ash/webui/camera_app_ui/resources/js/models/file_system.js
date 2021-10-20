@@ -156,7 +156,7 @@ export async function createVideoFile(videoType) {
 /**
  * @type {string}
  */
-const PRIVATE_TEMPFILE_NAME = 'video-intent.mkv';
+const PRIVATE_TEMPFILE_NAME = 'video-intent.mp4';
 
 /**
  * @return {!Promise<!FileAccessEntry>} Newly created temporary file.
