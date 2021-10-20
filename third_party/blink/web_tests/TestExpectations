@@ -3835,7 +3835,6 @@ crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-enco
 crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=x-cp1251 [ Failure Timeout ]
 crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=utf8 [ Failure Timeout ]
 
-crbug.com/626703 external/wpt/css/css-transforms/transform-box/view-box-mutation-001.html [ Failure ]
 crbug.com/626703 external/wpt/fetch/security/redirect-to-url-with-credentials.https.html [ Timeout ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path-svg-content/clip-path-shape-circle-003.svg [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path-svg-content/clip-path-shape-circle-004.svg [ Failure ]
@@ -6422,13 +6421,15 @@ crbug.com/1210199 http/tests/devtools/elements/elements-panel-restore-selection-
 crbug.com/1199522 http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Failure Pass ]
 
 # Failing css-transforms-2 web platform tests.
-crbug.com/753080 external/wpt/css/css-transforms/transform3d-sorting-002.html [ Failure ]
+crbug.com/847356 external/wpt/css/css-transforms/transform-box/view-box-mutation-001.html [ Failure ]
 
-external/wpt/css/css-transforms/transform-fixed-bg-002.html [ Failure ]
-external/wpt/css/css-transforms/transform-fixed-bg-004.html [ Failure ]
-external/wpt/css/css-transforms/transform-fixed-bg-005.html [ Failure ]
-external/wpt/css/css-transforms/transform-fixed-bg-006.html [ Failure ]
-external/wpt/css/css-transforms/transform-fixed-bg-007.html [ Failure ]
+crbug.com/1261895 external/wpt/css/css-transforms/transform3d-sorting-002.html [ Failure ]
+
+crbug.com/1261900 external/wpt/css/css-transforms/transform-fixed-bg-002.html [ Failure ]
+crbug.com/1261900 external/wpt/css/css-transforms/transform-fixed-bg-004.html [ Failure ]
+crbug.com/1261900 external/wpt/css/css-transforms/transform-fixed-bg-005.html [ Failure ]
+crbug.com/1261900 external/wpt/css/css-transforms/transform-fixed-bg-006.html [ Failure ]
+crbug.com/1261900 external/wpt/css/css-transforms/transform-fixed-bg-007.html [ Failure ]
 # Started failing after rolling new version of check-layout-th.js
 css3/flexbox/perpendicular-writing-modes-inside-flex-item.html [ Failure ]
 
