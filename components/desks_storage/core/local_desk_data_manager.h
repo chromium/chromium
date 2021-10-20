@@ -16,9 +16,9 @@
 #include "components/desks_storage/core/desk_model.h"
 
 namespace ash {
-class DesksTemplatesTest;
 class DeskTemplate;
-}
+class OverviewTestBase;
+}  // namespace ash
 
 namespace desks_storage {
 // The LocalDeskDataManager is the local storage implementation of
@@ -66,7 +66,7 @@ class LocalDeskDataManager : public DeskModel {
   bool IsSyncing() const override;
 
  private:
-  friend class ash::DesksTemplatesTest;
+  friend class ash::OverviewTestBase;
 
   // Loads desk templates from |local_path_| into cache if the cache is not
   // loaded yet.

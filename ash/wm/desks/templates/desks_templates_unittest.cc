@@ -9,7 +9,6 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/test_shell_delegate.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_delete_button.h"
@@ -23,13 +22,10 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/desks_storage/core/local_desk_data_manager.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -37,22 +33,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
-
-class CustomTestShellDelegate : public TestShellDelegate {
- public:
-  explicit CustomTestShellDelegate(desks_storage::DeskModel* desk_model)
-      : desk_model_(desk_model) {}
-  CustomTestShellDelegate(const CustomTestShellDelegate&) = delete;
-  CustomTestShellDelegate& operator=(const CustomTestShellDelegate&) = delete;
-  ~CustomTestShellDelegate() override = default;
-
-  // TestShellDelegate:
-  desks_storage::DeskModel* GetDeskModel() override { return desk_model_; }
-
- private:
-  // The desk model for the desks templates feature.
-  desks_storage::DeskModel* const desk_model_;
-};
 
 // Wrapper for DesksTemplatesPresenter that exposes internal state to test
 // functions.
@@ -133,10 +113,6 @@ class DesksTemplatesTest : public OverviewTestBase {
   DesksTemplatesTest(const DesksTemplatesTest&) = delete;
   DesksTemplatesTest& operator=(const DesksTemplatesTest&) = delete;
   ~DesksTemplatesTest() override = default;
-
-  desks_storage::LocalDeskDataManager* desk_model() {
-    return desk_model_.get();
-  }
 
   // Adds an entry to the desks model directly without capturing a desk. Allows
   // for testing the names and times of the UI directly.
@@ -254,31 +230,6 @@ class DesksTemplatesTest : public OverviewTestBase {
 
     return overview_session->grid_list();
   }
-
-  // OverviewTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kDesksTemplates);
-
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    desk_model_ = std::make_unique<desks_storage::LocalDeskDataManager>(
-        temp_dir_.GetPath());
-    // Ensure the model is ready for tests.
-    desk_model_->EnsureCacheIsLoaded();
-
-    // This will call `AshTestBase::SetUp()`.
-    SetUpInternal(std::make_unique<CustomTestShellDelegate>(desk_model_.get()));
-    Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
-        prefs::kDeskTemplatesEnabled, true);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  // The desks model for tests.
-  std::unique_ptr<desks_storage::LocalDeskDataManager> desk_model_;
-
-  // Temporary directory for the local desk model to store data.
-  base::ScopedTempDir temp_dir_;
 };
 
 // Tests the helpers `AddEntry()` and `DeleteEntry()`, which will be used in

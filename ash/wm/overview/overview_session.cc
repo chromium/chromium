@@ -991,7 +991,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   }
 
   // If a desk templates dialog is visible it should receive the key events.
-  if (desks_templates_util::AreDesksTemplatesEnabled() &&
+  if (desks_templates_dialog_controller_ &&
       desks_templates_dialog_controller_->dialog_widget()) {
     return;
   }

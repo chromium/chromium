@@ -3265,7 +3265,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckNoOverviewItemShift) {
   OverviewItem* item0 = GetOverviewItemForWindow(windows[0].get());
   const gfx::RectF before_shift_bounds = item0->target_bounds();
 
-  GenerateScrollSequence(gfx::Point(100, 50), gfx::Point(0, 50));
+  GenerateScrollSequence(gfx::Point(100, 60), gfx::Point(0, 50));
   EXPECT_EQ(before_shift_bounds, item0->target_bounds());
 }
 
@@ -3279,7 +3279,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckOverviewItemShift) {
   OverviewItem* item0 = GetOverviewItemForWindow(windows[0].get());
   const gfx::RectF before_shift_bounds = item0->target_bounds();
 
-  GenerateScrollSequence(gfx::Point(100, 50), gfx::Point(0, 50));
+  GenerateScrollSequence(gfx::Point(100, 60), gfx::Point(0, 50));
   EXPECT_LT(item0->target_bounds(), before_shift_bounds);
 }
 

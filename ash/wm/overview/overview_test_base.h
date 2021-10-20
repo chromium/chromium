@@ -11,6 +11,9 @@
 
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/test/ash_test_base.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/desks_storage/core/local_desk_data_manager.h"
 
 namespace views {
 class ImageButton;
@@ -25,7 +28,6 @@ class OverviewItem;
 class OverviewSession;
 class ScopedOverviewTransformWindow;
 class SplitViewController;
-class TestShellDelegate;
 class WindowPreviewView;
 
 // The base test fixture for testing Overview Mode.
@@ -88,18 +90,19 @@ class OverviewTestBase : public AshTestBase {
   gfx::Rect GetGridBounds();
   void SetGridBounds(OverviewGrid* grid, const gfx::Rect& bounds);
 
+  desks_storage::DeskModel* desk_model() { return desk_model_.get(); }
+
   // AshTestBase:
   void SetUp() override;
   void TearDown() override;
 
  protected:
-  // Sets up the test suite with a custom `delegate`. If nullptr is used, a
-  // TestShellDelegate will be used by default.
-  void SetUpInternal(std::unique_ptr<TestShellDelegate> delegate);
-
   void CheckForDuplicateTraceName(const char* trace);
 
  private:
+  std::unique_ptr<desks_storage::LocalDeskDataManager> desk_model_;
+  base::ScopedTempDir desk_model_temp_dir_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_api_;
   std::vector<std::string> trace_names_;
 };
