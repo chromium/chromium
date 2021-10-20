@@ -9851,6 +9851,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Kaleidoscope has been turned down.
     </obsolete>
   </suffix>
+  <suffix name="photos" label="Module ID for Google Photos module"/>
   <suffix name="recipe_tasks" label="Module ID for Recipe Tasks"/>
   <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
   <affected-histogram name="NewTabPage.Modules.Dismissed"/>
