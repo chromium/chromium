@@ -47,7 +47,8 @@ static constexpr SkColor kColorSelectionRect = SkColorSetRGB(0xEE, 0xEE, 0xEE);
 static constexpr int kMinimumValidSelectionEdgePixels = 30;
 
 ScreenshotFlow::ScreenshotFlow(content::WebContents* web_contents)
-    : web_contents_(web_contents->GetWeakPtr()) {
+    : content::WebContentsObserver(web_contents),
+      web_contents_(web_contents->GetWeakPtr()) {
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -321,6 +322,18 @@ void ScreenshotFlow::SetCursor(ui::mojom::CursorType cursor_type) {
 
 bool ScreenshotFlow::IsCaptureModeActive() {
   return capture_mode_ != CaptureMode::NOT_CAPTURING;
+}
+
+void ScreenshotFlow::WebContentsDestroyed() {
+  if (IsCaptureModeActive()) {
+    CancelCapture();
+  }
+}
+
+void ScreenshotFlow::OnVisibilityChanged(content::Visibility visibility) {
+  if (IsCaptureModeActive()) {
+    CancelCapture();
+  }
 }
 
 // UnderlyingWebContentsObserver monitors the WebContents and exits screen
