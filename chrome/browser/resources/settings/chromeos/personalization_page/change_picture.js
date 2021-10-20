@@ -186,6 +186,7 @@ Polymer({
   receiveOldImage_(imageUrl) {
     this.oldImageLabel_ = this.i18n(
         cr.png.isEncodedPngDataUrlAnimated(imageUrl) ? 'oldVideo' : 'oldPhoto');
+    this.oldImagePending_ = false;
     this.pictureList_.setOldImageUrl(imageUrl);
   },
 
