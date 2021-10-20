@@ -5202,22 +5202,6 @@
             ]
         }
     ],
-    "OfflineMeasurementsBackgroundTask": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210728",
-                    "enable_features": [
-                        "OfflineMeasurementsBackgroundTask"
-                    ],
-                    "min_os_version": "6.0.0"
-                }
-            ]
-        }
-    ],
     "OfflinePageServiceTurndownM91": [
         {
             "platforms": [
