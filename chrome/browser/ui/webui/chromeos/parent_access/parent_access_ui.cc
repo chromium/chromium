@@ -30,7 +30,7 @@ namespace chromeos {
 namespace {
 
 const char kParentAccessDefaultURL[] =
-    "https://families.google.com/parentaccess#pac";
+    "https://families.google.com/parentaccess";
 const char kParentAccessSwitch[] = "parent-access-url";
 
 // Returns the URL of the Parent Access flow from the command-line switch,
