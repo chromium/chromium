@@ -19,6 +19,10 @@
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
 #include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif  // defined(OS_WIN)
+
 namespace remoting {
 
 int RemoteWebAuthnMain(int argc, char** argv) {
@@ -39,8 +43,24 @@ int RemoteWebAuthnMain(int argc, char** argv) {
 #if defined(OS_POSIX)
   read_file = base::File(STDIN_FILENO);
   write_file = base::File(STDOUT_FILENO);
-#else
-  NOTIMPLEMENTED();
+#elif defined(OS_WIN)
+  // GetStdHandle() returns pseudo-handles for stdin and stdout even if
+  // the hosting executable specifies "Windows" subsystem. However the
+  // returned handles are invalid in that case unless standard input and
+  // output are redirected to a pipe or file.
+  read_file = base::File(GetStdHandle(STD_INPUT_HANDLE));
+  write_file = base::File(GetStdHandle(STD_OUTPUT_HANDLE));
+
+  // After the native messaging channel starts, the native messaging reader
+  // will keep doing blocking read operations on the input named pipe.
+  // If any other thread tries to perform any operation on STDIN, it will also
+  // block because the input named pipe is synchronous (non-overlapped).
+  // It is pretty common for a DLL to query the device info (GetFileType) of
+  // the STD* handles at startup. So any LoadLibrary request can potentially
+  // be blocked. To prevent that from happening we close STDIN and STDOUT
+  // handles as soon as we retrieve the corresponding file handles.
+  SetStdHandle(STD_INPUT_HANDLE, nullptr);
+  SetStdHandle(STD_OUTPUT_HANDLE, nullptr);
 #endif
 
   base::RunLoop run_loop;
