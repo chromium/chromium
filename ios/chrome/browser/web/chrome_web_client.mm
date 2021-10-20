@@ -34,6 +34,8 @@
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_error.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_unsafe_resource_container.h"
+#import "ios/chrome/browser/search_engines/search_engine_java_script_feature.h"
+#import "ios/chrome/browser/search_engines/search_engine_tab_helper_factory.h"
 #include "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
 #import "ios/chrome/browser/ui/elements/windowed_container_view.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
@@ -327,6 +329,10 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(ImageFetchJavaScriptFeature::GetInstance());
   features.push_back(
       password_manager::PasswordManagerJavaScriptFeature::GetInstance());
+
+  SearchEngineJavaScriptFeature::GetInstance()->SetDelegate(
+      SearchEngineTabHelperFactory::GetInstance());
+  features.push_back(SearchEngineJavaScriptFeature::GetInstance());
 
   return features;
 }

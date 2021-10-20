@@ -25,13 +25,6 @@
 
 namespace {
 
-const char kCommandPrefix[] = "searchEngine";
-const char kCommandOpenSearch[] = "searchEngine.openSearch";
-const char kOpenSearchPageUrlKey[] = "pageUrl";
-const char kOpenSearchOsddUrlKey[] = "osddUrl";
-const char kCommandSearchableUrl[] = "searchEngine.searchableUrl";
-const char kSearchableUrlUrlKey[] = "url";
-
 // Returns true if the |item|'s transition type is FORM_SUBMIT.
 bool IsFormSubmit(const web::NavigationItem* item) {
   return ui::PageTransitionCoreTypeIs(item->GetTransitionType(),
@@ -77,10 +70,6 @@ SearchEngineTabHelper::~SearchEngineTabHelper() {}
 SearchEngineTabHelper::SearchEngineTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state->AddObserver(this);
-  subscription_ = web_state->AddScriptCommandCallback(
-      base::BindRepeating(&SearchEngineTabHelper::OnJsMessage,
-                          base::Unretained(this)),
-      kCommandPrefix);
   DCHECK(favicon::WebFaviconDriver::FromWebState(web_state));
   favicon_driver_observation_.Observe(
       favicon::WebFaviconDriver::FromWebState(web_state));
@@ -124,33 +113,8 @@ void SearchEngineTabHelper::DidFinishNavigation(
   }
 }
 
-void SearchEngineTabHelper::OnJsMessage(const base::Value& message,
-                                        const GURL& page_url,
-                                        bool user_is_interacting,
-                                        web::WebFrame* sender_frame) {
-  const base::Value* cmd = message.FindKey("command");
-  if (!cmd || !cmd->is_string()) {
-    return;
-  }
-  std::string cmd_str = cmd->GetString();
-  if (cmd_str == kCommandOpenSearch) {
-    const base::Value* document_url = message.FindKey(kOpenSearchPageUrlKey);
-    if (!document_url || !document_url->is_string())
-      return;
-    const base::Value* osdd_url = message.FindKey(kOpenSearchOsddUrlKey);
-    if (!osdd_url || !osdd_url->is_string())
-      return;
-    AddTemplateURLByOSDD(GURL(document_url->GetString()),
-                         GURL(osdd_url->GetString()));
-  } else if (cmd_str == kCommandSearchableUrl) {
-    const base::Value* url = message.FindKey(kSearchableUrlUrlKey);
-    if (!url || !url->is_string())
-      return;
-    // Save |url| to |searchable_url_| when generated from <form> submission,
-    // and create the TemplateURL when the submission did lead to a successful
-    // navigation.
-    searchable_url_ = GURL(url->GetString());
-  }
+void SearchEngineTabHelper::SetSearchableUrl(GURL searchable_url) {
+  searchable_url_ = searchable_url;
 }
 
 // Creates a new TemplateURL by OSDD. The TemplateURL will be added to

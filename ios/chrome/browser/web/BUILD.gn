@@ -178,7 +178,6 @@ js_compile_bundle("chrome_bundle_main_frame") {
   sources = [
     "//components/translate/ios/browser/resources/language_detection.js",
     "//ios/chrome/browser/link_to_text/resources/link_to_text.js",
-    "//ios/chrome/browser/search_engines/resources/search_engine.js",
     "//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js",
     "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
     "resources/chrome_bundle_main_frame.js",
@@ -221,6 +220,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/safe_browsing",
+    "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/elements",
