@@ -17,6 +17,7 @@
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -117,12 +118,24 @@ void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
   return config;
 }
 
+- (void)tearDown {
+  // Sign out then wait for the sign-in screen to reappear if not already
+  // displayed. This is to avoid a conflict between the dismiss animation and
+  // the presentation animation of the sign-in screen UI which can be triggered
+  // simultaneously when tearing down the test case. The sign-in UI may be
+  // triggered again when tearing down because the browser is signed out. Making
+  // sure that sign-out is done and that the sign-in screen animation is done
+  // before tearing down avoids the conflict.
+  [ChromeEarlGreyAppInterface signOutAndClearIdentities];
+  [ChromeEarlGrey waitForMatcher:GetFirstRunScreenMatcher()];
+
+  [super tearDown];
+}
+
 #pragma mark - Tests
 
 // Tests the sign-in screen with accounts that are already available.
 - (void)testSignInScreenWithAccount {
-  // TODO(crbug.com/1261578): Need to enable the test).
-  EARL_GREY_TEST_SKIPPED(@"Test skipped crbug.com/1261578.");
   // Add an identity to sign-in to enable the "Continue as ..." button in the
   // sign-in screen.
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
