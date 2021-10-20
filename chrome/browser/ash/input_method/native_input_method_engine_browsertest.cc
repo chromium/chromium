@@ -184,10 +184,6 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
         ->get_emoji_suggester_for_testing()
         ->LoadEmojiMapForTesting(kEmojiData);
 
-    // Ensure predictive writing is off to stop tests from attempting to
-    // load the shared library.
-    prefs_->SetBoolean(prefs::kAssistPredictiveWritingEnabled, false);
-
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
