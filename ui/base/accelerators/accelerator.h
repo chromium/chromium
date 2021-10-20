@@ -111,6 +111,7 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   bool IsAltDown() const;
   bool IsAltGrDown() const;
   bool IsCmdDown() const;
+  bool IsFunctionDown() const;
   bool IsRepeat() const;
 
   // Returns a string with the localized shortcut if any.

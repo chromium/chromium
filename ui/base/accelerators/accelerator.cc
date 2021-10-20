@@ -81,7 +81,7 @@ struct {
 #endif
 
 const int kModifierMask = EF_SHIFT_DOWN | EF_CONTROL_DOWN | EF_ALT_DOWN |
-                          EF_COMMAND_DOWN | EF_ALTGR_DOWN;
+                          EF_COMMAND_DOWN | EF_FUNCTION_DOWN | EF_ALTGR_DOWN;
 
 const int kInterestingFlagsMask =
     kModifierMask | EF_IS_SYNTHESIZED | EF_IS_REPEAT;
@@ -218,6 +218,10 @@ bool Accelerator::IsAltGrDown() const {
 
 bool Accelerator::IsCmdDown() const {
   return (modifiers_ & EF_COMMAND_DOWN) != 0;
+}
+
+bool Accelerator::IsFunctionDown() const {
+  return (modifiers_ & EF_FUNCTION_DOWN) != 0;
 }
 
 bool Accelerator::IsRepeat() const {

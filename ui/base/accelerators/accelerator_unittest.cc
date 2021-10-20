@@ -77,12 +77,14 @@ TEST(AcceleratorTest, ShortcutTextForUnknownKey) {
 }
 
 TEST(AcceleratorTest, ConversionFromKeyEvent) {
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F,
-                         ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  ui::KeyEvent key_event(
+      ui::ET_KEY_PRESSED, ui::VKEY_F,
+      ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_FUNCTION_DOWN);
   Accelerator accelerator(key_event);
 
   EXPECT_EQ(accelerator.key_code(), ui::VKEY_F);
-  EXPECT_EQ(accelerator.modifiers(), ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_EQ(accelerator.modifiers(),
+            ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_FUNCTION_DOWN);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
