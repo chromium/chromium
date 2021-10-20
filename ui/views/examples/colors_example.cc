@@ -22,7 +22,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 
 namespace views {
 namespace examples {
@@ -36,16 +36,15 @@ namespace {
 // Starts a new row and adds two columns to |layout|, the first displaying
 // |label_string| and the second displaying |color_id| with its color and
 // equivalent components as text.
-void InsertColorRow(GridLayout* layout,
+void InsertColorRow(View* parent,
                     base::StringPiece16 label_string,
                     ui::ColorId color_id) {
-  layout->StartRow(GridLayout::kFixedSize, 0);
-  auto* label_view =
-      layout->AddView(std::make_unique<Label>(std::u16string(label_string)));
+  auto* label_view = parent->AddChildView(
+      std::make_unique<Label>(std::u16string(label_string)));
   label_view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label_view->SetSelectable(true);
 
-  auto* color_view = layout->AddView(std::make_unique<Label>());
+  auto* color_view = parent->AddChildView(std::make_unique<Label>());
   color_view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   auto background_color = color_view->GetColorProvider()->GetColor(color_id);
   uint8_t red = SkColorGetR(background_color);
@@ -64,95 +63,102 @@ void InsertColorRow(GridLayout* layout,
 // of ui::ColorId and the second contains the color.
 void CreateAllColorsView(ScrollView* scroll_view) {
   auto* container = scroll_view->SetContents(std::make_unique<View>());
-  auto* layout = container->SetLayoutManager(std::make_unique<GridLayout>());
-  auto* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1.0,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1.0,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorWindowBackground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorDialogBackground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorDialogForeground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorBubbleBackground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorFocusableBorderFocused));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorFocusableBorderUnfocused));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorButtonForeground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorButtonForegroundDisabled));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorButtonForegroundUnchecked));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorButtonBackgroundProminent));
-  InsertColorRow(layout,
+  container->SetLayoutManager(std::make_unique<TableLayout>())
+      ->AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, 1.0,
+                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, 1.0,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(70, TableLayout::kFixedSize);
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorWindowBackground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorDialogBackground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorDialogForeground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorBubbleBackground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorFocusableBorderFocused));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorFocusableBorderUnfocused));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorButtonForeground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorButtonForegroundDisabled));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorButtonForegroundUnchecked));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorButtonBackgroundProminent));
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorButtonBackgroundProminentFocused));
-  InsertColorRow(layout,
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorButtonBackgroundProminentDisabled));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorButtonForegroundProminent));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorButtonBorder));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorMenuItemForeground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorMenuItemForegroundDisabled));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorMenuItemForegroundSelected));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorMenuItemBackgroundSelected));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorMenuItemForegroundSecondary));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorMenuSeparator));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorMenuBackground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorMenuBorder));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorMenuIcon));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorMenuItemBackgroundHighlighted));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorMenuItemForegroundHighlighted));
-  InsertColorRow(layout,
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorButtonForegroundProminent));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorButtonBorder));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorMenuItemForeground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorMenuItemForegroundDisabled));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorMenuItemForegroundSelected));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorMenuItemBackgroundSelected));
+  InsertColorRow(container,
+                 COLOR_LABEL_ARGS(kColorMenuItemForegroundSecondary));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorMenuSeparator));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorMenuBackground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorMenuBorder));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorMenuIcon));
+  InsertColorRow(container,
+                 COLOR_LABEL_ARGS(kColorMenuItemBackgroundHighlighted));
+  InsertColorRow(container,
+                 COLOR_LABEL_ARGS(kColorMenuItemForegroundHighlighted));
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorMenuItemBackgroundAlertedInitial));
-  InsertColorRow(layout,
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorMenuItemBackgroundAlertedTarget));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorLabelForeground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorLabelForegroundDisabled));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorLabelForegroundSecondary));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorLabelSelectionForeground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorLabelSelectionBackground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorLinkForegroundDisabled));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorLinkForeground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorLinkForegroundPressed));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorSeparator));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTabForegroundSelected));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTabForeground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTabContentSeparator));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTextfieldForeground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTextfieldBackground));
-  InsertColorRow(layout,
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorLabelForeground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorLabelForegroundDisabled));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorLabelForegroundSecondary));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorLabelSelectionForeground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorLabelSelectionBackground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorLinkForegroundDisabled));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorLinkForeground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorLinkForegroundPressed));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorSeparator));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTabForegroundSelected));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTabForeground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTabContentSeparator));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTextfieldForeground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTextfieldBackground));
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorTextfieldForegroundPlaceholder));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTextfieldForegroundDisabled));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTextfieldBackgroundDisabled));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTextfieldSelectionForeground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTextfieldSelectionBackground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTooltipBackground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTooltipForeground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTreeBackground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTreeNodeForeground));
-  InsertColorRow(layout,
+  InsertColorRow(container,
+                 COLOR_LABEL_ARGS(kColorTextfieldForegroundDisabled));
+  InsertColorRow(container,
+                 COLOR_LABEL_ARGS(kColorTextfieldBackgroundDisabled));
+  InsertColorRow(container,
+                 COLOR_LABEL_ARGS(kColorTextfieldSelectionForeground));
+  InsertColorRow(container,
+                 COLOR_LABEL_ARGS(kColorTextfieldSelectionBackground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTooltipBackground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTooltipForeground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTreeBackground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTreeNodeForeground));
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorTreeNodeForegroundSelectedFocused));
-  InsertColorRow(layout,
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorTreeNodeForegroundSelectedUnfocused));
-  InsertColorRow(layout,
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorTreeNodeBackgroundSelectedFocused));
-  InsertColorRow(layout,
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorTreeNodeBackgroundSelectedUnfocused));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTableBackground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTableForeground));
-  InsertColorRow(layout,
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTableBackground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTableForeground));
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorTableForegroundSelectedFocused));
-  InsertColorRow(layout,
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorTableForegroundSelectedUnfocused));
-  InsertColorRow(layout,
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorTableBackgroundSelectedFocused));
-  InsertColorRow(layout,
+  InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorTableBackgroundSelectedUnfocused));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTableGroupingIndicator));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTableHeaderForeground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTableHeaderBackground));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorTableHeaderSeparator));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorThrobber));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorThrobberPreconnect));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorAlertLowSeverity));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorAlertMediumSeverity));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorAlertHighSeverity));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorIcon));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTableGroupingIndicator));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTableHeaderForeground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTableHeaderBackground));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorTableHeaderSeparator));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorThrobber));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorThrobberPreconnect));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorAlertLowSeverity));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorAlertMediumSeverity));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorAlertHighSeverity));
+  InsertColorRow(container, COLOR_LABEL_ARGS(kColorIcon));
   // Expands the view to allow for scrolling.
   container->SizeToPreferredSize();
 }

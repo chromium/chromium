@@ -16,10 +16,10 @@ namespace views {
 class Checkbox;
 class Combobox;
 class DialogDelegate;
-class GridLayout;
 class Label;
 class LabelButton;
 class Textfield;
+class View;
 
 namespace examples {
 
@@ -44,12 +44,12 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   class Dialog;
 
   // Helper methods to setup the configuration Views.
-  void StartRowWithLabel(GridLayout* layout, const char* label);
-  void StartTextfieldRow(GridLayout* layout,
+  void StartRowWithLabel(View* parent, const char* label);
+  void StartTextfieldRow(View* parent,
                          Textfield** member,
                          const char* label,
                          const char* value);
-  void AddCheckbox(GridLayout* layout, Checkbox** member);
+  void AddCheckbox(View* parent, Checkbox** member);
 
   // Checkbox callback
   void OnPerformAction();

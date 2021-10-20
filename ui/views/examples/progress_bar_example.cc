@@ -14,7 +14,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
 
 using l10n_util::GetStringUTF16;
@@ -29,43 +29,41 @@ ProgressBarExample::ProgressBarExample()
 ProgressBarExample::~ProgressBarExample() = default;
 
 void ProgressBarExample::CreateExampleView(View* container) {
-  GridLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::GridLayout>());
+  container->SetLayoutManager(std::make_unique<views::TableLayout>())
+      ->AddColumn(LayoutAlignment::kEnd, LayoutAlignment::kCenter,
+                  TableLayout::kFixedSize,
+                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(0, 8)
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kCenter, 1.0f,
+                 TableLayout::ColumnSize::kFixed, 200, 0)
+      .AddPaddingColumn(0, 8)
+      .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kCenter,
+                 TableLayout::kFixedSize,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, TableLayout::kFixedSize)
+      .AddPaddingRow(TableLayout::kFixedSize, 10)
+      .AddRows(1, TableLayout::kFixedSize)
+      .AddPaddingRow(TableLayout::kFixedSize, 10)
+      .AddRows(1, TableLayout::kFixedSize);
 
-  ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(GridLayout::TRAILING, GridLayout::CENTER, 0,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(0, 8);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::CENTER, 1,
-                        GridLayout::ColumnSize::kFixed, 200, 0);
-  column_set->AddPaddingColumn(0, 8);
-  column_set->AddColumn(GridLayout::LEADING, GridLayout::CENTER, 0,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(0, 0);
-  layout->AddView(std::make_unique<views::MdTextButton>(
+  container->AddChildView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&ProgressBarExample::ButtonPressed,
                           base::Unretained(this), -0.1),
       u"-"));
-  progress_bar_ = layout->AddView(std::make_unique<ProgressBar>());
-  layout->AddView(std::make_unique<views::MdTextButton>(
+  progress_bar_ = container->AddChildView(std::make_unique<ProgressBar>());
+  container->AddChildView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&ProgressBarExample::ButtonPressed,
                           base::Unretained(this), 0.1),
       u"+"));
 
-  layout->StartRowWithPadding(0, 0, 0, 10);
-  layout->AddView(
+  container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_PROGRESS_LOADER_LABEL)));
-  auto infinite_bar = std::make_unique<ProgressBar>();
-  infinite_bar->SetValue(-1);
-  layout->AddView(std::move(infinite_bar));
+  container->AddChildView(std::make_unique<ProgressBar>())->SetValue(-1);
+  container->AddChildView(std::make_unique<View>());
 
-  layout->StartRowWithPadding(0, 0, 0, 10);
-  layout->AddView(
+  container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_PROGRESS_LOADER_SHORT_LABEL)));
-  auto shorter_bar = std::make_unique<ProgressBar>(2);
-  shorter_bar->SetValue(-1);
-  layout->AddView(std::move(shorter_bar));
+  container->AddChildView(std::make_unique<ProgressBar>(2))->SetValue(-1);
 }
 
 void ProgressBarExample::ButtonPressed(double step) {

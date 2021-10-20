@@ -27,8 +27,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/examples/create_examples.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -155,30 +155,22 @@ class ExamplesWindowContents : public WidgetDelegateView {
 
     SetBackground(
         CreateThemedSolidBackground(this, ui::kColorDialogBackground));
-    GridLayout* layout =
-        SetLayoutManager(std::make_unique<views::GridLayout>());
-    ColumnSet* column_set = layout->AddColumnSet(0);
-    column_set->AddPaddingColumn(0, 5);
-    column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
-                          GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    column_set->AddPaddingColumn(0, 5);
-    layout->AddPaddingRow(0, 5);
-    layout->StartRow(0 /* no expand */, 0);
-    combobox_ = layout->AddView(std::move(combobox));
+
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        BoxLayout::Orientation::kVertical, gfx::Insets(5)));
+
+    combobox_ = AddChildView(std::move(combobox));
 
     auto item_count = combobox_model_->GetItemCount();
     if (item_count > 0) {
       combobox_->SetVisible(item_count > 1);
-      layout->StartRow(1, 0);
-      auto example_shown = std::make_unique<View>();
-      example_shown->SetLayoutManager(std::make_unique<FillLayout>());
-      example_shown->AddChildView(combobox_model_->GetItemViewAt(0));
-      example_shown_ = layout->AddView(std::move(example_shown));
+      example_shown_ = AddChildView(std::make_unique<View>());
+      example_shown_->SetLayoutManager(std::make_unique<FillLayout>());
+      example_shown_->AddChildView(combobox_model_->GetItemViewAt(0));
+      layout->SetFlexForView(example_shown_, 1);
     }
 
-    layout->StartRow(0 /* no expand */, 0);
-    status_label_ = layout->AddView(std::make_unique<Label>());
-    layout->AddPaddingRow(0, 5);
+    status_label_ = AddChildView(std::make_unique<Label>());
   }
 
   ExamplesWindowContents(const ExamplesWindowContents&) = delete;

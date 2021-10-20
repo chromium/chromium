@@ -270,7 +270,7 @@
       <message translateable="false" name="IDS_TEXTFIELD_DISABLED_PLACEHOLDER">
         disabled
       </message>
-      <message translateable="false" name="IDS_TEXTFFIELD_READ_ONLY_PLACEHOLDER">
+      <message translateable="false" name="IDS_TEXTFIELD_READ_ONLY_PLACEHOLDER">
         read only
       </message>
       <message translateable="false" name="IDS_TEXTFIELD_NAME_LABEL">

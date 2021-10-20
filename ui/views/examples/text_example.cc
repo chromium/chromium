@@ -18,8 +18,11 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/examples/example_combobox_model.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 namespace examples {
@@ -113,23 +116,22 @@ TextExample::TextExample() : ExampleBase("Text Styles") {}
 
 TextExample::~TextExample() = default;
 
-Checkbox* TextExample::AddCheckbox(GridLayout* layout, const char* name) {
-  return layout->AddView(std::make_unique<Checkbox>(
+Checkbox* TextExample::AddCheckbox(View* parent, const char* name) {
+  return parent->AddChildView(std::make_unique<Checkbox>(
       base::ASCIIToUTF16(name),
       base::BindRepeating(&TextExample::UpdateStyle, base::Unretained(this))));
 }
 
-Combobox* TextExample::AddCombobox(GridLayout* layout,
+Combobox* TextExample::AddCombobox(View* parent,
                                    const char* name,
                                    const char* const* strings,
                                    int count,
                                    void (TextExample::*combobox_callback)()) {
-  layout->StartRow(0, 0);
-  layout->AddView(std::make_unique<Label>(base::ASCIIToUTF16(name)));
-  auto* combobox = layout->AddView(
-      std::make_unique<Combobox>(
-          std::make_unique<ExampleComboboxModel>(strings, count)),
-      kNumColumns - 1, 1);
+  const std::u16string name_str = base::ASCIIToUTF16(name);
+  parent->AddChildView(std::make_unique<Label>(name_str));
+  auto* combobox = parent->AddChildView(std::make_unique<Combobox>(
+      std::make_unique<ExampleComboboxModel>(strings, count)));
+  combobox->SetProperty(kTableColAndRowSpanKey, gfx::Size(kNumColumns - 1, 1));
   combobox->SetCallback(
       base::BindRepeating(combobox_callback, base::Unretained(this)));
   // TODO(pbos): Figure out a reasonable accessible name here.
@@ -138,19 +140,18 @@ Combobox* TextExample::AddCombobox(GridLayout* layout,
 }
 
 void TextExample::CreateExampleView(View* container) {
-  GridLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  layout->AddPaddingRow(0, 8);
-
-  ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddPaddingColumn(0, 8);
-  column_set->AddColumn(GridLayout::LEADING, GridLayout::FILL, 0.1f,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  for (int i = 0; i < kNumColumns - 1; i++)
-    column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 0.1f,
-                          GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(0, 8);
+  auto* box_layout = container->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kVertical, gfx::Insets(8), 20, false));
+  auto* table_container = container->AddChildView(std::make_unique<View>());
+  TableLayout* layout =
+      table_container->SetLayoutManager(std::make_unique<TableLayout>());
+  layout->AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStretch, 0.1f,
+                    TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  for (int i = 0; i < kNumColumns - 1; i++) {
+    layout->AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch,
+                      0.1f, TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  }
+  layout->AddRows(6, TableLayout::kFixedSize);
 
   constexpr const char* kHorizontalAligments[] = {
       "Default",
@@ -158,12 +159,12 @@ void TextExample::CreateExampleView(View* container) {
       "Center",
       "Right",
   };
-  h_align_cb_ = AddCombobox(layout, "H-Align", kHorizontalAligments,
+  h_align_cb_ = AddCombobox(table_container, "H-Align", kHorizontalAligments,
                             base::size(kHorizontalAligments),
                             &TextExample::AlignComboboxChanged);
 
   constexpr const char* kElideBehaviors[] = {"Elide", "No Elide"};
-  eliding_cb_ = AddCombobox(layout, "Eliding", kElideBehaviors,
+  eliding_cb_ = AddCombobox(table_container, "Eliding", kElideBehaviors,
                             base::size(kElideBehaviors),
                             &TextExample::ElideComboboxChanged);
 
@@ -172,9 +173,9 @@ void TextExample::CreateExampleView(View* container) {
       "Show",
       "Hide",
   };
-  prefix_cb_ =
-      AddCombobox(layout, "Prefix", kPrefixOptions, base::size(kPrefixOptions),
-                  &TextExample::PrefixComboboxChanged);
+  prefix_cb_ = AddCombobox(table_container, "Prefix", kPrefixOptions,
+                           base::size(kPrefixOptions),
+                           &TextExample::PrefixComboboxChanged);
 
   constexpr const char* kTextExamples[] = {
       "Short",
@@ -183,35 +184,30 @@ void TextExample::CreateExampleView(View* container) {
       "RTL Hebrew",
   };
   text_cb_ =
-      AddCombobox(layout, "Example Text", kTextExamples,
+      AddCombobox(table_container, "Example Text", kTextExamples,
                   base::size(kTextExamples), &TextExample::TextComboboxChanged);
 
   constexpr const char* kWeightLabels[] = {
       "Thin",     "Extra Light", "Light",      "Normal", "Medium",
       "Semibold", "Bold",        "Extra Bold", "Black",
   };
-  weight_cb_ = AddCombobox(layout, "Font Weight", kWeightLabels,
+  weight_cb_ = AddCombobox(table_container, "Font Weight", kWeightLabels,
                            base::size(kWeightLabels),
                            &TextExample::WeightComboboxChanged);
   weight_cb_->SelectValue(u"Normal");
 
-  layout->StartRow(0, 0);
-  multiline_checkbox_ = AddCheckbox(layout, "Multiline");
-  break_checkbox_ = AddCheckbox(layout, "Character Break");
-  italic_checkbox_ = AddCheckbox(layout, "Italic");
-  underline_checkbox_ = AddCheckbox(layout, "Underline");
+  multiline_checkbox_ = AddCheckbox(table_container, "Multiline");
+  break_checkbox_ = AddCheckbox(table_container, "Character Break");
+  italic_checkbox_ = AddCheckbox(table_container, "Italic");
+  underline_checkbox_ = AddCheckbox(table_container, "Underline");
 
-  layout->AddPaddingRow(0, 20);
+  auto* fill_container = container->AddChildView(std::make_unique<View>());
+  box_layout->SetFlexForView(fill_container, 1);
+  fill_container->SetLayoutManager(std::make_unique<FillLayout>());
+  fill_container->SetBorder(CreateEmptyBorder(gfx::Insets(0, 8)));
 
-  column_set = layout->AddColumnSet(1);
-  column_set->AddPaddingColumn(0, 16);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(0, 16);
-
-  layout->StartRow(1, 1);
-  text_view_ = layout->AddView(std::make_unique<TextExampleView>());
-  layout->AddPaddingRow(0, 8);
+  text_view_ =
+      fill_container->AddChildView(std::make_unique<TextExampleView>());
 
   TextComboboxChanged();  // Sets initial text content.
 }

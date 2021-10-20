@@ -13,8 +13,8 @@ namespace views {
 
 class Checkbox;
 class Combobox;
-class GridLayout;
 class Label;
+class View;
 
 namespace examples {
 
@@ -44,7 +44,7 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
   void AddCustomLabel(View* container);
 
   // Creates and adds a combobox to the layout.
-  Combobox* AddCombobox(GridLayout* layout,
+  Combobox* AddCombobox(View* parent,
                         const char* name,
                         const char** strings,
                         int count,

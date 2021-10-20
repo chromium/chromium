@@ -19,8 +19,9 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -30,8 +31,6 @@ namespace views {
 namespace examples {
 namespace {
 
-constexpr int kFieldsColumnId = 0;
-constexpr int kButtonsColumnId = 1;
 constexpr int kFakeModeless = ui::MODAL_TYPE_SYSTEM + 1;
 
 }  // namespace
@@ -118,86 +117,88 @@ DialogExample::DialogExample()
 DialogExample::~DialogExample() = default;
 
 void DialogExample::CreateExampleView(View* container) {
-  // GridLayout |resize_percent| constants.
-  const float kFixed = 0.f;
-  const float kStretchy = 1.f;
+  auto* flex_layout =
+      container->SetLayoutManager(std::make_unique<FlexLayout>());
+  flex_layout->SetOrientation(LayoutOrientation::kVertical);
 
+  auto* table = container->AddChildView(std::make_unique<View>());
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   const int horizontal_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
-  GridLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::GridLayout>());
-  ColumnSet* column_set = layout->AddColumnSet(kFieldsColumnId);
-  column_set->AddColumn(GridLayout::LEADING, GridLayout::FILL, kFixed,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(kFixed, horizontal_spacing);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, kStretchy,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(kFixed, horizontal_spacing);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, kFixed,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  StartTextfieldRow(layout, &title_, "Dialog Title", "Title");
-  StartTextfieldRow(layout, &body_, "Dialog Body Text", "Body Text");
+  auto* table_layout = table->SetLayoutManager(std::make_unique<TableLayout>());
+  table_layout
+      ->AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStretch,
+                  TableLayout::kFixedSize,
+                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(TableLayout::kFixedSize, horizontal_spacing)
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, 1.0f,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(TableLayout::kFixedSize, horizontal_spacing)
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch,
+                 TableLayout::kFixedSize,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  const int vertical_padding =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  for (int i = 0; i < 7; ++i) {
+    table_layout->AddPaddingRow(TableLayout::kFixedSize, vertical_padding)
+        .AddRows(1, TableLayout::kFixedSize);
+  }
 
-  StartTextfieldRow(layout, &ok_button_label_, "OK Button Label", "Done");
-  AddCheckbox(layout, &has_ok_button_);
+  StartTextfieldRow(table, &title_, "Dialog Title", "Title");
+  table->AddChildView(std::make_unique<View>());
 
-  StartTextfieldRow(layout, &cancel_button_label_, "Cancel Button Label",
+  StartTextfieldRow(table, &body_, "Dialog Body Text", "Body Text");
+  table->AddChildView(std::make_unique<View>());
+
+  StartTextfieldRow(table, &ok_button_label_, "OK Button Label", "Done");
+  AddCheckbox(table, &has_ok_button_);
+
+  StartTextfieldRow(table, &cancel_button_label_, "Cancel Button Label",
                     "Cancel");
-  AddCheckbox(layout, &has_cancel_button_);
+  AddCheckbox(table, &has_cancel_button_);
 
-  StartTextfieldRow(layout, &extra_button_label_, "Extra Button Label", "Edit");
-  AddCheckbox(layout, &has_extra_button_);
+  StartTextfieldRow(table, &extra_button_label_, "Extra Button Label", "Edit");
+  AddCheckbox(table, &has_extra_button_);
 
-  StartRowWithLabel(layout, "Modal Type");
-  mode_ = layout->AddView(std::make_unique<Combobox>(&mode_model_));
+  table->AddChildView(std::make_unique<Label>(u"Modal Type"));
+  mode_ = table->AddChildView(std::make_unique<Combobox>(&mode_model_));
   mode_->SetCallback(base::BindRepeating(&DialogExample::OnPerformAction,
                                          base::Unretained(this)));
   // TODO(pbos): Figure out a reasonable accessible name here.
   mode_->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
   mode_->SetSelectedIndex(ui::MODAL_TYPE_CHILD);
+  table->AddChildView(std::make_unique<View>());
 
-  StartRowWithLabel(layout, "Bubble");
-  AddCheckbox(layout, &bubble_);
-  AddCheckbox(layout, &persistent_bubble_);
+  table->AddChildView(std::make_unique<Label>(u"Bubble"));
+  AddCheckbox(table, &bubble_);
+  AddCheckbox(table, &persistent_bubble_);
   persistent_bubble_->SetText(u"Persistent");
 
-  column_set = layout->AddColumnSet(kButtonsColumnId);
-  column_set->AddColumn(GridLayout::CENTER, GridLayout::CENTER, kStretchy,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  layout->StartRowWithPadding(
-      kFixed, kButtonsColumnId, kFixed,
-      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-
-  show_ = layout->AddView(std::make_unique<views::MdTextButton>(
+  show_ = container->AddChildView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&DialogExample::ShowButtonPressed,
                           base::Unretained(this)),
       u"Show"));
+  show_->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kCenter);
+  show_->SetProperty(
+      kMarginsKey, gfx::Insets(provider->GetDistanceMetric(
+                                   views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                               0, 0, 0));
 }
 
-void DialogExample::StartRowWithLabel(GridLayout* layout, const char* label) {
-  const float kFixedVerticalResize = 0.f;
-  layout->StartRowWithPadding(kFixedVerticalResize, kFieldsColumnId,
-                              kFixedVerticalResize,
-                              views::LayoutProvider::Get()->GetDistanceMetric(
-                                  views::DISTANCE_RELATED_CONTROL_VERTICAL));
-  layout->AddView(std::make_unique<Label>(base::ASCIIToUTF16(label)));
-}
-
-void DialogExample::StartTextfieldRow(GridLayout* layout,
+void DialogExample::StartTextfieldRow(View* parent,
                                       Textfield** member,
                                       const char* label,
                                       const char* value) {
-  StartRowWithLabel(layout, label);
+  parent->AddChildView(std::make_unique<Label>(base::ASCIIToUTF16(label)));
   auto textfield = std::make_unique<Textfield>();
   textfield->set_controller(this);
   textfield->SetText(base::ASCIIToUTF16(value));
   // TODO(pbos): Figure out a reasonable accessible name here.
   textfield->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
-  *member = layout->AddView(std::move(textfield));
+  *member = parent->AddChildView(std::move(textfield));
 }
 
-void DialogExample::AddCheckbox(GridLayout* layout, Checkbox** member) {
+void DialogExample::AddCheckbox(View* parent, Checkbox** member) {
   auto callback = member == &bubble_ ? &DialogExample::BubbleCheckboxPressed
                                      : &DialogExample::OtherCheckboxPressed;
   auto checkbox = std::make_unique<Checkbox>(
@@ -205,7 +206,7 @@ void DialogExample::AddCheckbox(GridLayout* layout, Checkbox** member) {
   checkbox->SetChecked(true);
   // TODO(pbos): Figure out a reasonable accessible name here.
   checkbox->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
-  *member = layout->AddView(std::move(checkbox));
+  *member = parent->AddChildView(std::move(checkbox));
 }
 
 ui::ModalType DialogExample::GetModalType() const {
@@ -295,6 +296,7 @@ void DialogExample::OtherCheckboxPressed() {
   // Buttons other than show and bubble are pressed. They are all checkboxes.
   // Update the dialog if there is one.
   if (last_dialog_) {
+    // TODO(crbug.com/1261666): This can segfault.
     last_dialog_->DialogModelChanged();
     ResizeDialog();
   }
