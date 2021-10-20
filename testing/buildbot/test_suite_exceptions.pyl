@@ -994,9 +994,7 @@
   },
   'chrome_public_test_vr_apk': {
     'remove_from': [
-      # Decided to no longer run VR tests on L, crbug.com/1159619.
-      'Lollipop Phone Tester',
-      'Lollipop Tablet Tester',
+      # Decided to no longer run VR tests on M, crbug.com/1159619.
       'Marshmallow Tablet Tester',
 
       'android-pie-arm64-rel', # https://crbug.com/1010211
@@ -1184,19 +1182,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_content_browsertests.filter',
         ],
-      },
-      'Lollipop Phone Tester': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'Lollipop Tablet Tester': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.lollipop_tablet_tester.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 15,
-        },
       },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
         'experiment_percentage': 100,
@@ -2393,8 +2378,6 @@
       'android-pie-arm64-rel',
       'android-pie-x86-rel',
       'android-11-x86-rel',
-      'Lollipop Phone Tester',
-      'Lollipop Tablet Tester',
       'Marshmallow 64 bit Tester',
       'Marshmallow Tablet Tester',
       'Nougat Phone Tester',
@@ -2557,11 +2540,6 @@
   },
   'sandbox_linux_unittests': {
     'modifications': {
-      'Lollipop Phone Tester': {
-        'args': [
-          '--shard-timeout=300',
-        ],
-      },
       'android-marshmallow-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.sandbox_linux_unittests.filter',
@@ -2907,7 +2885,7 @@
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1084352
       # There's no need to run telemetry_perf_unittests on both lollipop and
       # marshmallow on the CQ. https://crbug.com/1026487.
-      # TODO(crbug/1260494): Test suite isn't running on android. 
+      # TODO(crbug/1260494): Test suite isn't running on android.
       'android-marshmallow-arm64-rel',
       'android-nougat-arm64-rel', # crbug.com/1108124
       'android-pie-arm64-rel',
