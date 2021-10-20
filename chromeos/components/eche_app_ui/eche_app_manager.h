@@ -46,6 +46,7 @@ class EcheSignaler;
 class EcheUidProvider;
 class SystemInfo;
 class SystemInfoProvider;
+class AppsAccessManager;
 
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
@@ -80,6 +81,8 @@ class EcheAppManager : public KeyedService {
   void BindNotificationGeneratorInterface(
       mojo::PendingReceiver<mojom::NotificationGenerator> receiver);
 
+  AppsAccessManager* GetAppsAccessManager();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -99,6 +102,7 @@ class EcheAppManager : public KeyedService {
       remote_cros_network_config_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
   std::unique_ptr<EcheMessageReceiver> message_receiver_;
+  std::unique_ptr<AppsAccessManager> apps_access_manager_;
 };
 
 }  // namespace eche_app

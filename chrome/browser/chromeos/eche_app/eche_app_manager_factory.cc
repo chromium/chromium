@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chromeos/components/eche_app_ui/apps_access_manager_impl.h"
 #include "chromeos/components/eche_app_ui/eche_app_manager.h"
 #include "chromeos/components/eche_app_ui/eche_uid_provider.h"
 #include "chromeos/components/eche_app_ui/system_info.h"
@@ -172,6 +173,7 @@ EcheAppManagerFactory::~EcheAppManagerFactory() = default;
 void EcheAppManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kEcheAppSeedPref, "");
+  AppsAccessManagerImpl::RegisterPrefs(registry);
 }
 
 KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(

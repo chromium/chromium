@@ -32,13 +32,13 @@ class FakeObserver : public EcheMessageReceiver::Observer {
   }
 
   // EcheMessageReceiver::Observer:
-  void onGetAppsAccessStateResponseReceived(
+  void OnGetAppsAccessStateResponseReceived(
       proto::GetAppsAccessStateResponse apps_access_state_response) override {
     last_apps_access_state_response_ = apps_access_state_response;
     ++apps_access_state_response_num_calls_;
   }
 
-  void onSendAppsSetupResponseReceived(
+  void OnSendAppsSetupResponseReceived(
       proto::SendAppsSetupResponse apps_setup_response) override {
     last_apps_setup_reponse_ = apps_setup_response;
     ++apps_setup_response_;
@@ -95,7 +95,7 @@ class EcheMessageReceiverImplTest : public testing::Test {
   std::unique_ptr<EcheMessageReceiver> message_receiver_;
 };
 
-TEST_F(EcheMessageReceiverImplTest, onGetAppsAccessStateResponseReceived) {
+TEST_F(EcheMessageReceiverImplTest, OnGetAppsAccessStateResponseReceived) {
   proto::GetAppsAccessStateResponse response;
   response.set_result(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED);
   response.set_apps_access_state(
@@ -116,7 +116,7 @@ TEST_F(EcheMessageReceiverImplTest, onGetAppsAccessStateResponseReceived) {
             actual_apps_state.apps_access_state());
 }
 
-TEST_F(EcheMessageReceiverImplTest, onSendAppsSetupResponseReceived) {
+TEST_F(EcheMessageReceiverImplTest, OnSendAppsSetupResponseReceived) {
   proto::SendAppsSetupResponse response;
   response.set_result(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED);
   response.set_apps_access_state(

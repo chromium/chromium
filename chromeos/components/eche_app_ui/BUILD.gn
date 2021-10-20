@@ -16,6 +16,10 @@ preprocess_folder = "preprocessed"
 
 static_library("eche_app_ui") {
   sources = [
+    "apps_access_manager.cc",
+    "apps_access_manager.h",
+    "apps_access_manager_impl.cc",
+    "apps_access_manager_impl.h",
     "apps_access_setup_operation.cc",
     "apps_access_setup_operation.h",
     "eche_app_manager.cc",
@@ -49,6 +53,8 @@ static_library("eche_app_ui") {
     "feature_status_provider.h",
     "launch_app_helper.cc",
     "launch_app_helper.h",
+    "pref_names.cc",
+    "pref_names.h",
     "system_info.cc",
     "system_info.h",
     "system_info_provider.cc",
@@ -101,6 +107,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "apps_access_manager_impl_unittest.cc",
     "apps_access_setup_operation_unittest.cc",
     "eche_feature_status_provider_unittest.cc",
     "eche_message_receiver_impl_unittest.cc",

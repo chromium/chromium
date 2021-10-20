@@ -21,13 +21,13 @@ void EcheMessageReceiver::RemoveObserver(Observer* observer) {
 void EcheMessageReceiver::NotifyGetAppsAccessStateResponse(
     proto::GetAppsAccessStateResponse apps_access_state_response) {
   for (auto& observer : observer_list_)
-    observer.onGetAppsAccessStateResponseReceived(apps_access_state_response);
+    observer.OnGetAppsAccessStateResponseReceived(apps_access_state_response);
 }
 
 void EcheMessageReceiver::NotifySendAppsSetupResponse(
     proto::SendAppsSetupResponse apps_setup_response) {
   for (auto& observer : observer_list_)
-    observer.onSendAppsSetupResponseReceived(apps_setup_response);
+    observer.OnSendAppsSetupResponseReceived(apps_setup_response);
 }
 
 }  // namespace eche_app
