@@ -244,13 +244,8 @@ class SecurityTokenSamlTest : public OobeBaseTest {
   base::WeakPtrFactory<SecurityTokenSamlTest> weak_factory_{this};
 };
 
-#define NEVER_ENABLED_Basic DISABLED_Basic
-
 // Tests the successful login scenario with the correct PIN.
-// TODO(crbug.com/1033936): Fix the flakiness and enable it.
-IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, NEVER_ENABLED_Basic) {
-  test::OobeJS().ExpectHiddenPath({"gaia-signin", "pinDialog"});
-
+IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, Basic) {
   StartSignIn();
   WaitForPinDialog();
   test::OobeJS().ExpectVisiblePath({"gaia-signin", "pinDialog"});
