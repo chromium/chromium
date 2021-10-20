@@ -86,6 +86,14 @@
       outline: auto 5px -webkit-focus-ring-color;
     }
 
+    :host-context([enable-branding-update]) .cr-nav-menu-item:focus {
+      /**
+       * A non-zero z-index to force the outline to appear above the fill
+       * background of selected item.
+       */
+      z-index: 1;
+    }
+
     .cr-nav-menu-item iron-icon {
       margin-inline-end: 24px;
       pointer-events: none;
