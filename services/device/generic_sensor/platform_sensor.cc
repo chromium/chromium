@@ -24,8 +24,7 @@ PlatformSensor::PlatformSensor(mojom::SensorType type,
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       reading_buffer_(reading_buffer),
       type_(type),
-      provider_(provider),
-      have_raw_reading_(false) {}
+      provider_(provider) {}
 
 PlatformSensor::~PlatformSensor() {
   if (provider_)
@@ -110,9 +109,9 @@ bool PlatformSensor::GetLatestReading(SensorReading* result) {
 
 bool PlatformSensor::GetLatestRawReading(SensorReading* result) const {
   base::AutoLock auto_lock(lock_);
-  if (!have_raw_reading_)
+  if (!last_raw_reading_.has_value())
     return false;
-  *result = last_raw_reading_;
+  *result = last_raw_reading_.value();
   return true;
 }
 
@@ -135,7 +134,6 @@ void PlatformSensor::UpdateSharedBuffer(const SensorReading& reading) {
   {
     base::AutoLock auto_lock(lock_);
     last_raw_reading_ = reading;
-    have_raw_reading_ = true;
   }
 
   // Round the reading to guard user privacy. See https://crbug.com/1018180.
