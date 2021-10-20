@@ -316,6 +316,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 #endif
 #define NOT_DESTROYED() CheckIsNotDestroyed()
 
+#if DCHECK_IS_ON()
+  bool IsDestroyed() const { return is_destroyed_; }
+#endif
+
   // Returns the name of the layout object.
   virtual const char* GetName() const = 0;
 
