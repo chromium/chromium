@@ -46,15 +46,10 @@ class PolicyCertService : public KeyedService,
   // If |may_use_profile_wide_trust_anchors| is true, certificates from
   // |policy_certificate_provider| that have requested "Web" trust and have
   // profile-wide scope will be used for |profile|.
-  // |user_id| is used to remember if policy-provided trust anchors have been
-  // used in this user Profile and should be an empty string if this is the
-  // PolicyCertService for a Profile which is not associated with a user.
-  // If |user_id| is empty, |may_use_profile_wide_trust_anchors| must be false.
   PolicyCertService(
       Profile* profile,
       chromeos::PolicyCertificateProvider* policy_certificate_provider,
-      bool may_use_profile_wide_trust_anchors,
-      const std::string& user_id);
+      bool may_use_profile_wide_trust_anchors);
 
   PolicyCertService(const PolicyCertService&) = delete;
   PolicyCertService& operator=(const PolicyCertService&) = delete;
@@ -90,9 +85,7 @@ class PolicyCertService : public KeyedService,
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  static std::unique_ptr<PolicyCertService> CreateForTesting(
-      Profile* profile,
-      const std::string& user_id);
+  static std::unique_ptr<PolicyCertService> CreateForTesting(Profile* profile);
 
   // Sets the profile-wide policy-provided trust anchors reported by this
   // PolicyCertService. This is only callable for instances created through
@@ -102,7 +95,7 @@ class PolicyCertService : public KeyedService,
 
  private:
   // Constructor used by CreateForTesting.
-  PolicyCertService(Profile* profile, const std::string& user_id);
+  explicit PolicyCertService(Profile* profile);
 
   // Returns all allowed policy-provided certificates that have requested "Web"
   // trust and have profile-wide scope. If |may_use_profile_wide_trust_anchors_|
@@ -117,10 +110,6 @@ class PolicyCertService : public KeyedService,
   // If true, CA certificates |policy_certificate_provider_| that have requested
   // "Web" trust and have profile-wide scope may be used for |profile_|.
   const bool may_use_profile_wide_trust_anchors_;
-
-  // This will be an empty string for a PolicyCertService which is tied to a
-  // Profile without user association (e.g. the sign-in screen Profile).
-  const std::string user_id_;
 
   // Caches all server and CA certificates that have profile-wide scope from
   // |policy_certificate_provider_|.

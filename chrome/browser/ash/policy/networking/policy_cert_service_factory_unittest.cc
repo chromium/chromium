@@ -67,7 +67,7 @@ TEST_F(PolicyCertServiceFactoryMigrationTest, ExistingPrefMigrated) {
           kUserEmail, profile_));
 
   auto policy_cert_service =
-      policy::PolicyCertService::CreateForTesting(profile_, kUserEmail);
+      policy::PolicyCertService::CreateForTesting(profile_);
   EXPECT_TRUE(policy_cert_service->UsedPolicyCertificates());
 
   EXPECT_FALSE(LocalStateContains(kUserEmail));
@@ -87,7 +87,7 @@ TEST_F(PolicyCertServiceFactoryMigrationTest, ManyUsersOneMigrated) {
           kUserEmail, profile_));
 
   auto policy_cert_service =
-      policy::PolicyCertService::CreateForTesting(profile_, kUserEmail);
+      policy::PolicyCertService::CreateForTesting(profile_);
   EXPECT_TRUE(policy_cert_service->UsedPolicyCertificates());
 
   ASSERT_TRUE(LocalStateContains(email_1));
@@ -105,7 +105,7 @@ TEST_F(PolicyCertServiceFactoryMigrationTest, LocalStatePrefEmpty) {
           kUserEmail, profile_));
 
   auto policy_cert_service =
-      policy::PolicyCertService::CreateForTesting(profile_, kUserEmail);
+      policy::PolicyCertService::CreateForTesting(profile_);
   EXPECT_FALSE(policy_cert_service->UsedPolicyCertificates());
 }
 
@@ -122,7 +122,7 @@ TEST_F(PolicyCertServiceFactoryMigrationTest, UserNotInLocalStatePref) {
           kUserEmail, profile_));
 
   auto policy_cert_service =
-      policy::PolicyCertService::CreateForTesting(profile_, kUserEmail);
+      policy::PolicyCertService::CreateForTesting(profile_);
   EXPECT_FALSE(policy_cert_service->UsedPolicyCertificates());
 
   ASSERT_TRUE(LocalStateContains(email_1));

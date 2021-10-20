@@ -41,19 +41,12 @@ PolicyCertService::~PolicyCertService() {
 PolicyCertService::PolicyCertService(
     Profile* profile,
     chromeos::PolicyCertificateProvider* policy_certificate_provider,
-    bool may_use_profile_wide_trust_anchors,
-    const std::string& user_id)
+    bool may_use_profile_wide_trust_anchors)
     : profile_(profile),
       policy_certificate_provider_(policy_certificate_provider),
-      may_use_profile_wide_trust_anchors_(may_use_profile_wide_trust_anchors),
-      user_id_(user_id) {
+      may_use_profile_wide_trust_anchors_(may_use_profile_wide_trust_anchors) {
   DCHECK(policy_certificate_provider_);
   DCHECK(profile_);
-
-  // Only allow using profile-wide trust anchors if a user is associated with
-  // this Profile. Profiles without a user would be e.g. the sign-in screen
-  // Profile which are not supposed to have profile-wide trust anchors.
-  CHECK(!user_id_.empty() || !may_use_profile_wide_trust_anchors_);
 
   policy_certificate_provider_->AddPolicyProvidedCertsObserver(this);
   profile_wide_all_server_and_authority_certs_ =
@@ -62,12 +55,10 @@ PolicyCertService::PolicyCertService(
   profile_wide_trust_anchors_ = GetAllowedProfileWideTrustAnchors();
 }
 
-PolicyCertService::PolicyCertService(Profile* profile,
-                                     const std::string& user_id)
+PolicyCertService::PolicyCertService(Profile* profile)
     : profile_(profile),
       policy_certificate_provider_(nullptr),
-      may_use_profile_wide_trust_anchors_(true),
-      user_id_(user_id) {}
+      may_use_profile_wide_trust_anchors_(true) {}
 
 void PolicyCertService::OnPolicyProvidedCertsChanged() {
   profile_wide_all_server_and_authority_certs_ =
@@ -171,11 +162,6 @@ void PolicyCertService::GetPolicyCertificatesForStoragePartition(
 }
 
 bool PolicyCertService::UsedPolicyCertificates() const {
-  // PolicyCertService is only tracking if policy-provided certificates have
-  // been used for profiles that are associated with a user.
-  if (user_id_.empty())
-    return false;
-
   return profile_->GetPrefs()->GetBoolean(prefs::kUsedPolicyCertificates);
 }
 
@@ -198,9 +184,8 @@ void PolicyCertService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 // static
 std::unique_ptr<PolicyCertService> PolicyCertService::CreateForTesting(
-    Profile* profile,
-    const std::string& user_id) {
-  return base::WrapUnique(new PolicyCertService(profile, user_id));
+    Profile* profile) {
+  return base::WrapUnique(new PolicyCertService(profile));
 }
 
 void PolicyCertService::SetPolicyTrustAnchorsForTesting(

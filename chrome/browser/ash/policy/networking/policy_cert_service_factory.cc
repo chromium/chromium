@@ -106,10 +106,11 @@ KeyedService* PolicyCertServiceFactory::BuildServiceInstanceFor(
 
   if (chromeos::ProfileHelper::Get()->IsSigninProfile(profile)) {
     return new PolicyCertService(profile, policy_certificate_provider,
-                                 /*may_use_profile_wide_trust_anchors=*/false,
-                                 /*user_id=*/std::string());
+                                 /*may_use_profile_wide_trust_anchors=*/false);
   }
 
+  // Don't allow policy-provided certificates for "special" Profiles except the
+  // one listed above.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(
@@ -120,13 +121,16 @@ KeyedService* PolicyCertServiceFactory::BuildServiceInstanceFor(
   MigrateLocalStatePrefIntoProfilePref(user->GetAccountId().GetUserEmail(),
                                        profile);
 
+  // Only allow trusted policy-provided certificates for non-guest primary
+  // users. Guest users don't have user policy, but set
+  // `may_use_profile_wide_trust_anchors`=false for them out of caution against
+  // future changes.
   bool may_use_profile_wide_trust_anchors =
       user == user_manager->GetPrimaryUser() &&
       user->GetType() != user_manager::USER_TYPE_GUEST;
 
   return new PolicyCertService(profile, policy_certificate_provider,
-                               may_use_profile_wide_trust_anchors,
-                               user->GetAccountId().GetUserEmail());
+                               may_use_profile_wide_trust_anchors);
 }
 
 content::BrowserContext* PolicyCertServiceFactory::GetBrowserContextToUse(

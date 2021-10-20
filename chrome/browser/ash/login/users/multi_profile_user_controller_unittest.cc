@@ -109,7 +109,7 @@ const BehaviorTestCase kBehaviorTestCases[] = {
 std::unique_ptr<KeyedService> TestPolicyCertServiceFactory(
     content::BrowserContext* context) {
   return policy::PolicyCertService::CreateForTesting(
-      Profile::FromBrowserContext(context), kUsers[0]);
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace
