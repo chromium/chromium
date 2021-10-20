@@ -94,6 +94,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     // Buttons:
     public static final String PREF_RESET_SITE = "reset_site_button";
 
+    public static final int REQUEST_CODE_NOTIFICATION_CHANNEL_SETTINGS = 1;
+
     private static boolean arrayContains(int[] array, int element) {
         for (int e : array) {
             if (e == element) {
@@ -173,8 +175,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     // The callback to be run after this site is reset.
     private Observer mWebsiteSettingsObserver;
-
-    private static final int REQUEST_CODE_NOTIFICATION_CHANNEL_SETTINGS = 1;
 
     private final SiteDataCleaner mSiteDataCleaner = new SiteDataCleaner();
 
