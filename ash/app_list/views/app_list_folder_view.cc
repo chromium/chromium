@@ -512,6 +512,33 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
   base::OnceClosure completion_callback_;
 };
 
+// ScrollViewWithMaxHeight limits its preferred size to a maximum height that
+// shows 4 apps grid rows.
+class ScrollViewWithMaxHeight : public views::ScrollView {
+ public:
+  explicit ScrollViewWithMaxHeight(AppListFolderView* folder_view)
+      : views::ScrollView(views::ScrollView::ScrollWithLayers::kEnabled),
+        folder_view_(folder_view) {}
+  ScrollViewWithMaxHeight(const ScrollViewWithMaxHeight&) = delete;
+  ScrollViewWithMaxHeight& operator=(const ScrollViewWithMaxHeight&) = delete;
+  ~ScrollViewWithMaxHeight() override = default;
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override {
+    gfx::Size size = views::ScrollView::CalculatePreferredSize();
+    const int tile_height =
+        folder_view_->items_grid_view()->GetTotalTileSize().height();
+    // Show a maximum of 4 full rows, plus a little bit of the next row to make
+    // it obvious the view can scroll.
+    const int max_height = (tile_height * 4) + (tile_height / 4);
+    size.set_height(std::min(size.height(), max_height));
+    return size;
+  }
+
+ private:
+  AppListFolderView* const folder_view_;
+};
+
 }  // namespace
 
 AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
@@ -566,7 +593,7 @@ void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
   items_grid_view_->Init();
   items_grid_view->SetMaxColumnsAndRows(
       kMaxFolderColumns,
-      /*max_rows_in_first_page=*/kMaxPagedFolderRows,
+      /*max_rows_on_first_page=*/kMaxPagedFolderRows,
       /*max_rows=*/kMaxPagedFolderRows);
   items_grid_view->SetFixedTilePadding(kTileSpacingInFolder / 2,
                                        kTileSpacingInFolder / 2);
@@ -591,9 +618,8 @@ void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
 
 void AppListFolderView::CreateScrollableAppsGrid() {
   // The top part of the folder contents is a scrollable apps grid.
-  scroll_view_ =
-      contents_container_->AddChildView(std::make_unique<views::ScrollView>(
-          views::ScrollView::ScrollWithLayers::kEnabled));
+  scroll_view_ = contents_container_->AddChildView(
+      std::make_unique<ScrollViewWithMaxHeight>(this));
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
   // Don't paint a background. The folder already has one.
@@ -628,13 +654,14 @@ void AppListFolderView::CreateScrollableAppsGrid() {
                                        kTileSpacingInFolder / 2);
   scroll_view_->SetContents(std::move(scroll_contents));
 
-  // The scroll view consumes all available vertical space in its parent. This
-  // means that when the grid has a large number of apps, the scroll view height
-  // is limited to the height of this folder view minus the header height.
+  // In the common case, the parent view is large and the folder has a small
+  // number of apps, so the scroll view's size will be limited by the apps grid
+  // view's preferred size. However, if the parent view is small, the scroll
+  // view will scale down, so there is enough space for the header view.
   scroll_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kScaleToMaximum));
+                               views::MaximumFlexSizeRule::kPreferred));
 
   folder_header_view_ = contents_container_->AddChildView(
       std::make_unique<FolderHeaderView>(this));
