@@ -28,10 +28,18 @@ const KEYS = {
 
   "data: URL"                    : "00000000-0000-0000-0000-000000000009",
   "204 response"                 : "00000000-0000-0000-0000-00000000000A",
-  // Add keys below this list, incrementing the key UUID in hexadecimal:
+
   "keyboard.lock"                : "00000000-0000-0000-0000-00000000000B",
+
   "credentials.create"           : "00000000-0000-0000-0000-00000000000C",
   "credentials.create ACK"       : "00000000-0000-0000-0000-00000000000D",
+
+  "keyboard.lock"                : "00000000-0000-0000-0000-00000000000E",
+
+  "navigation_success"           : "00000000-0000-0000-0000-00000000000F",
+  "ready_for_navigation"         : "00000000-0000-0000-0000-000000000010",
+  "outer_page_did_navigate"      : "00000000-0000-0000-0000-000000000011",
+  // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
 function attachFencedFrame(url) {
@@ -42,6 +50,7 @@ function attachFencedFrame(url) {
   const fenced_frame = document.createElement('fencedframe');
   fenced_frame.src = url;
   document.body.append(fenced_frame);
+  return fenced_frame;
 }
 
 // Reads the value specified by `key` from the key-value store on the server.

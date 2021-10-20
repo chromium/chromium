@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="utils.js"></script>
+<title>Fenced frame hosting named frames</title>
+
+<body>
+<script>
+async function init() {
+  // This file is meant to run in a <fencedframe>. It sets up multiple frames
+  // all with the name `target_frame` in the following arrangements:
+  //   1.) A top-level fenced frame
+  //   2.) An iframe within a fenced frame
+  //   3.) A nested fenced frame
+  // Navigations to all of the above should fail, and thus should open a new
+  // top-level popup window instead of navigating these frames.
+  const ready_for_navigation_key = KEYS["ready_for_navigation"];
+  const outer_page_did_navigate_key = KEYS["outer_page_did_navigate"];
+
+  // Set up the named frame and report to the outer document that we're ready
+  // for it to try and navigate the named frame.
+  window.name = "target_frame";
+  writeValueToServer(ready_for_navigation_key, "READY");
+  await nextValueFromServer(outer_page_did_navigate_key);
+  // Now that the outer page has completed this test, reset `target_frame` named
+  // frame.
+  window.name = "";
+
+  const iframe = document.createElement('iframe');
+  iframe.name = "target_frame";
+  document.body.append(iframe);
+  writeValueToServer(ready_for_navigation_key, "READY");
+  await nextValueFromServer(outer_page_did_navigate_key);
+  // Now that the outer page has completed this test, reset `target_frame` named
+  // frame.
+  document.body.removeChild(iframe);
+
+  const ff = attachFencedFrame("fenced-frame-set-name-and-report-" +
+                               "ready-for-outermost-document-to-navigate.html");
+  await nextValueFromServer(outer_page_did_navigate_key);
+  // Now that the outer page has completed this test, reset `target_frame` named
+  // frame.
+  document.body.removeChild(ff);
+}
+
+init();
+</script>
+</body>
