@@ -8,11 +8,13 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_safe_mode_constants.h"
+#include "components/variations/variations_switches.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -142,6 +145,37 @@ std::unique_ptr<base::Value> MaybeGetFileContents(
   return nullptr;
 }
 
+// Returns the channel to use for setting up the Extended Variations Safe Mode
+// experiment.
+//
+// This is needed for tests in which there is a mismatch between (a) the channel
+// on which the bot is running (and thus the channel plumbed through to the
+// CleanExitBeacon's ctor) and (b) the channel that we wish to use for running a
+// particular test. This mismatch can cause failures (crbug/1259550) when (a)
+// the channel on which the bot is running is a channel to which the Extended
+// Variations Safe Mode experiment does not apply and (b) a test uses a channel
+// on which the experiment does apply.
+//
+// TODO(crbug/1241702): Clean up this function once the experiment is over.
+version_info::Channel GetChannel(version_info::Channel channel) {
+  const std::string forced_channel =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          variations::switches::kFakeVariationsChannel);
+
+  if (!forced_channel.empty()) {
+    if (forced_channel == "stable")
+      return version_info::Channel::STABLE;
+    if (forced_channel == "beta")
+      return version_info::Channel::BETA;
+    if (forced_channel == "dev")
+      return version_info::Channel::DEV;
+    if (forced_channel == "canary")
+      return version_info::Channel::CANARY;
+    DVLOG(1) << "Invalid channel provided: " << forced_channel;
+  }
+  return channel;
+}
+
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
 // Sets up the Extended Variations Safe Mode experiment, which is enabled on
 // only some channels. If assigned to an experiment group, returns the name of
@@ -176,7 +210,7 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
       local_state_(local_state),
       initial_browser_last_live_timestamp_(
           local_state->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp)),
-      channel_(channel) {
+      channel_(GetChannel(channel)) {
   DCHECK_NE(PrefService::INITIALIZATION_STATUS_WAITING,
             local_state_->GetInitializationStatus());
   // TODO(crbug/1248239, crbug/1255305): Remove the below line once the Extended
