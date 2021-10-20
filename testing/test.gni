@@ -427,6 +427,11 @@ template("test") {
       if (!defined(data_deps)) {
         data_deps = []
       }
+      data_deps += [
+        "//testing:test_scripts_shared",
+        "//testing/buildbot/filters:fuchsia_filters",
+      ]
+
       if (use_rts) {
         data_deps += [ ":${target_name}__rts_filters" ]
       }
