@@ -110,6 +110,15 @@ export class PersonalizationRouter extends PolymerElement {
 
   /**
    * @param {string} path
+   * @return {boolean}
+   * @private
+   */
+  shouldShowGooglePhotosCollection_(path) {
+    return path === Paths.GooglePhotosCollection;
+  }
+
+  /**
+   * @param {string} path
    * @return  {boolean}
    * @private
    */

@@ -1,0 +1,29 @@
+<style include="trusted-style common-style">
+  :host {
+    overflow: hidden;
+  }
+
+  #main {
+    height: 100%;
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  cr-button {
+    border: 0;
+  }
+
+  cr-button[aria-pressed=false] {
+    color: var(--cros-text-color-secondary);
+  }
+</style>
+<main id="main" aria-label$="[[i18n('googlePhotosLabel')]]" tabindex="-1">
+  <div>
+    <cr-button aria-pressed="true">
+      <div class="text">[[i18n('googlePhotosPhotosTabLabel')]]</div>
+    </cr-button>
+    <cr-button aria-pressed="false">
+      <div class="text">[[i18n('googlePhotosAlbumsTabLabel')]]</div>
+    </cr-button>
+  </div>
+</main>

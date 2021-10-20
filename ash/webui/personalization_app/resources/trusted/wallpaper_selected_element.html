@@ -1,4 +1,4 @@
-<style include="common-style">
+<style include="trusted-style common-style">
   #container {
     border-bottom: 1px solid var(--cros-separator-color);
     box-sizing: border-box;
@@ -125,19 +125,6 @@
   #wallpaperOptions .text,
   #collectionOptions .text {
     margin-inline-start: 8px;
-  }
-
-  #wallpaperOptions > cr-button,
-  #collectionOptions > cr-button {
-    border-color: var(--cros-button-stroke-color-secondary);
-    border-radius: 16px;
-    margin-inline-end: 8px;
-  }
-
-  #wallpaperOptions > cr-button[aria-selected='true'],
-  #collectionOptions > cr-button[aria-pressed='true'] {
-    background-color: var(--cros-highlight-color);
-    border: 0;
   }
 
   iron-icon {

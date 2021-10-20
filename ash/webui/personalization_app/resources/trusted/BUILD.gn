@@ -7,6 +7,7 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 
 polymer_element_files = [
+  "google_photos_element.js",
   "local_images_element.js",
   "personalization_router_element.js",
   "personalization_toast_element.js",
@@ -29,6 +30,15 @@ static_files = [
   "personalization_store.js",
   "styles.js",
 ]
+
+js_library("google_photos_element") {
+  deps = [
+    ":personalization_store",
+    ":styles",
+    "../common:styles",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
 
 js_library("local_images_element") {
   deps = [
@@ -70,6 +80,7 @@ js_library("personalization_actions") {
 
 js_library("personalization_app") {
   deps = [
+    ":google_photos_element",
     ":local_images_element",
     ":personalization_message_handler",
     ":personalization_reducers",
@@ -106,6 +117,7 @@ js_library("personalization_message_handler") {
 
 js_library("personalization_reducers") {
   deps = [
+    ":mojo_interface_provider",
     ":personalization_actions",
     "//ui/webui/resources/js/cr/ui:store",
   ]
@@ -204,6 +216,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [ "language_in=ECMASCRIPT_2020" ]
   deps = [
+    ":google_photos_element",
     ":local_images_element",
     ":mojo_interface_provider",
     ":personalization_actions",

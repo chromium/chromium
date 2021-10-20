@@ -25,7 +25,7 @@
   wallpaper-selected {
     grid-area: selected;
   }
-  wallpaper-collections, wallpaper-images, local-images {
+  wallpaper-collections, wallpaper-images, google-photos, local-images {
     grid-area: imagegrid;
   }
   personalization-toast {
@@ -63,6 +63,8 @@
   </wallpaper-collections>
   <wallpaper-images collection-id="[[queryParams_.id]]"
     hidden="[[!shouldShowCollectionImages_(path_)]]"></wallpaper-images>
+  <google-photos hidden$="[[!shouldShowGooglePhotosCollection_(path_)]]">
+  </google-photos>
   <local-images hidden="[[!shouldShowLocalCollection_(path_)]]"></local-images>
   <!-- Prevent the right margin from collapsing when window gets very narrow -->
   <div id="rightspacer"></div>

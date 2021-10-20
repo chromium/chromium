@@ -81,14 +81,13 @@ void AddStrings(content::WebUIDataSource* source) {
       {"exitFullscreen", IDS_PERSONALIZATION_APP_EXIT_FULL_SCREEN},
       {"ariaLabelExitFullscreen",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_EXIT_FULL_SCREEN},
-      {"setAsWallpaper", IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER}};
+      {"setAsWallpaper", IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER},
+      {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
+      {"googlePhotosAlbumsTabLabel",
+       IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB},
+      {"googlePhotosPhotosTabLabel",
+       IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_PHOTOS_TAB}};
   source->AddLocalizedStrings(kLocalizedStrings);
-
-  if (ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
-    source->AddLocalizedString("googlePhotosLabel",
-                               IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS);
-  }
-
   source->UseStringsJs();
 }
 
