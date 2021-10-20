@@ -97,6 +97,11 @@ void RemoveFlagsSwitches(base::CommandLine::SwitchMap* switch_list);
 // Reset all flags to the default state by clearing all flags.
 void ResetAllFlags(flags_ui::FlagsStorage* flags_storage);
 
+#if defined(OS_CHROMEOS)
+// Show flags of the other browser (Lacros/Ash).
+void CrosUrlFlagsRedirect();
+#endif
+
 // Sends UMA stats about experimental flag usage. This should be called once per
 // startup.
 void RecordUMAStatistics(flags_ui::FlagsStorage* flags_storage,

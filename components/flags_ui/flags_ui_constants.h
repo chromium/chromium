@@ -11,6 +11,9 @@ namespace flags_ui {
 // Must match the resource file names.
 extern const char kFlagsJS[];
 extern const char kFlagsCSS[];
+#if defined(OS_CHROMEOS)
+extern const char kFlagsSVG[];
+#endif
 
 // Message handlers.
 // Must match the constants used in the resource files.
@@ -18,6 +21,9 @@ extern const char kEnableExperimentalFeature[];
 extern const char kRequestExperimentalFeatures[];
 extern const char kSetOriginListFlag[];
 extern const char kResetAllFlags[];
+#if defined(OS_CHROMEOS)
+extern const char kCrosUrlFlagsRedirect[];
+#endif
 extern const char kRestartBrowser[];
 
 // Other values.

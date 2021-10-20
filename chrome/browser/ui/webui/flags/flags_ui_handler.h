@@ -57,6 +57,11 @@ class FlagsUIHandler : public content::WebUIMessageHandler {
   // Callback for the "resetAllFlags" message.
   void HandleResetAllFlags(const base::ListValue* args);
 
+#if defined(OS_CHROMEOS)
+  // Callback for the "CrosUrlFlagsRedirect" message.
+  void HandleCrosUrlFlagsRedirect(const base::ListValue* args);
+#endif
+
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   flags_ui::FlagAccess access_;

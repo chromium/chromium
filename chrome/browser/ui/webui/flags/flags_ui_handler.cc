@@ -49,6 +49,12 @@ void FlagsUIHandler::RegisterMessages() {
       flags_ui::kResetAllFlags,
       base::BindRepeating(&FlagsUIHandler::HandleResetAllFlags,
                           base::Unretained(this)));
+#if defined(OS_CHROMEOS)
+  web_ui()->RegisterDeprecatedMessageCallback(
+      flags_ui::kCrosUrlFlagsRedirect,
+      base::BindRepeating(&FlagsUIHandler::HandleCrosUrlFlagsRedirect,
+                          base::Unretained(this)));
+#endif
 }
 
 void FlagsUIHandler::Init(flags_ui::FlagsStorage* flags_storage,
@@ -180,3 +186,9 @@ void FlagsUIHandler::HandleResetAllFlags(const base::ListValue* args) {
   DCHECK(flags_storage_);
   about_flags::ResetAllFlags(flags_storage_.get());
 }
+
+#if defined(OS_CHROMEOS)
+void FlagsUIHandler::HandleCrosUrlFlagsRedirect(const base::ListValue* args) {
+  about_flags::CrosUrlFlagsRedirect();
+}
+#endif

@@ -90,6 +90,9 @@ content::WebUIDataSource* CreateFlagsUIHTMLSource() {
 
   source->AddResourcePath(flags_ui::kFlagsJS, IDR_FLAGS_UI_FLAGS_JS);
   source->AddResourcePath(flags_ui::kFlagsCSS, IDR_FLAGS_UI_FLAGS_CSS);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  source->AddResourcePath(flags_ui::kFlagsSVG, IDR_OS_FLAGS_UI_FLAGS_SVG);
+#endif
   source->SetDefaultResource(IDR_FLAGS_UI_FLAGS_HTML);
   source->UseStringsJs();
   return source;
@@ -179,6 +182,11 @@ void FlagsUI::AddStrings(content::WebUIDataSource* source) {
   source->AddLocalizedString("search-label", IDS_FLAGS_UI_SEARCH_LABEL);
   source->AddLocalizedString("search-placeholder",
                              IDS_FLAGS_UI_SEARCH_PLACEHOLDER);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  source->AddLocalizedString("os-flags-link", IDS_FLAGS_UI_OS_FLAGS_LINK);
+  source->AddLocalizedString("os-flags-text1", IDS_FLAGS_UI_OS_FLAGS_TEXT1);
+  source->AddLocalizedString("os-flags-text2", IDS_FLAGS_UI_OS_FLAGS_TEXT2);
+#endif
   source->AddLocalizedString("title", IDS_FLAGS_UI_TITLE);
   source->AddLocalizedString("unavailable", IDS_FLAGS_UI_UNAVAILABLE_FEATURE);
   source->AddLocalizedString("searchResultsSingular",
@@ -214,6 +222,14 @@ void FlagsDeprecatedUI::AddStrings(content::WebUIDataSource* source) {
   source->AddLocalizedString("search-label", IDS_FLAGS_UI_SEARCH_LABEL);
   source->AddLocalizedString("search-placeholder",
                              IDS_DEPRECATED_FEATURES_SEARCH_PLACEHOLDER);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  source->AddLocalizedString("os-flags-link",
+                             IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_LINK);
+  source->AddLocalizedString("os-flags-text1",
+                             IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT1);
+  source->AddLocalizedString("os-flags-text2",
+                             IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT2);
+#endif
   source->AddLocalizedString("title", IDS_DEPRECATED_FEATURES_TITLE);
   source->AddLocalizedString("unavailable",
                              IDS_DEPRECATED_FEATURES_UNAVAILABLE_FEATURE);
