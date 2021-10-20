@@ -143,48 +143,28 @@ TEST(RectTest, InclusiveIntersect) {
 }
 
 TEST(RectTest, Union) {
-  static const struct Test {
-    int x1;  // rect 1
-    int y1;
-    int w1;
-    int h1;
-    int x2;  // rect 2
-    int y2;
-    int w2;
-    int h2;
-    int x3;  // rect 3: the union of rects 1 and 2
-    int y3;
-    int w3;
-    int h3;
-  } tests[] = {
-    { 0, 0, 0, 0,
-      0, 0, 0, 0,
-      0, 0, 0, 0 },
-    { 0, 0, 4, 4,
-      0, 0, 4, 4,
-      0, 0, 4, 4 },
-    { 0, 0, 4, 4,
-      4, 4, 4, 4,
-      0, 0, 8, 8 },
-    { 0, 0, 4, 4,
-      0, 5, 4, 4,
-      0, 0, 4, 9 },
-    { 0, 0, 2, 2,
-      3, 3, 2, 2,
-      0, 0, 5, 5 },
-    { 3, 3, 2, 2,   // reverse r1 and r2 from previous test
-      0, 0, 2, 2,
-      0, 0, 5, 5 },
-    { 0, 0, 0, 0,   // union with empty rect
-      2, 2, 2, 2,
-      2, 2, 2, 2 }
-  };
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
-    Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
-    Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
-    EXPECT_EQ(r3, UnionRects(r1, r2));
-  }
+  EXPECT_EQ(Rect(), UnionRects(Rect(), Rect()));
+  EXPECT_EQ(Rect(1, 2, 3, 4), UnionRects(Rect(1, 2, 3, 4), Rect(1, 2, 3, 4)));
+  EXPECT_EQ(Rect(0, 0, 8, 10), UnionRects(Rect(0, 0, 3, 4), Rect(3, 4, 5, 6)));
+  EXPECT_EQ(Rect(0, 0, 8, 10), UnionRects(Rect(3, 4, 5, 6), Rect(0, 0, 3, 4)));
+  EXPECT_EQ(Rect(0, 1, 3, 8), UnionRects(Rect(0, 1, 3, 4), Rect(0, 5, 3, 4)));
+  EXPECT_EQ(Rect(0, 1, 10, 11), UnionRects(Rect(0, 1, 3, 4), Rect(4, 5, 6, 7)));
+  EXPECT_EQ(Rect(0, 1, 10, 11), UnionRects(Rect(4, 5, 6, 7), Rect(0, 1, 3, 4)));
+  EXPECT_EQ(Rect(2, 3, 4, 5), UnionRects(Rect(8, 9, 0, 2), Rect(2, 3, 4, 5)));
+  EXPECT_EQ(Rect(2, 3, 4, 5), UnionRects(Rect(2, 3, 4, 5), Rect(8, 9, 2, 0)));
+}
+
+TEST(RectTest, UnionEvenIfEmpty) {
+  EXPECT_EQ(Rect(), UnionRectsEvenIfEmpty(Rect(), Rect()));
+  EXPECT_EQ(Rect(0, 0, 3, 4), UnionRectsEvenIfEmpty(Rect(), Rect(3, 4, 0, 0)));
+  EXPECT_EQ(Rect(0, 0, 8, 10),
+            UnionRectsEvenIfEmpty(Rect(0, 0, 3, 4), Rect(3, 4, 5, 6)));
+  EXPECT_EQ(Rect(0, 0, 8, 10),
+            UnionRectsEvenIfEmpty(Rect(3, 4, 5, 6), Rect(0, 0, 3, 4)));
+  EXPECT_EQ(Rect(2, 3, 6, 8),
+            UnionRectsEvenIfEmpty(Rect(8, 9, 0, 2), Rect(2, 3, 4, 5)));
+  EXPECT_EQ(Rect(2, 3, 8, 6),
+            UnionRectsEvenIfEmpty(Rect(2, 3, 4, 5), Rect(8, 9, 2, 0)));
 }
 
 TEST(RectTest, Equals) {

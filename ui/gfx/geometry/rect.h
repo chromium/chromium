@@ -213,8 +213,14 @@ class GEOMETRY_EXPORT Rect {
   bool InclusiveIntersect(const Rect& rect);
 
   // Sets this rect to be the union of this rectangle with the given rectangle.
-  // The union is the smallest rectangle containing both rectangles.
+  // The union is the smallest rectangle containing both rectangles if not
+  // empty. If both rects are empty, this rect will become |rect|.
   void Union(const Rect& rect);
+
+  // Similar to Union(), but the result will contain both rectangles even if
+  // either of them is empty. For example, union of (100, 100, 0x0) and
+  // (200, 200, 50x0) is (100, 100, 150x100).
+  void UnionEvenIfEmpty(const Rect& rect);
 
   // Sets this rect to be the rectangle resulting from subtracting |rect| from
   // |*this|, i.e. the bounding rect of |Region(*this) - Region(rect)|.
@@ -306,6 +312,7 @@ inline Rect operator+(const Vector2d& lhs, const Rect& rhs) {
 
 GEOMETRY_EXPORT Rect IntersectRects(const Rect& a, const Rect& b);
 GEOMETRY_EXPORT Rect UnionRects(const Rect& a, const Rect& b);
+GEOMETRY_EXPORT Rect UnionRectsEvenIfEmpty(const Rect& a, const Rect& b);
 GEOMETRY_EXPORT Rect SubtractRects(const Rect& a, const Rect& b);
 
 // Constructs a rectangle with |p1| and |p2| as opposite corners.

@@ -160,8 +160,14 @@ class GEOMETRY_EXPORT RectF {
   bool InclusiveIntersect(const RectF& rect);
 
   // Sets this rect to be the union of this rectangle with the given rectangle.
-  // The union is the smallest rectangle containing both rectangles.
+  // The union is the smallest rectangle containing both rectangles if not
+  // empty. If both rects are empty, this rect will become |rect|.
   void Union(const RectF& rect);
+
+  // Similar to Union(), but the result will contain both rectangles even if
+  // either of them is empty. For example, union of (100, 100, 0x0) and
+  // (200, 200, 50x0) is (100, 100, 150x100).
+  void UnionEvenIfEmpty(const RectF& rect);
 
   // Sets this rect to be the rectangle resulting from subtracting |rect| from
   // |*this|, i.e. the bounding rect of |Region(*this) - Region(rect)|.
@@ -200,6 +206,9 @@ class GEOMETRY_EXPORT RectF {
   // is non-empty then the function returns 0. If the rects share a side, it
   // returns the smallest non-zero value appropriate for float.
   float ManhattanInternalDistance(const RectF& rect) const;
+
+  // Returns the closest point in or on an edge of this rect to the given point.
+  PointF ClosestPoint(const PointF& point) const;
 
   // Scales the rectangle by |scale|.
   void Scale(float scale) {
@@ -248,6 +257,7 @@ inline RectF operator+(const Vector2dF& lhs, const RectF& rhs) {
 
 GEOMETRY_EXPORT RectF IntersectRects(const RectF& a, const RectF& b);
 GEOMETRY_EXPORT RectF UnionRects(const RectF& a, const RectF& b);
+GEOMETRY_EXPORT RectF UnionRectsEvenIfEmpty(const RectF& a, const RectF& b);
 GEOMETRY_EXPORT RectF SubtractRects(const RectF& a, const RectF& b);
 
 inline RectF ScaleRect(const RectF& r, float x_scale, float y_scale) {
@@ -257,6 +267,10 @@ inline RectF ScaleRect(const RectF& r, float x_scale, float y_scale) {
 
 inline RectF ScaleRect(const RectF& r, float scale) {
   return ScaleRect(r, scale, scale);
+}
+
+inline RectF TransposeRect(const RectF& r) {
+  return RectF(r.y(), r.x(), r.height(), r.width());
 }
 
 // Constructs a rectangle with |p1| and |p2| as opposite corners.

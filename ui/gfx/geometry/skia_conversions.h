@@ -5,7 +5,6 @@
 #ifndef UI_GFX_GEOMETRY_SKIA_CONVERSIONS_H_
 #define UI_GFX_GEOMETRY_SKIA_CONVERSIONS_H_
 
-#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -24,7 +23,9 @@ class Transform;
 // Convert between Skia and gfx types.
 GEOMETRY_SKIA_EXPORT SkPoint PointToSkPoint(const Point& point);
 GEOMETRY_SKIA_EXPORT SkIPoint PointToSkIPoint(const Point& point);
+GEOMETRY_SKIA_EXPORT Point SkIPointToPoint(const SkIPoint& point);
 GEOMETRY_SKIA_EXPORT SkPoint PointFToSkPoint(const PointF& point);
+GEOMETRY_SKIA_EXPORT PointF SkPointToPointF(const SkPoint& point);
 GEOMETRY_SKIA_EXPORT SkRect RectToSkRect(const Rect& rect);
 GEOMETRY_SKIA_EXPORT SkIRect RectToSkIRect(const Rect& rect);
 GEOMETRY_SKIA_EXPORT Rect SkIRectToRect(const SkIRect& rect);

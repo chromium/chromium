@@ -38,6 +38,8 @@ class GEOMETRY_EXPORT SizeF {
 
   float GetArea() const;
 
+  float AspectRatio() const { return width_ / height_; }
+
   void SetSize(float width, float height) {
     set_width(width);
     set_height(height);
@@ -58,6 +60,8 @@ class GEOMETRY_EXPORT SizeF {
   void Scale(float x_scale, float y_scale) {
     SetSize(width() * x_scale, height() * y_scale);
   }
+
+  void Transpose() { std::swap(width_, height_); }
 
   std::string ToString() const;
 
@@ -86,6 +90,10 @@ GEOMETRY_EXPORT SizeF ScaleSize(const SizeF& p, float x_scale, float y_scale);
 
 inline SizeF ScaleSize(const SizeF& p, float scale) {
   return ScaleSize(p, scale, scale);
+}
+
+inline SizeF TransposeSize(const SizeF& s) {
+  return SizeF(s.height(), s.width());
 }
 
 // This is declared here for use in gtest-based unit tests but is defined in

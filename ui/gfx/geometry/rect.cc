@@ -209,6 +209,10 @@ void Rect::Union(const Rect& rect) {
   if (rect.IsEmpty())
     return;
 
+  UnionEvenIfEmpty(rect);
+}
+
+void Rect::UnionEvenIfEmpty(const Rect& rect) {
   SetByBounds(std::min(x(), rect.x()), std::min(y(), rect.y()),
               std::max(right(), rect.right()),
               std::max(bottom(), rect.bottom()));
@@ -339,6 +343,12 @@ Rect IntersectRects(const Rect& a, const Rect& b) {
 Rect UnionRects(const Rect& a, const Rect& b) {
   Rect result = a;
   result.Union(b);
+  return result;
+}
+
+Rect UnionRectsEvenIfEmpty(const Rect& a, const Rect& b) {
+  Rect result = a;
+  result.UnionEvenIfEmpty(b);
   return result;
 }
 

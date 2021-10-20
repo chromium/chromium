@@ -49,16 +49,27 @@ class GEOMETRY_EXPORT Vector2dF {
     y_ = y_ >= other.y_ ? y_ : other.y_;
   }
 
-  // Gives the square of the diagonal length of the vector.
+  // Gives the square of the diagonal length, i.e. the square of magnitude, of
+  // the vector.
   double LengthSquared() const;
-  // Gives the diagonal length of the vector.
+
+  // Gives the diagonal length (i.e. the magnitude) of the vector.
   float Length() const;
+
+  float AspectRatio() const { return x_ / y_; }
+
+  // Gives the slope angle in radians of the vector from the positive x axis,
+  // in the range of (-pi, pi]. The sign of the result is the same as the sign
+  // of y(), except that the result is pi for Vector2dF(negative-x, zero-y).
+  float SlopeAngleRadians() const;
 
   // Scale the x and y components of the vector by |scale|.
   void Scale(float scale) { Scale(scale, scale); }
   // Scale the x and y components of the vector by |x_scale| and |y_scale|
   // respectively.
   void Scale(float x_scale, float y_scale);
+
+  void Transpose() { std::swap(x_, y_); }
 
   std::string ToString() const;
 
@@ -91,7 +102,7 @@ inline Vector2dF operator-(const Vector2dF& lhs, const Vector2dF& rhs) {
   return result;
 }
 
-// Return the cross product of two vectors.
+// Return the cross product of two vectors, i.e. the determinant.
 GEOMETRY_EXPORT double CrossProduct(const Vector2dF& lhs, const Vector2dF& rhs);
 
 // Return the dot product of two vectors.
@@ -106,6 +117,10 @@ GEOMETRY_EXPORT Vector2dF ScaleVector2d(const Vector2dF& v,
 // Return a vector that is |v| scaled by the given scale factor.
 inline Vector2dF ScaleVector2d(const Vector2dF& v, float scale) {
   return ScaleVector2d(v, scale, scale);
+}
+
+inline Vector2dF TransposeVector2d(const Vector2dF& v) {
+  return Vector2dF(v.y(), v.x());
 }
 
 // This is declared here for use in gtest-based unit tests but is defined in

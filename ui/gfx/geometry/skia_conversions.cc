@@ -24,8 +24,16 @@ SkIPoint PointToSkIPoint(const Point& point) {
   return SkIPoint::Make(point.x(), point.y());
 }
 
+Point SkIPointToPoint(const SkIPoint& point) {
+  return Point(point.x(), point.y());
+}
+
 SkPoint PointFToSkPoint(const PointF& point) {
   return SkPoint::Make(SkFloatToScalar(point.x()), SkFloatToScalar(point.y()));
+}
+
+PointF SkPointToPointF(const SkPoint& point) {
+  return PointF(SkScalarToFloat(point.x()), SkScalarToFloat(point.y()));
 }
 
 SkRect RectToSkRect(const Rect& rect) {
