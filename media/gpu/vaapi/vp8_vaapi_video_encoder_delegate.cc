@@ -123,6 +123,11 @@ Vp8FrameHeader GetDefaultVp8FrameHeader(bool keyframe,
   // TODO(sprang): Make this dynamic. Value based on reference implementation
   // in libyami (https://github.com/intel/libyami).
 
+  // Sets the highest loop filter level.
+  // TODO(b/188853141): Set a loop filter level computed by a rate controller
+  // every frame once the rate controller supports it.
+  hdr.loopfilter_hdr.level = 63;
+
   // A VA-API driver recommends to set forced_lf_adjustment on keyframe.
   // Set loop_filter_adj_enable to 1 here because forced_lf_adjustment is read
   // only when a macroblock level loop filter adjustment.
