@@ -382,6 +382,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param shouldCascadeTabs Whether the {@link CascadingStripStacker} should be used.
      */
     void setShouldCascadeTabs(boolean shouldCascadeTabs) {
+        if (mModel == null) return;
+
         if (shouldCascadeTabs != mShouldCascadeTabs) {
             mShouldCascadeTabs = shouldCascadeTabs;
             setTabStacker(shouldCascadeTabs ? mCascadingStripStacker : mScrollingStripStacker);
@@ -429,6 +431,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (mModel == model) return;
         mModel = model;
         mTabCreator = tabCreator;
+        setShouldCascadeTabs(mShouldCascadeTabs);
         computeAndUpdateTabOrders(false);
     }
 
