@@ -226,14 +226,11 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
   if (contents != "CRLSet")
     return false;
 
-  int version;
-  if (!header_dict->GetInteger("Version", &version) ||
-      version != kCurrentFileVersion) {
+  if (header_dict->FindIntKey("Version") != kCurrentFileVersion)
     return false;
-  }
 
-  int sequence;
-  if (!header_dict->GetInteger("Sequence", &sequence))
+  absl::optional<int> sequence = header_dict->FindIntKey("Sequence");
+  if (!sequence)
     return false;
 
   // NotAfter is optional for now.
@@ -242,7 +239,7 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
     return false;
 
   scoped_refptr<CRLSet> crl_set(new CRLSet());
-  crl_set->sequence_ = static_cast<uint32_t>(sequence);
+  crl_set->sequence_ = static_cast<uint32_t>(*sequence);
   crl_set->not_after_ = static_cast<uint64_t>(not_after);
   crl_set->crls_.reserve(64);  // Value observed experimentally.
 

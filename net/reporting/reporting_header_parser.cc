@@ -92,15 +92,21 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
   endpoint_info_out->url = std::move(endpoint_url);
 
   int priority = ReportingEndpoint::EndpointInfo::kDefaultPriority;
-  if (dict->HasKey(kPriorityKey) && !dict->GetInteger(kPriorityKey, &priority))
-    return false;
+  if (const base::Value* value = dict->FindKey(kPriorityKey)) {
+    if (!value->is_int())
+      return false;
+    priority = value->GetInt();
+  }
   if (priority < 0)
     return false;
   endpoint_info_out->priority = priority;
 
   int weight = ReportingEndpoint::EndpointInfo::kDefaultWeight;
-  if (dict->HasKey(kWeightKey) && !dict->GetInteger(kWeightKey, &weight))
-    return false;
+  if (const base::Value* value = dict->FindKey(kWeightKey)) {
+    if (!value->is_int())
+      return false;
+    weight = value->GetInt();
+  }
   if (weight < 0)
     return false;
   endpoint_info_out->weight = weight;
@@ -133,11 +139,7 @@ bool ProcessEndpointGroup(ReportingDelegate* delegate,
                                       group_name);
   parsed_endpoint_group_out->group_key = group_key;
 
-  int ttl_sec = -1;
-  if (!dict->HasKey(kMaxAgeKey))
-    return false;
-  if (!dict->GetInteger(kMaxAgeKey, &ttl_sec))
-    return false;
+  int ttl_sec = dict->FindIntKey(kMaxAgeKey).value_or(-1);
   if (ttl_sec < 0)
     return false;
   // max_age: 0 signifies removal of the endpoint group.

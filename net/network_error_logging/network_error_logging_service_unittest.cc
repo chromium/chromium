@@ -220,8 +220,8 @@ void ExpectDictDoubleValue(double expected_value,
                            const base::DictionaryValue& value,
                            const std::string& key) {
   absl::optional<double> double_value = value.FindDoubleKey(key);
-  EXPECT_TRUE(double_value.has_value()) << key;
-  EXPECT_DOUBLE_EQ(expected_value, double_value.value_or(0.0)) << key;
+  ASSERT_TRUE(double_value) << key;
+  EXPECT_DOUBLE_EQ(expected_value, *double_value) << key;
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, CreateService) {
