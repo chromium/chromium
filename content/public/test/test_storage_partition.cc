@@ -67,10 +67,6 @@ storage::QuotaManager* TestStoragePartition::GetQuotaManager() {
   return quota_manager_;
 }
 
-AppCacheService* TestStoragePartition::GetAppCacheService() {
-  return app_cache_service_;
-}
-
 BackgroundSyncContext* TestStoragePartition::GetBackgroundSyncContext() {
   return background_sync_context_;
 }

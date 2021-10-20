@@ -390,10 +390,6 @@ void AppCacheInternalsHandler::CreateProxyForPartition(
     StoragePartition* storage_partition) {
   auto proxy = base::MakeRefCounted<Proxy>(weak_ptr_factory_.GetWeakPtr(),
                                            storage_partition->GetPath());
-  auto* appcache_service = static_cast<StoragePartitionImpl*>(storage_partition)
-                               ->GetAppCacheService();
-  if (appcache_service)
-    proxy->Initialize(appcache_service);
   appcache_proxies_.emplace_back(std::move(proxy));
 }
 

@@ -22,7 +22,6 @@ class ProtoDatabaseProvider;
 
 namespace content {
 
-class AppCacheService;
 class BackgroundSyncContext;
 class DevToolsBackgroundServicesContext;
 class DOMStorageContext;
@@ -88,11 +87,6 @@ class TestStoragePartition : public StoragePartition {
     quota_manager_ = manager;
   }
   storage::QuotaManager* GetQuotaManager() override;
-
-  void set_app_cache_service(AppCacheService* service) {
-    app_cache_service_ = service;
-  }
-  AppCacheService* GetAppCacheService() override;
 
   void set_file_system_context(storage::FileSystemContext* context) {
     file_system_context_ = context;
@@ -229,7 +223,6 @@ class TestStoragePartition : public StoragePartition {
   network::mojom::NetworkContext* network_context_ = nullptr;
   network::mojom::CookieManager* cookie_manager_for_browser_process_ = nullptr;
   storage::QuotaManager* quota_manager_ = nullptr;
-  AppCacheService* app_cache_service_ = nullptr;
   BackgroundSyncContext* background_sync_context_ = nullptr;
   storage::FileSystemContext* file_system_context_ = nullptr;
   storage::DatabaseTracker* database_tracker_ = nullptr;

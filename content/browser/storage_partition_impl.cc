@@ -1112,9 +1112,6 @@ StoragePartitionImpl::~StoragePartitionImpl() {
   if (GetContentIndexContext())
     GetContentIndexContext()->Shutdown();
 
-  if (GetAppCacheService())
-    GetAppCacheService()->Shutdown();
-
   if (GetGeneratedCodeCacheContext())
     GetGeneratedCodeCacheContext()->Shutdown();
 }
@@ -1223,11 +1220,6 @@ void StoragePartitionImpl::Initialize(
 
   service_worker_context_ = new ServiceWorkerContextWrapper(browser_context_);
   service_worker_context_->set_storage_partition(this);
-
-  if (StoragePartition::IsAppCacheEnabled()) {
-    appcache_service_ = base::MakeRefCounted<ChromeAppCacheService>(
-        quota_manager_proxy, weak_factory_.GetWeakPtr());
-  }
 
   dedicated_worker_service_ = std::make_unique<DedicatedWorkerServiceImpl>();
 
@@ -1443,11 +1435,6 @@ void StoragePartitionImpl::CreateHasTrustTokensAnswerer(
 storage::QuotaManager* StoragePartitionImpl::GetQuotaManager() {
   DCHECK(initialized_);
   return quota_manager_.get();
-}
-
-ChromeAppCacheService* StoragePartitionImpl::GetAppCacheService() {
-  DCHECK(initialized_);
-  return appcache_service_.get();
 }
 
 BackgroundSyncContextImpl* StoragePartitionImpl::GetBackgroundSyncContext() {
@@ -2795,10 +2782,6 @@ void StoragePartitionImpl::
 void StoragePartition::SetDefaultQuotaSettingsForTesting(
     const storage::QuotaSettings* settings) {
   g_test_quota_settings = settings;
-}
-
-bool StoragePartition::IsAppCacheEnabled() {
-  return base::FeatureList::IsEnabled(blink::features::kAppCache);
 }
 
 mojo::PendingRemote<network::mojom::CookieAccessObserver>

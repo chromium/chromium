@@ -39,7 +39,6 @@ delete;
 
   void RequestBeginning(net::URLRequest* request,
                         content::ResourceContext* resource_context,
-                        content::AppCacheService* appcache_service,
                         blink::mojom::ResourceType resource_type,
                         std::vector<std::unique_ptr<content::ResourceThrottle>>*
                             throttles) override;

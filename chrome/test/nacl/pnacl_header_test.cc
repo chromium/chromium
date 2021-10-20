@@ -28,7 +28,6 @@ using net::test_server::HttpResponse;
 void TestDispatcherHostDelegate::RequestBeginning(
     net::URLRequest* request,
     content::ResourceContext* resource_context,
-    content::AppCacheService* appcache_service,
     blink::mojom::ResourceType resource_type,
     std::vector<std::unique_ptr<content::ResourceThrottle>>* throttles) {
   // This checks the same condition as the one for PNaCl in

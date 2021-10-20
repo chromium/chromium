@@ -23,7 +23,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -463,14 +462,9 @@ void StoragePartitionImplMap::PostCreateInitialization(
     InitializeResourceContext(browser_context_);
   }
 
-  if (StoragePartition::IsAppCacheEnabled()) {
-    partition->GetAppCacheService()->Initialize(
-        in_memory ? base::FilePath()
-                  : partition->GetPath().Append(kAppCacheDirname),
-        browser_context_, browser_context_->GetSpecialStoragePolicy());
-  } else if (!in_memory) {
-    // If AppCache is not enabled, clean up any on disk storage.  This is the
-    // path that will execute once AppCache has been fully removed from Chrome.
+  if (!in_memory) {
+    // Clean up any lingering AppCache user data on disk, now that AppCache
+    // has been deprecated and removed.
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(

@@ -25,6 +25,7 @@
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/test/fuzzer/file_system_manager_mojolpm_fuzzer.pb.h"
 #include "mojo/core/embedder/embedder.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"

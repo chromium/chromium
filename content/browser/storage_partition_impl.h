@@ -20,7 +20,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/services/storage/public/mojom/partition.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom-forward.h"
-#include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -43,6 +42,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "storage/browser/quota/quota_client_type.h"
+#include "storage/browser/quota/quota_settings.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
 
@@ -148,7 +149,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   CreateURLLoaderNetworkObserverForNavigationRequest(
       int frame_tree_id) override;
   storage::QuotaManager* GetQuotaManager() override;
-  ChromeAppCacheService* GetAppCacheService() override;
   BackgroundSyncContextImpl* GetBackgroundSyncContext() override;
   storage::FileSystemContext* GetFileSystemContext() override;
   FontAccessContext* GetFontAccessContext() override;
@@ -536,7 +536,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
   scoped_refptr<QuotaContext> quota_context_;
   scoped_refptr<storage::QuotaManager> quota_manager_;
-  scoped_refptr<ChromeAppCacheService> appcache_service_;
   scoped_refptr<storage::FileSystemContext> filesystem_context_;
   scoped_refptr<storage::DatabaseTracker> database_tracker_;
   scoped_refptr<DOMStorageContextWrapper> dom_storage_context_;

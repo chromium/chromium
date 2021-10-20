@@ -405,9 +405,9 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
 
   web_prefs->plugins_enabled = false;
 
+  // TODO(enne): Remove this pref, and clean up Android settings.
   web_prefs->application_cache_enabled =
-      Java_AwSettings_getAppCacheEnabledLocked(env, obj) &&
-      content::StoragePartition::IsAppCacheEnabled();
+      Java_AwSettings_getAppCacheEnabledLocked(env, obj);
 
   web_prefs->local_storage_enabled =
       Java_AwSettings_getDomStorageEnabledLocked(env, obj);
