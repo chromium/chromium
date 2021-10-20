@@ -121,10 +121,8 @@ DWriteFontCollectionProxy::~DWriteFontCollectionProxy() = default;
 
 DWriteFontFamilyProxy* DWriteFontCollectionProxy::GetFamily(
     UINT32 family_index) {
-  if (family_index < families_.size()) {
-    if (DWriteFontFamilyProxy* family = families_[family_index].Get())
-      return family;
-  }
+  if (family_index < families_.size())
+    return families_[family_index].Get();
   return nullptr;
 }
 
