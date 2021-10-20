@@ -84,7 +84,6 @@ class CheckClientDownloadRequestBase {
   void OnRequestBuilt(std::unique_ptr<ClientDownloadRequest> request_proto);
 
   void StartTimeout();
-  void OnCertificateAllowlistCheckDone(bool is_allowlisted);
   void SendRequest();
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
 
