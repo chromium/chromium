@@ -153,6 +153,8 @@ void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
 
 // Tests the sign-in screen with accounts that are already available.
 - (void)testSignInScreenWithAccount {
+  // TODO(crbug.com/1261578): Need to enable the test).
+  EARL_GREY_TEST_SKIPPED(@"Test skipped crbug.com/1261578.");
   // Add an identity to sign-in to enable the "Continue as ..." button in the
   // sign-in screen.
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
