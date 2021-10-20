@@ -27,6 +27,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
@@ -70,21 +71,32 @@ absl::optional<std::string> GetProperty(HDEVINFO dev_info,
 base::FilePath FixUpPortName(base::StringPiece port_name) {
   // For COM numbers less than 9, CreateFile is called with a string such as
   // "COM1". For numbers greater than 9, a prefix of "\\.\" must be added.
-  if (port_name.length() > std::string("COM9").length())
+  if (port_name.length() > base::StringPiece("COM9").length())
     return base::FilePath(LR"(\\.\)").AppendASCII(port_name);
 
   return base::FilePath::FromUTF8Unsafe(port_name);
 }
 
-// Searches for the COM port in the device's friendly name and returns the
-// appropriate device path or nullopt if the input did not contain a valid
-// name.
-absl::optional<base::FilePath> GetPath(const std::string& friendly_name) {
-  std::string com_port;
-  if (!RE2::PartialMatch(friendly_name, ".* \\((COM[0-9]+)\\)", &com_port))
+// Deduce the device path for the device from the registry.
+absl::optional<base::FilePath> GetPath(HDEVINFO dev_info,
+                                       SP_DEVINFO_DATA* dev_info_data) {
+  HKEY key = SetupDiOpenDevRegKey(dev_info, dev_info_data, DICS_FLAG_GLOBAL, 0,
+                                  DIREG_DEV, KEY_READ);
+  if (key == INVALID_HANDLE_VALUE) {
+    SERIAL_PLOG(ERROR) << "Could not open device registry key";
     return absl::nullopt;
+  }
+  base::win::RegKey scoped_key(key);
 
-  return FixUpPortName(com_port);
+  std::wstring port_name;
+  LONG result = scoped_key.ReadValue(L"PortName", &port_name);
+  if (result != ERROR_SUCCESS) {
+    SERIAL_LOG(ERROR) << "Failed to read port name: "
+                      << logging::SystemErrorCodeToString(result);
+    return absl::nullopt;
+  }
+
+  return FixUpPortName(base::SysWideToUTF8(port_name));
 }
 
 // Searches for the display name in the device's friendly name. Returns nullopt
@@ -236,15 +248,7 @@ void SerialDeviceEnumeratorWin::OnPathRemoved(const std::wstring& device_path) {
   if (!SetupDiEnumDeviceInfo(dev_info.get(), 0, &dev_info_data))
     return;
 
-  // The friendly name looks like "USB_SERIAL_PORT (COM3)".
-  // In Windows, the COM port is the path used to uniquely identify the
-  // serial device. If the COM can't be found, ignore the device.
-  absl::optional<std::string> friendly_name =
-      GetProperty(dev_info.get(), &dev_info_data, DEVPKEY_Device_FriendlyName);
-  if (!friendly_name)
-    return;
-
-  absl::optional<base::FilePath> path = GetPath(*friendly_name);
+  absl::optional<base::FilePath> path = GetPath(dev_info.get(), &dev_info_data);
   if (!path)
     return;
 
@@ -283,15 +287,7 @@ void SerialDeviceEnumeratorWin::DoInitialEnumeration() {
 
 void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
                                               SP_DEVINFO_DATA* dev_info_data) {
-  // The friendly name looks like "USB_SERIAL_PORT (COM3)".
-  // In Windows, the COM port is the path used to uniquely identify the
-  // serial device. If the COM can't be found, ignore the device.
-  absl::optional<std::string> friendly_name =
-      GetProperty(dev_info, dev_info_data, DEVPKEY_Device_FriendlyName);
-  if (!friendly_name)
-    return;
-
-  absl::optional<base::FilePath> path = GetPath(*friendly_name);
+  absl::optional<base::FilePath> path = GetPath(dev_info, dev_info_data);
   if (!path)
     return;
 
@@ -326,6 +322,11 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
     // Fall back to the "friendly name" if no "bus reported device description"
     // is available. This name will likely be the same for all devices using the
     // same driver.
+    absl::optional<std::string> friendly_name =
+        GetProperty(dev_info, dev_info_data, DEVPKEY_Device_FriendlyName);
+    if (!friendly_name)
+      return;
+
     info->display_name = GetDisplayName(*friendly_name);
   }
 
