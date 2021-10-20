@@ -68,6 +68,7 @@ cast_source_set("url_rewrite") {
 
   public_deps = [
     "//base",
+    "//chromecast/common",
     "//chromecast/common/mojom",
     "//mojo/public/cpp/bindings",
     "//third_party/cast_core/public/src/proto/v2:url_rewrite_proto",

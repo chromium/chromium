@@ -4,6 +4,7 @@
 
 #include "chromecast/cast_core/web_runtime_application.h"
 
+#include "chromecast/browser/cast_web_service.h"
 #include "chromecast/cast_core/bindings_manager_web_runtime.h"
 #include "chromecast/cast_core/grpc_webui_controller_factory.h"
 #include "chromecast/cast_core/url_rewrite_rules_adapter.h"
@@ -33,6 +34,17 @@ bool WebRuntimeApplication::Load(
   url_rewrite_adapter_ =
       std::make_unique<UrlRewriteRulesAdapter>(request.url_rewrite_rules());
   app_url_ = request.application_config().cast_web_app_config().url();
+
+  auto* web_service = cast_web_service();
+  if (web_service) {
+    MojoIdentificationSettings params(request.url_rewrite_rules());
+    web_service->CreateSessionWithSubstitutions(
+        cast_session_id(), std::move(params.substitutable_params));
+    web_service->UpdateAppSettingsForSession(
+        cast_session_id(), std::move(params.application_settings));
+    web_service->UpdateDeviceSettingsForSession(
+        cast_session_id(), std::move(params.device_settings));
+  }
 
   return true;
 }

@@ -100,6 +100,13 @@ void RuntimeApplicationBase::FinishLaunch(
   GURL cast_application_url =
       ProcessWebView(core_app_stub_.get(), cast_web_view_->cast_web_contents());
 
+  const std::vector<int32_t> feature_permissions;
+  const std::vector<std::string> additional_feature_permission_origins;
+  // TODO(b/203580094): Currently we assume the app is not audio only.
+  cast_web_view_->cast_web_contents()->SetAppProperties(
+      app_id(), cast_session_id(), false /*is_audio_app*/, cast_application_url,
+      false /*enforce_feature_permissions*/, feature_permissions,
+      additional_feature_permission_origins);
   cast_web_view_->cast_web_contents()->LoadUrl(cast_application_url);
   cast_web_view_->window()->GrantScreenAccess();
   cast_web_view_->window()->CreateWindow(
@@ -184,6 +191,10 @@ void RuntimeApplicationBase::StopApplication() {
 
   if (cast_web_view_) {
     cast_web_view_->cast_web_contents()->ClosePage();
+  }
+
+  if (web_service_) {
+    web_service_->OnSessionDestroyed(cast_session_id());
   }
 
   GrpcServer::Stop();

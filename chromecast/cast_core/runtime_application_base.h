@@ -67,6 +67,9 @@ class RuntimeApplicationBase
     return task_runner_;
   }
 
+  // Returns a pointer to CastWebService.
+  CastWebService* cast_web_service() const { return web_service_; }
+
   // RuntimeApplication implementation:
   bool Load(const cast::runtime::LoadApplicationRequest& request) override;
   bool Launch(const cast::runtime::LaunchApplicationRequest& request) override;

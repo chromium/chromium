@@ -450,6 +450,15 @@ mojom::DeviceSettingsPtr ConvertDeviceSettingsToMojo(
 
 }  // namespace
 
+MojoIdentificationSettings::MojoIdentificationSettings(
+    const cast::v2::UrlRequestRewriteRules& rules) {
+  auto translated_rules = TranslateRewriteRules(rules);
+  substitutable_params = ConvertParamsToMojo(translated_rules);
+  application_settings = ConvertAppSettingsToMojo(translated_rules);
+  device_settings = ConvertDeviceSettingsToMojo(translated_rules);
+}
+MojoIdentificationSettings::~MojoIdentificationSettings() = default;
+
 ParamRule::ParamRule() = default;
 ParamRule::~ParamRule() = default;
 ParamRule::ParamRule(ParamRule&&) = default;

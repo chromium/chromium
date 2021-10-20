@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "chromecast/common/identification_settings_manager.h"
 #include "chromecast/common/mojom/identification_settings.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -60,6 +61,18 @@ struct TranslatedRewriteRules {
 
   // SubstitutableParameters from IdentificationSettingsManager.
   std::vector<ParamRule> params;
+};
+
+// This represents all-in-one rewrite rules translated into Mojo format in
+// order to be passed to IdentificationSettingsManager.
+struct MojoIdentificationSettings {
+  MojoIdentificationSettings(const cast::v2::UrlRequestRewriteRules& rules);
+  MojoIdentificationSettings() = delete;
+  ~MojoIdentificationSettings();
+
+  std::vector<mojom::SubstitutableParameterPtr> substitutable_params;
+  mojom::AppSettingsPtr application_settings;
+  mojom::DeviceSettingsPtr device_settings;
 };
 
 // This class is responsible for taking URL rewrite rules as specified by the
