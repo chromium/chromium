@@ -4190,17 +4190,6 @@
           'gpu_telemetry_tests': 'gpu_skia_renderer_vulkan_telemetry_tests',
         },
       },
-      'Android FYI dEQP Release (Nexus 5X)': {
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'marshmallow',
-          'bullhead',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_deqp_android_gtests',
-        },
-      },
       'ChromeOS FYI Release (amd64-generic)': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -4240,7 +4229,6 @@
       },
       'GPU FYI Linux Builder' : {},
       'GPU FYI Linux Builder (dbg)' : {},
-      'GPU FYI Linux dEQP Builder' : {},
       'GPU FYI Mac Builder' : {},
       'GPU FYI Mac Builder (asan)' : {},
       'GPU FYI Mac Builder (dbg)' : {},
@@ -4406,26 +4394,6 @@
           'gtest_tests': 'gpu_fyi_vulkan_gtests',
           'isolated_scripts': 'gpu_blink_web_tests',
           'gpu_telemetry_tests': 'gpu_skia_renderer_telemetry_tests',
-        },
-      },
-      'Linux FYI dEQP Release (Intel HD 630)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_intel_hd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_deqp_gles2_gl_gtests',
-        },
-      },
-      'Linux FYI dEQP Release (NVIDIA)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_nvidia_quadro_p400_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_deqp_linux_nvidia_gtests',
         },
       },
       'Mac FYI ASAN (Intel)': {
