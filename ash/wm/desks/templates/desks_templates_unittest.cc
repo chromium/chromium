@@ -376,8 +376,7 @@ TEST_F(DesksTemplatesTest, DialogSystemModal) {
 
   // Show one of the dialogs. Activating the dialog keeps us in overview mode.
   auto* dialog_controller = DesksTemplatesDialogController::Get();
-  dialog_controller->Show(DesksTemplatesDialogController::DialogType::kDelete,
-                          Shell::GetPrimaryRootWindow());
+  dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(), u"Bento");
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
   ASSERT_TRUE(GetOverviewSession());
 

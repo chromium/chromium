@@ -1543,6 +1543,38 @@ This file contains the strings for ash.
         Already assigned to all desks.
       </message>
 
+<!-- Desks Templates -->
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_CONFIRM_BUTTON" desc="The text of the confirm button of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
+        Save anyway
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_CONFIRM_BUTTON" desc="The text of the confirm button of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
+        Replace
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON" desc="The text of the confirm button of the desks templates delete dialog, which shows up when trying to delete a template.">
+        Delete
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_TITLE" desc="The text of the title of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
+        Unsupported apps in template
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_TITLE" desc="The text of the title of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
+        Replace template?
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_TITLE" desc="The text of the title of the desks templates delete dialog, which shows up when trying to delete a template.">
+        Delete template?
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
+        Linux apps aren’t currently supported. Other apps will be saved.
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
+        Template named <ph name="DESK_TEMPLATE_NAME">$1<ex>Bento</ex></ph> already exists
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates delete dialog, which shows up when trying to delete a template.">
+        <ph name="DESK_TEMPLATE_NAME">$1<ex>Bento</ex></ph> will be permanently deleted
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER" desc="The text of the header (text above the icon list) of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
+        Unsupported apps
+      </message>
+
       <!-- Virtual Desks -->
       <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The label of the new virtual desk (a.k.a. workspaces) button.">
         New desk
