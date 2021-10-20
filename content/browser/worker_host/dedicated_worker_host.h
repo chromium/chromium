@@ -156,6 +156,10 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
     return service_worker_handle_.get();
   }
 
+  base::WeakPtr<DedicatedWorkerHost> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // RenderProcessHostObserver:
   void RenderProcessExited(RenderProcessHost* render_process_host,

@@ -1,6 +1,5 @@
-self.testToken = 'FAIL: original value';
+console.log("Worker");
 
-self.addEventListener('connect', e => {
-  e.ports[0].postMessage('ready');
+self.addEventListener('message', e => {
+  self.postMessage('ready');
 });
-

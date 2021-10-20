@@ -108,7 +108,7 @@ void ServiceWorkerDevToolsManager::WorkerMainScriptFetchingStarting(
   // opportunity to attach to it before we do the actual fetch. We pass it a
   // callback that will be called once we have all the handlers ready.
   if (host_ptr->should_pause_on_start()) {
-    devtools_instrumentation::ThrottleMainScriptFetch(
+    devtools_instrumentation::ThrottleServiceWorkerMainScriptFetch(
         context_wrapper_ptr, version_id, requesting_frame_id, throttle_handle);
   }
 }

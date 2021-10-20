@@ -23,6 +23,8 @@ class DedicatedWorkerHost;
 // the DedicatedWorkerToken of the dedicated worker.
 class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
  public:
+  static WorkerDevToolsAgentHost* GetFor(DedicatedWorkerHost* host);
+
   WorkerDevToolsAgentHost(
       int process_id,
       mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
@@ -35,6 +37,7 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
 
   // DevToolsAgentHost override.
   BrowserContext* GetBrowserContext() override;
+  RenderProcessHost* GetProcessHost() override;
   std::string GetType() override;
   std::string GetTitle() override;
   std::string GetParentId() override;
@@ -44,6 +47,15 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   bool Close() override;
   absl::optional<network::CrossOriginEmbedderPolicy>
   cross_origin_embedder_policy(const std::string& id) override;
+
+  void SetRenderer(
+      int process_id,
+      mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
+      mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver);
+
+  const base::UnguessableToken& devtools_worker_token() const {
+    return devtools_worker_token_;
+  }
 
  private:
   ~WorkerDevToolsAgentHost() override;

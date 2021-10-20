@@ -121,11 +121,11 @@ class TargetHandler : public DevToolsDomainHandler,
       BrowserContext* browser_context,
       network::mojom::NetworkContextParams* network_context_params);
 
-  // Adds a ServiceWorker throttle for an auto attaching session. If none is
-  // known for this `agent_host`, is a no-op.
-  void AddServiceWorkerThrottle(
-      DevToolsAgentHost* agent_host,
-      scoped_refptr<DevToolsThrottleHandle> throttle_handle);
+  // Adds a ServiceWorker or DedicatedWorker throttle for an auto attaching
+  // session. If none is known for this `agent_host`, is a no-op.
+  // TODO(crbug.com/1143100): support SharedWorker.
+  void AddWorkerThrottle(DevToolsAgentHost* agent_host,
+                         scoped_refptr<DevToolsThrottleHandle> throttle_handle);
 
  private:
   class Session;

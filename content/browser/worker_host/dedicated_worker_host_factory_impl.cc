@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "content/browser/devtools/devtools_throttle_handle.h"
+#include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
@@ -149,9 +151,19 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       std::move(client));
   remote_client->OnWorkerHostCreated(std::move(broker),
                                      std::move(pending_remote_host));
-  host->StartScriptLoad(script_url, credentials_mode,
-                        std::move(outside_fetch_client_settings_object),
-                        std::move(blob_url_token), std::move(remote_client));
+
+  auto devtools_throttle_handle =
+      base::MakeRefCounted<DevToolsThrottleHandle>(base::BindOnce(
+          &DedicatedWorkerHost::StartScriptLoad, host->GetWeakPtr(), script_url,
+          credentials_mode, std::move(outside_fetch_client_settings_object),
+          std::move(blob_url_token), std::move(remote_client)));
+
+  // We are about to start fetching from the browser process and we want
+  // devtools to be able to instrument the URLLoaderFactory. This call will
+  // create a DevtoolsAgentHost.
+  WorkerDevToolsManager::GetInstance().WorkerCreated(
+      host, worker_process_host->GetID(), ancestor_render_frame_host_id_,
+      std::move(devtools_throttle_handle));
 }
 
 }  // namespace content

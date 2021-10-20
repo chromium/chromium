@@ -26,6 +26,8 @@
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
+#include "content/browser/devtools/worker_devtools_agent_host.h"
+#include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -394,7 +396,7 @@ void ThrottleForServiceWorkerAgentHost(
     scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
   for (auto* target_handler :
        protocol::TargetHandler::ForAgentHost(requesting_agent_host)) {
-    target_handler->AddServiceWorkerThrottle(agent_host, throttle_handle);
+    target_handler->AddWorkerThrottle(agent_host, throttle_handle);
   }
 }
 
@@ -426,7 +428,7 @@ std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
   return result;
 }
 
-void ThrottleMainScriptFetch(
+void ThrottleServiceWorkerMainScriptFetch(
     ServiceWorkerContextWrapper* wrapper,
     int64_t version_id,
     const GlobalRenderFrameHostId& requesting_frame_id,
@@ -460,6 +462,24 @@ void ThrottleMainScriptFetch(
 
   ThrottleForServiceWorkerAgentHost(agent_host, requesting_agent_host,
                                     throttle_handle);
+}
+
+void ThrottleWorkerMainScriptFetch(
+    const base::UnguessableToken& devtools_worker_token,
+    const GlobalRenderFrameHostId& ancestor_render_frame_host_id,
+    scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
+  WorkerDevToolsAgentHost* agent_host =
+      WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
+          devtools_worker_token);
+  DCHECK(agent_host);
+
+  RenderFrameHostImpl* rfh =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id);
+  DCHECK(rfh);
+
+  FrameTreeNode* ftn = rfh->frame_tree_node();
+  DispatchToAgents(ftn, &protocol::TargetHandler::AddWorkerThrottle, agent_host,
+                   std::move(throttle_handle));
 }
 
 bool ShouldWaitForDebuggerInWindowOpen() {

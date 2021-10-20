@@ -180,6 +180,7 @@ void WorkerScriptFetcher::CreateAndStart(
     CompletionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(storage_partition);
+  DCHECK(devtools_agent_host);
   DCHECK(request_destination == network::mojom::RequestDestination::kWorker ||
          request_destination ==
              network::mojom::RequestDestination::kSharedWorker)
@@ -299,6 +300,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
     const base::UnguessableToken& devtools_worker_token,
     WorkerScriptFetcher::CompletionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(devtools_agent_host);
 
   RenderProcessHost* factory_process =
       RenderProcessHost::FromID(worker_process_id);
@@ -366,13 +368,9 @@ void WorkerScriptFetcher::CreateScriptLoader(
     factory_bundle_for_browser_info->set_bypass_redirect_checks(
         bypass_redirect_checks);
 
-    // TODO(crbug.com/1143102): make this unconditional when dedicated workers
-    // are supported.
-    if (devtools_agent_host) {
-      devtools_instrumentation::WillCreateURLLoaderFactoryForWorkerMainScript(
-          devtools_agent_host, devtools_worker_token,
-          &factory_params->factory_override);
-    }
+    devtools_instrumentation::WillCreateURLLoaderFactoryForWorkerMainScript(
+        devtools_agent_host, devtools_worker_token,
+        &factory_params->factory_override);
     factory_process->CreateURLLoaderFactory(std::move(default_factory_receiver),
                                             std::move(factory_params));
 

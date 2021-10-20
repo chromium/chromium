@@ -192,10 +192,20 @@ std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
 //   installing service worker agent. It is expected to exist.
 // - `requesting_frame_id` is required, because the auto attacher is the one of
 //   the frame registering the worker.
-void ThrottleMainScriptFetch(
+void ThrottleServiceWorkerMainScriptFetch(
     ServiceWorkerContextWrapper* wrapper,
     int64_t version_id,
     const GlobalRenderFrameHostId& requesting_frame_id,
+    scoped_refptr<DevToolsThrottleHandle> throttle_handle);
+
+// For PlzDedicatedWorker. When creating a new DedicatedWorker with
+// PlzDedicatedWorker, the worker script fetch happens before starting the
+// worker. This function is called when DedicatedWorkerHost, which is the
+// representation of a worker in the browser process, is created.
+// `throttle_handle` controls when the script fetch resumes.
+void ThrottleWorkerMainScriptFetch(
+    const base::UnguessableToken& devtools_worker_token,
+    const GlobalRenderFrameHostId& ancestor_render_frame_host_id,
     scoped_refptr<DevToolsThrottleHandle> throttle_handle);
 
 bool ShouldWaitForDebuggerInWindowOpen();

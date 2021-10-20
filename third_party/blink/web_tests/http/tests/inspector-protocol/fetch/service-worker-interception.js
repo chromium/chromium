@@ -20,7 +20,7 @@
   });
 
   await dp.ServiceWorker.enable();
-  await session.navigate("resources/service-worker.html");
+  await session.navigate("resources/empty.html");
   session.evaluateAsync(`navigator.serviceWorker.register('service-worker.js')`);
 
   async function waitForServiceWorkerActivation() {

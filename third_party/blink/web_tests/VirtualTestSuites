@@ -467,6 +467,7 @@
               "external/wpt/workers",
               "external/wpt/xhr",
               "fast/workers",
+              "http/tests/inspector-protocol/fetch",
               "http/tests/origin_trials",
               "http/tests/workers"],
     "args": ["--enable-features=PlzDedicatedWorker,SharedArrayBuffer"]

@@ -10,8 +10,10 @@
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/worker_devtools_agent_host.h"
+#include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace content {
@@ -158,15 +160,37 @@ void DevToolsRendererChannel::ChildWorkerCreated(
     const std::string& name,
     const base::UnguessableToken& devtools_worker_token,
     bool waiting_for_debugger) {
-  if (content::DevToolsAgentHost::GetForId(devtools_worker_token.ToString())) {
-    receiver_.ReportBadMessage("Workers should have unique tokens.");
-    return;
-  }
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   if (!process)
     return;
+
   GURL filtered_url = url;
   process->FilterURL(true /* empty_allowed */, &filtered_url);
+
+  if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
+    // WorkerDevToolsAgentHost is already created on the browser process when
+    // PlzDedicatedWorker is enabled.
+    DCHECK(
+        content::DevToolsAgentHost::GetForId(devtools_worker_token.ToString()));
+    scoped_refptr<WorkerDevToolsAgentHost> agent_host =
+        WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
+            devtools_worker_token);
+    agent_host->SetRenderer(process_id_, std::move(worker_devtools_agent),
+                            std::move(host_receiver));
+
+    child_workers_.insert(agent_host.get());
+    if (child_worker_created_callback_) {
+      child_worker_created_callback_.Run(agent_host.get(),
+                                         waiting_for_debugger);
+    }
+    return;
+  }
+
+  DCHECK(!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
+  if (content::DevToolsAgentHost::GetForId(devtools_worker_token.ToString())) {
+    mojo::ReportBadMessage("Workers should have unique tokens.");
+    return;
+  }
   auto agent_host = base::MakeRefCounted<WorkerDevToolsAgentHost>(
       process_id_, std::move(worker_devtools_agent), std::move(host_receiver),
       filtered_url, std::move(name), devtools_worker_token, owner_->GetId(),
