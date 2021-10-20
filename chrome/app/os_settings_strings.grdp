@@ -2258,6 +2258,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FEEDBACK_LABEL" desc="In Device Settings, the text next to the toggle for enabling touchpad haptic feedback.">
     Enable haptic feedback. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY_LABEL" translateable="false" desc="In Device Settings, the text next to the slider for setting the touchpad haptic click sensitivity.">
+    Click feedback
+  </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_LIGHT_CLICK_LABEL" desc="In Device Settings, the text under the left (less sensitive) side of the slider for the touchpad haptic click sensitivity.">
+    Light
+  </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FIRM_CLICK_LABEL" desc="In Device Settings, the text under the right (more sensitive) side of the slider for the touchpad haptic click sensitivity.">
+    Firm
+  </message>
 
   <!-- Printing Page (OS Settings)-->
   <message name="IDS_SETTINGS_PRINT_AND_SCAN" desc="Title of the printing and scanning page and navigation item to get there.">

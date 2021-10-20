@@ -88,6 +88,12 @@ Polymer({
       readOnly: true,
     },
 
+    hapticClickSensitivityValues_: {
+      type: Array,
+      value: [1, 3, 5],
+      readOnly: true,
+    },
+
     /**
      * TODO(zentaro): Remove this conditional once the feature is launched.
      * @private
@@ -118,6 +124,17 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('allowTouchpadHapticFeedback');
+      },
+    },
+
+    /**
+     * TODO(gavinwill): Remove this conditional once the feature is launched.
+     * @private
+     */
+    allowTouchpadHapticClickSettings_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('allowTouchpadHapticClickSettings');
       },
     },
 

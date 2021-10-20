@@ -1219,8 +1219,14 @@ void DeviceSection::AddDevicePointersStrings(
       {"pointingStickAccelerationLabel",
        IDS_SETTINGS_POINTING_STICK_ACCELERATION_LABEL},
       {"touchpadAccelerationLabel", IDS_SETTINGS_TOUCHPAD_ACCELERATION_LABEL},
+      {"touchpadHapticClickSensitivityLabel",
+       IDS_SETTINGS_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY_LABEL},
       {"touchpadHapticFeedbackLabel",
        IDS_SETTINGS_TOUCHPAD_HAPTIC_FEEDBACK_LABEL},
+      {"touchpadHapticFirmClickLabel",
+       IDS_SETTINGS_TOUCHPAD_HAPTIC_FIRM_CLICK_LABEL},
+      {"touchpadHapticLightClickLabel",
+       IDS_SETTINGS_TOUCHPAD_HAPTIC_LIGHT_CLICK_LABEL},
       {"touchpadScrollAccelerationLabel",
        IDS_SETTINGS_TOUCHPAD_SCROLL_ACCELERATION_LABEL},
       {"touchpadScrollSpeed", IDS_SETTINGS_TOUCHPAD_SCROLL_SPEED_LABEL},
@@ -1237,6 +1243,9 @@ void DeviceSection::AddDevicePointersStrings(
   html_source->AddBoolean("allowTouchpadHapticFeedback",
                           base::FeatureList::IsEnabled(
                               ::features::kAllowDisableTouchpadHapticFeedback));
+  html_source->AddBoolean("allowTouchpadHapticClickSettings",
+                          base::FeatureList::IsEnabled(
+                              ::features::kAllowTouchpadHapticClickSettings));
 }
 
 }  // namespace settings
