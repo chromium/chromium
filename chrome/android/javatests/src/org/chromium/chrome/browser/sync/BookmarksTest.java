@@ -24,9 +24,11 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.sync.ModelType;
@@ -136,6 +138,7 @@ public class BookmarksTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @Features.DisableFeatures(ChromeFeatureList.SYNC_REUPLOAD_BOOKMARKS)
     public void testDownloadBookmarkTombstone() throws Exception {
         // Add the entity to test deleting.
         addServerBookmark(TITLE, URL);

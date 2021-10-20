@@ -92,7 +92,7 @@ class BookmarkEntityBuilder {
 
  private:
   // Creates an EntitySpecifics and pre-populates its BookmarkSpecifics.
-  sync_pb::EntitySpecifics CreateBaseEntitySpecifics(bool is_folder) const;
+  sync_pb::EntitySpecifics CreateBaseEntitySpecifics(bool is_folder);
 
   // Builds the parts of a LoopbackServerEntity common to both normal bookmarks
   // and folders.

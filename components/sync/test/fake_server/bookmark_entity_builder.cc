@@ -101,7 +101,7 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildFolder() {
 }
 
 sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
-    bool is_folder) const {
+    bool is_folder) {
   sync_pb::EntitySpecifics entity_specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       entity_specifics.mutable_bookmark();
@@ -114,6 +114,13 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
             BookmarkGeneration::kLegacyTitleWithoutGuidInSpecifics)
       << "Bookmark with legacy title and without GUID in specifics is not "
          "implemented.";
+
+  if (parent_id_.empty()) {
+    parent_id_ =
+        LoopbackServerEntity::CreateId(syncer::BOOKMARKS, "bookmark_bar");
+    parent_guid_ = base::GUID::ParseLowercase(
+        bookmarks::BookmarkNode::kBookmarkBarNodeGuid);
+  }
 
   if (bookmark_generation_ >= BookmarkGeneration::kValidGuidAndLegacyTitle) {
     bookmark_specifics->set_legacy_canonicalized_title(title_);
@@ -138,13 +145,6 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
 std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
     const sync_pb::EntitySpecifics& entity_specifics,
     bool is_folder) {
-  if (parent_id_.empty()) {
-    parent_id_ =
-        LoopbackServerEntity::CreateId(syncer::BOOKMARKS, "bookmark_bar");
-    parent_guid_ = base::GUID::ParseLowercase(
-        bookmarks::BookmarkNode::kBookmarkBarNodeGuid);
-  }
-
   if (id_.empty()) {
     id_ =
         LoopbackServerEntity::CreateId(syncer::BOOKMARKS, base::GenerateGUID());

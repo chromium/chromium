@@ -1176,7 +1176,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
 
   // Create bookmark in server with a valid GUID.
   std::unique_ptr<syncer::LoopbackServerEntity> bookmark =
-      bookmark_builder.BuildBookmark(url);
+      bookmark_builder
+          .SetGeneration(BookmarkGeneration::kHierarchyFieldsInSpecifics)
+          .BuildBookmark(url);
   const base::GUID guid = base::GUID::ParseCaseInsensitive(
       bookmark.get()->GetSpecifics().bookmark().guid());
   ASSERT_TRUE(guid.is_valid());
