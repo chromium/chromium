@@ -6,47 +6,46 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="resources/file-drag-common.js"></script>
 
-<body onload="setTimeout(runTest, 0)">
-  <input type=file oninput=onInputHandler() onchange=onChangeHandler()>
-  <input id="been-here" value="start">
-  <form action="../../../resources/back.html" method="POST"></form>
-</body>
+<input type=file oninput=eventHandler() onchange=eventHandler()>
+<input id="been-here" value="start">
+<form action="../../../resources/back.html" method="POST"></form>
 
 <script>
-var seenOnInput = false;
-var seenOnChange = false;
-var restorationEventTest = async_test('File input restoration: should not fire input and change events');
+var t = async_test('File input restoration: should not fire input and change events');
 
-function onInputHandler() {
-  var beenHere = document.getElementById("been-here");
-  if (beenHere.value)
-    seenOnInput = true;
-}
+var seenInitialEvents = false;
+var seenRestoreEvents = false;
+var beenHere = document.getElementById("been-here");
+var fileInput = document.querySelector('input[type=file]');
+const visitedValue = 'visited';
 
-function onChangeHandler() {
-  var beenHere = document.getElementById("been-here");
-  if (beenHere.value)
-    seenOnChange = true;
-}
-
-function runTest() {
-  var beenHere = document.getElementById('been-here');
-  var fileInput = document.querySelector('input[type=file]');
-
-  if (beenHere.value == 'start') {
-    if (window.eventSender)
-      dragFilesOntoElement(fileInput, ['foo.txt']);
-    assert_equals(fileInput.value, 'C:\\fakepath\\foo.txt');
-    beenHere.value = 'visited';
-    var form = document.querySelector('form');
-    // Submit form in a timeout to make sure that we create a new back/forward list item.
-    setTimeout(function() {form.submit();}, 0);
+function eventHandler(e) {
+  if (beenHere.value !== visitedValue) {
+    assert_equals(beenHere.value, 'start');
+    seenInitialEvents = true;
   } else {
-    restorationEventTest.step(function() {
-      assert_false(seenOnInput);
-      assert_false(seenOnChange);
-    });
-    restorationEventTest.done();
+    seenRestoreEvents = true;
   }
 }
+
+window.onload = () => {
+  requestAnimationFrame(() => {
+    if (beenHere.value === 'start') {
+      if (window.eventSender)
+        dragFilesOntoElement(fileInput, ['foo.txt']);
+      assert_equals(fileInput.value, 'C:\\fakepath\\foo.txt');
+      assert_true(seenInitialEvents);
+      beenHere.value = visitedValue;
+      // Submit form in a timeout to make sure that we create a new back/forward list item.
+      setTimeout(function() {document.querySelector('form').submit();}, 0);
+    } else {
+      t.step(function() {
+        assert_equals(beenHere.value, visitedValue);
+        assert_false(seenRestoreEvents);
+        assert_false(seenInitialEvents);
+      });
+      t.done();
+    }
+  });
+};
 </script>
