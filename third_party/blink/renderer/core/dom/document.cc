@@ -4260,6 +4260,12 @@ void Document::MaybeHandleHttpRefresh(const String& content,
         mojom::ConsoleMessageLevel::kError, message));
     return;
   }
+
+  // Monitor blocking refresh usage when scripting is disabled.
+  // See https://crbug.com/63107
+  if (!dom_window_->CanExecuteScripts(kNotAboutToExecuteScript))
+    UseCounter::Count(this, WebFeature::kHttpRefreshWhenScriptingDisabled);
+
   if (http_refresh_type == kHttpRefreshFromHeader) {
     UseCounter::Count(this, WebFeature::kRefreshHeader);
   }
