@@ -116,6 +116,7 @@ class OverlayWindowViews : public content::OverlayWindow,
   ToggleCameraButton* toggle_camera_button_for_testing() const;
   HangUpButton* hang_up_button_for_testing() const;
   BackToTabLabelButton* back_to_tab_label_button_for_testing() const;
+  views::CloseImageButton* close_button_for_testing() const;
   gfx::Point close_image_position_for_testing() const;
   gfx::Point resize_handle_position_for_testing() const;
   OverlayWindowViews::PlaybackState playback_state_for_testing() const;

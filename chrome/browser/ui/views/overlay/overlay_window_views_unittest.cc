@@ -5,12 +5,15 @@
 #include <memory>
 #include <utility>
 
+#include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "content/public/browser/overlay_window.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
@@ -18,6 +21,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/test/button_test_api.h"
 
 class TestPictureInPictureWindowController
     : public content::PictureInPictureWindowController {
@@ -27,9 +31,9 @@ class TestPictureInPictureWindowController
   // PictureInPictureWindowController:
   void Show() override {}
   void FocusInitiator() override {}
-  void Close(bool) override {}
+  MOCK_METHOD(void, Close, (bool));
   void CloseAndFocusInitiator() override {}
-  void OnWindowDestroyed(bool) override {}
+  MOCK_METHOD(void, OnWindowDestroyed, (bool));
   content::OverlayWindow* GetWindowForTesting() override { return nullptr; }
   void UpdateLayerBounds() override {}
   bool IsPlayerActive() override { return false; }
@@ -90,6 +94,10 @@ class OverlayWindowViewsTest : public ChromeViewsTestBase {
   OverlayWindowViews& overlay_window() { return *overlay_window_; }
 
   content::WebContents* web_contents() { return web_contents_; }
+
+  TestPictureInPictureWindowController& pip_window_controller() {
+    return pip_window_controller_;
+  }
 
  private:
   TestingProfile profile_;
@@ -374,4 +382,43 @@ TEST_F(OverlayWindowViewsTest, ShowControlsOnFocus) {
   EXPECT_FALSE(overlay_window().AreControlsVisible());
   overlay_window().OnNativeFocus();
   EXPECT_TRUE(overlay_window().AreControlsVisible());
+}
+
+TEST_F(OverlayWindowViewsTest, OnlyPauseOnCloseWhenPauseIsAvailable) {
+  views::test::ButtonTestApi close_button_clicker(
+      overlay_window().close_button_for_testing());
+  ui::MouseEvent dummy_event(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
+
+  // When the play/pause controls are visible, closing via the close button
+  // should pause the video.
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  EXPECT_CALL(pip_window_controller(), Close(true));
+  close_button_clicker.NotifyClick(dummy_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
+  // When the play/pause controls are not visible, closing via the close button
+  // should not pause the video.
+  overlay_window().SetPlayPauseButtonVisibility(false);
+  EXPECT_CALL(pip_window_controller(), Close(false));
+  close_button_clicker.NotifyClick(dummy_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+}
+
+TEST_F(OverlayWindowViewsTest, PauseOnWidgetCloseWhenPauseAvailable) {
+  // When the play/pause controls are visible, when the native widget is
+  // destroyed we should pause the underlying video.
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  EXPECT_CALL(pip_window_controller(), OnWindowDestroyed(true));
+  overlay_window().CloseNow();
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+}
+
+TEST_F(OverlayWindowViewsTest, DontPauseOnWidgetCloseWhenPauseNotAvailable) {
+  // When the play/pause controls are not visible, when the native widget is
+  // destroyed we should not pause the underlying video.
+  overlay_window().SetPlayPauseButtonVisibility(false);
+  EXPECT_CALL(pip_window_controller(), OnWindowDestroyed(false));
+  overlay_window().CloseNow();
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 }

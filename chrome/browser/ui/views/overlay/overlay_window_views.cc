@@ -377,7 +377,9 @@ void OverlayWindowViews::SetUpViews() {
   auto close_controls_view =
       std::make_unique<views::CloseImageButton>(base::BindRepeating(
           [](OverlayWindowViews* overlay) {
-            overlay->controller_->Close(/*should_pause_video=*/true);
+            // Only pause the video if play/pause is available.
+            const bool should_pause_video = overlay->show_play_pause_button_;
+            overlay->controller_->Close(should_pause_video);
             overlay->RecordButtonPressed(OverlayWindowControl::kClose);
           },
           base::Unretained(this)));
@@ -1011,7 +1013,8 @@ void OverlayWindowViews::OnNativeBlur() {
 
 void OverlayWindowViews::OnNativeWidgetDestroyed() {
   views::Widget::OnNativeWidgetDestroyed();
-  controller_->OnWindowDestroyed(/*should_pause_video=*/true);
+  controller_->OnWindowDestroyed(
+      /*should_pause_video=*/show_play_pause_button_);
 }
 
 gfx::Size OverlayWindowViews::GetMinimumSize() const {
@@ -1349,6 +1352,10 @@ HangUpButton* OverlayWindowViews::hang_up_button_for_testing() const {
 BackToTabLabelButton* OverlayWindowViews::back_to_tab_label_button_for_testing()
     const {
   return back_to_tab_label_button_;
+}
+
+views::CloseImageButton* OverlayWindowViews::close_button_for_testing() const {
+  return close_controls_view_;
 }
 
 gfx::Point OverlayWindowViews::close_image_position_for_testing() const {
