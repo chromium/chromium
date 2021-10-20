@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Morska školjka</translation>
 <translation id="6551185905438378412">Boja slonovače</translation>
 <translation id="6561818612645211875">Prelazak na početak trenutačnog retka</translation>
+<translation id="6563126228219321999">Nema nevažeće stavke</translation>
 <translation id="6579990219486187401">Svijetloružičasta</translation>
 <translation id="6583174818554398774">Pomicanje na sljedeće s razinom preciznosti</translation>
 <translation id="6584162722998608255">Sada ćete naučiti kako se kretati zaslonom. Možete prijeći jednim prstom slijeva nadesno da biste prešli na sljedeću stavku. Isprobajte to sada kako biste prešli na sljedeći korak.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Boja torte od limuna</translation>
 <translation id="6816066673340002913">Blijeda zlatnožuta</translation>
 <translation id="6826226459053491773">Prelazak dvama prstima prema dolje</translation>
+<translation id="6826669432862053130">Sljedeća nevažeća stavka</translation>
 <translation id="6833103209700200188">Podnožje</translation>
 <translation id="6837853484260746864">Odaberite glas:</translation>
 <translation id="6858047746862060282">Prolog</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Nema prethodnog naslova 5. razine</translation>
 <translation id="812886159861361726">Zaustavljeno je preuzimanje datoteke <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Iznad nema ćelije</translation>
+<translation id="8132248161074464367">Prethodna nevažeća stavka</translation>
 <translation id="8138880386467279117">Dodir</translation>
 <translation id="8146613869421949343">U sljedećem koraku saznat ćete više o tipki za pretraživanje. Tipka za pretraživanje koristi se u kombinaciji s drugim tipkama za ChromeVoxove naredbe. Tipka za pretraživanje nalazi se neposredno iznad lijeve tipke Shift. Da biste nastavili, pritisnite tipku za pretraživanje.</translation>
 <translation id="8158033275290782295">odaberi sve</translation>

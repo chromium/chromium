@@ -615,6 +615,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5465662442746197494">Kömək lazımdır?</translation>
 <translation id="5496819745535887422">Administrator bu cihaza geri qayıtdı. Cihaz yenidən başladıldıqda bütün data slinəcək.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Administratorunuz bütün eSIM profillərini silib. Ətraflı məlumat üçün administratorunuzla əlaqə saxlayın.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> qoşulur.</translation>
 <translation id="5532994612895037630">Tam ekranı çəkmək üçün istənilən yerə toxunun</translation>
 <translation id="553675580533261935">Mövcud sessiya</translation>
@@ -745,6 +746,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6537924328260219877">Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Telefonun Batareyası <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ilə paylaşılır</translation>
 <translation id="6559976592393364813">Administrator ilə Əlaqə</translation>
+<translation id="6565007273808762236">eSIM bağlantısı əlçatan deyil</translation>
 <translation id="6570902864550063460">USB ilə şarj edilir</translation>
 <translation id="6585808820553845416">Sessiya <ph name="SESSION_TIME_REMAINING" /> tarixində bitir.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

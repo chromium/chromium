@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">צדפה</translation>
 <translation id="6551185905438378412">שנהב</translation>
 <translation id="6561818612645211875">מעבר לתחילת השורה הנוכחית</translation>
+<translation id="6563126228219321999">אין פריט לא תקין</translation>
 <translation id="6579990219486187401">ורוד בהיר</translation>
 <translation id="6583174818554398774">מעבר לפריט הבא ברמת הפירוט הספציפית</translation>
 <translation id="6584162722998608255">עכשיו נראה איך לנוע במסך. ניתן להחליק בעזרת אצבע אחת מימין לשמאל כדי לעבור לפריט הבא. אפשר לנסות זאת עכשיו כדי לעבור לשלב הבא.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">לימון שיפון</translation>
 <translation id="6816066673340002913">מטה-זהב חיוור</translation>
 <translation id="6826226459053491773">החלקה מטה עם שתי אצבעות</translation>
+<translation id="6826669432862053130">הפריט הלא תקין הבא</translation>
 <translation id="6833103209700200188">כותרת תחתונה</translation>
 <translation id="6837853484260746864">בחירת קול:</translation>
 <translation id="6858047746862060282">פרולוג</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">אין כותרת קודמת מרמה 5</translation>
 <translation id="812886159861361726">ההורדה של <ph name="FILE_NAME" /> נפסקה</translation>
 <translation id="8129445297241948503">אין תא מלמעלה</translation>
+<translation id="8132248161074464367">הפריט הלא תקין הקודם</translation>
 <translation id="8138880386467279117">מגע</translation>
 <translation id="8146613869421949343">‏בשלב זה נסביר על מקש החיפוש. לביצוע פקודות ChromeVox, משתמשים במקש החיפוש בשילוב עם מקשים אחרים. מקש החיפוש נמצא בדיוק מעל מקש Shift השמאלי. כדי להמשיך, יש להקיש על מקש החיפוש.</translation>
 <translation id="8158033275290782295">בחירת הכול</translation>
