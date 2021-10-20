@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -14,12 +15,16 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -189,6 +194,19 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
   }
 }
 
+bool ShouldRecordUkm(Profile* profile) {
+  switch (syncer::GetUploadToGoogleState(
+      SyncServiceFactory::GetForProfile(profile), syncer::ModelType::APPS)) {
+    case syncer::UploadState::NOT_ACTIVE:
+      return false;
+    case syncer::UploadState::INITIALIZING:
+      // Note that INITIALIZING is considered good enough, because syncing apps
+      // is known to be enabled, and transient errors don't really matter here.
+    case syncer::UploadState::ACTIVE:
+      return true;
+  }
+}
+
 bool ShouldRecordUkmForAppTypeName(AppTypeName app_type_name) {
   switch (app_type_name) {
     case apps::AppTypeName::kArc:
@@ -263,6 +281,20 @@ AppTypeName GetAppTypeName(Profile* profile,
     case apps::mojom::AppType::kStandaloneBrowserExtension:
       return apps::AppTypeName::kStandaloneBrowserExtension;
   }
+}
+
+mojom::AppType GetAppType(Profile* profile, const std::string& app_id) {
+  DCHECK(AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+  auto type = apps::AppServiceProxyFactory::GetForProfile(profile)
+                  ->AppRegistryCache()
+                  .GetAppType(app_id);
+  if (type != mojom::AppType::kUnknown) {
+    return type;
+  }
+  if (crostini::IsCrostiniShelfAppId(profile, app_id)) {
+    return mojom::AppType::kCrostini;
+  }
+  return mojom::AppType::kUnknown;
 }
 
 }  // namespace apps

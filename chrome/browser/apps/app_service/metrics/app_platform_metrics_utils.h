@@ -101,6 +101,10 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
                                     const std::string& app_id,
                                     aura::Window* window);
 
+// Returns true if we are allowed to record UKM for `profile`. Otherwise,
+// returns false.
+bool ShouldRecordUkm(Profile* profile);
+
 // Due to the privacy limitation, only ARC apps, Chrome apps and web apps(PWA),
 // system web apps, builtin apps and Crostini apps are recorded because they are
 // synced to server/cloud, or part of OS. Other app types, e.g. remote apps,
@@ -117,6 +121,11 @@ AppTypeName GetAppTypeName(Profile* profile,
                            apps::mojom::AppType app_type,
                            const std::string& app_id,
                            apps::mojom::LaunchContainer container);
+
+// Gets the app type of a given app_id. Checks multiple sources, not just the
+// app registry cache, so can identify apps which aren't registered with app
+// service.
+mojom::AppType GetAppType(Profile* profile, const std::string& app_id);
 
 }  // namespace apps
 

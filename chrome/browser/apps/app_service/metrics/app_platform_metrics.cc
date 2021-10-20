@@ -11,21 +11,15 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_utils.h"
 #include "components/ukm/app_source_url_recorder.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/common/constants.h"
@@ -462,7 +456,8 @@ void AppPlatformMetrics::RecordAppLaunchUkm(
     const std::string& app_id,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::LaunchContainer container) {
-  if (app_type == apps::mojom::AppType::kUnknown || !ShouldRecordUkm()) {
+  if (app_type == apps::mojom::AppType::kUnknown ||
+      !ShouldRecordUkm(profile_)) {
     return;
   }
 
@@ -522,7 +517,7 @@ void AppPlatformMetrics::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
-  if (!ShouldRecordUkm()) {
+  if (!ShouldRecordUkm(profile_)) {
     return;
   }
 
@@ -545,7 +540,7 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   }
 
   auto app_id = update.AppId();
-  auto app_type = GetAppType(app_id);
+  auto app_type = GetAppType(profile_, app_id);
   if (app_type == apps::mojom::AppType::kUnknown) {
     return;
   }
@@ -897,7 +892,7 @@ void AppPlatformMetrics::RecordAppsUsageTime() {
 }
 
 void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
-  if (!ShouldRecordUkm()) {
+  if (!ShouldRecordUkm(profile_)) {
     return;
   }
 
@@ -954,22 +949,9 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
   ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
 }
 
-bool AppPlatformMetrics::ShouldRecordUkm() {
-  switch (syncer::GetUploadToGoogleState(
-      SyncServiceFactory::GetForProfile(profile_), syncer::ModelType::APPS)) {
-    case syncer::UploadState::NOT_ACTIVE:
-      return false;
-    case syncer::UploadState::INITIALIZING:
-      // Note that INITIALIZING is considered good enough, because syncing apps
-      // is known to be enabled, and transient errors don't really matter here.
-    case syncer::UploadState::ACTIVE:
-      return true;
-  }
-}
-
 ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
   ukm::SourceId source_id = ukm::kInvalidSourceId;
-  apps::mojom::AppType app_type = GetAppType(app_id);
+  apps::mojom::AppType app_type = GetAppType(profile_, app_id);
   switch (app_type) {
     case apps::mojom::AppType::kBuiltIn:
     case apps::mojom::AppType::kExtension:
@@ -1042,17 +1024,6 @@ ukm::SourceId AppPlatformMetrics::GetSourceIdForCrostini(
                         : registration->DesktopFileId();
   return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini(
       desktop_id, registration->Name());
-}
-
-apps::mojom::AppType AppPlatformMetrics::GetAppType(const std::string& app_id) {
-  auto type = app_registry_cache_.GetAppType(app_id);
-  if (type != mojom::AppType::kUnknown) {
-    return type;
-  }
-  if (crostini::IsCrostiniShelfAppId(profile_, app_id)) {
-    return mojom::AppType::kCrostini;
-  }
-  return mojom::AppType::kUnknown;
 }
 
 }  // namespace apps

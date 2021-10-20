@@ -208,19 +208,11 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void RecordAppsInstallUkm(const apps::AppUpdate& update,
                             InstallTime install_time);
 
-  // Returns true if we are allowed to record UKM. Otherwise, returns false.
-  bool ShouldRecordUkm();
-
   // Returns the SourceId of UKM for `app_id`.
   ukm::SourceId GetSourceId(const std::string& app_id);
 
   // Gets the source id for a Crostini app_id.
   ukm::SourceId GetSourceIdForCrostini(const std::string& app_id);
-
-  // Gets the app type of a given app_id. Checks multiple sources, not just the
-  // app registry cache, so can identify apps which aren't registered with app
-  // service.
-  mojom::AppType GetAppType(const std::string& app_id);
 
   Profile* const profile_ = nullptr;
 
