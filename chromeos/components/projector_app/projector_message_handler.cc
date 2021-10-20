@@ -74,30 +74,30 @@ base::WeakPtr<ProjectorMessageHandler> ProjectorMessageHandler::GetWeakPtr() {
 }
 
 void ProjectorMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getAccounts", base::BindRepeating(&ProjectorMessageHandler::GetAccounts,
                                          base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "canStartProjectorSession",
       base::BindRepeating(&ProjectorMessageHandler::CanStartProjectorSession,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "startProjectorSession",
       base::BindRepeating(&ProjectorMessageHandler::StartProjectorSession,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getOAuthTokenForAccount",
       base::BindRepeating(&ProjectorMessageHandler::GetOAuthTokenForAccount,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "onError", base::BindRepeating(&ProjectorMessageHandler::OnError,
                                      base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "sendXhr", base::BindRepeating(&ProjectorMessageHandler::SendXhr,
                                      base::Unretained(this)));
 }
@@ -111,11 +111,11 @@ void ProjectorMessageHandler::OnNewScreencastPreconditionChanged(
                     base::Value(can_start));
 }
 
-void ProjectorMessageHandler::GetAccounts(const base::ListValue* args) {
+void ProjectorMessageHandler::GetAccounts(base::Value::ConstListView args) {
   AllowJavascript();
 
   // Check that there is only one argument which is the callback id.
-  DCHECK_EQ(args->GetList().size(), 1u);
+  DCHECK_EQ(args.size(), 1u);
   auto* controller = ash::ProjectorController::Get();
   DCHECK(controller);
 
@@ -135,31 +135,30 @@ void ProjectorMessageHandler::GetAccounts(const base::ListValue* args) {
     response.push_back(std::move(account_info));
   }
 
-  ResolveJavascriptCallback(args->GetList()[0],
-                            base::Value(std::move(response)));
+  ResolveJavascriptCallback(args[0], base::Value(std::move(response)));
 }
 
 void ProjectorMessageHandler::CanStartProjectorSession(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
   // Check that there is only one argument which is the callback id.
-  DCHECK_EQ(args->GetList().size(), 1u);
+  DCHECK_EQ(args.size(), 1u);
 
   ResolveJavascriptCallback(
-      args->GetList()[0],
+      args[0],
       base::Value(ash::ProjectorController::Get()->CanStartNewSession()));
 }
 
 void ProjectorMessageHandler::StartProjectorSession(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
   // There are two arguments. The first is the callback and the second is a list
   // containing the account which we need to start the recording with.
-  DCHECK_EQ(args->GetList().size(), 2u);
+  DCHECK_EQ(args.size(), 2u);
 
-  const auto& func_args = args->GetList()[1];
+  const auto& func_args = args[1];
   DCHECK(func_args.is_list());
 
   // The first entry is the drive directory to save the screen cast to.
@@ -171,25 +170,25 @@ void ProjectorMessageHandler::StartProjectorSession(
   // and folder.
   auto* controller = ash::ProjectorController::Get();
   if (!controller->CanStartNewSession()) {
-    ResolveJavascriptCallback(args->GetList()[0], base::Value(false));
+    ResolveJavascriptCallback(args[0], base::Value(false));
     return;
   }
 
   controller->StartProjectorSession(func_args.GetList()[0].GetString());
-  ResolveJavascriptCallback(args->GetList()[0], base::Value(true));
+  ResolveJavascriptCallback(args[0], base::Value(true));
 }
 
 void ProjectorMessageHandler::GetOAuthTokenForAccount(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   // Two arguments. The first is callback id, and the second is the list
   // containing the account for which to fetch the oauth token.
-  DCHECK_EQ(args->GetList().size(), 2u);
+  DCHECK_EQ(args.size(), 2u);
 
-  const auto& requested_account = args->GetList()[1];
+  const auto& requested_account = args[1];
   DCHECK(requested_account.is_list());
   DCHECK_EQ(requested_account.GetList().size(), 1u);
 
-  auto& oauth_token_fetch_callback = args->GetList()[0].GetString();
+  auto& oauth_token_fetch_callback = args[0].GetString();
   const std::string& email = requested_account.GetList()[0].GetString();
 
   oauth_token_fetcher_.GetAccessTokenFor(
@@ -198,13 +197,13 @@ void ProjectorMessageHandler::GetOAuthTokenForAccount(
                      GetWeakPtr(), oauth_token_fetch_callback));
 }
 
-void ProjectorMessageHandler::SendXhr(const base::ListValue* args) {
+void ProjectorMessageHandler::SendXhr(const base::Value::ConstListView args) {
   // Two arguments. The first is callback id, and the second is the list
   // containing function arguments for making the request.
-  DCHECK_EQ(args->GetList().size(), 2u);
-  const auto& callback_id = args->GetList()[0].GetString();
+  DCHECK_EQ(args.size(), 2u);
+  const auto& callback_id = args[0].GetString();
 
-  const auto& func_args = args->GetList()[1].GetList();
+  const auto& func_args = args[1].GetList();
   // Four function arguments:
   // 1. The request URL.
   // 2. The request method, for example: GET
@@ -226,7 +225,7 @@ void ProjectorMessageHandler::SendXhr(const base::ListValue* args) {
                      GetWeakPtr(), callback_id));
 }
 
-void ProjectorMessageHandler::OnError(const base::ListValue* args) {
+void ProjectorMessageHandler::OnError(const base::Value::ConstListView args) {
   // TODO(b/195113693): Get the SWA dialog associated with this WebUI and close
   // it.
 }

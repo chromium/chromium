@@ -56,25 +56,25 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // Requested by the Projector SWA to list the available accounts (primary and
   // secondary accounts) in the current session. The list of accounts will be
   // used in the account picker in the SWA.
-  void GetAccounts(const base::ListValue* args);
+  void GetAccounts(const base::Value::ConstListView args);
 
   // Requested by the Projector SWA to check if it is possible to start a new
   // Projector session.
-  void CanStartProjectorSession(const base::ListValue* args);
+  void CanStartProjectorSession(const base::Value::ConstListView args);
 
   // Requested by the Projector SWA to start a new Projector session if it is
   // possible.
-  void StartProjectorSession(const base::ListValue* args);
+  void StartProjectorSession(const base::Value::ConstListView args);
 
   // Requested by the Projector SWA to get access to the OAuth token for the
   // account email provided in the `args`.
-  void GetOAuthTokenForAccount(const base::ListValue* args);
+  void GetOAuthTokenForAccount(const base::Value::ConstListView args);
 
   // Requested by the Projector SWA to send XHR request.
-  void SendXhr(const base::ListValue* args);
+  void SendXhr(const base::Value::ConstListView args);
 
   // Called by the Projector SWA when an error occurred.
-  void OnError(const base::ListValue* args);
+  void OnError(const base::Value::ConstListView args);
 
   // Called when OAuth token fetch request is completed by
   // ProjectorOAuthTokenFetcher. Resolves the javascript promise created by
