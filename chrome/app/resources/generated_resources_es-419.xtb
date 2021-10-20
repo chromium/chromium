@@ -116,7 +116,6 @@
 <translation id="1116639326869298217">No se pudo verificar tu identidad</translation>
 <translation id="1116694919640316211">Acerca de</translation>
 <translation id="1116779635164066733">La extensión "<ph name="NAME" />" administra esta configuración.</translation>
-<translation id="1118549423835582252"><ph name="MANAGER" /> te recomienda actualizar este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">El sistema no pudo determinar el modelo del dispositivo ni el número de serie.</translation>
 <translation id="1119447706177454957">Error interno</translation>
 <translation id="1122068467107743258">Trabajo</translation>
@@ -612,7 +611,6 @@
 <translation id="1628948239858170093">¿Quieres analizar el archivo antes de abrirlo?</translation>
 <translation id="1629314197035607094">Caducó la contraseña</translation>
 <translation id="1629451755632656601">¿Deseas que Google busque descuentos personalizados en tus carritos?</translation>
-<translation id="1630300831289687074">Pronto podrás usar tu Chromebook.</translation>
 <translation id="163072119192489970">Puede completar el envío y la recepción de datos</translation>
 <translation id="1630768113285622200">Restablecer y continuar</translation>
 <translation id="1632082166874334883">Contraseñas almacenadas en tu Cuenta de Google</translation>
@@ -1384,7 +1382,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2410079346590497630">Detalles de la versión</translation>
 <translation id="2410754283952462441">Elegir una cuenta</translation>
 <translation id="241082044617551207">Complemento desconocido</translation>
-<translation id="2412593942846481727">Actualización disponible</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Teclas de función del teclado</translation>
 <translation id="2419131370336513030">Ver las apps instaladas</translation>
@@ -2168,7 +2165,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3239373508713281971">Se quitó el límite de tiempo para <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Seleccionar el directorio de raíz de la extensión que debe empaquetarse. Para actualizar una extensión, también debes seleccionar el archivo de clave privada que será reutilizado.</translation>
 <translation id="3244294424315804309">Continuar silenciando el sonido</translation>
-<translation id="3246107497225150582">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 día}other{Actualiza el dispositivo en el transcurso de # días}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: Error de red</translation>
 <translation id="3248902735035392926">La seguridad es importante. Ahora, tómate un momento para <ph name="BEGIN_LINK" />revisar tus extensiones<ph name="END_LINK" /></translation>
 <translation id="3251714896659475029">Permite que <ph name="SUPERVISED_USER_NAME" /> acceda a Asistente de Google con "Hey Google"</translation>
@@ -2557,7 +2553,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> recibido de <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> recibidos de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Se detectó <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="3649138363871392317">Se capturó la foto.</translation>
-<translation id="3649505501900178324">Actualización pendiente</translation>
 <translation id="3650753875413052677">Error de inscripción</translation>
 <translation id="3650845953328929506">La carga del registro está pendiente.</translation>
 <translation id="3650952250015018111">Permitir que "<ph name="APP_NAME" />" acceda a:</translation>
@@ -3214,7 +3209,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4358313196493694334">Estabiliza la posición del cursor</translation>
 <translation id="4359408040881008151">Instalada a causa de las extensiones dependientes</translation>
 <translation id="4359717112757026264">Paisaje urbano</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" /> requiere que actualices este dispositivo <ph name="DEVICE_TYPE" /> antes de la fecha límite.</translation>
 <translation id="4361142739114356624">Falta la clave privada para este Certificado de cliente o no es válida</translation>
 <translation id="4361745360460842907">Abrir como pestaña</translation>
 <translation id="4363771538994847871">No se encontraron destinos de transmisión. ¿Necesitas ayuda?</translation>
@@ -3741,7 +3735,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Obtén más información sobre los datos que Google Drive recopila (y los motivos para ello) <ph name="BEGIN_LINK" />aquí<ph name="END_LINK" />.</translation>
-<translation id="49226369361073053">{0,plural, =0{Actualiza el dispositivo ahora}=1{Actualiza el dispositivo en el transcurso de 1 segundo}other{Actualiza el dispositivo en el transcurso de # segundos}}</translation>
 <translation id="492299503953721473">Quitar las apps de Android</translation>
 <translation id="492363500327720082">Desinstalando <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Envía comentarios</translation>
@@ -5028,7 +5021,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6326175484149238433">Eliminar de Chrome</translation>
 <translation id="6326855256003666642">Número de actividades en curso</translation>
 <translation id="6327785803543103246">Detección automática de proxy web</translation>
-<translation id="6328378651911184878"><ph name="MANAGER" /> requiere que actualices este dispositivo <ph name="DEVICE_TYPE" /> de inmediato.</translation>
 <translation id="6331191339300272798">Tema oscuro automático</translation>
 <translation id="6331566915566907158">Ayudar a mejorar las funciones y el rendimiento del Sistema operativo Chrome</translation>
 <translation id="6331818708794917058">Permitir que los sitios soliciten permiso para conectarse con dispositivos MIDI</translation>
@@ -5985,7 +5977,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7371490947952970241">Para inhabilitar la Ubicación, desactiva la configuración de la ubicación principal en este dispositivo. También puedes desactivar el uso de Wi-Fi, redes móviles y sensores para obtener la ubicación en la configuración de la ubicación.</translation>
 <translation id="7371917887111892735">Las pestañas se achican al ancho de las pestañas fijas</translation>
 <translation id="7374376573160927383">Administrar dispositivos USB</translation>
-<translation id="7375235221357833624">{0,plural, =1{Actualiza el dispositivo en el transcurso de una hora}other{Actualiza el dispositivo en el transcurso de # horas}}</translation>
 <translation id="7376543451826039186">Navegación más rápida: Por ejemplo, se carga contenido más específico y basado en la página actual de forma proactiva</translation>
 <translation id="7376553024552204454">Resaltar el cursor del mouse cuando se mueve</translation>
 <translation id="737728204345822099">Es posible que se guarde un registro de tu visita a este sitio en tu llave de seguridad.</translation>
@@ -6130,7 +6121,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7514417110442087199">Agregar asignación</translation>
 <translation id="751523031290522286">El administrador bloqueó <ph name="APP_NAME" />. Si quieres usar esa app, solicítale permiso.</translation>
 <translation id="7516981202574715431">Se pausó <ph name="APP_NAME" /></translation>
-<translation id="7517063221058203587">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 minuto}other{Actualiza el dispositivo en el transcurso de # minutos}}</translation>
 <translation id="7520766081042531487">Portal en modo incógnito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">Di "OK Google".</translation>
 <translation id="7523585675576642403">Cambiar nombre del perfil</translation>

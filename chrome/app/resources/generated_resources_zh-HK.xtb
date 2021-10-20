@@ -118,7 +118,6 @@
 <translation id="1116639326869298217">無法驗證您的身分</translation>
 <translation id="1116694919640316211">關於</translation>
 <translation id="1116779635164066733">此設定由「<ph name="NAME" />」擴充程式強制執行。</translation>
-<translation id="1118549423835582252"><ph name="MANAGER" /> 建議您更新此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="1118738876271697201">系統無法識別裝置型號或序號。</translation>
 <translation id="1119447706177454957">內部錯誤</translation>
 <translation id="1122068467107743258">工作</translation>
@@ -618,7 +617,6 @@
 <translation id="1628948239858170093">要先掃瞄檔案再開啟嗎？</translation>
 <translation id="1629314197035607094">密碼已過期</translation>
 <translation id="1629451755632656601">要讓 Google 為購物車中的項目尋找個人化折扣嗎？</translation>
-<translation id="1630300831289687074">您很快就能使用 Chromebook 了。</translation>
 <translation id="163072119192489970">已允許完成傳送和接收資料</translation>
 <translation id="1630768113285622200">重新啟動及繼續</translation>
 <translation id="1632082166874334883">儲存在 Google 帳戶中的密碼</translation>
@@ -1401,7 +1399,6 @@
 <translation id="2410079346590497630">版本詳細資料</translation>
 <translation id="2410754283952462441">選擇帳戶</translation>
 <translation id="241082044617551207">不明的外掛程式</translation>
-<translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">鍵盤功能鍵</translation>
 <translation id="2419131370336513030">查看已安裝的應用程式</translation>
@@ -2185,7 +2182,6 @@
 <translation id="3239373508713281971">已移除 <ph name="APP_NAME" /> 的時間限制</translation>
 <translation id="3241680850019875542">請選取要封裝的擴充功能根目錄。如要更新擴充功能，請一併選取要重複使用的私密金鑰。</translation>
 <translation id="3244294424315804309">繼續保持靜音</translation>
-<translation id="3246107497225150582">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 網絡錯誤</translation>
 <translation id="3248902735035392926">安全至上。請花一點時間<ph name="BEGIN_LINK" />立即檢查您的擴充功能<ph name="END_LINK" /></translation>
 <translation id="3251714896659475029">讓<ph name="SUPERVISED_USER_NAME" />透過「Ok Google」語音指令存取「Google 助理」</translation>
@@ -2574,7 +2570,6 @@
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}other{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3648348069317717750">偵測到 <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="3649138363871392317">已擷取相片</translation>
-<translation id="3649505501900178324">更新已逾期</translation>
 <translation id="3650753875413052677">註冊錯誤</translation>
 <translation id="3650845953328929506">正在等待記錄上載。</translation>
 <translation id="3650952250015018111">允許「<ph name="APP_NAME" />」存取：</translation>
@@ -3231,7 +3226,6 @@
 <translation id="4358313196493694334">穩定點擊位置</translation>
 <translation id="4359408040881008151">您已安裝有依賴關係的擴充功能，因此必須安裝此擴充功能。</translation>
 <translation id="4359717112757026264">城市景觀</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" /> 要求您在期限前更新此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="4361142739114356624">此用戶端憑證沒有私密金鑰或此金鑰無效</translation>
 <translation id="4361745360460842907">在分頁中開啟</translation>
 <translation id="4363771538994847871">找不到 Cast 目標。需要協助嗎？</translation>
@@ -3759,7 +3753,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         如要瞭解「Google 雲端硬碟」收集的資料和收集原因，請前往<ph name="BEGIN_LINK" />此處<ph name="END_LINK" />。</translation>
-<translation id="49226369361073053">{0,plural, =0{立即更新裝置}=1{請在 1 秒內更新裝置}other{請在 # 秒內更新裝置}}</translation>
 <translation id="492299503953721473">移除 Android 應用程式</translation>
 <translation id="492363500327720082">正在解除安裝 <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">提交意見</translation>
@@ -5047,7 +5040,6 @@
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
 <translation id="6326855256003666642">Keepalive 數量</translation>
 <translation id="6327785803543103246">Web Proxy Autodiscovery</translation>
-<translation id="6328378651911184878"><ph name="MANAGER" /> 要求您立即更新此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6331191339300272798">自動深色主題背景</translation>
 <translation id="6331566915566907158">協助改善 Chrome 作業系統的功能和效能</translation>
 <translation id="6331818708794917058">網站可要求連接 MIDI 裝置</translation>
@@ -6004,7 +5996,6 @@
 <translation id="7371490947952970241">關閉裝置的主要位置資訊設定，即可關閉定位服務。您也可以在位置資訊設定中關閉使用 Wi‑Fi、流動網絡和感應器確定位置的功能。</translation>
 <translation id="7371917887111892735">將分頁縮至固定分頁寬度</translation>
 <translation id="7374376573160927383">管理 USB 裝置</translation>
-<translation id="7375235221357833624">{0,plural, =1{請在 1 小時內更新裝置}other{請在 # 小時內更新裝置}}</translation>
 <translation id="7376543451826039186">加快瀏覽速度：例如，系統會根據目前網頁主動載入特定的詳細內容</translation>
 <translation id="7376553024552204454">移動滑鼠時突顯滑鼠游標</translation>
 <translation id="737728204345822099">您的安全密鑰可能會保留您瀏覽此網站的記錄。</translation>
@@ -6149,7 +6140,6 @@
 <translation id="7514417110442087199">新增指派</translation>
 <translation id="751523031290522286">管理員已封鎖「<ph name="APP_NAME" />」。請要求管理員授權使用此應用程式。</translation>
 <translation id="7516981202574715431">「<ph name="APP_NAME" />」已暫停</translation>
-<translation id="7517063221058203587">{0,plural, =1{請在 1 分鐘內更新裝置}other{請在 # 分鐘內更新裝置}}</translation>
 <translation id="7520766081042531487">無痕模式入口網站：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">說「Ok Google」</translation>
 <translation id="7523585675576642403">重新命名設定檔</translation>

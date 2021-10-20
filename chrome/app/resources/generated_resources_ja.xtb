@@ -116,7 +116,6 @@
 <translation id="1116639326869298217">本人確認ができませんでした</translation>
 <translation id="1116694919640316211">概要</translation>
 <translation id="1116779635164066733">この設定は拡張機能「<ph name="NAME" />」により制御されています。</translation>
-<translation id="1118549423835582252"><ph name="MANAGER" /> がこの <ph name="DEVICE_TYPE" /> の更新をすすめています。</translation>
 <translation id="1118738876271697201">デバイスの機種またはシリアル番号を特定できませんでした。</translation>
 <translation id="1119447706177454957">内部エラー</translation>
 <translation id="1122068467107743258">仕事</translation>
@@ -615,7 +614,6 @@
 <translation id="1628948239858170093">ファイルを開く前にスキャンしますか？</translation>
 <translation id="1629314197035607094">パスワードの有効期限が切れています</translation>
 <translation id="1629451755632656601">カートに入れたアイテムの割引情報の検索を Google に許可しますか？</translation>
-<translation id="1630300831289687074">まもなく Chromebook を使用できるようになります。</translation>
 <translation id="163072119192489970">データの送受信の完了を許可するサイト</translation>
 <translation id="1630768113285622200">再起動して続行</translation>
 <translation id="1632082166874334883">パスワードは Google アカウントに保存されています</translation>
@@ -1385,7 +1383,6 @@
 <translation id="2410079346590497630">ビルドの詳細</translation>
 <translation id="2410754283952462441">アカウントの選択</translation>
 <translation id="241082044617551207">不明なプラグイン</translation>
-<translation id="2412593942846481727">アップデートが利用可能</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">キーボードのファンクション キー</translation>
 <translation id="2419131370336513030">インストール済みアプリの表示</translation>
@@ -2169,7 +2166,6 @@
 <translation id="3239373508713281971"><ph name="APP_NAME" /> の使用時間制限が削除されました</translation>
 <translation id="3241680850019875542">パッケージ化する拡張機能のルート ディレクトリを選択します。拡張機能を更新するには、再使用する秘密鍵ファイルも選択してください。</translation>
 <translation id="3244294424315804309">音声のミュートを続行する</translation>
-<translation id="3246107497225150582">{0,plural, =1{1 日以内にデバイスを更新してください}other{# 日以内にデバイスを更新してください}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ネットワーク エラー</translation>
 <translation id="3248902735035392926">安全性に問題がないか、<ph name="BEGIN_LINK" />拡張機能を確認<ph name="END_LINK" />しましょう</translation>
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> さんが「OK Google」と話しかけて Google アシスタントにアクセスできるようにする</translation>
@@ -2558,7 +2554,6 @@
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取りました}other{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取りました}}</translation>
 <translation id="3648348069317717750">「<ph name="USB_DEVICE_NAME" />」を検出しました</translation>
 <translation id="3649138363871392317">写真を撮りました</translation>
-<translation id="3649505501900178324">更新の期限が過ぎています</translation>
 <translation id="3650753875413052677">登録エラー</translation>
 <translation id="3650845953328929506">ログのアップロードを保留しています。</translation>
 <translation id="3650952250015018111">「<ph name="APP_NAME" />」のアクセスを許可する:</translation>
@@ -3214,7 +3209,6 @@
 <translation id="4358313196493694334">クリック位置のぶれを補正する</translation>
 <translation id="4359408040881008151">依存関係にある拡張機能によってインストールされました。</translation>
 <translation id="4359717112757026264">Cityscape</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" /> が期限までにこの <ph name="DEVICE_TYPE" /> を更新するよう求めています。</translation>
 <translation id="4361142739114356624">このクライアント証明書には秘密鍵がないか、秘密鍵が無効です</translation>
 <translation id="4361745360460842907">タブとして開く</translation>
 <translation id="4363771538994847871">キャスト先が見つかりません。ヘルプを表示しますか？</translation>
@@ -3741,7 +3735,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Google ドライブが収集するデータの詳細や理由については、<ph name="BEGIN_LINK" />こちら<ph name="END_LINK" />をご覧ください。</translation>
-<translation id="49226369361073053">{0,plural, =0{今すぐデバイスを更新してください}=1{1 秒以内にデバイスを更新してください}other{# 秒以内にデバイスを更新してください}}</translation>
 <translation id="492299503953721473">Android アプリを削除</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> をアンインストールしています...</translation>
 <translation id="4924002401726507608">フィードバックを送信</translation>
@@ -5025,7 +5018,6 @@
 <translation id="6326175484149238433">Chrome から削除</translation>
 <translation id="6326855256003666642">キープアライブ カウント</translation>
 <translation id="6327785803543103246">ウェブプロキシ自動検出</translation>
-<translation id="6328378651911184878"><ph name="MANAGER" /> が今すぐこの <ph name="DEVICE_TYPE" /> を更新するよう求めています。</translation>
 <translation id="6331191339300272798">ダークモードを自動的に設定する</translation>
 <translation id="6331566915566907158">Chrome OS の機能と動作の改善に協力する</translation>
 <translation id="6331818708794917058">サイトが MIDI デバイスへの接続を要求できるようにする</translation>
@@ -5982,7 +5974,6 @@
 <translation id="7371490947952970241">位置情報の使用を無効にするには、このデバイスでメインの位置情報の設定を無効にします。また、位置情報の設定で、Wi‑Fi、モバイル ネットワーク、センサーを現在地の特定に使用しないよう指定することもできます。</translation>
 <translation id="7371917887111892735">タブを固定幅まで縮小</translation>
 <translation id="7374376573160927383">USB デバイスを管理する</translation>
-<translation id="7375235221357833624">{0,plural, =1{1 時間以内にデバイスを更新してください}other{# 時間以内にデバイスを更新してください}}</translation>
 <translation id="7376543451826039186">高速ブラウジング: たとえば、現在のページに基づいて、特定のコンテンツが追加で事前に読み込まれます</translation>
 <translation id="7376553024552204454">移動時にマウスカーソルを強調表示する</translation>
 <translation id="737728204345822099">このサイトへのアクセスの記録がセキュリティ キーに保存される可能性があります。</translation>
@@ -6127,7 +6118,6 @@
 <translation id="7514417110442087199">割り当てを追加</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> は管理者によってブロックされています。このアプリを使用するには、管理者の許可が必要です。</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> は一時停止中です</translation>
-<translation id="7517063221058203587">{0,plural, =1{1 分以内にデバイスを更新してください}other{# 分以内にデバイスを更新してください}}</translation>
 <translation id="7520766081042531487">シークレット ポータル: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">「OK Google」と言ってください</translation>
 <translation id="7523585675576642403">プロファイルの名前を変更</translation>

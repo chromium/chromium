@@ -21,6 +21,7 @@
 <translation id="109942774857561566">我好悶</translation>
 <translation id="1104084341931202936">顯示無障礙功能設定</translation>
 <translation id="1104621072296271835">連結您的裝置，以獲得更佳的體驗</translation>
+<translation id="1118549423835582252"><ph name="MANAGER" /> 建議您更新此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="1119348796022671382">主題顏色模式會使用從您桌布擷取的顏色，為介面添上淡雅色彩。</translation>
 <translation id="112308213915226829">自動隱藏捷徑列</translation>
 <translation id="1142002900084379065">最近的相片</translation>
@@ -357,6 +358,7 @@
 <translation id="3630697955794050612">關閉</translation>
 <translation id="3631369015426612114">允許顯示來自以下來源的通知</translation>
 <translation id="3638400994746983214">切換私隱保護畫面。<ph name="STATE_TEXT" />。</translation>
+<translation id="3649505501900178324">更新已逾期</translation>
 <translation id="366222428570480733">受管理嘅使用者：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">錄音麥克風</translation>
 <translation id="3680908746918359504">清除所有標記</translation>
@@ -456,6 +458,7 @@
 <translation id="4338109981321384717">放大鏡</translation>
 <translation id="4351433414020964307">正在載入小幫手…</translation>
 <translation id="4356930093361201197">高對比模式</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> 要求您在期限前更新此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="4371348193907997655">投放設定</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，訊號強度為 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">連線中…</translation>
@@ -714,6 +717,7 @@
 <translation id="6291221004442998378">非充電中</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> 已旋轉到 <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">語音</translation>
+<translation id="6328378651911184878"><ph name="MANAGER" /> 要求您立即更新此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6330012934079202188">顯示緊來自所有桌面嘅視窗，㩒向上箭咀掣就可以顯示來自目前桌面嘅視窗</translation>
 <translation id="6338485349199627913">「<ph name="DISPLAY_NAME" />」是由 <ph name="MANAGER" /> 管理的工作階段</translation>
 <translation id="6376931439017688372">藍牙已開啟</translation>

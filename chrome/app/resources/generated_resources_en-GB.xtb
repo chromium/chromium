@@ -120,7 +120,6 @@
 <translation id="1116639326869298217">Your identity couldn't be verified</translation>
 <translation id="1116694919640316211">About</translation>
 <translation id="1116779635164066733">This setting is enforced by the '<ph name="NAME" />' extension.</translation>
-<translation id="1118549423835582252"><ph name="MANAGER" /> recommends that you update this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">The system failed to determine device model or serial number.</translation>
 <translation id="1119447706177454957">Internal error</translation>
 <translation id="1122068467107743258">Work</translation>
@@ -622,7 +621,6 @@
 <translation id="1628948239858170093">Scan file before opening?</translation>
 <translation id="1629314197035607094">Password expired</translation>
 <translation id="1629451755632656601">Let Google find personalised discounts on your baskets?</translation>
-<translation id="1630300831289687074">You will be able to use your Chromebook shortly.</translation>
 <translation id="163072119192489970">Allowed to finish sending and receiving data</translation>
 <translation id="1630768113285622200">Restart and continue</translation>
 <translation id="1632082166874334883">Password stored in your Google Account</translation>
@@ -1406,7 +1404,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2410079346590497630">Build details</translation>
 <translation id="2410754283952462441">Choose an account</translation>
 <translation id="241082044617551207">Unknown plug-in</translation>
-<translation id="2412593942846481727">Update available</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Keyboard function keys</translation>
 <translation id="2419131370336513030">View installed apps</translation>
@@ -2194,7 +2191,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3239373508713281971">Time limit removed for <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Select the root directory of the extension to pack. To update an extension, also select the private key file to reuse.</translation>
 <translation id="3244294424315804309">Continue muting sound</translation>
-<translation id="3246107497225150582">{0,plural, =1{Update device within a day}other{Update device within # days}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Network error</translation>
 <translation id="3248902735035392926">Safety matters. Take a moment and <ph name="BEGIN_LINK" />check your extensions now<ph name="END_LINK" /></translation>
 <translation id="3251714896659475029">Let <ph name="SUPERVISED_USER_NAME" /> access Google Assistant with 'Hey Google'</translation>
@@ -2585,7 +2581,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> received from <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> received from <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> detected</translation>
 <translation id="3649138363871392317">Photo was captured</translation>
-<translation id="3649505501900178324">Update overdue</translation>
 <translation id="3650753875413052677">Enrolment error</translation>
 <translation id="3650845953328929506">Log upload pending.</translation>
 <translation id="3650952250015018111">Allow '<ph name="APP_NAME" />' to access:</translation>
@@ -3244,7 +3239,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4358313196493694334">Stabilise click location</translation>
 <translation id="4359408040881008151">Installed because of dependent extension(s).</translation>
 <translation id="4359717112757026264">Cityscape</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" /> requires you to update this <ph name="DEVICE_TYPE" /> before the deadline.</translation>
 <translation id="4361142739114356624">The Private Key for this Client Certificate is missing or invalid</translation>
 <translation id="4361745360460842907">Open as tab</translation>
 <translation id="4363771538994847871">No Cast destinations found. Need help?</translation>
@@ -3772,7 +3766,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Learn about the data that Google Drive collects and why <ph name="BEGIN_LINK" />here<ph name="END_LINK" />.</translation>
-<translation id="49226369361073053">{0,plural, =0{Update device now}=1{Update device within 1 second}other{Update device within # seconds}}</translation>
 <translation id="492299503953721473">Remove Android apps</translation>
 <translation id="492363500327720082">Uninstalling <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Submit feedback</translation>
@@ -5062,7 +5055,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6326855256003666642">Keepalive Count</translation>
 <translation id="6327785803543103246">Web proxy auto-discovery</translation>
-<translation id="6328378651911184878"><ph name="MANAGER" /> requires you to update this <ph name="DEVICE_TYPE" /> immediately.</translation>
 <translation id="6331191339300272798">Automatic Dark theme</translation>
 <translation id="6331566915566907158">Help improve Chrome OS features and performance</translation>
 <translation id="6331818708794917058">Sites can ask to connect to MIDI devices</translation>
@@ -6021,7 +6013,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7371490947952970241">You can turn off location by turning off the main location setting on this device. You can also turn off the use of Wi-Fi, mobile networks and sensors for location in location settings.</translation>
 <translation id="7371917887111892735">Tabs shrink to pinned tab width</translation>
 <translation id="7374376573160927383">Manage USB devices</translation>
-<translation id="7375235221357833624">{0,plural, =1{Update device within an hour}other{Update device within # hours}}</translation>
 <translation id="7376543451826039186">Faster browsing: For example, proactively load specific further content based on the current page</translation>
 <translation id="7376553024552204454">Highlight the mouse cursor when it's moving</translation>
 <translation id="737728204345822099">A record of your visit to this site may be kept on your security key.</translation>
@@ -6166,7 +6157,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7514417110442087199">Add assignment</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> is blocked by admin. Ask admin for permission to use this app.</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> is paused</translation>
-<translation id="7517063221058203587">{0,plural, =1{Update device within 1 minute}other{Update device within # minutes}}</translation>
 <translation id="7520766081042531487">Incognito portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">Say 'Ok Google'</translation>
 <translation id="7523585675576642403">Rename profile</translation>

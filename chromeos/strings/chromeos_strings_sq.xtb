@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="1018219910092211213">DNS-ja nuk mund të zgjidhet</translation>
 <translation id="1018656279737460067">Anuluar</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> nënprocese, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Skanimi nuk mund të nisej</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">U zbulua mur mbrojtës</translation>
 <translation id="1075811647922107217">Madhësia e faqes</translation>
+<translation id="1094693127011229778">Adresa IP nuk ofrohet</translation>
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
 <translation id="1124772482545689468">Përdoruesi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">U dyshua portal izolues</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">Nuk ofrohet asnjë rrjet <ph name="NETWORK_NAME" /></translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Rrjeti vendor, jo në roaming</translation>
 <translation id="1327977588028644528">Porta e kalimit</translation>
@@ -67,6 +70,7 @@
 <translation id="1999615961760456652">Portal izolues</translation>
 <translation id="2006864819935886708">Lidhshmëria</translation>
 <translation id="2008685064673031089">Kërkimi kryesor</translation>
+<translation id="2016697457005847575">Provo hapat e zgjidhjes së problemeve</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioni <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +103,7 @@
 <translation id="2505327257735685095">Rifresko imazhin aktual të sfondit</translation>
 <translation id="2517472476991765520">Skano</translation>
 <translation id="2570743873672969996">Po ekzekuton testin <ph name="TEST_NAME" />...</translation>
+<translation id="2584559707064218956">Për ta konfiguruar, shko te "Cilësimet"</translation>
 <translation id="2585245331261708204">Të rejat me Chrome OS</translation>
 <translation id="2619761439309613843">Rifreskimi i përditshëm</translation>
 <translation id="2620436844016719705">Sistemi</translation>
@@ -145,8 +150,10 @@
 <translation id="3532980081107202182">Rreth <ph name="MIN_REMAINING" /> minuta të mbetura</translation>
 <translation id="3565064564551103223">IP-të e lejuara</translation>
 <translation id="357889014807611375">Wi-Fi me matje</translation>
+<translation id="3583278742022654445">Fuqi e dobët e sinjalit. Provo t'i afrohesh më shumë burimit të sinjalit Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria është plot</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
+<translation id="3606583719724308068">Vonesë e lartë në sajtet e uebit HTTPS</translation>
 <translation id="3689839747745352263">Testi <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Të lidhura më parë</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> komente)</translation>
@@ -166,11 +173,13 @@
 <translation id="39823212440917567">Printimet më të vjetra se <ph name="NUMBER_OF_DAYS" /> ditë do të hiqen</translation>
 <translation id="4003384961948020559">Dështoi - Dalja është plot</translation>
 <translation id="4034824040120875894">Printeri</translation>
+<translation id="4044093238444069296">Portëkalimi nuk mund të kontaktohet</translation>
 <translation id="404928562651467259">PARALAJMËRIM</translation>
 <translation id="409427325554347132">Ruaj detajet e testit</translation>
 <translation id="4111761024568264522">Blloku me prekje USB</translation>
 <translation id="4131410914670010031">Bardhezi</translation>
 <translation id="4145784616224233563">Mur mbrojtës HTTP</translation>
+<translation id="4147897805161313378">Fotografitë e Google</translation>
 <translation id="4155551848414053977">Sigurohu që skaneri të jetë i ndezur dhe i disponueshëm përmes rrjetit tënd ose një lidhjeje të drejtpërdrejtë</translation>
 <translation id="4170700058716978431">DËSHTOI</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
@@ -187,6 +196,7 @@
 <translation id="4378551569595875038">Po lidhet...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Disku im</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> është joaktiv</translation>
 <translation id="4429881212383817840">Bileta e Kerberos skadon së shpejti</translation>
 <translation id="4431821876790500265">Shiko raportin</translation>
 <translation id="445059817448385655">Fjalëkalimi i vjetër</translation>
@@ -232,6 +242,7 @@
 <translation id="4917385247580444890">I fortë</translation>
 <translation id="4917889632206600977">Ndaloi - Nuk ka letër</translation>
 <translation id="4921665434385737356">U karikua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
+<translation id="4930320165497208503">Për të konfiguruar ose përditësuar një lidhje, shko te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Kontrollo skanerin dhe provo përsëri. Sigurohu që të jetë hapësirë lokale të mjaftueshme për të ruajtur skedarët e skanuar.</translation>
 <translation id="4985509611418653372">Ekzekuto</translation>
@@ -373,6 +384,7 @@
 <translation id="7059230779847288458">Po karikohet, <ph name="TIME_VALUE" /> derisa të mbushet</translation>
 <translation id="708426984172631313">NDALOI</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Dështoi - Autorizimi dështoi</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveri i emrave}other{Serverët e emrave}}</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
@@ -385,6 +397,7 @@
 <translation id="7271040990581020067">Skaneri është aktualisht në përdorim. Provo përsëri më vonë.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Koleksionet e imazheve të sfondit</translation>
+<translation id="7297226631177386107">Nuk mund të lidhesh me sajtet e uebit HTTPS nëpërmjet murit mbrojtës</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -417,6 +430,7 @@
 <translation id="7762130827864645708">Ndryshimi i fjalëkalimit tënd u krye me sukses. Përdor fjalëkalimin e ri këtej e tutje.</translation>
 <translation id="7763470514545477072">Përputhje e prapashtesës së domenit</translation>
 <translation id="7769672763586021400">ID-ja e modelit</translation>
+<translation id="7784116172884276937">Nuk është konfiguruar asnjë server DNS</translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7819857487979277519">PSK (WPA ose RSN)</translation>
 <translation id="7835501727204647447">Instalo CloudReady</translation>
@@ -431,13 +445,16 @@
 <translation id="7943235353293548836">Intervali i procesit të vazhdueshëm të mbajtjes aktive</translation>
 <translation id="7955587717700691983">Tastierë me Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7977800524392185497">Për t'iu bashkuar një rrjeti <ph name="NETWORK_NAME" />, shko te "Cilësimet"</translation>
 <translation id="7978412674231730200">Çelës privat</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
 <translation id="8075838845814659848">Karikimi i mbetur</translation>
+<translation id="8082366717211101304">DNS-ja nuk mund të zgjidhet nga aplikacionet për Android</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
+<translation id="8104083085214006426">Po përdor një rrjet të hapur dhe të pasigurt</translation>
 <translation id="811820734797650957">(Android) Portëkalimi mund të marrë ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Kërko matësit e trafikut</translation>
@@ -462,10 +479,12 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Tastierë e brendshme</translation>
 <translation id="843568408673868420">Lidhshmëria e internetit</translation>
+<translation id="844521431886043384">DNS-ja nuk është konfiguruar</translation>
 <translation id="8461329675984532579">Emri i ofruesit të rrjetit bazë</translation>
 <translation id="8475690821716466388">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP PSK</translation>
 <translation id="8477551185774834963">Vonesa e DNS-së është pak më lart se pragu i lejueshëm</translation>
 <translation id="8483248364096924578">Adresa e IP-së</translation>
+<translation id="8491311378305535241">Nuk mund të lidhesh me sajtet e uebit HTTPS nëpërmjet murit mbrojtës nga aplikacionet për Android</translation>
 <translation id="8498220429738806196">Matësit e trafikut</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8503836310948963452">Edhe vetëm pak minuta...</translation>
@@ -491,6 +510,7 @@
 <translation id="8818152010000655963">Imazhi i sfondit</translation>
 <translation id="8834539327799336565">Të lidhur aktualisht</translation>
 <translation id="8845001906332463065">Kërko ndihmë</translation>
+<translation id="8855781559874488009">Nuk mund të lidhesh me sajtet e uebit HTTP nëpërmjet murit mbrojtës</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Testi u krye me sukses</translation>
 <translation id="8898840733695078011">Fuqia e sinjalit</translation>
@@ -516,12 +536,14 @@
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Shkyç</translation>
+<translation id="9122602430962285795">Për t'u rilidhur, shko te "Cilësimet"</translation>
 <translation id="9126720536733509015">Ruaj shumë faqe në një skedar PDF</translation>
 <translation id="9137526406337347448">Shërbimet e Google</translation>
 <translation id="9149391708638971077">Ekzekuto testin e memories</translation>
 <translation id="9173638680043580060">Ka mbetur më pak se një minutë</translation>
 <translation id="917720651393141712">Provë</translation>
 <translation id="9190063653747922532">L2TP/IPsec + çelësi i ndarë paraprakisht</translation>
+<translation id="9204237731135241582">Portëkalimi nuk mund të kontaktohet nga aplikacionet për Android</translation>
 <translation id="9211490828691860325">Të gjitha tavolinat e punës</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nuk është aktivizuar</translation>

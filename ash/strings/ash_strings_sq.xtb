@@ -21,6 +21,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="109942774857561566">Jam i mërzitur</translation>
 <translation id="1104084341931202936">Shfaq cilësimet e qasshmërisë</translation>
 <translation id="1104621072296271835">Pajisjet e tua punojnë edhe më mirë së bashku</translation>
+<translation id="1118549423835582252"><ph name="MANAGER" /> rekomandon që ta përditësosh këtë pajisje <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Modaliteti me ngjyra me temë përdor ngjyrat e nxjerra nga imazhi i sfondit për të ngjyrosur lehtë ndërfaqen.</translation>
 <translation id="112308213915226829">Fshih raftin automatikisht</translation>
 <translation id="1142002900084379065">Fotot e fundit</translation>
@@ -357,6 +358,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3630697955794050612">çaktivizuar</translation>
 <translation id="3631369015426612114">Lejo njoftimet nga më poshtë</translation>
 <translation id="3638400994746983214">Ndrysho ekranin e privatësisë. <ph name="STATE_TEXT" /></translation>
+<translation id="3649505501900178324">Afati i përditësimit ka kaluar</translation>
 <translation id="366222428570480733">Përdorues i menaxhuar (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3665889125180354336">Regjistro me mikrofonin</translation>
 <translation id="3680908746918359504">Pastro të gjitha piketat</translation>
@@ -456,6 +458,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4338109981321384717">Xhami zmadhues</translation>
 <translation id="4351433414020964307">"Asistenti" po ngarkohet...</translation>
 <translation id="4356930093361201197">modaliteti i kontrastit të lartë</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> të kërkon që ta përditësosh këtë pajisje <ph name="DEVICE_TYPE" /> përpara afatit.</translation>
 <translation id="4371348193907997655">Cilësimet e transmetimit</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /> për qind</translation>
 <translation id="4378551569595875038">Po lidhet...</translation>
@@ -612,6 +615,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5465662442746197494">Ke nevojë për ndihmë?</translation>
 <translation id="5496819745535887422">Administratori po e kthen prapa pajisjen tënde. Të gjitha të dhënat do të fshihen kur të riniset pajisja.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Administratori yt ka hequr të gjitha profilet e kartës eSIM. Kontakto me administratorin për më shumë informacion.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> po lidhet.</translation>
 <translation id="5532994612895037630">Trokit diku për të regjistruar ekranin e plotë</translation>
 <translation id="553675580533261935">Po del nga seanca</translation>
@@ -715,6 +719,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6291221004442998378">Nuk po karikohet</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> u rrotullua në <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voice</translation>
+<translation id="6328378651911184878"><ph name="MANAGER" /> të kërkon që ta përditësosh këtë pajisje <ph name="DEVICE_TYPE" /> menjëherë.</translation>
 <translation id="6330012934079202188">Po shfaqen dritaret nga të gjitha tavolinat e punës. Shtyp tastin "Shigjeta lart" për të shfaqur dritaret nga tavolina aktuale e punës</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> është sesion i menaxhuar që menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth-i është aktiv</translation>
@@ -741,6 +746,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6537924328260219877">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, bateria e telefonit <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Po transmeton <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pyet administratorin</translation>
+<translation id="6565007273808762236">Lidhja e kartës eSIM nuk ofrohet</translation>
 <translation id="6570902864550063460">Po karikohet përmes USB-së</translation>
 <translation id="6585808820553845416">Sesioni përfundon për <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

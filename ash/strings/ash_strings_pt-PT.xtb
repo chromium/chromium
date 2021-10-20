@@ -21,6 +21,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="109942774857561566">Estou aborrecido</translation>
 <translation id="1104084341931202936">Mostrar definições de acessibilidade</translation>
 <translation id="1104621072296271835">Os seus dispositivos funcionam ainda melhor juntos</translation>
+<translation id="1118549423835582252"><ph name="MANAGER" /> recomenda que atualize este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">O modo de cores temáticas utiliza cores extraídas da sua imagem de fundo para colorir levemente a interface.</translation>
 <translation id="112308213915226829">Ocultar prateleira automaticamente</translation>
 <translation id="1142002900084379065">Fotos recentes</translation>
@@ -357,6 +358,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3630697955794050612">desativado</translation>
 <translation id="3631369015426612114">Permitir notificações das seguintes fontes:</translation>
 <translation id="3638400994746983214">Ative/desative o ecrã de privacidade. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649505501900178324">Atualização vencida</translation>
 <translation id="366222428570480733">Utilizador gerido por <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Gravar microfone</translation>
 <translation id="3680908746918359504">Limpar todos os marcadores</translation>
@@ -456,6 +458,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">A carregar o Assistente...</translation>
 <translation id="4356930093361201197">modo de alto contraste</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> necessita que atualize este <ph name="DEVICE_TYPE" /> antes do prazo.</translation>
 <translation id="4371348193907997655">Definições de transmissão</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensidade do sinal a <ph name="SIGNAL_STRENGTH" /> por cento</translation>
 <translation id="4378551569595875038">A ligar...</translation>
@@ -612,6 +615,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5465662442746197494">Precisa de ajuda?</translation>
 <translation id="5496819745535887422">O administrador vai reverter o dispositivo. Todos os dados serão eliminados quando o dispositivo for reiniciado.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">O seu administrador removeu todos os perfis do eSIM. Contacte o administrador para obter mais informações.</translation>
 <translation id="5523434445161341166">A funcionalidade <ph name="FEATURE_NAME" /> está a estabelecer ligação.</translation>
 <translation id="5532994612895037630">Toque em qualquer local para gravar o ecrã inteiro.</translation>
 <translation id="553675580533261935">A sair da sessão…</translation>
@@ -715,6 +719,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6291221004442998378">Não está a carregar.</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> foi rodado para <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voz</translation>
+<translation id="6328378651911184878"><ph name="MANAGER" /> necessita que atualize este <ph name="DEVICE_TYPE" /> imediatamente.</translation>
 <translation id="6330012934079202188">Ao mostrar as janelas de todos os espaços de trabalho, prima a tecla da seta para cima para mostrar janelas do espaço de trabalho atual</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> é uma sessão gerida por <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth ativado</translation>
@@ -741,6 +746,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6537924328260219877">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, bateria do telemóvel: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">A transmitir para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Peça ao administrador.</translation>
+<translation id="6565007273808762236">Ligação eSIM indisponível</translation>
 <translation id="6570902864550063460">A carregar através de USB…</translation>
 <translation id="6585808820553845416">A sessão termina em <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

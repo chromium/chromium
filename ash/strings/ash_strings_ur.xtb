@@ -21,6 +21,7 @@
 <translation id="109942774857561566">مجھے بوریت ہو رہی ہے</translation>
 <translation id="1104084341931202936">ایکسیسبیلٹی کی ترتیبات دکھائیں</translation>
 <translation id="1104621072296271835">آپ کے آلات مل کر اور بہتر کام کرتے ہیں</translation>
+<translation id="1118549423835582252"><ph name="MANAGER" /> کی تجویز ہے کہ آپ اس <ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کریں۔</translation>
 <translation id="1119348796022671382">تھیم کردہ رنگ وضع انٹرفیس کو ہلکا رنگ دینے کے لیے آپ کے وال پیپر سے ایکسٹریکٹ کیے گئے رنگوں کا استعمال کرتی ہے۔</translation>
 <translation id="112308213915226829">شیلف کو از خود چھپائیں</translation>
 <translation id="1142002900084379065">حالیہ تصاویر</translation>
@@ -357,6 +358,7 @@
 <translation id="3630697955794050612">آف</translation>
 <translation id="3631369015426612114">مندرجہ ذیل سے اطلاعات کی اجازت دیں</translation>
 <translation id="3638400994746983214">رازداری کا اسکرین ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
+<translation id="3649505501900178324">اپ ڈیٹ کرنا باقی ہے</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> نظم کردہ صارف</translation>
 <translation id="3665889125180354336">مائیکروفون کے ذریعے ریکارڈ کریں</translation>
 <translation id="3680908746918359504">سبھی مارکرز صاف کریں</translation>
@@ -456,6 +458,7 @@
 <translation id="4338109981321384717">میگنفائنگ گلاس</translation>
 <translation id="4351433414020964307">اسسٹنٹ لوڈ ہو رہا ہے...</translation>
 <translation id="4356930093361201197">اعلی تناسب امتزاج وضع</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آخری تاریخ سے پہلے اس <ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کریں۔</translation>
 <translation id="4371348193907997655">کاسٹ کی ترتیبات</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /> فیصد</translation>
 <translation id="4378551569595875038">منسلک ہو رہا ہے…</translation>
@@ -715,6 +718,7 @@
 <translation id="6291221004442998378">چارج نہیں ہو رہا ہے</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> کو <ph name="ROTATION" /> میں گھما دیا گیا تھا</translation>
 <translation id="6315170314923504164">آواز</translation>
+<translation id="6328378651911184878"><ph name="MANAGER" /> کا تقاضہ ہے کہ آپ اس <ph name="DEVICE_TYPE" /> کو فوری طور پر اپ ڈیٹ کریں۔</translation>
 <translation id="6330012934079202188">تمام ڈیسکس سے ونڈوز دکھائی جا رہی ہیں موجودہ ڈیسک سے ونڈوز کو دکھانے کے لیے اوپر تیر کے نشان والی کلید دبائیں</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> کے زیر انتظام ایک نظم کردہ سیشن ہے</translation>
 <translation id="6376931439017688372">بلوٹوتھ آن ہے</translation>

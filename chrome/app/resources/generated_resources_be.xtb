@@ -25,6 +25,7 @@
 <translation id="1017280919048282932">&amp;Дадаць у слоўнік</translation>
 <translation id="1018656279737460067">Скасавана</translation>
 <translation id="1022489261739821355">Паказаны паролі, захаваныя ва <ph name="BEGIN_LINK" />Уліковым запісе Google<ph name="END_LINK" /></translation>
+<translation id="1024304340821219537">Якія даныя абагульваюцца з вэб-сайтамі</translation>
 <translation id="1026655690966755180">Дадаць порт</translation>
 <translation id="1026822031284433028">Загрузіць відарыс</translation>
 <translation id="1029317248976101138">Маштаб</translation>
@@ -92,6 +93,7 @@
 <translation id="1088654056000736875">Chrome выдаляе шкоднае праграмнае забеспячэнне з вашага камп'ютара...</translation>
 <translation id="1088659085457112967">Перайсці ў рэжым чытання</translation>
 <translation id="1090126737595388931">Няма праграм, якія працуюць у фонавым рэжыме</translation>
+<translation id="1090541560108055381">Перад спалучэннем упэўніцеся, што гэты код – аднолькавы на абедзвюх прыладах</translation>
 <translation id="1091767800771861448">Каб прапусціць, націсніце ESC (толькі для неафіцыйных зборак).</translation>
 <translation id="1093457606523402488">Бачныя сеткі:</translation>
 <translation id="1094607894174825014">Аперацыі чытання або запісу былі запытаны з недапушчальным зрухам на прыладзе "<ph name="DEVICE_NAME" />".</translation>
@@ -116,7 +118,6 @@
 <translation id="1116639326869298217">Не ўдалося спраўдзіць вашу асобу</translation>
 <translation id="1116694919640316211">Інфармацыя</translation>
 <translation id="1116779635164066733">Гэтай наладай кіруе пашырэнне "<ph name="NAME" />".</translation>
-<translation id="1118549423835582252"><ph name="MANAGER" /> рэкамендуе вам абнавіць гэту прыладу <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Сістэме не ўдалося вызначыць мадэль прылады або яе серыйны нумар.</translation>
 <translation id="1119447706177454957">Унутраная памылка</translation>
 <translation id="1122068467107743258">Праца</translation>
@@ -372,6 +373,7 @@
 <translation id="1388728792929436380">Пасля завяршэння абнаўлення прылада "<ph name="DEVICE_TYPE" />" перазапусціцца.</translation>
 <translation id="139013308650923562">Сайты, якім дазволена выкарыстоўваць шрыфты, усталяваныя на прыладзе</translation>
 <translation id="1390548061267426325">Адкрыць у звычайнай укладцы</translation>
+<translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> не мае дазволу друкаваць на прынтары "<ph name="PRINTER_NAME" />". Звярніцеся да адміністратара.</translation>
 <translation id="1393283411312835250">Сонца і аблокі</translation>
 <translation id="1395730723686586365">Сродак абнаўлення запушчаны</translation>
 <translation id="1396139853388185343">Памылка наладжвання прынтара</translation>
@@ -428,6 +430,7 @@
 <translation id="1436390408194692385">Дзейнічае яшчэ <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Выдалены</translation>
 <translation id="1437986450143295708">Апішыце праблему падрабязна</translation>
+<translation id="1439671507542716852">доўгатэрміновая падтрымка</translation>
 <translation id="144283815522798837">Выбрана: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Задаць актыўны білет Kerberos</translation>
 <translation id="1444628761356461360">Гэта налада кіруецца ўладальнікам прылады – <ph name="OWNER_EMAIL" />.</translation>
@@ -618,7 +621,6 @@
 <translation id="1628948239858170093">Праверыць файл перад адкрыццём?</translation>
 <translation id="1629314197035607094">Тэрмін дзеяння пароля скончыўся</translation>
 <translation id="1629451755632656601">Дазволіць Google шукаць персаналізаваныя скідкі на тавары ў вашых кошыках?</translation>
-<translation id="1630300831289687074">Скора вы зможаце выкарыстоўваць Chromebook.</translation>
 <translation id="163072119192489970">Дазволена завяршаць адпраўку і атрыманне даных</translation>
 <translation id="1630768113285622200">Перазапусціць і працягнуць</translation>
 <translation id="1632082166874334883">Пароль, захаваны ва Уліковым запісе Google</translation>
@@ -1390,7 +1392,6 @@
 <translation id="2410079346590497630">Звесткі пра зборку</translation>
 <translation id="2410754283952462441">Выберыце ўліковы запіс</translation>
 <translation id="241082044617551207">Невядомая ўбудова</translation>
-<translation id="2412593942846481727">Ёсць абнаўленне</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Функцыянальныя клавішы клавіятуры</translation>
 <translation id="2419131370336513030">Прагледзець усталяваныя праграмы</translation>
@@ -1416,6 +1417,7 @@
 <translation id="244231003699905658">Несапраўдны адрас. Праверце адрас і паўтарыце спробу.</translation>
 <translation id="2442916515643169563">Цень ад тэксту</translation>
 <translation id="2443487764245141020">Магчыма, сайтам таксама трэба будзе распазнаць вашу прыладу пры дапамозе ідэнтыфікатара</translation>
+<translation id="244475495405467108">Закрыць укладкі злева</translation>
 <translation id="2445081178310039857">Патрабуецца каранёвы каталог пашырэння.</translation>
 <translation id="2445484935443597917">Стварыць новы профіль</translation>
 <translation id="244641233057214044">Звязана з вашым пошукавым запытам</translation>
@@ -1431,6 +1433,7 @@
 <translation id="2454264884354864965">Камера выключана</translation>
 <translation id="245650153866130664">Каб аўтаматычна абнаўляць білет, пастаўце птушку "Запомніць пароль". Пароль будзе захоўвацца толькі на вашай прыладзе.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> запытвае дазвол скапіраваць файлы са сховішча <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Зараз – <ph name="CHANNEL_NAME" /> версія</translation>
 <translation id="2458379781610688953">Абнавіць уліковы запіс, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Маркер кіравання прыладай несапраўдны.</translation>
 <translation id="2459703812219683497">Код актывацыі выяўлены</translation>
@@ -2115,6 +2118,7 @@
 <translation id="3154351730702813399">Адміністратар прылады можа сачыць за вашымі дзеяннямі ў браўзеры.</translation>
 <translation id="3154429428035006212">Па-за сеткай больш за месяц</translation>
 <translation id="3157387275655328056">Дадаць у спіс чытання</translation>
+<translation id="3157665603750177985">Калі вы не ў рэжыме інкогніта, сайты могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах (напрыклад, каб персаналізаваць рэкламу)</translation>
 <translation id="3157931365184549694">Аднавіць</translation>
 <translation id="3158033540161634471">Наладжванне адбітка пальца</translation>
 <translation id="3158770568048368350">Гэта можа прывесці да кароткачасовага адключэння мабільнай сеткі</translation>
@@ -2130,6 +2134,7 @@
 <translation id="3165390001037658081">Некаторыя аператары могуць блакіраваць гэту функцыю.</translation>
 <translation id="316652501498554287">Уліковыя запісы G Suite for Education</translation>
 <translation id="3170072451822350649">Таксама можна не ўваходзіць і <ph name="LINK_START" />праглядаць вэб-старонкі як госць<ph name="LINK_END" />.</translation>
+<translation id="31774765611822736">Новая ўкладка злева</translation>
 <translation id="3177909033752230686">Мова старонкі:</translation>
 <translation id="3179982752812949580">Шрыфт тэксту</translation>
 <translation id="3181954750937456830">Бяспечны прагляд (абараняе вас і прыладу ад небяспечных сайтаў)</translation>
@@ -2174,7 +2179,6 @@
 <translation id="3239373508713281971">Абмежаванне часу выдалена для праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="3241680850019875542">Выберыце каранёвы каталог, куды трэба ўпакаваць пашырэнне. Каб абнавіць пашырэнне, таксама выберыце файл закрытага ключа, які трэба ўжыць.</translation>
 <translation id="3244294424315804309">Працягнуць блакіраваць гук</translation>
-<translation id="3246107497225150582">{0,plural, =1{Перазапусціце прыладу на працягу дня}one{Перазапусціце прыладу на працягу # дня}few{Перазапусціце прыладу на працягу # дзён}many{Перазапусціце прыладу на працягу # дзён}other{Перазапусціце прыладу на працягу # дня}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – памылка сеткі</translation>
 <translation id="3248902735035392926">Бяспека мае значэнне. Удзяліце некаторы час і <ph name="BEGIN_LINK" />праверце пашырэнні<ph name="END_LINK" /></translation>
 <translation id="3251714896659475029">Дазвольце карыстальніку <ph name="SUPERVISED_USER_NAME" /> выкарыстоўваць каманду "Ok Google" для актывацыі Памочніка Google</translation>
@@ -2283,6 +2287,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}one{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}few{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}many{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}other{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}}</translation>
 <translation id="3364986687961713424">Паведамленне ад адміністратара: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Выкарыстоўвайце або Ctrl, або Alt</translation>
+<translation id="3367057768351048705">Сайты могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры толькі на сваіх старонках</translation>
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3369067987974711168">Паказаць іншыя дзеянні для гэтага порта</translation>
 <translation id="3369624026883419694">Вызначэнне хоста...</translation>
@@ -2337,6 +2342,7 @@
 <translation id="3420501302812554910">Неабходна скінуць унутраны ключ бяспекі</translation>
 <translation id="3421387094817716717">Эліптычны адкрыты ключ</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Заўвага.<ph name="END_BOLD" /> Чалавек з падобным да вашага голасам або запісам вашага голасу зможа атрымаць доступ да вашых персанальных вынікаў ці да Памочніка.</translation>
+<translation id="3421726884497337397">Выберыце, калі блакіраваць староннія файлы cookie</translation>
 <translation id="3422291238483866753">Пытацца, калі сайт запытвае дазвол стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры (рэкамендуецца)</translation>
 <translation id="3423463006624419153">На тэлефонах "<ph name="PHONE_NAME_1" />" і "<ph name="PHONE_NAME_2" />":</translation>
 <translation id="3423858849633684918">Перазапусціце <ph name="PRODUCT_NAME" /></translation>
@@ -2373,6 +2379,7 @@
 <translation id="344630545793878684">Прагляд вашых даных на шэрагу вэб-сайтаў</translation>
 <translation id="3446650212859500694">Гэты файл змяшчае канфідэнцыяльнае змесціва.</translation>
 <translation id="3446827946208017735">Самыя важныя налады прыватнасці на адной старонцы</translation>
+<translation id="3447644283769633681">Блакіроўка ўсіх старонніх файлаў cookie</translation>
 <translation id="3448086340637592206">Дадатковыя ўмовы Google Chrome і Chrome OS</translation>
 <translation id="3448492834076427715">Абнавіць уліковы запіс</translation>
 <translation id="3449393517661170867">Новае акно ва ўкладцы</translation>
@@ -2563,7 +2570,6 @@
 <translation id="3647998456578545569">{COUNT,plural, =1{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}one{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}few{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}many{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}other{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}}</translation>
 <translation id="3648348069317717750">Выяўлена прылада: <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="3649138363871392317">Здымак зроблены</translation>
-<translation id="3649505501900178324">Абнаўленне пратэрмінавана</translation>
 <translation id="3650753875413052677">Памылка рэгістрацыі</translation>
 <translation id="3650845953328929506">Чакаецца запампоўванне журнала.</translation>
 <translation id="3650952250015018111">Дазволіць праграме "<ph name="APP_NAME" />" доступ да наступнага:</translation>
@@ -2738,6 +2744,7 @@
 <translation id="3819800052061700452">&amp;Поўнаэкранны рэжым</translation>
 <translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Паказаць}one{Паказаць усе}few{Паказаць усе}many{Паказаць усе}other{Паказаць усе}}</translation>
 <translation id="3820749202859700794">SECG эліптычны secp521r1 (іншая назва – NIST P-521)</translation>
+<translation id="3821074617718452587">Апавяшчэнні Тэлефоннага цэнтра</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Пашырэнне ўхвалена}one{# пашырэнне ўхвалена}few{# пашырэнні ўхвалена}many{# пашырэнняў ухвалена}other{# пашырэння ўхвалены}}</translation>
 <translation id="3823310065043511710">Для выкарыстання Linux рэкамендуецца мець як мінімум <ph name="INSTALL_SIZE" />.</translation>
 <translation id="3824621460022590830">Токен рэгістрацыі прылады несапраўдны. Звярніцеся да адміністратара або ўладальніка прылады. Код памылкі: <ph name="ERROR_CODE" />.</translation>
@@ -2946,6 +2953,7 @@
 <translation id="4021279097213088397">–</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Скапіраваць звесткі пра зборку</translation>
+<translation id="4021941025609472374">Закрыць укладкі злева</translation>
 <translation id="4022426551683927403">&amp;Дадаць у слоўнік</translation>
 <translation id="4023146161712577481">Вызначаецца канфігурацыя прылады.</translation>
 <translation id="4025039777635956441">Выключыць гук на выбраным сайце</translation>
@@ -3221,7 +3229,6 @@
 <translation id="4358313196493694334">Стабілізаваць пазіцыю курсора</translation>
 <translation id="4359408040881008151">Усталявана, бо ёсць залежныя пашырэнні.</translation>
 <translation id="4359717112757026264">Гарадскі пейзаж</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" /> патрабуе, каб вы абнавілі гэту прыладу <ph name="DEVICE_TYPE" /> да заканчэння тэрміну.</translation>
 <translation id="4361142739114356624">Закрыты ключ для гэтага кліенцкага сертыфіката адсутнічае або не дзейнічае</translation>
 <translation id="4361745360460842907">Адкрыць як укладку</translation>
 <translation id="4363771538994847871">Аб'екты прызначэння для трансляцыі не знойдзены. Патрэбна дапамога?</translation>
@@ -3746,7 +3753,6 @@
 <translation id="4921348630401250116">Сінтэз маўлення</translation>
 <translation id="4921809350408880559">Нядаўнія і прапанаваныя дакументы паказваюцца вам на падставе вашых папярэдніх дзеянняў з Google Дыскам.
         <ph name="BREAK" /><ph name="BREAK" />Даведацца пра тое, якія даныя Google Дыск збірае і чаму, можна <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
-<translation id="49226369361073053">{0,plural, =0{Перазапусціце прыладу зараз}=1{Перазапусціце прыладу на працягу 1 секунды}one{Перазапусціце прыладу на працягу # секунды}few{Перазапусціце прыладу на працягу # секунд}many{Перазапусціце прыладу на працягу # секунд}other{Перазапусціце прыладу на працягу # секунды}}</translation>
 <translation id="492299503953721473">Выдаліць праграмы Android</translation>
 <translation id="492363500327720082">Ідзе выдаленне праграмы <ph name="APP_NAME" />...</translation>
 <translation id="4924002401726507608">Адправіць водгук</translation>
@@ -3862,6 +3868,7 @@
 <translation id="5053962746715621840">Выканаць пошук па відарысе з дапамогай Google Аб'ектыва</translation>
 <translation id="5056950756634735043">Ідзе падключэнне да кантэйнера</translation>
 <translation id="5057110919553308744">Пры націсканні на пашырэнне</translation>
+<translation id="505776528429481161">Лёгкае падключэнне і наладжванне прылад паблізу</translation>
 <translation id="5059241099014281248">Задаць абмежаванні на ўваход</translation>
 <translation id="5059526285558225588">Выберыце, што абагульваць</translation>
 <translation id="5060332552815861872">Даступны 1 прынтар, які можна захаваць.</translation>
@@ -4726,6 +4733,7 @@
 <translation id="6002452033851752583">Пароль выдалены з Уліковага запісу Google</translation>
 <translation id="6002458620803359783">Пажаданыя галасы</translation>
 <translation id="6003143259071779217">Выдаліць сотавую сетку eSIM-карты</translation>
+<translation id="6003479444341796444">Панэль загалоўка паказана</translation>
 <translation id="6003582434972667631">Тэма зададзена вашай арганізацыяй</translation>
 <translation id="6006484371116297560">Класічная</translation>
 <translation id="6007240208646052708">Галасавы пошук на вашай мове недаступны.</translation>
@@ -4893,6 +4901,7 @@
 <translation id="6184099524311454384">Пошук укладак</translation>
 <translation id="6185132558746749656">Месцазнаходжанне прылады</translation>
 <translation id="6186394437969115158">Сайты звычайна паказваюць рэкламу, каб мець магчымасць прапаноўваць змесціва або паслугі бясплатна Але некаторыя сайты паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
+<translation id="6190953336330058278">Праграмы Тэлефоннага цэнтра</translation>
 <translation id="6195005504600220730">Счытваць інфармацыю пра браўзер, АС і прыладу</translation>
 <translation id="6195693561221576702">Гэту прыладу нельга наладзіць у пазасеткавым дэманстрацыйным рэжыме.</translation>
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
@@ -5033,7 +5042,6 @@
 <translation id="6326175484149238433">Выдаліць з Chrome</translation>
 <translation id="6326855256003666642">Лік актыўных працэсаў</translation>
 <translation id="6327785803543103246">Аўтаматычная наладка проксі-сервера</translation>
-<translation id="6328378651911184878"><ph name="MANAGER" /> патрабуе, каб вы неадкладна перазапусцілі гэту прыладу <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6331191339300272798">Аўтаматычнае ўключэнне цёмнай тэмы</translation>
 <translation id="6331566915566907158">Дапамагаць паляпшаць функцыі і прадукцыйнасць Chrome OS</translation>
 <translation id="6331818708794917058">Сайты могуць запытваць дазвол на падключэнне да прылад MIDI</translation>
@@ -5110,6 +5118,7 @@
 <translation id="6418160186546245112">Версія <ph name="IDS_SHORT_PRODUCT_NAME" /> будзе вернута да папярэдне ўсталяванай</translation>
 <translation id="6418481728190846787">Цалкам забараніць доступ для ўсіх праграм</translation>
 <translation id="6418511932144861495">Усталюйце крытычнае абнаўленне</translation>
+<translation id="641899100123938294">Пошук новых прылад</translation>
 <translation id="6419524191360800346">Даступна абнаўленне да версіі Debian 11 (Bullseye)</translation>
 <translation id="6419546358665792306">Загрузіць распакаванае</translation>
 <translation id="6419843101460769608">Не дазваляць сайтам атрымліваць доступ да прылад Bluetooth</translation>
@@ -5654,6 +5663,7 @@
 <translation id="7000206553895739324">Прынтар "<ph name="PRINTER_NAME" />" падключаны, але яго трэба наладзіць</translation>
 <translation id="7000347579424117903">Дадайце Ctrl, Alt або клавішу "Пошук"</translation>
 <translation id="7001036685275644873">Рэзервовае капіраванне файлаў і праграм Linux</translation>
+<translation id="7001066449188684145">Каб друкаваць на прынтары "<ph name="PRINTER_NAME" />", трэба прайсці ідэнтыфікацыю. Звярніцеся да адміністратара.</translation>
 <translation id="7002055706763150362">Каб наладзіць Smart Lock для прылады Chromebook, нам неабходна спраўдзіць вашу асобу. Увядзіце пароль.</translation>
 <translation id="7003339318920871147">Інтэрнэт-базы даных</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файлы}many{{COUNT} файлаў}other{{COUNT} файла}}</translation>
@@ -5990,7 +6000,6 @@
 <translation id="7371490947952970241">Каб выключыць функцыю вызначэння месцазнаходжання, выключыце галоўную наладу месцазнаходжання на прыладзе. Таксама можна выключыць выкарыстанне Wi-Fi, мабільных сетак і датчыкаў для вызначэння месцазнаходжання ў адпаведных наладах.</translation>
 <translation id="7371917887111892735">Укладкі сціскаюцца і маюць шырыню замацаванай укладкі</translation>
 <translation id="7374376573160927383">Кіраваць прыладамі USB</translation>
-<translation id="7375235221357833624">{0,plural, =1{Перазапусціце прыладу на працягу гадзіны}one{Перазапусціце прыладу на працягу # гадзіны}few{Перазапусціце прыладу на працягу # гадзін}many{Перазапусціце прыладу на працягу # гадзін}other{Перазапусціце прыладу на працягу # гадзіны}}</translation>
 <translation id="7376543451826039186">Хутчэйшы прагляд сайтаў: напрыклад, на падставе даных з бягучай старонкі пэўнае змесціва будзе загружацца без запыту.</translation>
 <translation id="7376553024552204454">Указваць на курсор мышы, калі ён рухаецца</translation>
 <translation id="737728204345822099">На ключы бяспекі можа быць пакінуты запіс пра наведванне вамі гэтага вэб-сайта.</translation>
@@ -6135,7 +6144,6 @@
 <translation id="7514417110442087199">Дадаць прызначэнне</translation>
 <translation id="751523031290522286">Праграма "<ph name="APP_NAME" />" заблакіравана адміністратарам – запытайце ў яго дазвол на яе выкарыстанне.</translation>
 <translation id="7516981202574715431">Работа праграмы "<ph name="APP_NAME" />" прыпынена</translation>
-<translation id="7517063221058203587">{0,plural, =1{Перазапусціце прыладу на працягу 1 хвіліны}one{Перазапусціце прыладу на працягу # хвіліны}few{Перазапусціце прыладу на працягу # хвілін}many{Перазапусціце прыладу на працягу # хвілін}other{Перазапусціце прыладу на працягу # хвіліны}}</translation>
 <translation id="7520766081042531487">Партал у рэжыме інкогніта: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">Скажыце "Ok Google"</translation>
 <translation id="7523585675576642403">Пераймянуйце профіль</translation>
@@ -6238,6 +6246,7 @@
 <translation id="7622966771025050155">Пераключыцца на ўкладку, здымка якой ажыццяўлялася</translation>
 <translation id="7624337243375417909">Caps Lock выключаны</translation>
 <translation id="7625568159987162309">Праглядзець дазволы і захаваныя з сайтаў даныя</translation>
+<translation id="7625823789272218216">Новая ўкладка злева</translation>
 <translation id="7628201176665550262">Частата абнаўлення</translation>
 <translation id="7629827748548208700">Укладка: <ph name="TAB_NAME" /></translation>
 <translation id="7631014249255418691">Рэзервовая копія файлаў і праграм Linux створана</translation>
@@ -6268,6 +6277,7 @@
 <translation id="7650582458329409456">{COUNT,plural, =1{Зарэгістраваны 1 адбітак пальца}one{Зарэгістраваны {COUNT} адбітак пальцаў}few{Зарэгістравана {COUNT} адбіткі пальцаў}many{Зарэгістравана {COUNT} адбіткаў пальцаў}other{Зарэгістравана {COUNT} адбітка пальцаў}}</translation>
 <translation id="7650677314924139716">Бягучая налада выкарыстання трафіка: толькі па Wi-Fi</translation>
 <translation id="7650920359639954963">Не ўключана: <ph name="REASON" /></translation>
+<translation id="7651784568388208829">Працяг задачы Тэлефоннага цэнтра</translation>
 <translation id="765293928828334535">Праграмы, пашырэнні і карыстальніцкія сцэнарыі з гэтага сайта дадаваць нельга</translation>
 <translation id="7652954539215530680">Стварэнне PIN-кода</translation>
 <translation id="7654941827281939388">Гэты ўліковы запіс ужо выкарыстоўваецца на гэтым камп'ютары.</translation>
@@ -7061,6 +7071,7 @@
 <translation id="8460932807646981183">Кіраваць пошукавымі сістэмамі і пошукам на сайтах</translation>
 <translation id="84613761564611563">Запытаны інтэрфейс наладжвання сеткі, пачакайце...</translation>
 <translation id="8461914792118322307">Проксі-сервер</translation>
+<translation id="8463001014623882202">Збой аўтарызацыі</translation>
 <translation id="8463215747450521436">Гэты падкантрольны карыстальнік мог быць выдалены або выключаны менеджарам. Калі вы хочаце ўваходзіць ад імя гэтага карыстальніка, звярніцеся да менеджара.</translation>
 <translation id="846374874681391779">Панэль спамповак</translation>
 <translation id="8463955938112983119">Убудова <ph name="PLUGIN_NAME" /> выключана.</translation>
@@ -7510,6 +7521,7 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8922624386829239660">Перамяшчаць экран, калі ўказальнік мышы даходзіць да мяжы экрана</translation>
 <translation id="8923880975836399332">Цёмна-бірузовы</translation>
+<translation id="8925124370124776087">Панэль загалоўка схавана</translation>
 <translation id="8925458182817574960">&amp;Налады</translation>
 <translation id="8926389886865778422">Больш не пытацца</translation>
 <translation id="892706138619340876">Некаторыя налады былі скінуты</translation>

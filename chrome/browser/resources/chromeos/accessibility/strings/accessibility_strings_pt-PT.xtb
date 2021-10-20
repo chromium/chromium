@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Concha</translation>
 <translation id="6551185905438378412">Marfim</translation>
 <translation id="6561818612645211875">Ir para o início da linha atual</translation>
+<translation id="6563126228219321999">Nenhum item inválido</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6583174818554398774">Mover para seguinte por nível de detalhe</translation>
 <translation id="6584162722998608255">Em seguida, irá aprender a deslocar-se no ecrã. Pode deslizar rapidamente com um dedo da esquerda para a direita para se deslocar para o item seguinte. Experimente agora para avançar para o passo seguinte.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Amarelo muito claro</translation>
 <translation id="6816066673340002913">Dourado claro</translation>
 <translation id="6826226459053491773">Deslizar rapidamente com dois dedos para baixo</translation>
+<translation id="6826669432862053130">Item inválido seguinte</translation>
 <translation id="6833103209700200188">Rodapé</translation>
 <translation id="6837853484260746864">Selecionar uma voz:</translation>
 <translation id="6858047746862060282">Prólogo</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Não existe nenhum cabeçalho de nível 5 anterior.</translation>
 <translation id="812886159861361726">A transferência do ficheiro <ph name="FILE_NAME" /> foi interrompida</translation>
 <translation id="8129445297241948503">Não existe nenhuma célula acima.</translation>
+<translation id="8132248161074464367">Item inválido anterior</translation>
 <translation id="8138880386467279117">Tocar</translation>
 <translation id="8146613869421949343">Em seguida, irá saber mais sobre a tecla de pesquisa. A tecla de pesquisa é utilizada em combinação com outras teclas dos comandos do ChromeVox. A tecla de pesquisa está imediatamente acima da tecla Shift do lado esquerdo. Para continuar, prima a tecla de pesquisa.</translation>
 <translation id="8158033275290782295">selecionar tudo</translation>

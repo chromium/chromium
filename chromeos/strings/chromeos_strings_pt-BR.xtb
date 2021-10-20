@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1018219910092211213">Não foi possível resolver o DNS</translation>
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detectado</translation>
 <translation id="1075811647922107217">Tamanho da página</translation>
+<translation id="1094693127011229778">O endereço IP está indisponível</translation>
 <translation id="1119447706177454957">Erro interno</translation>
 <translation id="1124772482545689468">Usuário</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">Suspeita de portal cativo</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">Nenhuma rede <ph name="NETWORK_NAME" /> disponível</translation>
 <translation id="1314565355471455267">VPN do Android</translation>
 <translation id="131461803491198646">Rede doméstica, não está em roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
@@ -67,6 +70,7 @@
 <translation id="1999615961760456652">Portal cativo</translation>
 <translation id="2006864819935886708">Conectividade</translation>
 <translation id="2008685064673031089">Pesquisa de números primos</translation>
+<translation id="2016697457005847575">Testar etapas de solução de problemas</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +103,7 @@
 <translation id="2505327257735685095">Atualizar o plano de fundo atual</translation>
 <translation id="2517472476991765520">Verificar</translation>
 <translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
+<translation id="2584559707064218956">Para definir, acesse as Configurações</translation>
 <translation id="2585245331261708204">Novidades do Chrome OS</translation>
 <translation id="2619761439309613843">Atualização diária</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -145,8 +150,10 @@
 <translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
 <translation id="3565064564551103223">IPs permitidos</translation>
 <translation id="357889014807611375">Wi-Fi limitado</translation>
+<translation id="3583278742022654445">Intensidade do sinal fraca. Tente se aproximar da fonte do sinal Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="360565022852130722">A rede Wi-Fi é protegida pelo protocolo fraco WEP 802.1x</translation>
+<translation id="3606583719724308068">Alta latência em sites HTTPS</translation>
 <translation id="3689839747745352263">Teste de <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avaliações)</translation>
@@ -166,11 +173,13 @@
 <translation id="39823212440917567">Trabalhos de impressão enviados há mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidos</translation>
 <translation id="4003384961948020559">Falha - Saída cheia</translation>
 <translation id="4034824040120875894">Impressora</translation>
+<translation id="4044093238444069296">Não foi possível entrar em contato com o gateway</translation>
 <translation id="404928562651467259">AVISO</translation>
 <translation id="409427325554347132">Salvar detalhes do teste</translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
+<translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4155551848414053977">Confira se o scanner está ligado e disponível pela rede ou por uma conexão direta</translation>
 <translation id="4170700058716978431">FALHA</translation>
 <translation id="4176463684765177261">Desativado</translation>
@@ -187,6 +196,7 @@
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Meu Drive</translation>
+<translation id="4428374560396076622">A rede <ph name="NETWORK_NAME" /> está desativada</translation>
 <translation id="4429881212383817840">O tíquete do Kerberos expirará em breve</translation>
 <translation id="4431821876790500265">Ver relatório</translation>
 <translation id="445059817448385655">Senha antiga</translation>
@@ -232,6 +242,7 @@
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Parado (sem papel)</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> carregados em <ph name="NUM_SECONDS" /> segundos.</translation>
+<translation id="4930320165497208503">Para definir ou atualizar uma conexão, acesse as <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Confira o scanner e tente novamente. Confirme se há armazenamento local suficiente para salvar os arquivos digitalizados.</translation>
 <translation id="4985509611418653372">Executar</translation>
@@ -374,6 +385,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7059230779847288458">Carregando. <ph name="TIME_VALUE" /> até a carga completa</translation>
 <translation id="708426984172631313">PARADO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Falha: a autorização falhou</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}one{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
@@ -386,6 +398,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7271040990581020067">O scanner está em uso. Tente novamente mais tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Coleções de plano de fundo</translation>
+<translation id="7297226631177386107">O firewall impediu a conexão a sites HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -418,6 +431,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7762130827864645708">Senha modificada. De agora em diante, use a nova senha.</translation>
 <translation id="7763470514545477072">Correspondência do sufixo de domínio</translation>
 <translation id="7769672763586021400">Código do modelo</translation>
+<translation id="7784116172884276937">Nenhum servidor DNS está configurado</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">Pre-shared key (PSK): WPA ou RSN</translation>
 <translation id="7835501727204647447">Instalar CloudReady</translation>
@@ -432,13 +446,16 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7943235353293548836">Intervalo de sinal de atividade permanente</translation>
 <translation id="7955587717700691983">Teclado Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7977800524392185497">Para se conectar a uma rede <ph name="NETWORK_NAME" />, acesse as Configurações</translation>
 <translation id="7978412674231730200">Chave privada</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Enviar comentários</translation>
 <translation id="8075838845814659848">Carga restante</translation>
+<translation id="8082366717211101304">Não foi possível resolver o DNS em apps Android</translation>
 <translation id="808894953321890993">Alterar senha</translation>
+<translation id="8104083085214006426">Você está usando uma rede aberta e não segura</translation>
 <translation id="811820734797650957">(Android) O gateway pode receber um ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfego</translation>
@@ -463,10 +480,12 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Teclado interno</translation>
 <translation id="843568408673868420">Conectividade com a Internet</translation>
+<translation id="844521431886043384">O DNS não foi definido</translation>
 <translation id="8461329675984532579">Nome do provedor doméstico</translation>
 <translation id="8475690821716466388">A rede Wi-Fi é protegida pelo protocolo fraco WEP PSK</translation>
 <translation id="8477551185774834963">Latência do DNS um pouco acima do limite permitido</translation>
 <translation id="8483248364096924578">Endereço IP</translation>
+<translation id="8491311378305535241">O firewall impediu a conexão de apps Android a sites HTTP</translation>
 <translation id="8498220429738806196">Contadores de tráfego</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="8503836310948963452">Só mais alguns minutos…</translation>
@@ -492,6 +511,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8818152010000655963">Plano de fundo</translation>
 <translation id="8834539327799336565">Conectados no momento</translation>
 <translation id="8845001906332463065">Ajuda</translation>
+<translation id="8855781559874488009">O firewall impediu a conexão a sites HTTP</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Teste bem sucedido</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
@@ -517,12 +537,14 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="910415269708673980">Atualizar tíquete para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Digitalizando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
+<translation id="9122602430962285795">Para se reconectar, acesse as Configurações</translation>
 <translation id="9126720536733509015">Salvar várias páginas em um único PDF</translation>
 <translation id="9137526406337347448">Serviços do Google</translation>
 <translation id="9149391708638971077">Executar teste de memória</translation>
 <translation id="9173638680043580060">Menos de um minuto restante</translation>
 <translation id="917720651393141712">Testar</translation>
 <translation id="9190063653747922532">L2TP/IPSEC + chave pré-compartilhada</translation>
+<translation id="9204237731135241582">Não foi possível entrar em contato com o gateway em apps Android</translation>
 <translation id="9211490828691860325">Todos os espaços de trabalho</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Desativado</translation>

@@ -21,6 +21,7 @@
 <translation id="109942774857561566">Зеригип жатам</translation>
 <translation id="1104084341931202936">Атайын мүмкүнчүлүктөрдүн жөндөөлөрүн көрсөтүү</translation>
 <translation id="1104621072296271835">Түзмөктөрүңүз бирге мындан да жакшы иштейт</translation>
+<translation id="1118549423835582252"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүн жаңыртууну сунуштап жатат.</translation>
 <translation id="1119348796022671382">Интерфейске бир аз боёк кошуу үчүн, тема кошулган түстүү режим тушкагазыңыздагы түстөрдү колдонот.</translation>
 <translation id="112308213915226829">Текчени авто-жашыруу</translation>
 <translation id="1142002900084379065">Соңку сүрөттөр</translation>
@@ -357,6 +358,7 @@
 <translation id="3630697955794050612">өчүк</translation>
 <translation id="3631369015426612114">Төмөнкүдөн эскертмелерге уруксат берүү:</translation>
 <translation id="3638400994746983214">Купуялык экранын өчүрүү/күйгүзүү. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649505501900178324">Жаңыртуунун мөөнөтү бүттү</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Башкарылган колдонуучу</translation>
 <translation id="3665889125180354336">Аудиону жаздыруу</translation>
 <translation id="3680908746918359504">Бардык белгилегичти тазалоо</translation>
@@ -456,6 +458,7 @@
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Жардамчы жүктөлүүдө...</translation>
 <translation id="4356930093361201197">жогорку контраст режими</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүн мөөнөтү бүткөнгө чейин жаңыртууну талап кылууда.</translation>
 <translation id="4371348193907997655">Тышкы экранга чыгаруу жөндөөлөрү</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, сигналдын күчү <ph name="SIGNAL_STRENGTH" /> пайыз</translation>
 <translation id="4378551569595875038">Туташууда…</translation>
@@ -612,6 +615,7 @@
 <translation id="5465662442746197494">Жардам керекпи?</translation>
 <translation id="5496819745535887422">Администраторуңуз түзмөктү баштапкы абалга келтирүүдө. Түзмөктү өчүрүп-күйгүзгөндө, андагы маалыматтын баары өчүрүлөт.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Администраторуңуз бардык eSIM профилдерин өчүрүп койгон. Көбүрөөк маалымат алуу үчүн администраторуңузга кайрылыңыз.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> туташууда.</translation>
 <translation id="5532994612895037630">Толук экранды жаздыруу үчүн каалаган жерин басыңыз</translation>
 <translation id="553675580533261935">Учурдагы сеанс</translation>
@@ -715,6 +719,7 @@
 <translation id="6291221004442998378">Кубатталган жок</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> буга <ph name="ROTATION" /> айланды</translation>
 <translation id="6315170314923504164">Үн</translation>
+<translation id="6328378651911184878"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүн дароо жаңыртууну талап кылууда.</translation>
 <translation id="6330012934079202188">Бардык иш такталардагы терезелер көрсөтүлүп жатат. Учурдагы иш тактадагы терезелерди көрүү үчүн өйдө жебени басыңыз</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> тарабынан башкарылган сеанс</translation>
 <translation id="6376931439017688372">Bluetooth күйүк</translation>
@@ -741,6 +746,7 @@
 <translation id="6537924328260219877">Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Телефондун батареясы <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> экранына чыгаруу</translation>
 <translation id="6559976592393364813">Администраторго кайрылыңыз</translation>
+<translation id="6565007273808762236">eSIM-картага туташуу жеткиликсиз</translation>
 <translation id="6570902864550063460">USB аркылуу кубатталууда</translation>
 <translation id="6585808820553845416">Сессия <ph name="SESSION_TIME_REMAINING" /> кийиничинде бүтөт.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

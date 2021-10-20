@@ -21,6 +21,7 @@
 <translation id="109942774857561566">Ішім пысты</translation>
 <translation id="1104084341931202936">Арнайы мүмкіндіктер параметрлерін көрсету</translation>
 <translation id="1104621072296271835">Құрылғылар бірігіп жақсы жұмыс істейді</translation>
+<translation id="1118549423835582252"><ph name="MANAGER" /> бұл <ph name="DEVICE_TYPE" /> құрылғысын жаңартуды ұсынады.</translation>
 <translation id="1119348796022671382">Интерфейсті ашық түске бояу үшін тақырыптық түс режимі тұсқағазыңыздан алынған түстерді пайдаланады.</translation>
 <translation id="112308213915226829">Сөрені автоматты жасыру</translation>
 <translation id="1142002900084379065">Жақында түскен фотосуреттер</translation>
@@ -357,6 +358,7 @@
 <translation id="3630697955794050612">өшірулі</translation>
 <translation id="3631369015426612114">Келесі көздерден алынатын хабарландыруларға рұқсат беру</translation>
 <translation id="3638400994746983214">Құпиялылық экранын қосу немесе өшіру. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649505501900178324">Жаңарту мерзімі өтіп кетті</translation>
 <translation id="366222428570480733">Басқарылатын пайдаланушы: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Микрофон арқылы жазу</translation>
 <translation id="3680908746918359504">Барлық маркерді өшіру</translation>
@@ -456,6 +458,7 @@
 <translation id="4338109981321384717">Ұлғайтқыш шыны</translation>
 <translation id="4351433414020964307">Assistant жүктелуде...</translation>
 <translation id="4356930093361201197">жоғары контраст режимі</translation>
+<translation id="4360237979279036412">Мерзім аяқталғанға дейін, <ph name="MANAGER" /> бұл <ph name="DEVICE_TYPE" /> құрылғысын жаңартуыңызды сұрайды.</translation>
 <translation id="4371348193907997655">Трансляция параметрлері</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, сигнал күші <ph name="SIGNAL_STRENGTH" /> пайыз.</translation>
 <translation id="4378551569595875038">Қосылуда…</translation>
@@ -715,6 +718,7 @@
 <translation id="6291221004442998378">Зарядталып жатқан жоқ.</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> дисплейі <ph name="ROTATION" /> бағытында бұрылды</translation>
 <translation id="6315170314923504164">Микрофон</translation>
+<translation id="6328378651911184878"><ph name="MANAGER" /> бұл <ph name="DEVICE_TYPE" /> құрылғысын дереу жаңартуыңызды сұрайды.</translation>
 <translation id="6330012934079202188">Терезелер барлық жұмыс үстелінен көрсетіліп тұр. Терезелерді қазіргі жұмыс үстелінен көрсету үшін жоғарыға бағыттауыш пернені басыңыз.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> басқаратын сеанс.</translation>
 <translation id="6376931439017688372">Bluetooth қосулы</translation>

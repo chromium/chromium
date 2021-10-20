@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Gyöngyház</translation>
 <translation id="6551185905438378412">Elefántcsont</translation>
 <translation id="6561818612645211875">Ugrás az aktuális sor elejére</translation>
+<translation id="6563126228219321999">Nincs érvénytelen elem</translation>
 <translation id="6579990219486187401">Világos rózsaszín</translation>
 <translation id="6583174818554398774">Ugrás a következő részletességi szintre</translation>
 <translation id="6584162722998608255">Most megtanulhatja, hogyan navigálhat a képernyőn. Egy ujjal balról jobbra csúsztatva a következő elemre léphet. Próbálja ki most a következő lépéshez való ugráshoz.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Citromhab</translation>
 <translation id="6816066673340002913">Halvány aranyvessző</translation>
 <translation id="6826226459053491773">Csúsztassa két ujját lefelé</translation>
+<translation id="6826669432862053130">Következő érvénytelen elem</translation>
 <translation id="6833103209700200188">Lábléc</translation>
 <translation id="6837853484260746864">Válasszon hangot:</translation>
 <translation id="6858047746862060282">Prológus</translation>
@@ -1017,6 +1019,7 @@
 <translation id="8126386426083591964">Nincs előző 5. szintű címsor</translation>
 <translation id="812886159861361726">A következő letöltése leállítva: <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Nincs több cella felfelé</translation>
+<translation id="8132248161074464367">Előző érvénytelen elem</translation>
 <translation id="8138880386467279117">Érintés</translation>
 <translation id="8146613869421949343">Most a Keresés billentyűt mutatjuk be. A Keresés billentyű más billentyűkkel együtt használható a ChromeVox-parancsokhoz. A Keresés billentyű közvetlenül a bal oldali Shift billentyű felett található. A folytatáshoz nyomja le a Keresés billentyűt.</translation>
 <translation id="8158033275290782295">„select all” (az összes kijelölése)</translation>

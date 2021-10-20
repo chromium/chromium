@@ -21,6 +21,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="109942774857561566">Ek is verveeld</translation>
 <translation id="1104084341931202936">Wys toeganklikheidsinstellings</translation>
 <translation id="1104621072296271835">Jou toestelle werk selfs nog beter saam</translation>
+<translation id="1118549423835582252"><ph name="MANAGER" /> beveel aan dat jy hierdie <ph name="DEVICE_TYPE" /> opdateer.</translation>
 <translation id="1119348796022671382">Die temakleurmodus gebruik kleure wat van jou muurpapier onttrek word om die koppelvlak ligweg 'n kleur te gee.</translation>
 <translation id="112308213915226829">Outoversteek rak</translation>
 <translation id="1142002900084379065">Onlangse foto's</translation>
@@ -357,6 +358,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3630697955794050612">af</translation>
 <translation id="3631369015426612114">Laat kennisgewings van die volgende af toe</translation>
 <translation id="3638400994746983214">Wissel privaatheidskerm. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649505501900178324">Tyd vir 'n opdatering</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Bestuurde gebruiker</translation>
 <translation id="3665889125180354336">Neem mikrofoon op</translation>
 <translation id="3680908746918359504">Vee alle merkers uit</translation>
@@ -457,6 +459,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4338109981321384717">Vergrootglas</translation>
 <translation id="4351433414020964307">Assistent laai tans …</translation>
 <translation id="4356930093361201197">hoëkontrasmodus</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> vereis dat jy hierdie <ph name="DEVICE_TYPE" /> voor die spertyd opdateer.</translation>
 <translation id="4371348193907997655">Uitsaai-instellings</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; seinsterkte <ph name="SIGNAL_STRENGTH" /> persent</translation>
 <translation id="4378551569595875038">Koppel tans …</translation>
@@ -716,6 +719,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6291221004442998378">Laai nie</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> is na <ph name="ROTATION" /> gedraai</translation>
 <translation id="6315170314923504164">Stem</translation>
+<translation id="6328378651911184878"><ph name="MANAGER" /> vereis dat jy hierdie <ph name="DEVICE_TYPE" /> onmiddellik opdateer.</translation>
 <translation id="6330012934079202188">Vensters van alle lessenaars word tans gewys; druk die oppylsleutel om vensters van die huidige lessenaar te wys</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is 'n bestuurde sessie wat deur <ph name="MANAGER" /> bestuur word</translation>
 <translation id="6376931439017688372">Bluetooth is aan</translation>

@@ -114,7 +114,6 @@
 <translation id="1116639326869298217">तपाईंको पहिचान पुष्टि गर्न सकिएन</translation>
 <translation id="1116694919640316211">बारेमा</translation>
 <translation id="1116779635164066733">"<ph name="NAME" />" विस्तारले यो सेटिङ लागू गर्छ।</translation>
-<translation id="1118549423835582252"><ph name="MANAGER" /> का अनुसार तपाईंलाई <ph name="DEVICE_TYPE" /> अपडेट गर्न सिफारिस गरिन्छ।</translation>
 <translation id="1118738876271697201">प्रणालीले यन्त्रको मोडल वा क्रम सङ्ख्या निर्धारण गर्न सकेन।</translation>
 <translation id="1119447706177454957">आन्तरिक त्रुटि</translation>
 <translation id="1122068467107743258">कार्य प्रोफाइल</translation>
@@ -612,7 +611,6 @@
 <translation id="1628948239858170093">फाइल खोल्नुअघि उक्त फाइल स्क्यान गर्ने हो?</translation>
 <translation id="1629314197035607094">पासवर्डको म्याद सकिएको छ</translation>
 <translation id="1629451755632656601">Google लाई तपाईंका कार्टमा तपाईंले चाहेअनुसारको छुट खोज्ने अनुमति दिने हो?</translation>
-<translation id="1630300831289687074">तपाईं चाँडै नै आफ्नो Chromebook चलाउन सक्नु हुने छ।</translation>
 <translation id="163072119192489970">डेटा पठाउने तथा प्राप्त गर्ने कार्य पूरा गर्न अनुमति दिइएका साइटहरू</translation>
 <translation id="1630768113285622200">पुनः सुरु गरेर जारी राख्नुहोस्</translation>
 <translation id="1632082166874334883">तपाईंको Google खातामा भण्डारण गरिएको पासवर्ड</translation>
@@ -1384,7 +1382,6 @@
 <translation id="2410079346590497630">बिल्डसम्बन्धी विवरण</translation>
 <translation id="2410754283952462441">कुनै खाता छान्नुहोस्</translation>
 <translation id="241082044617551207">अज्ञात प्लगइन</translation>
-<translation id="2412593942846481727">अद्यावधिक उपलब्ध छ</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">किबोर्डका फङ्सन कुञ्जीहरू</translation>
 <translation id="2419131370336513030">इन्स्टल गरिएका एपहरू हेर्नुहोस्</translation>
@@ -2065,6 +2062,7 @@
 <translation id="310671807099593501">साइटले ब्लुटुथ प्रयोग गर्दै छ</translation>
 <translation id="3108931485517391283">प्राप्त गर्न सकिएन</translation>
 <translation id="3109724472072898302">ध्वस्त भएको</translation>
+<translation id="311214366526552035">जे भए पनि डाउनलोड गर्नुहोस्</translation>
 <translation id="311394601889664316">साइटहरूलाई मेरो यन्त्रमा भएका फाइल वा फोल्डरहरू परिवर्तन गर्ने अनुमति नदिइयोस्</translation>
 <translation id="3115147772012638511">क्यासको प्रतीक्षामा ...</translation>
 <translation id="3115580024857770654">सबै संक्षिप्त गर्नुहोस्</translation>
@@ -2169,7 +2167,6 @@
 <translation id="3239373508713281971"><ph name="APP_NAME" /> को समय सीमा हटाइयो</translation>
 <translation id="3241680850019875542">प्याक गर्नको लागि एक्स्टेन्सनको मूल डाइरेक्टरी चयन गर्नुहोस्। कुनै एक्स्टेन्सनलाई अपडेट गर्न, पुन: प्रयोग गर्नकोो लागि निजी कुञ्जी फाइललाई पनि चयन गर्नुहोस्।</translation>
 <translation id="3244294424315804309">आवाज म्युट गरिराख्नुहोस्</translation>
-<translation id="3246107497225150582">{0,plural, =1{एक दिनभित्र यन्त्र अपडेट गर्नुहोस्}other{# एक दिनभित्र यन्त्र अपडेट गर्नुहोस्}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क सम्बन्धी त्रुटि</translation>
 <translation id="3248902735035392926">सुरक्षासम्बन्धी विषयहरू केही क्षण निकालेर <ph name="BEGIN_LINK" />अहिले नै आफ्ना एक्स्टेन्सनहरू जाँच्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> लाई “Ok Google” भनेर Google सहायक एक्टिभेट गर्ने अनुमति दिनुहोस्</translation>
@@ -2343,6 +2340,7 @@
 <translation id="3429160811076349561">ट्रायल सुविधाहरू अफ गरिएका छन्</translation>
 <translation id="3429271624041785769">वेब सामग्रीका भाषाहरू</translation>
 <translation id="3429275422858276529">यो पृष्ठलाई पछि सजिलैसँग फेला पार्नका लागि यसमा पुस्तक चिन्ह लगाउनुहोस्</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> डाउनलोड गर्ने हो? यो डिभाइस प्रयोग गर्ने जोकोही व्यक्ति यो फाइल देख्न सक्छन्।</translation>
 <translation id="3432227430032737297">देखाइएका सबै कुराहरू हटाउनुहोस्</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">ओहो!  प्रणालीले यन्त्र स्थापना-समय विशेषण लक स्थापना गर्न असफल भयो।</translation>
@@ -2557,7 +2555,6 @@
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त भए}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त भए}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> पत्ता लगाइयो</translation>
 <translation id="3649138363871392317">तस्बिर क्याप्चर गरिएको थियो</translation>
-<translation id="3649505501900178324">अद्यावधिक हुन बाँकी</translation>
 <translation id="3650753875413052677">दर्तासम्बन्धी त्रुटि</translation>
 <translation id="3650845953328929506">लग अपलोड गर्ने कार्य विचाराधीन छ</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" लाई निम्नमाथि पहुँँच राख्न दिनुहोस्‌:</translation>
@@ -2684,6 +2681,7 @@
 <translation id="3777806571986431400">विस्तार सक्षम गरियो</translation>
 <translation id="3778152852029592020">डाउनलोड रद्द गरिएको थियो ।</translation>
 <translation id="3778208826288864398">अत्यन्तै धेरै पटक गलत PIN प्रविष्टि गरिएका कारण सुरक्षा साँचो लक गरिएको छ। तपाईंले उक्त सुरक्षा साँचो रिसेट गर्नु पर्ने हुन्छ</translation>
+<translation id="3778369586810509692">यो फाइल यो डिभाइसमा भण्डारण गरिने छ र सबै जना यो फाइल देख्न सक्ने छन्।</translation>
 <translation id="3778740492972734840">&amp;विकासकर्ता उपकरणहरू</translation>
 <translation id="3778868487658107119">यसलाई प्रश्नहरू सोध्नुहोस्। यसलाई कार्यहरू गर्न अह्राउनुहोस्। यो मद्दतका लागि सधैँ तत्पर तपाईंको व्यक्तिगत Google हो।</translation>
 <translation id="3781742599892759500">Linux लाई माइक्रोफोन प्रयोग गर्न दिने सेटिङ</translation>
@@ -3213,7 +3211,6 @@
 <translation id="4358313196493694334">क्लिक गरिने स्थान स्थिर राख्नुहोस्</translation>
 <translation id="4359408040881008151">स्थापनाको कारणले निर्भर एक्सटेन्स(हरू)।</translation>
 <translation id="4359717112757026264">सहरी परिदृश्य</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" /> का अनुसार तपाईंले म्याद सकिनुअघि नै यो <ph name="DEVICE_TYPE" /> अपडेट गर्न जरुरी छ।</translation>
 <translation id="4361142739114356624">यस ग्राहक प्रमाणपत्रका लागि निजी कुञ्जी भेटिएको छैन वा अमान्य छ</translation>
 <translation id="4361745360460842907">ट्याबको रूपमा खोल्नुहोस्</translation>
 <translation id="4363771538994847871">Cast को कुनै गन्तव्य भेट्टिएन। मद्दत चाहनुहुन्छ?</translation>
@@ -3740,7 +3737,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Google Drive ले के कस्ता जानकारी सङ्कलन गर्छ र किन सङ्कलन गर्छ भन्ने कुराका बारेमा जान्न <ph name="BEGIN_LINK" />यहाँ<ph name="END_LINK" />.हेर्नुहोस्।</translation>
-<translation id="49226369361073053">{0,plural, =0{अहिले नै यन्त्र अपडेट गर्नुहोस्}=1{१ सेकेन्डभित्र यन्त्र अपडेट गर्नुहोस्}other{# सेकेन्डभित्र यन्त्र अपडेट गर्नुहोस्}}</translation>
 <translation id="492299503953721473">Android एपहरूलाई हटाउनुहोस्</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> अनइन्स्टल गर्दै...</translation>
 <translation id="4924002401726507608">प्रतिक्रिया पेस गर्नुहोस्</translation>
@@ -5026,7 +5022,6 @@
 <translation id="6326175484149238433">Chrome बाट हटाउनुहोस्</translation>
 <translation id="6326855256003666642">सक्रिय राख्ने गणना</translation>
 <translation id="6327785803543103246">वेब प्रोक्सीको स्वत:खोज</translation>
-<translation id="6328378651911184878"><ph name="MANAGER" /> का अनुसार तपाईंले तत्कालै यो <ph name="DEVICE_TYPE" /> अपडेट गर्न जरुरी छ।</translation>
 <translation id="6331191339300272798">स्वचालित अँध्यारो थिम</translation>
 <translation id="6331566915566907158">Chrome OS का सुविधा र कार्यसम्पादनको गुणस्तरमा सुधार ल्याउन मद्दत गर्नुहोस्</translation>
 <translation id="6331818708794917058">साइटहरूले MIDI यन्त्रहरूमा कनेक्ट हुने अनुमति माग्न सक्छन्</translation>
@@ -5983,7 +5978,6 @@
 <translation id="7371490947952970241">तपाईं यो डिभाइसमा स्थानसम्बन्धी मुख्य सेटिङ निष्क्रिय पारी लोकेसन सर्भिस निष्क्रिय पार्न सक्नुहुन्छ। तपाईं स्थानसम्बन्धी सेटिङमा गई स्थान पत्ता लगाउने प्रयोजनका लागि Wi-Fi, मोबाइल नेटवर्क र सेन्सरहरूको प्रयोग गर्न नदिन पनि सक्नुहुन्छ।</translation>
 <translation id="7371917887111892735">ट्याबहरू पिन गरिएको ट्याबको चौडाइसँग बराबर हुने गरी साना हुन्छन्</translation>
 <translation id="7374376573160927383">USB हरू व्यवस्थापन गर्नुहोस्</translation>
-<translation id="7375235221357833624">{0,plural, =1{एक घन्टाभित्र यन्त्र अपडेट गर्नुहोस्}other{# घन्टाभित्र यन्त्र अपडेट गर्नुहोस्}}</translation>
 <translation id="7376543451826039186">अझ द्रुत ब्राउजिङ: उदाहरणका लागि, हाल खोलिएको पेजका आधारमा अग्रिम रूपमा अतिरिक्त खास सामग्री लोड गरिन्छ</translation>
 <translation id="7376553024552204454">गतिशील हुँदा माउसको कर्सरलाई हाइलाइट गर्नुहोस्</translation>
 <translation id="737728204345822099">तपाईंको सुरक्षा साँचोमा तपाईं यो साइटमा जानुभएको कुराको रेकर्ड राखिन सक्छ।</translation>
@@ -6128,7 +6122,6 @@
 <translation id="7514417110442087199">काम तोक्नुहोस्</translation>
 <translation id="751523031290522286">प्रशासकले <ph name="APP_NAME" /> माथि रोक लगाउनुभएको छ। यो एप प्रयोग गर्न प्रशासकबाट अनुमति लिनुहोस्।</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> पज गरिएको छ</translation>
-<translation id="7517063221058203587">{0,plural, =1{१ मिनेटभित्र अपडेट गर्नुहोस्}other{# मिनेटभित्र यन्त्र अपडेट गर्नुहोस्}}</translation>
 <translation id="7520766081042531487">इन्कोग्निटो पोर्टल: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">"Ok Google" भन्नुहोस्</translation>
 <translation id="7523585675576642403">प्रोफाइलको नाम बदल्नुहोस्</translation>

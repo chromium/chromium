@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">ສີຊົມພູຊີເຊລ</translation>
 <translation id="6551185905438378412">ສີງາຊ້າງ</translation>
 <translation id="6561818612645211875">ໄປທີ່ຕົ້ນແຖວປະຈຸບັນ</translation>
+<translation id="6563126228219321999">ບໍ່ມີລາຍການທີ່ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="6579990219486187401">ສີບົວອ່ອນ</translation>
 <translation id="6583174818554398774">ຍ້າຍໄປຫາລາຍລະອຽດຖັດໄປ</translation>
 <translation id="6584162722998608255">ຕໍ່ໄປ, ທ່ານຈະຮຽນວິທີເລື່ອນໄປມາຢູ່ໜ້າຈໍ. ທ່ານສາມາດປັດດ້ວຍນິ້ວດຽວຈາກຊ້າຍຫາຂວາເພື່ອເລື່ອນໄປຫາລາຍການຕໍ່ໄປໄດ້. ລອງເຮັດຕອນນີ້ເພື່ອເລື່ອນໄປຫາຂັ້ນຕອນຕໍ່ໄປ.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">ສີເຫຼືອງເລມອນຊິບຟອນ</translation>
 <translation id="6816066673340002913">ສີເຫຼືອງອ່ອນໂກນເດິນຣອດ</translation>
 <translation id="6826226459053491773">ປັດສອງນິ້ວມືລົງ</translation>
+<translation id="6826669432862053130">ລາຍການທີ່ບໍ່ຖືກຕ້ອງຕໍ່ໄປ</translation>
 <translation id="6833103209700200188">ຂໍ້ຄວາມທ້າຍໜ້າ</translation>
 <translation id="6837853484260746864">ເລືອກສຽງ:</translation>
 <translation id="6858047746862060282">ບົດນຳ</translation>
@@ -1017,6 +1019,7 @@
 <translation id="8126386426083591964">ບໍ່ມີຫົວຂໍ້ລະດັບ 5 ຜ່ານມາ</translation>
 <translation id="812886159861361726">ຢຸດການດາວໂຫຼດໄວ້ແລ້ວ <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">ບໍ່ມີເຊວຂ້າງເທິງ</translation>
+<translation id="8132248161074464367">ລາຍການທີ່ບໍ່ຖືກຕ້ອງກ່ອນໜ້າ</translation>
 <translation id="8138880386467279117">ແຕະ</translation>
 <translation id="8146613869421949343">ຕໍ່ໄປ, ທ່ານຈະຮຽນຮູ້ກ່ຽວກັບປຸ່ມຊອກຫາ. ປຸ່ມຊອກຫາຖືກໃຊ້ຮ່ວມກັບປຸ່ມອື່ນສຳລັບຄຳສັ່ງ ChromeVox. ປຸ່ມຊອກຫາຢູ່ເທິງປຸ່ມ Shift ເບື້ອງຊ້າຍ. ເພື່ອສືບຕໍ່, ກະລຸນາກົດປຸ່ມຊອກຫາ.</translation>
 <translation id="8158033275290782295">ເລືອກທັງໝົດ</translation>

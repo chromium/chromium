@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Lasturová</translation>
 <translation id="6551185905438378412">Slonovinová</translation>
 <translation id="6561818612645211875">Přejít na začátek aktuálního řádku</translation>
+<translation id="6563126228219321999">Žádná neplatná položka</translation>
 <translation id="6579990219486187401">Světle růžová</translation>
 <translation id="6583174818554398774">Přejít na další při úrovni podrobnosti</translation>
 <translation id="6584162722998608255">Dále se naučíte pohybovat po obrazovce. Přejetím prstem zleva doprava přejdete na další položku. Vyzkoušejte to a přejděte tak na další krok.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Světle citrónová</translation>
 <translation id="6816066673340002913">Bledě písková</translation>
 <translation id="6826226459053491773">Přejeďte dvěma prsty dolů</translation>
+<translation id="6826669432862053130">Další neplatná položka</translation>
 <translation id="6833103209700200188">Zápatí</translation>
 <translation id="6837853484260746864">Vyberte hlas:</translation>
 <translation id="6858047746862060282">Prolog</translation>
@@ -1017,6 +1019,7 @@
 <translation id="8126386426083591964">Žádný předchozí nadpis 5. úrovně není</translation>
 <translation id="812886159861361726">Bylo zastaveno stahování souboru <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Nahoře žádná buňka není</translation>
+<translation id="8132248161074464367">Předchozí neplatná položka</translation>
 <translation id="8138880386467279117">Dotykové</translation>
 <translation id="8146613869421949343">V dalším kroku se seznámíte s vyhledávacím tlačítkem. Vyhledávací tlačítko (označované také jako klávesa Hledat) se používá v kombinaci s dalšími klávesami pro příkazy čtečky ChromeVox. Vyhledávací tlačítko se nachází přímo nad klávesou Shift. Pokračujte stisknutím vyhledávacího tlačítka.</translation>
 <translation id="8158033275290782295">vybrat vše</translation>

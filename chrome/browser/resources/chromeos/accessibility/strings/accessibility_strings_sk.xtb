@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Mušľová biela</translation>
 <translation id="6551185905438378412">Slonovinová</translation>
 <translation id="6561818612645211875">Prejsť na začiatok aktuálneho riadka</translation>
+<translation id="6563126228219321999">Žiadna neplatná položka</translation>
 <translation id="6579990219486187401">Svetloružová</translation>
 <translation id="6583174818554398774">Prejsť na nasledujúcu položku na úrovni podrobností</translation>
 <translation id="6584162722998608255">Ďalej sa dozviete, ako sa pohybovať po obrazovke. Potiahnutím prsta zľava doprava môžete prejsť na ďalšiu položku. Vyskúšajte to a prejdite na ďalší krok.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Citrónová šifónová</translation>
 <translation id="6816066673340002913">Svetlobéžová</translation>
 <translation id="6826226459053491773">Potiahnite dvoma prstami nadol</translation>
+<translation id="6826669432862053130">Ďalšia neplatná položka</translation>
 <translation id="6833103209700200188">Päta</translation>
 <translation id="6837853484260746864">Vyberte hlas:</translation>
 <translation id="6858047746862060282">Prológ</translation>
@@ -1017,6 +1019,7 @@
 <translation id="8126386426083591964">Žiadny predchádzajúci nadpis piatej úrovne</translation>
 <translation id="812886159861361726">Sťahovanie súboru <ph name="FILE_NAME" /> bolo zastavené</translation>
 <translation id="8129445297241948503">Žiadna bunka vyššie</translation>
+<translation id="8132248161074464367">Predchádzajúca neplatná položka</translation>
 <translation id="8138880386467279117">Klepnúť</translation>
 <translation id="8146613869421949343">Ďalej si preberieme kláves vyhľadávania. Používa sa spolu s ďalšími klávesmi alebo príkazmi čítačky ChromeVox. Nájdete ho priamo nad klávesom Shift. Pokračujte stlačením klávesa vyhľadávania.</translation>
 <translation id="8158033275290782295">vybrať všetko</translation>

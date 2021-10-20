@@ -116,7 +116,6 @@
 <translation id="1116639326869298217">Չհաջողվեց հաստատել ձեր ինքնությունը</translation>
 <translation id="1116694919640316211">Տեղեկություններ</translation>
 <translation id="1116779635164066733">Այս կարգավորումը պարտադրված է «<ph name="NAME" />» ընդլայնման կողմից:</translation>
-<translation id="1118549423835582252">Կառավարիչը (<ph name="MANAGER" />) խորհուրդ է տալիս, որ թարմացնեք այս <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="1118738876271697201">Չհաջողվեց որոշել սարքի մոդելը կամ սերիական համարը:</translation>
 <translation id="1119447706177454957">Ներքին սխալ</translation>
 <translation id="1122068467107743258">Աշխատանքային</translation>
@@ -617,7 +616,6 @@
 <translation id="1628948239858170093">Բացելուց առաջ ստուգե՞լ ֆայլը</translation>
 <translation id="1629314197035607094">Գաղտնաբառի ժամկետը լրացել է</translation>
 <translation id="1629451755632656601">Թույլատրե՞լ Google-ին անհատականացված զեղչեր որոնել զամբյուղում։</translation>
-<translation id="1630300831289687074">Դուք շուտով կկարողանաք օգտագործել ձեր Chromebook-ը։</translation>
 <translation id="163072119192489970">Թույլատրվում է ավարտել տվյալների ուղարկումն ու ստացումը</translation>
 <translation id="1630768113285622200">Վերագործարկել և շարունակել</translation>
 <translation id="1632082166874334883">Գաղտնաբառերը պահվում են ձեր Google հաշվում</translation>
@@ -1389,7 +1387,6 @@
 <translation id="2410079346590497630">կառուցման մասին</translation>
 <translation id="2410754283952462441">Ընտրեք հաշիվ</translation>
 <translation id="241082044617551207">Անհայտ փլագին</translation>
-<translation id="2412593942846481727">Հասանելի է նոր տարբերակը</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Ստեղնաշարի գործառական ստեղներ</translation>
 <translation id="2419131370336513030">Դիտել տեղադրված հավելվածները</translation>
@@ -2173,7 +2170,6 @@
 <translation id="3239373508713281971"><ph name="APP_NAME" /> հավելվածի համար ժամանակի սահմանաչափը հեռացվել է</translation>
 <translation id="3241680850019875542">Ընտրեք արմատային գրացուցակը՝ փաթեթավորվող ընդլայնման համար: Ընդլայնումը թարմացնելու համար ընտրեք նաև մասնավոր բանալու ֆայլը:</translation>
 <translation id="3244294424315804309">Անջատել ձայնը</translation>
-<translation id="3246107497225150582">{0,plural, =1{Թարմացրեք սարքը մեկ օրվա ընթացքում}one{Թարմացրեք սարքը # օրվա ընթացքում}other{Թարմացրեք սարքը # օրվա ընթացքում}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Ցանցի սխալ</translation>
 <translation id="3248902735035392926">Անվտանգությունը կարևոր է: <ph name="BEGIN_LINK" />Ստուգեք ձեր ընդլայնումները<ph name="END_LINK" />:</translation>
 <translation id="3251714896659475029">Թույլատրեք <ph name="SUPERVISED_USER_NAME" />-ին բացել Google Օգնականը «Ok Google» հրահանգի միջոցով</translation>
@@ -2562,7 +2558,6 @@
 <translation id="3647998456578545569">{COUNT,plural, =1{Ստացվեց <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> սարքից}one{Ստացվեց <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> սարքից}other{Ստացվեց <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> սարքից}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> սարքը հայտնաբերվել է</translation>
 <translation id="3649138363871392317">Լուսանկարն արված է:</translation>
-<translation id="3649505501900178324">Թարմացման ժամկետը լրացել է</translation>
 <translation id="3650753875413052677">Գրանցման սխալ</translation>
 <translation id="3650845953328929506">Մատյանի վերբեռնումը դեռ չի սկսվել:</translation>
 <translation id="3650952250015018111">«<ph name="APP_NAME" />» հավելվածին հասանելի դարձրեք հետևյալ սարք(եր)ը՝</translation>
@@ -3220,7 +3215,6 @@
 <translation id="4358313196493694334">Կայունացնել սեղմման դիրքը</translation>
 <translation id="4359408040881008151">Տեղադրված է ենթակա ընդլայնման(ումների) հետևանքով:</translation>
 <translation id="4359717112757026264">Քաղաքային տեսարաններ</translation>
-<translation id="4360237979279036412">Կառավարիչը (<ph name="MANAGER" />) պահանջում է, որ թարմացնեք այս <ph name="DEVICE_TYPE" /> սարքը, քանի դեռ վերջնաժամկետը չի լրացել։</translation>
 <translation id="4361142739114356624">Սպասառուի հավաստագրի մասնավոր բանալին բացակայում է կամ անվավեր է</translation>
 <translation id="4361745360460842907">Բացել որպես ներդիր</translation>
 <translation id="4363771538994847871">Հեռարձակման սարք չի գտնվել։ Օգնությո՞ւն է հարկավոր։</translation>
@@ -3748,7 +3742,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Սեղմեք <ph name="BEGIN_LINK" />այստեղ<ph name="END_LINK" />՝ իմանալու, թե ինչ տվյալներ է Google Drive-ը հավաքում և ինչ նպատակով։</translation>
-<translation id="49226369361073053">{0,plural, =0{Թարմացրեք սարքը հիմա}=1{Թարմացրեք սարքը 1 վայրկյանից}one{Թարմացրեք սարքը # վայրկյանից}other{Թարմացրեք սարքը # վայրկյանից}}</translation>
 <translation id="492299503953721473">Հեռացնել Android հավելվածները</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> հավելվածը հեռացվում է…</translation>
 <translation id="4924002401726507608">Կարծիք հայտնել</translation>
@@ -5037,7 +5030,6 @@
 <translation id="6326175484149238433">Հեռացնել Chrome-ից</translation>
 <translation id="6326855256003666642">Keepalive կապակցումների քանակը</translation>
 <translation id="6327785803543103246">Միջնորդ սերվերի ինքնահայտնաբերում</translation>
-<translation id="6328378651911184878">Կառավարիչը (<ph name="MANAGER" />) պահանջում է, որ անմիջապես թարմացնեք այս <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="6331191339300272798">Ավտոմատ մուգ թեմա</translation>
 <translation id="6331566915566907158">Օգնել ավելի լավը դարձնել Chrome OS-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="6331818708794917058">Կայքերը կարող են MIDI սարքերին միանալու թույլտվություն խնդրել</translation>
@@ -5994,7 +5986,6 @@
 <translation id="7371490947952970241">Դուք կարող եք անջատել տեղորոշման ծառայությունը սարքի կարգավորումներում։ Բացի այդ, տեղորոշման կարգավորումներում հնարավոր է անջատել Wi-Fi-ի, բջջային ցանցերի ու տվիչների օգտագործումը տեղորոշման համար։</translation>
 <translation id="7371917887111892735">Ներդիրները փոքրացվում են ամրացված ներդիրի լայնությանը համապատասխան</translation>
 <translation id="7374376573160927383">Կառավարել USB սարքերը</translation>
-<translation id="7375235221357833624">{0,plural, =1{Թարմացրեք սարքը մեկ ժամվա ընթացքում}one{Թարմացրեք սարքը # ժամվա ընթացքում}other{Թարմացրեք սարքը # ժամվա ընթացքում}}</translation>
 <translation id="7376543451826039186">Ավելի արագ դիտարկում․ օրինակ՝ ընթացիկ էջի տվյալների հիման վրա որոշակի բովանդակություն բեռնվում է նախօրոք</translation>
 <translation id="7376553024552204454">Ընդգծել մկնիկի նշորդը, երբ այն շարժվում է</translation>
 <translation id="737728204345822099">Անվտանգության բանալու վրա կարող է պահվել նշում այս կայքի այցելության մասին։</translation>
@@ -6139,7 +6130,6 @@
 <translation id="7514417110442087199">Ավելացնել նշանակում</translation>
 <translation id="751523031290522286">Ադմինիստրատորն արգելափակել է <ph name="APP_NAME" /> հավելվածը։ Խնդրեք նրան տրամադրել ձեզ հավելվածի օգտագործման թույլտվություն։</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> հավելվածի աշխատանքը դադարեցված է</translation>
-<translation id="7517063221058203587">{0,plural, =1{Թարմացրեք սարքը 1 րոպեի ընթացքում}one{Թարմացրեք սարքը # րոպեի ընթացքում}other{Թարմացրեք սարքը # րոպեի ընթացքում}}</translation>
 <translation id="7520766081042531487">Ինկոգնիտո պորտալ՝ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">Ասեք «Ok Google»</translation>
 <translation id="7523585675576642403">Վերանվանեք պրոֆիլը</translation>

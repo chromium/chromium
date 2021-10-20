@@ -118,7 +118,6 @@
 <translation id="1116639326869298217">본인 여부를 확인할 수 없습니다.</translation>
 <translation id="1116694919640316211">정보</translation>
 <translation id="1116779635164066733">이 설정은 '<ph name="NAME" />' 확장 프로그램에서 시행합니다.</translation>
-<translation id="1118549423835582252"><ph name="MANAGER" />에서 이 <ph name="DEVICE_TYPE" />의 업데이트를 권장합니다.</translation>
 <translation id="1118738876271697201">시스템에서 기기 모델 또는 일련번호를 확인하지 못했습니다.</translation>
 <translation id="1119447706177454957">내부 오류</translation>
 <translation id="1122068467107743258">직장</translation>
@@ -618,7 +617,6 @@
 <translation id="1628948239858170093">열기 전에 파일을 검사하시겠습니까?</translation>
 <translation id="1629314197035607094">비밀번호가 만료되었습니다.</translation>
 <translation id="1629451755632656601">Google에서 장바구니의 상품에 관한 맞춤형 할인을 찾도록 허용하시겠습니까?</translation>
-<translation id="1630300831289687074">곧 Chromebook을 사용할 수 있습니다.</translation>
 <translation id="163072119192489970">데이터 전송 및 수신 완료가 허용됨</translation>
 <translation id="1630768113285622200">다시 시작 및 계속</translation>
 <translation id="1632082166874334883">Google 계정에 비밀번호가 저장됨</translation>
@@ -1402,7 +1400,6 @@
 <translation id="2410079346590497630">빌드 세부정보</translation>
 <translation id="2410754283952462441">계정 선택</translation>
 <translation id="241082044617551207">알 수 없는 플러그인</translation>
-<translation id="2412593942846481727">업데이트 가능</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">키보드 기능 키</translation>
 <translation id="2419131370336513030">설치된 앱 보기</translation>
@@ -2186,7 +2183,6 @@
 <translation id="3239373508713281971"><ph name="APP_NAME" />의 시간제한이 삭제되었습니다.</translation>
 <translation id="3241680850019875542">압축할 확장 프로그램의 루트 디렉터리를 선택합니다. 확장 프로그램을 업데이트하려면 다시 사용할 비공개 키 파일도 선택합니다.</translation>
 <translation id="3244294424315804309">계속 음소거</translation>
-<translation id="3246107497225150582">{0,plural, =1{1일 내 기기 업데이트}other{#일 내 기기 업데이트}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 네트워크 오류</translation>
 <translation id="3248902735035392926">안전은 그 무엇보다도 중요합니다. 잠시 시간을 내어 <ph name="BEGIN_LINK" />확장 프로그램을 검토<ph name="END_LINK" />해 보세요.</translation>
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" />님이 “Hey Google”을 통해 Google 어시스턴트에 액세스하도록 허용</translation>
@@ -2575,7 +2571,6 @@
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> 발견됨</translation>
 <translation id="3649138363871392317">사진이 캡처되었습니다.</translation>
-<translation id="3649505501900178324">업데이트 지연됨</translation>
 <translation id="3650753875413052677">등록 오류</translation>
 <translation id="3650845953328929506">로그 업데이트가 대기 중입니다.</translation>
 <translation id="3650952250015018111">'<ph name="APP_NAME" />'이(가) 다음 기기에 액세스하도록 허용합니다.</translation>
@@ -3230,7 +3225,6 @@
 <translation id="4358313196493694334">클릭 위치 보정</translation>
 <translation id="4359408040881008151">함께 설치된 확장 프로그램입니다.</translation>
 <translation id="4359717112757026264">도시 풍경</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" />에서 기한 전에 <ph name="DEVICE_TYPE" /> 기기를 업데이트할 것을 요청합니다.</translation>
 <translation id="4361142739114356624">이 클라이언트 인증서의 비공개 키가 없거나 잘못되었습니다.</translation>
 <translation id="4361745360460842907">탭으로 열기</translation>
 <translation id="4363771538994847871">전송 대상을 찾을 수 없습니다. 도움이 필요하세요?</translation>
@@ -3757,7 +3751,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Google Drive에서 수집하는 데이터와 수집 목적을 알아보려면 <ph name="BEGIN_LINK" />여기<ph name="END_LINK" />를 클릭하세요.</translation>
-<translation id="49226369361073053">{0,plural, =0{지금 기기 업데이트}=1{1초 내 기기 업데이트}other{#초 내 기기 업데이트}}</translation>
 <translation id="492299503953721473">Android 앱 삭제</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> 제거 중…</translation>
 <translation id="4924002401726507608">의견 제출</translation>
@@ -5044,7 +5037,6 @@
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
 <translation id="6326855256003666642">프로그램 사용자 수</translation>
 <translation id="6327785803543103246">웹 프록시 자동검색</translation>
-<translation id="6328378651911184878"><ph name="MANAGER" />에서 즉시 <ph name="DEVICE_TYPE" /> 기기를 업데이트할 것을 요청합니다.</translation>
 <translation id="6331191339300272798">자동 어두운 테마</translation>
 <translation id="6331566915566907158">Chrome OS의 기능 및 성능 개선에 참여</translation>
 <translation id="6331818708794917058">사이트에서 MIDI 기기에 연결하도록 요청할 수 있음</translation>
@@ -6001,7 +5993,6 @@
 <translation id="7371490947952970241">이 기기에서 기본 위치 설정을 사용 중지하여 위치를 사용 중지할 수 있습니다. 또한 위치 설정에서 위치 파악에 Wi‑Fi, 모바일 네트워크, 센서의 사용을 중지할 수도 있습니다.</translation>
 <translation id="7371917887111892735">탭이 고정된 탭 폭으로 줄어듦</translation>
 <translation id="7374376573160927383">USB 기기 관리</translation>
-<translation id="7375235221357833624">{0,plural, =1{1시간 내 기기 업데이트}other{#시간 내 기기 업데이트}}</translation>
 <translation id="7376543451826039186">더 빠른 탐색: 예를 들어, 현재 페이지를 기준으로 특정 추가 콘텐츠가 미리 로드됩니다.</translation>
 <translation id="7376553024552204454">이동 시 마우스 커서 강조표시</translation>
 <translation id="737728204345822099">이 사이트를 방문한 기록이 보안 키에 보관될 수 있습니다.</translation>
@@ -6146,7 +6137,6 @@
 <translation id="7514417110442087199">할당 추가</translation>
 <translation id="751523031290522286">관리자가 <ph name="APP_NAME" /> 앱을 차단했습니다. 이 앱을 사용하려면 관리자에게 권한을 요청하세요.</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> 앱이 일시중지됨</translation>
-<translation id="7517063221058203587">{0,plural, =1{1분 내 기기 업데이트}other{#분 내 기기 업데이트}}</translation>
 <translation id="7520766081042531487">시크릿 모드 포털: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">"Ok Google"이라고 말하세요.</translation>
 <translation id="7523585675576642403">프로필 이름 바꾸기</translation>

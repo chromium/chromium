@@ -21,6 +21,7 @@
 <translation id="109942774857561566">Мені нудно</translation>
 <translation id="1104084341931202936">Показати налаштування спеціальних можливостей</translation>
 <translation id="1104621072296271835">Ваші пристрої працюватимуть разом ще краще</translation>
+<translation id="1118549423835582252">Домен <ph name="MANAGER" /> радить оновити цей пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">У цьому режимі кольори інтерфейсу відповідають гамі фонового малюнка.</translation>
 <translation id="112308213915226829">Автоматично ховати полицю</translation>
 <translation id="1142002900084379065">Останні фотографії</translation>
@@ -357,6 +358,7 @@
 <translation id="3630697955794050612">вимкнено</translation>
 <translation id="3631369015426612114">Дозволити сповіщення з перелічених нижче джерел</translation>
 <translation id="3638400994746983214">Перемикає екран конфіденційності. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649505501900178324">Оновлення прострочено</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – керований користувач</translation>
 <translation id="3665889125180354336">Мікрофон для запису</translation>
 <translation id="3680908746918359504">Видалити всі маркери</translation>
@@ -456,6 +458,7 @@
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Завантаження Асистента…</translation>
 <translation id="4356930093361201197">режим високого контрасту</translation>
+<translation id="4360237979279036412">Домен <ph name="MANAGER" /> вимагає, щоб ви оновили цей пристрій <ph name="DEVICE_TYPE" /> до кінцевого терміну.</translation>
 <translation id="4371348193907997655">Налаштування трансляції</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Підключення…</translation>
@@ -715,6 +718,7 @@
 <translation id="6291221004442998378">Не заряджається</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> обернено на <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Аудіо</translation>
+<translation id="6328378651911184878">Домен <ph name="MANAGER" /> вимагає, щоб ви негайно оновили пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6330012934079202188">Показано вікна всіх робочих столів. Щоб показати вікна поточного робочого столу, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, яким керує <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">Bluetooth увімкнено</translation>

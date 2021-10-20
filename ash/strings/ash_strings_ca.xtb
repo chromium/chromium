@@ -21,6 +21,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="109942774857561566">M'avorreixo</translation>
 <translation id="1104084341931202936">Mostra la configuració d'accessibilitat</translation>
 <translation id="1104621072296271835">Els teus dispositius funcionen encara millor junts</translation>
+<translation id="1118549423835582252"><ph name="MANAGER" /> et recomana que actualitzis aquest <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">El mode de color temàtic utilitza colors extrets del fons de pantalla per acolorir lleugerament la interfície.</translation>
 <translation id="112308213915226829">Amaga el prestatge automàticament</translation>
 <translation id="1142002900084379065">Fotos recents</translation>
@@ -357,6 +358,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3630697955794050612">desactivat</translation>
 <translation id="3631369015426612114">Permet notificacions de les fonts següents:</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649505501900178324">Actualització pendent</translation>
 <translation id="366222428570480733">Usuari gestionat (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3665889125180354336">Grava el micròfon</translation>
 <translation id="3680908746918359504">Esborra tots els marcadors</translation>
@@ -456,6 +458,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">L'Assistent s'està carregant...</translation>
 <translation id="4356930093361201197">Mode d'alt contrast</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> requereix que actualitzis aquest <ph name="DEVICE_TYPE" /> abans del termini establert.</translation>
 <translation id="4371348193907997655">Configuració d'emissió</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; intensitat del senyal: <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
 <translation id="4378551569595875038">Connectant...</translation>
@@ -715,6 +718,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6291221004442998378">No s'està carregant</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> s'ha canviat a <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Veu</translation>
+<translation id="6328378651911184878"><ph name="MANAGER" /> requereix que actualitzis aquest <ph name="DEVICE_TYPE" /> immediatament.</translation>
 <translation id="6330012934079202188">S'estan mostrant les finestres de tots els escriptoris. Prem la tecla de fletxa amunt per mostrar les finestres de l'escriptori actual.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> és una sessió gestionada per <ph name="MANAGER" /></translation>
 <translation id="6376931439017688372">El Bluetooth està activat</translation>

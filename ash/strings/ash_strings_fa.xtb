@@ -21,6 +21,7 @@
 <translation id="109942774857561566">‏I’m bored (حوصله‌ام سر رفته)</translation>
 <translation id="1104084341931202936">نشان دادن تنظیمات دسترس‌پذیری</translation>
 <translation id="1104621072296271835">دستگاه‌هایتان باهم به‌مراتب بهتر کار می‌کنند</translation>
+<translation id="1118549423835582252"><ph name="MANAGER" /> توصیه می‌کند این <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید.</translation>
 <translation id="1119348796022671382">حالت «رنگ‌مایه» بااستفاده از رنگ‌های استخراج‌شده از کاغذدیواری، به واسط اندکی رنگ اضافه می‌کند.</translation>
 <translation id="112308213915226829">پنهان کردن خودکار قفسه</translation>
 <translation id="1142002900084379065">عکس‌های اخیر</translation>
@@ -357,6 +358,7 @@
 <translation id="3630697955794050612">خاموش</translation>
 <translation id="3631369015426612114">مجاز کردن اعلان‌های منابع زیر</translation>
 <translation id="3638400994746983214">روشن/خاموش کردن صفحه حریم‌خصوصی. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649505501900178324">به‌روزرسانی عقب‌افتاده</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> کاربر مدیریت‌شده</translation>
 <translation id="3665889125180354336">ضبط میکروفون</translation>
 <translation id="3680908746918359504">پاک کردن همه قلم‌های نشان‌گذاری</translation>
@@ -456,6 +458,7 @@
 <translation id="4338109981321384717">ذره‌بین</translation>
 <translation id="4351433414020964307">دستیار درحال بار کردن است...</translation>
 <translation id="4356930093361201197">حالت تضاد بالا</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> از شما می‌خواهد این <ph name="DEVICE_TYPE" /> را قبل‌از مهلت تعیین‌شده به‌روزرسانی کنید.</translation>
 <translation id="4371348193907997655">تنظیمات ارسال محتوا</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
 <translation id="4378551569595875038">در حال اتصال..</translation>
@@ -612,6 +615,7 @@
 <translation id="5465662442746197494">به راهنمایی نیاز دارید؟</translation>
 <translation id="5496819745535887422">سرپرست درحال عقب‌گرد کردن دستگاهتان است. همه داده‌ها بعد از بازراه‌اندازی دستگاه پاک می‌شود.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">سرپرستتان همه نمایه‌های سیم‌کارت داخلی را برداشته است. برای اطلاعات بیشتر، با سرپرست تماس بگیرید.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> درحال اتصال است.</translation>
 <translation id="5532994612895037630">برای ضبط تمام‌صفحه، روی هرجایی از صفحه ضربه بزنید</translation>
 <translation id="553675580533261935">خروج از جلسه</translation>
@@ -715,6 +719,7 @@
 <translation id="6291221004442998378">شارژ نمی‌شود</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> به <ph name="ROTATION" /> چرخانده شد</translation>
 <translation id="6315170314923504164">صدا</translation>
+<translation id="6328378651911184878"><ph name="MANAGER" /> از شما می‌خواهد این <ph name="DEVICE_TYPE" /> را فوراً به‌روزرسانی کنید.</translation>
 <translation id="6330012934079202188">درحال نمایش پنجره‌های همه میزکارها، برای نمایش پنجره‌های میزکار کنونی، کلید «جهت‌نمای بالا» را فشار دهید</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> جلسه مدیریت‌شده‌ای است که توسط <ph name="MANAGER" /> مدیریت می‌شود</translation>
 <translation id="6376931439017688372">بلوتوث روشن است</translation>
@@ -741,6 +746,7 @@
 <translation id="6537924328260219877">قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، باتری تلفن <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">ارسال محتوا به <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">سؤال از سرپرست</translation>
+<translation id="6565007273808762236">اتصال سیم‌کارت داخلی دردسترس نیست</translation>
 <translation id="6570902864550063460">‏درحال شارژ ازطریق USB</translation>
 <translation id="6585808820553845416">جلسه در <ph name="SESSION_TIME_REMAINING" /> به پایان می‌رسد.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>

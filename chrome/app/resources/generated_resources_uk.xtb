@@ -118,7 +118,6 @@
 <translation id="1116639326869298217">Не вдалося підтвердити вашу особу</translation>
 <translation id="1116694919640316211">Про Google Chrome</translation>
 <translation id="1116779635164066733">Цей параметр встановлюється розширенням "<ph name="NAME" />".</translation>
-<translation id="1118549423835582252">Домен <ph name="MANAGER" /> радить оновити цей пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Системі не вдалося визначити модель і серійний номер пристрою.</translation>
 <translation id="1119447706177454957">Внутрішня помилка</translation>
 <translation id="1122068467107743258">Робочий профіль</translation>
@@ -621,7 +620,6 @@
 <translation id="1628948239858170093">Cканувати файл, перш ніж відкрити?</translation>
 <translation id="1629314197035607094">Термін дії пароля закінчився</translation>
 <translation id="1629451755632656601">Дозволити Google знаходити персоналізовані знижки для ваших кошиків?</translation>
-<translation id="1630300831289687074">Незабаром ви зможете користуватися Chromebook.</translation>
 <translation id="163072119192489970">Дозволено завершувати надсилання й отримання даних</translation>
 <translation id="1630768113285622200">Перезапустити й продовжити</translation>
 <translation id="1632082166874334883">Пароль збережено у вашому обліковому записі Google</translation>
@@ -1405,7 +1403,6 @@
 <translation id="2410079346590497630">Дані складання</translation>
 <translation id="2410754283952462441">Виберіть обліковий запис</translation>
 <translation id="241082044617551207">Невідомий плагін</translation>
-<translation id="2412593942846481727">Доступне оновлення</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Функціональні клавіші клавіатури</translation>
 <translation id="2419131370336513030">Переглянути встановлені додатки</translation>
@@ -2189,7 +2186,6 @@
 <translation id="3239373508713281971">Для додатка <ph name="APP_NAME" /> скасовано ліміт часу</translation>
 <translation id="3241680850019875542">Виберіть кореневий каталог для пакування розширення. Щоб оновити розширення, також виберіть файл секретного ключа для повторного використання.</translation>
 <translation id="3244294424315804309">Не вмикати звук</translation>
-<translation id="3246107497225150582">{0,plural, =1{Оновіть пристрій протягом дня}one{Оновіть пристрій протягом # дня}few{Оновіть пристрій протягом # днів}many{Оновіть пристрій протягом # днів}other{Оновіть пристрій протягом # дня}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – помилка мережі</translation>
 <translation id="3248902735035392926">Безпека важлива. <ph name="BEGIN_LINK" />Перевірте свої розширення<ph name="END_LINK" />.</translation>
 <translation id="3251714896659475029">З вашого дозволу <ph name="SUPERVISED_USER_NAME" /> зможе викликати Google Асистента командою "Ok Google"</translation>
@@ -2578,7 +2574,6 @@
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Виявлено пристрій <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="3649138363871392317">Фотографію збережено</translation>
-<translation id="3649505501900178324">Оновлення прострочено</translation>
 <translation id="3650753875413052677">Помилка реєстрації</translation>
 <translation id="3650845953328929506">Очікується завантаження журналу.</translation>
 <translation id="3650952250015018111">Надати додатку "<ph name="APP_NAME" />" доступ:</translation>
@@ -3235,7 +3230,6 @@
 <translation id="4358313196493694334">Стабілізувати місце кліку</translation>
 <translation id="4359408040881008151">Установлено, оскільки є залежні розширення.</translation>
 <translation id="4359717112757026264">Міський пейзаж</translation>
-<translation id="4360237979279036412">Домен <ph name="MANAGER" /> вимагає, щоб ви оновили цей пристрій <ph name="DEVICE_TYPE" /> до кінцевого терміну.</translation>
 <translation id="4361142739114356624">Секретний ключ цього сертифіката клієнта відсутній або недійсний</translation>
 <translation id="4361745360460842907">Відкрити як вкладку</translation>
 <translation id="4363771538994847871">Немає пристроїв для трансляції. Потрібна допомога?</translation>
@@ -3763,7 +3757,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Докладну інформацію про те, які дані збирає Google Диск і чому, наведено <ph name="BEGIN_LINK" />на цій сторінці<ph name="END_LINK" />.</translation>
-<translation id="49226369361073053">{0,plural, =0{Оновіть пристрій зараз}=1{Оновіть пристрій протягом 1 секунди}one{Оновіть пристрій протягом # секунди}few{Оновіть пристрій протягом # секунд}many{Оновіть пристрій протягом # секунд}other{Оновіть пристрій протягом # секунд}}</translation>
 <translation id="492299503953721473">Видалити додатки Android</translation>
 <translation id="492363500327720082">Видалення додатка <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Надіслати відгук</translation>
@@ -5050,7 +5043,6 @@
 <translation id="6326175484149238433">Видалити з Chrome</translation>
 <translation id="6326855256003666642">Кількість процесів, які використовуються розширеннями</translation>
 <translation id="6327785803543103246">Автоматичне виявлення веб-проксі</translation>
-<translation id="6328378651911184878">Домен <ph name="MANAGER" /> вимагає, щоб ви негайно оновили пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6331191339300272798">Автоматична темна тема</translation>
 <translation id="6331566915566907158">Сприяти покращенню функцій і підвищенню продуктивності ОС Chrome</translation>
 <translation id="6331818708794917058">Сайти можуть запитувати дозвіл на підключення до пристроїв MIDI</translation>
@@ -6007,7 +5999,6 @@
 <translation id="7371490947952970241">Ви можете дезактивувати визначення місцезнаходження, вимкнувши на пристрої функцію "Доступ до моїх геоданих". У налаштуваннях цієї функції також можна вимкнути визначення місцезнаходження за допомогою Wi-Fi, мобільних мереж і датчиків.</translation>
 <translation id="7371917887111892735">Вкладки зменшуються до закріпленої ширини</translation>
 <translation id="7374376573160927383">Керувати пристроями USB</translation>
-<translation id="7375235221357833624">{0,plural, =1{Оновіть пристрій протягом години}one{Оновіть пристрій протягом # години}few{Оновіть пристрій протягом # годин}many{Оновіть пристрій протягом # годин}other{Оновіть пристрій протягом # години}}</translation>
 <translation id="7376543451826039186">Швидший веб-перегляд: наприклад, активне завантаження певного контенту на основі даних про поточну сторінку</translation>
 <translation id="7376553024552204454">Підсвічувати курсор миші під час руху</translation>
 <translation id="737728204345822099">На ключі безпеки може зберегтися запис про те, що ви відвідували цей сайт.</translation>
@@ -6152,7 +6143,6 @@
 <translation id="7514417110442087199">Додати призначення</translation>
 <translation id="751523031290522286">Додаток <ph name="APP_NAME" /> заблоковано адміністратором. Попросіть у нього дозвіл використовувати цей додаток.</translation>
 <translation id="7516981202574715431">Додаток <ph name="APP_NAME" /> призупинено</translation>
-<translation id="7517063221058203587">{0,plural, =1{Оновіть пристрій протягом 1 хвилини}one{Оновіть пристрій протягом # хвилини}few{Оновіть пристрій протягом # хвилин}many{Оновіть пристрій протягом # хвилин}other{Оновіть пристрій протягом # хвилини}}</translation>
 <translation id="7520766081042531487">Портал анонімного режиму: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">Скажіть "Ok Google"</translation>
 <translation id="7523585675576642403">Перейменувати профіль</translation>

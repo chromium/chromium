@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Branco-lunar</translation>
 <translation id="6551185905438378412">Marfim</translation>
 <translation id="6561818612645211875">Ir para o início da linha atual</translation>
+<translation id="6563126228219321999">Nenhum item inválido</translation>
 <translation id="6579990219486187401">Rosa-claro</translation>
 <translation id="6583174818554398774">Mover para o próximo na granularidade</translation>
 <translation id="6584162722998608255">Agora, você aprenderá a se mover pela tela. Deslize da esquerda para a direita com um dedo para avançar para o próximo item. Faça um teste para acessar a próxima etapa.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Verde-primitivo</translation>
 <translation id="6816066673340002913">Amarelo-dourado-pálido</translation>
 <translation id="6826226459053491773">Deslize para baixo usando dois dedos</translation>
+<translation id="6826669432862053130">Próximo item inválido</translation>
 <translation id="6833103209700200188">Rodapé</translation>
 <translation id="6837853484260746864">Selecione uma voz:</translation>
 <translation id="6858047746862060282">Prólogo</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Nenhum cabeçalho de nível 5 anterior</translation>
 <translation id="812886159861361726">Download de <ph name="FILE_NAME" /> interrompido</translation>
 <translation id="8129445297241948503">Nenhuma célula acima</translation>
+<translation id="8132248161074464367">Item inválido anterior</translation>
 <translation id="8138880386467279117">Tocar</translation>
 <translation id="8146613869421949343">A seguir, você aprenderá sobre a tecla de pesquisa. Ela é usada em combinação com outras teclas para acionar comandos do ChromeVox. Ela fica imediatamente acima da tecla Shift esquerda. Para continuar, pressione a tecla de pesquisa.</translation>
 <translation id="8158033275290782295">selecionar todos</translation>

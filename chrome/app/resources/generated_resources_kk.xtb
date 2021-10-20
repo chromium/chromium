@@ -116,7 +116,6 @@
 <translation id="1116639326869298217">Жеке басыңыз расталмады</translation>
 <translation id="1116694919640316211">Мәлімет</translation>
 <translation id="1116779635164066733">Бұл параметр "<ph name="NAME" />" кеңейтімі арқылы іске қосылады.</translation>
-<translation id="1118549423835582252"><ph name="MANAGER" /> бұл <ph name="DEVICE_TYPE" /> құрылғысын жаңартуды ұсынады.</translation>
 <translation id="1118738876271697201">Жүйе құрылғының үлгісін не сериялық нөмірін анықтай алмады.</translation>
 <translation id="1119447706177454957">Ішкі қате</translation>
 <translation id="1122068467107743258">Жұмыс профилі</translation>
@@ -612,7 +611,6 @@
 <translation id="1628948239858170093">Файл ашылмас бұрын сканерленсін бе?</translation>
 <translation id="1629314197035607094">Құпия сөз мерзімі аяқталды.</translation>
 <translation id="1629451755632656601">Google-дың себеттегі тауарларға жекелендірілген жеңілдіктер іздеуіне рұқсат берілсін бе?</translation>
-<translation id="1630300831289687074">Chromebook-ты сәлден кейін пайдалана аласыз.</translation>
 <translation id="163072119192489970">Дерек жіберуге және алуға рұқсаты барлар</translation>
 <translation id="1630768113285622200">Қайта қосу және жалғастыру</translation>
 <translation id="1632082166874334883">Google аккаунтыңызда сақталған құпия сөз</translation>
@@ -1384,7 +1382,6 @@
 <translation id="2410079346590497630">Құрама туралы мәліметтер</translation>
 <translation id="2410754283952462441">Аккаунт таңдау</translation>
 <translation id="241082044617551207">Белгісіз плагин</translation>
-<translation id="2412593942846481727">Жаңартылған нұсқа қолжетімді</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Пернетақтаның функциялық пернелері</translation>
 <translation id="2419131370336513030">Орнатылған қолданбаларды көру</translation>
@@ -2167,7 +2164,6 @@
 <translation id="3239373508713281971"><ph name="APP_NAME" /> үшін уақыт шектеуі алынды.</translation>
 <translation id="3241680850019875542">Бумаға салу үшін кеңейтімнің түпкі каталогін таңдаңыз. Кеңейтімді жаңарту үшін қайта пайдалану мақсатында жеке кілтті таңдаңыз.</translation>
 <translation id="3244294424315804309">Дыбысын қоспау</translation>
-<translation id="3246107497225150582">{0,plural, =1{Құрылғыны бір күнде жаңарту керек}other{Құрылғыны # күнде жаңарту керек}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – желі қатесі</translation>
 <translation id="3248902735035392926">Қауіпсіздік маңызды. Сәл уақытыңызды бөліп, <ph name="BEGIN_LINK" />кеңейтімдерді тексеріңіз<ph name="END_LINK" />.</translation>
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> Google Assistant-ке "Ok Google" деу арқылы кіруге рұқсат беру</translation>
@@ -2555,7 +2551,6 @@
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> құрылғысынан <ph name="ATTACHMENTS" /> алынды.}other{<ph name="DEVICE_NAME" /> құрылғысынан <ph name="ATTACHMENTS" /> алынды.}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> анықталды</translation>
 <translation id="3649138363871392317">Фотосурет түсірілді</translation>
-<translation id="3649505501900178324">Жаңарту мерзімі өтіп кетті</translation>
 <translation id="3650753875413052677">Тіркеу кезінде қате шықты</translation>
 <translation id="3650845953328929506">Журналды жүктеп салу кезекте.</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" қолданбасына кіруге рұқсат беру:</translation>
@@ -3212,7 +3207,6 @@
 <translation id="4358313196493694334">Басу орнын тұрақтандыру</translation>
 <translation id="4359408040881008151">Тәуелді кеңейтім(дер) себебінен орнатылды.</translation>
 <translation id="4359717112757026264">Қала көрінісі</translation>
-<translation id="4360237979279036412">Мерзім аяқталғанға дейін, <ph name="MANAGER" /> бұл <ph name="DEVICE_TYPE" /> құрылғысын жаңартуыңызды сұрайды.</translation>
 <translation id="4361142739114356624">Бұл клиент сертификатына арналған жеке код жоқ немесе жарамсыз</translation>
 <translation id="4361745360460842907">Қойынды етіп ашу</translation>
 <translation id="4363771538994847871">Cast үшін белгіленген орын табылмады. Көмек қажет пе?</translation>
@@ -3739,7 +3733,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Google Drive қандай деректерді жинайтыны және оларды не үшін жинайтыны туралы <ph name="BEGIN_LINK" />осы жерден<ph name="END_LINK" /> біліңіз.</translation>
-<translation id="49226369361073053">{0,plural, =0{Құрылғыны қазір жаңарту керек}=1{Құрылғыны 1 секундта жаңарту керек}other{Құрылғыны # секундта жаңарту керек}}</translation>
 <translation id="492299503953721473">Android қолданбаларын өшіру</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> жойылуда…</translation>
 <translation id="4924002401726507608">Пікір жіберу</translation>
@@ -5026,7 +5019,6 @@
 <translation id="6326175484149238433">Chrome бағдарламасынан жою</translation>
 <translation id="6326855256003666642">Кеңейтімдер қолданатын процестер саны</translation>
 <translation id="6327785803543103246">Вебпрокси-серверді автоматты анықтау</translation>
-<translation id="6328378651911184878"><ph name="MANAGER" /> бұл <ph name="DEVICE_TYPE" /> құрылғысын дереу жаңартуыңызды сұрайды.</translation>
 <translation id="6331191339300272798">Автоматты қараңғы тақырып</translation>
 <translation id="6331566915566907158">Chrome операциялық жүйесінің функцияларын және жұмыс өнімділігін жақсартуға көмектесу</translation>
 <translation id="6331818708794917058">Сайттар MIDI құрылғыларына қосылуға рұқсат сұрайды.</translation>
@@ -5983,7 +5975,6 @@
 <translation id="7371490947952970241">Құрылғыдағы негізгі геодерек параметрін өшіру арқылы орналасқан жердің анықталуын өшіруге болады. Сонымен қатар Wi‑Fi мен мобильдік желілердің және сенсорлардың орынды анықтау үшін қолданылуын геодерек параметрлерінен өшіре аласыз.</translation>
 <translation id="7371917887111892735">қойындылар бекітілген қойынды еніне дейін кішірейеді</translation>
 <translation id="7374376573160927383">USB құрылғыларын басқару</translation>
-<translation id="7375235221357833624">{0,plural, =1{Құрылғыны 1 сағат ішінде жаңарту керек}other{Құрылғыны # сағат ішінде жаңарту керек}}</translation>
 <translation id="7376543451826039186">Браузер жылдам болады: мысалы, қазіргі бет негізінде белгілі бір мазмұнды алдын ала жүктейді.</translation>
 <translation id="7376553024552204454">Тінтуір курсорын қозғалыс барысында бөлектеу</translation>
 <translation id="737728204345822099">Осы сайтқа кіргеніңіз туралы жазба қауіпсіздік кілтінде сақталуы мүмкін.</translation>
@@ -6128,7 +6119,6 @@
 <translation id="7514417110442087199">Тағайындау</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> қолданбасын әкімші бөгеген. Қолданбаны пайдалану үшін әкімшіден рұқсат сұраңыз.</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> кідіртілді</translation>
-<translation id="7517063221058203587">{0,plural, =1{Құрылғыны 1 минутта жаңарту керек}other{Құрылғыны # минутта жаңарту керек}}</translation>
 <translation id="7520766081042531487">Инкогнито порталы: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">"Ok Google" деп айтыңыз</translation>
 <translation id="7523585675576642403">Профильдің атын өзгерту</translation>

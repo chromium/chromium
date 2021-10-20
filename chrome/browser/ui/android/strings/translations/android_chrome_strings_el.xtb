@@ -26,6 +26,7 @@
 <translation id="1142732900304639782">Να μην παρέχεται δυνατότητα μετάφρασης αυτών των ιστοτόπων</translation>
 <translation id="1145536944570833626">Διαγραφή υπαρχόντων δεδομένων.</translation>
 <translation id="1146678959555564648">Εισαγωγή VR</translation>
+<translation id="114825011539563458">Τα σημαντικότερα στοιχεία ελέγχου για το απόρρητο και την ασφάλεια σε μία τοποθεσία</translation>
 <translation id="1154704303112745282">Η σελίδα δεν είναι διαθέσιμη εκτός σύνδεσης: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Χρησιμοποιήθηκαν</translation>
 <translation id="1171770572613082465">Δείτε δημοφιλείς ιστοτόπους πατώντας το κουμπί "Κορυφαίοι ιστότοποι"</translation>
@@ -318,6 +319,7 @@
 <translation id="2932222164150889403">Το πληκτρολόγιό σας δεν θα αλλάξει</translation>
 <translation id="2942036813789421260">Η καρτέλα προεπισκόπησης είναι κλειστή</translation>
 <translation id="2946420957526726953">Γίνεται ενημέρωση του Chrome για σύνδεση σε άλλες συσκευές</translation>
+<translation id="2951071800649516099">Προσθέστε σελίστες στη λίστα ανάγνωσης για αργότερα.</translation>
 <translation id="2956410042958133412">Αυτός ο λογαριασμός τελεί υπό τη διαχείριση των γονέων <ph name="PARENT_NAME_1" /> και <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> μη αναγνωσμένη σελίδα}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> μη αναγνωσμένες σελίδες}}</translation>
 <translation id="2961210776189273067">Τίτλος</translation>
@@ -549,6 +551,7 @@
 <translation id="4452411734226507615">Κλείσιμο καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Ο σελιδοδείκτης είναι στο "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4472118726404937099">Για συγχρονισμό και εξατομίκευση σε διάφορες συσκευές, συνδεθείτε και ενεργοποιήστε τον συγχρονισμό</translation>
+<translation id="4479839115899251637">Διαγρ. από λίστα ανάγνωσης</translation>
 <translation id="4479972344484327217">Εγκατάσταση <ph name="MODULE" /> για το Chrome…</translation>
 <translation id="4487967297491345095">Όλα τα δεδομένα εφαρμογών του Chrome θα διαγραφούν οριστικά. Σε αυτά περιλαμβάνονται όλα τα αρχεία, οι ρυθμίσεις, οι λογαριασμοί, οι βάσεις δεδομένων, κ.λπ.</translation>
 <translation id="449126573531210296">Κρυπτογραφήστε συγχρονισμένους κωδικούς πρόσβασης με τον Λογαριασμό σας Google</translation>
@@ -570,9 +573,11 @@
 <translation id="4558311620361989323">Συντομεύσεις ιστοσελίδας</translation>
 <translation id="4561730552726921821">Η εγγραφή ήταν επιτυχής</translation>
 <translation id="4561979708150884304">Δεν υπάρχει σύνδεση</translation>
+<translation id="4562008740775511591">Το Chrome παρέχει εύλογες προεπιλογές, αλλά μπορείτε να το προσαρμόσετε σύμφωνα με τον τρόπο με τον οποίο περιηγείστε.</translation>
 <translation id="4565377596337484307">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="4572422548854449519">Συνδεθείτε στον διαχειριζόμενο λογαριασμό</translation>
 <translation id="4576892426230499203">Δοκιμάστε μια διαφορετική επιλογή επαλήθευσης</translation>
+<translation id="4578289292431526768">Ας ξεκινήσουμε</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Πριν από # λεπτό}other{Πριν από # λεπτά}}</translation>
 <translation id="4587589328781138893">Ιστότοποι</translation>
 <translation id="4594952190837476234">Αυτή η σελίδα εκτός σύνδεσης δημιουργήθηκε στις <ph name="CREATION_TIME" /> και μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
@@ -809,6 +814,7 @@
 <translation id="5956665950594638604">Άνοιγμα Κέντρου βοήθειας Chrome σε νέα καρτέλα</translation>
 <translation id="5957442310066583693">Για να δείτε τους κορυφαίους ιστοτόπους, πατήστε το κουμπί αρχικής οθόνης.</translation>
 <translation id="5958275228015807058">Βρείτε τα αρχεία και τις σελίδες σας στις Λήψεις</translation>
+<translation id="5962272973076519240">Επαλήθευση ταυτότητας για ξεκλείδωμα Ανώνυμης περιήγησης</translation>
 <translation id="5962718611393537961">Πατήστε για σύμπτυξη</translation>
 <translation id="5964805880140440652">Για να κοινοποιήσετε αυτήν τη σελίδα σε μια άλλη συσκευή, ενεργοποιήστε τον συγχρονισμό στις ρυθμίσεις του Chrome.</translation>
 <translation id="5964869237734432770">Διακοπή περιγραφών εικόνων</translation>
@@ -933,6 +939,7 @@
 <translation id="661266467055912436">Βελτιώνει την ασφάλεια για εσάς και όλους στον ιστό.</translation>
 <translation id="6618554661997243500">Για να δείτε κορυφαίους ιστοτόπους και ειδήσεις για εσάς, πατήστε το κουμπί αρχικής οθόνης.</translation>
 <translation id="6627583120233659107">Επεξεργασία φακέλου</translation>
+<translation id="6633067410344541938">Ξεκλείδωμα Ανώνυμης περιήγησης</translation>
 <translation id="663674369910034433">Για περισσότερες ρυθμίσεις που σχετίζονται με το απόρρητο, την ασφάλεια και τη συλλογή δεδομένων, ανατρέξτε στην ενότητα <ph name="BEGIN_LINK1" />Συγχρονισμός<ph name="END_LINK1" /> και <ph name="BEGIN_LINK2" />υπηρεσίες Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Διαγραφή</translation>
 <translation id="6643649862576733715">Ταξινόμηση κατά όγκο δεδομένων που εξοικονομήθηκαν</translation>
@@ -988,12 +995,14 @@
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6955535239952325894">Αυτή η ρύθμιση είναι απενεργοποιημένη στα διαχειριζόμενα προγράμματα περιήγησης.</translation>
 <translation id="6963766334940102469">Διαγραφή σελιδοδεικτών</translation>
+<translation id="6964116075545915250">Επεξεργ. λίστας ανάγνωσης</translation>
 <translation id="696447261358045621">Έξοδος από την κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="6979737339423435258">Από την αρχή</translation>
 <translation id="6981982820502123353">Προσβασιμότητα</translation>
 <translation id="6987047470128880212">Η ανώνυμη περιήγηση δεν είναι διαθέσιμη σε αυτήν τη συσκευή.</translation>
 <translation id="6995899638241819463">Σας προειδοποιεί σε περίπτωση που οι κωδικοί πρόσβασής σας αποκαλυφθούν στο πλαίσιο μιας παραβίασης δεδομένων.</translation>
 <translation id="7001056293070445572">Αυτό το αρχείο είναι μεγάλο (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">Προσθήκη στη λίστα ανάγν. <ph name="BEGIN_NEW" />Νέα<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Άνοιγμα σε πρόγρ. περιήγησης</translation>
 <translation id="702463548815491781">Συνιστάται όταν έχει ενεργοποιηθεί το TalkBack ή η πρόσβαση με διακόπτη</translation>
 <translation id="7027549951530753705">Έγινε επαναφορά του στοιχείου <ph name="ITEM_TITLE" />.</translation>
@@ -1213,6 +1222,7 @@
 <translation id="825412236959742607">Αυτή η σελίδα χρησιμοποιεί πάρα πολλή μνήμη. Για αυτόν τον λόγο, το Chrome κατάργησε κάποιο περιεχόμενο.</translation>
 <translation id="8260126382462817229">Δοκιμάστε να συνδεθείτε ξανά</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
+<translation id="82619448491672958">Δείτε άλλες καρτέλες</translation>
 <translation id="8266862848225348053">Τοποθεσία λήψης</translation>
 <translation id="8274165955039650276">Εμφάνιση λήψεων</translation>
 <translation id="8281886186245836920">Παράβλεψη</translation>
