@@ -18,7 +18,7 @@ import {OpenWindowProxyImpl} from './open_window_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a visit to a
- * page within a Cluster. A visit features the page favicon, title, a timestamp,
+ * page within a cluster. A visit features the page favicon, title, a timestamp,
  * as well as an action menu.
  */
 

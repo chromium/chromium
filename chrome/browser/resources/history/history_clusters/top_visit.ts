@@ -15,7 +15,7 @@ import {URLVisit} from './history_clusters.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a top visit
- * within a Cluster. A top visit is a featured, i.e., visible, visit with an
+ * within a cluster. A top visit is a featured, i.e., visible, visit with an
  * optional set of related visits which are not visible by default.
  */
 

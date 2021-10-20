@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import './cluster.js';
-import './shared_vars.js';
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import './shared_style.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
@@ -66,7 +65,7 @@ class HistoryClustersElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * The current query for which related Clusters are requested and shown.
+       * The current query for which related clusters are requested and shown.
        */
       query: {
         type: String,
@@ -75,19 +74,26 @@ class HistoryClustersElement extends PolymerElement {
       },
 
       /**
-       * The header text to show when the query is non-empty.
+       * The header text to show when the query and the results are non-empty.
        */
       headerText_: {
         type: String,
-        computed: `computeHeaderText_(result_)`,
+        computed: `computeHeaderText_(result_.*)`,
       },
 
       /**
-       * Contains 1) the Clusters returned by the browser in response to a
-       * request for the freshest Clusters related to a given query until a
-       * given time threshold and 2) the optional continuation query parameters
-       * returned alongside the Clusters to be used in the follow-up request to
-       * load older Clusters.
+       * The placeholder text to show when the results are empty.
+       */
+      placeholderText_: {
+        type: String,
+        computed: `computePlaceholderText_(result_.*)`,
+      },
+
+      /**
+       * The browser response to a request for the freshest clusters related to
+       * a given query until an optional given end time (or the present time).
+       * Contains the clusters, the optional continuation end time to be used in
+       * the follow-up request to load older clusters, and the original query.
        */
       result_: Object,
 
@@ -232,9 +238,19 @@ class HistoryClustersElement extends PolymerElement {
   //============================================================================
 
   private computeHeaderText_(): string {
-    return this.result_ ?
-        loadTimeData.getStringF('headerText', this.result_.query || '') :
+    return this.result_ && this.result_.query && this.result_.clusters.length ?
+        loadTimeData.getStringF('headerText', this.result_.query) :
         '';
+  }
+
+  private computePlaceholderText_(): string {
+    if (!this.result_) {
+      return '';
+    }
+    return this.result_.clusters.length ?
+        '' :
+        loadTimeData.getString(
+            this.result_.query ? 'noSearchResults' : 'noResults');
   }
 
   /**
@@ -250,11 +266,13 @@ class HistoryClustersElement extends PolymerElement {
 
   private onClustersQueryResult_(result: QueryResult) {
     if (result.isContinuation) {
-      // Do not replace the existing result. `result` contains a partial set of
-      // Clusters that should be appended to the existing ones.
+      // Do not replace the existing result when `result` contains a partial
+      // set of clusters that should be appended to the existing ones.
       this.push('result_.clusters', ...result.clusters);
       this.result_.continuationEndTime = result.continuationEndTime;
     } else {
+      // Scroll to the top when `result` contains a new set of clusters.
+      this.scrollTop = 0;
       this.result_ = result;
     }
 
@@ -281,14 +299,12 @@ class HistoryClustersElement extends PolymerElement {
 
   private onQueryChanged_() {
     this.onBrowserIdle_().then(() => {
-      // Request up to `RESULTS_PER_PAGE` of the freshest Clusters until now.
+      // Request up to `RESULTS_PER_PAGE` of the freshest clusters until now.
       this.queryClusters_({
         query: this.query.trim(),
         maxCount: RESULTS_PER_PAGE,
         endTime: undefined,
       });
-      // Scroll to the top when the results change due to query change.
-      this.scrollTop = 0;
     });
   }
 

@@ -1,9 +1,9 @@
-<style include="cr-hidden-style">
+<style include="history-clusters-shared-style">
   :host {
     color: var(--cr-primary-text-color);
     display: block;
     font-size: 0.875rem;  /* 14px */
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 
   #clusters,
@@ -17,11 +17,17 @@
   #header {
     font-size: 1.75rem;  /* 28px */
   }
+
+  #placeholder {
+    font-size: inherit;
+  }
 </style>
-<div id="header" hidden="[[!result_.query]]">[[headerText_]]</div>
-<iron-list id="clusters"
-    items="[[result_.clusters]]"
-    on-remove-visits="onRemoveVisits_">
+<div id="header" hidden="[[!headerText_]]">[[headerText_]]</div>
+<div id="placeholder" class="centered-message" hidden="[[!placeholderText_]]">
+  [[placeholderText_]]
+</div>
+<iron-list id="clusters" items="[[result_.clusters]]"
+    on-remove-visits="onRemoveVisits_" hidden="[[!result_.clusters.length]]">
   <!-- We must have a tabindex on these history-cluster elements, because
        iron-list gets very confused handling arrow keys without them. Moreover,
        we can't allow Tab to traverse all list elements because:
@@ -35,7 +41,6 @@
 <iron-scroll-threshold id="scrollThreshold"
     lower-threshold="500" on-lower-threshold="onScrolledToBottom_">
 </iron-scroll-threshold>
-
 <cr-lazy-render id="confirmationDialog">
   <template>
     <cr-dialog consume-keydown-event on-cancel="onConfirmationDialogCancel_">

@@ -14,7 +14,7 @@ import {Cluster, PageCallbackRouter, URLVisit} from './history_clusters.mojom-we
 import {ClusterAction, MetricsProxyImpl} from './metrics_proxy.js';
 
 /**
- * @fileoverview This file provides a custom element displaying a Cluster.
+ * @fileoverview This file provides a custom element displaying a cluster.
  */
 
 declare global {
@@ -43,7 +43,7 @@ class HistoryClusterElement extends PolymerElement {
       },
 
       /**
-       * The Cluster displayed by this element.
+       * The cluster displayed by this element.
        */
       cluster: Object,
     };
