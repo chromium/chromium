@@ -603,5 +603,25 @@ TEST_F(SeatTest, DragDropAbort) {
   EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());
 }
 
+TEST_F(SeatTest, CanSetFocusChangedCallbackMoreThanOnce) {
+  TestSeat seat;
+  bool cb_1_called = false;
+  bool cb_2_called = false;
+
+  seat.SetFocusChangedCallback(base::BindLambdaForTesting(
+      [&](Surface* a, Surface* b, bool gained_or_lost) {
+        cb_1_called = true;
+      }));
+  seat.SetFocusChangedCallback(base::BindLambdaForTesting(
+      [&](Surface* a, Surface* b, bool gained_or_lost) {
+        cb_2_called = true;
+      }));
+
+  seat.OnWindowFocused(nullptr, nullptr);
+
+  EXPECT_TRUE(cb_1_called);
+  EXPECT_TRUE(cb_2_called);
+}
+
 }  // namespace
 }  // namespace exo

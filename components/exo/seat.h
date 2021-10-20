@@ -222,7 +222,7 @@ class Seat : public aura::client::FocusChangeObserver,
 
   gfx::PointF last_pointer_location_;
 
-  FocusChangedCallback focus_changed_callback_;
+  std::vector<FocusChangedCallback> focus_changed_callbacks_;
 
   bool was_shutdown_ = false;
 
