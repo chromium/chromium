@@ -3501,8 +3501,29 @@ IN_PROC_BROWSER_TEST_F(
                 .party_context());
 }
 
+class RenderFrameHostImplNoStrictSiteIsolationOnAndroidBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplNoStrictSiteIsolationOnAndroidBrowserTest() = default;
+  ~RenderFrameHostImplNoStrictSiteIsolationOnAndroidBrowserTest() override =
+      default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
+
+#if defined(OS_ANDROID)
+    // On Android, --site-per-process may be passed on some bots to force strict
+    // site isolation.  That causes this test too create a lot of processes and
+    // time out due to running too slowly, so force this test to run without
+    // strict site isolation on Android.  This is ok since this test doesn't
+    // actually care about process isolation.
+    command_line->RemoveSwitch(switches::kSitePerProcess);
+#endif
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTest,
+    RenderFrameHostImplNoStrictSiteIsolationOnAndroidBrowserTest,
     ComputeIsolationInfoForNavigationPartyContextExceedMaxSize) {
   GURL url = embedded_test_server()->GetURL(
       "a.com",
