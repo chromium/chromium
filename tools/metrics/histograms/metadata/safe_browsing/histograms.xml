@@ -1677,6 +1677,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenCompletion"
+    enum="BooleanSuccess" expires_after="2022-09-09">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Safe Browsing needs a token in order to make a request to get the tailored
+    security service bit. This histogram tracks whether getting a token is
+    successful or not.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenErrorState"
+    enum="GoogleServiceAuthError" expires_after="2022-09-09">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Safe Browsing needs a token in order to make a request to get the tailored
+    security service bit. This histogram tracks the HTTP code when getting a
+    token is not successful.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenResponseCode"
+    units="code" expires_after="2022-09-09">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    HTTP Response code returned by the server when trying to fetch the OAuth
+    token for a tailored security service query.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.TokenFetcher.ErrorType"
     enum="GoogleServiceAuthError" expires_after="2022-04-24">
   <owner>xinghuilu@chromium.org</owner>

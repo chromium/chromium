@@ -222,7 +222,8 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="sct_auditing"/>
       <traffic_annotation unique_id="unwanted_software_report"/>
       <traffic_annotation unique_id="ppapi_download_request"/>
-    </sender>
+      <traffic_annotation unique_id="tailored_security_service"/>
+   </sender>
   </group>
   <group name="Cookieless Ads">
     <sender name="Conversion Measurements">
