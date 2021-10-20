@@ -125,6 +125,8 @@ class ExternalProtocolDialogBrowserTest
       const absl::optional<url::Origin>& initiating_origin) override {
     url_did_launch_ = true;
     launch_url_ = initiating_origin->host();
+    if (launch_url_run_loop_)
+      launch_url_run_loop_->Quit();
   }
   void LaunchUrlWithoutSecurityCheck(
       const GURL& url,
@@ -146,6 +148,13 @@ class ExternalProtocolDialogBrowserTest
     host_resolver()->AddRule(kRedirectingOrigin, "127.0.0.1");
   }
 
+  void WaitForLaunchUrl() {
+    if (url_did_launch_)
+      return;
+    launch_url_run_loop_ = std::make_unique<base::RunLoop>();
+    launch_url_run_loop_->Run();
+  }
+
   base::HistogramTester histogram_tester_;
 
  protected:
@@ -155,6 +164,9 @@ class ExternalProtocolDialogBrowserTest
   BlockState blocked_state_ = BlockState::UNKNOWN;
   bool url_did_launch_ = false;
   std::string launch_url_;
+
+ private:
+  std::unique_ptr<base::RunLoop> launch_url_run_loop_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestAccept) {
@@ -278,15 +290,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestFocus) {
   EXPECT_TRUE(focused_view);
 }
 
-// https://crbug.com/1250386
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    defined(OS_LINUX) && defined(USE_OZONE)
-#define MAYBE_OriginNameTest DISABLED_OriginNameTest
-#else
-#define MAYBE_OriginNameTest OriginNameTest
-#endif
-IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
-                       MAYBE_OriginNameTest) {
+IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, OriginNameTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -297,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
       content::JsReplace("location.href = $1",
                          embedded_test_server()->GetURL(
                              "b.test", "/server-redirect?ms-calc:"))));
-  content::WaitForLoadStop(web_contents);
+  WaitForLaunchUrl();
   EXPECT_TRUE(url_did_launch_);
   // The url should be the url of the last redirecting server and not of the
   // request initiator
