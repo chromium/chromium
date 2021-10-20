@@ -166,9 +166,20 @@ Polymer({
     browserProxy.getChannelInfo().then(info => {
       this.channelInfo_ = info;
       // Display the target channel for the 'Currently on' message.
-      this.currentlyOnChannelText_ = this.i18n(
-          'aboutCurrentlyOnChannel',
-          this.i18n(browserChannelToI18nId(info.targetChannel, info.isLts)));
+      const browserChannel =
+          this.i18n(browserChannelToI18nId(info.targetChannel, info.isLts));
+      // TODO(crbug.com/1259245) On LTS we should already show "Currently on
+      // long-term support channel", whereas for other channels we still say
+      // "Currently on stable", without the word "channel". This will be changed
+      // and made consistent with the abovementioned ticket and this if-else
+      // will be refactored.
+      if (info.isLts) {
+        this.currentlyOnChannelText_ =
+            this.i18n('aboutCurrentlyOnChannelInfo', browserChannel);
+      } else {
+        this.currentlyOnChannelText_ =
+            this.i18n('aboutCurrentlyOnChannel', browserChannel);
+      }
     });
   },
 

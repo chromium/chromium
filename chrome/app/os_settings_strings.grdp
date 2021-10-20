@@ -151,13 +151,16 @@
     stable
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_LTS" desc="The LTS (long-term support) label in the message about current channel.">
-    LTS
+    long-term support
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_CHECK_FOR_UPDATES" desc="The button label to check for updates and apply (download and install) if found">
     Check for updates
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL" desc="The message about current channel.">
     Currently on <ph name="CHANNEL_NAME">$1<ex>stable</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_INFO" desc="The message about current channel.">
+    Currently on <ph name="CHANNEL_NAME">$1<ex>stable</ex></ph> channel
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_DETAILED_BUILD_INFO" desc="Label describing the section that shows detailed information about the current Chrome build.">
     Additional details
