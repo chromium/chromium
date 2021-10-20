@@ -35,14 +35,6 @@ http_archive(
     urls = ["https://github.com/google/benchmark/archive/0baacde3618ca617da95375e0af13ce1baadea47.zip"],
 )
 
-# C++ rules for Bazel.
-http_archive(
-    name = "rules_cc",  # 2021-06-07T16:41:49Z
-    sha256 = "b295cad8c5899e371dde175079c0a2cdc0151f5127acc92366a8c986beb95c76",
-    strip_prefix = "rules_cc-daf6ace7cfeacd6a83e9ff2ed659f416537b6c74",
-    urls = ["https://github.com/bazelbuild/rules_cc/archive/daf6ace7cfeacd6a83e9ff2ed659f416537b6c74.zip"],
-)
-
 # Bazel platform rules.
 http_archive(
     name = "platforms",

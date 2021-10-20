@@ -29,6 +29,7 @@ absl_cc_library(
     absl::atomic_hook
     absl::config
     absl::core_headers
+    absl::function_ref
     absl::raw_logging_internal
     absl::inlined_vector
     absl::stacktrace

@@ -1446,6 +1446,7 @@ class raw_hash_set {
   void prefetch(const key_arg<K>& key) const {
     (void)key;
 #if defined(__GNUC__)
+    prefetch_heap_block();
     auto seq = probe(ctrl_, hash_ref()(key), capacity_);
     __builtin_prefetch(static_cast<const void*>(ctrl_ + seq.offset()));
     __builtin_prefetch(static_cast<const void*>(slots_ + seq.offset()));
@@ -1477,6 +1478,7 @@ class raw_hash_set {
   }
   template <class K = key_type>
   iterator find(const key_arg<K>& key) {
+    prefetch_heap_block();
     return find(key, hash_ref()(key));
   }
 
@@ -1486,6 +1488,7 @@ class raw_hash_set {
   }
   template <class K = key_type>
   const_iterator find(const key_arg<K>& key) const {
+    prefetch_heap_block();
     return find(key, hash_ref()(key));
   }
 
@@ -1856,6 +1859,7 @@ class raw_hash_set {
  protected:
   template <class K>
   std::pair<size_t, bool> find_or_prepare_insert(const K& key) {
+    prefetch_heap_block();
     auto hash = hash_ref()(key);
     auto seq = probe(ctrl_, hash, capacity_);
     while (true) {
@@ -1917,6 +1921,15 @@ class raw_hash_set {
   }
 
   size_t& growth_left() { return settings_.template get<0>(); }
+
+  void prefetch_heap_block() const {
+    // Prefetch the heap-allocated memory region to resolve potential TLB
+    // misses.  This is intended to overlap with execution of calculating the
+    // hash for a key.
+#if defined(__GNUC__)
+    __builtin_prefetch(static_cast<const void*>(ctrl_), 0, 1);
+#endif  // __GNUC__
+  }
 
   HashtablezInfoHandle& infoz() { return settings_.template get<1>(); }
 
