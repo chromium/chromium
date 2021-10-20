@@ -511,19 +511,16 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
       ->SetOrientation(views::LayoutOrientation::kVertical);
   about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator());
 
-  // TODO(crbug.com/1250653): Update with the actual strings.
-  // TODO(crbug.com/1250653): Update checks for the data being available and
-  // logic to determine short description showed as subtitle.
   auto* about_this_site_button = about_this_site_section->AddChildView(
       std::make_unique<PageInfoHoverButton>(
           base::BindRepeating(&PageInfoNavigationHandler::OpenAboutThisSitePage,
                               base::Unretained(navigation_handler_), info),
-          PageInfoViewFactory::GetAboutThisSiteIcon(), 0, std::u16string(),
+          PageInfoViewFactory::GetAboutThisSiteIcon(),
+          IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER, std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
-          std::u16string(),
-          base::ASCIIToUTF16(info.description().description()),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_TOOLTIP),
+          base::UTF8ToUTF16(info.description().description()),
           PageInfoViewFactory::GetOpenSubpageIcon()));
-  about_this_site_button->SetTitleText(u"About this site");
   about_this_site_button->SetSubtitleMultiline(false);
 
   return about_this_site_section;

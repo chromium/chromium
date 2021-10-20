@@ -134,9 +134,9 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateAboutThisSitePageView(
     const page_info::proto::SiteInfo& info) {
-  // TODO(crbug.com/1250653): Use actual strings.
   return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(u"About this site"),
+      CreateSubpageHeader(
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER)),
       std::make_unique<PageInfoAboutThisSiteContentView>(presenter_,
                                                          ui_delegate_, info));
 }
