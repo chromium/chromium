@@ -23,6 +23,10 @@ receiver::MediaManager* CastRuntimeService::GetMediaManager() {
   return nullptr;
 }
 
+CastWebService* CastRuntimeService::GetCastWebService() {
+  return nullptr;
+}
+
 void CastRuntimeService::InitializeInternal() {}
 
 void CastRuntimeService::FinalizeInternal() {}

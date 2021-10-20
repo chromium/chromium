@@ -63,4 +63,8 @@ const std::string& CastRuntimeServiceImpl::GetAudioChannelEndpoint() {
   return app_dispatcher_.GetCastMediaServiceGrpcEndpoint();
 }
 
+CastWebService* CastRuntimeServiceImpl::GetCastWebService() {
+  return app_dispatcher_.GetCastWebService();
+}
+
 }  // namespace chromecast

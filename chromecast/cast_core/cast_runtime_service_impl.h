@@ -37,6 +37,7 @@ class CastRuntimeServiceImpl
   void StartInternal() override;
   void StopInternal() override;
   const std::string& GetAudioChannelEndpoint() override;
+  CastWebService* GetCastWebService() override;
 
  protected:
   // CastRuntimeMetricsRecorder::EventBuilderFactory overrides.

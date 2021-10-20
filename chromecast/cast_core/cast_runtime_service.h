@@ -31,6 +31,7 @@ namespace chromecast {
 
 class CastWindowManager;
 class WebCryptoServer;
+class CastWebService;
 
 namespace media {
 class MediaPipelineBackendManager;
@@ -66,6 +67,9 @@ class CastRuntimeService
 
   virtual WebCryptoServer* GetWebCryptoServer();
   virtual receiver::MediaManager* GetMediaManager();
+  // Returns a pointer to CastWebService object with lifespan
+  // equal to CastRuntimeService main object.
+  virtual CastWebService* GetCastWebService();
 
   // CastService overrides.
   void InitializeInternal() override;

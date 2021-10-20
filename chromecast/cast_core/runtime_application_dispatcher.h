@@ -68,6 +68,7 @@ class RuntimeApplicationDispatcher final : public GrpcServer,
       GrpcMethod* callback) override;
 
   const std::string& GetCastMediaServiceGrpcEndpoint() const;
+  CastWebService* GetCastWebService() const { return web_service_.get(); }
 
  private:
   // This class handles asynchronously calling MetricsRecorderService->Record
