@@ -847,7 +847,7 @@ def _SinkTestResult(test_result, test_file_name, result_sink_client):
   https_artifacts = []
   for link_name, link_url in sorted(test_result.GetLinks().items()):
     if link_url.startswith('https:'):
-      https_artifacts.append('<li><a href=%s>%s</a></li>' %
+      https_artifacts.append('<li><a target="_blank" href=%s>%s</a></li>' %
                              (link_url, link_name))
     else:
       logging.info('Skipping non-https link %r (%s) for test %s.', link_name,
