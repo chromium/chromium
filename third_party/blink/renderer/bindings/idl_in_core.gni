@@ -4,10 +4,6 @@
 
 # Statically-defined (not runtime-generated) IDL files in 'core' component
 # for production.
-#
-# CAUTION: static_idl_files_in_core is used only by a new V8 bindings generator,
-# which is under development.  You have to update core/core_idl_files.gni in
-# addition to this list.
 static_idl_files_in_core = get_path_info(
         [
           "//third_party/blink/renderer/core/animation/animatable.idl",
