@@ -1,22 +1,12 @@
     <style include="cr-hidden-style">
       :host {
-        --cr-tabs-height: 48px;
-        --cr-tabs-icon-margin-end: var(--cr-icon-size);
-        --cr-tabs-icon-size: var(--cr-icon-size);
-        --cr-tabs-selected-color: var(--google-blue-600);
         cursor: pointer;
         display: flex;
         flex-direction: row;
         font-size: var(--cr-tabs-font-size, 14px);
         font-weight: 500;
-        height: var(--cr-tabs-height);
+        height: var(--cr-tabs-height, 48px);
         user-select: none;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        :host {
-          --cr-tabs-selected-color: var(--google-blue-refresh-300);
-        }
       }
 
       .tab {
@@ -26,9 +16,8 @@
         flex: auto;
         height: 100%;
         justify-content: center;
-        margin-inline-end: var(--cr-tabs-margin-end);
-        margin-inline-start: var(--cr-tabs-margin-start);
         opacity: .8;
+        padding: 0 var(--cr-tabs-tab-inline-padding, 0);
         position: relative;
         transition: opacity 100ms cubic-bezier(.4, 0, 1, 1);
       }
@@ -42,8 +31,14 @@
       }
 
       .selected {
-        color: var(--cr-tabs-selected-color);
+        color: var(--cr-tabs-selected-color, var(--google-blue-600));
         opacity: 1;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .selected {
+          color: var(--cr-tabs-selected-color, var(--google-blue-refresh-300));
+        }
       }
 
       .selected:focus {
@@ -53,27 +48,36 @@
       .tab-icon {
         -webkit-mask-position: center;
         -webkit-mask-repeat: no-repeat;
-        -webkit-mask-size: var(--cr-tabs-icon-size);
+        -webkit-mask-size: var(--cr-tabs-icon-size, var(--cr-icon-size));
         background-color: var(--cr-secondary-text-color);
         display: none;
-        height: var(--cr-tabs-icon-size);
-        margin-inline-end: var(--cr-tabs-icon-margin-end);
-        width: var(--cr-tabs-icon-size);
+        height: var(--cr-tabs-icon-size, var(--cr-icon-size));
+        margin-inline-end: var(--cr-tabs-icon-margin-end, var(--cr-icon-size));
+        width: var(--cr-tabs-icon-size, var(--cr-icon-size));
       }
 
       .selected .tab-icon {
-        background-color: var(--cr-tabs-selected-color);
+        background-color: var(--cr-tabs-selected-color, var(--google-blue-600));
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .selected .tab-icon {
+          background-color: var(--cr-tabs-selected-color, var(--google-blue-refresh-300));
+        }
       }
 
       .tab-indicator {
-        background: var(--google-blue-600);
+        background: var(--cr-tabs-selected-color, var(--google-blue-600));
+        border-top-left-radius: var(--cr-tabs-selection-bar-width, 2px);
+        border-top-right-radius: var(--cr-tabs-selection-bar-width, 2px);
         bottom: 0;
         height: var(--cr-tabs-selection-bar-width, 2px);
+        left: var(--cr-tabs-tab-inline-padding, 0);
         opacity: 0;
         position: absolute;
+        right: var(--cr-tabs-tab-inline-padding, 0);
         transform-origin: left center;
         transition: transform;
-        width: 100%;
       }
 
       .selected .tab-indicator {
@@ -92,7 +96,7 @@
 
       @media (prefers-color-scheme: dark) {
         .tab-indicator {
-          background: var(--google-blue-refresh-300);
+          background: var(--cr-tabs-selected-color, var(--google-blue-refresh-300));
         }
       }
     </style>
