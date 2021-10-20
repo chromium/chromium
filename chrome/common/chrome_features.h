@@ -230,6 +230,11 @@ extern const base::Feature kEarlyLibraryLoad;
 
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kElidePrioritizationOfPreNativeBootstrapTasks;
+#endif
+
+#if defined(OS_ANDROID)
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kElideTabPreloadAtStartup;
 #endif
 

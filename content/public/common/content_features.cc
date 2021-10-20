@@ -561,12 +561,6 @@ const base::Feature kProcessSharingWithStrictSiteInstances{
 const base::Feature kHighPriorityBeforeUnload{
     "HighPriorityBeforeUnload", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Under this flag bootstrap (aka startup) tasks will be prioritized. This flag
-// is used by various modules to determine whether special scheduling
-// arrangements need to be made to prioritize certain tasks.
-const base::Feature kPrioritizeBootstrapTasks = {
-    "PrioritizeBootstrapTasks", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Requires that CORS preflight requests succeed before sending private network
 // requests. This flag implies `kPrivateNetworkAccessSendPreflights`.
 // See: https://wicg.github.io/private-network-access/#cors-preflight

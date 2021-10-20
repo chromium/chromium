@@ -85,6 +85,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.DYNAMIC_COLOR_ANDROID);
                 add(ChromeFeatureList.EARLY_LIBRARY_LOAD);
                 add(ChromeFeatureList.ELASTIC_OVERSCROLL);
+                add(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS);
                 add(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP);
                 add(ChromeFeatureList
                                 .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY);
@@ -98,7 +99,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS);
                 add(ChromeFeatureList.PAINT_PREVIEW_DEMO);
                 add(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);
-                add(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS);
                 add(ChromeFeatureList.READ_LATER);
                 add(ChromeFeatureList.START_SURFACE_ANDROID);
                 add(ChromeFeatureList.STORE_HOURS);

@@ -373,6 +373,15 @@ const base::Feature kEarlyLibraryLoad{"EarlyLibraryLoad",
 #endif
 
 #if defined(OS_ANDROID)
+// Under this flag Java bootstrap (aka startup) tasks that are run before native
+// initialization will not be specially prioritized by being posted at the front
+// of the Looper's queue.
+const base::Feature kElidePrioritizationOfPreNativeBootstrapTasks = {
+    "ElidePrioritizationOfPreNativeBootstrapTasks",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+#if defined(OS_ANDROID)
 // Under this flag tab preloading at startup will be elided (i.e., not
 // performed).
 const base::Feature kElideTabPreloadAtStartup = {

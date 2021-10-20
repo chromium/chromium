@@ -176,8 +176,12 @@ public class ProcessInitializationHandler {
         }
 
         BrowserTaskExecutor.register();
-        BrowserTaskExecutor.setShouldPrioritizeBootstrapTasks(
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS));
+        // This function controls whether BrowserTaskExecutor posts pre-native bootstrap tasks at
+        // the front or back of the Looper's queue.
+        // TODO(crbug.com/1258621): Rename this function (and related functions/state) to make it
+        // clear that it's about pre-native bootstrap tasks rather than all bootstrap tasks.
+        BrowserTaskExecutor.setShouldPrioritizeBootstrapTasks(!CachedFeatureFlags.isEnabled(
+                ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS));
 
         Context application = ContextUtils.getApplicationContext();
 

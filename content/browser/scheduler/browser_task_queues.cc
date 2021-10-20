@@ -232,15 +232,17 @@ BrowserTaskQueues::CreateBrowserTaskRunners() const {
 }
 
 void BrowserTaskQueues::PostFeatureListInitializationSetup() {
-  if (base::FeatureList::IsEnabled(features::kPrioritizeBootstrapTasks)) {
-    GetBrowserTaskQueue(QueueType::kBootstrap)
-        ->SetQueuePriority(QueuePriority::kHighestPriority);
+  // NOTE: This queue will not be used if the |kTreatBootstrapAsDefault|
+  // feature is enabled (see browser_task_executor.cc).
+  GetBrowserTaskQueue(QueueType::kBootstrap)
+      ->SetQueuePriority(QueuePriority::kHighestPriority);
 
-    // Navigation and preconnection tasks are also important during startup so
-    // prioritize them too.
-    GetBrowserTaskQueue(QueueType::kPreconnection)
-        ->SetQueuePriority(QueuePriority::kHighPriority);
-  }
+  // Preconnection tasks are also important during startup so prioritize this
+  // queue too. NOTE: This queue will not be used if the
+  // |kTreatPreconnectAsDefault| feature is enabled (see
+  // browser_task_executor.cc).
+  GetBrowserTaskQueue(QueueType::kPreconnection)
+      ->SetQueuePriority(QueuePriority::kHighPriority);
 }
 
 void BrowserTaskQueues::EnableAllQueues() {
