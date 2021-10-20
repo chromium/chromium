@@ -60,8 +60,8 @@ class LegalMessageView : public views::View {
 
   using LinkClickedCallback = base::RepeatingCallback<void(const GURL&)>;
 
-  explicit LegalMessageView(const LegalMessageLines& legal_message_lines,
-                            LinkClickedCallback callback);
+  LegalMessageView(const LegalMessageLines& legal_message_lines,
+                   LinkClickedCallback callback);
   ~LegalMessageView() override;
 };
 
