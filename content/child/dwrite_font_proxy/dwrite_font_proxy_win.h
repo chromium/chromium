@@ -97,19 +97,22 @@ class DWriteFontCollectionProxy
 
   bool LoadFamilyNames(UINT32 family_index, IDWriteLocalizedStrings** strings);
 
-  bool CreateFamily(UINT32 family_index);
-
   blink::mojom::DWriteFontProxy& GetFontProxy();
 
  private:
+  DWriteFontFamilyProxy* GetFamily(UINT32 family_index);
+  DWriteFontFamilyProxy* CreateFamily(UINT32 family_index);
+
   HRESULT FindFamilyName(const std::u16string& family_name,
                          UINT32* index,
                          BOOL* exists);
 
   Microsoft::WRL::ComPtr<IDWriteFactory> factory_;
+
   std::vector<Microsoft::WRL::ComPtr<DWriteFontFamilyProxy>> families_;
   std::map<std::u16string, UINT32> family_names_;
   UINT32 family_count_ = UINT_MAX;
+
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   // Per-sequence mojo::Remote<DWriteFontProxy>. This is preferred to a
   // mojo::SharedRemote, which would force a thread hop for each call that
@@ -156,13 +159,12 @@ class DWriteFontFamilyProxy
   bool GetFontFromFontFace(IDWriteFontFace* font_face, IDWriteFont** font);
 
   void SetName(const std::u16string& family_name);
-
   const std::u16string& GetName();
 
   bool IsLoaded();
 
  protected:
-  bool LoadFamily();
+  IDWriteFontFamily* LoadFamily();
 
  private:
   UINT32 family_index_;

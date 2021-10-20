@@ -119,6 +119,15 @@ DWriteFontCollectionProxy::DWriteFontCollectionProxy() = default;
 
 DWriteFontCollectionProxy::~DWriteFontCollectionProxy() = default;
 
+DWriteFontFamilyProxy* DWriteFontCollectionProxy::GetFamily(
+    UINT32 family_index) {
+  if (family_index < families_.size()) {
+    if (DWriteFontFamilyProxy* family = families_[family_index].Get())
+      return family;
+  }
+  return nullptr;
+}
+
 HRESULT DWriteFontCollectionProxy::FindFamilyName(const WCHAR* family_name,
                                                   UINT32* index,
                                                   BOOL* exists) {
@@ -158,11 +167,12 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(
   }
 
   if (family_index != UINT32_MAX) {
-    if (!CreateFamily(family_index))
+    DWriteFontFamilyProxy* family = CreateFamily(family_index);
+    if (!family)
       return E_FAIL;
+    family->SetName(family_name);
     *exists = TRUE;
     *index = family_index;
-    families_[family_index]->SetName(family_name);
   } else {
     *exists = FALSE;
     *index = UINT32_MAX;
@@ -182,11 +192,12 @@ HRESULT DWriteFontCollectionProxy::GetFontFamily(
     return S_OK;
   }
 
-  if (!CreateFamily(index))
-    return E_FAIL;
-
-  families_[index].CopyTo(font_family);
-  return S_OK;
+  if (DWriteFontFamilyProxy* family = CreateFamily(index)) {
+    const mswr::ComPtr<DWriteFontFamilyProxy> family_ptr = family;
+    family_ptr.CopyTo(font_family);
+    return S_OK;
+  }
+  return E_FAIL;
 }
 
 UINT32 DWriteFontCollectionProxy::GetFontFamilyCount() {
@@ -244,7 +255,7 @@ HRESULT DWriteFontCollectionProxy::CreateEnumeratorFromKey(
   }
 
   // If we already loaded the family we should reuse the existing collection.
-  DCHECK(!families_[*family_index]->IsLoaded());
+  DCHECK(!GetFamily(*family_index)->IsLoaded());
 
   std::vector<base::FilePath> file_names;
   std::vector<base::File> file_handles;
@@ -350,14 +361,16 @@ bool DWriteFontCollectionProxy::GetFontFamily(UINT32 family_index,
                                               IDWriteFontFamily** font_family) {
   DCHECK(font_family);
   DCHECK(!family_name.empty());
-  if (!CreateFamily(family_index))
+
+  DWriteFontFamilyProxy* family = CreateFamily(family_index);
+  if (!family)
     return false;
 
-  mswr::ComPtr<DWriteFontFamilyProxy>& family = families_[family_index];
   if (!family->IsLoaded() || family->GetName().empty())
     family->SetName(family_name);
 
-  family.CopyTo(font_family);
+  const mswr::ComPtr<DWriteFontFamilyProxy> family_ptr = family;
+  family_ptr.CopyTo(font_family);
   return true;
 }
 
@@ -381,13 +394,16 @@ bool DWriteFontCollectionProxy::LoadFamilyNames(
   return SUCCEEDED(hr);
 }
 
-bool DWriteFontCollectionProxy::CreateFamily(UINT32 family_index) {
-  if (family_index < families_.size() && families_[family_index])
-    return true;
+DWriteFontFamilyProxy* DWriteFontCollectionProxy::CreateFamily(
+    UINT32 family_index) {
+  if (family_index < families_.size()) {
+    if (DWriteFontFamilyProxy* family = families_[family_index].Get())
+      return family;
+  }
 
   UINT32 family_count = GetFontFamilyCount();
   if (family_index >= family_count) {
-    return false;
+    return nullptr;
   }
 
   if (families_.size() < family_count)
@@ -400,7 +416,7 @@ bool DWriteFontCollectionProxy::CreateFamily(UINT32 family_index) {
   DCHECK_LT(family_index, families_.size());
 
   families_[family_index] = family;
-  return true;
+  return family.Get();
 }
 
 blink::mojom::DWriteFontProxy& DWriteFontCollectionProxy::GetFontProxy() {
@@ -435,22 +451,19 @@ UINT32 DWriteFontFamilyProxy::GetFontCount() {
   // GetFontCount is almost certain to be followed by a series of GetFont
   // calls which will need to load all the fonts anyway, so we might as
   // well save an IPC here.
-  if (!LoadFamily())
-    return 0;
-
-  return family_->GetFontCount();
+  if (IDWriteFontFamily* family = LoadFamily())
+    return family->GetFontCount();
+  return 0;
 }
 
 HRESULT DWriteFontFamilyProxy::GetFont(UINT32 index, IDWriteFont** font) {
   DCHECK(font);
 
-  if (index >= GetFontCount()) {
+  if (index >= GetFontCount())
     return E_INVALIDARG;
-  }
-  if (!LoadFamily())
-    return E_FAIL;
-
-  return family_->GetFont(index, font);
+  if (IDWriteFontFamily* family = LoadFamily())
+    return family->GetFont(index, font);
+  return E_FAIL;
 }
 
 HRESULT DWriteFontFamilyProxy::GetFamilyNames(IDWriteLocalizedStrings** names) {
@@ -485,10 +498,9 @@ HRESULT DWriteFontFamilyProxy::GetFirstMatchingFont(
     IDWriteFont** matching_font) {
   DCHECK(matching_font);
 
-  if (!LoadFamily())
-    return E_FAIL;
-
-  return family_->GetFirstMatchingFont(weight, stretch, style, matching_font);
+  if (IDWriteFontFamily* family = LoadFamily())
+    return family->GetFirstMatchingFont(weight, stretch, style, matching_font);
+  return E_FAIL;
 }
 
 HRESULT DWriteFontFamilyProxy::GetMatchingFonts(
@@ -498,10 +510,9 @@ HRESULT DWriteFontFamilyProxy::GetMatchingFonts(
     IDWriteFontList** matching_fonts) {
   DCHECK(matching_fonts);
 
-  if (!LoadFamily())
-    return E_FAIL;
-
-  return family_->GetMatchingFonts(weight, stretch, style, matching_fonts);
+  if (IDWriteFontFamily* family = LoadFamily())
+    return family->GetMatchingFonts(weight, stretch, style, matching_fonts);
+  return E_FAIL;
 }
 
 HRESULT DWriteFontFamilyProxy::RuntimeClassInitialize(
@@ -542,9 +553,9 @@ bool DWriteFontFamilyProxy::IsLoaded() {
   return family_ != nullptr;
 }
 
-bool DWriteFontFamilyProxy::LoadFamily() {
+IDWriteFontFamily* DWriteFontFamilyProxy::LoadFamily() {
   if (family_)
-    return true;
+    return family_.Get();
 
   SCOPED_UMA_HISTOGRAM_TIMER("DirectWrite.Fonts.Proxy.LoadFamilyTime");
   TRACE_EVENT0("dwrite,fonts", "DWriteFontFamilyProxy::LoadFamily");
@@ -557,7 +568,7 @@ bool DWriteFontFamilyProxy::LoadFamily() {
   mswr::ComPtr<IDWriteFontCollection> collection;
   if (!proxy_collection_->LoadFamily(family_index_, &collection)) {
     LogLoadFamilyResult(LOAD_FAMILY_ERROR_NO_COLLECTION);
-    return false;
+    return nullptr;
   }
 
   UINT32 family_count = collection->GetFontFamilyCount();
@@ -576,7 +587,7 @@ bool DWriteFontFamilyProxy::LoadFamily() {
     if (SUCCEEDED(hr) && found) {
       hr = collection->GetFontFamily(family_index, &family_);
       LogLoadFamilyResult(LOAD_FAMILY_SUCCESS_MATCHED_FAMILY);
-      return SUCCEEDED(hr);
+      return SUCCEEDED(hr) ? family_.Get() : nullptr;
     }
   }
 
@@ -585,15 +596,14 @@ bool DWriteFontFamilyProxy::LoadFamily() {
   if (family_count == 0) {
     // This is really strange, we successfully loaded no fonts?!
     LogLoadFamilyResult(LOAD_FAMILY_ERROR_NO_FAMILIES);
-    return false;
+    return nullptr;
   }
 
   LogLoadFamilyResult(family_count == 1 ? LOAD_FAMILY_SUCCESS_SINGLE_FAMILY
                                         : LOAD_FAMILY_ERROR_MULTIPLE_FAMILIES);
 
   hr = collection->GetFontFamily(0, &family_);
-
-  return SUCCEEDED(hr);
+  return SUCCEEDED(hr) ? family_.Get() : nullptr;
 }
 
 FontFileEnumerator::FontFileEnumerator() = default;
