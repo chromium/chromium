@@ -2050,13 +2050,14 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
       ->GetEventHandler()
       .RecomputeMouseHoverStateIfNeeded();
 
-  // Adjusting frame anchor only happens on the main frame.
-  if (ForMainFrame()) {
-    if (LocalFrameView* view = LocalRootImpl()->GetFrameView()) {
-      if (FragmentAnchor* anchor = view->GetFragmentAnchor())
-        anchor->PerformPreRafActions();
-    }
-  }
+  ForEachLocalFrameControlledByWidget(
+      LocalRootImpl()->GetFrame(),
+      WTF::BindRepeating([](WebLocalFrameImpl* local_frame) {
+        if (LocalFrameView* view = local_frame->GetFrameView()) {
+          if (FragmentAnchor* anchor = view->GetFragmentAnchor())
+            anchor->PerformPreRafActions();
+        }
+      }));
 
   absl::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> ukm_timer;
   if (WidgetBase::ShouldRecordBeginMainFrameMetrics()) {

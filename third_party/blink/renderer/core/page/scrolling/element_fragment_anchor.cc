@@ -22,6 +22,18 @@
 
 namespace blink {
 
+namespace {
+// TODO(bokan): Move this into FragmentDirective after
+// https://crrev.com/c/3216206 lands.
+String RemoveFragmentDirectives(const String& url_fragment) {
+  wtf_size_t directive_delimiter_ix = url_fragment.Find(":~:");
+  if (directive_delimiter_ix == kNotFound)
+    return url_fragment;
+
+  return url_fragment.Substring(0, directive_delimiter_ix);
+}
+}  // namespace
+
 ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
                                                         LocalFrame& frame,
                                                         bool should_scroll) {
@@ -37,7 +49,7 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
   if (!url.HasFragmentIdentifier() && !doc.CssTarget() && !doc.IsSVGDocument())
     return nullptr;
 
-  String fragment = url.FragmentIdentifier();
+  String fragment = RemoveFragmentDirectives(url.FragmentIdentifier());
   Node* anchor_node = doc.FindAnchor(fragment);
 
   // Setting to null will clear the current target.
