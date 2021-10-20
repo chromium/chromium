@@ -10,12 +10,13 @@ These domains are used in social engineering attacks, from phishing to retail
 fraud.
 
 In addition to [Google Safe Browsing](https://safebrowsing.google.com/)
-protections, Chrome attempts to detect these lookalike domains using a number of
-on-device heuristics. These heuristics compare the visited URL against domains
-that the user has visited previously and other popular domains.
+protections, Chrome attempts to detect these lookalike domains by comparing the
+URL you visited with other URLs that are either very popular, or that you have
+visited previously. These checks all happen within Chrome -- Chrome does not
+communicate with Google to perform these checks.
 
 When Chrome detects a potential lookalike domain, it may block the page and show
-a full-page warning, or it may show a warning overlay, depending on how certain
+a full-page warning, or it may show a pop-up warning, depending on how certain
 Chrome is that the site is a spoof. These warnings typically have a "Did you
 mean ...?" message.
 
@@ -24,13 +25,13 @@ mean ...?" message.
 | ![Interstitial page](interstitial.png) | ![Safety Tip bubble](tip.png) |
 
 These warnings do not indicate that the site the user has visited is malicious.
-They only indicate that the site looks like another site, and the user should
-make sure that they're on the site that they expected.
+The warnings indicate that the site looks like another site, and that the user
+should make sure that they are visiting the site that they expected.
 
 ## Examples of lookalike domains
 
-Chrome's heuristics are designed to detect spoofing techniques in the wild. Some
-example "lookalike" patterns include:
+Chrome's checks are designed to detect spoofing techniques in the wild. Some
+example "lookalike" patterns that trigger warnings include:
 
  * Domains that are a small edit-distance away from other domains, such as
    `goog0le.com`.
@@ -44,31 +45,30 @@ This list is not exhaustive, and developers are encouraged to avoid using
 domains that users without technical backgrounds may confuse for another site.
 
 
-## Heuristics are imperfect
+## Lookalike checks are imperfect
 
-Like all heuristics, Chrome's heuristics are not always right. For instance,
-attackers can choose lookalike domains that Chrome is unable to detect. Our
-intent with Chrome's lookalike heuristics is not to make spoofing impossible,
+Chrome's lookalike checks are not always right. Chrome can not detect all
+lookalike domains, and often lookalike domains are not malicious.  Our
+intent with Chrome's lookalike warnings is not to make spoofing impossible,
 but to force attackers to use less convincing lookalikes, allowing users to
 notice spoofs more easily.
 
-In addition to not catching all spoofs, Chrome's heuristics also label some
-benign pages as lookalikes. We have several approaches to minimize these
-mistakes:
+While Chrome's checks sometimes label some benign pages as lookalikes, we use
+several approaches to minimize mistakes:
 
- * Heuristics are tuned to minimize warnings on legitimate pages.
+ * Checks are tuned to minimize warnings on legitimate pages.
  * Users are never prohibited from visiting the site requested, and the warnings
    shown are designed to be helpful and informative, rather than scary.
  * We monitor what sites trigger the most warnings on a regular basis, and
-   disable warnings on identified false positives.
- * For domains used internally, we provide an [Enterprise
+   disable warnings when we identify mistakes.
+ * For domains used in company environments, we provide an [Enterprise
    Policy](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=LookalikeWarningAllowlistDomains)
-   allowing businesses to selectively disable these warnings as needed for their
+   allowing businesses to selectively disable warnings as needed for their
    users.
- * For several months following the roll-out of new heuristics, we accept
-   appeals from site operators whose sites have been incorrectly flagged.
- * Heuristics launching in Chrome 88 or later will trigger a console message
-   informing site owners of the issue for at least one release prior to
+ * For several months following the roll-out of new lookalike checks, we accept
+   review requests from site operators whose sites have been flagged.
+ * New lookalike checks launching in Chrome 88 or later will trigger a console
+   message informing site owners of the issue for at least one release prior to
    triggering user-visible warnings.
 
 
@@ -90,22 +90,21 @@ has visited the same sites that you have.
 It is possible to remove warnings on sites where Chrome is incorrectly showing
 a warning.
  * If you are the owner of both the site showing the warning and the site that
-   Chrome thinks users should visit, you can
-   [**verify ownership of both sites**](#automated-warning-removal).
+   Chrome thinks users should visit, you can use our
+   [**automated warning removal process**](#automated-warning-removal).
  * If you are not the owner of both sites, or you can't follow the automated
    process, you can [**request a manual review**](#requesting-a-manual-review).
- 
- 
+
+
 ### Automated warning removal
 
 If you own both the site where Chrome is showing a warning, as well as the site
 that Chrome is recommending, you can suppress these warnings by proving that you
-control both sites. To do this, Chrome uses a special form of 
+control both sites using a special form of 
 [Digital Asset Links](https://developers.google.com/digital-asset-links).
 
 #### Instructions
-1.  Assuming you own both `example.com` and `example.net`, create a file
-named `assetlinks.json` and put the following contents in it:
+1.  Create a file named `assetlinks.json` containing the following:
 ```
 [{
   "relation": ["lookalikes/allowlist"],
@@ -115,17 +114,19 @@ named `assetlinks.json` and put the following contents in it:
   "target" : { "namespace": "web", "site": "https://example.net"}
 }]
 ```
-
-2. Upload this file to the following URLs:
-  - `https://example.com/.well-known/assetlinks.json`
-  - `https://example.net/.well-known/assetlinks.json`
-3. Fill out a self-verification [request](https://forms.gle/DsoM64EmSZ5H4bNd8).
+2. Replace `example.com` and `example.net` with the domain where the warning is
+   shown, and with the domain that Chrome recommends users visit. Do not use
+   subdomains (e.g. use "example.com", not "www.example.com").
+3. Upload this file to both of your sites at `/.well-known/assetlinks.json`. For
+   instance, in our example, you would upload the files at both
+   `https://example.com/.well-known/assetlinks.json` and
+   `https://example.net/.well-known/assetlinks.json`.
+4. Fill out a self-verification [request](https://forms.gle/DsoM64EmSZ5H4bNd8).
 
 Once you submit the request, please allow a few days for all warnings to stop.
 If verification fails, you should be notified via email within a few hours. If
 you don't get an email indicating verification failure and your sites still show
-a warning after a week, please submit a manual review
-[request](https://forms.gle/BxV3JGbCbRjucDxq6).
+a warning after a week, please submit a manual review using the process below.
 
 Important notes:
  * You must keep the `assetlinks.json` file in place so long as you wish to
@@ -139,23 +140,18 @@ Important notes:
 ### Requesting a manual review
 
 If a site triggers erroneous lookalike warnings in Chrome,
-you can ask for a manual appeal. These appeals are evaluated manually, and we
-can suppress the warning for all Chrome users when necessary.
+you can ask for a manual review. Please only use this process if you are unable
+to use the [Automated Process](#automated-warning-removal) above. In some
+cases, we may require that you use the automated process to demonstrate that
+you control both sites.
 
-In the case of compelling spoofs, we may ask you to demonstrate that you not
-only own the site on which the warning is shown, but the site that Chrome
-believes that your site is spoofing. We may also opt to suppress warnings, but
-only for a limited period of time (generally 6 months). This is generally used
-for cases where a site is changing its domain name.
+Requests for manual review are generally considered for six months following
+after that warning would have started (i.e. after Chrome introduces the check).
+After that time, we encourage developers to test their new sites in Chrome to
+ensure that their new domain does not trigger warnings.
 
-Appeals for domains triggered by a given heuristic are generally considered for
-the 6 months following the release of that heuristic. These six months are
-designed to allow Chrome to detect most existing sites that trigger the
-heuristic erroneously. After that time, we encourage developers to test their
-new sites in Chrome to ensure that their new domain does not trigger warnings.
-
-If you are a site owner and would like to request an appeal, please fill out
-a [request](https://forms.gle/BxV3JGbCbRjucDxq6).
+If you would like to request a review, please fill out a
+[request](https://forms.gle/BxV3JGbCbRjucDxq6).
 
 
 #### Reasons an appeal might be denied
@@ -172,5 +168,6 @@ to suppress the warning for impacted users.
 For newly created sites, we encourage domain owners to choose domains that do
 not look like domains used by other sites commonly visited by your users.
 
-Many warnings are also only encountered by a small fraction of users who happen
-to intersect with both sites. See a further description of this above.
+Please keep in mind that many warnings are only encountered by a small fraction
+of users (those who visit both sites). See
+[above](#not-all-users-see-all-warning) for details.
