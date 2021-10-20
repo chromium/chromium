@@ -32,8 +32,6 @@ class BrowserViewLayoutDelegate {
   virtual bool SupportsWindowFeature(Browser::WindowFeature feature) const = 0;
   virtual gfx::NativeView GetHostView() const = 0;
   virtual bool BrowserIsTypeNormal() const = 0;
-  virtual bool BrowserIsTypeSystemWebApp() const = 0;
-  virtual bool BrowserIsTypeWebApp() const = 0;
   virtual bool HasFindBarController() const = 0;
   virtual void MoveWindowForFindBarIfNecessary() const = 0;
 };
