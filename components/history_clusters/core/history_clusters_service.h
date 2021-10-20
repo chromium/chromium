@@ -104,7 +104,8 @@ class HistoryClustersService : public KeyedService {
                     base::OnceClosure closure,
                     base::CancelableTaskTracker* task_tracker);
 
-  // Returns true synchronously if `query` matches a cluster keyword.
+  // Returns true synchronously if `query` matches a cluster keyword. This
+  // ignores clusters with only one visit to avoid overtriggering.
   // Note: This depends on the cache state, so this may kick off a cache refresh
   // request while immediately returning false. It's expected that on the next
   // keystroke, the cache may be ready and return true then.
