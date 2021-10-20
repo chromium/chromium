@@ -8,6 +8,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/components/phonehub/camera_roll_manager.h"
 #include "chromeos/components/phonehub/user_action_recorder.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -29,6 +30,7 @@ constexpr int kCameraRollThumbnailVideoIconSize = 20;
 CameraRollThumbnail::CameraRollThumbnail(
     const int index,
     const chromeos::phonehub::CameraRollItem& item,
+    chromeos::phonehub::CameraRollManager* camera_roll_manager,
     chromeos::phonehub::UserActionRecorder* user_action_recorder)
     : views::MenuButton(base::BindRepeating(&CameraRollThumbnail::ButtonPressed,
                                             base::Unretained(this))),
@@ -36,6 +38,7 @@ CameraRollThumbnail::CameraRollThumbnail(
       metadata_(item.metadata()),
       video_type_(metadata_.mime_type().find("video/") == 0),
       image_(item.thumbnail().AsImageSkia()),
+      camera_roll_manager_(camera_roll_manager),
       user_action_recorder_(user_action_recorder) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Get(this)->SetColor(
@@ -109,6 +112,7 @@ ui::SimpleMenuModel* CameraRollThumbnail::GetMenuModel() {
 
 void CameraRollThumbnail::DownloadRequested() {
   PA_LOG(INFO) << "Downloading Camera Roll Item: index=" << index_;
+  camera_roll_manager_->DownloadItem(metadata_);
   user_action_recorder_->RecordCameraRollDownloadAttempt();
   phone_hub_metrics::LogCameraRollContextMenuDownload(index_, GetMediaType());
 }

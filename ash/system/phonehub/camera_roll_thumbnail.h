@@ -16,6 +16,7 @@
 
 namespace chromeos {
 namespace phonehub {
+class CameraRollManager;
 class UserActionRecorder;
 }  // namespace phonehub
 }  // namespace chromeos
@@ -27,6 +28,7 @@ class ASH_EXPORT CameraRollThumbnail : public views::MenuButton {
   CameraRollThumbnail(
       const int index,
       const chromeos::phonehub::CameraRollItem& item,
+      chromeos::phonehub::CameraRollManager* camera_roll_manager,
       chromeos::phonehub::UserActionRecorder* user_action_recorder);
   ~CameraRollThumbnail() override;
   CameraRollThumbnail(CameraRollThumbnail&) = delete;
@@ -49,6 +51,7 @@ class ASH_EXPORT CameraRollThumbnail : public views::MenuButton {
 
   std::unique_ptr<CameraRollMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
+  chromeos::phonehub::CameraRollManager* camera_roll_manager_ = nullptr;
   chromeos::phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
 };
 

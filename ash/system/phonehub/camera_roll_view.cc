@@ -175,8 +175,9 @@ void CameraRollView::Update() {
   }
 
   for (size_t index = 0; index < camera_roll_items.size(); index++) {
-    CameraRollThumbnail* item_thumbnail = new CameraRollThumbnail(
-        index, camera_roll_items.at(index), user_action_recorder_);
+    CameraRollThumbnail* item_thumbnail =
+        new CameraRollThumbnail(index, camera_roll_items.at(index),
+                                camera_roll_manager_, user_action_recorder_);
 
     const std::u16string accessible_name = l10n_util::GetStringFUTF16(
         IDS_ASH_PHONE_HUB_CAMERA_ROLL_THUMBNAIL_ACCESSIBLE_NAME,
