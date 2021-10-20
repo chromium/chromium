@@ -87,40 +87,40 @@ AXRole: AXGenericContainer
         AXRole: AXDescriptionListDetail
             AXRole: AXStaticText "- white cold drink"
                 AXRole: AXInlineTextBox "- white cold drink"
-    AXRole: AXMath "x + a / b"
-        AXRole: AXGenericContainer
-            AXRole: AXGenericContainer
+    AXRole: AXMath
+        AXRole: AXMathMLRow
+            AXRole: AXMathMLIdentifier
                 AXRole: AXStaticText "x"
                     AXRole: AXInlineTextBox "x"
-            AXRole: AXGenericContainer
+            AXRole: AXMathMLOperator
                 AXRole: AXStaticText "+"
                     AXRole: AXInlineTextBox "+"
-            AXRole: AXGenericContainer
-                AXRole: AXGenericContainer
+            AXRole: AXMathMLRow
+                AXRole: AXMathMLIdentifier
                     AXRole: AXStaticText "a"
                         AXRole: AXInlineTextBox "a"
-                AXRole: AXGenericContainer
+                AXRole: AXMathMLOperator
                     AXRole: AXStaticText "/"
                         AXRole: AXInlineTextBox "/"
-                AXRole: AXGenericContainer
+                AXRole: AXMathMLIdentifier
                     AXRole: AXStaticText "b"
                         AXRole: AXInlineTextBox "b"
     AXRole: AXMathMLMath
-        AXRole: AXGenericContainer
-            AXRole: AXGenericContainer
+        AXRole: AXMathMLRow
+            AXRole: AXMathMLIdentifier
                 AXRole: AXStaticText "𝑥"
                     AXRole: AXInlineTextBox "𝑥"
-            AXRole: AXGenericContainer
+            AXRole: AXMathMLOperator
                 AXRole: AXStaticText "+"
                     AXRole: AXInlineTextBox "+"
-            AXRole: AXGenericContainer
-                AXRole: AXGenericContainer
+            AXRole: AXMathMLRow
+                AXRole: AXMathMLIdentifier
                     AXRole: AXStaticText "𝑎"
                         AXRole: AXInlineTextBox "𝑎"
-                AXRole: AXGenericContainer
+                AXRole: AXMathMLOperator
                     AXRole: AXStaticText "/"
                         AXRole: AXInlineTextBox "/"
-                AXRole: AXGenericContainer
+                AXRole: AXMathMLIdentifier
                     AXRole: AXStaticText "𝑏"
                         AXRole: AXInlineTextBox "𝑏"
     AXRole: AXMain

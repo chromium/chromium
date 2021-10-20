@@ -108,6 +108,14 @@
       interfaceName: "MathMLElement",
     },
     {
+      name: "mtd",
+      interfaceName: "MathMLElement",
+    },
+    {
+      name: "mtr",
+      interfaceName: "MathMLElement",
+    },
+    {
       name: "mtext",
       interfaceName: "MathMLElement",
     },

@@ -2853,6 +2853,49 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kMath:
     case ax::mojom::Role::kMathMLMath:
       return ATK_ROLE_MATH;
+    // https://w3c.github.io/mathml-aam/#mathml-element-mappings
+    case ax::mojom::Role::kMathMLFraction:
+      return ATK_ROLE_MATH_FRACTION;
+    case ax::mojom::Role::kMathMLIdentifier:
+      return ATK_ROLE_STATIC;
+    case ax::mojom::Role::kMathMLMultiscripts:
+      return ATK_ROLE_SECTION;
+    case ax::mojom::Role::kMathMLNoneScript:
+      return ATK_ROLE_SECTION;
+    case ax::mojom::Role::kMathMLNumber:
+      return ATK_ROLE_STATIC;
+    case ax::mojom::Role::kMathMLPrescriptDelimiter:
+      return ATK_ROLE_SECTION;
+    case ax::mojom::Role::kMathMLOperator:
+      return ATK_ROLE_STATIC;
+    case ax::mojom::Role::kMathMLOver:
+      return ATK_ROLE_SECTION;
+    case ax::mojom::Role::kMathMLRoot:
+      return ATK_ROLE_MATH_ROOT;
+    case ax::mojom::Role::kMathMLRow:
+      return ATK_ROLE_SECTION;
+    case ax::mojom::Role::kMathMLSquareRoot:
+      return ATK_ROLE_MATH_ROOT;
+    case ax::mojom::Role::kMathMLStringLiteral:
+      return ATK_ROLE_STATIC;
+    case ax::mojom::Role::kMathMLSub:
+      return ATK_ROLE_SECTION;
+    case ax::mojom::Role::kMathMLSubSup:
+      return ATK_ROLE_SECTION;
+    case ax::mojom::Role::kMathMLSup:
+      return ATK_ROLE_SECTION;
+    case ax::mojom::Role::kMathMLTable:
+      return ATK_ROLE_TABLE;
+    case ax::mojom::Role::kMathMLTableCell:
+      return ATK_ROLE_TABLE_CELL;
+    case ax::mojom::Role::kMathMLTableRow:
+      return ATK_ROLE_TABLE_ROW;
+    case ax::mojom::Role::kMathMLText:
+      return ATK_ROLE_STATIC;
+    case ax::mojom::Role::kMathMLUnder:
+      return ATK_ROLE_SECTION;
+    case ax::mojom::Role::kMathMLUnderOver:
+      return ATK_ROLE_SECTION;
     case ax::mojom::Role::kMarquee:
       return ATK_ROLE_MARQUEE;
     case ax::mojom::Role::kMenu:

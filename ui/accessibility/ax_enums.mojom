@@ -106,8 +106,8 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
-// Next version: 3
-// Next value: 188
+// Next version: 4
+// Next value: 209
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
   // Used for role="none"/"presentation" -- ignored in platform tree.
@@ -246,7 +246,30 @@ enum Role {
   kMark = 119,
   kMarquee = 120,
   kMath = 121,
+  // MathML roles
+  // https://w3c.github.io/mathml-aam
+  [MinVersion=3] kMathMLFraction = 188,
+  [MinVersion=3] kMathMLIdentifier = 189,
   [MinVersion=2] kMathMLMath = 187,
+  [MinVersion=3] kMathMLMultiscripts = 190,
+  [MinVersion=3] kMathMLNoneScript = 191,
+  [MinVersion=3] kMathMLNumber = 192,
+  [MinVersion=3] kMathMLOperator = 193,
+  [MinVersion=3] kMathMLOver = 194,
+  [MinVersion=3] kMathMLPrescriptDelimiter = 195,
+  [MinVersion=3] kMathMLRoot = 196,
+  [MinVersion=3] kMathMLRow = 197,
+  [MinVersion=3] kMathMLSquareRoot = 198,
+  [MinVersion=3] kMathMLStringLiteral = 199,
+  [MinVersion=3] kMathMLSub = 200,
+  [MinVersion=3] kMathMLSubSup = 201,
+  [MinVersion=3] kMathMLSup = 202,
+  [MinVersion=3] kMathMLTable = 203,
+  [MinVersion=3] kMathMLTableCell = 204,
+  [MinVersion=3] kMathMLTableRow = 205,
+  [MinVersion=3] kMathMLText = 206,
+  [MinVersion=3] kMathMLUnder = 207,
+  [MinVersion=3] kMathMLUnderOver = 208,
   kMenu = 122,
   kMenuBar = 123,
   kMenuItem = 124,

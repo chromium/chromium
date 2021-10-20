@@ -1,0 +1,1 @@
+[math fraction] tag:mfrac

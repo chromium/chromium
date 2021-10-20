@@ -5540,6 +5540,31 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kMathMLMath:
       return ROLE_SYSTEM_EQUATION;
 
+    // TODO(http://crbug.com/1260584): Refine this if/when a MSAA API exists for
+    // properly exposing MathML content.
+    case ax::mojom::Role::kMathMLFraction:
+    case ax::mojom::Role::kMathMLIdentifier:
+    case ax::mojom::Role::kMathMLMultiscripts:
+    case ax::mojom::Role::kMathMLNoneScript:
+    case ax::mojom::Role::kMathMLNumber:
+    case ax::mojom::Role::kMathMLOperator:
+    case ax::mojom::Role::kMathMLOver:
+    case ax::mojom::Role::kMathMLPrescriptDelimiter:
+    case ax::mojom::Role::kMathMLRoot:
+    case ax::mojom::Role::kMathMLRow:
+    case ax::mojom::Role::kMathMLSquareRoot:
+    case ax::mojom::Role::kMathMLStringLiteral:
+    case ax::mojom::Role::kMathMLSub:
+    case ax::mojom::Role::kMathMLSubSup:
+    case ax::mojom::Role::kMathMLSup:
+    case ax::mojom::Role::kMathMLTable:
+    case ax::mojom::Role::kMathMLTableCell:
+    case ax::mojom::Role::kMathMLTableRow:
+    case ax::mojom::Role::kMathMLText:
+    case ax::mojom::Role::kMathMLUnder:
+    case ax::mojom::Role::kMathMLUnderOver:
+      return ROLE_SYSTEM_GROUPING;
+
     case ax::mojom::Role::kMenu:
       return ROLE_SYSTEM_MENUPOPUP;
 
@@ -6371,6 +6396,31 @@ std::wstring AXPlatformNodeWin::UIAAriaRole() {
     case ax::mojom::Role::kMathMLMath:
       return L"group";
 
+    // TODO(http://crbug.com/1260585): Refine this if/when a UIA API exists for
+    // properly exposing MathML content.
+    case ax::mojom::Role::kMathMLFraction:
+    case ax::mojom::Role::kMathMLIdentifier:
+    case ax::mojom::Role::kMathMLMultiscripts:
+    case ax::mojom::Role::kMathMLNoneScript:
+    case ax::mojom::Role::kMathMLNumber:
+    case ax::mojom::Role::kMathMLOperator:
+    case ax::mojom::Role::kMathMLOver:
+    case ax::mojom::Role::kMathMLPrescriptDelimiter:
+    case ax::mojom::Role::kMathMLRoot:
+    case ax::mojom::Role::kMathMLRow:
+    case ax::mojom::Role::kMathMLSquareRoot:
+    case ax::mojom::Role::kMathMLStringLiteral:
+    case ax::mojom::Role::kMathMLSub:
+    case ax::mojom::Role::kMathMLSubSup:
+    case ax::mojom::Role::kMathMLSup:
+    case ax::mojom::Role::kMathMLTable:
+    case ax::mojom::Role::kMathMLTableCell:
+    case ax::mojom::Role::kMathMLTableRow:
+    case ax::mojom::Role::kMathMLText:
+    case ax::mojom::Role::kMathMLUnder:
+    case ax::mojom::Role::kMathMLUnderOver:
+      return L"group";
+
     case ax::mojom::Role::kMenu:
       return L"menu";
 
@@ -7033,6 +7083,31 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
 
     case ax::mojom::Role::kMath:
     case ax::mojom::Role::kMathMLMath:
+      return UIA_GroupControlTypeId;
+
+    // TODO(http://crbug.com/1260585): Refine this if/when a UIA API exists for
+    // properly exposing MathML content.
+    case ax::mojom::Role::kMathMLFraction:
+    case ax::mojom::Role::kMathMLIdentifier:
+    case ax::mojom::Role::kMathMLMultiscripts:
+    case ax::mojom::Role::kMathMLNoneScript:
+    case ax::mojom::Role::kMathMLNumber:
+    case ax::mojom::Role::kMathMLOperator:
+    case ax::mojom::Role::kMathMLOver:
+    case ax::mojom::Role::kMathMLPrescriptDelimiter:
+    case ax::mojom::Role::kMathMLRoot:
+    case ax::mojom::Role::kMathMLRow:
+    case ax::mojom::Role::kMathMLSquareRoot:
+    case ax::mojom::Role::kMathMLStringLiteral:
+    case ax::mojom::Role::kMathMLSub:
+    case ax::mojom::Role::kMathMLSubSup:
+    case ax::mojom::Role::kMathMLSup:
+    case ax::mojom::Role::kMathMLTable:
+    case ax::mojom::Role::kMathMLTableCell:
+    case ax::mojom::Role::kMathMLTableRow:
+    case ax::mojom::Role::kMathMLText:
+    case ax::mojom::Role::kMathMLUnder:
+    case ax::mojom::Role::kMathMLUnderOver:
       return UIA_GroupControlTypeId;
 
     case ax::mojom::Role::kMenu:

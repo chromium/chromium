@@ -577,6 +577,14 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
       always_included_computed_roles.end())
     return kIncludeObject;
 
+  // Don't ignore MathML nodes by default, since MathML relies on child
+  // positions to determine semantics (e.g. numerator is the first child of a
+  // fraction).
+  if (RuntimeEnabledFeatures::MathMLCoreEnabled() && IsA<MathMLElement>(node) &&
+      RoleValue() != ax::mojom::blink::Role::kNone) {
+    return kIncludeObject;
+  }
+
   // Using the title or accessibility description (so we
   // check if there's some kind of accessible name for the element)
   // to decide an element's visibility is not as definitive as
@@ -1073,9 +1081,60 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
                  ? ax::mojom::blink::Role::kMathMLMath
                  : ax::mojom::blink::Role::kMath;
     }
-    // TODO(crbug.com/6606): Map more MathML elements.
+    if (element->HasTagName(mathml_names::kMfracTag))
+      return ax::mojom::blink::Role::kMathMLFraction;
+    if (element->HasTagName(mathml_names::kMiTag))
+      return ax::mojom::blink::Role::kMathMLIdentifier;
+    if (element->HasTagName(mathml_names::kMmultiscriptsTag))
+      return ax::mojom::blink::Role::kMathMLMultiscripts;
+    if (element->HasTagName(mathml_names::kMnTag))
+      return ax::mojom::blink::Role::kMathMLNumber;
+    if (element->HasTagName(mathml_names::kMoTag))
+      return ax::mojom::blink::Role::kMathMLOperator;
+    if (element->HasTagName(mathml_names::kMoverTag))
+      return ax::mojom::blink::Role::kMathMLOver;
+    if (element->HasTagName(mathml_names::kMunderTag))
+      return ax::mojom::blink::Role::kMathMLUnder;
+    if (element->HasTagName(mathml_names::kMunderoverTag))
+      return ax::mojom::blink::Role::kMathMLUnderOver;
+    if (element->HasTagName(mathml_names::kMrootTag))
+      return ax::mojom::blink::Role::kMathMLRoot;
+    if (element->HasTagName(mathml_names::kMrowTag) ||
+        element->HasTagName(mathml_names::kAnnotationXmlTag) ||
+        element->HasTagName(mathml_names::kMactionTag) ||
+        element->HasTagName(mathml_names::kMerrorTag) ||
+        element->HasTagName(mathml_names::kMpaddedTag) ||
+        element->HasTagName(mathml_names::kMphantomTag) ||
+        element->HasTagName(mathml_names::kMstyleTag) ||
+        element->HasTagName(mathml_names::kSemanticsTag)) {
+      return ax::mojom::blink::Role::kMathMLRow;
+    }
+    if (element->HasTagName(mathml_names::kMprescriptsTag))
+      return ax::mojom::blink::Role::kMathMLPrescriptDelimiter;
+    if (element->HasTagName(mathml_names::kNoneTag))
+      return ax::mojom::blink::Role::kMathMLNoneScript;
+    if (element->HasTagName(mathml_names::kMsqrtTag))
+      return ax::mojom::blink::Role::kMathMLSquareRoot;
+    if (element->HasTagName(mathml_names::kMsTag))
+      return ax::mojom::blink::Role::kMathMLStringLiteral;
     if (element->HasTagName(mathml_names::kMspaceTag))
       return ax::mojom::blink::Role::kNone;
+    if (element->HasTagName(mathml_names::kMsubTag))
+      return ax::mojom::blink::Role::kMathMLSub;
+    if (element->HasTagName(mathml_names::kMsubsupTag))
+      return ax::mojom::blink::Role::kMathMLSubSup;
+    if (element->HasTagName(mathml_names::kMsupTag))
+      return ax::mojom::blink::Role::kMathMLSup;
+    if (element->HasTagName(mathml_names::kMtableTag))
+      return ax::mojom::blink::Role::kMathMLTable;
+    if (element->HasTagName(mathml_names::kMtdTag))
+      return ax::mojom::blink::Role::kMathMLTableCell;
+    if (element->HasTagName(mathml_names::kMtrTag))
+      return ax::mojom::blink::Role::kMathMLTableRow;
+    if (element->HasTagName(mathml_names::kMtextTag) ||
+        element->HasTagName(mathml_names::kAnnotationTag)) {
+      return ax::mojom::blink::Role::kMathMLText;
+    }
   }
 
   if (GetNode()->HasTagName(html_names::kRpTag) ||

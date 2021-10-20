@@ -382,8 +382,50 @@ const char* ToString(ax::mojom::Role role) {
       return "marquee";
     case ax::mojom::Role::kMath:
       return "math";
+    case ax::mojom::Role::kMathMLFraction:
+      return "mathMLFraction";
+    case ax::mojom::Role::kMathMLIdentifier:
+      return "mathMLIdentifier";
     case ax::mojom::Role::kMathMLMath:
       return "mathMLMath";
+    case ax::mojom::Role::kMathMLMultiscripts:
+      return "mathMLMultiscripts";
+    case ax::mojom::Role::kMathMLNoneScript:
+      return "mathMLNoneScript";
+    case ax::mojom::Role::kMathMLNumber:
+      return "mathMLNumber";
+    case ax::mojom::Role::kMathMLOperator:
+      return "mathMLOperator";
+    case ax::mojom::Role::kMathMLOver:
+      return "mathMLOver";
+    case ax::mojom::Role::kMathMLPrescriptDelimiter:
+      return "mathMLPrescriptDelimiter";
+    case ax::mojom::Role::kMathMLRoot:
+      return "mathMLRoot";
+    case ax::mojom::Role::kMathMLRow:
+      return "mathMLRow";
+    case ax::mojom::Role::kMathMLSquareRoot:
+      return "mathMLSquareRoot";
+    case ax::mojom::Role::kMathMLStringLiteral:
+      return "mathMLStringLiteral";
+    case ax::mojom::Role::kMathMLSub:
+      return "mathMLSub";
+    case ax::mojom::Role::kMathMLSubSup:
+      return "mathMLSubSup";
+    case ax::mojom::Role::kMathMLSup:
+      return "mathMLSup";
+    case ax::mojom::Role::kMathMLTable:
+      return "mathMLTable";
+    case ax::mojom::Role::kMathMLTableCell:
+      return "mathMLTableCell";
+    case ax::mojom::Role::kMathMLTableRow:
+      return "mathMLTableRow";
+    case ax::mojom::Role::kMathMLText:
+      return "mathMLText";
+    case ax::mojom::Role::kMathMLUnder:
+      return "mathMLUnder";
+    case ax::mojom::Role::kMathMLUnderOver:
+      return "mathMLUnderOver";
     case ax::mojom::Role::kMenu:
       return "menu";
     case ax::mojom::Role::kMenuBar:
