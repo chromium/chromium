@@ -29,6 +29,7 @@ src/common/internal/file_loader.ts
 src/common/util/navigator_gpu.ts
 src/common/runtime/helper/sys.ts
 src/common/runtime/cmdline.ts
+src/common/runtime/server.ts
 src/common/runtime/helper/test_worker.ts
 src/common/runtime/standalone.ts
 src/common/runtime/wpt.ts
@@ -245,6 +246,7 @@ src/webgpu/shader/execution/robust_access_vertex.spec.ts
 src/webgpu/shader/execution/zero_init.spec.ts
 src/webgpu/shader/execution/builtin/builtin.ts
 src/webgpu/shader/execution/builtin/abs.spec.ts
+src/webgpu/shader/execution/builtin/ceil.spec.ts
 src/webgpu/shader/execution/builtin/float_built_functions.spce.ts
 src/webgpu/shader/execution/builtin/integer_built_in_functions.spec.ts
 src/webgpu/shader/execution/builtin/logical_built_in_functions.spec.ts
