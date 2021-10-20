@@ -352,8 +352,15 @@ INSTANTIATE_TEST_SUITE_P(,
                          ::testing::Bool());
 
 // When video is seeked throttling is stopped.
+// crbug.com/1248927: flaky on win
+#if defined(OS_WIN)
+#define MAYBE_StopsThrottlingOnPlaybackSeek \
+  DISABLED_StopsThrottlingOnPlaybackSeek
+#else
+#define MAYBE_StopsThrottlingOnPlaybackSeek StopsThrottlingOnPlaybackSeek
+#endif
 IN_PROC_BROWSER_TEST_P(LiteVideoStopThrottlingOnPlaybackSeekBrowserTest,
-                       StopsThrottlingOnPlaybackSeek) {
+                       MAYBE_StopsThrottlingOnPlaybackSeek) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   TestMSEPlayback("bear-vp9.webm", "2000", "2000", false);
 
