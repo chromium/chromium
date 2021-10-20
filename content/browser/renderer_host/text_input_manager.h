@@ -184,6 +184,12 @@ class CONTENT_EXPORT TextInputManager {
   const TextSelection* GetTextSelection(
       RenderWidgetHostViewBase* view = nullptr) const;
 
+  // Returns the bounds of the text control in the root frame.
+  const absl::optional<gfx::Rect> GetTextControlBounds() const;
+
+  // Returns the bounds of the selected text in the root frame.
+  const absl::optional<gfx::Rect> GetTextSelectionBounds() const;
+
   // ---------------------------------------------------------------------------
   // The following methods are called by RWHVs on the tab to update their IME-
   // related state.
