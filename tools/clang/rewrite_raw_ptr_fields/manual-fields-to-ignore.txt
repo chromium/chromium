@@ -120,6 +120,7 @@ base::trace_event::MemoryDumpProviderInfo::name
 content::NavigationRequest::frame_tree_node_
 content::NavigationRequest::rfh_restored_from_back_forward_cache_
 blink::scheduler::FrameSchedulerImpl::blame_context_
+content::TestNavigationManager::request_
 
 # Populated manually - requires rewriting member pointer type
 courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::input
