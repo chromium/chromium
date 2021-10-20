@@ -408,7 +408,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_ubsan": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "UBSan vptr Release": {
@@ -418,7 +419,8 @@
       "is_debug": false,
       "is_ubsan_no_recover": true,
       "is_ubsan_vptr": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Win ASan Release": {
