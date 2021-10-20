@@ -4,6 +4,7 @@
 
 #include "chromeos/components/phonehub/phone_status_processor.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/phonehub/do_not_disturb_controller.h"
@@ -192,8 +193,18 @@ void PhoneStatusProcessor::ProcessReceivedNotifications(
 
   std::vector<proto::Notification> inline_replyable_protos;
 
-  for (const auto& proto : notification_protos)
+  for (const auto& proto : notification_protos) {
+    if (!features::IsPhoneHubCallNotificationEnabled() &&
+        (proto.category() == proto::Notification::Category::
+                                 Notification_Category_INCOMING_CALL ||
+         proto.category() == proto::Notification::Category::
+                                 Notification_Category_ONGOING_CALL ||
+         proto.category() == proto::Notification::Category::
+                                 Notification_Category_SCREEN_CALL)) {
+      continue;
+    }
     inline_replyable_protos.emplace_back(proto);
+  }
 
   notification_processor_->AddNotifications(inline_replyable_protos);
 }

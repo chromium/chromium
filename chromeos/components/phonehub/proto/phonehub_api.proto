@@ -180,13 +180,32 @@ message Action {
     CANNED_REPLY = 4;
   }
 
+  enum CallAction {
+    UNSPECIFIED = 0;
+    ANSWER = 1;   // User can answer call for the CallStyle notification
+    DECLINE = 2;  // User can decline call for the CallStyle notification
+    HANGUP = 3;   // User can hang up call for the CallStyle notification
+    // User can start the screening call for the CallStyle notification
+    SCREENING = 4;
+  }
+
   int64 id = 1;
   string title = 2;
   // Optional, but not specifying a type implies no response can be sent.
   InputType type = 3;
+  // Only specified for actions in phone call notifications.
+  CallAction call_action = 4;
 }
 
 message Notification {
+  enum Category {
+    UNSPECIFIED = 0;
+    CONVERSATION = 1;
+    INCOMING_CALL = 2;
+    ONGOING_CALL = 3;
+    SCREEN_CALL = 4;
+  }
+
   int64 id = 1;
   int64 epoch_time_millis = 2;
   App origin_app = 3;
@@ -199,6 +218,9 @@ message Notification {
   bytes contact_image = 8;     // for messages
   bytes background_image = 9;  // for media
   bytes shared_image = 10;     // for messages
+  // The category of the notification, phone hub in CrOS will decide which
+  // category will be processed and display on CrOS notification,
+  Category category = 11;
 }
 
 message PhoneStatusSnapshot {
