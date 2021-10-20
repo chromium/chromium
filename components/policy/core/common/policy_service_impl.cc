@@ -126,6 +126,8 @@ void IgnoreUserCloudPrecedencePolicies(PolicyMap* policies) {
       PolicyMap::Entry* policy_entry_mutable =
           policies->GetMutable(policy_name);
       policy_entry_mutable->SetIgnored();
+      policy_entry_mutable->AddMessage(PolicyMap::MessageType::kError,
+                                       IDS_POLICY_IGNORED_CHROME_PROFILE);
     }
   }
 }
