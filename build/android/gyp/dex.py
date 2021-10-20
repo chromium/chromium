@@ -50,6 +50,10 @@ _IGNORE_WARNINGS = (
     r'Ignoring -shrinkunusedprotofields since the protobuf-lite runtime is',
 )
 
+_SKIPPED_CLASS_FILE_NAMES = (
+    'module-info.class',  # Explicitly skipped by r8/utils/FileUtils#isClassFile
+)
+
 
 def _ParseArgs(args):
   args = build_utils.ExpandFileArgs(args)
@@ -425,7 +429,7 @@ def _IntermediateDexFilePathsFromInputJars(class_inputs, incremental_dir):
   for jar in class_inputs:
     with zipfile.ZipFile(jar, 'r') as z:
       for subpath in z.namelist():
-        if subpath.endswith('.class'):
+        if _IsClassFile(subpath):
           subpath = subpath[:-5] + 'dex'
           dex_files.append(os.path.join(incremental_dir, subpath))
   return dex_files
@@ -467,15 +471,21 @@ def _ComputeRequiredDesugarClasses(changes, desugar_dependencies_file,
   return required_classes
 
 
+def _IsClassFile(path):
+  if os.path.basename(path) in _SKIPPED_CLASS_FILE_NAMES:
+    return False
+  return path.endswith('.class')
+
+
 def _ExtractClassFiles(changes, tmp_dir, class_inputs, required_classes_set):
   classes_list = []
   for jar in class_inputs:
     if changes:
       changed_class_list = (set(changes.IterChangedSubpaths(jar))
                             | required_classes_set)
-      predicate = lambda x: x in changed_class_list and x.endswith('.class')
+      predicate = lambda x: x in changed_class_list and _IsClassFile(x)
     else:
-      predicate = lambda x: x.endswith('.class')
+      predicate = _IsClassFile
 
     classes_list.extend(
         build_utils.ExtractAll(jar, path=tmp_dir, predicate=predicate))
