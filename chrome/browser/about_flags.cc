@@ -7768,6 +7768,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeManagementPageAndroidName,
      flag_descriptions::kChromeManagementPageAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(policy::features::kChromeManagementPageAndroid)},
+
+    {"context-menu-popup-style", flag_descriptions::kContextMenuPopupStyleName,
+     flag_descriptions::kContextMenuPopupStyleDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kContextMenuPopupStyle)},
 #endif  // defined(OS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

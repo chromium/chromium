@@ -49443,6 +49443,7 @@ from previous Chrome versions.
   <int value="-1051509976" label="ServiceWorkerOnUI:disabled"/>
   <int value="-1050006327" label="FirmwareUpdaterApp:disabled"/>
   <int value="-1048901516" label="ChromeMemex:enabled"/>
+  <int value="-1048530703" label="ContextMenuPopupStyle:disabled"/>
   <int value="-1048011353" label="LongPressBackNewDesign:disabled"/>
   <int value="-1046641729" label="TranslateUI:enabled"/>
   <int value="-1046627610" label="password-import:enabled"/>
@@ -52194,6 +52195,7 @@ from previous Chrome versions.
   <int value="1086592430" label="WebAppEnableLinkCapturing:enabled"/>
   <int value="1087235172" label="file-manager-enable-new-audio-player"/>
   <int value="1088915385" label="new-password-form-parsing:enabled"/>
+  <int value="1089106835" label="ContextMenuPopupStyle:enabled"/>
   <int value="1089913432" label="VirtualDesksGestures:disabled"/>
   <int value="1090377940" label="enable-quic-https"/>
   <int value="1090442943" label="SemanticColorDebugOverride:enabled"/>

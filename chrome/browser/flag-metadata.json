@@ -798,6 +798,11 @@
       "expiry_milestone":100
   },
   {
+    "name": "context-menu-popup-style",
+    "owners": [ "wenyufu", "clank-app-team@google.com" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "context-menu-search-and-shop-with-google-lens",
     "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 96
