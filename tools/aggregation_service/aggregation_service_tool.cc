@@ -21,7 +21,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/test/test_aggregation_service.h"
-#include "tools/aggregation_service/aggregation_service_tool_network_initializer.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -29,7 +28,8 @@ namespace aggregation_service {
 
 AggregationServiceTool::AggregationServiceTool()
     : agg_service_(content::TestAggregationService::Create(
-          base::DefaultClock::GetInstance())) {}
+          base::DefaultClock::GetInstance(),
+          network_initializer_.shared_url_loader_factory())) {}
 
 AggregationServiceTool::~AggregationServiceTool() = default;
 
@@ -89,8 +89,6 @@ bool AggregationServiceTool::SetPublicKeysFromFile(
 bool AggregationServiceTool::SendReport(const base::Value& contents,
                                         const GURL& url) {
   DCHECK(url.is_valid());
-
-  ToolNetworkInitializer network_initializer(agg_service_.get());
 
   bool succeeded = false;
 

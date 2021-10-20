@@ -15,8 +15,7 @@
 
 namespace aggregation_service {
 
-ToolNetworkInitializer::ToolNetworkInitializer(
-    content::TestAggregationService* agg_service) {
+ToolNetworkInitializer::ToolNetworkInitializer() {
   // Initialize the network state as this tool runs independently from the
   // command line.
   mojo::core::Init();
@@ -45,9 +44,6 @@ ToolNetworkInitializer::ToolNetworkInitializer(
   shared_url_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           url_loader_factory_.get());
-
-  DCHECK(agg_service);
-  agg_service->SetURLLoaderFactory(shared_url_loader_factory_);
 }
 
 ToolNetworkInitializer::~ToolNetworkInitializer() = default;

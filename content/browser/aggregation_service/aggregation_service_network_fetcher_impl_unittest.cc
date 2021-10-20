@@ -20,7 +20,6 @@
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -58,23 +57,17 @@ class AggregationServiceNetworkFetcherTest : public testing::Test {
  public:
   AggregationServiceNetworkFetcherTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        network_fetcher_(std::make_unique<AggregationServiceNetworkFetcherImpl>(
+        network_fetcher_(AggregationServiceNetworkFetcherImpl::CreateForTesting(
             task_environment_.GetMockClock(),
-            /*storage_partition=*/nullptr)),
-        shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
-    network_fetcher_->SetURLLoaderFactoryForTesting(shared_url_loader_factory_);
-  }
+                &test_url_loader_factory_))) {}
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-
-  std::unique_ptr<AggregationServiceNetworkFetcherImpl> network_fetcher_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<AggregationServiceNetworkFetcherImpl> network_fetcher_;
 
  private:
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 

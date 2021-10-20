@@ -36,9 +36,11 @@ class TestAggregationService {
  public:
   virtual ~TestAggregationService() = default;
 
-  // Creates an instance of the service.
+  // Creates an instance of the service. Aggregatable reports will be sent
+  // using the provided `url_loader_factory`.
   static std::unique_ptr<TestAggregationService> Create(
-      const base::Clock* clock);
+      const base::Clock* clock,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Sets whether to disable the AggregatableReport's payload(s) being encrypted
   // after serialization.
@@ -50,12 +52,6 @@ class TestAggregationService {
   virtual void SetPublicKeys(const url::Origin& origin,
                              const std::string& json_string,
                              base::OnceCallback<void(bool)> callback) = 0;
-
-  // Sets the provided URL loader factory. This will be called by the
-  // aggregation service tool to inject a network::mojom::URLLoaderFactory to
-  // send an aggregatable report over network.
-  virtual void SetURLLoaderFactory(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) = 0;
 
   // Sends the aggregatable report to the specified reporting endpoint `url`.
   // `callback` will be run once completed which returns whether the report was

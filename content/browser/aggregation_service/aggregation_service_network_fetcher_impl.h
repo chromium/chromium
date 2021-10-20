@@ -36,8 +36,7 @@ class StoragePartition;
 class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
     : public AggregationServiceKeyFetcher::NetworkFetcher {
  public:
-  // `clock` and `storage_partition` must be non-null pointers that are valid as
-  // long as this object.
+  // `clock` must be a non-null pointer that is valid as long as this object.
   AggregationServiceNetworkFetcherImpl(const base::Clock* clock,
                                        StoragePartition* storage_partition);
   AggregationServiceNetworkFetcherImpl(
@@ -49,8 +48,11 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
   void FetchPublicKeys(const url::Origin& origin,
                        NetworkFetchCallback callback) override;
 
-  // Tests inject a TestURLLoaderFactory so they can mock the network response.
-  void SetURLLoaderFactoryForTesting(
+  // Used by tests to inject a TestURLLoaderFactory so they can mock the
+  // network response. Also used by the aggregation service tool to inject a
+  // `url_loader_factory` if one is provided.
+  static std::unique_ptr<AggregationServiceNetworkFetcherImpl> CreateForTesting(
+      const base::Clock* clock,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
  private:
@@ -62,6 +64,11 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
 
   // This is a std::list so that iterators remain valid during modifications.
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
+
+  // For testing only.
+  AggregationServiceNetworkFetcherImpl(
+      const base::Clock* clock,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Invoked from SimpleURLLoader after download is complete.
   void OnSimpleLoaderComplete(UrlLoaderList::iterator it,
@@ -87,7 +94,8 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
 
   const base::Clock& clock_;
 
-  StoragePartition& storage_partition_;
+  // Might be `nullptr` for testing, otherwise must outlive `this`.
+  StoragePartition* storage_partition_;
 
   // Lazily accessed URLLoaderFactory used for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

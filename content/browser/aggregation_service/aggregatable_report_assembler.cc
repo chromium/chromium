@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -21,6 +22,7 @@
 #include "content/browser/aggregation_service/aggregation_service_network_fetcher_impl.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -35,6 +37,18 @@ AggregatableReportAssembler::AggregatableReportAssembler(
               std::make_unique<AggregationServiceNetworkFetcherImpl>(
                   base::DefaultClock::GetInstance(),
                   storage_partition)),
+          std::make_unique<AggregatableReport::Provider>()) {}
+
+AggregatableReportAssembler::AggregatableReportAssembler(
+    AggregatableReportManager* manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : AggregatableReportAssembler(
+          std::make_unique<AggregationServiceKeyFetcher>(
+              manager,
+              AggregationServiceNetworkFetcherImpl::
+                  CreateForTesting(  // IN-TEST
+                      base::DefaultClock::GetInstance(),
+                      std::move(url_loader_factory))),
           std::make_unique<AggregatableReport::Provider>()) {}
 
 AggregatableReportAssembler::AggregatableReportAssembler(
@@ -71,6 +85,15 @@ AggregatableReportAssembler::CreateForTesting(
     std::unique_ptr<AggregatableReport::Provider> report_provider) {
   return base::WrapUnique(new AggregatableReportAssembler(
       std::move(fetcher), std::move(report_provider)));
+}
+
+// static
+std::unique_ptr<AggregatableReportAssembler>
+AggregatableReportAssembler::CreateForTesting(
+    AggregatableReportManager* manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(
+      new AggregatableReportAssembler(manager, std::move(url_loader_factory)));
 }
 
 void AggregatableReportAssembler::AssembleReport(

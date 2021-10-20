@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/string_split.h"
+#include "tools/aggregation_service/aggregation_service_tool_network_initializer.h"
 
 class GURL;
 
@@ -54,6 +55,7 @@ class AggregationServiceTool {
   bool SetPublicKeysFromFile(const url::Origin& origin,
                              const std::string& json_file_path);
 
+  ToolNetworkInitializer network_initializer_;
   std::unique_ptr<content::TestAggregationService> agg_service_;
 };
 

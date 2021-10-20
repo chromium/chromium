@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -32,13 +33,31 @@ namespace content {
 
 AggregatableReportSender::AggregatableReportSender(
     StoragePartition* storage_partition)
-    : storage_partition_(storage_partition) {}
+    : storage_partition_(storage_partition) {
+  DCHECK(storage_partition_);
+}
+
+AggregatableReportSender::AggregatableReportSender(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : url_loader_factory_(std::move(url_loader_factory)) {
+  DCHECK(url_loader_factory_);
+}
 
 AggregatableReportSender::~AggregatableReportSender() = default;
+
+// static
+std::unique_ptr<AggregatableReportSender>
+AggregatableReportSender::CreateForTesting(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(
+      new AggregatableReportSender(std::move(url_loader_factory)));
+}
 
 void AggregatableReportSender::SendReport(const GURL& url,
                                           const base::Value& contents,
                                           ReportSentCallback callback) {
+  DCHECK(storage_partition_ || url_loader_factory_);
+
   // The browser process URLLoaderFactory is not created by default, so don't
   // create it until it is directly needed.
   if (!url_loader_factory_) {
@@ -119,11 +138,6 @@ void AggregatableReportSender::SendReport(const GURL& url,
       base::BindOnce(&AggregatableReportSender::OnReportSent,
                      base::Unretained(this), std::move(it),
                      std::move(callback)));
-}
-
-void AggregatableReportSender::SetURLLoaderFactoryForTesting(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  url_loader_factory_ = url_loader_factory;
 }
 
 void AggregatableReportSender::OnReportSent(

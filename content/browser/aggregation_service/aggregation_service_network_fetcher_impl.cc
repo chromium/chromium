@@ -10,6 +10,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -46,19 +48,41 @@ GURL GetPublicKeyUrl(const url::Origin& origin) {
 AggregationServiceNetworkFetcherImpl::AggregationServiceNetworkFetcherImpl(
     const base::Clock* clock,
     StoragePartition* storage_partition)
-    : clock_(*clock), storage_partition_(*storage_partition) {}
+    : clock_(*clock), storage_partition_(storage_partition) {
+  DCHECK(clock);
+  DCHECK(storage_partition_);
+}
+
+AggregationServiceNetworkFetcherImpl::AggregationServiceNetworkFetcherImpl(
+    const base::Clock* clock,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : clock_(*clock), url_loader_factory_(std::move(url_loader_factory)) {
+  DCHECK(clock);
+  DCHECK(url_loader_factory_);
+}
 
 AggregationServiceNetworkFetcherImpl::~AggregationServiceNetworkFetcherImpl() =
     default;
 
+// static
+std::unique_ptr<AggregationServiceNetworkFetcherImpl>
+AggregationServiceNetworkFetcherImpl::CreateForTesting(
+    const base::Clock* clock,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(new AggregationServiceNetworkFetcherImpl(
+      clock, std::move(url_loader_factory)));
+}
+
 void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
     const url::Origin& origin,
     NetworkFetchCallback callback) {
+  DCHECK(storage_partition_ || url_loader_factory_);
+
   // The browser process URLLoaderFactory is not created by default, so don't
   // create it until it is directly needed.
   if (!url_loader_factory_) {
     url_loader_factory_ =
-        storage_partition_.GetURLLoaderFactoryForBrowserProcess();
+        storage_partition_->GetURLLoaderFactoryForBrowserProcess();
   }
 
   GURL public_key_url = GetPublicKeyUrl(origin);
@@ -126,11 +150,6 @@ void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
           &AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete,
           base::Unretained(this), std::move(it), origin, std::move(callback)),
       kMaxJsonSize);
-}
-
-void AggregationServiceNetworkFetcherImpl::SetURLLoaderFactoryForTesting(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  url_loader_factory_ = url_loader_factory;
 }
 
 void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(

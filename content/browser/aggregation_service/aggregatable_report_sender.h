@@ -58,15 +58,19 @@ class CONTENT_EXPORT AggregatableReportSender {
                   const base::Value& contents,
                   ReportSentCallback callback);
 
-  // Tests inject a TestURLLoaderFactory so they can mock the network response.
-  // Also called by the aggregation service tool to inject a
-  // network::mojom::URLLoaderFactory.
-  void SetURLLoaderFactoryForTesting(
+  // Used by tests to inject a TestURLLoaderFactory so they can mock the
+  // network response. Also used by the aggregation service tool to inject a
+  // `url_loader_factory` if one is provided.
+  static std::unique_ptr<AggregatableReportSender> CreateForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
  private:
   // This is a std::list so that iterators remain valid during modifications.
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
+
+  // For testing only.
+  explicit AggregatableReportSender(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Called when headers are available for a sent report.
   void OnReportSent(UrlLoaderList::iterator it,
@@ -76,7 +80,7 @@ class CONTENT_EXPORT AggregatableReportSender {
   // Reports that are actively being sent.
   UrlLoaderList loaders_in_progress_;
 
-  // Must outlive `this`.
+  // Might be `nullptr` for testing, otherwise must outlive `this`.
   StoragePartition* storage_partition_;
 
   // Lazily accessed URLLoaderFactory used for network requests.

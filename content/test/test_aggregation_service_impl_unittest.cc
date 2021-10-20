@@ -8,11 +8,14 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -24,10 +27,15 @@ class TestAggregationServiceImplTest : public testing::Test {
   TestAggregationServiceImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         impl_(std::make_unique<TestAggregationServiceImpl>(
-            task_environment_.GetMockClock())) {}
+            task_environment_.GetMockClock(),
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_))) {}
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
  protected:
-  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestAggregationServiceImpl> impl_;
 };
 

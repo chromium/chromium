@@ -13,7 +13,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -39,21 +38,14 @@ class AggregatableReportSenderTest : public testing::Test {
  public:
   AggregatableReportSenderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        sender_(std::make_unique<AggregatableReportSender>(
-            /*storage_partition=*/nullptr)),
-        shared_url_loader_factory_(
+        sender_(AggregatableReportSender::CreateForTesting(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
-    sender_->SetURLLoaderFactoryForTesting(shared_url_loader_factory_);
-  }
+                &test_url_loader_factory_))) {}
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<AggregatableReportSender> sender_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-
- private:
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  std::unique_ptr<AggregatableReportSender> sender_;
 };
 
 TEST_F(AggregatableReportSenderTest, ReportSent_RequestAttributesSet) {

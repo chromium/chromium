@@ -29,13 +29,16 @@
 
 namespace content {
 
-TestAggregationServiceImpl::TestAggregationServiceImpl(const base::Clock* clock)
+TestAggregationServiceImpl::TestAggregationServiceImpl(
+    const base::Clock* clock,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : clock_(*clock),
       storage_(base::SequenceBound<AggregationServiceStorageSql>(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
           /*run_in_memory=*/true,
           /*path_to_database=*/base::FilePath(),
-          clock)) {
+          clock)),
+      sender_(AggregatableReportSender::CreateForTesting(url_loader_factory)) {
   DCHECK(clock);
 }
 
@@ -73,11 +76,6 @@ void TestAggregationServiceImpl::SetPublicKeys(
   storage_.AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
       .WithArgs(origin, std::move(keyset))
       .Then(base::BindOnce(std::move(callback), true));
-}
-
-void TestAggregationServiceImpl::SetURLLoaderFactory(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  sender_->SetURLLoaderFactoryForTesting(url_loader_factory);
 }
 
 void TestAggregationServiceImpl::SendReport(

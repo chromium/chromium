@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "content/public/test/test_aggregation_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
@@ -21,12 +20,15 @@ namespace aggregation_service {
 // be kept alive for the duration of network usage.
 class ToolNetworkInitializer {
  public:
-  // `agg_service` must be a non-null pointer to a TestAggregationService.
-  explicit ToolNetworkInitializer(content::TestAggregationService* agg_service);
+  ToolNetworkInitializer();
   ToolNetworkInitializer(const ToolNetworkInitializer& other) = delete;
   ToolNetworkInitializer& operator=(const ToolNetworkInitializer& other) =
       delete;
   ~ToolNetworkInitializer();
+
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory() {
+    return shared_url_loader_factory_;
+  }
 
  private:
   std::unique_ptr<network::NetworkService> network_service_;
