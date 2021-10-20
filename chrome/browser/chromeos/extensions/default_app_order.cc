@@ -111,7 +111,10 @@ const char* const kDefaultAppOrder[] = {
     web_app::kOsSettingsAppId,
 
     web_app::kHelpAppId,
+
+    web_app::kCalculatorAppId,
     extension_misc::kCalculatorAppId,
+
     web_app::kCursiveAppId,
     web_app::kCanvasAppId,
     extension_misc::kTextEditorAppId,
