@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -23,59 +24,6 @@ class Window;
 namespace apps {
 
 class AppUpdate;
-
-// This is used for logging, so do not remove or reorder existing entries.
-// This should be kept in sync with GetAppTypeNameSet in
-// c/b/apps/app_service/app_platform_metrics_service.cc.
-enum class AppTypeName {
-  kUnknown = 0,
-  kArc = 1,
-  kBuiltIn = 2,
-  kCrostini = 3,
-  kChromeApp = 4,
-  kWeb = 5,
-  kMacOs = 6,
-  kPluginVm = 7,
-  kStandaloneBrowser = 8,
-  kRemote = 9,
-  kBorealis = 10,
-  kSystemWeb = 11,
-  kChromeBrowser = 12,
-  kStandaloneBrowserExtension = 13,
-
-  // Add any new values above this one, and update kMaxValue to the highest
-  // enumerator value.
-  kMaxValue = kStandaloneBrowserExtension,
-};
-
-// This is used for logging, so do not remove or reorder existing entries.
-// The diferences with AppTypeName are:
-// 1. If a Chrome app opened in a tab, it is logged as kChromeBrowser in
-// AppTypeName, but logged as kChromeAppTab in AppTypeNameV2.
-// 2. If a web app opened in a tab, it is logged as kChromeBrowser in
-// AppTypeName, but logged as kWebTab in AppTypeNameV2.
-enum class AppTypeNameV2 {
-  kUnknown = 0,
-  kArc = 1,
-  kBuiltIn = 2,
-  kCrostini = 3,
-  kChromeAppWindow = 4,
-  kChromeAppTab = 5,
-  kWebWindow = 6,
-  kWebTab = 7,
-  kMacOs = 8,
-  kPluginVm = 9,
-  kStandaloneBrowser = 10,
-  kRemote = 11,
-  kBorealis = 12,
-  kSystemWeb = 13,
-  kChromeBrowser = 14,
-  kStandaloneBrowserExtension = 15,
-
-  // Add any new values above this one, and update kMaxValue to the highest
-  // enumerator value.
-  kMaxValue = kStandaloneBrowserExtension,
-};
 
 // This is used for logging, so do not remove or reorder existing entries.
 enum class InstallTime {
@@ -115,12 +63,6 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name);
 std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name);
 
 const std::set<apps::AppTypeName>& GetAppTypeNameSet();
-
-// Returns AppTypeName used for app launch metrics.
-apps::AppTypeName GetAppTypeName(Profile* profile,
-                                 apps::mojom::AppType app_type,
-                                 const std::string& app_id,
-                                 apps::mojom::LaunchContainer container);
 
 // Records metrics when launching apps.
 void RecordAppLaunchMetrics(Profile* profile,

@@ -6,10 +6,8 @@
 
 #include <set>
 
-#include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
@@ -19,18 +17,8 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/extensions/launch_util.h"
-#include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
-#include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -40,10 +28,7 @@
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/ukm/app_source_url_recorder.h"
 #include "components/user_manager/user_manager.h"
-#include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -71,11 +56,7 @@ constexpr char kInstallReasonSyncHistogram[] = "Sync";
 constexpr char kInstallReasonUserHistogram[] = "User";
 constexpr char kInstallReasonSubAppHistogram[] = "SubApp";
 
-constexpr base::TimeDelta kMinDuration = base::Seconds(1);
 constexpr base::TimeDelta kMaxDuration = base::Days(1);
-constexpr base::TimeDelta kMaxUsageDuration = base::Minutes(5);
-constexpr int kDurationBuckets = 100;
-constexpr int kUsageTimeBuckets = 50;
 
 std::set<apps::AppTypeName>& GetAppTypeNameSet() {
   static base::NoDestructor<std::set<apps::AppTypeName>> app_type_name_map;
@@ -95,97 +76,6 @@ std::set<apps::AppTypeName>& GetAppTypeNameSet() {
     app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserExtension);
   }
   return *app_type_name_map;
-}
-
-// Determines what app type a Chrome App should be logged as based on its launch
-// container and app id. In particular, Chrome apps in tabs are logged as part
-// of Chrome browser.
-apps::AppTypeName GetAppTypeNameForChromeApp(
-    Profile* profile,
-    const std::string& app_id,
-    apps::mojom::LaunchContainer container) {
-  if (app_id == extension_misc::kChromeAppId) {
-    return apps::AppTypeName::kChromeBrowser;
-  }
-
-  DCHECK(profile);
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-  DCHECK(registry);
-  const extensions::Extension* extension =
-      registry->GetInstalledExtension(app_id);
-
-  if (!extension || !extension->is_app()) {
-    return apps::AppTypeName::kUnknown;
-  }
-
-  if (CanLaunchViaEvent(extension)) {
-    return apps::AppTypeName::kChromeApp;
-  }
-
-  switch (container) {
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
-      return apps::AppTypeName::kChromeApp;
-    case apps::mojom::LaunchContainer::kLaunchContainerTab:
-      return apps::AppTypeName::kChromeBrowser;
-    default:
-      break;
-  }
-
-  apps::mojom::LaunchContainer launch_container =
-      extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile),
-                                     extension);
-  if (launch_container == apps::mojom::LaunchContainer::kLaunchContainerTab) {
-    return apps::AppTypeName::kChromeBrowser;
-  }
-
-  return apps::AppTypeName::kChromeApp;
-}
-
-// Determines what app type a web app should be logged as based on its launch
-// container and app id. In particular, web apps in tabs are logged as part of
-// Chrome browser.
-apps::AppTypeName GetAppTypeNameForWebApp(
-    Profile* profile,
-    const std::string& app_id,
-    apps::mojom::LaunchContainer container) {
-  apps::AppTypeName type_name = apps::AppTypeName::kChromeBrowser;
-  apps::mojom::WindowMode window_mode = apps::mojom::WindowMode::kBrowser;
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .ForOneApp(
-          app_id, [&type_name, &window_mode](const apps::AppUpdate& update) {
-            DCHECK(update.AppType() == apps::mojom::AppType::kWeb ||
-                   update.AppType() == apps::mojom::AppType::kSystemWeb);
-
-            // For system web apps, the install source is |kSystem|.
-            // The app type may be kSystemWeb (system web apps in Ash when
-            // Lacros web apps are enabled), or kWeb (all other cases).
-            type_name =
-                (update.InstallReason() == apps::mojom::InstallReason::kSystem)
-                    ? apps::AppTypeName::kSystemWeb
-                    : apps::AppTypeName::kWeb;
-            window_mode = update.WindowMode();
-          });
-
-  if (type_name != apps::AppTypeName::kWeb) {
-    return type_name;
-  }
-
-  switch (container) {
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
-      return apps::AppTypeName::kWeb;
-    case apps::mojom::LaunchContainer::kLaunchContainerTab:
-      return apps::AppTypeName::kChromeBrowser;
-    default:
-      break;
-  }
-
-  if (window_mode == apps::mojom::WindowMode::kBrowser) {
-    return apps::AppTypeName::kChromeBrowser;
-  }
-
-  return apps::AppTypeName::kWeb;
 }
 
 std::string GetInstallReason(apps::mojom::InstallReason install_reason) {
@@ -209,79 +99,6 @@ std::string GetInstallReason(apps::mojom::InstallReason install_reason) {
   }
 }
 
-// Returns false if |window| is a Chrome app window or a standalone web app
-// window. Otherwise, return true;
-bool IsBrowser(aura::Window* window) {
-  Browser* browser = chrome::FindBrowserWithWindow(window->GetToplevelWindow());
-  if (!browser || browser->is_type_app() || browser->is_type_app_popup()) {
-    return false;
-  }
-  return true;
-}
-
-// Returns true if the app with |app_id| is opened as a tab in a browser window.
-// Otherwise, return false;
-bool IsAppOpenedInTab(apps::AppTypeName app_type_name,
-                      const std::string& app_id) {
-  return app_type_name == apps::AppTypeName::kChromeBrowser &&
-         app_id != extension_misc::kChromeAppId;
-}
-
-// Determines what app type a web app should be logged as based on |window|. In
-// particular, web apps in tabs are logged as part of Chrome browser.
-apps::AppTypeName GetAppTypeNameForWebAppWindow(Profile* profile,
-                                                const std::string& app_id,
-                                                aura::Window* window) {
-  if (IsBrowser(window)) {
-    return apps::AppTypeName::kChromeBrowser;
-  }
-
-  if (GetAppTypeNameForWebApp(
-          profile, app_id,
-          apps::mojom::LaunchContainer::kLaunchContainerNone) ==
-      apps::AppTypeName::kSystemWeb) {
-    return apps::AppTypeName::kSystemWeb;
-  }
-
-  return apps::AppTypeName::kWeb;
-}
-
-// Returns AppTypeName used for app running metrics.
-apps::AppTypeName GetAppTypeNameForWindow(Profile* profile,
-                                          apps::mojom::AppType app_type,
-                                          const std::string& app_id,
-                                          aura::Window* window) {
-  switch (app_type) {
-    case apps::mojom::AppType::kUnknown:
-      return apps::AppTypeName::kUnknown;
-    case apps::mojom::AppType::kArc:
-      return apps::AppTypeName::kArc;
-    case apps::mojom::AppType::kBuiltIn:
-      return apps::AppTypeName::kBuiltIn;
-    case apps::mojom::AppType::kCrostini:
-      return apps::AppTypeName::kCrostini;
-    case apps::mojom::AppType::kExtension:
-      return IsBrowser(window) ? apps::AppTypeName::kChromeBrowser
-                               : apps::AppTypeName::kChromeApp;
-    case apps::mojom::AppType::kWeb:
-      return GetAppTypeNameForWebAppWindow(profile, app_id, window);
-    case apps::mojom::AppType::kMacOs:
-      return apps::AppTypeName::kMacOs;
-    case apps::mojom::AppType::kPluginVm:
-      return apps::AppTypeName::kPluginVm;
-    case apps::mojom::AppType::kStandaloneBrowser:
-      return apps::AppTypeName::kStandaloneBrowser;
-    case apps::mojom::AppType::kRemote:
-      return apps::AppTypeName::kRemote;
-    case apps::mojom::AppType::kBorealis:
-      return apps::AppTypeName::kBorealis;
-    case apps::mojom::AppType::kSystemWeb:
-      return apps::AppTypeName::kSystemWeb;
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
-      return apps::AppTypeName::kStandaloneBrowserExtension;
-  }
-}
-
 // Returns AppTypeNameV2 used for app running metrics.
 apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
                                      apps::mojom::AppType app_type,
@@ -297,11 +114,11 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
     case apps::mojom::AppType::kCrostini:
       return apps::AppTypeNameV2::kCrostini;
     case apps::mojom::AppType::kExtension:
-      return IsBrowser(window) ? apps::AppTypeNameV2::kChromeAppTab
-                               : apps::AppTypeNameV2::kChromeAppWindow;
+      return apps::IsBrowser(window) ? apps::AppTypeNameV2::kChromeAppTab
+                                     : apps::AppTypeNameV2::kChromeAppWindow;
     case apps::mojom::AppType::kWeb: {
       apps::AppTypeName app_type_name =
-          GetAppTypeNameForWebAppWindow(profile, app_id, window);
+          apps::GetAppTypeNameForWebAppWindow(profile, app_id, window);
       if (app_type_name == apps::AppTypeName::kChromeBrowser) {
         return apps::AppTypeNameV2::kWebTab;
       } else if (app_type_name == apps::AppTypeName::kSystemWeb) {
@@ -347,7 +164,7 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
                  : apps::AppTypeNameV2::kChromeAppTab;
     case apps::mojom::AppType::kWeb: {
       apps::AppTypeName app_type_name =
-          GetAppTypeNameForWebApp(profile, app_id, container);
+          apps::GetAppTypeNameForWebApp(profile, app_id, container);
       if (app_type_name == apps::AppTypeName::kChromeBrowser) {
         return apps::AppTypeNameV2::kWebTab;
       } else if (app_type_name == apps::AppTypeName::kSystemWeb) {
@@ -399,55 +216,6 @@ void RecordAppLaunchPerAppTypeV2(apps::AppTypeNameV2 app_type_name_v2) {
 
   base::UmaHistogramEnumeration(apps::kAppLaunchPerAppTypeV2HistogramName,
                                 app_type_name_v2);
-}
-
-// Due to the privacy limitation, only ARC apps, Chrome apps and web apps(PWA),
-// system web apps, builtin apps and Crostini apps are recorded because they are
-// synced to server/cloud, or part of OS. Other app types, e.g. remote apps,
-// etc, are not recorded. So returns true if the app_type_name is allowed to
-// record UKM. Otherwise, returns false.
-//
-// See DD: go/app-platform-metrics-using-ukm for details.
-bool ShouldRecordUkmForAppTypeName(apps::AppTypeName app_type_name) {
-  switch (app_type_name) {
-    case apps::AppTypeName::kArc:
-    case apps::AppTypeName::kBuiltIn:
-    case apps::AppTypeName::kChromeApp:
-    case apps::AppTypeName::kChromeBrowser:
-    case apps::AppTypeName::kWeb:
-    case apps::AppTypeName::kSystemWeb:
-    case apps::AppTypeName::kCrostini:
-      return true;
-    case apps::AppTypeName::kUnknown:
-    case apps::AppTypeName::kMacOs:
-    case apps::AppTypeName::kPluginVm:
-    case apps::AppTypeName::kStandaloneBrowser:
-    case apps::AppTypeName::kStandaloneBrowserExtension:
-    case apps::AppTypeName::kRemote:
-    case apps::AppTypeName::kBorealis:
-      return false;
-  }
-}
-
-int GetUserTypeByDeviceTypeMetrics() {
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(primary_user);
-  DCHECK(primary_user->is_profile_created());
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
-  DCHECK(profile);
-
-  UserTypeByDeviceTypeMetricsProvider::UserSegment user_segment =
-      UserTypeByDeviceTypeMetricsProvider::GetUserSegment(profile);
-
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  policy::MarketSegment device_segment =
-      connector->GetEnterpriseMarketSegment();
-
-  return UserTypeByDeviceTypeMetricsProvider::ConstructUmaValue(user_segment,
-                                                                device_segment);
 }
 
 }  // namespace
@@ -555,40 +323,6 @@ std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
 
 const std::set<apps::AppTypeName>& GetAppTypeNameSet() {
   return ::GetAppTypeNameSet();
-}
-
-apps::AppTypeName GetAppTypeName(Profile* profile,
-                                 apps::mojom::AppType app_type,
-                                 const std::string& app_id,
-                                 apps::mojom::LaunchContainer container) {
-  switch (app_type) {
-    case apps::mojom::AppType::kUnknown:
-      return apps::AppTypeName::kUnknown;
-    case apps::mojom::AppType::kArc:
-      return apps::AppTypeName::kArc;
-    case apps::mojom::AppType::kBuiltIn:
-      return apps::AppTypeName::kBuiltIn;
-    case apps::mojom::AppType::kCrostini:
-      return apps::AppTypeName::kCrostini;
-    case apps::mojom::AppType::kExtension:
-      return GetAppTypeNameForChromeApp(profile, app_id, container);
-    case apps::mojom::AppType::kWeb:
-      return GetAppTypeNameForWebApp(profile, app_id, container);
-    case apps::mojom::AppType::kMacOs:
-      return apps::AppTypeName::kMacOs;
-    case apps::mojom::AppType::kPluginVm:
-      return apps::AppTypeName::kPluginVm;
-    case apps::mojom::AppType::kStandaloneBrowser:
-      return apps::AppTypeName::kStandaloneBrowser;
-    case apps::mojom::AppType::kRemote:
-      return apps::AppTypeName::kRemote;
-    case apps::mojom::AppType::kBorealis:
-      return apps::AppTypeName::kBorealis;
-    case apps::mojom::AppType::kSystemWeb:
-      return apps::AppTypeName::kSystemWeb;
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
-      return apps::AppTypeName::kStandaloneBrowserExtension;
-  }
 }
 
 void RecordAppLaunchMetrics(Profile* profile,
