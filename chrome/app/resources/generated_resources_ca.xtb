@@ -700,7 +700,7 @@
 <translation id="1729533290416704613">També controla la pàgina que es mostra quan feu una cerca des de l'omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Per suprimir una aplicació, ves a Configuració &gt; Google Play Store &gt; Gestiona les preferències d'Android &gt; Aplicacions o Gestor d'aplicacions. A continuació, toca l'aplicació que vulguis desinstal·lar (és possible que hagis de lliscar cap a la dreta o cap a l'esquerra per trobar-la). Tot seguit, toca Desinstal·la o Desactiva.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Enviant sol·licitud....</translation>
-<translation id="1733064249834771892">tipus de lletra</translation>
+<translation id="1733064249834771892">fonts</translation>
 <translation id="1733383495376208985">Encripta les dades sincronitzades amb la teva <ph name="BEGIN_LINK" />frase de contrasenya de sincronització<ph name="END_LINK" />. No inclou les formes de pagament ni les adreces de Google Pay.</translation>
 <translation id="1734212868489994726">Blau clar</translation>
 <translation id="1734230530703461088">No s'han pogut carregar les extensions dins del límit de temps. Contacta amb l'administrador.</translation>
@@ -5085,7 +5085,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6466258437571594570">Els llocs web no poden interrompre't per demanar-te permís per enviar notificacions</translation>
 <translation id="6466988389784393586">&amp;Obre totes les adreces d'interès</translation>
 <translation id="6467304607960172345">Optimitza els vídeos en pantalla completa</translation>
-<translation id="6468485451923838994">Tipus de lletra</translation>
+<translation id="6468485451923838994">Fonts</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> fitxers</translation>
 <translation id="6469557521904094793">Activa la xarxa mòbil</translation>
 <translation id="6470823736074966819">Silencia les notificacions</translation>
@@ -5718,7 +5718,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" pot llegir imatges, vídeos i fitxers d'àudio de les ubicacions marcades.</translation>
 <translation id="7167486101654761064">&amp;Obre sempre els fitxers d'aquest tipus</translation>
 <translation id="716810439572026343">S'està baixant <ph name="FILE_NAME" /></translation>
-<translation id="7168109975831002660">Mida mínima de tipus de lletra</translation>
+<translation id="7168109975831002660">Mida mínima de la font</translation>
 <translation id="7170236477717446850">Foto del perfil</translation>
 <translation id="7171000599584840888">Afegeix un perfil...</translation>
 <translation id="7171259390164035663">No inscriguis</translation>
