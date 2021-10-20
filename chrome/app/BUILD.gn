@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//build/config/ui.gni")
@@ -73,6 +74,17 @@ if (is_android) {
       process_file_template(
           android_bundle_locales_as_resources,
           [ "java/res/values-{{source_name_part}}/generated_resources.xml" ])
+
+  google_chrome_strings_java_resources =
+      [ "java/res/values/google_chrome_strings.xml" ] +
+      process_file_template(
+          android_bundle_locales_as_resources,
+          [ "java/res/values-{{source_name_part}}/google_chrome_strings.xml" ])
+  chromium_strings_java_resources =
+      [ "java/res/values/chromium_strings.xml" ] +
+      process_file_template(
+          android_bundle_locales_as_resources,
+          [ "java/res/values-{{source_name_part}}/chromium_strings.xml" ])
 }
 
 grit("generated_resources") {
@@ -97,6 +109,15 @@ if (is_android) {
     generated_files =
         rebase_path(android_generated_java_resources, "java/res", ".")
     deps = [ ":generated_resources" ]
+    if (is_chrome_branded) {
+      generated_files +=
+          rebase_path(google_chrome_strings_java_resources, "java/res", ".")
+      deps += [ ":google_chrome_strings" ]
+    } else {
+      generated_files +=
+          rebase_path(chromium_strings_java_resources, "java/res", ".")
+      deps += [ ":chromium_strings" ]
+    }
   }
 }
 
@@ -108,6 +129,10 @@ grit("google_chrome_strings") {
             process_file_template(
                 locales_with_pseudolocales,
                 [ "google_chrome_strings_{{source_name_part}}.pak" ])
+
+  if (is_android) {
+    outputs += google_chrome_strings_java_resources
+  }
 }
 
 grit("chromium_strings") {
@@ -118,6 +143,10 @@ grit("chromium_strings") {
       [ "grit/chromium_strings.h" ] +
       process_file_template(locales_with_pseudolocales,
                             [ "chromium_strings_{{source_name_part}}.pak" ])
+
+  if (is_android) {
+    outputs += chromium_strings_java_resources
+  }
 }
 
 static_library("test_support") {
