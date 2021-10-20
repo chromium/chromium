@@ -16,6 +16,7 @@
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -223,6 +224,11 @@ bool BrowserDataMigrator::TargetItem::operator==(const TargetItem& rhs) const {
 
 int64_t BrowserDataMigrator::TargetInfo::TotalCopySize() const {
   return lacros_data_size + common_data_size;
+}
+
+int64_t BrowserDataMigrator::TargetInfo::TotalDirSize() const {
+  return no_copy_data_size + ash_data_size + lacros_data_size +
+         common_data_size;
 }
 
 // static
@@ -564,6 +570,8 @@ BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo(
           TargetItem{entry, size, item_type});
       target_info.ash_data_size += size;
     } else if (base::Contains(no_copy_data_paths, entry.BaseName().value())) {
+      target_info.no_copy_data_items.emplace_back(
+          TargetItem{entry, size, item_type});
       target_info.no_copy_data_size += size;
     } else if (base::Contains(lacros_data_paths, entry.BaseName().value())) {
       // Items that should be moved to lacros.
@@ -754,5 +762,38 @@ void BrowserDataMigrator::ClearMigrationStep(PrefService* local_state) {
 BrowserDataMigrator::MigrationStep BrowserDataMigrator::GetMigrationStep(
     PrefService* local_state) {
   return static_cast<MigrationStep>(local_state->GetInteger(kMigrationStep));
+}
+
+// static
+void BrowserDataMigrator::DryRunToCollectUMA(
+    const base::FilePath& profile_data_dir) {
+  TargetInfo target_info = GetTargetInfo(profile_data_dir);
+
+  base::UmaHistogramCustomCounts(kDryRunNoCopyDataSize,
+                                 target_info.no_copy_data_size / 1024 / 1024, 1,
+                                 10000, 100);
+  base::UmaHistogramCustomCounts(kDryRunAshDataSize,
+                                 target_info.ash_data_size / 1024 / 1024, 1,
+                                 10000, 100);
+  base::UmaHistogramCustomCounts(kDryRunLacrosDataSize,
+                                 target_info.lacros_data_size / 1024 / 1024, 1,
+                                 10000, 100);
+  base::UmaHistogramCustomCounts(kDryRunCommonDataSize,
+                                 target_info.common_data_size / 1024 / 1024, 1,
+                                 10000, 100);
+
+  browser_data_migrator_util::RecordTotalSize(target_info.TotalDirSize());
+
+  RecordTargetItemSizes(target_info.no_copy_data_items);
+  RecordTargetItemSizes(target_info.ash_data_items);
+  RecordTargetItemSizes(target_info.lacros_data_items);
+  RecordTargetItemSizes(target_info.common_data_items);
+}
+
+// staic
+void BrowserDataMigrator::RecordTargetItemSizes(
+    const std::vector<TargetItem>& items) {
+  for (auto& item : items)
+    browser_data_migrator_util::RecordUserDataSize(item.path, item.size);
 }
 }  // namespace ash

@@ -22,14 +22,18 @@
 #include "components/prefs/pref_service.h"
 
 namespace ash {
+
 // User data directory name for lacros.
 constexpr char kLacrosDir[] = "lacros";
+
 // Profile data directory name for lacros.
 constexpr char kLacrosProfilePath[] = "Default";
+
 // The name of temporary directory that will store copies of files from the
 // original user data directory. At the end of the migration, it will be moved
 // to the appropriate destination.
 constexpr char kTmpDir[] = "browser_data_migrator";
+
 // The following are UMA names.
 constexpr char kFinalStatus[] = "Ash.BrowserDataMigrator.FinalStatus";
 constexpr char kCopiedDataSize[] = "Ash.BrowserDataMigrator.CopiedDataSizeMB";
@@ -44,6 +48,18 @@ constexpr char kCommonDataTime[] =
     "Ash.BrowserDataMigrator.CommonDataTimeTakenMS";
 constexpr char kCreateDirectoryFail[] =
     "Ash.BrowserDataMigrator.CreateDirectoryFailure";
+
+// The following UMAs are recorded from
+// `BrowserDataMigrator::DryRunToCollectUMA()`.
+constexpr char kDryRunNoCopyDataSize[] =
+    "Ash.BrowserDataMigrator.DryRunNoCopyDataSizeMB";
+constexpr char kDryRunAshDataSize[] =
+    "Ash.BrowserDataMigrator.DryRunAshDataSizeMB";
+constexpr char kDryRunLacrosDataSize[] =
+    "Ash.BrowserDataMigrator.DryRunLacrosDataSizeMB";
+constexpr char kDryRunCommonDataSize[] =
+    "Ash.BrowserDataMigrator.DryRunCommonDataSizeMB";
+
 // Local state pref name, which is used to keep track of what step migration is
 // at. This ensures that ash does not get repeatedly for migration.
 // 1. The user logs in and restarts ash if necessary to apply flags.
@@ -100,6 +116,8 @@ class BrowserDataMigrator {
     std::vector<TargetItem> lacros_data_items;
     // Items that will be duplicated in both ash and lacros data dir.
     std::vector<TargetItem> common_data_items;
+    // Items that can be deleted from both ash and lacros data dir.
+    std::vector<TargetItem> no_copy_data_items;
     // The total size of `ash_data_items`.
     int64_t ash_data_size;
     // The total size of items that can be deleted during the migration.
@@ -113,6 +131,9 @@ class BrowserDataMigrator {
     // common_data_size` since we are copying lacros data rather than moving
     // them.
     int64_t TotalCopySize() const;
+    // The total size of the profile data directory. It is the sum of ash,
+    // no_copy, lacros and common sizes.
+    int64_t TotalDirSize() const;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -175,6 +196,10 @@ class BrowserDataMigrator {
   // Clears the value of `kMigrationStep` in Local State.
   static void ClearMigrationStep(PrefService* local_state);
 
+  // Collects migration specific UMAs without actually running the migration. It
+  // does not check if lacros is enabled.
+  static void DryRunToCollectUMA(const base::FilePath& profile_data_dir);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
                            IsMigrationRequiredOnWorker);
@@ -195,6 +220,7 @@ class BrowserDataMigrator {
   // already exists or not. Check if lacros is enabled or not beforehand.
   static bool IsMigrationRequiredOnWorker(base::FilePath user_data_dir,
                                           const std::string& user_id_hash);
+
   // Handles the migration on a worker thread. Returns the end status of data
   // wipe and migration. `progress_callback` gets posted on UI thread whenever
   // an update to the UI is required
@@ -212,28 +238,34 @@ class BrowserDataMigrator {
   static void MigrateInternalFinishedUIThread(base::OnceClosure callback,
                                               const std::string& user_id_hash,
                                               MigrationResult result);
+
   // Records to UMA histograms. Note that if `target_info` is nullptr, timer
   // will be ignored.
   static void RecordStatus(const FinalStatus& final_status,
                            const TargetInfo* target_info = nullptr,
                            const base::ElapsedTimer* timer = nullptr);
+
   // Create `TargetInfo` from `original_user_dir`. `TargetInfo` will include
   // paths of files/dirs that needs to be migrated.
   static TargetInfo GetTargetInfo(const base::FilePath& original_user_dir);
+
   // Compares space available for `to_dir` against total byte size that
   // needs to be copied.
   static bool HasEnoughDiskSpace(const TargetInfo& target_info,
                                  const base::FilePath& to_dir);
+
   // TODO(crbug.com/1248318):Remove this arbitrary cap for migration once a long
   // term solution is found. Temporarily limit the migration size to 4GB until
   // the slow migration speed issue is resolved.
   static bool IsMigrationSmallEnough(const TargetInfo& target_info);
+
   // Set up the temporary directory `tmp_dir` by copying items into it.
   static bool SetupTmpDir(const TargetInfo& target_info,
                           const base::FilePath& from_dir,
                           const base::FilePath& tmp_dir,
                           CancelFlag* cancel_flag,
                           MigrationProgressTracker* progress_tracker);
+
   // Copies `items` to `to_dir`. `items_size` and `category_name` are used for
   // logging.
   static bool CopyTargetItems(const base::FilePath& to_dir,
@@ -242,18 +274,23 @@ class BrowserDataMigrator {
                               int64_t items_size,
                               base::StringPiece category_name,
                               MigrationProgressTracker* progress_tracker);
+
   // Copies `item` to location pointed by `dest`. Returns true on success and
   // false on failure.
   static bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
                              const base::FilePath& dest,
                              CancelFlag* cancel_flag,
                              MigrationProgressTracker* progress_tracker);
+
   // Copies the contents of `from_path` to `to_path` recursively. Unlike
   // `base::CopyDirectory()` it skips symlinks.
   static bool CopyDirectory(const base::FilePath& from_path,
                             const base::FilePath& to_path,
                             CancelFlag* cancel_flag,
                             MigrationProgressTracker* progress_tracker);
+
+  // Records the sizes of `TargetItem`s.
+  static void RecordTargetItemSizes(const std::vector<TargetItem>& items);
 };
 
 }  // namespace ash

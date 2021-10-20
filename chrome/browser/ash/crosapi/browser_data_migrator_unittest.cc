@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +53,7 @@ class BrowserDataMigratorTest : public ::testing::Test {
     //     |- FullRestoreData         /* ash */
     //     |- Bookmarks               /* lacros */
     //     |- Cookies                 /* common */
-    //     |- Affilication Database/  /* common */
+    //     |- Affiliation Database/  /* common */
     //         |- data
     //         |- Downloads/data
 
@@ -65,11 +66,11 @@ class BrowserDataMigratorTest : public ::testing::Test {
     ASSERT_TRUE(base::CreateDirectory(
         from_dir_.Append(kDownloads) /* .../user/Downloads/ */));
     ASSERT_TRUE(base::CreateDirectory(from_dir_.Append(
-        kAffiliationDatabase) /* .../user/Affilication Database/ */));
+        kAffiliationDatabase) /* .../user/Affiliation Database/ */));
     ASSERT_TRUE(base::CreateDirectory(
         from_dir_.Append(kAffiliationDatabase)
             .Append(
-                kDownloads) /* .../user/Affilication Database/Downloads/ */));
+                kDownloads) /* .../user/Affiliation Database/Downloads/ */));
     ASSERT_TRUE(base::WriteFile(from_dir_.Append(kCache) /* .../user/Cache/ */,
                                 kDataContent, kFileSize));
     ASSERT_TRUE(base::WriteFile(
@@ -87,13 +88,13 @@ class BrowserDataMigratorTest : public ::testing::Test {
                         kDataContent, kFileSize));
     ASSERT_TRUE(base::WriteFile(
         from_dir_.Append(kAffiliationDatabase)
-            .Append(kDataFile) /* .../user/Affilication Database/data */,
+            .Append(kDataFile) /* .../user/Affiliation Database/data */,
         kDataContent, kFileSize));
     ASSERT_TRUE(base::WriteFile(
         from_dir_.Append(kAffiliationDatabase)
             .Append(kDownloads)
             .Append(
-                kDataFile) /* .../user/Affilication Database/Downloads/data */,
+                kDataFile) /* .../user/Affiliation Database/Downloads/data */,
         kDataContent, kFileSize));
   }
 
@@ -215,6 +216,69 @@ TEST_F(BrowserDataMigratorTest, CopyDirectory) {
       copy_to.Append(subdirectory).Append(subdirectory).Append(kDataFile)));
   // Make sure that symlink does not get copied.
   EXPECT_FALSE(base::PathExists(copy_to.Append(kFirstRun)));
+}
+
+TEST_F(BrowserDataMigratorTest, DryRunToCollectUMA) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(base::WriteFile(from_dir_.Append(FILE_PATH_LITERAL("abcd")),
+                              kDataContent, kFileSize));
+
+  BrowserDataMigrator::DryRunToCollectUMA(from_dir_);
+
+  std::string uma_name_cache =
+      std::string(browser_data_migrator_util::kUserDataStatsRecorderDataSize) +
+      "Cache";
+  std::string uma_name_downloads =
+      std::string(browser_data_migrator_util::kUserDataStatsRecorderDataSize) +
+      "Downloads";
+  std::string uma_name_full_restore_data =
+      std::string(browser_data_migrator_util::kUserDataStatsRecorderDataSize) +
+      "FullRestoreData";
+  std::string uma_name_bookmarks =
+      std::string(browser_data_migrator_util::kUserDataStatsRecorderDataSize) +
+      "Bookmarks";
+  std::string uma_name_cookies =
+      std::string(browser_data_migrator_util::kUserDataStatsRecorderDataSize) +
+      "Cookies";
+  std::string uma_name_afiiliation_database =
+      std::string(browser_data_migrator_util::kUserDataStatsRecorderDataSize) +
+      "AffiliationDatabase";
+  std::string uma_name_unknown =
+      std::string(browser_data_migrator_util::kUserDataStatsRecorderDataSize) +
+      browser_data_migrator_util::kUnknownUMAName;
+
+  histogram_tester.ExpectTotalCount(uma_name_cache, 1);
+  histogram_tester.ExpectTotalCount(uma_name_downloads, 1);
+  histogram_tester.ExpectTotalCount(uma_name_full_restore_data, 1);
+  histogram_tester.ExpectTotalCount(uma_name_bookmarks, 1);
+  histogram_tester.ExpectTotalCount(uma_name_cookies, 1);
+  histogram_tester.ExpectTotalCount(uma_name_afiiliation_database, 1);
+  histogram_tester.ExpectTotalCount(uma_name_unknown, 1);
+
+  histogram_tester.ExpectBucketCount(uma_name_cache, kFileSize / 1024 / 1024,
+                                     1);
+  histogram_tester.ExpectBucketCount(uma_name_downloads,
+                                     kFileSize / 1024 / 1024, 1);
+  histogram_tester.ExpectBucketCount(uma_name_full_restore_data,
+                                     kFileSize / 1024 / 1024, 1);
+  histogram_tester.ExpectBucketCount(uma_name_bookmarks,
+                                     kFileSize / 1024 / 1024, 1);
+  histogram_tester.ExpectBucketCount(uma_name_cookies, kFileSize / 1024 / 1024,
+                                     1);
+  histogram_tester.ExpectBucketCount(uma_name_afiiliation_database,
+                                     kFileSize * 2 / 1024 / 1024, 1);
+  histogram_tester.ExpectBucketCount(uma_name_unknown, kFileSize / 1024 / 1024,
+                                     1);
+
+  histogram_tester.ExpectBucketCount(kDryRunNoCopyDataSize,
+                                     kFileSize / 1024 / 1024, 1);
+  histogram_tester.ExpectBucketCount(kDryRunAshDataSize,
+                                     kFileSize * 2 / 1024 / 1024, 1);
+  histogram_tester.ExpectBucketCount(kDryRunLacrosDataSize,
+                                     kFileSize / 1024 / 1024, 1);
+  histogram_tester.ExpectBucketCount(kDryRunCommonDataSize,
+                                     kFileSize * 3 / 1024 / 1024, 1);
 }
 
 TEST_F(BrowserDataMigratorTest, RecordStatus) {
