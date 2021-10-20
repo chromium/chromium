@@ -112,11 +112,9 @@ final class SigninBridge {
         assert tabModelSelectorSupplier.hasValue() : "No TabModelSelector available.";
         final TabModel regularTabModel =
                 tabModelSelectorSupplier.get().getModel(/*incognito=*/false);
-        new AccountPickerBottomSheetCoordinator(windowAndroid.getActivity().get(),
-                bottomSheetController,
-                new AccountPickerDelegateImpl(windowAndroid,
-                        TabModelUtils.getCurrentTab(regularTabModel), new WebSigninBridge.Factory(),
-                        continueUrl));
+        new AccountPickerBottomSheetCoordinator(windowAndroid, bottomSheetController,
+                new AccountPickerDelegateImpl(TabModelUtils.getCurrentTab(regularTabModel),
+                        new WebSigninBridge.Factory(), continueUrl));
     }
 
     private SigninBridge() {}

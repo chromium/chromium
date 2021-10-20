@@ -15,8 +15,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.fragment.app.FragmentActivity;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -48,9 +45,6 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.WindowAndroid;
-
-import java.lang.ref.WeakReference;
 
 /**
  * This class tests the {@link AccountPickerDelegateImpl}.
@@ -86,9 +80,6 @@ public class AccountPickerDelegateImplTest {
     private Profile mProfileMock;
 
     @Mock
-    private WindowAndroid mWindowAndroidMock;
-
-    @Mock
     private Tab mTabMock;
 
     @Captor
@@ -97,17 +88,12 @@ public class AccountPickerDelegateImplTest {
     @Captor
     private ArgumentCaptor<WebSigninBridge.Listener> mWebSigninBridgeListenerCaptor;
 
-    private FragmentActivity mActivity;
-
     private AccountPickerDelegateImpl mDelegate;
 
     private CoreAccountInfo mCoreAccountInfo;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(FragmentActivity.class);
-        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(mActivity));
-
         Profile.setLastUsedProfileForTesting(mProfileMock);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
@@ -116,8 +102,8 @@ public class AccountPickerDelegateImplTest {
 
         mCoreAccountInfo = mAccountManagerTestRule.addAccount(TEST_EMAIL);
 
-        mDelegate = new AccountPickerDelegateImpl(
-                mWindowAndroidMock, mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
+        mDelegate =
+                new AccountPickerDelegateImpl(mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
         when(mWebSigninBridgeFactoryMock.create(eq(mProfileMock), any(), any()))
                 .thenReturn(mWebSigninBridgeMock);
     }
@@ -187,15 +173,5 @@ public class AccountPickerDelegateImplTest {
         // WebSigninBridge should be kept alive in case cookies are taking longer to
         // generate than usual
         verify(mWebSigninBridgeMock, never()).destroy();
-    }
-
-    @Test
-    public void testUpdateCredentials() {
-        mMockitoRule.strictness(Strictness.LENIENT);
-        Callback<Boolean> callback = (isSuccess) -> {};
-        mDelegate.updateCredentials(TEST_EMAIL, callback);
-        verify(mFakeAccountManagerFacade)
-                .updateCredentials(
-                        AccountUtils.createAccountFromName(TEST_EMAIL), mActivity, callback);
     }
 }

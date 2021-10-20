@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.signin.ui.account_picker;
 
-import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.MainThread;
@@ -17,6 +16,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
@@ -54,14 +54,15 @@ public class AccountPickerBottomSheetCoordinator {
      * bottom sheet on the screen.
      */
     @MainThread
-    public AccountPickerBottomSheetCoordinator(Activity activity,
+    public AccountPickerBottomSheetCoordinator(WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate) {
         SigninMetricsUtils.logAccountConsistencyPromoAction(AccountConsistencyPromoAction.SHOWN);
 
         mAccountPickerBottomSheetMediator = new AccountPickerBottomSheetMediator(
-                activity, accountPickerDelegate, this::dismissBottomSheet);
-        mView = new AccountPickerBottomSheetView(activity, mAccountPickerBottomSheetMediator);
+                windowAndroid, accountPickerDelegate, this::dismissBottomSheet);
+        mView = new AccountPickerBottomSheetView(
+                windowAndroid.getActivity().get(), mAccountPickerBottomSheetMediator);
         mAccountPickerCoordinator = new AccountPickerCoordinator(
                 mView.getAccountListView(), mAccountPickerBottomSheetMediator);
 

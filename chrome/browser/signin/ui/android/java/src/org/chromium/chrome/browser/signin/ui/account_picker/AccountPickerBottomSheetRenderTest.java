@@ -87,15 +87,6 @@ public class AccountPickerBottomSheetRenderTest {
                 onSignInErrorCallback.onResult(mError);
             }
         }
-
-        @Override
-        public void addAccount(Callback<String> callback) {}
-
-        @Override
-        public void updateCredentials(
-                String accountName, Callback<Boolean> onUpdateCredentialsCallback) {
-            onUpdateCredentialsCallback.onResult(true);
-        }
     }
 
     @Rule
@@ -256,8 +247,9 @@ public class AccountPickerBottomSheetRenderTest {
 
     private void buildAndShowCollapsedBottomSheet() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCoordinator = new AccountPickerBottomSheetCoordinator(mActivityTestRule.getActivity(),
-                    getBottomSheetController(), mAccountPickerDelegate);
+            mCoordinator = new AccountPickerBottomSheetCoordinator(
+                    mActivityTestRule.getActivity().getWindowAndroid(), getBottomSheetController(),
+                    mAccountPickerDelegate);
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
                 R.id.account_picker_selected_account)::isShown);

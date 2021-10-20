@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.signin.ui.account_picker;
 
-import android.accounts.AccountManager;
-import android.app.Activity;
-import android.content.Intent;
-
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
@@ -17,9 +13,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
-import org.chromium.chrome.browser.signin.ui.SigninUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -27,17 +21,9 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.WindowAndroid;
 
-/**
- * This class is used in web sign-in flow for the account picker bottom sheet.
- *
- * It is responsible for the sign-in and adding account functions needed for the
- * web sign-in flow.
- */
+/** TODO(crbug.com/1219434): Rename to WebSigninAccountPickerDelegate and update docs. */
 public class AccountPickerDelegateImpl implements AccountPickerDelegate {
-    private final WindowAndroid mWindowAndroid;
-    private final Activity mActivity;
     private final Tab mCurrentTab;
     private final WebSigninBridge.Factory mWebSigninBridgeFactory;
     private final String mContinueUrl;
@@ -46,17 +32,13 @@ public class AccountPickerDelegateImpl implements AccountPickerDelegate {
     private @Nullable WebSigninBridge mWebSigninBridge;
 
     /**
-     * @param windowAndroid The {@link WindowAndroid} instance of the activity.
      * @param currentTab The current tab where the account picker bottom sheet is displayed.
      * @param webSigninBridgeFactory A {@link WebSigninBridge.Factory} to create {@link
      *         WebSigninBridge} instances.
      * @param continueUrl The URL that the user would be redirected to after sign-in succeeds.
      */
-    public AccountPickerDelegateImpl(WindowAndroid windowAndroid, Tab currentTab,
-            WebSigninBridge.Factory webSigninBridgeFactory, String continueUrl) {
-        mWindowAndroid = windowAndroid;
-        mActivity = mWindowAndroid.getActivity().get();
-        assert mActivity != null : "Activity should not be null!";
+    public AccountPickerDelegateImpl(
+            Tab currentTab, WebSigninBridge.Factory webSigninBridgeFactory, String continueUrl) {
         mCurrentTab = currentTab;
         mWebSigninBridgeFactory = webSigninBridgeFactory;
         mContinueUrl = continueUrl;
@@ -101,36 +83,6 @@ public class AccountPickerDelegateImpl implements AccountPickerDelegate {
                         }
                     });
         });
-    }
-
-    @Override
-    public void addAccount(Callback<String> callback) {
-        AccountManagerFacadeProvider.getInstance().createAddAccountIntent((@Nullable Intent intent)
-                                                                                  -> {
-            if (intent != null) {
-                WindowAndroid.IntentCallback intentCallback = new WindowAndroid.IntentCallback() {
-                    @Override
-                    public void onIntentCompleted(int resultCode, Intent data) {
-                        if (resultCode == Activity.RESULT_OK) {
-                            callback.onResult(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME));
-                        }
-                    }
-                };
-                mWindowAndroid.showIntent(intent, intentCallback, null);
-            } else {
-                // AccountManagerFacade couldn't create intent, use SigninUtils to open
-                // settings instead.
-                SigninUtils.openSettingsForAllAccounts(mActivity);
-            }
-        });
-    }
-
-    @Override
-    public void updateCredentials(
-            String accountName, Callback<Boolean> onUpdateCredentialsCallback) {
-        AccountManagerFacadeProvider.getInstance().updateCredentials(
-                AccountUtils.createAccountFromName(accountName), mActivity,
-                onUpdateCredentialsCallback);
     }
 
     private static WebSigninBridge.Listener createWebSigninBridgeListener(

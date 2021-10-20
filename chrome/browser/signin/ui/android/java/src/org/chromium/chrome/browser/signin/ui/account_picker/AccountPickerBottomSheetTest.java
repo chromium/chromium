@@ -23,8 +23,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import android.accounts.AccountManager;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 
 import androidx.test.espresso.ViewInteraction;
@@ -68,6 +73,7 @@ import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.ViewUtils;
 
 /**
  * Tests account picker bottom sheet of the web signin flow.
@@ -76,6 +82,21 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class AccountPickerBottomSheetTest {
+    /** Fakes the user successfully adding an account with email ACCOUNT_EMAIL to the device. */
+    // TODO(crbug.com/1261387): Consider exposing this class to other tests.
+    public static class DummyAddAccountActivity extends Activity {
+        private static final String ACCOUNT_EMAIL = "test.account3@gmail.com";
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            Intent data = new Intent();
+            data.putExtra(AccountManager.KEY_ACCOUNT_NAME, ACCOUNT_EMAIL);
+            setResult(RESULT_OK, data);
+            finish();
+        }
+    }
+
     private static class CustomFakeAccountInfoService extends FakeAccountInfoService {
         int getNumberOfObservers() {
             return TestThreadUtils.runOnUiThreadBlockingNoException(mObservers::size);
@@ -100,12 +121,17 @@ public class AccountPickerBottomSheetTest {
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
+    // Use spy() instead of @Spy to immediately initialize, so the object can be injected in
+    // AccountManagerTestRule below.
+    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
+            spy(new FakeAccountManagerFacade());
+
     private final CustomFakeAccountInfoService mFakeAccountInfoService =
             new CustomFakeAccountInfoService();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeAccountInfoService);
+            new AccountManagerTestRule(mFakeAccountManagerFacade, mFakeAccountInfoService);
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -114,7 +140,10 @@ public class AccountPickerBottomSheetTest {
     private AccountPickerDelegate mAccountPickerDelegateMock;
 
     @Captor
-    public ArgumentCaptor<Callback<String>> callbackArgumentCaptor;
+    private ArgumentCaptor<Callback<Intent>> mAddAccountIntentCreationCallbackCaptor;
+
+    @Captor
+    private ArgumentCaptor<Callback<Boolean>> mUpdateCredentialsSuccessCallbackCaptor;
 
     private AccountPickerBottomSheetCoordinator mCoordinator;
 
@@ -161,10 +190,11 @@ public class AccountPickerBottomSheetTest {
         // Here since we want to test a zero account case, we would like to set up
         // a new AccountManagerFacade mock with no account in it. The mock will be
         // torn down in the end of the test in AccountManagerTestRule.
-        AccountManagerFacadeProvider.setInstanceForTests(new FakeAccountManagerFacade());
+        AccountManagerFacadeProvider.setInstanceForTests(spy(new FakeAccountManagerFacade()));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
-                    getBottomSheetController(), mAccountPickerDelegateMock);
+            mCoordinator = new AccountPickerBottomSheetCoordinator(
+                    sActivityTestRule.getActivity().getWindowAndroid(), getBottomSheetController(),
+                    mAccountPickerDelegateMock);
         });
         checkZeroAccountBottomSheet();
     }
@@ -257,8 +287,9 @@ public class AccountPickerBottomSheetTest {
         mAccountManagerTestRule.removeAccount(TEST_EMAIL1);
         mAccountManagerTestRule.removeAccount(TEST_EMAIL2);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
-                    getBottomSheetController(), mAccountPickerDelegateMock);
+            mCoordinator = new AccountPickerBottomSheetCoordinator(
+                    sActivityTestRule.getActivity().getWindowAndroid(), getBottomSheetController(),
+                    mAccountPickerDelegateMock);
         });
         checkZeroAccountBottomSheet();
 
@@ -340,10 +371,16 @@ public class AccountPickerBottomSheetTest {
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
         buildAndShowExpandedBottomSheet();
+
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        verify(mAccountPickerDelegateMock).addAccount(callbackArgumentCaptor.capture());
-        Callback<String> callback = callbackArgumentCaptor.getValue();
-        TestThreadUtils.runOnUiThreadBlocking(() -> callback.onResult("test.account3@gmail.com"));
+        verify(mFakeAccountManagerFacade)
+                .createAddAccountIntent(mAddAccountIntentCreationCallbackCaptor.capture());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mAddAccountIntentCreationCallbackCaptor.getValue().onResult(
+                    new Intent(sActivityTestRule.getActivity(), DummyAddAccountActivity.class));
+        });
+        ViewUtils.onViewWaiting(withText(DummyAddAccountActivity.ACCOUNT_EMAIL));
+
         clickContinueButtonAndCheckSignInInProgressSheet();
         Assert.assertEquals(1, addAccountHistogram.getDelta());
         Assert.assertEquals(1, signedInWithAddedAccountHistogram.getDelta());
@@ -445,14 +482,11 @@ public class AccountPickerBottomSheetTest {
 
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorSheet();
-        doAnswer(invocation -> {
-            Callback<Boolean> callback = invocation.getArgument(1);
-            callback.onResult(true);
-            return null;
-        })
-                .when(mAccountPickerDelegateMock)
-                .updateCredentials(eq(TEST_EMAIL1), any());
         onView(withText(R.string.auth_error_card_button)).perform(click());
+        verify(mFakeAccountManagerFacade)
+                .updateCredentials(any(), any(), mUpdateCredentialsSuccessCallbackCaptor.capture());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mUpdateCredentialsSuccessCallbackCaptor.getValue().onResult(true); });
         checkCollapsedAccountList(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
     }
 
@@ -467,11 +501,14 @@ public class AccountPickerBottomSheetTest {
                         AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED);
         buildAndShowExpandedBottomSheet();
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        verify(mAccountPickerDelegateMock).addAccount(callbackArgumentCaptor.capture());
-        final String accountEmailAdded = "test.account3@gmail.com";
-        Callback<String> callback = callbackArgumentCaptor.getValue();
-        TestThreadUtils.runOnUiThreadBlocking(() -> callback.onResult(accountEmailAdded));
-        checkCollapsedAccountList(accountEmailAdded, null, null);
+        verify(mFakeAccountManagerFacade)
+                .createAddAccountIntent(mAddAccountIntentCreationCallbackCaptor.capture());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mAddAccountIntentCreationCallbackCaptor.getValue().onResult(
+                    new Intent(sActivityTestRule.getActivity(), DummyAddAccountActivity.class));
+        });
+        ViewUtils.onViewWaiting(withText(DummyAddAccountActivity.ACCOUNT_EMAIL));
+        checkCollapsedAccountList(DummyAddAccountActivity.ACCOUNT_EMAIL, null, null);
         Assert.assertEquals(1, addAccountStartedHistogram.getDelta());
         Assert.assertEquals(1, addAccountCompletedHistogram.getDelta());
     }
@@ -528,13 +565,13 @@ public class AccountPickerBottomSheetTest {
         onView(withId(R.id.account_picker_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
-    private void checkZeroAccountBottomSheet() {
+    private static void checkZeroAccountBottomSheet() {
         onVisibleView(withText(TEST_EMAIL1)).check(doesNotExist());
         onVisibleView(withText(TEST_EMAIL2)).check(doesNotExist());
         onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        verify(mAccountPickerDelegateMock).addAccount(notNull());
+        verify(AccountManagerFacadeProvider.getInstance()).createAddAccountIntent(notNull());
     }
 
     private void checkCollapsedAccountList(String email, String fullName, String givenName) {
@@ -557,8 +594,9 @@ public class AccountPickerBottomSheetTest {
 
     private void buildAndShowCollapsedBottomSheet() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
-                    getBottomSheetController(), mAccountPickerDelegateMock);
+            mCoordinator = new AccountPickerBottomSheetCoordinator(
+                    sActivityTestRule.getActivity().getWindowAndroid(), getBottomSheetController(),
+                    mAccountPickerDelegateMock);
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
                 R.id.account_picker_selected_account)::isShown);

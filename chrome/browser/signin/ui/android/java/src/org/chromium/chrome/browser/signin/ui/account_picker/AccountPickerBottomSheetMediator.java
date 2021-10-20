@@ -5,15 +5,19 @@
 package org.chromium.chrome.browser.signin.ui.account_picker;
 
 import android.accounts.Account;
-import android.content.Context;
+import android.accounts.AccountManager;
+import android.app.Activity;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.signin.ui.SigninUtils;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -22,6 +26,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -33,6 +38,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
                                                   AccountPickerBottomSheetView.BackPressListener,
                                                   AccountsChangeObserver,
                                                   ProfileDataCache.Observer {
+    private final WindowAndroid mWindowAndroid;
+    private final Activity mActivity;
     private final AccountPickerDelegate mAccountPickerDelegate;
     private final ProfileDataCache mProfileDataCache;
     private final PropertyModel mModel;
@@ -42,10 +49,12 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     private @Nullable String mDefaultAccountName;
     private @Nullable String mAddedAccountName;
 
-    AccountPickerBottomSheetMediator(Context context, AccountPickerDelegate accountPickerDelegate,
-            Runnable dismissBottomSheetRunnable) {
+    AccountPickerBottomSheetMediator(WindowAndroid windowAndroid,
+            AccountPickerDelegate accountPickerDelegate, Runnable dismissBottomSheetRunnable) {
+        mWindowAndroid = windowAndroid;
+        mActivity = windowAndroid.getActivity().get();
         mAccountPickerDelegate = accountPickerDelegate;
-        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity);
 
         OnClickListener onDismissClicked = v -> dismissBottomSheetRunnable.run();
 
@@ -83,11 +92,25 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     public void addAccount() {
         SigninMetricsUtils.logAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED);
-        mAccountPickerDelegate.addAccount(accountName -> {
-            mAddedAccountName = accountName;
+        final WindowAndroid.IntentCallback onAddAccountCompleted =
+                (int resultCode, Intent data) -> {
+            if (resultCode != Activity.RESULT_OK) {
+                return;
+            }
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED);
-            onAccountSelected(accountName);
+            mAddedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+            onAccountSelected(mAddedAccountName);
+        };
+        mAccountManagerFacade.createAddAccountIntent(intent -> {
+            if (intent == null) {
+                // AccountManagerFacade couldn't create intent, use SigninUtils to open
+                // settings instead.
+                SigninUtils.openSettingsForAllAccounts(mActivity);
+                return;
+            }
+
+            mWindowAndroid.showIntent(intent, onAddAccountCompleted, null);
         });
     }
 
@@ -233,11 +256,14 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     }
 
     private void updateCredentials() {
-        mAccountPickerDelegate.updateCredentials(mSelectedAccountName, (isSuccess) -> {
+        final Callback<Boolean> onUpdateCredentialsCompleted = isSuccess -> {
             if (isSuccess) {
                 mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE,
                         ViewState.COLLAPSED_ACCOUNT_LIST);
             }
-        });
+        };
+        mAccountManagerFacade.updateCredentials(
+                AccountUtils.createAccountFromName(mSelectedAccountName), mActivity,
+                onUpdateCredentialsCompleted);
     }
 }
