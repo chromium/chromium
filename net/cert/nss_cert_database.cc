@@ -198,9 +198,6 @@ int NSSCertDatabase::ImportFromPKCS12(
     const std::u16string& password,
     bool is_extractable,
     ScopedCERTCertificateList* imported_certs) {
-  DVLOG(1) << __func__ << " "
-           << PK11_GetModuleID(slot_info) << ":"
-           << PK11_GetSlotID(slot_info);
   int result = psm::nsPKCS12Blob_Import(slot_info,
                                         data.data(), data.size(),
                                         password,

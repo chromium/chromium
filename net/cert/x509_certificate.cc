@@ -552,7 +552,6 @@ bool X509Certificate::VerifyHostname(
     // Catch badly corrupt cert names up front.
     if (cert_san_dns_name.empty() ||
         cert_san_dns_name.find('\0') != std::string::npos) {
-      DVLOG(1) << "Bad name in cert: " << cert_san_dns_name;
       continue;
     }
     std::string presented_name(base::ToLowerASCII(cert_san_dns_name));
