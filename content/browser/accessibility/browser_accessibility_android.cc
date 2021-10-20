@@ -63,8 +63,10 @@ constexpr int kMinimumCharacterCountForInvalid = 7;
 }  // namespace
 
 // static
-BrowserAccessibility* BrowserAccessibility::Create() {
-  return new BrowserAccessibilityAndroid();
+BrowserAccessibility* BrowserAccessibility::Create(
+    BrowserAccessibilityManager* manager,
+    ui::AXNode* node) {
+  return new BrowserAccessibilityAndroid(manager, node);
 }
 
 using UniqueIdMap = std::unordered_map<int32_t, BrowserAccessibilityAndroid*>;
@@ -83,7 +85,10 @@ BrowserAccessibilityAndroid* BrowserAccessibilityAndroid::GetFromUniqueId(
   return nullptr;
 }
 
-BrowserAccessibilityAndroid::BrowserAccessibilityAndroid() {
+BrowserAccessibilityAndroid::BrowserAccessibilityAndroid(
+    BrowserAccessibilityManager* manager,
+    ui::AXNode* node)
+    : BrowserAccessibility(manager, node) {
   g_unique_id_map.Get()[unique_id()] = this;
 }
 

@@ -57,7 +57,7 @@ BrowserAccessibilityManagerMac::BrowserAccessibilityManagerMac(
   Initialize(initial_tree);
 }
 
-BrowserAccessibilityManagerMac::~BrowserAccessibilityManagerMac() {}
+BrowserAccessibilityManagerMac::~BrowserAccessibilityManagerMac() = default;
 
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerMac::GetEmptyDocument() {

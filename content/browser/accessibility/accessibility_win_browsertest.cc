@@ -2232,12 +2232,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                                             ui::AXMode::kWebContents |
                                             ui::AXMode::kScreenReader);
 
-  LONG x, y, width, height;
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(),
       ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents |
           ui::AXMode::kScreenReader | ui::AXMode::kInlineTextBoxes,
       ax::mojom::Event::kLoadComplete);
+
+  // Calling `get_characterExtents` will enable `ui::AXMode::kInlineTextBoxes`
+  // as well.
+  LONG x, y, width, height;
   EXPECT_HRESULT_SUCCEEDED(paragraph_text->get_characterExtents(
       0, IA2_COORDTYPE_SCREEN_RELATIVE, &x, &y, &width, &height));
   // X and y coordinates should be available without
@@ -2247,9 +2250,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // Width and height should be unavailable at this point.
   EXPECT_EQ(0, width);
   EXPECT_EQ(0, height);
+
   waiter.WaitForNotification();
-  // Inline text boxes should have been enabled by this point.
-  EXPECT_HRESULT_SUCCEEDED(paragraph_text->get_characterExtents(
+
+  // Inline text boxes should have been enabled by this point but since the tree
+  // has been updated, any previously retrieved IAccessibles would have been
+  // invalidated.
+  BrowserAccessibility* updated_paragraph_text =
+      FindNode(ax::mojom::Role::kParagraph, "");
+  ASSERT_NE(nullptr, updated_paragraph_text);
+  auto* updated_paragraph_text_win =
+      ToBrowserAccessibilityWin(updated_paragraph_text)->GetCOM();
+  ASSERT_NE(nullptr, updated_paragraph_text_win);
+
+  EXPECT_HRESULT_SUCCEEDED(updated_paragraph_text_win->get_characterExtents(
       0, IA2_COORDTYPE_SCREEN_RELATIVE, &x, &y, &width, &height));
   EXPECT_LT(0, x);
   EXPECT_LT(0, y);

@@ -114,11 +114,9 @@ class ImplementedAtkInterfaces {
 class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
  public:
   AXPlatformNodeAuraLinux();
-
+  ~AXPlatformNodeAuraLinux() override;
   AXPlatformNodeAuraLinux(const AXPlatformNodeAuraLinux&) = delete;
   AXPlatformNodeAuraLinux& operator=(const AXPlatformNodeAuraLinux&) = delete;
-
-  ~AXPlatformNodeAuraLinux() override;
 
   static AXPlatformNodeAuraLinux* FromAtkObject(const AtkObject*);
 

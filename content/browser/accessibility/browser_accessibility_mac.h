@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/ax_node.h"
 
 @class BrowserAccessibilityCocoa;
 
@@ -28,11 +29,11 @@ CONTENT_EXPORT BrowserAccessibilityCocoa* ToBrowserAccessibilityCocoa(
 
 class BrowserAccessibilityMac : public BrowserAccessibility {
  public:
+  ~BrowserAccessibilityMac() override;
   BrowserAccessibilityMac(const BrowserAccessibilityMac&) = delete;
   BrowserAccessibilityMac& operator=(const BrowserAccessibilityMac&) = delete;
 
   // BrowserAccessibility overrides.
-  ~BrowserAccessibilityMac() override;
   void OnDataChanged() override;
   uint32_t PlatformChildCount() const override;
   BrowserAccessibility* PlatformGetChild(uint32_t child_index) const override;
@@ -49,12 +50,13 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   // Useful for re-announcing the current focus when properties have changed.
   void ReplaceNativeObject();
 
+ protected:
+  BrowserAccessibilityMac(BrowserAccessibilityManager* manager,
+                          ui::AXNode* node);
+
+  friend class BrowserAccessibility;  // Needs access to our constructor.
+
  private:
-  // This gives BrowserAccessibility::Create access to the class constructor.
-  friend class BrowserAccessibility;
-
-  BrowserAccessibilityMac();
-
   // Creates platform and cocoa node if not yet created.
   void CreatePlatformNodes();
 
@@ -62,7 +64,7 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   BrowserAccessibilityCocoa* CreateNativeWrapper();
 
   // Manager of the native cocoa node. We own this object.
-  ui::AXPlatformNodeMac* platform_node_;
+  ui::AXPlatformNodeMac* platform_node_ = nullptr;
 };
 
 }  // namespace content

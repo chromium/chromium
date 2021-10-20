@@ -32,10 +32,12 @@ namespace content {
 
 #if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
 // static
-BrowserAccessibility* BrowserAccessibility::Create() {
-  return new BrowserAccessibility();
+BrowserAccessibility* BrowserAccessibility::Create(
+    BrowserAccessibilityManager* manager,
+    ui::AXNode* node) {
+  return new BrowserAccessibility(manager, node);
 }
-#endif
+#endif  // !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
 
 // static
 BrowserAccessibility* BrowserAccessibility::FromAXPlatformNodeDelegate(
@@ -45,7 +47,12 @@ BrowserAccessibility* BrowserAccessibility::FromAXPlatformNodeDelegate(
   return static_cast<BrowserAccessibility*>(delegate);
 }
 
-BrowserAccessibility::BrowserAccessibility() = default;
+BrowserAccessibility::BrowserAccessibility(BrowserAccessibilityManager* manager,
+                                           ui::AXNode* node)
+    : manager_(manager), node_(node) {
+  DCHECK(manager);
+  DCHECK(node);
+}
 
 BrowserAccessibility::~BrowserAccessibility() = default;
 
@@ -119,15 +126,8 @@ int GetBoundaryTextOffsetInsideBaseAnchor(
 
 }  // namespace
 
-void BrowserAccessibility::Init(BrowserAccessibilityManager* manager,
-                                ui::AXNode* node) {
-  DCHECK(manager);
-  DCHECK(node);
-  manager_ = manager;
-  node_ = node;
-}
-
 #if DCHECK_IS_ON()
+
 bool BrowserAccessibility::IsValid() const {
   // Currently we only perform validity checks on non-empty, atomic text fields.
   // An atomic text field does not expose its internal implementation to
@@ -155,7 +155,7 @@ bool BrowserAccessibility::IsValid() const {
   return true;
 }
 
-#endif
+#endif  // DCHECK_IS_ON()
 
 void BrowserAccessibility::OnDataChanged() {
 #if DCHECK_IS_ON()

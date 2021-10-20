@@ -1199,7 +1199,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return;
   _needsToUpdateChildren = true;
   if ([self isIgnored]) {
-    auto* parent = _owner->PlatformGetParent();
+    BrowserAccessibility* parent = _owner->PlatformGetParent();
     if (parent)
       [ToBrowserAccessibilityCocoa(parent) childrenChanged];
   }

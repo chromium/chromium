@@ -37,6 +37,7 @@ class AXPlatformNodeMac : public AXPlatformNodeBase {
   base::scoped_nsobject<AXPlatformNodeCocoa> ReleaseNativeWrapper() {
     return std::move(native_node_);
   }
+
   void SetNativeWrapper(AXPlatformNodeCocoa* native_node) {
     return native_node_.reset(native_node);
   }

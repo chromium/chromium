@@ -14,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "content/browser/accessibility/browser_accessibility.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
 namespace content {
@@ -22,6 +23,12 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
  public:
   static BrowserAccessibilityAndroid* GetFromUniqueId(int32_t unique_id);
   int32_t unique_id() const { return GetUniqueId().Get(); }
+
+  ~BrowserAccessibilityAndroid() override;
+  BrowserAccessibilityAndroid(const BrowserAccessibilityAndroid& other) =
+      delete;
+  BrowserAccessibilityAndroid& operator=(
+      const BrowserAccessibilityAndroid& other) = delete;
 
   // BrowserAccessibility Overrides.
   void OnDataChanged() override;
@@ -184,19 +191,19 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   void GetSuggestions(std::vector<int>* suggestion_starts,
                       std::vector<int>* suggestion_ends) const;
 
- private:
-  // This gives BrowserAccessibility::Create access to the class constructor.
-  friend class BrowserAccessibility;
+ protected:
+  BrowserAccessibilityAndroid(BrowserAccessibilityManager* manager,
+                              ui::AXNode* node);
 
+  friend class BrowserAccessibility;  // Needs access to our constructor.
+
+ private:
   static size_t CommonPrefixLength(const std::u16string a,
                                    const std::u16string b);
   static size_t CommonSuffixLength(const std::u16string a,
                                    const std::u16string b);
   static size_t CommonEndLengths(const std::u16string a,
                                  const std::u16string b);
-
-  BrowserAccessibilityAndroid();
-  ~BrowserAccessibilityAndroid() override;
 
   // BrowserAccessibility overrides.
   BrowserAccessibility* PlatformGetLowestPlatformAncestor() const override;
@@ -214,8 +221,6 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   std::u16string old_value_;
   std::u16string new_value_;
   int32_t unique_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityAndroid);
 };
 
 }  // namespace content

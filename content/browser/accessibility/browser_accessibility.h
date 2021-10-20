@@ -54,24 +54,17 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   // Creates a platform specific BrowserAccessibility. Ownership passes to the
   // caller.
-  static BrowserAccessibility* Create();
+  static BrowserAccessibility* Create(BrowserAccessibilityManager* manager,
+                                      ui::AXNode* node);
 
   // Returns |delegate| as a BrowserAccessibility object, if |delegate| is
   // non-null and an object in the BrowserAccessibility class hierarchy.
   static BrowserAccessibility* FromAXPlatformNodeDelegate(
       ui::AXPlatformNodeDelegate* delegate);
 
-  BrowserAccessibility();
-
+  ~BrowserAccessibility() override;
   BrowserAccessibility(const BrowserAccessibility&) = delete;
   BrowserAccessibility& operator=(const BrowserAccessibility&) = delete;
-
-  ~BrowserAccessibility() override;
-
-  // Called only once, immediately after construction. The constructor doesn't
-  // take any arguments because in the Windows subclass we use a special
-  // function to construct a COM object.
-  virtual void Init(BrowserAccessibilityManager* manager, ui::AXNode* node);
 
   // Called after the object is first initialized and again every time
   // its data changes.
@@ -621,13 +614,15 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   std::string ToString() const;
 
  protected:
+  BrowserAccessibility(BrowserAccessibilityManager* manager, ui::AXNode* node);
+
   virtual ui::TextAttributeList ComputeTextAttributes() const;
 
   // The manager of this tree of accessibility objects. Weak, owns us.
-  BrowserAccessibilityManager* manager_ = nullptr;
+  BrowserAccessibilityManager* const manager_;
 
   // The underlying node. Weak, `AXTree` owns this.
-  ui::AXNode* node_ = nullptr;
+  ui::AXNode* const node_;
 
   // Protected so that it can't be called directly on a BrowserAccessibility
   // where it could be confused with an id that comes from the node data,

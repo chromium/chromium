@@ -15,11 +15,16 @@ BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
 }
 
 // static
-BrowserAccessibility* BrowserAccessibility::Create() {
-  return new BrowserAccessibilityAuraLinux();
+BrowserAccessibility* BrowserAccessibility::Create(
+    BrowserAccessibilityManager* manager,
+    ui::AXNode* node) {
+  return new BrowserAccessibilityAuraLinux(manager, node);
 }
 
-BrowserAccessibilityAuraLinux::BrowserAccessibilityAuraLinux() {
+BrowserAccessibilityAuraLinux::BrowserAccessibilityAuraLinux(
+    BrowserAccessibilityManager* manager,
+    ui::AXNode* node)
+    : BrowserAccessibility(manager, node) {
   node_ = static_cast<ui::AXPlatformNodeAuraLinux*>(
       ui::AXPlatformNode::Create(this));
 }
@@ -27,6 +32,7 @@ BrowserAccessibilityAuraLinux::BrowserAccessibilityAuraLinux() {
 BrowserAccessibilityAuraLinux::~BrowserAccessibilityAuraLinux() {
   DCHECK(node_);
   node_->Destroy();
+  node_ = nullptr;
 }
 
 ui::AXPlatformNodeAuraLinux* BrowserAccessibilityAuraLinux::GetNode() const {

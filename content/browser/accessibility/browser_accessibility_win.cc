@@ -13,19 +13,21 @@
 namespace content {
 
 // static
-BrowserAccessibility* BrowserAccessibility::Create() {
-  return new BrowserAccessibilityWin();
+BrowserAccessibility* BrowserAccessibility::Create(
+    BrowserAccessibilityManager* manager,
+    ui::AXNode* node) {
+  return new BrowserAccessibilityWin(manager, node);
 }
 
-BrowserAccessibilityWin::BrowserAccessibilityWin() {
+BrowserAccessibilityWin::BrowserAccessibilityWin(
+    BrowserAccessibilityManager* manager,
+    ui::AXNode* node)
+    : BrowserAccessibility(manager, node) {
   ui::win::CreateATLModuleIfNeeded();
   HRESULT hr = CComObject<BrowserAccessibilityComWin>::CreateInstance(
       &browser_accessibility_com_);
   DCHECK(SUCCEEDED(hr));
-
   browser_accessibility_com_->AddRef();
-
-  // Set the delegate to us
   browser_accessibility_com_->Init(this);
 }
 

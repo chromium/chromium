@@ -1425,9 +1425,8 @@ void BrowserAccessibilityManager::OnSubtreeWillBeDeleted(ui::AXTree* tree,
 void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
                                                 ui::AXNode* node) {
   DCHECK(node);
-  BrowserAccessibility* wrapper = BrowserAccessibility::Create();
+  BrowserAccessibility* wrapper = BrowserAccessibility::Create(this, node);
   id_wrapper_map_[node->id()] = wrapper;
-  wrapper->Init(this, node);
 
   if (tree->root() != node &&
       node->GetRole() == ax::mojom::Role::kRootWebArea) {
@@ -1451,11 +1450,10 @@ void BrowserAccessibilityManager::OnNodeReparented(ui::AXTree* tree,
                                                    ui::AXNode* node) {
   DCHECK(node);
   BrowserAccessibility* wrapper = GetFromAXNode(node);
-  if (!wrapper) {
-    wrapper = BrowserAccessibility::Create();
-    id_wrapper_map_[node->id()] = wrapper;
-  }
-  wrapper->Init(this, node);
+  if (wrapper)
+    delete wrapper;
+  wrapper = BrowserAccessibility::Create(this, node);
+  id_wrapper_map_[node->id()] = wrapper;
 }
 
 void BrowserAccessibilityManager::OnRoleChanged(ui::AXTree* tree,
@@ -1484,9 +1482,8 @@ void BrowserAccessibilityManager::OnAtomicUpdateFinished(
   for (const auto& change : changes) {
     ui::AXNode* node = change.node;
     BrowserAccessibility* wrapper = GetFromAXNode(node);
-    if (wrapper) {
+    if (wrapper)
       wrapper->OnDataChanged();
-    }
   }
 }
 
