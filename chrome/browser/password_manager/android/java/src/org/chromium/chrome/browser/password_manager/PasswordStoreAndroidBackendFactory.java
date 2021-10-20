@@ -6,11 +6,23 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
+import org.chromium.base.Callback;
+
 /**
  * This factory returns an implementation for the backend. The factory itself is implemented
  * downstream, too.
  */
 public abstract class PasswordStoreAndroidBackendFactory {
+    class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBackend {
+        public FakePasswordStoreAndroidBackend() {}
+
+        @Override
+        public void getAllLogins(
+                Callback<byte[]> loginsReply, Callback<Exception> failureCallback) {
+            failureCallback.onResult(new Exception("Not implemented"));
+        }
+    }
+
     private static PasswordStoreAndroidBackendFactory sInstance;
 
     /**
@@ -31,7 +43,6 @@ public abstract class PasswordStoreAndroidBackendFactory {
      * @return A non-null implementation of the {@link PasswordStoreAndroidBackend}.
      */
     public PasswordStoreAndroidBackend createBackend() {
-        assert false : "No implementation of the backend for password store found.";
-        return null;
+        return new FakePasswordStoreAndroidBackend();
     }
 }
