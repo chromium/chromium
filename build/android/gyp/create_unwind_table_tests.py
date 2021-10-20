@@ -12,11 +12,12 @@ import ctypes
 import io
 import unittest
 
-from create_unwind_table import (AddressCfi, AddressUnwind,
-                                 FilterToNonTombstoneCfi, FunctionCfi,
-                                 EncodeAsCUbytes, EncodeStackPointerUpdate,
-                                 EncodePop, EncodeAddressUnwind,
-                                 ReadFunctionCfi, Uleb128Encode, UnwindType)
+from create_unwind_table import (
+    AddressCfi, AddressUnwind, FilterToNonTombstoneCfi, FunctionCfi,
+    FunctionUnwind, EncodeAddressUnwind, EncodeAsCUbytes,
+    EncodeStackPointerUpdate, EncodePop, GenerateUnwinds, NullParser,
+    PushOrSubSpParser, ReadFunctionCfi, StoreSpParser, Uleb128Encode,
+    UnwindType, VPushParser)
 
 
 class _TestReadFunctionCfi(unittest.TestCase):
@@ -271,3 +272,213 @@ class _TestEncodeAddressUnwind(unittest.TestCase):
                           unwind_type=UnwindType.RESTORE_SP_FROM_REGISTER,
                           sp_offset=0x4,
                           registers=tuple())))
+
+
+class _TestNullParser(unittest.TestCase):
+  def testCfaChange(self):
+    parser = NullParser()
+    match = parser.GetBreakpadInstructionsRegex().search('.cfa: sp 0 + .ra: lr')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=0,
+                                                              cfa_sp_offset=0,
+                                                              match=match)
+
+    self.assertEqual(0, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=0,
+                      unwind_type=UnwindType.RETURN_TO_LR,
+                      sp_offset=0,
+                      registers=()), address_unwind)
+
+
+class _TestPushOrSubSpParser(unittest.TestCase):
+  def testCfaChange(self):
+    parser = PushOrSubSpParser()
+    match = parser.GetBreakpadInstructionsRegex().search('.cfa: sp 4 +')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=0,
+                                                              match=match)
+
+    self.assertEqual(4, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
+                      sp_offset=4,
+                      registers=()), address_unwind)
+
+  def testCfaAndRaChangePopOnly(self):
+    parser = PushOrSubSpParser()
+    match = parser.GetBreakpadInstructionsRegex().search(
+        '.cfa: sp 4 + .ra: .cfa -4 + ^')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=0,
+                                                              match=match)
+
+    self.assertEqual(4, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
+                      sp_offset=0,
+                      registers=(14, )), address_unwind)
+
+  def testCfaAndRaChangePopAndSpUpdate(self):
+    parser = PushOrSubSpParser()
+    match = parser.GetBreakpadInstructionsRegex().search(
+        '.cfa: sp 8 + .ra: .cfa -4 + ^')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=0,
+                                                              match=match)
+
+    self.assertEqual(8, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
+                      sp_offset=4,
+                      registers=(14, )), address_unwind)
+
+  def testCfaAndRaAndRegistersChangePopOnly(self):
+    parser = PushOrSubSpParser()
+    match = parser.GetBreakpadInstructionsRegex().search(
+        '.cfa: sp 12 + .ra: .cfa -4 + ^ r4: .cfa -12 + ^ r7: .cfa -8 + ^')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=0,
+                                                              match=match)
+
+    self.assertEqual(12, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
+                      sp_offset=0,
+                      registers=(4, 7, 14)), address_unwind)
+
+  def testCfaAndRaAndRegistersChangePopAndSpUpdate(self):
+    parser = PushOrSubSpParser()
+    match = parser.GetBreakpadInstructionsRegex().search(
+        '.cfa: sp 16 + .ra: .cfa -4 + ^ r4: .cfa -12 + ^ r7: .cfa -8 + ^')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=0,
+                                                              match=match)
+
+    self.assertEqual(16, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
+                      sp_offset=4,
+                      registers=(4, 7, 14)), address_unwind)
+
+  def testRegistersChange(self):
+    parser = PushOrSubSpParser()
+    match = parser.GetBreakpadInstructionsRegex().search(
+        'r4: .cfa -8 + ^ r7: .cfa -4 + ^')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=0,
+                                                              match=match)
+
+    self.assertEqual(0, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
+                      sp_offset=0,
+                      registers=(4, 7)), address_unwind)
+
+  def testCfaAndRegistersChange(self):
+    parser = PushOrSubSpParser()
+    match = parser.GetBreakpadInstructionsRegex().search(
+        '.cfa: sp 8 + r4: .cfa -8 + ^ r7: .cfa -4 + ^')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=0,
+                                                              match=match)
+
+    self.assertEqual(8, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
+                      sp_offset=0,
+                      registers=(4, 7)), address_unwind)
+
+  def testRegistersOrdering(self):
+    parser = PushOrSubSpParser()
+    match = parser.GetBreakpadInstructionsRegex().search(
+        'r10: .cfa -8 + ^ r7: .cfa -4 + ^')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=0,
+                                                              match=match)
+
+    self.assertEqual(0, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
+                      sp_offset=0,
+                      registers=(7, 10)), address_unwind)
+
+
+class _TestVPushParser(unittest.TestCase):
+  def testCfaAndRegistersChange(self):
+    parser = VPushParser()
+    match = parser.GetBreakpadInstructionsRegex().search(
+        '.cfa: sp 40 + unnamed_register264: .cfa -40 + ^ '
+        'unnamed_register265: .cfa -32 + ^')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=24,
+                                                              match=match)
+
+    self.assertEqual(40, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
+                      sp_offset=16,
+                      registers=()), address_unwind)
+
+  def testRegistersChange(self):
+    parser = VPushParser()
+    match = parser.GetBreakpadInstructionsRegex().search(
+        'unnamed_register264: .cfa -40 + ^ unnamed_register265: .cfa -32 + ^')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=24,
+                                                              match=match)
+
+    self.assertEqual(24, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.NO_ACTION,
+                      sp_offset=0,
+                      registers=()), address_unwind)
+
+
+class _TestStoreSpParser(unittest.TestCase):
+  def testCfaAndRegistersChange(self):
+    parser = StoreSpParser()
+    match = parser.GetBreakpadInstructionsRegex().search('.cfa: r7 8 +')
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=12,
+                                                              match=match)
+
+    self.assertEqual(8, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.RESTORE_SP_FROM_REGISTER,
+                      sp_offset=-4,
+                      registers=(7, )), address_unwind)

@@ -4,10 +4,12 @@
 # found in the LICENSE file.
 """Creates a table of unwind information in Android Chrome's bespoke format."""
 
+import abc
 import ctypes
 import enum
 import re
 from typing import Iterable, List, NamedTuple, Sequence, TextIO, Tuple
+
 
 _STACK_CFI_INIT_REGEX = re.compile(
     r'^STACK CFI INIT ([0-9a-f]+) ([0-9a-f]+) (.+)$')
@@ -273,7 +275,7 @@ class FunctionUnwind(NamedTuple):
 
   address: int
   size: int
-  address_unwind: Tuple[AddressUnwind, ...]
+  address_unwinds: Tuple[AddressUnwind, ...]
 
 
 def EncodeAddressUnwind(address_unwind: AddressUnwind) -> List[ctypes.c_ubyte]:
@@ -307,3 +309,147 @@ def EncodeAddressUnwind(address_unwind: AddressUnwind) -> List[ctypes.c_ubyte]:
 
   assert False, 'unknown unwind type'
   return []
+
+
+class UnwindInstructionsParser(abc.ABC):
+  """Base class for parsers of breakpad unwind instruction sequences.
+
+  Provides regexes matching breakpad instruction sequences understood by the
+  parser, and parsing of the sequences from the regex match.
+  """
+
+  @abc.abstractmethod
+  def GetBreakpadInstructionsRegex(self) -> re.Pattern:
+    pass
+
+  #
+  @abc.abstractmethod
+  def ParseFromMatch(self, address_offset: int, cfa_sp_offset: int,
+                     match: re.Match) -> Tuple[AddressUnwind, int]:
+    """Returns the regex matching the breakpad instructions.
+
+    Arguments:
+      address_offset: Offset from function start address.
+      cfa_sp_offset: CFA stack pointer offset.
+
+    Returns:
+      The unwind info for the address plus the new cfa_sp_offset.
+    """
+
+
+class NullParser(UnwindInstructionsParser):
+  """Translates the state before any instruction has been executed."""
+
+  regex = re.compile(r'^\.cfa: sp 0 \+ \.ra: lr$')
+
+  def GetBreakpadInstructionsRegex(self) -> re.Pattern:
+    return self.regex
+
+  def ParseFromMatch(self, address_offset: int, cfa_sp_offset: int,
+                     match: re.Match) -> Tuple[AddressUnwind, int]:
+    return AddressUnwind(address_offset, UnwindType.RETURN_TO_LR, 0, ()), 0
+
+
+class PushOrSubSpParser(UnwindInstructionsParser):
+  """Translates unwinds from push or sub sp, #constant instructions."""
+
+  # We expect at least one of the three outer groups to be non-empty. Cases:
+  #
+  # Standard prologue pushes.
+  #   Match the first two and optionally the third.
+  #
+  # Standard prologue sub sp, #constant.
+  #   Match only the first.
+  #
+  # Pushes in dynamic stack allocation functions after saving sp.
+  #   Match only the third since they don't alter the stack pointer or store the
+  #   return address.
+  #
+  # Leaf functions that use callee-save registers.
+  #   Match the first and third but not the second.
+  regex = re.compile(r'^(?:\.cfa: sp (\d+) \+ ?)?'
+                     r'(?:\.ra: \.cfa (-\d+) \+ \^ ?)?'
+                     r'((?:r\d+: \.cfa -\d+ \+ \^ ?)*)$')
+
+  # 'r' followed by digits, with 'r' matched via positive lookbehind so only the
+  # number appears in the match.
+  register_regex = re.compile('(?<=r)(\d+)')
+
+  def GetBreakpadInstructionsRegex(self) -> re.Pattern:
+    return self.regex
+
+  def ParseFromMatch(self, address_offset: int, cfa_sp_offset: int,
+                     match: re.Match) -> Tuple[AddressUnwind, int]:
+    # The group will be None if the outer non-capturing groups for the(\d+) and
+    # (-\d+) expressions are not matched.
+    new_cfa_sp_offset, ra_cfa_offset = (int(group) if group else None
+                                        for group in match.groups()[:2])
+
+    # Registers are pushed in reverse order by register number so are popped in
+    # order. Sort them to ensure the proper order.
+    registers = sorted([
+        int(register)
+        for register in self.register_regex.findall(match.group(3))
+    ] +
+                       # Also pop lr (ra in breakpad terms) if it was stored.
+                       ([14] if ra_cfa_offset is not None else []))
+
+    sp_offset = 0
+    if new_cfa_sp_offset is not None:
+      sp_offset = new_cfa_sp_offset - cfa_sp_offset
+      assert sp_offset % 4 == 0
+      if sp_offset >= len(registers) * 4:
+        # Handles the sub sp, #constant case, and push instructions that push
+        # caller-save registers r0-r3 which don't get encoded in the unwind
+        # instructions. In the latter case we need to move the stack pointer up
+        # to the first pushed register.
+        sp_offset -= len(registers) * 4
+
+    return AddressUnwind(address_offset,
+                         UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS, sp_offset,
+                         tuple(registers)), new_cfa_sp_offset or cfa_sp_offset
+
+
+class VPushParser(UnwindInstructionsParser):
+  # VPushes that occur in dynamic stack allocation functions after storing the
+  # stack pointer don't change the stack pointer or push any register that we
+  # care about. The first group will not match in those cases.
+  #
+  # Breakpad doesn't seem to understand how to name the floating point
+  # registers so calls them unnamed_register.
+  regex = re.compile(r'^(?:\.cfa: sp (\d+) \+ )?'
+                     r'(?:unnamed_register\d+: \.cfa -\d+ \+ \^ ?)+$')
+
+  def GetBreakpadInstructionsRegex(self) -> re.Pattern:
+    return self.regex
+
+  def ParseFromMatch(self, address_offset: int, cfa_sp_offset: int,
+                     match: re.Match) -> Tuple[AddressUnwind, int]:
+    # `match.group(1)`, which corresponds to the (\d+) expression, will be None
+    # if the first outer non-capturing group is not matched.
+    new_cfa_sp_offset = int(match.group(1)) if match.group(1) else None
+    if new_cfa_sp_offset is None:
+      return (AddressUnwind(address_offset, UnwindType.NO_ACTION, 0,
+                            ()), cfa_sp_offset)
+
+    sp_offset = new_cfa_sp_offset - cfa_sp_offset
+    assert sp_offset % 4 == 0
+    return AddressUnwind(address_offset,
+                         UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS, sp_offset,
+                         ()), new_cfa_sp_offset
+
+
+class StoreSpParser(UnwindInstructionsParser):
+  regex = re.compile(r'^\.cfa: r(\d+) (\d+) \+$')
+
+  def GetBreakpadInstructionsRegex(self) -> re.Pattern:
+    return self.regex
+
+  def ParseFromMatch(self, address_offset: int, cfa_sp_offset: int,
+                     match: re.Match) -> Tuple[AddressUnwind, int]:
+    register = int(match.group(1))
+    new_cfa_sp_offset = int(match.group(2))
+    sp_offset = new_cfa_sp_offset - cfa_sp_offset
+    assert sp_offset % 4 == 0
+    return AddressUnwind(address_offset, UnwindType.RESTORE_SP_FROM_REGISTER,
+                         sp_offset, (register, )), new_cfa_sp_offset
