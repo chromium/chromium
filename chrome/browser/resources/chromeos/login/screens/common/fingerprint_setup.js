@@ -44,6 +44,14 @@ const FingerprintSetupBase = Polymer.mixinBehaviors(
     [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
     Polymer.Element);
 
+/**
+ * @typedef {{
+ *   setupFingerprint:  OobeAdaptiveDialogElement,
+ *   arc:  CrFingerprintProgressArcElement,
+ * }}
+ */
+FingerprintSetupBase.$;
+
 class FingerprintSetup extends FingerprintSetupBase {
   static get is() {
     return 'fingerprint-setup-element';
@@ -197,15 +205,13 @@ class FingerprintSetup extends FingerprintSetupBase {
   /**
    * Enable/disable lottie animation.
    * @param {boolean} playing True if animation should be playing.
-   * @suppress {missingProperties}
    */
   setAnimationState_(playing) {
     if (this.shouldUseLottieAnimation_) {
       const lottieElement = /** @type{CrLottieElement} */ (
           this.$.setupFingerprint.querySelector('#scannerLocationLottie'));
       lottieElement.setPlay(playing);
-      /** @type {!CrFingerprintProgressArcElement} */ (this.$.arc)
-          .setPlay(playing);
+      this.$.arc.setPlay(playing);
     }
   }
 
@@ -261,13 +267,12 @@ class FingerprintSetup extends FingerprintSetupBase {
   onProgressChanged_(newValue, oldValue) {
     // Start a new enrollment, so reset all enrollment related states.
     if (newValue === 0) {
-      /** @type {!CrFingerprintProgressArcElement} */ (this.$.arc).reset();
+      this.$.arc.reset();
       this.scanResult_ = FingerprintResultType.SUCCESS;
       return;
     }
 
-    /** @type {!CrFingerprintProgressArcElement} */ (this.$.arc)
-        .setProgress(oldValue, newValue, newValue === 100);
+    this.$.arc.setProgress(oldValue, newValue, newValue === 100);
   }
 }
 
