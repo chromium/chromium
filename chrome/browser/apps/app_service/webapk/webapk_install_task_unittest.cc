@@ -335,6 +335,17 @@ TEST_F(WebApkInstallTaskTest, MinterTimeout) {
                                apps::WebApkInstallStatus::kNetworkTimeout, 1);
 }
 
+TEST_F(WebApkInstallTaskTest, NoManifestUrl) {
+  auto info = BuildDefaultWebAppInfo();
+  info->manifest_url = GURL();
+  auto app_id = web_app::test::InstallWebApp(profile(), std::move(info));
+  base::HistogramTester histograms;
+
+  ASSERT_FALSE(InstallWebApk(app_id));
+  histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
+                               apps::WebApkInstallStatus::kAppInvalid, 1);
+}
+
 TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShortName) {
   // Install an initial app.
   auto app_id =
