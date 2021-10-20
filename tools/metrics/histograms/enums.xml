@@ -18137,20 +18137,20 @@ metrics consent we also won't be able to send UMA metrics. -->
     mounted or belonging to the owner.
   </int>
   <int value="2" label="Browser Cache cleaned above target">
-    Successfully freed space above 2GB target.
+    Successfully freed space above the 2GB target.
   </int>
   <int value="3" label="Google Drive Cache cleaned above target">
-    Successfully freed space above 2GB target.
+    Successfully freed space above the 2GB target.
   </int>
   <int value="4" label="Google Drive Cache cleaned above minimum">
-    Disk space was not above 2GB target, but was above the 512MB minimum needed.
+    Disk space was not above the 2GB target, but was above the minimum needed.
     Decided not to proceed further with more aggressive cleanups.
   </int>
   <int value="5" label="Android Cache cleaned above target">
     Successfully freed space above 2GB target.
   </int>
   <int value="6" label="Android Cache cleaned above minimum">
-    Disk space was not above 2GB target, but was above the 512MB minimum needed.
+    Disk space was not above the 2GB target, but was above the minimum needed.
     Decided not to proceed further with more aggressive cleanups.
   </int>
   <int value="7" label="Whole User Profiles cleaned above target">
@@ -18161,6 +18161,13 @@ metrics consent we also won't be able to send UMA metrics. -->
   </int>
   <int value="9" label="No unmounted cryptohomes">
     No users or no logged-out users.
+  </int>
+  <int value="10" label="Dmcrypt cache vaults cleaned above target">
+    Successfully freed space above 2GB target.
+  </int>
+  <int value="11" label="Dmcrypt cache vaults cleaned above minimum">
+    Disk space was not above the 2GB target, but was above the minimum needed.
+    Decided not to proceed further with more aggressive cleanups.
   </int>
 </enum>
 
