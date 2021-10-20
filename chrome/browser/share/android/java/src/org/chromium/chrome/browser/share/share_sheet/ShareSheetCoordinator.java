@@ -422,6 +422,11 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         List<String> availableActivities = new ArrayList<String>();
         Map<String, ResolveInfo> resolveInfos = new HashMap<String, ResolveInfo>();
 
+        // The system can return ResolveInfos which refer to activities exported
+        // by Chrome - especially the Print activity. We don't want to offer
+        // these as "third party" targets, so filter them out.
+        availableResolveInfos = filterOutOwnResolveInfos(availableResolveInfos);
+
         // Sort the resolve infos by package name: on the backend, we store them by activity name,
         // but there's no particular reason activity names would be unique, and when we get them
         // from the system they're in arbitrary order. Here we sort them by package name (which *is*
@@ -448,6 +453,20 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             onThirdPartyShareTargetsReceived(
                     callback, resolveInfos, activity, params, saveLastUsed, ranking);
         });
+    }
+
+    // Returns a new list of ResovleInfos containing only the elements of the
+    // supplied list which are not references to activities from the current
+    // package.
+    private List<ResolveInfo> filterOutOwnResolveInfos(List<ResolveInfo> infos) {
+        String currentPackageName = ContextUtils.getApplicationContext().getPackageName();
+        List<ResolveInfo> remaining = new ArrayList<ResolveInfo>();
+        for (ResolveInfo info : infos) {
+            if (!info.activityInfo.packageName.equals(currentPackageName)) {
+                remaining.add(info);
+            }
+        }
+        return remaining;
     }
 
     private int numberOf3PTilesToShow(Activity activity) {
