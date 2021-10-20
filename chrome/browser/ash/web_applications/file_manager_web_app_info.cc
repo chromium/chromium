@@ -19,10 +19,40 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 
+using ash::file_manager::kChromeUIFileManagerURL;
+
+namespace {
+
+// Appends a file handler to `info`.
+// The handler action has the format: chrome://file-manager/?${ACTION_NAME}
+// This means: For files with the given `file_extensions` or `mime_type` the
+// Files SWA is a candidate app to open/handle such files.
+void AppendFileHandler(WebApplicationInfo& info,
+                       const std::string& action_name,
+                       const base::flat_set<std::string>& file_extensions,
+                       const std::string& mime_type = "") {
+  apps::FileHandler handler;
+
+  GURL action = GURL(kChromeUIFileManagerURL);
+  GURL::Replacements replacements;
+  replacements.SetQuery(action_name.c_str(),
+                        url::Component(0, action_name.length()));
+  handler.action = action.ReplaceComponents(replacements);
+
+  handler.accept.emplace_back();
+  handler.accept.back().file_extensions = file_extensions;
+  if (!mime_type.empty())
+    handler.accept.back().mime_type = mime_type;
+
+  info.file_handlers.push_back(std::move(handler));
+}
+
+}  // namespace
+
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(ash::file_manager::kChromeUIFileManagerURL);
-  info->scope = GURL(ash::file_manager::kChromeUIFileManagerURL);
+  info->start_url = GURL(kChromeUIFileManagerURL);
+  info->scope = GURL(kChromeUIFileManagerURL);
   info->title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
@@ -41,14 +71,45 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
+  // Add File Handlers. NOTE: Order of handlers matters.
+  // Archives:
+  AppendFileHandler(*info, "mount-archive",
+                    {"7z", "bz2", "crx", "gz", "iso", "rar", "tar", "tbz",
+                     "tbz2", "tgz", "zip"});
+
+  // Drive & Google Docs:
+  AppendFileHandler(*info, "open-hosted-generic",
+                    {"gdraw", "gtable", "gform", "gmaps", "gsite", "glink"});
+  AppendFileHandler(*info, "open-hosted-gdoc", {"gdoc"});
+  AppendFileHandler(*info, "open-hosted-gsheet", {"gsheet"});
+  AppendFileHandler(*info, "open-hosted-gslides", {"gslides"});
+
+  // View in the browser (with mime-type):
+  AppendFileHandler(*info, "view-pdf", {"pdf"}, "application/pdf");
+  AppendFileHandler(
+      *info, "view-in-browser",
+      {"htm", "html", "mht", "mhtml", "shtml", "xht", "xhtml", "svg", "txt"},
+      "text/plain");
+
+  // Crostini:
+  AppendFileHandler(*info, "install-linux-package", {"deb"});
+  AppendFileHandler(*info, "import-crostini-image", {"tini"});
+
+  // For File Picker and Save As dialogs:
+  AppendFileHandler(*info, "select", {"*"});
+  AppendFileHandler(*info, "open", {"*"});
   return info;
 }
 
 FileManagerSystemAppDelegate::FileManagerSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::FILE_MANAGER,
-                                    "File Manager",
-                                    GURL("chrome://file-manager"),
-                                    profile) {}
+    : web_app::SystemWebAppDelegate(
+          web_app::SystemAppType::FILE_MANAGER,
+          "File Manager",
+          GURL(kChromeUIFileManagerURL),
+          profile,
+          web_app::OriginTrialsMap(
+              {{web_app::GetOrigin(kChromeUIFileManagerURL),
+                {"FileHandling"}}})) {}
 
 std::unique_ptr<WebApplicationInfo>
 FileManagerSystemAppDelegate::GetWebAppInfo() const {
