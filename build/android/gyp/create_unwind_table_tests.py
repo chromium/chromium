@@ -15,9 +15,8 @@ import unittest
 from create_unwind_table import (
     AddressCfi, AddressUnwind, FilterToNonTombstoneCfi, FunctionCfi,
     FunctionUnwind, EncodeAddressUnwind, EncodeAsCUbytes,
-    EncodeStackPointerUpdate, EncodePop, GenerateUnwinds, NullParser,
-    PushOrSubSpParser, ReadFunctionCfi, StoreSpParser, Uleb128Encode,
-    UnwindType, VPushParser)
+    EncodeStackPointerUpdate, EncodePop, NullParser, PushOrSubSpParser,
+    ReadFunctionCfi, StoreSpParser, Uleb128Encode, UnwindType, VPushParser)
 
 
 class _TestReadFunctionCfi(unittest.TestCase):
