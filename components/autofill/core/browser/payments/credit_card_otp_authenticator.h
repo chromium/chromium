@@ -88,6 +88,10 @@ class CreditCardOtpAuthenticator {
   // also be invoked when user retries with a new OTP.
   void OnUnmaskPromptAccepted(const std::u16string& otp);
 
+  // Called when the unmask prompt is closed. |dismiss_by_cancellation|
+  // indicates whether the closure was triggered by user cancellation.
+  void OnUnmaskPromptClosed(bool dismiss_by_cancellation);
+
   // Callback function invoked when the client receives a response from the
   // server. Updates locally-cached |context_token_| to the latest version. If
   // the request was successful, dismiss the UI and pass the full card
@@ -150,6 +154,10 @@ class CreditCardOtpAuthenticator {
   // This contains the details of the Unmask request to be sent to the server.
   std::unique_ptr<payments::PaymentsClient::UnmaskRequestDetails>
       unmask_request_;
+
+  // The timestamps when the requests are sent. Used for logging.
+  absl::optional<base::TimeTicks> select_challenge_option_request_timestamp_;
+  absl::optional<base::TimeTicks> unmask_card_request_timestamp_;
 
   base::WeakPtrFactory<CreditCardOtpAuthenticator> weak_ptr_factory_{this};
 };

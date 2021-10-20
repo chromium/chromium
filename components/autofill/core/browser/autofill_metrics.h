@@ -1025,6 +1025,34 @@ class AutofillMetrics {
     kMaxValue = SECTION_UNION_IMPORT,
   };
 
+  // OTP authentication-related events.
+  enum class OtpAuthEvent {
+    // Unknown results. Should not happen.
+    kUnknown = 0,
+    // The OTP auth succeeded.
+    kSuccess = 1,
+    // The OTP auth failed because the flow was cancelled.
+    kFlowCancelled = 2,
+    // The OTP auth failed because the SelectedChallengeOption request failed
+    // due to generic errors.
+    kSelectedChallengeOptionGenericError = 3,
+    // The OTP auth failed because the SelectedChallengeOption request failed
+    // due to virtual card retrieval errors.
+    kSelectedChallengeOptionVirtualCardRetrievalError = 4,
+    // The OTP auth failed because the UnmaskCard request failed due to
+    // authentication errors.
+    kUnmaskCardAuthError = 5,
+    // The OTP auth failed because the UnmaskCard request failed due to virtual
+    // card retrieval errors.
+    kUnmaskCardVirtualCardRetrievalError = 6,
+    // The OTP auth failed temporarily because the OTP was expired.
+    kOtpExpired = 7,
+    // The OTP auth failed temporarily because the OTP didn't match the expected
+    // value.
+    kOtpMismatch = 8,
+    kMaxValue = kOtpMismatch
+  };
+
   // Utility to log URL keyed form interaction events.
   class FormInteractionsUkmLogger {
    public:
@@ -1743,6 +1771,24 @@ class AutofillMetrics {
 
   // Logs the image fetching result for one image in AutofillImageFetcher.
   static void LogImageFetchResult(bool succeeded);
+
+  /* Card unmasking OTP authentication-related metrics. */
+  // Logs when an OTP authentication starts.
+  static void LogOtpAuthAttempt();
+  // Logs the final reason the OTP authentication dialog is closed, even if
+  // there were prior failures like OTP mismatch, and is done once per Attempt.
+  static void LogOtpAuthResult(OtpAuthEvent event);
+  // Logged every time a retriable error occurs, which could potentially be
+  // several times in the same flow (mismatch then mismatch then cancel, etc.).
+  static void LogOtpAuthRetriableError(OtpAuthEvent event);
+  // Logs the roundtrip latency for UnmaskCardRequest sent by OTP
+  // authentication.
+  static void LogOtpAuthUnmaskCardRequestLatency(
+      const base::TimeDelta& latency);
+  // Logs the roundtrip latency for SelectChallengeOptionRequest sent by OTP
+  // authentication.
+  static void LogOtpAuthSelectChallengeOptionRequestLatency(
+      const base::TimeDelta& latency);
 
   // The total number of values in the |CardUploadDecisionMetric| enum. Must be
   // updated each time a new value is added.

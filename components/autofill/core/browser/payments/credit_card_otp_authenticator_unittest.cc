@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -123,6 +124,7 @@ class CreditCardOtpAuthenticatorTest : public testing::Test {
 };
 
 TEST_F(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
+  base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
   // previous unmask response. TestPaymentsClient will ack the select challenge
   // option request and directly invoke the callback.
@@ -138,7 +140,6 @@ TEST_F(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
   EXPECT_FALSE(OtpAuthenticatorContextToken().empty());
   EXPECT_NE(OtpAuthenticatorContextToken(),
             "context_token_from_previous_unmask_response");
-  // TODO(crbug.com/1243475): Verify the otp dialog is shown.
 
   // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
   // TestPaymentsClient just stores the unmask request detail, won't invoke the
@@ -153,9 +154,21 @@ TEST_F(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
   EXPECT_TRUE(requester_->did_succeed());
   EXPECT_EQ(kTestNumber16, requester_->number());
+
+  // Ensures the metrics have been logged correctly.
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Result",
+                                      AutofillMetrics::OtpAuthEvent::kSuccess,
+                                      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.SelectChallengeOptionRequest", 1);
 }
 
 TEST_F(CreditCardOtpAuthenticatorTest, SelectChallengeOptionFailsWithVcnError) {
+  base::HistogramTester histogram_tester;
   // Simulate server returns virtual card permanent failure.
   payments_client_->set_select_challenge_option_result(
       AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
@@ -175,10 +188,22 @@ TEST_F(CreditCardOtpAuthenticatorTest, SelectChallengeOptionFailsWithVcnError) {
   EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
   // Ensure the OTP authenticator is reset.
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
+
+  // Ensures the metrics have been logged correctly.
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpAuth.SmsOtp.Result",
+      AutofillMetrics::OtpAuthEvent::
+          kSelectedChallengeOptionVirtualCardRetrievalError,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.SelectChallengeOptionRequest", 1);
 }
 
 TEST_F(CreditCardOtpAuthenticatorTest,
        SelectChallengeOptionFailsWithOtherErrors) {
+  base::HistogramTester histogram_tester;
   // Simulate server returns non-virtual card permanent failure, e.g. response
   // not complete.
   payments_client_->set_select_challenge_option_result(
@@ -199,9 +224,19 @@ TEST_F(CreditCardOtpAuthenticatorTest,
   EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
   // Ensure the OTP authenticator is reset.
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
+
+  // Ensures the metrics have been logged correctly.
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpAuth.SmsOtp.Result",
+      AutofillMetrics::OtpAuthEvent::kSelectedChallengeOptionGenericError, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.SelectChallengeOptionRequest", 1);
 }
 
 TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
+  base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
   // previous unmask response. TestPaymentsClient will ack the select challenge
   // option request and directly invoke the callback.
@@ -228,9 +263,21 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
   EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
   // Ensure the OTP authenticator is reset.
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
+
+  // Ensures the metrics have been logged correctly.
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpAuth.SmsOtp.Result",
+      AutofillMetrics::OtpAuthEvent::kUnmaskCardVirtualCardRetrievalError, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.SelectChallengeOptionRequest", 1);
 }
 
 TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
+  base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
   // previous unmask response. TestPaymentsClient will ack the select challenge
   // option request and directly invoke the callback.
@@ -256,9 +303,21 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
   EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
   // Ensure the OTP authenticator is reset.
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
+
+  // Ensures the metrics have been logged correctly.
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpAuth.SmsOtp.Result",
+      AutofillMetrics::OtpAuthEvent::kUnmaskCardAuthError, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.SelectChallengeOptionRequest", 1);
 }
 
 TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
+  base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
   // previous unmask response. TestPaymentsClient will ack the select challenge
   // option request and directly invoke the callback.
@@ -304,9 +363,24 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
   EXPECT_TRUE(requester_->did_succeed());
   EXPECT_EQ(kTestNumber16, requester_->number());
+
+  // Ensures the metrics have been logged correctly.
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Result",
+                                      AutofillMetrics::OtpAuthEvent::kSuccess,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpAuth.SmsOtp.RetriableError",
+      AutofillMetrics::OtpAuthEvent::kOtpMismatch, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 2);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.SelectChallengeOptionRequest", 1);
 }
 
 TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
+  base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
   // previous unmask response. TestPaymentsClient will ack the select challenge
   // option request and directly invoke the callback.
@@ -368,9 +442,54 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
   EXPECT_TRUE(requester_->did_succeed());
   EXPECT_EQ(kTestNumber16, requester_->number());
+
+  // Ensures the metrics have been logged correctly.
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Result",
+                                      AutofillMetrics::OtpAuthEvent::kSuccess,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpAuth.SmsOtp.RetriableError",
+      AutofillMetrics::OtpAuthEvent::kOtpExpired, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 2);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.SelectChallengeOptionRequest", 2);
 }
 
-// TODO(crbug.com/1243475): Add test for user canceling the OTP dialog. It
-// should reset the otp authenticator.
+TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthCancelled) {
+  base::HistogramTester histogram_tester;
+  // Simulate user selects OTP challenge option. Current context_token is from
+  // previous unmask response. TestPaymentsClient will ack the select challenge
+  // option request and directly invoke the callback.
+  authenticator_->OnChallengeOptionSelected(
+      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      /*billing_customer_number=*/kTestBillingCustomerNumber);
+  // Verify the SelectChallengeRequest content.
+  verifySelectChallengeOptionRequest(
+      /*context_token=*/"context_token_from_previous_unmask_response",
+      kTestBillingCustomerNumber);
+  // Verify the context token is updated with SelectChallengeOption response.
+  EXPECT_FALSE(OtpAuthenticatorContextToken().empty());
+  EXPECT_NE(OtpAuthenticatorContextToken(),
+            "context_token_from_previous_unmask_response");
+
+  // Simulate user closes the otp input dialog.
+  authenticator_->OnUnmaskPromptClosed(/*dismiss_by_cancellation=*/true);
+  EXPECT_FALSE(requester_->did_succeed());
+
+  // Ensures the metrics have been logged correctly.
+  histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpAuth.SmsOtp.Result",
+      AutofillMetrics::OtpAuthEvent::kFlowCancelled, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OtpAuth.SmsOtp.RequestLatency.SelectChallengeOptionRequest", 1);
+}
 
 }  // namespace autofill
