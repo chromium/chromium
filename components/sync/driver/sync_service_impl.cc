@@ -333,7 +333,7 @@ void SyncServiceImpl::AccountStateChanged() {
     DCHECK(!engine_);
   } else {
     // Either a new account was signed in, or the existing account's
-    // |is_primary| bit was changed. Start up or reconfigure.
+    // |is_sync_consented| bit was changed. Start up or reconfigure.
     if (!engine_) {
       // Note: We only get here after an actual sign-in (not during browser
       // startup with an existing signed-in account), so no need for deferred
@@ -1616,7 +1616,7 @@ bool SyncServiceImpl::HasSyncConsent() const {
     // GetAccountInfo().
     return false;
   }
-  return auth_manager_->GetActiveAccountInfo().is_primary;
+  return auth_manager_->GetActiveAccountInfo().is_sync_consented;
 }
 
 void SyncServiceImpl::SetInvalidationsForSessionsEnabled(bool enabled) {

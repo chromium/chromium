@@ -15,14 +15,14 @@ namespace syncer {
 SyncAccountInfo::SyncAccountInfo() = default;
 
 SyncAccountInfo::SyncAccountInfo(const CoreAccountInfo& account_info,
-                                 bool is_primary)
-    : account_info(account_info), is_primary(is_primary) {}
+                                 bool is_sync_consented)
+    : account_info(account_info), is_sync_consented(is_sync_consented) {}
 
 SyncAccountInfo DetermineAccountToUse(
     signin::IdentityManager* identity_manager) {
   return SyncAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
-      /*is_primary=*/identity_manager->HasPrimaryAccount(
+      /*is_sync_consented=*/identity_manager->HasPrimaryAccount(
           signin::ConsentLevel::kSync));
 }
 

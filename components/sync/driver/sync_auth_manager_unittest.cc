@@ -203,7 +203,7 @@ TEST_F(SyncAuthManagerTest, ForwardsSecondaryAccountEvents) {
   AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
       "test@email.com", signin::ConsentLevel::kSignin);
 
-  EXPECT_FALSE(auth_manager->GetActiveAccountInfo().is_primary);
+  EXPECT_FALSE(auth_manager->GetActiveAccountInfo().is_sync_consented);
   EXPECT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
             account_info.account_id);
 
@@ -214,7 +214,7 @@ TEST_F(SyncAuthManagerTest, ForwardsSecondaryAccountEvents) {
   primary_account_mutator->SetPrimaryAccount(account_info.account_id,
                                              signin::ConsentLevel::kSync);
 
-  EXPECT_TRUE(auth_manager->GetActiveAccountInfo().is_primary);
+  EXPECT_TRUE(auth_manager->GetActiveAccountInfo().is_sync_consented);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID) &&
         // !defined(OS_IOS)

@@ -472,12 +472,13 @@ bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
   if (new_account.account_info.account_id ==
       sync_account_.account_info.account_id) {
     // We're already using this account (or there was and is no account to use).
-    // If the |is_primary| bit hasn't changed either, then there's nothing to
-    // do.
-    if (new_account.is_primary == sync_account_.is_primary) {
+    // If the |is_sync_consented| bit hasn't changed either, then there's
+    // nothing to do.
+    if (new_account.is_sync_consented == sync_account_.is_sync_consented) {
       return false;
     }
-    // The |is_primary| bit *has* changed, so update our state and notify.
+    // The |is_sync_consented| bit *has* changed, so update our state and
+    // notify.
     sync_account_ = new_account;
     account_state_changed_callback_.Run();
     return true;
