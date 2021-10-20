@@ -7176,14 +7176,7 @@ crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryH
 crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-rename.https.any.html [ Failure ]
 crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.worker.html [ Failure ]
 crbug.com/1250534 external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-rename.https.any.worker.html [ Failure ]
-crbug.com/1250534 [ Fuchsia ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
-crbug.com/1250534 [ Linux ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
-crbug.com/1250534 [ Mac10.12 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
-crbug.com/1250534 [ Mac10.13 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
-crbug.com/1250534 [ Mac10.14 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
-crbug.com/1250534 [ Mac10.15 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
-crbug.com/1250534 [ Mac11.0 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
-crbug.com/1250534 [ Win ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
+crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure ]
 crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-rename-manual.https.html [ Failure ]
 crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.html [ Failure ]
 crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-rename.https.any.html [ Failure ]
@@ -7292,7 +7285,6 @@ crbug.com/1256763 [ Linux ] images/color-profile-background-image-cross-fade.htm
 crbug.com/1256763 [ Linux ] images/color-profile-background-clip-text.html [ Failure Pass ]
 crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-svg-fill-text.html [ Failure Pass ]
 crbug.com/1259277 [ Mac ] fast/events/message-port-multi.html [ Failure Pass ]
-crbug.com/1261457 [ Mac11-arm64 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html [ Failure Pass ]
 
 # Sheriff 2021-10-20
 crbug.com/1261744 [ Mac11-arm64 ] external/wpt/url/a-element-origin.html [ Failure Pass ]
