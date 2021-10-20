@@ -5,6 +5,12 @@
 import {Command, CommandParser} from './commands.js';
 import {InputController} from './input_controller.js';
 
+const ErrorEvent = chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent;
+const ResultEvent =
+    chrome.speechRecognitionPrivate.SpeechRecognitionResultEvent;
+const StartOptions = chrome.speechRecognitionPrivate.StartOptions;
+const StopEvent = chrome.speechRecognitionPrivate.SpeechRecognitionStopEvent;
+
 /**
  * Main class for the Chrome OS dictation feature.
  * Please note: this is being developed behind the flag
@@ -29,10 +35,6 @@ export class Dictation {
      */
     this.state_ = Dictation.DictationState.OFF;
 
-    // TODO(crbug.com/1198212): Use SpeechRecognitionPrivate when available.
-    /** @private {SpeechRecognition} */
-    this.speechRecognizer_ = new window.webkitSpeechRecognition();
-
     /** @private {Audio} */
     this.cancelTone_ = new Audio('dictation/earcons/null_selection.wav');
 
@@ -54,6 +56,9 @@ export class Dictation {
     /** @private {boolean} */
     this.chromeVoxEnabled_ = false;
 
+    /** @private {?StartOptions} */
+    this.speechRecognitionOptions_ = null;
+
     this.initialize_();
   }
 
@@ -65,13 +70,20 @@ export class Dictation {
     this.inputController_ = new InputController(() => this.stopDictation_());
     this.commandParser_ = new CommandParser();
 
-    this.speechRecognizer_.interimResults = true;
-    this.speechRecognizer_.continuous = true;
-    this.speechRecognizer_.onresult = event => this.onResult_(event);
-    this.speechRecognizer_.onstart = () => this.onSpeechRecognitionStart_();
-    this.speechRecognizer_.onend = () => this.onSpeechRecognitionEnd_();
-    this.speechRecognizer_.onerror = error =>
-        this.onSpeechRecognitionError_(error);
+    // Set default speech recognition properties. Locale will be updated when
+    // `updateFromPrefs_` is called.
+    this.speechRecognitionOptions_ = {
+      locale: 'en-US',
+      interimResults: true,
+    };
+
+    // Setup speechRecognitionPrivate API listeners.
+    chrome.speechRecognitionPrivate.onStop.addListener(
+        event => this.onSpeechRecognitionStopped_(event));
+    chrome.speechRecognitionPrivate.onResult.addListener(
+        event => this.onSpeechRecognitionResult_(event));
+    chrome.speechRecognitionPrivate.onError.addListener(
+        event => this.onSpeechRecognitionError_(event));
 
     chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
     chrome.settingsPrivate.onPrefsChanged.addListener(
@@ -128,7 +140,9 @@ export class Dictation {
    */
   maybeStartSpeechRecognition_() {
     if (this.state_ === Dictation.DictationState.STARTING) {
-      this.speechRecognizer_.start();
+      chrome.speechRecognitionPrivate.start(
+          /** @type {!StartOptions} */ (this.speechRecognitionOptions_),
+          () => this.onSpeechRecognitionStarted_());
       this.setStopTimeout_(Dictation.Timeouts.NO_SPEECH_MS);
     } else {
       // We are no longer starting up - perhaps a stop came
@@ -147,30 +161,32 @@ export class Dictation {
    * @private
    */
   stopDictation_() {
-    // Stop Dictation if the state isn't already off or turning off.
-    if (this.state_ !== Dictation.DictationState.OFF &&
-        this.state_ !== Dictation.DictationState.STOPPING) {
-      chrome.accessibilityPrivate.toggleDictation();
-      this.state_ = Dictation.DictationState.STOPPING;
+    if (this.state_ === Dictation.DictationState.OFF ||
+        this.state_ === Dictation.DictationState.STOPPING) {
+      return;
     }
+
+    chrome.accessibilityPrivate.toggleDictation();
+    this.state_ = Dictation.DictationState.STOPPING;
   }
 
   /**
-   * Called when Dictation has been toggled off. Cleans up IME and local state.
+   * Called when Dictation has been toggled off. Cleans up IME, local state,
+   * and speech recognition.
    * @private
    */
   onDictationStopped_() {
     if (this.state_ === Dictation.DictationState.OFF) {
       return;
     }
+
     this.state_ = Dictation.DictationState.OFF;
+    chrome.speechRecognitionPrivate.stop({}, () => {});
     if (this.inputController_.hasCompositionText() || this.interimText_) {
       this.endTone_.play();
     } else {
       this.cancelTone_.play();
     }
-    // Stop speech recognition without sending a final result.
-    this.speechRecognizer_.abort();
 
     // Clear any timeouts.
     if (this.timeoutId_ !== null) {
@@ -188,21 +204,20 @@ export class Dictation {
 
   /**
    * Called when the Speech Recognition engine receives a recognition event.
-   * @param {SpeechRecognitionEvent} event
+   * @param {ResultEvent} event
    * @private
    */
-  onResult_(event) {
+  onSpeechRecognitionResult_(event) {
     if (this.state_ !== Dictation.DictationState.LISTENING) {
       return;
     }
-    const result = event.results[event.resultIndex];
-    if (result.length < 1) {
-      return;
-    }
-    this.processSpeechRecognitionResult_(result[0].transcript, result.isFinal);
+
+    const transcript = event.transcript;
+    const isFinal = event.isFinal;
+    this.processSpeechRecognitionResult_(transcript, isFinal);
     this.setStopTimeout_(
-        result.isFinal ? Dictation.Timeouts.NO_SPEECH_MS :
-                         Dictation.Timeouts.NO_NEW_SPEECH_MS);
+        isFinal ? Dictation.Timeouts.NO_SPEECH_MS :
+                  Dictation.Timeouts.NO_NEW_SPEECH_MS);
   }
 
   /**
@@ -237,10 +252,20 @@ export class Dictation {
   }
 
   /**
-   * Called when Speech Recognition starts up and begins listening.
+   * Called when Speech Recognition starts up and begins listening. Passed as
+   * a callback to speechRecognitionPrivate.start().
    * @private
    */
-  onSpeechRecognitionStart_() {
+  onSpeechRecognitionStarted_() {
+    if (chrome.runtime.lastError) {
+      // chrome.runtime.lastError will be set if the call to
+      // speechRecognitionPrivate.start() caused an error. When this happens,
+      // the speech recognition private API will turn the associated recognizer
+      // off. To align with this, we should call `stopDictation_`.
+      this.stopDictation_();
+      return;
+    }
+
     if (this.state_ !== Dictation.DictationState.STARTING) {
       // We tried to stop during speech shutdown.
       return;
@@ -251,20 +276,21 @@ export class Dictation {
   }
 
   /**
-   * Called when Speech Recognition has ended, either because of the
-   * SpeechRecognizer ending recognition or because recognition was cancelled.
+   * Called when speech recognition stops or when speech recognition encounters
+   * an error.
+   * @param {StopEvent} event
    * @private
    */
-  onSpeechRecognitionEnd_() {
+  onSpeechRecognitionStopped_(event) {
     // Stop dictation if it wasn't already stopped.
     this.stopDictation_();
   }
 
   /**
-   * @param {SpeechRecognitionError} error
+   * @param {ErrorEvent} event
    * @private
    */
-  onSpeechRecognitionError_(error) {
+  onSpeechRecognitionError_(event) {
     // TODO: Dictation does not surface speech recognition errors to the user.
     // Informing the user of errors, for example lack of network connection or a
     // missing microphone, would be a useful feature.
@@ -280,7 +306,8 @@ export class Dictation {
       switch (pref.key) {
         case Dictation.DICTATION_LOCALE_PREF:
           if (pref.value) {
-            this.speechRecognizer_.lang = /** @type {string} */ (pref.value);
+            this.speechRecognitionOptions_.locale =
+                /** @type {string} */ (pref.value);
           }
           break;
         case Dictation.SPOKEN_FEEDBACK_PREF:
@@ -408,13 +435,13 @@ export class Dictation {
 
 /**
  * Dictation states.
- * @enum {!number}
+ * @enum {!string}
  */
 Dictation.DictationState = {
-  OFF: 1,
-  STARTING: 2,
-  LISTENING: 3,
-  STOPPING: 4,
+  OFF: 'OFF',
+  STARTING: 'STARTING',
+  LISTENING: 'LISTENING',
+  STOPPING: 'STOPPING',
 };
 
 /**

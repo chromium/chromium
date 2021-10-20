@@ -33,7 +33,7 @@ export class InputController {
   }
 
   /**
-   * Sets up Dictation's speech recognizer and various listeners.
+   * Sets up Dictation's various IME listeners.
    * @private
    */
   initialize_() {

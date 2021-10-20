@@ -79,7 +79,7 @@ js2gtest("accessibility_common_extjs_tests") {
     "../common/testing/mock_input_ime.js",
     "../common/testing/mock_input_method_private.js",
     "../common/testing/mock_language_settings_private.js",
-    "../common/testing/mock_speech_recognition.js",
+    "../common/testing/mock_speech_recognition_private.js",
   ]
 
   # The test base classes generate C++ code with these deps.
@@ -117,6 +117,7 @@ js_library("accessibility_common") {
     "$externs_path/command_line_private.js",
     "$externs_path/input_method_private.js",
     "$externs_path/language_settings_private.js",
+    "$externs_path/speech_recognition_private.js",
   ]
 }
 
@@ -140,7 +141,10 @@ js_library("dictation") {
     ":dictation_commands",
     ":dictation_input_controller",
   ]
-  externs_list = [ "$externs_path/accessibility_private.js" ]
+  externs_list = [
+    "$externs_path/accessibility_private.js",
+    "$externs_path/speech_recognition_private.js",
+  ]
 }
 
 js_library("dictation_input_controller") {
