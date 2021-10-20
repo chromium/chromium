@@ -476,6 +476,9 @@ if (include_js_tests) {
       "engagement/site_engagement_browsertest.js",
       "usb_internals_browsertest.js",
     ]
+    if (is_chromeos_ash) {
+      sources += [ "chromeos/parent_access/parent_access_browsertest.js" ]
+    }
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "discards/discards_browsertest.js" ]
     }

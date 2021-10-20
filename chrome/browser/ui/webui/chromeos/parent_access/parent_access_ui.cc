@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -112,6 +114,8 @@ void ParentAccessUI::SetUpResources() {
   source->EnableReplaceI18nInJS();
 
   // Forward data to the WebUI.
+  source->AddResourcePath("parent_access_controller.js",
+                          IDR_PARENT_ACCESS_CONTROLLER_JS);
   source->AddResourcePath("parent_access_ui.js", IDR_PARENT_ACCESS_UI_JS);
 
   source->AddLocalizedString("pageTitle", IDS_PARENT_ACCESS_PAGE_TITLE);
@@ -121,8 +125,14 @@ void ParentAccessUI::SetUpResources() {
   source->UseStringsJs();
   source->SetDefaultResource(IDR_PARENT_ACCESS_HTML);
   source->AddString("webviewUrl", web_content_url_.spec());
-  source->AddString("eventOriginFilter",
-                    web_content_url_.DeprecatedGetOriginAsURL().spec());
+  source->AddString("eventOriginFilter", web_content_url_.spec());
+
+  // Enables use of test_loader.html
+  webui::SetJSModuleDefaults(source.get());
+
+  // Allows loading of local content into an iframe for testing.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, "frame-src chrome://test/;");
 
   content::WebUIDataSource::Add(profile, source.release());
 }
