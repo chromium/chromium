@@ -42,10 +42,8 @@ void ChromeOmniboxEditController::OnAutocompleteAccept(
 
   auto navigation = chrome::OpenCurrentURL(browser_);
 
-  if (alternative_nav_match.destination_url.is_valid()) {
-    ChromeOmniboxNavigationObserver::Create(navigation.get(), profile_, text,
-                                            match, alternative_nav_match);
-  }
+  ChromeOmniboxNavigationObserver::Create(navigation.get(), profile_, text,
+                                          match, alternative_nav_match);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::MaybeShowExtensionControlledSearchNotification(
