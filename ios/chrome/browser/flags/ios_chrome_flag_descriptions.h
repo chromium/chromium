@@ -231,6 +231,12 @@ extern const char kForceStartupSigninPromoDescription[];
 extern const char kCredentialProviderExtensionPromoName[];
 extern const char kCredentialProviderExtensionPromoDescription[];
 
+// Enables the user to track prices of the Shopping URLs they are visiting.
+// The first variation is to display price drops in the Tab Switching UI when
+// they are identified.
+extern const char kCommercePriceTrackingName[];
+extern const char kCommercePriceTrackingDescription[];
+
 // Title and description for the flag to set the major version the UA string to
 // 100.
 extern const char kForceMajorVersion100InUserAgentName[];

@@ -204,6 +204,14 @@ const FeatureEntry::FeatureVariation
         {"(show one)", kAutofillUseMobileLabelDisambiguationShowOne,
          base::size(kAutofillUseMobileLabelDisambiguationShowOne), nullptr}};
 
+const FeatureEntry::FeatureParam kCommercePriceTrackingWithOptimizationGuide[] =
+    {{"price_tracking_with_optimization_guide", "true"}};
+
+const FeatureEntry::FeatureVariation kCommercePriceTrackingVariations[] = {
+    {"Price Tracking with Optimization Guide",
+     kCommercePriceTrackingWithOptimizationGuide,
+     base::size(kCommercePriceTrackingWithOptimizationGuide), nullptr}};
+
 const FeatureEntry::FeatureParam
     kDefaultBrowserFullscreenPromoExperimentRemindMeLater[] = {
         {kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam, "true"}};
@@ -790,7 +798,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"credential-provider-extension-promo",
      flag_descriptions::kCredentialProviderExtensionPromoName,
      flag_descriptions::kCredentialProviderExtensionPromoDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderExtensionPromo)}};
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderExtensionPromo)},
+    {"enable-commerce-price-tracking",
+     flag_descriptions::kCommercePriceTrackingName,
+     flag_descriptions::kCommercePriceTrackingDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kCommercePriceTracking,
+                                    kCommercePriceTrackingVariations,
+                                    "CommercePriceTracking")}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

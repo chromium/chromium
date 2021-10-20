@@ -7,7 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
-// Return true if price alerts are enabled.
+namespace web {
+class BrowserState;
+}  // namespace web
+
+// Price alerts should not be available for all users - only
+// MSBB and signed in users with a non-incognito Tab.
+BOOL IsPriceAlertsEligible(web::BrowserState* browser_state);
+
+// Returns true if the flag controlling price alerts is enabled.
 BOOL IsPriceAlertsEnabled();
 
 #endif  // IOS_CHROME_BROWSER_COMMERCE_PRICE_ALERT_UTIL_H_

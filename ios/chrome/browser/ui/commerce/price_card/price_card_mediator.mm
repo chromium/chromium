@@ -14,6 +14,8 @@
 #endif
 
 PriceCardItem* CreatePriceCardItem(web::WebState* web_state) {
+  if (!web_state)
+    return nil;
   ShoppingPersistedDataTabHelper* shoppingHelper =
       ShoppingPersistedDataTabHelper::FromWebState(web_state);
   if (!shoppingHelper || !shoppingHelper->GetPriceDrop())

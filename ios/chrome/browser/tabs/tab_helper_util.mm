@@ -114,7 +114,8 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   LoadTimingTabHelper::CreateForWebState(web_state);
   OverscrollActionsTabHelper::CreateForWebState(web_state);
   IOSTaskTabHelper::CreateForWebState(web_state);
-  if (IsPriceAlertsEnabled())
+  if (IsPriceAlertsEnabled() &&
+      IsPriceAlertsEligible(web_state->GetBrowserState()))
     ShoppingPersistedDataTabHelper::CreateForWebState(web_state);
   AppLauncherTabHelper::CreateForWebState(web_state);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(

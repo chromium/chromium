@@ -8,6 +8,11 @@
 #include "Availability.h"
 #include "base/feature_list.h"
 
+// Allows the user to track product prices through Chrome.
+// Use IsPriceAlertsEnabled in price_alert_util rather than depending
+// on this directly.
+extern const base::Feature kCommercePriceTracking;
+
 // Feature to open tab switcher after sliding down the toolbar.
 extern const base::Feature kExpandedTabStrip;
 
