@@ -89,19 +89,18 @@ void MediaQueryParser::SetStateAndRestrict(
 }
 
 // State machine member functions start here
-void MediaQueryParser::ReadRestrictor(CSSParserTokenType type,
-                                      const CSSParserToken& token,
-                                      CSSParserTokenRange& range) {
-  ReadMediaType(type, token, range);
+void MediaQueryParser::ReadRestrictor(CSSParserTokenRange& range) {
+  ReadMediaType(range);
 }
 
-void MediaQueryParser::ReadMediaNot(CSSParserTokenType type,
-                                    const CSSParserToken& token,
-                                    CSSParserTokenRange& range) {
-  if (type == kIdentToken && EqualIgnoringASCIICase(token.Value(), "not"))
+void MediaQueryParser::ReadMediaNot(CSSParserTokenRange& range) {
+  if (range.Peek().GetType() == kIdentToken &&
+      EqualIgnoringASCIICase(range.Peek().Value(), "not")) {
+    ConsumeToken(range);
     SetStateAndRestrict(kReadFeatureStart, MediaQuery::kNot);
-  else
-    ReadFeatureStart(type, token, range);
+  } else {
+    ReadFeatureStart(range);
+  }
 }
 
 static bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
@@ -112,15 +111,15 @@ static bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
          EqualIgnoringASCIICase(token.Value(), "only");
 }
 
-void MediaQueryParser::ReadMediaType(CSSParserTokenType type,
-                                     const CSSParserToken& token,
-                                     CSSParserTokenRange& range) {
-  if (type == kLeftParenthesisToken) {
+void MediaQueryParser::ReadMediaType(CSSParserTokenRange& range) {
+  if (range.Peek().GetType() == kLeftParenthesisToken) {
+    ConsumeToken(range);
     if (media_query_data_.Restrictor() != MediaQuery::kNone)
       state_ = kSkipUntilComma;
     else
       state_ = kReadFeature;
-  } else if (type == kIdentToken) {
+  } else if (range.Peek().GetType() == kIdentToken) {
+    CSSParserToken token = ConsumeToken(range);
     if (state_ == kReadRestrictor &&
         EqualIgnoringASCIICase(token.Value(), "not")) {
       SetStateAndRestrict(kReadMediaType, MediaQuery::kNot);
@@ -134,44 +133,48 @@ void MediaQueryParser::ReadMediaType(CSSParserTokenType type,
       media_query_data_.SetMediaType(token.Value().ToString());
       state_ = kReadAnd;
     }
-  } else if (type == kEOFToken &&
+  } else if (range.AtEnd() &&
              (!query_set_->QueryVector().size() || state_ != kReadRestrictor)) {
     state_ = kDone;
   } else {
     state_ = kSkipUntilComma;
-    if (type == kCommaToken)
-      SkipUntilComma(type, token, range);
+    if (range.Peek().GetType() == kCommaToken)
+      SkipUntilComma(range);
+    else
+      ConsumeToken(range);
   }
 }
 
-void MediaQueryParser::ReadAnd(CSSParserTokenType type,
-                               const CSSParserToken& token,
-                               CSSParserTokenRange& range) {
-  if (type == kIdentToken && EqualIgnoringASCIICase(token.Value(), "and")) {
+void MediaQueryParser::ReadAnd(CSSParserTokenRange& range) {
+  CSSParserToken token = ConsumeToken(range);
+
+  if (token.GetType() == kIdentToken &&
+      EqualIgnoringASCIICase(token.Value(), "and")) {
     state_ = kReadFeatureStart;
-  } else if (type == kCommaToken && parser_type_ != kMediaConditionParser) {
+  } else if (token.GetType() == kCommaToken &&
+             parser_type_ != kMediaConditionParser) {
     query_set_->AddMediaQuery(media_query_data_.TakeMediaQuery());
     state_ = kReadRestrictor;
-  } else if (type == kEOFToken) {
+  } else if (token.GetType() == kEOFToken) {
     state_ = kDone;
   } else {
     state_ = kSkipUntilComma;
   }
 }
 
-void MediaQueryParser::ReadFeatureStart(CSSParserTokenType type,
-                                        const CSSParserToken& token,
-                                        CSSParserTokenRange& range) {
-  if (type == kLeftParenthesisToken)
+void MediaQueryParser::ReadFeatureStart(CSSParserTokenRange& range) {
+  CSSParserToken token = ConsumeToken(range);
+
+  if (token.GetType() == kLeftParenthesisToken)
     state_ = kReadFeature;
   else
     state_ = kSkipUntilComma;
 }
 
-void MediaQueryParser::ReadFeature(CSSParserTokenType type,
-                                   const CSSParserToken& token,
-                                   CSSParserTokenRange& range) {
-  if (type == kIdentToken) {
+void MediaQueryParser::ReadFeature(CSSParserTokenRange& range) {
+  CSSParserToken token = ConsumeToken(range);
+
+  if (token.GetType() == kIdentToken) {
     String media_feature = token.Value().ToString();
     if (IsMediaFeatureAllowedInMode(media_feature)) {
       media_query_data_.SetMediaFeature(media_feature);
@@ -184,35 +187,36 @@ void MediaQueryParser::ReadFeature(CSSParserTokenType type,
   }
 }
 
-void MediaQueryParser::ReadFeatureColon(CSSParserTokenType type,
-                                        const CSSParserToken& token,
-                                        CSSParserTokenRange& range) {
-  if (type == kColonToken) {
+void MediaQueryParser::ReadFeatureColon(CSSParserTokenRange& range) {
+  if (range.Peek().GetType() == kColonToken) {
+    CSSParserToken token = ConsumeToken(range);
     while (range.Peek().GetType() == kWhitespaceToken)
       range.Consume();
-    if (range.Peek().GetType() == kRightParenthesisToken || type == kEOFToken)
+    if (range.Peek().GetType() == kRightParenthesisToken ||
+        token.GetType() == kEOFToken)
       state_ = kSkipUntilBlockEnd;
     else
       state_ = kReadFeatureValue;
-  } else if (type == kRightParenthesisToken || type == kEOFToken) {
+  } else if (range.Peek().GetType() == kRightParenthesisToken ||
+             range.AtEnd()) {
     media_query_data_.AddExpression(range, execution_context_);
-    ReadFeatureEnd(type, token, range);
+    ReadFeatureEnd(range);
   } else {
+    ConsumeToken(range);
     state_ = kSkipUntilBlockEnd;
   }
 }
 
-void MediaQueryParser::ReadFeatureValue(CSSParserTokenType type,
-                                        const CSSParserToken& token,
-                                        CSSParserTokenRange& range) {
+void MediaQueryParser::ReadFeatureValue(CSSParserTokenRange& range) {
   media_query_data_.AddExpression(range, execution_context_);
   state_ = kReadFeatureEnd;
 }
 
-void MediaQueryParser::ReadFeatureEnd(CSSParserTokenType type,
-                                      const CSSParserToken& token,
-                                      CSSParserTokenRange& range) {
-  if (type == kRightParenthesisToken || type == kEOFToken) {
+void MediaQueryParser::ReadFeatureEnd(CSSParserTokenRange& range) {
+  CSSParserToken token = ConsumeToken(range);
+
+  if (token.GetType() == kRightParenthesisToken ||
+      token.GetType() == kEOFToken) {
     if (media_query_data_.LastExpressionValid())
       state_ = kReadAnd;
     else
@@ -223,11 +227,11 @@ void MediaQueryParser::ReadFeatureEnd(CSSParserTokenType type,
   }
 }
 
-void MediaQueryParser::SkipUntilComma(CSSParserTokenType type,
-                                      const CSSParserToken& token,
-                                      CSSParserTokenRange& range) {
-  if ((type == kCommaToken && !block_watcher_.BlockLevel()) ||
-      type == kEOFToken) {
+void MediaQueryParser::SkipUntilComma(CSSParserTokenRange& range) {
+  CSSParserToken token = ConsumeToken(range);
+
+  if ((token.GetType() == kCommaToken && !block_watcher_.BlockLevel()) ||
+      token.GetType() == kEOFToken) {
     if (parser_type_ == kMediaQuerySetParser) {
       state_ = kReadRestrictor;
       media_query_data_.Clear();
@@ -236,41 +240,62 @@ void MediaQueryParser::SkipUntilComma(CSSParserTokenType type,
   }
 }
 
-void MediaQueryParser::SkipUntilBlockEnd(CSSParserTokenType type,
-                                         const CSSParserToken& token,
-                                         CSSParserTokenRange& range) {
+void MediaQueryParser::SkipUntilBlockEnd(CSSParserTokenRange& range) {
+  CSSParserToken token = ConsumeToken(range);
+
   if (token.GetBlockType() == CSSParserToken::kBlockEnd &&
       !block_watcher_.BlockLevel())
     state_ = kSkipUntilComma;
 }
 
-void MediaQueryParser::Done(CSSParserTokenType type,
-                            const CSSParserToken& token,
-                            CSSParserTokenRange& range) {}
+void MediaQueryParser::Done(CSSParserTokenRange& range) {
+  DCHECK(range.AtEnd());
+}
 
-void MediaQueryParser::ProcessToken(const CSSParserToken& token,
-                                    CSSParserTokenRange& range) {
-  CSSParserTokenType type = token.GetType();
+CSSParserToken MediaQueryParser::ConsumeToken(CSSParserTokenRange& range) {
+  CSSParserToken token = range.Consume();
+  block_watcher_.HandleToken(token);
+  return token;
+}
 
-  if (state_ != kReadFeatureValue || type == kWhitespaceToken) {
-    block_watcher_.HandleToken(token);
-    range.Consume();
-  }
-
+void MediaQueryParser::ProcessToken(CSSParserTokenRange& range) {
   // Call the function that handles current state
-  if (type != kWhitespaceToken)
-    ((this)->*(state_))(type, token, range);
+  if (range.Peek().GetType() != kWhitespaceToken)
+    ((this)->*(state_))(range);
+  else
+    range.Consume();
 }
 
 // The state machine loop
 scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
     CSSParserTokenRange range) {
-  while (!range.AtEnd())
-    ProcessToken(range.Peek(), range);
+#if DCHECK_IS_ON()
+  // Used to detect loops.
+  Vector<State> seen_states;
+#endif  // DCHECK_IS_ON()
+
+  while (!range.AtEnd()) {
+#if DCHECK_IS_ON()
+    CSSParserTokenRange original_range = range;
+#endif  // DCHECK_IS_ON()
+    ProcessToken(range);
+#if DCHECK_IS_ON()
+    // If we did not advance |range|, then we must switch to a new
+    // state. If there's a loop, we'll eventually run out of states.
+    if (!range.AtEnd() && &range.Peek() <= &original_range.Peek()) {
+      DCHECK(!seen_states.Contains(state_));
+      seen_states.push_back(state_);
+    } else {
+      seen_states.clear();
+    }
+#endif  // DCHECK_IS_ON()
+  }
 
   // FIXME: Can we get rid of this special case?
-  if (parser_type_ == kMediaQuerySetParser)
-    ProcessToken(CSSParserToken(kEOFToken), range);
+  if (parser_type_ == kMediaQuerySetParser) {
+    CSSParserTokenRange empty = range.MakeSubRange(range.end(), range.end());
+    ProcessToken(empty);
+  }
 
   if (state_ != kReadAnd && state_ != kReadRestrictor && state_ != kDone &&
       state_ != kReadMediaNot)
