@@ -5557,8 +5557,8 @@
   },
   {
     "name": "web-otp-backend",
-    "owners": [ "yigu", "majidvp" ],
-    "expiry_milestone": 96
+    "owners": [ "yigu" ],
+    "expiry_milestone": 100
   },
   {
     "name": "web-share",
@@ -5572,8 +5572,8 @@
   },
   {
     "name": "webid",
-    "owners": [ "kenrb", "goto", "majidvp"],
-    "expiry_milestone": 96
+    "owners": [ "goto", "webid-core@google.com"],
+    "expiry_milestone": 110
   },
   {
     "name": "webnotes-publish",
