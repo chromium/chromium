@@ -626,14 +626,12 @@ TEST_F(FrameFetchContextHintsTest, MonitorDeviceMemorySecureTransport) {
 #if defined(OS_ANDROID)
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
                "4");
-  ExpectHeader("https://www.someother-example.com/1.gif",
-               "Sec-CH-Device-Memory", true, "4");
 #else
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory",
                false, "");
+#endif
   ExpectHeader("https://www.someother-example.com/1.gif",
                "Sec-CH-Device-Memory", false, "");
-#endif
 }
 
 // Verify that client hints are not attached when the resources do not belong to
@@ -1093,14 +1091,12 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
 #if defined(OS_ANDROID)
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
                "4");
-  ExpectHeader("https://www.someother-example.com/1.gif",
-               "Sec-CH-Device-Memory", true, "4");
 #else
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory",
                false, "");
+#endif
   ExpectHeader("https://www.someother-example.com/1.gif",
                "Sec-CH-Device-Memory", false, "");
-#endif
   // `Sec-CH-UA` is special.
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA", true, "");
 
@@ -1111,11 +1107,10 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
   // Policy delegation.
 #if defined(OS_ANDROID)
   ExpectHeader("https://www.example.net/1.gif", "DPR", true, "1");
-  ExpectHeader("https://www.example.net/1.gif", "Sec-CH-DPR", true, "1");
 #else
   ExpectHeader("https://www.example.net/1.gif", "DPR", false, "");
-  ExpectHeader("https://www.example.net/1.gif", "Sec-CH-DPR", false, "");
 #endif
+  ExpectHeader("https://www.example.net/1.gif", "Sec-CH-DPR", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Arch", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Platform-Version",
                false, "");
