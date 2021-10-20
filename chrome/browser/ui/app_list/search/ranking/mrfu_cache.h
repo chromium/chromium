@@ -19,8 +19,7 @@ namespace app_list {
 // The most-recently-frequently-used cache stores a mapping from strings -
 // called items - to scores that is persisted to disk. The cache has two main
 // operations: |Use| boosts the score of an item, and |Get| returns the score
-// of an item. |GetNormalized| returns the score of an item divided by the
-// sum of all scores.
+// of an item.
 //
 // THEORY
 //
@@ -93,6 +92,9 @@ class MrfuCache {
   MrfuCache(const MrfuCache&) = delete;
   MrfuCache& operator=(const MrfuCache&) = delete;
 
+  // Sort |items| according to their scores.
+  static void Sort(Items& items);
+
   // Records the use of |item|, increasing its score and decaying other scores.
   void Use(const std::string& item);
 
@@ -108,6 +110,26 @@ class MrfuCache {
   // Returns all items in the cache and their scores, normalized by the sum of
   // all scores.
   Items GetAllNormalized();
+
+  // Clears the current content of the cache and replaces it with the given
+  // items and scores. It is invalid to call this before the cache is
+  // initialized.
+  void ResetWithItems(const Items& items);
+
+  // Whether the cache has finished reading from disk.
+  bool initialized() const { return proto_.initialized(); }
+
+  // The number of items in the cache. Returns 0 if the cache hasn't finished
+  // initializing.
+  size_t size() const {
+    if (!initialized())
+      return 0u;
+    return proto_->items_size();
+  }
+
+  // Whether the cache has no items stored. Returns true if the cache hasn't
+  // finished initializing.
+  bool empty() const { return size() == 0; }
 
  private:
   friend class MrfuCacheTest;

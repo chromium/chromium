@@ -86,6 +86,11 @@ MrfuCache::MrfuCache(const base::FilePath& path, const Params& params) {
 
 MrfuCache::~MrfuCache() {}
 
+void MrfuCache::Sort(Items& items) {
+  std::sort(items.begin(), items.end(),
+            [](auto const& a, auto const& b) { return a.second < b.second; });
+}
+
 void MrfuCache::Use(const std::string& item) {
   if (!proto_.initialized())
     return;
@@ -160,6 +165,24 @@ MrfuCache::Items MrfuCache::GetAllNormalized() {
   for (auto& pair : results)
     pair.second /= total;
   return results;
+}
+
+void MrfuCache::ResetWithItems(const Items& items) {
+  DCHECK(proto_.initialized());
+  proto_->Clear();
+
+  proto_->set_update_count(0);
+  float total_score = 0.0f;
+  auto* proto_items = proto_->mutable_items();
+  for (const auto& item_score : items) {
+    Score score;
+    score.set_score(item_score.second);
+    score.set_last_update_count(0);
+    proto_items->insert({item_score.first, score});
+    total_score += item_score.second;
+  }
+  proto_->set_total_score(total_score);
+  proto_.QueueWrite();
 }
 
 void MrfuCache::Decay(Score* score) {

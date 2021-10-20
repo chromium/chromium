@@ -19,6 +19,7 @@
 namespace app_list {
 namespace {
 
+using testing::ElementsAre;
 using testing::FloatNear;
 using testing::Pair;
 using testing::UnorderedElementsAre;
@@ -77,6 +78,21 @@ TEST_F(MrfuCacheTest, UnusedItemHasScoreZero) {
   Wait();
 
   EXPECT_FLOAT_EQ(cache.Get("A"), 0.0f);
+}
+
+TEST_F(MrfuCacheTest, CheckInitializeEmptyAndSize) {
+  MrfuCache cache(GetPath(), TestingParams());
+  EXPECT_FALSE(cache.initialized());
+  EXPECT_EQ(cache.size(), 0u);
+  EXPECT_TRUE(cache.empty());
+  Wait();
+  EXPECT_TRUE(cache.initialized());
+  EXPECT_EQ(cache.size(), 0u);
+  EXPECT_TRUE(cache.empty());
+
+  cache.Use("A");
+  EXPECT_EQ(cache.size(), 1u);
+  EXPECT_FALSE(cache.empty());
 }
 
 TEST_F(MrfuCacheTest, UseAndGetOneItem) {
@@ -265,6 +281,33 @@ TEST_F(MrfuCacheTest, ReadFromDisk) {
   Wait();
   EXPECT_FLOAT_EQ(cache.Get("A"), 0.5f);
   EXPECT_FLOAT_EQ(cache.Get("B"), 0.6f);
+}
+
+TEST_F(MrfuCacheTest, Sort) {
+  MrfuCache::Items items = {{"A", 0.5f}, {"B", 0.3f}, {"C", 0.4f}};
+  MrfuCache::Sort(items);
+  EXPECT_THAT(items,
+              ElementsAre(Pair("B", 0.3f), Pair("C", 0.4f), Pair("A", 0.5f)));
+}
+
+TEST_F(MrfuCacheTest, ResetWithItems) {
+  {
+    MrfuCache cache(GetPath(), TestingParams());
+    Wait();
+
+    cache.Use("A");
+    cache.ResetWithItems({{"B", 0.5f}, {"C", 0.6f}});
+    EXPECT_THAT(cache.GetAll(),
+                UnorderedElementsAre(Pair("B", 0.5f), Pair("C", 0.6f)));
+    Wait();
+  }
+
+  // Check that the cache wrote to disk after the reset, and correctly set the
+  // update count and total score.
+  MrfuCacheProto proto = ReadFromDisk();
+  EXPECT_EQ(proto.items_size(), 2);
+  EXPECT_EQ(proto.update_count(), 0);
+  EXPECT_FLOAT_EQ(proto.total_score(), 1.1f);
 }
 
 }  // namespace app_list
