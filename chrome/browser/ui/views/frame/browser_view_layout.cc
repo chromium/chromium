@@ -209,7 +209,9 @@ gfx::Size BrowserViewLayout::GetMinimumSize(const views::View* host) const {
   // TODO(pkotwicz): Adjust the minimum height for the find bar.
 
   gfx::Size contents_size(contents_container_->GetMinimumSize());
-  contents_size.SetToMax(delegate_->BrowserIsTypeNormal()
+  contents_size.SetToMax((delegate_->BrowserIsTypeNormal() ||
+                          (delegate_->BrowserIsTypeWebApp() &&
+                           !delegate_->BrowserIsTypeSystemWebApp()))
                              ? gfx::Size(kMainBrowserContentsMinimumWidth,
                                          kMainBrowserContentsMinimumHeight)
                              : kContentsMinimumSize);

@@ -566,6 +566,14 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return browser_view_->browser()->is_type_normal();
   }
 
+  bool BrowserIsTypeSystemWebApp() const override {
+    return browser_view_->browser()->app_controller()->system_app();
+  }
+
+  bool BrowserIsTypeWebApp() const override {
+    return browser_view_->GetIsWebAppType();
+  }
+
   bool HasFindBarController() const override {
     return browser_view_->browser()->HasFindBarController();
   }

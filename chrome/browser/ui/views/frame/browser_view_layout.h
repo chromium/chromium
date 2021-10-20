@@ -39,13 +39,14 @@ class WebContentsModalDialogHost;
 // The layout manager used in chrome browser.
 class BrowserViewLayout : public views::LayoutManager {
  public:
-  // The minimum width for the normal (tabbed) browser window's contents area.
-  // This should be wide enough that WebUI pages (e.g. chrome://settings) and
-  // the various associated WebUI dialogs (e.g. Import Bookmarks) can still be
-  // functional. This value provides a trade-off between browser usability and
-  // privacy - specifically, the ability to browse in a very small window, even
-  // on large monitors (which is why a minimum height is not specified). This
-  // value is used for the main browser window only, not for popups.
+  // The minimum width for the normal (tabbed or web app) browser window's
+  // contents area. This should be wide enough that WebUI pages (e.g.
+  // chrome://settings) and the various associated WebUI dialogs (e.g. Import
+  // Bookmarks) can still be functional. This value provides a trade-off between
+  // browser usability and privacy - specifically, the ability to browse in a
+  // very small window, even on large monitors (which is why a minimum height is
+  // not specified). This value is used for the main browser window only, not
+  // for popups.
   static constexpr int kMainBrowserContentsMinimumWidth = 500;
 
   // |browser_view| may be null in tests.

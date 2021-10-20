@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWASizeIsCorrectlyRestored) {
   EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
   NavigateToURLAndWait(app_browser, app_url);
 
-  const gfx::Rect bounds = gfx::Rect(50, 50, 500, 500);
+  const gfx::Rect bounds = gfx::Rect(50, 50, 550, 550);
   app_browser->window()->SetBounds(bounds);
   app_browser->window()->Close();
 
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
   EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
   NavigateToURLAndWait(app_browser, app_url);
 
-  const gfx::Rect bounds = gfx::Rect(50, 50, 500, 500);
+  const gfx::Rect bounds = gfx::Rect(50, 50, 550, 550);
   app_browser->window()->SetBounds(bounds);
   app_browser->window()->Close();
 
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 
   const GURL offscope_url =
       https_server()->GetURL("offscope.site.test", "/simple.html");
-  const gfx::Size size(500, 500);
+  const gfx::Size size(550, 550);
 
   Browser* const popup_browser =
       OpenPopupAndWait(app_browser, offscope_url, size);
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 
   EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
 
-  const gfx::Size size(500, 500);
+  const gfx::Size size(550, 550);
   Browser* const popup_browser = OpenPopupAndWait(app_browser, app_url, size);
 
   // The navigation should have happened in a new window.
