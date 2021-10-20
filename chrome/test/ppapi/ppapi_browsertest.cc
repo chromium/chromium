@@ -1530,8 +1530,7 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, NaClIRTStackAlignment) {
   // Windows kernel, only 64-bit NaCl works.  This test matches the condition
   // used in //components/nacl/browser/nacl_browser.cc::NaClIrtName to
   // choose which kind of NaCl nexe to load, so it better be right.
-  is32 = (base::win::OSInfo::GetInstance()->wow64_status() !=
-          base::win::OSInfo::WOW64_ENABLED);
+  is32 = !base::win::OSInfo::GetInstance()->IsWowX86OnAMD64();
 #endif
   if (is32)
     RunTestViaHTTP(STRIP_PREFIXES(NaClIRTStackAlignment));

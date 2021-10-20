@@ -309,8 +309,7 @@ class NaClBrowserTestPnaclDebug : public NaClBrowserTestPnacl {
     // is used, the required 1GB sandbox address space is not reserved.
     // (see note in chrome/browser/nacl_host/test/nacl_gdb_browsertest.cc)
 #if defined(OS_WIN)
-    if (base::win::OSInfo::GetInstance()->wow64_status() ==
-            base::win::OSInfo::WOW64_DISABLED &&
+    if (base::win::OSInfo::GetInstance()->IsWowDisabled() &&
         base::win::OSInfo::GetArchitecture() ==
             base::win::OSInfo::X86_ARCHITECTURE) {
       return true;

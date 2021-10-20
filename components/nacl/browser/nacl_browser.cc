@@ -48,8 +48,7 @@ const base::FilePath::StringType NaClIrtName() {
 #if defined(ARCH_CPU_X86_64)
   bool is64 = true;
 #elif defined(OS_WIN)
-  bool is64 = (base::win::OSInfo::GetInstance()->wow64_status() ==
-               base::win::OSInfo::WOW64_ENABLED);
+  bool is64 = base::win::OSInfo::GetInstance()->IsWowX86OnAMD64();
 #else
   bool is64 = false;
 #endif

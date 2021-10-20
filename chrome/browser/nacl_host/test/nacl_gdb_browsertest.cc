@@ -53,9 +53,8 @@ class NaClGdbTest : public PPAPINaClNewlibTest {
     // to either add suspended process support to base::LaunchProcess or use
     // Win API.
 #if defined(OS_WIN)
-    if (base::win::OSInfo::GetInstance()->wow64_status() ==
-      base::win::OSInfo::WOW64_DISABLED) {
-        return;
+    if (base::win::OSInfo::GetInstance()->IsWowDisabled()) {
+      return;
     }
 #endif
     base::ScopedAllowBlockingForTesting allow_blocking;

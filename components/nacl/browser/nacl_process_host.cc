@@ -154,8 +154,7 @@ void* AllocateAddressSpaceASLR(base::ProcessHandle process, size_t size) {
 namespace {
 
 bool RunningOnWOW64() {
-  return (base::win::OSInfo::GetInstance()->wow64_status() ==
-          base::win::OSInfo::WOW64_ENABLED);
+  return base::win::OSInfo::GetInstance()->IsWowX86OnAMD64();
 }
 
 }  // namespace
