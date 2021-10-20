@@ -5790,12 +5790,6 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ACCOUNT_REMOVED_MESSAGE" desc="Notification message after account removal.">
     <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph> was removed from this device
   </message>
-  <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_PASSWORD_LABEL" desc="An input box label that tells the user to enter their password in that input box.">
-    Password
-  </message>
-  <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_INVALID_PASSWORD" desc="Text on a password field that tells the user the password is incorrect.">
-    Invalid password
-  </message>
 
   <!-- ADB sideloading policy-change notifications -->
   <message name="IDS_ADB_SIDELOADING_POLICY_CHANGE_SIDELOADING_DISALLOWED_NOTIFICATION_TITLE" desc="Title for the notification informing the user that ADB sideloading has been disabled.">

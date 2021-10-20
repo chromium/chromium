@@ -389,4 +389,17 @@
         Theme
     </message>
   </if>
+
+  <!-- Password Prompt Dialog -->
+  <if expr="chromeos or lacros">
+    <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_TITLE" desc="Title of the password prompt dialog popup.">
+      Confirm your password
+    </message>
+    <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_PASSWORD_LABEL" desc="An input box label that tells the user to enter their password in that input box.">
+      Password
+    </message>
+    <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_INVALID_PASSWORD" desc="Text on a password field that tells the user the password is incorrect.">
+      Invalid password
+    </message>
+  </if>
 </grit-part>
