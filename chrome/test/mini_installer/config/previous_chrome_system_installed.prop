@@ -55,7 +55,7 @@
       "values": {
         "CommandLine": {
           "type": "SZ",
-          "data": "\"$PROGRAM_FILES\\$CHROME_DIR\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe\" --rotate-dtkey=%1 --system-level --verbose-logging"
+          "data": "\"$PROGRAM_FILES\\$CHROME_DIR\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe\" --rotate-dtkey=%1 --dm-server-url=%2 --nonce=%3 --system-level --verbose-logging"
         },
         "WebAccessible": {
           "type": "DWORD",
