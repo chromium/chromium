@@ -111,7 +111,7 @@ public class LanguageSplitInstaller {
                 .addOnSuccessListener(sessionId -> { mInstallSessionId = sessionId; })
                 .addOnFailureListener(exception -> {
                     Log.i(TAG, "Language Split Failure:", exception);
-                    listener.onComplete(false);
+                    installFinished(false);
                 });
 
         // Schedule a deferred install if the live install fails the play store will install the
