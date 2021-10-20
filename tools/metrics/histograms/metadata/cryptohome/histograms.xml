@@ -234,6 +234,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.FreedCacheVaultDiskSpaceInMb" units="MB"
+    expires_after="2022-06-01">
+  <owner>vsavu@google.com</owner>
+  <owner>weifangsun@chromium.org</owner>
+  <summary>
+    This is an amount of Dmcrypt cache vault space (MB) which was evicted by
+    cryptohome due to shortage of remaining disk space. Reported only if
+    something was deleted (greater than zero).
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.FreeDiskSpaceTotalFreedInMb" units="MiB"
     expires_after="2022-07-13">
   <owner>vsavu@chromium.org</owner>
