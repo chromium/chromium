@@ -977,11 +977,15 @@ bool TabletModeController::CanUseUnstableLidAngle() const {
   return elapsed_time >= kUnstableLidAngleDuration;
 }
 
-bool TabletModeController::CanEnterTabletMode() {
-  // If we have ever seen accelerometer data, then HandleHingeRotation may
-  // trigger tablet mode at some point in the future.
-  // All TabletMode-enabled devices can enter tablet mode.
-  return have_seen_accelerometer_data_ || InTabletMode();
+bool TabletModeController::CanEnterTabletMode() const {
+  // If ChromeOS EC lid angle driver is supported, EC can handle lid angle
+  // calculation, and trigger tablet mode at some point.
+  // Otherwise, lid angle calculation is done on Chrome side for convertible
+  // device. If we have ever seen accelerometer data, then HandleHingeRotation
+  // may trigger tablet mode at some point in the future.
+  return IsBoardTypeMarkedAsTabletCapable() &&
+         (is_ec_lid_angle_driver_supported_.value_or(false) ||
+          have_seen_accelerometer_data_);
 }
 
 void TabletModeController::RecordTabletModeUsageInterval(
@@ -1281,13 +1285,8 @@ bool TabletModeController::ShouldUiBeInTabletMode() const {
   if (is_in_tablet_physical_state_)
     return true;
 
-  const bool can_enter_tablet_mode =
-      IsBoardTypeMarkedAsTabletCapable() && HasActiveInternalDisplay() &&
-      (is_ec_lid_angle_driver_supported_.value_or(false) ||
-       have_seen_accelerometer_data_);
-
-  return !has_internal_pointing_device_ && can_enter_tablet_mode &&
-         chromeos::IsRunningAsSystemCompositor();
+  return !has_internal_pointing_device_ && CanEnterTabletMode() &&
+         HasActiveInternalDisplay() && chromeos::IsRunningAsSystemCompositor();
 }
 
 bool TabletModeController::SetIsInTabletPhysicalState(bool new_state) {

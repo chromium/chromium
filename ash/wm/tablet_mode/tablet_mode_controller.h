@@ -270,7 +270,7 @@ class ASH_EXPORT TabletModeController
   // True if it is possible to enter tablet mode in the current
   // configuration. If this returns false, it should never be the case that
   // tablet mode becomes enabled.
-  bool CanEnterTabletMode();
+  bool CanEnterTabletMode() const;
 
   // Record UMA stats tracking TabletMode usage. If |type| is
   // TABLET_MODE_INTERVAL_INACTIVE, then record that TabletMode has been
