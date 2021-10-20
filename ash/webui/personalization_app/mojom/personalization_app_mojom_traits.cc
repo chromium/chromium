@@ -148,7 +148,7 @@ bool StructTraits<
 
 bool StructTraits<
     chromeos::personalization_app::mojom::WallpaperCollectionDataView,
-    backdrop::Collection>::isNull(const backdrop::Collection& collection) {
+    backdrop::Collection>::IsNull(const backdrop::Collection& collection) {
   return !(collection.has_collection_id() && collection.has_collection_name() &&
            collection.preview_size() > 0);
 }
@@ -183,7 +183,7 @@ bool StructTraits<chromeos::personalization_app::mojom::WallpaperImageDataView,
 }
 
 bool StructTraits<chromeos::personalization_app::mojom::WallpaperImageDataView,
-                  backdrop::Image>::isNull(const backdrop::Image& image) {
+                  backdrop::Image>::IsNull(const backdrop::Image& image) {
   if (!image.has_image_url() || !image.has_asset_id())
     return true;
   GURL image_url(image.image_url());

@@ -52,7 +52,7 @@ void FakePersonalizationAppUiDelegate::FetchImagesForCollection(
   std::vector<backdrop::Image> images;
   backdrop::Image image;
   image.set_asset_id(1);
-  image.set_image_url(std::string());
+  image.set_image_url("about:blank");
   image.add_attribution()->set_text("test");
   images.push_back(image);
   std::move(callback).Run(std::move(images));

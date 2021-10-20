@@ -46,7 +46,7 @@ struct StructTraits<
   static bool Read(
       chromeos::personalization_app::mojom::WallpaperCollectionDataView data,
       backdrop::Collection* out);
-  static bool isNull(const backdrop::Collection& collection);
+  static bool IsNull(const backdrop::Collection& collection);
 };
 
 template <>
@@ -60,7 +60,7 @@ struct StructTraits<
   static bool Read(
       chromeos::personalization_app::mojom::WallpaperImageDataView data,
       backdrop::Image* out);
-  static bool isNull(const backdrop::Image& image);
+  static bool IsNull(const backdrop::Image& image);
 };
 
 }  // namespace mojo
