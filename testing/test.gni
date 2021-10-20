@@ -407,6 +407,7 @@ template("test") {
                                "use_test_server",
                              ])
 
+      is_test_exe = true
       package = ":$_pkg_target"
       package_name = _output_name
 
@@ -427,10 +428,7 @@ template("test") {
       if (!defined(data_deps)) {
         data_deps = []
       }
-      data_deps += [
-        "//testing:test_scripts_shared",
-        "//testing/buildbot/filters:fuchsia_filters",
-      ]
+      data_deps += [ "//testing/buildbot/filters:fuchsia_filters" ]
 
       if (use_rts) {
         data_deps += [ ":${target_name}__rts_filters" ]
