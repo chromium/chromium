@@ -21,6 +21,8 @@ import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.crash.CrashKeys;
 
@@ -85,6 +87,16 @@ public class PureJavaExceptionReporter implements PureJavaExceptionHandler.JavaE
     public static void reportJavaException(Throwable javaException) {
         PureJavaExceptionReporter reporter = new PureJavaExceptionReporter();
         reporter.createAndUploadReport(javaException);
+    }
+
+    /**
+     * Posts a task to report and upload the device info and stack trace as if it was a crash.
+     *
+     * @param javaException The exception to report.
+     */
+    public static void postReportJavaException(Throwable javaException) {
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> reportJavaException(javaException));
     }
 
     @Override
