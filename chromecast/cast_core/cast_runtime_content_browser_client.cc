@@ -9,6 +9,7 @@
 #include "chromecast/cast_core/cast_core_switches.h"
 #include "chromecast/cast_core/cast_runtime_service.h"
 #include "chromecast/common/cors_exempt_headers.h"
+#include "content/public/common/content_switches.h"
 #include "media/base/cdm_factory.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
@@ -57,6 +58,21 @@ std::unique_ptr<::media::CdmFactory>
 CastRuntimeContentBrowserClient::CreateCdmFactory(
     ::media::mojom::FrameInterfaceFactory* frame_interfaces) {
   return nullptr;
+}
+
+void CastRuntimeContentBrowserClient::AppendExtraCommandLineSwitches(
+    base::CommandLine* command_line,
+    int child_process_id) {
+  CastContentBrowserClient::AppendExtraCommandLineSwitches(command_line,
+                                                           child_process_id);
+
+  base::CommandLine* browser_command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (browser_command_line->HasSwitch(switches::kLogFile) &&
+      !command_line->HasSwitch(switches::kLogFile)) {
+    const char* path[1] = {switches::kLogFile};
+    command_line->CopySwitchesFrom(*browser_command_line, path, size_t{1});
+  }
 }
 
 bool CastRuntimeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(

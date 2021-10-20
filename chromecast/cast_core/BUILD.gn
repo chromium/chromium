@@ -251,6 +251,7 @@ cast_source_set("browser") {
     "//base",
     "//chromecast/browser",
     "//chromecast/common:cors_exempt_headers",
+    "//content/public/common",
     "//media",
   ]
 

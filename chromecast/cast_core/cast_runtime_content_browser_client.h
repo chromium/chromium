@@ -33,6 +33,8 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
       ::media::mojom::FrameInterfaceFactory* frame_interfaces) override;
   // This function is used to allow/disallow WebUIs to make network requests.
   bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
+  void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
+                                      int child_process_id) override;
 };
 
 }  // namespace chromecast

@@ -172,6 +172,8 @@ void DemoPlatformService::StartRuntimeOnSequence(
 #if !defined(__arm__)
   runtime_cmdline.AppendSwitchASCII("--ozone-platform", "x11");
 #endif
+  runtime_cmdline.AppendSwitchASCII("--log-file",
+                                    "./runtime_logs/" + runtime_id_ + ".log");
   runtime_cmdline.AppendSwitchASCII("--vmodule", "*runtime_*=2");
   runtime_cmdline.AppendSwitchASCII("--cast-core-runtime-id", runtime_id_);
   runtime_cmdline.AppendSwitchASCII("--runtime-service-path",
