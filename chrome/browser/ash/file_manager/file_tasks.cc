@@ -263,7 +263,8 @@ void ExecuteTaskAfterMimeTypesCollected(
                       (task.action_id == kActionIdSend ||
                        task.action_id == kActionIdSendMultiple);
   bool is_web_app = task.task_type == TASK_TYPE_WEB_APP;
-  if (is_arc_share || is_web_app) {
+  bool is_chrome_app = task.task_type == TASK_TYPE_FILE_HANDLER;
+  if (is_arc_share || is_web_app || is_chrome_app) {
     ExecuteAppServiceTask(profile, task, file_urls, *mime_types,
                           std::move(done));
     return;
@@ -626,19 +627,14 @@ bool ExecuteFileTask(Profile* profile,
         extension_task_profile, extension, task.action_id, file_urls,
         std::move(done));
   } else if (task.task_type == TASK_TYPE_FILE_HANDLER) {
-    std::vector<base::FilePath> paths;
-    for (const FileSystemURL& file_url : file_urls)
-      paths.push_back(file_url.path());
-
-    DCHECK(!extension->from_bookmark());
-    apps::LaunchPlatformAppWithFileHandler(extension_task_profile, extension,
-                                           task.action_id, paths);
-    // In a multiprofile session, platform apps will open on the desktop
-    // corresponding to the profile that owns the files, so return
-    // TASK_RESULT_MESSAGE_SENT.
-    if (!done.is_null())
-      std::move(done).Run(
-          extensions::api::file_manager_private::TASK_RESULT_MESSAGE_SENT, "");
+    extensions::app_file_handler_util::MimeTypeCollector* mime_collector =
+        new extensions::app_file_handler_util::MimeTypeCollector(
+            extension_task_profile);
+    mime_collector->CollectForURLs(
+        file_urls,
+        base::BindOnce(&ExecuteTaskAfterMimeTypesCollected,
+                       extension_task_profile, task, file_urls, std::move(done),
+                       base::Owned(mime_collector)));
     return true;
   }
   NOTREACHED();

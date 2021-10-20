@@ -5,6 +5,8 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "build/branding_buildflags.h"
@@ -24,9 +26,11 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/constants.h"
@@ -533,6 +537,45 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
   ExecuteFileTask(profile, GURL("https://www.example.com/"), task_descriptor,
                   files, base::DoNothing());
   run_loop.Run();
+}
+
+// Launch a Chrome app with a real file and wait for it to ping back.
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteChromeApp) {
+  if (profile_type() == TestProfileType::kGuest) {
+    // The app can't install in guest mode.
+    return;
+  }
+  Profile* const profile = browser()->profile();
+  auto extension = InstallTiffHandlerChromeApp(profile);
+
+  TaskDescriptor task_descriptor(extension->id(), TASK_TYPE_FILE_HANDLER,
+                                 "tiffAction");
+
+  base::FilePath path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
+  path = path.AppendASCII("chromeos/file_manager/test_small.tiff");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(path));
+  }
+  // Copy the file into My Files.
+  file_manager::test::FolderInMyFiles folder(profile);
+  folder.Add({path});
+  base::FilePath path_in_my_files = folder.files()[0];
+
+  GURL tiff_url;
+  CHECK(util::ConvertAbsoluteFilePathToFileSystemUrl(
+      profile, path_in_my_files, util::GetFileManagerURL(), &tiff_url));
+  std::vector<storage::FileSystemURL> files;
+  files.push_back(storage::FileSystemURL::CreateForTest(tiff_url));
+
+  content::DOMMessageQueue message_queue;
+  ExecuteFileTask(profile, GURL("https://www.example.com/"), task_descriptor,
+                  files, base::DoNothing());
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  ASSERT_EQ("\"Received tiffAction with: test_small.tiff\"", message);
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(

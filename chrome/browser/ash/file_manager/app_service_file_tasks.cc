@@ -268,7 +268,8 @@ void ExecuteAppServiceTask(
   }
 
   DCHECK(task.task_type == TASK_TYPE_ARC_APP ||
-         task.task_type == TASK_TYPE_WEB_APP);
+         task.task_type == TASK_TYPE_WEB_APP ||
+         task.task_type == TASK_TYPE_FILE_HANDLER);
   apps::mojom::IntentPtr intent =
       task.task_type == TASK_TYPE_ARC_APP
           ? apps_util::CreateShareIntentFromFiles(file_urls, mime_types)
