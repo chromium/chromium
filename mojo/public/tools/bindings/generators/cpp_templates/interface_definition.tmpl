@@ -128,11 +128,11 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 bool {{proxy_name}}::{{method.name}}(
     {{interface_macros.declare_sync_method_params("param_", method)}}) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-{%-     set qualified_method_name = "%s::%s::%s" % (namespace_as_string,
+{%-     set event_name = "Call %s::%s::%s (sync)" % (namespace_as_string,
                                                     class_name, method.name) %}
   {{interface_macros.trace_event(prefix="param_",
                                  method_parameters=method.parameters,
-                                 method_name=qualified_method_name,
+                                 method_name=event_name,
                                  parameter_group="input_parameters",
                                  trace_event_type='_BEGIN')}}
 #endif
@@ -171,7 +171,7 @@ bool {{proxy_name}}::{{method.name}}(
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   {{interface_macros.trace_event(prefix="out_param_",
                                  method_parameters=method.response_parameters,
-                                 method_name=qualified_method_name,
+                                 method_name=event_name,
                                  parameter_group="sync_response_parameters",
                                  trace_event_type='_END',
                                  dereference_parameters=True)}}
@@ -183,11 +183,11 @@ bool {{proxy_name}}::{{method.name}}(
 void {{proxy_name}}::{{method.name}}(
     {{interface_macros.declare_request_params("in_", method)}}) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-{%- set qualified_method_name = "%s::%s::%s" % (namespace_as_string, class_name,
-                                                method.name) %}
+{%- set event_name = "Send %s::%s::%s" % (namespace_as_string, class_name,
+                                          method.name) %}
   {{interface_macros.trace_event(prefix="in_",
                                  method_parameters=method.parameters,
-                                 method_name=qualified_method_name,
+                                 method_name=event_name,
                                  parameter_group="input_parameters")}}
 #endif
 {%- if method.response_parameters != None %}
@@ -308,7 +308,7 @@ class {{class_name}}_{{method.name}}_ProxyToResponder {
 bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
     mojo::Message* message) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-  TRACE_EVENT1("mojom", "{{namespace_as_string}}::{{class_name}}::{{method.name}}Callback",
+  TRACE_EVENT1("mojom", "Receive reply {{namespace_as_string}}::{{class_name}}::{{method.name}}",
                "message", message->name());
 #endif
 {%-     if method|method_supports_lazy_serialization %}
@@ -344,11 +344,11 @@ bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
 void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
     {{interface_macros.declare_params("in_", method.response_parameters)}}) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-{%-     set qualified_method_name = "(Impl)%s::%s::%sCallback"
+{%-     set event_name = "Send reply %s::%s::%s"
 		% (namespace_as_string, class_name, method.name) %}
   {{interface_macros.trace_event(prefix="in_",
                                  method_parameters=method.response_parameters,
-                                 method_name=qualified_method_name,
+                                 method_name=event_name,
                                  parameter_group="async_response_parameters",
                                  trace_event_type='_BEGIN',
                                  dereference_parameters=False)}}
@@ -369,7 +369,7 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
 {%-   endif %}
 
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-  TRACE_EVENT_END1("mojom", "{{qualified_method_name}}", "message",
+  TRACE_EVENT_END1("mojom", "{{event_name}}", "message",
                    message.name());
 #endif
 
@@ -443,7 +443,7 @@ bool {{class_name}}StubDispatch::Accept(
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
       TRACE_EVENT1(
           "mojom",
-          "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}",
+          "Receive {{namespace_as_string}}::{{class_name}}::{{method.name}}",
           "message", message->name());
 #endif
       static constexpr uint32_t kMessageHash = base::MD5Hash32Constexpr(
