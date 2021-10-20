@@ -28,18 +28,25 @@ void ProxyTabsDataTypeController::LoadModels(
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(configure_context.sync_mode, syncer::SyncMode::kFull);
-  // Bypass connection to the sync engine by reporting that it's already
-  // running.
-  state_ = RUNNING;
+  state_ = MODEL_LOADED;
   state_changed_cb_.Run(state_);
   model_load_callback.Run(type(), syncer::SyncError());
 }
 
 std::unique_ptr<syncer::DataTypeActivationResponse>
 ProxyTabsDataTypeController::Connect() {
-  // This controller never enters the MODEL_LOADED state.
-  NOTREACHED();
-  return nullptr;
+  DCHECK(CalledOnValidThread());
+  DCHECK_EQ(MODEL_LOADED, state_);
+  state_ = RUNNING;
+  state_changed_cb_.Run(state_);
+
+  // Set |skip_engine_connection| to true to indicate that, actually, this sync
+  // datatype doesn't require communicating to the sync server to upload or
+  // download changes.
+  auto activation_response =
+      std::make_unique<syncer::DataTypeActivationResponse>();
+  activation_response->skip_engine_connection = true;
+  return activation_response;
 }
 
 void ProxyTabsDataTypeController::Stop(syncer::ShutdownReason shutdown_reason,

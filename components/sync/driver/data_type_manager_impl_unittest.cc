@@ -347,6 +347,31 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOne) {
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
+TEST_F(SyncDataTypeManagerImplTest, ConfigureOneThatSkipsEngineConnection) {
+  AddController(BOOKMARKS);
+
+  GetController(BOOKMARKS)
+      ->model()
+      ->EnableSkipEngineConnectionForActivationResponse();
+
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
+
+  Configure(ModelTypeSet(BOOKMARKS));
+
+  ASSERT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // priority types
+  EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+
+  EXPECT_EQ(DataTypeController::RUNNING, GetController(BOOKMARKS)->state());
+  EXPECT_TRUE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+
+  // Even if all APIs above indicate the datatype is active, in reality the
+  // configurer (SyncEngine) hasn't been activated/connected.
+  EXPECT_TRUE(configurer_.connected_types().Empty());
+}
+
 // Set up a DTM with a single controller, configure it, but stop it
 // before finishing the download.  It should still be safe to run the
 // download callback even after the DTM is stopped and destroyed.

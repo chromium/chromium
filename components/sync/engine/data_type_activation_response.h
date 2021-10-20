@@ -28,6 +28,10 @@ struct DataTypeActivationResponse {
   // The ModelTypeProcessor for the worker. Note that this is owned because
   // it is generally a proxy object to the real processor.
   std::unique_ptr<ModelTypeProcessor> type_processor;
+
+  // Special flag used in advanced cases where there is actually no need to
+  // activate/connect a datatype.
+  bool skip_engine_connection = false;
 };
 
 }  // namespace syncer

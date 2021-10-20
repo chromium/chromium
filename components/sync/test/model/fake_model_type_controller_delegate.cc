@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
 
@@ -21,7 +20,12 @@ FakeModelTypeControllerDelegate::~FakeModelTypeControllerDelegate() = default;
 
 void FakeModelTypeControllerDelegate::SetModelTypeStateForActivationResponse(
     const sync_pb::ModelTypeState& model_type_state) {
-  model_type_state_for_activation_response_ = model_type_state;
+  activation_response_.model_type_state = model_type_state;
+}
+
+void FakeModelTypeControllerDelegate::
+    EnableSkipEngineConnectionForActivationResponse() {
+  activation_response_.skip_engine_connection = true;
 }
 
 void FakeModelTypeControllerDelegate::EnableManualModelStart() {
@@ -104,7 +108,9 @@ FakeModelTypeControllerDelegate::GetWeakPtr() {
 std::unique_ptr<DataTypeActivationResponse>
 FakeModelTypeControllerDelegate::MakeActivationResponse() const {
   auto response = std::make_unique<DataTypeActivationResponse>();
-  response->model_type_state = model_type_state_for_activation_response_;
+  response->model_type_state = activation_response_.model_type_state;
+  response->skip_engine_connection =
+      activation_response_.skip_engine_connection;
   return response;
 }
 

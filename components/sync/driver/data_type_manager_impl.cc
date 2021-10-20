@@ -210,6 +210,16 @@ void DataTypeManagerImpl::ConnectDataTypes() {
     DCHECK(activation_response);
     DCHECK_EQ(dtc->state(), DataTypeController::RUNNING);
 
+    if (activation_response->skip_engine_connection) {
+      // |skip_engine_connection| means ConnectDataType() shouldn't be invoked
+      // because the datatype has some alternative way to sync changes to the
+      // server, without relying on this instance of the sync engine. This is
+      // currently possible for PROXY_TABS and, on Android, for PASSWORDS.
+      DCHECK(!activation_response->type_processor);
+      downloaded_types_.Put(type);
+      continue;
+    }
+
     if (activation_response->model_type_state.initial_sync_done()) {
       downloaded_types_.Put(type);
     } else {
@@ -566,12 +576,16 @@ DataTypeManagerImpl::PrepareConfigureParams(
   DCHECK(Intersection(active_types, disabled_types).Empty());
 
   ModelTypeSet types_to_download = Difference(active_types, downloaded_types_);
-  // Proxy and commit-only types never require downloading.
-  types_to_download.RetainAll(ProtocolTypes());
+  // Commit-only types never require downloading.
   types_to_download.RemoveAll(CommitOnlyTypes());
   if (!types_to_download.Empty()) {
     types_to_download.PutAll(ControlTypes());
   }
+
+  // All types to download are expected to be protocol types (proxy types should
+  // have skipped full activation via
+  // |DataTypeActivationResponse::skip_engine_connection|).
+  DCHECK(ProtocolTypes().HasAll(types_to_download));
 
   // Already (optimistically) update the |downloaded_types_|, so that the next
   // time we get here, it has the correct value.

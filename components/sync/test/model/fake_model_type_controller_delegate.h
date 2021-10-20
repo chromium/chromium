@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -27,8 +28,14 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
 
   ~FakeModelTypeControllerDelegate() override;
 
+  // Determines the ModelTypeState returned in Connect() as part of
+  // DataTypeActivationResponse.
   void SetModelTypeStateForActivationResponse(
       const sync_pb::ModelTypeState& model_type_state);
+
+  // Influences the bit |skip_engine_connection| returned in Connect() as part
+  // of DataTypeActivationResponse.
+  void EnableSkipEngineConnectionForActivationResponse();
 
   // By default, this delegate (model) completes startup automatically when
   // OnSyncStarting() is invoked. For tests that want to manually control the
@@ -63,7 +70,7 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   const ModelType type_;
   bool manual_model_start_enabled_ = false;
   int clear_metadata_call_count_ = 0;
-  sync_pb::ModelTypeState model_type_state_for_activation_response_;
+  DataTypeActivationResponse activation_response_;
   absl::optional<ModelError> model_error_;
   StartCallback start_callback_;
   ModelErrorHandler error_handler_;
