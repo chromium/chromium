@@ -36,4 +36,17 @@ SubresourceWebBundle* SubresourceWebBundleList::GetMatchingBundle(
   return nullptr;
 }
 
+SubresourceWebBundle*
+SubresourceWebBundleList::FindSubresourceWebBundleWhichWillBeReleased(
+    const KURL& bundle_url) const {
+  for (auto& it : subresource_web_bundles_) {
+    // TODO(crbug.com/1245166): Crossorigin value (in other words, credentials
+    // mode) should be checked to avoid matching web bundles with the same URL
+    // but different credentials mode.
+    if (it->WillBeReleased() && it->GetBundleUrl() == bundle_url)
+      return it;
+  }
+  return nullptr;
+}
+
 }  // namespace blink

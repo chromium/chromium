@@ -26,6 +26,8 @@ class PLATFORM_EXPORT SubresourceWebBundleList
   void Add(SubresourceWebBundle& bundle);
   void Remove(SubresourceWebBundle& bundle);
   SubresourceWebBundle* GetMatchingBundle(const KURL& url) const;
+  SubresourceWebBundle* FindSubresourceWebBundleWhichWillBeReleased(
+      const KURL& bundle_url) const;
 
  private:
   HeapVector<Member<SubresourceWebBundle>> subresource_web_bundles_;

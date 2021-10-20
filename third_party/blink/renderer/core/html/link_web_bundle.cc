@@ -66,6 +66,16 @@ void LinkWebBundle::OnWebBundleError(const String& message) const {
       mojom::blink::ConsoleMessageLevel::kWarning, message));
 }
 
+bool LinkWebBundle::IsScriptWebBundle() const {
+  NOTREACHED() << "Should never happen since IsScriptWebBundle() is called "
+                  "only for ScriptWebBundle in the current implementation.";
+  return false;
+}
+
+bool LinkWebBundle::WillBeReleased() const {
+  return false;
+}
+
 void LinkWebBundle::Process() {
   if (!owner_ || !owner_->GetDocument().GetFrame())
     return;

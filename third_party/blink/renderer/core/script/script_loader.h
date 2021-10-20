@@ -45,6 +45,7 @@ class ResourceFetcher;
 class ScriptElementBase;
 class Script;
 class ScriptResource;
+class ScriptWebBundle;
 class Modulator;
 
 class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
@@ -69,6 +70,7 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
     kModule,
     kImportMap,
     kSpeculationRules,
+    kWebBundle,
     kInvalid
   };
 
@@ -114,6 +116,10 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   // Only for ScriptRunner::MovePendingScript() and should be removed once
   // crbug.com/721914 is fixed.
   PendingScript* GetPendingScriptIfControlledByScriptRunnerForCrossDocMove();
+
+  // Release webbundle resources which are associated to this loader explicitly
+  // without waiting for blink-GC.
+  void ReleaseWebBundleResource();
 
  private:
   bool IgnoresLoadRequest() const;
@@ -213,6 +219,10 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   // and thus to keep it on MemoryCache, even after script execution, as long
   // as ScriptLoader is alive. crbug.com/778799
   Member<Resource> resource_keep_alive_;
+
+  // This is created only for <script type=webbundle>, representing a webbundle
+  // mapping rule and its loader.
+  Member<ScriptWebBundle> script_web_bundle_;
 };
 
 }  // namespace blink

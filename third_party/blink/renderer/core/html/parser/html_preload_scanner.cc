@@ -767,6 +767,10 @@ class TokenPreloadScanner::StartTagScanner {
           // supported.
           return false;
 
+        case ScriptLoader::ScriptTypeAtPrepare::kWebBundle:
+          // External webbundle is not yet supported.
+          return false;
+
         case ScriptLoader::ScriptTypeAtPrepare::kClassic:
         case ScriptLoader::ScriptTypeAtPrepare::kModule:
           if (ScriptLoader::BlockForNoModule(script_type,

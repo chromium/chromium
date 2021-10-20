@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<title>script type="webbundle" reuses webbundle resources</title>
+<link
+  rel="help"
+  href="https://github.com/WICG/webpackage/blob/main/explainers/subresource-loading.md"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/test-helpers.js"></script>
+
+<body>
+  <script>
+    window.TEST_WEB_BUNDLE_ELEMENT_TYPE = "script";
+    setup(() => {
+      assert_true(HTMLScriptElement.supports("webbundle"));
+    });
+
+    const wbn_url = "../resources/wbn/subresource.wbn";
+    const resource1 = "../resources/wbn/root.js";
+    const resource2 = "../resources/wbn/submodule.js";
+
+    let script1;
+    let script2;
+
+    function cleanUp() {
+      if (script1) {
+        script1.remove();
+      }
+      if (script2) {
+        script2.remove();
+      }
+    }
+
+    async function assertResource1CanBeFetched() {
+      const response = await fetch(resource1);
+      const text = await response.text();
+      assert_equals(text, "export * from './submodule.js';\n");
+    }
+
+    async function assertResource1CanNotBeFetched() {
+      const response = await fetch(resource1);
+      assert_equals(response.status, 404);
+    }
+
+    async function assertResource2CanBeFetched() {
+      const response = await fetch(resource2);
+      const text = await response.text();
+      assert_equals(text, "export const result = 'OK';\n");
+    }
+
+    function createScriptWebBundle1() {
+      return createWebBundleElement(wbn_url, /*resources=*/ [resource1]);
+    }
+
+    function createScriptWebBundle2() {
+      return createWebBundleElement(wbn_url, /*resources=*/ [resource2]);
+    }
+
+    async function appendScriptWebBundle1AndFetchResource1() {
+      clearWebBundleFetchCount();
+      script1 = createScriptWebBundle1();
+      document.body.append(script1);
+      await assertResource1CanBeFetched();
+      assert_equals(webBundleFetchCount(), 1);
+    }
+
+    function clearWebBundleFetchCount() {
+      performance.clearResourceTimings();
+    }
+
+    function webBundleFetchCount() {
+      return performance
+        .getEntriesByType("resource")
+        .filter((e) => e.name.endsWith("subresource.wbn")).length;
+    }
+
+    promise_test(async (t) => {
+      t.add_cleanup(cleanUp);
+      await appendScriptWebBundle1AndFetchResource1();
+      clearWebBundleFetchCount();
+
+      // Append script2 without removing script1.
+      // script2 should fetch the wbn again.
+      script2 = createScriptWebBundle2();
+      document.body.appendChild(script2);
+
+      await assertResource1CanBeFetched()
+      await assertResource2CanBeFetched();
+      assert_equals(webBundleFetchCount(), 1);
+    }, "A webbundle should be fetched again when new script element is appended.");
+
+    promise_test(async (t) => {
+      t.add_cleanup(cleanUp);
+      await appendScriptWebBundle1AndFetchResource1();
+      clearWebBundleFetchCount();
+
+      // Remove script1, then append script2
+      // script2 should reuse webbundle resources.
+      script1.remove();
+      script2 = createScriptWebBundle2();
+      document.body.append(script2);
+
+      await assertResource1CanNotBeFetched();
+      await assertResource2CanBeFetched();
+      assert_equals(webBundleFetchCount(), 0);
+    }, "'remove(), then append()' should reuse webbundle resources");
+
+    promise_test(async (t) => {
+      t.add_cleanup(cleanUp);
+      await appendScriptWebBundle1AndFetchResource1();
+      clearWebBundleFetchCount();
+
+      // Remove script1, then append the removed one.
+      script1.remove();
+      document.body.append(script1);
+
+      await assertResource1CanNotBeFetched();
+      assert_equals(webBundleFetchCount(), 0);
+    }, "'remove(), then append()' for the same element should reuse webbundle resources");
+
+    promise_test(async (t) => {
+      t.add_cleanup(cleanUp);
+      await appendScriptWebBundle1AndFetchResource1();
+      clearWebBundleFetchCount();
+
+      // Multiple 'remove(), then append()' for the same element.
+      script1.remove();
+      document.body.append(script1);
+
+      script1.remove();
+      document.body.append(script1);
+
+      await assertResource1CanNotBeFetched();
+      assert_equals(webBundleFetchCount(), 0);
+    }, "Multiple 'remove(), then append()' for the same element should reuse webbundle resources");
+
+
+    promise_test(async (t) => {
+      t.add_cleanup(cleanUp);
+      await appendScriptWebBundle1AndFetchResource1();
+      clearWebBundleFetchCount();
+
+      // Remove script1.
+      script1.remove();
+
+      // Then append script2 in a separet task.
+      await new Promise(resolve => t.step_timeout(resolve, 0));
+      script2 = createScriptWebBundle2();
+      document.body.append(script2);
+
+      await assertResource1CanNotBeFetched();
+      await assertResource2CanBeFetched();
+      assert_equals(webBundleFetchCount(), 1);
+    }, "'remove(), then append() in a separate task' should not reuse webbundle resources");
+
+
+    promise_test(async (t) => {
+      t.add_cleanup(cleanUp);
+      await appendScriptWebBundle1AndFetchResource1();
+      clearWebBundleFetchCount();
+
+      // Use replaceWith() to replace script1 with script2.
+      // script2 should reuse webbundle resources.
+      script2 = createScriptWebBundle2();
+      script1.replaceWith(script2);
+
+      await assertResource1CanNotBeFetched();
+      await assertResource2CanBeFetched();
+
+      assert_equals(webBundleFetchCount(), 0);
+    }, "replaceWith() should reuse webbundle resources.");
+
+    promise_test(async (t) => {
+      t.add_cleanup(cleanUp);
+      await appendScriptWebBundle1AndFetchResource1();
+      clearWebBundleFetchCount();
+
+      // Move script1 to another document. Then append script2.
+      // script2 should reuse webbundle resources.
+      const another_document = new Document();
+      another_document.append(script1);
+      script2 = createScriptWebBundle2();
+      document.body.append(script2);
+
+      await assertResource1CanNotBeFetched();
+      await assertResource2CanBeFetched();
+
+      assert_equals(webBundleFetchCount(), 0);
+
+      // TODO: Test the following cases:
+      // - The resources are not loaded from the webbundle in the new Document
+      // (Probably better to use a <iframe>.contentDocument)
+      // - Even if we move the script element back to the original Document,
+      // even immediately, the resources are not loaded from the webbundle in the
+      // original Document.
+    }, "append() should reuse webbundle resoruces even if the old script was moved to another document.");
+
+  </script>
+</body>

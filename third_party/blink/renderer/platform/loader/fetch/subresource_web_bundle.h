@@ -28,6 +28,8 @@ class PLATFORM_EXPORT SubresourceWebBundle : public GarbageCollectedMixin {
   virtual String GetCacheIdentifier() const = 0;
   virtual void OnWebBundleError(const String& message) const = 0;
   virtual void NotifyLoaded() = 0;
+  virtual bool IsScriptWebBundle() const = 0;
+  virtual bool WillBeReleased() const = 0;
 };
 
 }  // namespace blink

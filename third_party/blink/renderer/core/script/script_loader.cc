@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
+#include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle.h"
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/import_map.h"
@@ -122,6 +123,7 @@ void ScriptLoader::Trace(Visitor* visitor) const {
   visitor->Trace(pending_script_);
   visitor->Trace(prepared_pending_script_);
   visitor->Trace(resource_keep_alive_);
+  visitor->Trace(script_web_bundle_);
   PendingScriptClient::Trace(visitor);
 }
 
@@ -249,6 +251,9 @@ ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
   if (EqualIgnoringASCIICase(type, script_type_names::kSpeculationrules)) {
     return ScriptTypeAtPrepare::kSpeculationRules;
   }
+  if (EqualIgnoringASCIICase(type, script_type_names::kWebbundle)) {
+    return ScriptTypeAtPrepare::kWebBundle;
+  }
 
   // <spec step="8">... If neither of the above conditions are true, then
   // return. No script is executed.</spec>
@@ -295,6 +300,7 @@ bool ShouldBlockSyncScriptForDocumentPolicy(
   if (script_type == ScriptLoader::ScriptTypeAtPrepare::kModule ||
       script_type == ScriptLoader::ScriptTypeAtPrepare::kImportMap ||
       script_type == ScriptLoader::ScriptTypeAtPrepare::kSpeculationRules ||
+      script_type == ScriptLoader::ScriptTypeAtPrepare::kWebBundle ||
       !parser_inserted)
     return false;
 
@@ -364,6 +370,14 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
     case ScriptTypeAtPrepare::kSpeculationRules:
       if (!RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window))
         return false;
+      break;
+
+    case ScriptTypeAtPrepare::kWebBundle:
+      if (!RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
+              element_document.GetExecutionContext())) {
+        script_type_ = ScriptTypeAtPrepare::kInvalid;
+        return false;
+      }
       break;
 
     case ScriptTypeAtPrepare::kClassic:
@@ -632,6 +646,17 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
             "External speculation rules are not yet supported."));
         return false;
 
+      case ScriptTypeAtPrepare::kWebBundle:
+        element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kError,
+            "External webbundle is not yet supported."));
+        element_document.GetTaskRunner(TaskType::kDOMManipulation)
+            ->PostTask(FROM_HERE,
+                       WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
+                                 WrapPersistent(element_.Get())));
+        return false;
+
       case ScriptTypeAtPrepare::kClassic: {
         // - "classic":
 
@@ -728,6 +753,18 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         // map` synchronously here.
         pending_import_map->RegisterImportMap();
 
+        return false;
+      }
+      case ScriptTypeAtPrepare::kWebBundle: {
+        DCHECK(RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
+            context_window));
+        DCHECK(!script_web_bundle_);
+
+        script_web_bundle_ =
+            ScriptWebBundle::CreateOrReuseInline(element_document, source_text);
+        if (!script_web_bundle_) {
+          element_->DispatchErrorEvent();
+        }
         return false;
       }
 
@@ -1123,6 +1160,13 @@ String ScriptLoader::GetScriptText() const {
   return GetStringForScriptExecution(child_text_content,
                                      element_->GetScriptElementType(),
                                      element_->GetExecutionContext());
+}
+
+void ScriptLoader::ReleaseWebBundleResource() {
+  if (!script_web_bundle_)
+    return;
+  script_web_bundle_->WillReleaseBundleLoaderAndUnregister();
+  script_web_bundle_ = nullptr;
 }
 
 }  // namespace blink

@@ -9,5 +9,6 @@
     "importmap",
     "module",
     "speculationrules",
+    "webbundle",
   ],
 }

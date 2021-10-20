@@ -1364,6 +1364,7 @@ source_set("unit_tests") {
     "loader/threadable_loader_test.cc",
     "loader/threaded_icon_loader_test.cc",
     "loader/web_associated_url_loader_impl_test.cc",
+    "loader/web_bundle/script_web_bundle_rule_test.cc",
     "messaging/blink_transferable_message_mojom_traits_test.cc",
     "messaging/message_port_descriptor_mojom_traits_test.cc",
     "mobile_metrics/mobile_friendliness_checker_test.cc",

@@ -124,6 +124,11 @@ Node::InsertionNotificationRequest HTMLScriptElement::InsertedInto(
   return kInsertionShouldCallDidNotifySubtreeInsertions;
 }
 
+void HTMLScriptElement::RemovedFrom(ContainerNode& insertion_point) {
+  HTMLElement::RemovedFrom(insertion_point);
+  loader_->ReleaseWebBundleResource();
+}
+
 void HTMLScriptElement::DidNotifySubtreeInsertionsToDocument() {
   loader_->DidNotifySubtreeInsertionsToDocument();
 }
@@ -330,6 +335,10 @@ bool HTMLScriptElement::supports(ScriptState* script_state,
 
   if ((type == script_type_names::kSpeculationrules) &&
       RuntimeEnabledFeatures::SpeculationRulesEnabled(execution_context)) {
+    return true;
+  }
+  if ((type == script_type_names::kWebbundle) &&
+      RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(execution_context)) {
     return true;
   }
 

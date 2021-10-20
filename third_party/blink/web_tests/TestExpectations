@@ -4460,26 +4460,17 @@ crbug.com/1052642 external/wpt/service-workers/service-worker/unregister-immedia
 
 # known bug of SubresourceWebBundles
 crbug.com/1244483 external/wpt/web-bundle/subresource-loading/link-non-utf8-query-encoding-encoded-src.https.tentative.html [ Failure ]
-# <script type=webbundle> is not implemented
+# <script type=webbundle> is under development
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-accept-header.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-coep.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-corp.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-element-removal.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-nested-bundle.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-network-error.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-not-found.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-path-restriction.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-relative-url-in-web-bundle-cors.https.tentative.sub.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-relative-url-in-web-bundle.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-relative-url.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-relative-url-with-base.https.tentative.html [ Skip ]
+crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-relative-url.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-request-destination.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-resource-timing-attributes-consistent.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-resource-timing.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-service-worker-controlled.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-static-element.https.tentative.sub.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-static-element-with-base.https.tentative.sub.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-subframe-from-web-bundle.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-subresource-load.https.tentative.sub.html [ Skip ]
 
 # Sheriff failures 2017-07-03
