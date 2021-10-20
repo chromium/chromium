@@ -41,7 +41,6 @@ void EcheSignaler::TearDownSignaling() {
   proto::ExoMessage message;
   *message.mutable_action() = std::move(action);
   eche_connector_->SendMessage(message.SerializeAsString());
-  eche_connector_->Disconnect();
 }
 
 void EcheSignaler::Bind(

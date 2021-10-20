@@ -32,17 +32,17 @@ class FakeObserver : public EcheMessageReceiver::Observer {
   }
 
   // EcheMessageReceiver::Observer:
-  void onGetAppsAccessStateResponseReceived(
+  void OnGetAppsAccessStateResponseReceived(
       proto::GetAppsAccessStateResponse apps_access_state_response) override {
     last_apps_access_state_response_ = apps_access_state_response;
     ++apps_access_state_response_num_calls_;
   }
-
-  void onSendAppsSetupResponseReceived(
+  void OnSendAppsSetupResponseReceived(
       proto::SendAppsSetupResponse apps_setup_response) override {
     last_apps_setup_reponse_ = apps_setup_response;
     ++apps_setup_response_;
   }
+  void OnStatusChange(proto::StatusChangeType status_change_type) override {}
 
  private:
   size_t apps_access_state_response_num_calls_ = 0;

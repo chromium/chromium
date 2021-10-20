@@ -19,12 +19,14 @@ class EcheMessageReceiver {
     ~Observer() override = default;
 
     // Called when the apps access state response sent by the remote phone.
-    virtual void onGetAppsAccessStateResponseReceived(
+    virtual void OnGetAppsAccessStateResponseReceived(
         proto::GetAppsAccessStateResponse apps_access_state_response) = 0;
 
     // Called when the apps setup response sent by the remote phone.
-    virtual void onSendAppsSetupResponseReceived(
+    virtual void OnSendAppsSetupResponseReceived(
         proto::SendAppsSetupResponse apps_setup_response) = 0;
+
+    virtual void OnStatusChange(proto::StatusChangeType status_change_type) = 0;
   };
 
   EcheMessageReceiver(const EcheMessageReceiver&) = delete;
@@ -40,6 +42,7 @@ class EcheMessageReceiver {
       proto::GetAppsAccessStateResponse apps_access_state_response);
   void NotifySendAppsSetupResponse(
       proto::SendAppsSetupResponse apps_setup_response);
+  void NotifyStatusChange(proto::StatusChange status_change);
 
  private:
   friend class FakeEcheMessageReceiver;

@@ -68,12 +68,15 @@ EcheAppManager::EcheAppManager(
                                               connection_manager_.get())),
       signaler_(std::make_unique<EcheSignaler>(eche_connector_.get(),
                                                connection_manager_.get())),
+      message_receiver_(
+          std::make_unique<EcheMessageReceiverImpl>(connection_manager_.get())),
       eche_presence_manager_(std::make_unique<EchePresenceManager>(
           feature_status_provider_.get(),
           device_sync_client,
           multidevice_setup_client,
           std::move(presence_monitor_client),
-          eche_connector_.get())),
+          eche_connector_.get(),
+          message_receiver_.get())),
       uid_(std::make_unique<EcheUidProvider>(pref_service)),
       eche_recent_app_click_handler_(
           std::make_unique<EcheRecentAppClickHandler>(
@@ -81,9 +84,7 @@ EcheAppManager::EcheAppManager(
               feature_status_provider_.get(),
               launch_app_helper_.get())),
       notification_generator_(std::make_unique<EcheNotificationGenerator>(
-          launch_app_helper_.get())),
-      message_receiver_(std::make_unique<EcheMessageReceiverImpl>(
-          connection_manager_.get())) {
+          launch_app_helper_.get())) {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(
@@ -116,11 +117,11 @@ void EcheAppManager::BindNotificationGeneratorInterface(
 // are initialized in the constructor.
 void EcheAppManager::Shutdown() {
   system_info_provider_.reset();
-  message_receiver_.reset();
   notification_generator_.reset();
   eche_recent_app_click_handler_.reset();
   uid_.reset();
   eche_presence_manager_.reset();
+  message_receiver_.reset();
   signaler_.reset();
   eche_connector_.reset();
   eche_notification_click_handler_.reset();

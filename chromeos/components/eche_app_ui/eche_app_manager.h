@@ -91,6 +91,7 @@ class EcheAppManager : public KeyedService {
       eche_notification_click_handler_;
   std::unique_ptr<EcheConnector> eche_connector_;
   std::unique_ptr<EcheSignaler> signaler_;
+  std::unique_ptr<EcheMessageReceiver> message_receiver_;
   std::unique_ptr<EchePresenceManager> eche_presence_manager_;
   std::unique_ptr<EcheUidProvider> uid_;
   std::unique_ptr<EcheRecentAppClickHandler> eche_recent_app_click_handler_;
@@ -98,7 +99,6 @@ class EcheAppManager : public KeyedService {
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
-  std::unique_ptr<EcheMessageReceiver> message_receiver_;
 };
 
 }  // namespace eche_app

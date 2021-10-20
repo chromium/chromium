@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/eche_app_ui/eche_feature_status_provider.h"
+#include "chromeos/components/eche_app_ui/eche_message_receiver.h"
 #include "chromeos/components/eche_app_ui/feature_status_provider.h"
 
 namespace chromeos {
@@ -37,7 +38,8 @@ namespace eche_app {
 class EcheConnector;
 
 // Control presence monitoring and the sending of keepalives.
-class EchePresenceManager : public FeatureStatusProvider::Observer {
+class EchePresenceManager : public FeatureStatusProvider::Observer,
+                            public EcheMessageReceiver::Observer {
  public:
   EchePresenceManager(
       EcheFeatureStatusProvider* eche_feature_status_provider,
@@ -45,7 +47,8 @@ class EchePresenceManager : public FeatureStatusProvider::Observer {
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       std::unique_ptr<secure_channel::PresenceMonitorClient>
           presence_monitor_client,
-      EcheConnector* eche_connector);
+      EcheConnector* eche_connector,
+      EcheMessageReceiver* eche_message_receiver);
   ~EchePresenceManager() override;
 
   EchePresenceManager(const EchePresenceManager&) = delete;
@@ -54,6 +57,12 @@ class EchePresenceManager : public FeatureStatusProvider::Observer {
  private:
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
+  // EcheMessageReceiver::Observer:
+  void OnStatusChange(proto::StatusChangeType status_change_type) override;
+  void OnSendAppsSetupResponseReceived(
+      proto::SendAppsSetupResponse apps_setup_response) override {}
+  void OnGetAppsAccessStateResponseReceived(
+      proto::GetAppsAccessStateResponse apps_access_state_response) override {}
 
   void OnReady();
   void OnDeviceSeen();
@@ -69,8 +78,10 @@ class EchePresenceManager : public FeatureStatusProvider::Observer {
   std::unique_ptr<secure_channel::PresenceMonitorClient>
       presence_monitor_client_;
   EcheConnector* eche_connector_;
+  EcheMessageReceiver* eche_message_receiver_;
   base::RepeatingTimer timer_;
 
+  bool stream_running_ = false;
   bool is_monitoring_ = false;
   base::TimeTicks device_last_seen_time_;
 

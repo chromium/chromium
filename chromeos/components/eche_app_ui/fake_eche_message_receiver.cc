@@ -28,5 +28,12 @@ void FakeEcheMessageReceiver::FakeSendAppsSetupResponse(
   NotifySendAppsSetupResponse(response);
 }
 
+void FakeEcheMessageReceiver::FakeStatusChange(
+    proto::StatusChangeType status_change_type) {
+  proto::StatusChange status_change;
+  status_change.set_type(status_change_type);
+  NotifyStatusChange(status_change);
+}
+
 }  // namespace eche_app
 }  // namespace chromeos

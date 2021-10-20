@@ -15,14 +15,16 @@ class FakeEcheMessageReceiver : public EcheMessageReceiver {
   FakeEcheMessageReceiver();
   ~FakeEcheMessageReceiver() override;
 
-  void FakeGetAppsAccessStateResponse(eche_app::proto::Result result,
-                                      eche_app::proto::AppsAccessState status);
-  void FakeSendAppsSetupResponse(eche_app::proto::Result result,
-                                 eche_app::proto::AppsAccessState status);
+  void FakeGetAppsAccessStateResponse(proto::Result result,
+                                      proto::AppsAccessState status);
+  void FakeSendAppsSetupResponse(proto::Result result,
+                                 proto::AppsAccessState status);
+  void FakeStatusChange(proto::StatusChangeType status_change_type);
 
  private:
   using EcheMessageReceiver::NotifyGetAppsAccessStateResponse;
   using EcheMessageReceiver::NotifySendAppsSetupResponse;
+  using EcheMessageReceiver::NotifyStatusChange;
 };
 
 }  // namespace eche_app

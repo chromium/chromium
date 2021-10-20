@@ -30,13 +30,16 @@ EchePresenceManager::EchePresenceManager(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     std::unique_ptr<secure_channel::PresenceMonitorClient>
         presence_monitor_client,
-    EcheConnector* eche_connector)
+    EcheConnector* eche_connector,
+    EcheMessageReceiver* eche_message_receiver)
     : eche_feature_status_provider_(eche_feature_status_provider),
       device_sync_client_(device_sync_client),
       multidevice_setup_client_(multidevice_setup_client),
       presence_monitor_client_(std::move(presence_monitor_client)),
-      eche_connector_(eche_connector) {
+      eche_connector_(eche_connector),
+      eche_message_receiver_(eche_message_receiver) {
   eche_feature_status_provider_->AddObserver(this);
+  eche_message_receiver_->AddObserver(this);
   presence_monitor_client_->SetPresenceMonitorCallbacks(
       base::BindRepeating(&EchePresenceManager::OnReady,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -49,6 +52,14 @@ EchePresenceManager::~EchePresenceManager() {
 }
 
 void EchePresenceManager::OnFeatureStatusChanged() {
+  UpdateMonitoringStatus();
+}
+
+void EchePresenceManager::OnStatusChange(
+    proto::StatusChangeType status_change_type) {
+  PA_LOG(INFO) << "Stream status changed";
+  stream_running_ =
+      status_change_type == proto::StatusChangeType::TYPE_STREAM_START;
   UpdateMonitoringStatus();
 }
 
@@ -69,13 +80,18 @@ void EchePresenceManager::UpdateMonitoringStatus() {
     case FeatureStatus::kDependentFeaturePending:
       ABSL_FALLTHROUGH_INTENDED;
     case FeatureStatus::kDisconnected:
+      stream_running_ = false;
       ABSL_FALLTHROUGH_INTENDED;
     case FeatureStatus::kConnecting:
       StopMonitoring();
       break;
 
     case FeatureStatus::kConnected:
-      StartMonitoring();
+      if (stream_running_) {
+        StartMonitoring();
+      } else {
+        StopMonitoring();
+      }
       break;
   }
 }
