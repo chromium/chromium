@@ -11,7 +11,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -42,7 +41,6 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 /**
  * Tests FirstRunFlowSequencer which contains the core logic of what should be shown during the
@@ -64,17 +62,7 @@ public class FirstRunFlowSequencerTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeAccountManagerFacade() {
-                @Override
-                public void checkChildAccountStatus(
-                        Account account, ChildAccountStatusListener listener) {
-                    boolean accountIsChild = account.name.equals(CHILD_ACCOUNT);
-                    listener.onStatusReady(accountIsChild ? ChildAccountStatus.REGULAR_CHILD
-                                                          : ChildAccountStatus.NOT_CHILD,
-                            accountIsChild ? account : null);
-                }
-            });
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     /**
      * Testing version of FirstRunFlowSequencer that allows us to override all needed checks.

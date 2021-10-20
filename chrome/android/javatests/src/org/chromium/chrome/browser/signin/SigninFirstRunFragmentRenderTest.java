@@ -40,9 +40,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -55,19 +53,8 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SigninFirstRunFragmentRenderTest {
     private static final String TEST_EMAIL1 = "test.account1@gmail.com";
-    private static final String CHILD_EMAIL = "child.account@gmail.com";
-
-    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            new FakeAccountManagerFacade() {
-                @Override
-                public void checkChildAccountStatus(
-                        Account account, ChildAccountStatusListener listener) {
-                    listener.onStatusReady(account.name.equals(CHILD_EMAIL)
-                                    ? ChildAccountStatus.REGULAR_CHILD
-                                    : ChildAccountStatus.NOT_CHILD,
-                            account);
-                }
-            };
+    private static final Account CHILD_ACCOUNT =
+            AccountManagerTestRule.createChildAccount("account@gmail.com");
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -77,7 +64,7 @@ public class SigninFirstRunFragmentRenderTest {
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeAccountManagerFacade, new FakeAccountInfoService());
+            new AccountManagerTestRule(new FakeAccountInfoService());
 
     @Rule
     public final ChromeTabbedActivityTestRule mChromeActivityTestRule =
@@ -214,7 +201,7 @@ public class SigninFirstRunFragmentRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testFragmentWithChildAccount(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccountWithNameAndAvatar(CHILD_EMAIL);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
 
         launchActivityWithFragment();
 

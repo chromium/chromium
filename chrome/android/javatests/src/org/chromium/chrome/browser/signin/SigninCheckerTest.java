@@ -35,10 +35,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountRenameChecker;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 /**
  * This class tests the sign-in checks done at Chrome start-up or when accounts
@@ -48,23 +46,14 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.LOLLIPOP_MR1)
 public class SigninCheckerTest {
-    private static final String CHILD_ACCOUNT_EMAIL = "child.account@gmail.com";
+    private static final Account CHILD_ACCOUNT =
+            AccountManagerTestRule.createChildAccount("test@gmail.com");
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeAccountManagerFacade() {
-                @Override
-                public void checkChildAccountStatus(
-                        Account account, ChildAccountStatusListener listener) {
-                    listener.onStatusReady(CHILD_ACCOUNT_EMAIL.equals(account.name)
-                                    ? ChildAccountStatus.REGULAR_CHILD
-                                    : ChildAccountStatus.NOT_CHILD,
-                            account);
-                }
-            });
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
@@ -168,7 +157,7 @@ public class SigninCheckerTest {
         UserActionTester actionTester = new UserActionTester();
 
         final CoreAccountInfo expectedPrimaryAccount =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_EMAIL);
+                mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT.name);
 
         CriteriaHelper.pollUiThread(() -> {
             return expectedPrimaryAccount.equals(
@@ -188,7 +177,7 @@ public class SigninCheckerTest {
         when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
 
-        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT.name);
 
         // The check should be done twice, once at activity start-up, the other when account
         // is added.
@@ -204,7 +193,7 @@ public class SigninCheckerTest {
     @MediumTest
     public void noSigninWhenChildAccountIsTheSecondaryAccount() {
         mAccountManagerTestRule.addAccount("the.default.account@gmail.com");
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
 
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
@@ -221,7 +210,7 @@ public class SigninCheckerTest {
     @Test
     @MediumTest
     public void noSigninWhenChildAccountIsNotTheOnlyAccount() {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
         mAccountManagerTestRule.addAccount("the.second.account@gmail.com");
 
         mActivityTestRule.startMainActivityOnBlankPage();

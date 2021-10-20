@@ -19,7 +19,9 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.ChildAccountStatus;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -32,6 +34,11 @@ import java.util.UUID;
  * for testing.
  */
 public class FakeAccountManagerFacade implements AccountManagerFacade {
+    /**
+     * All the account names starting with this prefix will be considered as
+     * {@link ChildAccountStatus#REGULAR_CHILD} in {@link FakeAccountManagerFacade}.
+     */
+    private static final String CHILD_ACCOUNT_NAME_PREFIX = "child.";
     private final Object mLock = new Object();
 
     @GuardedBy("mLock")
@@ -96,7 +103,13 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {}
+    public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
+        if (account.name.startsWith(CHILD_ACCOUNT_NAME_PREFIX)) {
+            listener.onStatusReady(ChildAccountStatus.REGULAR_CHILD, account);
+        } else {
+            listener.onStatusReady(ChildAccountStatus.NOT_CHILD, /*childAccount=*/null);
+        }
+    }
 
     @Override
     public Optional<Boolean> canOfferExtendedSyncPromos(Account account) {
@@ -147,6 +160,16 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      */
     public static String toGaiaId(String email) {
         return "gaia-id-" + email.replace("@", "_at_");
+    }
+
+    /**
+     * Creates a child account.
+     * A child-specific prefix will be appended to the base name so that the created account
+     * will be considered as {@link ChildAccountStatus#REGULAR_CHILD} in
+     * {@link FakeAccountManagerFacade}.
+     */
+    public static Account createChildAccount(String baseName) {
+        return AccountUtils.createAccountFromName(CHILD_ACCOUNT_NAME_PREFIX + baseName);
     }
 
     @GuardedBy("mLock")

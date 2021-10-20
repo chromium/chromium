@@ -12,7 +12,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.content.Intent;
 import android.support.test.runner.lifecycle.Stage;
 
@@ -38,8 +37,6 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.ChildAccountStatus;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -54,21 +51,8 @@ public class FirstRunActivitySigninAndSyncTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            new FakeAccountManagerFacade() {
-                @Override
-                public void checkChildAccountStatus(
-                        Account account, ChildAccountStatusListener listener) {
-                    boolean accountIsChild = account.name.equals(CHILD_EMAIL);
-                    listener.onStatusReady(accountIsChild ? ChildAccountStatus.REGULAR_CHILD
-                                                          : ChildAccountStatus.NOT_CHILD,
-                            accountIsChild ? account : null);
-                }
-            };
-
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeAccountManagerFacade);
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Rule
     public final BaseActivityTestRule<FirstRunActivity> mFirstRunActivityRule =

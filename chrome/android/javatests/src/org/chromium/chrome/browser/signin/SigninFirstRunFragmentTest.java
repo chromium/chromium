@@ -68,16 +68,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests for the class {@link SigninFirstRunFragment}.
- */
+/** Tests for the class {@link SigninFirstRunFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SigninFirstRunFragmentTest {
@@ -85,7 +81,8 @@ public class SigninFirstRunFragmentTest {
     private static final String FULL_NAME1 = "Test Account1";
     private static final String GIVEN_NAME1 = "Account1";
     private static final String TEST_EMAIL2 = "test.account2@gmail.com";
-    private static final String CHILD_EMAIL = "child.account@gmail.com";
+    private static final Account CHILD_ACCOUNT =
+            AccountManagerTestRule.createChildAccount("account@gmail.com");
     private static final String CHILD_FULL_NAME = "Test Child";
 
     /**
@@ -111,24 +108,12 @@ public class SigninFirstRunFragmentTest {
         }
     }
 
-    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            new FakeAccountManagerFacade() {
-                @Override
-                public void checkChildAccountStatus(
-                        Account account, ChildAccountStatusListener listener) {
-                    listener.onStatusReady(account.name.equals(CHILD_EMAIL)
-                                    ? ChildAccountStatus.REGULAR_CHILD
-                                    : ChildAccountStatus.NOT_CHILD,
-                            account);
-                }
-            };
-
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeAccountManagerFacade, new FakeAccountInfoService());
+            new AccountManagerTestRule(new FakeAccountInfoService());
 
     @Rule
     public final ChromeTabbedActivityTestRule mChromeActivityTestRule =
@@ -187,7 +172,7 @@ public class SigninFirstRunFragmentTest {
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
 
         mAccountManagerTestRule.addAccount(
-                CHILD_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+                CHILD_ACCOUNT.name, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
 
         checkFragmentWithChildAccount();
     }
@@ -196,11 +181,11 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     public void testFragmentWhenRemovingChildAccountDynamically() {
         mAccountManagerTestRule.addAccount(
-                CHILD_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+                CHILD_ACCOUNT.name, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         launchActivityWithFragment();
 
-        mAccountManagerTestRule.removeAccount(CHILD_EMAIL);
+        mAccountManagerTestRule.removeAccount(CHILD_ACCOUNT.name);
 
         CriteriaHelper.pollUiThread(() -> {
             return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
@@ -341,7 +326,7 @@ public class SigninFirstRunFragmentTest {
     public void testFragmentWithChildAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(
-                CHILD_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+                CHILD_ACCOUNT.name, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
 
         launchActivityWithFragment();
 
@@ -433,7 +418,7 @@ public class SigninFirstRunFragmentTest {
     public void testContinueButtonWithChildAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(
-                CHILD_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+                CHILD_ACCOUNT.name, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
         launchActivityWithFragment();
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
                 R.string.signin_promo_continue_as, CHILD_FULL_NAME);
@@ -651,7 +636,7 @@ public class SigninFirstRunFragmentTest {
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
         Assert.assertFalse(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account).isEnabled());
-        onView(withText(CHILD_EMAIL)).check(matches(isDisplayed()));
+        onView(withText(CHILD_ACCOUNT.name)).check(matches(isDisplayed()));
         onView(withText(CHILD_FULL_NAME)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_selected_account_expand_icon))
                 .check(matches(not(isDisplayed())));

@@ -26,23 +26,15 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountUtilsTest {
     private static final Account CHILD_ACCOUNT1 =
-            AccountUtils.createAccountFromName("child.account1@gmail.com");
+            FakeAccountManagerFacade.createChildAccount("account1@gmail.com");
     private static final Account CHILD_ACCOUNT2 =
-            AccountUtils.createAccountFromName("child.account2@gmail.com");
+            FakeAccountManagerFacade.createChildAccount("account2@gmail.com");
     private static final Account ADULT_ACCOUNT1 =
             AccountUtils.createAccountFromName("adult.account1@gmail.com");
     private static final Account ADULT_ACCOUNT2 =
             AccountUtils.createAccountFromName("adult.account2@gmail.com");
 
-    private final FakeAccountManagerFacade mFakeFacade = new FakeAccountManagerFacade() {
-        @Override
-        public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
-            listener.onStatusReady(account.name.startsWith("child")
-                            ? ChildAccountStatus.REGULAR_CHILD
-                            : ChildAccountStatus.NOT_CHILD,
-                    account.name.startsWith("child") ? account : null);
-        }
-    };
+    private final FakeAccountManagerFacade mFakeFacade = new FakeAccountManagerFacade();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();

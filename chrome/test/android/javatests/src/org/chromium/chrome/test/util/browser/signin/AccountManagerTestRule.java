@@ -21,6 +21,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -252,6 +253,16 @@ public class AccountManagerTestRule implements TestRule {
     public void signOut() {
         SigninTestUtil.signOut();
         mIsSignedIn = false;
+    }
+
+    /**
+     * Creates a child account.
+     * A child-specific prefix will be appended to the base name so that the created account
+     * will be considered as {@link ChildAccountStatus#REGULAR_CHILD} in
+     * {@link FakeAccountManagerFacade}.
+     */
+    public static Account createChildAccount(String baseName) {
+        return FakeAccountManagerFacade.createChildAccount(baseName);
     }
 
     /**
