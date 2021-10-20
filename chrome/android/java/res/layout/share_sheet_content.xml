@@ -12,6 +12,7 @@
   android:orientation="vertical">
   <LinearLayout
       xmlns:tools="http://schemas.android.com/tools"
+      android:id="@+id/share_sheet_layout"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:minHeight="@dimen/min_touch_target_size"

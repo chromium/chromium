@@ -9,6 +9,7 @@
 
 namespace share {
 
+extern const base::Feature kSwapAndroidShareHubRows;
 extern const base::Feature kUpcomingSharingFeatures;
 
 bool AreUpcomingSharingFeaturesEnabled();

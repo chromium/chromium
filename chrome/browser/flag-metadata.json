@@ -5119,6 +5119,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "swap-android-share-hub-rows",
+    "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "sync-autofill-wallet-offer-data",
     "owners": ["siyua", "treib"],
     "expiry_milestone": 100

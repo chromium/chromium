@@ -7556,6 +7556,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShareUsageRankingFixedMoreName,
      flag_descriptions::kShareUsageRankingFixedMoreDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kShareUsageRankingFixedMore)},
+    {"swap-android-share-hub-rows",
+     flag_descriptions::kSwapAndroidShareHubRowsName,
+     flag_descriptions::kSwapAndroidShareHubRowsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(share::kSwapAndroidShareHubRows)},
 #endif
 
 #if !defined(OS_ANDROID)

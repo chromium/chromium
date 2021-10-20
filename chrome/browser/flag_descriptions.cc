@@ -3467,6 +3467,10 @@ const char kShareUsageRankingFixedMoreDescription[] =
     "When enabled with #share-usage-ranking, forces the 'More' option to "
     "occupy the right-most slot on the screen instead of moving depending on "
     "the length of the target list.";
+const char kSwapAndroidShareHubRowsName[] = "Swap Android share hub rows.";
+const char kSwapAndroidShareHubRowsDescription[] =
+    "Swap the order of the first-party and third-party rows in the Android "
+    "share hub.";
 
 const char kRequestDesktopSiteForTabletsName[] =
     "Request desktop site for tablets on Android";
