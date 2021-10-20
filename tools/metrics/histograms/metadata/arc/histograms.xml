@@ -157,7 +157,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Arc.AdbSideloadingEnablingScreen"
     enum="AdbSideloadingPromptEvent" expires_after="2022-05-01">
-  <owner>victorhsieh@chromium.org</owner>
+  <owner>vraheja@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     Record user's choice or error during ADB sideloading opt-in UI after reboot.
