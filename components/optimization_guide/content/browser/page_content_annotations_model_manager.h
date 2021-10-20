@@ -6,9 +6,13 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 
 #include "components/history/core/browser/url_row.h"
+#include "components/optimization_guide/content/browser/page_content_annotation_job.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_common.h"
+#include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/bert_model_executor.h"
 #include "components/optimization_guide/core/entity_metadata.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
+#include "net/base/priority_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
@@ -26,13 +30,11 @@ using EntityMetadataRetrievedCallback =
     base::OnceCallback<void(const absl::optional<EntityMetadata>&)>;
 
 // Manages the loading and execution of models used to annotate page content.
-//
-// TODO(crbug/1249632): Implement |PageContentAnnotator|.
-class PageContentAnnotationsModelManager {
+class PageContentAnnotationsModelManager : public PageContentAnnotator {
  public:
   explicit PageContentAnnotationsModelManager(
       OptimizationGuideModelProvider* optimization_guide_model_provider);
-  ~PageContentAnnotationsModelManager();
+  ~PageContentAnnotationsModelManager() override;
   PageContentAnnotationsModelManager(
       const PageContentAnnotationsModelManager&) = delete;
   PageContentAnnotationsModelManager& operator=(
@@ -41,8 +43,15 @@ class PageContentAnnotationsModelManager {
   // Requests to annotate |text|, will invoke |callback| when completed.
   //
   // This will execute all supported models based on the models_to_execute
-  // param on the PageContentAnnotationsService feature.
+  // param on the PageContentAnnotationsService feature and is only used by the
+  // History service code path. See the below |Annotate| for the publicly
+  // available Annotation code path.
   void Annotate(const std::string& text, PageContentAnnotatedCallback callback);
+
+  // PageContentAnnotator:
+  void Annotate(BatchAnnotationCallback callback,
+                const std::vector<std::string>& inputs,
+                AnnotationType annotation_type) override;
 
   // Returns the version of the page topics model that is currently being used
   // to annotate page content. Will return |absl::nullopt| if no model is being
@@ -56,6 +65,33 @@ class PageContentAnnotationsModelManager {
 
  private:
   friend class PageContentAnnotationsModelManagerTest;
+
+  // The supported priorities of jobs in |job_queue_|. Higher values correspond
+  // to higher priorities (that is, more urgent).
+  //
+  // These values are not persisted anywhere and may be changed in code at any
+  // time.
+  enum class JobPriority {
+    kUnknown = 0,
+
+    // All publicly posted jobs will have this priority level.
+    kNormal = 1,
+
+    // TODO(crbug/1249632): Add a kHigh value for internal jobs.
+
+    // Always keep this last and as the highest priority + 1. This value is
+    // passed to the priority queue ctor as "how many level of priorities are
+    // supported" by the queue.
+    kCount = 2,
+  };
+
+  // Enumerated state machine of job execution.
+  enum class JobExecutionState {
+    kUnknown = 0,
+    kIdle = 1,
+    kRunning = 2,
+    kComplete = 3,
+  };
 
   // Runs the next model on |text| based on |current_model_index|. If the
   // last model in |ordered_models_to_execute_| has executed, it will invoke
@@ -149,6 +185,12 @@ class PageContentAnnotationsModelManager {
   void OverridePageEntitiesModelExecutorForTesting(
       std::unique_ptr<PageEntitiesModelExecutor> page_entities_model_executor);
 
+  // Runs the next job in |job_queue_| if there is any.
+  void MaybeStartNextAnnotationJob();
+
+  // Called when a job finishes executing.
+  void OnJobExecutionComplete();
+
   // The model executor responsible for executing the page topics model.
   //
   // Can be nullptr if the page topics model will not be running for the
@@ -163,6 +205,15 @@ class PageContentAnnotationsModelManager {
 
   // The ordering of models to execute on the page content of each page load.
   std::vector<proto::OptimizationTarget> ordered_models_to_execute_;
+
+  // The queue of all jobs to be executed. This data structure supports FIFO
+  // ordering for elements of the same priority.
+  using JobQueue =
+      net::PriorityQueue<std::unique_ptr<PageContentAnnotationJob>>;
+  JobQueue job_queue_{static_cast<size_t>(JobPriority::kCount)};
+
+  // The current state of the running job, if any.
+  JobExecutionState job_state_ = JobExecutionState::kIdle;
 
   base::WeakPtrFactory<PageContentAnnotationsModelManager> weak_ptr_factory_{
       this};

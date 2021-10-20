@@ -13,6 +13,8 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/page_entities_model_executor.h"
 #include "components/optimization_guide/optimization_guide_buildflags.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #include "components/optimization_guide/internal/page_entities_model_executor_impl.h"
@@ -43,6 +45,18 @@ GetOrCreateCurrentContentModelAnnotations(
   if (current_annotations)
     return current_annotations;
   return std::make_unique<history::VisitContentModelAnnotations>();
+}
+
+void PretendToExecuteJob(base::OnceClosure callback,
+                         std::unique_ptr<PageContentAnnotationJob> job) {
+  while (absl::optional<std::string> input = job->GetNextInput()) {
+    job->PostNewResult(BatchAnnotationResult::CreatePageTopicsResult(
+        *input, ExecutionStatus::kErrorInternalError, absl::nullopt));
+  }
+  // Note to future self: The ordering of these callbacks being run will be
+  // important once actually being run on an executor.
+  job->OnComplete();
+  std::move(callback).Run();
 }
 
 }  // namespace
@@ -436,6 +450,52 @@ void PageContentAnnotationsModelManager::
   }
   DCHECK_LE(final_categories.size(), max_categories);
   out_content_annotations->categories = final_categories;
+}
+
+void PageContentAnnotationsModelManager::Annotate(
+    BatchAnnotationCallback callback,
+    const std::vector<std::string>& inputs,
+    AnnotationType annotation_type) {
+  std::unique_ptr<PageContentAnnotationJob> job =
+      std::make_unique<PageContentAnnotationJob>(std::move(callback), inputs,
+                                                 annotation_type);
+  job_queue_.Insert(std::move(job), static_cast<size_t>(JobPriority::kNormal));
+
+  MaybeStartNextAnnotationJob();
+}
+
+void PageContentAnnotationsModelManager::OnJobExecutionComplete() {
+  DCHECK_EQ(job_state_, JobExecutionState::kRunning);
+  job_state_ = JobExecutionState::kComplete;
+
+  MaybeStartNextAnnotationJob();
+}
+
+void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
+  if (job_state_ == JobExecutionState::kRunning) {
+    return;
+  }
+
+  JobQueue::Pointer job_ptr = job_queue_.FirstMax();
+  if (job_ptr.is_null()) {
+    return;
+  }
+
+  DCHECK(job_state_ == JobExecutionState::kIdle ||
+         job_state_ == JobExecutionState::kComplete);
+  job_state_ = JobExecutionState::kRunning;
+
+  std::unique_ptr<PageContentAnnotationJob> job = job_queue_.Erase(job_ptr);
+
+  base::OnceClosure on_complete_callback = base::BindOnce(
+      &PageContentAnnotationsModelManager::OnJobExecutionComplete,
+      weak_ptr_factory_.GetWeakPtr());
+
+  // TODO(crbug/1249632): Actually run the model instead.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PretendToExecuteJob, std::move(on_complete_callback),
+                     std::move(job)));
 }
 
 }  // namespace optimization_guide

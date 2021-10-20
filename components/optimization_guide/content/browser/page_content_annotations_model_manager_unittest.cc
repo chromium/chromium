@@ -454,6 +454,128 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   EXPECT_FALSE(GetMetadataForEntityId("someid").has_value());
 }
 
+TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageTopics) {
+  base::RunLoop run_loop;
+  std::vector<BatchAnnotationResult> result;
+  BatchAnnotationCallback callback = base::BindOnce(
+      [](base::RunLoop* run_loop,
+         std::vector<BatchAnnotationResult>* out_result,
+         const std::vector<BatchAnnotationResult>& in_result) {
+        *out_result = in_result;
+        run_loop->Quit();
+      },
+      &run_loop, &result);
+
+  model_manager()->Annotate(std::move(callback), {"input"},
+                            AnnotationType::kPageTopics);
+  run_loop.Run();
+
+  // TODO(crbug/1249632): Check the corresponding output once the model is being
+  // run.
+  ASSERT_EQ(result.size(), 1U);
+  EXPECT_EQ(result[0].input(), "input");
+  EXPECT_EQ(result[0].topics(), absl::nullopt);
+  EXPECT_EQ(result[0].entities(), absl::nullopt);
+  EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
+  base::RunLoop run_loop;
+  std::vector<BatchAnnotationResult> result;
+  BatchAnnotationCallback callback = base::BindOnce(
+      [](base::RunLoop* run_loop,
+         std::vector<BatchAnnotationResult>* out_result,
+         const std::vector<BatchAnnotationResult>& in_result) {
+        *out_result = in_result;
+        run_loop->Quit();
+      },
+      &run_loop, &result);
+
+  model_manager()->Annotate(std::move(callback), {"input"},
+                            AnnotationType::kPageEntities);
+  run_loop.Run();
+
+  // TODO(crbug/1249632): Check the corresponding output once the model is being
+  // run.
+  ASSERT_EQ(result.size(), 1U);
+  EXPECT_EQ(result[0].input(), "input");
+  EXPECT_EQ(result[0].topics(), absl::nullopt);
+  EXPECT_EQ(result[0].entities(), absl::nullopt);
+  EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
+       BatchAnnotate_ContentVisibility) {
+  base::RunLoop run_loop;
+  std::vector<BatchAnnotationResult> result;
+  BatchAnnotationCallback callback = base::BindOnce(
+      [](base::RunLoop* run_loop,
+         std::vector<BatchAnnotationResult>* out_result,
+         const std::vector<BatchAnnotationResult>& in_result) {
+        *out_result = in_result;
+        run_loop->Quit();
+      },
+      &run_loop, &result);
+
+  model_manager()->Annotate(std::move(callback), {"input"},
+                            AnnotationType::kContentVisibility);
+  run_loop.Run();
+
+  // TODO(crbug/1249632): Check the corresponding output once the model is being
+  // run.
+  ASSERT_EQ(result.size(), 1U);
+  EXPECT_EQ(result[0].input(), "input");
+  EXPECT_EQ(result[0].topics(), absl::nullopt);
+  EXPECT_EQ(result[0].entities(), absl::nullopt);
+  EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_CalledTwice) {
+  base::RunLoop run_loop1;
+  std::vector<BatchAnnotationResult> result1;
+  BatchAnnotationCallback callback1 = base::BindOnce(
+      [](base::RunLoop* run_loop,
+         std::vector<BatchAnnotationResult>* out_result,
+         const std::vector<BatchAnnotationResult>& in_result) {
+        *out_result = in_result;
+        run_loop->Quit();
+      },
+      &run_loop1, &result1);
+
+  model_manager()->Annotate(std::move(callback1), {"input1"},
+                            AnnotationType::kPageTopics);
+
+  base::RunLoop run_loop2;
+  std::vector<BatchAnnotationResult> result2;
+  BatchAnnotationCallback callback2 = base::BindOnce(
+      [](base::RunLoop* run_loop,
+         std::vector<BatchAnnotationResult>* out_result,
+         const std::vector<BatchAnnotationResult>& in_result) {
+        *out_result = in_result;
+        run_loop->Quit();
+      },
+      &run_loop2, &result2);
+
+  model_manager()->Annotate(std::move(callback2), {"input2"},
+                            AnnotationType::kPageEntities);
+
+  run_loop1.Run();
+  run_loop2.Run();
+
+  // TODO(crbug/1249632): Check the corresponding output once the model is being
+  // run.
+  ASSERT_EQ(result1.size(), 1U);
+  EXPECT_EQ(result1[0].input(), "input1");
+  EXPECT_EQ(result1[0].topics(), absl::nullopt);
+  EXPECT_EQ(result1[0].entities(), absl::nullopt);
+  EXPECT_EQ(result1[0].visibility_score(), absl::nullopt);
+  ASSERT_EQ(result2.size(), 1U);
+  EXPECT_EQ(result2[0].input(), "input2");
+  EXPECT_EQ(result2[0].topics(), absl::nullopt);
+  EXPECT_EQ(result2[0].entities(), absl::nullopt);
+  EXPECT_EQ(result2[0].visibility_score(), absl::nullopt);
+}
+
 class PageContentAnnotationsModelManagerEntitiesOnlyTest
     : public PageContentAnnotationsModelManagerTest {
  public:
