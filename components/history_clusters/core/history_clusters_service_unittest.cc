@@ -155,9 +155,13 @@ class HistoryClustersServiceTest : public testing::Test {
 
   // Add an incomplete visit context annotations to the in memory incomplete
   // visit map. Does not touch the history database.
-  void AddIncompleteVisit(history::URLID url_id,
-                          history::VisitID visit_id,
-                          base::Time visit_time) {
+  void AddIncompleteVisit(
+      history::URLID url_id,
+      history::VisitID visit_id,
+      base::Time visit_time,
+      ui::PageTransition transition = ui::PageTransitionFromInt(
+          ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+          ui::PAGE_TRANSITION_CHAIN_END)) {
     // It's not possible to have an incomplete visit with URL or visit set but
     // not the other. The IDs must either both be 0 or both be non-zero.
     ASSERT_FALSE(url_id ^ visit_id);
@@ -167,6 +171,7 @@ class HistoryClustersServiceTest : public testing::Test {
     incomplete_visit_context_annotations.url_row.set_id(url_id);
     incomplete_visit_context_annotations.visit_row.visit_id = visit_id;
     incomplete_visit_context_annotations.visit_row.visit_time = visit_time;
+    incomplete_visit_context_annotations.visit_row.transition = transition;
     incomplete_visit_context_annotations.status.history_rows = url_id;
     next_navigation_id_++;
   }
@@ -389,7 +394,7 @@ TEST_F(HistoryClustersServiceTest, UnflattenDuplicatesUnitTest) {
 }
 
 TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
-  // Create persisted visits 1, 2, & 3.
+  // Create persisted visits 1, 2, 3.
   AddHardcodedTestDataToHistoryService();
 
   auto days_ago = [](int days) { return base::Time::Now() - base::Days(days); };
@@ -402,6 +407,11 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
   AddIncompleteVisit(7, 7, days_ago(93));  // Too old.
   AddIncompleteVisit(3, 3, days_ago(90));  // Visit 3 was added to the history
                                            // database with source synched.
+  AddIncompleteVisit(
+      10, 10, days_ago(1),
+      ui::PageTransitionFromInt(
+          805306372));  // Visit 10 was added to the history database with
+                        // a non-visible page transition.
 
   history_clusters_service_->QueryClusters(
       /*query=*/"", /*end_time=*/base::Time::Now(), /* max_count=*/0,

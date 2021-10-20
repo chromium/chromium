@@ -46,6 +46,15 @@ namespace history_clusters {
 
 namespace {
 
+// Is the transition user-visible.
+bool IsTransitionUserVisible(int32_t transition) {
+  ui::PageTransition page_transition = ui::PageTransitionFromInt(transition);
+  return (ui::PAGE_TRANSITION_CHAIN_END & transition) != 0 &&
+         ui::PageTransitionIsMainFrame(page_transition) &&
+         !ui::PageTransitionCoreTypeIs(page_transition,
+                                       ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+}
+
 // Gets persisted `AnnotatedVisit`s to cluster including both persisted visits
 // from the history DB and incomplete visits.
 // - We don't want incomplete visits to be mysteriously missing from the
@@ -154,6 +163,12 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
       if (base::Contains(annotated_visits_, visit_id, [](const auto& visit) {
             return visit.visit_row.visit_id;
           })) {
+        continue;
+      }
+
+      // Discard any incomplete visits that are not visible to the user.
+      if (!IsTransitionUserVisible(
+              incomplete_visit_context_annotations.visit_row.transition)) {
         continue;
       }
 
