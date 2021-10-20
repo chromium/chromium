@@ -36,24 +36,31 @@ class SkottieLogWriter : public skottie::Logger {
 
 // static
 scoped_refptr<SkottieWrapper> SkottieWrapper::CreateSerializable(
-    std::vector<uint8_t> data) {
+    std::vector<uint8_t> data,
+    sk_sp<skresources::ResourceProvider> resource_provider) {
   base::span<const uint8_t> data_span(data);
-  return base::WrapRefCounted<SkottieWrapper>(
-      new SkottieWrapper(data_span, std::move(data)));
+  return base::WrapRefCounted<SkottieWrapper>(new SkottieWrapper(
+      data_span, std::move(data), std::move(resource_provider)));
 }
 
 // static
 scoped_refptr<SkottieWrapper> SkottieWrapper::CreateNonSerializable(
-    base::span<const uint8_t> data) {
+    base::span<const uint8_t> data,
+    sk_sp<skresources::ResourceProvider> resource_provider) {
   return base::WrapRefCounted<SkottieWrapper>(
-      new SkottieWrapper(data, /*owned_data=*/std::vector<uint8_t>()));
+      new SkottieWrapper(data, /*owned_data=*/std::vector<uint8_t>(),
+                         std::move(resource_provider)));
 }
 
-SkottieWrapper::SkottieWrapper(base::span<const uint8_t> data,
-                               std::vector<uint8_t> owned_data)
+SkottieWrapper::SkottieWrapper(
+    base::span<const uint8_t> data,
+    std::vector<uint8_t> owned_data,
+    sk_sp<skresources::ResourceProvider> resource_provider)
     : animation_(
           skottie::Animation::Builder()
               .setLogger(sk_make_sp<SkottieLogWriter>())
+              .setResourceProvider(skresources::CachingResourceProvider::Make(
+                  std::move(resource_provider)))
               .make(reinterpret_cast<const char*>(data.data()), data.size())),
       raw_data_(std::move(owned_data)),
       id_(base::FastHash(data)) {}

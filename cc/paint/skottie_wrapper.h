@@ -12,7 +12,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "cc/paint/paint_export.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
+#include "third_party/skia/modules/skresources/include/SkResources.h"
 
 class SkCanvas;
 struct SkRect;
@@ -26,13 +28,18 @@ class CC_PAINT_EXPORT SkottieWrapper
     : public base::RefCountedThreadSafe<SkottieWrapper> {
  public:
   // Creates an instance that can be serialized for IPC. This uses additional
-  // memory to store the raw animation data.
+  // memory to store the raw animation data. A |resource_provider| must be
+  // provided if the animation might have assets embedded in it; if not nullptr
+  // is acceptable. The |resource_provider| will be invoked from the same thread
+  // on which the caller calls Create...() and Draw().
   static scoped_refptr<SkottieWrapper> CreateSerializable(
-      std::vector<uint8_t> data);
+      std::vector<uint8_t> data,
+      sk_sp<skresources::ResourceProvider> resource_provider = nullptr);
 
   // Creates a non serializable instance of the class. This uses less memory.
   static scoped_refptr<SkottieWrapper> CreateNonSerializable(
-      base::span<const uint8_t> data);
+      base::span<const uint8_t> data,
+      sk_sp<skresources::ResourceProvider> resource_provider = nullptr);
 
   SkottieWrapper(const SkottieWrapper&) = delete;
 
@@ -56,7 +63,8 @@ class CC_PAINT_EXPORT SkottieWrapper
   friend class base::RefCountedThreadSafe<SkottieWrapper>;
 
   SkottieWrapper(base::span<const uint8_t> data,
-                 std::vector<uint8_t> owned_data);
+                 std::vector<uint8_t> owned_data,
+                 sk_sp<skresources::ResourceProvider> resource_provider);
   ~SkottieWrapper();
 
   base::Lock lock_;
