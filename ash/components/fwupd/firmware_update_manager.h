@@ -15,6 +15,9 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager {
   FirmwareUpdateManager(const FirmwareUpdateManager&) = delete;
   FirmwareUpdateManager& operator=(const FirmwareUpdateManager&) = delete;
   ~FirmwareUpdateManager();
+
+  // Gets the global instance pointer.
+  static FirmwareUpdateManager* Get();
 };
 }  // namespace ash
 

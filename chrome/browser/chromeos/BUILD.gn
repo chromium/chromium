@@ -85,6 +85,7 @@ source_set("chromeos") {
     "//ash/components/drivefs",
     "//ash/components/drivefs/mojom",
     "//ash/components/enhanced_network_tts/mojom",
+    "//ash/components/fwupd",
     "//ash/components/geolocation",
     "//ash/components/pcie_peripheral",
     "//ash/components/power",

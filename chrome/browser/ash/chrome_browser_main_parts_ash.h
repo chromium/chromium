@@ -71,6 +71,7 @@ namespace ash {
 class AccessibilityEventRewriterDelegateImpl;
 class BulkPrintersCalculatorFactory;
 class DebugdNotificationHandler;
+class FirmwareUpdateManager;
 namespace quick_pair {
 class QuickPairBrowserDelegateImpl;
 }
@@ -234,6 +235,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       login_screen_extensions_lifetime_manager_;
   std::unique_ptr<LoginScreenExtensionsStorageCleaner>
       login_screen_extensions_storage_cleaner_;
+
+  std::unique_ptr<ash::FirmwareUpdateManager> firmware_update_manager_;
 
   std::unique_ptr<GnubbyNotification> gnubby_notification_;
   std::unique_ptr<system::BreakpadConsentWatcher> breakpad_consent_watcher_;

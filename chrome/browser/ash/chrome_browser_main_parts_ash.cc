@@ -14,6 +14,7 @@
 #include "ash/components/audio/audio_devices_pref_handler_impl.h"
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/drivefs/fake_drivefs_launcher_client.h"
+#include "ash/components/fwupd/firmware_update_manager.h"
 #include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
 #include "ash/components/power/dark_resume_controller.h"
 #include "ash/constants/ash_features.h"
@@ -1200,6 +1201,10 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
                  base::BindOnce(&ash::AshUsbDetector::ConnectToDeviceManager,
                                 base::Unretained(ash_usb_detector_.get())));
 
+  if (ash::features::IsFirmwareUpdaterAppEnabled()) {
+    firmware_update_manager_ = std::make_unique<ash::FirmwareUpdateManager>();
+  }
+
   if (chromeos::features::IsPciguardUiEnabled()) {
     // The local_state pref may not be available at this stage of Chrome's
     // lifecycle, default to false for now. The actual state will be set in a
@@ -1273,6 +1278,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   assistant_delegate_.reset();
 
   assistant_state_client_.reset();
+
+  firmware_update_manager_.reset();
 
   if (pre_profile_init_called_)
     ash::Shell::Get()->RemovePreTargetHandler(MagnificationManager::Get());
