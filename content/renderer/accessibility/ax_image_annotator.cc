@@ -39,7 +39,7 @@ namespace content {
 namespace {
 
 int GetMessageIdForIconEnum(const std::string& icon_type) {
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
   return 0;
 #else
   static constexpr auto kIconTypeToMessageIdMap =

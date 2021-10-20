@@ -904,7 +904,7 @@ below:
         Appears to be: <ph name="DESCRIPTION">$1<ex>A person at a podium</ex></ph>
       </message>
 
-      <if expr="not is_android">
+      <if expr="not is_android and not is_fuchsia">
         <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PLUS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a plus icon, which often is used to add">
           Plus icon, may mean Add
         </message>
