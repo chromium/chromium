@@ -47,19 +47,20 @@ declare_args() {
   # b/193072381, but then again, we don't expect a build speedup before much
   # more work is done.
   use_goma_rust = false
-}
 
-# Rust code may end up being linked into a final executable by:
-# * rustc (which calls lld)
-# * our pre-existing C++ linker invocations
-# At the moment, this first pipeline is incompatible with the ldflags we use
-# for thin LTO, due to some problem in escaping gn rules. There's a further
-# problem with -lunwind on Android.
-# However, Rust code is still useful if it's contributing to our existing
-# C++ linker invocations, so this doesn't disable Rust entirely. It does
-# disable Rust unit test executables, so we do need to fix this.
-# https://crbug.com/1229423
-rustc_can_link = !use_thin_lto && !is_android
+  # Rust code may end up being linked into a final executable by:
+  # * rustc (which calls lld)
+  # * our pre-existing C++ linker invocations
+  # At the moment, this first pipeline is incompatible with the ldflags we use
+  # for thin LTO, due to some problem in escaping gn rules. There's a further
+  # problem with -lunwind on Android.
+  # However, Rust code is still useful if it's contributing to our existing
+  # C++ linker invocations, so this doesn't disable Rust entirely. It does
+  # disable Rust unit test executables, so we do need to fix this.
+  # https://crbug.com/1229423
+  # NB this may be overridden by individual toolchains
+  rustc_can_link = !use_thin_lto && !is_android
+}
 
 # Has a Rust toolchain available in the build by default.
 toolchain_has_official_rust =

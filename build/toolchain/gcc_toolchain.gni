@@ -144,6 +144,11 @@ template("gcc_toolchain") {
       if (!defined(invoker_toolchain_args.v8_current_cpu)) {
         v8_current_cpu = invoker_toolchain_args.current_cpu
       }
+
+      # Whether rustc can successfully link binaries. (If not, rust code
+      # can still be linked by our C++ toolchain). See
+      # //build/config/rust.gni
+      rustc_can_link = !use_thin_lto && current_os != "android"
     }
 
     # When the invoker has explicitly overridden use_remoteexec, use_goma or
@@ -690,7 +695,7 @@ template("gcc_toolchain") {
         outputs = [ rust_outfile ]
       }
 
-      if (rustc_can_link) {
+      if (toolchain_args.rustc_can_link) {
         tool("rust_bin") {
           rust_outfile = "{{root_out_dir}}/{{crate_name}}"
           depfile = "{{output}}.d"

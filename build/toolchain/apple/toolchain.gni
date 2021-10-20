@@ -69,6 +69,9 @@ template("apple_toolchain") {
       # ensure that it's always the same, regardless of the values that may be
       # set on those toolchains.
       host_toolchain = host_toolchain
+
+      # Respect the global setting for whether rustc can make binaries.
+      rustc_can_link = rustc_can_link
     }
 
     # When the invoker has explicitly overridden use_goma or cc_wrapper in the
@@ -250,7 +253,7 @@ template("apple_toolchain") {
         outputs = [ rust_outfile ]
       }
 
-      if (rustc_can_link) {
+      if (toolchain_args.rustc_can_link) {
         tool("rust_bin") {
           rust_outfile = "{{root_out_dir}}/{{crate_name}}"
           depfile = "{{output}}.d"

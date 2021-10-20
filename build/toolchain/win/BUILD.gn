@@ -85,6 +85,9 @@ template("msvc_toolchain") {
 
       # This value needs to be passed through unchanged.
       host_toolchain = host_toolchain
+
+      # Respect the global setting for whether rustc can make binaries.
+      rustc_can_link = rustc_can_link
     }
 
     # Make these apply to all tools below.
@@ -317,7 +320,7 @@ template("msvc_toolchain") {
         outputs = [ rust_outfile ]
       }
 
-      if (rustc_can_link) {
+      if (toolchain_args.rustc_can_link) {
         tool("rust_bin") {
           rust_outfile = "{{root_out_dir}}/{{crate_name}}.exe"
           depfile = "{{crate_name}}.d"
