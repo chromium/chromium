@@ -116,17 +116,7 @@ class SandboxedUnpackerClient
 // transcoding all images to PNG, parsing all message catalogs, and rewriting
 // the manifest JSON. As such, it should not be used when the output is not
 // intended to be given back to the author.
-//
-// Lifetime management:
-//
-// This class is ref-counted by each call it makes to itself on another thread.
-//
-// Additionally, we hold a reference to our own client so that the client lives
-// long enough to receive the result of unpacking.
-//
-// NOTE: This class should only be used on the FILE thread.
-//
-class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
+class SandboxedUnpacker : public ImageSanitizer::Client {
  public:
   // Overrides the required verifier format for testing purposes. Only one
   // ScopedVerifierFormatOverrideForTest may exist at a time.
@@ -170,11 +160,9 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
                           const base::FilePath& directory);
 
  private:
-  friend class base::RefCountedThreadSafe<SandboxedUnpacker>;
-
   friend class SandboxedUnpackerTest;
 
-  ~SandboxedUnpacker();
+  ~SandboxedUnpacker() override;
 
   // Create |temp_dir_| used to unzip or unpack the extension in.
   bool CreateTempDirectory();
@@ -218,9 +206,11 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // Helper which calls ReportFailure.
   void ReportUnpackExtensionFailed(base::StringPiece error);
 
-  void ImageSanitizationDone(ImageSanitizer::Status status,
-                             const base::FilePath& path);
-  void ImageSanitizerDecodedImage(const base::FilePath& path, SkBitmap image);
+  // Implementation of ImageSanitizer::Client:
+  data_decoder::DataDecoder* GetDataDecoder() override;
+  void OnImageSanitizationDone(ImageSanitizer::Status status,
+                               const base::FilePath& path) override;
+  void OnImageDecoded(const base::FilePath& path, SkBitmap image) override;
 
   void ReadMessageCatalogs();
 

@@ -558,19 +558,20 @@ void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value manifest) {
   std::set<base::FilePath> image_paths =
       ExtensionsClient::Get()->GetBrowserImagePaths(extension_.get());
   image_sanitizer_ = ImageSanitizer::CreateAndStart(
-      &data_decoder_, extension_root_, image_paths,
-      base::BindRepeating(&SandboxedUnpacker::ImageSanitizerDecodedImage, this),
-      base::BindOnce(&SandboxedUnpacker::ImageSanitizationDone, this),
-      unpacker_io_task_runner_);
+      this, extension_root_, image_paths, unpacker_io_task_runner_);
 }
 
-void SandboxedUnpacker::ImageSanitizerDecodedImage(const base::FilePath& path,
-                                                   SkBitmap image) {
+data_decoder::DataDecoder* SandboxedUnpacker::GetDataDecoder() {
+  return &data_decoder_;
+}
+
+void SandboxedUnpacker::OnImageDecoded(const base::FilePath& path,
+                                       SkBitmap image) {
   if (path == install_icon_path_)
     install_icon_ = image;
 }
 
-void SandboxedUnpacker::ImageSanitizationDone(
+void SandboxedUnpacker::OnImageSanitizationDone(
     ImageSanitizer::Status status,
     const base::FilePath& file_path_for_error) {
   if (status == ImageSanitizer::Status::kSuccess) {
@@ -612,12 +613,6 @@ void SandboxedUnpacker::ImageSanitizationDone(
       failure_reason = SandboxedUnpackerFailureReason::ERROR_SAVING_THEME_IMAGE;
       error = l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
                                          u"ERROR_SAVING_THEME_IMAGE");
-      break;
-    case ImageSanitizer::Status::kServiceError:
-      failure_reason = SandboxedUnpackerFailureReason::
-          UTILITY_PROCESS_CRASHED_WHILE_TRYING_TO_INSTALL;
-      error = l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
-                                         u"ERROR_UTILITY_PROCESS_CRASH");
       break;
     default:
       NOTREACHED();
