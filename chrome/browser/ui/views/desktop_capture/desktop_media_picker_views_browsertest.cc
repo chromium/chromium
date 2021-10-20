@@ -126,7 +126,14 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
 
 // Show the picker UI with only one source type: TYPE_WEB_CONTENTS, aka the
 // tab picker.
-IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest, InvokeUi_tabs) {
+// crbug.com/1261820: flaky on Win
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_tabs DISABLED_InvokeUi_tabs
+#else
+#define MAYBE_InvokeUi_tabs InvokeUi_tabs
+#endif
+IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
+                       MAYBE_InvokeUi_tabs) {
   after_show_callback_ =
       base::BindOnce([](const std::vector<FakeDesktopMediaList*>& sources) {
         sources[0]->AddSource(0);
