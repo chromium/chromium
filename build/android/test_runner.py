@@ -827,6 +827,42 @@ def RunTestsCommand(args, result_sink_client=None):
     raise Exception('Unknown test type.')
 
 
+def _SinkTestResult(test_result, test_file_name, result_sink_client):
+  """Upload test result to result_sink.
+
+  Args:
+    test_result: A BaseTestResult object
+    test_file_name: A string representing the file location of the test
+    result_sink_client: A ResultSinkClient object
+
+  Returns:
+    N/A
+  """
+  # Some tests put in non utf-8 char as part of the test
+  # which breaks uploads, so need to decode and re-encode.
+  log_decoded = test_result.GetLog()
+  if isinstance(log_decoded, bytes):
+    log_decoded = log_decoded.decode('utf-8', 'replace')
+  html_artifact = ''
+  https_artifacts = []
+  for link_name, link_url in sorted(test_result.GetLinks().items()):
+    if link_url.startswith('https:'):
+      https_artifacts.append('<li><a href=%s>%s</a></li>' %
+                             (link_url, link_name))
+    else:
+      logging.info('Skipping non-https link %r (%s) for test %s.', link_name,
+                   link_url, test_result.GetName())
+  if https_artifacts:
+    html_artifact += '<ul>%s</ul>' % '/n'.join(https_artifacts)
+  result_sink_client.Post(test_result.GetName(),
+                          test_result.GetType(),
+                          test_result.GetDuration(),
+                          log_decoded.encode('utf-8'),
+                          test_file_name,
+                          failure_reason=test_result.GetFailureReason(),
+                          html_artifact=html_artifact)
+
+
 _SUPPORTED_IN_PLATFORM_MODE = [
   # TODO(jbudorick): Add support for more test types.
   'gtest',
@@ -936,17 +972,7 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
               match = re.search(r'^(.+\..+)#', r.GetName())
               test_file_name = test_class_to_file_name_dict.get(
                   match.group(1)) if match else None
-              # Some tests put in non utf-8 char as part of the test
-              # which breaks uploads, so need to decode and re-encode.
-              log_decoded = r.GetLog()
-              if isinstance(log_decoded, bytes):
-                log_decoded = log_decoded.decode('utf-8', 'replace')
-              result_sink_client.Post(r.GetName(),
-                                      r.GetType(),
-                                      r.GetDuration(),
-                                      log_decoded.encode('utf-8'),
-                                      test_file_name,
-                                      failure_reason=r.GetFailureReason())
+              _SinkTestResult(r, test_file_name, result_sink_client)
 
   @contextlib.contextmanager
   def upload_logcats_file():
