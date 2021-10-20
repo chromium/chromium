@@ -61,8 +61,7 @@ class AboutUI : public content::WebUIController {
 namespace about_ui {
 
 // Helper functions
-void AppendHeader(std::string* output, int refresh,
-                  const std::string& unescaped_title);
+void AppendHeader(std::string* output, const std::string& unescaped_title);
 void AppendBody(std::string *output);
 void AppendFooter(std::string *output);
 

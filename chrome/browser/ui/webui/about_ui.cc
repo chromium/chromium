@@ -505,19 +505,14 @@ class CrostiniCreditsHandler
 
 namespace about_ui {
 
-void AppendHeader(std::string* output, int refresh,
-                  const std::string& unescaped_title) {
+void AppendHeader(std::string* output, const std::string& unescaped_title) {
   output->append("<!DOCTYPE HTML>\n<html>\n<head>\n");
+  output->append("<meta charset='utf-8'>\n");
+  output->append("<meta name='color-scheme' content='light dark'>\n");
   if (!unescaped_title.empty()) {
     output->append("<title>");
     output->append(net::EscapeForHTML(unescaped_title));
     output->append("</title>\n");
-  }
-  output->append("<meta charset='utf-8'>\n");
-  if (refresh > 0) {
-    output->append("<meta http-equiv='refresh' content='");
-    output->append(base::NumberToString(refresh));
-    output->append("'/>\n");
   }
 }
 
@@ -539,7 +534,7 @@ namespace {
 
 std::string ChromeURLs() {
   std::string html;
-  AppendHeader(&html, 0, "Chrome URLs");
+  AppendHeader(&html, "Chrome URLs");
   AppendBody(&html);
 
   html += "<h2>List of Chrome URLs</h2>\n<ul>\n";
@@ -580,7 +575,7 @@ std::string ChromeURLs() {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
 std::string AboutLinuxProxyConfig() {
   std::string data;
-  AppendHeader(&data, 0,
+  AppendHeader(&data,
                l10n_util::GetStringUTF8(IDS_ABOUT_LINUX_PROXY_CONFIG_TITLE));
   data.append("<style>body { max-width: 70ex; padding: 2ex 5ex; }</style>");
   AppendBody(&data);
