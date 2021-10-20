@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.content_creation.reactions;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
@@ -36,7 +37,11 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
     private final SceneCoordinator mSceneCoordinator;
 
     private List<ReactionMetadata> mAvailableReactions;
+    private Bitmap[] mThumbnails;
     private ToolbarCoordinator mToolbarCoordinator;
+
+    private boolean mDialogViewCreated;
+    private boolean mAssetsFetched;
 
     /**
      * Constructs a new LightweightReactionsCoordinatorImpl which initializes and displays the
@@ -53,6 +58,8 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController, ReactionService reactionService) {
         super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
+        mDialogViewCreated = false;
+        mAssetsFetched = false;
         mReactionService = reactionService;
         mDialog = new LightweightReactionsDialog();
         mSceneCoordinator = new SceneCoordinator(activity);
@@ -63,20 +70,49 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         mMediator = new LightweightReactionsMediator(imageFetcher);
         mReactionService.getReactions((reactions) -> {
             mAvailableReactions = reactions;
-            mMediator.fetchAssetsAndGetThumbnails(reactions, (thumbnails) -> {
-                assert thumbnails != null;
-                assert thumbnails.length > 0;
-                assert thumbnails.length == mAvailableReactions.size();
-            });
+            mMediator.fetchAssetsAndGetThumbnails(reactions, this::onAssetsFetched);
         });
     }
 
     /**
-     * Initializes the toolbar after the root dialog view is ready.
+     * Creates the toolbar coordinator after the root dialog view is ready, then attempts to finish
+     * the initialization of the feature.
      * @param view The root {@link View} of the dialog.
      */
     private void onViewCreated(View view) {
+        mDialogViewCreated = true;
         mToolbarCoordinator = new ToolbarCoordinator(view, this, mSceneCoordinator);
+        maybeFinishInitialization();
+    }
+
+    /**
+     * Stores the thumbnails of the reactions, then attempts to finish the initialization of the
+     * feature.
+     * @param thumbnails The list of thumbnails. The order must be the same as
+     *                   {@code mAvailableReactions}.
+     */
+    private void onAssetsFetched(Bitmap[] thumbnails) {
+        assert thumbnails != null;
+        assert thumbnails.length == mAvailableReactions.size();
+
+        mAssetsFetched = true;
+        mThumbnails = thumbnails;
+        maybeFinishInitialization();
+    }
+
+    /**
+     * Performs the remaining initialization for the feature, namely creating the toolbar carousel
+     * for the reactions, hooking up the remaining event handlers, and dismissing the loading view.
+     *
+     * <p><b>Note:</b> The dialog view must be ready and the assets must have been fetched. If
+     * either is missing, this is a no-op.
+     */
+    private void maybeFinishInitialization() {
+        if (!mDialogViewCreated || !mAssetsFetched) {
+            // Wait until both operations have completed.
+            return;
+        }
+        mToolbarCoordinator.initReactions(mThumbnails);
     }
 
     // LightweightReactionsCoordinator implementation.

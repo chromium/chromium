@@ -16,4 +16,5 @@
     <dimen name="toolbar_button_size">40dp</dimen>
     <dimen name="toolbar_button_margin">16dp</dimen>
     <dimen name="toolbar_button_padding">8dp</dimen>
+    <dimen name="toolbar_reactions_margin">10dp</dimen>
 </resources>

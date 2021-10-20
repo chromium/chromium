@@ -13,16 +13,21 @@
     android:orientation="vertical"
     android:importantForAccessibility="yes">
 
-    <LinearLayout
-        android:id="@+id/lightweight_reactions_toolbar_reaction_picker"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:layout_above="@id/lightweight_reactions_toolbar_controls"
-        android:paddingHorizontal="@dimen/toolbar_button_margin"
+    <HorizontalScrollView
+        android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_row_height"
-        android:layout_width="match_parent">
-        <!-- Empty for now -->
-    </LinearLayout>
+        android:layout_above="@id/lightweight_reactions_toolbar_controls"
+        android:scrollbars="none">
+        <LinearLayout
+            android:id="@+id/lightweight_reactions_toolbar_reaction_picker"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/toolbar_reactions_margin"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content">
+            <!-- ImageViews are added at runtime. -->
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <LinearLayout
         android:id="@+id/lightweight_reactions_toolbar_controls"
