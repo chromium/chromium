@@ -3953,6 +3953,34 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Ndk-translation"/>
 </enum>
 
+<enum name="ArcNearbyShareDataHandlingResult">
+  <int value="0" label="Directory does not exists."/>
+  <int value="1" label="Unexpected null g_browser_process."/>
+  <int value="2" label="Invalid profile."/>
+  <int value="3" label="Base directory is empty."/>
+  <int value="4" label="Failed to create unique temp directory."/>
+  <int value="5" label="External urls are empty."/>
+  <int value="6" label="Invalid size provided for file name."/>
+  <int value="7" label="Invalid FileSystemURL from handle."/>
+  <int value="8" label="FileSystemURL is not of external file type."/>
+  <int value="9" label="Invalid destination file descriptor."/>
+  <int value="10" label="Invalid destination file at path."/>
+  <int value="11" label="Failed to prepare temp directory and stream files."/>
+  <int value="12" label="Failed to stream file IO data."/>
+  <int value="13" label="Invalid number of bytes read."/>
+  <int value="14" label="Timeout."/>
+</enum>
+
+<enum name="ArcNearbyShareIOErrorResult">
+  <int value="0" label="Failed to create FileStreamReader."/>
+  <int value="1" label="Failed to wait for data pipe."/>
+  <int value="2" label="Unexpected close of data pipe."/>
+  <int value="3" label="Failed to write to data pipe."/>
+  <int value="4" label="Reached EOF even though there are remaining bytes."/>
+  <int value="5" label="Read failed."/>
+  <int value="6" label="Could not find valid endpoint for streamed data."/>
+</enum>
+
 <enum name="ArcNetworkError">
 <!-- ArcNetworkError values from components/arc/mojom/metrics.mojom -->
 
@@ -58134,6 +58162,11 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Mojo pipe disconnection (deprecated)"/>
   <int value="3" label="Utility process disconnected Decoder mojo pipe"/>
   <int value="4" label="Utility process disconnected Connections mojo pipe"/>
+</enum>
+
+<enum name="NearbyShareArcBridgeFailResult">
+  <int value="0" label="Instance is null."/>
+  <int value="1" label="Instance already exists."/>
 </enum>
 
 <enum name="NearbyShareAttachmentType">

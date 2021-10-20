@@ -1050,6 +1050,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Arc.NearbyShare.ArcBridgeFailure"
+    enum="NearbyShareArcBridgeFailResult" expires_after="2022-03-27">
+  <owner>ttefera@google.com</owner>
+  <owner>arc-app-dev@google.com</owner>
+  <summary>
+    Records any ARC Bridge connection / communication failures using
+    NearbyShare.
+  </summary>
+</histogram>
+
+<histogram name="Arc.NearbyShare.DataHandlingFailure"
+    enum="ArcNearbyShareDataHandlingResult" expires_after="2022-03-27">
+  <owner>ttefera@google.com</owner>
+  <owner>arc-app-dev@google.com</owner>
+  <summary>
+    Records any data handling errors with sharing text or files using
+    NearbyShare.
+  </summary>
+</histogram>
+
+<histogram name="Arc.NearbyShare.FileStreamFailure" enum="PlatformFileError"
+    expires_after="2022-03-23">
+  <owner>ttefera@google.com</owner>
+  <owner>arc-app-dev@google.com</owner>
+  <summary>
+    Records the reason for failing to stream a file using NearbyShare. ARC
+    NearbyShare shares a file after finding a window, and once &quot;share&quot;
+    is clicked, it attempts to send the file.
+  </summary>
+</histogram>
+
+<histogram name="Arc.NearbyShare.IOFailure" enum="ArcNearbyShareIOErrorResult"
+    expires_after="2022-03-27">
+  <owner>ttefera@google.com</owner>
+  <owner>arc-app-dev@google.com</owner>
+  <summary>Records any IO errors while using NearbyShare.</summary>
+</histogram>
+
 <histogram name="Arc.NearbyShare.WindowFound" units="units"
     expires_after="2022-03-09">
   <owner>ttefera@google.com</owner>

@@ -345,6 +345,7 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
   if (result.has_value() && result.value() != base::File::FILE_OK) {
     LOG(ERROR) << "Failed to complete file streaming with error: "
                << base::File::ErrorToString(result.value());
+    UpdateNearbyShareFileStreamError(result.value());
     ShowErrorDialog();
     return;
   }

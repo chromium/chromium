@@ -14,6 +14,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -102,6 +103,7 @@ void ShareInfoFileStreamAdapter::StartFileStreaming() {
       url_, offset_, bytes_remaining_, base::Time());
   if (!stream_reader_) {
     LOG(ERROR) << "Failed to create FileStreamReader.";
+    UpdateNearbyShareIOFail(IOErrorResult::kFilereaderFailed);
     OnStreamingFinished(false);
     return;
   }
@@ -165,12 +167,14 @@ void ShareInfoFileStreamAdapter::OnProducerStreamUpdate(
     const mojo::HandleSignalsState& state) {
   if (result != MOJO_RESULT_OK) {
     LOG(ERROR) << "Failed to wait for data pipe with error: " << result;
+    UpdateNearbyShareIOFail(IOErrorResult::kDataPipeFailedWait);
     OnStreamingFinished(false);
     return;
   }
 
   if (state.peer_closed()) {
     LOG(ERROR) << "Unexpected close of data pipe.";
+    UpdateNearbyShareIOFail(IOErrorResult::kDataPipeUnexpectedClose);
     OnStreamingFinished(false);
     return;
   }
@@ -199,6 +203,7 @@ void ShareInfoFileStreamAdapter::WriteToPipe() {
       return;
     } else if (mojo_result != MOJO_RESULT_OK) {
       LOG(ERROR) << "Failed to write to data pipe with result: " << mojo_result;
+      UpdateNearbyShareIOFail(IOErrorResult::kDataPipeFailedWrite);
       OnWriteFinished(false);
       return;
     }
@@ -218,11 +223,13 @@ void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
   if (bytes_read < 0) {
     LOG(ERROR) << " Reached EOF even though there are remaining bytes: "
                << bytes_remaining_;
+    UpdateNearbyShareIOFail(IOErrorResult::kEOFWithRemainingBytes);
     OnStreamingFinished(false);
     return;
   }
   if (bytes_read == 0) {
     LOG(ERROR) << "Read failed with error: " << net::ErrorToString(bytes_read);
+    UpdateNearbyShareIOFail(IOErrorResult::kReadFailed);
     OnStreamingFinished(false);
     return;
   }
@@ -237,6 +244,7 @@ void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
     WriteToPipe();
   } else {
     LOG(ERROR) << "Unexpected could not find valid endpoint for streamed data.";
+    UpdateNearbyShareIOFail(IOErrorResult::kStreamedDataInvalidEndpoint);
     OnStreamingFinished(false);
   }
 }
