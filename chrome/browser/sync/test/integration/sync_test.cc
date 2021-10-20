@@ -972,8 +972,30 @@ void SyncTest::TearDownOnMainThread() {
   // used profile by path will fail. To work around that, set the last used
   // profile back to the originally created default profile (which does live in
   // the user data dir, and which we don't use otherwise).
-  if (previous_profile_)
+  if (previous_profile_) {
     profiles::SetLastUsedProfile(previous_profile_->GetBaseName());
+    previous_profile_ = nullptr;
+  }
+
+  if (fake_server_.get()) {
+    for (const std::unique_ptr<fake_server::FakeServerInvalidationSender>&
+             observer : fake_server_invalidation_observers_) {
+      fake_server_->RemoveObserver(observer.get());
+    }
+    fake_server_sync_invalidation_sender_.reset();
+    fake_server_.reset();
+  }
+
+  // Delete things that unsubscribe in destructor before their targets are gone.
+  configuration_refresher_.reset();
+
+  // Note: Closing all the browsers (see below) may destroy the Profiles, if
+  // kDestroyProfileOnBrowserClose is enabled. So clear them out here, to make
+  // sure they're not used anymore.
+  profiles_.clear();
+  clients_.clear();
+  // TODO(crbug.com/1260897): There are various other Profile-related members
+  // around like profile_to_*_map_ - those should probably be cleaned up too.
 
 #if !defined(OS_ANDROID)
   // Closing all browsers created by this test. The calls here block until
@@ -987,21 +1009,10 @@ void SyncTest::TearDownOnMainThread() {
       closed_browser_count++;
     }
   }
+  browsers_.clear();
   ASSERT_EQ(chrome::GetTotalBrowserCount(),
             initial_total_browser_count - closed_browser_count);
 #endif
-
-  if (fake_server_.get()) {
-    for (const std::unique_ptr<fake_server::FakeServerInvalidationSender>&
-             observer : fake_server_invalidation_observers_) {
-      fake_server_->RemoveObserver(observer.get());
-    }
-    fake_server_sync_invalidation_sender_.reset();
-    fake_server_.reset();
-  }
-
-  // Delete things that unsubscribe in destructor before their targets are gone.
-  configuration_refresher_.reset();
   PlatformBrowserTest::TearDownOnMainThread();
 }
 
