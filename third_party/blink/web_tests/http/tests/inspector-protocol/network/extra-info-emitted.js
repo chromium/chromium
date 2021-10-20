@@ -16,10 +16,14 @@
   }
 
   async function assertHasExtraInfo(url) {
-    const responseReceivedPromise = dp.Network.onceResponseReceived();
-    await session.evaluate(`fetch('${url}', {method: 'POST', credentials: 'include'})`);
-    const {requestExtraInfo, responseExtraInfo} = await helper.navigateWithExtraInfo(url);
-    const responseReceived = await responseReceivedPromise;
+    session.evaluate(
+        `fetch('${url}', {method: 'POST', credentials: 'include'})`);
+    const [responseReceived, requestExtraInfo, responseExtraInfo] =
+        await Promise.all([
+          dp.Network.onceResponseReceived(),
+          dp.Network.onceRequestWillBeSentExtraInfo(),
+          dp.Network.onceResponseReceivedExtraInfo()
+        ]);
     testRunner.log(`fetched subresource: ${url}`);
     testRunner.log(`responseReceived.url: ${responseReceived.params.response.url}`);
     testRunner.log(`responseReceived.hasExtraInfo: ${responseReceived.params.hasExtraInfo}`);
