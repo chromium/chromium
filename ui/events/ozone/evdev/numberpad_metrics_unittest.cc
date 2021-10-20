@@ -82,9 +82,7 @@ class NumberpadMetricsTest : public ::testing::Test {
   NumberpadMetricsTest() = default;
   NumberpadMetricsTest(const NumberpadMetricsTest&) = delete;
   NumberpadMetricsTest& operator=(const NumberpadMetricsTest&) = delete;
-  ~NumberpadMetricsTest() override {
-    ui::NumberpadMetricsRecorder::ClearInstance();
-  }
+  ~NumberpadMetricsTest() override = default;
 
   // NOTE: This is only creates a simple ui::InputDevice based on a device
   // capabilities report; it is not suitable for subclasses of ui::InputDevice.
@@ -310,10 +308,8 @@ class NumberpadMetricsTest : public ::testing::Test {
 
   // NumberpadMetricsRecorder uses feature_usage_metrics, which posts tasks
   // during construction, so we need a task environment set up before it is
-  // constructed. We will fetch the singleton and keep a reference for
-  // convenience.
-  ui::NumberpadMetricsRecorder& numberpad_metrics_ =
-      *ui::NumberpadMetricsRecorder::GetInstance();
+  // constructed.
+  ui::NumberpadMetricsRecorder numberpad_metrics_;
 };
 
 // Class used for testing parameterised variations of number-lock presses to

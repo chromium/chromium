@@ -4,8 +4,8 @@
 
 #include "ui/events/ozone/evdev/numberpad_metrics.h"
 
-#include "base/at_exit.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 
 #include <linux/input.h>
 
@@ -137,23 +137,12 @@ void NumberpadMetricsDelegate::RecordUsage(bool success) {
 }
 
 // static
-NumberpadMetricsRecorder* NumberpadMetricsRecorder::instance_;
-
-// static
 NumberpadMetricsRecorder* NumberpadMetricsRecorder::GetInstance() {
-  if (!instance_) {
-    instance_ = new NumberpadMetricsRecorder();
-    base::AtExitManager::RegisterTask(base::BindOnce(ClearInstance));
-  }
-  return instance_;
-}
-
-// static
-void NumberpadMetricsRecorder::ClearInstance() {
-  if (instance_) {
-    delete instance_;
-    instance_ = nullptr;
-  }
+  // For now, we leak this in normal operation; our invokers,
+  // EventConverterEvdevImpls, are not currently destroyed during
+  // a clean shut-down.
+  static base::NoDestructor<NumberpadMetricsRecorder> instance;
+  return instance.get();
 }
 
 void NumberpadMetricsRecorder::AddDevice(const ui::InputDevice& input_device) {
