@@ -1785,7 +1785,8 @@ class ReportingHeaderParserStructuredHeaderTest
 
     if (header_map) {
       ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
-          context(), reporting_source, isolation_info, origin, *header_map);
+          context(), reporting_source, isolation_info,
+          isolation_info.network_isolation_key(), origin, *header_map);
     }
   }
   void ProcessParsedHeader(
@@ -1795,7 +1796,8 @@ class ReportingHeaderParserStructuredHeaderTest
       const absl::optional<base::flat_map<std::string, std::string>>&
           header_map) {
     ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
-        context(), reporting_source, isolation_info, origin, *header_map);
+        context(), reporting_source, isolation_info,
+        isolation_info.network_isolation_key(), origin, *header_map);
   }
 
   const base::UnguessableToken kReportingSource_ =

@@ -40,15 +40,14 @@ namespace {
 
 const char kReportingHost[] = "example.com";
 
-class ReportingBrowserTest : public CertVerifierBrowserTest,
-                             public ::testing::WithParamInterface<bool> {
+class BaseReportingBrowserTest : public CertVerifierBrowserTest,
+                                 public ::testing::WithParamInterface<bool> {
  public:
-  ReportingBrowserTest()
+  BaseReportingBrowserTest()
       : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
     std::vector<base::Feature> required_features = {
         network::features::kReporting, network::features::kNetworkErrorLogging,
-        features::kCrashReporting,
-        net::features::kPartitionNelAndReportingByNetworkIsolationKey};
+        features::kCrashReporting};
     if (UseDocumentReporting()) {
       required_features.push_back(net::features::kDocumentReporting);
     }
@@ -59,10 +58,10 @@ class ReportingBrowserTest : public CertVerifierBrowserTest,
         {});
   }
 
-  ReportingBrowserTest(const ReportingBrowserTest&) = delete;
-  ReportingBrowserTest& operator=(const ReportingBrowserTest&) = delete;
+  BaseReportingBrowserTest(const BaseReportingBrowserTest&) = delete;
+  BaseReportingBrowserTest& operator=(const BaseReportingBrowserTest&) = delete;
 
-  ~ReportingBrowserTest() override = default;
+  ~BaseReportingBrowserTest() override = default;
 
   void SetUp() override;
   void SetUpOnMainThread() override;
@@ -121,7 +120,7 @@ class ReportingBrowserTest : public CertVerifierBrowserTest,
   std::unique_ptr<net::test_server::ControllableHttpResponse> upload_response_;
 };
 
-void ReportingBrowserTest::SetUp() {
+void BaseReportingBrowserTest::SetUp() {
   CertVerifierBrowserTest::SetUp();
 
   // Make report delivery happen instantly.
@@ -130,7 +129,7 @@ void ReportingBrowserTest::SetUp() {
   net::ReportingPolicy::UsePolicyForTesting(policy);
 }
 
-void ReportingBrowserTest::SetUpOnMainThread() {
+void BaseReportingBrowserTest::SetUpOnMainThread() {
   CertVerifierBrowserTest::SetUpOnMainThread();
 
   host_resolver()->AddRule("*", "127.0.0.1");
@@ -150,6 +149,40 @@ void ReportingBrowserTest::SetUpOnMainThread() {
   server()->AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(server()->Start());
 }
+
+class ReportingBrowserTest : public BaseReportingBrowserTest {
+ public:
+  ReportingBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kPartitionNelAndReportingByNetworkIsolationKey);
+  }
+
+  ReportingBrowserTest(const ReportingBrowserTest&) = delete;
+  ReportingBrowserTest& operator=(const ReportingBrowserTest&) = delete;
+
+  ~ReportingBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class NonIsolatedReportingBrowserTest : public BaseReportingBrowserTest {
+ public:
+  NonIsolatedReportingBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        net::features::kPartitionNelAndReportingByNetworkIsolationKey);
+  }
+
+  NonIsolatedReportingBrowserTest(const NonIsolatedReportingBrowserTest&) =
+      delete;
+  NonIsolatedReportingBrowserTest& operator=(
+      const NonIsolatedReportingBrowserTest&) = delete;
+
+  ~NonIsolatedReportingBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 std::unique_ptr<base::Value> ParseReportUpload(const std::string& payload) {
   auto parsed_payload = base::test::ParseJsonDeprecated(payload);
@@ -232,6 +265,62 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestReportingHeadersProcessed) {
   original_response()->Send("<script>alert(1);</script>\r\n");
   original_response()->Done();
 
+  upload_response()->WaitForRequest();
+  std::unique_ptr<base::Value> actual =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 204 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify the contents of the report that we received.
+  ASSERT_TRUE(actual);
+  base::Value expected = base::test::ParseJson(base::StringPrintf(
+      R"json(
+        [ {
+           "body": {
+              "blockedURL": "inline",
+              "disposition": "enforce",
+              "documentURL": "%s",
+              "effectiveDirective": "script-src-elem",
+              "lineNumber": 1,
+              "originalPolicy": "script-src 'none'; report-to default",
+              "referrer": "",
+              "sample": "",
+              "sourceFile": "%s",
+              "statusCode": 200
+           },
+           "type": "csp-violation",
+           "url": "%s",
+           "user_agent": "Mozilla/1.0"
+        } ]
+      )json",
+      GetReportingEnabledURL().spec().c_str(),
+      GetReportingEnabledURL().spec().c_str(),
+      GetReportingEnabledURL().spec().c_str()));
+  EXPECT_EQ(expected, *actual);
+}
+
+// Tests that CSP reports are delivered properly whether configured with the
+// v0 Report-To header or the v1 Reporting-Endpoints header. This is a Non-
+// isolated test, so will run with NIK-based report isolation disabled. This is
+// a regression test for https://crbug.com/1258112.
+IN_PROC_BROWSER_TEST_P(NonIsolatedReportingBrowserTest,
+                       TestReportingHeadersProcessed) {
+  NavigateParams params(browser(), GetReportingEnabledURL(),
+                        ui::PAGE_TRANSITION_LINK);
+  Navigate(&params);
+
+  original_response()->WaitForRequest();
+  original_response()->Send("HTTP/1.1 200 OK\r\n");
+  original_response()->Send("Content-Type: text/html\r\n");
+  original_response()->Send(GetAppropriateReportingHeader());
+  original_response()->Send(GetCSPHeader());
+  original_response()->Send("\r\n");
+  original_response()->Send("<script>alert(1);</script>\r\n");
+  original_response()->Done();
+
+  // Ensure that the correct endpoint was found, and that a report was sent.
+  // (If the endpoint cannot not be found, then a report will be sent at all.)
   upload_response()->WaitForRequest();
   std::unique_ptr<base::Value> actual =
       ParseReportUpload(upload_response()->http_request()->content);
@@ -419,3 +508,6 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ReportingBrowserTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         NonIsolatedReportingBrowserTest,
+                         ::testing::Bool());
