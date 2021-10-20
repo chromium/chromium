@@ -504,17 +504,18 @@ class MediaCodecUtil {
     }
 
     // List of supported HW encoders.
-    @IntDef({HWEncoder.QcomVp8, HWEncoder.QcomH264, HWEncoder.ExynosVp8, HWEncoder.ExynosH264,
-            HWEncoder.MediatekH264, HWEncoder.HisiH264})
+    @IntDef({HWEncoder.QcomVp8, HWEncoder.QcomH264, HWEncoder.ExynosVp8, HWEncoder.ExynosVp9,
+            HWEncoder.ExynosH264, HWEncoder.MediatekH264, HWEncoder.HisiH264})
     @Retention(RetentionPolicy.SOURCE)
     public @interface HWEncoder {
         int QcomVp8 = 0;
         int QcomH264 = 1;
         int ExynosVp8 = 2;
-        int ExynosH264 = 3;
-        int MediatekH264 = 4;
-        int HisiH264 = 5;
-        int NUM_ENTRIES = 6;
+        int ExynosVp9 = 3;
+        int ExynosH264 = 4;
+        int MediatekH264 = 5;
+        int HisiH264 = 6;
+        int NUM_ENTRIES = 7;
     }
 
     private static String getMimeForHWEncoder(@HWEncoder int decoder) {
@@ -522,6 +523,8 @@ class MediaCodecUtil {
             case HWEncoder.QcomVp8:
             case HWEncoder.ExynosVp8:
                 return MimeTypes.VIDEO_VP8;
+            case HWEncoder.ExynosVp9:
+                return MimeTypes.VIDEO_VP9;
             case HWEncoder.QcomH264:
             case HWEncoder.ExynosH264:
             case HWEncoder.MediatekH264:
@@ -535,14 +538,15 @@ class MediaCodecUtil {
         switch (decoder) {
             case HWEncoder.QcomVp8:
             case HWEncoder.QcomH264:
-                return "OMX.qcom.";
+                return "qcom";
             case HWEncoder.ExynosVp8:
+            case HWEncoder.ExynosVp9:
             case HWEncoder.ExynosH264:
-                return "OMX.Exynos.";
+                return "Exynos";
             case HWEncoder.MediatekH264:
-                return "OMX.MTK.";
+                return "MTK";
             case HWEncoder.HisiH264:
-                return "OMX.hisi.";
+                return "hisi";
         }
         return "";
     }
@@ -554,6 +558,7 @@ class MediaCodecUtil {
             case HWEncoder.ExynosH264:
                 return Build.VERSION_CODES.LOLLIPOP;
             case HWEncoder.ExynosVp8:
+            case HWEncoder.ExynosVp9:
                 return Build.VERSION_CODES.M;
             case HWEncoder.MediatekH264:
                 return Build.VERSION_CODES.O_MR1;
@@ -655,7 +660,9 @@ class MediaCodecUtil {
                     codecProperties++) {
                 if (!mime.equalsIgnoreCase(getMimeForHWEncoder(codecProperties))) continue;
 
-                if (encoderName.startsWith(getPrefixForHWEncoder(codecProperties))) {
+                String prefix = getPrefixForHWEncoder(codecProperties);
+                if (encoderName.startsWith("OMX." + prefix + ".")
+                        || encoderName.startsWith("c2." + prefix + ".")) {
                     if (Build.VERSION.SDK_INT < getMinSDKForHWEncoder(codecProperties)) {
                         Log.w(TAG, "Codec " + encoderName + " is disabled due to SDK version "
                                         + Build.VERSION.SDK_INT);
