@@ -224,7 +224,6 @@
 #define IDC_SHOW_FULL_URLS             40259
 #define IDC_CARET_BROWSING_TOGGLE      40260
 #define IDC_TOGGLE_COMMANDER     40261
-#define IDC_SHOW_KALEIDOSCOPE          40262
 #define IDC_CHROME_TIPS                40263
 #define IDC_CHROME_WHATS_NEW           40264
 

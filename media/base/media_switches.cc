@@ -894,16 +894,6 @@ const base::Feature kInternalMediaSession {
 #endif
 };
 
-const base::Feature kKaleidoscope{"Kaleidoscope",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kKaleidoscopeInMenu{"KaleidoscopeInMenu",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kKaleidoscopeForceShowFirstRunExperience{
-    "KaleidoscopeForceShowFirstRunExperience",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Keypress detection which serves as input to noise suppression methods
 // in WebRTC clients. This functionality is enabled by default but it can be
 // disabled experemantally by using --disable-features=KeyPressMonitoring.

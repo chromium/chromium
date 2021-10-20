@@ -149,10 +149,6 @@ MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsModernUI;
 MEDIA_EXPORT extern const base::Feature kHardwareMediaKeyHandling;
 MEDIA_EXPORT extern const base::Feature kHardwareSecureDecryption;
 MEDIA_EXPORT extern const base::Feature kInternalMediaSession;
-MEDIA_EXPORT extern const base::Feature kKaleidoscope;
-MEDIA_EXPORT extern const base::Feature kKaleidoscopeInMenu;
-MEDIA_EXPORT extern const base::Feature
-    kKaleidoscopeForceShowFirstRunExperience;
 MEDIA_EXPORT extern const base::Feature kKeepRvfcFrameAlive;
 MEDIA_EXPORT extern const base::Feature kKeyPressMonitoring;
 MEDIA_EXPORT extern const base::Feature kLiveCaption;
