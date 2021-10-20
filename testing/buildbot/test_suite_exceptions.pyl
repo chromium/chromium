@@ -1209,17 +1209,16 @@
           'shards': 15,
         },
       },
-      'WebRTC Chromium FYI Android Tests (dbg) (L Nexus5)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
-        ],
-      },
       'WebRTC Chromium FYI Android Tests (dbg) (M Nexus5X)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
         ],
-      }
-      ,
+      },
+      'WebRTC Chromium FYI Android Tests (dbg) (N Nexus5X)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
+        ],
+      },
       'Win10 Tests x64': {
         # crbug.com/868082
         'args': [

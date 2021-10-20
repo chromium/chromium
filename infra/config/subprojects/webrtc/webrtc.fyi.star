@@ -63,13 +63,13 @@ builder(
 )
 
 builder(
-    name = "WebRTC Chromium FYI Android Tests (dbg) (L Nexus5)",
-    triggered_by = ["WebRTC Chromium FYI Android Builder (dbg)"],
+    name = "WebRTC Chromium FYI Android Tests (dbg) (M Nexus5X)",
+    triggered_by = ["WebRTC Chromium FYI Android Builder ARM64 (dbg)"],
 )
 
 builder(
-    name = "WebRTC Chromium FYI Android Tests (dbg) (M Nexus5X)",
-    triggered_by = ["WebRTC Chromium FYI Android Builder ARM64 (dbg)"],
+    name = "WebRTC Chromium FYI Android Tests (dbg) (N Nexus5X)",
+    triggered_by = ["WebRTC Chromium FYI Android Builder (dbg)"],
 )
 
 builder(
