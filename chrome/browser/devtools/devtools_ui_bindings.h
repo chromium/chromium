@@ -101,6 +101,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void Detach();
   bool IsAttachedTo(content::DevToolsAgentHost* agent_host);
 
+  static base::Value GetSyncInformationForProfile(Profile* profile);
+
  private:
   using DevToolsUIBindingsList = std::vector<DevToolsUIBindings*>;
 

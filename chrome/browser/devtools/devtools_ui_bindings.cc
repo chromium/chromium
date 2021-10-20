@@ -37,6 +37,7 @@
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -94,6 +95,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/resource/resource_bundle.h"
 
 using base::DictionaryValue;
 using content::BrowserThread;
@@ -1283,14 +1285,18 @@ void DevToolsUIBindings::ClearPreferences() {
 }
 
 void DevToolsUIBindings::GetSyncInformation(DispatchCallback callback) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result =
+      DevToolsUIBindings::GetSyncInformationForProfile(profile_);
+  std::move(callback).Run(&result);
+}
 
+base::Value DevToolsUIBindings::GetSyncInformationForProfile(Profile* profile) {
+  base::Value result(base::Value::Type::DICTIONARY);
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
+      SyncServiceFactory::GetForProfile(profile);
   if (!sync_service) {
     result.SetBoolKey("isSyncActive", false);
-    std::move(callback).Run(&result);
-    return;
+    return result;
   }
 
   result.SetBoolKey("isSyncActive", sync_service->IsSyncFeatureActive());
@@ -1299,25 +1305,28 @@ void DevToolsUIBindings::GetSyncInformation(DispatchCallback callback) {
       sync_service->GetActiveDataTypes().Has(syncer::ModelType::PREFERENCES));
 
   CoreAccountInfo account_info = sync_service->GetAccountInfo();
-  if (account_info.IsEmpty()) {
-    std::move(callback).Run(&result);
-    return;
-  }
+  if (account_info.IsEmpty())
+    return result;
 
   result.SetStringKey("accountEmail", account_info.email);
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
+      IdentityManagerFactory::GetForProfile(profile);
   AccountInfo extended_info =
       identity_manager->FindExtendedAccountInfo(account_info);
-  if (!extended_info.IsEmpty()) {
-    scoped_refptr<base::RefCountedMemory> png_bytes =
-        extended_info.account_image.As1xPNGBytes();
-    if (png_bytes->size() > 0)
-      result.SetStringKey("accountImage", base::Base64Encode(*png_bytes));
+  gfx::Image account_image;
+  if (extended_info.IsEmpty() || extended_info.account_image.IsEmpty()) {
+    account_image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+        profiles::GetPlaceholderAvatarIconResourceID());
+  } else {
+    account_image = extended_info.account_image;
   }
+  scoped_refptr<base::RefCountedMemory> png_bytes =
+      account_image.As1xPNGBytes();
+  if (png_bytes->size() > 0)
+    result.SetStringKey("accountImage", base::Base64Encode(*png_bytes));
 
-  std::move(callback).Run(&result);
+  return result;
 }
 
 void DevToolsUIBindings::Reattach(DispatchCallback callback) {
