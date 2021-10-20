@@ -209,6 +209,13 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
   if (!input_context)
     return;
 
+  // Do not show suggestion when the cursor is within an auto correct range.
+  const gfx::Range range = input_context->GetAutocorrectRange();
+  if (!range.is_empty() && cursor_pos >= range.start() &&
+      cursor_pos <= range.end()) {
+    return;
+  }
+
   absl::optional<ui::GrammarFragment> grammar_fragment_opt =
       input_context->GetGrammarFragment(gfx::Range(cursor_pos));
 

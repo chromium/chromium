@@ -307,6 +307,33 @@ TEST_F(GrammarManagerTest, ShowsAndDismissesGrammarSuggestion) {
   manager.OnKeyEvent(CreateKeyEvent(ui::DomCode::ESCAPE));
 }
 
+TEST_F(GrammarManagerTest, DoesntShowGrammarSuggestionWhenUndoWindowIsShown) {
+  ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
+  GrammarManager manager(profile_.get(),
+                         std::make_unique<TestGrammarServiceClient>(),
+                         &mock_suggestion_handler);
+  base::HistogramTester histogram_tester;
+
+  manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
+  manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(9, 14));
+  task_environment_.FastForwardBy(base::Milliseconds(2500));
+
+  auto grammar_fragments =
+      mock_ime_input_context_handler_.get_grammar_fragments();
+  EXPECT_EQ(grammar_fragments.size(), 1);
+  EXPECT_EQ(grammar_fragments[0].range, gfx::Range(9, 14));
+  EXPECT_EQ(grammar_fragments[0].suggestion, "correct");
+
+  // No EXPECT_CALL comparing with the last test case because suggestion window
+  // should not show.
+
+  manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
+  histogram_tester.ExpectBucketCount("InputMethod.Assistive.Grammar.Actions",
+                                     1 /*GrammarAction::kWindowShown*/, 0);
+}
+
 TEST_F(GrammarManagerTest, DismissesSuggestionWhenSelectingARange) {
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
   GrammarManager manager(profile_.get(),
