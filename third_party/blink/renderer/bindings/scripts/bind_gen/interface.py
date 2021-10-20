@@ -2877,7 +2877,11 @@ if (${info}.ShouldThrowOnError()) {
             TextNode("""\
 // step 1.3. Invoke the indexed property setter with P and Desc.[[Value]].
 ${class_name}::IndexedPropertySetterCallback(
-    ${index}, ${v8_property_desc}.value(), ${info});
+    ${index},
+    ${v8_property_desc}.has_value()
+        ? ${v8_property_desc}.value()
+        : v8::Undefined(${isolate}).As<v8::Value>(),
+    ${info});
 """))
 
     return func_decl, func_def
@@ -3320,7 +3324,11 @@ if (v8_property_desc.has_get() || v8_property_desc.has_set()) {
 
 // step 2.2.2.2. Invoke the named property setter with P and Desc.[[Value]].
 ${class_name}::NamedPropertySetterCallback(
-    ${v8_property_name}, ${v8_property_desc}.value(), ${info});
+    ${v8_property_name},
+    ${v8_property_desc}.has_value()
+        ? ${v8_property_desc}.value()
+        : v8::Undefined(${isolate}).As<v8::Value>(),
+    ${info});
 bindings::V8SetReturnValue(${info}, nullptr);
 """))
 
