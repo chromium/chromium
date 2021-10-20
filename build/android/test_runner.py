@@ -853,7 +853,7 @@ def _SinkTestResult(test_result, test_file_name, result_sink_client):
       logging.info('Skipping non-https link %r (%s) for test %s.', link_name,
                    link_url, test_result.GetName())
   if https_artifacts:
-    html_artifact += '<ul>%s</ul>' % '/n'.join(https_artifacts)
+    html_artifact += '<ul>%s</ul>' % '\n'.join(https_artifacts)
   result_sink_client.Post(test_result.GetName(),
                           test_result.GetType(),
                           test_result.GetDuration(),
