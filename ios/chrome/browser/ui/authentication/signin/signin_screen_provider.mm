@@ -14,7 +14,7 @@
 @implementation SigninScreenProvider
 
 - (instancetype)init {
-  return [super initWithScreens:@[ @(kSignIn), @(kSync), @(kStepsCompleted) ]];
+  return [super initWithScreens:@[ @(kSignIn), @(kStepsCompleted) ]];
 }
 
 @end

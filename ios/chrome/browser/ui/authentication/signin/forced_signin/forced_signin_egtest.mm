@@ -63,14 +63,6 @@ void TriggerForcedSigninScreen() {
   [ChromeEarlGrey waitForMatcher:GetFirstRunScreenMatcher()];
 }
 
-// Checks that the sync screen is displayed.
-void VerifySyncScreenIsDisplayed() {
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
-}
-
 // Checks that the forced sign-in prompt is fully dismissed by making sure
 // that there isn't any forced sign-in screen displayed.
 void VerifyForcedSigninFullyDismissed() {
@@ -85,28 +77,16 @@ void VerifyForcedSigninFullyDismissed() {
       assertWithMatcher:grey_nil()];
 }
 
-// Returns a matcher for the button to turn on sync.
-id<GREYMatcher> GetTurnSyncOnButton() {
-  if ([FirstRunAppInterface isOldSyncStringInFREEnabled]) {
-    return grey_allOf(grey_text(l10n_util::GetNSString(
-                          IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON)),
-                      grey_sufficientlyVisible(), nil);
-  }
-  return grey_allOf(grey_text(l10n_util::GetNSString(
-                        IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION)),
-                    grey_sufficientlyVisible(), nil);
-}
+// Scrolls down to |elementMatcher| in the scrollable content of the first run
+// screen.
+void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
+  id<GREYMatcher> scrollView = grey_accessibilityID(kScrollViewIdentifier);
 
-// Returns a matcher for the button to not turn on sync.
-id<GREYMatcher> GetDontSyncButton() {
-  if ([FirstRunAppInterface isOldSyncStringInFREEnabled]) {
-    return grey_allOf(grey_text(l10n_util::GetNSString(
-                          IDS_IOS_FIRSTRUN_ACCOUNT_CONSISTENCY_SKIP_BUTTON)),
-                      grey_sufficientlyVisible(), nil);
-  }
-  return grey_allOf(grey_text(l10n_util::GetNSString(
-                        IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION)),
-                    grey_sufficientlyVisible(), nil);
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(elementMatcher,
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 50)
+      onElementWithMatcher:scrollView] assertWithMatcher:grey_notNil()];
 }
 
 }  // namespace
@@ -135,18 +115,6 @@ id<GREYMatcher> GetDontSyncButton() {
       "<dict><key>BrowserSignin</key><integer>2</integer></dict>");
 
   return config;
-}
-
-// Scrolls down to |elementMatcher| in the scrollable content of the first run
-// screen.
-void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
-  id<GREYMatcher> scrollView = grey_accessibilityID(kScrollViewIdentifier);
-
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(elementMatcher,
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 50)
-      onElementWithMatcher:scrollView] assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark - Tests
@@ -187,8 +155,7 @@ void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
                                           fakeIdentity)]
       performAction:grey_tap()];
 
-  // Make sure that the next screen can be successfully displayed.
-  VerifySyncScreenIsDisplayed();
+  VerifyForcedSigninFullyDismissed();
 }
 
 // Tests the sign-in screen without accounts where an account has to be added
@@ -271,53 +238,6 @@ void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
   [[EarlGrey selectElementWithMatcher:GetContinueButtonWithIdentityMatcher(
                                           fakeIdentity2)]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that sync can be turned on from the sync screen.
-- (void)testTurnOnSync {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  TriggerForcedSigninScreen();
-
-  [[EarlGrey selectElementWithMatcher:GetContinueButtonWithIdentityMatcher(
-                                          fakeIdentity)]
-      performAction:grey_tap()];
-
-  VerifySyncScreenIsDisplayed();
-  [[EarlGrey selectElementWithMatcher:GetTurnSyncOnButton()]
-      performAction:grey_tap()];
-
-  VerifyForcedSigninFullyDismissed();
-
-  // Check that sign-in is considered as enabled in settings.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [SigninEarlGrey verifySyncUIEnabled:YES];
-}
-
-// Tests that sync is off when the user chooses to not sync.
-- (void)testNoSync {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  TriggerForcedSigninScreen();
-
-  [[EarlGrey selectElementWithMatcher:GetContinueButtonWithIdentityMatcher(
-                                          fakeIdentity)]
-      performAction:grey_tap()];
-
-  VerifySyncScreenIsDisplayed();
-  [[EarlGrey selectElementWithMatcher:GetDontSyncButton()]
-      performAction:grey_tap()];
-
-  // Verify that the user is signed in.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-
-  VerifyForcedSigninFullyDismissed();
-
-  // Check that sign-in is considered as enabled in settings.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [SigninEarlGrey verifySyncUIEnabled:NO];
 }
 
 @end
