@@ -25,15 +25,32 @@ var NewTabPageAppTest = class extends NewTabPageBrowserTest {
   }
 };
 
-// TODO(https://crbug.com/1253309): Flaky on Linux debug builds.
-GEN('#if defined(OS_LINUX) && !defined(NDEBUG)');
-GEN('#define MAYBE_NewTabPageAppTestAll DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_NewTabPageAppTestAll All');
-GEN('#endif');
+TEST_F('NewTabPageAppTest', 'Misc', function() {
+  runMochaSuite('NewTabPageAppTest misc');
+});
 
-TEST_F('NewTabPageAppTest', 'MAYBE_NewTabPageAppTestAll', function() {
-  mocha.run();
+TEST_F('NewTabPageAppTest', 'Theming', function() {
+  runMochaSuite('NewTabPageAppTest theming');
+});
+
+TEST_F('NewTabPageAppTest', 'Promo', function() {
+  runMochaSuite('NewTabPageAppTest promo');
+});
+
+TEST_F('NewTabPageAppTest', 'Clicks', function() {
+  runMochaSuite('NewTabPageAppTest clicks');
+});
+
+TEST_F('NewTabPageAppTest', 'Modules', function() {
+  runMochaSuite('NewTabPageAppTest modules');
+});
+
+TEST_F('NewTabPageAppTest', 'CounterfactualModules', function() {
+  runMochaSuite('NewTabPageAppTest counterfactual modules');
+});
+
+TEST_F('NewTabPageAppTest', 'CustomizeUrl', function() {
+  runMochaSuite('NewTabPageAppTest customize URL');
 });
 
 var NewTabPageCustomizeDialogTest = class extends NewTabPageBrowserTest {

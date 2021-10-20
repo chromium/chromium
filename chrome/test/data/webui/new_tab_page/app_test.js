@@ -82,133 +82,62 @@ suite('NewTabPageAppTest', () => {
     await flushTasks();
   });
 
-  test('customize dialog closed on start', () => {
-    // Assert.
-    assertFalse(!!app.shadowRoot.querySelector('ntp-customize-dialog'));
-  });
+  suite('misc', () => {
+    test('customize dialog closed on start', () => {
+      // Assert.
+      assertFalse(!!app.shadowRoot.querySelector('ntp-customize-dialog'));
+    });
 
-  test('clicking customize button opens customize dialog', async () => {
-    // Act.
-    $$(app, '#customizeButton').click();
-    await flushTasks();
+    test('clicking customize button opens customize dialog', async () => {
+      // Act.
+      $$(app, '#customizeButton').click();
+      await flushTasks();
 
-    // Assert.
-    assertTrue(!!app.shadowRoot.querySelector('ntp-customize-dialog'));
-  });
+      // Assert.
+      assertTrue(!!app.shadowRoot.querySelector('ntp-customize-dialog'));
+    });
 
-  test('setting theme updates customize dialog', async () => {
-    // Arrange.
-    $$(app, '#customizeButton').click();
-    const theme = createTheme();
+    test('logs height', async () => {
+      // Assert.
+      assertEquals(1, metrics.count('NewTabPage.Height'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.Height',
+              Math.floor(document.documentElement.clientHeight)));
+    });
 
-    // Act.
-    callbackRouterRemote.setTheme(theme);
-    await callbackRouterRemote.$.flushForTesting();
+    test('realbox is not visible by default', async () => {
+      // Assert.
+      assertStyle($$(app, '#realbox'), 'visibility', 'hidden');
 
-    // Assert.
-    assertDeepEquals(
-        theme, app.shadowRoot.querySelector('ntp-customize-dialog').theme);
-  });
+      // Act.
+      callbackRouterRemote.setTheme(createTheme());
+      await callbackRouterRemote.$.flushForTesting();
 
-  test('setting theme updates ntp', async () => {
-    // Act.
-    callbackRouterRemote.setTheme(createTheme());
-    await callbackRouterRemote.$.flushForTesting();
+      // Assert.
+      assertStyle($$(app, '#realbox'), 'visibility', 'visible');
+    });
 
-    // Assert.
-    assertEquals(1, backgroundManager.getCallCount('setBackgroundColor'));
-    assertEquals(
-        0xffff0000 /* red */,
-        (await backgroundManager.whenCalled('setBackgroundColor')).value);
-    assertStyle(
-        $$(app, '#content'), '--ntp-theme-text-color', 'rgba(0, 0, 255, 1)');
-    assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
-    assertFalse(await backgroundManager.whenCalled('setShowBackgroundImage'));
-    assertStyle($$(app, '#backgroundImageAttribution'), 'display', 'none');
-    assertStyle($$(app, '#backgroundImageAttribution2'), 'display', 'none');
-    assertFalse($$(app, '#logo').singleColored);
-    assertFalse($$(app, '#logo').dark);
-    assertEquals(0xffff0000, $$(app, '#logo').backgroundColor.value);
-  });
+    test('open voice search event opens voice search overlay', async () => {
+      // Act.
+      $$(app, '#realbox').dispatchEvent(new Event('open-voice-search'));
+      await flushTasks();
 
-  test('setting 3p theme shows attribution', async () => {
-    // Arrange.
-    const theme = createTheme();
-    theme.backgroundImage = {
-      url: {url: 'https://foo.com'},
-      attributionUrl: {url: 'chrome://theme/foo'},
-    };
+      // Assert.
+      assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
+      assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.VoiceActions', VoiceAction.kActivateSearchBox));
+    });
 
-    // Act.
-    callbackRouterRemote.setTheme(theme);
-    await callbackRouterRemote.$.flushForTesting();
-
-    assertNotStyle($$(app, '#themeAttribution'), 'display', 'none');
-    assertEquals('chrome://theme/foo', $$(app, '#themeAttribution img').src);
-  });
-
-  test('realbox is not visible by default', async () => {
-    // Assert.
-    assertStyle($$(app, '#realbox'), 'visibility', 'hidden');
-
-    // Act.
-    callbackRouterRemote.setTheme(createTheme());
-    await callbackRouterRemote.$.flushForTesting();
-
-    // Assert.
-    assertStyle($$(app, '#realbox'), 'visibility', 'visible');
-  });
-
-  test('open voice search event opens voice search overlay', async () => {
-    // Act.
-    $$(app, '#realbox').dispatchEvent(new Event('open-voice-search'));
-    await flushTasks();
-
-    // Assert.
-    assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
-    assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
-    assertEquals(
-        1,
-        metrics.count(
-            'NewTabPage.VoiceActions', VoiceAction.kActivateSearchBox));
-  });
-
-  test('voice search keyboard shortcut', async () => {
-    // Test correct shortcut opens voice search.
-    // Act.
-    window.dispatchEvent(new KeyboardEvent('keydown', {
-      ctrlKey: true,
-      shiftKey: true,
-      code: 'Period',
-    }));
-    await flushTasks();
-
-    // Assert.
-    assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
-    assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
-    assertEquals(
-        1,
-        metrics.count(
-            'NewTabPage.VoiceActions', VoiceAction.kActivateKeyboard));
-
-    // Test other shortcut doesn't close voice search.
-    // Act
-    window.dispatchEvent(new KeyboardEvent('keydown', {
-      ctrlKey: true,
-      shiftKey: true,
-      code: 'Enter',
-    }));
-    await flushTasks();
-
-    // Assert.
-    assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
-  });
-
-  if (isMac) {
-    test('keyboard shortcut opens voice search overlay on mac', async () => {
+    test('voice search keyboard shortcut', async () => {
+      // Test correct shortcut opens voice search.
       // Act.
       window.dispatchEvent(new KeyboardEvent('keydown', {
-        metaKey: true,
+        ctrlKey: true,
         shiftKey: true,
         code: 'Period',
       }));
@@ -216,260 +145,339 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
+      assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.VoiceActions', VoiceAction.kActivateKeyboard));
+
+      // Test other shortcut doesn't close voice search.
+      // Act
+      window.dispatchEvent(new KeyboardEvent('keydown', {
+        ctrlKey: true,
+        shiftKey: true,
+        code: 'Enter',
+      }));
+      await flushTasks();
+
+      // Assert.
+      assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
     });
-  }
 
-  test('setting background image shows image', async () => {
-    // Arrange.
-    const theme = createTheme();
-    theme.backgroundImage = {url: {url: 'https://img.png'}};
+    if (isMac) {
+      test('keyboard shortcut opens voice search overlay on mac', async () => {
+        // Act.
+        window.dispatchEvent(new KeyboardEvent('keydown', {
+          metaKey: true,
+          shiftKey: true,
+          code: 'Period',
+        }));
+        await flushTasks();
 
-    // Act.
-    backgroundManager.resetResolver('setShowBackgroundImage');
-    callbackRouterRemote.setTheme(theme);
-    await callbackRouterRemote.$.flushForTesting();
-
-    // Assert.
-    assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
-    assertTrue(await backgroundManager.whenCalled('setShowBackgroundImage'));
-    assertNotStyle(
-        $$(app, '#backgroundImageAttribution'), 'text-shadow', 'none');
-    assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
-    assertEquals(
-        'https://img.png',
-        (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-    assertEquals(null, $$(app, '#logo').backgroundColor);
+        // Assert.
+        assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
+      });
+    }
   });
 
-  test('setting attributions shows attributions', async function() {
-    // Arrange.
-    const theme = createTheme();
-    theme.backgroundImageAttribution1 = 'foo';
-    theme.backgroundImageAttribution2 = 'bar';
-    theme.backgroundImageAttributionUrl = {url: 'https://info.com'};
+  suite('theming', () => {
+    test('setting theme updates customize dialog', async () => {
+      // Arrange.
+      $$(app, '#customizeButton').click();
+      const theme = createTheme();
 
-    // Act.
-    callbackRouterRemote.setTheme(theme);
-    await callbackRouterRemote.$.flushForTesting();
+      // Act.
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
 
-    // Assert.
-    assertNotStyle($$(app, '#backgroundImageAttribution'), 'display', 'none');
-    assertNotStyle($$(app, '#backgroundImageAttribution2'), 'display', 'none');
-    assertEquals(
-        'https://info.com',
-        $$(app, '#backgroundImageAttribution').getAttribute('href'));
-    assertEquals(
-        'foo', $$(app, '#backgroundImageAttribution1').textContent.trim());
-    assertEquals(
-        'bar', $$(app, '#backgroundImageAttribution2').textContent.trim());
-  });
+      // Assert.
+      assertDeepEquals(
+          theme, app.shadowRoot.querySelector('ntp-customize-dialog').theme);
+    });
 
-  test('setting logo color colors logo', async function() {
-    // Arrange.
-    const theme = createTheme();
-    theme.logoColor = {value: 0xffff0000};
+    test('setting theme updates ntp', async () => {
+      // Act.
+      callbackRouterRemote.setTheme(createTheme());
+      await callbackRouterRemote.$.flushForTesting();
 
-    // Act.
-    callbackRouterRemote.setTheme(theme);
-    await callbackRouterRemote.$.flushForTesting();
+      // Assert.
+      assertEquals(1, backgroundManager.getCallCount('setBackgroundColor'));
+      assertEquals(
+          0xffff0000 /* red */,
+          (await backgroundManager.whenCalled('setBackgroundColor')).value);
+      assertStyle(
+          $$(app, '#content'), '--ntp-theme-text-color', 'rgba(0, 0, 255, 1)');
+      assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
+      assertFalse(await backgroundManager.whenCalled('setShowBackgroundImage'));
+      assertStyle($$(app, '#backgroundImageAttribution'), 'display', 'none');
+      assertStyle($$(app, '#backgroundImageAttribution2'), 'display', 'none');
+      assertFalse($$(app, '#logo').singleColored);
+      assertFalse($$(app, '#logo').dark);
+      assertEquals(0xffff0000, $$(app, '#logo').backgroundColor.value);
+    });
 
-    // Assert.
-    assertTrue($$(app, '#logo').singleColored);
-    assertStyle($$(app, '#logo'), '--ntp-logo-color', 'rgba(255, 0, 0, 1)');
-  });
+    test('setting 3p theme shows attribution', async () => {
+      // Arrange.
+      const theme = createTheme();
+      theme.backgroundImage = {
+        url: {url: 'https://foo.com'},
+        attributionUrl: {url: 'chrome://theme/foo'},
+      };
 
-  test('preview background image', async () => {
-    const theme = createTheme();
-    theme.backgroundImage = {url: {url: 'https://example.com/image.png'}};
-    theme.backgroundImageAttribution1 = 'foo';
-    theme.backgroundImageAttribution2 = 'bar';
-    theme.backgroundImageAttributionUrl = {url: 'https://info.com'};
-    callbackRouterRemote.setTheme(theme);
-    await callbackRouterRemote.$.flushForTesting();
-    assertEquals(backgroundManager.getCallCount('setBackgroundImage'), 1);
-    assertEquals(
-        'https://example.com/image.png',
-        (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-    assertEquals(
-        'https://info.com/', $$(app, '#backgroundImageAttribution').href);
-    assertEquals('foo', $$(app, '#backgroundImageAttribution1').innerText);
-    assertEquals('bar', $$(app, '#backgroundImageAttribution2').innerText);
-    $$(app, '#customizeButton').click();
-    await flushTasks();
-    const dialog = app.shadowRoot.querySelector('ntp-customize-dialog');
-    backgroundManager.resetResolver('setBackgroundImage');
-    dialog.backgroundSelection = {
-      type: BackgroundSelectionType.IMAGE,
-      image: {
-        attribution1: '1',
-        attribution2: '2',
-        attributionUrl: {url: 'https://example.com'},
-        imageUrl: {url: 'https://example.com/other.png'},
-      },
-    };
-    assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
-    assertEquals(
-        'https://example.com/other.png',
-        (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-    assertEquals(
-        'https://example.com/', $$(app, '#backgroundImageAttribution').href);
-    assertEquals('1', $$(app, '#backgroundImageAttribution1').innerText);
-    assertEquals('2', $$(app, '#backgroundImageAttribution2').innerText);
-    assertFalse($$(app, '#backgroundImageAttribution2').hidden);
+      // Act.
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
 
-    backgroundManager.resetResolver('setBackgroundImage');
-    dialog.backgroundSelection = {type: BackgroundSelectionType.NO_SELECTION};
-    assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
-    assertEquals(
-        'https://example.com/image.png',
-        (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-  });
+      assertNotStyle($$(app, '#themeAttribution'), 'display', 'none');
+      assertEquals('chrome://theme/foo', $$(app, '#themeAttribution img').src);
+    });
 
-  test('theme update when dialog closed clears selection', async () => {
-    const theme = createTheme();
-    theme.backgroundImage = {url: {url: 'https://example.com/image.png'}};
-    callbackRouterRemote.setTheme(theme);
-    await callbackRouterRemote.$.flushForTesting();
-    assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
-    assertEquals(
-        'https://example.com/image.png',
-        (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-    $$(app, '#customizeButton').click();
-    await flushTasks();
-    const dialog = app.shadowRoot.querySelector('ntp-customize-dialog');
-    backgroundManager.resetResolver('setBackgroundImage');
-    dialog.backgroundSelection = {
-      type: BackgroundSelectionType.IMAGE,
-      image: {
-        attribution1: '1',
-        attribution2: '2',
-        attributionUrl: {url: 'https://example.com'},
-        imageUrl: {url: 'https://example.com/other.png'},
-      },
-    };
-    assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
-    assertEquals(
-        'https://example.com/other.png',
-        (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-    backgroundManager.resetResolver('setBackgroundImage');
-    dialog.dispatchEvent(new Event('close'));
-    assertEquals(0, backgroundManager.getCallCount('setBackgroundImage'));
-    backgroundManager.resetResolver('setBackgroundImage');
-    callbackRouterRemote.setTheme(theme);
-    await callbackRouterRemote.$.flushForTesting();
-    assertEquals(2, backgroundManager.getCallCount('setBackgroundImage'));
-    assertEquals(
-        'https://example.com/image.png',
-        (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-  });
+    test('setting background image shows image', async () => {
+      // Arrange.
+      const theme = createTheme();
+      theme.backgroundImage = {url: {url: 'https://img.png'}};
 
-  test('theme updates add shortcut color', async () => {
-    const theme = createTheme();
-    theme.mostVisited.useWhiteTileIcon = true;
-    callbackRouterRemote.setTheme(theme);
-    const mostVisited = $$(app, '#mostVisited');
-    assertFalse(mostVisited.hasAttribute('use-white-tile-icon_'));
-    await callbackRouterRemote.$.flushForTesting();
-    assertTrue(mostVisited.hasAttribute('use-white-tile-icon_'));
-  });
+      // Act.
+      backgroundManager.resetResolver('setShowBackgroundImage');
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
 
-  test('theme updates use title pill', async () => {
-    const theme = createTheme();
-    theme.mostVisited.useTitlePill = true;
-    callbackRouterRemote.setTheme(theme);
-    const mostVisited = $$(app, '#mostVisited');
-    assertFalse(mostVisited.hasAttribute('use-title-pill_'));
-    await callbackRouterRemote.$.flushForTesting();
-    assertTrue(mostVisited.hasAttribute('use-title-pill_'));
-  });
+      // Assert.
+      assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
+      assertTrue(await backgroundManager.whenCalled('setShowBackgroundImage'));
+      assertNotStyle(
+          $$(app, '#backgroundImageAttribution'), 'text-shadow', 'none');
+      assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
+      assertEquals(
+          'https://img.png',
+          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
+      assertEquals(null, $$(app, '#logo').backgroundColor);
+    });
 
-  test('theme updates is dark', async () => {
-    const theme = createTheme();
-    theme.mostVisited.isDark = true;
-    callbackRouterRemote.setTheme(theme);
-    const mostVisited = $$(app, '#mostVisited');
-    assertFalse(mostVisited.hasAttribute('is-dark_'));
-    await callbackRouterRemote.$.flushForTesting();
-    assertTrue(mostVisited.hasAttribute('is-dark_'));
-  });
+    test('setting attributions shows attributions', async function() {
+      // Arrange.
+      const theme = createTheme();
+      theme.backgroundImageAttribution1 = 'foo';
+      theme.backgroundImageAttribution2 = 'bar';
+      theme.backgroundImageAttributionUrl = {url: 'https://info.com'};
 
-  test('can show promo with browser command', async () => {
-    const promoBrowserCommandHandler = installMock(
-        CommandHandlerRemote,
-        mock => BrowserCommandProxy.getInstance().handler = mock);
-    promoBrowserCommandHandler.setResultFor(
-        'canExecuteCommand', Promise.resolve({canExecute: true}));
+      // Act.
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
 
-    const commandId = 123;  // Unsupported command.
-    window.dispatchEvent(new MessageEvent('message', {
-      data: {
-        frameType: 'one-google-bar',
-        messageType: 'can-show-promo-with-browser-command',
-        commandId,
-      },
-      source: window,
-      origin: window.origin,
-    }));
+      // Assert.
+      assertNotStyle($$(app, '#backgroundImageAttribution'), 'display', 'none');
+      assertNotStyle(
+          $$(app, '#backgroundImageAttribution2'), 'display', 'none');
+      assertEquals(
+          'https://info.com',
+          $$(app, '#backgroundImageAttribution').getAttribute('href'));
+      assertEquals(
+          'foo', $$(app, '#backgroundImageAttribution1').textContent.trim());
+      assertEquals(
+          'bar', $$(app, '#backgroundImageAttribution2').textContent.trim());
+    });
 
-    // Make sure the command is sent to the browser.
-    const expectedCommandId =
-        await promoBrowserCommandHandler.whenCalled('canExecuteCommand');
-    // Unsupported commands get resolved to the default command before being
-    // sent to the browser.
-    assertEquals(Command.kUnknownCommand, expectedCommandId);
+    test('setting logo color colors logo', async function() {
+      // Arrange.
+      const theme = createTheme();
+      theme.logoColor = {value: 0xffff0000};
 
-    // Make sure the promo frame gets notified whether the promo can be shown.
-    const {data} = await eventToPromise('message', window);
-    assertEquals('can-show-promo-with-browser-command', data.messageType);
-    assertTrue(data[commandId]);
-  });
+      // Act.
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
 
-  test('executes promo browser command', async () => {
-    const promoBrowserCommandHandler = installMock(
-        CommandHandlerRemote,
-        mock => BrowserCommandProxy.getInstance().handler = mock);
-    promoBrowserCommandHandler.setResultFor(
-        'executeCommand', Promise.resolve({commandExecuted: true}));
+      // Assert.
+      assertTrue($$(app, '#logo').singleColored);
+      assertStyle($$(app, '#logo'), '--ntp-logo-color', 'rgba(255, 0, 0, 1)');
+    });
 
-    const commandId = 123;  // Unsupported command.
-    const clickInfo = {middleButton: true};
-    window.dispatchEvent(new MessageEvent('message', {
-      data: {
-        frameType: 'one-google-bar',
-        messageType: 'execute-browser-command',
-        data: {
-          commandId,
-          clickInfo,
+    test('preview background image', async () => {
+      const theme = createTheme();
+      theme.backgroundImage = {url: {url: 'https://example.com/image.png'}};
+      theme.backgroundImageAttribution1 = 'foo';
+      theme.backgroundImageAttribution2 = 'bar';
+      theme.backgroundImageAttributionUrl = {url: 'https://info.com'};
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+      assertEquals(backgroundManager.getCallCount('setBackgroundImage'), 1);
+      assertEquals(
+          'https://example.com/image.png',
+          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
+      assertEquals(
+          'https://info.com/', $$(app, '#backgroundImageAttribution').href);
+      assertEquals('foo', $$(app, '#backgroundImageAttribution1').innerText);
+      assertEquals('bar', $$(app, '#backgroundImageAttribution2').innerText);
+      $$(app, '#customizeButton').click();
+      await flushTasks();
+      const dialog = app.shadowRoot.querySelector('ntp-customize-dialog');
+      backgroundManager.resetResolver('setBackgroundImage');
+      dialog.backgroundSelection = {
+        type: BackgroundSelectionType.IMAGE,
+        image: {
+          attribution1: '1',
+          attribution2: '2',
+          attributionUrl: {url: 'https://example.com'},
+          imageUrl: {url: 'https://example.com/other.png'},
         },
-      },
-      source: window,
-      origin: window.origin,
-    }));
+      };
+      assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
+      assertEquals(
+          'https://example.com/other.png',
+          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
+      assertEquals(
+          'https://example.com/', $$(app, '#backgroundImageAttribution').href);
+      assertEquals('1', $$(app, '#backgroundImageAttribution1').innerText);
+      assertEquals('2', $$(app, '#backgroundImageAttribution2').innerText);
+      assertFalse($$(app, '#backgroundImageAttribution2').hidden);
 
-    // Make sure the command and click information are sent to the browser.
-    const [expectedCommandId, expectedClickInfo] =
-        await promoBrowserCommandHandler.whenCalled('executeCommand');
-    // Unsupported commands get resolved to the default command before being
-    // sent to the browser.
-    assertEquals(Command.kUnknownCommand, expectedCommandId);
-    assertEquals(clickInfo, expectedClickInfo);
+      backgroundManager.resetResolver('setBackgroundImage');
+      dialog.backgroundSelection = {type: BackgroundSelectionType.NO_SELECTION};
+      assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
+      assertEquals(
+          'https://example.com/image.png',
+          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
+    });
 
-    // Make sure the promo frame gets notified whether the command was executed.
-    const {data: commandExecuted} = await eventToPromise('message', window);
-    assertTrue(commandExecuted);
+    test('theme update when dialog closed clears selection', async () => {
+      const theme = createTheme();
+      theme.backgroundImage = {url: {url: 'https://example.com/image.png'}};
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+      assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
+      assertEquals(
+          'https://example.com/image.png',
+          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
+      $$(app, '#customizeButton').click();
+      await flushTasks();
+      const dialog = app.shadowRoot.querySelector('ntp-customize-dialog');
+      backgroundManager.resetResolver('setBackgroundImage');
+      dialog.backgroundSelection = {
+        type: BackgroundSelectionType.IMAGE,
+        image: {
+          attribution1: '1',
+          attribution2: '2',
+          attributionUrl: {url: 'https://example.com'},
+          imageUrl: {url: 'https://example.com/other.png'},
+        },
+      };
+      assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
+      assertEquals(
+          'https://example.com/other.png',
+          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
+      backgroundManager.resetResolver('setBackgroundImage');
+      dialog.dispatchEvent(new Event('close'));
+      assertEquals(0, backgroundManager.getCallCount('setBackgroundImage'));
+      backgroundManager.resetResolver('setBackgroundImage');
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+      assertEquals(2, backgroundManager.getCallCount('setBackgroundImage'));
+      assertEquals(
+          'https://example.com/image.png',
+          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
+    });
+
+    test('theme updates add shortcut color', async () => {
+      const theme = createTheme();
+      theme.mostVisited.useWhiteTileIcon = true;
+      callbackRouterRemote.setTheme(theme);
+      const mostVisited = $$(app, '#mostVisited');
+      assertFalse(mostVisited.hasAttribute('use-white-tile-icon_'));
+      await callbackRouterRemote.$.flushForTesting();
+      assertTrue(mostVisited.hasAttribute('use-white-tile-icon_'));
+    });
+
+    test('theme updates use title pill', async () => {
+      const theme = createTheme();
+      theme.mostVisited.useTitlePill = true;
+      callbackRouterRemote.setTheme(theme);
+      const mostVisited = $$(app, '#mostVisited');
+      assertFalse(mostVisited.hasAttribute('use-title-pill_'));
+      await callbackRouterRemote.$.flushForTesting();
+      assertTrue(mostVisited.hasAttribute('use-title-pill_'));
+    });
+
+    test('theme updates is dark', async () => {
+      const theme = createTheme();
+      theme.mostVisited.isDark = true;
+      callbackRouterRemote.setTheme(theme);
+      const mostVisited = $$(app, '#mostVisited');
+      assertFalse(mostVisited.hasAttribute('is-dark_'));
+      await callbackRouterRemote.$.flushForTesting();
+      assertTrue(mostVisited.hasAttribute('is-dark_'));
+    });
   });
 
-  test('logs height', async () => {
-    // Assert.
-    assertEquals(1, metrics.count('NewTabPage.Height'));
-    assertEquals(
-        1,
-        metrics.count(
-            'NewTabPage.Height',
-            Math.floor(document.documentElement.clientHeight)));
+  suite('promo', () => {
+    test('can show promo with browser command', async () => {
+      const promoBrowserCommandHandler = installMock(
+          CommandHandlerRemote,
+          mock => BrowserCommandProxy.getInstance().handler = mock);
+      promoBrowserCommandHandler.setResultFor(
+          'canExecuteCommand', Promise.resolve({canExecute: true}));
+
+      const commandId = 123;  // Unsupported command.
+      window.dispatchEvent(new MessageEvent('message', {
+        data: {
+          frameType: 'one-google-bar',
+          messageType: 'can-show-promo-with-browser-command',
+          commandId,
+        },
+        source: window,
+        origin: window.origin,
+      }));
+
+      // Make sure the command is sent to the browser.
+      const expectedCommandId =
+          await promoBrowserCommandHandler.whenCalled('canExecuteCommand');
+      // Unsupported commands get resolved to the default command before being
+      // sent to the browser.
+      assertEquals(Command.kUnknownCommand, expectedCommandId);
+
+      // Make sure the promo frame gets notified whether the promo can be shown.
+      const {data} = await eventToPromise('message', window);
+      assertEquals('can-show-promo-with-browser-command', data.messageType);
+      assertTrue(data[commandId]);
+    });
+
+    test('executes promo browser command', async () => {
+      const promoBrowserCommandHandler = installMock(
+          CommandHandlerRemote,
+          mock => BrowserCommandProxy.getInstance().handler = mock);
+      promoBrowserCommandHandler.setResultFor(
+          'executeCommand', Promise.resolve({commandExecuted: true}));
+
+      const commandId = 123;  // Unsupported command.
+      const clickInfo = {middleButton: true};
+      window.dispatchEvent(new MessageEvent('message', {
+        data: {
+          frameType: 'one-google-bar',
+          messageType: 'execute-browser-command',
+          data: {
+            commandId,
+            clickInfo,
+          },
+        },
+        source: window,
+        origin: window.origin,
+      }));
+
+      // Make sure the command and click information are sent to the browser.
+      const [expectedCommandId, expectedClickInfo] =
+          await promoBrowserCommandHandler.whenCalled('executeCommand');
+      // Unsupported commands get resolved to the default command before being
+      // sent to the browser.
+      assertEquals(Command.kUnknownCommand, expectedCommandId);
+      assertEquals(clickInfo, expectedClickInfo);
+
+      // Make sure the promo frame gets notified whether the command was
+      // executed.
+      const {data: commandExecuted} = await eventToPromise('message', window);
+      assertTrue(commandExecuted);
+    });
   });
 
-  suite('click recording', () => {
+  suite('clicks', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
