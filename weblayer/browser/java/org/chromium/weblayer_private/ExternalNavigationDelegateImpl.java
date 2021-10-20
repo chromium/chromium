@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.Function;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.StartActivityIfNeededResult;
 import org.chromium.components.external_intents.ExternalNavigationParams;
@@ -78,17 +77,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         assert !proxy
             : "|proxy| should be true only for instant apps, which WebLayer doesn't handle";
 
-        boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(intent.toUri(0));
-        boolean hasDefaultHandler = hasDefaultHandler(intent);
-
-        // Match CCT's custom behavior of keeping http(s) URLs with no default handler in the app.
-        // TODO(blundell): If/when CCT eliminates its special handling of this case, eliminate it
-        // from WebLayer as well.
-        if (!isExternalProtocol && !hasDefaultHandler) {
-            return StartActivityIfNeededResult.HANDLED_WITHOUT_ACTIVITY_START;
-        }
-
-        // Otherwise defer to ExternalNavigationHandler's default logic.
+        // Defer to ExternalNavigationHandler's default logic.
         return StartActivityIfNeededResult.DID_NOT_HANDLE;
     }
 

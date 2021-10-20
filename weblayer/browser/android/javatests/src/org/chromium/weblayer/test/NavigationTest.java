@@ -84,9 +84,10 @@ public class NavigationTest {
     // A URL with a custom scheme/host that is handled by WebLayer Shell.
     private static final String CUSTOM_SCHEME_URL_WITH_DEFAULT_EXTERNAL_HANDLER =
             "weblayer://weblayertest/intent";
-    // An intent that opens Chrome to view a specified URL.
-    private static final String INTENT_TO_CHROME_URL =
-            "intent://play.google.com/store/apps/details?id=com.facebook.katana/#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end";
+    // An intent that sends an url with a custom scheme that is handled by WebLayer Shell.
+    private static final String INTENT_TO_CUSTOM_SCHEME_URL =
+            "intent://weblayertest/intent#Intent;scheme=weblayer;"
+            + "action=android.intent.action.VIEW;end";
 
     // An IntentInterceptor that simply drops intents to ensure that intent launches don't interfere
     // with running of tests.
@@ -762,7 +763,7 @@ public class NavigationTest {
         assertEquals(true, mCallback.onCompletedCallback.isKnownProtocol());
 
         // Test external protocol cases.
-        mActivityTestRule.navigateAndWaitForFailure(activity.getTab(), INTENT_TO_CHROME_URL,
+        mActivityTestRule.navigateAndWaitForFailure(activity.getTab(), INTENT_TO_CUSTOM_SCHEME_URL,
                 /*waitForPaint=*/false);
         assertEquals(false, mCallback.onStartedCallback.isKnownProtocol());
         assertEquals(false, mCallback.onFailedCallback.isKnownProtocol());
