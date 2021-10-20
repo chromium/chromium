@@ -213,7 +213,7 @@ void ShadowController::Impl::OnWindowBoundsChanged(
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
   ui::Shadow* shadow = GetShadowForWindow(window);
-  if (shadow)
+  if (shadow && window->GetProperty(aura::client::kUseWindowBoundsForShadow))
     shadow->SetContentBounds(gfx::Rect(new_bounds.size()));
 }
 

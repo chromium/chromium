@@ -134,10 +134,8 @@ void ShellSurface::AcknowledgeConfigure(uint32_t serial) {
       break;
   }
 
-  if (widget_) {
-    UpdateWidgetBounds();
-    UpdateShadow();
-  }
+  // Shadow bounds update should be called in the next Commit() when applying
+  // config instead of updating right when the client acknowledge the config.
 }
 
 void ShellSurface::SetParent(ShellSurface* parent) {

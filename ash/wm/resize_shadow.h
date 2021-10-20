@@ -17,6 +17,9 @@ class Window;
 namespace ui {
 class Layer;
 }
+namespace gfx {
+class Rect;
+}
 
 namespace ash {
 
@@ -69,6 +72,7 @@ class ResizeShadow {
 
   // Updates bounds and visibility of |layer_|.
   void UpdateBoundsAndVisibility();
+  void UpdateBounds(const gfx::Rect& window_bounds);
 
   // Updates the |last_hist_test_| with given |hit_test| code.
   void UpdateHitTest(int hit_test);

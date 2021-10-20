@@ -94,7 +94,7 @@ void ResizeShadowController::OnWindowBoundsChanged(
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
   ResizeShadow* shadow = GetShadowForWindow(window);
-  if (shadow)
+  if (shadow && window->GetProperty(aura::client::kUseWindowBoundsForShadow))
     shadow->UpdateBoundsAndVisibility();
 }
 
@@ -115,6 +115,14 @@ void ResizeShadowController::OnWindowPropertyChanged(aura::Window* window,
   if (key != aura::client::kShowStateKey)
     return;
   UpdateShadowVisibility(window, window->IsVisible());
+}
+
+void ResizeShadowController::UpdateResizeShadowBoundsOfWindow(
+    aura::Window* window,
+    const gfx::Rect& bounds) {
+  ResizeShadow* shadow = GetShadowForWindow(window);
+  if (shadow)
+    shadow->UpdateBounds(bounds);
 }
 
 ResizeShadow* ResizeShadowController::GetShadowForWindowForTest(

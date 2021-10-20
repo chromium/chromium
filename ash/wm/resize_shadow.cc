@@ -133,6 +133,10 @@ void ResizeShadow::UpdateHitTest(int hit) {
 }
 
 void ResizeShadow::UpdateBoundsAndVisibility() {
+  UpdateBounds(window_->bounds());
+}
+
+void ResizeShadow::UpdateBounds(const gfx::Rect& window_bounds) {
   // The shadow layer is positioned such that one or two edges will stick out
   // from underneath |window_|. Thus |window_| occludes the rest of the
   // roundrect.
@@ -146,7 +150,7 @@ void ResizeShadow::UpdateBoundsAndVisibility() {
 
   visible_ &= !outsets.IsEmpty();
   if (visible_) {
-    gfx::Rect bounds = window_->bounds();
+    gfx::Rect bounds = window_bounds;
     bounds.Inset(outsets);
     layer_->SetBounds(bounds);
   }

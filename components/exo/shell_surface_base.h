@@ -132,6 +132,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Set the flag if the surface can maximize or not.
   void SetCanMinimize(bool can_minimize);
 
+  // Set normal shadow bounds, |shadow_bounds_|, to |bounds| to be used and
+  // applied via `UpdateShadow()`. Set and update resize shadow bounds with
+  // |widget_|'s origin and |bounds| via `UpdateResizeShadowBoundsOfWindow()`.
+  void SetBoundsForShadows(const absl::optional<gfx::Rect>& bounds);
+
   // Prevents shell surface from being moved.
   void DisableMovement();
 

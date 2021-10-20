@@ -40,6 +40,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -48,6 +49,7 @@
 #include "ui/events/event.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
 
@@ -1427,6 +1429,125 @@ TEST_F(ShellSurfaceTest, ServerStartResize) {
 
   EXPECT_EQ(widget->GetWindowBoundsInScreen().size().width(),
             size.width() + kDragAmount);
+}
+
+// Make sure that resize shadow does not update until commit when the window
+// property |aura::client::kUseWindowBoundsForShadow| is false.
+TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+  shell_surface->OnSetServerStartResize();
+  shell_surface->root_surface()->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  auto* widget = shell_surface->GetWidget();
+
+  gfx::Size size = widget->GetWindowBoundsInScreen().size();
+  widget->SetBounds(gfx::Rect(size));
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kUseWindowBoundsForShadow, false);
+
+  // Starts mouse event to make sure resize shadow is created.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(size.width() + 2, size.height() / 2);
+
+  // Creates resize shadow and normal shadow for resizable exo window.
+  ash::ResizeShadow* resize_shadow =
+      ash::Shell::Get()->resize_shadow_controller()->GetShadowForWindowForTest(
+          widget->GetNativeWindow());
+  ASSERT_TRUE(resize_shadow);
+  shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
+  shell_surface->root_surface()->Commit();
+  ui::Shadow* normal_shadow =
+      wm::ShadowController::GetShadowForWindow(widget->GetNativeWindow());
+  ASSERT_TRUE(normal_shadow);
+
+  // ash::ResizeShadow::InitParams set the default |thickness| to 8.
+  const int kResizeShadowThickness = 8;
+
+  EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
+            resize_shadow->GetLayerForTest()->bounds().size());
+  EXPECT_EQ(size, normal_shadow->content_bounds().size());
+
+  gfx::Size new_size(100, 100);
+  gfx::Rect new_bounds(new_size);
+  uint32_t serial = 0;
+  auto configure_callback = base::BindRepeating(
+      [](uint32_t* const serial_ptr, const gfx::Size& size,
+         chromeos::WindowStateType state_type, bool resizing, bool activated,
+         const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
+      &serial);
+
+  shell_surface->set_configure_callback(configure_callback);
+
+  // Resize the widget and set geometry.
+  shell_surface->StartResize(HTBOTTOMRIGHT);
+  shell_surface->SetWidgetBounds(new_bounds);
+  shell_surface->SetGeometry(new_bounds);
+
+  // Client acknowledge configure for resizing. Shadow sizes should not be
+  // updated yet until commit.
+  shell_surface->AcknowledgeConfigure(serial);
+  EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
+            resize_shadow->GetLayerForTest()->bounds().size());
+  EXPECT_EQ(size, normal_shadow->content_bounds().size());
+
+  // Normal and resize shadow sizes are updated after commit.
+  shell_surface->root_surface()->Commit();
+  EXPECT_EQ(
+      gfx::Size(new_size.width() + kResizeShadowThickness, new_size.height()),
+      resize_shadow->GetLayerForTest()->bounds().size());
+  EXPECT_EQ(new_size, normal_shadow->content_bounds().size());
+}
+
+// Make sure that resize shadow updates as soon as widget bounds change when
+// the window property |aura::client::kUseWindowBoundsForShadow| is false.
+TEST_F(ShellSurfaceTest, ResizeShadowDependentBounds) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+  shell_surface->OnSetServerStartResize();
+  shell_surface->root_surface()->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  auto* widget = shell_surface->GetWidget();
+
+  gfx::Size size = widget->GetWindowBoundsInScreen().size();
+  widget->SetBounds(gfx::Rect(size));
+
+  // Starts mouse event to make sure resize shadow is created.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(size.width() + 2, size.height() / 2);
+
+  // Creates resize shadow and normal shadow for resizable exo window.
+  ash::ResizeShadow* resize_shadow =
+      ash::Shell::Get()->resize_shadow_controller()->GetShadowForWindowForTest(
+          widget->GetNativeWindow());
+  ASSERT_TRUE(resize_shadow);
+  shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
+  shell_surface->root_surface()->Commit();
+  ui::Shadow* normal_shadow =
+      wm::ShadowController::GetShadowForWindow(widget->GetNativeWindow());
+  ASSERT_TRUE(normal_shadow);
+
+  // ash::ResizeShadow::InitParams set the default |thickness| to 8.
+  const int kResizeShadowThickness = 8;
+
+  EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
+            resize_shadow->GetLayerForTest()->bounds().size());
+  EXPECT_EQ(size, normal_shadow->content_bounds().size());
+
+  gfx::Size new_size(100, 100);
+  gfx::Rect new_bounds(new_size);
+
+  // Resize the widget and set geometry.
+  shell_surface->StartResize(HTBOTTOMRIGHT);
+  shell_surface->SetWidgetBounds(new_bounds);
+  shell_surface->SetGeometry(new_bounds);
+  // Shadow bounds are updated as soon as the widget bounds change.
+  EXPECT_EQ(
+      gfx::Size(new_size.width() + kResizeShadowThickness, new_size.height()),
+      resize_shadow->GetLayerForTest()->bounds().size());
+  EXPECT_EQ(new_size, normal_shadow->content_bounds().size());
 }
 
 TEST_F(ShellSurfaceTest, PropertyResolverTest) {

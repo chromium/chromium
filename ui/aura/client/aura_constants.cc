@@ -61,6 +61,9 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kNameKey, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::OwnedWindowAnchor,
                                    kOwnedWindowAnchor,
                                    nullptr)
+
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kUseWindowBoundsForShadow, true)
+
 DEFINE_UI_CLASS_PROPERTY_KEY(gfx::NativeViewAccessible,
                              kParentNativeViewAccessibleKey,
                              nullptr)

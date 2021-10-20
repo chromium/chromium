@@ -111,6 +111,21 @@ AURA_EXPORT extern const WindowProperty<std::string*>* const kNameKey;
 AURA_EXPORT extern const WindowProperty<struct ui::OwnedWindowAnchor*>* const
     kOwnedWindowAnchor;
 
+// A property key to store if a window drop shadow and resize shadow of a
+// window are exactly the same as the window bounds, i.e. if resizing a window
+// immediately resizes its shadows. Generally, resizing and content rendering
+// happen in server side without any client involved, so without any delay in
+// communication this value should be true: shadow bounds are the same as
+// window bounds which define content bounds. For LaCros and other windows with
+// server-controlled shadow but client-controlled content, this value should be
+// false to ensure that the shadow is not immediately resized along with window
+// in server side. Instead, the shadow waits for client content to catch up with
+// the new window bounds first to avoid a gap between shadow and content
+// (crbug.com/1199497).
+// TODO(crbug/1247880): all exo clients that use server side resize shadow
+// should have this property set to true.
+AURA_EXPORT extern const WindowProperty<bool>* const kUseWindowBoundsForShadow;
+
 // A property key to store the accessible parent of a native view. This is
 // used to allow WebContents to access their accessible parents for use in
 // walking up the accessibility tree via platform APIs.
