@@ -37,5 +37,7 @@ struct OverflowMenuDestinationView: View {
         .font(.caption2)
         .padding([.leading, .trailing], Dimensions.textPadding)
     }
+    .contentShape(Rectangle())
+    .onTapGesture(perform: destination.handler)
   }
 }

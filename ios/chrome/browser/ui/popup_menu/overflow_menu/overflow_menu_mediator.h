@@ -30,6 +30,12 @@ class WebStateList;
 // Navigation agent for reloading pages.
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
 
+// If the current session is off the record or not.
+@property(nonatomic, assign) bool isIncognito;
+
+// BaseViewController for presenting some UI.
+@property(nonatomic, weak) UIViewController* baseViewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_OVERFLOW_MENU_MEDIATOR_H_

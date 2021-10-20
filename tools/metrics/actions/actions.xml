@@ -14978,6 +14978,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuPasswords">
+  <owner>rkgibson@chromium.org</owner>
+  <description>User pressed 'Passwords' in the app menu.</description>
+</action>
+
 <action name="MobileMenuPasteAndGo">
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Paste and Go' in the app menu.</description>

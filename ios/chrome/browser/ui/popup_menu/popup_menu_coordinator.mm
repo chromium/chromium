@@ -307,6 +307,9 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
       self.overflowMenuMediator.webStateList = self.browser->GetWebStateList();
       self.overflowMenuMediator.navigationAgent =
           WebNavigationBrowserAgent::FromBrowser(self.browser);
+      self.overflowMenuMediator.baseViewController = self.baseViewController;
+      self.overflowMenuMediator.isIncognito =
+          self.browser->GetBrowserState()->IsOffTheRecord();
       UIViewController* menu = [OverflowMenuViewProvider
           makeViewControllerWithModel:self.overflowMenuMediator
                                           .overflowMenuModel];

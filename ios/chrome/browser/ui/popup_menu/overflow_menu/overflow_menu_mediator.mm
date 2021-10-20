@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -24,6 +27,7 @@
 #endif
 
 using base::RecordAction;
+using base::UmaHistogramEnumeration;
 using base::UserMetricsAction;
 
 namespace {
@@ -145,38 +149,39 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   __weak __typeof(self) weakSelf = self;
 
   self.bookmarksDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_BOOKMARKS, @"overflow_menu_destination_bookmarks",
-      ^{
+      IDS_IOS_TOOLS_MENU_BOOKMARKS, @"overflow_menu_destination_bookmarks", ^{
+        [weakSelf openBookmarks];
       });
   self.downloadsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_DOWNLOADS, @"overflow_menu_destination_downloads",
-      ^{
+      IDS_IOS_TOOLS_MENU_DOWNLOADS, @"overflow_menu_destination_downloads", ^{
+        [weakSelf openDownloads];
       });
   self.historyDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_HISTORY, @"overflow_menu_destination_history",
-      ^{
+      IDS_IOS_TOOLS_MENU_HISTORY, @"overflow_menu_destination_history", ^{
+        [weakSelf openHistory];
       });
   self.passwordsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_PASSWORDS, @"overflow_menu_destination_passwords",
-      ^{
+      IDS_IOS_TOOLS_MENU_PASSWORDS, @"overflow_menu_destination_passwords", ^{
+        [weakSelf openPasswords];
       });
-  self.readingListDestination =
-      CreateOverflowMenuDestination(IDS_IOS_TOOLS_MENU_READING_LIST,
-                                    @"overflow_menu_destination_reading_list",
-                                    ^{
+  self.readingListDestination = CreateOverflowMenuDestination(
+      IDS_IOS_TOOLS_MENU_READING_LIST,
+      @"overflow_menu_destination_reading_list", ^{
+        [weakSelf openReadingList];
+      });
+  self.recentTabsDestination =
+      CreateOverflowMenuDestination(IDS_IOS_TOOLS_MENU_RECENT_TABS,
+                                    @"overflow_menu_destination_recent_tabs", ^{
+                                      [weakSelf openRecentTabs];
                                     });
-  self.recentTabsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_RECENT_TABS, @"overflow_menu_destination_recent_tabs",
-      ^{
-      });
   self.settingsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_SETTINGS, @"overflow_menu_destination_settings",
-      ^{
+      IDS_IOS_TOOLS_MENU_SETTINGS, @"overflow_menu_destination_settings", ^{
+        [weakSelf openSettings];
       });
   self.siteInfoDestination =
       CreateOverflowMenuDestination(IDS_IOS_TOOLS_MENU_SITE_INFORMATION,
-                                    @"overflow_menu_destination_site_info",
-                                    ^{
+                                    @"overflow_menu_destination_site_info", ^{
+                                      [weakSelf openSiteInformation];
                                     });
 
   // The reload action's handler depends on the page state, so it's set
@@ -373,6 +378,75 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   [self.dispatcher dismissPopupMenuAnimated:YES];
   [self.dispatcher
       openURLInNewTab:[OpenNewTabCommand commandWithIncognito:YES]];
+}
+
+#pragma mark - Destinations Handlers
+
+// Dismisses the menu and opens bookmarks.
+- (void)openBookmarks {
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  RecordAction(UserMetricsAction("MobileMenuAllBookmarks"));
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+  [self.dispatcher showBookmarksManager];
+}
+
+// Dismisses the menu and opens history.
+- (void)openHistory {
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  RecordAction(UserMetricsAction("MobileMenuHistory"));
+  [self.dispatcher showHistory];
+}
+
+// Dismisses the menu and opens reading list.
+- (void)openReadingList {
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  RecordAction(UserMetricsAction("MobileMenuReadingList"));
+  [self.dispatcher showReadingList];
+}
+
+// Dismisses the menu and opens password list.
+- (void)openPasswords {
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  RecordAction(UserMetricsAction("MobileMenuPasswords"));
+  [self.dispatcher
+      showSavedPasswordsSettingsFromViewController:self.baseViewController];
+}
+
+// Dismisses the menu and opens downloads.
+- (void)openDownloads {
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  RecordAction(UserMetricsAction("MobileDownloadFolderUIShownFromToolsMenu"));
+  profile_metrics::BrowserProfileType type =
+      self.isIncognito ? profile_metrics::BrowserProfileType::kIncognito
+                       : profile_metrics::BrowserProfileType::kRegular;
+  UmaHistogramEnumeration("Download.OpenDownloadsFromMenu.PerProfileType",
+                          type);
+  [self.dispatcher showDownloadsFolder];
+}
+
+// Dismisses the menu and opens recent tabs.
+- (void)openRecentTabs {
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  RecordAction(UserMetricsAction("MobileMenuRecentTabs"));
+  [self.dispatcher showRecentTabs];
+}
+
+// Dismisses the menu and shows page information.
+- (void)openSiteInformation {
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  RecordAction(UserMetricsAction("MobileMenuSiteInformation"));
+  [self.dispatcher showPageInfo];
+}
+
+// Dismisses the menu and opens settings.
+- (void)openSettings {
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  RecordAction(UserMetricsAction("MobileMenuSettings"));
+  profile_metrics::BrowserProfileType type =
+      self.isIncognito ? profile_metrics::BrowserProfileType::kIncognito
+                       : profile_metrics::BrowserProfileType::kRegular;
+  UmaHistogramEnumeration("Settings.OpenSettingsFromMenu.PerProfileType", type);
+  [self.dispatcher showSettingsFromViewController:self.baseViewController];
 }
 
 @end
