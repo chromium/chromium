@@ -32,7 +32,7 @@ group("polymer3_elements") {
     "network:polymer3_elements",
     "network_health:polymer3_elements",
     "quick_unlock:polymer3_elements",
-    "smb_shares:polymer3_elements",
+    "smb_shares:web_components",
     "traffic_counters:web_components",
   ]
 }

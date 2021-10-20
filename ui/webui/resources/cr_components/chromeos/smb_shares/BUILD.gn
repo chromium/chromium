@@ -3,26 +3,21 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
 
 assert(is_chromeos, "SMB Shares is Chrome OS only.")
-
-# TODO(crbug.com/1031947): Fully convert this component to Polymer 3 once
-# chrome://os-settings has been migrated.
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
-    ":add_smb_share_dialog.m",
-    ":smb_browser_proxy.m",
+    ":add_smb_share_dialog",
+    ":smb_browser_proxy",
   ]
 }
 
-js_library("add_smb_share_dialog.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/smb_shares/add_smb_share_dialog.m.js" ]
+js_library("add_smb_share_dialog") {
   deps = [
-    ":smb_browser_proxy.m",
+    ":smb_browser_proxy",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -32,31 +27,12 @@ js_library("add_smb_share_dialog.m") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":add_smb_share_dialog_module" ]
 }
 
-js_library("smb_browser_proxy.m") {
+js_library("smb_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/smb_shares/smb_browser_proxy.m.js" ]
-  extra_deps = [ ":smb_browser_proxy_module" ]
 }
 
-js_modulizer("smb_browser_proxy_module") {
-  input_files = [ "smb_browser_proxy.js" ]
-  namespace_rewrites = [ "smb_shares.SmbBrowserProxy|SmbBrowserProxy" ]
-}
-
-polymer_modulizer("add_smb_share_dialog") {
-  js_file = "add_smb_share_dialog.js"
-  html_file = "add_smb_share_dialog.html"
-  html_type = "dom-module"
-  namespace_rewrites = [ "smb_shares.SmbBrowserProxy|SmbBrowserProxy" ]
-  auto_imports = [ "ui/webui/resources/cr_components/chromeos/smb_shares/smb_browser_proxy.html|SmbAuthMethod,SmbBrowserProxy,SmbBrowserProxyImpl,SmbMountResult" ]
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    ":add_smb_share_dialog_module",
-    ":smb_browser_proxy_module",
-  ]
+html_to_js("web_components") {
+  js_files = [ "add_smb_share_dialog.js" ]
 }

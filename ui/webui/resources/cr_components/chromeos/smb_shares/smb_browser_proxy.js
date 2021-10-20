@@ -7,14 +7,14 @@
  * interact with the browser. Used only on Chrome OS.
  */
 
-// #import {addSingletonGetter, sendWithPromise} from '../../../js/cr.m.js';
+import {addSingletonGetter, sendWithPromise} from '../../../js/cr.m.js';
 
 /**
  *  @enum {number}
  *  These values must be kept in sync with the SmbMountResult enum in
  *  chrome/browser/ash/smb_client/smb_errors.h.
  */
-/* #export */ const SmbMountResult = {
+export const SmbMountResult = {
   SUCCESS: 0,
   UNKNOWN_FAILURE: 1,
   AUTHENTICATION_FAILED: 2,
@@ -33,72 +33,63 @@
 };
 
 /** @enum {string} */
-/* #export */ const SmbAuthMethod = {
+export const SmbAuthMethod = {
   KERBEROS: 'kerberos',
   CREDENTIALS: 'credentials',
 };
 
-cr.define('smb_shares', function() {
-  /** @interface */
-  /* #export */ class SmbBrowserProxy {
-    /**
-     * Attempts to mount an Smb filesystem with the provided url.
-     * @param {string} smbUrl File Share URL.
-     * @param {string} smbName Display name for the File Share.
-     * @param {string} username
-     * @param {string} password
-     * @param {string} authMethod
-     * @param {boolean} shouldOpenFileManagerAfterMount
-     * @param {boolean} saveCredentials
-     * @return {!Promise<SmbMountResult>}
-     */
-    smbMount(
-        smbUrl, smbName, username, password, authMethod,
-        shouldOpenFileManagerAfterMount, saveCredentials) {}
+/** @interface */
+export class SmbBrowserProxy {
+  /**
+   * Attempts to mount an Smb filesystem with the provided url.
+   * @param {string} smbUrl File Share URL.
+   * @param {string} smbName Display name for the File Share.
+   * @param {string} username
+   * @param {string} password
+   * @param {string} authMethod
+   * @param {boolean} shouldOpenFileManagerAfterMount
+   * @param {boolean} saveCredentials
+   * @return {!Promise<SmbMountResult>}
+   */
+  smbMount(
+      smbUrl, smbName, username, password, authMethod,
+      shouldOpenFileManagerAfterMount, saveCredentials) {}
 
-    /**
-     * Starts the file share discovery process.
-     */
-    startDiscovery() {}
+  /**
+   * Starts the file share discovery process.
+   */
+  startDiscovery() {}
 
-    /**
-     * Updates the credentials for a mounted share.
-     * @param {string} mountId
-     * @param {string} username
-     * @param {string} password
-     */
-    updateCredentials(mountId, username, password) {}
+  /**
+   * Updates the credentials for a mounted share.
+   * @param {string} mountId
+   * @param {string} username
+   * @param {string} password
+   */
+  updateCredentials(mountId, username, password) {}
+}
+
+/** @implements {SmbBrowserProxy} */
+export class SmbBrowserProxyImpl {
+  /** @override */
+  smbMount(
+      smbUrl, smbName, username, password, authMethod,
+      shouldOpenFileManagerAfterMount, saveCredentials) {
+    return sendWithPromise(
+        'smbMount', smbUrl, smbName, username, password,
+        authMethod === SmbAuthMethod.KERBEROS, shouldOpenFileManagerAfterMount,
+        saveCredentials);
   }
 
-  /** @implements {smb_shares.SmbBrowserProxy} */
-  /* #export */ class SmbBrowserProxyImpl {
-    /** @override */
-    smbMount(
-        smbUrl, smbName, username, password, authMethod,
-        shouldOpenFileManagerAfterMount, saveCredentials) {
-      return cr.sendWithPromise(
-          'smbMount', smbUrl, smbName, username, password,
-          authMethod === SmbAuthMethod.KERBEROS,
-          shouldOpenFileManagerAfterMount, saveCredentials);
-    }
-
-    /** @override */
-    startDiscovery() {
-      chrome.send('startDiscovery');
-    }
-
-    /** @override */
-    updateCredentials(mountId, username, password) {
-      chrome.send('updateCredentials', [mountId, username, password]);
-    }
+  /** @override */
+  startDiscovery() {
+    chrome.send('startDiscovery');
   }
 
-  cr.addSingletonGetter(SmbBrowserProxyImpl);
+  /** @override */
+  updateCredentials(mountId, username, password) {
+    chrome.send('updateCredentials', [mountId, username, password]);
+  }
+}
 
-  // #cr_define_end
-  return {
-    SmbBrowserProxy: SmbBrowserProxy,
-    SmbBrowserProxyImpl: SmbBrowserProxyImpl,
-  };
-
-});
+addSingletonGetter(SmbBrowserProxyImpl);

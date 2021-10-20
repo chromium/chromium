@@ -95,6 +95,7 @@ preprocess_if_expr("preprocess_src") {
     "chromeos/bluetooth/bluetooth_types.js",
     "chromeos/bluetooth/bluetooth_metrics_utils.js",
     "chromeos/bluetooth/cros_bluetooth_config.js",
+    "chromeos/smb_shares/smb_browser_proxy.js",
     "most_visited/browser_proxy.js",
     "most_visited/window_proxy.js",
   ]
@@ -211,8 +212,7 @@ preprocess_if_expr("preprocess_generated") {
       "chromeos/quick_unlock/pin_keyboard_icon.m.js",
       "chromeos/quick_unlock/pin_keyboard.m.js",
       "chromeos/quick_unlock/setup_pin_keyboard.m.js",
-      "chromeos/smb_shares/add_smb_share_dialog.m.js",
-      "chromeos/smb_shares/smb_browser_proxy.m.js",
+      "chromeos/smb_shares/add_smb_share_dialog.js",
       "chromeos/traffic_counters/traffic_counters.js",
     ]
   }
@@ -375,10 +375,6 @@ if (is_chromeos_ash) {
       "chromeos/quick_unlock/pin_keyboard.js",
       "chromeos/quick_unlock/setup_pin_keyboard.html",
       "chromeos/quick_unlock/setup_pin_keyboard.js",
-      "chromeos/smb_shares/add_smb_share_dialog.html",
-      "chromeos/smb_shares/add_smb_share_dialog.js",
-      "chromeos/smb_shares/smb_browser_proxy.html",
-      "chromeos/smb_shares/smb_browser_proxy.js",
     ]
   }
 }
