@@ -154,6 +154,11 @@ void NotificationProcessor::AddNotifications(
     }
   }
 
+  if (decode_image_requests.empty()) {
+    PA_LOG(INFO) << "Cannon find any image to decode for the notifications";
+    return;
+  }
+
   base::RepeatingClosure barrier = base::BarrierClosure(
       decode_image_requests.size(),
       base::BindOnce(&NotificationProcessor::OnAllImagesDecoded,

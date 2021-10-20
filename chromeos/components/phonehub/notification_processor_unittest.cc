@@ -156,6 +156,25 @@ class NotificationProcessorTest : public testing::Test {
     return notification;
   }
 
+  proto::Notification CreateNonTextTypeNotification(
+      int64_t notification_id,
+      int64_t inline_reply_id,
+      std::string icon = std::string()) {
+    auto origin_app = std::make_unique<proto::App>();
+    origin_app->set_icon(icon);
+
+    proto::Notification notification;
+    notification.set_id(notification_id);
+    notification.set_allocated_origin_app(origin_app.release());
+
+    notification.add_actions();
+    proto::Action* open_action = notification.mutable_actions(0);
+    open_action->set_id(kOpenableActionId);
+    open_action->set_type(proto::Action_InputType::Action_InputType_OPEN);
+
+    return notification;
+  }
+
  private:
   std::unique_ptr<FakeNotificationManager> fake_notification_manager_;
   std::unique_ptr<NotificationProcessor> notification_processor_;
@@ -178,6 +197,19 @@ TEST_F(NotificationProcessorTest, FailedToDecodeImage) {
   EXPECT_TRUE(notification->app_metadata().icon.IsEmpty());
   EXPECT_FALSE(notification->shared_image().has_value());
   EXPECT_FALSE(notification->contact_image().has_value());
+}
+
+TEST_F(NotificationProcessorTest, ShouldSkipDecodeImageIfNotAvailable) {
+  std::vector<proto::Notification> first_set_of_notifications;
+
+  first_set_of_notifications.emplace_back(CreateNonTextTypeNotification(
+      kNotificationIdA, kInlineReplyIdA, kIconDataA));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+
+  EXPECT_EQ(0u, image_decoder_delegate()->NumberOfDecodeImageCallbacks());
+  image_decoder_delegate()->RunAllCallbacks();
+
+  EXPECT_EQ(0u, fake_notification_manager()->num_notifications());
 }
 
 TEST_F(NotificationProcessorTest, ImageFieldPopulatedCorrectly) {
