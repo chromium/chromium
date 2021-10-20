@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -45,7 +44,6 @@ class MerchantViewerDataManagerTest : public testing::Test {
     testing::Test::SetUp();
 
     service_ = MerchantViewerDataManagerFactory::GetForProfile(&profile_);
-    DCHECK(profile_.CreateHistoryService());
   }
 
   void TearDown() override {
