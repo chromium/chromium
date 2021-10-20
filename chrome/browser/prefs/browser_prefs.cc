@@ -1746,6 +1746,10 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
       kNearbySharingFastInitiationNotificationEnabledPrefName);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // Added 10/2021.
+  translate::TranslatePrefs::MigrateObsoleteProfilePrefs(profile_prefs);
+  translate::TranslatePrefs::ClearObsoleteProfilePrefs(profile_prefs);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 }

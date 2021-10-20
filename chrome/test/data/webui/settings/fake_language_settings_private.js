@@ -217,7 +217,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
     setTimeout(function() {
       callback(
           /** @type {!Array<!string>} */ (
-              this.settingsPrefs_.get('prefs.translate_whitelists.value')));
+              this.settingsPrefs_.get('prefs.translate_allowlists.value')));
     }.bind(this));
   }
 
@@ -228,7 +228,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    */
   setLanguageAlwaysTranslateState(languageCode, alwaysTranslate) {
     const alwaysTranslateList =
-        this.settingsPrefs_.get('prefs.translate_whitelists.value');
+        this.settingsPrefs_.get('prefs.translate_allowlists.value');
     if (alwaysTranslate) {
       if (!alwaysTranslateList.includes(languageCode)) {
         alwaysTranslateList.push(languageCode);
@@ -241,7 +241,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
       alwaysTranslateList.splice(index, 1);
     }
     this.settingsPrefs_.set(
-        'prefs.translate_whitelists.value', alwaysTranslateList);
+        'prefs.translate_allowlists.value', alwaysTranslateList);
   }
 
   /**
@@ -551,7 +551,7 @@ export function getFakeLanguagePrefs() {
     // of {always translate: target}, however only the keys are needed for
     // testing.
     {
-      key: 'translate_whitelists',
+      key: 'translate_allowlists',
       type: chrome.settingsPrivate.PrefType.LIST,
       value: [],
     },

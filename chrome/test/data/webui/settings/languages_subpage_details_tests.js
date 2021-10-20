@@ -33,7 +33,7 @@ suite('languages subpage detailed settings', function() {
   let browserProxy = null;
 
   // Always Translate language pref name for the platform.
-  const alwaysTranslatePref = 'translate_whitelists';
+  const alwaysTranslatePref = 'translate_allowlists';
   const neverTranslatePref = 'translate_blocked_languages';
 
   suiteSetup(function() {

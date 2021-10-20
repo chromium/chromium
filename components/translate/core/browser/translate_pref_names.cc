@@ -14,7 +14,7 @@ namespace prefs {
 // from the right-click context menu unless translate is disabled by policy.
 const char kOfferTranslateEnabled[] = "translate.enabled";
 
-const char kPrefAlwaysTranslateList[] = "translate_whitelists";
+const char kPrefAlwaysTranslateList[] = "translate_allowlists";
 
 const char kPrefTranslateRecentTarget[] = "translate_recent_target";
 

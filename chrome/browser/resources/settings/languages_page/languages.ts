@@ -130,7 +130,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       // All observers wait for the model to be populated by including the
       // |languages| property.
       'alwaysTranslateLanguagesPrefChanged_(' +
-          'prefs.translate_whitelists.value.*, languages)',
+          'prefs.translate_allowlists.value.*, languages)',
       'neverTranslateLanguagesPrefChanged_(' +
           'prefs.translate_blocked_languages.value.*, languages)',
       // <if expr="is_win">
@@ -451,7 +451,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       return;
     }
     const alwaysTranslateCodes =
-        Object.keys(this.getPref('translate_whitelists').value);
+        Object.keys(this.getPref('translate_allowlists').value);
     const alwaysTranslateLanguages =
         alwaysTranslateCodes.map(code => this.getLanguage(code));
     this.set('languages.alwaysTranslate', alwaysTranslateLanguages);

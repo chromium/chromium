@@ -190,7 +190,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
       // All observers wait for the model to be populated by including the
       // |languages| property.
       'alwaysTranslateLanguagesPrefChanged_(' +
-          'prefs.translate_whitelists.value.*, languages)',
+          'prefs.translate_allowlists.value.*, languages)',
       'neverTranslateLanguagesPrefChanged_(' +
           'prefs.translate_blocked_languages.value.*, languages)',
       'prospectiveUILanguageChanged_(prefs.intl.app_locale.value, languages)',
@@ -542,7 +542,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
       return;
     }
     const alwaysTranslateCodes = Object.keys(
-        /** @type {!Object} */ (this.getPref('translate_whitelists').value));
+        /** @type {!Object} */ (this.getPref('translate_allowlists').value));
     const alwaysTranslateLanguages =
         alwaysTranslateCodes.map(code => this.getLanguage(code));
     this.set('languages.alwaysTranslate', alwaysTranslateLanguages);
