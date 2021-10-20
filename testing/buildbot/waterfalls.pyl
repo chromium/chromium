@@ -2409,6 +2409,14 @@
           'linux-bionic',
         ],
       },
+      'mac-arm-rel-swarming': {
+        'mixins': [
+          'mac_11_arm64',
+        ],
+        'test_suites': {
+           'gtest_tests': 'chromium_swarm_desktop_gtests',
+        },
+      },
       'mac-rel-swarming': {
         'mixins': [
           'mac_x64',

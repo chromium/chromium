@@ -11,6 +11,7 @@ luci.console_view(
         luci.console_view_entry(builder = "ci/linux-rel-swarming"),
         luci.console_view_entry(builder = "ci/linux-ssd-rel-swarming"),
         luci.console_view_entry(builder = "ci/mac-rel-swarming"),
+        luci.console_view_entry(builder = "ci/mac-arm-rel-swarming"),
         luci.console_view_entry(builder = "ci/win-rel-swarming"),
     ],
 )
