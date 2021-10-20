@@ -386,3 +386,28 @@ TEST(ForceSigninVerifierTest, ChangeNetworkFromWIFITo4GWithFinishedRequest) {
   // No more request because it's verfied already.
   EXPECT_EQ(nullptr, verifier.access_token_fetcher());
 }
+
+// Regression test for https://crbug.com/1259864
+TEST(ForceSigninVerifierTest, DeleteWithPendingRequestShouldNotCrash) {
+  base::test::TaskEnvironment scoped_task_env;
+  signin::IdentityTestEnvironment identity_test_env;
+  const AccountInfo account_info =
+      identity_test_env.MakePrimaryAccountAvailable(
+          "email@test.com", signin::ConsentLevel::kSync);
+
+  ConfigureNetworkConnectionTracker(NetworkConnectionType::Undecided,
+                                    NetworkResponseType::Asynchronous);
+
+  {
+    ForceSigninVerifierWithAccessToInternalsForTesting verifier(
+        identity_test_env.identity_manager());
+
+    // There is no network type at first.
+    ASSERT_EQ(nullptr, verifier.access_token_fetcher());
+
+    // Delete the verifier while the request is pending.
+  }
+
+  // Waiting for the network type returns, this should not crash.
+  SpinCurrentSequenceTaskRunner();
+}
