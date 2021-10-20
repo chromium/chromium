@@ -53,13 +53,16 @@ class GerritAPI(object):
         url = URL_BASE + path
         assert self.user and self.token, 'Gerrit user and token required for authenticated routes.'
 
-        b64auth = base64.b64encode('{}:{}'.format(self.user, self.token))
+        b64auth = base64.b64encode('{}:{}'.format(self.user,
+                                                  self.token).encode('utf-8'))
         headers = {
-            'Authorization': 'Basic {}'.format(b64auth),
+            'Authorization': 'Basic {}'.format(b64auth.decode('utf-8')),
             'Content-Type': 'application/json',
         }
-        return self.host.web.request(
-            'POST', url, data=json.dumps(data), headers=headers)
+        return self.host.web.request('POST',
+                                     url,
+                                     data=json.dumps(data).encode('utf-8'),
+                                     headers=headers)
 
     def query_cl_comments_and_revisions(self, change_id):
         """Queries a CL with comments and revisions information."""
