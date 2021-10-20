@@ -344,8 +344,8 @@ Document* Animation::GetDocument() const {
   return document_;
 }
 
-absl::optional<double> Animation::TimelineTime() const {
-  return timeline_ ? timeline_->CurrentTimeMilliseconds() : absl::nullopt;
+absl::optional<AnimationTimeDelta> Animation::TimelineTime() const {
+  return timeline_ ? timeline_->CurrentTime() : absl::nullopt;
 }
 
 bool Animation::ConvertCSSNumberishToTime(
@@ -520,11 +520,14 @@ V8CSSNumberish* Animation::startTime() const {
 }
 
 V8CSSNumberish* Animation::ConvertTimeToCSSNumberish(
-    AnimationTimeDelta time) const {
-  if (timeline_ && timeline_->IsScrollTimeline()) {
-    return To<ScrollTimeline>(*timeline_).ConvertTimeToProgress(time);
+    absl::optional<AnimationTimeDelta> time) const {
+  if (time) {
+    if (timeline_ && timeline_->IsScrollTimeline()) {
+      return To<ScrollTimeline>(*timeline_).ConvertTimeToProgress(time.value());
+    }
+    return MakeGarbageCollected<V8CSSNumberish>(time.value().InMillisecondsF());
   }
-  return MakeGarbageCollected<V8CSSNumberish>(time.InMillisecondsF());
+  return nullptr;
 }
 
 // https://drafts.csswg.org/web-animations/#the-current-time-of-an-animation
@@ -2297,14 +2300,8 @@ bool Animation::Update(TimingUpdateReason reason) {
 void Animation::QueueFinishedEvent() {
   const AtomicString& event_type = event_type_names::kFinish;
   if (GetExecutionContext() && HasEventListeners(event_type)) {
-    absl::optional<AnimationTimeDelta> event_current_time =
-        CurrentTimeInternal();
-    absl::optional<double> event_current_time_ms;
-    if (event_current_time)
-      event_current_time_ms = event_current_time.value().InMillisecondsF();
-    // TODO(crbug.com/916117): Handle NaN values for scroll-linked animations.
     pending_finished_event_ = MakeGarbageCollected<AnimationPlaybackEvent>(
-        event_type, event_current_time_ms, TimelineTime());
+        event_type, currentTime(), ConvertTimeToCSSNumberish(TimelineTime()));
     pending_finished_event_->SetTarget(this);
     pending_finished_event_->SetCurrentTarget(this);
     document_->EnqueueAnimationFrameEvent(pending_finished_event_);
@@ -2366,11 +2363,8 @@ void Animation::cancel() {
 
     const AtomicString& event_type = event_type_names::kCancel;
     if (GetExecutionContext() && HasEventListeners(event_type)) {
-      absl::optional<double> event_current_time = absl::nullopt;
-      // TODO(crbug.com/916117): Handle NaN values for scroll-linked
-      // animations.
       pending_cancelled_event_ = MakeGarbageCollected<AnimationPlaybackEvent>(
-          event_type, event_current_time, TimelineTime());
+          event_type, nullptr, ConvertTimeToCSSNumberish(TimelineTime()));
       pending_cancelled_event_->SetTarget(this);
       pending_cancelled_event_->SetCurrentTarget(this);
       document_->EnqueueAnimationFrameEvent(pending_cancelled_event_);
@@ -2679,13 +2673,8 @@ void Animation::RemoveReplacedAnimation() {
   replace_state_ = kRemoved;
   const AtomicString& event_type = event_type_names::kRemove;
   if (GetExecutionContext() && HasEventListeners(event_type)) {
-    absl::optional<AnimationTimeDelta> event_current_time =
-        CurrentTimeInternal();
-    absl::optional<double> event_current_time_ms;
-    if (event_current_time)
-      event_current_time_ms = event_current_time.value().InMillisecondsF();
     pending_remove_event_ = MakeGarbageCollected<AnimationPlaybackEvent>(
-        event_type, event_current_time_ms, TimelineTime());
+        event_type, currentTime(), ConvertTimeToCSSNumberish(TimelineTime()));
     pending_remove_event_->SetTarget(this);
     pending_remove_event_->SetCurrentTarget(this);
     document_->EnqueueAnimationFrameEvent(pending_remove_event_);

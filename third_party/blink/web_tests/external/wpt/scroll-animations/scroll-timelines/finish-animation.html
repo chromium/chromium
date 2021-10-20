@@ -260,9 +260,9 @@ promise_test(async t => {
     'The current time is the end of the active duration in finished state.');
   assert_percents_equal(animation.startTime, -75,
     'The start time is calculated to match the current time.');
-  assert_times_equal(finishEvent.currentTime / 1000, 100,
+  assert_percents_equal(finishEvent.currentTime, 100,
     'event.currentTime is the animation current time.');
-  assert_times_equal(finishEvent.timelineTime / 1000, 25,
+  assert_percents_equal(finishEvent.timelineTime, 25,
     'event.timelineTime is timeline.currentTime');
 }, 'Finishing idle animation produces correct state and fires finish event.');
 
@@ -300,9 +300,9 @@ promise_test(async t => {
     'The current time is the end of active duration in finished state.');
   assert_percents_equal(animation.startTime, -75,
     'The start time is calculated to match animation current time.');
-  assert_times_equal(finishEvent.currentTime / 1000, 100,
+  assert_percents_equal(finishEvent.currentTime, 100,
     'event.currentTime is the animation current time.');
-  assert_times_equal(finishEvent.timelineTime / 1000, 25,
+  assert_percents_equal(finishEvent.timelineTime, 25,
     'event.timelineTime is timeline.currentTime');
 }, 'Finishing running animation produces correct state and fires finish event.');
 
