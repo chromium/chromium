@@ -31,7 +31,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/security_interstitials/core/features.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/content/content_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -113,17 +112,13 @@ SecurityStateTabHelper::GetVisibleSecurityState() {
           : security_state::SafetyTipInfo(
                 {security_state::SafetyTipStatus::kUnknown, GURL()});
 
-  // If both the on-form warning and the on-submit warning are enabled for mixed
-  // forms (and they are not disabled by policy) we don't degrade the lock icon
-  // for sites with mixed forms present.
-  if (base::FeatureList::IsEnabled(
-          security_interstitials::kInsecureFormSubmissionInterstitial)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    if (profile &&
-        profile->GetPrefs()->GetBoolean(prefs::kMixedFormsWarningsEnabled)) {
-      state->should_treat_displayed_mixed_forms_as_secure = true;
-    }
+  // If both the mixed form warnings are not disabled by policy we don't degrade
+  // the lock icon for sites with mixed forms present.
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  if (profile &&
+      profile->GetPrefs()->GetBoolean(prefs::kMixedFormsWarningsEnabled)) {
+    state->should_treat_displayed_mixed_forms_as_secure = true;
   }
 
   auto* https_only_mode_tab_helper =

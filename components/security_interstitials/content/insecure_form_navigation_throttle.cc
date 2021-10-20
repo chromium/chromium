@@ -11,7 +11,6 @@
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
 #include "components/security_interstitials/content/insecure_form_tab_storage.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
-#include "components/security_interstitials/core/features.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -80,8 +79,7 @@ InsecureFormNavigationThrottle::MaybeCreateNavigationThrottle(
     content::NavigationHandle* navigation_handle,
     std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
     PrefService* prefs) {
-  if (!base::FeatureList::IsEnabled(kInsecureFormSubmissionInterstitial) ||
-      (prefs && !prefs->GetBoolean(prefs::kMixedFormsWarningsEnabled)))
+  if (prefs && !prefs->GetBoolean(prefs::kMixedFormsWarningsEnabled))
     return nullptr;
   return std::make_unique<InsecureFormNavigationThrottle>(
       navigation_handle, std::move(blocking_page_factory));
@@ -117,9 +115,6 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
     return content::NavigationThrottle::PROCEED;
 
   if (is_redirect) {
-    std::string feature_mode = base::GetFieldTrialParamValueByFeature(
-        kInsecureFormSubmissionInterstitial,
-        kInsecureFormSubmissionInterstitialMode);
     // 307 and 308 redirects for POST forms are special because they can leak
     // form data if done over HTTP.
     if ((handle->GetResponseHeaders()->response_code() ==
@@ -129,16 +124,10 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
         handle->IsPost()) {
       LogMixedFormInterstitialMetrics(
           InterstitialTriggeredState::kMixedFormRedirectWithFormData);
-      if (feature_mode == kInsecureFormSubmissionInterstitialModeNoRedirects) {
-        return content::NavigationThrottle::PROCEED;
-      }
     } else {
       LogMixedFormInterstitialMetrics(
           InterstitialTriggeredState::kMixedFormRedirectNoFormData);
-      if (feature_mode !=
-          kInsecureFormSubmissionInterstitialModeIncludeAllRedirects) {
-        return content::NavigationThrottle::PROCEED;
-      }
+      return content::NavigationThrottle::PROCEED;
     }
   } else {
     LogMixedFormInterstitialMetrics(

@@ -130,7 +130,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search/ntp_features.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
-#include "components/security_interstitials/core/features.h"
 #include "components/security_state/core/features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/send_tab_to_self/features.h"
@@ -6746,11 +6745,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEditPasswordsInSettingsName,
      flag_descriptions::kEditPasswordsInSettingsDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kEditPasswordsInSettings)},
-
-    {"mixed-forms-interstitial", flag_descriptions::kMixedFormsInterstitialName,
-     flag_descriptions::kMixedFormsInterstitialDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         security_interstitials::kInsecureFormSubmissionInterstitial)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"frame-throttle-fps", flag_descriptions::kFrameThrottleFpsName,

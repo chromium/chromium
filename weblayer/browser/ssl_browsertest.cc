@@ -13,7 +13,6 @@
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
 #include "components/security_interstitials/content/ssl_error_assistant.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
-#include "components/security_interstitials/core/features.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -412,20 +411,9 @@ IN_PROC_BROWSER_TEST_F(SSLBrowserTest, ErrorPageNotCalledForMismatch) {
   EXPECT_FALSE(error_page_delegate.was_get_error_page_content_called());
 }
 
-class SSLBrowserTestWithInsecureFormsWarningEnabled : public SSLBrowserTest {
- public:
-  SSLBrowserTestWithInsecureFormsWarningEnabled() {
-    feature_list_.InitAndEnableFeature(
-        security_interstitials::kInsecureFormSubmissionInterstitial);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Visits a page that displays an insecure form, submits the form, and checks an
 // interstitial is shown.
-IN_PROC_BROWSER_TEST_F(SSLBrowserTestWithInsecureFormsWarningEnabled,
+IN_PROC_BROWSER_TEST_F(SSLBrowserTest,
                        TestDisplaysInsecureFormSubmissionWarning) {
   GURL insecure_form_url = https_server_->GetURL("/insecure_form.html");
   GURL form_target_url = GURL("http://does-not-exist.test/form_target.html?");
@@ -440,37 +428,6 @@ IN_PROC_BROWSER_TEST_F(SSLBrowserTestWithInsecureFormsWarningEnabled,
 
   // Check the correct interstitial loaded.
   EXPECT_TRUE(IsShowingInsecureFormInterstitial(shell()->tab()));
-}
-
-class SSLBrowserTestWithInsecureFormsWarningDisabled : public SSLBrowserTest {
- public:
-  SSLBrowserTestWithInsecureFormsWarningDisabled() {
-    feature_list_.InitAndDisableFeature(
-        security_interstitials::kInsecureFormSubmissionInterstitial);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Visits a page that displays an insecure form, submits the form, and checks no
-// interstitial is displayed with the feature off.
-IN_PROC_BROWSER_TEST_F(SSLBrowserTestWithInsecureFormsWarningDisabled,
-                       TestNoInsecureFormWarning) {
-  GURL insecure_form_url = https_server_->GetURL("/insecure_form.html");
-  GURL form_target_url = GURL("http://does-not-exist.test/form_target.html?");
-  NavigateAndWaitForCompletion(insecure_form_url, shell());
-
-  // Submit the form and wait for the form target to load. We wait for a
-  // failure since the target url is not served.
-  TestNavigationObserver navigation_observer(
-      form_target_url, TestNavigationObserver::NavigationEvent::kFailure,
-      shell());
-  ExecuteScript(shell(), "submitForm();", false /*use_separate_isolate*/);
-  navigation_observer.Wait();
-
-  // Check no interstitial loaded.
-  EXPECT_FALSE(IsShowingSecurityInterstitial(shell()->tab()));
 }
 
 }  // namespace weblayer

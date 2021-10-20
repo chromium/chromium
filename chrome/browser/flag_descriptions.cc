@@ -1624,12 +1624,6 @@ const char kMetricsSettingsAndroidName[] = "Metrics Settings on Android";
 const char kMetricsSettingsAndroidDescription[] =
     "Enables the new design of metrics settings.";
 
-const char kMixedFormsInterstitialName[] = "Mixed forms interstitial";
-const char kMixedFormsInterstitialDescription[] =
-    "When enabled, a full-page interstitial warning is shown when a mixed "
-    "content form (a form on an HTTPS site that submits over HTTP) is "
-    "submitted.";
-
 const char kMobileIdentityConsistencyFREName[] =
     "Mobile identity consistency FRE";
 const char kMobileIdentityConsistencyFREDescription[] =

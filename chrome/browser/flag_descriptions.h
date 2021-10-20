@@ -933,9 +933,6 @@ extern const char kMediaSessionWebRTCDescription[];
 extern const char kMetricsSettingsAndroidName[];
 extern const char kMetricsSettingsAndroidDescription[];
 
-extern const char kMixedFormsInterstitialName[];
-extern const char kMixedFormsInterstitialDescription[];
-
 extern const char kMobileIdentityConsistencyFREName[];
 extern const char kMobileIdentityConsistencyFREDescription[];
 
