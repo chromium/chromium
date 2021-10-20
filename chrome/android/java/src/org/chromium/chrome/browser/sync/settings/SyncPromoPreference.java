@@ -121,7 +121,9 @@ public class SyncPromoPreference extends Preference
         final boolean hasStateChangedFromHiddenToShown = mState == State.PROMO_HIDDEN
                 && (state == State.PERSONALIZED_SIGNIN_PROMO
                         || state == State.PERSONALIZED_SYNC_PROMO);
-        if (hasStateChangedFromHiddenToShown) mSigninPromoController.increasePromoShowCount();
+        if (hasStateChangedFromHiddenToShown) {
+            mSigninPromoController.increasePromoShowCount();
+        }
 
         mState = state;
         assert mStateChangedCallback != null;
