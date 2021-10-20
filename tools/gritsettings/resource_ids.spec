@@ -725,6 +725,10 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [3980],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/firmware_update_ui/resources/ash_firmware_update_app_resources.grd": {
+    "META": {"sizes": {"includes": [200],}},
+    "includes": [3990],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shortcut_customization_ui/resources/ash_shortcut_customization_app_resources.grd": {
     "META": {"sizes": {"includes": [200],}},
     "includes": [4000],

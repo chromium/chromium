@@ -199,6 +199,7 @@ template("chrome_extra_paks") {
       sources += [
         "$root_gen_dir/ash/ash_camera_app_resources.pak",
         "$root_gen_dir/ash/ash_diagnostics_app_resources.pak",
+        "$root_gen_dir/ash/ash_firmware_update_app_resources.pak",
         "$root_gen_dir/ash/ash_help_app_resources.pak",
         "$root_gen_dir/ash/ash_media_app_resources.pak",
         "$root_gen_dir/ash/ash_os_feedback_resources.pak",
@@ -246,6 +247,7 @@ template("chrome_extra_paks") {
         "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
         "//ash/webui/resources:camera_app_resources",
         "//ash/webui/resources:diagnostics_app_resources",
+        "//ash/webui/resources:firmware_update_app_resources",
         "//ash/webui/resources:help_app_bundle_resources",
         "//ash/webui/resources:help_app_kids_magazine_bundle_resources",
         "//ash/webui/resources:help_app_resources",

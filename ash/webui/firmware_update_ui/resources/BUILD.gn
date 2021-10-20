@@ -1,0 +1,47 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocessed_dir = "preprocessed"
+preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
+
+polymer_element_files = [ "firmware_update_app.js" ]
+
+generate_grd("build_grd") {
+  input_files = [ "index.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":preprocess_generated" ]
+  manifest_files = [ "$target_gen_dir/$preprocessed_gen_manifest" ]
+  grd_prefix = "ash_firmware_update_app"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args
+  deps = [ ":firmware_update_app" ]
+}
+
+js_library("firmware_update_app") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
+  in_files = polymer_element_files
+}
+
+html_to_js("web_components") {
+  js_files = polymer_element_files
+}

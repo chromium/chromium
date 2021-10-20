@@ -159,6 +159,8 @@
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/file_manager/url_constants.h"
+#include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
+#include "ash/webui/firmware_update_ui/url_constants.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/media_app_ui/media_app_ui.h"
@@ -869,6 +871,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (features::IsShortcutCustomizationAppEnabled()) {
     if (url.host_piece() == ash::kChromeUIShortcutCustomizationAppHost)
       return &NewWebUI<ash::ShortcutCustomizationAppUI>;
+  }
+  if (ash::features::IsFirmwareUpdaterAppEnabled()) {
+    if (url.host_piece() == ash::kChromeUIFirmwareUpdateAppHost)
+      return &NewWebUI<ash::FirmwareUpdateAppUI>;
   }
   if (url.host_piece() == chromeos::multidevice::kChromeUIProximityAuthHost &&
       !profile->IsOffTheRecord()) {
