@@ -55,10 +55,7 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
     return nullptr;
   }
 
-  permissions::PermissionRequestManager* manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents);
-
-  if (manager->ShouldDropCurrentRequestIfCannotShowQuietly() &&
+  if (delegate->ShouldDropCurrentRequestIfCannotShowQuietly() &&
       IsFullScreenMode(web_contents, browser)) {
     return nullptr;
   }
@@ -80,12 +77,10 @@ PermissionPromptImpl::PermissionPromptImpl(Browser* browser,
       web_contents_(web_contents),
       delegate_(delegate),
       browser_(browser),
-      permission_requested_time_(base::TimeTicks::Now()),
-      manager_(permissions::PermissionRequestManager::FromWebContents(
-          web_contents)) {
+      permission_requested_time_(base::TimeTicks::Now()) {
   if (web_app::AppBrowserController::IsWebApp(browser_)) {
     SelectPwaPrompt();
-  } else if (manager_->ShouldCurrentRequestUseQuietUI()) {
+  } else if (delegate_->ShouldCurrentRequestUseQuietUI()) {
     SelectQuietPrompt();
   } else {
     SelectNormalPrompt();
@@ -173,7 +168,7 @@ void PermissionPromptImpl::UpdateAnchor() {
         chip_ = lbv->DisplayQuietChip(
             delegate_,
             !permissions::PermissionUiSelector::ShouldSuppressAnimation(
-                manager_->ReasonForUsingQuietUi()));
+                delegate_->ReasonForUsingQuietUi()));
       }
       // If there is fresh pending request shown as chip UI and location bar
       // isn't visible anymore, show bubble UI instead.
@@ -205,7 +200,7 @@ PermissionPromptImpl::GetPromptDisposition() const {
           LOCATION_BAR_LEFT_QUIET_CHIP;
     case PermissionPromptStyle::kLocationBarRightIcon: {
       return permissions::PermissionUiSelector::ShouldSuppressAnimation(
-                 manager_->ReasonForUsingQuietUi())
+                 delegate_->ReasonForUsingQuietUi())
                  ? permissions::PermissionPromptDisposition::
                        LOCATION_BAR_RIGHT_STATIC_ICON
                  : permissions::PermissionPromptDisposition::
@@ -234,7 +229,7 @@ bool PermissionPromptImpl::IsLocationBarDisplayed() {
 }
 
 void PermissionPromptImpl::SelectPwaPrompt() {
-  if (manager_->ShouldCurrentRequestUseQuietUI()) {
+  if (delegate_->ShouldCurrentRequestUseQuietUI()) {
     ShowQuietIcon();
   } else {
     ShowBubble();
@@ -242,7 +237,7 @@ void PermissionPromptImpl::SelectPwaPrompt() {
 }
 
 void PermissionPromptImpl::SelectNormalPrompt() {
-  DCHECK(!manager_->ShouldCurrentRequestUseQuietUI());
+  DCHECK(!delegate_->ShouldCurrentRequestUseQuietUI());
   if (ShouldCurrentRequestUseChip()) {
     ShowChip();
   } else {
@@ -257,7 +252,7 @@ void PermissionPromptImpl::SelectQuietPrompt() {
     } else {
       // If LocationBar is not displayed (Fullscreen mode), display a default
       // bubble only for non-abusive origins.
-      DCHECK(!manager_->ShouldDropCurrentRequestIfCannotShowQuietly());
+      DCHECK(!delegate_->ShouldDropCurrentRequestIfCannotShowQuietly());
       ShowBubble();
     }
   } else {
@@ -288,10 +283,10 @@ void PermissionPromptImpl::ShowChip() {
   LocationBarView* lbv = GetLocationBarView();
   DCHECK(lbv);
 
-  if (manager_->ShouldCurrentRequestUseQuietUI()) {
+  if (delegate_->ShouldCurrentRequestUseQuietUI()) {
     chip_ = lbv->DisplayQuietChip(
         delegate_, !permissions::PermissionUiSelector::ShouldSuppressAnimation(
-                       manager_->ReasonForUsingQuietUi()));
+                       delegate_->ReasonForUsingQuietUi()));
     prompt_style_ = PermissionPromptStyle::kQuietChip;
   } else {
     chip_ = lbv->DisplayChip(delegate_);

@@ -878,7 +878,8 @@ bool PermissionRequestManager::IsRequestInProgress() const {
   return !requests_.empty();
 }
 
-bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly() {
+bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly()
+    const {
   absl::optional<QuietUiReason> quiet_ui_reason = ReasonForUsingQuietUi();
   if (quiet_ui_reason.has_value()) {
     switch (quiet_ui_reason.value()) {

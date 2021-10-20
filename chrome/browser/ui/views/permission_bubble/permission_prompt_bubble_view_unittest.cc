@@ -51,6 +51,14 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void Closing() override {}
 
   bool WasCurrentRequestAlreadyDisplayed() override { return false; }
+  bool ShouldDropCurrentRequestIfCannotShowQuietly() const override {
+    return false;
+  }
+  bool ShouldCurrentRequestUseQuietUI() const override { return false; }
+  absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+  ReasonForUsingQuietUi() const override {
+    return absl::nullopt;
+  }
 
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;

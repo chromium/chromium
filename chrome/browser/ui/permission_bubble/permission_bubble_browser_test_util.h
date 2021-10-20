@@ -47,9 +47,13 @@ class TestPermissionBubbleViewDelegate
 
   void Accept() override {}
   void AcceptThisTime() override {}
-  void Deny() override {}
   void Closing() override {}
+  void Deny() override {}
 
+  absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+  ReasonForUsingQuietUi() const override;
+  bool ShouldCurrentRequestUseQuietUI() const override;
+  bool ShouldDropCurrentRequestIfCannotShowQuietly() const override;
   bool WasCurrentRequestAlreadyDisplayed() override;
 
   void set_requests(std::vector<permissions::PermissionRequest*> requests) {

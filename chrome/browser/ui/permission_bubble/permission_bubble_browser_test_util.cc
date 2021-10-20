@@ -38,6 +38,20 @@ GURL TestPermissionBubbleViewDelegate::GetEmbeddingOrigin() const {
   return GURL("https://embedder.example.com");
 }
 
+absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+TestPermissionBubbleViewDelegate::ReasonForUsingQuietUi() const {
+  return absl::nullopt;
+}
+
+bool TestPermissionBubbleViewDelegate::ShouldCurrentRequestUseQuietUI() const {
+  return false;
+}
+
+bool TestPermissionBubbleViewDelegate::
+    ShouldDropCurrentRequestIfCannotShowQuietly() const {
+  return false;
+}
+
 bool TestPermissionBubbleViewDelegate::WasCurrentRequestAlreadyDisplayed() {
   return false;
 }

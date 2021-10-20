@@ -111,21 +111,7 @@ class PermissionRequestManager
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Notification permission requests might use a quiet UI when the
-  // "quiet-notification-prompts" feature is enabled. This is done either
-  // directly by the user in notifications settings, or via automatic logic that
-  // might trigger the current request to use the quiet UI.
-  bool ShouldCurrentRequestUseQuietUI() const;
-
-  // If |ShouldCurrentRequestUseQuietUI| return true, this will provide a reason
-  // as to why the quiet UI needs to be used. Returns `absl::nullopt` otherwise.
-  absl::optional<QuietUiReason> ReasonForUsingQuietUi() const;
-
   bool IsRequestInProgress() const;
-
-  // If the LocationBar is not visible, there is no place to display a quiet
-  // permission prompt. Abusive prompts will be ignored.
-  bool ShouldDropCurrentRequestIfCannotShowQuietly();
 
   // Do NOT use this methods in production code. Use this methods in browser
   // tests that need to accept or deny permissions when requested in
@@ -155,6 +141,10 @@ class PermissionRequestManager
   void Deny() override;
   void Closing() override;
   bool WasCurrentRequestAlreadyDisplayed() override;
+  bool ShouldDropCurrentRequestIfCannotShowQuietly() const override;
+  bool ShouldCurrentRequestUseQuietUI() const override;
+  absl::optional<PermissionUiSelector::QuietUiReason> ReasonForUsingQuietUi()
+      const override;
 
   void set_web_contents_supports_permission_requests(
       bool web_contents_supports_permission_requests) {

@@ -14,10 +14,6 @@
 
 class Browser;
 
-namespace permissions {
-class PermissionRequestManager;
-}
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -77,9 +73,6 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
   Browser* browser_;
 
   base::TimeTicks permission_requested_time_;
-
-  // PermissionRequestManager owns `this` and outlives `PermissionPromptImpl`.
-  permissions::PermissionRequestManager* manager_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_IMPL_H_
