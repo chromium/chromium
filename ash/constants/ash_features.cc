@@ -262,7 +262,7 @@ const base::Feature kClipboardHistoryScreenshotNudge{
 // Enables compositing-based throttling to throttle appropriate frame sinks that
 // do not need to be refreshed at high fps.
 const base::Feature kCompositingBasedThrottling{
-    "CompositingBasedThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
+    "CompositingBasedThrottling", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables contextual nudges for gesture education.
 const base::Feature kContextualNudges{"ContextualNudges",
