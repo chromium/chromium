@@ -220,8 +220,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, 0);
   registry->RegisterInt64Pref(prefs::kSafeBrowsingMetricsLastLogTime, 0);
   registry->RegisterDictionaryPref(prefs::kSafeBrowsingEventTimestamps);
-  registry->RegisterInt64Pref(prefs::kAccountTailoredSecurityUpdateTimestamp,
-                              0);
+  registry->RegisterTimePref(prefs::kAccountTailoredSecurityUpdateTimestamp,
+                             base::Time());
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
