@@ -6,48 +6,78 @@
  * @fileoverview Oobe reset screen implementation.
  */
 
-Polymer({
-  is: 'autolaunch-element',
+/* #js_imports_placeholder */
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+const AutolaunchBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
+    Polymer.Element);
 
-  EXTERNAL_API: [
-    'updateApp',
-  ],
+/**
+ * @polymer
+ */
+class Autolaunch extends AutolaunchBase {
+  static get is() {
+    return 'autolaunch-element';
+  }
 
-  properties: {
-    appName_: {type: String, value: ''},
-    appIconUrl_: {type: String, value: ''},
-  },
+  /* #html_template_placeholder */
 
+  static get properties() {
+    return {
+      appName_: {type: String},
+      appIconUrl_: {type: String},
+    };
+  }
+
+  constructor() {
+    super();
+    this.appName_ = '';
+    this.appIconUrl_ = '';
+  }
+
+  /** Overridden from LoginScreenBehavior. */
+  // clang-format off
+  get EXTERNAL_API() {
+    return [
+      'updateApp',
+    ];
+  }
+  // clang-format on
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('AutolaunchScreen', {
       resetAllowed: true,
     });
-  },
+  }
 
   onConfirm_() {
     chrome.send('autolaunchOnConfirm');
-  },
+  }
 
   onCancel_() {
     chrome.send('autolaunchOnCancel');
-  },
+  }
 
   /**
    * Event handler invoked when the page is shown and ready.
    */
   onBeforeShow() {
     chrome.send('autolaunchVisible');
-  },
+  }
 
   /**
    * Cancels the reset and drops the user back to the login screen.
    */
   cancel() {
     chrome.send('autolaunchOnCancel');
-  },
+  }
 
   /**
    * Sets app to be displayed in the auto-launch warning.
@@ -57,5 +87,7 @@ Polymer({
     this.appName_ = app.appName;
     if (app.appIconUrl && app.appIconUrl.length)
       this.appIconUrl_ = app.appIconUrl;
-  },
-});
+  }
+}
+
+customElements.define(Autolaunch.is, Autolaunch);
