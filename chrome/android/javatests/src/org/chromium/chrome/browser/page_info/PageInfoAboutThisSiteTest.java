@@ -8,8 +8,10 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -38,6 +40,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteDescription;
+import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteInfo;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -97,20 +101,23 @@ public class PageInfoAboutThisSiteTest {
     @Test
     @MediumTest
     public void testStoreInfoRowWithData() {
-        String testDescription = "Test site description";
-        doReturn(testDescription)
+        SiteDescription description =
+                SiteDescription.newBuilder().setDescription("Some description").build();
+        byte[] bytes = SiteInfo.newBuilder().setDescription(description).build().toByteArray();
+        doReturn(bytes)
                 .when(mMockAboutThisSiteJni)
-                .getSiteDescription(any(BrowserContextHandle.class), any(GURL.class));
+                .getSiteInfo(any(BrowserContextHandle.class), any(GURL.class));
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(isDisplayed()));
+        onView(withText(containsString("Some description"))).check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
     public void testStoreInfoRowWithoutData() {
-        doReturn("")
+        doReturn(null)
                 .when(mMockAboutThisSiteJni)
-                .getSiteDescription(any(BrowserContextHandle.class), any(GURL.class));
+                .getSiteInfo(any(BrowserContextHandle.class), any(GURL.class));
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(not(isDisplayed())));
     }

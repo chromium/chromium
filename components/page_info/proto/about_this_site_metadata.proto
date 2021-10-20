@@ -6,6 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.page_info.proto";
+option java_outer_classname = "AboutThisSiteMetadataProto";
 
 package page_info.proto;
 

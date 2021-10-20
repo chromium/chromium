@@ -8,12 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Log;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
+import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteInfo;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
@@ -22,18 +26,19 @@ import org.chromium.url.GURL;
  */
 public class PageInfoAboutThisSiteController implements PageInfoSubpageController {
     public static final int ROW_ID = View.generateViewId();
+    private static final String TAG = "PageInfo";
 
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
-    private final String mSiteDescription;
+    private final @Nullable SiteInfo mSiteInfo;
 
     public PageInfoAboutThisSiteController(PageInfoMainController mainController,
             PageInfoRowView rowView, PageInfoControllerDelegate delegate) {
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;
-        mSiteDescription = getSiteDescription();
+        mSiteInfo = getSiteInfo();
         setupRow();
     }
 
@@ -49,8 +54,12 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     @Override
     public View createViewForSubpage(ViewGroup parent) {
+        // The subpage can only be created if there is a row and the row is only visible if siteInfo
+        // is populated.
+        assert mSiteInfo != null;
+        assert mSiteInfo.hasDescription();
         TextView view = new TextView(parent.getContext());
-        view.setText(mSiteDescription);
+        view.setText(mSiteInfo.getDescription().getDescription());
         return view;
     }
 
@@ -60,8 +69,8 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     private void setupRow() {
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         String subtitle = null;
-        if (mSiteDescription != null && !mSiteDescription.isEmpty()) {
-            subtitle = mSiteDescription;
+        if (mSiteInfo != null && mSiteInfo.hasDescription()) {
+            subtitle = mSiteInfo.getDescription().getDescription();
         }
 
         // TODO(crbug.com/1250653): Add translated string.
@@ -76,11 +85,19 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         mRowView.setParams(rowParams);
     }
 
-    private String getSiteDescription() {
-        return PageInfoAboutThisSiteControllerJni.get().getSiteDescription(
+    private @Nullable SiteInfo getSiteInfo() {
+        byte[] result = PageInfoAboutThisSiteControllerJni.get().getSiteInfo(
                 mMainController.getBrowserContext(), mMainController.getURL());
+        if (result == null) return null;
+        SiteInfo info = null;
+        try {
+            info = SiteInfo.parseFrom(result);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            Log.e(TAG, "Could not parse proto: %s", e);
+            assert false;
+        }
+        return info;
     }
-
     @Override
     public void clearData() {}
 
@@ -89,7 +106,6 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     @NativeMethods
     interface Natives {
-        // TODO(crbug.com/1250653): Pass protobuf instead.
-        String getSiteDescription(BrowserContextHandle browserContext, GURL url);
+        byte[] getSiteInfo(BrowserContextHandle browserContext, GURL url);
     }
 }

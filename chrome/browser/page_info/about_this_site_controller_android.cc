@@ -4,6 +4,8 @@
 
 #include "chrome/android/chrome_jni_headers/PageInfoAboutThisSiteController_jni.h"
 
+#include <jni.h>
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,8 +15,8 @@
 #include "content/public/browser/browser_context.h"
 #include "url/android/gurl_android.h"
 
-static base::android::ScopedJavaLocalRef<jstring>
-JNI_PageInfoAboutThisSiteController_GetSiteDescription(
+static base::android::ScopedJavaLocalRef<jbyteArray>
+JNI_PageInfoAboutThisSiteController_GetSiteInfo(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_browserContext,
     const base::android::JavaParamRef<jobject>& j_url) {
@@ -27,9 +29,12 @@ JNI_PageInfoAboutThisSiteController_GetSiteDescription(
   auto info = service->GetAboutThisSiteInfo(*url);
   if (!info)
     return nullptr;
-  if (!info->has_description() || !info->description().has_description())
-    return nullptr;
-  // TODO(crbug.com/1250653): Pass full protobuf instead.
-  return base::android::ConvertUTF8ToJavaString(
-      env, info->description().description());
+
+  // Serialize the proto to pass it to Java. This will copy the whole object
+  // but it only contains a few strings and ints and this method is called only
+  // when PageInfo is opened.
+  int size = info->ByteSize();
+  std::vector<uint8_t> data(size);
+  info->SerializeToArray(data.data(), size);
+  return base::android::ToJavaByteArray(env, data.data(), size);
 }
