@@ -23,8 +23,12 @@ class TextDirective : public SelectorDirective {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static TextDirective* Create(const String& directive_value);
+  static Type ClassType() { return kText; }
   explicit TextDirective(const TextFragmentSelector& selector);
   ~TextDirective() override;
+
+  const TextFragmentSelector& GetSelector() const { return selector_; }
 
   void Trace(Visitor*) const override;
 

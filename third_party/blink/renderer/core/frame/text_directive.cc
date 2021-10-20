@@ -9,6 +9,15 @@
 
 namespace blink {
 
+// static
+TextDirective* TextDirective::Create(const String& directive_value) {
+  auto selector = TextFragmentSelector::FromTextDirective(directive_value);
+  if (selector.Type() == TextFragmentSelector::kInvalid)
+    return nullptr;
+
+  return MakeGarbageCollected<TextDirective>(selector);
+}
+
 TextDirective::TextDirective(const TextFragmentSelector& selector)
     : SelectorDirective(Directive::kText), selector_(selector) {}
 

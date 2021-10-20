@@ -14,7 +14,7 @@ namespace blink {
 // TextFragmentAnchor, parsed into its components.
 class CORE_EXPORT TextFragmentSelector final {
  public:
-  static TextFragmentSelector Create(String target_text);
+  static TextFragmentSelector FromTextDirective(const String& directive);
 
   enum SelectorType {
     // An invalid text selector.

@@ -28,8 +28,7 @@ FragmentAnchor* FragmentAnchor::TryCreate(const KURL& url,
   // text directive but we only do the text matching later on.
   bool text_fragment_anchor_created = false;
   if (text_fragment_identifiers_enabled) {
-    anchor = TextFragmentAnchor::TryCreateFragmentDirective(url, frame,
-                                                            should_scroll);
+    anchor = TextFragmentAnchor::TryCreate(url, frame, should_scroll);
     text_fragment_anchor_created = anchor;
   }
 
