@@ -45,7 +45,10 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
       network::mojom::CSPDirectiveName::ScriptSrc,
       // Allows loading javascript files from the current origin
       "script-src 'self';");
-
+  // Allow styles to include inline styling needed for Polymer elements.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      "style-src 'self' 'unsafe-inline';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
       // Allows loading video file thumbnail.
