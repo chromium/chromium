@@ -749,7 +749,7 @@
 <translation id="5639724618331995626">అన్ని సైట్‌లను అనుమతించండి</translation>
 <translation id="5648166631817621825">గత 7 రోజులు</translation>
 <translation id="5655963694829536461">మీ డౌన్‌లోడ్‌లను వెతకండి</translation>
-<translation id="5659593005791499971">ఇమెయిల్</translation>
+<translation id="5659593005791499971">ఈమెయిల్‌</translation>
 <translation id="5665379678064389456"><ph name="APP_NAME" />లో ఈవెంట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="5668404140385795438">దగ్గరకు జూమ్ చేయడాన్ని నిరోధించడానికి ప్రయత్నించే వెబ్‌సైట్ రిక్వెస్ట్‌ను పట్టించుకోదు</translation>
 <translation id="5683547024293500885">అప్‌డేట్‌లను Chrome చెక్ చేయలేదు</translation>
@@ -1108,7 +1108,7 @@
 <translation id="7665369617277396874">ఖాతాను జోడించండి</translation>
 <translation id="766587987807204883">కథనాలు ఇక్కడ కనిపిస్తాయి, మీరు ఆఫ్‌లైన్‌లో ఉన్నప్పటికీ కూడా వీటిని చదవవచ్చు</translation>
 <translation id="7682724950699840886">కింది చిట్కాలను ప్రయత్నించండి: మీ పరికరంలో తగినంత స్థలం ఉన్నట్లు నిర్ధారించుకోండి, మళ్లీ ఎగుమతి చేయడానికి ప్రయత్నించండి.</translation>
-<translation id="7698359219371678927"><ph name="APP_NAME" />లో ఇమెయిల్‌ను క్రియేట్ చేయండి</translation>
+<translation id="7698359219371678927"><ph name="APP_NAME" />లో ఈమెయిల్‌ను క్రియేట్ చేయండి</translation>
 <translation id="7704317875155739195">ఆటో-ఫిల్ సెర్చ్‌లు, URLలు</translation>
 <translation id="7707922173985738739">మొబైల్ డేటాను ఉపయోగిస్తుంది</translation>
 <translation id="7725024127233776428">మీరు బుక్‌మార్క్ చేసే పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
@@ -1139,7 +1139,7 @@
 <translation id="7857691613771368249">ఫైల్స్‌ను సేవ్ చేయవలసి వచ్చినప్పుడు అనుమతి అడగాలి</translation>
 <translation id="7859988229622350291">వీటిని ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="78707286264420418">మీ పరికరానికి కనెక్ట్ అవ్వడానికి <ph name="PRODUCT_NAME" />కు సమీపంలోని పరికరాల అనుమతి అవసరం</translation>
-<translation id="7875915731392087153">ఇమెయిల్‌ను క్రియేట్ చేయండి</translation>
+<translation id="7875915731392087153">ఈమెయిల్‌ను క్రియేట్ చేయండి</translation>
 <translation id="7876243839304621966">అన్నీ తొలగించు</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{మీకు <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> చదవని పేజీ ఉంది}other{మీకు <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> చదవని పేజీలు ఉన్నాయి}}</translation>
 <translation id="7882131421121961860">చరిత్ర ఏదీ కనుగొనబడలేదు</translation>
