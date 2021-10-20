@@ -431,6 +431,17 @@ VerifySignatureResult VariationsSeedStore::VerifySeedSignatureForTesting(
   return VerifySeedSignature(seed_bytes, base64_seed_signature);
 }
 
+// It is intentional that country-related prefs are retained for regular seeds
+// and cleared for safe seeds.
+//
+// For regular seeds, the prefs are kept for two reasons. First, it's better to
+// have some idea of a country recently associated with the device. Second, some
+// past, country-gated launches started relying on the VariationsService-
+// provided country when they retired server-side configs.
+//
+// The safe seed prefs are needed to correctly apply a safe seed, so if the safe
+// seed is cleared, there's no reason to retain them as they may be incorrect
+// for the next safe seed.
 void VariationsSeedStore::ClearPrefs(SeedType seed_type) {
   if (seed_type == SeedType::LATEST) {
     local_state_->ClearPref(prefs::kVariationsCompressedSeed);
