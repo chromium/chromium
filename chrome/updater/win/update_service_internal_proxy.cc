@@ -18,6 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/win/win_constants.h"
 
 namespace updater {
 namespace {
@@ -149,6 +150,7 @@ CLSID UpdateServiceInternalProxy::GetInternalClass() const {
 void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
   DCHECK(STA_task_runner_->BelongsToCurrentThread());
 
+  ::Sleep(kCreateUpdaterInstanceDelayMs);
   Microsoft::WRL::ComPtr<IUnknown> server;
   HRESULT hr = ::CoCreateInstance(GetInternalClass(), nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
@@ -212,6 +214,7 @@ void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
     base::OnceClosure callback) {
   DCHECK(STA_task_runner_->BelongsToCurrentThread());
 
+  ::Sleep(kCreateUpdaterInstanceDelayMs);
   Microsoft::WRL::ComPtr<IUnknown> server;
   HRESULT hr = ::CoCreateInstance(GetInternalClass(), nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));

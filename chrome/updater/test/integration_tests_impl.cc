@@ -422,7 +422,7 @@ void StressUpdateService(UpdaterScope /*scope*/) {
   int n = 10;
 
   // Delay in milliseconds between successive cycles.
-  const int kDelayBetweenLoopsMS = 50;
+  const int kDelayBetweenLoopsMS = 0;
 
   // Runs on the main sequence.
   auto loop_closure = [&]() {

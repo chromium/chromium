@@ -29,6 +29,7 @@
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
+#include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -44,6 +45,7 @@ static constexpr base::TaskTraits kComClientTraits = {
 // Creates an instance of IUpdater in the COM STA apartment.
 HRESULT CreateUpdater(UpdaterScope scope,
                       Microsoft::WRL::ComPtr<IUpdater>& updater) {
+  ::Sleep(kCreateUpdaterInstanceDelayMs);
   Microsoft::WRL::ComPtr<IUnknown> server;
   HRESULT hr = ::CoCreateInstance(
       scope == UpdaterScope::kSystem ? __uuidof(UpdaterSystemClass)
