@@ -3151,38 +3151,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ClientHints.PersistDuration" units="ms"
-    expires_after="2021-10-25">
+    expires_after="2022-10-25">
   <owner>yoavweiss@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
   <owner>aarontag@chromium.org</owner>
   <summary>
     Duration for which the origin requested the client hints to be persisted.
-    Collected on the renderer side.
+    Collected on the renderer side. Collected while navigation responses are
+    being processed.
   </summary>
 </histogram>
 
 <histogram name="ClientHints.UpdateEventCount" units="count"
-    expires_after="2021-10-25">
+    expires_after="2022-10-25">
   <owner>yoavweiss@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
   <owner>aarontag@chromium.org</owner>
   <summary>
     Count of events when the client hints needs to be persisted to the disk by
-    the browser.
+    the browser. Collected while navigation responses are being processed.
   </summary>
 </histogram>
 
 <histogram name="ClientHints.UpdateSize" units="count"
-    expires_after="2021-10-25">
+    expires_after="2022-10-25">
   <owner>yoavweiss@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
   <owner>aarontag@chromium.org</owner>
   <summary>
     Count of client hints that need to be persisted to the disk. Recorded by the
-    renderer.
+    renderer. Collected while navigation responses are being processed.
   </summary>
 </histogram>
 
