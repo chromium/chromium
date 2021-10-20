@@ -339,7 +339,8 @@
       "is_debug": false,
       "is_msan": true,
       "msan_track_origins": 2,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "MSAN Release (no origins)": {
@@ -349,7 +350,8 @@
       "is_debug": false,
       "is_msan": true,
       "msan_track_origins": 0,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Mac ASAN Release": {

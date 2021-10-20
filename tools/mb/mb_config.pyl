@@ -253,8 +253,8 @@
       'Libfuzzer Upload Linux UBSan': 'libfuzzer_ubsan_release_bot',
       'Libfuzzer Upload Mac ASan': 'libfuzzer_mac_asan_shared_release_bot',
       'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot',
-      'MSAN Release (chained origins)': 'msan_release_bot',
-      'MSAN Release (no origins)': 'msan_no_origins_release_bot',
+      'MSAN Release (chained origins)': 'msan_release_bot_reclient',
+      'MSAN Release (no origins)': 'msan_no_origins_release_bot_reclient',
       'Mac ASAN Release Media': 'asan_disable_nacl_fuzzer_v8_heap_chrome_with_codecs_release_bot',
       'Mac ASAN Release': 'asan_disable_nacl_fuzzer_v8_heap_release_bot',
       'TSAN Debug': 'tsan_disable_nacl_debug_bot_reclient',
@@ -2572,10 +2572,6 @@
 
     'mac_clang_tot_official': [
       'clang_tot', 'official', 'no_widevine_cdm_host_verification',
-    ],
-
-    'msan_no_origins_release_bot': [
-      'msan_no_origins', 'release_bot',
     ],
 
     'msan_no_origins_release_bot_reclient': [
