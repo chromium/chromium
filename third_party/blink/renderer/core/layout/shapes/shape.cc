@@ -36,9 +36,9 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/layout/shapes/box_shape.h"
+#include "third_party/blink/renderer/core/layout/shapes/ellipse_shape.h"
 #include "third_party/blink/renderer/core/layout/shapes/polygon_shape.h"
 #include "third_party/blink/renderer/core/layout/shapes/raster_shape.h"
-#include "third_party/blink/renderer/core/layout/shapes/rectangle_shape.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -63,25 +63,6 @@ static std::unique_ptr<Shape> CreateInsetShape(const FloatRoundedRect& bounds) {
   return std::make_unique<BoxShape>(bounds);
 }
 
-static std::unique_ptr<Shape> CreateCircleShape(const FloatPoint& center,
-                                                float radius) {
-  DCHECK_GE(radius, 0);
-  return std::make_unique<RectangleShape>(
-      FloatRect(center.x() - radius, center.y() - radius, radius * 2,
-                radius * 2),
-      FloatSize(radius, radius));
-}
-
-static std::unique_ptr<Shape> CreateEllipseShape(const FloatPoint& center,
-                                                 const FloatSize& radii) {
-  DCHECK_GE(radii.width(), 0);
-  DCHECK_GE(radii.height(), 0);
-  return std::make_unique<RectangleShape>(
-      FloatRect(center.x() - radii.width(), center.y() - radii.height(),
-                radii.width() * 2, radii.height() * 2),
-      radii);
-}
-
 static std::unique_ptr<Shape> CreatePolygonShape(Vector<FloatPoint> vertices,
                                                  WindRule fill_rule) {
   return std::make_unique<PolygonShape>(std::move(vertices), fill_rule);
@@ -99,14 +80,14 @@ static inline FloatRect PhysicalRectToLogical(const FloatRect& rect,
   return rect.TransposedRect();
 }
 
-static inline FloatPoint PhysicalPointToLogical(const FloatPoint& point,
-                                                float logical_box_height,
-                                                WritingMode writing_mode) {
+static inline gfx::PointF PhysicalPointToLogical(const gfx::PointF& point,
+                                                 float logical_box_height,
+                                                 WritingMode writing_mode) {
   if (IsHorizontalWritingMode(writing_mode))
     return point;
   if (IsFlippedBlocksWritingMode(writing_mode))
-    return FloatPoint(point.y(), logical_box_height - point.x());
-  return point.TransposedPoint();
+    return gfx::PointF(point.y(), logical_box_height - point.x());
+  return gfx::TransposePoint(point);
 }
 
 static inline FloatSize PhysicalSizeToLogical(const FloatSize& size,
@@ -134,31 +115,32 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
   switch (basic_shape->GetType()) {
     case BasicShape::kBasicShapeCircleType: {
       const BasicShapeCircle* circle = To<BasicShapeCircle>(basic_shape);
-      FloatPoint center =
-          FloatPointForCenterCoordinate(circle->CenterX(), circle->CenterY(),
-                                        FloatSize(box_width, box_height));
+      gfx::PointF center =
+          PointForCenterCoordinate(circle->CenterX(), circle->CenterY(),
+                                   FloatSize(box_width, box_height));
       float radius =
           circle->FloatValueForRadiusInBox(FloatSize(box_width, box_height));
-      FloatPoint logical_center = PhysicalPointToLogical(
+      gfx::PointF logical_center = PhysicalPointToLogical(
           center, logical_box_size.Height().ToFloat(), writing_mode);
 
-      shape = CreateCircleShape(logical_center, radius);
+      shape = std::make_unique<EllipseShape>(logical_center, radius, radius);
       break;
     }
 
     case BasicShape::kBasicShapeEllipseType: {
       const BasicShapeEllipse* ellipse = To<BasicShapeEllipse>(basic_shape);
-      FloatPoint center =
-          FloatPointForCenterCoordinate(ellipse->CenterX(), ellipse->CenterY(),
-                                        FloatSize(box_width, box_height));
+      gfx::PointF center =
+          PointForCenterCoordinate(ellipse->CenterX(), ellipse->CenterY(),
+                                   FloatSize(box_width, box_height));
       float radius_x = ellipse->FloatValueForRadiusInBox(ellipse->RadiusX(),
                                                          center.x(), box_width);
       float radius_y = ellipse->FloatValueForRadiusInBox(
           ellipse->RadiusY(), center.y(), box_height);
-      FloatPoint logical_center = PhysicalPointToLogical(
+      gfx::PointF logical_center = PhysicalPointToLogical(
           center, logical_box_size.Height().ToFloat(), writing_mode);
 
-      shape = CreateEllipseShape(logical_center, FloatSize(radius_x, radius_y));
+      shape =
+          std::make_unique<EllipseShape>(logical_center, radius_x, radius_y);
       break;
     }
 
@@ -169,10 +151,10 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
       DCHECK(!(values_size % 2));
       Vector<FloatPoint> vertices(values_size / 2);
       for (wtf_size_t i = 0; i < values_size; i += 2) {
-        FloatPoint vertex(FloatValueForLength(values.at(i), box_width),
-                          FloatValueForLength(values.at(i + 1), box_height));
-        vertices[i / 2] = PhysicalPointToLogical(
-            vertex, logical_box_size.Height().ToFloat(), writing_mode);
+        gfx::PointF vertex(FloatValueForLength(values.at(i), box_width),
+                           FloatValueForLength(values.at(i + 1), box_height));
+        vertices[i / 2] = FloatPoint(PhysicalPointToLogical(
+            vertex, logical_box_size.Height().ToFloat(), writing_mode));
       }
       shape = CreatePolygonShape(std::move(vertices), polygon->GetWindRule());
       break;

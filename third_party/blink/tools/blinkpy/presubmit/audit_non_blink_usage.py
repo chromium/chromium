@@ -328,6 +328,7 @@ _CONFIG = [
             'gfx::ToRoundedPoint',
             'gfx::ToRoundedRect',
             'gfx::ToRoundedSize',
+            'gfx::TransposePoint',
             'gfx::UniteRects',
 
             # Range type.

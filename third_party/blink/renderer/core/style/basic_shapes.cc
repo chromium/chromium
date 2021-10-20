@@ -51,8 +51,7 @@ float BasicShapeCircle::FloatValueForRadiusInBox(FloatSize box_size) const {
         hypotf(box_size.width(), box_size.height()) / sqrtf(2));
   }
 
-  FloatPoint center =
-      FloatPointForCenterCoordinate(center_x_, center_y_, box_size);
+  gfx::PointF center = PointForCenterCoordinate(center_x_, center_y_, box_size);
 
   float width_delta = std::abs(box_size.width() - center.x());
   float height_delta = std::abs(box_size.height() - center.y());
@@ -70,12 +69,10 @@ void BasicShapeCircle::GetPath(Path& path,
                                const FloatRect& bounding_box,
                                float) {
   DCHECK(path.IsEmpty());
-  FloatPoint center =
-      FloatPointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
+  gfx::PointF center =
+      PointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
   float radius = FloatValueForRadiusInBox(bounding_box.size());
-  path.AddEllipse(FloatRect(center.x() - radius + bounding_box.x(),
-                            center.y() - radius + bounding_box.y(), radius * 2,
-                            radius * 2));
+  path.AddEllipse(center, radius, radius);
 }
 
 bool BasicShapeEllipse::operator==(const BasicShape& o) const {
@@ -105,15 +102,13 @@ void BasicShapeEllipse::GetPath(Path& path,
                                 const FloatRect& bounding_box,
                                 float) {
   DCHECK(path.IsEmpty());
-  FloatPoint center =
-      FloatPointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
+  gfx::PointF center =
+      PointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
   float radius_x =
       FloatValueForRadiusInBox(radius_x_, center.x(), bounding_box.width());
   float radius_y =
       FloatValueForRadiusInBox(radius_y_, center.y(), bounding_box.height());
-  path.AddEllipse(FloatRect(center.x() - radius_x + bounding_box.x(),
-                            center.y() - radius_y + bounding_box.y(),
-                            radius_x * 2, radius_y * 2));
+  path.AddEllipse(center, radius_x, radius_y);
 }
 
 void BasicShapePolygon::GetPath(Path& path,

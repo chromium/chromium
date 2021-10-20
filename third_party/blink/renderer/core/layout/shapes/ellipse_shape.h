@@ -27,43 +27,34 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SHAPES_RECTANGLE_SHAPE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SHAPES_RECTANGLE_SHAPE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SHAPES_ELLIPSE_SHAPE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SHAPES_ELLIPSE_SHAPE_H_
 
 #include "third_party/blink/renderer/core/layout/shapes/shape.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
-class RectangleShape final : public Shape {
+class CORE_EXPORT EllipseShape final : public Shape {
  public:
-  RectangleShape(const FloatRect& bounds, const FloatSize& radii)
-      : Shape(), bounds_(bounds), radii_(radii) {}
-
-  LayoutRect ShapeMarginLogicalBoundingBox() const override {
-    return static_cast<LayoutRect>(ShapeMarginBounds());
+  EllipseShape(const gfx::PointF& center, float radius_x, float radius_y)
+      : center_(center), radius_x_(radius_x), radius_y_(radius_y) {
+    DCHECK_GE(radius_x, 0);
+    DCHECK_GE(radius_y, 0);
   }
-  bool IsEmpty() const override { return bounds_.IsEmpty(); }
+
+  LayoutRect ShapeMarginLogicalBoundingBox() const override;
+  bool IsEmpty() const override { return !radius_x_ || !radius_y_; }
   LineSegment GetExcludedInterval(LayoutUnit logical_top,
                                   LayoutUnit logical_height) const override;
   void BuildDisplayPaths(DisplayPaths&) const override;
 
  private:
-  FloatRect ShapeMarginBounds() const;
-
-  float Rx() const { return radii_.width(); }
-  float Ry() const { return radii_.height(); }
-  float X() const { return bounds_.x(); }
-  float Y() const { return bounds_.y(); }
-  float Width() const { return bounds_.width(); }
-  float Height() const { return bounds_.height(); }
-
-  FloatRect bounds_;
-  FloatSize radii_;
+  gfx::PointF center_;
+  float radius_x_;
+  float radius_y_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SHAPES_RECTANGLE_SHAPE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SHAPES_ELLIPSE_SHAPE_H_

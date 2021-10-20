@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -426,9 +427,13 @@ void Path::AddEllipse(const FloatPoint& p,
   Transform(ellipse_transform);
 }
 
-void Path::AddEllipse(const FloatRect& rect) {
+void Path::AddEllipse(const gfx::PointF& center,
+                      float radius_x,
+                      float radius_y) {
   // Start at 3 o'clock, add clock-wise.
-  path_.addOval(rect, SkPathDirection::kCW, 1);
+  path_.addOval(SkRect::MakeLTRB(center.x() - radius_x, center.y() - radius_y,
+                                 center.x() + radius_x, center.y() + radius_y),
+                SkPathDirection::kCW, 1);
 }
 
 void Path::AddRoundedRect(const FloatRoundedRect& r) {

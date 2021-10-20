@@ -143,9 +143,9 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
       case kCircle:
         if (coords_.size() >= 3 && coords_[2] > 0) {
           float r = ClampCoordinate(coords_[2]);
-          path.AddEllipse(FloatRect(ClampCoordinate(coords_[0]) - r,
-                                    ClampCoordinate(coords_[1]) - r, 2 * r,
-                                    2 * r));
+          path.AddEllipse(gfx::PointF(ClampCoordinate(coords_[0]),
+                                      ClampCoordinate(coords_[1])),
+                          r, r);
         }
         break;
       case kRect:

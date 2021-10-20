@@ -369,13 +369,12 @@ scoped_refptr<BasicShape> BasicShapeForValue(
   return basic_shape;
 }
 
-FloatPoint FloatPointForCenterCoordinate(
-    const BasicShapeCenterCoordinate& center_x,
-    const BasicShapeCenterCoordinate& center_y,
-    FloatSize box_size) {
+gfx::PointF PointForCenterCoordinate(const BasicShapeCenterCoordinate& center_x,
+                                     const BasicShapeCenterCoordinate& center_y,
+                                     FloatSize box_size) {
   float x = FloatValueForLength(center_x.ComputedLength(), box_size.width());
   float y = FloatValueForLength(center_y.ComputedLength(), box_size.height());
-  return FloatPoint(x, y);
+  return gfx::PointF(x, y);
 }
 
 }  // namespace blink

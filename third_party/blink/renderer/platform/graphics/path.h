@@ -40,6 +40,10 @@
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPathMeasure.h"
 
+namespace gfx {
+class PointF;
+}
+
 namespace blink {
 
 class AffineTransform;
@@ -172,7 +176,7 @@ class PLATFORM_EXPORT Path {
                   float rotation,
                   float start_angle,
                   float end_angle);
-  void AddEllipse(const FloatRect&);
+  void AddEllipse(const gfx::PointF& center, float radius_x, float radius_y);
 
   void AddRoundedRect(const FloatRect&, const FloatSize& rounding_radii);
   void AddRoundedRect(const FloatRect&,

@@ -34,10 +34,13 @@
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
+namespace gfx {
+class PointF;
+}
+
 namespace blink {
 
 class CSSValue;
-class FloatPoint;
 class StyleResolverState;
 class ComputedStyle;
 
@@ -45,9 +48,9 @@ CSSValue* ValueForBasicShape(const ComputedStyle&, const BasicShape*);
 CORE_EXPORT scoped_refptr<BasicShape> BasicShapeForValue(
     const StyleResolverState&,
     const CSSValue&);
-FloatPoint FloatPointForCenterCoordinate(const BasicShapeCenterCoordinate&,
-                                         const BasicShapeCenterCoordinate&,
-                                         FloatSize);
+gfx::PointF PointForCenterCoordinate(const BasicShapeCenterCoordinate&,
+                                     const BasicShapeCenterCoordinate&,
+                                     FloatSize);
 
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_BASIC_SHAPE_FUNCTIONS_H_
