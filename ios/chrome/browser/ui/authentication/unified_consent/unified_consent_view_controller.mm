@@ -264,6 +264,9 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
           constraintEqualToAnchor:self.syncSettingsTextView.trailingAnchor],
       [self.managementNoticeTextView.topAnchor
           constraintEqualToAnchor:self.syncSettingsTextView.bottomAnchor],
+      [self.managementNoticeTextView.bottomAnchor
+          constraintLessThanOrEqualToAnchor:container.bottomAnchor
+                                   constant:-kVerticalTextMargin],
     ]];
   }
 
