@@ -23,8 +23,9 @@ message SiteFirstSeen {
 enum DurationUnit {
   UNIT_UNSPECIFIED = 0;
   UNIT_DAYS = 1;
-  UNIT_MONTHS = 2;
-  UNIT_YEARS = 3;
+  UNIT_WEEKS = 2;
+  UNIT_MONTHS = 3;
+  UNIT_YEARS = 4;
 }
 
 enum DurationPrecision {
