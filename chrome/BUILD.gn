@@ -1586,6 +1586,10 @@ repack("browser_tests_pak") {
   sources = [ "$root_gen_dir/chrome/webui_test_resources.pak" ]
   output = "$root_out_dir/browser_tests.pak"
   deps = [ "//chrome/test/data:webui_test_resources" ]
+  if (!is_android) {
+    sources += [ "$root_gen_dir/chrome/webui_generated_test_resources.pak" ]
+    deps += [ "//chrome/test/data/webui:resources" ]
+  }
 }
 
 group("strings") {

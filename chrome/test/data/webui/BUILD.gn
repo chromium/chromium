@@ -10,6 +10,8 @@ import("//chrome/test/include_js_tests.gni")
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
 import("./namespace_rewrites.gni")
@@ -611,4 +613,44 @@ js_library("test_plural_string_proxy") {
     ":test_browser_proxy",
     "//ui/webui/resources/js:plural_string_proxy",
   ]
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "test/data/grit/webui_generated_test_resources.h",
+    "test/data/grit/webui_generated_test_resources_map.cc",
+    "test/data/grit/webui_generated_test_resources_map.h",
+    "webui_generated_test_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_chai_grdp") {
+  grd_prefix = "webui_generated_test"
+  out_grd = "$target_gen_dir/chai_resources.grdp"
+  input_files_base_dir = rebase_path("//third_party/chaijs", "//")
+  input_files = [ "chai.js" ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "webui_generated_test"
+  output_files_base_dir = "test/data/grit"
+  out_grd = "$target_gen_dir/resources.grd"
+
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "chai_assert.js",
+    "test_browser_proxy.js",
+    "test_util.js",
+  ]
+
+  deps = [ ":build_chai_grdp" ]
+  grdp_files = [ "$target_gen_dir/chai_resources.grdp" ]
 }
