@@ -104,15 +104,11 @@ bool ControlMessageHandler::Run(
   Deserialize<interface_control::RunMessageParamsDataView>(params, &params_ptr,
                                                            message);
   auto& input = *params_ptr->input;
-  interface_control::RunOutputPtr output = interface_control::RunOutput::New();
+  interface_control::RunOutputPtr output;
   if (input.is_query_version()) {
-    output->set_query_version_result(
+    output = interface_control::RunOutput::NewQueryVersionResult(
         interface_control::QueryVersionResult::New());
     output->get_query_version_result()->version = interface_version_;
-  } else if (input.is_flush_for_testing()) {
-    output.reset();
-  } else {
-    output.reset();
   }
 
   auto response_params_ptr = interface_control::RunResponseMessageParams::New();

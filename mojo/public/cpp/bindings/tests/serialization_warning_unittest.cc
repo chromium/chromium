@@ -216,8 +216,7 @@ TEST_F(SerializationWarningTest, ArrayOfStrings) {
 
 TEST_F(SerializationWarningTest, StructInUnion) {
   DummyStructPtr dummy(nullptr);
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_dummy(std::move(dummy));
+  ObjectUnionPtr obj = ObjectUnion::NewFDummy(std::move(dummy));
 
   TestUnionWarning(std::move(obj),
                    mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER);
@@ -225,8 +224,7 @@ TEST_F(SerializationWarningTest, StructInUnion) {
 
 TEST_F(SerializationWarningTest, UnionInUnion) {
   PodUnionPtr pod(nullptr);
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_pod_union(std::move(pod));
+  ObjectUnionPtr obj = ObjectUnion::NewFPodUnion(std::move(pod));
 
   TestUnionWarning(std::move(obj),
                    mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER);
@@ -234,8 +232,7 @@ TEST_F(SerializationWarningTest, UnionInUnion) {
 
 TEST_F(SerializationWarningTest, HandleInUnion) {
   ScopedMessagePipeHandle pipe;
-  HandleUnionPtr handle(HandleUnion::New());
-  handle->set_f_message_pipe(std::move(pipe));
+  HandleUnionPtr handle = HandleUnion::NewFMessagePipe(std::move(pipe));
 
   TestUnionWarning(std::move(handle),
                    mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE);
