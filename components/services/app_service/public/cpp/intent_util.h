@@ -27,6 +27,11 @@ extern const char kIntentActionSend[];
 extern const char kIntentActionSendMultiple[];
 extern const char kIntentActionCreateNote[];
 
+struct SharedText {
+  std::string text;
+  GURL url;
+};
+
 // Create an intent struct from URL.
 apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url);
 
@@ -152,6 +157,15 @@ apps::mojom::IntentPtr ConvertValueToIntent(base::Value&& value);
 // "text/html"] will return "text/html", and ["text/html", "image/jpeg"]
 // becomes the fully wildcard pattern.
 std::string CalculateCommonMimeType(const std::vector<std::string>& mime_types);
+
+// Extracts the text from |share_text| to populate the SharedText struct. If
+// |SharedText.url| is populated, the value will always be a valid parsed URL.
+// The |share_text| passed in here should be the share_text field from
+// apps::mojom::IntentPtr.
+//
+// Testing covered by share_target_utils_unittest.cc as this function was
+// migrated out from web_app::ShareTargetUtils.
+SharedText ExtractSharedText(const std::string& share_text);
 
 }  // namespace apps_util
 

@@ -54,9 +54,6 @@ class SharesheetHeaderView : public views::View {
 
   // Parses the share_text attribute for each individual url and text
   // from the intent struct and returns the result in a vector.
-  //
-  // TODO(crbug.com/2650014): Move the existing ExtractSharedFields function
-  // from share_target_utils.h to a common place and reuse the function here.
   std::vector<std::u16string> ExtractShareText();
   const gfx::VectorIcon& GetTextVectorIcon();
 

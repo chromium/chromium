@@ -10,6 +10,8 @@
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
@@ -34,7 +36,28 @@ void CopyToClipboardShareAction::LaunchAction(
     views::View* root_view,
     apps::mojom::IntentPtr intent) {
   controller_ = controller;
-  // TODO(crbug.com/1244143) Add copying logic.
+  ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+
+  if (intent->share_text.has_value()) {
+    apps_util::SharedText extracted_text =
+        apps_util::ExtractSharedText(intent->share_text.value());
+
+    if (!extracted_text.text.empty()) {
+      clipboard_writer.WriteText(base::UTF8ToUTF16(extracted_text.text));
+    }
+
+    if (!extracted_text.url.is_empty()) {
+      std::string anchor_text;
+      if (intent->share_title.has_value() &&
+          !(intent->share_title.value().empty())) {
+        anchor_text = intent->share_title.value();
+      }
+      clipboard_writer.WriteHyperlink(base::UTF8ToUTF16(anchor_text),
+                                      extracted_text.url.spec());
+    }
+  }
+
+  // TODO(crbug.com/1244143) Add image and file copying logic.
   controller_->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
 }
 

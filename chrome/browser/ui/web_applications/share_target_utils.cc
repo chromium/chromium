@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_share_target/target_util.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "extensions/common/constants.h"
 #include "net/base/mime_util.h"
@@ -49,32 +50,16 @@ std::vector<SharedField> ExtractSharedFields(
   if (!intent.share_text.has_value())
     return result;
 
-  std::string extracted_text = *intent.share_text;
-  GURL extracted_url;
-  size_t separator_pos = extracted_text.find_last_of(' ');
-  size_t newline_pos = extracted_text.find_last_of('\n');
-  if (newline_pos != std::string::npos &&
-      (separator_pos == std::string::npos || separator_pos < newline_pos)) {
-    separator_pos = newline_pos;
-  }
+  apps_util::SharedText extracted_text =
+      apps_util::ExtractSharedText(*intent.share_text);
 
-  if (separator_pos == std::string::npos) {
-    extracted_url = GURL(extracted_text);
-    if (extracted_url.is_valid())
-      extracted_text.clear();
-  } else {
-    extracted_url = GURL(extracted_text.substr(separator_pos + 1));
-    if (extracted_url.is_valid())
-      extracted_text.erase(separator_pos);
-  }
-
-  if (!share_target.params.text.empty() && !extracted_text.empty())
+  if (!share_target.params.text.empty() && !extracted_text.text.empty())
     result.push_back(
-        {.name = share_target.params.text, .value = extracted_text});
+        {.name = share_target.params.text, .value = extracted_text.text});
 
-  if (!share_target.params.url.empty() && extracted_url.is_valid())
+  if (!share_target.params.url.empty() && !extracted_text.url.is_empty())
     result.push_back(
-        {.name = share_target.params.url, .value = extracted_url.spec()});
+        {.name = share_target.params.url, .value = extracted_text.url.spec()});
 
   return result;
 }

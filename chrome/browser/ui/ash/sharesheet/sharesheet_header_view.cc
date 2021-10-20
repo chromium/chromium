@@ -29,6 +29,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/url_formatter/url_formatter.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -372,26 +373,15 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
     text_fields.push_back(base::UTF8ToUTF16(title_text));
   }
 
-  if (intent_->share_text.has_value() &&
-      !(intent_->share_text.value().empty())) {
-    std::string extracted_text = intent_->share_text.value();
-    size_t last_space = extracted_text.find_last_of(' ');
-    GURL extracted_url;
+  if (intent_->share_text.has_value()) {
+    apps_util::SharedText extracted_text =
+        apps_util::ExtractSharedText(intent_->share_text.value());
 
-    if (last_space == std::string::npos) {
-      extracted_url = GURL(extracted_text);
-      if (extracted_url.is_valid())
-        extracted_text.clear();
-    } else {
-      extracted_url = GURL(extracted_text.substr(last_space + 1));
-      if (extracted_url.is_valid())
-        extracted_text.erase(last_space);
+    if (!extracted_text.text.empty()) {
+      text_fields.push_back(base::UTF8ToUTF16(extracted_text.text));
     }
 
-    if (!extracted_text.empty())
-      text_fields.push_back(base::UTF8ToUTF16(extracted_text));
-
-    if (extracted_url.is_valid()) {
+    if (!extracted_text.url.is_empty()) {
       // We format the URL to match the location bar so the user is not
       // surprised by what is being shared. This means:
       // - International characters are unescaped (human readable) where safe.
@@ -403,7 +393,7 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
       const auto format_types = url_formatter::kFormatUrlOmitDefaults &
                                 ~url_formatter::kFormatUrlOmitHTTP;
       const auto formatted_text = url_formatter::FormatUrl(
-          extracted_url, format_types, net::UnescapeRule::NORMAL,
+          extracted_text.url, format_types, net::UnescapeRule::NORMAL,
           /*new_parsed=*/nullptr,
           /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
       text_fields.push_back(formatted_text);

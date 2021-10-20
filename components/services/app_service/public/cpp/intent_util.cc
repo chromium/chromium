@@ -763,4 +763,34 @@ std::string CalculateCommonMimeType(
   return common_type[0] + kMimeTypeSeparator + common_type[1];
 }
 
+SharedText ExtractSharedText(const std::string& share_text) {
+  SharedText shared_text;
+  std::string extracted_text = share_text;
+  GURL extracted_url;
+  size_t separator_pos = extracted_text.find_last_of(' ');
+  size_t newline_pos = extracted_text.find_last_of('\n');
+  if (newline_pos != std::string::npos &&
+      (separator_pos == std::string::npos || separator_pos < newline_pos)) {
+    separator_pos = newline_pos;
+  }
+
+  if (separator_pos == std::string::npos) {
+    extracted_url = GURL(extracted_text);
+    if (extracted_url.is_valid())
+      extracted_text.clear();
+  } else {
+    extracted_url = GURL(extracted_text.substr(separator_pos + 1));
+    if (extracted_url.is_valid())
+      extracted_text.erase(separator_pos);
+  }
+
+  if (!extracted_text.empty())
+    shared_text.text = extracted_text;
+
+  if (extracted_url.is_valid())
+    shared_text.url = extracted_url;
+
+  return shared_text;
+}
+
 }  // namespace apps_util
