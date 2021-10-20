@@ -14,7 +14,6 @@
 namespace ash {
 class ChromeUserManagerImpl;
 class CrosSettings;
-class SupervisedUserTestBase;
 
 // TODO(crbug.com/1155729): Check this entire class is not used anymore for
 // deprecated supervised users and remove it with all dependencies.
@@ -41,7 +40,6 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
  private:
   friend class ChromeUserManagerImpl;
   friend class UserManager;
-  friend class SupervisedUserTestBase;
 
   explicit SupervisedUserManagerImpl(ChromeUserManagerImpl* owner);
 

@@ -39,7 +39,6 @@ class KioskTest;
 namespace chromeos {
 class LocaleChangeGuard;
 class Preferences;
-class SupervisedUserTestBase;
 }  // namespace chromeos
 #endif
 
@@ -172,7 +171,6 @@ class ProfileImpl : public Profile {
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ash::KioskTest;
-  friend class chromeos::SupervisedUserTestBase;
 #endif
   friend class Profile;
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
