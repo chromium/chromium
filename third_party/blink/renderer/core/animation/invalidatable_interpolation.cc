@@ -107,7 +107,15 @@ bool InvalidatableInterpolation::IsNeutralKeyframeActive() const {
   return start_keyframe_->IsNeutral() || end_keyframe_->IsNeutral();
 }
 
-void InvalidatableInterpolation::ClearConversionCache() const {
+void InvalidatableInterpolation::ClearConversionCache(
+    InterpolationEnvironment& environment) const {
+  if (is_conversion_cached_) {
+    if (auto* css_environment =
+            DynamicTo<CSSInterpolationEnvironment>(environment)) {
+      css_environment->GetState().SetAffectsCompositorSnapshots();
+    }
+  }
+
   is_conversion_cached_ = false;
   cached_pair_conversion_.reset();
   conversion_checkers_.clear();
@@ -137,7 +145,7 @@ bool InvalidatableInterpolation::IsConversionCacheValid(
 
 const TypedInterpolationValue*
 InvalidatableInterpolation::EnsureValidConversion(
-    const InterpolationEnvironment& environment,
+    InterpolationEnvironment& environment,
     const UnderlyingValueOwner& underlying_value_owner) const {
   DCHECK(!std::isnan(current_fraction_));
   DCHECK(interpolation_types_ &&
@@ -145,7 +153,7 @@ InvalidatableInterpolation::EnsureValidConversion(
              environment.GetInterpolationTypesMap().Version());
   if (IsConversionCacheValid(environment, underlying_value_owner))
     return cached_value_.get();
-  ClearConversionCache();
+  ClearConversionCache(environment);
 
   std::unique_ptr<PairwisePrimitiveInterpolation> pairwise_conversion =
       MaybeConvertPairwise(environment, underlying_value_owner);
@@ -166,7 +174,7 @@ InvalidatableInterpolation::EnsureValidConversion(
 }
 
 void InvalidatableInterpolation::EnsureValidInterpolationTypes(
-    const InterpolationEnvironment& environment) const {
+    InterpolationEnvironment& environment) const {
   const InterpolationTypesMap& map = environment.GetInterpolationTypesMap();
   size_t latest_version = map.Version();
   if (interpolation_types_ && interpolation_types_version_ == latest_version) {
@@ -175,7 +183,7 @@ void InvalidatableInterpolation::EnsureValidInterpolationTypes(
   const InterpolationTypes* latest_interpolation_types = &map.Get(property_);
   DCHECK(latest_interpolation_types);
   if (interpolation_types_ != latest_interpolation_types) {
-    ClearConversionCache();
+    ClearConversionCache(environment);
   }
   interpolation_types_ = latest_interpolation_types;
   interpolation_types_version_ = latest_version;
@@ -227,6 +235,7 @@ void InvalidatableInterpolation::ApplyStack(
     const TypedInterpolationValue* first_value =
         first_interpolation.EnsureValidConversion(environment,
                                                   underlying_value_owner);
+
     // Fast path for replace interpolations that are the only one to apply.
     if (interpolations.size() == 1) {
       if (first_value) {
@@ -253,6 +262,7 @@ void InvalidatableInterpolation::ApplyStack(
                                                     underlying_value_owner);
     if (!current_value)
       continue;
+
     should_apply = true;
     current_interpolation.SetFlagIfInheritUsed(environment);
     if (!current_interpolation.DependsOnUnderlyingValue() ||

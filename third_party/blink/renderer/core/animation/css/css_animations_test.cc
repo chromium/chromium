@@ -205,7 +205,7 @@ TEST_P(CSSAnimationsTest, CompositedBackgroundColorSnapshot) {
   CSSAnimations::CalculateCompositorAnimationUpdate(
       update, *element, *element, element->ComputedStyleRef(),
       element->parentNode()->GetComputedStyle(),
-      /* was_window_resized */ false);
+      /* was_window_resized */ false, /* force update */ false);
 
   ASSERT_EQ(1u, update.UpdatedCompositorKeyframes().size());
   EXPECT_EQ(animation, update.UpdatedCompositorKeyframes()[0].Get());

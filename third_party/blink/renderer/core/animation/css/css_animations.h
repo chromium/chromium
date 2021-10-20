@@ -80,7 +80,8 @@ class CORE_EXPORT CSSAnimations final {
       Element&,
       const ComputedStyle&,
       const ComputedStyle* parent_style,
-      bool was_viewport_changed);
+      bool was_viewport_changed,
+      bool force_update);
 
   static AnimationEffect::EventDelegate* CreateEventDelegate(
       Element* element,

@@ -1344,43 +1344,45 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   CSSAnimations::CalculateAnimationUpdate(
       state.AnimationUpdate(), *animating_element, state.GetElement(),
       *state.Style(), state.ParentStyle(), this);
-  CSSAnimations::CalculateCompositorAnimationUpdate(
-      state.AnimationUpdate(), *animating_element, element, *state.Style(),
-      state.ParentStyle(), WasViewportResized());
   CSSAnimations::CalculateTransitionUpdate(state.AnimationUpdate(),
                                            *animating_element, *state.Style());
 
+  bool apply = !state.AnimationUpdate().IsEmpty();
+  if (apply) {
+    const ActiveInterpolationsMap& animations =
+        state.AnimationUpdate().ActiveInterpolationsForAnimations();
+    const ActiveInterpolationsMap& transitions =
+        state.AnimationUpdate().ActiveInterpolationsForTransitions();
+
+    cascade.AddInterpolations(&animations, CascadeOrigin::kAnimation);
+    cascade.AddInterpolations(&transitions, CascadeOrigin::kTransition);
+
+    CascadeFilter filter;
+    if (state.Style()->StyleType() == kPseudoIdMarker)
+      filter = filter.Add(CSSProperty::kValidForMarker, false);
+    if (IsHighlightPseudoElement(state.Style()->StyleType()))
+      filter = filter.Add(CSSProperty::kValidForHighlight, false);
+    filter = filter.Add(CSSProperty::kAnimation, true);
+
+    cascade.Apply(filter);
+
+    // Start loading resources used by animations.
+    state.LoadPendingResources();
+
+    DCHECK(!state.GetFontBuilder().FontDirty());
+  }
+
+  CSSAnimations::CalculateCompositorAnimationUpdate(
+      state.AnimationUpdate(), *animating_element, element,
+      *state.StyleRef().GetBaseComputedStyle(), state.ParentStyle(),
+      WasViewportResized(), state.AffectsCompositorSnapshots());
   CSSAnimations::SnapshotCompositorKeyframes(
-      element, state.AnimationUpdate(), *state.Style(), state.ParentStyle());
+      element, state.AnimationUpdate(),
+      *state.StyleRef().GetBaseComputedStyle(), state.ParentStyle());
   CSSAnimations::UpdateAnimationFlags(
       *animating_element, state.AnimationUpdate(), state.StyleRef());
 
-  if (state.AnimationUpdate().IsEmpty())
-    return false;
-
-  const ActiveInterpolationsMap& animations =
-      state.AnimationUpdate().ActiveInterpolationsForAnimations();
-  const ActiveInterpolationsMap& transitions =
-      state.AnimationUpdate().ActiveInterpolationsForTransitions();
-
-  cascade.AddInterpolations(&animations, CascadeOrigin::kAnimation);
-  cascade.AddInterpolations(&transitions, CascadeOrigin::kTransition);
-
-  CascadeFilter filter;
-  if (state.Style()->StyleType() == kPseudoIdMarker)
-    filter = filter.Add(CSSProperty::kValidForMarker, false);
-  if (IsHighlightPseudoElement(state.Style()->StyleType()))
-    filter = filter.Add(CSSProperty::kValidForHighlight, false);
-  filter = filter.Add(CSSProperty::kAnimation, true);
-
-  cascade.Apply(filter);
-
-  // Start loading resources used by animations.
-  state.LoadPendingResources();
-
-  DCHECK(!state.GetFontBuilder().FontDirty());
-
-  return true;
+  return apply;
 }
 
 StyleRuleKeyframes* StyleResolver::FindKeyframesRule(

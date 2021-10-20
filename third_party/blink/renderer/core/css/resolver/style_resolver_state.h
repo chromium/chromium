@@ -174,6 +174,11 @@ class CORE_EXPORT StyleResolverState {
   bool CanAffectAnimations() const { return can_affect_animations_; }
   void SetCanAffectAnimations() { can_affect_animations_ = true; }
 
+  bool AffectsCompositorSnapshots() const {
+    return affects_compositor_snapshots_;
+  }
+  void SetAffectsCompositorSnapshots() { affects_compositor_snapshots_ = true; }
+
  private:
   CSSToLengthConversionData UnzoomedLengthConversionData(
       const ComputedStyle* font_style) const;
@@ -218,6 +223,9 @@ class CORE_EXPORT StyleResolverState {
   // True whenever a matching rule in a non-matching container query contains
   // any properties that can affect animations or transitions.
   bool can_affect_animations_ = false;
+
+  // True if snapshots of composited keyframes require re-validation.
+  bool affects_compositor_snapshots_ = false;
 };
 
 }  // namespace blink
