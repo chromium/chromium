@@ -5,10 +5,16 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/privacy_review/PrivacyReviewDialog.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/privacy_review/PrivacyReviewDialog.java",
+    "java/src/org/chromium/chrome/browser/privacy_review/PrivacyReviewPagerAdapter.java",
+  ]
   deps = [
     ":java_resources",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_viewpager2_viewpager2_java",
     "//ui/android:ui_full_java",
   ]
   resources_package = "org.chromium.chrome.browser.privacy_review"
@@ -16,9 +22,17 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/privacy_review_cookies_image.xml",
     "java/res/drawable/privacy_review_illustration.xml",
+    "java/res/drawable/privacy_review_msbb_image.xml",
+    "java/res/drawable/privacy_review_sb_image.xml",
+    "java/res/drawable/privacy_review_sync_image.xml",
+    "java/res/layout/privacy_review_cookies_step.xml",
     "java/res/layout/privacy_review_dialog.xml",
+    "java/res/layout/privacy_review_msbb_step.xml",
+    "java/res/layout/privacy_review_sb_step.xml",
     "java/res/layout/privacy_review_steps.xml",
+    "java/res/layout/privacy_review_sync_step.xml",
     "java/res/layout/privacy_review_welcome.xml",
     "java/res/menu/privacy_review_toolbar_menu.xml",
     "java/res/values/dimens.xml",
