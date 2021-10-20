@@ -25,7 +25,6 @@ VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
     scoped_refptr<CodecPicture> picture,
     std::unique_ptr<ScopedVABuffer> coded_buffer)
     : input_frame_(input_frame),
-      timestamp_(input_frame->timestamp()),
       keyframe_(keyframe),
       input_surface_(input_surface),
       picture_(std::move(picture)),
@@ -38,11 +37,13 @@ VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
 VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
     scoped_refptr<VideoFrame> input_frame,
     bool keyframe)
-    : input_frame_(input_frame),
-      timestamp_(input_frame->timestamp()),
-      keyframe_(keyframe) {}
+    : input_frame_(input_frame), keyframe_(keyframe) {}
 
 VaapiVideoEncoderDelegate::EncodeJob::~EncodeJob() = default;
+
+base::TimeDelta VaapiVideoEncoderDelegate::EncodeJob::timestamp() const {
+  return input_frame_->timestamp();
+}
 
 const scoped_refptr<VideoFrame>&
 VaapiVideoEncoderDelegate::EncodeJob::input_frame() const {

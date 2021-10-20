@@ -97,8 +97,7 @@ class VaapiVideoEncoderDelegate {
     // Returns true if this job has been requested to produce a keyframe.
     bool IsKeyframeRequested() const { return keyframe_; }
 
-    // Returns the timestamp associated with this job.
-    base::TimeDelta timestamp() const { return timestamp_; }
+    base::TimeDelta timestamp() const;
 
     const scoped_refptr<VideoFrame>& input_frame() const;
 
@@ -110,9 +109,6 @@ class VaapiVideoEncoderDelegate {
    private:
     // Input VideoFrame to be encoded.
     const scoped_refptr<VideoFrame> input_frame_;
-
-    // Source timestamp for |input_frame_|.
-    const base::TimeDelta timestamp_;
 
     // True if this job is to produce a keyframe.
     bool keyframe_;
