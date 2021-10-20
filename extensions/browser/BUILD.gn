@@ -725,6 +725,8 @@ source_set("test_support") {
   sources = [
     "api/declarative_net_request/test_utils.cc",
     "api/declarative_net_request/test_utils.h",
+    "api/idle/test_idle_provider.cc",
+    "api/idle/test_idle_provider.h",
     "api/sockets_udp/test_udp_echo_server.cc",
     "api/sockets_udp/test_udp_echo_server.h",
     "browsertest_util.cc",
@@ -763,6 +765,7 @@ source_set("test_support") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/idle:idle",
   ]
 
   if (is_chromeos_ash) {
