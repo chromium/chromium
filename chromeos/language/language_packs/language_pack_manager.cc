@@ -41,11 +41,15 @@ PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
 }
 
 const base::flat_map<PackSpecPair, std::string>& GetAllDlcIds() {
-  // Create the map of all DLCs and corresponding IDs.
+  // Map of all DLCs and corresponding IDs.
+  // It's a map from PackSpecPair to DLC ID. The pair is <feature id, locale>.
   // Whenever a new DLC is created, it needs to be added here.
   // Clients of Language Packs don't need to know the IDs.
   static const base::NoDestructor<base::flat_map<PackSpecPair, std::string>>
-      all_dlc_ids({{{kHandwritingFeatureId, "en"}, "handwriting-en-dlc"}});
+      all_dlc_ids({
+          {{kHandwritingFeatureId, "es"}, "languagepack-handwriting-es"},
+          {{kHandwritingFeatureId, "spa"}, "languagepack-handwriting-es"},
+      });
 
   return *all_dlc_ids;
 }
