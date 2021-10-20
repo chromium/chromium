@@ -75,7 +75,7 @@ void PartitionAddressSpace::Init() {
   void* requested_address =
       reinterpret_cast<void*>(setup_.non_brp_pool_base_address_);
   char* actual_address = internal::AddressPoolManager::GetInstance()->Reserve(
-      non_brp_pool_, requested_address, kSuperPageSize);
+      setup_.non_brp_pool_, requested_address, kSuperPageSize);
   PA_CHECK(requested_address == actual_address)
       << "QuarantineCardTable is required to be allocated in the beginning of "
          "the non-BRP pool";

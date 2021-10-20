@@ -906,13 +906,14 @@ size_t FreeAndUnmarkInCardTable(PartitionRoot<ThreadSafe>* root,
   void* slot_start = root->AdjustPointerForExtrasSubtract(object);
   root->FreeNoHooksImmediate(object, slot_span, slot_start);
 #if PA_STARSCAN_USE_CARD_TABLE
+  const uintptr_t object_as_uintptr = reinterpret_cast<uintptr_t>(object);
   // Reset card(s) for this quarantined object. Please note that the
   // cards may still contain quarantined objects (which were
   // promoted in this scan cycle), but
   // ClearQuarantinedObjectsAndFilterSuperPages() will set them
   // again in the next PCScan cycle.
-  QuarantineCardTable::GetFrom(ptr).Unquarantine(
-      ptr, slot_span->GetUsableSize(root));
+  QuarantineCardTable::GetFrom(object_as_uintptr)
+      .Unquarantine(object_as_uintptr, slot_span->GetUsableSize(root));
 #endif
   return slot_size;
 }
