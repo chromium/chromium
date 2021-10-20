@@ -141,7 +141,7 @@ content::RenderFrameHost* SandboxedWebUiAppTestBase::GetAppFrame(
     content::WebContents* web_ui) {
   // Assume the first subframe is the app.
   content::RenderFrameHost* subframe = ChildFrameAt(web_ui, 0);
-  EXPECT_TRUE(subframe);
+  EXPECT_TRUE(subframe) << web_ui->GetVisibleURL();
   return subframe;
 }
 

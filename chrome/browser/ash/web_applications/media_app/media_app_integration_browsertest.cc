@@ -22,6 +22,8 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -112,6 +114,31 @@ using MediaAppIntegrationAllProfilesTest = MediaAppIntegrationTest;
 using MediaAppIntegrationWithFilesAppAllProfilesTest =
     MediaAppIntegrationWithFilesAppTest;
 
+class BrowserWindowWaiter : public BrowserListObserver {
+ public:
+  void WaitForBrowserAdded() {
+    BrowserList::GetInstance()->AddObserver(this);
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+    BrowserList::GetInstance()->RemoveObserver(this);
+  }
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override { quit_closure_.Run(); }
+
+ private:
+  base::RepeatingClosure quit_closure_;
+};
+
+// Waits for the number of active Browsers in the test process to reach `count`.
+void WaitForBrowserCount(int count) {
+  EXPECT_LE(BrowserList::GetInstance()->size(), count) << "Too many browsers";
+  while (BrowserList::GetInstance()->size() < count) {
+    BrowserWindowWaiter().WaitForBrowserAdded();
+  }
+}
+
 // Gets the base::FilePath for a named file in the test folder.
 base::FilePath TestFile(const std::string& ascii_name) {
   base::FilePath path;
@@ -130,7 +157,9 @@ void PrepareAppForTest(content::WebContents* web_ui) {
                          web_ui, MediaAppUiBrowserTest::AppJsTestLibrary()));
 }
 
-content::WebContents* PrepareActiveBrowserForTest() {
+content::WebContents* PrepareActiveBrowserForTest(
+    int expected_browser_count = 2) {
+  WaitForBrowserCount(expected_browser_count);
   Browser* app_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* web_ui =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -260,8 +289,8 @@ void MediaAppIntegrationTest::MediaAppWithLaunchSystemWebAppAsync(
   web_app::LaunchSystemWebAppAsync(browser()->profile(),
                                    web_app::SystemAppType::MEDIA, image_params);
   web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  app = PrepareActiveBrowserForTest(audio_enabled ? 3 : 2);
   Browser* second_browser = chrome::FindBrowserWithActiveWindow();
-  app = PrepareActiveBrowserForTest();
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
   if (audio_enabled) {
@@ -754,8 +783,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   folder.Add({TestFile(kFilePng800x600)});
   OpenOperationResult open_result = folder.Open(TestFile(kFilePng800x600));
 
-  // Window focus changes on ChromeOS are synchronous, so just get the newly
-  // focused window.
+  // Although window focus changes on ChromeOS are synchronous, the app launch
+  // codepaths may not be, so ensure a Browser is created.
+  WaitForBrowserCount(2);
   Browser* app_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* web_ui =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -787,6 +817,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
   // Launch with the audio file.
   EXPECT_EQ(folder.Open(TestFile(kFileAudioOgg)),
             platform_util::OPEN_SUCCEEDED);
+  WaitForBrowserCount(2);
   Browser* audio_app_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* audio_web_ui =
       audio_app_browser->tab_strip_model()->GetActiveWebContents();
@@ -795,6 +826,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
   // Launch with the image file.
   EXPECT_EQ(folder.Open(TestFile(kFileJpeg640x480)),
             platform_util::OPEN_SUCCEEDED);
+  WaitForBrowserCount(3);
   Browser* image_app_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* image_web_ui =
       image_app_browser->tab_strip_model()->GetActiveWebContents();
