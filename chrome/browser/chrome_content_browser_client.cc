@@ -4325,7 +4325,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
         &throttles);
   }
 
-  if (IsErrorPageAutoReloadEnabled() && handle->IsInMainFrame()) {
+  if (IsErrorPageAutoReloadEnabled()) {
     MaybeAddThrottle(
         error_page::NetErrorAutoReloader::MaybeCreateThrottleFor(handle),
         &throttles);
