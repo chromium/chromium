@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/web_remote_playback_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -332,6 +333,11 @@ class MediaControlsImplTest : public PageTestBase,
       return false;
 
     return true;
+  }
+
+  PointerEvent* CreatePointerEvent(const AtomicString& name) {
+    PointerEventInit* init = PointerEventInit::Create();
+    return PointerEvent::Create(name, init);
   }
 
  private:
@@ -970,7 +976,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   MediaControls().DispatchEvent(*Event::Create("focusin"));
   MediaControls().MediaElement().SetFocused(true,
                                             mojom::blink::FocusType::kNone);
-  MediaControls().DispatchEvent(*Event::Create("pointermove"));
+  MediaControls().DispatchEvent(*CreatePointerEvent("pointermove"));
 
   // Controls should remain visible
   platform()->RunForPeriodSeconds(2);
@@ -1021,7 +1027,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler, CursorHidesWhenControlsHide) {
 
   // If the mouse moves, the controls are shown and the cursor is no longer
   // hidden.
-  MediaControls().DispatchEvent(*Event::Create("pointermove"));
+  MediaControls().DispatchEvent(*CreatePointerEvent("pointermove"));
   EXPECT_FALSE(IsCursorHidden());
 
   // Once the controls hide again, the cursor is hidden again.
@@ -1282,9 +1288,11 @@ TEST_F(MediaControlsImplTest, CastOverlayShowsOnSomeEvents) {
   SimulateHideMediaControlsTimerFired();
   EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
 
-  for (auto* const event_name :
+  for (const AtomicString event_name :
        {"gesturetap", "click", "pointerover", "pointermove"}) {
-    overlay_enclosure->DispatchEvent(*Event::Create(event_name));
+    overlay_enclosure->DispatchEvent(event_name == "gesturetap"
+                                         ? *Event::Create(event_name)
+                                         : *CreatePointerEvent(event_name));
     EXPECT_TRUE(IsElementVisible(*cast_overlay_button));
 
     SimulateHideMediaControlsTimerFired();
