@@ -16,7 +16,7 @@
 
 namespace maldoca {
 static inline std::string& GetFailedEncoding() {
-  thread_local std::string failed_encoding;
+  static std::string failed_encoding;
   return failed_encoding;
 }
 
