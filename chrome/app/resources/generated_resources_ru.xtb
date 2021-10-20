@@ -2534,7 +2534,7 @@
 <translation id="3650952250015018111">Разрешить приложению "<ph name="APP_NAME" />" доступ к этому устройству:</translation>
 <translation id="3651488188562686558">Отключится от сети Wi-Fi</translation>
 <translation id="3652817283076144888">Инициализация…</translation>
-<translation id="3653160965917900914">Общие папки сети</translation>
+<translation id="3653160965917900914">Общие сетевые папки</translation>
 <translation id="3653999333232393305">Разрешить <ph name="HOST" /> доступ к микрофону</translation>
 <translation id="3654045516529121250">Чтение настроек специальных возможностей</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{С постоянным доступом к 1 файлу.}one{С постоянным доступом к # файлу.}few{С постоянным доступом к # файлам.}many{С постоянным доступом к # файлам.}other{С постоянным доступом к # файла.}}</translation>
