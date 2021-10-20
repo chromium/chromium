@@ -256,6 +256,7 @@ source_set("eg2_tests") {
   sources = [ "reading_list_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
+    ":features",
     ":reading_list_constants",
     "//base",
     "//base/test:test_support",
