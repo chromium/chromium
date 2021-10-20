@@ -93,6 +93,11 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += protocol::kRemoteOpenUrlCapability;
   }
 
+  if (desktop_environment_options().enable_remote_webauthn()) {
+    capabilities += " ";
+    capabilities += protocol::kRemoteWebAuthnCapability;
+  }
+
   return capabilities;
 }
 

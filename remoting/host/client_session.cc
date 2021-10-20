@@ -411,11 +411,6 @@ void ClientSession::OnConnectionAuthenticated() {
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kWebrtcIceSdpRestartAction);
 
-#if !defined(NDEBUG)
-  host_capabilities_.append(" ");
-  host_capabilities_.append(protocol::kRemoteWebAuthnCapability);
-#endif
-
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();
 

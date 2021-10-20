@@ -1641,6 +1641,11 @@ void HostProcess::StartHost() {
   // The feature is enabled for all Googlers using a supported platform.
   desktop_environment_options_.set_enable_remote_open_url(is_googler_);
 
+#if !defined(NDEBUG)
+  // Experimental feature.
+  desktop_environment_options_.set_enable_remote_webauthn(true);
+#endif
+
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),
       transport_context, context_->audio_task_runner(),

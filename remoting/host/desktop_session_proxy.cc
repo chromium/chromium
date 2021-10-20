@@ -196,6 +196,11 @@ std::string DesktopSessionProxy::GetCapabilities() const {
     result += protocol::kRemoteOpenUrlCapability;
   }
 
+  if (options_.enable_remote_webauthn()) {
+    result += " ";
+    result += protocol::kRemoteWebAuthnCapability;
+  }
+
   return result;
 }
 

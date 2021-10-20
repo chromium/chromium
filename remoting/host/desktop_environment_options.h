@@ -46,6 +46,9 @@ class DesktopEnvironmentOptions final {
   bool enable_remote_open_url() const;
   void set_enable_remote_open_url(bool enabled);
 
+  bool enable_remote_webauthn() const;
+  void set_enable_remote_webauthn(bool enabled);
+
   const webrtc::DesktopCaptureOptions* desktop_capture_options() const;
   webrtc::DesktopCaptureOptions* desktop_capture_options();
 
@@ -76,6 +79,9 @@ class DesktopEnvironmentOptions final {
   // should also call IsRemoteOpenUrlSupported() to determine if the feature is
   // supported by the platform.
   bool enable_remote_open_url_ = false;
+
+  // True if this host has the remote WebAuthn feature enabled.
+  bool enable_remote_webauthn_ = false;
 
   // The DesktopCaptureOptions to initialize DesktopCapturer.
   webrtc::DesktopCaptureOptions desktop_capture_options_;
