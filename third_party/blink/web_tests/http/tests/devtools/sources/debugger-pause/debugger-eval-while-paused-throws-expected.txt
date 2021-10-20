@@ -5,10 +5,10 @@ Dumping console messages:
 
 injectedFunction()
 debugger-eval-while-paused-throws.js:51 Uncaught Error: injectedObj.func
-    at Object.func (debugger-eval-while-paused-throws.js:51)
-    at injectedFunction (debugger-eval-while-paused-throws.js:54)
-    at eval (eval at testFunction (inspected-page.html:27), <anonymous>:1:1)
-    at testFunction (test.js:27)
+    at Object.func (debugger-eval-while-…sed-throws.js:51:15)
+    at injectedFunction (debugger-eval-while-…sed-throws.js:54:24)
+    at eval (eval at testFunction (inspected-page.html:27:11), <anonymous>:1:1)
+    at testFunction (test.js:27:11)
 func @ debugger-eval-while-paused-throws.js:51
 injectedFunction @ debugger-eval-while-paused-throws.js:54
 eval @ VM:1
@@ -18,9 +18,9 @@ scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 localObj.func()
 test.js:24 Uncaught Error: localObj.func
-    at Object.func (test.js:24)
-    at eval (eval at testFunction (inspected-page.html:27), <anonymous>:1:10)
-    at testFunction (test.js:27)
+    at Object.func (test.js:24:25)
+    at eval (eval at testFunction (inspected-page.html:27:11), <anonymous>:1:10)
+    at testFunction (test.js:27:11)
 func @ test.js:24
 eval @ VM:1
 testFunction @ test.js:27
@@ -29,9 +29,9 @@ scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 globalObj.func()
 test.js:15 Uncaught Error: globalObj.func
-    at Object.func (test.js:15)
-    at eval (eval at testFunction (inspected-page.html:27), <anonymous>:1:11)
-    at testFunction (test.js:27)
+    at Object.func (test.js:15:21)
+    at eval (eval at testFunction (inspected-page.html:27:11), <anonymous>:1:11)
+    at testFunction (test.js:27:11)
 func @ test.js:15
 eval @ VM:1
 testFunction @ test.js:27

@@ -12,7 +12,7 @@ table = 'local in iframe'
 clear = 
 x: = VM:1 Uncaught SyntaxError: Unexpected end of input
     at Object.pauseInsideIframe (<anonymous>:6:5)
-    at testFunction (debugger-eval-on-cal…inside-iframe.js:35)
+    at testFunction (debugger-eval-on-cal…ide-iframe.js:35:50)
 pauseInsideIframe @ VM:6
 testFunction @ debugger-eval-on-cal…inside-iframe.js:35
 setTimeout (async)
@@ -26,7 +26,7 @@ table =
 clear = 'local in top frame'
 x: = VM:1 Uncaught SyntaxError: Unexpected end of input
     at Object.pauseInsideIframe (<anonymous>:6:5)
-    at testFunction (debugger-eval-on-cal…inside-iframe.js:35)
+    at testFunction (debugger-eval-on-cal…ide-iframe.js:35:50)
 pauseInsideIframe @ VM:6
 testFunction @ debugger-eval-on-cal…inside-iframe.js:35
 setTimeout (async)

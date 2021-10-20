@@ -9,8 +9,8 @@ undefined
 undefined
 2console-repeat-count.js:15 Message
 2console-repeat-count.js:18 Error: Message with error
-    at dumpMessages (console-repeat-count.js:18)
-    at console-repeat-count.js:49
+    at dumpMessages (console-repeat-count.js:18:21)
+    at console-repeat-count.js:49:1
 console-repeat-count.js:21 {a: 1}
 dumpMessages @ console-repeat-count.js:21
 (anonymous) @ console-repeat-count.js:49

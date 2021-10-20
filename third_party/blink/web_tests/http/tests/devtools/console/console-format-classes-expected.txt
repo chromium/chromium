@@ -1,7 +1,7 @@
 Tests that console produces instant previews for arrays and objects.
 
 console-format-classes.js:30 Error: custom error with link www.chromium.org
-    at console-format-classes.js:20 
+    at console-format-classes.js:20:9 
   console-message
     source-code
       console-message-anchor
