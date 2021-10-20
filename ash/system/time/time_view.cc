@@ -50,10 +50,6 @@ const int kVerticalClockLeftPadding = 9;
 // vertical clock.
 const int kVerticalClockMinutesTopOffset = -2;
 
-// Leading padding used to draw the tray background to the left of the clock
-// when the shelf is vertically aligned.
-const int kClockLeadingPadding = 8;
-
 std::u16string FormatDate(const base::Time& time) {
   // Use 'short' month format (e.g., "Oct") followed by non-padded day of
   // month (e.g., "2", "10").
@@ -263,7 +259,6 @@ void TimeView::SetupSubviews(ClockLayout clock_layout) {
   columns->AddPaddingColumn(0, kVerticalClockLeftPadding);
   columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER, 0,
                      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  layout->AddPaddingRow(0, kClockLeadingPadding);
   layout->StartRow(0, kColumnId);
   vertical_label_hours_ = layout->AddView(std::make_unique<views::Label>());
   SetupLabel(vertical_label_hours_);
