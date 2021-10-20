@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "components/pdf/renderer/pdf_internal_plugin_delegate.h"
 #include "components/pdf/renderer/pdf_view_web_plugin_client.h"
@@ -47,13 +48,23 @@ blink::WebPlugin* CreateInternalPlugin(
   }
 
   // The in-process plugin should only be created if the parent frame has an
-  // allowed origin.
-  blink::WebFrame* parent_frame = render_frame->GetWebFrame()->Parent();
+  // origin allowed to hold an internal plugin.
+  blink::WebFrame* frame = render_frame->GetWebFrame();
+  blink::WebFrame* parent_frame = frame->Parent();
   if (!parent_frame)
     return nullptr;
 
   if (!delegate->IsAllowedOrigin(parent_frame->GetSecurityOrigin()))
     return nullptr;
+
+  // The plugin should always be externally handled from origins allowed to
+  // hold the internal plugin.
+  DCHECK(!delegate->IsAllowedOrigin(frame->GetSecurityOrigin()));
+
+  // The internal plugin frame must not share a process with the parent frame.
+  // This could potentially happen if the source SiteInstance is incorrectly
+  // reused (see crbug.com/1259635).
+  CHECK(parent_frame->IsWebRemoteFrame());
 
   mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote;
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
