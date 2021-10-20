@@ -4,4 +4,8 @@ include_rules = [
   "+chromeos/grit/chromeos_media_app_bundle_resources.h",
   "+chromeos/grit/chromeos_media_app_bundle_resources_map.h",
   "+components/content_settings/core/common",
+
+  # Allow only public Blink interfaces, similar to chrome/browser/DEPS.
+  "+third_party/blink/public/common",
+  "+third_party/blink/public/mojom",
 ]

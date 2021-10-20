@@ -44,13 +44,24 @@ const createImgChild = async (blobSrc, fileName) => {
 const createAudioChild = async (blobSrc, fileName) => {
   const container =
       /** @type {HTMLDivElement} */ (document.createElement('div'));
-  const audio = /** @type {HTMLAudioElement} */
-      (container.appendChild(document.createElement('audio')));
-  audio.src = blobSrc;
+
   const title = /** @type {HTMLDivElement} */
       (container.appendChild(document.createElement('div')));
   title.className = 'title';
   title.innerText = fileName;
+
+  const audio = /** @type {HTMLAudioElement} */
+      (container.appendChild(document.createElement('audio')));
+  audio.src = blobSrc;
+  // Audio will autoplay in this manner. Do the same in the mock to test
+  // integration points.
+  audio.play()
+      .then(() => {
+        console.log('Audio playing..');
+      })
+      .catch(e => {
+        console.error(String(e));
+      });
   return container;
 };
 

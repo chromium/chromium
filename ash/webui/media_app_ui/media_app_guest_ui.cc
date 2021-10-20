@@ -9,10 +9,13 @@
 #include "chromeos/components/web_applications/webui_test_prod_util.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 
 namespace ash {
@@ -98,7 +101,8 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
 
 MediaAppGuestUI::MediaAppGuestUI(content::WebUI* web_ui,
                                  MediaAppGuestUIDelegate* delegate)
-    : ui::UntrustedWebUIController(web_ui) {
+    : UntrustedWebUIController(web_ui),
+      WebContentsObserver(web_ui->GetWebContents()) {
   content::WebUIDataSource* untrusted_source =
       CreateMediaAppUntrustedDataSource(delegate);
 
@@ -107,5 +111,19 @@ MediaAppGuestUI::MediaAppGuestUI(content::WebUI* web_ui,
 }
 
 MediaAppGuestUI::~MediaAppGuestUI() = default;
+
+void MediaAppGuestUI::ReadyToCommitNavigation(
+    content::NavigationHandle* handle) {
+  // Force-enable autoplay support.
+  const std::string allowed_resource = "app.html";
+  if (handle->GetURL() != GURL(kChromeUIMediaAppGuestURL + allowed_resource))
+    return;
+
+  mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
+  handle->GetRenderFrameHost()->GetRemoteAssociatedInterfaces()->GetInterface(
+      &client);
+  client->AddAutoplayFlags(url::Origin::Create(handle->GetURL()),
+                           blink::mojom::kAutoplayFlagForceAllow);
+}
 
 }  // namespace ash

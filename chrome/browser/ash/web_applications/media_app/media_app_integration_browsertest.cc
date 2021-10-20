@@ -81,6 +81,12 @@ class MediaAppIntegrationTest : public SystemWebAppIntegrationTest {
   void MediaAppLaunchWithFile(bool audio_enabled);
   void MediaAppWithLaunchSystemWebAppAsync(bool audio_enabled);
   void MediaAppEligibleOpenTask(bool audio_enabled);
+
+  // Helper to initiate a test by launching a single file.
+  content::WebContents* LaunchWithOneTestFile(const char* file);
+
+ private:
+  std::unique_ptr<file_manager::test::FolderInMyFiles> launch_folder_;
 };
 
 class MediaAppIntegrationWithFilesAppTest : public MediaAppIntegrationTest {
@@ -172,7 +178,7 @@ content::WebContents* PrepareActiveBrowserForTest(
 content::EvalJsResult WaitForAudioTrackTitle(content::WebContents* web_ui) {
   constexpr char kScript[] = R"(
       (async function waitForAudioTrackTitle() {
-        return (await waitForNode('div.title')).innerText;
+        return (await waitForNode('div.title:not(:empty)')).innerText;
       })();
   )";
 
@@ -211,6 +217,17 @@ content::EvalJsResult WaitForNavigable(content::WebContents* web_ui) {
 void TouchFileSync(const base::FilePath& path, const base::Time& time) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::TouchFile(path, time, time));
+}
+
+content::WebContents* MediaAppIntegrationTest::LaunchWithOneTestFile(
+    const char* file) {
+  WaitForTestSystemAppInstall();
+  launch_folder_ =
+      std::make_unique<file_manager::test::FolderInMyFiles>(profile());
+  launch_folder_->Add({TestFile(file)});
+  EXPECT_EQ(launch_folder_->Open(TestFile(file)),
+            platform_util::OPEN_SUCCEEDED);
+  return PrepareActiveBrowserForTest();
 }
 
 }  // namespace
@@ -845,6 +862,30 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
 
   // Check the metrics are recorded.
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromFileManager", 2);
+}
+
+// Ensures audio files opened in the media app successfully autoplay.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest, Autoplay) {
+  content::WebContents* web_ui = LaunchWithOneTestFile(kFileAudioOgg);
+
+  EXPECT_EQ(kFileAudioOgg, WaitForAudioTrackTitle(web_ui));
+
+  constexpr char kWaitForPlayedLength[] = R"(
+      (async function waitForPlayedLength() {
+        const audioElement = await waitForNode('audio');
+        if (audioElement.played.length > 0) {
+          return audioElement.played.length;
+        }
+        // Wait for a timeupdate. If autoplay malfunctions, this will timeout.
+        await new Promise(resolve => {
+          audioElement.addEventListener('timeupdate', resolve, {once: true});
+        });
+        return audioElement.played.length;
+      })();
+  )";
+
+  EXPECT_LE(
+      1, MediaAppUiBrowserTest::EvalJsInAppFrame(web_ui, kWaitForPlayedLength));
 }
 
 // Test that the MediaApp can navigate other files in the directory of a file
