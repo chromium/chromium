@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test.h"
@@ -20,13 +21,20 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
+#include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/gl_scaler_test_util.h"
 #include "components/viz/test/paths.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/skia_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/rect.h"
@@ -129,6 +137,96 @@ std::unique_ptr<AggregatedRenderPass> GenerateRootRenderPass(
                /*is_premultiplied=*/true, /*nearest_neighbor=*/true,
                /*force_anti_aliasing_off=*/false);
   return pass;
+}
+
+void ReadbackTextureOnGpuThread(gpu::SharedImageManager* shared_image_manager,
+                                gpu::SharedContextState* context_state,
+                                const gpu::Mailbox& mailbox,
+                                const gfx::Size& texture_size,
+                                SkColorType color_type,
+                                SkBitmap& out_bitmap) {
+  DCHECK(color_type == kAlpha_8_SkColorType ||
+         color_type == kR8G8_unorm_SkColorType);
+
+  if (!context_state->MakeCurrent(nullptr))
+    return;
+
+  auto representation = shared_image_manager->ProduceSkia(
+      mailbox, context_state->memory_type_tracker(), context_state);
+
+  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  auto scoped_write = representation->BeginScopedWriteAccess(
+      /*final_msaa_count=*/0, surface_props, &begin_semaphores, &end_semaphores,
+      gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
+
+  auto* surface = scoped_write->surface();
+
+  surface->wait(begin_semaphores.size(), begin_semaphores.data());
+
+  size_t row_bytes =
+      texture_size.width() * (color_type == kAlpha_8_SkColorType ? 1 : 2);
+  size_t num_bytes = row_bytes * texture_size.height();
+
+  DCHECK_EQ(num_bytes, out_bitmap.computeByteSize());
+  DCHECK_EQ(row_bytes, out_bitmap.rowBytes());
+  DCHECK_EQ(
+      static_cast<size_t>(out_bitmap.width() * out_bitmap.bytesPerPixel()),
+      out_bitmap.rowBytes());
+
+  SkPixmap pixmap(SkImageInfo::Make(texture_size.width(), texture_size.height(),
+                                    color_type, kUnpremul_SkAlphaType),
+                  out_bitmap.getAddr(0, 0), row_bytes);
+
+  bool success = surface->readPixels(pixmap, 0, 0);
+  DCHECK(success);
+
+  GrFlushInfo flush_info;
+  flush_info.fNumSemaphores = end_semaphores.size();
+  flush_info.fSignalSemaphores = end_semaphores.data();
+
+  gpu::AddVulkanCleanupTaskForSkiaFlush(context_state->vk_context_provider(),
+                                        &flush_info);
+
+  surface->flush(SkSurface::BackendSurfaceAccess::kNoAccess, flush_info);
+}
+
+// Reads back NV12 planes from textures returned in the result.
+// Will issue a task to the GPU thread and block on its completion.
+void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
+                        std::unique_ptr<CopyOutputResult> result,
+                        SkBitmap& out_luma_plane,
+                        SkBitmap& out_chroma_planes) {
+  base::WaitableEvent wait;
+
+  gpu_service_holder->ScheduleGpuTask(base::BindLambdaForTesting(
+      [&out_luma_plane, &out_chroma_planes, &result, &wait]() {
+        auto* shared_image_manager = TestGpuServiceHolder::GetInstance()
+                                         ->gpu_service()
+                                         ->shared_image_manager();
+        auto* context_state = TestGpuServiceHolder::GetInstance()
+                                  ->gpu_service()
+                                  ->GetContextState()
+                                  .get();
+
+        ReadbackTextureOnGpuThread(
+            shared_image_manager, context_state,
+            result->GetTextureResult()->planes[0].mailbox, result->size(),
+            kAlpha_8_SkColorType, out_luma_plane);
+
+        ReadbackTextureOnGpuThread(
+            shared_image_manager, context_state,
+            result->GetTextureResult()->planes[1].mailbox,
+            gfx::Size(result->size().width() / 2, result->size().height() / 2),
+            kR8G8_unorm_SkColorType, out_chroma_planes);
+
+        wait.Signal();
+      }));
+
+  wait.Wait();
 }
 
 }  // namespace
@@ -254,24 +352,20 @@ INSTANTIATE_TEST_SUITE_P(All,
                          // Result scaling: Scale by half?
                          testing::Values(true, false));
 
-// Don't compile the NV12 tests when run on Android emulator, they won't
-// work since the SkiaRenderer currently does not support CopyOutputRequests
-// with NV12 format if the platform does not support GL_EXT_texture_rg extension
-// in GL ES 2.0 (which is the case on Android emulator).
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
-
-class SkiaReadbackPixelTestNV12 : public cc::PixelTest,
-                                  public testing::WithParamInterface<bool> {
+class SkiaReadbackPixelTestNV12
+    : public cc::PixelTest,
+      public testing::WithParamInterface<
+          std::tuple<bool, CopyOutputResult::Destination>> {
  public:
+  bool ScaleByHalf() const { return std::get<0>(GetParam()); }
+
+  CopyOutputResult::Destination RequestDestination() const {
+    return std::get<1>(GetParam());
+  }
+
   CopyOutputResult::Format RequestFormat() const {
     return CopyOutputResult::Format::NV12_PLANES;
   }
-
-  CopyOutputResult::Destination RequestDestination() const {
-    return CopyOutputResult::Destination::kSystemMemory;
-  }
-
-  bool ScaleByHalf() const { return GetParam(); }
 
   void SetUp() override {
     SetUpSkiaRenderer(gfx::SurfaceOrigin::kBottomLeft);
@@ -287,6 +381,10 @@ class SkiaReadbackPixelTestNV12 : public cc::PixelTest,
     return GetTestFilePath(
         ScaleByHalf() ? FILE_PATH_LITERAL("half_of_one_of_16_color_rects.png")
                       : FILE_PATH_LITERAL("one_of_16_color_rects.png"));
+  }
+
+  gpu::gles2::GLES2Interface* gl() {
+    return child_context_provider_->ContextGL();
   }
 
  protected:
@@ -317,9 +415,13 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
     // TODO(https://crbug.com/1256483): Fail the test case after adjusting asset
     // sizes, if we got odd dimensions it means that the assets have been
     // accidentally changed to no longer be even, even after scaling by half.
-    GTEST_SKIP() << " The test case expects the result size to match the "
-                    "request size exactly, which is not possible with NV12 "
-                    "when the request size dimensions aren't even.";
+    GTEST_SKIP()
+        << " The test case expects the result size to match the "
+           "request size exactly, which is not possible with NV12 "
+           "when the request size dimensions aren't even. result_selection="
+        << result_selection.ToString() << ", ScaleByHalf()=" << ScaleByHalf()
+        << ", RequestDestination()="
+        << static_cast<int>(base::to_underlying(RequestDestination()));
   }
 
   std::unique_ptr<CopyOutputResult> result;
@@ -378,22 +480,27 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
   SkBitmap luma_plane;
   SkBitmap chroma_planes;
 
+  // Packed plane sizes:
+  const gfx::Size luma_plane_size =
+      gfx::Size(result->size().width() / 4, result->size().height());
+  const gfx::Size chroma_planes_size =
+      gfx::Size(luma_plane_size.width(), luma_plane_size.height() / 2);
+
   if (RequestDestination() == CopyOutputResult::Destination::kSystemMemory) {
     // Create a bitmap with packed Y values:
-    luma_plane = GLScalerTestUtil::AllocateRGBABitmap(
-        gfx::Size(result->size().width() / 4, result->size().height()));
+    luma_plane = GLScalerTestUtil::AllocateRGBABitmap(luma_plane_size);
+    chroma_planes = GLScalerTestUtil::AllocateRGBABitmap(chroma_planes_size);
 
-    chroma_planes = GLScalerTestUtil::AllocateRGBABitmap(
-        gfx::Size(luma_plane.width(), luma_plane.height() / 2));
-
-    result->ReadNV12Planes(
-        reinterpret_cast<uint8_t*>(luma_plane.getAddr(0, 0)),
-        result->size().width(),
-        reinterpret_cast<uint8_t*>(chroma_planes.getAddr(0, 0)),
-        result->size().width());
+    result->ReadNV12Planes(static_cast<uint8_t*>(luma_plane.getAddr(0, 0)),
+                           result->size().width(),
+                           static_cast<uint8_t*>(chroma_planes.getAddr(0, 0)),
+                           result->size().width());
   } else {
-    LOG(ERROR) << "Texture results for NV12 are not supported yet!";
-    ADD_FAILURE();
+    luma_plane = GLScalerTestUtil::AllocateRGBABitmap(luma_plane_size);
+    chroma_planes = GLScalerTestUtil::AllocateRGBABitmap(chroma_planes_size);
+
+    ReadbackNV12Planes(gpu_service_holder_, std::move(result), luma_plane,
+                       chroma_planes);
   }
 
   GLScalerTestUtil::UnpackPlanarBitmap(luma_plane, 0, &actual);
@@ -420,11 +527,21 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         SkiaReadbackPixelTestNV12,
-                         // Result scaling: Scale by half?
-                         testing::Values(true, false));
-
+#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SkiaReadbackPixelTestNV12,
+    // Result scaling: Scale by half?
+    testing::Combine(
+        testing::Values(true, false),
+        testing::Values(CopyOutputResult::Destination::kSystemMemory,
+                        CopyOutputResult::Destination::kNativeTextures)));
+#else
+// Don't instantiate the NV12 tests when run on Android emulator, they won't
+// work since the SkiaRenderer currently does not support CopyOutputRequests
+// with NV12 format if the platform does not support GL_EXT_texture_rg extension
+// in GL ES 2.0 (which is the case on Android emulator).
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SkiaReadbackPixelTestNV12);
 #endif
 
 }  // namespace viz

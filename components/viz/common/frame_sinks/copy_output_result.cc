@@ -217,20 +217,28 @@ const SkBitmap& CopyOutputSkBitmapResult::AsSkBitmap() const {
 CopyOutputSkBitmapResult::~CopyOutputSkBitmapResult() = default;
 
 CopyOutputTextureResult::CopyOutputTextureResult(
+    Format format,
     const gfx::Rect& rect,
     TextureResult texture_result,
     ReleaseCallbacks release_callbacks)
-    : CopyOutputResult(Format::RGBA, Destination::kNativeTextures, rect, false),
+    : CopyOutputResult(format, Destination::kNativeTextures, rect, false),
       texture_result_(std::move(texture_result)),
       release_callbacks_(std::move(release_callbacks)) {
   // If we're constructing empty result, all mailboxes must be zero.
   // Otherwise, the first mailbox must be non-zero.
   DCHECK_EQ(rect.IsEmpty(), texture_result_.planes[0].mailbox.IsZero());
+  if (format == Format::NV12_PLANES) {
+    DCHECK_EQ(rect.IsEmpty(), texture_result_.planes[1].mailbox.IsZero());
+  }
   // If we're constructing empty result, the callbacks must be empty.
+  // If we're constructing non-empty result, the callbacks must not be empty.
   DCHECK_EQ(rect.IsEmpty(), release_callbacks_.empty());
-  // Callbacks must either be empty, or contain exactly one callback (we support
-  // only one plane for now).
-  DCHECK(release_callbacks_.empty() || release_callbacks_.size() == 1);
+
+  if (format == Format::NV12_PLANES && !rect.IsEmpty()) {
+    // For non-empty NV12 result, we must have kNV12MaxPlanes release callbacks.
+    DCHECK_EQ(release_callbacks_.size(), kNV12MaxPlanes);
+  }
+
   // Color space must be valid for non-empty results.
   DCHECK(rect.IsEmpty() || texture_result_.color_space.IsValid());
 }

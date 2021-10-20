@@ -267,7 +267,8 @@ class VIZ_COMMON_EXPORT CopyOutputSkBitmapResult : public CopyOutputResult {
 class VIZ_COMMON_EXPORT CopyOutputTextureResult : public CopyOutputResult {
  public:
   // Construct a non-empty texture result:
-  CopyOutputTextureResult(const gfx::Rect& rect,
+  CopyOutputTextureResult(Format format,
+                          const gfx::Rect& rect,
                           TextureResult texture_result,
                           ReleaseCallbacks release_callbacks);
 

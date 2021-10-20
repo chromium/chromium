@@ -418,6 +418,10 @@ class SkiaOutputSurfaceImplOnGpu
   // callbacks so resources can still be cleaned up in the dtor.
   std::vector<std::unique_ptr<ReleaseCallback>> release_on_gpu_callbacks_;
 
+  // Helper, creates a release callback for the passed in |representation|.
+  ReleaseCallback CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
+      std::unique_ptr<gpu::SharedImageRepresentationSkia> representation);
+
 #if defined(USE_OZONE)
   // This should outlive gl_surface_ and vulkan_surface_.
   std::unique_ptr<ui::PlatformWindowSurface> window_surface_;

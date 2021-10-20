@@ -294,7 +294,7 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
               base::BindOnce(&Release, std::move(releaser)));
 
           *out_p = std::make_unique<viz::CopyOutputTextureResult>(
-              rect,
+              viz::CopyOutputResult::Format::RGBA, rect,
               viz::CopyOutputResult::TextureResult(*mailbox, *sync_token,
                                                    *color_space),
               std::move(release_callbacks));

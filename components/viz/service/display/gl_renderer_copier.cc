@@ -735,7 +735,7 @@ void GLRendererCopier::RenderAndSendTextureResult(
       texture_deleter_->GetReleaseCallback(context_provider_, mailbox));
 
   request->SendResult(std::make_unique<CopyOutputTextureResult>(
-      result_rect,
+      CopyOutputResult::Format::RGBA, result_rect,
       CopyOutputResult::TextureResult(mailbox, sync_token, dest_color_space),
       std::move(release_callbacks)));
 }

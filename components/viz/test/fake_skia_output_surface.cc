@@ -286,7 +286,7 @@ void FakeSkiaOutputSurface::CopyOutput(
         texture_deleter_->GetReleaseCallback(context_provider_, local_mailbox));
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
-        geometry.result_bounds,
+        CopyOutputResult::Format::RGBA, geometry.result_bounds,
         CopyOutputResult::TextureResult(local_mailbox, sync_token, color_space),
         std::move(release_callbacks)));
     return;

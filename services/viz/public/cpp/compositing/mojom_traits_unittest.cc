@@ -361,7 +361,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_TextureRequest) {
       run_loop_for_release.QuitClosure(), sync_token));
 
   output->SendResult(std::make_unique<CopyOutputTextureResult>(
-      result_rect,
+      result_format, result_rect,
       CopyOutputResult::TextureResult(mailbox, sync_token,
                                       gfx::ColorSpace::CreateSRGB()),
       std::move(release_callbacks)));
@@ -1338,7 +1338,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
   mailbox.SetName(mailbox_name);
   std::unique_ptr<CopyOutputResult> input =
       std::make_unique<CopyOutputTextureResult>(
-          result_rect,
+          CopyOutputResult::Format::RGBA, result_rect,
           CopyOutputResult::TextureResult(mailbox, sync_token,
                                           result_color_space),
           std::move(release_callbacks));

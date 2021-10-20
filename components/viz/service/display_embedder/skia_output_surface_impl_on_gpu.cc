@@ -704,23 +704,13 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
       // Grab the mailbox before we transfer `representation`'s ownership:
       gpu::Mailbox mailbox = representation->mailbox();
 
-      auto gpu_callback = std::make_unique<ReleaseCallback>(base::BindOnce(
-          &SkiaOutputSurfaceImplOnGpu::DestroyCopyOutputResourcesOnGpuThread,
-          weak_ptr_factory_.GetWeakPtr(), std::move(representation),
-          context_state_));
-      release_on_gpu_callbacks_.push_back(std::move(gpu_callback));
-      auto run_gpu_callback = base::BindOnce(
-          &SkiaOutputSurfaceImplOnGpu::RunDestroyCopyOutputResourcesOnGpuThread,
-          weak_ptr_factory_.GetWeakPtr(),
-          release_on_gpu_callbacks_.back().get());
-      auto viz_callback = base::BindPostTask(
-          base::ThreadTaskRunnerHandle::Get(), std::move(run_gpu_callback));
-
       CopyOutputResult::ReleaseCallbacks release_callbacks;
-      release_callbacks.push_back(std::move(viz_callback));
+      release_callbacks.push_back(
+          CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
+              std::move(representation)));
 
       request->SendResult(std::make_unique<CopyOutputTextureResult>(
-          geometry.result_bounds,
+          CopyOutputResult::Format::RGBA, geometry.result_bounds,
           CopyOutputResult::TextureResult(mailbox, gpu::SyncToken(),
                                           color_space),
           std::move(release_callbacks)));
@@ -931,10 +921,25 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   }
 
   switch (request->result_destination()) {
-    case CopyOutputRequest::ResultDestination::kNativeTextures:
-      NOTREACHED()
-          << "Not yet supported, should be blocked by CopyOutputRequest ctor!";
+    case CopyOutputRequest::ResultDestination::kNativeTextures: {
+      CopyOutputResult::ReleaseCallbacks release_callbacks;
+      std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> planes;
+
+      for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
+        release_callbacks.push_back(
+            CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
+                std::move(plane_access_datas[i].representation)));
+
+        planes[i].mailbox = plane_access_datas[i].mailbox;
+      }
+
+      request->SendResult(std::make_unique<CopyOutputTextureResult>(
+          CopyOutputResult::Format::NV12_PLANES, geometry.result_selection,
+          CopyOutputResult::TextureResult(planes, color_space),
+          std::move(release_callbacks)));
+
       break;
+    }
     case CopyOutputRequest::ResultDestination::kSystemMemory: {
       auto nv12_readback = base::MakeRefCounted<NV12PlanesReadbackContext>(
           weak_ptr_, std::move(request), geometry.result_selection);
@@ -957,8 +962,27 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
             &CopyOutputResultSkiaNV12::OnNV12PlaneReadbackDone,
             context.release());
       }
-    } break;
+
+      break;
+    }
   }
+}
+
+ReleaseCallback
+SkiaOutputSurfaceImplOnGpu::CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
+    std::unique_ptr<gpu::SharedImageRepresentationSkia> representation) {
+  auto gpu_callback = std::make_unique<ReleaseCallback>(base::BindOnce(
+      &SkiaOutputSurfaceImplOnGpu::DestroyCopyOutputResourcesOnGpuThread,
+      weak_ptr_factory_.GetWeakPtr(), std::move(representation),
+      context_state_));
+  release_on_gpu_callbacks_.push_back(std::move(gpu_callback));
+
+  auto run_gpu_callback = base::BindOnce(
+      &SkiaOutputSurfaceImplOnGpu::RunDestroyCopyOutputResourcesOnGpuThread,
+      weak_ptr_factory_.GetWeakPtr(), release_on_gpu_callbacks_.back().get());
+
+  return base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                            std::move(run_gpu_callback));
 }
 
 void SkiaOutputSurfaceImplOnGpu::CopyOutput(
