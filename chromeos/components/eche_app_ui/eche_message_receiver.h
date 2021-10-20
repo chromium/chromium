@@ -19,11 +19,11 @@ class EcheMessageReceiver {
     ~Observer() override = default;
 
     // Called when the apps access state response sent by the remote phone.
-    virtual void OnGetAppsAccessStateResponseReceived(
+    virtual void onGetAppsAccessStateResponseReceived(
         proto::GetAppsAccessStateResponse apps_access_state_response) = 0;
 
     // Called when the apps setup response sent by the remote phone.
-    virtual void OnSendAppsSetupResponseReceived(
+    virtual void onSendAppsSetupResponseReceived(
         proto::SendAppsSetupResponse apps_setup_response) = 0;
   };
 
