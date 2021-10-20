@@ -4,12 +4,15 @@
 
 #include "ash/system/phonehub/camera_roll_view.h"
 
+#include <string>
+
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/camera_roll_thumbnail.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
@@ -171,10 +174,18 @@ void CameraRollView::Update() {
     return;
   }
 
-  int index = 0;
-  for (const chromeos::phonehub::CameraRollItem& item : camera_roll_items) {
-    items_view_->AddCameraRollItem(
-        new CameraRollThumbnail(index++, item, user_action_recorder_));
+  for (size_t index = 0; index < camera_roll_items.size(); index++) {
+    CameraRollThumbnail* item_thumbnail = new CameraRollThumbnail(
+        index, camera_roll_items.at(index), user_action_recorder_);
+
+    const std::u16string accessible_name = l10n_util::GetStringFUTF16(
+        IDS_ASH_PHONE_HUB_CAMERA_ROLL_THUMBNAIL_ACCESSIBLE_NAME,
+        base::NumberToString16(index + 1),
+        base::NumberToString16(camera_roll_items.size()));
+    item_thumbnail->SetAccessibleName(accessible_name);
+    item_thumbnail->SetTooltipText(accessible_name);
+
+    items_view_->AddCameraRollItem(item_thumbnail);
   }
 
   PreferredSizeChanged();

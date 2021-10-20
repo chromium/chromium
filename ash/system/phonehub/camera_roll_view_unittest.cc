@@ -10,6 +10,8 @@
 #include "chromeos/components/phonehub/fake_user_action_recorder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
+#include "ui/views/controls/button/menu_button.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -36,7 +38,9 @@ class CameraRollViewTest : public AshTestBase {
   }
 
  protected:
-  CameraRollView* camera_roll_view() { return camera_roll_view_.get(); }
+  const CameraRollView* camera_roll_view() const {
+    return camera_roll_view_.get();
+  }
 
   chromeos::phonehub::FakeCameraRollManager* fake_camera_roll_manager() {
     return fake_camera_roll_manager_.get();
@@ -60,6 +64,15 @@ class CameraRollViewTest : public AshTestBase {
       items.emplace_back(metadata, thumbnail);
     }
     return items;
+  }
+
+  const views::View* GetItemsView() const {
+    return camera_roll_view()->children().at(1);
+  }
+
+  const views::MenuButton* GetThumbnailView(int index) const {
+    return static_cast<views::MenuButton*>(
+        GetItemsView()->children().at(index));
   }
 
  private:
@@ -87,14 +100,14 @@ TEST_F(CameraRollViewTest, SingleItem) {
   // Set 1 camera roll item.
   size_t expected_size = 1;
   fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(expected_size));
-  EXPECT_EQ(camera_roll_view()->items_view_->children().size(), expected_size);
+  EXPECT_EQ(GetItemsView()->children().size(), expected_size);
 }
 
 TEST_F(CameraRollViewTest, MultipleItems) {
   // Set 4 camera roll items.
   size_t expected_size = 4;
   fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(expected_size));
-  EXPECT_EQ(camera_roll_view()->items_view_->children().size(), expected_size);
+  EXPECT_EQ(GetItemsView()->children().size(), expected_size);
 }
 
 TEST_F(CameraRollViewTest, ViewLayout) {
@@ -111,6 +124,19 @@ TEST_F(CameraRollViewTest, ViewLayout) {
             gfx::Point(168, 4));
   EXPECT_EQ(camera_roll_view()->items_view_->GetCameraRollItemPosition(3),
             gfx::Point(250, 4));
+}
+
+TEST_F(CameraRollViewTest, AccessibleNameAndTooltip) {
+  fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(4));
+
+  EXPECT_EQ(u"Recent photo 1 of 4.", GetThumbnailView(0)->GetAccessibleName());
+  EXPECT_EQ(u"Recent photo 1 of 4.", GetThumbnailView(0)->GetTooltipText());
+  EXPECT_EQ(u"Recent photo 2 of 4.", GetThumbnailView(1)->GetAccessibleName());
+  EXPECT_EQ(u"Recent photo 2 of 4.", GetThumbnailView(1)->GetTooltipText());
+  EXPECT_EQ(u"Recent photo 3 of 4.", GetThumbnailView(2)->GetAccessibleName());
+  EXPECT_EQ(u"Recent photo 3 of 4.", GetThumbnailView(2)->GetTooltipText());
+  EXPECT_EQ(u"Recent photo 4 of 4.", GetThumbnailView(3)->GetAccessibleName());
+  EXPECT_EQ(u"Recent photo 4 of 4.", GetThumbnailView(3)->GetTooltipText());
 }
 
 }  // namespace ash

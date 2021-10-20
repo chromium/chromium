@@ -40,9 +40,6 @@ class ASH_EXPORT CameraRollView
   const char* GetClassName() const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, ViewVisibility);
-  FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, SingleItem);
-  FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, MultipleItems);
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, ViewLayout);
 
   class CameraRollItemsView : public views::View {
