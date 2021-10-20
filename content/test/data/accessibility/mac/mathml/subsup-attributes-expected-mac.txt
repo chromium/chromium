@@ -1,0 +1,14 @@
+sub1.AXMathBase.AXChildren[0].AXValue='1'
+sub1.AXMathSubscript.AXChildren[0].AXValue='2'
+sub2.AXMathBase=NULL
+sub3.AXMathSubscript=NULL
+sup1.AXMathBase.AXChildren[0].AXValue='1'
+sup1.AXMathSuperscript.AXChildren[0].AXValue='2'
+sup2.AXMathBase=NULL
+sup3.AXMathSuperscript=NULL
+subsup1.AXMathBase.AXChildren[0].AXValue='1'
+subsup1.AXMathSubscript.AXChildren[0].AXValue='2'
+subsup1.AXMathSuperscript.AXChildren[0].AXValue='3'
+subsup2.AXMathBase=NULL
+subsup3.AXMathSubscript=NULL
+subsup4.AXMathSuperscript=NULL

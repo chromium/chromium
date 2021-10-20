@@ -1,0 +1,4 @@
+frac1.AXMathFractionNumerator.AXChildren[0].AXValue='1'
+frac1.AXMathFractionDenominator.AXChildren[0].AXValue='2'
+frac2.AXMathFractionNumerator=NULL
+frac3.AXMathFractionDenominator=NULL

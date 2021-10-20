@@ -1,0 +1,14 @@
+under1.AXMathBase.AXChildren[0].AXValue='1'
+under1.AXMathUnder.AXChildren[0].AXValue='2'
+under2.AXMathBase=NULL
+under3.AXMathUnder=NULL
+over1.AXMathBase.AXChildren[0].AXValue='1'
+over1.AXMathOver.AXChildren[0].AXValue='2'
+over2.AXMathBase=NULL
+over3.AXMathOver=NULL
+underover1.AXMathBase.AXChildren[0].AXValue='1'
+underover1.AXMathUnder.AXChildren[0].AXValue='2'
+underover1.AXMathOver.AXChildren[0].AXValue='3'
+underover2.AXMathBase=NULL
+underover3.AXMathUnder=NULL
+underover4.AXMathOver=NULL

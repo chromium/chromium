@@ -159,7 +159,11 @@ OptionalNSObject AttributeInvoker::Invoke(const AXPropertyNode& property_node,
     auto target_optional = InvokeFor(target, *current_node);
     // Result of the current step is either null or error. Don't go any further.
     if (!target_optional.IsNotNil()) {
-      return target_optional;
+      if (target_optional.IsError() || target_optional.IsNotApplicable() ||
+          current_node->next.get())
+        return target_optional;
+      target = nil;
+      break;
     }
     target = *target_optional;
     current_node = current_node->next.get();
@@ -218,6 +222,10 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
         return rvalue;
       }
       // Getter
+      id value = AttributeValueOf(target, attribute);
+      // Handle the case of AXMath attributes that may return null values.
+      if (!value && base::StartsWith(property_node.name_or_value, "AXMath"))
+        return OptionalNSObject(value);
       return OptionalNSObject::NotNullOrNotApplicable(
           AttributeValueOf(target, attribute));
     }

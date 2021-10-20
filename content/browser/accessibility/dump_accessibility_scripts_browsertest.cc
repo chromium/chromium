@@ -6,6 +6,7 @@
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -24,6 +25,7 @@ constexpr const char kMacAttributes[]{"mac/attributes"};
 constexpr const char kMacSelection[]{"mac/selection"};
 constexpr const char kMacTextMarker[]{"mac/textmarker"};
 constexpr const char kMacMethods[]{"mac/methods"};
+constexpr const char kMacMathML[]{"mac/mathml"};
 
 #endif
 
@@ -44,6 +46,12 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     // Drop 'mac' expectations qualifier both from expectation file names and
     // from scenario directives.
     test_helper_.OverrideExpectationType("content");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Enable MathMLCore for some MathML tests.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures, "MathMLCore");
   }
 
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override;
@@ -211,6 +219,22 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityTitle) {
   RunTypedTest<kMacMethods>("title.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, MathMLFractionAttributes) {
+  RunTypedTest<kMacMathML>(FILE_PATH_LITERAL("fraction-attributes.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, MathMLRadicalAttributes) {
+  RunTypedTest<kMacMathML>(FILE_PATH_LITERAL("radical-attributes.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, MathMLUnderOverAttributes) {
+  RunTypedTest<kMacMathML>(FILE_PATH_LITERAL("underover-attributes.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, MathMLSubSupAttributes) {
+  RunTypedTest<kMacMathML>(FILE_PATH_LITERAL("subsup-attributes.html"));
 }
 
 #endif
