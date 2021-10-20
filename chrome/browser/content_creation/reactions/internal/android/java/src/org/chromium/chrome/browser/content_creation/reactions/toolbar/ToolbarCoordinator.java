@@ -11,7 +11,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
+import org.chromium.components.content_creation.reactions.ReactionMetadata;
 import org.chromium.ui.base.ViewUtils;
+
+import java.util.List;
 
 /**
  * Coordinator for the Lightweight Reactions toolbar.
@@ -22,6 +25,8 @@ public class ToolbarCoordinator {
     private final ToolbarControlsDelegate mControlsDelegate;
     private final ToolbarReactionsDelegate mReactionsDelegate;
     private final RelativeLayout mRootLayout;
+
+    private List<ReactionMetadata> mAvailableReactions;
 
     public ToolbarCoordinator(View parentView, ToolbarControlsDelegate controlsDelegate,
             ToolbarReactionsDelegate reactionsDelegate) {
@@ -39,7 +44,10 @@ public class ToolbarCoordinator {
     /**
      * Populates the reaction picker carousel with the given thumbnails.
      */
-    public void initReactions(Bitmap[] thumbnails) {
+    public void initReactions(List<ReactionMetadata> availableReactions, Bitmap[] thumbnails) {
+        assert availableReactions.size() == thumbnails.length;
+        mAvailableReactions = availableReactions;
+
         LinearLayout lr =
                 mRootLayout.findViewById(R.id.lightweight_reactions_toolbar_reaction_picker);
         for (int i = 0; i < thumbnails.length; ++i) {
@@ -51,7 +59,18 @@ public class ToolbarCoordinator {
             iv.setLayoutParams(params);
             iv.setAdjustViewBounds(true);
             iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+            iv.setClickable(true);
+            iv.setTag(availableReactions.get(i));
+            iv.setOnClickListener(this::onReactionTapped);
+
             lr.addView(iv);
         }
+    }
+
+    private void onReactionTapped(View view) {
+        ImageView iv = (ImageView) view;
+        ReactionMetadata rm = (ReactionMetadata) iv.getTag();
+        mReactionsDelegate.onToolbarReactionTapped(rm);
     }
 }

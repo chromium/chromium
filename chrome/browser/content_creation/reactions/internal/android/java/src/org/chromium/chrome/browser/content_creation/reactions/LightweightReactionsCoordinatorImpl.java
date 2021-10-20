@@ -112,7 +112,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
             // Wait until both operations have completed.
             return;
         }
-        mToolbarCoordinator.initReactions(mThumbnails);
+        mToolbarCoordinator.initReactions(mAvailableReactions, mThumbnails);
     }
 
     // LightweightReactionsCoordinator implementation.
