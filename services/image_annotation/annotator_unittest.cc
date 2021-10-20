@@ -65,7 +65,8 @@ constexpr char kTemplateRequest[] = R"(
     "imageBytes": "%s",
     "engineParameters": [
       {"ocrParameters": {}},
-      {"descriptionParameters": {}}
+      {"descriptionParameters": {}},
+      {"iconParameters": {}}
     ]
   }]
 }
@@ -80,7 +81,8 @@ constexpr char kBatchRequest[] = R"(
       "imageBytes": "BwgJ",
       "engineParameters": [
         {"ocrParameters": {}},
-        {"descriptionParameters": {}}
+        {"descriptionParameters": {}},
+        {"iconParameters": {}}
       ]
     },
     {
@@ -88,7 +90,8 @@ constexpr char kBatchRequest[] = R"(
       "imageBytes": "BAUG",
       "engineParameters": [
         {"ocrParameters": {}},
-        {"descriptionParameters": {}}
+        {"descriptionParameters": {}},
+        {"iconParameters": {}}
       ]
     },
     {
@@ -96,7 +99,8 @@ constexpr char kBatchRequest[] = R"(
       "imageBytes": "AQID",
       "engineParameters": [
         {"ocrParameters": {}},
-        {"descriptionParameters": {}}
+        {"descriptionParameters": {}},
+        {"iconParameters": {}}
       ]
     }
   ]
@@ -1860,7 +1864,8 @@ TEST(AnnotatorTest, DescPolicy) {
               "imageId": "https://www.example.com/image2.jpg",
               "imageBytes": "BAUG",
               "engineParameters": [
-                {"ocrParameters": {}}
+                {"ocrParameters": {}},
+                {"iconParameters": {}}
               ]
             },
             {
@@ -1868,7 +1873,8 @@ TEST(AnnotatorTest, DescPolicy) {
               "imageBytes": "AQID",
               "engineParameters": [
                 {"ocrParameters": {}},
-                {"descriptionParameters": {}}
+                {"descriptionParameters": {}},
+                {"iconParameters": {}}
               ]
             }
           ]
@@ -2048,7 +2054,8 @@ TEST(AnnotatorTest, DescLanguage) {
               "imageId": "https://www.example.com/image2.jpg en",
               "imageBytes": "BAUG",
               "engineParameters": [
-                {"ocrParameters": {}}
+                {"ocrParameters": {}},
+                {"iconParameters": {}}
               ]
             },
             {
@@ -2060,7 +2067,8 @@ TEST(AnnotatorTest, DescLanguage) {
                   "descriptionParameters": {
                     "preferredLanguages": ["it"]
                   }
-                }
+                },
+                {"iconParameters": {}}
               ]
             },
             {
@@ -2072,7 +2080,8 @@ TEST(AnnotatorTest, DescLanguage) {
                   "descriptionParameters": {
                     "preferredLanguages": ["fr"]
                   }
-                }
+                },
+                {"iconParameters": {}}
               ]
             }
           ]
@@ -2224,7 +2233,8 @@ TEST(AnnotatorTest, LanguageFallback) {
                   "descriptionParameters": {
                     "preferredLanguages": ["en"]
                   }
-                }
+                },
+                {"iconParameters": {}}
               ]
             }
           ]

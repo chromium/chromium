@@ -86,6 +86,11 @@ void ReportImageRequestIncludesDesc(const bool includes_desc) {
                         includes_desc);
 }
 
+void ReportImageRequestIncludesIcon(const bool includes_icon) {
+  UMA_HISTOGRAM_BOOLEAN(metrics_internal::kImageRequestIncludesIcon,
+                        includes_icon);
+}
+
 void ReportServerRequestSizeKB(const size_t size_kb) {
   // Use a custom memory histogram with ~10 buckets per order of magnitude
   // between 1KB and 30MB.

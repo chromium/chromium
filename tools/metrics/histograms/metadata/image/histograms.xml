@@ -142,7 +142,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ImageAnnotationService.AccessibilityV1.ImageRequestIncludesDesc"
-    enum="BooleanIncluded" expires_after="2020-03-31">
+    enum="BooleanIncluded" expires_after="M105">
   <owner>amoylan@chromium.org</owner>
   <owner>martis@chromium.org</owner>
   <summary>
@@ -152,6 +152,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The description backend will not be included when the image is known to
     violate the description model policy (i.e. be too small or have too-high an
     aspect ratio).
+  </summary>
+</histogram>
+
+<histogram
+    name="ImageAnnotationService.AccessibilityV1.ImageRequestIncludesIcon"
+    enum="BooleanIncluded" expires_after="M105">
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each image request sent to the image annotation server, records whether
+    or not the icon backend is included among the requested backends.
+
+    The icon backend will not be included when the image is known to violate the
+    icon model policy (i.e. be too large or have too-high an aspect ratio).
   </summary>
 </histogram>
 
