@@ -237,24 +237,31 @@ public class FeedStream implements Stream {
         }
 
         private void openUrl(String url, int disposition) {
-            LoadUrlParams params = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
-            params.setReferrer(new Referrer(
-                    SuggestionsConfig.getReferrerUrl(ChromeFeatureList.INTEREST_FEED_V2),
-                    // WARNING: ReferrerPolicy.ALWAYS is assumed by other Chrome code for NTP
-                    // tiles to set consider_for_ntp_most_visited.
-                    org.chromium.network.mojom.ReferrerPolicy.ALWAYS));
-            Tab tab = mNavigationDelegate.openUrl(disposition, params);
+            // This postTask is necessary so that other click-handlers have a chance
+            // to run before we begin navigating. On start surface, navigation immediately
+            // triggers unbind, which can break event handling.
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                LoadUrlParams params = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
+                params.setReferrer(new Referrer(
+                        SuggestionsConfig.getReferrerUrl(ChromeFeatureList.INTEREST_FEED_V2),
+                        // WARNING: ReferrerPolicy.ALWAYS is assumed by other Chrome code for NTP
+                        // tiles to set consider_for_ntp_most_visited.
+                        org.chromium.network.mojom.ReferrerPolicy.ALWAYS));
+                Tab tab = mNavigationDelegate.openUrl(disposition, params);
 
-            boolean inNewTab = (disposition
-                            == org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB
-                    || disposition == org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD);
+                boolean inNewTab = (disposition
+                                == org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB
+                        || disposition
+                                == org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD);
 
-            if (tab != null) {
-                tab.addObserver(new FeedTabNavigationObserver(inNewTab));
-                NavigationRecorder.record(tab,
-                        visitData -> FeedServiceBridge.reportOpenVisitComplete(visitData.duration));
-            }
-            ReturnToChromeExperimentsUtil.onFeedCardOpened();
+                if (tab != null) {
+                    tab.addObserver(new FeedTabNavigationObserver(inNewTab));
+                    NavigationRecorder.record(tab,
+                            visitData
+                            -> FeedServiceBridge.reportOpenVisitComplete(visitData.duration));
+                }
+                ReturnToChromeExperimentsUtil.onFeedCardOpened();
+            });
         }
     }
 
