@@ -84,7 +84,7 @@ using ::testing::Key;
 using ::testing::Not;
 using ::testing::Optional;
 
-constexpr unsigned expected_client_hints_number = 13u;
+constexpr unsigned expected_client_hints_number = 16u;
 constexpr int32_t uma_histogram_max_value = 1471228928;
 
 // An interceptor that records count of fetches and client hint headers for
@@ -661,17 +661,32 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
       VerifyClientHintsReceived(expect_client_hints_on_main_frame_, request);
       if (expect_client_hints_on_main_frame_) {
         double value = 0.0;
+
         EXPECT_TRUE(base::StringToDouble(
             request.headers.find("device-memory")->second, &value));
         EXPECT_LT(0.0, value);
         EXPECT_TRUE(IsSimilarToDoubleABNF(
             request.headers.find("device-memory")->second));
+        main_frame_device_memory_observed_deprecated_ = value;
+
+        EXPECT_TRUE(base::StringToDouble(
+            request.headers.find("sec-ch-device-memory")->second, &value));
+        EXPECT_LT(0.0, value);
+        EXPECT_TRUE(IsSimilarToDoubleABNF(
+            request.headers.find("sec-ch-device-memory")->second));
         main_frame_device_memory_observed_ = value;
 
         EXPECT_TRUE(
             base::StringToDouble(request.headers.find("dpr")->second, &value));
         EXPECT_LT(0.0, value);
         EXPECT_TRUE(IsSimilarToDoubleABNF(request.headers.find("dpr")->second));
+        main_frame_dpr_observed_deprecated_ = value;
+
+        EXPECT_TRUE(base::StringToDouble(
+            request.headers.find("sec-ch-dpr")->second, &value));
+        EXPECT_LT(0.0, value);
+        EXPECT_TRUE(
+            IsSimilarToDoubleABNF(request.headers.find("sec-ch-dpr")->second));
         main_frame_dpr_observed_ = value;
 
         EXPECT_TRUE(base::StringToDouble(
@@ -683,13 +698,18 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
 #else
         EXPECT_EQ(980, value);
 #endif
-        main_frame_viewport_width_observed_ = value;
+        main_frame_viewport_width_observed_deprecated_ = value;
 
         EXPECT_TRUE(base::StringToDouble(
-            request.headers.find("sec-ch-viewport-height")->second, &value));
+            request.headers.find("sec-ch-viewport-width")->second, &value));
         EXPECT_TRUE(IsSimilarToIntABNF(
-            request.headers.find("sec-ch-viewport-height")->second));
+            request.headers.find("sec-ch-viewport-width")->second));
+#if !defined(OS_ANDROID)
         EXPECT_LT(0.0, value);
+#else
+        EXPECT_EQ(980, value);
+#endif
+        main_frame_viewport_width_observed_ = value;
 
         VerifyNetworkQualityClientHints(request);
       }
@@ -700,11 +720,21 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
 
       if (expect_client_hints_on_subresources()) {
         double value = 0.0;
+
         EXPECT_TRUE(base::StringToDouble(
             request.headers.find("device-memory")->second, &value));
         EXPECT_LT(0.0, value);
         EXPECT_TRUE(IsSimilarToDoubleABNF(
             request.headers.find("device-memory")->second));
+        if (main_frame_device_memory_observed_deprecated_ > 0) {
+          EXPECT_EQ(main_frame_device_memory_observed_deprecated_, value);
+        }
+
+        EXPECT_TRUE(base::StringToDouble(
+            request.headers.find("sec-ch-device-memory")->second, &value));
+        EXPECT_LT(0.0, value);
+        EXPECT_TRUE(IsSimilarToDoubleABNF(
+            request.headers.find("sec-ch-device-memory")->second));
         if (main_frame_device_memory_observed_ > 0) {
           EXPECT_EQ(main_frame_device_memory_observed_, value);
         }
@@ -713,6 +743,15 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
             base::StringToDouble(request.headers.find("dpr")->second, &value));
         EXPECT_LT(0.0, value);
         EXPECT_TRUE(IsSimilarToDoubleABNF(request.headers.find("dpr")->second));
+        if (main_frame_dpr_observed_deprecated_ > 0) {
+          EXPECT_EQ(main_frame_dpr_observed_deprecated_, value);
+        }
+
+        EXPECT_TRUE(base::StringToDouble(
+            request.headers.find("sec-ch-dpr")->second, &value));
+        EXPECT_LT(0.0, value);
+        EXPECT_TRUE(
+            IsSimilarToDoubleABNF(request.headers.find("sec-ch-dpr")->second));
         if (main_frame_dpr_observed_ > 0) {
           EXPECT_EQ(main_frame_dpr_observed_, value);
         }
@@ -730,15 +769,28 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
         // TODO(tbansal): https://crbug.com/825892: Viewport width on main
         // frame requests may be incorrect when the Chrome window is not
         // maximized.
+        if (main_frame_viewport_width_observed_deprecated_ > 0) {
+          EXPECT_EQ(main_frame_viewport_width_observed_deprecated_, value);
+        }
+#endif
+
+        EXPECT_TRUE(base::StringToDouble(
+            request.headers.find("sec-ch-viewport-width")->second, &value));
+        EXPECT_TRUE(IsSimilarToIntABNF(
+            request.headers.find("sec-ch-viewport-width")->second));
+#if !defined(OS_ANDROID)
+        EXPECT_LT(0.0, value);
+#else
+        EXPECT_EQ(980, value);
+#endif
+#if defined(OS_ANDROID)
+        // TODO(tbansal): https://crbug.com/825892: Viewport width on main
+        // frame requests may be incorrect when the Chrome window is not
+        // maximized.
         if (main_frame_viewport_width_observed_ > 0) {
           EXPECT_EQ(main_frame_viewport_width_observed_, value);
         }
 #endif
-        EXPECT_TRUE(base::StringToDouble(
-            request.headers.find("sec-ch-viewport-height")->second, &value));
-        EXPECT_TRUE(IsSimilarToIntABNF(
-            request.headers.find("sec-ch-viewport-height")->second));
-        EXPECT_LT(0.0, value);
 
         VerifyNetworkQualityClientHints(request);
       }
@@ -769,7 +821,7 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
       SCOPED_TRACE(testing::Message() << header);
       SCOPED_TRACE(testing::Message() << request.GetURL().spec());
       // Resource width client hint is only attached on image subresources.
-      if (header == "width") {
+      if (header == "width" || header == "sec-ch-width") {
         continue;
       }
 
@@ -785,13 +837,6 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
       // `Sec-CH-UA-Reduced` is tested via UaReducedOriginTrialBrowserTest
       // below.
       if (header == "sec-ch-ua-reduced") {
-        continue;
-      }
-
-      // We aren't yet including the new sec-ch-device-memory, sec-ch-dpr,
-      // sec-ch-width, sec-ch-viewport-width
-      if (header == "sec-ch-device-memory" || header == "sec-ch-dpr" ||
-          header == "sec-ch-width" || header == "sec-ch-viewport-width") {
         continue;
       }
 
@@ -893,8 +938,11 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
   std::string main_frame_ua_mobile_observed_;
   std::string main_frame_ua_platform_observed_;
 
+  double main_frame_dpr_observed_deprecated_ = -1;
   double main_frame_dpr_observed_ = -1;
+  double main_frame_viewport_width_observed_deprecated_ = -1;
   double main_frame_viewport_width_observed_ = -1;
+  double main_frame_device_memory_observed_deprecated_ = -1;
   double main_frame_device_memory_observed_ = -1;
 
   // Expect client hints on all the main frame request.

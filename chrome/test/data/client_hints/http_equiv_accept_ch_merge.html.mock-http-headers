@@ -1,3 +1,3 @@
 HTTP/1.1 200 OK
-Accept-CH: dpr,device-memory,viewport-width,rtt,downlink,ect
+Accept-CH: dpr,sec-ch-dpr,device-memory,sec-ch-device-memory,viewport-width,sec-ch-viewport-width,rtt,downlink,ect
 Accept-CH-Lifetime: 3600

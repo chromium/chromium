@@ -20,11 +20,7 @@ class ClientHintsPreferencesTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kUserAgentClientHint,
                               blink::features::
-                                  kPrefersColorSchemeClientHintHeader,
-                              blink::features::kClientHintsDeviceMemory,
-                              blink::features::kClientHintsResourceWidth,
-                              blink::features::kClientHintsDPR,
-                              blink::features::kClientHintsViewportWidth},
+                                  kPrefersColorSchemeClientHintHeader},
         /*disabled_features=*/{});
   }
 

@@ -1054,19 +1054,19 @@ const base::Feature kForceMajorVersion100InUserAgent{
 
 // Enable `sec-ch-device-memory` client hint.
 const base::Feature kClientHintsDeviceMemory{"ClientHintsDeviceMemory",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable `sec-ch-dpr` client hint.
 const base::Feature kClientHintsDPR{"ClientHintsDPR",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable `sec-ch-width` client hint.
-const base::Feature kClientHintsResourceWidth{
-    "ClientHintsResourceWidth", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kClientHintsResourceWidth{"ClientHintsResourceWidth",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable `sec-ch-viewport-width` client hint.
-const base::Feature kClientHintsViewportWidth{
-    "ClientHintsViewportWidth", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kClientHintsViewportWidth{"ClientHintsViewportWidth",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allows third party use of WebSQL (`DOMWindowWebDatabase::openDatabase`).
 const base::Feature kWebSQLInThirdPartyContextEnabled{
