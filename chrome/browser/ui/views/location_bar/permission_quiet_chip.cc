@@ -67,17 +67,11 @@ views::View* PermissionQuietChip::CreateBubble() {
   content::WebContents* web_contents = lbv->GetContentSettingWebContents();
 
   if (web_contents) {
-    std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model =
-        std::make_unique<ContentSettingQuietRequestBubbleModel>(
-            lbv->GetContentSettingBubbleModelDelegate(), web_contents);
-    content_setting_bubble_model->AsQuietRequestBubbleModel()
-        ->SetOnBubbleClosedByUserCallback(
-            base::BindOnce(&PermissionQuietChip::OnPromptBubbleClosed,
-                           base::Unretained(this)));
     ContentSettingBubbleContents* quiet_request_bubble =
         new ContentSettingBubbleContents(
-            std::move(content_setting_bubble_model), web_contents, lbv,
-            views::BubbleBorder::TOP_LEFT);
+            std::make_unique<ContentSettingQuietRequestBubbleModel>(
+                lbv->GetContentSettingBubbleModelDelegate(), web_contents),
+            web_contents, lbv, views::BubbleBorder::TOP_LEFT);
     quiet_request_bubble->SetHighlightedButton(button());
     views::Widget* bubble_widget =
         views::BubbleDialogDelegateView::CreateBubble(quiet_request_bubble);
@@ -88,10 +82,6 @@ views::View* PermissionQuietChip::CreateBubble() {
   }
 
   return nullptr;
-}
-
-bool PermissionQuietChip::ShouldCloseBubbleOnLostFocus() const {
-  return true;
 }
 
 void PermissionQuietChip::RecordChipButtonPressed() {

@@ -75,16 +75,45 @@ void VerifyCameraAndMicRequest(
   }
 }
 
+bool ShouldBubbleStartOpen(permissions::PermissionPrompt::Delegate* delegate) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionChipGestureSensitive)) {
+    auto requests = delegate->Requests();
+    const bool has_gesture =
+        std::any_of(requests.begin(), requests.end(), [](auto* request) {
+          return request->GetGestureType() ==
+                 permissions::PermissionRequestGestureType::GESTURE;
+        });
+    if (has_gesture)
+      return true;
+  }
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionChipRequestTypeSensitive)) {
+    // Notifications and geolocation are targeted here because they are usually
+    // not necessary for the website to function correctly, so they can safely
+    // be given less prominence.
+    auto requests = delegate->Requests();
+    const bool is_geolocation_or_notifications =
+        std::any_of(requests.begin(), requests.end(), [](auto* request) {
+          auto request_type = request->request_type();
+          return request_type == permissions::RequestType::kNotifications ||
+                 request_type == permissions::RequestType::kGeolocation;
+        });
+    if (!is_geolocation_or_notifications)
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 PermissionRequestChip::PermissionRequestChip(
     Browser* browser,
-    permissions::PermissionPrompt::Delegate* delegate,
-    bool should_bubble_start_open)
+    permissions::PermissionPrompt::Delegate* delegate)
     : PermissionChip(
           delegate,
           {GetPermissionIconId(delegate), GetPermissionMessage(delegate),
-           should_bubble_start_open,
+           ShouldBubbleStartOpen(delegate),
            base::FeatureList::IsEnabled(
                permissions::features::kPermissionChipIsProminentStyle),
            OmniboxChipButton::Theme::kBlue, /*should_expand=*/true}),
@@ -98,8 +127,6 @@ PermissionRequestChip::~PermissionRequestChip() = default;
 views::View* PermissionRequestChip::CreateBubble() {
   PermissionPromptBubbleView* prompt_bubble = new PermissionPromptBubbleView(
       browser_, delegate(), chip_shown_time_, PermissionPromptStyle::kChip);
-  prompt_bubble->SetOnBubbleClosedByUserCallback(base::BindOnce(
-      &PermissionRequestChip::OnPromptBubbleClosed, base::Unretained(this)));
   prompt_bubble->Show();
   prompt_bubble->GetWidget()->AddObserver(this);
 
@@ -113,11 +140,6 @@ void PermissionRequestChip::Collapse(bool allow_restart) {
   if (!IsBubbleShowing()) {
     ShowBlockedBadge();
   }
-}
-
-void PermissionRequestChip::OnPromptBubbleClosed() {
-  PermissionChip::OnPromptBubbleClosed();
-  ShowBlockedBadge();
 }
 
 void PermissionRequestChip::RecordChipButtonPressed() {

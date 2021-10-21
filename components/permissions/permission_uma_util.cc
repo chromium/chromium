@@ -344,12 +344,8 @@ std::string GetPromptDispositionString(
       return "CustomModalDialog";
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
       return "LocationBarLeftChip";
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:
-      return "LocationBarLeftChipAutoBubble";
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
       return "LocationBarLeftQuietChip";
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
-      return "LocationBarLeftQuietAbusiveChip";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
       return "LocationBarRightAnimatedIcon";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
@@ -555,10 +551,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
     base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
     absl::optional<PermissionPromptDispositionReason> ui_reason,
-    absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
-    bool did_show_prompt,
-    bool did_click_managed,
-    bool did_click_learn_more) {
+    absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
   switch (permission_action) {
     case PermissionAction::GRANTED:
       RecordPromptDecided(requests, /*accepted=*/true, /*is_one_time=*/false);
@@ -622,50 +615,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
   base::UmaHistogramEnumeration("Permissions.Action.WithDisposition." +
                                     GetPromptDispositionString(ui_disposition),
                                 permission_action, PermissionAction::NUM);
-
-  RequestTypeForUma type =
-      GetUmaValueForRequestType(requests[0]->request_type());
-  if (requests.size() > 1)
-    type = RequestTypeForUma::MULTIPLE;
-
-  std::string permission_type = GetPermissionRequestString(type);
-  std::string permission_disposition =
-      GetPromptDispositionString(ui_disposition);
-
-  base::UmaHistogramEnumeration("Permissions.Prompt." + permission_type + "." +
-                                    permission_disposition + ".Action",
-                                permission_action, PermissionAction::NUM);
-
-  if (!time_to_decision.is_zero()) {
-    base::UmaHistogramLongTimes("Permissions.Prompt." + permission_type + "." +
-                                    permission_disposition + "." +
-                                    action_string + ".TimeToAction",
-                                time_to_decision);
-  }
-
-  if (permission_action == PermissionAction::IGNORED &&
-      ui_disposition !=
-          PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE) {
-    base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
-                                  permission_disposition +
-                                  ".Ignored.DidShowBubble",
-                              did_show_prompt);
-  }
-
-  if (ui_disposition ==
-      PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP) {
-    base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
-                                  permission_disposition + "." + action_string +
-                                  ".DidClickManage",
-                              did_click_managed);
-  } else if (ui_disposition == PermissionPromptDisposition::
-                                   LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP) {
-    base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
-                                  permission_disposition + "." + action_string +
-                                  ".DidClickLearnMore",
-                              did_click_learn_more);
-  }
-}  // namespace permissions
+}
 
 void PermissionUmaUtil::RecordPermissionPromptPriorCount(
     ContentSettingsType permission,
@@ -1085,14 +1035,12 @@ bool PermissionUmaUtil::IsPromptDispositionQuiet(
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
     case PermissionPromptDisposition::MINI_INFOBAR:
     case PermissionPromptDisposition::MESSAGE_UI:
       return true;
     case PermissionPromptDisposition::ANCHORED_BUBBLE:
     case PermissionPromptDisposition::MODAL_DIALOG:
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:
     case PermissionPromptDisposition::NONE_VISIBLE:
     case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
     case PermissionPromptDisposition::NOT_APPLICABLE:
@@ -1107,12 +1055,10 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
     case PermissionPromptDisposition::ANCHORED_BUBBLE:
     case PermissionPromptDisposition::MODAL_DIALOG:
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:
       return true;
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
     case PermissionPromptDisposition::MINI_INFOBAR:
     case PermissionPromptDisposition::MESSAGE_UI:
     case PermissionPromptDisposition::NONE_VISIBLE:
