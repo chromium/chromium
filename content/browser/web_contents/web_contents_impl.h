@@ -2213,17 +2213,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   ui::NativeTheme::PreferredContrast preferred_contrast_ =
       ui::NativeTheme::PreferredContrast::kNoPreference;
 
-  // A cached copy of the most recently observed ColorProvider Key. This is used
-  // as a fallback to get the most recently seen ColorProvider in situations
-  // where the ColorProviderSource is no longer available but the WebContents
-  // continues to require colors for rendering. This ensures the WebContents
-  // does not repaint with incorrect colors when removed from a UI hierarchy
-  // with a ColorProviderSource only to later be re-inserted into the same UI
-  // hierarchy. This pattern is present in the behavior of browser tabs where
-  // WebContents objects are added to and removed from the browser UI as the
-  // active tab changes.
-  ui::ColorProviderManager::Key color_provider_key_;
-
   // Tracks clients who want to be notified when a JavaScript dialog is
   // dismissed.
   std::unique_ptr<JavaScriptDialogDismissNotifier>

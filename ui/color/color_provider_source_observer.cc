@@ -11,8 +11,7 @@ ColorProviderSourceObserver::ColorProviderSourceObserver() = default;
 ColorProviderSourceObserver::~ColorProviderSourceObserver() = default;
 
 void ColorProviderSourceObserver::OnColorProviderSourceDestroying() {
-  source_ = nullptr;
-  color_provider_source_observation_.Reset();
+  Observe(nullptr);
 }
 
 const ui::ColorProviderSource*
@@ -21,15 +20,20 @@ ColorProviderSourceObserver::GetColorProviderSourceForTesting() const {
 }
 
 void ColorProviderSourceObserver::Observe(ColorProviderSource* source) {
-  if (source && color_provider_source_observation_.IsObservingSource(source))
+  if (source ? color_provider_source_observation_.IsObservingSource(source)
+             : !source_) {
     return;
+  }
 
   color_provider_source_observation_.Reset();
   source_ = source;
-  if (!source_)
-    return;
 
-  color_provider_source_observation_.Observe(source);
+  if (source_)
+    color_provider_source_observation_.Observe(source);
+
+  // Notify both when a new source is observed and when an observation is reset
+  // (i.e. when Observe() is called with nullptr).
+  OnColorProviderChanged();
 }
 
 const ui::ColorProviderSource*

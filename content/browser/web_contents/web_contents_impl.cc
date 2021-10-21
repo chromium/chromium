@@ -490,14 +490,42 @@ int64_t AdjustRequestedWindowBounds(gfx::Rect* bounds, RenderFrameHost* host) {
   return display.id();
 }
 
-// WebContents can exist independently of a ColorProviderSource and is still
-// expected to be able to be inserted into a system gfx::NativeView hierarchy.
-// Whilst most WebContents clients should be setting a ColorProviderSource we
-// must accommodate for cases where this is not currently being done. For these
-// cases fallback to a ColorProvider keyed to various NativeTheme bits.
-ui::ColorProviderManager::Key GetWebDefaultColorProviderKey() {
-  return ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr);
-}
+// A ColorProviderSource used when one has not been explicitly set. This source
+// only reflects theme information present in the web NativeTheme singleton.
+// Keep this an implementation detail of WebContentsImpl as we should not be
+// exposing a default ColorProviderSource generally.
+class DefaultColorProviderSource : public ui::ColorProviderSource,
+                                   public ui::NativeThemeObserver {
+ public:
+  DefaultColorProviderSource() {
+    native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForWeb());
+  }
+  DefaultColorProviderSource(const DefaultColorProviderSource&) = delete;
+  DefaultColorProviderSource& operator=(const DefaultColorProviderSource&) =
+      delete;
+  ~DefaultColorProviderSource() override = default;
+
+  static DefaultColorProviderSource* GetInstance() {
+    static base::NoDestructor<DefaultColorProviderSource> instance;
+    return instance.get();
+  }
+
+  // ui::ColorProviderSource:
+  const ui::ColorProvider* GetColorProvider() const override {
+    return ui::ColorProviderManager::Get().GetColorProviderFor(
+        ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr));
+  }
+
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override {
+    DCHECK(native_theme_observation_.IsObservingSource(observed_theme));
+    NotifyColorProviderChanged();
+  }
+
+ private:
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observation_{this};
+};
 
 }  // namespace
 
@@ -890,7 +918,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
           std::make_unique<MediaWebContentsObserver>(this)),
       is_overlay_content_(false),
       showing_context_menu_(false),
-      color_provider_key_(GetWebDefaultColorProviderKey()),
       prerender_host_registry_(blink::features::IsPrerender2Enabled()
                                    ? std::make_unique<PrerenderHostRegistry>()
                                    : nullptr),
@@ -905,6 +932,13 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
 #if defined(OS_ANDROID)
   display_cutout_host_impl_ = std::make_unique<DisplayCutoutHostImpl>(this);
 #endif
+
+  // WebContents can exist independently of a ColorProviderSource and is still
+  // expected to be able to render its content and be inserted into a
+  // gfx::NativeView hierarchy. Whilst most WebContents clients should be
+  // setting a ColorProviderSource we must accommodate for cases where this is
+  // not currently being done. For these cases fallback to the default source.
+  SetColorProviderSource(DefaultColorProviderSource::GetInstance());
 
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
   native_theme_observation_.Observe(native_theme);
@@ -8891,19 +8925,25 @@ void WebContentsImpl::OnCaptionStyleUpdated() {
 }
 
 void WebContentsImpl::OnColorProviderChanged() {
-  // TODO(tluk): Code that needs to be notified of theme color changes (not just
-  // NativeTheme changes) should be moved here.
-  DCHECK(GetColorProviderSource());
-  color_provider_key_ = GetColorProviderSource()->GetColorProviderKey();
+  // TODO(tluk): Currently changes to theme related web prefs are being
+  // propagated in OnNativeThemeUpdated(). This logic should be moved here since
+  // there are instances where the system theme may not change but clients
+  // manually change the ColorProviderSource currently being observed by this
+  // WebContents.
+
+  // OnColorProviderChanged() might have been triggered as the result of the
+  // observed source being reset. If this is the case fallback to the default
+  // source.
+  if (!GetColorProviderSource()) {
+    SetColorProviderSource(DefaultColorProviderSource::GetInstance());
+    return;
+  }
 }
 
 const ui::ColorProvider* WebContentsImpl::GetColorProvider() const {
-  // Always defer to the ColorProviderSource if available for the correct
-  // ColorProvider instance.
-  return GetColorProviderSource()
-             ? GetColorProviderSource()->GetColorProvider()
-             : ui::ColorProviderManager::Get().GetColorProviderFor(
-                   color_provider_key_);
+  auto* source = GetColorProviderSource();
+  DCHECK(source);
+  return source->GetColorProvider();
 }
 
 blink::mojom::FrameWidgetInputHandler*

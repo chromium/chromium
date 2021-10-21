@@ -16,10 +16,6 @@ namespace {
 class MockColorProviderSource : public ColorProviderSource {
  public:
   MOCK_METHOD(const ColorProvider*, GetColorProvider, (), (const, override));
-  MOCK_METHOD(ColorProviderManager::Key,
-              GetColorProviderKey,
-              (),
-              (const, override));
 };
 
 class MockColorProviderSourceObserver : public ColorProviderSourceObserver {
@@ -38,10 +34,10 @@ TEST_F(ColorProviderSourceObserverTest, DestroyingSourceClearsItFromObservers) {
   MockColorProviderSourceObserver observer_1;
   MockColorProviderSourceObserver observer_2;
 
-  // OnColorProviderChanged() should be called once when the observer is first
-  // added to the source.
-  EXPECT_CALL(observer_1, OnColorProviderChanged()).Times(1);
-  EXPECT_CALL(observer_2, OnColorProviderChanged()).Times(1);
+  // OnColorProviderChanged() should be called twice. Once when the observer is
+  // first added to the source and again when the source is destroyed.
+  EXPECT_CALL(observer_1, OnColorProviderChanged()).Times(2);
+  EXPECT_CALL(observer_2, OnColorProviderChanged()).Times(2);
 
   auto set_observaton = [&](MockColorProviderSourceObserver* observer) {
     observer->ObserveForTesting(source.get());
@@ -99,9 +95,10 @@ TEST_F(ColorProviderSourceObserverTest,
   MockColorProviderSourceObserver observer_1;
   MockColorProviderSourceObserver observer_2;
 
-  // observer_2 should not be notified after resetting its observation below.
+  // observer_2 should receive notifications up to and including when its
+  // observation is reset below.
   EXPECT_CALL(observer_1, OnColorProviderChanged()).Times(4);
-  EXPECT_CALL(observer_2, OnColorProviderChanged()).Times(2);
+  EXPECT_CALL(observer_2, OnColorProviderChanged()).Times(3);
 
   auto set_observaton_and_notify =
       [&](MockColorProviderSourceObserver* observer) {

@@ -1747,11 +1747,7 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 
 const ui::ColorProvider* Widget::GetColorProvider() const {
   return ui::ColorProviderManager::Get().GetColorProviderFor(
-      GetColorProviderKey());
-}
-
-ui::ColorProviderManager::Key Widget::GetColorProviderKey() const {
-  return GetNativeTheme()->GetColorProviderKey(GetCustomTheme());
+      GetNativeTheme()->GetColorProviderKey(GetCustomTheme()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

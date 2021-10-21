@@ -16,7 +16,6 @@ ColorProviderSource::~ColorProviderSource() {
 
 void ColorProviderSource::AddObserver(ColorProviderSourceObserver* observer) {
   observers_.AddObserver(observer);
-  observer->OnColorProviderChanged();
 }
 
 void ColorProviderSource::RemoveObserver(
