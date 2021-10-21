@@ -74,7 +74,7 @@ public class BookmarkModel extends BookmarkBridge {
      *                  children, because deleting folder will also remove all its children, and
      *                  deleting children once more will cause errors.
      */
-    void deleteBookmarks(BookmarkId... bookmarks) {
+    public void deleteBookmarks(BookmarkId... bookmarks) {
         assert bookmarks != null && bookmarks.length > 0;
         // Store all titles of bookmarks.
         List<String> titles = new ArrayList<>();

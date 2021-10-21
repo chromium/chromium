@@ -50,7 +50,7 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   void Destroy(JNIEnv*, const base::android::JavaParamRef<jobject>&);
 
-  jlong GetBookmarkIdForWebContents(
+  base::android::ScopedJavaLocalRef<jobject> GetBookmarkIdForWebContents(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jweb_contents,

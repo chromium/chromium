@@ -91,15 +91,9 @@ public class BookmarkFeatures {
                         BOOKMARK_VISUALS_ENABLED_DEFAULT);
     }
 
-    public static boolean isAddBookmarkMenuItemEnabled() {
+    public static boolean isBookmarkMenuItemAsDedicatedRowEnabled() {
         return isBookmarksRefreshEnabled()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.BOOKMARKS_REFRESH, "add_bookmark_in_app_menu", false);
-    }
-
-    public static boolean isEditBookmarkMenuItemEnabled() {
-        return isBookmarksRefreshEnabled()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.BOOKMARKS_REFRESH, "edit_bookmark_in_app_menu", false);
+                        ChromeFeatureList.BOOKMARKS_REFRESH, "bookmark_in_app_menu", false);
     }
 }

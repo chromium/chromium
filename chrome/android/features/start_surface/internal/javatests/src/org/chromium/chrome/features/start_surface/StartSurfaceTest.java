@@ -83,6 +83,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
@@ -2242,6 +2243,7 @@ public class StartSurfaceTest {
     public void testStartSurfaceMenu() throws ExecutionException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(false);
         if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForOverviewVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);

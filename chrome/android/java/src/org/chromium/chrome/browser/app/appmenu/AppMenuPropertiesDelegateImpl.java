@@ -26,7 +26,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -55,6 +54,7 @@ import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -72,6 +72,8 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -98,7 +100,7 @@ import java.util.Map;
  */
 public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate {
     private static Boolean sItemBookmarkedForTesting;
-
+    private static Boolean sItemInReadingListForTesting;
     protected PropertyModel mReloadPropertyModel;
 
     protected final Context mContext;
@@ -110,7 +112,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     protected final View mDecorView;
     private CallbackController mCallbackController = new CallbackController();
     private final ObservableSupplier<BookmarkBridge> mBookmarkBridgeSupplier;
-    private Callback<BookmarkBridge> mBookmarkBridgeSupplierCallback;
     private boolean mUpdateMenuItemVisible;
     private ShareUtils mShareUtils;
     // Keeps track of which menu item was shown when installable app is detected.
@@ -150,7 +151,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private @Nullable OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     private @Nullable StartSurface.StateObserver mStartSurfaceStateObserver;
     private @StartSurfaceState int mStartSurfaceState;
-    protected BookmarkBridge mBookmarkBridge;
     protected Runnable mAppMenuInvalidator;
 
     /**
@@ -200,14 +200,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             }));
         }
         mBookmarkBridgeSupplier = bookmarkBridgeSupplier;
-        mBookmarkBridgeSupplierCallback = (bookmarkBridge) -> mBookmarkBridge = bookmarkBridge;
-        mBookmarkBridgeSupplier.addObserver(mBookmarkBridgeSupplierCallback);
         mShareUtils = new ShareUtils();
     }
 
     @Override
     public void destroy() {
-        mBookmarkBridgeSupplier.removeObserver(mBookmarkBridgeSupplierCallback);
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
@@ -413,8 +410,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             actionBar.findItem(R.id.reload_menu_id).setIcon(icon);
             loadingStateChanged(isCurrentTabNotNull && currentTab.isLoading());
 
-            MenuItem bookmarkMenuItem = actionBar.findItem(R.id.bookmark_this_page_id);
-            updateBookmarkMenuItem(bookmarkMenuItem, currentTab);
+            MenuItem bookmarkMenuItemShortcut = actionBar.findItem(R.id.bookmark_this_page_id);
+            updateBookmarkMenuItemShortcut(bookmarkMenuItemShortcut, currentTab);
 
             MenuItem offlineMenuItem = actionBar.findItem(R.id.offline_page_id);
             offlineMenuItem.setEnabled(isCurrentTabNotNull && shouldEnableDownloadPage(currentTab));
@@ -443,25 +440,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                     mContext.getString(R.string.menu_manage_all_windows, getInstanceCount()));
         }
 
-        menu.findItem(R.id.add_to_reading_list_menu_id)
-                .setVisible(isCurrentTabNotNull && isHttpOrHttpsScheme
-                        && ReadingListFeatures.isAddToReadingListAppMenuItemEnabled());
-        // TODO(crbug.com/1252228): Show this only on URLs already on the Reading List.
-        menu.findItem(R.id.delete_from_reading_list_menu_id)
-                .setVisible(isHttpOrHttpsScheme
-                        && ReadingListFeatures.isDeleteFromReadingListAppMenuItemEnabled());
-        // TODO(crbug.com/1252228): Show this only on URLs already on the Reading List.
-        menu.findItem(R.id.edit_reading_list_menu_id)
-                .setVisible(isCurrentTabNotNull && isHttpOrHttpsScheme
-                        && ReadingListFeatures.isEditReadingListAppMenuItemEnabled());
-
-        // TODO(crbug.com/1257406): Show this only if the current page is not in bookmarks.
-        menu.findItem(R.id.add_bookmark_menu_id)
-                .setVisible(isCurrentTabNotNull && BookmarkFeatures.isAddBookmarkMenuItemEnabled());
-        // TODO(crbug.com/1257406): Show this only if the current page is in bookmarks.
-        menu.findItem(R.id.edit_bookmark_menu_id)
-                .setVisible(
-                        isCurrentTabNotNull && BookmarkFeatures.isEditBookmarkMenuItemEnabled());
+        updateReadingListMenuItemRow(menu.findItem(R.id.add_to_reading_list_menu_id),
+                menu.findItem(R.id.delete_from_reading_list_menu_id), currentTab);
+        updateBookmarkMenuItemRow(menu.findItem(R.id.add_bookmark_menu_id),
+                menu.findItem(R.id.edit_bookmark_menu_id), currentTab);
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared, or when the
         // current tab is null.
@@ -657,9 +639,25 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public boolean shouldCheckBookmarkStar(@NonNull Tab currentTab) {
-        return sItemBookmarkedForTesting != null
-                ? sItemBookmarkedForTesting
-                : mBookmarkBridge != null && mBookmarkBridge.hasBookmarkIdForTab(currentTab);
+        if (sItemBookmarkedForTesting != null) return sItemBookmarkedForTesting;
+
+        BookmarkId existingBookmark =
+                mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
+        return existingBookmark != null && existingBookmark.getType() == BookmarkType.NORMAL;
+    }
+
+    /**
+     * @param currentTab The currentTab for which the app menu is showing.
+     * @return Whether reading list menu item should be highlighted, indicating that the current tab
+     *         exists in the reading list.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public boolean shouldHighlightReadingList(@NonNull Tab currentTab) {
+        if (sItemInReadingListForTesting != null) return sItemInReadingListForTesting;
+
+        BookmarkId existingBookmark =
+                mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
+        return existingBookmark != null && existingBookmark.getType() == BookmarkType.READING_LIST;
     }
 
     /**
@@ -992,33 +990,89 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     /**
      * Updates the bookmark item's visibility.
      *
-     * @param bookmarkMenuItem {@link MenuItem} for adding/editing the bookmark.
-     * @param currentTab        Current tab being displayed.
+     * @param bookmarkMenuItemShortcut {@link MenuItem} for adding/editing the bookmark.
+     * @param currentTab Current tab being displayed.
      */
-    protected void updateBookmarkMenuItem(MenuItem bookmarkMenuItem, @Nullable Tab currentTab) {
-        // If this method is called before the {@link #mBookmarkBridgeSupplierCallback} has been
-        // called, try to retrieve the bridge directly from the supplier.
-        if (mBookmarkBridge == null && mBookmarkBridgeSupplier != null) {
-            mBookmarkBridge = mBookmarkBridgeSupplier.get();
+    protected void updateBookmarkMenuItemShortcut(
+            MenuItem bookmarkMenuItemShortcut, @Nullable Tab currentTab) {
+        // If the menu item row is enabled, then disable the shortcut.
+        if (BookmarkFeatures.isBookmarkMenuItemAsDedicatedRowEnabled()) {
+            bookmarkMenuItemShortcut.setVisible(false);
+            return;
         }
 
-        if (mBookmarkBridge == null || currentTab == null) {
-            // If the BookmarkBridge still isn't available, assume the bookmark menu item is not
-            // editable.
-            bookmarkMenuItem.setEnabled(false);
+        boolean editEnabled = mBookmarkBridgeSupplier.hasValue()
+                && mBookmarkBridgeSupplier.get().isEditBookmarksEnabled();
+        bookmarkMenuItemShortcut.setEnabled(editEnabled);
+
+        if (shouldCheckBookmarkStar(currentTab)) {
+            bookmarkMenuItemShortcut.setIcon(R.drawable.btn_star_filled);
+            bookmarkMenuItemShortcut.setChecked(true);
+            bookmarkMenuItemShortcut.setTitleCondensed(mContext.getString(R.string.edit_bookmark));
         } else {
-            bookmarkMenuItem.setEnabled(mBookmarkBridge.isEditBookmarksEnabled());
+            bookmarkMenuItemShortcut.setIcon(R.drawable.btn_star);
+            bookmarkMenuItemShortcut.setChecked(false);
+            bookmarkMenuItemShortcut.setTitleCondensed(mContext.getString(R.string.menu_bookmark));
+        }
+    }
+
+    /**
+     * Updates the bookmark item's visibility.
+     *
+     * @param bookmarkMenuItemAdd {@link MenuItem} for adding the bookmark.
+     * @param bookmarkMenuItemEdit {@link MenuItem} for editing the bookmark.
+     * @param currentTab Current tab being displayed.
+     */
+    protected void updateBookmarkMenuItemRow(
+            MenuItem bookmarkMenuItemAdd, MenuItem bookmarkMenuItemEdit, @Nullable Tab currentTab) {
+        // If the bookmark menu item row is disabled, then hide both item.
+        if (!BookmarkFeatures.isBookmarkMenuItemAsDedicatedRowEnabled()) {
+            bookmarkMenuItemAdd.setVisible(false);
+            bookmarkMenuItemEdit.setVisible(false);
+            return;
         }
 
-        if (currentTab != null && shouldCheckBookmarkStar(currentTab)) {
-            bookmarkMenuItem.setIcon(R.drawable.btn_star_filled);
-            bookmarkMenuItem.setChecked(true);
-            bookmarkMenuItem.setTitleCondensed(mContext.getString(R.string.edit_bookmark));
-        } else {
-            bookmarkMenuItem.setIcon(R.drawable.btn_star);
-            bookmarkMenuItem.setChecked(false);
-            bookmarkMenuItem.setTitleCondensed(mContext.getString(R.string.menu_bookmark));
+        // If the bookmark bridge or tab isn't available, then default to add.
+        if (!mBookmarkBridgeSupplier.hasValue() || currentTab == null) {
+            bookmarkMenuItemAdd.setVisible(true);
+            bookmarkMenuItemEdit.setVisible(false);
         }
+
+        boolean editEnabled = mBookmarkBridgeSupplier.hasValue()
+                && mBookmarkBridgeSupplier.get().isEditBookmarksEnabled();
+        bookmarkMenuItemAdd.setEnabled(editEnabled);
+        bookmarkMenuItemEdit.setEnabled(editEnabled);
+
+        boolean shouldCheckBookmarkStar = shouldCheckBookmarkStar(currentTab);
+        bookmarkMenuItemAdd.setVisible(!shouldCheckBookmarkStar);
+        bookmarkMenuItemEdit.setVisible(shouldCheckBookmarkStar);
+    }
+
+    /**
+     * Updates the bookmark item's visibility.
+     *
+     * @param readingListMenuItemAdd {@link MenuItem} for adding to the reading list.
+     * @param readingListMenuItemEdit {@link MenuItem} for deleting from the reading list.
+     * @param currentTab Current tab being displayed.
+     */
+    protected void updateReadingListMenuItemRow(MenuItem readingListMenuItemAdd,
+            MenuItem readingListMenuItemEdit, @Nullable Tab currentTab) {
+        // If the reading list item row is disabled, then hide both item.
+        if (!ReadingListFeatures.isReadingListMenuItemAsDedicatedRowEnabled()
+                || !mBookmarkBridgeSupplier.hasValue() || currentTab == null
+                || !ReadingListUtils.isReadingListSupported(currentTab.getUrl())) {
+            readingListMenuItemAdd.setVisible(false);
+            readingListMenuItemEdit.setVisible(false);
+            return;
+        }
+
+        boolean editEnabled = mBookmarkBridgeSupplier.get().isEditBookmarksEnabled();
+        readingListMenuItemAdd.setEnabled(editEnabled);
+        readingListMenuItemEdit.setEnabled(editEnabled);
+
+        boolean readingListItemExists = shouldHighlightReadingList(currentTab);
+        readingListMenuItemAdd.setVisible(!readingListItemExists);
+        readingListMenuItemEdit.setVisible(readingListItemExists);
     }
 
     /**
@@ -1095,19 +1149,24 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     @VisibleForTesting
-    static void setPageBookmarkedForTesting(Boolean bookmarked) {
+    public static void setPageBookmarkedForTesting(Boolean bookmarked) {
         sItemBookmarkedForTesting = bookmarked;
+    }
+
+    @VisibleForTesting
+    static void setPageInReadingListForTesting(Boolean highlight) {
+        sItemInReadingListForTesting = highlight;
     }
 
     /**
      * @return Whether the menu item's icon need to be tinted to blue.
      */
     protected @ColorRes int getMenuItemIconColorRes(MenuItem menuItem) {
-        int itemId = menuItem.getItemId();
-        if (itemId == R.id.edit_bookmark_menu_id || itemId == R.id.add_bookmark_menu_id) {
+        final int itemId = menuItem.getItemId();
+        if (itemId == R.id.edit_bookmark_menu_id
+                || itemId == R.id.delete_from_reading_list_menu_id) {
             return R.color.default_icon_color_accent1_tint_list;
         }
-
         return R.color.default_icon_color_secondary_tint_list;
     }
 }

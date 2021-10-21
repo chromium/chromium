@@ -311,17 +311,17 @@ public class BookmarkBridge {
         if (tab.isFrozen() || mNativeBookmarkBridge == 0) return false;
         return BookmarkBridgeJni.get().getBookmarkIdForWebContents(
                        mNativeBookmarkBridge, this, tab.getWebContents(), false)
-                != BookmarkId.INVALID_ID;
+                != null;
     }
 
     /**
      * @param tab Tab whose current URL is checked against.
-     * @return User-editable bookmark ID or {@link BookmarkId#INVALID_ID} if bookmark backend is
-     *         not loaded or the tab is frozen.
+     * @return BookmarkId or {@link null} if bookmark backend is not loaded or the tab is frozen.
      */
-    public long getUserBookmarkIdForTab(Tab tab) {
+    @Nullable
+    public BookmarkId getUserBookmarkIdForTab(Tab tab) {
         ThreadUtils.assertOnUiThread();
-        if (tab.isFrozen()) return BookmarkId.INVALID_ID;
+        if (tab.isFrozen()) return null;
         return BookmarkBridgeJni.get().getBookmarkIdForWebContents(
                 mNativeBookmarkBridge, this, tab.getWebContents(), true);
     }
@@ -1153,7 +1153,7 @@ public class BookmarkBridge {
 
     @NativeMethods
     interface Natives {
-        long getBookmarkIdForWebContents(long nativeBookmarkBridge, BookmarkBridge caller,
+        BookmarkId getBookmarkIdForWebContents(long nativeBookmarkBridge, BookmarkBridge caller,
                 WebContents webContents, boolean onlyEditable);
         BookmarkItem getBookmarkByID(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);

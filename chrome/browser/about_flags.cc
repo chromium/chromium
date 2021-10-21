@@ -2680,7 +2680,7 @@ const FeatureEntry::FeatureParam kReadLaterUseRootBookmarkAsDefault[] = {
     {"use_root_bookmark_as_default", "true"}};
 const FeatureEntry::FeatureParam kReadLaterInAppMenu[] = {
     {"use_root_bookmark_as_default", "true"},
-    {"add_to_reading_list_in_app_menu", "true"}};
+    {"reading_list_in_app_menu", "true"}};
 
 const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
     {"(use root bookmark as default)", kReadLaterUseRootBookmarkAsDefault,
@@ -2691,17 +2691,15 @@ const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
 const FeatureEntry::FeatureParam kBookmarksRefreshVisuals[] = {
     {"bookmark_visuals_enabled", "true"}};
 const FeatureEntry::FeatureParam kBookmarksRefreshAppMenu[] = {
-    {"add_bookmark_in_app_menu", "true"},
-    {"edit_bookmark_in_app_menu", "true"}};
+    {"bookmark_in_app_menu", "true"}};
 const FeatureEntry::FeatureParam kBookmarksRefreshWithEverything[] = {
     {"bookmark_visuals_enabled", "true"},
-    {"add_bookmark_in_app_menu", "true"},
-    {"edit_bookmark_in_app_menu", "true"}};
+    {"bookmark_in_app_menu", "true"}};
 
 const FeatureEntry::FeatureVariation kBookmarksRefreshVariations[] = {
     {"(manager visuals only)", kBookmarksRefreshVisuals,
      base::size(kBookmarksRefreshVisuals), nullptr},
-    {"(app menu)", kBookmarksRefreshAppMenu,
+    {"(bookmark in app menu)", kBookmarksRefreshAppMenu,
      base::size(kBookmarksRefreshAppMenu), nullptr},
     {"(everything)", kBookmarksRefreshWithEverything,
      base::size(kBookmarksRefreshWithEverything), nullptr}};

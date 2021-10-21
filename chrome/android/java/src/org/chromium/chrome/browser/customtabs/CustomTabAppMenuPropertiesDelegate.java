@@ -186,7 +186,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
             MenuItem bookmarkItem = menu.findItem(R.id.bookmark_this_page_id);
             if (bookmarkItemVisible) {
-                updateBookmarkMenuItem(bookmarkItem, currentTab);
+                updateBookmarkMenuItemShortcut(bookmarkItem, currentTab);
             } else {
                 bookmarkItem.setVisible(false);
             }

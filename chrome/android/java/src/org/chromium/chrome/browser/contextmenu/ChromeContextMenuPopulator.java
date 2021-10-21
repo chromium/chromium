@@ -455,8 +455,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     linkGroup.add(createListItem(Item.SAVE_LINK_AS));
                 }
                 if (!mParams.isImage() && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)
-                        && ReadingListUtils.isReadingListSupported(
-                                mParams.getLinkUrl().getValidSpecOrEmpty())) {
+                        && ReadingListUtils.isReadingListSupported(mParams.getLinkUrl())) {
                     linkGroup.add(createListItem(Item.READ_LATER, shouldTriggerReadLaterHelpUi()));
                 }
                 linkGroup.add(createShareListItem(Item.SHARE_LINK, Item.DIRECT_SHARE_LINK));

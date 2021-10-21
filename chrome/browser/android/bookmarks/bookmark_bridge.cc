@@ -70,8 +70,6 @@ using content::BrowserThread;
 
 namespace {
 
-const int kInvalidId = -1;
-
 class BookmarkTitleComparer {
  public:
   explicit BookmarkTitleComparer(BookmarkBridge* bookmark_bridge,
@@ -169,7 +167,8 @@ static jlong JNI_BookmarkBridge_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(bridge);
 }
 
-jlong BookmarkBridge::GetBookmarkIdForWebContents(
+base::android::ScopedJavaLocalRef<jobject>
+BookmarkBridge::GetBookmarkIdForWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,
@@ -178,7 +177,7 @@ jlong BookmarkBridge::GetBookmarkIdForWebContents(
 
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents)
-    return kInvalidId;
+    return nullptr;
 
   // TODO(https://crbug.com/1023759): We currently don't have a separate tab
   // model for incognito CCTs and incognito Tabs. So for incognito CCTs, the
@@ -197,7 +196,8 @@ jlong BookmarkBridge::GetBookmarkIdForWebContents(
   if (reading_list_manager_->IsLoaded()) {
     const auto* node = reading_list_manager_->Get(url);
     if (node)
-      return node->id();
+      return JavaBookmarkIdCreateBookmarkId(env, node->id(),
+                                            GetBookmarkType(node));
   }
 
   // Get all the nodes for |url| and sort them by date added.
@@ -214,10 +214,11 @@ jlong BookmarkBridge::GetBookmarkIdForWebContents(
   for (const auto* node : nodes) {
     if (only_editable && !managed->CanBeEditedByUser(node))
       continue;
-    return node->id();
+    return JavaBookmarkIdCreateBookmarkId(env, node->id(),
+                                          GetBookmarkType(node));
   }
 
-  return kInvalidId;
+  return nullptr;
 }
 
 jboolean BookmarkBridge::IsEditBookmarksEnabled(JNIEnv* env) {
@@ -1118,10 +1119,14 @@ const BookmarkNode* BookmarkBridge::GetParentNode(const BookmarkNode* node) {
 }
 
 int BookmarkBridge::GetBookmarkType(const BookmarkNode* node) {
-  if (partner_bookmarks_shim_->IsPartnerBookmark(node))
+  // TODO(crbug.com/1150559) return the wrong type when the backend is not
+  // loaded?
+  if (partner_bookmarks_shim_->IsLoaded() &&
+      partner_bookmarks_shim_->IsPartnerBookmark(node))
     return BookmarkType::BOOKMARK_TYPE_PARTNER;
 
-  if (reading_list_manager_->IsReadingListBookmark(node))
+  if (reading_list_manager_->IsLoaded() &&
+      reading_list_manager_->IsReadingListBookmark(node))
     return BookmarkType::BOOKMARK_TYPE_READING_LIST;
 
   return BookmarkType::BOOKMARK_TYPE_NORMAL;

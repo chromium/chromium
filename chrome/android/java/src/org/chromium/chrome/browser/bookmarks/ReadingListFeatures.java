@@ -14,11 +14,7 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>{@link ChromeFeatureList#READ_LATER}
  * <ul>
- * <li>{@code add_to_reading_list_in_app_menu}: boolean; show "Add to Reading List" in the app menu.
- * Default: {@code false}</li>
- * <li>{@code delete_from_reading_list_in_app_menu}: boolean; show "Delete from Reading List" in the
- * app menu. Default: {@code false}</li>
- * <li>{@code edit_reading_list_in_app_menu}: boolean; show "Edit Reading List" in the app menu.
+ * <li>{@code reading_list_in_app_menu}: boolean; show Add/Delete menu items in the app menu.
  * Default: {@code false}</li>
  * <li>{@code session_length}: int (seconds); duration Chrome needs to spend in background before it
  * discards the "last bookmark location". Default: {@link #DEFAULT_SESSION_LENGTH_SECONDS}</li>
@@ -59,24 +55,9 @@ public class ReadingListFeatures {
     }
 
     /** Returns whether the "Add to Reading List" app menu item should be enabled. */
-    public static boolean isAddToReadingListAppMenuItemEnabled() {
+    public static boolean isReadingListMenuItemAsDedicatedRowEnabled() {
         return isReadingListEnabled()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.READ_LATER, "add_to_reading_list_in_app_menu", false);
-    }
-
-    /** Returns whether the "Delete from Reading List" app menu item should be enabled. */
-    public static boolean isDeleteFromReadingListAppMenuItemEnabled() {
-        return isReadingListEnabled()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.READ_LATER, "delete_from_reading_list_in_app_menu",
-                        false);
-    }
-
-    /** Returns whether the "Edit Reading List" app menu item should be enabled. */
-    public static boolean isEditReadingListAppMenuItemEnabled() {
-        return isReadingListEnabled()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.READ_LATER, "edit_reading_list_in_app_menu", false);
+                        ChromeFeatureList.READ_LATER, "reading_list_in_app_menu", false);
     }
 }

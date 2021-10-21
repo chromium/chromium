@@ -12,20 +12,23 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
+/** Unit test for {@link ReadingListUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-/**
- * Unit test for {@link ReadingListUtils}.
- */
 public class ReadingListUtilsUnitTest {
     @Test
     @SmallTest
     public void testIsReadingListSupport() {
         Assert.assertFalse(ReadingListUtils.isReadingListSupported(null));
-        Assert.assertFalse(ReadingListUtils.isReadingListSupported(""));
-        Assert.assertFalse(ReadingListUtils.isReadingListSupported("chrome://flags"));
-        Assert.assertTrue(ReadingListUtils.isReadingListSupported("http://www.example.com"));
-        Assert.assertTrue(ReadingListUtils.isReadingListSupported("https://www.example.com"));
+        Assert.assertFalse(ReadingListUtils.isReadingListSupported(GURL.emptyGURL()));
+        Assert.assertFalse(ReadingListUtils.isReadingListSupported(
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL)));
+        Assert.assertTrue(ReadingListUtils.isReadingListSupported(
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)));
+        Assert.assertTrue(ReadingListUtils.isReadingListSupported(
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.HTTP_URL)));
     }
 }

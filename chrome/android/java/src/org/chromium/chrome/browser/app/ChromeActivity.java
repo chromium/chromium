@@ -148,6 +148,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.printing.PrintShareActivity;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
@@ -1860,10 +1861,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 // can't be edited. If the current URL is only bookmarked by managed bookmarks, this
                 // will return INVALID_ID.
                 // TODO(bauerb): This does not take partner bookmarks into account.
-                final long bookmarkId = bridge.getUserBookmarkIdForTab(tabToBookmark);
-                if (bookmarkId != BookmarkId.INVALID_ID) {
-                    currentBookmarkItem =
-                            bookmarkModel.getBookmarkById(new BookmarkId(bookmarkId, bookmarkType));
+                final BookmarkId bookmarkId = bridge.getUserBookmarkIdForTab(tabToBookmark);
+                if (bookmarkId != null) {
+                    currentBookmarkItem = bookmarkModel.getBookmarkById(bookmarkId);
                 }
             }
 
@@ -2428,7 +2428,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return false;
         }
 
-        if (id == R.id.bookmark_this_page_id) {
+        if (id == R.id.bookmark_this_page_id || id == R.id.add_bookmark_menu_id
+                || id == R.id.edit_bookmark_menu_id) {
             addOrEditBookmark(currentTab);
             RecordUserAction.record("MobileMenuAddToBookmarks");
             return true;
@@ -2437,6 +2438,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (id == R.id.add_to_reading_list_menu_id) {
             addToReadingList(currentTab);
             RecordUserAction.record("MobileMenuAddToReadingList");
+            return true;
+        }
+
+        if (id == R.id.delete_from_reading_list_menu_id) {
+            ReadingListUtils.deleteFromReadingList(mSnackbarManager, /*activity=*/this, currentTab);
+            RecordUserAction.record("MobileMenuDeleteFromReadingList");
             return true;
         }
 
