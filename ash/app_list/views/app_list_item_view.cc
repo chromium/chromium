@@ -13,6 +13,7 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
@@ -264,7 +265,8 @@ class AppListItemView::IconImageView : public views::ImageView {
 AppListItemView::AppListItemView(const AppListConfig* app_list_config,
                                  GridDelegate* grid_delegate,
                                  AppListItem* item,
-                                 AppListViewDelegate* view_delegate)
+                                 AppListViewDelegate* view_delegate,
+                                 Context context)
     : views::Button(
           base::BindRepeating(&GridDelegate::OnAppListItemViewActivated,
                               base::Unretained(grid_delegate),
@@ -273,7 +275,8 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
       is_folder_(item->GetItemType() == AppListFolderItem::kItemType),
       item_weak_(item),
       grid_delegate_(grid_delegate),
-      view_delegate_(view_delegate) {
+      view_delegate_(view_delegate),
+      context_(context) {
   DCHECK(app_list_config_);
   // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
   // able to submit accessibility checks. This crashes if fetching a11y node
@@ -649,9 +652,23 @@ void AppListItemView::OnContextMenuModelReceived(
       AppListLaunchedFrom::kLaunchedFromGrid};
   view_delegate_->GetAppLaunchedMetricParams(&metric_params);
 
+  // Assign the correct app type to `context_menu_` according to the parent view
+  // of the app list item view.
+  AppListMenuModelAdapter::AppListViewAppType app_type;
+  switch (context_) {
+    case Context::kAppsGridView:
+      app_type = features::IsProductivityLauncherEnabled()
+                     ? AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APP_GRID
+                     : AppListMenuModelAdapter::FULLSCREEN_APP_GRID;
+      break;
+    case Context::kRecentAppsView:
+      app_type = AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_RECENT_APP;
+      break;
+  }
+
   context_menu_ = std::make_unique<AppListMenuModelAdapter>(
       item_weak_->GetMetadata()->id, std::move(menu_model), GetWidget(),
-      source_type, metric_params, AppListMenuModelAdapter::FULLSCREEN_APP_GRID,
+      source_type, metric_params, app_type,
       base::BindOnce(&AppListItemView::OnMenuClosed,
                      weak_ptr_factory_.GetWeakPtr()),
       view_delegate_->IsInTabletMode());

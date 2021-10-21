@@ -17551,22 +17551,92 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Apps.AppListSuggestedChipOpenType"/>
   <affected-histogram name="Apps.ContextMenuExecuteCommand.FromApp"/>
   <affected-histogram name="Apps.ContextMenuExecuteCommand.NotFromApp"/>
-  <affected-histogram name="Apps.ContextMenuShowSource.AppGrid"/>
-  <affected-histogram name="Apps.ContextMenuShowSource.Desktop"/>
-  <affected-histogram name="Apps.ContextMenuShowSource.SearchResult"/>
-  <affected-histogram name="Apps.ContextMenuShowSource.Shelf"/>
-  <affected-histogram name="Apps.ContextMenuShowSource.ShelfButton"/>
-  <affected-histogram name="Apps.ContextMenuShowSource.SuggestedAppFullscreen"/>
-  <affected-histogram name="Apps.ContextMenuShowSource.SuggestedAppPeeking"/>
-  <affected-histogram name="Apps.ContextMenuUserJourneyTime.AppGrid"/>
-  <affected-histogram name="Apps.ContextMenuUserJourneyTime.Desktop"/>
-  <affected-histogram name="Apps.ContextMenuUserJourneyTime.SearchResult"/>
-  <affected-histogram name="Apps.ContextMenuUserJourneyTime.Shelf"/>
-  <affected-histogram name="Apps.ContextMenuUserJourneyTime.ShelfButton"/>
+  <affected-histogram name="Apps.ContextMenuShowSource.AppGrid">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Apps.ContextMenuShowSource.Desktop">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Apps.ContextMenuShowSource.SearchResult">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Apps.ContextMenuShowSource.Shelf">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Apps.ContextMenuShowSource.ShelfButton">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Apps.ContextMenuShowSource.SuggestedAppFullscreen">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Apps.ContextMenuShowSource.SuggestedAppPeeking">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Apps.ContextMenuUserJourneyTime.AppGrid">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Apps.ContextMenuUserJourneyTime.Desktop">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Apps.ContextMenuUserJourneyTime.SearchResult">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Apps.ContextMenuUserJourneyTime.Shelf">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Apps.ContextMenuUserJourneyTime.ShelfButton">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
   <affected-histogram
-      name="Apps.ContextMenuUserJourneyTime.SuggestedAppFullscreen"/>
+      name="Apps.ContextMenuUserJourneyTime.SuggestedAppFullscreen">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
   <affected-histogram
-      name="Apps.ContextMenuUserJourneyTime.SuggestedAppPeeking"/>
+      name="Apps.ContextMenuUserJourneyTime.SuggestedAppPeeking">
+    <obsolete>
+      Obsoleted in October 2021. Replaced this suffix with variants in
+      histogram.xml
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Apps.PaginationTransition.AnimationSmoothness"/>
   <affected-histogram
       name="Apps.PaginationTransition.DragScroll.PresentationTime"/>

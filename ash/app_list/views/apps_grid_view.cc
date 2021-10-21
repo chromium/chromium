@@ -944,9 +944,9 @@ std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItemAtIndex(
   // The |drag_view_| might be pending for deletion, therefore |view_model_|
   // may have one more item than |item_list_|.
   DCHECK_LE(index, item_list_->item_count());
-  auto view = std::make_unique<AppListItemView>(app_list_config_, this,
-                                                item_list_->item_at(index),
-                                                app_list_view_delegate_);
+  auto view = std::make_unique<AppListItemView>(
+      app_list_config_, this, item_list_->item_at(index),
+      app_list_view_delegate_, AppListItemView::Context::kAppsGridView);
   if (items_need_layer_for_drag_)
     view->EnsureLayer();
   if (cardified_state_)

@@ -55,6 +55,15 @@ class ASH_EXPORT AppListItemView : public views::Button,
  public:
   METADATA_HEADER(AppListItemView);
 
+  // The types of context where the app list item view is shown.
+  enum class Context {
+    // The item is shown in an AppsGridView.
+    kAppsGridView,
+
+    // The item is shown in the RecentAppsView.
+    kRecentAppsView
+  };
+
   // The parent apps grid (AppsGridView) or a stub. Not named "Delegate" to
   // differentiate it from AppListViewDelegate.
   class GridDelegate {
@@ -103,7 +112,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
   AppListItemView(const AppListConfig* app_list_config,
                   GridDelegate* grid_delegate,
                   AppListItem* item,
-                  AppListViewDelegate* view_delegate);
+                  AppListViewDelegate* view_delegate,
+                  Context context);
   AppListItemView(const AppListItemView&) = delete;
   AppListItemView& operator=(const AppListItemView&) = delete;
   ~AppListItemView() override;
@@ -403,6 +413,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Draws an indicator in the top right corner of the image to represent an
   // active notification.
   AppNotificationIndicatorView* notification_indicator_ = nullptr;
+
+  // Indicates the context in which this view is shown.
+  const Context context_;
 
   // Helper to trigger icon load.
   absl::optional<AppIconLoadHelper> icon_load_helper_;

@@ -79,6 +79,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <variants name="AppUIComponent">
   <variant name=".AppGrid" summary="App - Fullscreen Launcher"/>
   <variant name=".Desktop" summary="Desktop"/>
+  <variant name=".ProductivityLauncherAppGrid"
+      summary="App - Productivity Launcher"/>
+  <variant name=".ProductivityLauncherRecentApp"
+      summary="Recent App, Productivity Launcher"/>
   <variant name=".SearchResult" summary="Launcher App Search Result"/>
   <variant name=".Shelf" summary="Shelf"/>
   <variant name=".ShelfButton" summary="ShelfButton"/>
@@ -162,6 +166,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Removed October 2021.
     </obsolete>
   </variant>
+</variants>
+
+<variants name="TabletOrClamshellMode">
+  <variant name=".ClamshellMode" summary="Clamshell Mode Enabled"/>
+  <variant name=".TabletMode" summary="Tablet Mode Enabled"/>
 </variants>
 
 <histogram name="Apps.ActivatedCount.{AppType}" units="units"
@@ -1857,8 +1866,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram
+    name="Apps.ContextMenuShowSourceV2{AppUIComponent}{TabletOrClamshellMode}"
+    enum="MenuSourceType" expires_after="2022-01-31">
+  <owner>wcwang@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The show source (touch, mouse, keyboard, etc) for a context menu. Split by
+    the component from which the context menu originated. {AppUIComponent}
+  </summary>
+  <token key="AppUIComponent" variants="AppUIComponent">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+  <token key="TabletOrClamshellMode" variants="TabletOrClamshellMode"/>
+</histogram>
+
 <histogram name="Apps.ContextMenuShowSource{AppUIComponent}"
     enum="MenuSourceType" expires_after="2021-10-10">
+  <obsolete>
+    Obsoleted in October 2021. Combine the TabletOrClamshellMode suffix in
+    histogram_suffixes_list with this histogram.
+  </obsolete>
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -1874,8 +1906,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram
+    name="Apps.ContextMenuUserJourneyTimeV2{AppUIComponent}{TabletOrClamshellMode}"
+    units="ms" expires_after="2022-01-31">
+  <owner>wcwang@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The user journey time for a ContextMenu, defined as the time between
+    launching a context menu and the context menu's close callback being
+    activated. Not recorded whenever the context menu is not for an app icon on
+    the shelf. {AppUIComponent}
+  </summary>
+  <token key="AppUIComponent" variants="AppUIComponent">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+  <token key="TabletOrClamshellMode" variants="TabletOrClamshellMode"/>
+</histogram>
+
 <histogram name="Apps.ContextMenuUserJourneyTime{AppUIComponent}" units="ms"
     expires_after="2021-10-31">
+  <obsolete>
+    Obsoleted in October 2021. Combine the TabletOrClamshellMode suffix in
+    histogram_suffixes_list with this histogram.
+  </obsolete>
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>

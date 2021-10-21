@@ -182,7 +182,8 @@ void RecentAppsView::ShowResults(SearchModel* search_model,
     AppListItem* item = model->FindItem(item_id);
     if (item) {
       auto* item_view = AddChildView(std::make_unique<AppListItemView>(
-          app_list_config_, grid_delegate_.get(), item, view_delegate_));
+          app_list_config_, grid_delegate_.get(), item, view_delegate_,
+          AppListItemView::Context::kRecentAppsView));
       item_view->SetProperty(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
