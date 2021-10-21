@@ -18,9 +18,8 @@
 
 <dom-module id="settings-change-picture">
   <template>
-    <style>
+    <style include="settings-shared">
       :host {
-        --cr-toolbar-height: 56px;
         /* #headerLine height + padding */
         --cr-settings-header-height: calc(62px + 1.34em);
         --title-height: 2em;
@@ -66,13 +65,12 @@
       #pictureList {
         /* TODO(reveman): Find a way to have height align to viewport
            without using fixed position. */
-        --bottom-padding: 48px;
         height: calc(100vh -
             var(--cr-toolbar-height) -
+            var(--cr-toolbar-padding-top) -
             var(--cr-settings-header-height) -
             var(--title-padding) -
-            var(--title-height) -
-            var(--bottom-padding));
+            var(--title-height));
         margin-inline-end: 16px;
         margin-top: 0;
         min-height: 332px;
