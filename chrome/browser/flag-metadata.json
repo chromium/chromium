@@ -4222,7 +4222,7 @@
   {
     "name": "omnibox-updated-connection-security-indicators",
     "owners": [ "meacer", "chrome-trusty-transport@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 98
   },
   {
     "name": "optimization-guide-model-downloading",
