@@ -11,6 +11,12 @@
 <dom-module id="cr-picture-list">
   <template>
     <style include="cr-shared-style">
+      #container {
+        /* Add margin at the bottom of the list. Note that there is no margin
+         * to the window boundary when the list scrolls. */
+        border-bottom: 40px transparent solid;
+      }
+
       :host {
         display: inline-block;
         margin-top: -6px;
