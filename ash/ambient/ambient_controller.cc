@@ -115,7 +115,10 @@ bool IsAmbientModeEnabled() {
 
 class AmbientWidgetDelegate : public views::WidgetDelegate {
  public:
-  AmbientWidgetDelegate() { SetCanMaximize(true); }
+  AmbientWidgetDelegate() {
+    SetCanMaximize(true);
+    SetOwnedByWidget(true);
+  }
 };
 
 }  // namespace
