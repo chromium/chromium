@@ -11,21 +11,6 @@
 
 namespace ui {
 
-static int UniqueTreeCountForNodeCount(int node_count,
-                                       bool permutations) {
-  int unique_tree_count = 1;
-
-  // (n-1)! for the possible trees.
-  for (int i = 2; i < node_count; ++i)
-    unique_tree_count *= i;
-
-  // n! for the permutations of ids.
-  if (permutations)
-    unique_tree_count = unique_tree_count * unique_tree_count * node_count;
-
-  return unique_tree_count;
-}
-
 TreeGenerator::TreeGenerator(int max_node_count, bool permutations)
     : max_node_count_(max_node_count),
       permutations_(permutations),

@@ -4,10 +4,12 @@
 
 #include <memory>
 #include <numeric>
+#include <vector>
 
 #include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_event_generator.h"
@@ -19,6 +21,24 @@
 
 namespace ui {
 namespace {
+
+// Do a more exhaustive test in release mode. If you're modifying
+// the algorithm you may want to try even larger tree sizes if you
+// can afford the time.
+#ifdef NDEBUG
+constexpr int kMax_tree_size = 4;
+#else
+constexpr int kMax_tree_size = 3;
+#endif
+
+// We split the test into four by splitting the two nested loops that builds the
+// trees. To do so, we need to know the maximum number of (permuted) trees.
+constexpr int kMax_number_of_trees0 =
+    TreeGenerator::ComputeUniqueTreeCount(kMax_tree_size,
+                                          /* permutations */ false);
+constexpr int kMax_number_of_trees1 =
+    TreeGenerator::ComputeUniqueTreeCount(kMax_tree_size,
+                                          /* permutations */ true);
 
 // A function to turn a tree into a string, capturing only the node ids
 // and their relationship to one another.
@@ -198,45 +218,39 @@ TEST(AXGeneratedTreeTest, TestTreeGeneratorWithPermutations) {
   }
 }
 
-// Test mutating every possible tree with <n> nodes to every other possible
-// tree with <n> nodes, where <n> is 4 in release mode and 3 in debug mode
-// (for speed). For each possible combination of trees, we also vary which
-// node we serialize first.
-//
-// For every possible scenario, we check that the AXTreeUpdate is valid,
-// that the destination tree can unserialize it and create a valid tree,
-// and that after updating all nodes the resulting tree now matches the
-// intended tree.
-//
-// Sheriffs: this test is actually very stable and reliable, but it's
-// cpu-bound so under extremely heavy load it sometimes times out even
-// though it only takes 1 - 2 seconds to run under normal load.
-// Please don't disable unless it's actually flaking frequently (e.g.,
-// every day). Check Flake Portal first.
-TEST(AXGeneratedTreeTest, SerializeGeneratedTrees) {
-  // Do a more exhaustive test in release mode. If you're modifying
-  // the algorithm you may want to try even larger tree sizes if you
-  // can afford the time.
-#ifdef NDEBUG
-  int max_tree_size = 4;
-#else
-  LOG(WARNING) << "Debug build, only testing trees with 3 nodes and not 4.";
-  int max_tree_size = 3;
-#endif
+struct PermutationBlock {
+  PermutationBlock(int first_unique_tree0,
+                   int last_unique_tree0,
+                   int first_unique_tree1,
+                   int last_unique_tree1)
+      : first_unique_tree0(first_unique_tree0),
+        last_unique_tree0(last_unique_tree0),
+        first_unique_tree1(first_unique_tree1),
+        last_unique_tree1(last_unique_tree1) {}
+  int first_unique_tree0;
+  int last_unique_tree0;
+  int first_unique_tree1;
+  int last_unique_tree1;
+};
 
-  TreeGenerator generator0(max_tree_size, false);
-  int n0 = generator0.UniqueTreeCount();
+class SerializeGeneratedTreesTest
+    : public testing::TestWithParam<PermutationBlock> {};
 
-  TreeGenerator generator1(max_tree_size, true);
-  int n1 = generator1.UniqueTreeCount();
+TEST_P(SerializeGeneratedTreesTest, SerializeGeneratedTrees) {
+  const int first_tree0_ = GetParam().first_unique_tree0;
+  const int last_tree0_ = GetParam().last_unique_tree0;
+  const int first_tree1_ = GetParam().first_unique_tree1;
+  const int last_tree1_ = GetParam().last_unique_tree1;
+  TreeGenerator generator0(kMax_tree_size, /* permutations */ false);
+  TreeGenerator generator1(kMax_tree_size, /* permutations */ true);
 
-  for (int i = 0; i < n0; i++) {
+  for (int i = first_tree0_; i < last_tree0_; i++) {
     // Build the first tree, tree0.
     AXSerializableTree tree0;
     generator0.BuildUniqueTree(i, &tree0);
     SCOPED_TRACE("tree0 is " + TreeToString(tree0));
 
-    for (int j = 0; j < n1; j++) {
+    for (int j = first_tree1_; j < last_tree1_; j++) {
       // Build the second tree, tree1.
       AXSerializableTree tree1;
       generator1.BuildUniqueTree(j, &tree1);
@@ -301,6 +315,42 @@ TEST(AXGeneratedTreeTest, SerializeGeneratedTrees) {
     }
   }
 }
+
+// Test mutating every possible tree with <n> nodes to every other possible
+// tree with <n> nodes, where <n> is 4 in release mode and 3 in debug mode
+// (for speed). For each possible combination of trees, we also vary which
+// node we serialize first.
+//
+// For every possible scenario, we check that the AXTreeUpdate is valid,
+// that the destination tree can unserialize it and create a valid tree,
+// and that after updating all nodes the resulting tree now matches the
+// intended tree.
+//
+// Sheriffs: this test is actually very stable and reliable, but it's
+// cpu-bound so under extremely heavy load it sometimes times out even
+// though it only takes 1 - 2 seconds to run under normal load.
+// Please don't disable unless it's actually flaking frequently (e.g.,
+// every day). Check Flake Portal first.
+
+INSTANTIATE_TEST_SUITE_P(
+    AXGeneratedTreeTest0,
+    SerializeGeneratedTreesTest,
+    testing::Values(PermutationBlock(0,
+                                     kMax_number_of_trees0 / 2,
+                                     0,
+                                     kMax_number_of_trees1 / 2),
+                    PermutationBlock(0,
+                                     kMax_number_of_trees0 / 2,
+                                     kMax_number_of_trees1 / 2,
+                                     kMax_number_of_trees1),
+                    PermutationBlock(kMax_number_of_trees0 / 2,
+                                     kMax_number_of_trees0,
+                                     0,
+                                     kMax_number_of_trees1 / 2),
+                    PermutationBlock(kMax_number_of_trees0 / 2,
+                                     kMax_number_of_trees0,
+                                     kMax_number_of_trees1 / 2,
+                                     kMax_number_of_trees1)));
 
 // Sheriffs: this test is actually very stable and reliable, but it's
 // cpu-bound so under extremely heavy load it sometimes times out even
