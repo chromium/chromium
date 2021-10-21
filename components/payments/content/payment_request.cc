@@ -79,9 +79,7 @@ PaymentRequest::PaymentRequest(
     base::WeakPtr<PaymentRequestDisplayManager> display_manager,
     mojo::PendingReceiver<mojom::PaymentRequest> receiver,
     base::WeakPtr<ObserverForTest> observer_for_testing)
-    : initiator_frame_routing_id_(content::GlobalRenderFrameHostId(
-          render_frame_host->GetProcess()->GetID(),
-          render_frame_host->GetRoutingID())),
+    : initiator_frame_routing_id_(render_frame_host->GetGlobalId()),
       log_(web_contents()),
       delegate_(std::move(delegate)),
       manager_(manager),

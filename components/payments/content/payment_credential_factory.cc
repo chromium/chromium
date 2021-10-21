@@ -28,11 +28,7 @@ void CreatePaymentCredential(
     return;
 
   content::GlobalRenderFrameHostId initiator_frame_routing_id =
-      render_frame_host->GetProcess()
-          ? content::GlobalRenderFrameHostId(
-                render_frame_host->GetProcess()->GetID(),
-                render_frame_host->GetRoutingID())
-          : content::GlobalRenderFrameHostId();
+      render_frame_host->GetGlobalId();
   PaymentCredentialManager::GetOrCreateForWebContents(web_contents)
       ->CreatePaymentCredential(
           initiator_frame_routing_id,
