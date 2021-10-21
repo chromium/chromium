@@ -2908,9 +2908,6 @@ extern const char kShowFeedbackReportQuestionnaireDescription[];
 extern const char kBluetoothSessionizedMetricsName[];
 extern const char kBluetoothSessionizedMetricsDescription[];
 
-extern const char kShowDateInTrayName[];
-extern const char kShowDateInTrayDescription[];
-
 extern const char kShowTapsName[];
 extern const char kShowTapsDescription[];
 

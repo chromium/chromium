@@ -7175,12 +7175,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsLinux | kOsMac | kOsCrOS | kOsAndroid,
      FEATURE_VALUE_TYPE(net::features::kSplitCacheByNetworkIsolationKey)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-show-date-in-tray", flag_descriptions::kShowDateInTrayName,
-     flag_descriptions::kShowDateInTrayDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kShowDateInTrayButton)},
-#endif
-
     {"autofill-address-save-prompt",
      flag_descriptions::kEnableAutofillAddressSavePromptName,
      flag_descriptions::kEnableAutofillAddressSavePromptDescription,

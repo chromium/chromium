@@ -5035,10 +5035,6 @@ const char kBluetoothSessionizedMetricsName[] =
 const char kBluetoothSessionizedMetricsDescription[] =
     "Enables collecting and processing Bluetooth sessionized metrics.";
 
-const char kShowDateInTrayName[] = "Enable Show Date In Tray";
-const char kShowDateInTrayDescription[] =
-    "Showing date in status area when the screen is sufficiently large.";
-
 const char kShowTapsName[] = "Show taps";
 const char kShowTapsDescription[] =
     "Draws a circle at each touch point, which makes touch points more obvious "

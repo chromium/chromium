@@ -24,8 +24,8 @@ class TimeTrayItemViewTest : public AshTestBase,
   void SetUp() override {
     AshTestBase::SetUp();
     std::vector<base::Feature> features = {features::kScalableStatusArea,
-                                           features::kShowDateInTrayButton};
-    if (IsShowDateInTrayButtonEnabled())
+                                           features::kCalendarView};
+    if (IsCalendarViewEnabled())
       scoped_feature_list_.InitWithFeatures(features, {});
     else
       scoped_feature_list_.InitWithFeatures({}, features);
@@ -41,7 +41,7 @@ class TimeTrayItemViewTest : public AshTestBase,
     AshTestBase::TearDown();
   }
 
-  bool IsShowDateInTrayButtonEnabled() { return GetParam(); }
+  bool IsCalendarViewEnabled() { return GetParam(); }
 
   // Returns true if the time view is in horizontal layout, false if it is in
   // vertical layout.
@@ -63,7 +63,7 @@ class TimeTrayItemViewTest : public AshTestBase,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          TimeTrayItemViewTest,
-                         testing::Bool() /* IsShowDateInTrayButtonEnabled() */);
+                         testing::Bool() /* IsCalendarViewEnabled() */);
 
 TEST_P(TimeTrayItemViewTest, ShelfAlignment) {
   // The tray should show time horizontal view when the shelf is bottom.
@@ -93,7 +93,7 @@ TEST_P(TimeTrayItemViewTest, DisplayChanged) {
 
   // Date should be shown in large screen size (when the feature is enabled).
   UpdateDisplay("1680x800");
-  EXPECT_EQ(IsShowDateInTrayButtonEnabled(), ShouldShowDateInTimeView());
+  EXPECT_EQ(IsCalendarViewEnabled(), ShouldShowDateInTimeView());
 }
 
 }  // namespace tray

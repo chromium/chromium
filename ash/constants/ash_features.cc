@@ -208,7 +208,8 @@ const base::Feature kManagedTermsOfService{"ManagedTermsOfService",
 const base::Feature kButtonARCNetworkDiagnostics{
     "ButtonARCNetworkDiagnostics", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable or disable calendar view from the system tray.
+// Enable or disable calendar view from the system tray. Also enables the system
+// tray to show date in the shelf when the screen is sufficiently large.
 const base::Feature kCalendarView{"CalendarView",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1026,10 +1027,6 @@ const base::Feature kShowBluetoothDebugLogToggle{
 const base::Feature kShowFeedbackReportQuestionnaire{
     "FeedbackReportQuestionnaire", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the system tray to show date in sufficiently large screen.
-const base::Feature kShowDateInTrayButton{"ShowDateInTrayButton",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Shows the Play Store icon in Demo Mode.
 const base::Feature kShowPlayInDemoMode{"ShowPlayInDemoMode",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1674,11 +1671,6 @@ bool IsShelfLauncherNudgeEnabled() {
 
 bool IsShimlessRMAFlowEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAFlow);
-}
-
-bool IsShowDateInTrayButtonEnabled() {
-  return IsScalableStatusAreaEnabled() &&
-         base::FeatureList::IsEnabled(kShowDateInTrayButton);
 }
 
 bool IsSplitSettingsSyncEnabled() {
