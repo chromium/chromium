@@ -55,6 +55,23 @@ async function fetchAllImagesForCollections(provider, store) {
 }
 
 /**
+ * Gets the list of Google Photos photos and saves it to the store.
+ * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ *     provider
+ * @param {!PersonalizationStore} store
+ */
+async function getGooglePhotosPhotos(provider, store) {
+  store.dispatch(action.beginLoadGooglePhotosPhotosAction());
+
+  // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
+  // request that returns an empty response list of Google Photos photos.
+  return new Promise(resolve => setTimeout(() => {
+                       store.dispatch(action.setGooglePhotosPhotosAction([]));
+                       resolve();
+                     }, 1000));
+}
+
+/**
  * Get list of local images from disk and save it to the store.
  * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
  *     provider
@@ -246,6 +263,17 @@ export async function cancelPreviewWallpaper(provider) {
 export async function initializeBackdropData(provider, store) {
   await fetchCollections(provider, store);
   await fetchAllImagesForCollections(provider, store);
+}
+
+/**
+ * Gets the list of Google Photos photos and saves it to the store.
+ * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ *     provider
+ * @param {!PersonalizationStore} store
+ */
+export async function initializeGooglePhotosData(provider, store) {
+  await getGooglePhotosPhotos(provider, store);
+  // TODO(dmblack): Fetch Google Photos albums.
 }
 
 /**

@@ -35,6 +35,14 @@ export let DisplayableImage;
 export let BackdropState;
 
 /**
+ * Stores Google Photos state.
+ * @typedef {{
+ *  photos: ?Array<undefined>,
+ * }}
+ */
+export let GooglePhotosState;
+
+/**
  * Stores loading state of various components of the app.
  * |images| is a mapping of collection id to loading state.
  * |local| stores data just for local images on disk.
@@ -50,6 +58,8 @@ export let BackdropState;
  * |setImage| is a number representing the number of concurrent requests to set
  * current wallpaper information. This can be more than 1 in case a user rapidly
  * selects multiple wallpaper options.
+ *
+ * |googlePhotos| stores loading state of Google Photos data.
  * @typedef {{
  *   collections: boolean,
  *   images: !Object<string, boolean>,
@@ -60,6 +70,9 @@ export let BackdropState;
  *   refreshWallpaper: boolean,
  *   selected: boolean,
  *   setImage: number,
+ *   googlePhotos: {
+ *    photos: boolean,
+ *   },
  * }}
  */
 export let LoadingState;
@@ -94,6 +107,7 @@ export let DailyRefreshState;
  *   dailyRefresh: !DailyRefreshState,
  *   error: ?string,
  *   fullscreen: boolean,
+ *   googlePhotos: !GooglePhotosState,
  * }}
  */
 export let PersonalizationState;
@@ -112,6 +126,7 @@ export function emptyState() {
       refreshWallpaper: false,
       selected: false,
       setImage: 0,
+      googlePhotos: {photos: false},
     },
     local: {images: null, data: {}},
     currentSelected: null,
@@ -119,6 +134,7 @@ export function emptyState() {
     dailyRefresh: {collectionId: null},
     error: null,
     fullscreen: false,
+    googlePhotos: {photos: null},
   };
 }
 
@@ -258,6 +274,22 @@ function loadingReducer(state, action) {
       return /** @type {!LoadingState} */ ({...state, refreshWallpaper: true});
     case ActionName.SET_UPDATED_DAILY_REFRESH_IMAGE:
       return /** @type {!LoadingState} */ ({...state, refreshWallpaper: false});
+    case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS:
+      return /** @type {!LoadingState} */ ({
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          photos: true,
+        },
+      });
+    case ActionName.SET_GOOGLE_PHOTOS_PHOTOS:
+      return /** @type {!LoadingState} */ ({
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          photos: false,
+        },
+      });
     default:
       return state;
   }
@@ -410,6 +442,23 @@ function errorReducer(state, action) {
   }
 }
 
+/**
+ * @param {!GooglePhotosState} state
+ * @param {!Action} action
+ * @return {!GooglePhotosState}
+ */
+function googlePhotosReducer(state, action) {
+  switch (action.name) {
+    case ActionName.SET_GOOGLE_PHOTOS_PHOTOS:
+      return /** @type {!GooglePhotosState} */ ({
+        ...state,
+        photos: (/** @type {{photos: ?Array<undefined>}} */ (action)).photos,
+      });
+    default:
+      return state;
+  }
+}
+
 const root = combineReducers({
   backdrop: backdropReducer,
   loading: loadingReducer,
@@ -419,6 +468,7 @@ const root = combineReducers({
   dailyRefresh: dailyRefreshReducer,
   error: errorReducer,
   fullscreen: fullscreenReducer,
+  googlePhotos: googlePhotosReducer,
 });
 
 /**

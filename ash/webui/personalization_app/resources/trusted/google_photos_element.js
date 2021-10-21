@@ -11,6 +11,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './styles.js';
 import '../common/styles.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getWallpaperProvider} from './mojo_interface_provider.js';
+import {initializeGooglePhotosData} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 /** @polymer */
@@ -24,21 +26,62 @@ export class GooglePhotos extends WithPersonalizationStore {
   }
 
   static get properties() {
-    return {};
+    return {
+      /**
+       * The list of photos.
+       * @type {?Array<undefined>}
+       * @private
+       */
+      photos_: {
+        type: Array,
+      },
+
+      /**
+       * Whether the list of photos is currently loading.
+       * @type {boolean}
+       * @private
+       */
+      photosLoading_: {type: Boolean}
+    };
   }
 
+  static get observers() {
+    return ['onPhotosLoaded_(photos_, photosLoading_)'];
+  }
+
+  /** @override */
   constructor() {
     super();
+    /** @const @private */
+    this.wallpaperProvider_ = getWallpaperProvider();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
+
+    // This element will be permanently hidden if the Google Photos integration
+    // feature flag is disabled, so we can quit early to prevent unnecessary
+    // data bindings and API calls.
+    if (!loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled')) {
+      return;
+    }
+
+    this.watch('photos_', state => state.googlePhotos.photos);
+    this.watch('photosLoading_', state => state.loading.googlePhotos.photos);
+    this.updateFromStore();
+
+    initializeGooglePhotosData(this.wallpaperProvider_, this.getStore());
   }
 
-  /** @override */
-  disconnectedCallback() {
-    super.disconnectedCallback();
+  /**
+   * Invoked on changes to the list of photos and its loading state.
+   * @param {?Array<undefined>} photos
+   * @param {boolean} photosLoading
+   * @private
+   */
+  onPhotosLoaded_(photos, photosLoading) {
+    // TODO(dmblack): Send event to untrusted via iframe API.
   }
 }
 

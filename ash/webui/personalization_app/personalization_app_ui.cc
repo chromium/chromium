@@ -121,6 +121,9 @@ PersonalizationAppUI::PersonalizationAppUI(
   AddStrings(source.get());
   source->AddBoolean("fullScreenPreviewEnabled",
                      ash::features::IsWallpaperFullScreenPreviewEnabled());
+  source->AddBoolean(
+      "isGooglePhotosIntegrationEnabled",
+      ash::features::IsWallpaperGooglePhotosIntegrationEnabled());
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, source.release());
