@@ -373,7 +373,6 @@ try_.chromium_android_builder(
     cores = 16 if settings.is_main else 8,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
-    tryjob = try_.job(),
     # TODO(crbug/1202741)
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
