@@ -748,11 +748,11 @@ void GraphicsContext::DrawImage(
     DarkModeFilterHelper::ApplyToImageIfNeeded(*GetDarkModeFilter(), image,
                                                &image_flags, src, dest);
   }
-  ImageDrawOptions draw_options;
-  draw_options.sampling_options = ComputeSamplingOptions(image, dest, src);
-  draw_options.respect_orientation = should_respect_image_orientation;
-  draw_options.decode_mode = decode_mode;
-  draw_options.apply_dark_mode = auto_dark_mode.enabled;
+  SkSamplingOptions sampling = ComputeSamplingOptions(image, dest, src);
+  ImageDrawOptions draw_options(
+      GetDarkModeFilter(), sampling, should_respect_image_orientation,
+      Image::kClampImageToSourceRect, decode_mode, auto_dark_mode.enabled);
+
   image->Draw(canvas_, image_flags, dest, src, draw_options);
   paint_controller_.SetImagePainted();
 }
@@ -792,11 +792,9 @@ void GraphicsContext::DrawImageRRect(
         *GetDarkModeFilter(), image, &image_flags, src_rect, dest.Rect());
   }
 
-  ImageDrawOptions draw_options;
-  draw_options.sampling_options = sampling;
-  draw_options.respect_orientation = respect_orientation;
-  draw_options.decode_mode = decode_mode;
-  draw_options.apply_dark_mode = auto_dark_mode.enabled;
+  ImageDrawOptions draw_options(
+      GetDarkModeFilter(), sampling, respect_orientation,
+      Image::kClampImageToSourceRect, decode_mode, auto_dark_mode.enabled);
 
   bool use_shader = (visible_src == src_rect) &&
                     (respect_orientation == kDoNotRespectImageOrientation ||
@@ -870,10 +868,12 @@ void GraphicsContext::DrawImageTiled(
         dest_rect);
   }
 
-  ImageDrawOptions draw_options;
-  draw_options.sampling_options = ImageSamplingOptions();
-  draw_options.respect_orientation = respect_orientation;
-  draw_options.apply_dark_mode = auto_dark_mode.enabled;
+  SkSamplingOptions sampling = ImageSamplingOptions();
+  ImageDrawOptions draw_options(GetDarkModeFilter(), sampling,
+                                respect_orientation,
+                                Image::kClampImageToSourceRect,
+                                Image::kSyncDecode, auto_dark_mode.enabled);
+
   image->DrawPattern(*this, image_flags, dest_rect, tiling_info, draw_options);
   paint_controller_.SetImagePainted();
 }

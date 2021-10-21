@@ -85,6 +85,20 @@ struct ImageTilingInfo {
 };
 
 struct ImageDrawOptions {
+  ImageDrawOptions() {}
+  explicit ImageDrawOptions(DarkModeFilter* dark_mode_filter,
+                            SkSamplingOptions& sampling_options,
+                            RespectImageOrientationEnum respect_orientation,
+                            Image::ImageClampingMode clamping_mode,
+                            Image::ImageDecodingMode decode_mode,
+                            bool apply_dark_mode)
+      : dark_mode_filter(dark_mode_filter),
+        sampling_options(sampling_options),
+        respect_orientation(respect_orientation),
+        clamping_mode(clamping_mode),
+        decode_mode(decode_mode),
+        apply_dark_mode(apply_dark_mode) {}
+  DarkModeFilter* dark_mode_filter;
   SkSamplingOptions sampling_options;
   RespectImageOrientationEnum respect_orientation = kRespectImageOrientation;
   Image::ImageClampingMode clamping_mode = Image::kClampImageToSourceRect;
