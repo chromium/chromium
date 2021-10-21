@@ -6,16 +6,11 @@
 
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/request_type.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -36,30 +31,15 @@ const gfx::VectorIcon& GetPermissionIconId(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
 
-  switch (delegate->Requests()[0]->request_type()) {
-    case permissions::RequestType::kNotifications:
-      return vector_icons::kNotificationsOffIcon;
-    case permissions::RequestType::kGeolocation:
-      return vector_icons::kLocationOffIcon;
-    default:
-      NOTREACHED();
-      return gfx::kNoneIcon;
-  }
+  return delegate->Requests()[0]->GetBlockedIconForChip();
 }
 
 std::u16string GetPermissionMessage(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
+  DCHECK(delegate->Requests()[0]->GetQuietChipText().has_value());
 
-  switch (delegate->Requests()[0]->request_type()) {
-    case permissions::RequestType::kNotifications:
-      return l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
-    case permissions::RequestType::kGeolocation:
-      return l10n_util::GetStringUTF16(IDS_GEOLOCATION_OFF_EXPLANATORY_TEXT);
-    default:
-      NOTREACHED();
-      return std::u16string();
-  }
+  return delegate->Requests()[0]->GetQuietChipText().value();
 }
 
 }  // namespace

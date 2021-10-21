@@ -259,6 +259,13 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_IDLE_DETECTION_PERMISSION_CHIP" desc="Button text representing a request for using using idle detection from a website. When clicked, shows a permission prompt bubble with more information.">
       Know your device use?
     </message>
+
+    <message name="IDS_GEOLOCATION_PERMISSION_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for the user's physical location from a website. When clicked, shows a permission prompt bubble with more information.">
+      Location blocked
+    </message>
+    <message name="IDS_NOTIFICATION_PERMISSIONS_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for showing notifications from a website. When clicked, shows a permission prompt bubble with more information.">
+      Notifications blocked
+    </message>
   </if>
 
   <!-- Quota messages -->

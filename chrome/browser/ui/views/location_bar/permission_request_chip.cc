@@ -6,14 +6,11 @@
 
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -40,13 +37,13 @@ const gfx::VectorIcon& GetPermissionIconId(
   DCHECK(delegate);
   auto requests = delegate->Requests();
   if (requests.size() == 1)
-    return permissions::GetIconId(requests[0]->request_type());
+    return requests[0]->GetIconForChip();
 
   // When we have two requests, it must be microphone & camera. Then we need to
   // use the icon from the camera request.
   return IsCameraPermission(requests[0]->request_type())
-             ? permissions::GetIconId(requests[0]->request_type())
-             : permissions::GetIconId(requests[1]->request_type());
+             ? requests[0]->GetIconForChip()
+             : requests[1]->GetIconForChip();
 }
 
 std::u16string GetPermissionMessage(
@@ -56,7 +53,7 @@ std::u16string GetPermissionMessage(
   auto requests = delegate->Requests();
 
   return requests.size() == 1
-             ? requests[0]->GetChipText().value()
+             ? requests[0]->GetRequestChipText().value()
              : l10n_util::GetStringUTF16(
                    IDS_MEDIA_CAPTURE_VIDEO_AND_AUDIO_PERMISSION_CHIP);
 }

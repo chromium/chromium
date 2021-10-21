@@ -300,7 +300,7 @@ bool PermissionPromptImpl::ShouldCurrentRequestUseChip() {
 
   std::vector<permissions::PermissionRequest*> requests = delegate_->Requests();
   return std::all_of(requests.begin(), requests.end(), [](auto* request) {
-    return request->GetChipText().has_value();
+    return request->GetRequestChipText().has_value();
   });
 }
 
