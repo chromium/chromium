@@ -35,7 +35,12 @@ class ProfilePickerLacrosSignInProvider
   // new profile and assigns the newly added account to the profile as the
   // (unconsented) primary account. When any step in the process fails (such as
   // the user cancels account addition), it returns a nullptr profile.
-  void ShowAddAccountDialog(SignedInCallback callback);
+  void ShowAddAccountDialogAndCreateSignedInProfile(SignedInCallback callback);
+
+  // Creates a new profile with an existing account. Returns a nullptr profile
+  // in case of failure.
+  void CreateSignedInProfileWithExistingAccount(const std::string& gaia_id,
+                                                SignedInCallback callback);
 
  private:
   // IdentityManager::Observer:

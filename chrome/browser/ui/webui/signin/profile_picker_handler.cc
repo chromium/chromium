@@ -704,6 +704,7 @@ void ProfilePickerHandler::OnProfileStatisticsReceived(
 
 void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
     const base::ListValue* args) {
+  AllowJavascript();
   CHECK_EQ(2U, args->GetList().size());
   absl::optional<SkColor> profile_color = args->GetList()[0].GetIfInt();
 
@@ -712,9 +713,17 @@ void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
     DCHECK(!lacros_sign_in_provider_);
     lacros_sign_in_provider_ =
         std::make_unique<ProfilePickerLacrosSignInProvider>();
-    lacros_sign_in_provider_->ShowAddAccountDialog(
+    ProfilePickerLacrosSignInProvider::SignedInCallback callback =
         base::BindOnce(&ProfilePickerHandler::OnLacrosSignedInProfileCreated,
-                       weak_factory_.GetWeakPtr(), profile_color));
+                       weak_factory_.GetWeakPtr(), profile_color);
+    const std::string& gaia_id = args->GetList()[1].GetString();
+    if (gaia_id.empty()) {
+      lacros_sign_in_provider_->ShowAddAccountDialogAndCreateSignedInProfile(
+          std::move(callback));
+    } else {
+      lacros_sign_in_provider_->CreateSignedInProfileWithExistingAccount(
+          gaia_id, std::move(callback));
+    }
     return;
   }
 #endif

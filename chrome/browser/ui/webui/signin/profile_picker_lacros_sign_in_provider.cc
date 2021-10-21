@@ -4,24 +4,26 @@
 
 #include "chrome/browser/ui/webui/signin/profile_picker_lacros_sign_in_provider.h"
 
+#include "base/check.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
-ProfilePickerLacrosSignInProvider::ProfilePickerLacrosSignInProvider() =
-    default;
+ProfilePickerLacrosSignInProvider::ProfilePickerLacrosSignInProvider() {
+  DCHECK(base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
+}
 
 ProfilePickerLacrosSignInProvider::~ProfilePickerLacrosSignInProvider() =
     default;
 
-void ProfilePickerLacrosSignInProvider::ShowAddAccountDialog(
-    SignedInCallback callback) {
-  DCHECK(base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
+void ProfilePickerLacrosSignInProvider::
+    ShowAddAccountDialogAndCreateSignedInProfile(SignedInCallback callback) {
   DCHECK(callback);
   DCHECK(!callback_);
   callback_ = std::move(callback);
@@ -31,6 +33,24 @@ void ProfilePickerLacrosSignInProvider::ShowAddAccountDialog(
       ->ShowAddAccountDialogAndCreateNewProfile(
           account_manager::AccountManagerFacade::AccountAdditionSource::
               kChromeProfileCreation,
+          base::BindOnce(
+              &ProfilePickerLacrosSignInProvider::OnLacrosProfileCreated,
+              weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProfilePickerLacrosSignInProvider::
+    CreateSignedInProfileWithExistingAccount(const std::string& gaia_id,
+                                             SignedInCallback callback) {
+  DCHECK(callback);
+  DCHECK(!callback_);
+  DCHECK(!gaia_id.empty());
+  callback_ = std::move(callback);
+
+  g_browser_process->profile_manager()
+      ->GetAccountProfileMapper()
+      ->CreateNewProfileWithAccount(
+          account_manager::AccountKey(gaia_id,
+                                      account_manager::AccountType::kGaia),
           base::BindOnce(
               &ProfilePickerLacrosSignInProvider::OnLacrosProfileCreated,
               weak_ptr_factory_.GetWeakPtr()));
