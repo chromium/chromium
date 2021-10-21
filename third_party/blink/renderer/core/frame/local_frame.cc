@@ -1804,7 +1804,7 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
           "The frame attempting navigation is targeting its top-level window, "
           "but is neither same-origin with its target nor has it received a "
           "user gesture. See "
-          "https://www.chromestatus.com/features/5851021045661696.");
+          "https://www.chromestatus.com/feature/5851021045661696.");
       initiating_frame.GetLocalFrameHostRemote().DidBlockNavigation(
           destination_url, initiating_frame.GetDocument()->Url(),
           mojom::NavigationBlockedReason::kRedirectWithNoUserGesture);
