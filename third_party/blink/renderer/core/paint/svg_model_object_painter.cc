@@ -43,6 +43,22 @@ void SVGModelObjectPainter::RecordHitTestData(const LayoutObject& svg_object,
       svg_object.InsideBlockingWheelEventHandler());
 }
 
+void SVGModelObjectPainter::RecordRegionCaptureData(
+    const LayoutObject& svg_object,
+    const PaintInfo& paint_info) {
+  DCHECK(svg_object.IsSVGChild());
+  const Element* element = DynamicTo<Element>(svg_object.GetNode());
+  if (element) {
+    const RegionCaptureCropId* crop_id = element->GetRegionCaptureCropId();
+    if (crop_id) {
+      paint_info.context.GetPaintController().RecordRegionCaptureData(
+          svg_object, *crop_id,
+          ToGfxRect(
+              EnclosingIntRect(svg_object.VisualRectInLocalSVGCoordinates())));
+    }
+  }
+}
+
 void SVGModelObjectPainter::PaintOutline(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground)
     return;

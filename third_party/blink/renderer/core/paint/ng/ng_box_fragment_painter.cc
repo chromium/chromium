@@ -1055,6 +1055,13 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
         PhysicalFragment().InsideBlockingWheelEventHandler());
   }
 
+  Element* element = DynamicTo<Element>(layout_object.GetNode());
+  if (element && element->GetRegionCaptureCropId()) {
+    paint_info.context.GetPaintController().RecordRegionCaptureData(
+        *background_client, *(element->GetRegionCaptureCropId()),
+        ToGfxRect(PixelSnappedIntRect(paint_rect)));
+  }
+
   bool needs_scroll_hit_test = true;
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     // Pre-CompositeAfterPaint, there is no need to emit scroll hit test
@@ -1480,15 +1487,22 @@ inline void NGBoxFragmentPainter::PaintLineBox(
   if (paint_info.phase != PaintPhase::kForeground)
     return;
 
+  PhysicalRect border_box = line_box_fragment.LocalRect();
+  border_box.offset += child_offset;
   absl::optional<ScopedDisplayItemFragment> display_item_fragment;
   if (ShouldRecordHitTestData(paint_info)) {
     display_item_fragment.emplace(paint_info.context, line_fragment_id);
-    PhysicalRect border_box = line_box_fragment.LocalRect();
-    border_box.offset += child_offset;
     paint_info.context.GetPaintController().RecordHitTestData(
         display_item_client, ToGfxRect(PixelSnappedIntRect(border_box)),
         PhysicalFragment().EffectiveAllowedTouchAction(),
         PhysicalFragment().InsideBlockingWheelEventHandler());
+  }
+
+  Element* element = DynamicTo<Element>(line_box_fragment.GetNode());
+  if (element && element->GetRegionCaptureCropId()) {
+    paint_info.context.GetPaintController().RecordRegionCaptureData(
+        display_item_client, *(element->GetRegionCaptureCropId()),
+        ToGfxRect(PixelSnappedIntRect(border_box)));
   }
 
   // Paint the background of the `::first-line` line box.

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/layer_selection_data.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ref_counted_property_tree_state.h"
+#include "third_party/blink/renderer/platform/graphics/paint/region_capture_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -34,7 +35,6 @@ struct PLATFORM_EXPORT PaintChunk {
   DISALLOW_NEW();
 
   using Id = DisplayItem::Id;
-
   PaintChunk(wtf_size_t begin,
              wtf_size_t end,
              const DisplayItemClient& client,
@@ -63,6 +63,7 @@ struct PLATFORM_EXPORT PaintChunk {
         id(other.id),
         properties(other.properties),
         hit_test_data(std::move(other.hit_test_data)),
+        region_capture_data(std::move(other.region_capture_data)),
         layer_selection_data(std::move(other.layer_selection_data)),
         bounds(other.bounds),
         drawable_bounds(other.drawable_bounds),
@@ -141,6 +142,7 @@ struct PLATFORM_EXPORT PaintChunk {
   RefCountedPropertyTreeState properties;
 
   std::unique_ptr<HitTestData> hit_test_data;
+  std::unique_ptr<RegionCaptureData> region_capture_data;
   std::unique_ptr<LayerSelectionData> layer_selection_data;
 
   // The following fields depend on the display items in this chunk.

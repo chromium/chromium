@@ -964,6 +964,34 @@ static void UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
   layer.SetNonFastScrollableRegion(std::move(non_fast_scrollable_region));
 }
 
+static void UpdateRegionCaptureData(cc::Layer& layer,
+                                    const PropertyTreeState& layer_state,
+                                    const PaintChunkSubset& chunks) {
+  const FloatPoint layer_offset(layer.offset_to_transform_parent());
+  cc::RegionCaptureBounds capture_bounds;
+  for (const PaintChunk& chunk : chunks) {
+    if (!chunk.region_capture_data)
+      continue;
+    const PropertyTreeState chunk_state =
+        chunk.properties.GetPropertyTreeState().Unalias();
+    for (const std::pair<RegionCaptureCropId, gfx::Rect>& pair :
+         *chunk.region_capture_data) {
+      auto rect = FloatClipRect(gfx::RectF(pair.second));
+      if (!GeometryMapper::LocalToAncestorVisualRect(chunk_state, layer_state,
+                                                     rect)) {
+        continue;
+      }
+      rect.MoveBy(-layer_offset);
+      capture_bounds.Set(pair.first.value(),
+                         ToGfxRect(EnclosingIntRect(rect.Rect())));
+    }
+    break;
+  }
+  // At this point, the bounds are in the coordinate space of
+  // the layer we are adding them to.
+  layer.SetCaptureBounds(std::move(capture_bounds));
+}
+
 static gfx::Point MapSelectionBoundPoint(const gfx::Point& point,
                                          const PropertyTreeState& layer_state,
                                          const PropertyTreeState& chunk_state,
@@ -1029,6 +1057,7 @@ void PaintChunksToCcLayer::UpdateLayerProperties(
   UpdateBackgroundColor(layer, layer_state.Effect(), chunks);
   UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
       layer, layer_state, chunks);
+  UpdateRegionCaptureData(layer, layer_state, chunks);
 }
 
 }  // namespace blink

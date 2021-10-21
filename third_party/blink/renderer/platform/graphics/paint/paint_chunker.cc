@@ -196,6 +196,21 @@ bool PaintChunker::AddHitTestDataToCurrentChunk(const PaintChunk::Id& id,
   return created_new_chunk;
 }
 
+bool PaintChunker::AddRegionCaptureDataToCurrentChunk(
+    const PaintChunk::Id& id,
+    const DisplayItemClient& client,
+    const RegionCaptureCropId& crop_id,
+    const gfx::Rect& rect) {
+  DCHECK(!crop_id->is_zero());
+  bool created_new_chunk = EnsureCurrentChunk(id, client);
+  auto& chunk = chunks_->back();
+  if (!chunk.region_capture_data) {
+    chunk.region_capture_data = std::make_unique<RegionCaptureData>();
+  }
+  chunk.region_capture_data->insert_or_assign(crop_id, std::move(rect));
+  return created_new_chunk;
+}
+
 void PaintChunker::AddSelectionToCurrentChunk(
     absl::optional<PaintedSelectionBound> start,
     absl::optional<PaintedSelectionBound> end) {

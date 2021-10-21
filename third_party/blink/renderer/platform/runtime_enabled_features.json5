@@ -1862,7 +1862,7 @@
     },
     {
       name: "RegionCapture",
-      status: {"Android": "", "default": "experimental"},
+      status: "experimental",
     },
     {
       name: "RemotePlayback",

@@ -12,6 +12,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
 #include "cc/input/layer_selection_bound.h"
+#include "cc/paint/element_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
+#include "third_party/blink/renderer/platform/graphics/paint/region_capture_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -150,6 +152,10 @@ class PLATFORM_EXPORT PaintController {
                          const gfx::Rect&,
                          TouchAction,
                          bool);
+
+  void RecordRegionCaptureData(const DisplayItemClient& client,
+                               const RegionCaptureCropId& crop_id,
+                               const gfx::Rect& rect);
 
   void RecordScrollHitTestData(
       const DisplayItemClient&,

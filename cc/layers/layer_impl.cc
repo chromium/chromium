@@ -352,6 +352,12 @@ const Region& LayerImpl::GetAllTouchActionRegions() const {
   return *all_touch_action_regions_;
 }
 
+void LayerImpl::SetCaptureBounds(RegionCaptureBounds bounds) {
+  if (capture_bounds_ == bounds)
+    return;
+  capture_bounds_ = std::move(bounds);
+}
+
 std::unique_ptr<LayerImpl> LayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) {
   return LayerImpl::Create(tree_impl, layer_id_);
@@ -383,6 +389,7 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
       all_touch_action_regions_
           ? std::make_unique<Region>(*all_touch_action_regions_)
           : nullptr;
+  layer->capture_bounds_ = capture_bounds_;
   layer->wheel_event_handler_region_ = wheel_event_handler_region_;
   layer->background_color_ = background_color_;
   layer->safe_opaque_background_color_ = safe_opaque_background_color_;

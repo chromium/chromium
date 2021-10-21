@@ -85,6 +85,13 @@ class PLATFORM_EXPORT PaintChunker final {
 
   // The id will be used when we need to create a new current chunk.
   // Otherwise it's ignored. Returns true if a new chunk is added.
+  bool AddRegionCaptureDataToCurrentChunk(const PaintChunk::Id& id,
+                                          const DisplayItemClient& client,
+                                          const RegionCaptureCropId& crop_id,
+                                          const gfx::Rect& bounds);
+
+  // The id will be used when we need to create a new current chunk.
+  // Otherwise it's ignored. Returns true if a new chunk is added.
   void AddSelectionToCurrentChunk(absl::optional<PaintedSelectionBound> start,
                                   absl::optional<PaintedSelectionBound> end);
 

@@ -80,6 +80,9 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool painting_background_in_contents_space =
       BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
                                                              layout_view_);
+
+  Element* element = DynamicTo<Element>(layout_view_.GetNode());
+  bool has_region_capture_data = element && element->GetRegionCaptureCropId();
   bool paints_scroll_hit_test =
       !painting_background_in_contents_space &&
       layout_view_.FirstFragment().PaintProperties()->Scroll();
@@ -100,7 +103,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   }
 
   if (!layout_view_.HasBoxDecorationBackground() && !has_hit_test_data &&
-      !paints_scroll_hit_test)
+      !paints_scroll_hit_test && !has_region_capture_data)
     return;
 
   // The background rect always includes at least the visible content size.
@@ -202,6 +205,13 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
         .RecordHitTestData(paint_info,
                            PhysicalRect(pixel_snapped_background_rect),
                            *background_client);
+  }
+
+  if (has_region_capture_data) {
+    BoxPainter(layout_view_)
+        .RecordRegionCaptureData(paint_info,
+                                 PhysicalRect(pixel_snapped_background_rect),
+                                 *background_client);
   }
 
   // Record the scroll hit test after the non-scrolling background so

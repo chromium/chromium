@@ -10,6 +10,21 @@
 
 namespace blink {
 
+namespace {
+
+template <typename T>
+bool PointerValueEquals(const std::unique_ptr<T>& a,
+                        const std::unique_ptr<T>& b) {
+  if (!a && !b) {
+    return true;
+  }
+  if (!a || !b) {
+    return false;
+  }
+  return *a == *b;
+}
+}  // namespace
+
 struct SameSizeAsPaintChunk {
   wtf_size_t begin_index;
   wtf_size_t end_index;
@@ -21,6 +36,7 @@ struct SameSizeAsPaintChunk {
   gfx::Rect drawable_bounds;
   gfx::Rect rect_known_to_be_opaque;
   void* hit_test_data;
+  void* region_capture_data;
   void* layer_selection;
   bool b[2];
 };
@@ -33,9 +49,8 @@ bool PaintChunk::EqualsForUnderInvalidationChecking(
          properties == other.properties && bounds == other.bounds &&
          drawable_bounds == other.drawable_bounds &&
          raster_effect_outset == other.raster_effect_outset &&
-         ((!hit_test_data && !other.hit_test_data) ||
-          (hit_test_data && other.hit_test_data &&
-           *hit_test_data == *other.hit_test_data)) &&
+         PointerValueEquals(hit_test_data, other.hit_test_data) &&
+         PointerValueEquals(region_capture_data, other.region_capture_data) &&
          effectively_invisible == other.effectively_invisible;
   // Derived fields like rect_known_to_be_opaque are not checked because they
   // are updated when we create the next chunk or release chunks. We ensure
@@ -49,6 +64,10 @@ size_t PaintChunk::MemoryUsageInBytes() const {
     total_size += sizeof(*hit_test_data);
     total_size += hit_test_data->touch_action_rects.CapacityInBytes();
     total_size += hit_test_data->wheel_event_rects.CapacityInBytes();
+  }
+  total_size += sizeof(region_capture_data);
+  if (region_capture_data) {
+    total_size += sizeof(*region_capture_data);
   }
   return total_size;
 }
@@ -64,6 +83,10 @@ static String ToStringImpl(const PaintChunk& c, const String& id_string) {
   if (c.hit_test_data) {
     sb.Append(", hit_test_data=");
     sb.Append(c.hit_test_data->ToString());
+  }
+  if (c.region_capture_data) {
+    sb.Append(", region_capture_data=");
+    sb.Append(ToString(*c.region_capture_data));
   }
   sb.Append(')');
   return sb.ToString();

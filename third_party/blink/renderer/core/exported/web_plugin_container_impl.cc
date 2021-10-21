@@ -182,6 +182,12 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
                                                    TouchAction::kAuto, true);
   }
 
+  if (element_->GetRegionCaptureCropId()) {
+    context.GetPaintController().RecordRegionCaptureData(
+        *GetLayoutEmbeddedContent(), *(element_->GetRegionCaptureCropId()),
+        ToGfxRect(visual_rect));
+  }
+
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() && layer_) {
     layer_->SetBounds(ToGfxSize(Size()));
     layer_->SetIsDrawable(true);

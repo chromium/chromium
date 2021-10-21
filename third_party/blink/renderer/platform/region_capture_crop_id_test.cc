@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/dom/region_capture_crop_id.h"
+#include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "base/guid.h"
 #include "base/token.h"
 

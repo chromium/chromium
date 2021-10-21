@@ -94,6 +94,20 @@ void PaintController::RecordHitTestData(const DisplayItemClient& client,
   }
 }
 
+void PaintController::RecordRegionCaptureData(
+    const DisplayItemClient& client,
+    const RegionCaptureCropId& crop_id,
+    const gfx::Rect& rect) {
+  DCHECK(!crop_id->is_zero());
+  PaintChunk::Id id(client.Id(), DisplayItem::kRegionCapture,
+                    current_fragment_);
+  CheckNewChunkId(id);
+  ValidateNewChunkClient(client);
+  if (paint_chunker_.AddRegionCaptureDataToCurrentChunk(id, client, crop_id,
+                                                        rect))
+    CheckNewChunk();
+}
+
 void PaintController::RecordScrollHitTestData(
     const DisplayItemClient& client,
     DisplayItem::Type type,

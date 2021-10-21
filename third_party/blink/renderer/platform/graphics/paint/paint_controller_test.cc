@@ -2012,8 +2012,62 @@ TEST_P(PaintControllerTest, AllowDuplicatedIdForUncacheableItem) {
   EXPECT_FALSE(uncacheable.IsCacheable());
 }
 
+TEST_P(PaintControllerTest, RecordRegionCaptureDataValidData) {
+  static const auto kCropId = RegionCaptureCropId(base::Token::CreateRandom());
+  static const gfx::Rect kBounds(1, 2, 640, 480);
+
+  GraphicsContext context(GetPaintController());
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client");
+  {
+    CommitCycleScope cycle_scope(GetPaintController());
+    InitRootChunk();
+    GetPaintController().RecordRegionCaptureData(client, kCropId, kBounds);
+
+    DrawRect(context, client, kBackgroundType, gfx::Rect(100, 100, 200, 200));
+  }
+
+  EXPECT_THAT(GetPaintController().GetDisplayItemList(),
+              ElementsAre(IsSameId(client.Id(), kBackgroundType)));
+  EXPECT_DEFAULT_ROOT_CHUNK(1);
+  const Vector<PaintChunk>& chunks = GetPaintController().PaintChunks();
+  EXPECT_EQ(1u, chunks.size());
+  EXPECT_EQ(kBounds, chunks[0].region_capture_data->find(kCropId)->second);
+}
+
 // Death tests don't work properly on Android.
 #if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+
+TEST_P(PaintControllerTest, RecordRegionCaptureDataEmptyToken) {
+  static const auto kCropId = RegionCaptureCropId(base::Token{});
+  static const gfx::Rect kBounds(1, 2, 640, 480);
+
+  GraphicsContext context(GetPaintController());
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client");
+  {
+    CommitCycleScope cycle_scope(GetPaintController());
+    InitRootChunk();
+
+#if DCHECK_IS_ON()
+    EXPECT_DEATH(
+        GetPaintController().RecordRegionCaptureData(client, kCropId, kBounds),
+        "Check failed: !crop_id->is_zero");
+  }
+#else
+    // If DCHECKs are not enabled, we should just record the data as-is.
+    GetPaintController().RecordRegionCaptureData(client, kCropId, kBounds);
+    DrawRect(context, client, kBackgroundType, gfx::Rect(100, 100, 200, 200));
+  }
+
+  EXPECT_THAT(GetPaintController().GetDisplayItemList(),
+              ElementsAre(IsSameId(client.Id(), kBackgroundType)));
+  EXPECT_DEFAULT_ROOT_CHUNK(1);
+  const Vector<PaintChunk>& chunks = GetPaintController().PaintChunks();
+  EXPECT_EQ(1u, chunks.size());
+  EXPECT_EQ(kBounds, chunks[0].region_capture_data->find(kCropId)->second);
+#endif
+}
 
 TEST_P(PaintControllerTest, DuplicatedSubsequences) {
   FakeDisplayItemClient& client =

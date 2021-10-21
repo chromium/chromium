@@ -156,6 +156,7 @@ void InlineFlowBoxPainter::PaintBackgroundBorderShadow(
     return;
 
   RecordHitTestData(paint_info, paint_offset);
+  RecordRegionCaptureData(paint_info, paint_offset);
 
   // You can use p::first-line to specify a background. If so, the root line
   // boxes for a line may actually have to paint a background.
@@ -284,6 +285,23 @@ void InlineFlowBoxPainter::RecordHitTestData(
       ToGfxRect(PixelSnappedIntRect(AdjustedFrameRect(paint_offset))),
       layout_object->EffectiveAllowedTouchAction(),
       layout_object->InsideBlockingWheelEventHandler());
+}
+
+void InlineFlowBoxPainter::RecordRegionCaptureData(
+    const PaintInfo& paint_info,
+    const PhysicalOffset& paint_offset) {
+  LayoutObject* layout_object =
+      LineLayoutAPIShim::LayoutObjectFrom(inline_flow_box_.GetLineLayoutItem());
+
+  const Element* element = DynamicTo<Element>(layout_object->GetNode());
+  if (element) {
+    const RegionCaptureCropId* crop_id = element->GetRegionCaptureCropId();
+    if (crop_id) {
+      paint_info.context.GetPaintController().RecordRegionCaptureData(
+          inline_flow_box_, *crop_id,
+          ToGfxRect(PixelSnappedIntRect(AdjustedFrameRect(paint_offset))));
+    }
+  }
 }
 
 void InlineFlowBoxPainter::PaintNormalBoxShadow(

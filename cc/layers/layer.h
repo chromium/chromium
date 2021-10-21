@@ -22,6 +22,7 @@
 #include "cc/input/input_handler.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/layers/layer_collections.h"
+#include "cc/layers/region_capture_bounds.h"
 #include "cc/layers/touch_action_region.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
@@ -140,7 +141,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // same source will be aborted.
   void RequestCopyOfOutput(std::unique_ptr<viz::CopyOutputRequest> request);
   // True if a copy request has been inserted on this layer and a commit has not
-  // occured yet.
+  // occurred yet.
   bool HasCopyRequest() const {
     return layer_tree_inputs() && !layer_tree_inputs()->copy_requests.empty();
   }
@@ -160,7 +161,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // If the layer says contents_opaque() is true, in layer tree mode, this
   // returns the value set by SetSafeOpaqueBackgroundColor() which should be an
   // opaque color, and in layer list mode, returns an opaque color calculated
-  // from background_color() and layer_tree_host()->background_clor().
+  // from background_color() and layer_tree_host()->background_color().
   // Otherwise, it returns something non-opaque. It prefers to return the
   // background_color(), but if the background_color() is opaque (and this layer
   // claims to not be), then SK_ColorTRANSPARENT is returned to avoid intrusive
@@ -445,6 +446,12 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   void SetTouchActionRegion(TouchActionRegion touch_action_region);
   const TouchActionRegion& touch_action_region() const {
     return inputs_.touch_action_region;
+  }
+
+  // Set or get the region that should be used for capture.
+  void SetCaptureBounds(RegionCaptureBounds bounds);
+  const RegionCaptureBounds& capture_bounds() const {
+    return inputs_.capture_bounds;
   }
 
   // Set or get the set of blocking wheel rects of this layer. The
@@ -864,6 +871,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
     Region non_fast_scrollable_region;
     TouchActionRegion touch_action_region;
+    RegionCaptureBounds capture_bounds;
     Region wheel_event_region;
 
     ElementId element_id;

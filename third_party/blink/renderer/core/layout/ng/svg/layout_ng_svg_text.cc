@@ -134,9 +134,10 @@ void LayoutNGSVGText::Paint(const PaintInfo& paint_info) const {
   }
   ScopedSVGTransformState transform_state(block_info, *this);
 
-  if (block_info.phase == PaintPhase::kForeground)
+  if (block_info.phase == PaintPhase::kForeground) {
     SVGModelObjectPainter::RecordHitTestData(*this, block_info);
-
+    SVGModelObjectPainter::RecordRegionCaptureData(*this, block_info);
+  }
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::Paint(block_info);
 
   // Svg doesn't follow HTML PaintPhases, but is implemented with HTML classes.

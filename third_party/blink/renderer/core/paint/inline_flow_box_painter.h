@@ -64,6 +64,11 @@ class InlineFlowBoxPainter : public InlineBoxPainterBase {
   // phase even if there is no other painted content.
   void RecordHitTestData(const PaintInfo&, const PhysicalOffset& paint_offset);
 
+  // Records the bounds of the current paint chunk for potential cropping later
+  // as part of tab capture.
+  void RecordRegionCaptureData(const PaintInfo& paint_info,
+                               const PhysicalOffset& paint_offset);
+
   const InlineFlowBox& inline_flow_box_;
 };
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 
+#include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
@@ -104,6 +105,7 @@ void BoxPainter::PaintBoxDecorationBackground(
   }
 
   RecordHitTestData(paint_info, paint_rect, *background_client);
+  RecordRegionCaptureData(paint_info, paint_rect, *background_client);
 
   bool needs_scroll_hit_test = true;
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
@@ -296,6 +298,21 @@ void BoxPainter::RecordHitTestData(const PaintInfo& paint_info,
       background_client, ToGfxRect(PixelSnappedIntRect(paint_rect)),
       layout_box_.EffectiveAllowedTouchAction(),
       layout_box_.InsideBlockingWheelEventHandler());
+}
+
+void BoxPainter::RecordRegionCaptureData(
+    const PaintInfo& paint_info,
+    const PhysicalRect& paint_rect,
+    const DisplayItemClient& background_client) {
+  const Element* element = DynamicTo<Element>(layout_box_.GetNode());
+  if (element) {
+    const RegionCaptureCropId* crop_id = element->GetRegionCaptureCropId();
+    if (crop_id) {
+      paint_info.context.GetPaintController().RecordRegionCaptureData(
+          background_client, *crop_id,
+          ToGfxRect(PixelSnappedIntRect(paint_rect)));
+    }
+  }
 }
 
 void BoxPainter::RecordScrollHitTestData(

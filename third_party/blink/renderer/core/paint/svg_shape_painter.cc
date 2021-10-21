@@ -61,6 +61,8 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
   {
     ScopedSVGPaintState paint_state(layout_svg_shape_, paint_info);
     SVGModelObjectPainter::RecordHitTestData(layout_svg_shape_, paint_info);
+    SVGModelObjectPainter::RecordRegionCaptureData(layout_svg_shape_,
+                                                   paint_info);
     if (!DrawingRecorder::UseCachedDrawingIfPossible(
             paint_info.context, layout_svg_shape_, paint_info.phase)) {
       SVGDrawingRecorder recorder(paint_info.context, layout_svg_shape_,

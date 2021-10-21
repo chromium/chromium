@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 
+#include "cc/layers/layer.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
@@ -208,6 +209,8 @@ class TestChunks {
                         PropertyTreeState(t, c, e));
     chunks.back().bounds = bounds;
   }
+
+  Vector<PaintChunk>* GetChunks() { return &paint_artifact_->PaintChunks(); }
 
   PaintChunkSubset Build() {
     return PaintChunkSubset(std::move(paint_artifact_));
@@ -1398,6 +1401,81 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
   // The effect bounds are the union of the chunk's drawable_bounds and the
   // output bounds of the filter with empty input in the filter's space.
   EXPECT_EFFECT_BOUNDS(7, 15, 93, 85, *output, 2);
+}
+
+TEST_P(PaintChunksToCcLayerTest,
+       UpdateLayerPropertiesRegionCaptureDataSetOnLayer) {
+  auto layer = cc::Layer::Create();
+
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0(), gfx::Rect(5, 10, 200, 300),
+                  gfx::Rect(10, 15, 20, 30));
+
+  const auto kCropId = RegionCaptureCropId(base::Token::CreateRandom());
+  const RegionCaptureData kMap{{kCropId, gfx::Rect{50, 60, 100, 200}}};
+  chunks.GetChunks()->back().region_capture_data =
+      std::make_unique<RegionCaptureData>(kMap);
+
+  PaintChunksToCcLayer::UpdateLayerProperties(*layer, PropertyTreeState::Root(),
+                                              chunks.Build());
+
+  const gfx::Rect actual_bounds =
+      layer->capture_bounds().bounds().find(kCropId.value())->second;
+  EXPECT_EQ((gfx::Rect{50, 60, 100, 200}), actual_bounds);
+}
+
+TEST_P(PaintChunksToCcLayerTest,
+       UpdateLayerPropertiesRegionCaptureDataUsesLayerOffset) {
+  auto layer = cc::Layer::Create();
+  layer->SetOffsetToTransformParent(gfx::Vector2dF{10, 15});
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0(), gfx::Rect(5, 10, 200, 300),
+                  gfx::Rect(10, 15, 20, 30));
+
+  const auto kCropId = RegionCaptureCropId(base::Token::CreateRandom());
+  const RegionCaptureData kMap{{kCropId, gfx::Rect{50, 60, 100, 200}}};
+  chunks.GetChunks()->back().region_capture_data =
+      std::make_unique<RegionCaptureData>(kMap);
+
+  PaintChunksToCcLayer::UpdateLayerProperties(*layer, PropertyTreeState::Root(),
+                                              chunks.Build());
+
+  const gfx::Rect actual_bounds =
+      layer->capture_bounds().bounds().find(kCropId.value())->second;
+  EXPECT_EQ((gfx::Rect{40, 45, 100, 200}), actual_bounds);
+}
+
+TEST_P(PaintChunksToCcLayerTest, UpdateLayerPropertiesRegionCaptureDataEmpty) {
+  auto layer = cc::Layer::Create();
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0(), gfx::Rect(5, 10, 200, 300),
+                  gfx::Rect(10, 15, 20, 30));
+  PaintChunksToCcLayer::UpdateLayerProperties(*layer, PropertyTreeState::Root(),
+                                              chunks.Build());
+
+  // The layer should have bounds still, but they should be empty.
+  EXPECT_TRUE(layer->capture_bounds().bounds().empty());
+}
+
+TEST_P(PaintChunksToCcLayerTest,
+       UpdateLayerPropertiesRegionCaptureDataEmptyBounds) {
+  auto layer = cc::Layer::Create();
+
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0(), gfx::Rect(5, 10, 200, 300),
+                  gfx::Rect(10, 15, 20, 30));
+
+  const auto kCropId = RegionCaptureCropId(base::Token::CreateRandom());
+  const RegionCaptureData kMap{{kCropId, gfx::Rect{}}};
+  chunks.GetChunks()->back().region_capture_data =
+      std::make_unique<RegionCaptureData>(kMap);
+
+  PaintChunksToCcLayer::UpdateLayerProperties(*layer, PropertyTreeState::Root(),
+                                              chunks.Build());
+
+  const gfx::Rect actual_bounds =
+      layer->capture_bounds().bounds().find(kCropId.value())->second;
+  EXPECT_TRUE(actual_bounds.IsEmpty());
 }
 
 }  // namespace

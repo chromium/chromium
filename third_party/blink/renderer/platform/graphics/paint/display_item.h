@@ -133,6 +133,9 @@ class PLATFORM_EXPORT DisplayItem {
     // and is sized properly even if no content would otherwise be painted.
     kHitTest,
 
+    // Used for paint chunks that contain region capture data.
+    kRegionCapture,
+
     // Used both for specifying the paint-order scroll location, and for non-
     // composited scroll hit testing (see: hit_test_data.h).
     kScrollHitTest,

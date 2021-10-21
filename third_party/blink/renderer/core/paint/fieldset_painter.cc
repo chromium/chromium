@@ -97,6 +97,8 @@ void FieldsetPainter::PaintBoxDecorationBackground(
 
   BoxPainter(layout_fieldset_)
       .RecordHitTestData(paint_info, paint_rect, layout_fieldset_);
+  BoxPainter(layout_fieldset_)
+      .RecordRegionCaptureData(paint_info, paint_rect, layout_fieldset_);
 }
 
 void FieldsetPainter::PaintMask(const PaintInfo& paint_info,

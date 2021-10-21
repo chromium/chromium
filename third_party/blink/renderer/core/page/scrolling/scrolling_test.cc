@@ -76,9 +76,16 @@
 
 namespace blink {
 
+namespace {
+
+constexpr char kHttpBaseUrl[] = "http://www.test.com/";
+constexpr char kHttpsBaseUrl[] = "https://www.test.com/";
+
+}  // namespace
+
 class ScrollingTest : public testing::Test, public PaintTestConfigurations {
  public:
-  ScrollingTest() : base_url_("http://www.test.com/") {
+  ScrollingTest() {
     helper_.Initialize(nullptr, nullptr, &ConfigureSettings);
     GetWebView()->MainFrameViewWidget()->Resize(gfx::Size(320, 240));
     GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
@@ -89,8 +96,14 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
-  void NavigateTo(const std::string& url) {
-    frame_test_helpers::LoadFrame(GetWebView()->MainFrameImpl(), url);
+  void NavigateToHttp(const std::string& url_fragment) {
+    frame_test_helpers::LoadFrame(GetWebView()->MainFrameImpl(),
+                                  kHttpBaseUrl + url_fragment);
+  }
+
+  void NavigateToHttps(const std::string& url_fragment) {
+    frame_test_helpers::LoadFrame(GetWebView()->MainFrameImpl(),
+                                  kHttpsBaseUrl + url_fragment);
   }
 
   void LoadHTML(const std::string& html) {
@@ -107,8 +120,28 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
     // TODO(crbug.com/751425): We should use the mock functionality
     // via |helper_|.
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url_), test::CoreTestDataPath(),
+        WebString::FromUTF8(kHttpBaseUrl), test::CoreTestDataPath(),
         WebString::FromUTF8(file_name));
+  }
+
+  void RegisterMockedHttpsURLLoad(const std::string& file_name) {
+    // TODO(crbug.com/751425): We should use the mock functionality
+    // via |helper_|.
+    url_test_helpers::RegisterMockedURLLoadFromBase(
+        WebString::FromUTF8(kHttpsBaseUrl), test::CoreTestDataPath(),
+        WebString::FromUTF8(file_name));
+  }
+
+  void SetupHttpTestURL(const std::string& url_fragment) {
+    RegisterMockedHttpURLLoad(url_fragment);
+    NavigateToHttp(url_fragment);
+    ForceFullCompositingUpdate();
+  }
+
+  void SetupHttpsTestURL(const std::string& url_fragment) {
+    RegisterMockedHttpsURLLoad(url_fragment);
+    NavigateToHttps(url_fragment);
+    ForceFullCompositingUpdate();
   }
 
   WebViewImpl* GetWebView() const { return helper_.GetWebView(); }
@@ -190,12 +223,13 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
         RootCcLayer(), scrollable_area->GetScrollElementId());
   }
 
- protected:
-  std::string base_url_;
-
  private:
   static void ConfigureSettings(WebSettings* settings) {
     settings->SetPreferCompositingToLCDTextEnabled(true);
+  }
+
+  void NavigateTo(const std::string& url) {
+    frame_test_helpers::LoadFrame(GetWebView()->MainFrameImpl(), url);
   }
 
   frame_test_helpers::WebViewHelper helper_;
@@ -235,9 +269,7 @@ TEST_P(ScrollingTest, fastScrollingByDefault) {
 TEST_P(ScrollingTest, fastFractionalScrollingDiv) {
   ScopedFractionalScrollOffsetsForTest fractional_scroll_offsets(true);
 
-  RegisterMockedHttpURLLoad("fractional-scroll-div.html");
-  NavigateTo(base_url_ + "fractional-scroll-div.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("fractional-scroll-div.html");
 
   Document* document = GetFrame()->GetDocument();
   Element* scrollable_element = document->getElementById("scroller");
@@ -260,9 +292,7 @@ TEST_P(ScrollingTest, fastFractionalScrollingDiv) {
 }
 
 TEST_P(ScrollingTest, fastScrollingForFixedPosition) {
-  RegisterMockedHttpURLLoad("fixed-position.html");
-  NavigateTo(base_url_ + "fixed-position.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("fixed-position.html");
 
   const auto* scroll_node =
       ScrollNodeForScrollableArea(GetFrame()->View()->LayoutViewport());
@@ -279,9 +309,7 @@ static cc::StickyPositionConstraint GetStickyConstraint(Element* element) {
 }
 
 TEST_P(ScrollingTest, fastScrollingForStickyPosition) {
-  RegisterMockedHttpURLLoad("sticky-position.html");
-  NavigateTo(base_url_ + "sticky-position.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("sticky-position.html");
 
   // Sticky position should not fall back to main thread scrolling.
   const auto* scroll_node =
@@ -368,9 +396,7 @@ TEST_P(ScrollingTest, elementPointerEventHandler) {
 }
 
 TEST_P(ScrollingTest, touchEventHandler) {
-  RegisterMockedHttpURLLoad("touch-event-handler.html");
-  NavigateTo(base_url_ + "touch-event-handler.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("touch-event-handler.html");
 
   ASSERT_EQ(cc::EventListenerProperties::kBlocking,
             LayerTreeHost()->event_listener_properties(
@@ -394,9 +420,7 @@ TEST_P(ScrollingTest, elementBlockingTouchEventHandler) {
 }
 
 TEST_P(ScrollingTest, touchEventHandlerPassive) {
-  RegisterMockedHttpURLLoad("touch-event-handler-passive.html");
-  NavigateTo(base_url_ + "touch-event-handler-passive.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("touch-event-handler-passive.html");
 
   ASSERT_EQ(cc::EventListenerProperties::kPassive,
             LayerTreeHost()->event_listener_properties(
@@ -434,9 +458,7 @@ TEST_P(ScrollingTest, TouchActionRectsOnImage) {
 }
 
 TEST_P(ScrollingTest, touchEventHandlerBoth) {
-  RegisterMockedHttpURLLoad("touch-event-handler-both.html");
-  NavigateTo(base_url_ + "touch-event-handler-both.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("touch-event-handler-both.html");
 
   ASSERT_EQ(cc::EventListenerProperties::kBlockingAndPassive,
             LayerTreeHost()->event_listener_properties(
@@ -444,9 +466,7 @@ TEST_P(ScrollingTest, touchEventHandlerBoth) {
 }
 
 TEST_P(ScrollingTest, wheelEventHandler) {
-  RegisterMockedHttpURLLoad("wheel-event-handler.html");
-  NavigateTo(base_url_ + "wheel-event-handler.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("wheel-event-handler.html");
 
   ASSERT_EQ(cc::EventListenerProperties::kBlocking,
             LayerTreeHost()->event_listener_properties(
@@ -454,9 +474,7 @@ TEST_P(ScrollingTest, wheelEventHandler) {
 }
 
 TEST_P(ScrollingTest, wheelEventHandlerPassive) {
-  RegisterMockedHttpURLLoad("wheel-event-handler-passive.html");
-  NavigateTo(base_url_ + "wheel-event-handler-passive.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("wheel-event-handler-passive.html");
 
   ASSERT_EQ(cc::EventListenerProperties::kPassive,
             LayerTreeHost()->event_listener_properties(
@@ -464,9 +482,7 @@ TEST_P(ScrollingTest, wheelEventHandlerPassive) {
 }
 
 TEST_P(ScrollingTest, wheelEventHandlerBoth) {
-  RegisterMockedHttpURLLoad("wheel-event-handler-both.html");
-  NavigateTo(base_url_ + "wheel-event-handler-both.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("wheel-event-handler-both.html");
 
   ASSERT_EQ(cc::EventListenerProperties::kBlockingAndPassive,
             LayerTreeHost()->event_listener_properties(
@@ -474,17 +490,13 @@ TEST_P(ScrollingTest, wheelEventHandlerBoth) {
 }
 
 TEST_P(ScrollingTest, scrollEventHandler) {
-  RegisterMockedHttpURLLoad("scroll-event-handler.html");
-  NavigateTo(base_url_ + "scroll-event-handler.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("scroll-event-handler.html");
 
   ASSERT_TRUE(GetMainFrameWidget()->HaveScrollEventHandlers());
 }
 
 TEST_P(ScrollingTest, updateEventHandlersDuringTeardown) {
-  RegisterMockedHttpURLLoad("scroll-event-handler-window.html");
-  NavigateTo(base_url_ + "scroll-event-handler-window.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("scroll-event-handler-window.html");
 
   // Simulate detaching the document from its DOM window. This should not
   // cause a crash when the WebViewImpl is closed by the test runner.
@@ -492,18 +504,14 @@ TEST_P(ScrollingTest, updateEventHandlersDuringTeardown) {
 }
 
 TEST_P(ScrollingTest, clippedBodyTest) {
-  RegisterMockedHttpURLLoad("clipped-body.html");
-  NavigateTo(base_url_ + "clipped-body.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("clipped-body.html");
 
   const auto* root_scroll_layer = MainFrameScrollingContentsLayer();
   EXPECT_TRUE(root_scroll_layer->non_fast_scrollable_region().IsEmpty());
 }
 
 TEST_P(ScrollingTest, touchAction) {
-  RegisterMockedHttpURLLoad("touch-action.html");
-  NavigateTo(base_url_ + "touch-action.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("touch-action.html");
 
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
@@ -514,9 +522,7 @@ TEST_P(ScrollingTest, touchAction) {
 }
 
 TEST_P(ScrollingTest, touchActionRegions) {
-  RegisterMockedHttpURLLoad("touch-action-regions.html");
-  NavigateTo(base_url_ + "touch-action-regions.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("touch-action-regions.html");
 
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
 
@@ -732,7 +738,7 @@ TEST_P(ScrollingTest, touchActionExcludesBoxShadow) {
 
 TEST_P(ScrollingTest, touchActionOnInline) {
   RegisterMockedHttpURLLoad("touch-action-on-inline.html");
-  NavigateTo(base_url_ + "touch-action-on-inline.html");
+  NavigateToHttp("touch-action-on-inline.html");
   LoadAhem();
   ForceFullCompositingUpdate();
 
@@ -745,7 +751,7 @@ TEST_P(ScrollingTest, touchActionOnInline) {
 
 TEST_P(ScrollingTest, touchActionOnText) {
   RegisterMockedHttpURLLoad("touch-action-on-text.html");
-  NavigateTo(base_url_ + "touch-action-on-text.html");
+  NavigateToHttp("touch-action-on-text.html");
   LoadAhem();
   ForceFullCompositingUpdate();
 
@@ -758,7 +764,7 @@ TEST_P(ScrollingTest, touchActionOnText) {
 
 TEST_P(ScrollingTest, touchActionWithVerticalRLWritingMode) {
   RegisterMockedHttpURLLoad("touch-action-with-vertical-rl-writing-mode.html");
-  NavigateTo(base_url_ + "touch-action-with-vertical-rl-writing-mode.html");
+  NavigateToHttp("touch-action-with-vertical-rl-writing-mode.html");
   LoadAhem();
   ForceFullCompositingUpdate();
 
@@ -770,9 +776,7 @@ TEST_P(ScrollingTest, touchActionWithVerticalRLWritingMode) {
 }
 
 TEST_P(ScrollingTest, touchActionBlockingHandler) {
-  RegisterMockedHttpURLLoad("touch-action-blocking-handler.html");
-  NavigateTo(base_url_ + "touch-action-blocking-handler.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("touch-action-blocking-handler.html");
 
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
 
@@ -1378,10 +1382,33 @@ TEST_P(ScrollingTest, NonFastScrollableRegionWithBorder) {
             gfx::Rect(0, 0, 120, 120));
 }
 
+TEST_P(ScrollingTest, ProduceCropIdRegionCaptureData) {
+  ScopedRegionCaptureForTest(true);
+  SetupHttpsTestURL("produce-crop-id.html");
+
+  const cc::Layer* container_layer =
+      RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
+          ? MainFrameScrollingContentsLayer()
+          : LayerByDOMElementId("scrollable");
+  const auto* contents_layer =
+      ScrollingContentsLayerByDOMElementId("scrollable");
+
+  const base::flat_map<cc::RegionCaptureCropId, gfx::Rect>& container_bounds =
+      container_layer->capture_bounds().bounds();
+  const base::flat_map<cc::RegionCaptureCropId, gfx::Rect>& contents_bounds =
+      contents_layer->capture_bounds().bounds();
+
+  EXPECT_EQ(1u, container_bounds.size());
+  EXPECT_FALSE(container_bounds.begin()->first.is_zero());
+  EXPECT_EQ((gfx::Size{200, 200}), container_bounds.begin()->second.size());
+
+  EXPECT_EQ(1u, contents_bounds.size());
+  EXPECT_FALSE(contents_bounds.begin()->first.is_zero());
+  EXPECT_EQ((gfx::Rect{0, 0, 1000, 1000}), contents_bounds.begin()->second);
+}
+
 TEST_P(ScrollingTest, overflowScrolling) {
-  RegisterMockedHttpURLLoad("overflow-scrolling.html");
-  NavigateTo(base_url_ + "overflow-scrolling.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("overflow-scrolling.html");
 
   // Verify the scroll node of the accelerated scrolling element.
   const auto* scroll_node = ScrollNodeByDOMElementId("scrollable");
@@ -1396,9 +1423,7 @@ TEST_P(ScrollingTest, overflowScrolling) {
 }
 
 TEST_P(ScrollingTest, overflowHidden) {
-  RegisterMockedHttpURLLoad("overflow-hidden.html");
-  NavigateTo(base_url_ + "overflow-hidden.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("overflow-hidden.html");
 
   // Verify the scroll node of the accelerated scrolling element.
   const auto* scroll_node = ScrollNodeByDOMElementId("unscrollable-y");
@@ -1415,7 +1440,7 @@ TEST_P(ScrollingTest, overflowHidden) {
 TEST_P(ScrollingTest, iframeScrolling) {
   RegisterMockedHttpURLLoad("iframe-scrolling.html");
   RegisterMockedHttpURLLoad("iframe-scrolling-inner.html");
-  NavigateTo(base_url_ + "iframe-scrolling.html");
+  NavigateToHttp("iframe-scrolling.html");
   ForceFullCompositingUpdate();
 
   Element* scrollable_frame =
@@ -1446,7 +1471,7 @@ TEST_P(ScrollingTest, iframeScrolling) {
 TEST_P(ScrollingTest, rtlIframe) {
   RegisterMockedHttpURLLoad("rtl-iframe.html");
   RegisterMockedHttpURLLoad("rtl-iframe-inner.html");
-  NavigateTo(base_url_ + "rtl-iframe.html");
+  NavigateToHttp("rtl-iframe.html");
   ForceFullCompositingUpdate();
 
   Element* scrollable_frame =
@@ -1478,9 +1503,7 @@ TEST_P(ScrollingTest, rtlIframe) {
 }
 
 TEST_P(ScrollingTest, setupScrollbarLayerShouldNotCrash) {
-  RegisterMockedHttpURLLoad("setup_scrollbar_layer_crash.html");
-  NavigateTo(base_url_ + "setup_scrollbar_layer_crash.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("setup_scrollbar_layer_crash.html");
   // This test document setup an iframe with scrollbars, then switch to
   // an empty document by javascript.
 }
@@ -1493,9 +1516,7 @@ TEST_P(ScrollingTest, setupScrollbarLayerShouldSetScrollLayerOpaque)
 {
   ScopedMockOverlayScrollbars mock_overlay_scrollbar(false);
 
-  RegisterMockedHttpURLLoad("wide_document.html");
-  NavigateTo(base_url_ + "wide_document.html");
-  ForceFullCompositingUpdate();
+  SetupHttpTestURL("wide_document.html");
 
   LocalFrameView* frame_view = GetFrame()->View();
   ASSERT_TRUE(frame_view);

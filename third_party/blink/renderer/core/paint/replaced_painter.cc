@@ -104,11 +104,16 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
   if (ShouldPaintBoxDecorationBackground(local_paint_info)) {
     bool should_paint_background = false;
     if (layout_replaced_.StyleRef().Visibility() == EVisibility::kVisible) {
-      if (layout_replaced_.HasBoxDecorationBackground())
+      if (layout_replaced_.HasBoxDecorationBackground()) {
         should_paint_background = true;
-      if (layout_replaced_.HasEffectiveAllowedTouchAction() ||
-          layout_replaced_.InsideBlockingWheelEventHandler()) {
+      } else if (layout_replaced_.HasEffectiveAllowedTouchAction() ||
+                 layout_replaced_.InsideBlockingWheelEventHandler()) {
         should_paint_background = true;
+      } else {
+        Element* element = DynamicTo<Element>(layout_replaced_.GetNode());
+        if (element && element->GetRegionCaptureCropId()) {
+          should_paint_background = true;
+        }
       }
     }
     if (should_paint_background) {
@@ -117,6 +122,9 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
         // the background but still need to paint the hit test rects.
         BoxPainter(layout_replaced_)
             .RecordHitTestData(local_paint_info, border_rect, layout_replaced_);
+        BoxPainter(layout_replaced_)
+            .RecordRegionCaptureData(local_paint_info, border_rect,
+                                     layout_replaced_);
         return;
       }
 

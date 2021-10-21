@@ -53,6 +53,7 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer> {
     SkColor background_color;
     Region non_fast_scrollable_region;
     TouchActionRegion touch_action_region;
+    RegionCaptureBounds capture_bounds;
     Region wheel_event_region;
     ElementId element_id;
   } inputs;
@@ -1108,6 +1109,17 @@ void Layer::SetTouchActionRegion(TouchActionRegion touch_action_region) {
   SetNeedsCommit();
 }
 
+void Layer::SetCaptureBounds(RegionCaptureBounds bounds) {
+  DCHECK(IsPropertyChangeAllowed());
+  if (inputs_.capture_bounds == bounds) {
+    return;
+  }
+
+  inputs_.capture_bounds = std::move(bounds);
+  SetPropertyTreesNeedRebuild();
+  SetNeedsCommit();
+}
+
 void Layer::SetWheelEventRegion(Region wheel_event_region) {
   DCHECK(IsPropertyChangeAllowed());
   if (inputs_.wheel_event_region == wheel_event_region)
@@ -1354,6 +1366,7 @@ void Layer::PushPropertiesTo(LayerImpl* layer) {
   layer->set_may_contain_video(may_contain_video_);
   layer->SetNonFastScrollableRegion(inputs_.non_fast_scrollable_region);
   layer->SetTouchActionRegion(inputs_.touch_action_region);
+  layer->SetCaptureBounds(inputs_.capture_bounds);
   layer->SetWheelEventHandlerRegion(inputs_.wheel_event_region);
   layer->SetContentsOpaque(inputs_.contents_opaque);
   layer->SetContentsOpaqueForText(inputs_.contents_opaque_for_text);
