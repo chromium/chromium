@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-import "chrome/browser/policy/messaging_layer/proto/synced/session_affiliated_user.proto";
+import "session_affiliated_user.proto";
 
 package ash.reporting;
 

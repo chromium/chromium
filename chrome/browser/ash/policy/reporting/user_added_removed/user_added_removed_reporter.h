@@ -7,9 +7,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/policy/reporting/user_added_removed/user_added_removed_record.pb.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
+#include "chrome/browser/policy/messaging_layer/proto/synced/user_added_removed_record.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/proto/record_constants.pb.h"
