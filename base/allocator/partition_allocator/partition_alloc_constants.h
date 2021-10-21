@@ -9,6 +9,7 @@
 #include <cstddef>
 
 #include <algorithm>
+#include <limits>
 
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
