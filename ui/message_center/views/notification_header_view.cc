@@ -407,17 +407,13 @@ void NotificationHeaderView::UpdateSummaryTextVisibility() {
 }
 
 void NotificationHeaderView::UpdateColors() {
-  SkColor color;
-  if (is_in_ash_notification_) {
-    DCHECK(color_.has_value());
-    color = color_.value();
-  } else if (!GetWidget()) {
+  if (!GetWidget()) {
     // Return early here since GetColorProvider() depends on the widget.
     return;
-  } else {
-    color = color_.value_or(
-        GetColorProvider()->GetColor(ui::kColorNotificationHeaderForeground));
   }
+
+  SkColor color = color_.value_or(
+      GetColorProvider()->GetColor(ui::kColorNotificationHeaderForeground));
 
   app_name_view_->SetEnabledColor(color);
   summary_text_view_->SetEnabledColor(color);
