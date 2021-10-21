@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chrome_color_mixers.h"
+#include "chrome/browser/ui/color/chrome_color_mixers.h"
 
-#include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/ui/color/chrome_color_mixer.h"
 #include "chrome/browser/ui/color/omnibox_color_mixer.h"
 

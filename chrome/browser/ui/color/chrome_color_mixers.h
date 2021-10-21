@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROME_COLOR_MIXERS_H_
-#define CHROME_BROWSER_CHROME_COLOR_MIXERS_H_
+#ifndef CHROME_BROWSER_UI_COLOR_CHROME_COLOR_MIXERS_H_
+#define CHROME_BROWSER_UI_COLOR_CHROME_COLOR_MIXERS_H_
 
 #include "ui/color/color_provider_manager.h"
 
@@ -15,4 +15,4 @@ class ColorProvider;
 void AddChromeColorMixers(ui::ColorProvider* provider,
                           const ui::ColorProviderManager::Key& key);
 
-#endif  // CHROME_BROWSER_CHROME_COLOR_MIXERS_H_
+#endif  // CHROME_BROWSER_UI_COLOR_CHROME_COLOR_MIXERS_H_

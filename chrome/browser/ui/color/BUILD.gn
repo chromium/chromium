@@ -14,6 +14,8 @@ source_set("mixers") {
   sources = [
     "chrome_color_mixer.cc",
     "chrome_color_mixer.h",
+    "chrome_color_mixers.cc",
+    "chrome_color_mixers.h",
     "omnibox_color_mixer.cc",
     "omnibox_color_mixer.h",
   ]

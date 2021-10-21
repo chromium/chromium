@@ -12,8 +12,8 @@
 
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_color_mixers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "ui/color/color_mixers.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
