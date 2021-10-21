@@ -55,6 +55,31 @@ namespace content {
     ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(safearray));           \
   }
 
+#define EXPECT_UIA_SAFEARRAY_EQ(safearray, expected_property_values)   \
+  {                                                                    \
+    using T = typename decltype(expected_property_values)::value_type; \
+    EXPECT_EQ(sizeof(T), ::SafeArrayGetElemsize(safearray));           \
+    EXPECT_EQ(1u, SafeArrayGetDim(safearray));                         \
+    LONG array_lower_bound;                                            \
+    EXPECT_HRESULT_SUCCEEDED(                                          \
+        SafeArrayGetLBound(safearray, 1, &array_lower_bound));         \
+    LONG array_upper_bound;                                            \
+    EXPECT_HRESULT_SUCCEEDED(                                          \
+        SafeArrayGetUBound(safearray, 1, &array_upper_bound));         \
+    const size_t count = array_upper_bound - array_lower_bound + 1;    \
+    EXPECT_EQ(expected_property_values.size(), count);                 \
+    if (sizeof(T) == ::SafeArrayGetElemsize(safearray) &&              \
+        count == expected_property_values.size()) {                    \
+      T* array_data;                                                   \
+      EXPECT_HRESULT_SUCCEEDED(::SafeArrayAccessData(                  \
+          safearray, reinterpret_cast<void**>(&array_data)));          \
+      for (size_t i = 0; i < count; ++i) {                             \
+        EXPECT_EQ(array_data[i], expected_property_values[i]);         \
+      }                                                                \
+      EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(safearray));    \
+    }                                                                  \
+  }
+
 #define EXPECT_UIA_TEXTRANGE_EQ(provider, expected_content) \
   {                                                         \
     base::win::ScopedBstr provider_content;                 \
@@ -398,6 +423,162 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
     EXPECT_EQ(0u, index);
   }
 };
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetChildren) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <div>
+            <span>Text1</span>
+            <span>Text2</span>
+            <span>Text3</span>
+          </div>
+          <p>Before link</p>
+          <a href="#">
+            Link text 1
+            <span>Link text 2</span>
+            <span>Link text 3</span>
+            Link text 4
+          </a>
+          <p>After link</p>
+          <p>Before img</p>
+          <img alt="Image description">
+          <p>After img</p>
+        </body>
+      </html>
+  )HTML");
+
+  BrowserAccessibility* text1_node =
+      FindNode(ax::mojom::Role::kStaticText, "Text1");
+  ASSERT_NE(nullptr, text1_node);
+  ComPtr<IRawElementProviderSimple> text1_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(text1_node);
+
+  BrowserAccessibility* before_link_text_node =
+      FindNode(ax::mojom::Role::kStaticText, "Before link");
+  ASSERT_NE(nullptr, before_link_text_node);
+  ComPtr<IRawElementProviderSimple> before_link_text_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(before_link_text_node);
+
+  BrowserAccessibility* link_node = FindNode(
+      ax::mojom::Role::kLink, "Link text 1 Link text 2Link text 3 Link text 4");
+  ASSERT_NE(nullptr, link_node);
+  ComPtr<IRawElementProviderSimple> link_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(link_node);
+
+  BrowserAccessibility* link_text2_node =
+      FindNode(ax::mojom::Role::kStaticText, "Link text 2");
+  ASSERT_NE(nullptr, link_text2_node);
+  ComPtr<IRawElementProviderSimple> link_text2_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(link_text2_node);
+
+  BrowserAccessibility* link_text3_node =
+      FindNode(ax::mojom::Role::kStaticText, "Link text 3");
+  ASSERT_NE(nullptr, link_text3_node);
+  ComPtr<IRawElementProviderSimple> link_text3_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(link_text3_node);
+
+  BrowserAccessibility* after_link_text_node =
+      FindNode(ax::mojom::Role::kStaticText, "After link");
+  ASSERT_NE(nullptr, after_link_text_node);
+  ComPtr<IRawElementProviderSimple> after_link_text_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(after_link_text_node);
+
+  BrowserAccessibility* image_node =
+      FindNode(ax::mojom::Role::kImage, "Image description");
+  ASSERT_NE(nullptr, image_node);
+  ComPtr<IRawElementProviderSimple> image_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(image_node);
+
+  // 1. Validate that no children are returned when the range doesn't include
+  // any UIA embedded objects.
+  ComPtr<ITextRangeProvider> text_range;
+  GetTextRangeProviderFromTextNode(*text1_node, &text_range);
+  ASSERT_NE(nullptr, text_range.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range, L"Text1");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range, TextPatternRangeEndpoint_End,
+                                   TextUnit_Paragraph,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"Text1 Text2 Text3\n",
+                                   /*expected_count*/ 1);
+
+  base::win::ScopedSafearray children;
+  std::vector<ComPtr<IRawElementProviderSimple>> expected_values = {};
+
+  EXPECT_HRESULT_SUCCEEDED(text_range->GetChildren(children.Receive()));
+  EXPECT_UIA_SAFEARRAY_EQ(children.Get(), expected_values);
+
+  // 2. Validate that both the link and image objects are returned when the
+  // range spans the document.
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range, TextPatternRangeEndpoint_End, TextUnit_Document,
+      /*count*/ 1,
+      /*expected_text*/
+      L"Text1 Text2 Text3\nBefore link\nLink text 1 Link text 2 Link text 3 "
+      L"Link text 4\nAfter link\nBefore img\n\xFFFC\nAfter img",
+      /*expected_count*/ 1);
+
+  EXPECT_HRESULT_SUCCEEDED(text_range->GetChildren(children.Receive()));
+
+  expected_values = {link_raw, image_raw};
+  EXPECT_UIA_SAFEARRAY_EQ(children.Get(), expected_values);
+
+  // 3. Validate that no object is returned when the range is inside the textual
+  // content of an embedded object.
+  GetTextRangeProviderFromTextNode(*link_text2_node, &text_range);
+  ASSERT_NE(nullptr, text_range.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range, L"Link text 2");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range, TextPatternRangeEndpoint_End,
+                                   TextUnit_Character,
+                                   /*count*/ 12,
+                                   /*expected_text*/ L"Link text 2 Link text 3",
+                                   /*expected_count*/ 12);
+
+  EXPECT_HRESULT_SUCCEEDED(text_range->GetChildren(children.Receive()));
+
+  expected_values = {};
+  EXPECT_UIA_SAFEARRAY_EQ(children.Get(), expected_values);
+
+  // 4. Validate that the link object is returned when the text range contains
+  // a link object.
+  GetTextRangeProviderFromTextNode(*before_link_text_node, &text_range);
+  ASSERT_NE(nullptr, text_range.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range, L"Before link");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range, TextPatternRangeEndpoint_End,
+                                   TextUnit_Paragraph,
+                                   /*count*/ 2,
+                                   /*expected_text*/
+                                   L"Before link\nLink text 1 Link text 2 Link "
+                                   L"text 3 Link text 4\nAfter link\n",
+                                   /*expected_count*/ 2);
+
+  EXPECT_HRESULT_SUCCEEDED(text_range->GetChildren(children.Receive()));
+
+  expected_values = {link_raw};
+  EXPECT_UIA_SAFEARRAY_EQ(children.Get(), expected_values);
+
+  // 5. Validate that the link object is included even if it is partially
+  // included in the range.
+  GetTextRangeProviderFromTextNode(*link_text2_node, &text_range);
+  ASSERT_NE(nullptr, text_range.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range, L"Link text 2");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ 2,
+      /*expected_text*/ L"Link text 2 Link text 3 Link text 4\nAfter link\n",
+      /*expected_count*/ 2);
+
+  EXPECT_HRESULT_SUCCEEDED(text_range->GetChildren(children.Receive()));
+
+  expected_values = {link_raw};
+  EXPECT_UIA_SAFEARRAY_EQ(children.Get(), expected_values);
+}
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        GetAttributeValue) {

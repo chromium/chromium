@@ -35,8 +35,9 @@ class CONTENT_EXPORT BrowserAccessibilityWin : public BrowserAccessibility {
   void OnLocationChanged() override;
   std::u16string GetHypertext() const override;
 
-  const std::vector<gfx::NativeViewAccessible> GetUIADescendants()
-      const override;
+  const std::vector<gfx::NativeViewAccessible> GetUIADirectChildrenInRange(
+      ui::AXPlatformNodeDelegate* start,
+      ui::AXPlatformNodeDelegate* end) override;
 
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
 

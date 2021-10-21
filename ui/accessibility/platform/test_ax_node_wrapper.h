@@ -155,8 +155,9 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   SkColor GetColor() const override;
   SkColor GetBackgroundColor() const override;
 
-  const std::vector<gfx::NativeViewAccessible> GetUIADescendants()
-      const override;
+  const std::vector<gfx::NativeViewAccessible> GetUIADirectChildrenInRange(
+      ui::AXPlatformNodeDelegate* start,
+      ui::AXPlatformNodeDelegate* end) override;
   gfx::RectF GetLocation() const;
   int InternalChildCount() const;
   TestAXNodeWrapper* InternalGetChild(int index) const;

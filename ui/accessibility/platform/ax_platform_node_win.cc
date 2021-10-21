@@ -627,8 +627,7 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
     // A menu item could have something other than a role of
     // |ROLE_SYSTEM_MENUITEM|. Zoom modification controls for example have a
     // role of button.
-    auto* parent =
-        static_cast<AXPlatformNodeWin*>(FromNativeViewAccessible(GetParent()));
+    auto* parent = GetParentPlatformNodeWin();
     int role = MSAARole();
     if (role == ROLE_SYSTEM_MENUITEM) {
       event_type = ax::mojom::Event::kFocus;
@@ -2280,6 +2279,15 @@ bool AXPlatformNodeWin::ISelectionItemProviderIsSelected() const {
   // SelectionItem.IsSelected is set according to the True or False value of
   // aria-selected.
   return GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+}
+
+bool AXPlatformNodeWin::IsNodeInaccessibleForUIA() const {
+  // Ignored nodes and those that are descendants of a leaf node shouldn't be
+  // exposed to UIA. For example, an atomic text field can have text children
+  // in our internal AX tree but isn't supposed to have any in UIA's AX tree.
+  // We also don't expose inline text boxes to UIA.
+  return GetData().IsIgnored() ||
+         GetRole() == ax::mojom::Role::kInlineTextBox || IsChildOfLeaf();
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::AddToSelection() {
@@ -4917,8 +4925,7 @@ void AXPlatformNodeWin::GetAnnotationObjectsAttribute(
   // parent) of the text node, but it can be on any ancestor of the text node.
   // TODO(vicfei): Need to find an efficient algorithm to walk up current node's
   // ancestors to find the attribute. https://crbug.com/1201327
-  AXPlatformNodeWin* parent_platform_node =
-      static_cast<AXPlatformNodeWin*>(FromNativeViewAccessible(GetParent()));
+  AXPlatformNodeWin* parent_platform_node = GetParentPlatformNodeWin();
 
   if (!parent_platform_node || !IsText())
     return;
@@ -5775,6 +5782,11 @@ int AXPlatformNodeWin::MSAARole() {
 
   NOTREACHED();
   return ROLE_SYSTEM_GROUPING;
+}
+
+AXPlatformNodeWin* AXPlatformNodeWin::GetParentPlatformNodeWin() const {
+  return static_cast<AXPlatformNodeWin*>(
+      AXPlatformNode::FromNativeViewAccessible(GetParent()));
 }
 
 bool AXPlatformNodeWin::IsWebAreaForPresentationalIframe() {
@@ -7535,14 +7547,17 @@ absl::optional<LONG> AXPlatformNodeWin::ComputeUIALandmarkType() const {
   }
 }
 
-bool AXPlatformNodeWin::IsInaccessibleDueToAncestor() const {
-  AXPlatformNodeWin* parent = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNode::FromNativeViewAccessible(GetParent()));
+bool AXPlatformNodeWin::IsInaccessibleForUIA() const {
+  if (IsNodeInaccessibleForUIA())
+    return true;
+
+  AXPlatformNodeWin* parent = GetParentPlatformNodeWin();
   while (parent) {
-    if (parent->ShouldHideChildrenForUIA())
+    if (parent->IsNodeInaccessibleForUIA() ||
+        parent->ShouldHideChildrenForUIA()) {
       return true;
-    parent = static_cast<AXPlatformNodeWin*>(
-        FromNativeViewAccessible(parent->GetParent()));
+    }
+    parent = parent->GetParentPlatformNodeWin();
   }
   return false;
 }
@@ -8043,8 +8058,7 @@ HRESULT AXPlatformNodeWin::AllocateComArrayFromVector(
 
 bool AXPlatformNodeWin::IsHyperlink() {
   int32_t hyperlink_index = -1;
-  AXPlatformNodeWin* parent =
-      static_cast<AXPlatformNodeWin*>(FromNativeViewAccessible(GetParent()));
+  AXPlatformNodeWin* parent = GetParentPlatformNodeWin();
   if (parent) {
     hyperlink_index = parent->GetHyperlinkIndexFromChild(this);
   }
@@ -8280,17 +8294,12 @@ void AXPlatformNodeWin::FireLiveRegionChangeRecursive() {
   }
 }
 
-AXPlatformNodeWin* AXPlatformNodeWin::GetLowestAccessibleElement() {
-  if (!IsInaccessibleDueToAncestor())
-    return this;
-
-  AXPlatformNodeWin* parent = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNode::FromNativeViewAccessible(GetParent()));
-  while (parent) {
-    if (parent->ShouldHideChildrenForUIA())
-      return parent;
-    parent = static_cast<AXPlatformNodeWin*>(
-        AXPlatformNode::FromNativeViewAccessible(parent->GetParent()));
+AXPlatformNodeWin* AXPlatformNodeWin::GetLowestAccessibleElementForUIA() {
+  AXPlatformNodeWin* node = this;
+  while (node) {
+    if (!node->IsInaccessibleForUIA())
+      return node;
+    node = node->GetParentPlatformNodeWin();
   }
 
   NOTREACHED();

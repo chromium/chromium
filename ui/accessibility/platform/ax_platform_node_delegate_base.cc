@@ -941,7 +941,9 @@ absl::optional<int> AXPlatformNodeDelegateBase::FindTextBoundary(
 }
 
 const std::vector<gfx::NativeViewAccessible>
-AXPlatformNodeDelegateBase::GetUIADescendants() const {
+AXPlatformNodeDelegateBase::GetUIADirectChildrenInRange(
+    ui::AXPlatformNodeDelegate* start,
+    ui::AXPlatformNodeDelegate* end) {
   return {};
 }
 

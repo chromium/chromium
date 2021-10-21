@@ -808,6 +808,89 @@ bool IsTextField(ax::mojom::Role role) {
   }
 }
 
+bool IsUIAEmbeddedObject(ax::mojom::Role role) {
+  // A UIA embedded object "is any element that has non-textual boundaries such
+  // as an image, hyperlink, table", etc. For more info, see
+  // https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-textpattern-and-embedded-objects-overview.
+  switch (role) {
+    case ax::mojom::Role::kButton:
+    case ax::mojom::Role::kCanvas:
+    case ax::mojom::Role::kCell:
+    case ax::mojom::Role::kCheckBox:
+    case ax::mojom::Role::kColorWell:
+    case ax::mojom::Role::kColumn:
+    case ax::mojom::Role::kColumnHeader:
+    case ax::mojom::Role::kComboBoxGrouping:
+    case ax::mojom::Role::kComboBoxMenuButton:
+    case ax::mojom::Role::kDate:
+    case ax::mojom::Role::kDateTime:
+    case ax::mojom::Role::kDescriptionList:
+    case ax::mojom::Role::kDescriptionListTerm:
+    case ax::mojom::Role::kDirectory:
+    case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDocBackLink:
+    case ax::mojom::Role::kDocBiblioEntry:
+    case ax::mojom::Role::kDocBiblioRef:
+    case ax::mojom::Role::kDocBibliography:
+    case ax::mojom::Role::kDocCover:
+    case ax::mojom::Role::kDocEndnote:
+    case ax::mojom::Role::kDocGlossRef:
+    case ax::mojom::Role::kDocNoteRef:
+    case ax::mojom::Role::kForm:
+    case ax::mojom::Role::kGraphicsSymbol:
+    case ax::mojom::Role::kGrid:
+    case ax::mojom::Role::kIframe:
+    case ax::mojom::Role::kIframePresentational:
+    case ax::mojom::Role::kImage:
+    case ax::mojom::Role::kInputTime:
+    case ax::mojom::Role::kLink:
+    case ax::mojom::Role::kList:
+    case ax::mojom::Role::kListBox:
+    case ax::mojom::Role::kListBoxOption:
+    case ax::mojom::Role::kListGrid:
+    case ax::mojom::Role::kListItem:
+    case ax::mojom::Role::kMenu:
+    case ax::mojom::Role::kMenuBar:
+    case ax::mojom::Role::kMenuItem:
+    case ax::mojom::Role::kMenuItemCheckBox:
+    case ax::mojom::Role::kMenuItemRadio:
+    case ax::mojom::Role::kMenuListOption:
+    case ax::mojom::Role::kMenuListPopup:
+    case ax::mojom::Role::kMeter:
+    case ax::mojom::Role::kPdfActionableHighlight:
+    case ax::mojom::Role::kPopUpButton:
+    case ax::mojom::Role::kProgressIndicator:
+    case ax::mojom::Role::kRadioButton:
+    case ax::mojom::Role::kRadioGroup:
+    case ax::mojom::Role::kRow:
+    case ax::mojom::Role::kRowHeader:
+    case ax::mojom::Role::kScrollBar:
+    case ax::mojom::Role::kSearchBox:
+    case ax::mojom::Role::kSlider:
+    case ax::mojom::Role::kSpinButton:
+    case ax::mojom::Role::kSplitter:
+    case ax::mojom::Role::kSvgRoot:
+    case ax::mojom::Role::kSwitch:
+    case ax::mojom::Role::kTab:
+    case ax::mojom::Role::kTabList:
+    case ax::mojom::Role::kTable:
+    case ax::mojom::Role::kTerm:
+    case ax::mojom::Role::kTextField:
+    case ax::mojom::Role::kTextFieldWithComboBox:
+    case ax::mojom::Role::kToggleButton:
+    case ax::mojom::Role::kToolbar:
+    case ax::mojom::Role::kTree:
+    case ax::mojom::Role::kTreeGrid:
+    case ax::mojom::Role::kTreeItem:
+    case ax::mojom::Role::kVideo:
+      return true;
+    case ax::mojom::Role::kLayoutTableCell:
+      return kExposeLayoutTableAsDataTable;
+    default:
+      return false;
+  }
+}
+
 bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kArticle:

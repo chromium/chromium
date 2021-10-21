@@ -280,8 +280,9 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
       ax::mojom::MoveDirection direction,
       ax::mojom::TextAffinity affinity) const override;
 
-  const std::vector<gfx::NativeViewAccessible> GetUIADescendants()
-      const override;
+  const std::vector<gfx::NativeViewAccessible> GetUIADirectChildrenInRange(
+      ui::AXPlatformNodeDelegate* start,
+      ui::AXPlatformNodeDelegate* end) override;
 
   std::string GetLanguage() const override;
 

@@ -1246,7 +1246,9 @@ absl::optional<int> BrowserAccessibility::FindTextBoundary(
 }
 
 const std::vector<gfx::NativeViewAccessible>
-BrowserAccessibility::GetUIADescendants() const {
+BrowserAccessibility::GetUIADirectChildrenInRange(
+    ui::AXPlatformNodeDelegate* start,
+    ui::AXPlatformNodeDelegate* end) {
   // This method is only called on Windows. Other platforms should not call it.
   // The BrowserAccessibilityWin subclass overrides this method.
   NOTREACHED();

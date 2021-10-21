@@ -617,15 +617,6 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetEnclosingElement(
   if (!enclosing_node)
     return UIA_E_ELEMENTNOTAVAILABLE;
 
-  while (enclosing_node->GetData().IsIgnored() ||
-         enclosing_node->GetRole() == ax::mojom::Role::kInlineTextBox ||
-         enclosing_node->IsChildOfLeaf()) {
-    AXPlatformNodeWin* parent = static_cast<AXPlatformNodeWin*>(
-        AXPlatformNode::FromNativeViewAccessible(enclosing_node->GetParent()));
-    DCHECK(parent);
-    enclosing_node = parent;
-  }
-
   enclosing_node->GetNativeViewAccessible()->QueryInterface(
       IID_PPV_ARGS(element));
 
@@ -976,27 +967,28 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ScrollIntoView(BOOL align_to_top) {
   return S_OK;
 }
 
+// This function is expected to return a subset of the *direct* children of the
+// common ancestor node. The subset should only include the direct children
+// included - fully or partially - in the range.
 HRESULT AXPlatformNodeTextRangeProviderWin::GetChildren(SAFEARRAY** children) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_GETCHILDREN);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETCHILDREN);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(children);
   std::vector<gfx::NativeViewAccessible> descendants;
 
-  const AXNode* common_anchor = start()->LowestCommonAnchor(*end());
-  if (!common_anchor)
+  AXPlatformNodeWin* start_anchor =
+      GetPlatformNodeFromAXNode(start()->GetAnchor());
+  AXPlatformNodeWin* end_anchor = GetPlatformNodeFromAXNode(end()->GetAnchor());
+  AXPlatformNodeWin* common_anchor = GetLowestAccessibleCommonPlatformNode();
+  if (!common_anchor || !start_anchor || !end_anchor)
     return UIA_E_ELEMENTNOTAVAILABLE;
-  const AXTreeID tree_id = common_anchor->tree()->GetAXTreeID();
-  const AXNodeID node_id = common_anchor->id();
-  AXPlatformNodeDelegate* delegate = GetDelegate(tree_id, node_id);
-  DCHECK(delegate);
-  while (delegate->GetData().IsIgnored()) {
-    auto* node = static_cast<AXPlatformNodeWin*>(
-        AXPlatformNode::FromNativeViewAccessible(delegate->GetParent()));
-    DCHECK(node);
-    delegate = node->GetDelegate();
-  }
-  if (delegate->GetChildCount())
-    descendants = delegate->GetUIADescendants();
+
+  AXPlatformNodeDelegate* start_delegate = start_anchor->GetDelegate();
+  AXPlatformNodeDelegate* end_delegate = end_anchor->GetDelegate();
+  AXPlatformNodeDelegate* common_delegate = common_anchor->GetDelegate();
+
+  descendants = common_delegate->GetUIADirectChildrenInRange(start_delegate,
+                                                             end_delegate);
 
   SAFEARRAY* safe_array =
       SafeArrayCreateVector(VT_UNKNOWN, 0, descendants.size());
@@ -1382,20 +1374,30 @@ void AXPlatformNodeTextRangeProviderWin::
 }
 
 AXPlatformNodeWin*
+AXPlatformNodeTextRangeProviderWin::GetPlatformNodeFromAXNode(
+    const AXNode* node) const {
+  if (!node)
+    return nullptr;
+
+  // TODO(kschmi): Update to use AXTreeManager.
+  AXPlatformNodeWin* platform_node =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNode::FromNativeViewAccessible(
+          GetDelegate(node->tree()->GetAXTreeID(), node->id())
+              ->GetNativeViewAccessible()));
+  DCHECK(platform_node);
+
+  return platform_node;
+}
+
+AXPlatformNodeWin*
 AXPlatformNodeTextRangeProviderWin::GetLowestAccessibleCommonPlatformNode()
     const {
   AXNode* common_anchor = start()->LowestCommonAnchor(*end());
   if (!common_anchor)
     return nullptr;
 
-  const AXTreeID tree_id = common_anchor->tree()->GetAXTreeID();
-  const AXNodeID node_id = common_anchor->id();
-  AXPlatformNodeWin* platform_node =
-      static_cast<AXPlatformNodeWin*>(AXPlatformNode::FromNativeViewAccessible(
-          GetDelegate(tree_id, node_id)->GetNativeViewAccessible()));
-  DCHECK(platform_node);
-
-  return platform_node->GetLowestAccessibleElement();
+  return GetPlatformNodeFromAXNode(common_anchor)
+      ->GetLowestAccessibleElementForUIA();
 }
 
 bool AXPlatformNodeTextRangeProviderWin::

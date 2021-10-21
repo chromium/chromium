@@ -1141,8 +1141,8 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   // Helper to recursively find live-regions and fire a change event on them
   void FireLiveRegionChangeRecursive();
 
-  // Returns the parent node that makes this node inaccessible.
-  AXPlatformNodeWin* GetLowestAccessibleElement();
+  // Returns the first ancestor node that is accessible for UIA.
+  AXPlatformNodeWin* GetLowestAccessibleElementForUIA();
 
   // Returns the first |IsTextOnlyObject| descendant using
   // depth-first pre-order traversal.
@@ -1192,7 +1192,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   absl::optional<LONG> ComputeUIALandmarkType() const;
 
-  bool IsInaccessibleDueToAncestor() const;
+  bool IsInaccessibleForUIA() const;
 
   bool ShouldHideChildrenForUIA() const;
 
@@ -1242,6 +1242,8 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
                            SanitizeStringAttributeForIA2);
 
  private:
+  AXPlatformNodeWin* GetParentPlatformNodeWin() const;
+
   bool IsWebAreaForPresentationalIframe();
   bool ShouldNodeHaveFocusableState() const;
   int GetAnnotationTypeImpl() const;
@@ -1390,6 +1392,9 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   // Helper method getting the selected status.
   bool ISelectionItemProviderIsSelected() const;
+
+  // Helper method for IsInaccessibleForUIA.
+  bool IsNodeInaccessibleForUIA() const;
 
   //
   // Getters for UIA GetTextAttributeValue

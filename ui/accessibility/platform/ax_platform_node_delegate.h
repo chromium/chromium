@@ -486,8 +486,9 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   // Return a vector of all the descendants of this delegate's node. This method
   // is only meaningful for Windows UIA.
-  virtual const std::vector<gfx::NativeViewAccessible> GetUIADescendants()
-      const = 0;
+  virtual const std::vector<gfx::NativeViewAccessible>
+  GetUIADirectChildrenInRange(ui::AXPlatformNodeDelegate* start,
+                              ui::AXPlatformNodeDelegate* end) = 0;
 
   // Return a string representing the language code.
   //

@@ -207,6 +207,10 @@ AX_BASE_EXPORT bool IsText(ax::mojom::Role role);
 // <input> or <textarea>.
 AX_BASE_EXPORT bool IsTextField(ax::mojom::Role role);
 
+// Returns true if the provided role fits the description of a UIA embedded
+// objects. See the method definition for more details.
+AX_BASE_EXPORT bool IsUIAEmbeddedObject(ax::mojom::Role role);
+
 // Returns true if the node should be read only by default
 AX_BASE_EXPORT bool ShouldHaveReadonlyStateByDefault(
     const ax::mojom::Role role);
