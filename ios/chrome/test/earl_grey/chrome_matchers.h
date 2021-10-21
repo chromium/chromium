@@ -278,6 +278,10 @@ id<GREYMatcher> ContentSettingsButton();
 // screen.
 id<GREYMatcher> GoogleServicesSettingsButton();
 
+// Returns matcher for the Manage Sync Settings button on the main Settings
+// screen.
+id<GREYMatcher> ManageSyncSettingsButton();
+
 // Returns matcher for the Google Services Settings view.
 id<GREYMatcher> GoogleServicesSettingsView();
 

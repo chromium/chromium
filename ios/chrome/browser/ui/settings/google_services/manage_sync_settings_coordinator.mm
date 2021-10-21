@@ -22,8 +22,6 @@
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -70,12 +68,6 @@ using signin_metrics::PromoAction;
 // Dismiss callback for Web and app setting details view.
 @property(nonatomic, copy) ios::DismissASMViewControllerBlock
     dismissWebAndAppSettingDetailsControllerBlock;
-// Manages the authentication flow for a given identity.
-@property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
-// YES if the last sign-in has been interrupted. In that case, the sync UI will
-// be dismissed and the sync setup flag should not be marked as done. The sync
-// should be kept undecided, not marked as disabled.
-@property(nonatomic, assign) BOOL signinInterrupted;
 // Displays the sign-out options for a syncing user.
 @property(nonatomic, strong) SignoutActionSheetCoordinator* signOutCoordinator;
 
@@ -122,12 +114,11 @@ using signin_metrics::PromoAction;
 }
 
 - (void)stop {
+  [super stop];
   // This coordinator displays the main view and it is in charge to enable sync
   // or not when being closed.
-  // Sync changes should only be commited if the user is authenticated and
-  // the sign-in has not been interrupted.
-  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) ||
-      !self.signinInterrupted) {
+  // Sync changes should only be commited if the user is authenticated.
+  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     SyncSetupService* syncSetupService =
         SyncSetupServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
@@ -162,20 +153,6 @@ using signin_metrics::PromoAction;
   }
 }
 
-- (void)signinFinishedWithSuccess:(BOOL)success {
-  DCHECK(self.authenticationFlow);
-  self.authenticationFlow = nil;
-  [self.viewController allowUserInteraction];
-
-  ChromeIdentity* primaryAccount =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
-          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  // TODO(crbug.com/1101346): SigninCoordinatorResult should be received instead
-  // of guessing if the sign-in has been interrupted.
-  self.signinInterrupted = !success && primaryAccount;
-}
-
 #pragma mark - ManageSyncSettingsTableViewControllerPresentationDelegate
 
 - (void)manageSyncSettingsTableViewControllerWasRemoved:
@@ -187,16 +164,14 @@ using signin_metrics::PromoAction;
 #pragma mark - ManageSyncSettingsCommandHandler
 
 - (void)openWebAppActivityDialog {
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
   base::RecordAction(base::UserMetricsAction(
       "Signin_AccountSettings_GoogleActivityControlsClicked"));
   self.dismissWebAndAppSettingDetailsControllerBlock =
       ios::GetChromeBrowserProvider()
           .GetChromeIdentityService()
           ->PresentWebAndAppSettingDetailsController(
-              authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin),
+              self.authService->GetPrimaryIdentity(
+                  signin::ConsentLevel::kSignin),
               self.viewController, YES);
 }
 
@@ -276,27 +251,6 @@ using signin_metrics::PromoAction;
                                                                 trigger:
                                                                     syncer::TrustedVaultUserActionTriggerForUMA::
                                                                         kSettings];
-}
-
-- (void)restartAuthenticationFlow {
-  ChromeIdentity* authenticatedIdentity =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
-          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  [self.viewController preventUserInteraction];
-  DCHECK(!self.authenticationFlow);
-  self.authenticationFlow =
-      [[AuthenticationFlow alloc] initWithBrowser:self.browser
-                                         identity:authenticatedIdentity
-                                  shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
-                                 postSignInAction:POST_SIGNIN_ACTION_COMMIT_SYNC
-                         presentingViewController:self.viewController];
-  self.authenticationFlow.dispatcher = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
-  __weak ManageSyncSettingsCoordinator* weakSelf = self;
-  [self.authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    [weakSelf signinFinishedWithSuccess:success];
-  }];
 }
 
 - (void)openReauthDialogAsSyncIsInAuthError {

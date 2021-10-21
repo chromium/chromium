@@ -354,6 +354,10 @@ id<GREYMatcher> GoogleServicesSettingsButton() {
   return [ChromeMatchersAppInterface googleServicesSettingsButton];
 }
 
+id<GREYMatcher> ManageSyncSettingsButton() {
+  return [ChromeMatchersAppInterface manageSyncSettingsButton];
+}
+
 id<GREYMatcher> GoogleServicesSettingsView() {
   return [ChromeMatchersAppInterface googleServicesSettingsView];
 }

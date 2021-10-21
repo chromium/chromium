@@ -137,6 +137,7 @@ source_set("eg2_tests") {
   sources = [
     "accounts_table_egtest.mm",
     "google_services_settings_egtest.mm",
+    "manage_sync_settings_egtest.mm",
   ]
   deps = [
     ":eg_test_support+eg2",

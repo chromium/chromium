@@ -59,7 +59,6 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   // Data from Chrome sync.
   DataFromChromeSync,
   // Sync errors.
-  RestartAuthenticationFlowErrorItemType,
   ReauthDialogAsSyncIsInAuthErrorItemType,
   ShowPassphraseDialogErrorItemType,
   SyncNeedsTrustedVaultKeyErrorItemType,
