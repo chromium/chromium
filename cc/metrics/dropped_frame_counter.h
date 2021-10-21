@@ -112,6 +112,7 @@ class CC_EXPORT DroppedFrameCounter {
   void NotifyFrameResult(const viz::BeginFrameArgs& args, bool is_dropped);
   base::TimeDelta ComputeCurrentWindowSize() const;
 
+  void PopSlidingWindow();
   void UpdateMaxPercentDroppedFrame(double percent_dropped_frame);
 
   const base::TimeDelta kSlidingWindowInterval = base::Seconds(1);

@@ -589,13 +589,15 @@ TEST_F(DroppedFrameCounterTest,
 
   // Advance 1s so that we will attempt to update the window when resetting the
   // pending frames. The pending dropped frame above should be calculated here,
-  // and both the max and 95th percentile should be updated.
+  // and the max percentile should be updated.
   AdvancetimeByIntervals(kFps);
   dropped_frame_counter_.ResetPendingFrames(GetNextFrameTime());
-
-  EXPECT_EQ(dropped_frame_counter_.sliding_window_max_percent_dropped(),
-            dropped_frame_counter_.SlidingWindow95PercentilePercentDropped());
   EXPECT_GT(dropped_frame_counter_.sliding_window_max_percent_dropped(), 0u);
+
+  // There should be enough sliding windows reported with 0 dropped frames that
+  // the 95th percentile stays at 0.
+  EXPECT_EQ(dropped_frame_counter_.SlidingWindow95PercentilePercentDropped(),
+            0u);
 }
 
 TEST_F(DroppedFrameCounterTest, ResetPendingFramesAccountingForPendingFrames) {
