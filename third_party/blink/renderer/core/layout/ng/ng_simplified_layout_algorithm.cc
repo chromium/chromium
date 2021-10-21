@@ -335,8 +335,7 @@ void NGSimplifiedLayoutAlgorithm::AddChildFragment(
   absl::optional<LogicalOffset> relative_offset = LogicalOffset();
 
   // Add the new fragment to the builder.
-  container_builder_.AddChild(new_fragment, child_offset,
-                              /* inline_container */ nullptr, margin_strut,
+  container_builder_.AddChild(new_fragment, child_offset, margin_strut,
                               is_self_collapsing, relative_offset);
 }
 

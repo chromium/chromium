@@ -671,9 +671,9 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
                                        CalculateOffset(node_info, only_layout)};
         scoped_refptr<const NGLayoutResult> result =
             LayoutOOFNode(node_to_layout, only_layout);
-        container_builder_->AddChild(result->PhysicalFragment(),
-                                     result->OutOfFlowPositionedOffset(),
-                                     &candidate.inline_container);
+        container_builder_->AddResult(
+            *result, result->OutOfFlowPositionedOffset(),
+            /* relative_offset */ absl::nullopt, &candidate.inline_container);
         container_builder_->SetHasOutOfFlowFragmentChild(true);
         if (container_builder_->IsInitialColumnBalancingPass()) {
           container_builder_->PropagateTallestUnbreakableBlockSize(
@@ -785,9 +785,9 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
       }
 
       limited_multicol_container_builder.AddChild(
-          *fragment, offset, /* inline_container */ nullptr,
-          /* margin_strut */ nullptr, /* is_self_collapsing */ false,
-          /* relative_offset */ absl::nullopt,
+          *fragment, offset, /* margin_strut */ nullptr,
+          /* is_self_collapsing */ false, /* relative_offset */ absl::nullopt,
+          /* inline_container */ nullptr,
           /* adjustment_for_oof_propagation */ absl::nullopt);
       multicol_children.emplace_back(MulticolChildInfo(&child));
     }
@@ -1647,9 +1647,10 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
     scoped_refptr<const NGLayoutResult> new_result = algorithm->Layout();
     node.AddColumnResult(new_result);
     container_builder_->AddChild(
-        new_result->PhysicalFragment(), offset, /* inline_container */ nullptr,
+        new_result->PhysicalFragment(), offset,
         /* margin_strut */ nullptr, /* is_self_collapsing */ false,
         /* relative_offset */ absl::nullopt,
+        /* inline_container */ nullptr,
         /* adjustment_for_oof_propagation */ absl::nullopt);
   } else {
     scoped_refptr<const NGLayoutResult> new_result = algorithm->Layout();

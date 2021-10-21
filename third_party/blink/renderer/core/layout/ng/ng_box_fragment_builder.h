@@ -202,9 +202,13 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // more. In some cases, such as grid, the relative offset may need to be
   // computed ahead of time. If so, a |relative_offset| will be passed
   // in. Otherwise, the relative offset will be calculated as normal.
-  void AddResult(const NGLayoutResult&,
-                 const LogicalOffset,
-                 absl::optional<LogicalOffset> relative_offset = absl::nullopt);
+  // |inline_container| is passed when adding an OOF that is contained by a
+  // non-atomic inline.
+  void AddResult(
+      const NGLayoutResult&,
+      const LogicalOffset,
+      absl::optional<LogicalOffset> relative_offset = absl::nullopt,
+      const NGInlineContainer<LogicalOffset>* inline_container = nullptr);
 
   // Add a child fragment and propagate info from it. Called by AddResult().
   // Other callers should call AddResult() instead of this when possible, since
@@ -212,10 +216,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   void AddChild(
       const NGPhysicalFragment&,
       const LogicalOffset&,
-      const NGInlineContainer<LogicalOffset>* inline_container = nullptr,
       const NGMarginStrut* margin_strut = nullptr,
       bool is_self_collapsing = false,
       absl::optional<LogicalOffset> relative_offset = absl::nullopt,
+      const NGInlineContainer<LogicalOffset>* inline_container = nullptr,
       absl::optional<LayoutUnit> adjustment_for_oof_propagation = LayoutUnit());
 
   // Manually add a break token to the builder. Note that we're assuming that

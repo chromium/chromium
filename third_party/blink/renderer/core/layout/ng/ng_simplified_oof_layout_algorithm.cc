@@ -134,9 +134,9 @@ void NGSimplifiedOOFLayoutAlgorithm::AddChildFragment(const NGLink& child) {
 
   // Add the fragment to the builder.
   container_builder_.AddChild(
-      *fragment, child_offset, /* inline_container */ nullptr,
-      /* margin_strut */ nullptr, /* is_self_collapsing */ false,
-      relative_offset,
+      *fragment, child_offset, /* margin_strut */ nullptr,
+      /* is_self_collapsing */ false, relative_offset,
+      /* inline_container */ nullptr,
       /* adjustment_for_oof_propagation */ absl::nullopt);
 }
 
