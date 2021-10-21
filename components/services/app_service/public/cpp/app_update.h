@@ -44,6 +44,8 @@ namespace apps {
 // remain valid for the lifetime of the AppUpdate.
 //
 // See components/services/app_service/README.md for more details.
+//
+// TODO(crbug.com/1253250): Remove all apps::mojom related code.
 class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
  public:
   // Modifies |state| by copying over all of |delta|'s known fields: those
@@ -155,8 +157,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   const ::AccountId& AccountId() const;
 
  private:
-  const apps::mojom::App* state_;
-  const apps::mojom::App* delta_;
+  const apps::mojom::App* mojom_state_;
+  const apps::mojom::App* mojom_delta_;
 
   const ::AccountId& account_id_;
 };
