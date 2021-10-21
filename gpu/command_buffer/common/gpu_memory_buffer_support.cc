@@ -163,7 +163,8 @@ GPU_EXPORT uint32_t GetBufferTextureTarget(gfx::BufferUsage usage,
 }
 
 GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(
-    gfx::BufferFormat format) {
+    gfx::BufferFormat format,
+    gfx::BufferPlane plane) {
 #if defined(USE_OZONE) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_WIN)
   // Always use GL_TEXTURE_2D as the target for RGB textures.
@@ -177,6 +178,15 @@ GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(
       format == gfx::BufferFormat::BGRA_1010102) {
     return false;
   }
+#if defined(OS_CHROMEOS)
+  // Use GL_TEXTURE_2D when importing the NV12 DMA-buf as two GL textures, Y
+  // plane as gfx::BufferFormat::R_8, UV plane as gfx::BufferFormat::RG_88, then
+  // we can sample and write to NV12 DMA-buf through the two GL textures.
+  if (format == gfx::BufferFormat::YUV_420_BIPLANAR &&
+      (plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV)) {
+    return false;
+  }
+#endif
 #elif defined(OS_ANDROID)
   if (format == gfx::BufferFormat::BGR_565 ||
       format == gfx::BufferFormat::RGBA_8888) {

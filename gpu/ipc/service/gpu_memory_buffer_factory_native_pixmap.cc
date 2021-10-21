@@ -42,8 +42,9 @@ namespace {
 template <class Image, class Pixmap>
 scoped_refptr<Image> CreateImageFromPixmap(const gfx::Size& size,
                                            gfx::BufferFormat format,
-                                           scoped_refptr<Pixmap> pixmap) {
-  auto image = base::MakeRefCounted<Image>(size, format);
+                                           scoped_refptr<Pixmap> pixmap,
+                                           gfx::BufferPlane plane) {
+  auto image = base::MakeRefCounted<Image>(size, format, plane);
   if (!image->Initialize(std::move(pixmap))) {
     LOG(ERROR) << "Failed to create GLImage " << size.ToString() << ", "
                << gfx::BufferFormatToString(format);
@@ -166,8 +167,6 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
     SurfaceHandle surface_handle) {
   if (handle.type != gfx::NATIVE_PIXMAP)
     return nullptr;
-  if (plane != gfx::BufferPlane::DEFAULT)
-    return nullptr;
 
   scoped_refptr<gfx::NativePixmap> pixmap;
 
@@ -206,12 +205,14 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
     }
   }
 
+  gfx::Size plane_size = GetPlaneSize(plane, size);
+  gfx::BufferFormat plane_format = GetPlaneBufferFormat(plane, format);
   switch (gl::GetGLImplementation()) {
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
       // EGL
-      return CreateImageFromPixmap<gl::GLImageNativePixmap>(size, format,
-                                                            pixmap);
+      return CreateImageFromPixmap<gl::GLImageNativePixmap>(
+          plane_size, plane_format, pixmap, plane);
 #if defined(USE_X11)
     case gl::kGLImplementationDesktopGL:
 #if defined(USE_OZONE)
@@ -222,7 +223,7 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
 #endif
       // GLX
       return CreateImageFromPixmap<gl::GLImageGLXNativePixmap>(size, format,
-                                                               pixmap);
+                                                               pixmap, plane);
 #endif
     default:
       NOTREACHED();

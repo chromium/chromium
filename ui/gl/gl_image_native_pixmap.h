@@ -17,7 +17,9 @@ namespace gl {
 
 class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
  public:
-  GLImageNativePixmap(const gfx::Size& size, gfx::BufferFormat format);
+  GLImageNativePixmap(const gfx::Size& size,
+                      gfx::BufferFormat format,
+                      gfx::BufferPlane plane = gfx::BufferPlane::DEFAULT);
 
   // Create an EGLImage from a given NativePixmap.
   bool Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
@@ -46,6 +48,7 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
  private:
   gfx::BufferFormat format_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
+  gfx::BufferPlane plane_;
   bool has_image_flush_external_;
   bool has_image_dma_buf_export_;
 };

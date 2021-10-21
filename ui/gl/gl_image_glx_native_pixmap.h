@@ -17,7 +17,9 @@ namespace gl {
 
 class GL_EXPORT GLImageGLXNativePixmap : public GLImageGLX {
  public:
-  GLImageGLXNativePixmap(const gfx::Size& size, gfx::BufferFormat format);
+  GLImageGLXNativePixmap(const gfx::Size& size,
+                         gfx::BufferFormat format,
+                         gfx::BufferPlane plane = gfx::BufferPlane::DEFAULT);
 
   GLImageGLXNativePixmap(const GLImageGLXNativePixmap&) = delete;
   GLImageGLXNativePixmap& operator=(const GLImageGLXNativePixmap&) = delete;

@@ -159,7 +159,7 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
   const gfx::GpuMemoryBufferType handle_type = handle.type;
   GLenum target =
       (handle_type == gfx::SHARED_MEMORY_BUFFER ||
-       !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format))
+       !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane))
           ? GL_TEXTURE_2D
           : gpu::GetPlatformSpecificTextureTarget();
   scoped_refptr<gl::GLImage> image = MakeGLImage(

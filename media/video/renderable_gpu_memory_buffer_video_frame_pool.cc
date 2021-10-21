@@ -153,7 +153,7 @@ bool FrameResources::Initialize() {
   auto* context = pool_->GetContext();
 
   constexpr gfx::BufferUsage kBufferUsage =
-#if defined(OS_MAC)
+#if defined(OS_MAC) || defined(OS_CHROMEOS)
       gfx::BufferUsage::SCANOUT_VEA_CPU_READ
 #else
       gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
