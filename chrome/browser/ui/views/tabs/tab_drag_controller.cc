@@ -2177,10 +2177,14 @@ gfx::Point TabDragController::GetCursorScreenPoint() {
     bool got_touch_point =
         widget->GetGestureRecognizer()->GetLastTouchPointForTarget(
             widget_window, &touch_point_f);
-    CHECK(got_touch_point);
-    gfx::Point touch_point = gfx::ToFlooredPoint(touch_point_f);
-    wm::ConvertPointToScreen(widget_window->GetRootWindow(), &touch_point);
-    return touch_point;
+    if (got_touch_point) {
+      gfx::Point touch_point = gfx::ToFlooredPoint(touch_point_f);
+      wm::ConvertPointToScreen(widget_window->GetRootWindow(), &touch_point);
+      return touch_point;
+    }
+
+    // Fallback when touch state is lost. See http://crbug.com/1162541
+    return last_point_in_screen_;
   }
 #endif
 
