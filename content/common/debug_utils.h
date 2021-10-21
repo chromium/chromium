@@ -55,9 +55,14 @@ enum class DebugScenario {
   // RenderFrameProxyHost::SetFocusedFrame().
   kDebugNoRenderFrameProxyHostOnSetFocusedFrame = 9,
 
+  // The RenderFrameHost to be restored from the back/forward cache no longer
+  // exists for a navigation that is not marked as being restarted.
+  // See https://crbug.com/1258523.
+  kDebugNoRestoredRFHOnNonRestartedNavigation = 10,
+
   // After making changes, you MUST update the histograms xml by running:
   // "python tools/metrics/histograms/update_debug_scenarios.py"
-  kMaxValue = kDebugNoRenderFrameProxyHostOnSetFocusedFrame,
+  kMaxValue = kDebugNoRestoredRFHOnNonRestartedNavigation,
 };
 
 // The tracing categories enabled for debugging navigation scenarios can be
