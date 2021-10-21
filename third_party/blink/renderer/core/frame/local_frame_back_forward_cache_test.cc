@@ -46,6 +46,9 @@ class TestLocalFrameBackForwardCacheClient
     quit_closure_.Run();
   }
 
+  void DidChangeBackForwardCacheDisablingFeatures(
+      uint64_t features_mask) override {}
+
   void WaitUntilEvictedFromBackForwardCache() {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();

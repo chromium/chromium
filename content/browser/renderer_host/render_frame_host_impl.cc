@@ -3985,7 +3985,7 @@ void RenderFrameHostImpl::CancelInitialHistoryLoad() {
   NOTIMPLEMENTED();
 }
 
-void RenderFrameHostImpl::DidChangeActiveSchedulerTrackedFeatures(
+void RenderFrameHostImpl::DidChangeBackForwardCacheDisablingFeatures(
     uint64_t features_mask) {
   renderer_reported_bfcache_disabling_features_ =
       BackForwardCacheDisablingFeatures::FromEnumBitmask(features_mask);

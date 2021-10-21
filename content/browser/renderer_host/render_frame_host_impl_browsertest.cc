@@ -3134,8 +3134,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
   // Simulate getting 0b1 as a feature vector from the renderer.
-  static_cast<blink::mojom::LocalFrameHost*>(main_frame)
-      ->DidChangeActiveSchedulerTrackedFeatures(0b1u);
+  main_frame->DidChangeBackForwardCacheDisablingFeatures(0b1u);
   DCHECK_EQ(main_frame->GetBackForwardCacheDisablingFeatures().ToEnumBitmask(),
             0b1u);
   // Simulate the browser side reporting a feature usage.
@@ -3145,8 +3144,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
             0b11u);
   // Simulate a feature vector being updated from the renderer with some
   // features being activated and some being deactivated.
-  static_cast<blink::mojom::LocalFrameHost*>(main_frame)
-      ->DidChangeActiveSchedulerTrackedFeatures(0b100u);
+  main_frame->DidChangeBackForwardCacheDisablingFeatures(0b100u);
   DCHECK_EQ(main_frame->GetBackForwardCacheDisablingFeatures().ToEnumBitmask(),
             0b110u);
 
@@ -3156,7 +3154,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
   main_frame = web_contents()->GetMainFrame();
-  main_frame->DidChangeActiveSchedulerTrackedFeatures(0b0u);
+  main_frame->DidChangeBackForwardCacheDisablingFeatures(0b0u);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

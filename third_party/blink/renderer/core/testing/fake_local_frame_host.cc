@@ -72,9 +72,6 @@ void FakeLocalFrameHost::EnforceInsecureRequestPolicy(
 void FakeLocalFrameHost::EnforceInsecureNavigationsSet(
     const WTF::Vector<uint32_t>& set) {}
 
-void FakeLocalFrameHost::DidChangeActiveSchedulerTrackedFeatures(
-    uint64_t features_mask) {}
-
 void FakeLocalFrameHost::SuddenTerminationDisablerChanged(
     bool present,
     blink::mojom::SuddenTerminationDisablerType disabler_type) {}

@@ -17,4 +17,10 @@ interface BackForwardCacheControllerHost {
   // Evicts the page from the back/forward cache due to e.g., JavaScript
   // execution and network request redirect.
   EvictFromBackForwardCache(RendererEvictionReason reason);
+
+  // Sent by the blink's FrameScheduler when a list of active features
+  // the scheduler tracks changes.
+  // See blink::scheduler::SchedulingPolicy::Feature for the meaning
+  // of the individual bits.
+  DidChangeBackForwardCacheDisablingFeatures(uint64 features_mask);
 };

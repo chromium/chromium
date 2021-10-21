@@ -8389,8 +8389,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) No-op feature update on a subframe while in cache, should be no-op.
   ASSERT_FALSE(delete_observer_rfh_b.deleted());
-  static_cast<blink::mojom::LocalFrameHost*>(rfh_b)
-      ->DidChangeActiveSchedulerTrackedFeatures(0);
+  rfh_b->DidChangeBackForwardCacheDisablingFeatures(0);
 
   // 4) Go back.
   web_contents()->GetController().GoBack();
