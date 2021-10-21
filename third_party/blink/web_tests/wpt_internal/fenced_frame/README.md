@@ -81,7 +81,7 @@ reads it. **No two tests should ever use the same key to communicate information
 to and from a fenced frame**, as this will cause server-side race conditions.
 
 For a good test example, see
-[window-parent.html](third_party/blink/web_tests/wpt_internal/fenced_frame/window-parent.html).
+[window-parent.html](window-parent.html).
 
 ## Underlying implementations
 
