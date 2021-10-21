@@ -244,15 +244,19 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     return std::move(this->Set##property_name(std::move(value)));             \
   }
 
-#define VIEW_BUILDER_METHOD(method_name)                                      \
-  BuilderT& method_name()& {                                                  \
+#define VIEW_BUILDER_METHOD(method_name, ...)                                 \
+  template <typename... Args>                                                 \
+  BuilderT& method_name(Args&&... args)& {                                    \
     auto caller = std::make_unique<::views::internal::ClassMethodCaller<      \
         ViewClass_, decltype(&ViewClass_::method_name),                       \
-        &ViewClass_::method_name>>();                                         \
+        &ViewClass_::method_name, __VA_ARGS__>>(std::forward<Args>(args)...); \
     ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(caller)); \
     return *static_cast<BuilderT*>(this);                                     \
   }                                                                           \
-  BuilderT&& method_name()&& { return std::move(this->method_name()); }
+  template <typename... Args>                                                 \
+  BuilderT&& method_name(Args&&... args)&& {                                  \
+    return std::move(this->method_name(std::forward<Args>(args)...));         \
+  }
 
 #define VIEW_BUILDER_VIEW_TYPE_PROPERTY(property_type, property_name)         \
   template <typename _View>                                                   \
