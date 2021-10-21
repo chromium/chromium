@@ -21,6 +21,13 @@
   #placeholder {
     font-size: inherit;
   }
+
+  #footer {
+    display: flex;
+    justify-content: center;
+    padding:
+        0 var(--cluster-padding-horizontal) var(--cluster-padding-vertical);
+  }
 </style>
 <div id="header" hidden="[[!headerText_]]">[[headerText_]]</div>
 <div id="placeholder" class="centered-message" hidden="[[!placeholderText_]]">
@@ -38,6 +45,12 @@
     </history-cluster>
   </template>
 </iron-list>
+<div id="footer" hidden="[[getLoadMoreButtonHidden_(
+    result_, result_.clusters.*, result_.continuationEndTime)]]">
+  <cr-button id="loadMoreButton" on-click="onLoadMoreButtonClick_">
+    $i18n{loadMoreButtonLabel}
+  </cr-button>
+</div>
 <iron-scroll-threshold id="scrollThreshold"
     lower-threshold="500" on-lower-threshold="onScrolledToBottom_">
 </iron-scroll-threshold>

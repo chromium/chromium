@@ -14,13 +14,15 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult, URLVisit} from './history_clusters.mojom-webui.js';
+import {Cluster, PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult, URLVisit} from './history_clusters.mojom-webui.js';
 import {ClusterAction, MetricsProxyImpl} from './metrics_proxy.js';
 
 /**
@@ -133,6 +135,10 @@ class HistoryClustersElement extends PolymerElement {
   connectedCallback() {
     super.connectedCallback();
 
+    // Register a per-document singleton focus outline manager. Some of our
+    // child elements depend on the CSS classes set by this singleton.
+    FocusOutlineManager.forDocument(document);
+
     this.$.clusters.notifyResize();
     this.$.clusters.scrollTarget = this;
     this.$.scrollThreshold.scrollTarget = this;
@@ -166,6 +172,16 @@ class HistoryClustersElement extends PolymerElement {
 
   private onConfirmationDialogCancel_() {
     this.visitsToBeRemoved_ = [];
+  }
+
+  private onLoadMoreButtonClick_() {
+    if (this.result_ && this.result_.continuationEndTime) {
+      this.queryClusters_({
+        query: this.result_.query,
+        maxCount: RESULTS_PER_PAGE,
+        endTime: this.result_.continuationEndTime,
+      });
+    }
   }
 
   private onRemoveButtonClick_() {
@@ -224,13 +240,17 @@ class HistoryClustersElement extends PolymerElement {
   private onScrolledToBottom_() {
     this.$.scrollThreshold.clearTriggers();
 
-    if (this.result_ && this.result_.continuationEndTime) {
-      this.queryClusters_({
-        query: this.result_.query,
-        maxCount: RESULTS_PER_PAGE,
-        endTime: this.result_.continuationEndTime,
-      });
+    if (this.shadowRoot!.querySelector(':focus-visible')) {
+      // If some element of ours is keyboard-focused, don't automatically load
+      // more clusters. It loses the user's position and messes up screen
+      // readers. Let the user manually click the "Load More" button, if needed.
+      // We use :focus-visible here, because :focus is triggered by mouse focus
+      // too. And `FocusOutlineManager.visible()` is too primitive. It's true
+      // on page load, and whenever the user is typing in the searchbox.
+      return;
     }
+
+    this.onLoadMoreButtonClick_();
   }
 
   //============================================================================
@@ -254,6 +274,19 @@ class HistoryClustersElement extends PolymerElement {
   }
 
   /**
+   * Returns true and hides the button unless we actually have more results to
+   * load. Note we don't actually hide this button based on keyboard-focus
+   * state. This is because if the user is using the mouse, more clusters are
+   * loaded before the user ever gets a chance to see this button.
+   */
+  private getLoadMoreButtonHidden_(
+      _result: QueryResult, _result_clusters: Array<Cluster>,
+      _result_continuation_time: Time): boolean {
+    return !this.result_ || this.result_.clusters.length === 0 ||
+        !this.result_.continuationEndTime;
+  }
+
+  /**
    * Returns a promise that resolves when the browser is idle.
    */
   private onBrowserIdle_(): Promise<void> {
@@ -269,7 +302,7 @@ class HistoryClustersElement extends PolymerElement {
       // Do not replace the existing result when `result` contains a partial
       // set of clusters that should be appended to the existing ones.
       this.push('result_.clusters', ...result.clusters);
-      this.result_.continuationEndTime = result.continuationEndTime;
+      this.set('result_.continuationEndTime', result.continuationEndTime);
     } else {
       // Scroll to the top when `result` contains a new set of clusters.
       this.scrollTop = 0;
@@ -292,7 +325,7 @@ class HistoryClustersElement extends PolymerElement {
     // updated with the results we just got.
     this.onBrowserIdle_().then(() => {
       if (this.scrollHeight <= this.clientHeight) {
-        this.onScrolledToBottom_();
+        this.onLoadMoreButtonClick_();
       }
     });
   }
