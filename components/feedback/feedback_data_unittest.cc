@@ -104,7 +104,8 @@ class FeedbackDataTest : public testing::Test {
   scoped_refptr<FeedbackData> data_;
 };
 
-TEST_F(FeedbackDataTest, ReportSending) {
+// TODO (crbug.com/1261932): Test is flaky. Please re-enable it when fixed.
+TEST_F(FeedbackDataTest, FLAKY_ReportSending) {
   data_->SetAndCompressHistograms(kHistograms);
   data_->set_image(kImageData);
   data_->AttachAndCompressFileData(kFileData);
