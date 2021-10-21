@@ -8,7 +8,6 @@
 # toolchain, this GNI file may be read and processed from within Chrome OS
 # toolchains. Checking |is_android| here would therefore be too restrictive.
 if (is_android || is_chromeos) {
-  import("//build/config/android/channel.gni")
   import("//build/config/chromecast_build.gni")
   import("//build/config/dcheck_always_on.gni")
   import("//build_overrides/build.gni")
@@ -284,8 +283,8 @@ if (is_android || is_chromeos) {
     # Enables trace event injection on Android views with bytecode rewriting.
     # This adds an additional step on android_app_bundle_module targets that
     # adds trace events to some methods in android.view.View subclasses.
-    enable_trace_event_bytecode_rewriting =
-        !is_java_debug && android_channel != "stable"
+    # TODO(salg): Change this value to `enable_proguard && is_official_build`
+    enable_trace_event_bytecode_rewriting = false
   }
 
   # Host stuff -----------------------------------------------------------------
