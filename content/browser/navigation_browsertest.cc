@@ -3508,8 +3508,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 // when performing a non-history navigation to decide if it's a same-document
 // navigation, so..
 // 6. The browser will perform a cross-document navigation to a.html#foo.
+//
+// TODO(https://crbug.com/1262032): Test is flaky on various platforms.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       SameDocumentNavigationRacesPushStateURLChange) {
+                       DISABLED_SameDocumentNavigationRacesPushStateURLChange) {
   WebContents* wc = shell()->web_contents();
   GURL url0 = embedded_test_server()->GetURL("/title1.html");
   GURL url1 = embedded_test_server()->GetURL("/title2.html");
