@@ -80,6 +80,8 @@ class SharingHubBubbleController
  private:
   friend class content::WebContentsUserData<SharingHubBubbleController>;
 
+  void UpdateIcon();
+
   SharingHubModel* GetSharingHubModel();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
