@@ -243,6 +243,7 @@ MEDIA_EXPORT extern const base::Feature kDirectShowGetPhotoState;
 MEDIA_EXPORT extern const base::Feature kIncludeIRCamerasInDeviceEnumeration;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationAsyncH264Encoding;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationAV1Decoding;
+MEDIA_EXPORT extern const base::Feature kMediaFoundationAV1Encoding;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationVideoCapture;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationVP8Decoding;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationD3D11VideoCapture;

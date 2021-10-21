@@ -116,6 +116,23 @@ bool IsSvcSupported(IMFActivate* activate) {
 #endif  // defined(ARCH_CPU_X86)
 }
 
+GUID VideoCodecToMFSubtype(VideoCodec codec) {
+  switch (codec) {
+    case VideoCodec::kH264:
+      return MFVideoFormat_H264;
+    case VideoCodec::kVP8:
+      return MFVideoFormat_VP80;
+    case VideoCodec::kVP9:
+      return MFVideoFormat_VP90;
+    case VideoCodec::kHEVC:
+      return MFVideoFormat_HEVC;
+    case VideoCodec::kAV1:
+      return MFVideoFormat_AV1;
+    default:
+      return GUID_NULL;
+  }
+}
+
 }  // namespace
 
 class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
@@ -192,13 +209,26 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
   SupportedProfiles profiles;
   bitrate_ = Bitrate::ConstantBitrate(kDefaultTargetBitrate);
   frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
+
+  auto h264_profiles = GetSupportedProfilesForCodec(VideoCodec::kH264);
+  profiles.insert(profiles.end(), h264_profiles.begin(), h264_profiles.end());
+  if (base::FeatureList::IsEnabled(kMediaFoundationAV1Encoding)) {
+    auto av1_profiles = GetSupportedProfilesForCodec(VideoCodec::kAV1);
+    profiles.insert(profiles.end(), av1_profiles.begin(), av1_profiles.end());
+  }
+  ReleaseEncoderResources();
+  return profiles;
+}
+
+VideoEncodeAccelerator::SupportedProfiles
+MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
+    VideoCodec codec) {
+  SupportedProfiles profiles;
   IMFActivate** pp_activate = nullptr;
-  uint32_t encoder_count = EnumerateHardwareEncoders(&pp_activate);
+  uint32_t encoder_count = EnumerateHardwareEncoders(codec, &pp_activate);
   if (!encoder_count) {
-    ReleaseEncoderResources();
     DVLOG(1)
         << "Hardware encode acceleration is not available on this platform.";
-
     return profiles;
   }
 
@@ -219,12 +249,10 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
     }
     CoTaskMemFree(pp_activate);
   }
-  ReleaseEncoderResources();
 
   SupportedProfile profile;
   // More profiles can be supported here, but they should be available in SW
   // fallback as well.
-  profile.profile = H264PROFILE_BASELINE;
   profile.max_framerate_numerator = kMaxFrameRateNumerator;
   profile.max_framerate_denominator = kMaxFrameRateDenominator;
   profile.max_resolution = gfx::Size(kMaxResolutionWidth, kMaxResolutionHeight);
@@ -232,14 +260,19 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
   }
-  profiles.push_back(profile);
+  if (codec == VideoCodec::kH264) {
+    profile.profile = H264PROFILE_BASELINE;
+    profiles.push_back(profile);
 
-  profile.profile = H264PROFILE_MAIN;
-  profiles.push_back(profile);
+    profile.profile = H264PROFILE_MAIN;
+    profiles.push_back(profile);
 
-  profile.profile = H264PROFILE_HIGH;
-  profiles.push_back(profile);
-
+    profile.profile = H264PROFILE_HIGH;
+    profiles.push_back(profile);
+  } else if (codec == VideoCodec::kAV1) {
+    profile.profile = AV1PROFILE_PROFILE_MAIN;
+    profiles.push_back(profile);
+  }
   return profiles;
 }
 
@@ -255,8 +288,19 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  if (GetH264VProfile(config.output_profile, config.is_constrained_h264) ==
-      eAVEncH264VProfile_unknown) {
+  if (config.output_profile >= H264PROFILE_MIN &&
+      config.output_profile <= H264PROFILE_MAX) {
+    if (GetH264VProfile(config.output_profile, config.is_constrained_h264) ==
+        eAVEncH264VProfile_unknown) {
+      DLOG(ERROR) << "Output profile not supported= " << config.output_profile;
+      return false;
+    }
+    codec_ = VideoCodec::kH264;
+  } else if (config.output_profile == AV1PROFILE_PROFILE_MAIN) {
+    codec_ = VideoCodec::kAV1;
+  }
+
+  if (codec_ == VideoCodec::kUnknown) {
     DLOG(ERROR) << "Output profile not supported= " << config.output_profile;
     return false;
   }
@@ -268,7 +312,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
   }
   encoder_thread_task_runner_ = encoder_thread_.task_runner();
   IMFActivate** pp_activate = nullptr;
-  uint32_t encoder_count = EnumerateHardwareEncoders(&pp_activate);
+  uint32_t encoder_count = EnumerateHardwareEncoders(codec_, &pp_activate);
   if (!encoder_count) {
     DLOG(ERROR) << "Failed finding a hardware encoder MFT.";
     return false;
@@ -489,6 +533,7 @@ bool MediaFoundationVideoEncodeAccelerator::PreSandboxInitialization() {
 }
 
 uint32_t MediaFoundationVideoEncodeAccelerator::EnumerateHardwareEncoders(
+    VideoCodec codec,
     IMFActivate*** pp_activate) {
   DVLOG(3) << __func__;
   DCHECK(main_client_task_runner_->BelongsToCurrentThread());
@@ -496,6 +541,11 @@ uint32_t MediaFoundationVideoEncodeAccelerator::EnumerateHardwareEncoders(
   if (!compatible_with_win7_ &&
       base::win::GetVersion() < base::win::Version::WIN8) {
     DVLOG(ERROR) << "Windows versions earlier than 8 are not supported.";
+    return 0;
+  }
+
+  if (codec != VideoCodec::kH264 && codec != VideoCodec::kAV1) {
+    DVLOG(ERROR) << "Enumerating unsupported hardware encoders.";
     return 0;
   }
 
@@ -515,7 +565,7 @@ uint32_t MediaFoundationVideoEncodeAccelerator::EnumerateHardwareEncoders(
   input_info.guidSubtype = MFVideoFormat_NV12;
   MFT_REGISTER_TYPE_INFO output_info;
   output_info.guidMajorType = MFMediaType_Video;
-  output_info.guidSubtype = MFVideoFormat_H264;
+  output_info.guidSubtype = VideoCodecToMFSubtype(codec);
 
   uint32_t count = 0;
   HRESULT hr = E_FAIL;
@@ -654,7 +704,8 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeInputOutputParameters(
   RETURN_ON_HR_FAILURE(hr, "Couldn't create output media type", false);
   hr = imf_output_media_type_->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
   RETURN_ON_HR_FAILURE(hr, "Couldn't set media type", false);
-  hr = imf_output_media_type_->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_H264);
+  hr = imf_output_media_type_->SetGUID(MF_MT_SUBTYPE,
+                                       VideoCodecToMFSubtype(codec_));
   RETURN_ON_HR_FAILURE(hr, "Couldn't set video format", false);
   hr = imf_output_media_type_->SetUINT32(MF_MT_AVG_BITRATE, bitrate_.target());
   RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
@@ -668,9 +719,11 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeInputOutputParameters(
   hr = imf_output_media_type_->SetUINT32(MF_MT_INTERLACE_MODE,
                                          MFVideoInterlace_Progressive);
   RETURN_ON_HR_FAILURE(hr, "Couldn't set interlace mode", false);
-  hr = imf_output_media_type_->SetUINT32(
-      MF_MT_MPEG2_PROFILE,
-      GetH264VProfile(output_profile, is_constrained_h264));
+  if (codec_ == VideoCodec::kH264) {
+    hr = imf_output_media_type_->SetUINT32(
+        MF_MT_MPEG2_PROFILE,
+        GetH264VProfile(output_profile, is_constrained_h264));
+  }
   RETURN_ON_HR_FAILURE(hr, "Couldn't set codec profile", false);
   hr = encoder_->SetOutputType(output_stream_id_, imf_output_media_type_.Get(),
                                0);
@@ -1152,7 +1205,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutputAsync() {
   output_data_buffer.pSample = nullptr;
 
   BitstreamBufferMetadata md(size, keyframe, timestamp);
-  if (temporalScalableCoding())
+  if (codec_ == VideoCodec::kH264 && temporalScalableCoding())
     md.h264.emplace().temporal_idx = temporal_id;
   main_client_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Client::BitstreamBufferReady, main_client_,

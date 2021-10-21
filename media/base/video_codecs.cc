@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/video_color_space.h"
+#include "ui/gfx/color_space.h"
 
 namespace media {
 

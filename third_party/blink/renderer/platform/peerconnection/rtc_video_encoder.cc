@@ -356,6 +356,9 @@ webrtc::VideoCodecType ProfileToWebRtcVideoCodecType(
   } else if (profile >= media::H264PROFILE_MIN &&
              profile <= media::H264PROFILE_MAX) {
     return webrtc::kVideoCodecH264;
+  } else if (profile >= media::AV1PROFILE_MIN &&
+             profile <= media::AV1PROFILE_MAX) {
+    return webrtc::kVideoCodecAV1;
   }
   NOTREACHED() << "Invalid profile " << GetProfileName(profile);
   return webrtc::kVideoCodecGeneric;

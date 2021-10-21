@@ -44,6 +44,8 @@ absl::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
     return media::VideoCodecProfile::VP8PROFILE_MIN;
   } else if (sdp.name == "VP9") {
     return media::VideoCodecProfile::VP9PROFILE_MIN;
+  } else if (sdp.name == "AV1") {
+    return media::VideoCodecProfile::AV1PROFILE_MIN;
   }
   return absl::nullopt;
 }
@@ -135,6 +137,11 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         {webrtc::kVP9FmtpProfileId,
          webrtc::VP9ProfileToString(vp9_profile)}};
     return format;
+  }
+
+  if (profile.profile >= media::AV1PROFILE_MIN &&
+      profile.profile <= media::AV1PROFILE_MAX) {
+    return webrtc::SdpVideoFormat("AV1");
   }
 
   return absl::nullopt;

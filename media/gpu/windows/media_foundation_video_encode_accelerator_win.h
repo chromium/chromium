@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "media/base/bitrate.h"
+#include "media/base/video_codecs.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
@@ -70,8 +71,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Holds output buffers coming from the encoder.
   class EncodeOutput;
 
-  // Enumerates all hardware encoder backed IMFTransform instances.
-  uint32_t EnumerateHardwareEncoders(IMFActivate*** pp_activate);
+  // Get supported profiles for specific codec.
+  VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesForCodec(
+      VideoCodec codec);
+
+  // Enumerates all hardware encoder backed IMFTransform instances for given
+  // codec.
+  uint32_t EnumerateHardwareEncoders(VideoCodec codec,
+                                     IMFActivate*** pp_activate);
 
   // Activates the asynchronous encoder instance |encoder_| according to codec
   // merit.
@@ -161,6 +168,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   Bitrate bitrate_;
   bool low_latency_mode_;
   int num_temporal_layers_ = 1;
+
+  // Codec type used for encoding.
+  VideoCodec codec_ = VideoCodec::kUnknown;
 
   // Group of picture length for encoded output stream, indicates the
   // distance between two key frames.
