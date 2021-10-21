@@ -89,6 +89,9 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
     return base::Contains(*supported_features, feature);
   }
   gfx::NativeView GetHostView() const override { return nullptr; }
+  bool BrowserIsSystemWebApp() const override { return false; }
+  bool BrowserIsWebApp() const override { return false; }
+  bool BrowserIsTypeApp() const override { return false; }
   bool BrowserIsTypeNormal() const override { return true; }
   bool HasFindBarController() const override { return false; }
   void MoveWindowForFindBarIfNecessary() const override {}

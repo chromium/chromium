@@ -562,6 +562,18 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return browser_view_->GetWidget()->GetNativeView();
   }
 
+  bool BrowserIsSystemWebApp() const override {
+    return browser_view_->browser()->app_controller()->system_app();
+  }
+
+  bool BrowserIsWebApp() const override {
+    return browser_view_->GetIsWebAppType();
+  }
+
+  bool BrowserIsTypeApp() const override {
+    return browser_view_->browser()->is_type_app();
+  }
+
   bool BrowserIsTypeNormal() const override {
     return browser_view_->browser()->is_type_normal();
   }

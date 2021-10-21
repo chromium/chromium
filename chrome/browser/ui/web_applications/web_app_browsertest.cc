@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWASizeIsCorrectlyRestored) {
   EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
   NavigateToURLAndWait(app_browser, app_url);
 
-  const gfx::Rect bounds = gfx::Rect(50, 50, 500, 500);
+  const gfx::Rect bounds = gfx::Rect(50, 50, 550, 500);
   app_browser->window()->SetBounds(bounds);
   app_browser->window()->Close();
 
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
   EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
   NavigateToURLAndWait(app_browser, app_url);
 
-  const gfx::Rect bounds = gfx::Rect(50, 50, 500, 500);
+  const gfx::Rect bounds = gfx::Rect(50, 50, 550, 500);
   app_browser->window()->SetBounds(bounds);
   app_browser->window()->Close();
 
