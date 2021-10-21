@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/org/robolectric/annotations/4.3.1/annotations-4.3.1.jar'
-_FILE_NAME = 'annotations-4.3.1.jar'
-_FILE_VERSION = '4.3.1'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/org/robolectric/annotations/4.6.1/annotations-4.6.1.jar'
+_FILE_NAME = 'annotations-4.6.1.jar'
+_FILE_VERSION = '4.6.1'
 
 
 def do_latest():

@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/com/google/auto/value/auto-value-annotations/1.7/auto-value-annotations-1.7.jar'
-_FILE_NAME = 'auto-value-annotations-1.7.jar'
-_FILE_VERSION = '1.7'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/com/google/auto/value/auto-value-annotations/1.7.4/auto-value-annotations-1.7.4.jar'
+_FILE_NAME = 'auto-value-annotations-1.7.4.jar'
+_FILE_VERSION = '1.7.4'
 
 
 def do_latest():
