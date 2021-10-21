@@ -70,6 +70,8 @@ class OAuthMultiloginResult {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(OAuthMultiloginResultTest, TryParseCookiesFromValue);
+  FRIEND_TEST_ALL_PREFIXES(OAuthMultiloginResultTest,
+                           ParseRealResponseFromGaia_2021_10);
 
   // Response body that has a form of JSON contains protection characters
   // against XSSI that have to be removed. See go/xssi.
