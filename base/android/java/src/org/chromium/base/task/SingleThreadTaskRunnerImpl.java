@@ -9,9 +9,14 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.metrics.RecordHistogram;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Implementation of the abstract class {@link SingleThreadTaskRunner}. Before native initialization
@@ -23,6 +28,19 @@ public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements Single
     @Nullable
     private final Handler mHandler;
     private final boolean mPostPreNativeTasksAtFrontOfQueue;
+
+    // These values are persisted in histograms. Please do not renumber. Append only.
+    @IntDef({PreNativeTaskPostType.POSTED_AT_BACK_OF_QUEUE,
+            PreNativeTaskPostType.POSTED_AT_FRONT_OF_QUEUE,
+            PreNativeTaskPostType.DEFERRED_TO_NATIVE_INIT, PreNativeTaskPostType.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface PreNativeTaskPostType {
+        int POSTED_AT_BACK_OF_QUEUE = 0;
+        int POSTED_AT_FRONT_OF_QUEUE = 1;
+        int DEFERRED_TO_NATIVE_INIT = 2;
+
+        int NUM_ENTRIES = 3;
+    }
 
     /**
      * @param handler                The backing Handler if any. Note this must run tasks on the
@@ -57,10 +75,22 @@ public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements Single
     protected void schedulePreNativeTask() {
         // if |mHandler| is null then pre-native task execution is not supported.
         if (mHandler == null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.TaskScheduling.PreNativeTaskPostType",
+                    PreNativeTaskPostType.DEFERRED_TO_NATIVE_INIT,
+                    PreNativeTaskPostType.NUM_ENTRIES);
             return;
         } else if (mPostPreNativeTasksAtFrontOfQueue) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.TaskScheduling.PreNativeTaskPostType",
+                    PreNativeTaskPostType.POSTED_AT_FRONT_OF_QUEUE,
+                    PreNativeTaskPostType.NUM_ENTRIES);
             postAtFrontOfQueue();
         } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.TaskScheduling.PreNativeTaskPostType",
+                    PreNativeTaskPostType.POSTED_AT_BACK_OF_QUEUE,
+                    PreNativeTaskPostType.NUM_ENTRIES);
             mHandler.post(mRunPreNativeTaskClosure);
         }
     }
