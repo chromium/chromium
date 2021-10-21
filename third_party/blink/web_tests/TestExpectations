@@ -578,6 +578,9 @@ crbug.com/1207960 [ Linux ] compositing/perspective-interest-rect.html [ Failure
 crbug.com/954591 external/wpt/css/css-transforms/composited-under-rotateY-180deg.html [ Failure ]
 crbug.com/954591 external/wpt/css/css-transforms/composited-under-rotateY-180deg-clip.html [ Failure ]
 
+crbug.com/1261905 external/wpt/css/css-transforms/backface-visibility-hidden-child-will-change-transform.html [ Failure ]
+crbug.com/1261905 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-child-translate.html [ Failure ]
+
 # Fixed in CompositeAfterPaint.
 crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Crash Failure Pass ]
 crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Failure ]

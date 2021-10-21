@@ -1077,10 +1077,18 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
           CompositingReasonsForTransformProperty();
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
-      state.backface_visibility =
-          object_.HasHiddenBackface()
-              ? TransformPaintPropertyNode::BackfaceVisibility::kHidden
-              : TransformPaintPropertyNode::BackfaceVisibility::kVisible;
+      if (object_.HasHiddenBackface()) {
+        state.backface_visibility =
+            TransformPaintPropertyNode::BackfaceVisibility::kHidden;
+      } else if (state.direct_compositing_reasons != CompositingReason::kNone) {
+        // The above condition fixes a CompositeAfterPaint regression
+        // (crbug.com/1260603) by letting non-directly-composited transforms
+        // inherit parent's backface visibility.
+        // TODO(crbug.com/1261905): Fix the the root cause, and revisit the
+        // above condition and make it at least more web developer friendly.
+        state.backface_visibility =
+            TransformPaintPropertyNode::BackfaceVisibility::kVisible;
+      }
       state.compositor_element_id = GetCompositorElementId(
           CompositorElementIdNamespace::kPrimaryTransform);
 
