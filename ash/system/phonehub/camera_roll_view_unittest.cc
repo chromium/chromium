@@ -21,16 +21,6 @@ class CameraRollViewTest : public AshTestBase {
   ~CameraRollViewTest() override = default;
 
   // AshTestBase:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    fake_camera_roll_manager_ =
-        std::make_unique<chromeos::phonehub::FakeCameraRollManager>();
-    fake_user_action_recorder_ =
-        std::make_unique<chromeos::phonehub::FakeUserActionRecorder>();
-    camera_roll_view_ = std::make_unique<CameraRollView>(
-        fake_camera_roll_manager_.get(), fake_user_action_recorder_.get());
-  }
-
   void TearDown() override {
     camera_roll_view_.reset();
     fake_camera_roll_manager_.reset();
@@ -44,6 +34,21 @@ class CameraRollViewTest : public AshTestBase {
 
   chromeos::phonehub::FakeCameraRollManager* fake_camera_roll_manager() {
     return fake_camera_roll_manager_.get();
+  }
+
+  void PresetCameraRollOptInState(bool has_been_dismissed,
+                                  bool can_be_enabled) {
+    fake_camera_roll_manager_ =
+        std::make_unique<chromeos::phonehub::FakeCameraRollManager>();
+    if (has_been_dismissed) {
+      fake_camera_roll_manager_->OnCameraRollOnboardingUiDismissed();
+    }
+    fake_camera_roll_manager_->SetIsCameraRollAvailableToBeEnabled(
+        can_be_enabled);
+    fake_user_action_recorder_ =
+        std::make_unique<chromeos::phonehub::FakeUserActionRecorder>();
+    camera_roll_view_ = std::make_unique<CameraRollView>(
+        fake_camera_roll_manager_.get(), fake_user_action_recorder_.get());
   }
 
   const std::vector<chromeos::phonehub::CameraRollItem> CreateFakeItems(
@@ -83,7 +88,43 @@ class CameraRollViewTest : public AshTestBase {
       fake_camera_roll_manager_;
 };
 
+TEST_F(CameraRollViewTest, DisplayOptInView) {
+  PresetCameraRollOptInState(/*has_been_dismissed=*/false,
+                             /*can_be_enabled=*/true);
+
+  fake_camera_roll_manager()->ClearCurrentItems();
+  EXPECT_TRUE(camera_roll_view()->GetVisible());
+  EXPECT_TRUE(camera_roll_view()->opt_in_view_->GetVisible());
+}
+
+TEST_F(CameraRollViewTest, OptInAlready) {
+  PresetCameraRollOptInState(/*has_been_dismissed=*/false,
+                             /*can_be_enabled=*/false);
+
+  fake_camera_roll_manager()->ClearCurrentItems();
+  EXPECT_FALSE(camera_roll_view()->GetVisible());
+
+  fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(1));
+  EXPECT_TRUE(camera_roll_view()->GetVisible());
+  EXPECT_FALSE(camera_roll_view()->opt_in_view_->GetVisible());
+  EXPECT_TRUE(camera_roll_view()->items_view_->GetVisible());
+}
+
+TEST_F(CameraRollViewTest, OptInAndDismissed) {
+  PresetCameraRollOptInState(/*has_been_dismissed=*/true,
+                             /*can_be_enabled=*/true);
+
+  fake_camera_roll_manager()->ClearCurrentItems();
+  EXPECT_FALSE(camera_roll_view()->GetVisible());
+  // Setting disabled, shouldn't display anything even if there are camera roll
+  // items
+  fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(1));
+  EXPECT_FALSE(camera_roll_view()->GetVisible());
+}
+
 TEST_F(CameraRollViewTest, ViewVisibility) {
+  PresetCameraRollOptInState(/*has_been_dismissed=*/true,
+                             /*can_be_enabled=*/false);
   // The camera roll view is not visible if there are no items available and
   // visible when there are one or more items available.
   fake_camera_roll_manager()->ClearCurrentItems();
@@ -97,6 +138,8 @@ TEST_F(CameraRollViewTest, ViewVisibility) {
 }
 
 TEST_F(CameraRollViewTest, SingleItem) {
+  PresetCameraRollOptInState(/*has_been_dismissed=*/true,
+                             /*can_be_enabled=*/false);
   // Set 1 camera roll item.
   size_t expected_size = 1;
   fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(expected_size));
@@ -104,6 +147,8 @@ TEST_F(CameraRollViewTest, SingleItem) {
 }
 
 TEST_F(CameraRollViewTest, MultipleItems) {
+  PresetCameraRollOptInState(/*has_been_dismissed=*/true,
+                             /*can_be_enabled=*/false);
   // Set 4 camera roll items.
   size_t expected_size = 4;
   fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(expected_size));
@@ -111,6 +156,8 @@ TEST_F(CameraRollViewTest, MultipleItems) {
 }
 
 TEST_F(CameraRollViewTest, ViewLayout) {
+  PresetCameraRollOptInState(/*has_been_dismissed=*/true,
+                             /*can_be_enabled=*/false);
   // Test the layout size and positions of the items. If the layout is being
   // intentionally changed this test will need to be updated.
   fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(4));
@@ -127,6 +174,8 @@ TEST_F(CameraRollViewTest, ViewLayout) {
 }
 
 TEST_F(CameraRollViewTest, AccessibleNameAndTooltip) {
+  PresetCameraRollOptInState(/*has_been_dismissed=*/true,
+                             /*can_be_enabled=*/false);
   fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(4));
 
   EXPECT_EQ(u"Recent photo 1 of 4.", GetThumbnailView(0)->GetAccessibleName());

@@ -84,6 +84,9 @@ CameraRollView::CameraRollView(
   AddChildView(std::make_unique<HeaderView>());
   items_view_ = AddChildView(std::make_unique<CameraRollItemsView>());
 
+  opt_in_view_ =
+      AddChildView(std::make_unique<CameraRollOptInView>(camera_roll_manager_));
+
   Update();
   camera_roll_manager_->AddObserver(this);
 }
@@ -92,7 +95,7 @@ CameraRollView::~CameraRollView() {
   camera_roll_manager_->RemoveObserver(this);
 }
 
-void CameraRollView::OnCameraRollItemsChanged() {
+void CameraRollView::OnCameraRollViewUiStateUpdated() {
   Update();
 }
 
@@ -165,32 +168,42 @@ void CameraRollView::CameraRollItemsView::CalculateIdealBounds() {
 
 void CameraRollView::Update() {
   items_view_->Reset();
+  chromeos::phonehub::CameraRollManager::CameraRollUiState current_ui_state =
+      camera_roll_manager_->ui_state();
 
-  const std::vector<chromeos::phonehub::CameraRollItem> camera_roll_items =
-      camera_roll_manager_->current_items();
+  switch (current_ui_state) {
+    case chromeos::phonehub::CameraRollManager::CameraRollUiState::SHOULD_HIDE:
+      SetVisible(false);
+      break;
+    case chromeos::phonehub::CameraRollManager::CameraRollUiState::CAN_OPT_IN:
+      opt_in_view_->SetVisible(true);
+      items_view_->SetVisible(false);
+      SetVisible(true);
+      break;
+    case chromeos::phonehub::CameraRollManager::CameraRollUiState::
+        ITEMS_VISIBLE:
+      opt_in_view_->SetVisible(false);
+      items_view_->SetVisible(true);
+      SetVisible(true);
+      const std::vector<chromeos::phonehub::CameraRollItem> camera_roll_items =
+          camera_roll_manager_->current_items();
+      for (size_t index = 0; index < camera_roll_items.size(); index++) {
+        CameraRollThumbnail* item_thumbnail = new CameraRollThumbnail(
+            index, camera_roll_items.at(index), camera_roll_manager_,
+            user_action_recorder_);
 
-  if (camera_roll_items.empty()) {
-    SetVisible(false);
-    return;
-  }
-
-  for (size_t index = 0; index < camera_roll_items.size(); index++) {
-    CameraRollThumbnail* item_thumbnail =
-        new CameraRollThumbnail(index, camera_roll_items.at(index),
-                                camera_roll_manager_, user_action_recorder_);
-
-    const std::u16string accessible_name = l10n_util::GetStringFUTF16(
-        IDS_ASH_PHONE_HUB_CAMERA_ROLL_THUMBNAIL_ACCESSIBLE_NAME,
-        base::NumberToString16(index + 1),
-        base::NumberToString16(camera_roll_items.size()));
-    item_thumbnail->SetAccessibleName(accessible_name);
-    item_thumbnail->SetTooltipText(accessible_name);
-
-    items_view_->AddCameraRollItem(item_thumbnail);
+        const std::u16string accessible_name = l10n_util::GetStringFUTF16(
+            IDS_ASH_PHONE_HUB_CAMERA_ROLL_THUMBNAIL_ACCESSIBLE_NAME,
+            base::NumberToString16(index + 1),
+            base::NumberToString16(camera_roll_items.size()));
+        item_thumbnail->SetAccessibleName(accessible_name);
+        item_thumbnail->SetTooltipText(accessible_name);
+        items_view_->AddCameraRollItem(item_thumbnail);
+      }
+      break;
   }
 
   PreferredSizeChanged();
-  SetVisible(true);
 }
 
 }  // namespace ash
