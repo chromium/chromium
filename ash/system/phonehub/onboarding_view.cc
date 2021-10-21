@@ -208,7 +208,7 @@ void OnboardingView::ShowDismissPrompt() {
 
   LogInterstitialScreenEvent(InterstitialScreenEvent::kShown);
 
-  RemoveChildView(main_view_);
+  RemoveChildViewT(main_view_);
   main_view_ = AddChildView(
       std::make_unique<OnboardingDismissPromptView>(onboarding_ui_tracker_));
 

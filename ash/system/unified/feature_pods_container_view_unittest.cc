@@ -61,11 +61,14 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
   }
 
  protected:
+  void AddButton(FeaturePodButton* button) {
+    buttons_.push_back(button);
+    container()->AddChildView(button);
+  }
+
   void AddButtons(int count) {
-    for (int i = 0; i < count; ++i) {
-      buttons_.push_back(new FeaturePodButton(this));
-      container()->AddChildView(buttons_.back());
-    }
+    for (int i = 0; i < count; ++i)
+      AddButton(new FeaturePodButton(this));
     container()->SetBoundsRect(gfx::Rect(container_->GetPreferredSize()));
     container()->Layout();
   }
@@ -438,7 +441,7 @@ TEST_F(FeaturePodsContainerViewTest, PaginationMouseWheelHandling) {
 
 TEST_F(FeaturePodsContainerViewTest, NonTogglableButton) {
   // Add one togglable and one non-tobblable button.
-  buttons_.push_back(new FeaturePodButton(this, /*is_togglable=*/false));
+  AddButton(new FeaturePodButton(this, /*is_togglable=*/false));
   AddButtons(1);
 
   // Non-togglable buttons should be labelled as a regular button for

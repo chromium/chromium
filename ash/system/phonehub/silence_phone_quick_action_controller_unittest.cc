@@ -24,10 +24,11 @@ class SilencePhoneQuickActionControllerTest : public AshTestBase {
     controller_ = std::make_unique<SilencePhoneQuickActionController>(
         dnd_controller_.get());
 
-    controller_->CreateItem();
+    item_ = base::WrapUnique(controller_->CreateItem());
   }
 
   void TearDown() override {
+    item_.reset();
     controller_.reset();
     dnd_controller_.reset();
     AshTestBase::TearDown();
@@ -46,6 +47,7 @@ class SilencePhoneQuickActionControllerTest : public AshTestBase {
   }
 
  private:
+  std::unique_ptr<QuickActionItem> item_;
   std::unique_ptr<SilencePhoneQuickActionController> controller_;
   std::unique_ptr<chromeos::phonehub::FakeDoNotDisturbController>
       dnd_controller_;

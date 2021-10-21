@@ -177,7 +177,7 @@ gfx::ImageSkia GetImageForIndex(ImageType image_type,
       kUnifiedTrayNetworkIconPadding);
 }
 
-gfx::ImageSkia* ConnectingWirelessImage(ImageType image_type,
+gfx::ImageSkia& ConnectingWirelessImage(ImageType image_type,
                                         IconType icon_type,
                                         double animation) {
   // Connecting icons animate by adjusting their signal strength up and down,
@@ -188,7 +188,7 @@ gfx::ImageSkia* ConnectingWirelessImage(ImageType image_type,
   // the key is a tuple including a bool representing whether the icon displays
   // bars (as oppose to arcs), the IconType, and an int representing the index
   // of the image (with respect to GetImageForIndex()).
-  static base::flat_map<std::tuple<bool, IconType, int>, gfx::ImageSkia*>
+  static base::flat_map<std::tuple<bool, IconType, int>, gfx::ImageSkia>
       s_image_cache;
 
   // Note that if |image_type| is NONE, arcs are displayed by default.
@@ -205,7 +205,7 @@ gfx::ImageSkia* ConnectingWirelessImage(ImageType image_type,
     // TODO(estade): should the alpha be applied in SignalStrengthImageSource?
     gfx::ImageSkia source = GetImageForIndex(image_type, icon_type, index + 1);
     s_image_cache[map_key] =
-        new gfx::ImageSkia(gfx::ImageSkiaOperations::CreateTransparentImage(
+        gfx::ImageSkia(gfx::ImageSkiaOperations::CreateTransparentImage(
             source, kConnectingImageAlpha));
   }
 
@@ -536,7 +536,7 @@ gfx::ImageSkia GetConnectingImageForNetworkType(NetworkType network_type,
   double animation = NetworkIconAnimation::GetInstance()->GetAnimation();
 
   return CreateNetworkIconImage(
-      *ConnectingWirelessImage(image_type, icon_type, animation), Badges());
+      ConnectingWirelessImage(image_type, icon_type, animation), Badges());
 }
 
 gfx::ImageSkia GetConnectedNetworkWithConnectingVpnImage(
