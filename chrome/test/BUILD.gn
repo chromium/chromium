@@ -187,35 +187,6 @@ static_library("test_support") {
     "base/web_feature_histogram_tester.h",
   ]
 
-  if (is_mac) {
-    sources += [
-      "base/launchservices_utils_mac.h",
-      "base/launchservices_utils_mac.mm",
-      "base/scoped_bundle_swizzler_mac.h",
-      "base/scoped_bundle_swizzler_mac.mm",
-    ]
-  }
-
-  if (is_win) {
-    sources += [
-      "base/process_inspector_win.cc",
-      "base/process_inspector_win.h",
-      "base/process_lineage_win.cc",
-      "base/process_lineage_win.h",
-    ]
-  }
-
-  if (!is_android) {
-    sources += [
-      "../browser/banners/test_app_banner_manager_desktop.cc",
-      "../browser/banners/test_app_banner_manager_desktop.h",
-      "../browser/renderer_context_menu/render_view_context_menu_test_util.cc",
-      "../browser/renderer_context_menu/render_view_context_menu_test_util.h",
-      "../browser/themes/test/theme_service_changed_waiter.cc",
-      "../browser/themes/test/theme_service_changed_waiter.h",
-    ]
-  }
-
   if (is_chrome_branded &&
       (is_mac || is_win || (is_posix && !is_android && !is_chromeos_ash) ||
        is_fuchsia)) {
@@ -381,9 +352,20 @@ static_library("test_support") {
       "//extensions/common:test_support",
       "//ui/snapshot",
     ]
+
+    deps += [ "//components/constrained_window" ]
+
     sources += [
+      "../browser/banners/test_app_banner_manager_desktop.cc",
+      "../browser/banners/test_app_banner_manager_desktop.h",
+      "../browser/renderer_context_menu/render_view_context_menu_test_util.cc",
+      "../browser/renderer_context_menu/render_view_context_menu_test_util.h",
+      "../browser/themes/test/theme_service_changed_waiter.cc",
+      "../browser/themes/test/theme_service_changed_waiter.h",
       "../browser/ui/tabs/pinned_tab_test_utils.cc",
       "../browser/ui/tabs/pinned_tab_test_utils.h",
+      "../test/base/browser_with_test_window_test.cc",
+      "../test/base/browser_with_test_window_test.h",
       "base/dialog_test_browser_window.cc",
       "base/dialog_test_browser_window.h",
       "base/test_browser_window.cc",
@@ -400,6 +382,10 @@ static_library("test_support") {
     sources += [
       "//chrome/app/chrome_crash_reporter_client.cc",
       "//chrome/app/chrome_crash_reporter_client_mac.mm",
+      "base/launchservices_utils_mac.h",
+      "base/launchservices_utils_mac.mm",
+      "base/scoped_bundle_swizzler_mac.h",
+      "base/scoped_bundle_swizzler_mac.mm",
     ]
     deps += [
       "//build:branding_buildflags",
@@ -434,6 +420,10 @@ static_library("test_support") {
       "../browser/webshare/win/scoped_share_operation_fake_components.cc",
       "../browser/webshare/win/scoped_share_operation_fake_components.h",
       "//chrome/app/chrome_crash_reporter_client_win.cc",
+      "base/process_inspector_win.cc",
+      "base/process_inspector_win.h",
+      "base/process_lineage_win.cc",
+      "base/process_lineage_win.h",
     ]
     public_deps += [
       "//chrome/chrome_elf:crash",
@@ -523,6 +513,7 @@ static_library("test_support") {
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
       "//chromeos/services/machine_learning/public/cpp:stub",
+      "//chromeos/ui/base",
       "//components/account_manager_core:test_support",
     ]
   }
@@ -582,10 +573,14 @@ static_library("test_support") {
     sources += [
       "../browser/extensions/browsertest_util.cc",
       "../browser/extensions/browsertest_util.h",
+      "../browser/extensions/extension_api_unittest.cc",
+      "../browser/extensions/extension_api_unittest.h",
       "../browser/extensions/extension_apitest.cc",
       "../browser/extensions/extension_apitest.h",
       "../browser/extensions/extension_browsertest.cc",
       "../browser/extensions/extension_browsertest.h",
+      "../browser/extensions/extension_function_test_utils.cc",
+      "../browser/extensions/extension_function_test_utils.h",
       "../browser/extensions/permissions_test_util.cc",
       "../browser/extensions/permissions_test_util.h",
       "../browser/extensions/test_extension_environment.cc",
@@ -6044,8 +6039,6 @@ test("unit_tests") {
       "../common/importer/mock_importer_bridge.cc",
       "../common/importer/mock_importer_bridge.h",
       "../renderer/searchbox/searchbox_unittest.cc",
-      "../test/base/browser_with_test_window_test.cc",
-      "../test/base/browser_with_test_window_test.h",
       "../utility/importer/bookmark_html_reader_unittest.cc",
       "../utility/importer/bookmarks_file_importer_unittest.cc",
 
@@ -6757,13 +6750,9 @@ test("unit_tests") {
       "../browser/extensions/extension_action_icon_factory_unittest.cc",
       "../browser/extensions/extension_action_runner_unittest.cc",
       "../browser/extensions/extension_allowlist_unittest.cc",
-      "../browser/extensions/extension_api_unittest.cc",
-      "../browser/extensions/extension_api_unittest.h",
       "../browser/extensions/extension_context_menu_model_unittest.cc",
       "../browser/extensions/extension_error_controller_unittest.cc",
       "../browser/extensions/extension_error_ui_default_unittest.cc",
-      "../browser/extensions/extension_function_test_utils.cc",
-      "../browser/extensions/extension_function_test_utils.h",
       "../browser/extensions/extension_garbage_collector_unittest.cc",
       "../browser/extensions/extension_gcm_app_handler_unittest.cc",
       "../browser/extensions/extension_icon_manager_unittest.cc",
