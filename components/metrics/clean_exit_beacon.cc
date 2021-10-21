@@ -137,9 +137,6 @@ std::unique_ptr<base::Value> MaybeGetFileContents(
       "Variations.ExtendedSafeMode.GotVariationsFileContents",
       got_beacon_file_contents);
 
-  // TODO(crbug/1259550): Remove LOG once resolved.
-  LOG(ERROR) << "got_beacon_file_contents: " << got_beacon_file_contents;
-
   if (got_beacon_file_contents)
     return beacon_file_contents;
   return nullptr;
@@ -237,8 +234,6 @@ void CleanExitBeacon::Initialize() {
   if (group == kSignalAndWriteViaFileUtilGroup)
     beacon_file_path_ = user_data_dir_.Append(variations::kVariationsFilename);
 
-  // TODO(crbug/1259550): Remove LOG once resolved.
-  LOG(ERROR) << "beacon_file_path_: " << beacon_file_path_;
   std::unique_ptr<base::Value> beacon_file_contents =
       MaybeGetFileContents(beacon_file_path_);
 
