@@ -4,6 +4,7 @@
 
 #include "components/download/internal/common/android/download_collection_bridge.h"
 
+#include <set>
 #include <utility>
 
 #include "base/android/jni_android.h"
@@ -31,6 +32,11 @@ const int kDefaultExpirationDurationInDays = 3;
 // Finch parameter key value of the duration in days for an intermediate
 // download to expire.
 constexpr char kDownloadExpirationDurationFinchKey[] = "expiration_duration";
+
+// Used by tests to simulate that a list of file names exists in the system.
+// Must be used on main thread.
+std::set<base::FilePath>* g_existing_file_names = nullptr;
+
 }  // namespace
 // static
 base::FilePath DownloadCollectionBridge::CreateIntermediateUriForPublish(
@@ -124,6 +130,10 @@ base::File DownloadCollectionBridge::OpenIntermediateUri(
 
 // static
 bool DownloadCollectionBridge::FileNameExists(const base::FilePath& file_name) {
+  if (g_existing_file_names) {
+    return g_existing_file_names->find(file_name) !=
+           g_existing_file_names->end();
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jfile_name =
       ConvertUTF8ToJavaString(env, file_name.value());
@@ -190,6 +200,17 @@ jint JNI_DownloadCollectionBridge_GetExpirationDurationInDays(JNIEnv* env) {
   return base::StringToInt(finch_value, &days)
              ? days
              : kDefaultExpirationDurationInDays;
+}
+
+// static
+void DownloadCollectionBridge::AddExistingFileNameForTesting(
+    const base::FilePath& file_name) {
+  g_existing_file_names->emplace(file_name);
+}
+
+// static
+void DownloadCollectionBridge::ResetExistingFileNamesForTesting() {
+  g_existing_file_names = new std::set<base::FilePath>();
 }
 
 }  // namespace download
