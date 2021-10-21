@@ -126,7 +126,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     MicGainSliderController::SetMapDeviceSliderCallbackForTest(nullptr);
     audio_pref_handler_ = nullptr;
     audio_detailed_view_ = nullptr;
-
+    audio_detailed_view_.reset();
     audio_detailed_view_controller_.reset();
     tray_controller_.reset();
     tray_model_.reset();
@@ -154,10 +154,11 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
 
   tray::AudioDetailedView* audio_detailed_view() {
     if (!audio_detailed_view_) {
-      audio_detailed_view_ = static_cast<tray::AudioDetailedView*>(
-          audio_detailed_view_controller_->CreateView());
+      audio_detailed_view_ =
+          base::WrapUnique(static_cast<tray::AudioDetailedView*>(
+              audio_detailed_view_controller_->CreateView()));
     }
-    return audio_detailed_view_;
+    return audio_detailed_view_.get();
   }
 
   views::View* live_caption_view() {
@@ -180,11 +181,12 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  tray::AudioDetailedView* audio_detailed_view_ = nullptr;
+  std::unique_ptr<tray::AudioDetailedView> audio_detailed_view_;
 };
 
 TEST_F(UnifiedAudioDetailedViewControllerTest, OnlyOneVisibleSlider) {
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
       GenerateAudioNodeList({kInternalMic, kMicJack}));
 
@@ -214,7 +216,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   // Verify the device has dual internal mics.
   EXPECT_TRUE(cras_audio_handler_->HasDualInternalMic());
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
 
   // Verify there is only 1 slider in the view.
   EXPECT_EQ(sliders_map_.size(), 1u);
@@ -235,7 +238,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
       AudioDevice(GenerateAudioNode(kInternalMic)), true,
       CrasAudioHandler::ACTIVATE_BY_USER);
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
   EXPECT_EQ(0u, toggles_map_.size());
 }
 
@@ -252,7 +256,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   cras_audio_handler_->SwitchToDevice(internal_mic, true,
                                       CrasAudioHandler::ACTIVATE_BY_USER);
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
   EXPECT_EQ(1u, toggles_map_.size());
 
   views::ToggleButton* toggle =
@@ -275,7 +280,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   cras_audio_handler_->SwitchToDevice(internal_mic, true,
                                       CrasAudioHandler::ACTIVATE_BY_USER);
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
   EXPECT_EQ(1u, toggles_map_.size());
 
   views::ToggleButton* toggle =
@@ -314,7 +320,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
       AudioDevice(GenerateAudioNode(kInternalMic)), true,
       CrasAudioHandler::ACTIVATE_BY_USER);
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
   EXPECT_EQ(0u, toggles_map_.size());
 }
 
@@ -333,7 +340,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
   EXPECT_EQ(0u, fake_cras_audio_client()->GetNoiseCancellationEnabledCount());
 
-  audio_detailed_view_controller_->CreateView();
+  std::unique_ptr<views::View> view =
+      base::WrapUnique(audio_detailed_view_controller_->CreateView());
 
   EXPECT_EQ(1u, toggles_map_.size());
   // audio_detailed_view_controller_->CreateView() calls
