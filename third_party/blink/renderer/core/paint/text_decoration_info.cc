@@ -185,11 +185,36 @@ void TextDecorationInfo::SetDecorationIndex(int decoration_index) {
 }
 
 void TextDecorationInfo::SetPerLineData(TextDecoration line,
-                                        float line_offset,
-                                        float double_offset,
-                                        int wavy_offset_factor) {
+                                        float line_offset) {
   int index = TextDecorationToLineDataIndex(line);
   line_data_[index].line_offset = line_offset;
+
+  const float double_offset_from_thickness = ResolvedThickness() + 1.0f;
+  float double_offset;
+  int wavy_offset_factor;
+  switch (line) {
+    case TextDecoration::kUnderline:
+      double_offset = double_offset_from_thickness;
+      wavy_offset_factor = 1;
+      break;
+    case TextDecoration::kOverline:
+      double_offset = -double_offset_from_thickness;
+      wavy_offset_factor = 1;
+      break;
+    case TextDecoration::kLineThrough:
+      // Floor double_offset in order to avoid double-line gap to appear
+      // of different size depending on position where the double line
+      // is drawn because of rounding downstream in
+      // GraphicsContext::DrawLineForText.
+      double_offset = floorf(double_offset_from_thickness);
+      wavy_offset_factor = 0;
+      break;
+    default:
+      double_offset = 0.0f;
+      wavy_offset_factor = 0;
+      NOTREACHED();
+  }
+
   line_data_[index].double_offset = double_offset;
   line_data_[index].wavy_offset_factor = wavy_offset_factor;
   line_data_[index].stroke_path.reset();

@@ -555,9 +555,8 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
           decoration_offset.ComputeUnderlineOffset(
               underline_position, decoration_info.Style().ComputedFontSize(),
               decoration_info.FontData(), line_offset, resolved_thickness);
-      decoration_info.SetPerLineData(
-          TextDecoration::kUnderline, paint_underline_offset,
-          TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness), 1);
+      decoration_info.SetPerLineData(TextDecoration::kUnderline,
+                                     paint_underline_offset);
       accumulated_bound.Union(
           decoration_info.BoundsForLine(TextDecoration::kUnderline));
     }
@@ -573,10 +572,8 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
           decoration_offset.ComputeUnderlineOffsetForUnder(
               line_offset, decoration_info.Style().ComputedFontSize(),
               decoration_info.FontData(), resolved_thickness, position);
-      decoration_info.SetPerLineData(
-          TextDecoration::kOverline, paint_overline_offset,
-          -TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness),
-          1);
+      decoration_info.SetPerLineData(TextDecoration::kOverline,
+                                     paint_overline_offset);
       accumulated_bound.Union(
           decoration_info.BoundsForLine(TextDecoration::kOverline));
     }
@@ -586,15 +583,8 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
       // it centered at the same origin.
       const float line_through_offset =
           2 * decoration_info.Baseline() / 3 - resolved_thickness / 2;
-      // Floor double_offset in order to avoid double-line gap to appear
-      // of different size depending on position where the double line
-      // is drawn because of rounding downstream in
-      // GraphicsContext::DrawLineForText.
-      decoration_info.SetPerLineData(
-          TextDecoration::kLineThrough, line_through_offset,
-          floorf(TextDecorationInfo::DoubleOffsetFromThickness(
-              resolved_thickness)),
-          0);
+      decoration_info.SetPerLineData(TextDecoration::kLineThrough,
+                                     line_through_offset);
       accumulated_bound.Union(
           decoration_info.BoundsForLine(TextDecoration::kLineThrough));
     }

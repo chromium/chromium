@@ -60,10 +60,7 @@ class CORE_EXPORT TextDecorationInfo {
   // Set data for one of the text decoration lines: over, under or
   // through. Must be called before trying to paint or compute bounds
   // for a line.
-  void SetPerLineData(TextDecoration line,
-                      float line_offset,
-                      float double_offset,
-                      int wavy_offset_factor);
+  void SetPerLineData(TextDecoration line, float line_offset);
 
   // These methods do not depend on SetDecorationIndex
   LayoutUnit Width() const { return width_; }
@@ -102,10 +99,6 @@ class CORE_EXPORT TextDecorationInfo {
   // Return a path for a wavy line at the given position, for the
   // current decoration.
   absl::optional<Path> PrepareWavyStrokePath(TextDecoration line) const;
-
-  static float DoubleOffsetFromThickness(float thickness_pixels) {
-    return thickness_pixels + 1.0f;
-  }
 
  private:
   float ComputeUnderlineThickness(
