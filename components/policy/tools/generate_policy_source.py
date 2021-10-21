@@ -109,6 +109,7 @@ class PolicyDetails:
     self.has_enterprise_default = 'default_for_enterprise_users' in policy
     if self.has_enterprise_default:
       self.enterprise_default = policy['default_for_enterprise_users']
+    self.cloud_only = features.get('cloud_only', False)
 
     self.platforms = set()
     self.future_on = set()
@@ -1725,7 +1726,7 @@ def _WriteAppRestrictions(policies, policy_atomic_groups, target_platform, f,
   for policy in policies:
     if (policy.is_supported and policy.restriction_type != 'invalid'
         and not policy.is_deprecated and not policy.is_future
-        and not policy.internal_only):
+        and not policy.internal_only and not policy.cloud_only):
       WriteAppRestriction(policy)
   f.write('</restrictions>')
 
