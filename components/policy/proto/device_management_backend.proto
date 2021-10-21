@@ -3937,6 +3937,12 @@ message BrowserPublicKeyUploadRequest {
     CHROME_BROWSER_OS_KEY = 2;
   }
 
+  enum KeyType {
+    KEY_TYPE_UNSPECIFIED = 0;
+    RSA_KEY = 1;
+    EC_KEY = 2;
+  }
+
   // Public key in EC_NID_X9_62_PRIME256V1_PUBLIC_DER format.
   optional bytes public_key = 1;
   // Signature of the new public key signed using the existing key, empty for
@@ -3944,6 +3950,8 @@ message BrowserPublicKeyUploadRequest {
   optional bytes signature = 2;
   // Trust Level of the key.
   optional KeyTrustLevel key_trust_level = 3;
+  // Type of the key.
+  optional KeyType key_type = 4;
 }
 
 // Response from server to device for cert upload request.
