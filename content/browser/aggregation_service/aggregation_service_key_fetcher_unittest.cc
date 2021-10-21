@@ -142,7 +142,7 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
 
 TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysFromStorage_Succeed) {
   url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
-  PublicKey expected_key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
+  PublicKey expected_key = aggregation_service::GenerateKey().public_key;
 
   SetPublicKeysInStorage(
       origin,
@@ -184,7 +184,7 @@ TEST_F(AggregationServiceKeyFetcherTest,
 
 TEST_F(AggregationServiceKeyFetcherTest, FetchPublicKeysFromNetwork_Succeed) {
   url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
-  PublicKey expected_key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
+  PublicKey expected_key = aggregation_service::GenerateKey().public_key;
 
   GetPublicKey(origin);
   network_fetcher_->WaitForNumFetches(1);
@@ -208,7 +208,7 @@ TEST_F(AggregationServiceKeyFetcherTest, FetchPublicKeysFromNetwork_Succeed) {
 TEST_F(AggregationServiceKeyFetcherTest,
        FetchPublicKeysFromNetworkNoStore_NotStored) {
   url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
-  PublicKey expected_key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
+  PublicKey expected_key = aggregation_service::GenerateKey().public_key;
 
   GetPublicKey(origin);
   network_fetcher_->WaitForNumFetches(1);
@@ -234,7 +234,7 @@ TEST_F(AggregationServiceKeyFetcherTest,
   url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
   base::Time now = clock().Now();
 
-  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
+  PublicKey key = aggregation_service::GenerateKey().public_key;
   SetPublicKeysInStorage(origin,
                          PublicKeyset(/*keys=*/{key}, /*fetch_time=*/now,
                                       /*expiry_time=*/now + base::Days(1)));
@@ -259,7 +259,7 @@ TEST_F(AggregationServiceKeyFetcherTest,
 TEST_F(AggregationServiceKeyFetcherTest,
        SimultaneousFetches_NoDuplicateNetworkRequest) {
   url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
-  PublicKey expected_key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
+  PublicKey expected_key = aggregation_service::GenerateKey().public_key;
 
   for (int i = 0; i < 10; ++i) {
     GetPublicKey(origin);

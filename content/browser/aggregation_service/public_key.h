@@ -14,6 +14,7 @@
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "third_party/boringssl/src/include/openssl/hpke.h"
 
 namespace content {
 
@@ -33,6 +34,9 @@ struct CONTENT_EXPORT PublicKey {
   std::vector<uint8_t> key;
 
   static constexpr size_t kMaxIdSize = 128;
+
+  // The expected length (in bytes) of the key.
+  static constexpr size_t kKeyByteLength = X25519_PUBLIC_VALUE_LEN;
 };
 
 struct CONTENT_EXPORT PublicKeyset {

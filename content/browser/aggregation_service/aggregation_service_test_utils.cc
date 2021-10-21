@@ -12,6 +12,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
@@ -202,7 +203,8 @@ TestHpkeKey GenerateKey(std::string key_id) {
       /*out_len=*/&public_key_len, /*max_out=*/public_key.size()));
   EXPECT_EQ(public_key.size(), public_key_len);
 
-  TestHpkeKey hpke_key{{}, PublicKey(key_id, public_key)};
+  TestHpkeKey hpke_key{
+      {}, PublicKey(key_id, public_key), base::Base64Encode(public_key)};
   EVP_HPKE_KEY_copy(&hpke_key.full_hpke_key, key.get());
 
   return hpke_key;

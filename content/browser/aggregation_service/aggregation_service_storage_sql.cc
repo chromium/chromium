@@ -100,10 +100,8 @@ std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
 
-  std::vector<PublicKey> result;
-
   if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
-    return result;
+    return {};
 
   static constexpr char kGetOriginIdSql[] =
       "SELECT origin_id FROM origins WHERE origin = ? AND expiry_time > ?";
@@ -112,7 +110,7 @@ std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
   get_origin_id_statement.BindString(0, origin.Serialize());
   get_origin_id_statement.BindTime(1, clock_.Now());
   if (!get_origin_id_statement.Step())
-    return result;
+    return {};
 
   int64_t origin_id = get_origin_id_statement.ColumnInt64(0);
 
@@ -123,23 +121,27 @@ std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
       db_.GetCachedStatement(SQL_FROM_HERE, kGetKeysSql));
   get_keys_statement.BindInt64(0, origin_id);
 
-  bool has_more_data = get_keys_statement.Step();
+  // Partial results are not returned in case of any error.
+  std::vector<PublicKey> result;
+  while (get_keys_statement.Step()) {
+    if (result.size() >= PublicKeyset::kMaxNumberKeys)
+      return {};
 
-  while (result.size() < PublicKeyset::kMaxNumberKeys && has_more_data) {
     std::string id = get_keys_statement.ColumnString(0);
 
     std::vector<uint8_t> key;
     get_keys_statement.ColumnBlobAsVector(1, &key);
 
-    result.emplace_back(std::move(id), std::move(key));
+    if (id.size() > PublicKey::kMaxIdSize ||
+        key.size() != PublicKey::kKeyByteLength) {
+      return {};
+    }
 
-    has_more_data = get_keys_statement.Step();
+    result.emplace_back(std::move(id), std::move(key));
   }
 
-  // Don't return partial results if one of the statements fails or more keys
-  // than expected are returned.
-  if (!get_keys_statement.Succeeded() || has_more_data)
-    result.clear();
+  if (!get_keys_statement.Succeeded())
+    return {};
 
   return result;
 }
@@ -315,8 +317,7 @@ bool AggregationServiceStorageSql::InsertPublicKeysImpl(
 
   for (const PublicKey& key : keyset.keys) {
     DCHECK_LE(key.id.size(), PublicKey::kMaxIdSize);
-
-    // TODO(crbug.com/1238458): Check that the key size is as expected.
+    DCHECK_EQ(key.key.size(), PublicKey::kKeyByteLength);
 
     insert_key_statement.Reset(/*clear_bound_vars=*/true);
     insert_key_statement.BindInt64(0, origin_id);

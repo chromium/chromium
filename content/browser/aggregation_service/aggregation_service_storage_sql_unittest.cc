@@ -31,7 +31,7 @@ url::Origin GetExampleOrigin() {
 }
 
 const std::vector<PublicKey> kExampleKeys{
-    PublicKey(/*id=*/"dummy_id", /*key=*/kABCD1234AsBytes)};
+    aggregation_service::GenerateKey("dummy_id").public_key};
 
 }  // namespace
 
@@ -153,8 +153,8 @@ TEST_F(AggregationServiceStorageSqlTest, SetPublicKeys_ExpectedResult) {
   OpenDatabase();
 
   std::vector<PublicKey> expected_keys{
-      PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
-      PublicKey(/*id=*/"bcde", /*key=*/kEFGH5678AsBytes)};
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("bcde").public_key};
 
   url::Origin origin = GetExampleOrigin();
   PublicKeyset keyset(expected_keys, /*fetch_time=*/clock_.Now(),
@@ -171,9 +171,8 @@ TEST_F(AggregationServiceStorageSqlTest, GetPublicKeysExpired_EmptyResult) {
   OpenDatabase();
 
   std::vector<PublicKey> keys{
-      PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
-      PublicKey(/*id=*/"bcde", /*key=*/kEFGH5678AsBytes),
-  };
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("bcde").public_key};
 
   base::Time now = clock_.Now();
   url::Origin origin = GetExampleOrigin();
@@ -191,9 +190,8 @@ TEST_F(AggregationServiceStorageSqlTest, ClearPublicKeys) {
   OpenDatabase();
 
   std::vector<PublicKey> keys{
-      PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
-      PublicKey(/*id=*/"bcde", /*key=*/kEFGH5678AsBytes),
-  };
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("bcde").public_key};
 
   url::Origin origin = GetExampleOrigin();
   PublicKeyset keyset(std::move(keys), /*fetch_time=*/clock_.Now(),
@@ -213,9 +211,9 @@ TEST_F(AggregationServiceStorageSqlTest, ReplacePublicKeys) {
   url::Origin origin = GetExampleOrigin();
 
   std::vector<PublicKey> old_keys{
-      PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
-      PublicKey(/*id=*/"bcde", /*key=*/kEFGH5678AsBytes),
-  };
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("bcde").public_key};
+
   PublicKeyset old_keyset(old_keys, /*fetch_time=*/clock_.Now(),
                           /*expiry_time=*/base::Time::Max());
   storage_->SetPublicKeys(origin, old_keyset);
@@ -223,9 +221,9 @@ TEST_F(AggregationServiceStorageSqlTest, ReplacePublicKeys) {
       old_keys, storage_->GetPublicKeys(origin)));
 
   std::vector<PublicKey> expected_keys{
-      PublicKey(/*id=*/"efgh", /*key=*/kEFGH5678AsBytes),
-      PublicKey(/*id=*/"fghi", /*key=*/kABCD1234AsBytes),
-  };
+      aggregation_service::GenerateKey("efgh").public_key,
+      aggregation_service::GenerateKey("fghi").public_key};
+
   PublicKeyset expected_keyset(expected_keys, /*fetch_time=*/clock_.Now(),
                                /*expiry_time=*/base::Time::Max());
   storage_->SetPublicKeys(origin, expected_keyset);
@@ -241,8 +239,8 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   url::Origin origin_1 = url::Origin::Create(GURL("https://a.com"));
   std::vector<PublicKey> keys_1{
-      PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
-      PublicKey(/*id=*/"bcde", /*key=*/kEFGH5678AsBytes)};
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("bcde").public_key};
   storage_->SetPublicKeys(origin_1,
                           PublicKeyset(keys_1, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
@@ -251,8 +249,8 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   url::Origin origin_2 = url::Origin::Create(GURL("https://b.com"));
   std::vector<PublicKey> keys_2{
-      PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
-      PublicKey(/*id=*/"efgh", /*key=*/kEFGH5678AsBytes)};
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("efgh").public_key};
   storage_->SetPublicKeys(origin_2,
                           PublicKeyset(keys_2, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
@@ -276,8 +274,8 @@ TEST_F(AggregationServiceStorageSqlTest, ClearAllPublicKeys_AllDeleted) {
 
   url::Origin origin_1 = url::Origin::Create(GURL("https://a.com"));
   std::vector<PublicKey> keys_1{
-      PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
-      PublicKey(/*id=*/"bcde", /*key=*/kEFGH5678AsBytes)};
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("bcde").public_key};
   storage_->SetPublicKeys(origin_1,
                           PublicKeyset(keys_1, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
@@ -286,8 +284,8 @@ TEST_F(AggregationServiceStorageSqlTest, ClearAllPublicKeys_AllDeleted) {
 
   url::Origin origin_2 = url::Origin::Create(GURL("https://b.com"));
   std::vector<PublicKey> keys_2{
-      PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
-      PublicKey(/*id=*/"efgh", /*key=*/kEFGH5678AsBytes)};
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("efgh").public_key};
   storage_->SetPublicKeys(origin_2,
                           PublicKeyset(keys_2, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
@@ -311,16 +309,16 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   url::Origin origin_1 = url::Origin::Create(GURL("https://a.com"));
   std::vector<PublicKey> keys_1{
-      PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
-      PublicKey(/*id=*/"bcde", /*key=*/kEFGH5678AsBytes)};
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("bcde").public_key};
   storage_->SetPublicKeys(origin_1,
                           PublicKeyset(keys_1, /*fetch_time=*/now,
                                        /*expiry_time=*/now + base::Days(1)));
 
   url::Origin origin_2 = url::Origin::Create(GURL("https://b.com"));
   std::vector<PublicKey> keys_2{
-      PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes),
-      PublicKey(/*id=*/"efgh", /*key=*/kEFGH5678AsBytes)};
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("efgh").public_key};
   storage_->SetPublicKeys(origin_2,
                           PublicKeyset(keys_2, /*fetch_time=*/now,
                                        /*expiry_time=*/now + base::Days(3)));

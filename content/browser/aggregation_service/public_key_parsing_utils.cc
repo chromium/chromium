@@ -41,8 +41,9 @@ absl::optional<PublicKey> GetPublicKey(base::Value& value) {
   if (!base::Base64Decode(key_string, &key_string))
     return absl::nullopt;
 
-  // TODO(crbug.com/1238458): Check that the length of the vector is as
-  // expected.
+  if (key_string.size() != PublicKey::kKeyByteLength)
+    return absl::nullopt;
+
   return PublicKey(std::move(key_id),
                    std::vector<uint8_t>(key_string.begin(), key_string.end()));
 }

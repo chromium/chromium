@@ -152,7 +152,7 @@ std::vector<uint8_t> EncryptWithHpke(
   std::vector<uint8_t> payload(EVP_HPKE_MAX_ENC_LENGTH);
   size_t encapsulated_shared_secret_len;
 
-  DCHECK(public_key.size() == X25519_PUBLIC_VALUE_LEN);
+  DCHECK_EQ(public_key.size(), PublicKey::kKeyByteLength);
 
   if (!EVP_HPKE_CTX_setup_sender(
           /*ctx=*/sender_context.get(),

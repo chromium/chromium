@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
@@ -36,20 +37,21 @@ const char kExampleOrigin[] = "https://helper.test/";
 const char kExampleOriginKeysUrl[] =
     "https://helper.test/.well-known/aggregation-service/keys.json";
 
-const char kExampleValidJson[] = R"(
-        {
-            "version" : "",
-            "keys" : [
-                {
-                    "id" : "abcd",
-                    "key" : "ABCD1234"
-                }
-            ]
-        }
-    )";
-
-const std::vector<PublicKey> kExamplePublicKeys = {
-    PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes)};
+const aggregation_service::TestHpkeKey kExampleHpkeKey =
+    aggregation_service::GenerateKey("abcd");
+const std::string kExampleValidJson = base::ReplaceStringPlaceholders(
+    R"({
+          "version": "",
+          "keys": [
+              {
+                  "id": "abcd",
+                  "key": "$1"
+              }
+          ]
+       })",
+    {kExampleHpkeKey.base64_encoded_public_key},
+    /*offsets=*/nullptr);
+const std::vector<PublicKey> kExamplePublicKeys = {kExampleHpkeKey.public_key};
 
 }  // namespace
 

@@ -40,17 +40,20 @@ class TestAggregationServiceImplTest : public testing::Test {
 };
 
 TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
-  std::string json_string = R"(
-        {
-            "version" : "",
-            "keys" : [
+  aggregation_service::TestHpkeKey generated_key =
+      aggregation_service::GenerateKey("abcd");
+
+  std::string json_string = base::ReplaceStringPlaceholders(
+      R"({
+            "version": "",
+            "keys": [
                 {
-                    "id" : "abcd",
-                    "key" : "ABCD1234"
+                   "id": "abcd",
+                   "key": "$1"
                 }
             ]
-        }
-    )";
+         })",
+      {generated_key.base64_encoded_public_key}, /*offsets=*/nullptr);
 
   url::Origin origin = url::Origin::Create(GURL("https://a.com"));
 
@@ -63,8 +66,7 @@ TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
   impl_->GetPublicKeys(
       origin, base::BindLambdaForTesting([&](std::vector<PublicKey> keys) {
         EXPECT_TRUE(content::aggregation_service::PublicKeysEqual(
-            {content::PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes)},
-            keys));
+            {generated_key.public_key}, keys));
         run_loop.Quit();
       }));
   run_loop.Run();
