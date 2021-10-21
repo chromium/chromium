@@ -7,14 +7,17 @@
 #include "ash/display/display_move_window_util.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/screen_util.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/test/display_manager_test_api.h"
 
 using session_manager::SessionState;
@@ -803,6 +806,63 @@ TEST_F(PersistentWindowControllerTest, RotationOnDisplayReconnecting) {
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(w1_bounds_in_landscape, w1->GetBoundsInScreen());
+}
+
+TEST_F(PersistentWindowControllerTest, NoRestoreOnRotationForSnappedWindows) {
+  UpdateDisplay("800x600");
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  ScreenOrientationControllerTestApi test_api(
+      Shell::Get()->screen_orientation_controller());
+  test_api.SetDisplayRotation(display::Display::ROTATE_0,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kLandscapePrimary);
+
+  aura::Window* w1 =
+      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 200, 200));
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+
+  // Snap the unique window in clamshell mode will not enter split view mode.
+  WMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  auto* window_state = WindowState::Get(w1);
+  window_state->OnWMEvent(&wm_left_snap_event);
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            window_state->GetStateType());
+  const gfx::Rect bounds_in_landscape_primary = w1->GetBoundsInScreen();
+  EXPECT_EQ(0, bounds_in_landscape_primary.x());
+
+  // Snapped window should not have persistent window info on screen rotation
+  // so its bounds will not be restored.
+  test_api.SetDisplayRotation(display::Display::ROTATE_90,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kPortraitSecondary);
+  EXPECT_FALSE(window_state->persistent_window_info_of_screen_rotation());
+
+  // Snapped window's bounds should not be restored on screen rotation. The
+  // primary snapped window in landscape primary should still be primary snapped
+  // after rotated to landscape secondary, and be kept at the right side of the
+  // screen.
+  test_api.SetDisplayRotation(display::Display::ROTATE_180,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kLandscapeSecondary);
+  EXPECT_FALSE(window_state->persistent_window_info_of_screen_rotation());
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            window_state->GetStateType());
+  const gfx::Rect bounds_in_landscape_secondary = w1->GetBoundsInScreen();
+  EXPECT_NE(bounds_in_landscape_primary, bounds_in_landscape_secondary);
+  EXPECT_NE(0, bounds_in_landscape_secondary.x());
+  EXPECT_EQ(
+      bounds_in_landscape_secondary.right(),
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(w1)
+          .right());
 }
 
 }  // namespace ash

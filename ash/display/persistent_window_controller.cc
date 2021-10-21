@@ -116,6 +116,17 @@ void PersistentWindowController::OnDisplayMetricsChanged(
     auto* window_state = WindowState::Get(window);
     if (window_state->persistent_window_info_of_screen_rotation())
       continue;
+    // Do not restore the bounds on screen rotation of windows that are snapped,
+    // maximized or fullscreened. A snapped window is expected to have different
+    // snap positions in different orientations, which means different bounds.
+    // E.g, a left snapped window in landscape primary is expected to be right
+    // snapped in landscape secondary. Restoring is not needed for maximized or
+    // fullscreened windows either, since they will be kept maximized or
+    // fullscreened after rotation.
+    if (window_state->IsSnapped() || window_state->IsMaximized() ||
+        window_state->IsFullscreen()) {
+      continue;
+    }
     window_state->SetPersistentWindowInfoOfScreenRotation(
         PersistentWindowInfo(window, was_landscape_before_rotation));
   }
