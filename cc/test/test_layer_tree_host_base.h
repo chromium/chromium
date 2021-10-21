@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/fake_picture_layer_impl.h"
@@ -83,9 +84,9 @@ class TestLayerTreeHostBase : public testing::Test {
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink_;
   std::unique_ptr<FakeLayerTreeHostImpl> host_impl_;
 
-  FakePictureLayerImpl* pending_layer_;
-  FakePictureLayerImpl* active_layer_;
-  FakePictureLayerImpl* old_pending_layer_;
+  raw_ptr<FakePictureLayerImpl> pending_layer_;
+  raw_ptr<FakePictureLayerImpl> active_layer_;
+  raw_ptr<FakePictureLayerImpl> old_pending_layer_;
   const int root_id_;
   int next_layer_id_;
 };

@@ -9,6 +9,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/fling_controller.h"
@@ -179,7 +180,7 @@ class CONTENT_EXPORT GestureEventQueue {
   bool FlingInProgressForTest() const;
 
   // The receiver of all forwarded gesture events.
-  GestureEventQueueClient* client_;
+  raw_ptr<GestureEventQueueClient> client_;
 
   // True if a GestureScrollUpdate sequence is in progress.
   bool scrolling_in_progress_;

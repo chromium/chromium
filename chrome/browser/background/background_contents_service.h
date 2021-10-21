@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -234,13 +235,13 @@ class BackgroundContentsService : private content::NotificationObserver,
   // Delay (in ms) before restarting a force-installed extension that crashed.
   static int restart_delay_in_ms_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::ObserverList<BackgroundContentsServiceObserver> observers_;
 
   // PrefService used to store list of background pages (or NULL if this is
   // running under an incognito profile).
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
   content::NotificationRegistrar registrar_;
 
   // Information we track about each BackgroundContents.

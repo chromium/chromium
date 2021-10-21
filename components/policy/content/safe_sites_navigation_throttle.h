@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CONTENT_SAFE_SITES_NAVIGATION_THROTTLE_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -61,7 +62,7 @@ class SafeSitesNavigationThrottle : public content::NavigationThrottle {
   // Creates the result to be returned when navigation is canceled.
   ThrottleCheckResult CreateCancelResult() const;
 
-  SafeSearchService* safe_seach_service_;
+  raw_ptr<SafeSearchService> safe_seach_service_;
 
   const DeferredResultCallback deferred_result_callback_;
 

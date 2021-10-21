@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
@@ -159,7 +160,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   int processed_yuv_overlay_count_ = 0;
 
   // Reference to the global viz singleton.
-  const DebugRendererSettings* const debug_settings_;
+  const raw_ptr<const DebugRendererSettings> debug_settings_;
 
   bool previous_frame_underlay_is_opaque_ = true;
   gfx::RectF previous_display_rect_;

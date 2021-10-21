@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/id_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/predictors/proxy_lookup_client_impl.h"
@@ -104,7 +105,7 @@ struct PreresolveJob {
   // outlive PreresolveInfo. It's only accessed on PreconnectManager class
   // context and PreresolveInfo lifetime is tied to PreconnectManager.
   // May be equal to nullptr in case of detached job.
-  PreresolveInfo* info;
+  raw_ptr<PreresolveInfo> info;
   std::unique_ptr<ResolveHostClientImpl> resolve_host_client;
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client;
 };
@@ -225,15 +226,15 @@ class PreconnectManager {
   network::mojom::NetworkContext* GetNetworkContext() const;
 
   base::WeakPtr<Delegate> delegate_;
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   std::list<PreresolveJobId> queued_jobs_;
   PreresolveJobMap preresolve_jobs_;
   std::map<GURL, std::unique_ptr<PreresolveInfo>> preresolve_info_;
   size_t inflight_preresolves_count_ = 0;
 
   // Only used in tests.
-  network::mojom::NetworkContext* network_context_ = nullptr;
-  Observer* observer_ = nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 
   base::WeakPtrFactory<PreconnectManager> weak_factory_{this};
 };

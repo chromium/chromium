@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -72,9 +73,9 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
   void MaybeClearStore(
       scoped_refptr<PasswordStoreInterface> account_password_store_for_cleanup);
 
-  PrefService* const pref_service_;
-  signin::IdentityManager* const identity_manager_;
-  syncer::SyncService* const sync_service_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   PasswordAccountStorageSettingsWatcher account_storage_settings_watcher_;
 

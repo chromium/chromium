@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -127,10 +128,10 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
 
  private:
   // The ExtensionService associated with the primary profile.
-  extensions::ExtensionService* extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
 
   // ToolbarActionsModel associated with the main profile.
-  ToolbarActionsModel* toolbar_model_ = nullptr;
+  raw_ptr<ToolbarActionsModel> toolbar_model_ = nullptr;
 
   std::unique_ptr<ExtensionActionTestHelper> test_util_;
 

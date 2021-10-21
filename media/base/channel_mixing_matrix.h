@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
 
@@ -32,7 +33,7 @@ class MEDIA_EXPORT ChannelMixingMatrix {
 
  private:
   // Result transformation of input channels to output channels
-  std::vector<std::vector<float>>* matrix_;
+  raw_ptr<std::vector<std::vector<float>>> matrix_;
 
   // Input and output channel layout provided during construction.
   ChannelLayout input_layout_;

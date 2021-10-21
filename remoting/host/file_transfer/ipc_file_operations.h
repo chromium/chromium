@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/protocol/file_transfer_helpers.h"
@@ -97,7 +98,7 @@ class IpcFileOperations : public FileOperations {
     base::flat_map<std::uint64_t, DataResultCallback> data_result_callbacks;
 
     // The associated RequestHandler.
-    RequestHandler* request_handler;
+    raw_ptr<RequestHandler> request_handler;
 
     base::WeakPtrFactory<SharedState> weak_ptr_factory{this};
   };

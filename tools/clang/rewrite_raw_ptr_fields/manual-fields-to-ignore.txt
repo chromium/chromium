@@ -186,6 +186,19 @@ device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, con
 device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::n
 device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::e
 
+# Windows HANDLE types are pointer types but they are ids. When they happen to fall on a BRP pool memory address, raw_ptr will try to access the ref count and cause an issue.
+base::internal::UnretainedWrapper<HDC__>
+base::internal::UnretainedWrapper<HDESK__>
+base::internal::UnretainedWrapper<HGLRC__>
+base::internal::UnretainedWrapper<HICON__>
+base::internal::UnretainedWrapper<HINSTANCE__>
+base::internal::UnretainedWrapper<HKEY__>
+base::internal::UnretainedWrapper<HKL__>
+base::internal::UnretainedWrapper<HMENU__>
+base::internal::UnretainedWrapper<HWINSTA__>
+base::internal::UnretainedWrapper<HWND__>
+base::internal::UnretainedWrapper<HMONITOR__>
+
 #######
 # BackupRefPtr-specific sections
 #######

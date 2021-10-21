@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/border.h"
 #include "ui/views/test/test_views.h"
@@ -56,7 +57,7 @@ class FillLayoutTest : public testing::Test {
   }
 
   // The test target.
-  FillLayout* layout_ = nullptr;
+  raw_ptr<FillLayout> layout_ = nullptr;
 
   std::unique_ptr<View> host_;
 };

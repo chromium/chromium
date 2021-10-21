@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -54,7 +55,7 @@ class DeclarativeContentCssPredicate : public ContentPredicate {
                                  const std::vector<std::string>& css_selectors);
 
   // Weak.
-  ContentPredicateEvaluator* const evaluator_;
+  const raw_ptr<ContentPredicateEvaluator> evaluator_;
   std::vector<std::string> css_selectors_;
 };
 
@@ -153,7 +154,7 @@ class DeclarativeContentCssConditionTracker
   void DeletePerWebContentsTracker(content::WebContents* contents);
 
   // Weak.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Maps the CSS selectors to watch to the number of predicates specifying
   // them.

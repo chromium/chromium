@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -69,7 +70,7 @@ class IgnoreErrorsCertVerifierTest : public ::testing::Test {
  public:
   IgnoreErrorsCertVerifierTest()
       : mock_verifier_(new MockCertVerifier()),
-        verifier_(base::WrapUnique(mock_verifier_), SPKIHashSet()) {}
+        verifier_(base::WrapUnique(mock_verifier_.get()), SPKIHashSet()) {}
   ~IgnoreErrorsCertVerifierTest() override {}
 
  protected:
@@ -79,7 +80,7 @@ class IgnoreErrorsCertVerifierTest : public ::testing::Test {
 
   // The wrapped CertVerifier. Defaults to returning ERR_CERT_INVALID. Owned by
   // |verifier_|.
-  MockCertVerifier* mock_verifier_;
+  raw_ptr<MockCertVerifier> mock_verifier_;
   IgnoreErrorsCertVerifier verifier_;
 };
 

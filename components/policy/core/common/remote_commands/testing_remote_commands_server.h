@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -125,7 +126,7 @@ class TestingRemoteCommandsServer {
   RemoteCommandJob::UniqueIDType last_generated_unique_id_ = 0;
 
   // Clock used to generate command issue time when IssueCommand() is called.
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   // A lock protecting the command queues, as well as generated and acknowledged
   // IDs.

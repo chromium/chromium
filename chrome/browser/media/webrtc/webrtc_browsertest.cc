@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -157,8 +158,8 @@ class WebRtcBrowserTest : public WebRtcTestBase {
     HangUp(right_tab_);
   }
 
-  content::WebContents* left_tab_;
-  content::WebContents* right_tab_;
+  raw_ptr<content::WebContents> left_tab_;
+  raw_ptr<content::WebContents> right_tab_;
 };
 
 // TODO(898546): many of these tests are failing on ASan builds.

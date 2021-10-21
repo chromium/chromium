@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DEVTOOLS_PROCESS_OBSERVER_H_
 #define CHROME_BROWSER_UI_VIEWS_DEVTOOLS_PROCESS_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "content/public/browser/browser_child_process_observer.h"
 
@@ -36,7 +37,7 @@ class DevtoolsProcessObserver : public content::BrowserChildProcessObserver {
       const content::ChildProcessData& data,
       const content::ChildProcessTerminationInfo& info) override;
 
-  ui_devtools::TracingAgent* tracing_agent_;
+  raw_ptr<ui_devtools::TracingAgent> tracing_agent_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DEVTOOLS_PROCESS_OBSERVER_H_

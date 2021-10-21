@@ -4,6 +4,7 @@
 
 #include "net/quic/network_connection.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/test/test_with_task_environment.h"
@@ -26,7 +27,7 @@ class NetworkConnectionTest : public TestWithTaskEnvironment {
       : notifier_(scoped_notifier_.mock_network_change_notifier()) {}
 
   ScopedMockNetworkChangeNotifier scoped_notifier_;
-  MockNetworkChangeNotifier* notifier_;
+  raw_ptr<MockNetworkChangeNotifier> notifier_;
 };
 
 TEST_F(NetworkConnectionTest, Connection2G) {

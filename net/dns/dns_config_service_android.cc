@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "net/android/network_library.h"
@@ -179,7 +180,7 @@ class DnsConfigServiceAndroid::ConfigReader : public SerialWorker {
   android::DnsServerGetter dns_server_getter_;
 
   // Raw pointer to owning DnsConfigService.
-  DnsConfigServiceAndroid* const service_;
+  const raw_ptr<DnsConfigServiceAndroid> service_;
 };
 
 DnsConfigServiceAndroid::DnsConfigServiceAndroid()

@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -171,7 +172,7 @@ class StreamProvider final : public Demuxer {
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
-    openscreen::cast::RpcMessenger* const rpc_messenger_;
+    const raw_ptr<openscreen::cast::RpcMessenger> rpc_messenger_;
     const Type type_;
     const int remote_handle_;
     const int rpc_handle_;
@@ -247,8 +248,8 @@ class StreamProvider final : public Demuxer {
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
-  ReceiverController* const receiver_controller_;
-  openscreen::cast::RpcMessenger* const rpc_messenger_;
+  const raw_ptr<ReceiverController> receiver_controller_;
+  const raw_ptr<openscreen::cast::RpcMessenger> rpc_messenger_;
   MediaStream::UniquePtr audio_stream_;
   MediaStream::UniquePtr video_stream_;
   bool has_audio_{false};

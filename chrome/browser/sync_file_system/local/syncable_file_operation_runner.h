@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -95,7 +96,7 @@ class SyncableFileOperationRunner
   bool ShouldStartMoreTasks() const;
 
   // Keeps track of the writing/syncing status. Not owned.
-  LocalFileSyncStatus* const sync_status_;
+  const raw_ptr<LocalFileSyncStatus> sync_status_;
 
   std::list<std::unique_ptr<Task>> pending_tasks_;
 

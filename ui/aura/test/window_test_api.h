@@ -6,6 +6,7 @@
 #define UI_AURA_TEST_WINDOW_TEST_API_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 
 namespace aura {
@@ -27,7 +28,7 @@ class WindowTestApi {
   void SetOcclusionState(aura::Window::OcclusionState state);
 
  private:
-  Window* window_;
+  raw_ptr<Window> window_;
 };
 
 }  // namespace test

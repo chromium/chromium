@@ -7,6 +7,7 @@
 #include "content/browser/speech/tts_controller_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -103,7 +104,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   }
 
  private:
-  TtsController* const controller_;
+  const raw_ptr<TtsController> controller_;
   bool platform_supported_ = true;
   bool platform_initialized_ = true;
   std::vector<VoiceData> voices_;

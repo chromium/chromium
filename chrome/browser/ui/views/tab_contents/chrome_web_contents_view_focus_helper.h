@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TAB_CONTENTS_CHROME_WEB_CONTENTS_VIEW_FOCUS_HELPER_H_
 #define CHROME_BROWSER_UI_VIEWS_TAB_CONTENTS_CHROME_WEB_CONTENTS_VIEW_FOCUS_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/native_widget_types.h"
@@ -47,7 +48,7 @@ class ChromeWebContentsViewFocusHelper
   // Used to store the last focused view.
   views::ViewTracker last_focused_view_tracker_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

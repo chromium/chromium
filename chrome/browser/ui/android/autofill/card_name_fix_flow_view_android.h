@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 
 namespace content {
@@ -53,8 +54,8 @@ class CardNameFixFlowViewAndroid : public CardNameFixFlowView {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 
-  CardNameFixFlowController* controller_;
-  content::WebContents* web_contents_;
+  raw_ptr<CardNameFixFlowController> controller_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace autofill

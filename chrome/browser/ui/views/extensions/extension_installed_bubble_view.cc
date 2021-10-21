@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -132,7 +133,7 @@ class ExtensionInstalledBubbleView : public BubbleSyncPromoDelegate,
 
   void LinkClicked();
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
   const std::unique_ptr<ExtensionInstalledBubbleModel> model_;
 };
 

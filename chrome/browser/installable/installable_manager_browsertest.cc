@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -240,7 +241,7 @@ class NestedCallbackTester {
   }
 
  private:
-  InstallableManager* manager_;
+  raw_ptr<InstallableManager> manager_;
   InstallableParams params_;
   base::OnceClosure quit_closure_;
   std::vector<InstallableStatusCode> errors_;

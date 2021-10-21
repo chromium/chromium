@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/test_reg_util_win.h"
@@ -126,7 +127,7 @@ class WebAppHandlerRegistrationUtilsWinTest : public testing::Test {
   base::ScopedTempDir temp_version_dir_;
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   const AppId app_id_ = "app_id";
   const std::wstring app_name_ = L"app_name";

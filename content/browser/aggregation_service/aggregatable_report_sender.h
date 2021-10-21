@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -81,7 +82,7 @@ class CONTENT_EXPORT AggregatableReportSender {
   UrlLoaderList loaders_in_progress_;
 
   // Might be `nullptr` for testing, otherwise must outlive `this`.
-  StoragePartition* storage_partition_;
+  raw_ptr<StoragePartition> storage_partition_;
 
   // Lazily accessed URLLoaderFactory used for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

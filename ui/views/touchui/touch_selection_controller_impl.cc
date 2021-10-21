@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -348,11 +349,11 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   bool GetDrawInvisible() const { return draw_invisible_; }
 
  private:
-  TouchSelectionControllerImpl* controller_;
+  raw_ptr<TouchSelectionControllerImpl> controller_;
 
   // In local coordinates
   gfx::SelectionBound selection_bound_;
-  gfx::Image* image_;
+  raw_ptr<gfx::Image> image_;
 
   // If true, this is a handle corresponding to the single cursor, otherwise it
   // is a handle corresponding to one of the two selection bounds.

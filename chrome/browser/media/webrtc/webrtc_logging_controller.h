@@ -15,6 +15,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/rtp_dump_type.h"
@@ -231,7 +232,7 @@ class WebRtcLoggingController
 
   // A pointer to the log uploader that's shared for all browser contexts.
   // Ownership lies with the browser process.
-  WebRtcLogUploader* const log_uploader_;
+  const raw_ptr<WebRtcLogUploader> log_uploader_;
 
   // Web app id used for statistics. Created as the hash of the value of a
   // "client" meta data key, if exists. 0 means undefined, and is the hash of

@@ -15,6 +15,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -365,7 +366,7 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
   int bad_messages_;
   base::flat_set<mojom::PrinterType> called_for_type_;
   std::unique_ptr<PrinterHandler> test_printer_handler_;
-  content::WebContents* const initiator_;
+  const raw_ptr<content::WebContents> initiator_;
 };
 
 }  // namespace
@@ -691,14 +692,14 @@ class PrintPreviewHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> preview_web_contents_;
   std::unique_ptr<content::WebContents> initiator_web_contents_;
   std::vector<PrinterInfo> printers_;
-  TestPrinterHandler* printer_handler_;
-  TestPrintPreviewHandler* handler_;
+  raw_ptr<TestPrinterHandler> printer_handler_;
+  raw_ptr<TestPrintPreviewHandler> handler_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestLocalPrinterAsh> local_printer_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;

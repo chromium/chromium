@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/web_test/browser/web_test_control_host.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 #include <string.h>
@@ -476,7 +477,7 @@ class WebTestControlHost::WebTestWindowObserver : WebContentsObserver {
     web_test_control_->HandleNewRenderFrameHost(render_frame_host);
   }
 
-  WebTestControlHost* const web_test_control_;
+  const raw_ptr<WebTestControlHost> web_test_control_;
 };
 
 // WebTestControlHost -------------------------------------------------------

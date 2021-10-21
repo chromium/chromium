@@ -23,6 +23,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -708,7 +709,7 @@ class DownloadProtectionServiceTestBase
 
   scoped_refptr<FakeSafeBrowsingService> sb_service_;
   scoped_refptr<MockBinaryFeatureExtractor> binary_feature_extractor_;
-  DownloadProtectionService* download_service_;
+  raw_ptr<DownloadProtectionService> download_service_;
   DownloadCheckResult result_;
   bool has_result_;
   std::unique_ptr<content::InProcessUtilityThreadHelper>
@@ -727,7 +728,7 @@ class DownloadProtectionServiceTestBase
   base::FilePath final_path_;
   std::string hash_;
   base::ScopedTempDir temp_dir_;
-  extensions::TestEventRouter* test_event_router_;
+  raw_ptr<extensions::TestEventRouter> test_event_router_;
   TestingProfileManager testing_profile_manager_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;

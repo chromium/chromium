@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/audio/audio_service.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -51,7 +52,7 @@ class AudioAPI : public BrowserContextKeyedAPI, public AudioService::Observer {
     return "AudioAPI";
   }
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<AudioDeviceIdCalculator> stable_id_calculator_;
   std::unique_ptr<AudioService> service_;
 

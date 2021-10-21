@@ -181,8 +181,8 @@ TestReportingContext::TestReportingContext(
       delivery_timer_(new base::MockOneShotTimer()),
       garbage_collection_timer_(new base::MockOneShotTimer()) {
   garbage_collector()->SetTimerForTesting(
-      base::WrapUnique(garbage_collection_timer_));
-  delivery_agent()->SetTimerForTesting(base::WrapUnique(delivery_timer_));
+      base::WrapUnique(garbage_collection_timer_.get()));
+  delivery_agent()->SetTimerForTesting(base::WrapUnique(delivery_timer_.get()));
 }
 
 TestReportingContext::~TestReportingContext() {

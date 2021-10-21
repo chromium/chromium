@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -72,11 +73,11 @@ class ExtensionBookmarksTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  bookmarks::ManagedBookmarkService* managed_;
-  BookmarkModel* model_;
-  const BookmarkNode* node_;
-  const BookmarkNode* node2_;
-  const BookmarkNode* folder_;
+  raw_ptr<bookmarks::ManagedBookmarkService> managed_;
+  raw_ptr<BookmarkModel> model_;
+  raw_ptr<const BookmarkNode> node_;
+  raw_ptr<const BookmarkNode> node2_;
+  raw_ptr<const BookmarkNode> folder_;
 };
 
 TEST_F(ExtensionBookmarksTest, GetFullTreeFromRoot) {

@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -204,7 +205,7 @@ class AppBackgroundPageNaClTest : public AppBackgroundPageApiTest {
   }
 
  private:
-  const Extension* extension_;
+  raw_ptr<const Extension> extension_;
 };
 
 }  // namespace

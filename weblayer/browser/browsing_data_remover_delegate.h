@@ -6,6 +6,7 @@
 #define WEBLAYER_BROWSER_BROWSING_DATA_REMOVER_DELEGATE_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -62,7 +63,7 @@ class BrowsingDataRemoverDelegate : public content::BrowsingDataRemoverDelegate,
 
   void RunCallbackIfDone();
 
-  content::BrowserContext* browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 
   int pending_tasks_ = 0;
 

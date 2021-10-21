@@ -6,6 +6,7 @@
 #define UI_TOUCH_SELECTION_TOUCH_SELECTION_CONTROLLER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -209,7 +210,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
 
   void LogSelectionEnd();
 
-  TouchSelectionControllerClient* const client_;
+  const raw_ptr<TouchSelectionControllerClient> client_;
   const Config config_;
 
   InputEventType response_pending_input_event_;

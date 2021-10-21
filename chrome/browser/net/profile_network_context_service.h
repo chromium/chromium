@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -165,7 +166,7 @@ class ProfileNetworkContextService
   void OnThirdPartyCookieBlockingChanged(
       bool block_third_party_cookies) override;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   ProxyConfigMonitor proxy_config_monitor_;
 

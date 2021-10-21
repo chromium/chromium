@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -100,7 +101,7 @@ struct HidDeviceManager::GetApiDevicesParams {
       : extension(extension), filters(filters), callback(std::move(callback)) {}
   ~GetApiDevicesParams() {}
 
-  const Extension* extension;
+  raw_ptr<const Extension> extension;
   std::vector<HidDeviceFilter> filters;
   GetApiDevicesCallback callback;
 };

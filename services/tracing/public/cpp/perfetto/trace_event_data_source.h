@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
@@ -282,7 +283,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource :
   // base::AutoLock to protect code paths which may post tasks.
   // TODO(eseckler): Use GUARDED_BY annotations on all fields below.
   base::Lock lock_;  // Protects subsequent members.
-  PerfettoProducer* producer_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<PerfettoProducer> producer_ GUARDED_BY(lock_) = nullptr;
   uint32_t target_buffer_ = 0;
   std::unique_ptr<perfetto::TraceWriter> trace_writer_;
   bool is_enabled_ = false;

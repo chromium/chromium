@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -81,9 +82,9 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
   MOCK_METHOD0(OnDialogClosed, void());
 
  private:
-  AccountChooserPrompt* current_account_chooser_;
-  AutoSigninFirstRunPrompt* current_autosignin_prompt_;
-  CredentialLeakPrompt* current_credential_leak_prompt_;
+  raw_ptr<AccountChooserPrompt> current_account_chooser_;
+  raw_ptr<AutoSigninFirstRunPrompt> current_autosignin_prompt_;
+  raw_ptr<CredentialLeakPrompt> current_credential_leak_prompt_;
 };
 
 TestManagePasswordsUIController::TestManagePasswordsUIController(
@@ -170,7 +171,7 @@ class PasswordDialogViewTest : public DialogBrowserTest {
   }
 
  private:
-  TestManagePasswordsUIController* controller_;
+  raw_ptr<TestManagePasswordsUIController> controller_;
 };
 
 void PasswordDialogViewTest::SetUpOnMainThread() {

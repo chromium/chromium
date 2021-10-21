@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_V8_MEMORY_TEST_HELPERS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_V8_MEMORY_TEST_HELPERS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "components/performance_manager/v8_memory/v8_detailed_memory_decorator.h"
 
@@ -213,8 +214,8 @@ class V8MemoryPerformanceManagerTestHarness
       override;
 
  private:
-  content::RenderFrameHost* main_frame_ = nullptr;
-  content::RenderFrameHost* child_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost> main_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost> child_frame_ = nullptr;
   RenderProcessHostId main_process_id_;
   RenderProcessHostId child_process_id_;
 };

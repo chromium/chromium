@@ -8,6 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/optimization_guide/proto/performance_hints_metadata.pb.h"
 #include "content/public/browser/context_menu_params.h"
@@ -43,7 +44,7 @@ class ContextMenuHelper
   GetChromeRenderFrame() const;
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   content::ContextMenuParams context_menu_params_;
 

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
@@ -218,7 +219,7 @@ class TrialComparisonCertVerifierControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 
   mojo::Remote<cert_verifier::mojom::TrialComparisonCertVerifierReportClient>
       report_client_;

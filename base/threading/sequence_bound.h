@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -443,13 +444,13 @@ class SequenceBound {
     //   destructor will `CHECK()` if `sequence_bound_` is non-null, since that
     //   indicates `Then()` was not invoked. Similarly, note this branch should
     //   be eliminated by the optimizer if the code is free of bugs. :)
-    const SequenceBound* sequence_bound_;
+    raw_ptr<const SequenceBound<T, CrossThreadBindTraits>> sequence_bound_;
     // Subtle: this typically points at a Location *temporary*. This is used to
     // try to detect errors resulting from lifetime extension of the async call
     // factory temporaries, since the factory destructors can perform work. If
     // the lifetime of the factory is incorrectly extended, dereferencing
     // `location_` will trigger a stack-use-after-scope when running with ASan.
-    const Location* const location_;
+    const raw_ptr<const Location> location_;
     MethodRef method_;
   };
 
@@ -597,8 +598,8 @@ class SequenceBound {
     AsyncCallWithBoundArgsBuilderBase& operator=(
         AsyncCallWithBoundArgsBuilderBase&&) noexcept = default;
 
-    const SequenceBound* sequence_bound_;
-    const Location* const location_;
+    raw_ptr<const SequenceBound<T, CrossThreadBindTraits>> sequence_bound_;
+    const raw_ptr<const Location> location_;
     CrossThreadTask<ReturnType()> callback_;
   };
 

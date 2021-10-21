@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -124,7 +125,7 @@ class NewTabPageTest : public InProcessBrowserTest,
     // Read initial value of lazy-loaded in case lazy load is already complete
     // at this point in time.
     lazy_loaded_ =
-        EvalJs(contents_,
+        EvalJs(contents_.get(),
                "document.documentElement.hasAttribute('lazy-loaded')",
                content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1)
             .ExtractBool();
@@ -152,7 +153,7 @@ class NewTabPageTest : public InProcessBrowserTest,
 
   // Blocks until the next animation frame.
   void WaitForAnimationFrame() {
-    CHECK(EvalJs(contents_,
+    CHECK(EvalJs(contents_.get(),
                  "new Promise(r => requestAnimationFrame(() => r(true)))",
                  content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1)
               .ExtractBool());
@@ -182,8 +183,8 @@ class NewTabPageTest : public InProcessBrowserTest,
 
  protected:
   base::test::ScopedFeatureList features_;
-  content::WebContents* contents_;
-  BrowserView* browser_view_;
+  raw_ptr<content::WebContents> contents_;
+  raw_ptr<BrowserView> browser_view_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::map<std::string, GURL> loading_resources_;
   base::OnceClosure network_load_quit_closure_;

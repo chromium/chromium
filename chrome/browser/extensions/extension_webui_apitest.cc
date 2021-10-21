@@ -5,6 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -125,7 +126,7 @@ class ExtensionWebUIEmbeddedOptionsTest : public ExtensionWebUITest {
 
  private:
   guest_view::TestGuestViewManagerFactory test_guest_view_manager_factory_;
-  guest_view::TestGuestViewManager* test_guest_view_manager_ = nullptr;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_ = nullptr;
 };
 
 #if !defined(OS_WIN)  // flaky http://crbug.com/530722

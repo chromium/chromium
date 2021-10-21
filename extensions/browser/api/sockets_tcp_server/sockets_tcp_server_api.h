@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/common/api/sockets_tcp_server.h"
 
@@ -91,7 +92,7 @@ class SocketsTcpServerListenFunction : public TCPServerSocketApiFunction {
   void OnCompleted(int result, const std::string& error_msg);
 
   std::unique_ptr<sockets_tcp_server::Listen::Params> params_;
-  TCPServerSocketEventDispatcher* socket_event_dispatcher_;
+  raw_ptr<TCPServerSocketEventDispatcher> socket_event_dispatcher_;
 };
 
 class SocketsTcpServerDisconnectFunction : public TCPServerSocketApiFunction {

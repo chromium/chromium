@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "components/media_router/browser/android/media_router_android.h"
 #include "components/media_router/browser/android/media_router_android_bridge.h"
@@ -65,7 +66,7 @@ class MediaRouterAndroidTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<MediaRouterAndroid> router_;
-  MockMediaRouterAndroidBridge* mock_bridge_;
+  raw_ptr<MockMediaRouterAndroidBridge> mock_bridge_;
 };
 
 TEST_F(MediaRouterAndroidTest, DetachRoute) {

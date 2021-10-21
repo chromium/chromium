@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -281,7 +282,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
   bool token_fetches_configured_in_client_ = false;
-  TestSafeBrowsingTokenFetcher* raw_token_fetcher_ = nullptr;
+  raw_ptr<TestSafeBrowsingTokenFetcher> raw_token_fetcher_ = nullptr;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;

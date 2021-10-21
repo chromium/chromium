@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -604,9 +605,9 @@ class OmniboxEditModel {
 
   std::unique_ptr<OmniboxController> omnibox_controller_;
 
-  OmniboxView* view_;
+  raw_ptr<OmniboxView> view_;
 
-  OmniboxEditController* controller_;
+  raw_ptr<OmniboxEditController> controller_;
 
   OmniboxFocusState focus_state_;
 
@@ -759,7 +760,7 @@ class OmniboxEditModel {
 
   // The popup view is nullptr when there's no popup, and is non-null when
   // a popup view exists (i.e. between calls to `set_popup_view`).
-  OmniboxPopupView* popup_view_ = nullptr;
+  raw_ptr<OmniboxPopupView> popup_view_ = nullptr;
 
   // The current popup selection; set to normal kNoMatch when there's no popup.
   OmniboxPopupSelection popup_selection_ =

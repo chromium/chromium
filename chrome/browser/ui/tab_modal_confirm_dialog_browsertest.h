@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -41,7 +42,7 @@ class MockTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
   void OnClosed() override;
 
  private:
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 class TabModalConfirmDialogTest
@@ -64,10 +65,10 @@ class TabModalConfirmDialogTest
 
  protected:
   // Owned by |dialog_|.
-  MockTabModalConfirmDialogDelegate* delegate_;
+  raw_ptr<MockTabModalConfirmDialogDelegate> delegate_;
 
   // Deletes itself.
-  TabModalConfirmDialog* dialog_;
+  raw_ptr<TabModalConfirmDialog> dialog_;
 
   int accepted_count_;
   int canceled_count_;

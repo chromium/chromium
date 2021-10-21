@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/google_keys.h"
@@ -81,7 +82,7 @@ class DesktopAttestationService : public AttestationService {
 
   GoogleKeys google_keys_;
   std::unique_ptr<enterprise_connectors::SigningKeyPair> key_pair_;
-  policy::DeviceManagementService* device_management_service_;
+  raw_ptr<policy::DeviceManagementService> device_management_service_;
 
   base::WeakPtrFactory<DesktopAttestationService> weak_factory_{this};
 };

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
@@ -47,7 +48,7 @@ class CONTENT_EXPORT AccessibilityEventRecorder : public ui::AXEventRecorder {
   AccessibilityEventRecorder(BrowserAccessibilityManager* manager);
 
  protected:
-  BrowserAccessibilityManager* const manager_;
+  const raw_ptr<BrowserAccessibilityManager> manager_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorder);

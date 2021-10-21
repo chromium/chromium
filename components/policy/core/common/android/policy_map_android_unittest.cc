@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/policy/android/test_jni_headers/PolicyMapTestSupporter_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +34,7 @@ class PolicyMapAndroidTest : public ::testing::Test {
                     POLICY_SOURCE_PLATFORM, std::move(value), nullptr);
   }
 
-  JNIEnv* env_ = base::android::AttachCurrentThread();
+  raw_ptr<JNIEnv> env_ = base::android::AttachCurrentThread();
   PolicyMap policy_map_;
   PolicyMapAndroid policy_map_android_{policy_map_};
   base::android::ScopedJavaLocalRef<jobject> j_support_ =

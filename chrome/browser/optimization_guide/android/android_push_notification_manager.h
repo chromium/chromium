@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_ANDROID_ANDROID_PUSH_NOTIFICATION_MANAGER_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_ANDROID_ANDROID_PUSH_NOTIFICATION_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
@@ -69,10 +70,10 @@ class AndroidPushNotificationManager : public PushNotificationManager {
       const proto::HintNotificationPayload& notification);
 
   // Owns |this|. Expected to be set before |OnDelegateReady| is called.
-  PushNotificationManager::Delegate* delegate_ = nullptr;
+  raw_ptr<PushNotificationManager::Delegate> delegate_ = nullptr;
 
   // Not owned, but expected to outlive |this|.
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Observers to handle the custom payload.
   base::ObserverList<PushNotificationManager::Observer> observers_;

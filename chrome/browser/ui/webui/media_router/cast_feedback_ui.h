@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_CAST_FEEDBACK_UI_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_ui_controller.h"
 
 class Profile;
@@ -31,8 +32,8 @@ class CastFeedbackUI : public content::WebUIController {
  private:
   void OnCloseMessage(const base::ListValue*);
 
-  Profile* const profile_;
-  content::WebContents* const web_contents_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<content::WebContents> web_contents_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

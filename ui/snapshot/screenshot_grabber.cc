@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/current_thread.h"
 #include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -62,7 +63,7 @@ class ScreenshotGrabber::ScopedCursorHider {
 
  private:
   explicit ScopedCursorHider(aura::Window* window) : window_(window) {}
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 };
 #endif
 

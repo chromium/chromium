@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/extensions/extension_install_friction_dialog_view.h"
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -117,7 +118,7 @@ class ExtensionInstallFrictionDialogView::WebContentsDestructionObserver
 
  private:
   // Not owned.
-  ExtensionInstallFrictionDialogView* parent_view_;
+  raw_ptr<ExtensionInstallFrictionDialogView> parent_view_;
 };
 
 ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(

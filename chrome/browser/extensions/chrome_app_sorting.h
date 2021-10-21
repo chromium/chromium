@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
@@ -169,9 +170,9 @@ class ChromeAppSorting : public AppSorting,
   // Returns the number of items in |m| visible on the new tab page.
   size_t CountItemsVisibleOnNtp(const AppLaunchOrdinalMap& m) const;
 
-  content::BrowserContext* const browser_context_ = nullptr;
-  const web_app::WebAppRegistrar* web_app_registrar_ = nullptr;
-  web_app::WebAppSyncBridge* web_app_sync_bridge_ = nullptr;
+  const raw_ptr<content::BrowserContext> browser_context_ = nullptr;
+  raw_ptr<const web_app::WebAppRegistrar> web_app_registrar_ = nullptr;
+  raw_ptr<web_app::WebAppSyncBridge> web_app_sync_bridge_ = nullptr;
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       app_registrar_observation_{this};

@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_BROWSER_CONTROLS_NAVIGATION_STATE_HANDLER_H_
 #define WEBLAYER_BROWSER_BROWSER_CONTROLS_NAVIGATION_STATE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -74,7 +75,7 @@ class BrowserControlsNavigationStateHandler
 
   bool IsRendererHungOrCrashed();
 
-  BrowserControlsNavigationStateHandlerDelegate* delegate_;
+  raw_ptr<BrowserControlsNavigationStateHandlerDelegate> delegate_;
 
   // The controls are forced visible when a navigation starts, and allowed to
   // hide a short amount of time after done.

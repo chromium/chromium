@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NET_STUB_RESOLVER_CONFIG_READER_H_
 #define CHROME_BROWSER_NET_STUB_RESOLVER_CONFIG_READER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -88,7 +89,7 @@ class StubResolverConfigReader {
       bool record_metrics,
       bool update_network_service);
 
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   // Timer for deferred running of parental controls checks. Underling API calls
   // may be slow and run off-thread. Calling for the result is delayed to avoid

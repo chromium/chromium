@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/download_manager.h"
 
@@ -91,8 +92,8 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
   void OnDownloadRemoved(DownloadItem* item) override;
   void OnDownloadDestroyed(DownloadItem* item) override;
 
-  content::DownloadManager* manager_;
-  AllDownloadItemNotifier::Observer* observer_;
+  raw_ptr<content::DownloadManager> manager_;
+  raw_ptr<AllDownloadItemNotifier::Observer> observer_;
   std::set<DownloadItem*> observing_;
   base::WeakPtrFactory<AllDownloadItemNotifier> weak_factory_{this};
 };

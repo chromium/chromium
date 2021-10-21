@@ -5,6 +5,7 @@
 #ifndef MEDIA_CAST_NET_RTCP_RECEIVER_RTCP_SESSION_H_
 #define MEDIA_CAST_NET_RTCP_RECEIVER_RTCP_SESSION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "media/cast/common/clock_drift_smoother.h"
 #include "media/cast/net/pacing/paced_sender.h"
@@ -63,7 +64,7 @@ class ReceiverRtcpSession : public RtcpSession {
                              uint32_t ntp_seconds,
                              uint32_t ntp_fraction);
 
-  const base::TickClock* const clock_;  // Not owned.
+  const raw_ptr<const base::TickClock> clock_;  // Not owned.
   const uint32_t local_ssrc_;
   const uint32_t remote_ssrc_;
 

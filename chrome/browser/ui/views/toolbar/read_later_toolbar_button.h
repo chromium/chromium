@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_READ_LATER_TOOLBAR_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_READ_LATER_TOOLBAR_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -49,8 +50,8 @@ class ReadLaterToolbarButton : public ToolbarButton,
     void OnViewBoundsChanged(views::View* observed_view) override;
 
    private:
-    views::DotIndicator* const dot_indicator_;
-    views::ImageView* const image_;
+    const raw_ptr<views::DotIndicator> dot_indicator_;
+    const raw_ptr<views::ImageView> image_;
     base::ScopedObservation<views::View, views::ViewObserver> observation_{
         this};
   };
@@ -62,16 +63,16 @@ class ReadLaterToolbarButton : public ToolbarButton,
 
   void ButtonPressed();
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
-  views::DotIndicator* dot_indicator_;
+  raw_ptr<views::DotIndicator> dot_indicator_;
   std::unique_ptr<DotBoundsUpdater> dot_bounds_updater_;
 
-  ReadingListModel* const reading_list_model_;
+  const raw_ptr<ReadingListModel> reading_list_model_;
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       reading_list_model_scoped_observation_{this};
 
-  views::View* side_panel_webview_ = nullptr;
+  raw_ptr<views::View> side_panel_webview_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_READ_LATER_TOOLBAR_BUTTON_H_

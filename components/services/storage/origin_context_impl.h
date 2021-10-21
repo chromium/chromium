@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_STORAGE_ORIGIN_CONTEXT_IMPL_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/services/storage/public/mojom/origin_context.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -33,7 +34,7 @@ class OriginContextImpl : public mojom::OriginContext {
  private:
   void OnDisconnect();
 
-  PartitionImpl* const partition_;
+  const raw_ptr<PartitionImpl> partition_;
   const url::Origin origin_;
   mojo::ReceiverSet<mojom::OriginContext> receivers_;
 };

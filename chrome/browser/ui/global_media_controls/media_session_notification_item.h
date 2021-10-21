@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -136,12 +137,12 @@ class MediaSessionNotificationItem
 
   void MaybeHideOrShowNotification();
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   bool is_bound_ = true;
 
   // Weak reference to the view of the currently shown media notification.
-  media_message_center::MediaNotificationView* view_ = nullptr;
+  raw_ptr<media_message_center::MediaNotificationView> view_ = nullptr;
 
   // The |request_id_| is the request id of the media session and is guaranteed
   // to be globally unique.

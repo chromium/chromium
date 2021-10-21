@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -61,7 +62,7 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
 
-  PlatformWindowDelegate* delegate_;
+  raw_ptr<PlatformWindowDelegate> delegate_;
   gfx::Rect bounds_;
 };
 

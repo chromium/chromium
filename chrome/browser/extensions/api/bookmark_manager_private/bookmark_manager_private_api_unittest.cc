@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -44,7 +45,7 @@ class BookmarkManagerPrivateApiUnitTest : public ExtensionServiceTestBase {
   std::string node_id() const { return node_id_; }
 
  private:
-  bookmarks::BookmarkModel* model_ = nullptr;
+  raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
   std::string node_id_;
 };
 

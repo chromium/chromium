@@ -363,7 +363,7 @@ void DecoderStream<StreamType>::OnDecoderSelected(
     DCHECK(!reset_cb_);
   }
 
-  auto* original_stream = stream_;
+  auto* original_stream = stream_.get();
   bool is_decrypting_demuxer_stream_selected = !!decrypting_demuxer_stream;
 
   if (decrypting_demuxer_stream) {

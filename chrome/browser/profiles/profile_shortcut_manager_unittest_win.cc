@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
@@ -353,7 +354,7 @@ class ProfileShortcutManagerTest : public testing::Test {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<ProfileShortcutManager> profile_shortcut_manager_;
-  ProfileAttributesStorage* profile_attributes_storage_;
+  raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   base::ScopedPathOverride fake_user_desktop_;
   base::ScopedPathOverride fake_system_desktop_;
   std::u16string profile_1_name_;

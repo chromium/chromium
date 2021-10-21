@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
 #include "content/public/browser/web_contents.h"
@@ -46,10 +47,10 @@ class AutofillProgressDialogControllerImpl
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // View that displays the error dialog.
-  AutofillProgressDialogView* autofill_progress_dialog_view_ = nullptr;
+  raw_ptr<AutofillProgressDialogView> autofill_progress_dialog_view_ = nullptr;
 
   // Callback function invoked when the cancel button is clicked.
   base::OnceClosure cancel_callback_;

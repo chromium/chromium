@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
@@ -136,7 +137,7 @@ class VIEWS_EXPORT InkDropHighlight {
 
   std::unique_ptr<AnimationAbortHandle> animation_abort_handle_;
 
-  InkDropHighlightObserver* observer_ = nullptr;
+  raw_ptr<InkDropHighlightObserver> observer_ = nullptr;
 };
 
 // Returns a human readable string for |animation_type|.  Useful for logging.

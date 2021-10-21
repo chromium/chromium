@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -73,7 +74,7 @@ class RenderViewHostTest : public RenderViewHostImplTestHarness {
 
  private:
   RenderViewHostTestBrowserClient test_browser_client_;
-  ContentBrowserClient* old_browser_client_;
+  raw_ptr<ContentBrowserClient> old_browser_client_;
 };
 
 // Ensure we do not grant bindings to a process shared with unprivileged views.

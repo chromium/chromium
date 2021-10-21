@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
@@ -104,7 +105,7 @@ class TransactionalLevelDBIterator {
   // Non-null iff |iterator_state_| is kActive.
   std::unique_ptr<LevelDBSnapshot> snapshot_;
 
-  const leveldb::Comparator* const comparator_;
+  const raw_ptr<const leveldb::Comparator> comparator_;
 };
 
 }  // namespace content

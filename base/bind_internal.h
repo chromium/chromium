@@ -17,6 +17,7 @@
 #include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_scoped_refptr_mismatch_checker.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -86,8 +87,35 @@ class UnretainedWrapper {
   T* get() const { return ptr_; }
 
  private:
-  T* ptr_;
+  raw_ptr<T> ptr_;
 };
+
+#if defined(OS_WIN)
+
+#define DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(name)     \
+  template <>                                            \
+  class UnretainedWrapper<name##__> {                    \
+   public:                                               \
+    explicit UnretainedWrapper(name##__* o) : ptr_(o) {} \
+    name##__* get() const { return ptr_; }               \
+                                                         \
+   private:                                              \
+    name##__* ptr_;                                      \
+  }
+
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HDC);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HDESK);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HGLRC);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HICON);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HINSTANCE);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HKEY);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HKL);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HMENU);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HWINSTA);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HWND);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HMONITOR);
+
+#endif  // defined(OS_WIN)
 
 // Storage type for std::reference_wrapper so `BindState` can internally store
 // unprotected references using raw_ptr.
@@ -106,7 +134,7 @@ class UnretainedRefWrapper {
  private:
   // This is intentionally a pointer to ensure the Big Rewrite will change this
   // to raw_ptr.
-  T* const ptr_;
+  const raw_ptr<T> ptr_;
 };
 
 template <typename T>

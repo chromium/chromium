@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
 #include "chrome/grit/generated_resources.h"
@@ -70,8 +71,8 @@ class TabListModel : public ui::TableModel,
   TabListModel(const TabListModel&) = delete;
   TabListModel operator=(const TabListModel&) = delete;
 
-  DesktopMediaListController* controller_;
-  ui::TableModelObserver* observer_ = nullptr;
+  raw_ptr<DesktopMediaListController> controller_;
+  raw_ptr<ui::TableModelObserver> observer_ = nullptr;
   base::RepeatingCallback<void(size_t)> preview_updated_callback_;
 };
 
@@ -150,7 +151,7 @@ class TabListViewObserver : public views::TableViewObserver {
   TabListViewObserver(const TabListViewObserver&) = delete;
   TabListViewObserver operator=(const TabListViewObserver&) = delete;
 
-  DesktopMediaListController* const controller_;
+  const raw_ptr<DesktopMediaListController> controller_;
   base::RepeatingClosure selection_changed_callback_;
 };
 

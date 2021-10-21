@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -316,7 +317,7 @@ class FidoRequestHandlerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::FakeFidoDiscoveryFactory fake_discovery_factory_;
   scoped_refptr<::testing::NiceMock<MockBluetoothAdapter>> mock_adapter_;
-  test::FakeFidoDiscovery* discovery_;
+  raw_ptr<test::FakeFidoDiscovery> discovery_;
   FakeHandlerCallbackReceiver cb_;
 };
 

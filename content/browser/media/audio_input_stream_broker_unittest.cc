@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sync_socket.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -151,7 +152,7 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
     stream_request_data_->created_callback = std::move(created_callback);
   }
 
-  StreamRequestData* stream_request_data_;
+  raw_ptr<StreamRequestData> stream_request_data_;
 };
 
 struct TestEnvironment {

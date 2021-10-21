@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
 
 using base::android::JavaParamRef;
@@ -82,7 +83,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
 
   std::vector<history::BrowsingHistoryService::HistoryEntry> items_to_remove_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::OnceClosure query_history_continuation_;
 };

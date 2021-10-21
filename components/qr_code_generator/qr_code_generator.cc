@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 
 // kMaxVersionWithSmallLengths is the maximum QR version that uses the smaller
@@ -508,7 +509,7 @@ class BitPacker {
     }
   }
 
-  std::vector<uint8_t>* const out_;
+  const raw_ptr<std::vector<uint8_t>> out_;
   int bits_remaining_in_final_byte_ = 0;
 };
 

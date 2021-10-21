@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_CONTROLLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -55,8 +56,8 @@ class WebauthnDialogControllerImpl
   // clicked, the dialog stays and the cancel button is still clickable.
   AutofillClient::WebauthnDialogCallback callback_;
 
-  WebauthnDialogModel* dialog_model_ = nullptr;
-  WebauthnDialogView* dialog_view_ = nullptr;
+  raw_ptr<WebauthnDialogModel> dialog_model_ = nullptr;
+  raw_ptr<WebauthnDialogView> dialog_view_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

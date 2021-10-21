@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
@@ -72,7 +73,7 @@ class CRYPTO_EXPORT Encryptor {
   // TODO(albertb): Support streaming encryption.
 
  private:
-  const SymmetricKey* key_;
+  raw_ptr<const SymmetricKey> key_;
   Mode mode_;
 
   bool CryptString(bool do_encrypt,

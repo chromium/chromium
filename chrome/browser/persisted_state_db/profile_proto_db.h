@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
@@ -157,7 +158,7 @@ class ProfileProtoDB : public KeyedService {
 
   // Browser context associated with ProfileProtoDB (ProfileProtoDB are per
   // profile).
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Status of the database initialization.
   absl::optional<leveldb_proto::Enums::InitStatus> database_status_;

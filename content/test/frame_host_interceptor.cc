@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/common/frame.mojom.h"
@@ -62,10 +63,10 @@ class FrameHostInterceptor::FrameAgent
   }
 
  private:
-  FrameHostInterceptor* interceptor_;
+  raw_ptr<FrameHostInterceptor> interceptor_;
 
-  RenderFrameHostImpl* rfhi_;
-  mojom::FrameHost* impl_;
+  raw_ptr<RenderFrameHostImpl> rfhi_;
+  raw_ptr<mojom::FrameHost> impl_;
 };
 
 FrameHostInterceptor::FrameHostInterceptor(WebContents* web_contents)

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -87,7 +88,7 @@ class CreditCardFIDOAuthenticator
     bool did_succeed = false;
     // The fetched credit card if the authentication was successful. Can be
     // nullptr if authentication failed.
-    const CreditCard* card = nullptr;
+    raw_ptr<const CreditCard> card = nullptr;
     // The CVC of the fetched credit card. Can be empty string.
     std::u16string cvc = std::u16string();
     // The type of the failure of the full card request.
@@ -255,7 +256,7 @@ class CreditCardFIDOAuthenticator
   webauthn::InternalAuthenticator* authenticator();
 
   // Card being unmasked.
-  const CreditCard* card_;
+  raw_ptr<const CreditCard> card_;
 
   // The current flow in progress.
   Flow current_flow_ = NONE_FLOW;
@@ -265,16 +266,16 @@ class CreditCardFIDOAuthenticator
   std::string card_authorization_token_;
 
   // The associated autofill driver. Weak reference.
-  AutofillDriver* const autofill_driver_;
+  const raw_ptr<AutofillDriver> autofill_driver_;
 
   // The associated autofill client. Weak reference.
-  AutofillClient* const autofill_client_;
+  const raw_ptr<AutofillClient> autofill_client_;
 
   // Payments client to make requests to Google Payments.
-  payments::PaymentsClient* const payments_client_;
+  const raw_ptr<payments::PaymentsClient> payments_client_;
 
   // Authenticator pointer to facilitate WebAuthn.
-  webauthn::InternalAuthenticator* authenticator_ = nullptr;
+  raw_ptr<webauthn::InternalAuthenticator> authenticator_ = nullptr;
 
   // Responsible for getting the full card details, including the PAN and the
   // CVC.

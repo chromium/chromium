@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 
@@ -52,7 +53,7 @@ struct CONTENT_EXPORT CookieStoreConfig {
   // Used to provide encryption hooks for the cookie store. The
   // CookieCryptoDelegate must outlive any cookie store created with this
   // config.
-  net::CookieCryptoDelegate* crypto_delegate;
+  raw_ptr<net::CookieCryptoDelegate> crypto_delegate;
 
   // Callbacks for data load events will be performed on |client_task_runner|.
   // If nullptr, uses the task runner for BrowserThread::IO.

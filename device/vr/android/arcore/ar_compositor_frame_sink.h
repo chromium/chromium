@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -139,7 +140,7 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   void CloseBindingsIfOpen();
 
   scoped_refptr<base::SingleThreadTaskRunner> gl_thread_task_runner_;
-  XrFrameSinkClient* xr_frame_sink_client_;
+  raw_ptr<XrFrameSinkClient> xr_frame_sink_client_;
   gfx::Size frame_size_;
   bool can_issue_new_begin_frame_ = true;
   bool is_initialized_ = false;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 
 #ifndef GPU_SKIA_BINDINGS_GLES2_IMPLEMENTATION_WITH_GRCONTEXT_SUPPORT_H_
@@ -179,7 +180,7 @@ class GLES2ImplementationWithGrContextSupport
   void WillEnableOrDisable(GLenum cap);
   void ResetGrContextIfNeeded(uint32_t dirty_bits);
 
-  GrDirectContext* gr_context_ = nullptr;
+  raw_ptr<GrDirectContext> gr_context_ = nullptr;
   bool using_gl_from_skia_ = false;
 };
 

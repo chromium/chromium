@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -259,8 +260,8 @@ class ExperimentTestMetricsProvider : public TestMetricsProvider {
   }
 
  private:
-  base::FieldTrial* profile_metrics_trial_;
-  base::FieldTrial* session_data_trial_;
+  raw_ptr<base::FieldTrial> profile_metrics_trial_;
+  raw_ptr<base::FieldTrial> session_data_trial_;
 };
 
 }  // namespace

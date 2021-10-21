@@ -6,6 +6,7 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_TEST_RULESET_PUBLISHER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 
 namespace subresource_filter {
@@ -30,7 +31,7 @@ class TestRulesetPublisher {
   void SetRuleset(const TestRuleset& unindexed_ruleset);
 
  private:
-  RulesetService* ruleset_service_;
+  raw_ptr<RulesetService> ruleset_service_;
 };
 
 }  // namespace testing

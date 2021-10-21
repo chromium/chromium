@@ -19,7 +19,7 @@ SigninReauthHandler::SigninReauthHandler(
     : controller_(controller),
       string_to_grd_id_map_(std::move(string_to_grd_id_map)) {
   DCHECK(controller_);
-  controller_observation_.Observe(controller_);
+  controller_observation_.Observe(controller_.get());
 }
 
 SigninReauthHandler::~SigninReauthHandler() = default;

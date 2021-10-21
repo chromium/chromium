@@ -4,6 +4,7 @@
 
 #include "media/base/android/media_service_throttler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -57,7 +58,7 @@ class MediaServiceThrottlerTest : public testing::Test {
 
   base::TimeTicks TestNow() { return clock_.NowTicks(); }
 
-  MediaServiceThrottler* throttler_;
+  raw_ptr<MediaServiceThrottler> throttler_;
   base::SimpleTestTickClock clock_;
 
   base::TimeDelta base_delay_;

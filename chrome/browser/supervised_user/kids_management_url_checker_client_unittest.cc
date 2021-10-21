@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -161,7 +162,7 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
                     safe_search_api::ClientClassification classification));
 
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile* test_profile_;
+  raw_ptr<TestingProfile> test_profile_;
   std::unique_ptr<TestingProfileManager> test_profile_manager_;
   std::unique_ptr<KidsManagementURLCheckerClient> url_classifier_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,7 +48,7 @@ class ErrorBadge : public GlobalError {
   static int GetMenuItemCommandID();
 
  private:
-  WarningBadgeService* badge_service_;
+  raw_ptr<WarningBadgeService> badge_service_;
 };
 
 ErrorBadge::ErrorBadge(WarningBadgeService* badge_service)

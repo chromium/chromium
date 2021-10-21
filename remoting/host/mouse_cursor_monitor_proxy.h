@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -50,7 +51,7 @@ class MouseCursorMonitorProxy : public webrtc::MouseCursorMonitor {
 
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
-  Callback* callback_ = nullptr;
+  raw_ptr<Callback> callback_ = nullptr;
 
   base::WeakPtrFactory<MouseCursorMonitorProxy> weak_factory_{this};
 };

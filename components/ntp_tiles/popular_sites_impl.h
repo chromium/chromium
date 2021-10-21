@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ntp_tiles/popular_sites.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -75,9 +76,9 @@ class PopularSitesImpl : public PopularSites {
   void OnDownloadFailed();
 
   // Parameters set from constructor.
-  PrefService* const prefs_;
-  const TemplateURLService* const template_url_service_;
-  variations::VariationsService* const variations_;
+  const raw_ptr<PrefService> prefs_;
+  const raw_ptr<const TemplateURLService> template_url_service_;
+  const raw_ptr<variations::VariationsService> variations_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Set by MaybeStartFetch() and called after fetch completes.

@@ -13,6 +13,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -206,10 +207,10 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
   void PropagateInstalled(View* host);
   void PropagateInvalidateLayout();
 
-  View* host_view_ = nullptr;
+  raw_ptr<View> host_view_ = nullptr;
   std::map<const View*, ChildInfo> child_infos_;
   std::vector<std::unique_ptr<LayoutManagerBase>> owned_layouts_;
-  LayoutManagerBase* parent_layout_ = nullptr;
+  raw_ptr<LayoutManagerBase> parent_layout_ = nullptr;
 
   // Used to suspend invalidation while processing signals from the host view,
   // or while invalidating the host view without invalidating the layout.

@@ -58,8 +58,8 @@ void DomainDiversityReporter::MaybeComputeDomainMetrics() {
   }
   // Observe history service and start reporting as soon as
   // the former is ready.
-  DCHECK(!history_service_observer_.IsObservingSource(history_service_));
-  history_service_observer_.Observe(history_service_);
+  DCHECK(!history_service_observer_.IsObservingSource(history_service_.get()));
+  history_service_observer_.Observe(history_service_.get());
 }
 
 void DomainDiversityReporter::ComputeDomainMetrics() {

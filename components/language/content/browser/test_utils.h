@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_LANGUAGE_CONTENT_BROWSER_TEST_UTILS_H_
 #define COMPONENTS_LANGUAGE_CONTENT_BROWSER_TEST_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
@@ -54,7 +55,7 @@ class MockIpGeoLocationProvider
       mojo::PendingReceiver<device::mojom::Geolocation> receiver) override;
 
  private:
-  MockGeoLocation* mock_geo_location_;
+  raw_ptr<MockGeoLocation> mock_geo_location_;
   mojo::Receiver<device::mojom::PublicIpAddressGeolocationProvider> receiver_{
       this};
 };

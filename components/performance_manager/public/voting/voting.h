@@ -44,6 +44,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"
 
@@ -159,7 +160,7 @@ class VotingChannel {
 
   // Used to reach back into the factory to decrement the outstanding
   // VotingChannel count, and for routing votes to the consumer.
-  VotingChannelFactory<VoteImpl>* factory_ = nullptr;
+  raw_ptr<VotingChannelFactory<VoteImpl>> factory_ = nullptr;
   VoterId<VoteImpl> voter_id_;
 
 #if DCHECK_IS_ON()
@@ -201,7 +202,7 @@ class VotingChannelFactory final {
 
  private:
   // The consumer that owns this factory.
-  VoteObserver<VoteImpl>* observer_ = nullptr;
+  raw_ptr<VoteObserver<VoteImpl>> observer_ = nullptr;
 
   // The number of voting channels issued, and the number that remain
   // outstanding.

@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_ICON_IMAGE_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -114,7 +115,7 @@ class IconImage : public ExtensionRegistryObserver {
                            UnloadedExtensionReason reason) override;
   void OnShutdown(ExtensionRegistry* extension_registry) override;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<const Extension> extension_;
   ExtensionIconSet icon_set_;
   const int resource_size_in_dip_;
@@ -127,7 +128,7 @@ class IconImage : public ExtensionRegistryObserver {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  Source* source_;  // Owned by ImageSkia storage.
+  raw_ptr<Source> source_;  // Owned by ImageSkia storage.
   gfx::ImageSkia image_skia_;
   // The icon with whose representation |image_skia_| should be updated if
   // its own representation load fails.

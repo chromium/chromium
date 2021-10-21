@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -289,12 +290,12 @@ class PrivacySandboxSettings : public KeyedService,
  private:
   base::ObserverList<Observer>::Unchecked observers_;
 
-  HostContentSettingsMap* host_content_settings_map_;
-  content_settings::CookieSettings* cookie_settings_;
-  PrefService* pref_service_;
-  policy::PolicyService* policy_service_;
-  syncer::SyncService* sync_service_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  raw_ptr<content_settings::CookieSettings> cookie_settings_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<policy::PolicyService> policy_service_;
+  raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_{this};

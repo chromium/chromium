@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 
@@ -142,7 +143,7 @@ class EnumSet {
       return i;
     }
 
-    const EnumBitSet* enums_;
+    raw_ptr<const EnumBitSet> enums_;
     size_t i_;
   };
 

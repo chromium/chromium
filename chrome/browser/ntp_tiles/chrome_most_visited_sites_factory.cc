@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -53,8 +54,8 @@ class SupervisorBridge : public ntp_tiles::MostVisitedSitesSupervisor,
   void OnURLFilterChanged() override;
 
  private:
-  Profile* const profile_;
-  Observer* supervisor_observer_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<Observer> supervisor_observer_;
   base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>
       register_observation_{this};
 };

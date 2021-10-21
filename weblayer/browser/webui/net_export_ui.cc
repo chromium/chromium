@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/webui/net_export_ui.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/net_log/net_export_file_writer.h"
@@ -64,7 +65,7 @@ class NetExportMessageHandler
   void OnEnableNotifyUIWithState(const base::ListValue* list) {
     AllowJavascript();
     if (!state_observation_manager_.IsObserving()) {
-      state_observation_manager_.Observe(file_writer_);
+      state_observation_manager_.Observe(file_writer_.get());
     }
     NotifyUIWithState(file_writer_->GetState());
   }
@@ -137,7 +138,7 @@ class NetExportMessageHandler
   }
 
   // Cached pointer to SystemNetworkContextManager's NetExportFileWriter.
-  net_log::NetExportFileWriter* file_writer_;
+  raw_ptr<net_log::NetExportFileWriter> file_writer_;
 
   base::ScopedObservation<net_log::NetExportFileWriter,
                           net_log::NetExportFileWriter::StateObserver>

@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/watcher_dispatcher.h"
@@ -63,7 +64,7 @@ class WatcherSet {
     ContextSet contexts;
   };
 
-  Dispatcher* const owner_;
+  const raw_ptr<Dispatcher> owner_;
   base::flat_map<WatcherDispatcher*, Entry> watchers_;
   absl::optional<HandleSignalsState> last_known_state_;
 };

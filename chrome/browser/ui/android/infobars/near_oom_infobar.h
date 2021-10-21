@@ -8,6 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/android/infobar_android.h"
 
 namespace content {
@@ -41,7 +42,7 @@ class NearOomInfoBar : public infobars::InfoBarAndroid {
                      const base::android::JavaParamRef<jobject>& obj) override;
   void ProcessButton(int action) override;
 
-  InterventionDelegate* delegate_;
+  raw_ptr<InterventionDelegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_NEAR_OOM_INFOBAR_H_

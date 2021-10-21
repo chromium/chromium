@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/download/public/background_service/download_params.h"
@@ -123,7 +124,7 @@ class PredictionModelDownloadManager {
   // The Download Service to schedule model downloads with.
   //
   // Guaranteed to outlive |this|.
-  download::BackgroundDownloadService* download_service_;
+  raw_ptr<download::BackgroundDownloadService> download_service_;
 
   // Whether the download service is available.
   bool is_available_for_downloads_;

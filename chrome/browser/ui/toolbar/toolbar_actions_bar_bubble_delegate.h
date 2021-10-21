@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ui_base_types.h"
 
 namespace gfx {
@@ -31,7 +32,7 @@ class ToolbarActionsBarBubbleDelegate {
 
     // The resource defining the image icon. If has a value of null, then no
     // image icon will be added.
-    const gfx::VectorIcon* resource;
+    raw_ptr<const gfx::VectorIcon> resource;
 
     // Text in the view. If this is an empty string, no text will be added.
     std::u16string text;

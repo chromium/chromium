@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client.h"
@@ -110,13 +111,13 @@ class GCMAccountMapper : public GCMAppHandler {
   void SetClockForTesting(base::Clock* clock);
 
   // GCMDriver owns GCMAccountMapper.
-  GCMDriver* gcm_driver_;
+  raw_ptr<GCMDriver> gcm_driver_;
 
   // Callback to GCMDriver to dispatch messages sent to Gaia ID.
   DispatchMessageCallback dispatch_message_callback_;
 
   // Clock for timestamping status changes.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Currnetly tracked account mappings.
   AccountMappings accounts_;

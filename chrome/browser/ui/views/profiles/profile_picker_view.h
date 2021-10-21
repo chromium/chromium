@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -228,7 +229,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   // Owned by the view hierarchy.
-  views::WebView* web_view_ = nullptr;
+  raw_ptr<views::WebView> web_view_ = nullptr;
 
   // The web contents backed by the system profile. This is used for displaying
   // the WebUI pages.
@@ -242,7 +243,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Toolbar view displayed on top of the WebView for GAIA sign-in, owned by the
   // view hierarchy.
-  ProfilePickerDiceSignInToolbar* toolbar_ = nullptr;
+  raw_ptr<ProfilePickerDiceSignInToolbar> toolbar_ = nullptr;
 
   // Handles the logic for signing-in to GAIA.
   std::unique_ptr<ProfilePickerDiceSignInProvider> dice_sign_in_provider_;

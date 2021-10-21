@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
@@ -49,7 +50,7 @@ class ProcessMetricsDecorator::ScopedMetricsInterestTokenImpl
   ~ScopedMetricsInterestTokenImpl() override;
 
  protected:
-  Graph* graph_;
+  raw_ptr<Graph> graph_;
 };
 
 ProcessMetricsDecorator::ScopedMetricsInterestTokenImpl::
