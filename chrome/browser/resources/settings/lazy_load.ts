@@ -29,8 +29,10 @@ import './site_settings/settings_category_default_radio_group.js';
 import './site_settings/site_data.js';
 import './site_settings/site_details.js';
 import './site_settings/zoom_levels.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 import './people_page/import_data_dialog.js';
+// </if>
+// <if expr="not chromeos">
 import './people_page/manage_profile.js';
 // </if>
 import './people_page/signout_dialog.js';
