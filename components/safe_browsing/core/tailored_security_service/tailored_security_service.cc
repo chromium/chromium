@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/safe_browsing/core/tailored_security_service/tailored_security_service_observer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -46,21 +47,12 @@ const char kQueryTailoredSecurityServiceUrl[] =
 // The maximum number of retries for the SimpleURLLoader requests.
 const size_t kMaxRetries = 1;
 
-// Returns a Google account that can be used for getting a token.
-// TODO(drubery): This prioritizes the primary account but instead should
-// use the list of accounts with refresh tokens and select the one that
-// should actually be queried.
+// Returns a primary Google account that can be used for getting a token.
 CoreAccountId GetAccountForRequest(
     const signin::IdentityManager* identity_manager) {
-  CoreAccountInfo result =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
-  if (result.IsEmpty()) {
-    std::vector<CoreAccountInfo> all_accounts =
-        identity_manager->GetAccountsWithRefreshTokens();
-    if (!all_accounts.empty())
-      result = all_accounts.front();
-  }
-  return result.account_id;
+  CoreAccountInfo result;
+  identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  return result.IsEmpty() ? CoreAccountId() : result.account_id;
 }
 
 class RequestImpl : public TailoredSecurityService::Request {
@@ -248,6 +240,16 @@ TailoredSecurityService::TailoredSecurityService(
 
 TailoredSecurityService::~TailoredSecurityService() = default;
 
+void TailoredSecurityService::AddObserver(
+    TailoredSecurityServiceObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void TailoredSecurityService::RemoveObserver(
+    TailoredSecurityServiceObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 std::unique_ptr<TailoredSecurityService::Request>
 TailoredSecurityService::CreateRequest(
     const GURL& url,
@@ -317,7 +319,9 @@ void TailoredSecurityService::StartRequest(
 }
 
 void TailoredSecurityService::OnTailoredSecurityBitRetrieved(bool is_enabled) {
-  // To be implemented.
+  for (auto& observer : observer_list_) {
+    observer.OnTailoredSecurityBitChanged(is_enabled);
+  }
 }
 
 void TailoredSecurityService::QueryTailoredSecurityBitCompletionCallback(
@@ -340,7 +344,6 @@ void TailoredSecurityService::QueryTailoredSecurityBitCompletionCallback(
             : response_value.FindBoolKey("history_recording_enabled")
                   .value_or(false);
   }
-
   std::move(callback).Run(tailored_security_service_enabled);
 }
 

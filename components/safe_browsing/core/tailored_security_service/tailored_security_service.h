@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -34,6 +35,8 @@ class SharedURLLoaderFactory;
 }
 
 namespace safe_browsing {
+
+class TailoredSecurityServiceObserver;
 
 // Provides an API for querying Google servers for a user's tailored security
 // account Opt-In.
@@ -80,6 +83,9 @@ class TailoredSecurityService : public KeyedService {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~TailoredSecurityService() override;
+
+  void AddObserver(TailoredSecurityServiceObserver* observer);
+  void RemoveObserver(TailoredSecurityServiceObserver* observer);
 
   // Queries whether TailoredSecurity is enabled on the server.
   void QueryTailoredSecurityBit();
@@ -132,6 +138,10 @@ class TailoredSecurityService : public KeyedService {
   // profile shutdown.
   std::map<Request*, std::unique_ptr<Request>>
       pending_tailored_security_requests_;
+
+  // Observers.
+  base::ObserverList<TailoredSecurityServiceObserver, true>::Unchecked
+      observer_list_;
 
   // Timer to periodically check tailored security bit.
   base::RepeatingTimer timer_;
