@@ -7050,6 +7050,12 @@ test("unit_tests") {
     sources += [ "../browser/ui/global_media_controls/media_notification_device_monitor_unittest.cc" ]
   }
 
+  if (is_chromeos_lacros) {
+    sources += [
+      "../browser/upgrade_detector/get_installed_version_lacros_unittest.cc",
+    ]
+  }
+
   if (is_linux) {
     sources += [
       "../browser/shell_integration_linux_unittest.cc",
