@@ -28,6 +28,13 @@ const TPMErrorMessageElementBase = Polymer.mixinBehaviors(
     [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
     Polymer.Element);
 
+/**
+ * @typedef {{
+ *   errorDialog:  OobeAdaptiveDialogElement,
+ * }}
+ */
+TPMErrorMessageElementBase.$;
+
 class TPMErrorMessage extends TPMErrorMessageElementBase {
   static get is() {
     return 'tpm-error-message-element';
@@ -101,7 +108,6 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
 
   /**
    * @override
-   * @suppress {missingProperties}
    */
   get defaultControl() {
     return this.$.errorDialog;

@@ -30,6 +30,13 @@ const SyncConsentScreenElementBase = Polymer.mixinBehaviors(
     [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
     Polymer.Element);
 
+/**
+ * @typedef {{
+ *   reviewSettingsBox:  CrCheckboxElement,
+ * }}
+ */
+SyncConsentScreenElementBase.$;
+
 class SyncConsentScreen extends SyncConsentScreenElementBase {
   static get is() {
     return 'sync-consent-element';
@@ -160,7 +167,6 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
   /**
    * Continue button click handler for pre-SplitSettingsSync.
    * @private
-   * @suppress {missingProperties}
    */
   onSettingsSaveAndContinue_(e, opted_in) {
     assert(e.path);

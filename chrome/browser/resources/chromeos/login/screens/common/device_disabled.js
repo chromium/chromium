@@ -18,6 +18,13 @@ const DeviceDisabledElementBase = Polymer.mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
     Polymer.Element);
 
+/**
+ * @typedef {{
+ *   dialog:  OobeAdaptiveDialogElement,
+ * }}
+ */
+DeviceDisabledElementBase.$;
+
 class DeviceDisabled extends DeviceDisabledElementBase {
   static get is() {
     return 'device-disabled-element';
@@ -81,7 +88,6 @@ class DeviceDisabled extends DeviceDisabledElementBase {
 
   /**
    * @override
-   * @suppress {missingProperties}
    */
   get defaultControl() {
     return this.$.dialog;

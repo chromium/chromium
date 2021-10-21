@@ -19,6 +19,13 @@ const SigninFatalErrorBase = Polymer.mixinBehaviors(
     Polymer.Element);
 
 /**
+ * @typedef {{
+ *   actionButton:  OobeTextButtonElement,
+ * }}
+ */
+SigninFatalErrorBase.$;
+
+/**
  * @polymer
  */
 class SigninFatalScreen extends SigninFatalErrorBase {
@@ -84,7 +91,6 @@ class SigninFatalScreen extends SigninFatalErrorBase {
 
   /**
    * Returns the control which should receive initial focus.
-   * @suppress {missingProperties}
    */
   get defaultControl() {
     return this.$.actionButton;

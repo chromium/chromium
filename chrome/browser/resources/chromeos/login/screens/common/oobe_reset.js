@@ -55,6 +55,15 @@ const ResetScreenElementBase = Polymer.mixinBehaviors(
     Polymer.Element);
 
 /**
+ * @typedef {{
+ *   resetDialog:  OobeAdaptiveDialogElement,
+ *   confirmationDialog:  OobeModalDialogElement,
+ *   tpmFirmwareUpdateCheckbox, CrCheckBox,
+ * }}
+ */
+ResetScreenElementBase.$;
+
+/**
  * @polymer
  */
 class OobeReset extends ResetScreenElementBase {
@@ -201,13 +210,11 @@ class OobeReset extends ResetScreenElementBase {
 
   /**
    * Returns the control which should receive initial focus.
-   * @suppress {missingProperties}
    */
   get defaultControl() {
     return this.$.resetDialog;
   }
 
-  /** @suppress {missingProperties} */
   focus() {
     this.$.resetDialog.focus();
   }
@@ -255,7 +262,6 @@ class OobeReset extends ResetScreenElementBase {
 
   /**
    * @param {boolean} should_show
-   * @suppress {missingProperties}
    */
   setShouldShowConfirmationDialog(should_show) {
     if (should_show) {
@@ -429,7 +435,6 @@ class OobeReset extends ResetScreenElementBase {
   /**
    * Change handler for TPM firmware update checkbox.
    * @private
-   * @suppress {missingProperties}
    */
   onTPMFirmwareUpdateChanged_() {
     const checked = this.$.tpmFirmwareUpdateCheckbox.checked;

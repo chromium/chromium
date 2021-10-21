@@ -44,6 +44,14 @@ const UserCreationSignInMethod = {
   SIGNIN: 'signin',
 };
 
+/**
+ * @typedef {{
+ *   learnMoreDialog:  OobeModalDialogElement,
+ *   learnMoreLink: HTMLAnchorElement,
+ * }}
+ */
+UserCreationScreenElementBase.$;
+
 class UserCreation extends UserCreationScreenElementBase {
   static get is() {
     return 'user-creation-element';
@@ -173,16 +181,10 @@ class UserCreation extends UserCreationScreenElementBase {
     }
   }
 
-  /**
-   * @suppress {missingProperties}
-   */
   onLearnMoreClicked_() {
     this.$.learnMoreDialog.showDialog();
   }
 
-  /**
-   * @suppress {missingProperties}
-   */
   focusLearnMoreLink_() {
     this.$.learnMoreLink.focus();
   }

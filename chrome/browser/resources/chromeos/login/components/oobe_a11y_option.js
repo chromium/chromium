@@ -4,8 +4,7 @@
 
 /* #js_imports_placeholder */
 
-class OobeA11yOption extends Polymer.Element {
-
+/* #export */ class OobeA11yOption extends Polymer.Element {
   static get is() { return 'oobe-a11y-option'; }
 
   /* #html_template_placeholder */

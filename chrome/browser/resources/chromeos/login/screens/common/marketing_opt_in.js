@@ -18,6 +18,15 @@ const MarketingScreenElementBase = Polymer.mixinBehaviors(
   [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
   Polymer.Element);
 
+/**
+ * @typedef {{
+ *   marketingOptInOverviewDialog:  OobeAdaptiveDialogElement,
+ *   chromebookUpdatesOption:  CrToggleElement,
+ *   a11yNavButtonToggle:  OobeA11yOption,
+ * }}
+ */
+MarketingScreenElementBase.$;
+
 class MarketingOptIn extends MarketingScreenElementBase {
 
   static get is() { return 'marketing-opt-in-element'; }
@@ -88,9 +97,6 @@ class MarketingOptIn extends MarketingScreenElementBase {
       this.$.animation.setPlay(played);
   }
 
-  /** Called when dialog is shown
-   * @suppress {missingProperties}
-   */
   onBeforeShow(data) {
     this.marketingOptInVisible_ =
         'optInVisibility' in data && data.optInVisibility;
@@ -103,10 +109,6 @@ class MarketingOptIn extends MarketingScreenElementBase {
     this.$.marketingOptInOverviewDialog.show();
   }
 
-  /**
-   * Returns the control which should receive initial focus.
-   * @suppress {missingProperties}
-   */
   get defaultControl() {
     return this.$.marketingOptInOverviewDialog;
   }
@@ -133,7 +135,6 @@ class MarketingOptIn extends MarketingScreenElementBase {
   /**
    * @param {boolean} enabled Whether the a11y setting for shownig shelf
    * navigation buttons is enabled.
-   * @suppress {missingProperties}
    */
   updateA11yNavigationButtonToggle(enabled) {
     this.$.a11yNavButtonToggle.checked = enabled;
@@ -152,7 +153,6 @@ class MarketingOptIn extends MarketingScreenElementBase {
   /**
    * The 'on-change' event handler for when the a11y navigation button setting
    * is toggled on or off.
-   * @suppress {missingProperties}
    * @private
    */
   onA11yNavButtonsSettingChanged_() {
