@@ -121,6 +121,11 @@ class MockAutocompleteProviderClient
                void(history::KeywordID keyword_id, const std::u16string& term));
   MOCK_METHOD1(PrefetchImage, void(const GURL& url));
 
+  void set_pedal_provider(
+      std::unique_ptr<OmniboxPedalProvider> pedal_provider) {
+    pedal_provider_ = std::move(pedal_provider);
+  }
+
   void set_template_url_service(std::unique_ptr<TemplateURLService> service) {
     template_url_service_ = std::move(service);
   }

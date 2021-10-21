@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -41,6 +40,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -114,11 +114,8 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()) {
 #if !defined(OS_ANDROID)
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  pedal_provider_ = std::make_unique<OmniboxPedalProvider>(*this, true);
-#else
-  pedal_provider_ = std::make_unique<OmniboxPedalProvider>(*this, false);
-#endif
+  pedal_provider_ = std::make_unique<OmniboxPedalProvider>(
+      *this, GetPedalImplementations(IsOffTheRecord(), false));
 #endif
 }
 

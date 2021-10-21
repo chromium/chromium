@@ -98,8 +98,6 @@ static_library("browser") {
     "actions/omnibox_pedal.cc",
     "actions/omnibox_pedal.h",
     "actions/omnibox_pedal_concepts.h",
-    "actions/omnibox_pedal_implementations.cc",
-    "actions/omnibox_pedal_implementations.h",
     "actions/omnibox_pedal_provider.cc",
     "actions/omnibox_pedal_provider.h",
     "answers_cache.cc",
@@ -520,7 +518,6 @@ bundle_data("unit_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "actions/omnibox_pedal_implementations_unittest.cc",
     "actions/omnibox_pedal_provider_unittest.cc",
     "actions/omnibox_pedal_unittest.cc",
     "answers_cache_unittest.cc",

@@ -6,6 +6,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
@@ -738,8 +739,11 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
 
     // Instantiating the provider loads concept data from shared ResourceBundle,
     // or from omnibox_pedal_synonyms.grd if using translation console.
-    OmniboxPedalProvider provider(client, true);
-    EXPECT_EQ(provider.FindPedalMatch(u""), nullptr);
+    // Note, pedals initialization must happen after features are enabled above,
+    // so that the full set of pedals will be created and loaded.
+    client.set_pedal_provider(std::make_unique<OmniboxPedalProvider>(
+        client, GetPedalImplementations(client.IsOffTheRecord(), true)));
+    EXPECT_EQ(client.GetPedalProvider()->FindPedalMatch(u""), nullptr);
 
     // Note, with translation console process, we don't have specific cover
     // cases to test, and there is no fallback to English. Skip the trigger
@@ -752,8 +756,10 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
       //  a soft failure so as to not block all other platforms. To ensure this
       //  is not going to cause failure in production, still test that English
       //  triggering functions. Data is there; it works; but warn about locale.
-      if (!provider.FindPedalMatch(base::UTF8ToUTF16(test_case.triggers[0]))) {
-        EXPECT_NE(provider.FindPedalMatch(u"clear history"), nullptr);
+      if (!client.GetPedalProvider()->FindPedalMatch(
+              base::UTF8ToUTF16(test_case.triggers[0]))) {
+        EXPECT_NE(client.GetPedalProvider()->FindPedalMatch(u"clear history"),
+                  nullptr);
         LOG(WARNING) << "ChromeOS using English for locale "
                      << test_case.locale;
         continue;
@@ -761,7 +767,9 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
 #endif
 
       for (const std::string& trigger : test_case.triggers) {
-        EXPECT_NE(provider.FindPedalMatch(base::UTF8ToUTF16(trigger)), nullptr)
+        EXPECT_NE(client.GetPedalProvider()->FindPedalMatch(
+                      base::UTF8ToUTF16(trigger)),
+                  nullptr)
             << "locale: " << test_case.locale << std::endl
             << "trigger: " << trigger;
       }

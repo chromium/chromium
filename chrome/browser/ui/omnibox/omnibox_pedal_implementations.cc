@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
+#include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -19,7 +20,7 @@
 #include "components/strings/grit/components_strings.h"
 
 // This carefully simplifies preprocessor condition usage below.
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR))
 #define SUPPORTS_DESKTOP_ICONS 1
 #else
 #define SUPPORTS_DESKTOP_ICONS 0
@@ -1340,7 +1341,7 @@ class OmniboxPedalCustomizeSearchEngines : public OmniboxPedal {
 // =============================================================================
 
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
-GetPedalImplementations(bool with_branding, bool incognito) {
+GetPedalImplementations(bool incognito, bool testing) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
   const auto add = [&](OmniboxPedal* pedal) {
     pedals.insert(std::make_pair(pedal->id(), base::WrapRefCounted(pedal)));
@@ -1360,7 +1361,7 @@ GetPedalImplementations(bool with_branding, bool incognito) {
   add(new OmniboxPedalManageSiteSettings());
   add(new OmniboxPedalSeeChromeTips());
 
-  if (with_branding) {
+  if (testing || BUILDFLAG(GOOGLE_CHROME_BRANDING)) {
     add(new OmniboxPedalCreateGoogleDoc());
     add(new OmniboxPedalCreateGoogleSheet());
     add(new OmniboxPedalCreateGoogleSlide());
@@ -1371,6 +1372,7 @@ GetPedalImplementations(bool with_branding, bool incognito) {
     add(new OmniboxPedalManageGoogleAccount());
     add(new OmniboxPedalChangeGooglePassword());
   }
+
   if (OmniboxFieldTrial::IsPedalsBatch3Enabled()) {
     if (incognito) {
       add(new OmniboxPedalCloseIncognitoWindows());

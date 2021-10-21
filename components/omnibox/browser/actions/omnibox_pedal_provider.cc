@@ -18,7 +18,6 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
-#include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -49,10 +48,11 @@ size_t EstimateMemoryUsage(scoped_refptr<OmniboxPedal> pedal) {
   return pedal->EstimateMemoryUsage();
 }
 
-OmniboxPedalProvider::OmniboxPedalProvider(AutocompleteProviderClient& client,
-                                           bool with_branding)
+OmniboxPedalProvider::OmniboxPedalProvider(
+    AutocompleteProviderClient& client,
+    std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals)
     : client_(client),
-      pedals_(GetPedalImplementations(with_branding, client_.IsOffTheRecord())),
+      pedals_(std::move(pedals)),
       ignore_group_(false, false, 0),
       match_tokens_(kMaximumMaxTokens) {
   LoadPedalConcepts();

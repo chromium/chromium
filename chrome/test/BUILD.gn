@@ -5925,6 +5925,7 @@ test("unit_tests") {
       "../browser/ui/hid/hid_chooser_controller_unittest.cc",
       "../browser/ui/omnibox/chrome_omnibox_navigation_observer_unittest.cc",
       "../browser/ui/omnibox/clipboard_utils_unittest.cc",
+      "../browser/ui/omnibox/omnibox_pedal_implementations_unittest.cc",
       "../browser/ui/omnibox/omnibox_pedals_unittest.cc",
       "../browser/ui/page_info/permission_menu_model_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/auto_sign_in_bubble_controller_unittest.cc",

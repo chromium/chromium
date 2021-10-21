@@ -8,6 +8,7 @@ include_rules = [
   "+components/enterprise",
   "+components/infobars/android",
   "+components/live_caption",
+  "+components/omnibox",
   "+components/page_load_metrics/browser",
   "+components/qr_code_generator",
   "+components/safety_check",

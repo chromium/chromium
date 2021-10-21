@@ -5,7 +5,6 @@
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"

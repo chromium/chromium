@@ -1970,6 +1970,13 @@ TEST_F(AutocompleteResultTest, ConvertsOpenTabsCorrectly) {
 
 TEST_F(AutocompleteResultTest, AttachesPedals) {
   FakeAutocompleteProviderClient client;
+  std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
+  const auto add = [&](OmniboxPedal* pedal) {
+    pedals.insert(std::make_pair(pedal->id(), base::WrapRefCounted(pedal)));
+  };
+  add(new TestOmniboxPedalClearBrowsingData());
+  client.set_pedal_provider(
+      std::make_unique<OmniboxPedalProvider>(client, std::move(pedals)));
   EXPECT_NE(nullptr, client.GetPedalProvider());
 
   AutocompleteResult result;

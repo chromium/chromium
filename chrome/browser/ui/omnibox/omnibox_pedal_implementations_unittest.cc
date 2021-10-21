@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
+#include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -31,12 +31,33 @@ class OmniboxPedalImplementationsTest : public testing::Test {
          omnibox::kOmniboxPedalsBatch3NonEnglish,
          omnibox::kOmniboxPedalsTranslationConsole},
         {});
+    InitPedals();
   }
 
-  GURL ExecuteContextAndReturnResult(const OmniboxPedal* pedal,
-                                     OmniboxAction::Client& client) {
+  void InitPedals() {
+    // Note, pedals initialization must happen after features are initialized so
+    // that field trial checks will allow instantiation of all pedals.
+    autocomplete_provider_client_.set_pedal_provider(
+        std::make_unique<OmniboxPedalProvider>(
+            autocomplete_provider_client_,
+            GetPedalImplementations(
+                autocomplete_provider_client_.IsOffTheRecord(), true)));
+  }
+
+  OmniboxPedalProvider* provider() {
+    return autocomplete_provider_client_.GetPedalProvider();
+  }
+
+  void SetOffTheRecord() {
+    // This macro mutates the client state to go off the record.
+    EXPECT_CALL(autocomplete_provider_client_, IsOffTheRecord())
+        .WillOnce(testing::Return(true));
+    InitPedals();
+  }
+
+  GURL ExecuteContextAndReturnResult(const OmniboxPedal* pedal) {
     OmniboxPedal::ExecutionContext context(
-        client,
+        autocomplete_provider_client_,
         base::BindOnce(&OmniboxEditController::OnAutocompleteAccept,
                        omnibox_edit_controller_->AsWeakPtr()),
         {}, WindowOpenDisposition::CURRENT_TAB);
@@ -18422,16 +18443,14 @@ class OmniboxPedalImplementationsTest : public testing::Test {
     // implementation.  For each one, the full list of literal expressions are
     // confirmed as concept matches for the Pedal.  Finally, we verify that
     // every implemented Pedal has been tested using set logic.
-    MockAutocompleteProviderClient client;
-    OmniboxPedalProvider provider(client, true);
-    const auto& pedals = provider.pedals_;
+    const auto& pedals = provider()->pedals_;
     std::unordered_set<const OmniboxPedal*> found_pedals(pedals.size());
     LOG(INFO) << "Pedal count: " << pedals.size()
-              << "; memory: " << provider.EstimateMemoryUsage();
+              << "; memory: " << provider()->EstimateMemoryUsage();
     for (const auto& pedal_concept : literal_concept_expressions) {
       const std::u16string first_trigger = base::ASCIIToUTF16(pedal_concept[0]);
       const OmniboxPedal* canonical_pedal =
-          provider.FindPedalMatch(first_trigger);
+          provider()->FindPedalMatch(first_trigger);
       EXPECT_NE(canonical_pedal, nullptr)
           << "Canonical pedal not found for: " << first_trigger;
       const bool is_newly_found = found_pedals.insert(canonical_pedal).second;
@@ -18441,8 +18460,8 @@ class OmniboxPedalImplementationsTest : public testing::Test {
         const std::u16string expression = base::ASCIIToUTF16(literal);
         const auto is_match = [&](const auto& pedal) {
           OmniboxPedal::TokenSequence sequence(0);
-          provider.Tokenize(sequence, expression);
-          provider.ignore_group_.EraseMatchesIn(sequence, true);
+          provider()->Tokenize(sequence, expression);
+          provider()->ignore_group_.EraseMatchesIn(sequence, true);
           sequence.ResetLinks();
           return pedal.second->IsConceptMatch(sequence);
         };
@@ -18462,6 +18481,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   std::unique_ptr<TestOmniboxEditController> omnibox_edit_controller_;
+  MockAutocompleteProviderClient autocomplete_provider_client_;
 };
 
 class OmniboxPedalImplementationsWithoutTranslationConsoleTest
@@ -18475,58 +18495,47 @@ class OmniboxPedalImplementationsWithoutTranslationConsoleTest
             omnibox::kOmniboxPedalsBatch3NonEnglish,
         },
         {});
+    InitPedals();
   }
 };
 
 TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
-  MockAutocompleteProviderClient client;
-  OmniboxPedalProvider provider(client, true);
-
-  const OmniboxPedal* pedal = provider.FindPedalMatch(u"clear browser data");
+  const OmniboxPedal* pedal = provider()->FindPedalMatch(u"clear browser data");
   EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
 
   EXPECT_EQ(GURL("chrome://settings/clearBrowserData"),
-            ExecuteContextAndReturnResult(pedal, client));
+            ExecuteContextAndReturnResult(pedal));
 }
 
 TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
        PedalClearBrowsingDataExecutes) {
-  MockAutocompleteProviderClient client;
-  OmniboxPedalProvider provider(client, true);
-
-  const OmniboxPedal* pedal = provider.FindPedalMatch(u"clear browser data");
+  const OmniboxPedal* pedal = provider()->FindPedalMatch(u"clear browser data");
   EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
 
   EXPECT_EQ(GURL("chrome://settings/clearBrowserData"),
-            ExecuteContextAndReturnResult(pedal, client));
+            ExecuteContextAndReturnResult(pedal));
 }
 
 TEST_F(OmniboxPedalImplementationsTest,
        PedalIncognitoClearBrowsingDataExecutes) {
-  MockAutocompleteProviderClient client;
-  EXPECT_CALL(client, IsOffTheRecord()).WillOnce(testing::Return(true));
-  OmniboxPedalProvider provider(client, true);
-
-  const OmniboxPedal* pedal = provider.FindPedalMatch(u"clear browser data");
+  SetOffTheRecord();
+  const OmniboxPedal* pedal = provider()->FindPedalMatch(u"clear browser data");
   // Note, there is only one Pedal for clearing browser data but it behaves
   // differently depending on incognito status. The incognito behavior does
   // not navigate but the non-incognito behavior does navigate.
   EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
-  EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal, client));
+  EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal));
 }
 
 TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
        PedalIncognitoClearBrowsingDataExecutes) {
-  MockAutocompleteProviderClient client;
-  EXPECT_CALL(client, IsOffTheRecord()).WillOnce(testing::Return(true));
-  OmniboxPedalProvider provider(client, true);
-
-  const OmniboxPedal* pedal = provider.FindPedalMatch(u"clear browser data");
+  SetOffTheRecord();
+  const OmniboxPedal* pedal = provider()->FindPedalMatch(u"clear browser data");
   // Note, there is only one Pedal for clearing browser data but it behaves
   // differently depending on incognito status. The incognito behavior does
   // not navigate but the non-incognito behavior does navigate.
   EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
-  EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal, client));
+  EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal));
 }
 
 TEST_F(OmniboxPedalImplementationsTest,
@@ -18537,4 +18546,15 @@ TEST_F(OmniboxPedalImplementationsTest,
 TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
        UnorderedSynonymExpressionsAreConceptMatches) {
   TestLiteralConceptExpressions();
+}
+
+TEST_F(OmniboxPedalImplementationsTest, MemoryUsageIsModerate) {
+  // Note: This allowance is a soft limit that may be tweaked depending on
+  // how usefulness is weighed against memory cost. The goal of the test is
+  // just to prove a reasonable bound.
+  size_t memory_allowance =
+      static_cast<size_t>(OmniboxPedalId::TOTAL_COUNT) * 2048;
+  size_t memory_usage = provider()->EstimateMemoryUsage();
+  LOG(INFO) << "Pedals memory usage: " << memory_usage;
+  EXPECT_LT(memory_usage, memory_allowance);
 }

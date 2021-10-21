@@ -1143,6 +1143,8 @@ static_library("ui") {
       "omnibox/chrome_omnibox_navigation_observer.h",
       "omnibox/clipboard_utils.cc",
       "omnibox/clipboard_utils.h",
+      "omnibox/omnibox_pedal_implementations.cc",
+      "omnibox/omnibox_pedal_implementations.h",
       "omnibox/omnibox_tab_helper.cc",
       "omnibox/omnibox_tab_helper.h",
       "omnibox/omnibox_theme.cc",

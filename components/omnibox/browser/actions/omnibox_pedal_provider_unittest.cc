@@ -7,6 +7,7 @@
 #include "base/environment.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,21 +30,16 @@ class OmniboxPedalProviderTest : public testing::Test {
 
 TEST_F(OmniboxPedalProviderTest, QueriesTriggerPedals) {
   MockAutocompleteProviderClient client;
-  OmniboxPedalProvider provider(client, true);
-  EXPECT_EQ(provider.FindPedalMatch(u""), nullptr);
-  EXPECT_EQ(provider.FindPedalMatch(u"clear histor"), nullptr);
-  EXPECT_NE(provider.FindPedalMatch(u"clear history"), nullptr);
-}
-
-TEST_F(OmniboxPedalProviderTest, MemoryUsageIsModerate) {
-  MockAutocompleteProviderClient client;
-  OmniboxPedalProvider provider(client, true);
-  // Note: This allowance is a soft limit that may be tweaked depending on
-  // how usefulness is weighed against memory cost. The goal of the test is
-  // just to prove a reasonable bound.
-  size_t memory_allowance =
-      static_cast<size_t>(OmniboxPedalId::TOTAL_COUNT) * 2048;
-  size_t memory_usage = provider.EstimateMemoryUsage();
-  LOG(INFO) << "Pedals memory usage: " << memory_usage;
-  EXPECT_LT(memory_usage, memory_allowance);
+  std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
+  const auto add = [&](OmniboxPedal* pedal) {
+    pedals.insert(std::make_pair(pedal->id(), base::WrapRefCounted(pedal)));
+  };
+  add(new TestOmniboxPedalClearBrowsingData());
+  client.set_pedal_provider(
+      std::make_unique<OmniboxPedalProvider>(client, std::move(pedals)));
+  EXPECT_EQ(client.GetPedalProvider()->FindPedalMatch(u""), nullptr);
+  EXPECT_EQ(client.GetPedalProvider()->FindPedalMatch(u"clear histor"),
+            nullptr);
+  EXPECT_NE(client.GetPedalProvider()->FindPedalMatch(u"clear history"),
+            nullptr);
 }
