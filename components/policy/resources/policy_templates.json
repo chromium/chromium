@@ -20481,7 +20481,7 @@
       'tags': [],
       'desc': '''Deprecated in M68. Use DefaultPopupsSetting instead.
 
-      For a full explanation, see https://www.chromestatus.com/features/5675755719622656.
+      For a full explanation, see https://www.chromestatus.com/feature/5675755719622656.
       If this policy is enabled, sites will be allowed to simultaneously navigate and open new windows/tabs.
       If this policy is disabled or not set, sites will be disallowed from simultaneously navigating and opening a new window/tab.''',
     },
