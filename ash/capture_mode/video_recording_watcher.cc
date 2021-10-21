@@ -232,6 +232,17 @@ VideoRecordingWatcher::VideoRecordingWatcher(
 }
 
 VideoRecordingWatcher::~VideoRecordingWatcher() {
+  DCHECK(is_shutting_down_);
+}
+
+void VideoRecordingWatcher::ToggleRecordingOverlayEnabled() {
+  DCHECK(is_in_projector_mode_);
+
+  recording_overlay_controller_->Toggle();
+}
+
+void VideoRecordingWatcher::ShutDown() {
+  is_shutting_down_ = true;
   DCHECK(window_being_recorded_);
 
   if (is_in_projector_mode_)
@@ -247,13 +258,10 @@ VideoRecordingWatcher::~VideoRecordingWatcher() {
         ->cursor_window_controller()
         ->RemoveObserver(this);
   }
+  // Move the |non_root_window_capture_request_| so that the
+  // |window_being_recorded_| is not capturable.
+  auto to_be_removed_request = std::move(non_root_window_capture_request_);
   window_being_recorded_->RemoveObserver(this);
-}
-
-void VideoRecordingWatcher::ToggleRecordingOverlayEnabled() {
-  DCHECK(is_in_projector_mode_);
-
-  recording_overlay_controller_->Toggle();
 }
 
 void VideoRecordingWatcher::OnWindowParentChanged(aura::Window* window,

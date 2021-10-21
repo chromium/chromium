@@ -69,10 +69,14 @@ class ASH_EXPORT VideoRecordingWatcher
   aura::Window* window_being_recorded() const { return window_being_recorded_; }
   bool is_in_projector_mode() const { return is_in_projector_mode_; }
   bool should_paint_layer() const { return should_paint_layer_; }
+  bool is_shutting_down() const { return is_shutting_down_; }
 
   // Toggles the Projector mode's overlay widget on or off. Can only be called
   // if |is_in_projector_mode()| is true.
   void ToggleRecordingOverlayEnabled();
+
+  // Clean up prior to deletion.
+  void ShutDown();
 
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
@@ -274,6 +278,9 @@ class ASH_EXPORT VideoRecordingWatcher
 
   // Register for DisplayObserver callbacks.
   display::ScopedDisplayObserver display_observer_{this};
+
+  // True if the shutting down process has been triggered.
+  bool is_shutting_down_ = false;
 };
 
 }  // namespace ash

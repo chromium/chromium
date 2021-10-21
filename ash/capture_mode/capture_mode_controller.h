@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/services/recording/public/mojom/recording_service.mojom.h"
@@ -39,7 +40,6 @@ class SequencedTaskRunner;
 namespace ash {
 
 class CaptureModeSession;
-class VideoRecordingWatcher;
 
 // Controls starting and ending a Capture Mode session and its behavior.
 class ASH_EXPORT CaptureModeController
@@ -75,7 +75,10 @@ class ASH_EXPORT CaptureModeController
   }
   gfx::Rect user_capture_region() const { return user_capture_region_; }
   bool enable_audio_recording() const { return enable_audio_recording_; }
-  bool is_recording_in_progress() const { return !!video_recording_watcher_; }
+  bool is_recording_in_progress() const {
+    return video_recording_watcher_ &&
+           !video_recording_watcher_->is_shutting_down();
+  }
 
   // Returns true if a capture mode session is currently active. If you only
   // need to call this method, but don't need the rest of the controller, use
@@ -292,8 +295,11 @@ class ASH_EXPORT CaptureModeController
   // Called back when the |video_file_handler_| flushes the remaining cached
   // video chunks in its buffer. Called on the UI thread. |video_thumbnail| is
   // an RGB image provided by the recording service that can be used as a
-  // thumbnail of the video in the notification.
-  void OnVideoFileSaved(const gfx::ImageSkia& video_thumbnail, bool success);
+  // thumbnail of the video in the notification. If |in_projector_mode| is true
+  // the recording will not be shown in tote or notification.
+  void OnVideoFileSaved(const gfx::ImageSkia& video_thumbnail,
+                        bool success,
+                        bool in_projector_mode);
 
   // Shows a preview notification of the newly taken screenshot or screen
   // recording.

@@ -38,6 +38,7 @@
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -2718,6 +2719,7 @@ TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
                                     ->stop_recording_button_tray();
   EXPECT_FALSE(stop_recording_button->visible_preferred());
   EXPECT_FALSE(controller->is_recording_in_progress());
+  WaitForCaptureFileToBeSaved();
   EXPECT_FALSE(controller->video_recording_watcher_for_testing());
   histogram_tester.ExpectBucketCount(
       kEndRecordingReasonInClamshellHistogramName,
@@ -4864,6 +4866,19 @@ TEST_P(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetBounds) {
   EXPECT_FALSE(overlay_controller->is_enabled());
   auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
   VerifyOverlayWindow(overlay_window, capture_source);
+}
+
+// Tests that neither preview notification nor recording in tote is shown if in
+// projector mode.
+TEST_P(ProjectorCaptureModeIntegrationTests,
+       NotShowRecordingInToteOrNotificationForProjectorMode) {
+  const auto capture_source = GetParam();
+  StartRecordingForProjectorFromSource(capture_source);
+  CaptureModeTestApi().StopVideoRecording();
+  WaitForCaptureFileToBeSaved();
+  EXPECT_FALSE(GetPreviewNotification());
+  ash::HoldingSpaceTestApi holding_space_api;
+  EXPECT_TRUE(holding_space_api.GetScreenCaptureViews().empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

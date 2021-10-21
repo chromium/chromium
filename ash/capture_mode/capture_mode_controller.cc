@@ -11,7 +11,6 @@
 #include "ash/capture_mode/capture_mode_notification_view.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/projector/projector_controller_impl.h"
@@ -980,8 +979,9 @@ void CaptureModeController::FinalizeRecording(bool success,
   recording_service_remote_.reset();
   delegate_->OnServiceRemoteReset();
   recording_service_client_receiver_.reset();
-
-  OnVideoFileSaved(thumbnail, success);
+  OnVideoFileSaved(thumbnail, success,
+                   video_recording_watcher_->is_in_projector_mode());
+  video_recording_watcher_.reset();
 }
 
 void CaptureModeController::TerminateRecordingUiElements() {
@@ -991,10 +991,11 @@ void CaptureModeController::TerminateRecordingUiElements() {
   capture_mode_util::SetStopRecordingButtonVisibility(
       video_recording_watcher_->window_being_recorded()->GetRootWindow(),
       false);
-  video_recording_watcher_.reset();
 
   capture_mode_util::TriggerAccessibilityAlert(
       IDS_ASH_SCREEN_CAPTURE_ALERT_RECORDING_STOPPED);
+
+  video_recording_watcher_->ShutDown();
 }
 
 void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
@@ -1101,22 +1102,24 @@ void CaptureModeController::OnImageFileSaved(
 
 void CaptureModeController::OnVideoFileSaved(
     const gfx::ImageSkia& video_thumbnail,
-    bool success) {
+    bool success,
+    bool in_projector_mode) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   if (!success) {
     ShowFailureNotification();
   } else {
-    ShowPreviewNotification(current_video_file_path_,
-                            gfx::Image(video_thumbnail),
-                            CaptureModeType::kVideo);
+    if (!in_projector_mode) {
+      ShowPreviewNotification(current_video_file_path_,
+                              gfx::Image(video_thumbnail),
+                              CaptureModeType::kVideo);
+      HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
+      if (client)  // May be `nullptr` in tests.
+        client->AddScreenRecording(current_video_file_path_);
+    }
     DCHECK(!recording_start_time_.is_null());
     RecordCaptureModeRecordTime(
         (base::TimeTicks::Now() - recording_start_time_).InSeconds());
-
-    HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
-    if (client)  // May be `nullptr` in tests.
-      client->AddScreenRecording(current_video_file_path_);
   }
 
   low_disk_space_threshold_reached_ = false;
