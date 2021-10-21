@@ -44,6 +44,8 @@ extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
 extern const base::Feature kUnifiedPasswordManagerAndroid;
 extern const base::Feature kUnifiedPasswordManagerMigration;
 extern const base::Feature kUnifiedPasswordManagerShadowAndroid;
+extern const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly;
+
 #endif
 extern const base::Feature kUsernameFirstFlow;
 extern const base::Feature kUsernameFirstFlowFilling;
