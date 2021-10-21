@@ -5,6 +5,8 @@
 import {PostMessageAPIClient} from 'chrome-untrusted://projector/js/post_message_api_client.m.js';
 import {RequestHandler} from 'chrome-untrusted://projector/js/post_message_api_request_handler.m.js';
 
+import {ProjectorError} from '../../communication/message_types.js';
+
 const TARGET_URL = 'chrome://projector/'
 
 /**

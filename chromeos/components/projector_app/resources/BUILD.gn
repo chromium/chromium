@@ -5,7 +5,6 @@
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 assert(is_chromeos_ash, "Projector is ChromeOS only")
 
@@ -16,7 +15,7 @@ js_type_check("closure_compile") {
                     "browser_resolver_prefix_replacements=\"chrome-untrusted://projector/js/post_message_api_request_handler.m.js=./js/post_message_api_request_handler.m.js\"",
                   ]
   deps = [
-    ":message_types.m",
+    ":message_types",
     ":projector_browser_proxy",
     ":selfie_cam",
     ":trusted_annotator_closure_compile",
@@ -34,17 +33,8 @@ js_library("selfie_cam") {
   sources = [ "selfie_cam/selfie_cam.js" ]
 }
 
-js_modulizer("modulize") {
-  input_files = [ "communication/message_types.js" ]
-}
-
 js_library("message_types") {
   sources = [ "communication/message_types.js" ]
-}
-
-js_library("message_types.m") {
-  sources = [ "$root_gen_dir/chromeos/components/projector_app/resources/message_types.m.js" ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("trusted_annotator_closure_compile") {
@@ -53,7 +43,6 @@ js_library("trusted_annotator_closure_compile") {
     "annotator/trusted/trusted_annotator_comm_factory.js",
   ]
   deps = [
-    ":message_types",
     ":projector_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:post_message_api_client.m",
@@ -69,7 +58,6 @@ js_library("trusted_app_closure_compile") {
     "app/trusted/trusted_app_comm_factory.js",
   ]
   deps = [
-    ":message_types",
     ":projector_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:post_message_api_client.m",
@@ -81,7 +69,6 @@ js_library("trusted_app_closure_compile") {
 js_library("untrusted_annotator_closure_compile") {
   sources = [ "annotator/untrusted/untrusted_annotator_comm_factory.js" ]
   deps = [
-    ":message_types",
     "//ui/webui/resources/js:post_message_api_client.m",
     "//ui/webui/resources/js:post_message_api_request_handler.m",
   ]
@@ -104,6 +91,7 @@ generate_grd("build_untrusted_grd") {
     "app/index.html",
     "app/sandboxed_load_time_data.js",
     "app/untrusted/untrusted_app_comm_factory.js",
+    "communication/message_types.js",
   ]
 
   input_files_base_dir = rebase_path(".", "//")

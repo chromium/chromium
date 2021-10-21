@@ -15,7 +15,7 @@
  *
  * @enum {string}
  */
-/* #export */ const AnnotatorToolType = {
+export const AnnotatorToolType = {
   MARKER: 'marker',
   PEN: 'pen',
   HIGHLIGHTER: 'highlighter',
@@ -28,7 +28,7 @@
  * Enum for projector error types supported.
  * @enum {string}
  */
-/* #export */ const ProjectorError = {
+export const ProjectorError = {
   NONE: 'NONE',
   TOKEN_FETCH_FAILURE: 'TOKEN_FETCH_FAILURE',
   TOKEN_FETCH_ALREADY_IN_PROGRESS: 'TOKEN_FETCH_ALREADY_IN_PROGRESS',
