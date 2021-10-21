@@ -279,6 +279,11 @@ class WaylandConnection {
   bool surface_submission_in_pixel_coordinates() const {
     return surface_submission_in_pixel_coordinates_;
   }
+
+  void set_surface_submission_in_pixel_coordinates(bool enabled) {
+    surface_submission_in_pixel_coordinates_ = enabled;
+  }
+
   wl::SerialTracker& serial_tracker() { return serial_tracker_; }
 
   void set_tablet_layout_state(display::TabletState tablet_layout_state) {
