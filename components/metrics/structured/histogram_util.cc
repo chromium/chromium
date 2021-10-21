@@ -13,11 +13,6 @@ void LogInternalError(StructuredMetricsError error) {
   UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.InternalError2", error);
 }
 
-void LogPrefReadError(PersistentPrefStore::PrefReadError error) {
-  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.PrefReadError", error,
-                            PersistentPrefStore::PREF_READ_ERROR_MAX_ENUM);
-}
-
 void LogEventRecordingState(EventRecordingState state) {
   UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.EventRecordingState", state);
 }

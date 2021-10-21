@@ -836,6 +836,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="UMA.StructuredMetrics.PrefReadError"
     enum="PrefServiceReadError" expires_after="2021-12-01">
+  <obsolete>
+    Deprecated 10/2021 as structured metrics now stores data in protos rather
+    than prefs. Replaced with UMA.StructuredMetrics.InternalError2.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>

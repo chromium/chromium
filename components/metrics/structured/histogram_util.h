@@ -58,11 +58,6 @@ enum class KeyValidationState {
 
 void LogInternalError(StructuredMetricsError error);
 
-// Log an error on reading the JSONPrefStore from disk. A
-// PREF_READ_ERROR_NO_FILE is expected when a profile first logs in on a
-// particular device.
-void LogPrefReadError(PersistentPrefStore::PrefReadError error);
-
 void LogEventRecordingState(EventRecordingState state);
 
 void LogKeyValidation(KeyValidationState state);
