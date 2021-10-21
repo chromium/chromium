@@ -201,6 +201,46 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.EmptyDomain.SetDomain" enum="Boolean"
+    expires_after="2022-04-21">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    If a ParsedCookie's domain attribute is cleared using SetDomain().
+
+    This metric is recorded whenever a parsed cookie has its domain attribute
+    set to the empty string via ParsedCookie::SetDomain().
+  </summary>
+</histogram>
+
+<histogram name="Cookie.EmptyDomain.SetupAttributes.Multiple" enum="Boolean"
+    expires_after="2022-04-21">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    If a ParsedCookie is setup with more than one domain attribute and one of
+    those domain values is empty.
+
+    This metric is recorded whenever a parsed cookie encounters a cookie string
+    with more than one domain pair where at least one domain pair has a value of
+    the empty string via ParsedCookie::SetupAttributes().
+  </summary>
+</histogram>
+
+<histogram name="Cookie.EmptyDomain.SetupAttributes.Single" enum="Boolean"
+    expires_after="2022-04-21">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    If a ParsedCookie is setup with a single domain attribute that has an empty
+    value.
+
+    This metric is recorded whenever a parsed cookie encounters a cookie string
+    with a single domain pair whose value is the empty string via
+    ParsedCookie::SetupAttributes().
+  </summary>
+</histogram>
+
 <histogram name="Cookie.ExpirationDurationMinutes" units="minutes"
     expires_after="M85">
   <obsolete>

@@ -310,6 +310,8 @@ bool ParsedCookie::SetPath(const std::string& path) {
 }
 
 bool ParsedCookie::SetDomain(const std::string& domain) {
+  UMA_HISTOGRAM_BOOLEAN("Cookie.EmptyDomain.SetDomain",
+                        domain == std::string());
   return SetString(&domain_index_, kDomainTokenName, domain);
 }
 
@@ -763,12 +765,25 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
 }
 
 void ParsedCookie::SetupAttributes() {
+  // For UMA_HISTOGRAMS below
+  int domain_count =
+      std::count_if(pairs_.begin(), pairs_.end(),
+                    [](const std::pair<std::string, std::string>& pair) {
+                      return pair.first == kDomainTokenName;
+                    });
   // We skip over the first token/value, the user supplied one.
   for (size_t i = 1; i < pairs_.size(); ++i) {
     if (pairs_[i].first == kPathTokenName) {
       path_index_ = i;
-    } else if (pairs_[i].first == kDomainTokenName && pairs_[i].second != "") {
-      domain_index_ = i;
+    } else if (pairs_[i].first == kDomainTokenName) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Cookie.EmptyDomain.SetupAttributes.Single",
+          (domain_count == 1) && (pairs_[i].second == std::string()));
+      UMA_HISTOGRAM_BOOLEAN(
+          "Cookie.EmptyDomain.SetupAttributes.Multiple",
+          (domain_count > 1) && (pairs_[i].second == std::string()));
+      if (pairs_[i].second != "")
+        domain_index_ = i;
     } else if (pairs_[i].first == kExpiresTokenName) {
       expires_index_ = i;
     } else if (pairs_[i].first == kMaxAgeTokenName) {
