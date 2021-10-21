@@ -87925,9 +87925,6 @@
         "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
       },
       {
-        "args": [
-          "--gtest_filter=*Trace*:*Tracing*:*Perfetto*:*StackUnwinder*:*Hprof*:-TracingConsumerTest.*:PerfettoIntegrationTest.*"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

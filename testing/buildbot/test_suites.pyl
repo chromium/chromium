@@ -4692,11 +4692,7 @@
     'perfetto_gtests': {
       'base_unittests': {},
       'perfetto_unittests': {},
-      'services_unittests': {
-        'args': [
-          '--gtest_filter=*Trace*:*Tracing*:*Perfetto*:*StackUnwinder*:*Hprof*:-TracingConsumerTest.*:PerfettoIntegrationTest.*',
-        ],
-      },
+      'services_unittests': {},
     },
 
     'performance_smoke_test_isolated_scripts': {
