@@ -25,7 +25,8 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
      * including situations in which the message is already dismissed and hide animation is running.
      */
     @Nullable
-    private MessageQueueManager.MessageState mCurrentDisplayedMessage;
+    private MessageState mCurrentDisplayedMessage;
+    private MessageState mLastShownMessage;
     private MessageQueueDelegate mMessageQueueDelegate;
     // TokenHolder tracking whether the queue should be suspended.
     private final TokenHolder mSuppressionTokenHolder =
@@ -182,7 +183,13 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         if (mCurrentDisplayedMessage != candidate) {
             if (mCurrentDisplayedMessage == null) {
                 mCurrentDisplayedMessage = candidate;
-                mMessageQueueDelegate.onStartShowing(mCurrentDisplayedMessage.handler::show);
+                mMessageQueueDelegate.onStartShowing(() -> {
+                    if (mCurrentDisplayedMessage == null) {
+                        return;
+                    }
+                    mCurrentDisplayedMessage.handler.show();
+                    mLastShownMessage = mCurrentDisplayedMessage;
+                });
             } else {
                 hideMessage(!isQueueSuspended() && animateTransition, !isQueueSuspended());
             }
@@ -205,11 +212,19 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
     }
 
     private void hideMessage(boolean animate, boolean updateCurrentMessage) {
-        mCurrentDisplayedMessage.handler.hide(animate, () -> {
+        assert mCurrentDisplayedMessage
+                != null
+            : "This should not be called when there is no valid currently displayed message.";
+        Runnable runnable = () -> {
             mMessageQueueDelegate.onFinishHiding();
             mCurrentDisplayedMessage = null;
             if (updateCurrentMessage) updateCurrentDisplayedMessage(true, getNextMessage());
-        });
+        };
+        if (mLastShownMessage != mCurrentDisplayedMessage) {
+            runnable.run();
+            return;
+        }
+        mCurrentDisplayedMessage.handler.hide(animate, runnable);
     }
 
     /**
