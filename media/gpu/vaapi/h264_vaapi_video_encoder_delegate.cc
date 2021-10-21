@@ -246,7 +246,7 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
     DVLOGF(1) << "Spatial layer encoding is not supported";
     return false;
   }
-  if (config.HasTemporalLayer()) {
+  if (config.HasTemporalLayer() && !supports_temporal_layer_for_testing_) {
     bool support_temporal_layer = false;
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
     VAImplementation implementation = VaapiWrapper::GetImplementationType();

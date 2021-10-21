@@ -41,6 +41,40 @@ VideoEncodeAccelerator::Config kDefaultVEAConfig(
     VideoEncodeAccelerator::Config::StorageType::kShmem,
     VideoEncodeAccelerator::Config::ContentType::kCamera);
 
+MATCHER_P2(MatchVABufferDescriptor, va_buffer_type, va_buffer_size, "") {
+  return arg.type == va_buffer_type && arg.size == va_buffer_size &&
+         arg.data != nullptr;
+}
+
+MATCHER_P2(MatchVABufferDescriptorForMiscParam,
+           va_misc_param_type,
+           va_misc_param_size,
+           "") {
+  if (arg.type != VAEncMiscParameterBufferType ||
+      arg.size != va_misc_param_size + sizeof(VAEncMiscParameterBuffer)) {
+    return false;
+  }
+  const auto* va_buffer =
+      static_cast<const VAEncMiscParameterBuffer*>(arg.data);
+
+  return va_buffer != nullptr && va_buffer->type == va_misc_param_type;
+}
+
+MATCHER_P(MatchVABufferDescriptorForPackedHeader, va_packed_header_type, "") {
+  if (arg.type != VAEncPackedHeaderParameterBufferType ||
+      arg.size != sizeof(VAEncPackedHeaderParameterBuffer)) {
+    return false;
+  }
+
+  const auto* va_buffer =
+      static_cast<const VAEncPackedHeaderParameterBuffer*>(arg.data);
+  return va_buffer != nullptr && va_buffer->type == va_packed_header_type;
+}
+
+MATCHER(MatchVABufferDescriptorForPackedHeaderData, "") {
+  return arg.type == VAEncPackedHeaderDataBufferType && arg.data != nullptr;
+}
+
 void ValidateTemporalLayerStructure(uint8_t num_temporal_layers,
                                     size_t num_frames,
                                     int frame_num,
@@ -83,6 +117,8 @@ void ValidateTemporalLayerStructure(uint8_t num_temporal_layers,
 class MockVaapiWrapper : public VaapiWrapper {
  public:
   MockVaapiWrapper() : VaapiWrapper(kEncodeConstantBitrate) {}
+
+  MOCK_METHOD1(SubmitBuffer_Locked, bool(const VABufferDescriptor&));
 
   bool GetSupportedPackedHeaders(VideoCodecProfile profile,
                                  bool& packed_sps,
@@ -157,6 +193,8 @@ void H264VaapiVideoEncoderDelegateTest::SetUp() {
       base::BindRepeating(&H264VaapiVideoEncoderDelegateTest::OnError,
                           base::Unretained(this)));
   EXPECT_CALL(*this, OnError()).Times(0);
+
+  encoder_->supports_temporal_layer_for_testing_ = true;
 }
 
 bool H264VaapiVideoEncoderDelegateTest::InitializeEncoder(
@@ -175,14 +213,78 @@ bool H264VaapiVideoEncoderDelegateTest::InitializeEncoder(
 
 void H264VaapiVideoEncoderDelegateTest::EncodeFrame(bool force_keyframe) {
   auto encode_job = CreateEncodeJob(force_keyframe);
+  ::testing::InSequence seq;
+
+  EXPECT_CALL(*mock_vaapi_wrapper_,
+              SubmitBuffer_Locked(MatchVABufferDescriptor(
+                  VAEncSequenceParameterBufferType,
+                  sizeof(VAEncSequenceParameterBufferH264))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_vaapi_wrapper_,
+              SubmitBuffer_Locked(MatchVABufferDescriptor(
+                  VAEncPictureParameterBufferType,
+                  sizeof(VAEncPictureParameterBufferH264))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_vaapi_wrapper_, SubmitBuffer_Locked(MatchVABufferDescriptor(
+                                        VAEncSliceParameterBufferType,
+                                        sizeof(VAEncSliceParameterBufferH264))))
+      .WillOnce(Return(true));
+
+  // Misc Parameters.
+  EXPECT_CALL(*mock_vaapi_wrapper_,
+              SubmitBuffer_Locked(MatchVABufferDescriptorForMiscParam(
+                  VAEncMiscParameterTypeRateControl,
+                  sizeof(VAEncMiscParameterRateControl))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_vaapi_wrapper_,
+              SubmitBuffer_Locked(MatchVABufferDescriptorForMiscParam(
+                  VAEncMiscParameterTypeFrameRate,
+                  sizeof(VAEncMiscParameterFrameRate))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_vaapi_wrapper_,
+              SubmitBuffer_Locked(MatchVABufferDescriptorForMiscParam(
+                  VAEncMiscParameterTypeHRD, sizeof(VAEncMiscParameterHRD))))
+      .WillOnce(Return(true));
+  // Packed slice header.
+  EXPECT_CALL(*mock_vaapi_wrapper_,
+              SubmitBuffer_Locked(MatchVABufferDescriptorForPackedHeader(
+                  VAEncPackedHeaderSlice)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_vaapi_wrapper_,
+              SubmitBuffer_Locked(MatchVABufferDescriptorForPackedHeaderData()))
+      .WillOnce(Return(true));
+
+  // Assume IDR frame is produced if and only if |force_keyframe| because IDR
+  // frame period is long enough.
+  if (force_keyframe) {
+    // Packed SPS header.
+    EXPECT_CALL(*mock_vaapi_wrapper_,
+                SubmitBuffer_Locked(MatchVABufferDescriptorForPackedHeader(
+                    VAEncPackedHeaderSequence)))
+        .WillOnce(Return(true));
+    EXPECT_CALL(
+        *mock_vaapi_wrapper_,
+        SubmitBuffer_Locked(MatchVABufferDescriptorForPackedHeaderData()))
+        .WillOnce(Return(true));
+
+    // Packed PPS header.
+    EXPECT_CALL(*mock_vaapi_wrapper_,
+                SubmitBuffer_Locked(MatchVABufferDescriptorForPackedHeader(
+                    VAEncPackedHeaderPicture)))
+        .WillOnce(Return(true));
+    EXPECT_CALL(
+        *mock_vaapi_wrapper_,
+        SubmitBuffer_Locked(MatchVABufferDescriptorForPackedHeaderData()))
+        .WillOnce(Return(true));
+  }
+
   EXPECT_TRUE(encoder_->PrepareEncodeJob(*encode_job.get()));
 
   const H264Picture& pic =
       *reinterpret_cast<H264Picture*>(encode_job->picture().get());
-  if (force_keyframe)
-    EXPECT_EQ(pic.idr, true);
   EXPECT_EQ(pic.type == H264SliceHeader::kISlice, pic.idr);
-  if (pic.idr)
+  EXPECT_EQ(pic.idr, force_keyframe);
+  if (force_keyframe)
     num_encode_frames_ = 0;
 
   const int frame_num = pic.frame_num;
@@ -213,18 +315,7 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, Initialize) {
   ExpectLevel(H264SPS::kLevelIDC5p1);
 }
 
-// H.264 temporal layer encoding is enabled on ChromeOS only. Skip this test
-// on other platforms.
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeTemporalLayerRequest) {
-  // TODO(b/199487660): Enable H.264 temporal layer encoding on AMD once their
-  // drivers support them.
-  const auto implementation = VaapiWrapper::GetImplementationType();
-  if (implementation != VAImplementation::kIntelI965 &&
-      implementation != VAImplementation::kIntelIHD) {
-    GTEST_SKIP() << "Skip temporal layer test on AMD devices";
-  }
-
   const uint8_t num_temporal_layers = GetParam();
   const bool initialize_success = num_temporal_layers <= 3;
   // Initialize.
@@ -249,5 +340,4 @@ TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeTemporalLayerRequest) {
 INSTANTIATE_TEST_SUITE_P(,
                          H264VaapiVideoEncoderDelegateTest,
                          ::testing::Values(2u, 3u, 4u));
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace media
