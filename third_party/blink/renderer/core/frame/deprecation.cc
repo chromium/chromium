@@ -632,6 +632,12 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               WillBeRemoved("The 'basic-card' payment method", kM100,
                             "5730051011117056")};
 
+    case WebFeature::kHostCandidateAttributeGetter:
+      return {"HostCandidateAttributeGetter", kUnknown,
+              ReplacedBy("'RTCPeerConnectionIceErrorEvent.hostCandidate'",
+                         "'RTCPeerConnectionIceErrorEvent.address', "
+                         "'RTCPeerConnectionIceErrorEvent.port'")};
+
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return {"NotDeprecated", kUnknown, ""};
