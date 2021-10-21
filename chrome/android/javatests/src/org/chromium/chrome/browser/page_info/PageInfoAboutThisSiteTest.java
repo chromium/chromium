@@ -18,6 +18,8 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import androidx.annotation.NonNull;
+import androidx.test.espresso.ViewAssertion;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -30,6 +32,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -38,8 +41,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.Hyperlink;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteDescription;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteInfo;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -47,6 +52,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.url.GURL;
+
+import java.io.IOException;
 
 /**
  * Tests for PageInfoAboutThisSite.
@@ -76,6 +83,10 @@ public class PageInfoAboutThisSiteTest {
     @Rule
     public JniMocker mMocker = new JniMocker();
 
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+
     @Mock
     private PageInfoAboutThisSiteController.Natives mMockAboutThisSiteJni;
 
@@ -98,15 +109,38 @@ public class PageInfoAboutThisSiteTest {
         onViewWaiting(allOf(withId(org.chromium.chrome.R.id.page_info_url_wrapper), isDisplayed()));
     }
 
-    @Test
-    @MediumTest
-    public void testStoreInfoRowWithData() {
-        SiteDescription description =
-                SiteDescription.newBuilder().setDescription("Some description").build();
-        byte[] bytes = SiteInfo.newBuilder().setDescription(description).build().toByteArray();
+    @NonNull
+    private ViewAssertion renderView(String renderId) {
+        return (v, noMatchException) -> {
+            if (noMatchException != null) throw noMatchException;
+            try {
+                mRenderTestRule.render(v, renderId);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    private void mockResponse(byte[] bytes) {
         doReturn(bytes)
                 .when(mMockAboutThisSiteJni)
                 .getSiteInfo(any(BrowserContextHandle.class), any(GURL.class));
+    }
+
+    private byte[] createDescription() {
+        SiteDescription.Builder description =
+                SiteDescription.newBuilder()
+                        .setDescription("Some description about example.com for testing purposes")
+                        .setSource(Hyperlink.newBuilder()
+                                           .setUrl("https://example.com")
+                                           .setLabel("Example.com"));
+        return SiteInfo.newBuilder().setDescription(description).build().toByteArray();
+    }
+
+    @Test
+    @MediumTest
+    public void testStoreInfoRowWithData() {
+        mockResponse(createDescription());
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(isDisplayed()));
         onView(withText(containsString("Some description"))).check(matches(isDisplayed()));
@@ -115,10 +149,19 @@ public class PageInfoAboutThisSiteTest {
     @Test
     @MediumTest
     public void testStoreInfoRowWithoutData() {
-        doReturn(null)
-                .when(mMockAboutThisSiteJni)
-                .getSiteInfo(any(BrowserContextHandle.class), any(GURL.class));
+        mockResponse(null);
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStoreInfoRowRendering() {
+        mockResponse(createDescription());
+        openPageInfo();
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID))
+                .check(matches(isDisplayed()))
+                .check(renderView("page_info_about_this_site_row"));
     }
 }

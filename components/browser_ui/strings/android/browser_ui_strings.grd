@@ -447,6 +447,10 @@
       </message>
 
       <!-- Page Info popup -->
+      <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_TITLE" desc="The title label of the 'About this site' subpage in Page Info bubble.">
+        About this site
+      </message>
+
       <message name="IDS_PAGE_INFO_DOMAIN_HIDDEN" desc="Message to display in the page info bubble when the domain is hidden.">
         This content is from <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>, delivered by Google.
       </message>

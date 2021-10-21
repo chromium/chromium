@@ -6,6 +6,7 @@ package org.chromium.components.page_info;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ public class PageInfoRowView extends FrameLayout {
         public CharSequence subtitle;
         public Runnable clickCallback;
         public boolean decreaseIconSize;
+        public boolean singleLineSubTitle;
         public @ColorRes int rowTint;
     }
 
@@ -69,6 +71,8 @@ public class PageInfoRowView extends FrameLayout {
         mTitle.setText(params.title);
         mTitle.setVisibility(params.title != null ? VISIBLE : GONE);
         updateSubtitle(params.subtitle);
+        mSubtitle.setSingleLine(params.singleLineSubTitle);
+        mSubtitle.setEllipsize(params.singleLineSubTitle ? TextUtils.TruncateAt.END : null);
         if (params.title != null && params.subtitle != null) {
             mTitle.setPadding(0, 0, 0, ViewUtils.dpToPx(displayMetrics, 4));
         }

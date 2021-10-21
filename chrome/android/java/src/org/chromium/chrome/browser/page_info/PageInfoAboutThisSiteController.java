@@ -48,8 +48,8 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     @Override
     public String getSubpageTitle() {
-        // TODO(crbug.com/1250653): Add translated string.
-        return "About this site";
+        return mRowView.getContext().getResources().getString(
+                R.string.page_info_about_this_site_title);
     }
 
     @Override
@@ -74,8 +74,10 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         }
 
         // TODO(crbug.com/1250653): Add translated string.
-        rowParams.title = "Site info";
+        rowParams.title = mRowView.getContext().getResources().getString(
+                R.string.page_info_about_this_site_title);
         rowParams.subtitle = subtitle;
+        rowParams.singleLineSubTitle = true;
         rowParams.visible =
                 subtitle != null && mDelegate.isSiteSettingsAvailable() && !mDelegate.isIncognito();
         rowParams.iconResId = R.drawable.ic_info_outline_grey_24dp;
