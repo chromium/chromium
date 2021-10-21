@@ -35,6 +35,8 @@ class PLATFORM_EXPORT PropertyTreeStateOrAlias {
     return PropertyTreeStateOrAlias();
   }
 
+  static const PropertyTreeState& Root();
+
   // Returns true if all fields are initialized.
   bool IsInitialized() const { return transform_ && clip_ && effect_; }
 
@@ -74,6 +76,14 @@ class PLATFORM_EXPORT PropertyTreeStateOrAlias {
     Effect().ClearChangedTo(&to.Effect());
   }
 
+  // Returns true if any property tree state change is >= |change| relative to
+  // |relative_to|. Note that this is O(|nodes|).
+  bool Changed(PaintPropertyChangeType change,
+               const PropertyTreeState& relative_to) const;
+  bool ChangedToRoot(PaintPropertyChangeType change) const {
+    return Changed(change, Root());
+  }
+
   String ToString() const;
 #if DCHECK_IS_ON()
   // Dumps the tree from this state up to the root as a string.
@@ -106,8 +116,6 @@ class PLATFORM_EXPORT PropertyTreeState : public PropertyTreeStateOrAlias {
                     const EffectPaintPropertyNode& effect)
       : PropertyTreeStateOrAlias(transform, clip, effect) {}
 
-  static const PropertyTreeState& Root();
-
   PropertyTreeState Unalias() const = delete;
 
   // This is used as the initial value of uninitialized PropertyTreeState.
@@ -137,14 +145,6 @@ class PLATFORM_EXPORT PropertyTreeState : public PropertyTreeStateOrAlias {
   }
   void SetEffect(const EffectPaintPropertyNode& node) {
     PropertyTreeStateOrAlias::SetEffect(node);
-  }
-
-  // Returns true if any property tree state change is >= |change| relative to
-  // |relative_to|. Note that this is O(|nodes|).
-  bool Changed(PaintPropertyChangeType change,
-               const PropertyTreeState& relative_to) const;
-  bool ChangedToRoot(PaintPropertyChangeType change) const {
-    return Changed(change, Root());
   }
 
   // Determines whether drawings based on the 'guest' state can be painted into

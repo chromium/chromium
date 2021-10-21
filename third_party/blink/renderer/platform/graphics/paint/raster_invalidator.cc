@@ -221,7 +221,7 @@ void RasterInvalidator::GenerateRasterInvalidations(
     // its paint properties didn't change relative to the layer.
     if (!layer_offset_changed && reason == PaintInvalidationReason::kNone &&
         new_chunk.is_moved_from_cached_subsequence &&
-        !new_chunk.properties.GetPropertyTreeState().Unalias().Changed(
+        !new_chunk.properties.GetPropertyTreeState().Changed(
             PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state)) {
       new_chunks_info.emplace_back(old_chunk_info, it);
     } else {
