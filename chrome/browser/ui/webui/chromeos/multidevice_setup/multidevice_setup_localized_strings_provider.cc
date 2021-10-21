@@ -141,8 +141,10 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   for (const auto& entry : GetLocalizedStringsWithPlaceholders())
     html_source->AddString(entry.name, entry.localized_string);
 
-  html_source->AddResourcePath("multidevice_setup.json",
-                               IDR_MULTIDEVICE_SETUP_ANIMATION);
+  html_source->AddResourcePath("multidevice_setup_dark.json",
+                               IDR_MULTIDEVICE_SETUP_ANIMATION_DARK);
+  html_source->AddResourcePath("multidevice_setup_light.json",
+                               IDR_MULTIDEVICE_SETUP_ANIMATION_LIGHT);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }

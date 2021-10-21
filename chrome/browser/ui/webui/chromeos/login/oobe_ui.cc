@@ -241,8 +241,10 @@ void AddMarketingOptInResources(content::WebUIDataSource* source) {
 }
 
 void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
-  source->AddResourcePath("multidevice_setup.json",
-                          IDR_MULTIDEVICE_SETUP_ANIMATION);
+  source->AddResourcePath("multidevice_setup_light.json",
+                          IDR_MULTIDEVICE_SETUP_ANIMATION_LIGHT);
+  source->AddResourcePath("multidevice_setup_dark.json",
+                          IDR_MULTIDEVICE_SETUP_ANIMATION_DARK);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }

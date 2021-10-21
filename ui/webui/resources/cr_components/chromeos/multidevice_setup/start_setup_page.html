@@ -11,6 +11,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-media-query/iron-media-query.html">
 
 <dom-module id="start-setup-page">
   <template>
@@ -20,11 +21,11 @@
       }
 
       #singleDeviceName {
-        color: var(--cr-primary-text-color);
+        color: var(--cros-text-color-primary);
       }
 
       .offline-device-name {
-        color: var(--cr-secondary-text-color);
+        color: var(--cros-text-color-secondary);
       }
 
       #animation-container {
@@ -76,7 +77,7 @@
       }
 
       #feature-details-container {
-        color: var(--cr-primary-text-color);
+        color: var(--cros-text-color-primary);
         padding-top: 40px;
       }
 
@@ -85,17 +86,11 @@
       }
 
       .feature-detail iron-icon {
-        --iron-icon-fill-color: var(--google-blue-600);
+        --iron-icon-fill-color: var(--cros-icon-color-prominent);
         --iron-icon-height: 20px;
         --iron-icon-width: 20px;
         min-width: 20px;
         padding: 0 20px;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        .feature-detail iron-icon {
-          --iron-icon-fill-color: var(--google-blue-300);
-        }
       }
 
       /* Hide the animation when not enough space in vertical mode. */
@@ -121,8 +116,11 @@
       </span>
       <span slot="message">
         <div id="animation-container">
+          <iron-media-query query="(prefers-color-scheme: dark)"
+              query-matches="{{isDarkModeActive_}}">
+          </iron-media-query>
           <cr-lottie id="multideviceSetupAnimation"
-              animation-url="multidevice_setup.json">
+              animation-url="[[getAnimationUrl_(isDarkModeActive_)]]">
           </cr-lottie>
         </div>
       </span>
