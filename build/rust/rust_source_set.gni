@@ -97,6 +97,9 @@ import("//build/config/rust.gni")
 #     this template will create a `<name>_unittests` executable in the output
 #     directory; this behavior is suppressed if this flag is set to true.
 #
+#   unit_test_target (optional)
+#     Overrides the default name for the unit tests target
+#
 #   crate_root (optional)
 #     Location of the crate root.
 #     This defaults to `./src/lib.rs` and should only be changed when
@@ -126,10 +129,11 @@ import("//build/config/rust.gni")
 template("rust_source_set") {
   _target_name = target_name
   if (defined(invoker.crate_root)) {
-    crate_root = invoker.crate_root
+    _crate_root = invoker.crate_root
   } else {
-    crate_root = "src/lib.rs"
+    _crate_root = "src/lib.rs"
   }
+  crate_root = _crate_root
 
   _features = []
   if (defined(invoker.features)) {
@@ -215,6 +219,7 @@ template("rust_source_set") {
                              "output_name",
                              "crate_name",
                              "crate_root",
+                             "unit_test_target",
                            ])
     visibility = [
       ":${_target_name}",
@@ -223,11 +228,16 @@ template("rust_source_set") {
   }
 
   if (_build_unit_tests) {
+    _unit_test_target = "${_target_name}_unittests"
+    if (defined(invoker.unit_test_target)) {
+      _unit_test_target = invoker.unit_test_target
+    }
+
     # TODO(crbug.com/1229320): Arrange to run test executables on try bots.
     # TODO(crbug.com/gn/146): Allow Rust executables to depend on C/C++ source sets.
     # This is important in cases where Rust tests may depend upon C/C++
     # dependencies.
-    executable("${_target_name}_unittests") {
+    executable(_unit_test_target) {
       forward_variables_from(invoker,
                              "*",
                              [
@@ -238,12 +248,14 @@ template("rust_source_set") {
                                "output_name",
                                "crate_name",
                                "crate_root",
+                               "unit_test_target",
                              ])
       rustflags = [
         "--cfg",
         "feature=\"test\"",
         "--test",
       ]
+      crate_root = _crate_root
       rustflags += _features
       configs += _configs
       deps = _deps
