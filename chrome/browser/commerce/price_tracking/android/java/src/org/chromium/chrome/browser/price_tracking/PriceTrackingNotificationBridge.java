@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.price_tracking.proto.Notifications.ExpandedVi
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.PriceDropNotificationPayload;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.commerce.PriceTracking.ProductPrice;
+import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,25 +135,30 @@ public class PriceTrackingNotificationBridge {
 
     private static PriceDropNotificationPayload parseAndValidatePriceDropNotificationPayload(
             ByteString payload) {
+        // notification_data field is an any.proto.
+        Any any = null;
+        try {
+            any = Any.parseFrom(payload);
+        } catch (InvalidProtocolBufferException e) {
+            Log.e(TAG, "Failed to parse to Any.");
+            return null;
+        }
+
+        if (any == null) return null;
+
         PriceDropNotificationPayload priceDropPayload = null;
         try {
-            priceDropPayload = PriceDropNotificationPayload.parseFrom(payload);
+            priceDropPayload = PriceDropNotificationPayload.parseFrom(any.getValue());
         } catch (InvalidProtocolBufferException e) {
             Log.e(TAG, "Failed to parse PriceDropNotificationPayload.");
             return null;
         }
         if (priceDropPayload == null) return null;
 
-        // PriceDropNotificationPayload must have current price and previous prices to calculate the
-        // price drop.
-        if (!priceDropPayload.hasCurrentPrice() || !priceDropPayload.hasPreviousPrice()
-                || !priceDropPayload.hasOfferId()) {
-            return null;
-        }
-
         // Current price must be smaller than previous price, or it's not a price drop.
-        if (priceDropPayload.getCurrentPrice().getAmountMicros()
-                > priceDropPayload.getPreviousPrice().getAmountMicros()) {
+        if (!priceDropPayload.hasCurrentPrice() || !priceDropPayload.hasPreviousPrice()
+                || (priceDropPayload.getCurrentPrice().getAmountMicros()
+                        >= priceDropPayload.getPreviousPrice().getAmountMicros())) {
             return null;
         }
 
@@ -168,13 +174,6 @@ public class PriceTrackingNotificationBridge {
         // Must have the product name to show in the title.
         if (!priceDropPayload.hasProductName()
                 || TextUtils.isEmpty(priceDropPayload.getProductName())) {
-            return null;
-        }
-
-        // Must have valid price data.
-        if (!priceDropPayload.hasCurrentPrice() || !priceDropPayload.hasPreviousPrice()
-                || priceDropPayload.getCurrentPrice().getAmountMicros()
-                        >= priceDropPayload.getPreviousPrice().getAmountMicros()) {
             return null;
         }
 

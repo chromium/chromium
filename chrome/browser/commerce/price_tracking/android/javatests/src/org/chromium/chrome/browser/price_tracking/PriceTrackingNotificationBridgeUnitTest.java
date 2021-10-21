@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.price_tracking.proto.Notifications.ChromeNoti
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.ExpandedView;
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.PriceDropNotificationPayload;
 import org.chromium.components.commerce.PriceTracking.ProductPrice;
+import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
 
@@ -92,7 +93,9 @@ public class PriceTrackingNotificationBridgeUnitTest {
             PriceDropNotificationPayload.Builder priceDropNotificationPayload) {
         ChromeNotification.Builder builder = ChromeNotification.newBuilder();
         builder.setNotificationDataType(NotificationDataType.PRICE_DROP_NOTIFICATION);
-        builder.setNotificationData(priceDropNotificationPayload.build().toByteString());
+        Any.Builder anyBuilder = Any.newBuilder();
+        anyBuilder.setValue(priceDropNotificationPayload.build().toByteString());
+        builder.setNotificationData(anyBuilder.build().toByteString());
         builder.setChromeMessage(chromeMessage.build());
         return builder;
     }
