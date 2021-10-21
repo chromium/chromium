@@ -32,6 +32,18 @@ bool PathProviderFuchsia(int key, FilePath* result) {
     case DIR_SOURCE_ROOT:
       *result = base::FilePath(base::kPackageRootDirectoryPath);
       return true;
+    case DIR_USER_DESKTOP:
+      // TODO(crbug.com/1231928): Implement this case.
+      NOTIMPLEMENTED_LOG_ONCE() << " for DIR_USER_DESKTOP.";
+      return false;
+    case DIR_HOME:
+      // TODO(crbug.com/1231928) Provide a proper base::GetHomeDir()
+      // implementation for Fuchsia and remove this case statement. See also
+      // crbug.com/1261284. For now, log, return false, and let the base
+      // implementation handle it. This will end up returning a temporary
+      // directory.
+      NOTIMPLEMENTED_LOG_ONCE() << "for DIR_HOME. Will use temporary dir.";
+      return false;
   }
   return false;
 }

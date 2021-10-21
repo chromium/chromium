@@ -4,6 +4,7 @@
 
 #include "base/path_service.h"
 
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -24,10 +25,10 @@ namespace base {
 namespace {
 
 // Returns true if PathService::Get returns true and sets the path parameter
-// to non-empty for the given PathService::DirType enumeration value.
-bool ReturnsValidPath(int dir_type) {
+// to non-empty for the given PathService key enumeration value.
+bool ReturnsValidPath(int key) {
   FilePath path;
-  bool result = PathService::Get(dir_type, &path);
+  bool result = PathService::Get(key, &path);
 
   // Some paths might not exist on some platforms in which case confirming
   // |result| is true and !path.empty() is the best we can do.
@@ -35,22 +36,22 @@ bool ReturnsValidPath(int dir_type) {
 #if defined(OS_POSIX)
   // If chromium has never been started on this account, the cache path may not
   // exist.
-  if (dir_type == DIR_CACHE)
+  if (key == DIR_CACHE)
     check_path_exists = false;
 #endif
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // On the linux try-bots: a path is returned (e.g. /home/chrome-bot/Desktop),
   // but it doesn't exist.
-  if (dir_type == DIR_USER_DESKTOP)
+  if (key == DIR_USER_DESKTOP)
     check_path_exists = false;
 #endif
 #if defined(OS_WIN)
-  if (dir_type == DIR_TASKBAR_PINS)
+  if (key == DIR_TASKBAR_PINS)
     check_path_exists = false;
 #endif
 #if defined(OS_APPLE)
-  if (dir_type != DIR_EXE && dir_type != DIR_MODULE && dir_type != FILE_EXE &&
-      dir_type != FILE_MODULE) {
+  if (key != DIR_EXE && key != DIR_MODULE && key != FILE_EXE &&
+      key != FILE_MODULE) {
     if (path.ReferencesParent()) {
       LOG(INFO) << "Path (" << path << ") references parent.";
       return false;
@@ -77,16 +78,14 @@ bool ReturnsValidPath(int dir_type) {
   return true;
 }
 
-#if defined(OS_WIN)
-// Function to test any directory keys that are not supported on some versions
-// of Windows. Checks that the function fails and that the returned path is
-// empty.
-bool ReturnsInvalidPath(int dir_type) {
+// Returns true if PathService::Get returns false and path parameter is empty
+// for the given PathService key enumeration value. Used to test path keys that
+// are not supported on the platform or on some versions of Windows.
+bool ReturnsInvalidPath(int key) {
   FilePath path;
-  bool result = PathService::Get(dir_type, &path);
+  bool result = PathService::Get(key, &path);
   return !result && path.empty();
 }
-#endif
 
 }  // namespace
 
@@ -98,21 +97,45 @@ typedef PlatformTest PathServiceTest;
 // in the development environment.  (This test was created because a few
 // later changes to Get broke the semantics of the function and yielded the
 // correct value while returning false.)
+// If this test fails for specific value(s) on a specific platform, consider not
+// defining the enum value on that platform rather than skipping or expecting
+// failure for the value(s) on that platform in this test.
 TEST_F(PathServiceTest, Get) {
-  for (int key = PATH_START + 1; key < PATH_END; ++key) {
+  // Contains keys that are defined but not supported on the platform.
 #if defined(OS_ANDROID)
-    if (key == FILE_MODULE || key == DIR_USER_DESKTOP ||
-        key == DIR_HOME)
-      continue;  // Android doesn't implement these.
+  // The following keys are not intended to be implemented on Android (see
+  // crbug.com/1257402). Current implementation is described before each key.
+  // TODO(crbug.com/1257402): Remove the definition of these keys on Android
+  // or at least fix the behavior of DIR_HOME.
+  constexpr std::array<int, 2> kUnsupportedKeys = {
+      // Though DIR_HOME is not intended to be supported, PathProviderPosix
+      // handles it and returns true. Thus, it is NOT included in the array.
+      /* DIR_HOME, */
+      // PathProviderAndroid and PathProviderPosix both return false.
+      FILE_MODULE,
+      // PathProviderPosix handles it but fails at some point.
+      DIR_USER_DESKTOP};
 #elif defined(OS_IOS)
-    if (key == DIR_USER_DESKTOP)
-      continue;  // iOS doesn't implement DIR_USER_DESKTOP.
+  constexpr std::array<int, 1> kUnsupportedKeys = {
+      // DIR_USER_DESKTOP is not implemented on iOS. See crbug.com/1257402.
+      DIR_USER_DESKTOP};
+
 #elif defined(OS_FUCHSIA)
-    if (key == DIR_USER_DESKTOP || key == FILE_MODULE || key == DIR_MODULE)
-      continue;  // Fuchsia doesn't implement DIR_USER_DESKTOP, FILE_MODULE and
-                 // DIR_MODULE.
+  constexpr std::array<int, 3> kUnsupportedKeys = {
+      // TODO(crbug.com/1231928): Implement DIR_USER_DESKTOP.
+      DIR_USER_DESKTOP,
+      // TODO(crbug.com/1184980), Do not define FILE_MODULE and DIR_MODULE.
+      FILE_MODULE, DIR_MODULE};
+#else
+  constexpr std::array<int, 0> kUnsupportedKeys = {};
 #endif
-    EXPECT_PRED1(ReturnsValidPath, key);
+  for (int key = PATH_START + 1; key < PATH_END; ++key) {
+    if (std::find(kUnsupportedKeys.begin(), kUnsupportedKeys.end(), key) ==
+        kUnsupportedKeys.end()) {
+      EXPECT_PRED1(ReturnsValidPath, key);
+    } else {
+      EXPECT_PRED1(ReturnsInvalidPath, key);
+    }
   }
 #if defined(OS_WIN)
   for (int key = PATH_WIN_START + 1; key < PATH_WIN_END; ++key) {
