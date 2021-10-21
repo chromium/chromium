@@ -29,6 +29,12 @@ const GaiaPasswordChangedBase = Polymer.mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
     Polymer.Element);
 
+/**
+ * @typedef {{
+ *   oldPasswordInput:  CrInputElement,
+ * }}
+ */
+GaiaPasswordChangedBase.$;
 
 class GaiaPasswordChanged extends GaiaPasswordChangedBase {
   static get is() {
@@ -67,7 +73,6 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
 
   /**
    * @override
-   * @suppress {missingProperties}
    */
   ready() {
     super.ready();
@@ -99,7 +104,6 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
 
   /**
    * @private
-   * @suppress {missingProperties}
    */
   submit_() {
     if (this.disabled)

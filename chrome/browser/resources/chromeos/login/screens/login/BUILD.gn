@@ -76,6 +76,7 @@ js_library("active_directory_password_change.m") {
     "../../components/buttons:oobe_next_button.m",
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_modal_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
   extra_deps = [ ":active_directory_password_change_module" ]
 }
@@ -104,6 +105,7 @@ js_library("gaia_password_changed.m") {
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_loading_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
   extra_deps = [ ":gaia_password_changed_module" ]
 }

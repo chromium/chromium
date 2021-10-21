@@ -42,6 +42,15 @@ const UIState = {
    LoginScreenBehavior, MultiStepBehavior],
   Polymer.Element);
 
+/**
+ * @typedef {{
+ *   errorDialog:  OobeModalDialogElement,
+ *   oldPassword:  CrInputElement,
+ *   newPassword:  CrInputElement,
+ * }}
+ */
+ActiveDirectoryPasswordChangeBase.$;
+
 class ActiveDirectoryPasswordChange extends ActiveDirectoryPasswordChangeBase {
 
   static get is() { return 'active-directory-password-change-element'; }
@@ -143,7 +152,6 @@ class ActiveDirectoryPasswordChange extends ActiveDirectoryPasswordChangeBase {
    * @public
    * Shows sign-in error dialog.
    * @param {string} content Content to show in dialog.
-   * @suppress {missingProperties}
    */
   showErrorDialog(content) {
     this.errorDialogText_ = content;
@@ -191,7 +199,6 @@ class ActiveDirectoryPasswordChange extends ActiveDirectoryPasswordChangeBase {
 
   /**
    *  @private
-   *  @suppress {missingProperties}
   */
   onSubmit_() {
     if (!this.$.oldPassword.validate() || !this.$.newPassword.validate()) {
