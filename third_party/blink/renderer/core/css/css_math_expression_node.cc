@@ -1280,17 +1280,15 @@ scoped_refptr<const CalculationValue> CSSMathExpressionNode::ToCalcValue(
     // Clamping if pixels + percent could result in NaN. In special case,
     // inf px + inf % could evaluate to nan when
     // allows_negative_percentage_reference is true.
-    if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-      if (IsNaN(*maybe_pixels_and_percent,
-                allows_negative_percentage_reference)) {
-        maybe_pixels_and_percent = CreateClampedSamePixelsAndPercent(
-            std::numeric_limits<float>::quiet_NaN());
-      } else {
-        maybe_pixels_and_percent->pixels = CSSValueClampingUtils::ClampLength(
-            maybe_pixels_and_percent->pixels);
-        maybe_pixels_and_percent->percent = CSSValueClampingUtils::ClampLength(
-            maybe_pixels_and_percent->percent);
-      }
+    if (IsNaN(*maybe_pixels_and_percent,
+              allows_negative_percentage_reference)) {
+      maybe_pixels_and_percent = CreateClampedSamePixelsAndPercent(
+          std::numeric_limits<float>::quiet_NaN());
+    } else {
+      maybe_pixels_and_percent->pixels =
+          CSSValueClampingUtils::ClampLength(maybe_pixels_and_percent->pixels);
+      maybe_pixels_and_percent->percent =
+          CSSValueClampingUtils::ClampLength(maybe_pixels_and_percent->percent);
     }
     return CalculationValue::Create(*maybe_pixels_and_percent, range);
   }

@@ -684,7 +684,8 @@
     "bases": ["external/wpt/html/rendering/non-replaced-elements/the-page/crashtests/",
               "external/wpt/css/css-values/",
               "external/wpt/css/css-transforms/parsing/",
-              "external/wpt/css/css-transforms/crashtests/"],
+              "external/wpt/css/css-transforms/crashtests/",
+              "external/wpt/html/obsolete/requirements-for-implementations/the-marquee-element-0/crashtests"],
     "args": ["--disable-blink-features=CSSCalcInfinityAndNaN"]
   },
   {
