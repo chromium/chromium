@@ -100,6 +100,18 @@ class CC_EXPORT DroppedFrameCounter {
     return sliding_window_max_percent_dropped_;
   }
 
+  absl::optional<double> max_percent_dropped_After_1_sec() const {
+    return sliding_window_max_percent_dropped_After_1_sec_;
+  }
+
+  absl::optional<double> max_percent_dropped_After_2_sec() const {
+    return sliding_window_max_percent_dropped_After_2_sec_;
+  }
+
+  absl::optional<double> max_percent_dropped_After_5_sec() const {
+    return sliding_window_max_percent_dropped_After_5_sec_;
+  }
+
   uint32_t SlidingWindow95PercentilePercentDropped() const {
     return sliding_window_histogram_.GetPercentDroppedFramePercentile(0.95);
   }

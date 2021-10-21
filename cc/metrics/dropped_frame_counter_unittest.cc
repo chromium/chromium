@@ -314,6 +314,27 @@ class DroppedFrameCounterTest : public testing::Test {
     return dropped_frame_counter_.sliding_window_max_percent_dropped();
   }
 
+  double MaxPercentDroppedFrameAfter1Sec() {
+    auto percent_dropped =
+        dropped_frame_counter_.max_percent_dropped_After_1_sec();
+    EXPECT_TRUE(percent_dropped.has_value());
+    return percent_dropped.value();
+  }
+
+  double MaxPercentDroppedFrameAfter2Sec() {
+    auto percent_dropped =
+        dropped_frame_counter_.max_percent_dropped_After_2_sec();
+    EXPECT_TRUE(percent_dropped.has_value());
+    return percent_dropped.value();
+  }
+
+  double MaxPercentDroppedFrameAfter5Sec() {
+    auto percent_dropped =
+        dropped_frame_counter_.max_percent_dropped_After_5_sec();
+    EXPECT_TRUE(percent_dropped.has_value());
+    return percent_dropped.value();
+  }
+
   double PercentDroppedFrame95Percentile() {
     return dropped_frame_counter_.SlidingWindow95PercentilePercentDropped();
   }
@@ -768,6 +789,55 @@ TEST_F(DroppedFrameCounterTest, ForkedCompositorFrameReporter) {
 
   SimulateForkedFrame(true, true);
   EXPECT_EQ(dropped_frame_counter_.total_smoothness_dropped(), 3u);
+}
+
+TEST_F(DroppedFrameCounterTest, WorstSmoothnessTiming) {
+  // Set an interval that rounds up nicely with 1 second.
+  constexpr auto kInterval = base::Milliseconds(10);
+  constexpr size_t kFps = base::Seconds(1) / kInterval;
+  static_assert(
+      kFps % 5 == 0,
+      "kFps must be a multiple of 5 because this test depends on it.");
+  SetInterval(kInterval);
+
+  // Prepare a second of pending frames, and send FCP after the last of these
+  // frames.
+  dropped_frame_counter_.Reset();
+  std::vector<viz::BeginFrameArgs> pending_frames = SimulatePendingFrame(kFps);
+  const auto& last_frame = pending_frames.back();
+  base::TimeTicks time_fcp_sent =
+      last_frame.frame_time + last_frame.interval / 2;
+  dropped_frame_counter_.OnFcpReceived();
+  dropped_frame_counter_.SetTimeFcpReceivedForTesting(time_fcp_sent);
+
+  // End each of the pending frames as dropped. These shouldn't affect any of
+  // the metrics.
+  for (const auto& frame : pending_frames) {
+    dropped_frame_counter_.OnEndFrame(frame, true);
+  }
+
+  // After FCP time, add a second each of 80% and 60%, and three seconds of 40%
+  // dropped frames. This should be five seconds total.
+  SimulateFrameSequence({false, true, true, true, true}, kFps / 5);
+  SimulateFrameSequence({false, false, true, true, true}, kFps / 5);
+  SimulateFrameSequence({false, false, false, true, true}, (kFps / 5) * 3);
+
+  // Next two seconds are 20% dropped frames.
+  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 2);
+
+  // The first 1, 2, and 5 seconds shouldn't be recorded in the corresponding
+  // max dropped after N seconds metrics.
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), 80);
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter1Sec(), 60);
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter2Sec(), 40);
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter5Sec(), 20);
+
+  // Next second is 100% dropped frames, all metrics should include this.
+  SimulateFrameSequence({true}, kFps);
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), 100);
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter1Sec(), 100);
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter2Sec(), 100);
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter5Sec(), 100);
 }
 
 }  // namespace

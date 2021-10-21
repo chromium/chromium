@@ -393,10 +393,11 @@ void DroppedFrameCounter::PopSlidingWindow() {
     time_max_delta_ = newest_args.frame_time - time_fcp_received_;
     sliding_window_max_percent_dropped_ = percent_dropped_frame;
   }
-  UpdateMaxPercentDroppedFrame(percent_dropped_frame);
 
   latest_sliding_window_start_ = last_timestamp;
   latest_sliding_window_interval_ = remaining_oldest_args.interval;
+
+  UpdateMaxPercentDroppedFrame(percent_dropped_frame);
 }
 
 void DroppedFrameCounter::UpdateMaxPercentDroppedFrame(
@@ -404,7 +405,7 @@ void DroppedFrameCounter::UpdateMaxPercentDroppedFrame(
   if (!fcp_received_)
     return;
 
-  const auto fcp_time_delta = base::TimeTicks::Now() - time_fcp_received_;
+  const auto fcp_time_delta = latest_sliding_window_start_ - time_fcp_received_;
 
   if (fcp_time_delta > base::Seconds(1))
     sliding_window_max_percent_dropped_After_1_sec_ =
