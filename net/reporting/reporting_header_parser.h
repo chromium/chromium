@@ -53,7 +53,7 @@ class NET_EXPORT ReportingHeaderParser {
   static void ParseReportToHeader(
       ReportingContext* context,
       const NetworkIsolationKey& network_isolation_key,
-      const GURL& url,
+      const url::Origin& origin,
       std::unique_ptr<base::Value> value);
 
   // `isolation_info` here will be stored in the cache, associated with the

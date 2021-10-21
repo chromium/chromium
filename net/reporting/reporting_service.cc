@@ -27,6 +27,7 @@
 #include "net/reporting/reporting_uploader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -113,7 +114,7 @@ class ReportingServiceImpl : public ReportingService {
         depth, queued_ticks));
   }
 
-  void ProcessReportToHeader(const GURL& url,
+  void ProcessReportToHeader(const url::Origin& origin,
                              const NetworkIsolationKey& network_isolation_key,
                              const std::string& header_string) override {
     if (header_string.size() > kMaxJsonSize)
@@ -125,11 +126,10 @@ class ReportingServiceImpl : public ReportingService {
     if (!header_value)
       return;
 
-    DVLOG(1) << "Received Reporting policy for "
-             << url.DeprecatedGetOriginAsURL();
+    DVLOG(1) << "Received Reporting policy for " << origin;
     DoOrBacklogTask(base::BindOnce(
         &ReportingServiceImpl::DoProcessReportToHeader, base::Unretained(this),
-        FixupNetworkIsolationKey(network_isolation_key), url,
+        FixupNetworkIsolationKey(network_isolation_key), origin,
         std::move(header_value)));
   }
 
@@ -214,11 +214,11 @@ class ReportingServiceImpl : public ReportingService {
   }
 
   void DoProcessReportToHeader(const NetworkIsolationKey& network_isolation_key,
-                               const GURL& url,
+                               const url::Origin& origin,
                                std::unique_ptr<base::Value> header_value) {
     DCHECK(initialized_);
     ReportingHeaderParser::ParseReportToHeader(
-        context_.get(), network_isolation_key, url, std::move(header_value));
+        context_.get(), network_isolation_key, origin, std::move(header_value));
   }
 
   void DoSetDocumentReportingEndpoints(

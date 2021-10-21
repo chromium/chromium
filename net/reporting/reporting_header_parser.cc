@@ -286,15 +286,13 @@ void ReportingHeaderParser::RecordReportingHeaderType(
 void ReportingHeaderParser::ParseReportToHeader(
     ReportingContext* context,
     const NetworkIsolationKey& network_isolation_key,
-    const GURL& url,
+    const url::Origin& origin,
     std::unique_ptr<base::Value> value) {
-  DCHECK(url.SchemeIsCryptographic());
+  DCHECK(GURL::SchemeIsCryptographic(origin.scheme()));
   DCHECK(value->is_list());
 
   ReportingDelegate* delegate = context->delegate();
   ReportingCache* cache = context->cache();
-
-  url::Origin origin = url::Origin::Create(url);
 
   std::vector<ReportingEndpointGroup> parsed_header;
 

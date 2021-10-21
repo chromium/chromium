@@ -16,6 +16,7 @@
 #include "net/reporting/reporting_policy.pb.h"
 #include "net/reporting/reporting_test_util.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
@@ -40,8 +41,8 @@ void FuzzReportingHeaderParser(const std::string& data_json,
   // TODO: consider including proto definition for URL after moving that to
   // testing/libfuzzer/proto and creating a separate converter.
   net::ReportingHeaderParser::ParseReportToHeader(
-      &context, net::NetworkIsolationKey(), GURL("https://origin/path"),
-      std::move(data_value));
+      &context, net::NetworkIsolationKey(),
+      url::Origin::Create(GURL("https://origin/")), std::move(data_value));
   if (context.cache()->GetEndpointCount() == 0) {
     return;
   }

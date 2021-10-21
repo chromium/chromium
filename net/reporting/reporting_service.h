@@ -23,6 +23,10 @@ namespace base {
 class Value;
 }  // namespace base
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace net {
 
 class IsolationInfo;
@@ -77,10 +81,11 @@ class NET_EXPORT ReportingService {
       std::unique_ptr<const base::Value> body,
       int depth) = 0;
 
-  // Processes a Report-To header. |url| is the URL that originated the header;
-  // |header_value| is the normalized value of the Report-To header.
+  // Processes a Report-To header. |origin| is the Origin of the URL that the
+  // header came from; |header_value| is the normalized value of the Report-To
+  // header.
   virtual void ProcessReportToHeader(
-      const GURL& url,
+      const url::Origin& origin,
       const NetworkIsolationKey& network_isolation_key,
       const std::string& header_value) = 0;
 

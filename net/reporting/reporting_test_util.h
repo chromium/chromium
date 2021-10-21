@@ -351,7 +351,7 @@ class TestReportingService : public ReportingService {
       std::unique_ptr<const base::Value> body,
       int depth) override;
 
-  void ProcessReportToHeader(const GURL& url,
+  void ProcessReportToHeader(const url::Origin& url,
                              const NetworkIsolationKey& network_isolation_key,
                              const std::string& header_value) override;
 

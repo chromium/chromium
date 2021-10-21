@@ -181,7 +181,7 @@ TEST_P(ReportingServiceTest, QueueReportNetworkIsolationKeyDisabled) {
 }
 
 TEST_P(ReportingServiceTest, ProcessReportToHeader) {
-  service()->ProcessReportToHeader(kUrl_, kNik_,
+  service()->ProcessReportToHeader(kOrigin_, kNik_,
                                    "{\"endpoints\":[{\"url\":\"" +
                                        kEndpoint_.spec() +
                                        "\"}],"
@@ -345,7 +345,7 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {
 
 TEST_P(ReportingServiceTest, ProcessReportToHeaderPathAbsolute) {
   service()->ProcessReportToHeader(
-      kUrl_, kNik_,
+      kOrigin_, kNik_,
       "{\"endpoints\":[{\"url\":\"/path-absolute\"}],"
       "\"group\":\"" +
           kGroup_ +
@@ -367,7 +367,7 @@ TEST_P(ReportingServiceTest, ProcessReportToHeader_TooLong) {
       "\"junk\":\"" + std::string(32 * 1024, 'a') + "\"}";
   // This does not trigger an attempt to load from the store because the header
   // is immediately rejected as invalid.
-  service()->ProcessReportToHeader(kUrl_, kNik_, header_too_long);
+  service()->ProcessReportToHeader(kOrigin_, kNik_, header_too_long);
 
   EXPECT_EQ(0u, context()->cache()->GetEndpointCount());
 }
@@ -383,7 +383,7 @@ TEST_P(ReportingServiceTest, ProcessReportToHeader_TooDeep) {
                                       "\"junk\":[[[[[[[[[[]]]]]]]]]]}";
   // This does not trigger an attempt to load from the store because the header
   // is immediately rejected as invalid.
-  service()->ProcessReportToHeader(kUrl_, kNik_, header_too_deep);
+  service()->ProcessReportToHeader(kOrigin_, kNik_, header_too_deep);
 
   EXPECT_EQ(0u, context()->cache()->GetEndpointCount());
 }
@@ -396,7 +396,7 @@ TEST_P(ReportingServiceTest, ProcessReportToHeaderNetworkIsolationKeyDisabled) {
   // Re-create the store, so it reads the new feature value.
   Init();
 
-  service()->ProcessReportToHeader(kUrl_, kNik_,
+  service()->ProcessReportToHeader(kOrigin_, kNik_,
                                    "{\"endpoints\":[{\"url\":\"" +
                                        kEndpoint_.spec() +
                                        "\"}],"
@@ -422,7 +422,7 @@ TEST_P(ReportingServiceTest, WriteToStore) {
 
   // This first call to any public method triggers a load. The load will block
   // until we call FinishLoading.
-  service()->ProcessReportToHeader(kUrl_, kNik_,
+  service()->ProcessReportToHeader(kOrigin_, kNik_,
                                    "{\"endpoints\":[{\"url\":\"" +
                                        kEndpoint_.spec() +
                                        "\"}],"
@@ -444,7 +444,7 @@ TEST_P(ReportingServiceTest, WriteToStore) {
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 
-  service()->ProcessReportToHeader(kUrl2_, kNik2_,
+  service()->ProcessReportToHeader(kOrigin2_, kNik2_,
                                    "{\"endpoints\":[{\"url\":\"" +
                                        kEndpoint_.spec() +
                                        "\"}],"
@@ -497,7 +497,7 @@ TEST_P(ReportingServiceTest, WaitUntilLoadFinishesBeforeWritingToStore) {
 
   // This first call to any public method triggers a load. The load will block
   // until we call FinishLoading.
-  service()->ProcessReportToHeader(kUrl_, kNik_,
+  service()->ProcessReportToHeader(kOrigin_, kNik_,
                                    "{\"endpoints\":[{\"url\":\"" +
                                        kEndpoint_.spec() +
                                        "\"}],"
@@ -509,7 +509,7 @@ TEST_P(ReportingServiceTest, WaitUntilLoadFinishesBeforeWritingToStore) {
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 
-  service()->ProcessReportToHeader(kUrl2_, kNik2_,
+  service()->ProcessReportToHeader(kOrigin2_, kNik2_,
                                    "{\"endpoints\":[{\"url\":\"" +
                                        kEndpoint_.spec() +
                                        "\"}],"

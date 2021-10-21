@@ -345,7 +345,7 @@ void TestReportingService::QueueReport(
 }
 
 void TestReportingService::ProcessReportToHeader(
-    const GURL& url,
+    const url::Origin& origin,
     const NetworkIsolationKey& network_isolation_key,
     const std::string& header_value) {
   NOTREACHED();
