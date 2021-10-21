@@ -370,41 +370,6 @@ void DlpContentManager::OnWebContentsDestroyed(
   RemoveFromConfidential(web_contents);
 }
 
-DlpContentRestrictionSet DlpContentManager::GetRestrictionSetForURL(
-    const GURL& url) const {
-  DlpContentRestrictionSet set;
-  DlpRulesManager* dlp_rules_manager =
-      DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!dlp_rules_manager)
-    return set;
-
-  const size_t kRestrictionsCount = 5;
-  static constexpr std::array<
-      std::pair<DlpRulesManager::Restriction, DlpContentRestriction>,
-      kRestrictionsCount>
-      kRestrictionsArray = {{{DlpRulesManager::Restriction::kScreenshot,
-                              DlpContentRestriction::kScreenshot},
-                             {DlpRulesManager::Restriction::kScreenshot,
-                              DlpContentRestriction::kVideoCapture},
-                             {DlpRulesManager::Restriction::kPrivacyScreen,
-                              DlpContentRestriction::kPrivacyScreen},
-                             {DlpRulesManager::Restriction::kPrinting,
-                              DlpContentRestriction::kPrint},
-                             {DlpRulesManager::Restriction::kScreenShare,
-                              DlpContentRestriction::kScreenShare}}};
-
-  for (const auto& restriction : kRestrictionsArray) {
-    DlpRulesManager::Level level =
-        dlp_rules_manager->IsRestricted(url, restriction.first);
-    if (level == DlpRulesManager::Level::kNotSet ||
-        level == DlpRulesManager::Level::kAllow)
-      continue;
-    set.SetRestriction(restriction.second, level, url);
-  }
-
-  return set;
-}
-
 void DlpContentManager::OnVisibilityChanged(
     content::WebContents* web_contents) {
   MaybeChangeOnScreenRestrictions();

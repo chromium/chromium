@@ -21,7 +21,6 @@
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class GURL;
 struct ScreenshotArea;
 
 namespace aura {
@@ -197,8 +196,6 @@ class DlpContentManager : public DlpContentObserver,
       content::WebContents* web_contents,
       const DlpContentRestrictionSet& restriction_set) override;
   void OnWebContentsDestroyed(content::WebContents* web_contents) override;
-  DlpContentRestrictionSet GetRestrictionSetForURL(
-      const GURL& url) const override;
   void OnVisibilityChanged(content::WebContents* web_contents) override;
 
   // Helper to remove |web_contents| from the confidential set.

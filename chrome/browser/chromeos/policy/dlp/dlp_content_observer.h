@@ -33,10 +33,10 @@ class DlpContentObserver {
   // Called when |web_contents| is about to be destroyed.
   virtual void OnWebContentsDestroyed(content::WebContents* web_contents) = 0;
 
-  // Should return which restrictions are being applied to the |url| according
+  // Returns which content restrictions are being applied to the |url| according
   // to the policies.
   virtual DlpContentRestrictionSet GetRestrictionSetForURL(
-      const GURL& url) const = 0;
+      const GURL& url) const;
 
   // Called when |web_contents| becomes visible or not.
   virtual void OnVisibilityChanged(content::WebContents* web_contents) = 0;
