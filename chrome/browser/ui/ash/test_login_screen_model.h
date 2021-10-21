@@ -21,12 +21,16 @@ class TestLoginScreenModel : public ash::LoginScreenModel {
   void SetUserList(const std::vector<ash::LoginUserInfo>& users) override;
   void SetPinEnabledForUser(const AccountId& account_id,
                             bool is_enabled) override;
-  void SetFingerprintState(const AccountId& account_id,
-                           ash::FingerprintState state) override;
   void SetAvatarForUser(const AccountId& account_id,
                         const ash::UserAvatar& avatar) override;
+  void SetFingerprintState(const AccountId& account_id,
+                           ash::FingerprintState state) override;
   void NotifyFingerprintAuthResult(const AccountId& account_id,
                                    bool successful) override;
+  void SetSmartLockState(const AccountId& account_id,
+                         ash::SmartLockState state) override;
+  void NotifySmartLockAuthResult(const AccountId& account_id,
+                                 bool successful) override;
   void EnableAuthForUser(const AccountId& account_id) override;
   void DisableAuthForUser(
       const AccountId& account_id,

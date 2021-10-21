@@ -1076,6 +1076,26 @@ void LockContentsView::OnFingerprintAuthResult(const AccountId& account_id,
   big_view->auth_user()->NotifyFingerprintAuthResult(success);
 }
 
+void LockContentsView::OnSmartLockStateChanged(const AccountId& account_id,
+                                               SmartLockState state) {
+  LoginBigUserView* big_view =
+      TryToFindBigUser(account_id, true /*require_auth_active*/);
+  if (!big_view || !big_view->auth_user())
+    return;
+
+  big_view->auth_user()->SetSmartLockState(state);
+}
+
+void LockContentsView::OnSmartLockAuthResult(const AccountId& account_id,
+                                             bool success) {
+  LoginBigUserView* big_view =
+      TryToFindBigUser(account_id, true /*require_auth_active*/);
+  if (!big_view || !big_view->auth_user())
+    return;
+
+  big_view->auth_user()->NotifySmartLockAuthResult(success);
+}
+
 void LockContentsView::OnAuthEnabledForUser(const AccountId& user) {
   LockContentsView::UserState* state = FindStateForUser(user);
   if (!state) {
@@ -1171,17 +1191,15 @@ void LockContentsView::OnForceOnlineSignInForUser(const AccountId& user) {
 void LockContentsView::OnShowEasyUnlockIcon(
     const AccountId& user,
     const EasyUnlockIconInfo& icon_info) {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
+
   UserState* state = FindStateForUser(user);
   if (!state)
     return;
 
   state->easy_unlock_icon_info = icon_info;
   UpdateEasyUnlockIconForUser(user);
-
-  // Do not show tooltip if the Smart Lock revamp is enabled since it will be
-  // removed post launch.
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
-    return;
 
   // Show tooltip only if the user is actively showing auth.
   LoginBigUserView* big_user =

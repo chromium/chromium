@@ -52,6 +52,7 @@ class LoginExpandedPublicAccountView;
 class LoginUserView;
 class NoteActionLaunchButton;
 class ScrollableUsersListView;
+enum class SmartLockState;
 
 namespace mojom {
 enum class TrayActionState;
@@ -173,6 +174,10 @@ class ASH_EXPORT LockContentsView
                                  FingerprintState state) override;
   void OnFingerprintAuthResult(const AccountId& account_id,
                                bool success) override;
+  void OnSmartLockStateChanged(const AccountId& account_id,
+                               SmartLockState state) override;
+  void OnSmartLockAuthResult(const AccountId& account_id,
+                             bool success) override;
   void OnAuthEnabledForUser(const AccountId& user) override;
   void OnAuthDisabledForUser(
       const AccountId& user,
@@ -184,6 +189,8 @@ class ASH_EXPORT LockContentsView
   void OnTapToUnlockEnabledForUserChanged(const AccountId& user,
                                           bool enabled) override;
   void OnForceOnlineSignInForUser(const AccountId& user) override;
+  // TODO(https://crbug.com/1233614): Delete this method in favor of
+  // OnSmartLockStateChanged once Smart Lock UI revamp is enabled.
   void OnShowEasyUnlockIcon(const AccountId& user,
                             const EasyUnlockIconInfo& icon_info) override;
   void OnWarningMessageUpdated(const std::u16string& message) override;
