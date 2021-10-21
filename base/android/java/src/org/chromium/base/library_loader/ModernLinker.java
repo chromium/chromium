@@ -4,6 +4,8 @@
 
 package org.chromium.base.library_loader;
 
+import android.os.SystemClock;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -24,6 +26,9 @@ import javax.annotation.concurrent.GuardedBy;
 class ModernLinker extends Linker {
     private static final String TAG = "ModernLinker";
 
+    private static final String DETAILED_LOAD_TIME_HISTOGRAM_PREFIX =
+            "ChromiumAndroidLinker.ModernLinkerDetailedLoadTime.";
+
     ModernLinker() {}
 
     @Override
@@ -40,42 +45,28 @@ class ModernLinker extends Linker {
         }
         assert mState == State.INITIALIZED; // Only one successful call.
 
+        // Load or declare fallback to System.loadLibrary.
+        long beforeLoadMs = SystemClock.uptimeMillis();
         String libFilePath = System.mapLibraryName(library);
+        boolean performedModernLoad = true;
         if (relroMode == RelroSharingMode.NO_SHARING) {
             // System.loadLibrary() below implements the fallback.
+            performedModernLoad = false;
             mState = State.DONE;
         } else if (relroMode == RelroSharingMode.PRODUCE) {
-            // Create the shared RELRO, and store it.
-            mLocalLibInfo.mLibFilePath = libFilePath;
-            if (getModernLinkerJni().loadLibrary(
-                        libFilePath, mLocalLibInfo, true /* spawnRelroRegion */)) {
-                if (DEBUG) {
-                    Log.i(TAG, "Successfully spawned RELRO: mLoadAddress=0x%x, mLoadSize=%d",
-                            mLocalLibInfo.mLoadAddress, mLocalLibInfo.mLoadSize);
-                }
-            } else {
-                Log.e(TAG, "Unable to load with ModernLinker, using the system linker instead");
-                // System.loadLibrary() below implements the fallback.
-                mLocalLibInfo.mRelroFd = -1;
-            }
-            RecordHistogram.recordBooleanHistogram(
-                    "ChromiumAndroidLinker.RelroProvidedSuccessfully",
-                    mLocalLibInfo.mRelroFd != -1);
-
+            loadAndProduceSharedRelro(libFilePath); // Throws on a failed load.
             // Next state is still to "provide relro", even if there is none, to indicate that
             // consuming RELRO is not expected with this Linker instance.
             mState = State.DONE_PROVIDE_RELRO;
         } else {
             assert relroMode == RelroSharingMode.CONSUME;
-            assert mRemoteLibInfo == null || libFilePath.equals(mRemoteLibInfo.mLibFilePath);
-            if (!getModernLinkerJni().loadLibrary(
-                        libFilePath, mLocalLibInfo, false /* spawnRelroRegion */)) {
-                resetAndThrow(String.format("Unable to load library: %s", libFilePath));
-            }
-            assert mLocalLibInfo.mRelroFd == -1;
-
+            loadWithoutProducingRelro(libFilePath); // Does not throw.
             // Done loading the library, but using an externally provided RELRO may happen later.
             mState = State.DONE;
+        }
+        if (performedModernLoad) {
+            recordDetailedLoadTimeSince(
+                    beforeLoadMs, relroMode == RelroSharingMode.PRODUCE ? "Produce" : "Consume");
         }
 
         // Load the library a second time, in order to keep using lazy JNI registration. When
@@ -85,11 +76,51 @@ class ModernLinker extends Linker {
         //
         // This is not wasteful though, as libraries are reference-counted, and as a consequence the
         // library is not really loaded a second time, and we keep relocation sharing.
+        long beforeSystemLoadMs = SystemClock.uptimeMillis();
         try {
             System.loadLibrary(library);
         } catch (UnsatisfiedLinkError e) {
             resetAndThrow("Failed at System.loadLibrary()");
         }
+        recordDetailedLoadTimeSince(
+                beforeSystemLoadMs, performedModernLoad ? "Second" : "NoSharing");
+    }
+
+    private void recordDetailedLoadTimeSince(long sinceMs, String suffix) {
+        RecordHistogram.recordTimesHistogram(
+                DETAILED_LOAD_TIME_HISTOGRAM_PREFIX + suffix, SystemClock.uptimeMillis() - sinceMs);
+    }
+
+    // Loads the library via ModernLinker for later consumption of the RELRO region, throws on
+    // failure to allow a safe retry.
+    @GuardedBy("mLock")
+    private void loadWithoutProducingRelro(String libFilePath) {
+        assert mRemoteLibInfo == null || libFilePath.equals(mRemoteLibInfo.mLibFilePath);
+        if (!getModernLinkerJni().loadLibrary(
+                    libFilePath, mLocalLibInfo, false /* spawnRelroRegion */)) {
+            resetAndThrow(String.format("Unable to load library: %s", libFilePath));
+        }
+        assert mLocalLibInfo.mRelroFd == -1;
+    }
+
+    // Loads the library via ModernLinker. Does not throw on failure because in both cases
+    // System.loadLibrary() is useful. Records a histogram to count failures.
+    @GuardedBy("mLock")
+    private void loadAndProduceSharedRelro(String libFilePath) {
+        mLocalLibInfo.mLibFilePath = libFilePath;
+        if (getModernLinkerJni().loadLibrary(
+                    libFilePath, mLocalLibInfo, true /* spawnRelroRegion */)) {
+            if (DEBUG) {
+                Log.i(TAG, "Successfully spawned RELRO: mLoadAddress=0x%x, mLoadSize=%d",
+                        mLocalLibInfo.mLoadAddress, mLocalLibInfo.mLoadSize);
+            }
+        } else {
+            Log.e(TAG, "Unable to load with ModernLinker, using the system linker instead");
+            // System.loadLibrary() below implements the fallback.
+            mLocalLibInfo.mRelroFd = -1;
+        }
+        RecordHistogram.recordBooleanHistogram(
+                "ChromiumAndroidLinker.RelroProvidedSuccessfully", mLocalLibInfo.mRelroFd != -1);
     }
 
     @Override

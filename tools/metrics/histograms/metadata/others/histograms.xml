@@ -2793,6 +2793,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromiumAndroidLinker.ModernLinkerDetailedLoadTime.{LoadKind}"
+    units="ms" expires_after="2022-10-01">
+  <owner>pasko@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <summary>
+    The ModernLinker loads the native library twice: once with
+    android_dlopen_ext, and if the first one does not fail, also invokes
+    System.loadLibrary(). This histogram reflects the time to load the native
+    library when {LoadKind}.
+
+    Failed load does not record a sample. Failing the first load would also
+    avoid recording the histogram for the second load.
+
+    See a description of RELRO sharing here:
+    https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/android_native_libraries.md#RELRO-Sharing
+  </summary>
+  <token key="LoadKind">
+    <variant name="Consume"
+        summary="consuming an external RELRO is expected later, with
+                 android_dlopen_ext"/>
+    <variant name="NoSharing"
+        summary="RELRO sharing cooperation is not requested (fallback, in
+                 testing)"/>
+    <variant name="Produce"
+        summary="producing RELRO is requested, with android_dlopen_ext"/>
+    <variant name="Second"
+        summary="the first load succeeded and the System.loadLibrary() time
+                 is measured"/>
+  </token>
+</histogram>
+
 <histogram name="ChromiumAndroidLinker.RelroAvailableImmediately"
     enum="BooleanRelroAvailableImmediately" expires_after="2022-10-01">
   <owner>lizeb@chromium.org</owner>
