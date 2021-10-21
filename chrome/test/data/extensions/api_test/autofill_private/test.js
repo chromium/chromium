@@ -400,8 +400,10 @@ var TESTS_FOR_CONFIG = {
   ]
 };
 
-var testConfig = window.location.search.substring(1);
-var testsToRun = TESTS_FOR_CONFIG[testConfig] || [testConfig];
-chrome.test.runTests(availableTests.filter(function(op) {
-  return testsToRun.includes(op.name);
-}));
+chrome.test.getConfig(function(config) {
+  var testConfig = config.customArg;
+  var testsToRun = TESTS_FOR_CONFIG[testConfig] || [testConfig];
+  chrome.test.runTests(availableTests.filter(function(op) {
+    return testsToRun.includes(op.name);
+  }));
+});
