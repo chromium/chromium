@@ -1504,12 +1504,15 @@ class SavePackageDeepScanningBrowserTest
     return DownloadPrefs(browser()->profile()).DownloadPath();
   }
 
+  base::FilePath GetTestFilePath() {
+    return GetTestDataDirectory().AppendASCII("save_page/text.txt");
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1248459): Flaky on Win7.
-IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, DISABLED_Allowed) {
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Allowed) {
   SetUpReporting();
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
@@ -1522,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, DISABLED_Allowed) {
   base::RunLoop run_loop;
   content::SavePackageFinishedObserver observer(
       browser()->profile()->GetDownloadManager(), run_loop.QuitClosure());
-  base::FilePath main_file = GetSaveDir().AppendASCII("text.txt");
+  base::FilePath main_file = GetSaveDir().AppendASCII("text.htm");
   base::FilePath extra_files_dir = GetSaveDir().AppendASCII("text_files");
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
@@ -1545,12 +1548,14 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, DISABLED_Allowed) {
 
   ASSERT_EQ(download_items().size(), 1u);
   download::DownloadItem* item = *download_items().begin();
-  EXPECT_EQ(item->GetDangerType(),
-            download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+  EXPECT_EQ(
+      item->GetDangerType(),
+      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE);
   EXPECT_EQ(item->GetState(), download::DownloadItem::COMPLETE);
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::PathExists(main_file));
+  EXPECT_TRUE(base::ContentsEqual(GetTestFilePath(), main_file));
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
@@ -1568,7 +1573,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   content::SavePackageFinishedObserver observer(
       browser()->profile()->GetDownloadManager(), run_loop.QuitClosure(),
       {download::DownloadItem::INTERRUPTED});
-  base::FilePath main_file = GetSaveDir().AppendASCII("text.txt");
+  base::FilePath main_file = GetSaveDir().AppendASCII("text.htm");
   base::FilePath extra_files_dir = GetSaveDir().AppendASCII("text_files");
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
@@ -1616,14 +1621,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
-// Flaky on Win7: crbug.com/1258150
-#if defined(OS_WIN)
-#define MAYBE_KeepAfterWarning DISABLED_KeepAfterWarning
-#else
-#define MAYBE_KeepAfterWarning KeepAfterWarning
-#endif
-IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
-                       MAYBE_KeepAfterWarning) {
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   SetUpReporting();
 
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
@@ -1637,7 +1635,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
   content::SavePackageFinishedObserver observer(
       browser()->profile()->GetDownloadManager(),
       save_package_run_loop.QuitClosure(), {download::DownloadItem::COMPLETE});
-  base::FilePath main_file = GetSaveDir().AppendASCII("text.txt");
+  base::FilePath main_file = GetSaveDir().AppendASCII("text.htm");
   base::FilePath extra_files_dir = GetSaveDir().AppendASCII("text_files");
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
@@ -1715,6 +1713,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::COMPLETE);
 
   EXPECT_TRUE(base::PathExists(main_file));
+  EXPECT_TRUE(base::ContentsEqual(GetTestFilePath(), main_file));
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
@@ -1733,7 +1732,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
   content::SavePackageFinishedObserver observer(
       browser()->profile()->GetDownloadManager(),
       save_package_run_loop.QuitClosure(), {download::DownloadItem::CANCELLED});
-  base::FilePath main_file = GetSaveDir().AppendASCII("text.txt");
+  base::FilePath main_file = GetSaveDir().AppendASCII("text.htm");
   base::FilePath extra_files_dir = GetSaveDir().AppendASCII("text_files");
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
@@ -1796,13 +1795,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
-// Flaky on Win7: crbug.com/1258150
-#if defined(OS_WIN)
-#define MAYBE_OpenNow DISABLED_OpenNow
-#else
-#define MAYBE_OpenNow OpenNow
-#endif
-IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, MAYBE_OpenNow) {
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   SetUpReporting();
 
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
@@ -1816,7 +1809,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, MAYBE_OpenNow) {
   content::SavePackageFinishedObserver observer(
       browser()->profile()->GetDownloadManager(),
       save_package_run_loop.QuitClosure(), {download::DownloadItem::COMPLETE});
-  base::FilePath main_file = GetSaveDir().AppendASCII("text.txt");
+  base::FilePath main_file = GetSaveDir().AppendASCII("text.htm");
   base::FilePath extra_files_dir = GetSaveDir().AppendASCII("text_files");
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
@@ -1837,6 +1830,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, MAYBE_OpenNow) {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::PathExists(main_file));
+  EXPECT_TRUE(base::ContentsEqual(GetTestFilePath(), main_file));
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 
   // After the verdict is obtained, send the FCM message to confirm the
