@@ -1151,8 +1151,11 @@ void AppListItemView::CreateDraggedViewHoverAnimation() {
 }
 
 void AppListItemView::AdaptBoundsForSelectionHighlight(gfx::Rect* bounds) {
-  bounds->Inset(0, 0, 0, app_list_config_->grid_icon_bottom_padding());
-  bounds->ClampToCenteredSize(app_list_config_->grid_focus_size());
+  // ProductivityLauncher draws the focus highlight around the whole tile.
+  if (!features::IsProductivityLauncherEnabled()) {
+    bounds->Inset(0, 0, 0, app_list_config_->grid_icon_bottom_padding());
+    bounds->ClampToCenteredSize(app_list_config_->grid_focus_size());
+  }
   // Update the bounds to account for the focus ring width - by default, the
   // focus ring is painted so the highlight bounds are centered within the
   // focus ring stroke - this should be overridden so the outer stroke bounds

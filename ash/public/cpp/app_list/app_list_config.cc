@@ -122,16 +122,17 @@ int GridTitleHorizontalPaddingForType(ash::AppListConfigType type) {
 }
 
 int GridFocusDimensionForType(ash::AppListConfigType type) {
-  // TODO(jamescook): Update focus rings for ProductivityLauncher.
   switch (type) {
     case ash::AppListConfigType::kLarge:
-    case ash::AppListConfigType::kRegular:
       return 80;
     case ash::AppListConfigType::kMedium:
-    case ash::AppListConfigType::kDense:
       return 64;
     case ash::AppListConfigType::kSmall:
       return 56;
+    // Unused for ProductivityLauncher.
+    case ash::AppListConfigType::kRegular:
+    case ash::AppListConfigType::kDense:
+      return -1;
   }
 }
 

@@ -252,7 +252,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return grid_title_horizontal_padding_;
   }
   int grid_title_width() const { return grid_title_width_; }
-  int grid_focus_dimension() const { return grid_focus_dimension_; }
   int grid_focus_corner_radius() const { return grid_focus_corner_radius_; }
   int app_title_max_line_height() const { return app_title_max_line_height_; }
   const gfx::FontList& app_title_font() const { return app_title_font_; }
@@ -331,8 +330,12 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // The title width of tile views in apps grid view.
   const int grid_title_width_;
 
-  // The focus dimension and corner radius of tile views in apps grid view.
+  // The focus dimension of tile views in apps grid view. Only used when
+  // ProductivityLauncher is disabled. ProductivityLauncher draws the focus ring
+  // around the entire AppListItemView.
   const int grid_focus_dimension_;
+
+  // Corner radius of the focus ring for tile views in apps grid view.
   const int grid_focus_corner_radius_;
 
   // The maximum line height for app title in app list.
