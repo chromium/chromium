@@ -18,7 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.BottomSheetOpenedSource;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
-import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
+import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -144,7 +144,7 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @VisibleForTesting
-    void maybeDisplayMessage(MerchantTrustSignals trustSignals, MerchantTrustMessageContext item,
+    void maybeDisplayMessage(MerchantTrustSignalsV2 trustSignals, MerchantTrustMessageContext item,
             boolean shouldExpediteMessage) {
         if (trustSignals == null) return;
         NavigationHandle navigationHandle = item.getNavigationHandle();
@@ -169,7 +169,7 @@ public class MerchantTrustSignalsCoordinator
         });
     }
 
-    private void scheduleMessage(MerchantTrustSignals trustSignals,
+    private void scheduleMessage(MerchantTrustSignalsV2 trustSignals,
             MerchantTrustMessageContext item, boolean shouldExpediteMessage) {
         assert (trustSignals != null) && (item != null);
         mMessageScheduler.schedule(
@@ -203,7 +203,7 @@ public class MerchantTrustSignalsCoordinator
                 == ConnectionSecurityLevel.SECURE;
     }
 
-    private boolean isMerchantRatingBelowThreshold(MerchantTrustSignals trustSignals) {
+    private boolean isMerchantRatingBelowThreshold(MerchantTrustSignalsV2 trustSignals) {
         return trustSignals.getMerchantStarRating()
                 < MerchantViewerConfig.getTrustSignalsMessageRatingThreshold();
     }
@@ -235,7 +235,7 @@ public class MerchantTrustSignalsCoordinator
 
     @Override
     public void onMessagePrimaryAction(
-            MerchantTrustSignals trustSignals, String messageAssociatedUrl) {
+            MerchantTrustSignalsV2 trustSignals, String messageAssociatedUrl) {
         mMetrics.recordMetricsForMessageTapped();
         launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()),
                 BottomSheetOpenedSource.FROM_MESSAGE, messageAssociatedUrl);
@@ -243,7 +243,7 @@ public class MerchantTrustSignalsCoordinator
 
     // PageInfoStoreInfoController.StoreInfoActionHandler implementation.
     @Override
-    public void onStoreInfoClicked(MerchantTrustSignals trustSignals) {
+    public void onStoreInfoClicked(MerchantTrustSignalsV2 trustSignals) {
         launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()),
                 BottomSheetOpenedSource.FROM_PAGE_INFO, null);
         // If user has clicked the "Store info" row, send a signal to disable {@link

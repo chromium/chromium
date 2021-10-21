@@ -47,13 +47,6 @@ public class MerchantTrustMessageScheduler {
         clearScheduledMessage(clearReason);
     }
 
-    private void clearScheduledMessage(@MessageClearReason int clearReason) {
-        if (mScheduledMessage != null) {
-            mMetrics.recordMetricsForMessageCleared(clearReason);
-        }
-        setScheduledMessage(null);
-    }
-
     /** Adds a message to the underlying {@link MessageDispatcher} queue. */
     void schedule(PropertyModel model, MerchantTrustMessageContext messageContext,
             long delayInMillis, Callback<MerchantTrustMessageContext> messageEnqueuedCallback) {
@@ -87,6 +80,13 @@ public class MerchantTrustMessageScheduler {
     /** Returns the currently scheduled message. */
     MerchantTrustMessageContext getScheduledMessageContext() {
         return mScheduledMessage == null ? null : mScheduledMessage.first;
+    }
+
+    private void clearScheduledMessage(@MessageClearReason int clearReason) {
+        if (mScheduledMessage != null) {
+            mMetrics.recordMetricsForMessageCleared(clearReason);
+        }
+        setScheduledMessage(null);
     }
 
     @VisibleForTesting

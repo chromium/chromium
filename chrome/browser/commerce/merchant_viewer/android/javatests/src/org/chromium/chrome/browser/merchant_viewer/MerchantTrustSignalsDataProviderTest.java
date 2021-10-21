@@ -26,7 +26,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
+import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
@@ -62,11 +62,15 @@ public class MerchantTrustSignalsDataProviderTest {
     @Mock
     private OptimizationGuideBridge.Natives mMockOptimizationGuideBridgeJni;
 
-    static final MerchantTrustSignals FAKE_MERCHANT_TRUST_SIGNALS =
-            MerchantTrustSignals.newBuilder()
+    static final MerchantTrustSignalsV2 FAKE_MERCHANT_TRUST_SIGNALS =
+            MerchantTrustSignalsV2.newBuilder()
                     .setMerchantStarRating(4.5f)
                     .setMerchantCountRating(100)
                     .setMerchantDetailsPageUrl("http://dummy/url")
+                    .setHasReturnPolicy(true)
+                    .setNonPersonalizedFamiliarityScore(0.2f)
+                    .setContainsSensitiveContent(false)
+                    .setProactiveMessageDisabled(false)
                     .build();
 
     static final Any ANY_MERHCANT_TRUST_SIGNALS =
@@ -143,11 +147,15 @@ public class MerchantTrustSignalsDataProviderTest {
         instance.getDataForUrl(mMockDestinationGurl, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
 
-        MerchantTrustSignals result = callbackHelper.getMerchantTrustSignalsResult();
+        MerchantTrustSignalsV2 result = callbackHelper.getMerchantTrustSignalsResult();
         Assert.assertNotNull(result);
         Assert.assertEquals(4.5f, result.getMerchantStarRating(), 0.0f);
         Assert.assertEquals(100, result.getMerchantCountRating());
         Assert.assertEquals("http://dummy/url", result.getMerchantDetailsPageUrl());
+        Assert.assertEquals(true, result.getHasReturnPolicy());
+        Assert.assertEquals(0.2f, result.getNonPersonalizedFamiliarityScore(), 0.0f);
+        Assert.assertEquals(false, result.getContainsSensitiveContent());
+        Assert.assertEquals(false, result.getProactiveMessageDisabled());
     }
 
     @Test
@@ -208,11 +216,96 @@ public class MerchantTrustSignalsDataProviderTest {
         instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
 
-        MerchantTrustSignals result = callbackHelper.getMerchantTrustSignalsResult();
+        MerchantTrustSignalsV2 result = callbackHelper.getMerchantTrustSignalsResult();
         Assert.assertNotNull(result);
         Assert.assertEquals(4.5f, result.getMerchantStarRating(), 0.0f);
         Assert.assertEquals(100, result.getMerchantCountRating());
         Assert.assertEquals("http://dummy/url", result.getMerchantDetailsPageUrl());
+        Assert.assertEquals(true, result.getHasReturnPolicy());
+        Assert.assertEquals(0.2f, result.getNonPersonalizedFamiliarityScore(), 0.0f);
+        Assert.assertEquals(false, result.getContainsSensitiveContent());
+        Assert.assertEquals(false, result.getProactiveMessageDisabled());
+    }
+
+    @Test
+    public void testIsValidMerchantTrustSignals() {
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+        Assert.assertTrue(instance.isValidMerchantTrustSignals(FAKE_MERCHANT_TRUST_SIGNALS));
+    }
+
+    @Test
+    public void testIsValidMerchantTrustSignals_EmptyDetailsPageUrl() {
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(4.5f)
+                                                      .setMerchantCountRating(100)
+                                                      .setMerchantDetailsPageUrl("")
+                                                      .setHasReturnPolicy(true)
+                                                      .setNonPersonalizedFamiliarityScore(0.2f)
+                                                      .setContainsSensitiveContent(false)
+                                                      .setProactiveMessageDisabled(false)
+                                                      .build();
+        Assert.assertFalse(instance.isValidMerchantTrustSignals(trustSignals));
+    }
+
+    @Test
+    public void testIsValidMerchantTrustSignals_ContainsSensitiveContent() {
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(4.5f)
+                                                      .setMerchantCountRating(100)
+                                                      .setMerchantDetailsPageUrl("http://dummy/url")
+                                                      .setHasReturnPolicy(true)
+                                                      .setNonPersonalizedFamiliarityScore(0.2f)
+                                                      .setContainsSensitiveContent(true)
+                                                      .setProactiveMessageDisabled(false)
+                                                      .build();
+        Assert.assertFalse(instance.isValidMerchantTrustSignals(trustSignals));
+    }
+
+    @Test
+    public void testIsValidMerchantTrustSignals_NoRating() {
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(0.0f)
+                                                      .setMerchantCountRating(100)
+                                                      .setMerchantDetailsPageUrl("http://dummy/url")
+                                                      .setHasReturnPolicy(true)
+                                                      .setNonPersonalizedFamiliarityScore(0.2f)
+                                                      .setContainsSensitiveContent(false)
+                                                      .setProactiveMessageDisabled(false)
+                                                      .build();
+        Assert.assertTrue(instance.isValidMerchantTrustSignals(trustSignals));
+    }
+
+    @Test
+    public void testIsValidMerchantTrustSignals_NoReturnPolicy() {
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(4.5f)
+                                                      .setMerchantCountRating(100)
+                                                      .setMerchantDetailsPageUrl("http://dummy/url")
+                                                      .setHasReturnPolicy(false)
+                                                      .setNonPersonalizedFamiliarityScore(0.2f)
+                                                      .setContainsSensitiveContent(false)
+                                                      .setProactiveMessageDisabled(false)
+                                                      .build();
+        Assert.assertTrue(instance.isValidMerchantTrustSignals(trustSignals));
+    }
+
+    @Test
+    public void testIsValidMerchantTrustSignals_NoRatingOrReturnPolicy() {
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(0.0f)
+                                                      .setMerchantCountRating(100)
+                                                      .setMerchantDetailsPageUrl("http://dummy/url")
+                                                      .setHasReturnPolicy(false)
+                                                      .setNonPersonalizedFamiliarityScore(0.2f)
+                                                      .setContainsSensitiveContent(false)
+                                                      .setProactiveMessageDisabled(false)
+                                                      .build();
+        Assert.assertFalse(instance.isValidMerchantTrustSignals(trustSignals));
     }
 
     static void mockOptimizationGuideAsyncResponse(
