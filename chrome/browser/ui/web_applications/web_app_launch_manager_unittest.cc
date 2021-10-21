@@ -203,6 +203,43 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolMailTo) {
   run_loop.Run();
 }
 
+TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolFile) {
+#if defined(OS_WIN)
+  const base::FilePath::CharType kTestPath[] =
+      FILE_PATH_LITERAL("file:///C:/test_app_path/test_app_file.txt");
+#else
+  const base::FilePath::CharType kTestPath[] =
+      FILE_PATH_LITERAL("file:///C:/test_app_path/test_app_file.txt");
+#endif  // defined(OS_WIN)
+
+  base::RunLoop run_loop;
+  const absl::optional<GURL> protocol_handler_launch_url(
+      "file:///C:/test_app_path/test_app_file.txt");
+  base::CommandLine command_line = CreateCommandLine();
+
+  command_line.AppendArg(protocol_handler_launch_url.value().spec());
+
+  apps::AppLaunchParams expected_results = CreateLaunchParams(
+      command_line, {base::FilePath(kTestPath)}, absl::nullopt, absl::nullopt);
+
+  testing::StrictMock<MockWebAppLaunchManager> manager(profile());
+  EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](apps::AppLaunchParams&& params,
+              base::OnceCallback<void(Browser * browser,
+                                      apps::mojom::LaunchContainer container)>
+                  callback) {
+            ValidateLaunchParams(params, expected_results);
+            run_loop.Quit();
+          }));
+
+  manager.LaunchApplication(kTestAppId, command_line,
+                            base::FilePath(kCurrentDirectory), absl::nullopt,
+                            absl::nullopt, {}, base::DoNothing());
+  run_loop.Run();
+}
+
 TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolDisallowed) {
 #if defined(OS_WIN)
   const base::FilePath::CharType kTestPath[] =
