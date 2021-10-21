@@ -459,7 +459,6 @@ body.files-ng div.splitter.splitter-active .splitter-button .icon {
 /* Breadcrumbs and things under the title but above the list view. */
 .dialog-header {
   align-items: center;
-  background: rgb(51, 103, 214);
   box-sizing: border-box;
   color: white;
   display: flex;
@@ -471,8 +470,7 @@ body.files-ng div.splitter.splitter-active .splitter-button .icon {
 
 .dialog-header.files-ng {
   background: none;
-  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
-  color: var(--google-grey-700);
+  border-bottom: 1px solid var(--cros-separator-color);
   font-size: 14px;
   height: 56px;
   overflow: hidden;
@@ -551,7 +549,7 @@ html.pointer-active .dialog-header.files-ng cr-button:not(:active):hover {
 }
 
 html.pointer-active .dialog-header.files-ng button:not([menu-shown]):not(:active):hover {
-  background-color: var(--cros-ripple-color);
+  background-color: unset;
   cursor: default;
 }
 
@@ -937,7 +935,7 @@ body.check-select #files-selected-label {
 }
 
 #cancel-selection-button {
-  --ink-color: currentColor;
+  --ink-color: var(--cros-ripple-color);
   border: none;
   box-shadow: none;
   color: currentColor;
