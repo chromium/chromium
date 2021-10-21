@@ -30,7 +30,10 @@ class CardUnmaskAuthenticationSelectionDialogBrowserTest
     // Do lazy initialization of controller.
     CardUnmaskAuthenticationSelectionDialogControllerImpl::CreateForWebContents(
         web_contents);
-    controller()->ShowDialog(challenge_options_list_);
+    controller()->ShowDialog(
+        challenge_options_list_,
+        /*confirm_unmasking_method_callback=*/base::DoNothing(),
+        /*cancel_unmasking_closure=*/base::DoNothing());
   }
 
   CardUnmaskAuthenticationSelectionDialogView* GetDialog() {

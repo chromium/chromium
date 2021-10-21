@@ -76,6 +76,7 @@ class StrikeDatabase;
 enum class WebauthnDialogCallbackType;
 enum class WebauthnDialogState;
 struct AutofillOfferData;
+struct CardUnmaskChallengeOption;
 struct Suggestion;
 
 namespace payments {
@@ -384,6 +385,18 @@ class AutofillClient : public RiskDataLoader {
                                 UnmaskCardReason reason,
                                 base::WeakPtr<CardUnmaskDelegate> delegate) = 0;
   virtual void OnUnmaskVerificationResult(PaymentsRpcResult result) = 0;
+
+  // Shows a dialog for the user to choose/confirm the authentication
+  // to use in card unmasking.
+  virtual void ShowUnmaskAuthenticatorSelectionDialog(
+      const std::vector<CardUnmaskChallengeOption>& challenge_options,
+      base::OnceCallback<void(const std::string&)>
+          confirm_unmask_challenge_option_callback,
+      base::OnceClosure cancel_unmasking_closure);
+  // This should be invoked upon server accepting the authentication method, in
+  // which case, we dismiss the selection dialog to open the authentication
+  // dialog.
+  virtual void DismissUnmaskAuthenticatorSelectionDialog();
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   // Returns the list of allowed merchants and BIN ranges for virtual cards.

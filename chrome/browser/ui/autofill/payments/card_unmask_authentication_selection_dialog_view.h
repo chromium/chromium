@@ -23,9 +23,10 @@ class CardUnmaskAuthenticationSelectionDialogView {
       CardUnmaskAuthenticationSelectionDialogController* controller,
       content::WebContents* web_contents);
 
-  // Method to safely close this dialog when the controller is destroyed by
-  // unlinking the controller and closing the widget that owns this dialog view.
-  virtual void OnControllerDestroying() = 0;
+  // Method to safely close this dialog (this also includes the case where the
+  // controller is destroyed first). |user_closed_dialog| indicates whether the
+  // dismissal was triggered by user closing the dialog.
+  virtual void Dismiss(bool user_closed_dialog) = 0;
 };
 
 }  // namespace autofill

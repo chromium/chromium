@@ -40,9 +40,13 @@ CardUnmaskAuthenticationSelectionDialogViews::
 
 CardUnmaskAuthenticationSelectionDialogViews::
     ~CardUnmaskAuthenticationSelectionDialogViews() {
-  // Inform |controller_| of the dialog's destruction.
-  if (controller_)
-    controller_->OnDialogClosed();
+  // Inform |controller_| of the dialog's destruction. By the time this is
+  // called, the |controller_| will not be nullptr only if the dialog is closed
+  // by the user. For other cases, the |controller_| should already be reset.
+  if (controller_) {
+    controller_->OnDialogClosed(/*user_closed_dialog=*/true);
+    controller_ = nullptr;
+  }
 }
 
 // static
@@ -56,14 +60,20 @@ CardUnmaskAuthenticationSelectionDialogView::CreateAndShow(
   return dialog_view;
 }
 
-void CardUnmaskAuthenticationSelectionDialogViews::OnControllerDestroying() {
-  controller_ = nullptr;
+void CardUnmaskAuthenticationSelectionDialogViews::Dismiss(
+    bool user_closed_dialog) {
+  if (controller_) {
+    controller_->OnDialogClosed(user_closed_dialog);
+    controller_ = nullptr;
+  }
   GetWidget()->Close();
 }
 
 bool CardUnmaskAuthenticationSelectionDialogViews::Accept() {
   ReplaceContentWithProgressThrobber();
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  DCHECK(!controller_->GetChallengeOptions().empty());
+  controller_->OnOkButtonClicked(controller_->GetChallengeOptions()[0].id);
   return false;
 }
 

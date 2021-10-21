@@ -34,7 +34,7 @@ class AuthenticatorSelectionDialogViewAndroid
       const AuthenticatorSelectionDialogViewAndroid&) = delete;
 
   // CardUnmaskAuthenticationSelectionDialogView.
-  void OnControllerDestroying() override;
+  void Dismiss(bool user_closed_dialog) override;
 
   // Called by the Java code when an Authenticator selection is made.
   void OnOptionSelected(JNIEnv* env,

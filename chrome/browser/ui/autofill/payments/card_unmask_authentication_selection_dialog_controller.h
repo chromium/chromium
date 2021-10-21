@@ -28,8 +28,14 @@ class CardUnmaskAuthenticationSelectionDialogController {
       const CardUnmaskAuthenticationSelectionDialogController&) = delete;
 
   // Called whenever the dialog is closed, and it sets the |dialog_view_|
-  // variable in this class to nullptr.
-  virtual void OnDialogClosed() = 0;
+  // variable in this class to nullptr. If |user_closed_dialog| is true it means
+  // the user has cancelled the flow or closed the tab/browser. The backend
+  // status will need to be reset.
+  virtual void OnDialogClosed(bool user_closed_dialog) = 0;
+
+  // Event handler function. Invoked when the OK button is clicked.
+  virtual void OnOkButtonClicked(
+      const std::string& selected_challenge_option_id) = 0;
 
   virtual std::u16string GetWindowTitle() const = 0;
 
