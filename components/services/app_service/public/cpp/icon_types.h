@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {

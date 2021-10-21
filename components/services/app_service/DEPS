@@ -14,7 +14,6 @@ specific_include_rules = {
   ],
   "instance\.h": [
     "+ui/aura/window.h",
-    "+ui/gfx/image/image_skia_rep.h",
   ],
   "icon_cache_unittest\.cc": [
     "+chrome/test/base/testing_profile.h",
