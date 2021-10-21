@@ -198,8 +198,11 @@ class ContentSettingBubbleModel {
                                   const std::string& selected_device_id) {}
   virtual void OnDoneButtonClicked() {}
   virtual void OnCancelButtonClicked() {}
-  // Called by the view code when the bubble is closed
+  // Called by the view code when the bubble is closed.
   virtual void CommitChanges() {}
+
+  // Called when the bubble is dismissed.
+  virtual void OnBubbleClosedByUser() {}
 
   // TODO(msramek): The casting methods below are only necessary because
   // ContentSettingBubbleController in the Cocoa UI needs to know the type of
@@ -225,6 +228,8 @@ class ContentSettingBubbleModel {
 
   // Cast this bubble into ContentSettingQuietRequestBubbleModel if possible.
   virtual ContentSettingQuietRequestBubbleModel* AsQuietRequestBubbleModel();
+
+  bool is_UMA_for_test = false;
 
  protected:
   // |web_contents| must outlive this.
@@ -432,6 +437,10 @@ class ContentSettingQuietRequestBubbleModel : public ContentSettingBubbleModel {
 
   ~ContentSettingQuietRequestBubbleModel() override;
 
+  void SetOnBubbleClosedByUserCallback(base::OnceClosure callback) {
+    on_bubble_closed_by_user_callback_ = std::move(callback);
+  }
+
  private:
   void SetManageText();
 
@@ -440,7 +449,10 @@ class ContentSettingQuietRequestBubbleModel : public ContentSettingBubbleModel {
   void OnLearnMoreClicked() override;
   void OnDoneButtonClicked() override;
   void OnCancelButtonClicked() override;
+  void OnBubbleClosedByUser() override;
   ContentSettingQuietRequestBubbleModel* AsQuietRequestBubbleModel() override;
+
+  base::OnceClosure on_bubble_closed_by_user_callback_ = base::NullCallback();
 };
 
 // The model for the deceptive content bubble.

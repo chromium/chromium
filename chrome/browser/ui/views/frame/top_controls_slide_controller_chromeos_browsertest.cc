@@ -1401,7 +1401,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestPermissionBubble) {
                                TopChromeShownState::kFullyShown);
 
   // Dismiss the bubble.
-  permission_manager->Closing();
+  permission_manager->Dismiss();
   EXPECT_FALSE(permission_manager->IsRequestInProgress());
   SynchronizeBrowserWithRenderer(active_contents);
 

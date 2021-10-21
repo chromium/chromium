@@ -164,6 +164,15 @@ enum class PermissionPromptDisposition {
   // Only used on Android, a message bubble near top of the screen and below the
   // location bar. Message UI is an alternative UI to infobar UI.
   MESSAGE_UI = 10,
+
+  // Only used on desktop, a chip on the left-hand side of the location bar that
+  // automatically shows a bubble.
+  LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE = 11,
+
+  // Only used on desktop, a less prominent version of chip on the left-hand
+  // side of the location bar that shows a bubble when clicked. Can be shown as
+  // a collapsed icon only.
+  LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP = 12,
 };
 
 // The reason why the permission prompt disposition was used. Enum used in UKMs,
@@ -294,7 +303,10 @@ class PermissionUmaUtil {
       base::TimeDelta time_to_decision,
       PermissionPromptDisposition ui_disposition,
       absl::optional<PermissionPromptDispositionReason> ui_reason,
-      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood);
+      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      bool did_show_prompt,
+      bool did_click_manage,
+      bool did_click_learn_more);
 
   static void RecordWithBatteryBucket(const std::string& histogram);
 
