@@ -41,7 +41,9 @@ export class GooglePhotos extends WithPersonalizationStore {
        * @type {boolean}
        * @private
        */
-      photosLoading_: {type: Boolean}
+      photosLoading_: {
+        type: Boolean,
+      }
     };
   }
 
@@ -59,13 +61,6 @@ export class GooglePhotos extends WithPersonalizationStore {
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-
-    // This element will be permanently hidden if the Google Photos integration
-    // feature flag is disabled, so we can quit early to prevent unnecessary
-    // data bindings and API calls.
-    if (!loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled')) {
-      return;
-    }
 
     this.watch('photos_', state => state.googlePhotos.photos);
     this.watch('photosLoading_', state => state.loading.googlePhotos.photos);

@@ -37,7 +37,7 @@ export let BackdropState;
 /**
  * Stores Google Photos state.
  * @typedef {{
- *  photos: ?Array<undefined>,
+ *  photos: (?Array<undefined>|undefined),
  * }}
  */
 export let GooglePhotosState;
@@ -134,7 +134,7 @@ export function emptyState() {
     dailyRefresh: {collectionId: null},
     error: null,
     fullscreen: false,
-    googlePhotos: {photos: null},
+    googlePhotos: {photos: undefined},
   };
 }
 

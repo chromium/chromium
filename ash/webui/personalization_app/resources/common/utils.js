@@ -31,6 +31,15 @@ export function isNonEmptyArray(maybeArray) {
 }
 
 /**
+ * Checks if argument is null or is an array.
+ * @param {?Object} maybeNullOrArray
+ * @return {boolean}
+ */
+export function isNullOrArray(maybeNullOrArray) {
+  return maybeNullOrArray === null || Array.isArray(maybeNullOrArray);
+}
+
+/**
  * Attach a listener to a child element onload function. Returns a promise
  * that resolves when that child element is loaded.
  * @param {*} element A polymer element

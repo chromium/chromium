@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '/assert.m.js';
-import {EventType, SelectCollectionEvent, SelectGooglePhotosCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendCurrentWallpaperAssetIdEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendPendingWallpaperAssetIdEvent, SendVisibleEvent, trustedOrigin, untrustedOrigin} from './constants.js';
-import {isNonEmptyArray} from './utils.js';
+import {EventType, SelectCollectionEvent, SelectGooglePhotosCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendCurrentWallpaperAssetIdEvent, SendGooglePhotosPhotosEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendPendingWallpaperAssetIdEvent, SendVisibleEvent, trustedOrigin, untrustedOrigin} from './constants.js';
+import {isNonEmptyArray, isNullOrArray} from './utils.js';
 
 /**
  * @fileoverview Helper functions for communicating between trusted and
@@ -23,6 +23,17 @@ import {isNonEmptyArray} from './utils.js';
 export function sendCollections(target, collections) {
   /** @type {!SendCollectionsEvent} */
   const event = {type: EventType.SEND_COLLECTIONS, collections};
+  target.postMessage(event, untrustedOrigin);
+}
+
+/**
+ * Sends the list of Google Photos photos to untrusted.
+ * @param {!Window} target the untrusted iframe window to send the message to.
+ * @param {?Array<undefined>} photos
+ */
+export function sendGooglePhotosPhotos(target, photos) {
+  /** @type {!SendGooglePhotosPhotosEvent} */
+  const event = {type: EventType.SEND_GOOGLE_PHOTOS_PHOTOS, photos};
   target.postMessage(event, untrustedOrigin);
 }
 
@@ -207,6 +218,7 @@ export function validateReceivedData(event, expectedEventType) {
   /**
    * @type {
    *   SendCollectionsEvent|
+   *   SendGooglePhotosPhotosEvent|
    *   SendImagesEvent|
    *   SendCurrentWallpaperAssetIdEvent|
    *   SendPendingWallpaperAssetIdEvent|
@@ -220,6 +232,9 @@ export function validateReceivedData(event, expectedEventType) {
     case EventType.SEND_COLLECTIONS:
       assert(isNonEmptyArray(data.collections), 'Expected collections array');
       return data.collections;
+    case EventType.SEND_GOOGLE_PHOTOS_PHOTOS:
+      assert(isNullOrArray(data.photos), 'Expected photos array');
+      return data.photos;
     case EventType.SEND_LOCAL_IMAGE_DATA:
       assert(typeof data.data === 'object', 'Expected data object');
       return data.data;

@@ -125,6 +125,15 @@ export class PersonalizationRouter extends PolymerElement {
   shouldShowLocalCollection_(path) {
     return path === Paths.LocalCollection;
   }
+
+  /**
+   * Whether Google Photos integration is enabled.
+   * @return {boolean}
+   * @private
+   */
+  isGooglePhotosIntegrationEnabled_() {
+    return loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled');
+  }
 }
 
 customElements.define(PersonalizationRouter.is, PersonalizationRouter);

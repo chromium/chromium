@@ -57,6 +57,28 @@ export function WallpaperCollectionsTest() {
     assertDeepEquals(wallpaperProvider.collections, data);
   });
 
+  test('sends Google Photos photos when loaded', async () => {
+    const {sendGooglePhotosPhotos: sendGooglePhotosPhotosPromise} =
+        promisifyIframeFunctionsForTesting();
+
+    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+
+    personalizationStore.data.googlePhotos.photos = [1, 2, 3, 4];
+    personalizationStore.data.loading.googlePhotos.photos = false;
+    personalizationStore.notifyObservers();
+
+    // Wait for |sendGooglePhotosPhotos| to be called.
+    const [target, data] = await sendGooglePhotosPhotosPromise;
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const iframe =
+        wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
+    assertFalse(iframe.hidden);
+
+    assertWindowObjectsEqual(iframe.contentWindow, target);
+    assertDeepEquals(personalizationStore.data.googlePhotos.photos, data);
+  });
+
   test('sends image counts when a collection loads', async () => {
     personalizationStore.data.backdrop = {
       collections: wallpaperProvider.collections,

@@ -11,13 +11,14 @@
 import './styles.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {kMaximumLocalImagePreviews} from '../common/constants.js';
-import {sendCollections, sendImageCounts, sendLocalImageData, sendLocalImages, sendVisible} from '../common/iframe_api.js';
-import {isNonEmptyArray, promisifyOnload} from '../common/utils.js';
+import {sendCollections, sendGooglePhotosPhotos, sendImageCounts, sendLocalImageData, sendLocalImages, sendVisible} from '../common/iframe_api.js';
+import {isNonEmptyArray, isNullOrArray, promisifyOnload} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {initializeBackdropData} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 let sendCollectionsFunction = sendCollections;
+let sendGooglePhotosPhotosFunction = sendGooglePhotosPhotos;
 let sendImageCountsFunction = sendImageCounts;
 let sendLocalImagesFunction = sendLocalImages;
 let sendLocalImageDataFunction = sendLocalImageData;
@@ -27,6 +28,7 @@ let sendLocalImageDataFunction = sendLocalImageData;
  * resolved when the function is called by |WallpaperCollectionsElement|.
  * @return {{
  *   sendCollections: Promise<?>,
+ *   sendGooglePhotosPhotos: Promise<?>,
  *   sendImageCounts: Promise<?>,
  *   sendLocalImages: Promise<?>,
  *   sendLocalImageData: Promise<?>,
@@ -35,12 +37,15 @@ let sendLocalImageDataFunction = sendLocalImageData;
 export function promisifyIframeFunctionsForTesting() {
   let resolvers = {};
   const promises = [
-    sendCollections, sendImageCounts, sendLocalImages, sendLocalImageData
+    sendCollections, sendGooglePhotosPhotos, sendImageCounts, sendLocalImages,
+    sendLocalImageData
   ].reduce((result, next) => {
     result[next.name] = new Promise(resolve => resolvers[next.name] = resolve);
     return result;
   }, {});
   sendCollectionsFunction = (...args) => resolvers[sendCollections.name](args);
+  sendGooglePhotosPhotosFunction = (...args) =>
+      resolvers[sendGooglePhotosPhotos.name](args);
   sendImageCountsFunction = (...args) => resolvers[sendImageCounts.name](args);
   sendLocalImagesFunction = (...args) => resolvers[sendLocalImages.name](args);
   sendLocalImageDataFunction = (...args) =>
@@ -81,6 +86,24 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
       /** @private */
       collectionsLoading_: {
+        type: Boolean,
+      },
+
+      /**
+       * The list of Google Photos photos.
+       * @type {?Array<undefined>}
+       * @private
+       */
+      googlePhotos: {
+        type: Array,
+      },
+
+      /**
+       * Whether the list of Google Photos photos is currently loading.
+       * @type {boolean}
+       * @private
+       */
+      googlePhotosLoading_: {
         type: Boolean,
       },
 
@@ -143,6 +166,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
   static get observers() {
     return [
       'onCollectionImagesChanged_(images_, imagesLoading_)',
+      'onGooglePhotosChanged_(googlePhotos_, googlePhotosLoading_)',
       'onLocalImageDataChanged_(localImages_, localImageData_, localImageDataLoading_)',
     ];
   }
@@ -166,6 +190,9 @@ export class WallpaperCollections extends WithPersonalizationStore {
     super.connectedCallback();
     this.watch('collections_', state => state.backdrop.collections);
     this.watch('collectionsLoading_', state => state.loading.collections);
+    this.watch('googlePhotos_', state => state.googlePhotos.photos);
+    this.watch(
+        'googlePhotosLoading_', state => state.loading.googlePhotos.photos);
     this.watch('images_', state => state.backdrop.images);
     this.watch('imagesLoading_', state => state.loading.images);
     this.watch('localImages_', state => state.local.images);
@@ -241,6 +268,21 @@ export class WallpaperCollections extends WithPersonalizationStore {
     const iframe = await this.iframePromise_;
     sendImageCountsFunction(
         /** @type {!Window} */ (iframe.contentWindow), counts);
+  }
+
+  /**
+   * Invoked on changes to the list of Google Photos photos.
+   * @param {?Array<undefined>} googlePhotos
+   * @param {boolean} googlePhotosLoading
+   * @private
+   */
+  async onGooglePhotosChanged_(googlePhotos, googlePhotosLoading) {
+    if (googlePhotosLoading || !isNullOrArray(googlePhotos)) {
+      return;
+    }
+    const iframe = await this.iframePromise_;
+    sendGooglePhotosPhotosFunction(
+        /** @type {!Window} */ (iframe.contentWindow), googlePhotos);
   }
 
   /**

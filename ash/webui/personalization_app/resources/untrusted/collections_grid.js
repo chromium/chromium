@@ -8,7 +8,7 @@ import './styles.js';
 import {afterNextRender, html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
 import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../common/iframe_api.js';
-import {getLoadingPlaceholderAnimationDelay, isSelectionEvent} from '../common/utils.js';
+import {getLoadingPlaceholderAnimationDelay, isNullOrArray, isSelectionEvent} from '../common/utils.js';
 
 /**
  * @fileoverview Responds to |SendCollectionsEvent| from trusted. Handles user
@@ -89,13 +89,14 @@ function getCountText(x) {
 
 /**
  * Returns the tile to display for the Google Photos collection.
+ * @param {?Array<undefined>} googlePhotos
  * @return {!ImageTile}
  */
-function getGooglePhotosTile() {
+function getGooglePhotosTile(googlePhotos) {
   return {
     name: loadTimeData.getString('googlePhotosLabel'),
     id: kGooglePhotosCollectionId,
-    count: getCountText(0),
+    count: getCountText(googlePhotos?.length ?? 0),
     preview: [],
     type: TileType.image,
   };
@@ -180,6 +181,15 @@ export class CollectionsGrid extends PolymerElement {
       },
 
       /**
+       * The list of Google Photos photos.
+       * @type {?Array<undefined>}
+       * @private
+       */
+      googlePhotos_: {
+        type: Array,
+      },
+
+      /**
        * Mapping of collection id to number of images. Loads in progressively
        * after collections_.
        * @type {Object<string, number>}
@@ -228,6 +238,7 @@ export class CollectionsGrid extends PolymerElement {
     return [
       'onLocalImagesLoaded_(localImages_, localImageData_)',
       'onCollectionLoaded_(collections_, imageCounts_)',
+      'onGooglePhotosLoaded_(googlePhotos_)',
     ]
   }
 
@@ -303,10 +314,16 @@ export class CollectionsGrid extends PolymerElement {
         });
       }
     });
+  }
 
-    // TODO(dmblack): Remove and respond to live data updates.
-    if (loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled')) {
-      this.set('tiles_.1', getGooglePhotosTile());
+  /**
+   * Invoked on changes to the list of Google Photos photos and its loading
+   * state.
+   * @param {?Array<undefined>} googlePhotos
+   */
+  onGooglePhotosLoaded_(googlePhotos) {
+    if (isNullOrArray(googlePhotos)) {
+      this.set('tiles_.1', getGooglePhotosTile(googlePhotos));
     }
   }
 
@@ -340,6 +357,15 @@ export class CollectionsGrid extends PolymerElement {
         } catch (e) {
           console.warn('Invalid collections received', e);
           this.collections_ = [];
+        }
+        break;
+      case EventType.SEND_GOOGLE_PHOTOS_PHOTOS:
+        try {
+          this.googlePhotos_ = validateReceivedData(
+              message, EventType.SEND_GOOGLE_PHOTOS_PHOTOS);
+        } catch (e) {
+          console.warn('Invalid Google Photos photos received', e);
+          this.googlePhotos_ = null;
         }
         break;
       case EventType.SEND_IMAGE_COUNTS:
