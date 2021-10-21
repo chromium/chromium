@@ -2091,6 +2091,16 @@ message ChromeOsUserReportRequest {
   repeated PartialReportType partial_report_types = 3;
 }
 
+// Report user level status on all platforms. It includes the information of the
+// profile that user has signed in plus some basic browser and OS information.
+message ChromeProfileReportRequest {
+  // Browser related info
+  optional BrowserReport browser_report = 1;
+
+  // Basic OS information
+  optional OSReport os_report = 2;
+}
+
 // A validation issue from validating a policy value that was contained in
 // the payload of the policy fetch response.
 message PolicyValueValidationIssue {
@@ -2308,13 +2318,18 @@ message DeviceStatusReportResponse {
 
 // Response from DMServer to a Chrome desktop report request. The report
 // upload errors will be set in the containing DeviceManagementResponse or
-// eventually at the HTTP level as mentioned in a TODO.
+// eventually at the HTTP level.
 message ChromeDesktopReportResponse {}
 
 // Response from DMServer to a ChromeOS user report request. The report
 // upload errors will be set in the containing DeviceManagementResponse or
-// eventually at the HTTP level as mentioned in a TODO.
+// eventually at the HTTP level.
 message ChromeOsUserReportResponse {}
+
+// Response from DMServer to a profile report request. The report
+// upload errors will be set in the containing DeviceManagementResponse or
+// eventually at the HTTP level.
+message ChromeProfileReportResponse {}
 
 // Response from DMServer to update user devices' status.
 // It is possible that status report fails but policy request succeed.  In such
