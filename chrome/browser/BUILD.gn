@@ -4990,8 +4990,13 @@ static_library("browser") {
       "apps/app_service/browser_app_instance_registry.h",
       "apps/app_service/browser_app_instance_tracker.cc",
       "apps/app_service/browser_app_instance_tracker.h",
+      "apps/intent_helper/common_apps_navigation_throttle.cc",
+      "apps/intent_helper/common_apps_navigation_throttle.h",
     ]
-    deps += [ "//ui/wm/public" ]
+    deps += [
+      "//chromeos/components/projector_app/public/cpp",
+      "//ui/wm/public",
+    ]
   }
 
   if (is_chromeos_ash || enable_extensions || is_android) {

@@ -641,11 +641,11 @@ const base::Feature kUpdateHistoryEntryPointsInIncognito{
 #if !defined(OS_ANDROID)
 // Allow user to have preference for PWA in the intent picker.
 const base::Feature kIntentPickerPWAPersistence{
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   "IntentPickerPWAPersistence", base::FEATURE_ENABLED_BY_DEFAULT
 #else
   "IntentPickerPWAPersistence", base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 };
 #endif  // !defined(OS_ANDROID)
 

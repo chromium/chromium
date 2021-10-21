@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APPS_INTENT_HELPER_COMMON_APPS_NAVIGATION_THROTTLE_H_
-#define CHROME_BROWSER_ASH_APPS_INTENT_HELPER_COMMON_APPS_NAVIGATION_THROTTLE_H_
+#ifndef CHROME_BROWSER_APPS_INTENT_HELPER_COMMON_APPS_NAVIGATION_THROTTLE_H_
+#define CHROME_BROWSER_APPS_INTENT_HELPER_COMMON_APPS_NAVIGATION_THROTTLE_H_
 
 #include <memory>
 #include <vector>
@@ -44,10 +44,12 @@ class CommonAppsNavigationThrottle : public apps::AppsNavigationThrottle {
 
  private:
   bool ShouldCancelNavigation(content::NavigationHandle* handle) override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool ShouldShowDisablePage(content::NavigationHandle* handle) override;
   ThrottleCheckResult MaybeShowCustomResult() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_ASH_APPS_INTENT_HELPER_COMMON_APPS_NAVIGATION_THROTTLE_H_
+#endif  // CHROME_BROWSER_APPS_INTENT_HELPER_COMMON_APPS_NAVIGATION_THROTTLE_H_

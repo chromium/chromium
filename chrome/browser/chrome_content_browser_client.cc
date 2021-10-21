@@ -457,8 +457,8 @@
 // TODO(crbug.com/939205):  Once the upcoming App Service is available, use a
 // single navigation throttle to display the intent picker on all platforms.
 #if !defined(OS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/apps/intent_helper/common_apps_navigation_throttle.h"
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
 #else
 #include "chrome/browser/apps/intent_helper/apps_navigation_throttle.h"
 #endif
@@ -4173,7 +4173,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 
 #if !defined(OS_ANDROID)
   auto url_to_apps_throttle =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
       apps::CommonAppsNavigationThrottle::MaybeCreate(handle);
 #else
       apps::AppsNavigationThrottle::MaybeCreate(handle);

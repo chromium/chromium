@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/apps/intent_helper/common_apps_navigation_throttle.h"
+#include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
 
 #include <string>
 #include <utility>
@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
-#include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -39,12 +38,18 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/display/types/display_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace apps {
 
 namespace {
 
 using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
+// TODO(crbug.com/1251490 ) Update to make disabled page works in Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string GetAppDisabledErrorPage() {
   base::DictionaryValue strings;
 
@@ -85,6 +90,7 @@ bool IsAppDisabled(const std::string& app_id) {
       disabled_system_features_pref->GetList();
   return base::Contains(disabled_system_features, base::Value(system_feature));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Usually we want to only capture navigations from clicking a link. For a
 // subset of apps, we want to capture typing into the omnibox as well.
@@ -171,8 +177,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
 
   std::vector<std::string> app_ids =
       proxy->GetAppIdsForUrl(url, /*exclude_browser=*/true);
@@ -233,6 +238,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   return true;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool CommonAppsNavigationThrottle::ShouldShowDisablePage(
     content::NavigationHandle* handle) {
   content::WebContents* web_contents = handle->GetWebContents();
@@ -257,5 +263,6 @@ ThrottleCheckResult CommonAppsNavigationThrottle::MaybeShowCustomResult() {
                              net::ERR_BLOCKED_BY_ADMINISTRATOR,
                              GetAppDisabledErrorPage());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace apps
