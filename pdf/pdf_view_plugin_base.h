@@ -202,6 +202,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
                       SkColor background_color,
                       bool has_edits);
 
+  // Creates a new `PDFiumEngine`.
+  virtual std::unique_ptr<PDFiumEngine> CreateEngine(
+      PDFEngine::Client* client,
+      PDFiumFormFiller::ScriptOption script_option);
+
   // Destroys the main `PDFiumEngine`. Subclasses should call this method in
   // their destructor to ensure the engine is destroyed first.
   void DestroyEngine();

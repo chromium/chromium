@@ -35,6 +35,10 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   ~TestPDFiumEngine() override;
 
+  MOCK_METHOD(void, PageOffsetUpdated, (const gfx::Vector2d&), (override));
+
+  MOCK_METHOD(void, PluginSizeUpdated, (const gfx::Size&), (override));
+
   MOCK_METHOD(void, ScrolledToXPosition, (int), (override));
   MOCK_METHOD(void, ScrolledToYPosition, (int), (override));
 
@@ -56,6 +60,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   // Returns an empty bookmark list.
   base::Value GetBookmarks() override;
+
+  MOCK_METHOD(void, SetGrayscale, (bool), (override));
 
   uint32_t GetLoadedByteSize() override;
 
