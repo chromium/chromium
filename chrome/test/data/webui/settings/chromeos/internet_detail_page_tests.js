@@ -406,6 +406,38 @@ suite('InternetDetailPage', function() {
           deepLinkElement, getDeepActiveElement(),
           'Allow shared proxy toggle should be focused for settingId=11.');
     });
+
+    test('WiFi page disabled when blocked by policy', async () => {
+      init();
+      const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, true);
+      const wifiNetwork =
+          getManagedProperties(mojom.NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = mojom.OncSource.kUser;
+      wifiNetwork.connectable = true;
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
+      internetDetailPage.globalPolicy = {
+        allowOnlyPolicyWifiNetworksToConnect: true,
+      };
+      await flushAsync();
+
+      const connectDisconnectButton = getButton('connectDisconnect');
+      assertTrue(connectDisconnectButton.hidden);
+      assertTrue(connectDisconnectButton.disabled);
+      assertFalse(!!internetDetailPage.$$('#infoFields'));
+      const configureButton = getButton('configureButton');
+      assertTrue(configureButton.hidden);
+      const advancedFields = getButton('advancedFields');
+      assertFalse(advancedFields.disabled);
+      assertFalse(advancedFields.hidden);
+      assertFalse(!!internetDetailPage.$$('#deviceFields'));
+      assertFalse(!!internetDetailPage.$$('network-ip-config'));
+      assertFalse(!!internetDetailPage.$$('network-nameservers'));
+      assertFalse(!!internetDetailPage.$$('network-proxy-section'));
+    });
   });
 
   suite('DetailsPageVPN', function() {
@@ -1057,6 +1089,56 @@ suite('InternetDetailPage', function() {
       assertFalse(networkIpConfig.disabled);
       assertFalse(networkNameservers.disabled);
       assertFalse(networkProxySection.disabled);
+    });
+
+    test('Cellular page disabled when blocked by policy', async () => {
+      init();
+
+      const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
+      const cellularNetwork = getManagedProperties(
+          mojom.NetworkType.kCellular, 'cellular', mojom.OncSource.kDevice);
+      // Required for connectDisconnectButton to be rendered.
+      cellularNetwork.connectionState = mojom.ConnectionStateType.kNotConnected;
+      cellularNetwork.typeProperties.cellular.allowRoaming =
+          OncMojo.createManagedBool(false);
+      // Required for advancedFields to be rendered.
+      cellularNetwork.typeProperties.cellular.networkTechnology = 'LTE';
+      // Required for infoFields to be rendered.
+      cellularNetwork.typeProperties.cellular.servingOperator = {name: 'name'};
+      // Required for deviceFields to be rendered.
+      const test_iccid = '11111111111111111';
+      cellularNetwork.typeProperties.cellular.iccid = test_iccid;
+      cellularNetwork.typeProperties.cellular.supportNetworkScan = true;
+      cellularNetwork.source = mojom.OncSource.kNone;
+      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      internetDetailPage.globalPolicy = {
+        allowOnlyPolicyCellularNetworks: true,
+      };
+      await flushAsync();
+
+      const connectDisconnectButton = getButton('connectDisconnect');
+      assertTrue(connectDisconnectButton.hidden);
+      assertTrue(connectDisconnectButton.disabled);
+      assertFalse(!!internetDetailPage.$$('#infoFields'));
+      const cellularSimInfoAdvanced = getButton('cellularSimInfoAdvanced');
+      assertFalse(cellularSimInfoAdvanced.disabled);
+      assertFalse(cellularSimInfoAdvanced.hidden);
+      const advancedFields = getButton('advancedFields');
+      assertFalse(advancedFields.disabled);
+      assertFalse(advancedFields.hidden);
+      const deviceFields = getButton('deviceFields');
+      assertFalse(deviceFields.disabled);
+      assertFalse(deviceFields.hidden);
+
+      assertFalse(!!internetDetailPage.$$('cellular-roaming-toggle-button'));
+      assertFalse(!!internetDetailPage.$$('network-choose-mobile'));
+      assertFalse(!!internetDetailPage.$$('network-apnlist'));
+      assertFalse(!!internetDetailPage.$$('network-ip-config'));
+      assertFalse(!!internetDetailPage.$$('network-nameservers'));
+      assertFalse(!!internetDetailPage.$$('network-proxy-section'));
     });
   });
 

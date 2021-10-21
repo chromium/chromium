@@ -1244,9 +1244,18 @@ Polymer({
    */
   isBlockedByPolicy_(managedProperties, globalPolicy, managedNetworkAvailable) {
     if (!managedProperties || !globalPolicy ||
-        managedProperties.type !==
-            chromeos.networkConfig.mojom.NetworkType.kWiFi ||
         this.isPolicySource(managedProperties.source)) {
+      return false;
+    }
+
+    if (managedProperties.type ===
+            chromeos.networkConfig.mojom.NetworkType.kCellular &&
+        !!globalPolicy.allowOnlyPolicyCellularNetworks) {
+      return true;
+    }
+
+    if (managedProperties.type !==
+        chromeos.networkConfig.mojom.NetworkType.kWiFi) {
       return false;
     }
     const hexSsid =

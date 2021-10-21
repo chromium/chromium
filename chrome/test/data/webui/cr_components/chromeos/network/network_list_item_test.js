@@ -637,4 +637,34 @@ suite('NetworkListItemTest', function() {
         assertEquals(
             networkStateLockedText, networkStateText.textContent.trim());
       });
+
+  test(
+      'Show detail page when clicking on blocked cellular network item',
+      async () => {
+        init();
+
+        // Set item to a policy blocked cellular network.
+        const managedProperties = OncMojo.getDefaultManagedProperties(
+            mojom.NetworkType.kCellular, 'cellular');
+        managedProperties.connectionState =
+            mojom.ConnectionStateType.kNotConnected;
+        managedProperties.source = mojom.OncSource.kNone;
+        mojoApi_.setManagedPropertiesForTest(managedProperties);
+
+        const networkState =
+            OncMojo.managedPropertiesToNetworkState(managedProperties);
+        listItem.item = networkState;
+        // Set global policy to restrict managed cellular networks.
+        listItem.globalPolicy = {
+          allowOnlyPolicyCellularNetworks: true,
+        };
+        await flushAsync();
+
+        // Selecting the row should fire the show-detail event.
+        const showDetailPromise =
+            test_util.eventToPromise('show-detail', listItem);
+        listItem.$.divOuter.click();
+        const showDetailEvent = await showDetailPromise;
+        assertEquals(showDetailEvent.detail, networkState);
+      });
 });
