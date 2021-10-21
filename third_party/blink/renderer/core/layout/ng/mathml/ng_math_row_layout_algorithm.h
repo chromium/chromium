@@ -26,16 +26,16 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
     ChildWithOffsetAndMargins(const NGBlockNode& child,
                               const NGBoxStrut& margins,
                               LogicalOffset offset,
-                              scoped_refptr<const NGPhysicalFragment> fragment)
+                              scoped_refptr<const NGLayoutResult> result)
         : child(child),
           margins(margins),
           offset(offset),
-          fragment(std::move(fragment)) {}
+          result(std::move(result)) {}
 
     NGBlockNode child;
     NGBoxStrut margins;
     LogicalOffset offset;
-    scoped_refptr<const NGPhysicalFragment> fragment;
+    scoped_refptr<const NGLayoutResult> result;
   };
   typedef Vector<ChildWithOffsetAndMargins, 4> ChildrenVector;
 

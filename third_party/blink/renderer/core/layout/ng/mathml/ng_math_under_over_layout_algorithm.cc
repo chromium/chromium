@@ -317,8 +317,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
              (over_fragment.InlineSize() + over_margins.InlineSum())) /
                 2,
         block_offset};
-    container_builder_.AddChild(over_layout_result->PhysicalFragment(),
-                                over_offset);
+    container_builder_.AddResult(*over_layout_result, over_offset);
     over.StoreMargins(ConstraintSpace(), over_margins);
     if (parameters.use_under_over_bar_fallback) {
       block_offset += over_fragment.BlockSize();
@@ -344,8 +343,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
            (base_fragment.InlineSize() + base_margins.InlineSum())) /
               2,
       block_offset};
-  container_builder_.AddChild(base_layout_result->PhysicalFragment(),
-                              base_offset);
+  container_builder_.AddResult(*base_layout_result, base_offset);
   base.StoreMargins(ConstraintSpace(), base_margins);
   block_offset += base_fragment.BlockSize() + base_margins.block_end;
 
@@ -375,8 +373,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
         block_offset};
     block_offset += under_fragment.BlockSize();
     block_offset += parameters.under_extra_descender;
-    container_builder_.AddChild(under_layout_result->PhysicalFragment(),
-                                under_offset);
+    container_builder_.AddResult(*under_layout_result, under_offset);
     under.StoreMargins(ConstraintSpace(), under_margins);
     block_offset += under_margins.block_end;
   }

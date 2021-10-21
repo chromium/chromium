@@ -196,16 +196,19 @@ class CORE_EXPORT NGBoxFragmentBuilder final
                            absl::optional<NGBreakAppeal> appeal,
                            bool is_forced_break);
 
-  // Add a layout result. This involves appending the fragment and its relative
-  // offset to the builder, but also keeping track of out-of-flow positioned
-  // descendants, propagating fragmentainer breaks, and more. In some cases,
-  // such as grid, the relative offset may need to be computed ahead of time.
-  // If so, a |relative_offset| will be passed in. Otherwise, the relative
-  // offset will be calculated as normal.
+  // Add a layout result and propagate info from it. This involves appending the
+  // fragment and its relative offset to the builder, but also keeping track of
+  // out-of-flow positioned descendants, propagating fragmentainer breaks, and
+  // more. In some cases, such as grid, the relative offset may need to be
+  // computed ahead of time. If so, a |relative_offset| will be passed
+  // in. Otherwise, the relative offset will be calculated as normal.
   void AddResult(const NGLayoutResult&,
                  const LogicalOffset,
                  absl::optional<LogicalOffset> relative_offset = absl::nullopt);
 
+  // Add a child fragment and propagate info from it. Called by AddResult().
+  // Other callers should call AddResult() instead of this when possible, since
+  // there is information in the layout result that might need to be propagated.
   void AddChild(
       const NGPhysicalFragment&,
       const LogicalOffset&,

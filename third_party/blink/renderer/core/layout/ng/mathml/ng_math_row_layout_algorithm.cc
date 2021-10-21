@@ -148,10 +148,10 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     LayoutUnit lspace, rspace;
     if (should_add_space)
       DetermineOperatorSpacing(To<NGBlockNode>(child), &lspace, &rspace);
-    const NGPhysicalFragment& physical_fragment =
-        child_layout_result->PhysicalFragment();
+    const auto& physical_fragment =
+        To<NGPhysicalBoxFragment>(child_layout_result->PhysicalFragment());
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           To<NGPhysicalBoxFragment>(physical_fragment));
+                           physical_fragment);
 
     NGBoxStrut margins = ComputeMarginsFor(child_constraint_space,
                                            child.Style(), ConstraintSpace());
@@ -167,7 +167,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     children->emplace_back(
         To<NGBlockNode>(child), margins,
         LogicalOffset{inline_offset, margins.block_start - ascent},
-        std::move(&physical_fragment));
+        std::move(child_layout_result));
 
     inline_offset += fragment.InlineSize() + margins.inline_end;
 
@@ -207,7 +207,7 @@ scoped_refptr<const NGLayoutResult> NGMathRowLayoutAlgorithm::Layout() {
   adjust_offset += LogicalOffset{center_offset, max_row_block_baseline};
   for (auto& child_data : children) {
     child_data.offset += adjust_offset;
-    container_builder_.AddChild(*child_data.fragment, child_data.offset);
+    container_builder_.AddResult(*child_data.result, child_data.offset);
     child_data.child.StoreMargins(ConstraintSpace(), child_data.margins);
   }
 

@@ -66,7 +66,6 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
   DCHECK(IsValidMathMLRadical(Node()));
 
   auto vertical = GetRadicalVerticalParameters(Style(), Node().HasIndex());
-  scoped_refptr<const NGPhysicalBoxFragment> index_fragment, base_fragment;
   LayoutUnit index_inline_size, index_ascent, index_descent, base_ascent,
       base_descent;
   RadicalHorizontalParameters horizontal;
@@ -75,19 +74,20 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
   NGBlockNode index = nullptr;
   GatherChildren(&base, &index, &container_builder_);
 
+  scoped_refptr<const NGLayoutResult> base_layout_result;
+  scoped_refptr<const NGLayoutResult> index_layout_result;
   if (base) {
     // Handle layout of base child. For <msqrt> the base is anonymous and uses
     // the row layout algorithm.
     NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), base);
-    scoped_refptr<const NGLayoutResult> base_layout_result =
-        base.Layout(constraint_space);
-    base_fragment =
-        &To<NGPhysicalBoxFragment>(base_layout_result->PhysicalFragment());
+    base_layout_result = base.Layout(constraint_space);
+    const auto& base_fragment =
+        To<NGPhysicalBoxFragment>(base_layout_result->PhysicalFragment());
     base_margins =
         ComputeMarginsFor(constraint_space, base.Style(), ConstraintSpace());
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           *base_fragment);
+                           base_fragment);
     base_ascent = base_margins.block_start + fragment.BaselineOrSynthesize();
     base_descent = fragment.BlockSize() + base_margins.BlockSum() - base_ascent;
   }
@@ -96,14 +96,13 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
     // (https://w3c.github.io/mathml-core/#root-with-index).
     NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), index);
-    scoped_refptr<const NGLayoutResult> index_layout_result =
-        index.Layout(constraint_space);
-    index_fragment =
-        &To<NGPhysicalBoxFragment>(index_layout_result->PhysicalFragment());
+    index_layout_result = index.Layout(constraint_space);
+    const auto& index_fragment =
+        To<NGPhysicalBoxFragment>(index_layout_result->PhysicalFragment());
     index_margins =
         ComputeMarginsFor(constraint_space, index.Style(), ConstraintSpace());
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           *index_fragment);
+                           index_fragment);
     index_inline_size = fragment.InlineSize() + index_margins.InlineSum();
     index_ascent = index_margins.block_start + fragment.BaselineOrSynthesize();
     index_descent =
@@ -163,7 +162,7 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
             horizontal.kern_before_degree + horizontal.kern_after_degree +
             base_margins.inline_start,
         base_margins.block_start - base_ascent + ascent};
-    container_builder_.AddChild(*base_fragment, base_offset);
+    container_builder_.AddResult(*base_layout_result, base_offset);
     base.StoreMargins(ConstraintSpace(), base_margins);
   }
   if (index) {
@@ -172,7 +171,7 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
             horizontal.kern_before_degree,
         index_margins.block_start + ascent + descent - index_bottom_raise -
             index_descent - index_ascent};
-    container_builder_.AddChild(*index_fragment, index_offset);
+    container_builder_.AddResult(*index_layout_result, index_offset);
     index.StoreMargins(ConstraintSpace(), index_margins);
   }
 

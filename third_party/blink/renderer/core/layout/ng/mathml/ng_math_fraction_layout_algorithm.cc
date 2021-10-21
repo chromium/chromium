@@ -248,10 +248,8 @@ scoped_refptr<const NGLayoutResult> NGMathFractionLayoutAlgorithm::Layout() {
                                     fraction_ascent + denominator_shift -
                                     denominator_ascent;
 
-  container_builder_.AddChild(numerator_layout_result->PhysicalFragment(),
-                              numerator_offset);
-  container_builder_.AddChild(denominator_layout_result->PhysicalFragment(),
-                              denominator_offset);
+  container_builder_.AddResult(*numerator_layout_result, numerator_offset);
+  container_builder_.AddResult(*denominator_layout_result, denominator_offset);
 
   numerator.StoreMargins(ConstraintSpace(), numerator_margins);
   denominator.StoreMargins(ConstraintSpace(), denominator_margins);

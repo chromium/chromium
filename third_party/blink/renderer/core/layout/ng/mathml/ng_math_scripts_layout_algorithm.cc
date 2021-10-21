@@ -336,15 +336,13 @@ scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
                                    sub_metric.margins.inline_start,
                                ascent + metrics.sub_shift - sub_metric.ascent +
                                    sub_metric.margins.block_start);
-      container_builder_.AddChild(sub_metric.result->PhysicalFragment(),
-                                  sub_offset);
+      container_builder_.AddResult(*sub_metric.result, sub_offset);
       sub_metric.node.StoreMargins(ConstraintSpace(), sub_metric.margins);
       LogicalOffset sup_offset(inline_offset - sup_metric.inline_size +
                                    sup_metric.margins.inline_start,
                                ascent - metrics.sup_shift - sup_metric.ascent +
                                    sup_metric.margins.block_start);
-      container_builder_.AddChild(sup_metric.result->PhysicalFragment(),
-                                  sup_offset);
+      container_builder_.AddResult(*sup_metric.result, sup_offset);
       sup_metric.node.StoreMargins(ConstraintSpace(), sup_metric.margins);
     }
   } else {
@@ -354,15 +352,13 @@ scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
   LogicalOffset base_offset(
       inline_offset,
       ascent - base_metrics.ascent + base_metrics.margins.block_start);
-  container_builder_.AddChild(base_metrics.result->PhysicalFragment(),
-                              base_offset);
+  container_builder_.AddResult(*base_metrics.result, base_offset);
   base.StoreMargins(ConstraintSpace(), base_metrics.margins);
   if (prescripts) {
     LogicalOffset prescripts_offset(inline_offset,
                                     ascent - prescripts_metrics.ascent +
                                         prescripts_metrics.margins.block_start);
-    container_builder_.AddChild(prescripts_metrics.result->PhysicalFragment(),
-                                prescripts_offset);
+    container_builder_.AddResult(*prescripts_metrics.result, prescripts_offset);
     prescripts.StoreMargins(ConstraintSpace(), prescripts_metrics.margins);
   }
   inline_offset += base_metrics.inline_size + base_metrics.margins.inline_end;
@@ -382,16 +378,14 @@ scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
               .ClampNegativeToZero(),
           ascent + metrics.sub_shift - sub_metric.ascent +
               sub_metric.margins.block_start);
-      container_builder_.AddChild(sub_metric.result->PhysicalFragment(),
-                                  sub_offset);
+      container_builder_.AddResult(*sub_metric.result, sub_offset);
       sub_metric.node.StoreMargins(ConstraintSpace(), sub_metric.margins);
     }
     if (sup_metric.node) {
       LogicalOffset sup_offset(inline_offset + sup_metric.margins.inline_start,
                                ascent - metrics.sup_shift - sup_metric.ascent +
                                    sup_metric.margins.block_start);
-      container_builder_.AddChild(sup_metric.result->PhysicalFragment(),
-                                  sup_offset);
+      container_builder_.AddResult(*sup_metric.result, sup_offset);
       sup_metric.node.StoreMargins(ConstraintSpace(), sup_metric.margins);
     }
     LayoutUnit sub_sup_pair_inline_size =
