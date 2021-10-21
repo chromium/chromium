@@ -559,6 +559,30 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kMark,
           ax::mojom::blink::Role::kMath,
           ax::mojom::blink::Role::kMathMLMath,
+          // Don't ignore MathML nodes by default, since MathML relies on child
+          // positions to determine semantics (e.g. numerator is the first
+          // child of a fraction).
+          ax::mojom::blink::Role::kMathMLFraction,
+          ax::mojom::blink::Role::kMathMLIdentifier,
+          ax::mojom::blink::Role::kMathMLMultiscripts,
+          ax::mojom::blink::Role::kMathMLNoneScript,
+          ax::mojom::blink::Role::kMathMLNumber,
+          ax::mojom::blink::Role::kMathMLOperator,
+          ax::mojom::blink::Role::kMathMLOver,
+          ax::mojom::blink::Role::kMathMLPrescriptDelimiter,
+          ax::mojom::blink::Role::kMathMLRoot,
+          ax::mojom::blink::Role::kMathMLRow,
+          ax::mojom::blink::Role::kMathMLSquareRoot,
+          ax::mojom::blink::Role::kMathMLStringLiteral,
+          ax::mojom::blink::Role::kMathMLSub,
+          ax::mojom::blink::Role::kMathMLSubSup,
+          ax::mojom::blink::Role::kMathMLSup,
+          ax::mojom::blink::Role::kMathMLTable,
+          ax::mojom::blink::Role::kMathMLTableCell,
+          ax::mojom::blink::Role::kMathMLTableRow,
+          ax::mojom::blink::Role::kMathMLText,
+          ax::mojom::blink::Role::kMathMLUnder,
+          ax::mojom::blink::Role::kMathMLUnderOver,
           ax::mojom::blink::Role::kMeter,
           ax::mojom::blink::Role::kNavigation,
           ax::mojom::blink::Role::kPluginObject,
@@ -576,14 +600,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   if (always_included_computed_roles.find(RoleValue()) !=
       always_included_computed_roles.end())
     return kIncludeObject;
-
-  // Don't ignore MathML nodes by default, since MathML relies on child
-  // positions to determine semantics (e.g. numerator is the first child of a
-  // fraction).
-  if (RuntimeEnabledFeatures::MathMLCoreEnabled() && IsA<MathMLElement>(node) &&
-      RoleValue() != ax::mojom::blink::Role::kNone) {
-    return kIncludeObject;
-  }
 
   // Using the title or accessibility description (so we
   // check if there's some kind of accessible name for the element)
@@ -1117,8 +1133,6 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
       return ax::mojom::blink::Role::kMathMLSquareRoot;
     if (element->HasTagName(mathml_names::kMsTag))
       return ax::mojom::blink::Role::kMathMLStringLiteral;
-    if (element->HasTagName(mathml_names::kMspaceTag))
-      return ax::mojom::blink::Role::kNone;
     if (element->HasTagName(mathml_names::kMsubTag))
       return ax::mojom::blink::Role::kMathMLSub;
     if (element->HasTagName(mathml_names::kMsubsupTag))

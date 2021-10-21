@@ -264,6 +264,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLUnder) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLUnderOver) {
   RunMathMLTest(FILE_PATH_LITERAL("munderover.html"));
 }
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLUnknown) {
+  RunMathMLTest(FILE_PATH_LITERAL("unknown.html"));
+}
 
 //
 // AccName tests.

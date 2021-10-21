@@ -3185,6 +3185,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MathMLSpace) {
   RunMathMLTest(FILE_PATH_LITERAL("mspace.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MathMLUnknown) {
+  RunMathMLTest(FILE_PATH_LITERAL("unknown.html"));
+}
+
 //
 // AccName tests where having the full tree is desired.
 //
