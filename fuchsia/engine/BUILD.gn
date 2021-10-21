@@ -141,7 +141,6 @@ component("web_engine_core") {
     "//media/mojo/common",
     "//media/mojo/services",
     "//mojo/public/cpp/bindings",
-    "//sandbox/policy",
     "//services/media_session/public/mojom",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

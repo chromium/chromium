@@ -30,6 +30,7 @@ mojom("example_interfaces") {
       ]
     },
   ]
+  visibility = [ ":*" ]
 }
 
 source_set("traits") {
@@ -38,6 +39,11 @@ source_set("traits") {
   public_deps = [
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+  ]
+
+  visibility = [
+    ":*",
+    "//media/fuchsia/mojom:*",
   ]
 }
 
@@ -54,5 +60,10 @@ test("fuchsia_mojo_unittests") {
     "//mojo/core/test:run_all_unittests",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
+  ]
+
+  visibility = [
+    ":*",
+    "//fuchsia:gn_all",
   ]
 }

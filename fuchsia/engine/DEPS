@@ -8,6 +8,8 @@ include_rules = [
   "+components/version_info",
   "+components/viz/common",
   "+content/public/app",
+  "+content/public/common",
+  "+fuchsia/base",
   "+google_apis",
   "+gpu/command_buffer/service",
   "+gpu/config/gpu_finch_features.h",
@@ -15,9 +17,7 @@ include_rules = [
   "+media/base",
   "+media/fuchsia",
   "+mojo/public",
-  "+sandbox/policy",
-  "+services/service_manager",
-  "+third_party/blink/public/common/switches.h",
+  "+net",
   "+third_party/widevine/cdm/widevine_cdm_common.h",
   "+ui/base",
   "+ui/display/display_switches.h",
@@ -25,3 +25,9 @@ include_rules = [
   "+ui/gl/gl_switches.h",
   "+ui/ozone/public",
 ]
+
+specific_include_rules = {
+  "context_provider_impl_unittest\.cc": [
+    "+services/network/public/cpp/network_switches.h"
+  ],
+}
