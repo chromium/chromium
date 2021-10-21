@@ -99,6 +99,21 @@ const CLIENT_DELEGATE = {
         'sendXhr',
         [url, method, requestBody ? requestBody : '', !!useCredentials]);
   },
+
+  shouldShowNewScreencastButton() {
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'shouldShowNewScreencastButton', []);
+  },
+
+  shouldDownloadSoda() {
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'shouldDownloadSoda', []);
+  },
+
+  installSoda() {
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'installSoda', []);
+  }
 }
 
 /**
@@ -115,13 +130,23 @@ export class UntrustedAppRequestHandler extends RequestHandler {
     this.targetWindow_ = parentWindow;
 
     this.registerMethod('onNewScreencastPreconditionChanged', (canStart) => {
-      if (canStart.length !== 1 || typeof canStart[0] !== "boolean") {
+      if (canStart.length !== 1 || typeof canStart[0] !== 'boolean') {
         console.error(
             'Invalid argument to onNewScreencastPreconditionChanged', canStart);
         return;
       }
 
       getAppElement().onNewScreencastPreconditionChanged(canStart[0]);
+    });
+    this.registerMethod('onSodaInstallProgressUpdated', (args) => {
+      if (args.length !== 1 || isNaN(args[0])) {
+        return;
+      }
+
+      getAppElement().onSodaInstallProgressUpdated(args[0]);
+    });
+    this.registerMethod('onSodaInstallError', (args) => {
+      getAppElement().onSodaInstallError();
     });
   }
 
@@ -152,8 +177,8 @@ export class AppUntrustedCommFactory {
     AppUntrustedCommFactory.requestHandler_ =
         new UntrustedAppRequestHandler(window.parent);
 
-   getAppElement().setClientDelegate(CLIENT_DELEGATE);
-}
+    getAppElement().setClientDelegate(CLIENT_DELEGATE);
+  }
 
   /**
    * In order to use this class, please do the following (e.g. to check if it is

@@ -35,6 +35,13 @@ const char kGetOAuthTokenCallback[] = "getOAuthTokenCallback";
 const char kSendXhrCallback[] = "sendXhrCallback";
 const char kOnNewScreencastPreconditionChanged[] =
     "onNewScreencastPreconditionChanged";
+const char kOnSodaInstallProgressUpdated[] = "onSodaInstallProgressUpdated";
+const char kOnSodaInstallError[] = "onSodaInstallError";
+
+const char kShouldShowNewScreencastButtonCallback[] =
+    "shouldShowNewScreencastButtonCallback";
+const char kShouldDownloadSodaCallback[] = "shouldDownloadSodaCallbck";
+const char kInstallSodaCallback[] = "installSodaCallback";
 
 }  // namespace
 
@@ -227,6 +234,64 @@ TEST_F(ProjectorMessageHandlerUnitTest, CanStartNewSession) {
   EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
   EXPECT_EQ(call_data.arg1()->GetString(), kOnNewScreencastPreconditionChanged);
   EXPECT_TRUE(call_data.arg2()->GetBool());
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, OnSodaProgress) {
+  message_handler()->OnSodaProgress(50);
+  const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
+  EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
+  EXPECT_EQ(call_data.arg1()->GetString(), kOnSodaInstallProgressUpdated);
+  EXPECT_EQ(call_data.arg2()->GetInt(), 50);
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, OnSodaError) {
+  message_handler()->OnSodaError();
+  const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
+  EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
+  EXPECT_EQ(call_data.arg1()->GetString(), kOnSodaInstallError);
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, ShouldShowNewScreencastButton) {
+  base::ListValue list_args;
+  list_args.Append(base::Value(kShouldShowNewScreencastButtonCallback));
+
+  web_ui().HandleReceivedMessage("shouldShowNewScreencastButton", &list_args);
+  base::RunLoop().RunUntilIdle();
+
+  const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
+  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(call_data.arg1()->GetString(),
+            kShouldShowNewScreencastButtonCallback);
+  EXPECT_EQ(call_data.arg2()->GetBool(), true);
+  EXPECT_EQ(call_data.arg3()->GetBool(), false);
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, ShouldDownloadSoda) {
+  base::ListValue list_args;
+  list_args.Append(base::Value(kShouldDownloadSodaCallback));
+
+  web_ui().HandleReceivedMessage("shouldDownloadSoda", &list_args);
+  base::RunLoop().RunUntilIdle();
+
+  const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
+  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(call_data.arg1()->GetString(), kShouldDownloadSodaCallback);
+  EXPECT_EQ(call_data.arg2()->GetBool(), true);
+  EXPECT_EQ(call_data.arg3()->GetBool(), false);
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, InstallSoda) {
+  base::ListValue list_args;
+  list_args.Append(base::Value(kInstallSodaCallback));
+
+  web_ui().HandleReceivedMessage("installSoda", &list_args);
+  base::RunLoop().RunUntilIdle();
+
+  const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
+  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(call_data.arg1()->GetString(), kInstallSodaCallback);
+  EXPECT_EQ(call_data.arg2()->GetBool(), true);
+  EXPECT_EQ(call_data.arg3()->GetBool(), false);
 }
 
 class ProjectorSessionStartUnitTest

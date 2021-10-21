@@ -100,6 +100,30 @@ void ProjectorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "sendXhr", base::BindRepeating(&ProjectorMessageHandler::SendXhr,
                                      base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "shouldShowNewScreencastButton",
+      base::BindRepeating(
+          &ProjectorMessageHandler::ShouldShowNewScreencastButton,
+          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "shouldDownloadSoda",
+      base::BindRepeating(&ProjectorMessageHandler::ShouldDownloadSoda,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "installSoda", base::BindRepeating(&ProjectorMessageHandler::InstallSoda,
+                                         base::Unretained(this)));
+}
+
+void ProjectorMessageHandler::OnSodaProgress(int combined_progress) {
+  AllowJavascript();
+  FireWebUIListener("onSodaInstallProgressUpdated",
+                    base::Value(combined_progress));
+}
+
+void ProjectorMessageHandler::OnSodaError() {
+  AllowJavascript();
+  FireWebUIListener("onSodaInstallError");
 }
 
 void ProjectorMessageHandler::OnScreencastsStateChange() {}
@@ -223,6 +247,33 @@ void ProjectorMessageHandler::SendXhr(const base::Value::ConstListView args) {
       GURL(url), method, request_body, use_credentials,
       base::BindOnce(&ProjectorMessageHandler::OnXhrRequestCompleted,
                      GetWeakPtr(), callback_id));
+}
+
+void ProjectorMessageHandler::ShouldShowNewScreencastButton(
+    const base::Value::ConstListView args) {
+  AllowJavascript();
+  // TODO(b/200205765): Add checks on whether new screencast button should be
+  // shown.
+  const auto& js_callback_id = args[0].GetString();
+  ResolveJavascriptCallback(base::Value(js_callback_id), base::Value(false));
+}
+
+void ProjectorMessageHandler::ShouldDownloadSoda(
+    const base::Value::ConstListView args) {
+  AllowJavascript();
+  // TODO(b/200205765): Add checks on whether the install soda button should be
+  // shown.
+  const auto& js_callback_id = args[0].GetString();
+  ResolveJavascriptCallback(base::Value(js_callback_id), base::Value(false));
+}
+
+void ProjectorMessageHandler::InstallSoda(
+    const base::Value::ConstListView args) {
+  AllowJavascript();
+
+  // TODO(b/200205765): Trigger SODA installation.
+  const auto& js_callback_id = args[0].GetString();
+  ResolveJavascriptCallback(base::Value(js_callback_id), base::Value(false));
 }
 
 void ProjectorMessageHandler::OnError(const base::Value::ConstListView args) {

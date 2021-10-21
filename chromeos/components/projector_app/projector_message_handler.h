@@ -43,6 +43,12 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // ProjectorAppClient:Observer:
   void OnNewScreencastPreconditionChanged(bool can_start) override;
 
+  // Used to notify the SWA the SODA installation progress.
+  void OnSodaProgress(int combined_progress);
+
+  // Used to notify the SWA that SODA installation failed.
+  void OnSodaError();
+
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:
@@ -72,6 +78,17 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
 
   // Requested by the Projector SWA to send XHR request.
   void SendXhr(const base::Value::ConstListView args);
+
+  // Requested by the Projector SWA on whether it should show the "new
+  // screencast" button.
+  void ShouldShowNewScreencastButton(const base::Value::ConstListView args);
+
+  // Requested by the Projector SWA to check if SODA is not available and should
+  // be downloaded. Returns false if the device doesn't support SODA.
+  void ShouldDownloadSoda(const base::Value::ConstListView args);
+
+  // Requested by the Projector SWA to trigger SODA installation.
+  void InstallSoda(const base::Value::ConstListView args);
 
   // Called by the Projector SWA when an error occurred.
   void OnError(const base::Value::ConstListView args);

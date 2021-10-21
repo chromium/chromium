@@ -72,6 +72,27 @@ export class ProjectorBrowserProxy {
    * @return {!Promise<!projectorApp.XhrResponse>}
    */
   sendXhr(url, method, requestBody, useCredentials) {}
+
+  /**
+   * Return true if the "new screencast" button should be shown to the user.
+   * @return {!Promise<boolean>}
+   */
+  shouldShowNewScreencastButton() {}
+
+  /**
+   * Returns true if the "install speech recognition" button should be shown to
+   * the user.
+   * @return {!Promise<boolean>}
+   */
+  shouldDownloadSoda() {}
+
+  /**
+   * Triggers the installation of on device speech recognition binary and
+   * language packs for the user's locale. Returns true if download and
+   * installation started.
+   * @return {!Promise<boolean>}
+   */
+  installSoda() {}
 }
 
 /**
@@ -118,6 +139,21 @@ export class ProjectorBrowserProxyImpl {
   sendXhr(url, method, requestBody, useCredentials) {
     return sendWithPromise(
         'sendXhr', [url, method, requestBody, useCredentials]);
+  }
+
+  /** @override */
+  shouldShowNewScreencastButton() {
+    return sendWithPromise('shouldShowNewScreencastButton');
+  }
+
+  /** @override */
+  shouldDownloadSoda() {
+    return sendWithPromise('shouldDownloadSoda');
+  }
+
+  /** @override */
+  installSoda() {
+    return sendWithPromise('installSoda');
   }
 }
 

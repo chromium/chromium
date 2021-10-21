@@ -256,6 +256,27 @@ projectorApp.ClientDelegate.prototype.sendXhr = function(
     url, method, requestBody, useCredentials) {};
 
 /**
+ * Return true if the "new screencast" button should be shown to the user.
+ * @return {!Promise<boolean>}
+ */
+projectorApp.ClientDelegate.prototype.shouldShowNewScreencastButton =
+    function() {};
+
+/**
+ * Returns true if the device supports on device speech recognition.
+ * @return {!Promise<boolean>}
+ */
+projectorApp.ClientDelegate.prototype.shouldDownloadSoda = function() {};
+
+/**
+ * Triggers the installation of on device speech recognition binary and language
+ * packs for the user's locale. Returns true if download and installation
+ * started.
+ * @return {!Promise<boolean>}
+ */
+projectorApp.ClientDelegate.prototype.installSoda = function() {};
+
+/**
  * The client Api for interacting with the Projector app instance.
  * @record
  * @struct
@@ -282,3 +303,17 @@ projectorApp.AppApi.prototype.onScreencastsStateChange = function(
  * @param {!projectorApp.ClientDelegate} clientDelegate
  */
 projectorApp.AppApi.prototype.setClientDelegate = function(clientDelegate) {};
+
+/**
+ * Notifies the Projector App the download and installation progress of the SODA
+ * binary and language packs.
+ * @param {number} progress A number in range 0 - 100 indicating installation
+ *     progress.
+ */
+projectorApp.AppApi.prototype.onSodaInstallProgressUpdated = function(
+    progress) {};
+
+/**
+ * Notifies the Projector App when there is a SODA installation error.
+ */
+projectorApp.AppApi.prototype.onSodaInstallError = function() {};

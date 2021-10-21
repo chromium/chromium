@@ -45,5 +45,19 @@ Polymer({
       }
       client.onNewScreencastPreconditionChanged(canStart);
     });
+
+    this.addWebUIListener('onSodaInstallProgressUpdated', (progress) => {
+      if (isNaN(progress)) {
+        console.error(
+            'Invalid argument to onSodaInstallProgressUpdated', progress);
+        return;
+      }
+
+      client.onSodaInstallProgressUpdated(progress);
+    });
+
+    this.addWebUIListener('onSodaInstallError', (args) => {
+      client.onSodaInstallError();
+    });
   },
 });
