@@ -155,11 +155,6 @@ const views::TypographyProvider& ChromeLayoutProvider::GetTypographyProvider()
   return typography_provider_;
 }
 
-views::GridLayout::Alignment
-ChromeLayoutProvider::GetControlLabelGridAlignment() const {
-  return views::GridLayout::LEADING;
-}
-
 bool ChromeLayoutProvider::ShouldShowWindowIcon() const {
   return false;
 }

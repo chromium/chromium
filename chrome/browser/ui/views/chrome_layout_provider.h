@@ -97,15 +97,6 @@ class ChromeLayoutProvider : public views::LayoutProvider {
   int GetSnappedDialogWidth(int min_width) const override;
   const views::TypographyProvider& GetTypographyProvider() const override;
 
-  // Returns the alignment used for control labels in a GridLayout; for example,
-  // in this GridLayout:
-  //   ---------------------------
-  //   | Label 1      Checkbox 1 |
-  //   | Label 2      Checkbox 2 |
-  //   ---------------------------
-  // This value controls the alignment used for "Label 1" and "Label 2".
-  virtual views::GridLayout::Alignment GetControlLabelGridAlignment() const;
-
   // Returns whether to show the icon next to the title text on a dialog.
   virtual bool ShouldShowWindowIcon() const;
 

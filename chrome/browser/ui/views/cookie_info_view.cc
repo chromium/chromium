@@ -91,8 +91,7 @@ CookieInfoView::CookieInfoView() {
 
   int three_column_layout_id = 0;
   views::ColumnSet* column_set = layout->AddColumnSet(three_column_layout_id);
-  column_set->AddColumn(provider->GetControlLabelGridAlignment(),
-                        views::GridLayout::CENTER,
+  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
                         views::GridLayout::kFixedSize,
                         views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   column_set->AddPaddingColumn(views::GridLayout::kFixedSize,

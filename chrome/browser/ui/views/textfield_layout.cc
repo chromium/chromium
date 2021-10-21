@@ -41,8 +41,7 @@ views::ColumnSet* ConfigureTextfieldStack(views::GridLayout* layout,
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
 
   views::ColumnSet* column_set = layout->AddColumnSet(column_set_id);
-  column_set->AddColumn(provider->GetControlLabelGridAlignment(),
-                        views::GridLayout::CENTER,
+  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
                         views::GridLayout::kFixedSize,
                         views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   // TODO(tapted): This column may need some additional alignment logic under
