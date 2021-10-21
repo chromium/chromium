@@ -126,18 +126,18 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return;
     }
 
-    const device = this.systemProperties.pairedDevices.find(
-        (device) => device.deviceProperties.id === this.deviceId_);
+    this.device_ =
+        this.systemProperties.pairedDevices.find(
+            (device) => device.deviceProperties.id === this.deviceId_) ||
+        null;
 
     // Special case where the device was turned off or becomes unavailable
     // while user is vewing the page, return back to previous page.
-    if (!device) {
+    if (!this.device_) {
       this.deviceId_ = '';
       Router.getInstance().navigateToPreviousRoute();
       return;
     }
-
-    this.device_ = device;
   }
 
   /**
@@ -383,26 +383,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    */
   onForgetBtnClick_(event) {
     event.stopPropagation();
-    getBluetoothConfig().forget(this.deviceId_).then(response => {
-      this.handleForgetResult_(response.success);
-    });
-  }
-
-  /**
-   * @param {boolean} success
-   * @private
-   */
-  handleForgetResult_(success) {
-    // After forgeting a device, the device is removed from paired devices
-    // list. Navigating back to paired device list ensures no connect/diconnect
-    // operations can be initiated on a device that is not currently paired.
-    // Reset |deviceId_| and |device_|. This is done, to prevent a second call
-    // to |navigateToPreviousRoute()| on |systemProperties| change.
-    if (success) {
-      this.deviceId_ = '';
-      this.device_ = null;
-      Router.getInstance().navigateToPreviousRoute();
-    }
+    getBluetoothConfig().forget(this.deviceId_);
   }
 
   /**
