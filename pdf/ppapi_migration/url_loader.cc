@@ -383,13 +383,17 @@ void PepperUrlLoader::Close() {
 
 void PepperUrlLoader::DidOpen(ResultCallback callback, int32_t result) {
   pp::URLResponseInfo pp_response = pepper_loader_.GetResponseInfo();
-  mutable_response().status_code = pp_response.GetStatusCode();
-
-  pp::Var headers_var = pp_response.GetHeaders();
-  if (headers_var.is_string()) {
-    mutable_response().headers = headers_var.AsString();
+  if (pp_response.is_null()) {
+    DCHECK_NE(result, kSuccess);
   } else {
-    mutable_response().headers.clear();
+    mutable_response().status_code = pp_response.GetStatusCode();
+
+    pp::Var headers_var = pp_response.GetHeaders();
+    if (headers_var.is_string()) {
+      mutable_response().headers = headers_var.AsString();
+    } else {
+      mutable_response().headers.clear();
+    }
   }
 
   std::move(callback).Run(result);
