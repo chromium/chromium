@@ -8,12 +8,18 @@ def main(request, response):
     response.headers.append(b"Access-Control-Allow-Headers", b"*")
     response.headers.append(b"Access-Control-Expose-Headers", b"*")
 
+    if b"sec-ch-device-memory" in request.headers:
+        response.headers.set(b"device-memory-received", request.headers.get(b"sec-ch-device-memory"))
     if b"device-memory" in request.headers:
-        response.headers.set(b"device-memory-received", request.headers.get(b"device-memory"))
+        response.headers.set(b"device-memory-deprecated-received", request.headers.get(b"device-memory"))
+    if b"sec-ch-dpr" in request.headers:
+        response.headers.set(b"dpr-received", request.headers.get(b"sec-ch-dpr"))
     if b"dpr" in request.headers:
-        response.headers.set(b"dpr-received", request.headers.get(b"dpr"))
+        response.headers.set(b"dpr-deprecated-received", request.headers.get(b"dpr"))
+    if b"sec-ch-viewport-width" in request.headers:
+        response.headers.set(b"viewport-width-received", request.headers.get(b"sec-ch-viewport-width"))
     if b"viewport-width" in request.headers:
-        response.headers.set(b"viewport-width-received", request.headers.get(b"viewport-width"))
+        response.headers.set(b"viewport-width-deprecated-received", request.headers.get(b"viewport-width"))
     if b"sec-ch-viewport-height" in request.headers:
         response.headers.set(b"viewport-height-received", request.headers.get(b"sec-ch-viewport-height"))
     if b"rtt" in request.headers:

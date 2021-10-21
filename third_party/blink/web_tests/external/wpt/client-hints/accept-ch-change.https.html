@@ -33,7 +33,9 @@ promise_test(async () => {
   // Verify that the browser did not include client hints in the request
   // headers when fetching echo_client_hints_received.py.
   assert_false(r.headers.has("device-memory-received"), "device-memory-received");
+  assert_false(r.headers.has("device-memory-deprecated-received"), "device-memory-deprecated-received");
   assert_false(r.headers.has("viewport-width-received"), "viewport-width-received");
+  assert_false(r.headers.has("viewport-width-deprecated-received"), "viewport-width-deprecated-received");
 
   // Fetching this webpage should cause user-agent to persist client hint
   // preferences for the origin.

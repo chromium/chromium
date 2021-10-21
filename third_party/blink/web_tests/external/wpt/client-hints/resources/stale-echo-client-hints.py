@@ -9,9 +9,13 @@ def id_token():
 
 def main(request, response):
     client_hint_headers = [
+        b"sec-ch-device-memory",
         b"device-memory",
+        b"sec-ch-dpr",
         b"dpr",
+        b"sec-ch-width",
         b"width",
+        b"sec-ch-viewport-width",
         b"viewport-width",
         b"rtt",
         b"downlink",
