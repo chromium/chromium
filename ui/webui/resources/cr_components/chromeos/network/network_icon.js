@@ -309,4 +309,13 @@ Polymer({
     return this.networkState.type === mojom.NetworkType.kCellular &&
         this.networkState.typeState.cellular.roaming;
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showIcon_() {
+    return !!this.networkState;
+  },
+
 });
