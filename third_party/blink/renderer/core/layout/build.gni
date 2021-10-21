@@ -307,6 +307,8 @@ blink_core_sources_layout = [
   "ng/flex/layout_ng_flexible_box.h",
   "ng/flex/ng_flex_child_iterator.cc",
   "ng/flex/ng_flex_child_iterator.h",
+  "ng/flex/ng_flex_item_iterator.cc",
+  "ng/flex/ng_flex_item_iterator.h",
   "ng/flex/ng_flex_layout_algorithm.cc",
   "ng/flex/ng_flex_layout_algorithm.h",
   "ng/geometry/ng_bfc_offset.cc",

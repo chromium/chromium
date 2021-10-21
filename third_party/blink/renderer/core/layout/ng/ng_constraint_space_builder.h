@@ -36,6 +36,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
                                  adjust_inline_size_if_needed) {
     if (parent_space.IsInsideBalancedColumns())
       space_.EnsureRareData()->is_inside_balanced_columns = true;
+    if (!parent_space.ShouldCacheResult())
+      space_.EnsureRareData()->should_cache_result = false;
   }
 
   // The setters on this builder are in the writing mode of parent_writing_mode.
@@ -449,6 +451,10 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     DCHECK_GE(target_stretch_block_sizes.descent, LayoutUnit());
     space_.EnsureRareData()->SetTargetStretchBlockSizes(
         target_stretch_block_sizes);
+  }
+
+  void SetShouldNotCacheResult() {
+    space_.EnsureRareData()->should_cache_result = false;
   }
 
   // Creates a new constraint space.

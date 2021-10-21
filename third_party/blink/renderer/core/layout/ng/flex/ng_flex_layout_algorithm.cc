@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_child_iterator.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_item_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
@@ -326,7 +327,11 @@ Length NGFlexLayoutAlgorithm::GetUsedFlexBasis(const NGBlockNode& child) const {
 }
 
 NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
-    const FlexItem& flex_item) const {
+    const FlexItem& flex_item,
+    absl::optional<LayoutUnit> block_offset_for_fragmentation) const {
+  DCHECK(!DoesItemStretch(flex_item.ng_input_node_) ||
+         !block_offset_for_fragmentation);
+
   const ComputedStyle& child_style = flex_item.ng_input_node_.Style();
   NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
                                          child_style.GetWritingDirection(),
@@ -370,6 +375,24 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
     // into both the "measure" and "layout" cache slots. So the stretch
     // layout will reuse this "measure" result if it can.
     space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
+  } else if (ConstraintSpace().HasBlockFragmentation()) {
+    if (block_offset_for_fragmentation) {
+      SetupSpaceBuilderForFragmentation(
+          ConstraintSpace(), flex_item.ng_input_node_,
+          *block_offset_for_fragmentation, &space_builder,
+          /* is_new_fc */ true);
+    } else if (!is_horizontal_flow_ && !algorithm_.IsMultiline()) {
+      // TODO(almaher): Support multi-line and row fragmentation.
+
+      // TODO(almaher): Should we consider caching this separately in a new
+      // slot type rather than not caching at all? And should we cache other
+      // item information to avoid relaying out on every pass?
+
+      // We will re-layout later to take fragmentation into account. Don't
+      // cache the initial layout pass since we do not want to override any
+      // results from previous fragmentainers.
+      space_builder.SetShouldNotCacheResult();
+    }
   }
 
   space_builder.SetAvailableSize(available_size);
@@ -786,6 +809,11 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
     while (!line->ResolveFlexibleLengths()) {
       continue;
     }
+
+    // TODO(almaher): How should devtools be handled for multiple fragments?
+    if (UNLIKELY(layout_info_for_devtools_ && !IsResumingLayout(BreakToken())))
+      layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
+
     for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
       FlexItem& flex_item = line->line_items_[i];
       NGConstraintSpace child_space = BuildSpaceForLayout(flex_item);
@@ -838,6 +866,9 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 
   LayoutUnit intrinsic_block_size = BorderScrollbarPadding().BlockSum();
 
+  // TODO(almaher): The intrinsic block size will be incorrect if fragmented.
+  // Need to keep track of this as we perform fragmentation to ensure this is
+  // set correctly.
   if (algorithm_.FlexLines().IsEmpty() && Node().HasLineIfEmpty()) {
     intrinsic_block_size += Node().EmptyLineBlockSize();
   } else {
@@ -951,80 +982,109 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
   }
 
   absl::optional<LayoutUnit> fallback_baseline;
+  NGFlexItemIterator item_iterator(algorithm_.FlexLines(), BreakToken());
 
   bool success = true;
-  for (FlexLine& line_context : line_contexts) {
-    if (UNLIKELY(layout_info_for_devtools_))
-      layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
-    for (wtf_size_t child_number = 0;
-         child_number < line_context.line_items_.size(); ++child_number) {
-      FlexItem& flex_item = line_context.line_items_[child_number];
+  for (auto entry = item_iterator.NextItem();
+       FlexItem* flex_item = entry.flex_item;
+       entry = item_iterator.NextItem()) {
+    FlexLine& line_context = line_contexts[flex_item->line_number_];
+    const NGBreakToken* item_break_token = entry.token;
 
-      if (DoesItemStretch(flex_item.ng_input_node_))
-        ApplyStretchAlignmentToChild(flex_item);
+    // flex_item.desired_location_ stores the main axis offset in X and the
+    // cross axis offset in Y. But AddChild wants offset from parent
+    // rectangle, so we have to transpose for columns. AddChild takes care of
+    // any writing mode differences though.
+    LayoutPoint location = is_column_
+                               ? flex_item->desired_location_.TransposedPoint()
+                               : flex_item->desired_location_;
 
-      const auto& physical_fragment = To<NGPhysicalBoxFragment>(
-          flex_item.layout_result_->PhysicalFragment());
+    // TODO(almaher): We also need to adjust the location if an item doesn't
+    // start in the first fragmentainer. Will need to take the consumed block
+    // size into account.
+    if (item_break_token)
+      location.SetY(LayoutUnit());
 
-      // flex_item.desired_location_ stores the main axis offset in X and the
-      // cross axis offset in Y. But AddChild wants offset from parent
-      // rectangle, so we have to transpose for columns. AddChild takes care of
-      // any writing mode differences though.
-      LayoutPoint location = is_column_
-                                 ? flex_item.desired_location_.TransposedPoint()
-                                 : flex_item.desired_location_;
+    if (DoesItemStretch(flex_item->ng_input_node_)) {
+      // TODO(almaher): Take fragmentation into account when performing the
+      // layout for stretch.
+      ApplyStretchAlignmentToChild(*flex_item);
+    } else if (ConstraintSpace().HasBlockFragmentation() &&
+               !is_horizontal_flow_ && !algorithm_.IsMultiline()) {
+      // TODO(almaher): Support multi-line and row fragmentation.
+      LayoutWithBlockFragmentation(*flex_item, location.Y(),
+                                   To<NGBlockBreakToken>(item_break_token));
 
-      NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                             physical_fragment);
-      // Only propagate baselines from children on the first flex-line.
-      if (&line_context == line_contexts.begin()) {
-        PropagateBaselineFromChild(flex_item, fragment, location.Y(),
-                                   &fallback_baseline);
-      }
-
-      container_builder_.AddChild(physical_fragment,
-                                  {location.X(), location.Y()});
-      if (UNLIKELY(layout_info_for_devtools_)) {
-        // If this is a "devtools layout", execution speed isn't critical but we
-        // have to not adversely affect execution speed of a regular layout.
-        PhysicalRect item_rect;
-        item_rect.size = physical_fragment.Size();
-        PhysicalSize flexbox_size = ToPhysicalSize(
-            container_builder_.Size(), ConstraintSpace().GetWritingMode());
-        item_rect.offset =
-            LogicalOffset(location.X(), location.Y())
-                .ConvertToPhysical(ConstraintSpace().GetWritingDirection(),
-                                   flexbox_size, item_rect.size);
-        // devtools uses margin box.
-        item_rect.Expand(flex_item.physical_margins_);
-        DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
-        DevtoolsFlexInfo::Item item;
-        item.rect = item_rect;
-        item.baseline = flex_item.MarginBoxAscent();
-        layout_info_for_devtools_->lines.back().items.push_back(item);
-      }
-
-      flex_item.ng_input_node_.StoreMargins(flex_item.physical_margins_);
-
-      // Detect if the flex-item had its scrollbar state change. If so we need
-      // to relayout as the input to the flex algorithm is incorrect.
-      if (!ignore_child_scrollbar_changes_) {
-        if (flex_item.scrollbars_ !=
-            ComputeScrollbarsForNonAnonymous(flex_item.ng_input_node_))
-          success = false;
-
-        // The flex-item scrollbars may not have changed, but an descendant's
-        // scrollbars might have causing the min/max sizes to be incorrect.
-        if (flex_item.depends_on_min_max_sizes_ &&
-            flex_item.ng_input_node_.GetLayoutBox()
-                ->IntrinsicLogicalWidthsDirty())
-          success = false;
-      } else {
-        DCHECK_EQ(flex_item.scrollbars_,
-                  ComputeScrollbarsForNonAnonymous(flex_item.ng_input_node_));
+      // A child break in a parallel flow doesn't affect whether we should
+      // break here or not.
+      if (container_builder_.HasInflowChildBreakInside()) {
+        // But if the break happened in the same flow, we'll now just finish
+        // layout of the fragment. No more siblings should be processed.
+        break;
       }
     }
+
+    const auto& physical_fragment = To<NGPhysicalBoxFragment>(
+        flex_item->layout_result_->PhysicalFragment());
+
+    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                           physical_fragment);
+    // Only propagate baselines from children on the first flex-line.
+    if (&line_context == line_contexts.begin()) {
+      // TODO(almaher): How will this work with fragmentation?
+      PropagateBaselineFromChild(*flex_item, fragment, location.Y(),
+                                 &fallback_baseline);
+    }
+
+    container_builder_.AddResult(*flex_item->layout_result_,
+                                 {location.X(), location.Y()});
+
+    // TODO(almaher): How should devtools be handled for multiple fragments?
+    if (UNLIKELY(layout_info_for_devtools_)) {
+      // If this is a "devtools layout", execution speed isn't critical but we
+      // have to not adversely affect execution speed of a regular layout.
+      PhysicalRect item_rect;
+      item_rect.size = physical_fragment.Size();
+      PhysicalSize flexbox_size = ToPhysicalSize(
+          container_builder_.Size(), ConstraintSpace().GetWritingMode());
+      item_rect.offset =
+          LogicalOffset(location.X(), location.Y())
+              .ConvertToPhysical(ConstraintSpace().GetWritingDirection(),
+                                 flexbox_size, item_rect.size);
+      // devtools uses margin box.
+      item_rect.Expand(flex_item->physical_margins_);
+      DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
+      DevtoolsFlexInfo::Item item;
+      item.rect = item_rect;
+      item.baseline = flex_item->MarginBoxAscent();
+      layout_info_for_devtools_->lines[flex_item->line_number_].items.push_back(
+          item);
+    }
+
+    flex_item->ng_input_node_.StoreMargins(flex_item->physical_margins_);
+
+    // Detect if the flex-item had its scrollbar state change. If so we need
+    // to relayout as the input to the flex algorithm is incorrect.
+    if (!ignore_child_scrollbar_changes_) {
+      if (flex_item->scrollbars_ !=
+          ComputeScrollbarsForNonAnonymous(flex_item->ng_input_node_))
+        success = false;
+
+      // The flex-item scrollbars may not have changed, but an descendant's
+      // scrollbars might have causing the min/max sizes to be incorrect.
+      if (flex_item->depends_on_min_max_sizes_ &&
+          flex_item->ng_input_node_.GetLayoutBox()
+              ->IntrinsicLogicalWidthsDirty())
+        success = false;
+    } else {
+      DCHECK_EQ(flex_item->scrollbars_,
+                ComputeScrollbarsForNonAnonymous(flex_item->ng_input_node_));
+    }
   }
+
+  if (!container_builder_.HasInflowChildBreakInside() &&
+      !item_iterator.NextItem().flex_item)
+    container_builder_.SetHasSeenAllChildren();
 
   // Set the baseline to the fallback, if we didn't find any children with
   // baseline alignment.
@@ -1041,6 +1101,19 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
 
   // Signal if we need to relayout with new child scrollbar information.
   return success;
+}
+
+void NGFlexLayoutAlgorithm::LayoutWithBlockFragmentation(
+    FlexItem& flex_item,
+    LayoutUnit block_offset,
+    const NGBlockBreakToken* item_break_token) {
+  DCHECK(ConstraintSpace().HasBlockFragmentation());
+  DCHECK(!DoesItemStretch(flex_item.ng_input_node_));
+
+  NGConstraintSpace child_space = BuildSpaceForLayout(flex_item, block_offset);
+  // TODO(almaher): Handle a break before.
+  flex_item.layout_result_ =
+      flex_item.ng_input_node_.Layout(child_space, item_break_token);
 }
 
 void NGFlexLayoutAlgorithm::AdjustButtonBaseline(

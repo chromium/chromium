@@ -3307,6 +3307,9 @@ void LayoutBox::SetCachedLayoutResult(
   DCHECK(!result->PhysicalFragment().BreakToken());
   DCHECK(To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode());
 
+  if (!result->GetConstraintSpaceForCaching().ShouldCacheResult())
+    return;
+
   if (result->GetConstraintSpaceForCaching().CacheSlot() ==
       NGCacheSlot::kMeasure) {
     // We don't early return here, when setting the "measure" result we also
@@ -3495,6 +3498,9 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
     NGLayoutCacheStatus* out_cache_status) {
   NOT_DESTROYED();
   *out_cache_status = NGLayoutCacheStatus::kNeedsLayout;
+
+  if (!new_space.ShouldCacheResult())
+    return nullptr;
 
   const bool use_layout_cache_slot =
       new_space.CacheSlot() == NGCacheSlot::kLayout &&
@@ -7569,6 +7575,9 @@ bool LayoutBox::HasUnsplittableScrollingOverflow(
 LayoutBox::PaginationBreakability LayoutBox::GetPaginationBreakability(
     FragmentationEngine engine) const {
   NOT_DESTROYED();
+  // TODO(almaher): Don't consider a writing mode root monolitic if
+  // IsLayoutNGFlexibleBox(). The breakability should be handled at the item
+  // level. (Likely same for Table and Grid).
   if (ShouldBeConsideredAsReplaced() ||
       HasUnsplittableScrollingOverflow(engine) ||
       (Parent() && IsWritingModeRoot()) ||

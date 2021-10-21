@@ -60,7 +60,12 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   NGConstraintSpace BuildSpaceForFlexBasis(const NGBlockNode& flex_item) const;
   NGConstraintSpace BuildSpaceForIntrinsicBlockSize(
       const NGBlockNode& flex_item) const;
-  NGConstraintSpace BuildSpaceForLayout(const FlexItem& flex_item) const;
+  // |block_offset_for_fragmentation| should only be set when running the final
+  // layout pass for fragmentation.
+  NGConstraintSpace BuildSpaceForLayout(
+      const FlexItem& flex_item,
+      absl::optional<LayoutUnit> block_offset_for_fragmentation =
+          absl::nullopt) const;
   void ConstructAndAppendFlexItems();
   void ApplyStretchAlignmentToChild(FlexItem& flex_item);
   bool GiveLinesAndItemsFinalPositionAndSize();
@@ -81,6 +86,11 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       const NGBoxFragment&,
       LayoutUnit block_offset,
       absl::optional<LayoutUnit>* fallback_baseline);
+
+  // Re-layout a given flex item, taking fragmentation into account.
+  void LayoutWithBlockFragmentation(FlexItem& flex_item,
+                                    LayoutUnit block_offset,
+                                    const NGBlockBreakToken* item_break_token);
 
   const bool is_column_;
   const bool is_horizontal_flow_;

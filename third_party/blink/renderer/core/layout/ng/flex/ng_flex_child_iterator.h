@@ -14,9 +14,6 @@ namespace blink {
 // A utility class for flex layout which given the current node will iterate
 // through its children.
 //
-// TODO(layout-dev): Once flex layout supports NG-fragmentation this will need
-// to be updated to accept a break-token.
-//
 // This class does not handle modifications to its arguments after it has been
 // constructed.
 class CORE_EXPORT NGFlexChildIterator {
