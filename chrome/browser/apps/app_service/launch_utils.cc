@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,13 +38,19 @@ std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
     return launch_files;
   }
 
-  // Assume all args passed were intended as files to pass to the app.
   launch_files.reserve(command_line.GetArgs().size());
   for (const auto& arg : command_line.GetArgs()) {
-    base::FilePath path(arg);
-    if (path.empty()) {
+#if defined(OS_WIN)
+    GURL url(base::AsStringPiece16(arg));
+#else
+    GURL url(arg);
+#endif
+    if (url.is_valid() && !url.SchemeIsFile())
       continue;
-    }
+
+    base::FilePath path(arg);
+    if (path.empty())
+      continue;
 
     launch_files.push_back(path);
   }

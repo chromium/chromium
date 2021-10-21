@@ -187,16 +187,12 @@ TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_FileProtocol) {
             base::FilePath(FILE_PATH_LITERAL("file://filename")));
 }
 
+// Verifies that a non-file protocol is not treated as a filename.
 TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_CustomProtocol) {
-  // Validate a vector with size 1 is returned, and the
-  // contents match the command line parameter. This uses
-  // a test protocol.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, "test");
   command_line.AppendArg("web+test://filename");
   std::vector<base::FilePath> launch_files =
       apps::GetLaunchFilesFromCommandLine(command_line);
-  ASSERT_EQ(launch_files.size(), 1U);
-  EXPECT_EQ(launch_files[0],
-            base::FilePath(FILE_PATH_LITERAL("web+test://filename")));
+  EXPECT_EQ(0U, launch_files.size());
 }
