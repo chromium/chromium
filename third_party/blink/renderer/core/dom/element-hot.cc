@@ -89,16 +89,18 @@ std::pair<wtf_size_t, const QualifiedName> Element::LookupAttributeQNameHinted(
   if (!GetElementData()) {
     return std::make_pair(
         kNotFound,
-        QualifiedName(g_null_atom, LowercaseIfNecessary(name), g_null_atom));
+        QualifiedName(g_null_atom, LowercaseIfNecessary(std::move(name)),
+                      g_null_atom));
   }
 
   AttributeCollection attributes = GetElementData()->Attributes();
   wtf_size_t index = attributes.FindIndexHinted(name, hint);
   return std::make_pair(
-      index, index != kNotFound
-                 ? attributes[index].GetName()
-                 : QualifiedName(g_null_atom, LowercaseIfNecessary(name),
-                                 g_null_atom));
+      index,
+      index != kNotFound
+          ? attributes[index].GetName()
+          : QualifiedName(g_null_atom, LowercaseIfNecessary(std::move(name)),
+                          g_null_atom));
 }
 
 void Element::setAttribute(const QualifiedName& name,

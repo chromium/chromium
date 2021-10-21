@@ -72,14 +72,18 @@ AtomicString AtomicString::FromUTF8(const char* chars) {
   return AtomicString(AtomicStringTable::Instance().AddUTF8(chars, nullptr));
 }
 
-AtomicString AtomicString::LowerASCII() const {
-  if (LIKELY(IsLowerASCII()))
-    return *this;
-  StringImpl* impl = Impl();
+AtomicString AtomicString::LowerASCII(AtomicString source) {
+  if (LIKELY(source.IsLowerASCII()))
+    return source;
+  StringImpl* impl = source.Impl();
   // if impl is null, then IsLowerASCII() should have returned true.
   DCHECK(impl);
   scoped_refptr<StringImpl> new_impl = impl->LowerASCII();
   return AtomicString(String(std::move(new_impl)));
+}
+
+AtomicString AtomicString::LowerASCII() const {
+  return AtomicString::LowerASCII(*this);
 }
 
 AtomicString AtomicString::UpperASCII() const {
