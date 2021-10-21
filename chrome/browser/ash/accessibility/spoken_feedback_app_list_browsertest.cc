@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/model/app_list_test_model.h"
-#include "ash/app_list/model/search/search_model.h"
-#include "ash/app_list/model/search/test_search_result.h"
+#include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -17,7 +15,8 @@
 #include "chrome/browser/ash/accessibility/spoken_feedback_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
-#include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -45,26 +44,14 @@ void SendKeyPressWithShiftAndControl(ui::KeyboardCode key) {
 
 enum SpokenFeedbackAppListTestVariant { kTestAsNormalUser, kTestAsGuestUser };
 
-class TestSuggestionChipResult : public TestSearchResult {
- public:
-  explicit TestSuggestionChipResult(const std::u16string& title) {
-    set_display_type(SearchResultDisplayType::kChip);
-    set_title(title);
-  }
-
-  TestSuggestionChipResult(const TestSuggestionChipResult&) = delete;
-  TestSuggestionChipResult& operator=(const TestSuggestionChipResult&) = delete;
-
-  ~TestSuggestionChipResult() override = default;
-};
-
-class SpokenFeedbackAppListTestBase
+class SpokenFeedbackAppListTest
     : public LoggedInSpokenFeedbackTest,
       public ::testing::WithParamInterface<SpokenFeedbackAppListTestVariant> {
  protected:
-  SpokenFeedbackAppListTestBase() = default;
-  ~SpokenFeedbackAppListTestBase() override = default;
+  SpokenFeedbackAppListTest() = default;
+  ~SpokenFeedbackAppListTest() override = default;
 
+  // LoggedInSpokenFeedbackTest:
   void SetUp() override {
     // Do not run expand arrow hinting animation to avoid msan test crash.
     // (See https://crbug.com/926038)
@@ -86,37 +73,30 @@ class SpokenFeedbackAppListTestBase
           switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
     }
   }
-};
 
-class SpokenFeedbackAppListTest : public SpokenFeedbackAppListTestBase {
- public:
-  SpokenFeedbackAppListTest() = default;
-  ~SpokenFeedbackAppListTest() override = default;
-
-  // SpokenFeedbackAppListTestBase:
   void SetUpOnMainThread() override {
     LoggedInSpokenFeedbackTest::SetUpOnMainThread();
-    auto* controller = Shell::Get()->app_list_controller();
-    controller->SetAppListModelForTest(
-        std::make_unique<test::AppListTestModel>());
-    app_list_test_model_ =
-        static_cast<test::AppListTestModel*>(controller->GetModel());
-    search_model_ = controller->GetSearchModel();
+    AppListClientImpl::GetInstance()->UpdateProfile();
   }
 
   // Populate apps grid with |num| items.
   void PopulateApps(size_t num) {
-    // TODO(https://crbug.com/1251617): use `ChromeAppListModelUpdater` instead
-    // of `app_list_test_model_` to populate apps.
-    app_list_test_model_->PopulateApps(num);
+    // Only folders or page breaks are allowed to be added from the Ash side.
+    // Therefore new apps should be added through `ChromeAppListModelUpdater`.
+    ::test::PopulateDummyAppListItems(num);
   }
 
-  // Populate |num| suggestion chips.
-  void PopulateChips(size_t num) {
-    for (size_t i = 0; i < num; i++) {
-      search_model_->results()->Add(std::make_unique<TestSuggestionChipResult>(
-          base::UTF8ToUTF16("Chip " + base::NumberToString(i))));
+  std::vector<std::string> GetPublishedSuggestionChips() {
+    std::vector<std::string> chips;
+    std::vector<ChromeSearchResult*> published_results =
+        AppListClientImpl::GetInstance()
+            ->GetModelUpdaterForTest()
+            ->GetPublishedSearchResultsForTest();
+    for (auto* result : published_results) {
+      if (result->display_type() == ash::SearchResultDisplayType::kChip)
+        chips.push_back(base::UTF16ToUTF8(result->title()));
     }
+    return chips;
   }
 
   void ReadWindowTitle() {
@@ -125,9 +105,18 @@ class SpokenFeedbackAppListTest : public SpokenFeedbackAppListTestBase {
         "CommandHandler.onCommand('readCurrentTitle');");
   }
 
- private:
-  test::AppListTestModel* app_list_test_model_ = nullptr;
-  SearchModel* search_model_ = nullptr;
+  ash::AppListItem* FindItemByName(const std::string& name, int* index) {
+    ash::AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
+    ash::AppListItemList* item_list = model->top_level_item_list();
+    for (int i = 0; i < item_list->item_count(); ++i) {
+      if (item_list->item_at(i)->name() == name) {
+        if (index)
+          *index = i;
+        return item_list->item_at(i);
+      }
+    }
+    return nullptr;
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
@@ -166,13 +155,6 @@ class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
     SpokenFeedbackAppListTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kAshEnableTabletMode);
   }
-
-  void SetNotificationBadgeForApp(const std::string& id, bool has_badge) {
-    auto* model = Shell::Get()->app_list_controller()->GetModel();
-    auto* item = model->FindItem(id);
-
-    item->UpdateNotificationBadgeForTesting(has_badge);
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
@@ -198,7 +180,13 @@ INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
 IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
                        AppListItemNotificationBadgeAnnounced) {
   PopulateApps(1);
-  SetNotificationBadgeForApp("Item 0", true);
+
+  std::vector<std::string> suggestion_chips = GetPublishedSuggestionChips();
+
+  int test_item_index = 0;
+  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  ASSERT_TRUE(test_item);
+  test_item->UpdateNotificationBadgeForTesting(true);
 
   EnableChromeVox();
 
@@ -217,11 +205,21 @@ IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
   sm_.ExpectSpeech("Launcher, all apps");
 
-  // Move focus to 1st app;
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  // Move focus over suggestion chip views.
+  for (auto& chip : suggestion_chips) {
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+    sm_.ExpectSpeech(chip);
+    sm_.ExpectSpeech("Button");
+  }
+
+  // Skip over apps that were installed before the test item.
+  sm_.Call([this, &test_item_index]() {
+    for (int i = 0; i < test_item_index + 1; ++i)
+      SendKeyPressWithSearch(ui::VKEY_RIGHT);
+  });
 
   // Check that the announcmenet for items with a notification badge occurs.
-  sm_.ExpectSpeech("Item 0 requests your attention.");
+  sm_.ExpectSpeech("app 0 requests your attention.");
   sm_.Replay();
 }
 
@@ -230,11 +228,11 @@ IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
 IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
                        AppListItemPausedAppAnnounced) {
   PopulateApps(1);
-  Shell::Get()
-      ->app_list_controller()
-      ->GetModel()
-      ->FindItem("Item 0")
-      ->UpdateAppStatusForTesting(AppStatus::kPaused);
+
+  int test_item_index = 0;
+  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  ASSERT_TRUE(test_item);
+  test_item->UpdateAppStatusForTesting(AppStatus::kPaused);
 
   EnableChromeVox();
 
@@ -253,10 +251,21 @@ IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
   sm_.ExpectSpeech("Launcher, all apps");
 
-  // Move focus to 1st app;
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  // Skip suggestion chips if any are shown.
+  if (!GetPublishedSuggestionChips().empty())
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+
+  // Move focus to the first app.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+
+  // Skip over apps that were installed before the test item.
+  sm_.Call([this, &test_item_index]() {
+    for (int i = 0; i < test_item_index; ++i)
+      SendKeyPressWithSearch(ui::VKEY_RIGHT);
+  });
 
   // Check that the announcmenet for items with a pause badge occurs.
+  sm_.ExpectSpeech("app 0");
   sm_.ExpectSpeech("Paused");
   sm_.Replay();
 }
@@ -266,11 +275,11 @@ IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
 IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
                        AppListItemBlockedAppAnnounced) {
   PopulateApps(1);
-  Shell::Get()
-      ->app_list_controller()
-      ->GetModel()
-      ->FindItem("Item 0")
-      ->UpdateAppStatusForTesting(AppStatus::kBlocked);
+
+  int test_item_index = 0;
+  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  ASSERT_TRUE(test_item);
+  test_item->UpdateAppStatusForTesting(AppStatus::kBlocked);
 
   EnableChromeVox();
 
@@ -289,10 +298,21 @@ IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
   sm_.ExpectSpeech("Launcher, all apps");
 
-  // Move focus to 1st app;
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  // Skip suggestion chips if any are shown.
+  if (!GetPublishedSuggestionChips().empty())
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+
+  // Move focus to the first app.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+
+  // Skip over apps that were installed before the test item.
+  sm_.Call([this, &test_item_index]() {
+    for (int i = 0; i < test_item_index; ++i)
+      SendKeyPressWithSearch(ui::VKEY_RIGHT);
+  });
 
   // Check that the announcmenet for items with a block badge occurs.
+  sm_.ExpectSpeech("app 0");
   sm_.ExpectSpeech("Blocked");
   sm_.Replay();
 }
@@ -443,8 +463,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
                        PeekingLauncherFocusTraversal) {
-  // Add 3 suggestion chips.
-  PopulateChips(3);
+  std::vector<std::string> suggestion_chips = GetPublishedSuggestionChips();
+  ASSERT_GE(suggestion_chips.size(), 1u);
 
   EnableChromeVox();
 
@@ -456,18 +476,14 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   // launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
   sm_.ExpectSpeech("Launcher, partial view");
-  // Move focus to 1st suggestion chip;
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Chip 0");
-  sm_.ExpectSpeech("Button");
-  // Move focus to 2nd suggestion chip;
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Chip 1");
-  sm_.ExpectSpeech("Button");
-  // Move focus to 3rd suggestion chip;
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Chip 2");
-  sm_.ExpectSpeech("Button");
+
+  // Move focus over suggestion chip views.
+  for (auto& chip : suggestion_chips) {
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+    sm_.ExpectSpeech(chip);
+    sm_.ExpectSpeech("Button");
+  }
+
   // Move focus to expand all apps button;
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
   sm_.ExpectSpeech("Expand to all apps");
@@ -480,9 +496,12 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
                        FullscreenLauncherFocusTraversal) {
-  // Add 1 suggestion chip and 3 apps.
-  PopulateChips(1);
+  const int default_app_count =
+      AppListClientImpl::GetInstance()->GetModelUpdaterForTest()->ItemCount();
   PopulateApps(3);
+
+  std::vector<std::string> suggestion_chips = GetPublishedSuggestionChips();
+  ASSERT_GE(suggestion_chips.size(), 1u);
 
   EnableChromeVox();
 
@@ -502,21 +521,31 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   // Press space on expand arrow to go to fullscreen launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
   sm_.ExpectSpeech("Launcher, all apps");
-  // Move focus to the suggestion chip;
+
+  // Move focus over suggestion chip views.
+  for (auto& chip : suggestion_chips) {
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+    sm_.ExpectSpeech(chip);
+    sm_.ExpectSpeech("Button");
+  }
+
+  // Focus through apps installed by default.
+  sm_.Call([this, &default_app_count]() {
+    for (int i = 0; i < default_app_count; ++i)
+      SendKeyPressWithSearch(ui::VKEY_RIGHT);
+  });
+
+  // Move focus to the first app installed by the test.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Chip 0");
-  sm_.ExpectSpeech("Button");
-  // Move focus to 1st app;
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Item 0");
+  sm_.ExpectSpeech("app 0");
   sm_.ExpectSpeech("Button");
   // Move focus to 2nd app;
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Item 1");
+  sm_.ExpectSpeech("app 1");
   sm_.ExpectSpeech("Button");
   // Move focus to 3rd app;
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Item 2");
+  sm_.ExpectSpeech("app 2");
   sm_.ExpectSpeech("Button");
   // Move focus to app list window;
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
@@ -530,6 +559,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
 // Checks that app list keyboard foldering is announced.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListFoldering) {
+  const int default_app_count =
+      AppListClientImpl::GetInstance()->GetModelUpdaterForTest()->ItemCount();
+
   // Add 3 apps.
   PopulateApps(3);
 
@@ -550,9 +582,21 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListFoldering) {
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
   sm_.ExpectSpeech("Launcher, all apps");
 
-  // Move focus to 1st app;
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Item 0");
+  // Move focus to first app;
+  sm_.Call([this, &default_app_count]() {
+    SendKeyPressWithSearch(ui::VKEY_DOWN);
+
+    if (default_app_count) {
+      // Skip the suggestion chips.
+      SendKeyPressWithSearch(ui::VKEY_DOWN);
+
+      // Skip the default installed apps.
+      for (int i = 0; i < default_app_count; ++i)
+        SendKeyPressWithSearch(ui::VKEY_RIGHT);
+    }
+  });
+
+  sm_.ExpectSpeech("app 0");
   sm_.ExpectSpeech("Button");
 
   // Combine items and create a new folder.
@@ -560,19 +604,22 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListFoldering) {
   sm_.ExpectSpeech("Folder Unnamed");
   sm_.ExpectSpeech("Button");
   sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech("Item 0 combined with Item 1 to create new folder.");
+  sm_.ExpectSpeech("app 0 combined with app 1 to create new folder.");
 
   // Open the folder and move focus to the first item of the folder.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeech("Item 1");
+  sm_.ExpectSpeech("app 1");
   sm_.ExpectSpeech("Button");
 
   // Remove the first item from the folder back to the top level app list.
   sm_.Call([]() { SendKeyPressWithShiftAndControl(ui::VKEY_LEFT); });
-  sm_.ExpectSpeech("Item 1");
+  sm_.ExpectSpeech("app 1");
   sm_.ExpectSpeech("Button");
   sm_.ExpectNextSpeechIsNot("Alert");
-  sm_.ExpectSpeech("Moved to Page 1, row 1, column 1.");
+  std::string expected_text;
+  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
+                                       "Moved to Page 1, row 1, column %d.",
+                                       default_app_count + 1));
 
   sm_.Replay();
 }
@@ -614,37 +661,13 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   sm_.Replay();
 }
 
-// The test with `ChromeAppListModelUpdater` set.
-class SpokenFeedbackWithChromeAppListModelUpdaterTest
-    : public SpokenFeedbackAppListTestBase {
- public:
-  SpokenFeedbackWithChromeAppListModelUpdaterTest() = default;
-  ~SpokenFeedbackWithChromeAppListModelUpdaterTest() override = default;
-
-  void SetUpOnMainThread() override {
-    SpokenFeedbackAppListTestBase::SetUpOnMainThread();
-    AppListClientImpl::GetInstance()->UpdateProfile();
-  }
-  void PopulateApps(size_t num) {
-    // Only folders or page breaks are allowed to be added from the Ash side.
-    // Therefore new apps should be added through `ChromeAppListModelUpdater`.
-    ::test::PopulateDummyAppListItems(num);
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
-                         SpokenFeedbackWithChromeAppListModelUpdaterTest,
-                         ::testing::Values(kTestAsNormalUser,
-                                           kTestAsGuestUser));
-
 // Checks that app list keyboard reordering is announced.
 // TODO(mmourgos): The current method of accessibility announcements for item
 // reordering uses alerts, this works for spoken feedback but does not work as
 // well for braille users. The preferred way to handle this is to actually
 // change focus as the user navigates, and to have each object's
 // accessible name describe its position. (See crbug.com/1098495)
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackWithChromeAppListModelUpdaterTest,
-                       AppListReordering) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListReordering) {
   const int default_app_count =
       AppListClientImpl::GetInstance()->GetModelUpdaterForTest()->ItemCount();
 
@@ -743,7 +766,13 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackWithChromeAppListModelUpdaterTest,
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
                        ClamshellLauncher) {
+  std::vector<std::string> suggestion_chips = GetPublishedSuggestionChips();
   PopulateApps(3);
+
+  int test_item_index = 0;
+  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  ASSERT_TRUE(test_item);
+
   EnableChromeVox();
 
   // Focus the shelf. This selects the launcher button.
@@ -760,15 +789,33 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
   sm_.ExpectSpeechPattern("Search your device,*");
   sm_.ExpectSpeech("Edit text");
 
-  // Move focus down to the apps grid. This selects the first app.
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
-  sm_.ExpectSpeech("Item 0");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Button");
+
+  // Move focus over recent apps, which are currently populated using suggestion
+  // chip results.
+  // TODO(https://crbug.com/1260427): Traverse over all recent apps when the
+  // linked issue is fixed.
+  if (!suggestion_chips.empty()) {
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+    sm_.ExpectSpeech("Button");
+  }
+
+  // Skip over apps that were installed before the test item.
+  // This selects the first app installed by the test.
+  for (int i = 0; i < test_item_index; ++i) {
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  }
+  sm_.ExpectSpeech("app 0");
   sm_.ExpectSpeech("Button");
 
   // Move the focused item to the right. The announcement does not include a
   // page because the bubble launcher apps grid is scrollable, not paged.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Moved to row 1, column 2.");
+
+  std::string expected_text;
+  sm_.ExpectSpeech(base::SStringPrintf(
+      &expected_text, "Moved to row 1, column %d.", test_item_index + 2));
 
   sm_.Replay();
 }
