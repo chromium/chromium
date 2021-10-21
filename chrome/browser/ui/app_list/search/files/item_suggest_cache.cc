@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -182,7 +183,8 @@ ItemSuggestCache::Results::~Results() = default;
 ItemSuggestCache::ItemSuggestCache(
     Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : enabled_(kEnabled.Get()),
+    : made_request_(false),
+      enabled_(kEnabled.Get()),
       server_url_(kServerUrl.Get()),
       min_time_between_updates_(base::Minutes(kMinMinutesBetweenUpdates.Get())),
       profile_(profile),
@@ -231,13 +233,12 @@ void ItemSuggestCache::UpdateCache() {
   time_of_last_update_ = now;
 
   // Make no requests and exit in these cases:
-  // - another request is in-flight (url_loader_ is non-null)
-  // - item suggest has been disabled via experiment
-  // - item suggest has been disabled by policy
-  // - the server url is not https or not trusted by Google
-  if (url_loader_) {
-    return;
-  } else if (!enabled_) {
+  // - Item suggest has been disabled via experiment.
+  // - Item suggest has been disabled by policy.
+  // - The server url is not https or not trusted by Google.
+  // - We've already made a request this session and the suggested files flag
+  //   is disabled. This is to prevent too much QPS to the ItemSuggest backend.
+  if (!enabled_) {
     LogStatus(Status::kDisabledByExperiment);
     return;
   } else if (IsDisabledByPolicy(profile_)) {
@@ -246,6 +247,9 @@ void ItemSuggestCache::UpdateCache() {
   } else if (!server_url_.SchemeIs(url::kHttpsScheme) ||
              !google_util::IsGoogleAssociatedDomainUrl(server_url_)) {
     LogStatus(Status::kInvalidServerUrl);
+    return;
+  } else if (made_request_ && !app_list_features::IsSuggestedFilesEnabled()) {
+    LogStatus(Status::kPostLaunchUpdateIgnored);
     return;
   }
 
@@ -276,7 +280,9 @@ void ItemSuggestCache::OnTokenReceived(GoogleServiceAuthError error,
     return;
   }
 
-  // Make a new request.
+  // Make a new request. This destroys any existing |url_loader_| which will
+  // cancel that request if it is in-progress.
+  made_request_ = true;
   url_loader_ = MakeRequestLoader(token_info.token);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
   url_loader_->AttachStringForUpload(GetRequestBody(), "application/json");

@@ -91,7 +91,8 @@ class ItemSuggestCache {
     kNoResultsInResponse = 12,
     kJsonParseFailure = 13,
     kJsonConversionFailure = 14,
-    kMaxValue = kJsonConversionFailure,
+    kPostLaunchUpdateIgnored = 15,
+    kMaxValue = kPostLaunchUpdateIgnored,
   };
 
  private:
@@ -129,6 +130,10 @@ class ItemSuggestCache {
 
   // Start time for latency metrics.
   base::TimeTicks update_start_time_;
+
+  // Whether the cache has made at least one request to ItemSuggest this
+  // session. Used to prevent further updates in some cases.
+  bool made_request_;
 
   const bool enabled_;
   const GURL server_url_;
