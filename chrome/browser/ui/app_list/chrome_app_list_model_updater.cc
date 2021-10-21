@@ -19,25 +19,6 @@
 #include "extensions/common/constants.h"
 #include "ui/base/models/menu_model.h"
 
-namespace {
-
-syncer::StringOrdinal CreateChromePositionOnLast(
-    const std::map<std::string, std::unique_ptr<ChromeAppListItem>>& items) {
-  syncer::StringOrdinal last_known_position;
-  for (auto& it : items) {
-    if (!last_known_position.IsValid() ||
-        (it.second->position().IsValid() &&
-         it.second->position().GreaterThan(last_known_position))) {
-      last_known_position = it.second->position();
-    }
-  }
-  return last_known_position.IsValid()
-             ? last_known_position.CreateAfter()
-             : syncer::StringOrdinal::CreateInitialOrdinal();
-}
-
-}  // namespace
-
 ChromeAppListModelUpdater::ChromeAppListModelUpdater(Profile* profile)
     : profile_(profile) {}
 
@@ -393,72 +374,6 @@ syncer::StringOrdinal ChromeAppListModelUpdater::GetPositionBeforeFirstItem()
 
 ////////////////////////////////////////////////////////////////////////////////
 // Methods for AppListSyncableService
-
-void ChromeAppListModelUpdater::ResolveOemFolderPosition(
-    const syncer::StringOrdinal& preferred_oem_position,
-    ResolveOemFolderPositionCallback callback) {
-  if (!app_list_controller_)
-    return;
-  app_list_controller_->ResolveOemFolderPosition(
-      preferred_oem_position,
-      base::BindOnce(
-          [](base::WeakPtr<ChromeAppListModelUpdater> self,
-             ResolveOemFolderPositionCallback callback,
-             std::unique_ptr<ash::AppListItemMetadata> folder_data) {
-            if (!self)
-              return;
-            ChromeAppListItem* chrome_oem_folder = nullptr;
-            if (folder_data) {
-              chrome_oem_folder = self->FindFolderItem(ash::kOemFolderId);
-              chrome_oem_folder->SetMetadata(std::move(folder_data));
-            }
-            std::move(callback).Run(chrome_oem_folder);
-          },
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ChromeAppListModelUpdater::AddItemToOemFolder(
-    std::unique_ptr<ChromeAppListItem> item,
-    app_list::AppListSyncableService::SyncItem* oem_sync_item,
-    const std::string& oem_folder_name,
-    const syncer::StringOrdinal& preferred_oem_position) {
-  syncer::StringOrdinal position_to_try = preferred_oem_position;
-  // If we find a valid postion in the sync item, then we'll try it.
-  if (oem_sync_item && oem_sync_item->item_ordinal.IsValid())
-    position_to_try = oem_sync_item->item_ordinal;
-
-  if (app_list_controller_) {
-    // TODO(https://crbug.com/1258851): handle adding OEM apps in a better way.
-    app_list_controller_->FindOrCreateOemFolder(
-        oem_folder_name, position_to_try,
-        base::BindOnce(
-            [](base::WeakPtr<ChromeAppListModelUpdater> self,
-               std::unique_ptr<ChromeAppListItem> item) {
-              if (!self)
-                return;
-              self->AddItemToFolder(std::move(item), ash::kOemFolderId);
-            },
-            weak_ptr_factory_.GetWeakPtr(), std::move(item)));
-  } else {
-    ChromeAppListItem* item_added = AddChromeItem(std::move(item));
-    item_added->SetChromeFolderId(ash::kOemFolderId);
-    // If we don't have an OEM folder in Chrome, create one first.
-    ChromeAppListItem* oem_folder = FindFolderItem(ash::kOemFolderId);
-    if (!oem_folder) {
-      std::unique_ptr<ChromeAppListItem> new_oem_folder =
-          std::make_unique<ChromeAppListItem>(profile_, ash::kOemFolderId,
-                                              this);
-      oem_folder = AddChromeItem(std::move(new_oem_folder));
-      oem_folder->SetChromeIsFolder(true);
-    }
-    oem_folder->SetChromeName(oem_folder_name);
-
-    if (!position_to_try.IsValid())
-      position_to_try = CreateChromePositionOnLast(items_);
-
-    oem_folder->SetChromePosition(position_to_try);
-  }
-}
 
 void ChromeAppListModelUpdater::UpdateAppItemFromSyncItem(
     app_list::AppListSyncableService::SyncItem* sync_item,

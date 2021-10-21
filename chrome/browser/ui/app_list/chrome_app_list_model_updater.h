@@ -88,14 +88,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   syncer::StringOrdinal GetPositionBeforeFirstItem() const override;
 
   // Methods for AppListSyncableService:
-  void AddItemToOemFolder(
-      std::unique_ptr<ChromeAppListItem> item,
-      app_list::AppListSyncableService::SyncItem* oem_sync_item,
-      const std::string& oem_folder_name,
-      const syncer::StringOrdinal& preferred_oem_position) override;
-  void ResolveOemFolderPosition(
-      const syncer::StringOrdinal& preferred_oem_position,
-      ResolveOemFolderPositionCallback callback) override;
   void UpdateAppItemFromSyncItem(
       app_list::AppListSyncableService::SyncItem* sync_item,
       bool update_name,

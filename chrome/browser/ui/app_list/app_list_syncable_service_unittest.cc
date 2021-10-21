@@ -335,43 +335,205 @@ TEST_F(AppListSyncableServiceTest, OEMFolderForConflictingPos) {
 
   // Create some app. Note its id should be greater than web store app id in
   // order to move app in case of conflicting pos after web store app.
-  const std::string some_app_id = CreateNextAppId(extensions::kWebStoreAppId);
-  scoped_refptr<extensions::Extension> some_app =
-      MakeApp(kSomeAppName, some_app_id,
+  const std::string test_app_1_id = CreateNextAppId(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> test_app_1 =
+      MakeApp(kSomeAppName, test_app_1_id,
               extensions ::Extension::WAS_INSTALLED_BY_DEFAULT);
-  InstallExtension(some_app.get());
+  InstallExtension(test_app_1.get());
+
+  const std::string test_app_2_id = CreateNextAppId(test_app_1_id);
+  scoped_refptr<extensions::Extension> test_app_2 =
+      MakeApp(kSomeAppName, test_app_2_id,
+              extensions ::Extension::WAS_INSTALLED_BY_DEFAULT);
+  InstallExtension(test_app_2.get());
 
   ChromeAppListItem* web_store_item =
       model_updater()->FindItem(web_store_app_id);
   ASSERT_TRUE(web_store_item);
-  ChromeAppListItem* some_app_item = model_updater()->FindItem(some_app_id);
-  ASSERT_TRUE(some_app_item);
+  ChromeAppListItem* test_app_1_item = model_updater()->FindItem(test_app_1_id);
+  ASSERT_TRUE(test_app_1_item);
 
+  ChromeAppListItem* test_app_2_item = model_updater()->FindItem(test_app_2_id);
+  ASSERT_TRUE(test_app_2_item);
   // Simulate position conflict.
   model_updater_test_api()->SetItemPosition(web_store_item->id(),
-                                            some_app_item->position());
+                                            test_app_1_item->position());
+
+  // Position second test app after the webstore and the first test app.
+  model_updater_test_api()->SetItemPosition(
+      test_app_2_item->id(), test_app_1_item->position().CreateAfter());
 
   // Install an OEM app. It must be placed by default after web store app but in
   // case of app of the same position should be shifted next.
-  const std::string oem_app_id = CreateNextAppId(some_app_id);
+  const std::string oem_app_id = CreateNextAppId(test_app_2_id);
   scoped_refptr<extensions::Extension> oem_app = MakeApp(
       kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
   InstallExtension(oem_app.get());
 
-  size_t web_store_app_index;
-  size_t some_app_index;
-  EXPECT_TRUE(model_updater()->FindItemIndexForTest(web_store_app_id,
-                                                    &web_store_app_index));
-  EXPECT_TRUE(
-      model_updater()->FindItemIndexForTest(some_app_id, &some_app_index));
   // OEM item is not top level element.
   ChromeAppListItem* oem_app_item = model_updater()->FindItem(oem_app_id);
   EXPECT_NE(nullptr, oem_app_item);
   EXPECT_EQ(oem_app_item->folder_id(), ash::kOemFolderId);
+
   // But OEM folder is.
   ChromeAppListItem* oem_folder = model_updater()->FindItem(ash::kOemFolderId);
-  EXPECT_NE(nullptr, oem_folder);
+  ASSERT_NE(nullptr, oem_folder);
   EXPECT_EQ(oem_folder->folder_id(), "");
+
+  EXPECT_TRUE(oem_folder->position().GreaterThan(web_store_item->position()));
+  EXPECT_TRUE(oem_folder->position().GreaterThan(test_app_1_item->position()));
+  EXPECT_TRUE(oem_folder->position().LessThan(test_app_2_item->position()));
+
+  // Receiving initial sync data does not change the OEM folder position.
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_TRUE(oem_folder->position().GreaterThan(web_store_item->position()));
+  EXPECT_TRUE(oem_folder->position().GreaterThan(test_app_1_item->position()));
+  EXPECT_TRUE(oem_folder->position().LessThan(test_app_2_item->position()));
+}
+
+// Verifies that OEM folder is positioned at the end of the list if initial sync
+// data that contains non-default apps is received after an OEM data is
+// received.
+TEST_F(AppListSyncableServiceTest,
+       OEMFolderPositionUpdatedAfterInitialSyncWithNonDefaultApps) {
+  // Create a "web store" app.
+  const std::string web_store_app_id(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> store =
+      MakeApp("webstore", web_store_app_id,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+  InstallExtension(store.get());
+  ChromeAppListItem* web_store_item =
+      model_updater()->FindItem(web_store_app_id);
+
+  const std::string test_app_id = CreateNextAppId(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> test_app =
+      MakeApp(kSomeAppName, test_app_id,
+              extensions ::Extension::WAS_INSTALLED_BY_DEFAULT);
+  InstallExtension(test_app.get());
+  ChromeAppListItem* test_app_item = model_updater()->FindItem(test_app_id);
+  model_updater_test_api()->SetItemPosition(
+      test_app_item->id(), web_store_item->position().CreateAfter());
+
+  // Install an OEM app. It must be placed by default after web store app but in
+  // case of app of the same position should be shifted next.
+  const std::string oem_app_id = CreateNextAppId(test_app_id);
+  scoped_refptr<extensions::Extension> oem_app = MakeApp(
+      kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
+  InstallExtension(oem_app.get());
+
+  syncer::StringOrdinal sync_item_ordinal =
+      test_app_item->position().CreateAfter();
+
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(CreateAppRemoteData(
+      "non-oem-app", "Non OEM app", std::string() /* parent_id */,
+      sync_item_ordinal.ToInternalValue(),
+      std::string() /* item_pin_ordinal */));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  ChromeAppListItem* oem_folder = model_updater()->FindItem(ash::kOemFolderId);
+  ASSERT_NE(nullptr, oem_folder);
+  EXPECT_EQ(oem_folder->folder_id(), "");
+
+  EXPECT_TRUE(oem_folder->position().GreaterThan(web_store_item->position()));
+  EXPECT_TRUE(oem_folder->position().GreaterThan(test_app_item->position()));
+  EXPECT_TRUE(oem_folder->position().GreaterThan(sync_item_ordinal));
+}
+
+TEST_F(AppListSyncableServiceTest,
+       OEMFolderPositionedAtEndIfNonDefaultAppsSynced) {
+  const std::string web_store_app_id(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> store =
+      MakeApp("webstore", web_store_app_id,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+  InstallExtension(store.get());
+  ChromeAppListItem* web_store_item =
+      model_updater()->FindItem(web_store_app_id);
+
+  const std::string test_app_id = CreateNextAppId(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> test_app =
+      MakeApp(kSomeAppName, test_app_id,
+              extensions ::Extension::WAS_INSTALLED_BY_DEFAULT);
+  InstallExtension(test_app.get());
+  ChromeAppListItem* test_app_item = model_updater()->FindItem(test_app_id);
+  model_updater_test_api()->SetItemPosition(
+      test_app_item->id(), web_store_item->position().CreateAfter());
+
+  syncer::StringOrdinal sync_item_ordinal =
+      test_app_item->position().CreateAfter();
+
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(CreateAppRemoteData(
+      "non-oem-app", "Non OEM app", std::string() /* parent_id */,
+      sync_item_ordinal.ToInternalValue(),
+      std::string() /* item_pin_ordinal */));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  // Install an OEM app. It must be placed by default after web store app but in
+  // case of app of the same position should be shifted next.
+  const std::string oem_app_id = CreateNextAppId(test_app_id);
+  scoped_refptr<extensions::Extension> oem_app = MakeApp(
+      kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
+  InstallExtension(oem_app.get());
+
+  ChromeAppListItem* oem_folder = model_updater()->FindItem(ash::kOemFolderId);
+  ASSERT_NE(nullptr, oem_folder);
+  EXPECT_EQ(oem_folder->folder_id(), "");
+
+  EXPECT_TRUE(oem_folder->position().GreaterThan(web_store_item->position()));
+  EXPECT_TRUE(oem_folder->position().GreaterThan(test_app_item->position()));
+  EXPECT_TRUE(oem_folder->position().GreaterThan(sync_item_ordinal));
+}
+
+TEST_F(AppListSyncableServiceTest,
+       OEMFolderPositionedAfterWebstoreIfOnlyDefaultAppsSynced) {
+  const std::string web_store_app_id(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> store =
+      MakeApp("webstore", web_store_app_id,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+  InstallExtension(store.get());
+  ChromeAppListItem* web_store_item =
+      model_updater()->FindItem(web_store_app_id);
+
+  const std::string test_app_id = CreateNextAppId(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> test_app =
+      MakeApp(kSomeAppName, test_app_id,
+              extensions ::Extension::WAS_INSTALLED_BY_DEFAULT);
+  InstallExtension(test_app.get());
+  ChromeAppListItem* test_app_item = model_updater()->FindItem(test_app_id);
+  model_updater_test_api()->SetItemPosition(
+      test_app_item->id(), web_store_item->position().CreateAfter());
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  const std::string oem_app_id = CreateNextAppId(test_app_id);
+  scoped_refptr<extensions::Extension> oem_app = MakeApp(
+      kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
+  InstallExtension(oem_app.get());
+
+  ChromeAppListItem* oem_folder = model_updater()->FindItem(ash::kOemFolderId);
+  ASSERT_NE(nullptr, oem_folder);
+  EXPECT_EQ(oem_folder->folder_id(), "");
+
+  EXPECT_TRUE(oem_folder->position().GreaterThan(web_store_item->position()));
+  EXPECT_TRUE(oem_folder->position().LessThan(test_app_item->position()));
 }
 
 // Verifies that OEM item preserves parent and doesn't change parent in case

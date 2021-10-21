@@ -128,13 +128,6 @@ class ASH_EXPORT AppListControllerImpl
       std::unique_ptr<SearchResultMetadata> metadata) override;
 
   void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) override;
-  void FindOrCreateOemFolder(
-      const std::string& oem_folder_name,
-      const syncer::StringOrdinal& preferred_oem_position,
-      FindOrCreateOemFolderCallback callback) override;
-  void ResolveOemFolderPosition(
-      const syncer::StringOrdinal& preferred_oem_position,
-      ResolveOemFolderPositionCallback callback) override;
   void NotifyProcessSyncChangesFinished() override;
   void DismissAppList() override;
   void GetAppInfoDialogBounds(GetAppInfoDialogBoundsCallback callback) override;

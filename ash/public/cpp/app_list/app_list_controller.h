@@ -105,29 +105,6 @@ class ASH_PUBLIC_EXPORT AppListController {
   virtual void GetIdToAppListIndexMap(
       GetIdToAppListIndexMapCallback callback) = 0;
 
-  // Finds the OEM folder or creates one if it doesn't exist.
-  // |oem_folder_name|: the expected name of the OEM folder while creating.
-  // |preferred_oem_position|: the preferred position of the OEM folder while
-  //                           creating; if it's invalid then the final position
-  //                           is determined in Ash.
-  // |oem_folder|: the meta data of the existing/created OEM folder.
-  using FindOrCreateOemFolderCallback = base::OnceClosure;
-  virtual void FindOrCreateOemFolder(
-      const std::string& oem_folder_name,
-      const syncer::StringOrdinal& preferred_oem_position,
-      FindOrCreateOemFolderCallback callback) = 0;
-
-  // Resolves the position of the OEM folder.
-  // |preferred_oem_position|: the preferred position of the OEM folder; if it's
-  //                           invalid then the final position is determined in
-  //                           Ash.
-  // |oem_folder|: the meta data of the OEM folder, or null if it doesn't exist.
-  using ResolveOemFolderPositionCallback =
-      base::OnceCallback<void(std::unique_ptr<AppListItemMetadata>)>;
-  virtual void ResolveOemFolderPosition(
-      const syncer::StringOrdinal& preferred_oem_position,
-      ResolveOemFolderPositionCallback callback) = 0;
-
   // Notifies sync service has finished processing sync changes.
   virtual void NotifyProcessSyncChangesFinished() = 0;
 

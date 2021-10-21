@@ -665,9 +665,8 @@ void AppListSyncableService::AddItem(
 
   if (AppIsOem(app_item->id())) {
     VLOG(2) << this << ": AddItem to OEM folder: " << sync_item->ToString();
-    model_updater_->AddItemToOemFolder(
-        std::move(app_item), FindSyncItem(ash::kOemFolderId), oem_folder_name_,
-        GetPreferredOemFolderPos());
+    EnsureOemFolderExists();
+    model_updater_->AddItemToFolder(std::move(app_item), ash::kOemFolderId);
   } else {
     std::string folder_id = sync_item->parent_id;
     VLOG(2) << this << ": AddItem: " << sync_item->ToString() << " Folder: '"
@@ -764,11 +763,6 @@ void AppListSyncableService::AddOrUpdateFromSyncItem(
     const ChromeAppListItem* app_item) {
   for (auto& observer : observer_list_)
     observer.OnAddOrUpdateFromSyncItemForTest();
-
-  // Do not create a sync item for the OEM folder here, do that in
-  // ResolveFolderPositions once the position has been resolved.
-  if (app_item->id() == ash::kOemFolderId)
-    return;
 
   DCHECK(app_item->position().IsValid());
 
@@ -871,6 +865,61 @@ void AppListSyncableService::UpdateSyncItem(const ChromeAppListItem* app_item) {
   PruneRedundantPageBreakItems();
 }
 
+syncer::StringOrdinal AppListSyncableService::GetDefaultOemFolderPosition()
+    const {
+  // Calculate the OEM folder position:
+  // *   If OEM folder is in sync data, respect the existing item position.
+  // *   If the user has non-default apps in sync, the OEM folder is added as
+  //     the last item in the model.
+  // *   If the user has only default apps in sync data, add OEM folder after
+  //     webstore item.
+  if (first_app_list_sync_) {
+    syncer::StringOrdinal position_after_webstore =
+        GetPositionAfterApp(extensions::kWebStoreAppId);
+    if (position_after_webstore.IsValid())
+      return position_after_webstore;
+  }
+
+  return GetLastPosition();
+}
+
+syncer::StringOrdinal AppListSyncableService::GetLastPosition() const {
+  syncer::StringOrdinal largest_ordinal;
+  for (const auto& it : sync_items_) {
+    const SyncItem* item = it.second.get();
+    if (item->item_ordinal.IsValid() &&
+        (!largest_ordinal.IsValid() ||
+         item->item_ordinal.GreaterThan(largest_ordinal))) {
+      largest_ordinal = item->item_ordinal;
+    }
+  }
+  if (largest_ordinal.IsValid())
+    return largest_ordinal.CreateAfter();
+  return syncer::StringOrdinal::CreateInitialOrdinal();
+}
+
+syncer::StringOrdinal AppListSyncableService::GetPositionAfterApp(
+    const std::string& app_id) const {
+  const SyncItem* app_item = GetSyncItem(app_id);
+  if (!app_item || !app_item->item_ordinal.IsValid())
+    return syncer::StringOrdinal();
+
+  syncer::StringOrdinal next_item;
+  for (const auto& it : sync_items_) {
+    const SyncItem* item = it.second.get();
+    if (item->item_ordinal.IsValid() &&
+        item->item_ordinal.GreaterThan(app_item->item_ordinal) &&
+        (!next_item.IsValid() || next_item.GreaterThan(item->item_ordinal))) {
+      next_item = item->item_ordinal;
+    }
+  }
+
+  if (next_item.IsValid())
+    return app_item->item_ordinal.CreateBetween(next_item);
+
+  return app_item->item_ordinal.CreateAfter();
+}
+
 void AppListSyncableService::SortSyncItems(ash::AppListSortOrder order) {
   // Too few sync items. Return early.
   if (sync_items_.size() < 2)
@@ -971,25 +1020,6 @@ void AppListSyncableService::ResolveFolderPositions() {
             ash::kOemFolderId,  // Don't sync oem folder's name.
         false);                 // Don't sync its folder here.
   }
-
-  // Move the OEM folder if one exists and we have not synced its position.
-  if (!FindSyncItem(ash::kOemFolderId)) {
-    model_updater_->ResolveOemFolderPosition(
-        GetPreferredOemFolderPos(),
-        base::BindOnce(
-            [](base::WeakPtr<AppListSyncableService> self,
-               ChromeAppListItem* oem_folder) {
-              if (!self)
-                return;
-
-              if (oem_folder) {
-                VLOG(2) << "Creating new OEM folder sync item: "
-                        << oem_folder->position().ToDebugString();
-                self->CreateSyncItemFromAppItem(oem_folder);
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 void AppListSyncableService::PruneEmptySyncFolders() {
@@ -1080,9 +1110,8 @@ AppListSyncableService::MergeDataAndStartSyncing(
 
   // Copy all sync items to |unsynced_items|.
   std::set<std::string> unsynced_items;
-  for (const auto& sync_pair : sync_items_) {
+  for (const auto& sync_pair : sync_items_)
     unsynced_items.insert(sync_pair.first);
-  }
 
   // Create SyncItem entries for initial_sync_data.
   for (syncer::SyncDataList::const_iterator iter = initial_sync_data.begin();
@@ -1115,11 +1144,21 @@ AppListSyncableService::MergeDataAndStartSyncing(
     // item to be removed.
     if (!sync_item)
       continue;
+
     VLOG(2) << this << " -> SYNC ADD: " << sync_item->ToString();
+
+    if (sync_item->item_id == ash::kOemFolderId &&
+        oem_folder_using_provisional_default_position_) {
+      sync_item->item_ordinal = GetDefaultOemFolderPosition();
+      model_updater_->UpdateAppItemFromSyncItem(sync_item, false, false);
+    }
+
     UpdateSyncItemInLocalStorage(profile_, sync_item);
     change_list.push_back(SyncChange(FROM_HERE, SyncChange::ACTION_ADD,
                                      GetSyncDataFromSyncItem(sync_item)));
   }
+
+  oem_folder_using_provisional_default_position_ = false;
 
   // Fix items that do not contain valid app list position, required for
   // builds prior to M53 (crbug.com/677647).
@@ -1405,24 +1444,6 @@ void AppListSyncableService::DeleteSyncItemSpecifics(
   }
 }
 
-syncer::StringOrdinal AppListSyncableService::GetPreferredOemFolderPos() {
-  VLOG(2) << "GetPreferredOemFolderPos: " << first_app_list_sync_;
-  if (!first_app_list_sync_) {
-    VLOG(2) << "Sync items exist, placing OEM folder at end.";
-    syncer::StringOrdinal last;
-    for (const auto& sync_pair : sync_items_) {
-      SyncItem* sync_item = sync_pair.second.get();
-      if (sync_item->item_ordinal.IsValid() &&
-          (!last.IsValid() || sync_item->item_ordinal.GreaterThan(last))) {
-        last = sync_item->item_ordinal;
-      }
-    }
-    if (last.IsValid())
-      return last.CreateAfter();
-  }
-  return syncer::StringOrdinal();
-}
-
 bool AppListSyncableService::AppIsOem(const std::string& id) {
   // For Arc and web apps, it is sufficient to check the install reason.
   apps::mojom::InstallReason install_reason =
@@ -1581,6 +1602,39 @@ bool AppListSyncableService::UpdateSyncItemFromAppItem(
     changed = true;
   }
   return changed;
+}
+
+void AppListSyncableService::EnsureOemFolderExists() {
+  const std::string folder_id = ash::kOemFolderId;
+  if (model_updater_->FindItem(folder_id))
+    return;
+
+  auto oem_folder = std::make_unique<ChromeAppListItem>(profile_, folder_id,
+                                                        model_updater_.get());
+  oem_folder->SetChromeName(oem_folder_name_);
+  oem_folder->SetIsPersistent(true);
+  oem_folder->SetChromeIsFolder(true);
+
+  SyncItem* current_sync_data = FindSyncItem(folder_id);
+  syncer::StringOrdinal folder_position;
+  if (current_sync_data) {
+    folder_position = current_sync_data->item_ordinal;
+  } else {
+    oem_folder_using_provisional_default_position_ =
+        !initial_sync_data_processed_;
+    folder_position = GetDefaultOemFolderPosition();
+  }
+
+  if (!folder_position.IsValid())
+    folder_position = GetLastPosition();
+  oem_folder->SetChromePosition(folder_position);
+
+  if (current_sync_data)
+    UpdateSyncItem(oem_folder.get());
+  else
+    CreateSyncItemFromAppItem(oem_folder.get());
+
+  model_updater_->AddItem(std::move(oem_folder));
 }
 
 void AppListSyncableService::MaybeAddOrUpdateCrostiniFolderSyncData() {

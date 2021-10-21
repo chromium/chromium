@@ -29,21 +29,6 @@ void FakeAppListModelUpdater::AddItemToFolder(
   items_.push_back(std::move(item));
 }
 
-void FakeAppListModelUpdater::AddItemToOemFolder(
-    std::unique_ptr<ChromeAppListItem> item,
-    app_list::AppListSyncableService::SyncItem* oem_sync_item,
-    const std::string& oem_folder_name,
-    const syncer::StringOrdinal& preferred_oem_position) {
-  syncer::StringOrdinal position_to_try = preferred_oem_position;
-  // If we find a valid postion in the sync item, then we'll try it.
-  if (oem_sync_item && oem_sync_item->item_ordinal.IsValid())
-    position_to_try = oem_sync_item->item_ordinal;
-  // In ash:
-  FindOrCreateOemFolder(oem_folder_name, position_to_try);
-  // In chrome, after oem folder is created:
-  AddItemToFolder(std::move(item), ash::kOemFolderId);
-}
-
 void FakeAppListModelUpdater::RemoveItem(const std::string& id) {
   size_t index;
   if (FindItemIndexForTest(id, &index)) {
@@ -93,6 +78,8 @@ void FakeAppListModelUpdater::SetItemPosition(
     return;
 
   ChromeAppListItem::TestApi(item).SetPosition(new_position);
+  for (AppListModelUpdaterObserver& observer : observers_)
+    observer.OnAppListItemUpdated(item);
 }
 
 void FakeAppListModelUpdater::SetItemName(const std::string& id,
@@ -186,46 +173,6 @@ void FakeAppListModelUpdater::PublishSearchResults(
     const std::vector<ChromeSearchResult*>& results,
     const std::vector<ash::AppListSearchResultCategory>& categories) {
   search_results_ = results;
-}
-
-void FakeAppListModelUpdater::FindOrCreateOemFolder(
-    const std::string& oem_folder_name,
-    const syncer::StringOrdinal& preferred_oem_position) {
-  ChromeAppListItem* oem_folder = FindFolderItem(ash::kOemFolderId);
-  if (oem_folder) {
-    std::unique_ptr<ash::AppListItemMetadata> folder_data =
-        oem_folder->CloneMetadata();
-    folder_data->name = oem_folder_name;
-    oem_folder->SetMetadata(std::move(folder_data));
-  } else {
-    std::unique_ptr<ChromeAppListItem> new_folder =
-        std::make_unique<ChromeAppListItem>(nullptr, ash::kOemFolderId,
-                                            nullptr);
-    oem_folder = new_folder.get();
-    std::unique_ptr<ash::AppListItemMetadata> folder_data =
-        oem_folder->CloneMetadata();
-    folder_data->position = preferred_oem_position.IsValid()
-                                ? preferred_oem_position
-                                : GetOemFolderPos();
-    folder_data->name = oem_folder_name;
-    oem_folder->SetMetadata(std::move(folder_data));
-    AddItem(std::move(new_folder));
-  }
-}
-
-syncer::StringOrdinal FakeAppListModelUpdater::GetOemFolderPos() {
-  // The oem folder's correct position is based on the item order.
-  // We don't have the information in Chrome, so the returned position
-  // here is not guaranteed correct.
-  size_t web_store_app_index;
-  if (!FindItemIndexForTest(extensions::kWebStoreAppId, &web_store_app_index)) {
-    if (items_.empty())
-      return syncer::StringOrdinal::CreateInitialOrdinal();
-    return items_.back()->position().CreateAfter();
-  }
-  const ChromeAppListItem* web_store_app_item =
-      ItemAtForTest(web_store_app_index);
-  return web_store_app_item->position().CreateAfter();
 }
 
 void FakeAppListModelUpdater::UpdateAppItemFromSyncItem(

@@ -505,44 +505,6 @@ void AppListControllerImpl::GetIdToAppListIndexMap(
   std::move(callback).Run(id_to_app_list_index);
 }
 
-void AppListControllerImpl::FindOrCreateOemFolder(
-    const std::string& oem_folder_name,
-    const syncer::StringOrdinal& preferred_oem_position,
-    FindOrCreateOemFolderCallback callback) {
-  AppListFolderItem* oem_folder = model_->FindFolderItem(kOemFolderId);
-  if (!oem_folder) {
-    std::unique_ptr<AppListFolderItem> new_folder =
-        std::make_unique<AppListFolderItem>(kOemFolderId,
-                                            /*app_list_model_delegate=*/this);
-    syncer::StringOrdinal oem_position = preferred_oem_position.IsValid()
-                                             ? preferred_oem_position
-                                             : GetOemFolderPos();
-    // Do not create a sync item for the OEM folder here, do it in
-    // ResolveFolderPositions() when the item position is finalized.
-    oem_folder =
-        static_cast<AppListFolderItem*>(model_->AddItem(std::move(new_folder)));
-    model_->SetItemPosition(oem_folder, oem_position);
-  }
-  model_->SetItemName(oem_folder, oem_folder_name);
-  std::move(callback).Run();
-}
-
-void AppListControllerImpl::ResolveOemFolderPosition(
-    const syncer::StringOrdinal& preferred_oem_position,
-    ResolveOemFolderPositionCallback callback) {
-  // In ash:
-  AppListFolderItem* ash_oem_folder = FindFolderItem(kOemFolderId);
-  std::unique_ptr<AppListItemMetadata> metadata;
-  if (ash_oem_folder) {
-    const syncer::StringOrdinal& oem_folder_pos =
-        preferred_oem_position.IsValid() ? preferred_oem_position
-                                         : GetOemFolderPos();
-    model_->SetItemPosition(ash_oem_folder, oem_folder_pos);
-    metadata = ash_oem_folder->CloneMetadata();
-  }
-  std::move(callback).Run(std::move(metadata));
-}
-
 void AppListControllerImpl::NotifyProcessSyncChangesFinished() {
   // When there are incompatible apps on different devices under the same
   // user account, it is possible that moving or adding an app on an empty
@@ -1925,51 +1887,6 @@ void AppListControllerImpl::OnVisibilityWillChange(bool visible,
 
 ////////////////////////////////////////////////////////////////////////////////
 // Private used only:
-
-syncer::StringOrdinal AppListControllerImpl::GetOemFolderPos() {
-  // Place the OEM folder just after the web store, which should always be
-  // followed by a pre-installed app (e.g. Search), so the poosition should be
-  // stable. TODO(stevenjb): consider explicitly setting the OEM folder
-  // location along with the name in
-  // ServicesCustomizationDocument::SetOemFolderName().
-  AppListItemList* item_list = model_->top_level_item_list();
-  if (!item_list->item_count()) {
-    LOG(ERROR) << "No top level item was found. "
-               << "Placing OEM folder at the beginning.";
-    return syncer::StringOrdinal::CreateInitialOrdinal();
-  }
-
-  size_t web_store_app_index;
-  if (!item_list->FindItemIndex(extensions::kWebStoreAppId,
-                                &web_store_app_index)) {
-    LOG(ERROR) << "Web store position is not found it top items. "
-               << "Placing OEM folder at the end.";
-    return item_list->item_at(item_list->item_count() - 1)
-        ->position()
-        .CreateAfter();
-  }
-
-  // Skip items with the same position.
-  const AppListItem* web_store_app_item =
-      item_list->item_at(web_store_app_index);
-  for (size_t j = web_store_app_index + 1; j < item_list->item_count(); ++j) {
-    const AppListItem* next_item = item_list->item_at(j);
-    DCHECK(next_item->position().IsValid());
-    if (!next_item->position().Equals(web_store_app_item->position())) {
-      const syncer::StringOrdinal oem_ordinal =
-          web_store_app_item->position().CreateBetween(next_item->position());
-      VLOG(1) << "Placing OEM Folder at: " << j
-              << " position: " << oem_ordinal.ToDebugString();
-      return oem_ordinal;
-    }
-  }
-
-  const syncer::StringOrdinal oem_ordinal =
-      web_store_app_item->position().CreateAfter();
-  VLOG(1) << "Placing OEM Folder at: " << item_list->item_count()
-          << " position: " << oem_ordinal.ToDebugString();
-  return oem_ordinal;
-}
 
 std::unique_ptr<AppListItem> AppListControllerImpl::CreateAppListItem(
     std::unique_ptr<AppListItemMetadata> metadata) {

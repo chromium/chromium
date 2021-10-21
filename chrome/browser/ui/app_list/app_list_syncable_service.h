@@ -135,6 +135,17 @@ class AppListSyncableService : public syncer::SyncableService,
   // Removes sync item matching |id| after item uninstall.
   void RemoveUninstalledItem(const std::string& id);
 
+  // Returns the default position for the OEM folder.
+  syncer::StringOrdinal GetDefaultOemFolderPosition() const;
+
+  // Creates a string ordinal that would position an app list item as the last
+  // item in the app list.
+  syncer::StringOrdinal GetLastPosition() const;
+
+  // Gets a string ordinal that would position an app after the item with the
+  // provided `id`.
+  syncer::StringOrdinal GetPositionAfterApp(const std::string& id) const;
+
   // Sorts items following the given order.
   void SortSyncItems(ash::AppListSortOrder order);
 
@@ -354,6 +365,10 @@ class AppListSyncableService : public syncer::SyncableService,
   void ApplyAppAttributes(const std::string& app_id,
                           std::unique_ptr<SyncItem> attributes);
 
+  // Creates a `ChromeAppListItem` and a sync item for OEM folder, if they don't
+  // already exist.
+  void EnsureOemFolderExists();
+
   // Creates or updates the Crostini folder sync data if the Crostini folder is
   // missing.
   void MaybeAddOrUpdateCrostiniFolderSyncData();
@@ -378,6 +393,13 @@ class AppListSyncableService : public syncer::SyncableService,
   syncer::SyncableService::StartSyncFlare flare_;
   bool initial_sync_data_processed_ = false;
   bool first_app_list_sync_ = true;
+  // Whether OEM folder position is set to a provisional value - the default OEM
+  // folder position depends on whether sync data contains any non-default apps.
+  // If an OEM app gets installed before initial app lists sync data is
+  // processed, the OEM folder position may be incorrect due to unknown sync
+  // data state, and has to be recalculated when initial sync gets processed -
+  // this variable is used to detect this state.
+  bool oem_folder_using_provisional_default_position_ = false;
   std::string oem_folder_name_;
   // Callback to install default page breaks.
   // Only set for first time user for tablet form devices.
