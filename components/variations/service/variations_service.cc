@@ -482,12 +482,10 @@ GURL VariationsService::GetVariationsServerURL(HttpOptions http_options) {
   }
 
   // Add milestone to the request URL.
-  std::string version = version_info::GetVersionNumber();
-  std::vector<std::string> version_parts = base::SplitString(
-      version, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (version_parts.size() > 0) {
-    server_url = net::AppendOrReplaceQueryParameter(server_url, "milestone",
-                                                    version_parts[0]);
+  const std::string milestone = version_info::GetMajorVersionNumber();
+  if (!milestone.empty()) {
+    server_url =
+        net::AppendOrReplaceQueryParameter(server_url, "milestone", milestone);
   }
 
   DCHECK(server_url.is_valid());
