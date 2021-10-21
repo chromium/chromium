@@ -3369,10 +3369,6 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     SCOPED_CRASH_KEY_STRING256("NoRVH", "target_site_info",
                                target_si->GetSiteInfo().GetDebugString());
     SCOPED_CRASH_KEY_BOOL(
-        "NoRVH", "target_si_in_bfcache",
-        back_forward_cache.IsSiteInstanceInBackForwardCacheForDebugging(
-            target_si->GetId()));
-    SCOPED_CRASH_KEY_BOOL(
         "NoRVH", "target_bi_in_bfcache",
         back_forward_cache.IsBrowsingInstanceInBackForwardCacheForDebugging(
             target_si->GetBrowsingInstanceId()));
@@ -3392,10 +3388,6 @@ void RenderFrameHostImpl::OnCreateChildFrame(
               ->frame_tree_node()
               ->render_manager()
               ->GetProxyHostWithoutRenderViewHostForDebugging());
-    SCOPED_CRASH_KEY_BOOL(
-        "NoRVH", "main_frame_si_in_bfcache",
-        back_forward_cache.IsSiteInstanceInBackForwardCacheForDebugging(
-            main_frame_si->GetId()));
 
     SiteInstanceImpl* proxy_si =
         static_cast<SiteInstanceImpl*>(proxy->GetSiteInstance());
@@ -3413,10 +3405,6 @@ void RenderFrameHostImpl::OnCreateChildFrame(
         "NoRVH", "proxy_bi_in_bfcache",
         back_forward_cache.IsBrowsingInstanceInBackForwardCacheForDebugging(
             proxy_si->GetBrowsingInstanceId()));
-    SCOPED_CRASH_KEY_BOOL(
-        "NoRVH", "proxy_si_in_bfcache",
-        back_forward_cache.IsSiteInstanceInBackForwardCacheForDebugging(
-            proxy_si->GetId()));
     SCOPED_CRASH_KEY_BOOL(
         "NoRVH", "proxy_in_bfcache",
         back_forward_cache.IsProxyInBackForwardCacheForDebugging(proxy));

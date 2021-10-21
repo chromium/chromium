@@ -1295,18 +1295,6 @@ bool BackForwardCacheImpl::IsBrowsingInstanceInBackForwardCacheForDebugging(
   return false;
 }
 
-bool BackForwardCacheImpl::IsSiteInstanceInBackForwardCacheForDebugging(
-    SiteInstanceId site_instance_id) {
-  for (std::unique_ptr<Entry>& entry : entries_) {
-    for (auto& proxy_map_entry : entry->proxy_hosts()) {
-      if (proxy_map_entry.first == site_instance_id) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 bool BackForwardCacheImpl::IsProxyInBackForwardCacheForDebugging(
     RenderFrameProxyHost* proxy) {
   for (std::unique_ptr<Entry>& entry : entries_) {

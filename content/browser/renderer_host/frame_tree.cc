@@ -142,17 +142,9 @@ void PrintCrashKeysForBug1250218(FrameTreeNode* ftn,
       back_forward_cache.IsBrowsingInstanceInBackForwardCacheForDebugging(
           focused_site_instance->GetBrowsingInstanceId()));
   SCOPED_CRASH_KEY_BOOL(
-      "NoProxy", "focused_si_in_bfcache",
-      back_forward_cache.IsSiteInstanceInBackForwardCacheForDebugging(
-          focused_site_instance->GetId()));
-  SCOPED_CRASH_KEY_BOOL(
       "NoProxy", "proxy_bi_in_bfcache",
       back_forward_cache.IsBrowsingInstanceInBackForwardCacheForDebugging(
           proxy_site_instance->GetBrowsingInstanceId()));
-  SCOPED_CRASH_KEY_BOOL(
-      "NoProxy", "proxy_si_in_bfcache",
-      back_forward_cache.IsSiteInstanceInBackForwardCacheForDebugging(
-          proxy_site_instance->GetId()));
 
   base::debug::DumpWithoutCrashing();
 
