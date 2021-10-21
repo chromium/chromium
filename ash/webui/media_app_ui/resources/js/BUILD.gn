@@ -5,7 +5,6 @@
 import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//chromeos/components/web_applications/system_apps.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 stage_folder = "$target_gen_dir/stage"
 
@@ -19,6 +18,7 @@ copy("stage_static") {
     "app_context_test_support.js",
     "error_reporter.js",
     "launch.js",
+    "message_types.js",
     "mojo_api_bootstrap.js",
     "piex_module.js",
     "piex_module_loader.js",
@@ -32,13 +32,11 @@ copy("stage_generated") {
   sources = [
     "$target_gen_dir/../../../../../chromeos/components/system_apps/public/js/message_pipe.m.js",
     "$target_gen_dir/../../media_app_ui.mojom-lite.js",
-    "$target_gen_dir/message_types.m.js",
   ]
 
   outputs = [ stage_folder + "/{{source_file_part}}" ]
 
   deps = [
-    ":modulize",
     "//ash/webui/media_app_ui:mojo_bindings_js",
     "//chromeos/components/system_apps/public/js:modulize",
   ]
@@ -75,10 +73,6 @@ optimize_webui("piex_rollup") {
     ":stage_generated",
     ":stage_static",
   ]
-}
-
-js_modulizer("modulize") {
-  input_files = [ "message_types.js" ]
 }
 
 # Build rules below here are just used for typechecking and don't influence what
@@ -133,19 +127,13 @@ js_library("launch") {
   deps = [
     ":app_context_test_support",
     ":error_reporter",
-    ":message_types.m",
+    ":message_types",
     ":mojo_api_bootstrap",
     "//chromeos/components/system_apps/public/js:message_pipe.m",
   ]
 }
 
 js_library("message_types") {
-}
-
-js_library("message_types.m") {
-  sources =
-      [ "$root_gen_dir/ash/webui/media_app_ui/resources/js/message_types.m.js" ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("error_reporter") {
@@ -163,7 +151,7 @@ js_library("receiver") {
   externs_list = [ "media_app.externs.js" ]
   deps = [
     ":app_context_test_support",
-    ":message_types.m",
+    ":message_types",
     ":piex_module_loader",
     "//chromeos/components/system_apps/public/js:message_pipe.m",
     "//chromeos/components/system_apps/public/js:sandboxed_load_time_data",

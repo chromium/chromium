@@ -11,7 +11,7 @@
  * Enum for message types.
  * @enum {string}
  */
-/* #export */ const Message = {
+export const Message = {
   DELETE_FILE: 'delete-file',
   IFRAME_READY: 'iframe-ready',
   LOAD_EXTRA_FILES: 'load-extra-files',
@@ -32,7 +32,7 @@
  * If the supplied file `token` is invalid the request is rejected.
  * @typedef {{token: number}}
  */
-/* #export */ let DeleteFileMessage;
+export let DeleteFileMessage;
 
 /**
  * Representation of a file passed in on the LoadFilesMessage.
@@ -45,7 +45,7 @@
  *    canRename: boolean
  * }}
  */
-/* #export */ let FileContext;
+export let FileContext;
 
 /**
  * Message sent by the privileged context to the unprivileged context indicating
@@ -55,7 +55,7 @@
  *    files: !Array<!FileContext>
  * }}
  */
-/* #export */ let LoadFilesMessage;
+export let LoadFilesMessage;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -63,7 +63,7 @@
  * If the supplied file `token` is invalid the request is rejected.
  * @typedef {{token: number, blob: !Blob}}
  */
-/* #export */ let OverwriteFileMessage;
+export let OverwriteFileMessage;
 
 /**
  * Response message to a successful overwrite (no error thrown). If fields are
@@ -72,7 +72,7 @@
  * `errorName` is the error on the write attempt that triggered the picker.
  * @typedef {{renamedTo: (string|undefined), errorName: (string|undefined)}}
  */
-/* #export */ let OverwriteViaFilePickerResponse;
+export let OverwriteViaFilePickerResponse;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -84,13 +84,13 @@
  * this is used to decide what `direction` is in reference to.
  * @typedef {{direction: number, currentFileToken: (number|undefined)}}
  */
-/* #export */ let NavigateMessage;
+export let NavigateMessage;
 
 /**
  * Enum for results of renaming a file.
  * @enum {number}
  */
-/* #export */ const RenameResult = {
+export const RenameResult = {
   FILE_NO_LONGER_IN_LAST_OPENED_DIRECTORY: -1,
   SUCCESS: 0,
   FILE_EXISTS: 1,
@@ -102,10 +102,10 @@
  * If the supplied file `token` is invalid the request is rejected.
  * @typedef {{token: number, newFilename: string}}
  */
-/* #export */ let RenameFileMessage;
+export let RenameFileMessage;
 
 /** @typedef {{renameResult: RenameResult!}}  */
-/* #export */ let RenameFileResponse;
+export let RenameFileResponse;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -127,7 +127,7 @@
  *   accept: !Array<string>
  * }}
  */
-/* #export */ let RequestSaveFileMessage;
+export let RequestSaveFileMessage;
 
 /**
  * Response message sent by the privileged context with a unique identifier for
@@ -135,7 +135,7 @@
  * file message.
  * @typedef {{pickedFileContext: !FileContext}}
  */
-/* #export */ let RequestSaveFileResponse;
+export let RequestSaveFileResponse;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -147,24 +147,24 @@
  * just the currently writable file.
  * @typedef {{blob: !Blob, oldFileToken: ?number, pickedFileToken: number}}
  */
-/* #export */ let SaveAsMessage;
+export let SaveAsMessage;
 
 /**
  * Response message sent by the privileged context with the name of the new
  * current file.
  * @typedef {{newFilename: string}}
  */
-/* #export */ let SaveAsResponse;
+export let SaveAsResponse;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
  * an "allowed" file to be opened.
  * @typedef {{fileToken: number}}
  */
-/* #export */ let OpenAllowedFileMessage;
+export let OpenAllowedFileMessage;
 
 /**
  * Response message sent by the privileged context to "open" an allowed file.
  * @typedef {{file: !File}}
  */
-/* #export */ let OpenAllowedFileResponse;
+export let OpenAllowedFileResponse;
