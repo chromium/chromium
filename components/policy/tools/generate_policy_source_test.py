@@ -12,7 +12,8 @@ import generate_policy_source_test_data as test_data
 
 from generate_policy_source import PolicyDetails
 
-class CppGenerationTest(unittest.TestCase):
+
+class PolicyGenerationTest(unittest.TestCase):
 
   TEMPLATES_JSON = {
       "risk_tag_definitions": [{
@@ -70,11 +71,26 @@ class CppGenerationTest(unittest.TestCase):
           "tags": [],
           "caption": "ExampleBoolPrecedenceMetapolicy caption",
           "desc": "ExampleBoolPrecedenceMetapolicy desc",
+      }, {
+          "name": "CloudOnlyPolicy",
+          "type": "main",
+          "schema": {
+              "type": "boolean"
+          },
+          "features": {
+              "cloud_only": True,
+          },
+          "supported_on": ["chrome_os:1-", "android:1-"],
+          "id": 5,
+          "tags": [],
+          "caption": "CloudOnlyPolicy caption",
+          "desc": "CloudOnlyPolicy desc",
       }],
       "policy_atomic_group_definitions": []
   }
 
   def setUp(self):
+    self.maxDiff = 10000
     self.chrome_major_version = 94
     self.target_platform = 'chrome_os'
     self.all_target_platforms = ['win', 'mac', 'linux', 'chromeos', 'fuchsia']
@@ -322,6 +338,22 @@ class CppGenerationTest(unittest.TestCase):
     mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
     self._assertCallsEqual(mocked_file().write.call_args_list,
                            test_data.EXPECTED_CROS_POLICY_CONSTANTS_SOURCE)
+
+
+  def testWriteAppRestrictions(self):
+    output_path = 'app_restrictions_xml'
+    with patch('codecs.open', mock_open()) as mocked_file:
+      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+        generate_policy_source._WriteAppRestrictions(
+            self.policies,
+            self.policy_atomic_groups,
+            self.target_platform,
+            f,
+            self.risk_tags,
+        )
+    mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
+    self._assertCallsEqual(mocked_file().write.call_args_list,
+                           test_data.EXPECTED_APP_RESTRICTIONS_XML)
 
 
 if __name__ == '__main__':
