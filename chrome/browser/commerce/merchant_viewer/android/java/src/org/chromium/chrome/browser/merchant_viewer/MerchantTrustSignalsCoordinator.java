@@ -151,7 +151,9 @@ public class MerchantTrustSignalsCoordinator
         MerchantTrustSignalsEventStorage storage = mStorageFactory.getForLastUsedProfile();
         if (navigationHandle == null || navigationHandle.getUrl() == null || storage == null
                 || MerchantViewerConfig.isTrustSignalsMessageDisabled()
+                || trustSignals.getProactiveMessageDisabled()
                 || isMerchantRatingBelowThreshold(trustSignals)
+                || isNonPersonalizedFamiliarMerchant(trustSignals)
                 || isFamiliarMerchant(navigationHandle.getUrl().getSpec())
                 || hasReachedMaxAllowedMessageNumberInGivenTime()
                 || !isOnSecureWebsite(item.getWebContents())) {
@@ -206,6 +208,11 @@ public class MerchantTrustSignalsCoordinator
     private boolean isMerchantRatingBelowThreshold(MerchantTrustSignalsV2 trustSignals) {
         return trustSignals.getMerchantStarRating()
                 < MerchantViewerConfig.getTrustSignalsMessageRatingThreshold();
+    }
+
+    private boolean isNonPersonalizedFamiliarMerchant(MerchantTrustSignalsV2 trustSignals) {
+        return trustSignals.getNonPersonalizedFamiliarityScore()
+                > MerchantViewerConfig.getTrustSignalsNonPersonalizedFamiliarityScoreThreshold();
     }
 
     @VisibleForTesting

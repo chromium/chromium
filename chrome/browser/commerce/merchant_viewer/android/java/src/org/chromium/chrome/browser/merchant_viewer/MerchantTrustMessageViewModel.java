@@ -72,6 +72,9 @@ class MerchantTrustMessageViewModel {
 
     public static Spannable getMessageDescription(
             Context context, MerchantTrustSignalsV2 trustSignals) {
+        // The zero rating value means we have no rating data for the merchant, under which
+        // condition we shouldn't call this method to generate the description.
+        assert trustSignals.getMerchantStarRating() > 0;
         // Only keep one decimal to avoid inaccurate double value.
         double ratingValue = Math.round(trustSignals.getMerchantStarRating() * 10) / 10.0;
         SpannableStringBuilder builder = new SpannableStringBuilder();
@@ -89,10 +92,15 @@ class MerchantTrustMessageViewModel {
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         }
         builder.append(" ");
-        builder.append(context.getResources().getQuantityString(
-                R.plurals.merchant_viewer_message_description_reviews,
-                trustSignals.getMerchantCountRating(),
-                numberFormatter.format(trustSignals.getMerchantCountRating())));
+        if (trustSignals.getMerchantCountRating() > 0) {
+            builder.append(context.getResources().getQuantityString(
+                    R.plurals.merchant_viewer_message_description_reviews,
+                    trustSignals.getMerchantCountRating(),
+                    numberFormatter.format(trustSignals.getMerchantCountRating())));
+        } else {
+            builder.append(context.getResources().getString(
+                    R.string.page_info_store_info_description_with_no_review));
+        }
         return builder;
     }
 

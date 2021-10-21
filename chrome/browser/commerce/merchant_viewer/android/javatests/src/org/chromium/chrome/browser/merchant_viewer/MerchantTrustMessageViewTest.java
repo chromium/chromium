@@ -67,7 +67,6 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
 
     private Activity mActivity;
     private MessageBannerView mMessageBannerView;
-    private MerchantTrustSignalsV2 mMerchantTrustSignals;
     private LayoutParams mParams;
 
     @Override
@@ -76,11 +75,6 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
         mActivity = getActivity();
         mMessageBannerView = (MessageBannerView) LayoutInflater.from(mActivity).inflate(
                 R.layout.message_banner_view, null, false);
-        mMerchantTrustSignals = MerchantTrustSignalsV2.newBuilder()
-                                        .setMerchantStarRating(3.51234f)
-                                        .setMerchantCountRating(1640)
-                                        .setMerchantDetailsPageUrl("http://dummy/url")
-                                        .build();
         mParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                 mActivity.getResources().getDimensionPixelSize(R.dimen.message_banner_height));
     }
@@ -91,9 +85,9 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
         super.tearDownTest();
     }
 
-    private void createModelAndSetView() {
+    private void createModelAndSetView(MerchantTrustSignalsV2 trustSignals) {
         PropertyModel propertyModel = MerchantTrustMessageViewModel.create(
-                mActivity, mMerchantTrustSignals, "fake_url", mMockActionHandler);
+                mActivity, trustSignals, "fake_url", mMockActionHandler);
         PropertyModelChangeProcessor.create(
                 propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -105,7 +99,13 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
     @Feature({"RenderTest"})
     public void testRenderMessage_UseRatingBar() throws IOException {
         setUseRatingBarParam("true");
-        createModelAndSetView();
+
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(3.51234f)
+                                                      .setMerchantCountRating(1640)
+                                                      .setMerchantDetailsPageUrl("http://dummy/url")
+                                                      .build();
+        createModelAndSetView(trustSignals);
         mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_use_rating_bar");
     }
 
@@ -114,8 +114,29 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
     @Feature({"RenderTest"})
     public void testRenderMessage_NotUseRatingBar() throws IOException {
         setUseRatingBarParam("false");
-        createModelAndSetView();
+
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(3.51234f)
+                                                      .setMerchantCountRating(1640)
+                                                      .setMerchantDetailsPageUrl("http://dummy/url")
+                                                      .build();
+        createModelAndSetView(trustSignals);
         mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_not_use_rating_bar");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderMessage_NoRatingReviews() throws IOException {
+        setUseRatingBarParam("true");
+
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(3.51234f)
+                                                      .setMerchantCountRating(0)
+                                                      .setMerchantDetailsPageUrl("http://dummy/url")
+                                                      .build();
+        createModelAndSetView(trustSignals);
+        mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_no_rating_reviews");
     }
 
     private void setUseRatingBarParam(String useRatingBar) {
