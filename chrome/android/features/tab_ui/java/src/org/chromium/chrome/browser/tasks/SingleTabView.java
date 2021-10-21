@@ -6,14 +6,12 @@ package org.chromium.chrome.browser.tasks;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** View of the tab on the single tab tab switcher. */
 class SingleTabView extends LinearLayout {
@@ -25,7 +23,6 @@ class SingleTabView extends LinearLayout {
     public SingleTabView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        setBackgroundColor();
     }
 
     @Override
@@ -50,12 +47,5 @@ class SingleTabView extends LinearLayout {
      */
     public void setTitle(String title) {
         mTitle.setText(title);
-    }
-
-    /** Set the background color of the view. */
-    private void setBackgroundColor() {
-        GradientDrawable gradientDrawable = (GradientDrawable) getBackground();
-        gradientDrawable.setColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.card_elevation));
     }
 }
