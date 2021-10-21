@@ -175,6 +175,11 @@ void PaintPropertyTreeBuilder::SetupContextForFrame(
     full_context.fragments.push_back(PaintPropertyTreeBuilderFragmentContext());
 
   PaintPropertyTreeBuilderFragmentContext& context = full_context.fragments[0];
+
+  // Block fragmentation doesn't cross frame boundaries.
+  full_context.repeating_table_section = nullptr;
+  context.current.is_in_block_fragmentation = false;
+
   context.current.paint_offset += PhysicalOffset(frame_view.Location());
   context.rendering_context_id = 0;
   context.should_flatten_inherited_transform = true;
