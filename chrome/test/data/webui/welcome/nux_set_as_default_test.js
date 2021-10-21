@@ -5,9 +5,8 @@
 import 'chrome://welcome/set_as_default/nux_set_as_default.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {NuxSetAsDefaultProxyImpl} from 'chrome://welcome/set_as_default/nux_set_as_default_proxy.js';
-
-import {eventToPromise} from '../test_util.js';
 
 import {TestNuxSetAsDefaultProxy} from './test_nux_set_as_default_proxy.js';
 

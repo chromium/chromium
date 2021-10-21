@@ -193,7 +193,7 @@ export const NavigationMixin = dedupingMixin(
       return NavigationMixin;
     });
 
-interface NavigationMixinInterface {
+export interface NavigationMixinInterface {
   subtitle?: string;
   notifyRouteEnter(): void;
   updateFocusForA11y(): void;

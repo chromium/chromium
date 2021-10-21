@@ -11,6 +11,7 @@ import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_definitions.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
@@ -645,4 +646,22 @@ generate_grd("build_grd") {
     deps += [ "print_preview:build_grdp" ]
     grdp_files += [ "$target_gen_dir/print_preview/resources.grdp" ]
   }
+
+  if (!is_chromeos_ash && !is_android) {
+    deps += [ "welcome:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/welcome/resources.grdp" ]
+  }
+}
+
+# TypeScript related targets
+
+ts_definitions("generate_definitions") {
+  root_dir = "./"
+  out_dir = "$target_gen_dir/tsc"
+  js_files = [
+    "chai_assert.js",
+    "test_browser_proxy.js",
+    "test_util.js",
+  ]
+  extra_deps = [ "//ui/webui/resources:generate_definitions" ]
 }

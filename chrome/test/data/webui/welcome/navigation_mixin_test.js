@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {navigateTo, navigateToNextStep, NavigationMixin, Routes} from 'chrome://welcome/navigation_mixin.js';
-
-import {eventToPromise} from '../test_util.js';
 
 suite('NavigationBehaviorTest', function() {
   let elements = [];
