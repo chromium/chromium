@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
@@ -162,13 +163,52 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
   NGGridLayoutAlgorithmTrackCollection column_track_collection;
   NGGridLayoutAlgorithmTrackCollection row_track_collection;
   LayoutUnit intrinsic_block_size;
+  NGGridGeometry grid_geometry;
 
-  const NGGridGeometry grid_geometry = ComputeGridGeometry(
-      column_block_track_collection, row_block_track_collection, &grid_items,
-      &column_track_collection, &row_track_collection, &grid_properties,
-      &intrinsic_block_size);
+  if (IsResumingLayout(BreakToken())) {
+    column_track_collection = NGGridLayoutAlgorithmTrackCollection(
+        column_block_track_collection, false, &grid_properties);
+    row_track_collection = NGGridLayoutAlgorithmTrackCollection(
+        row_block_track_collection, false, &grid_properties);
 
-  PlaceGridItems(grid_items, grid_geometry);
+    // Cache set indices for grid items.
+    for (auto& grid_item : grid_items.item_data) {
+      grid_item.ComputeSetIndices(column_track_collection);
+      grid_item.ComputeSetIndices(row_track_collection);
+    }
+
+    // TODO(layout-dev): When we support variable inline-size fragments we'll
+    // need to re-run |ComputeGridGeometry| for the different inline-size.
+    // When doing this, we'll need to make sure that we don't recalculate the
+    // automatic repetitions (this depends on available size), as this might
+    // change the grid structure significantly (e.g. pull a child up into the
+    // first row).
+    grid_geometry = BreakToken()->GridData().grid_geometry;
+    intrinsic_block_size = BreakToken()->GridData().intrinsic_block_size;
+  } else {
+    grid_geometry = ComputeGridGeometry(
+        column_block_track_collection, row_block_track_collection, &grid_items,
+        &column_track_collection, &row_track_collection, &grid_properties,
+        &intrinsic_block_size);
+  }
+
+  if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
+    // Either retrieve all items offsets, or generate them using the
+    // non-fragmented |PlaceGridItems| pass.
+    Vector<GridItemOffsets> offsets;
+    if (IsResumingLayout(BreakToken()))
+      offsets = BreakToken()->GridData().offsets;
+    else
+      PlaceGridItems(grid_items, grid_geometry, &offsets);
+
+    PlaceGridItemsForFragmentation(grid_items, grid_geometry, offsets);
+
+    container_builder_.SetGridBreakTokenData(
+        std::make_unique<NGGridBreakTokenData>(grid_geometry, offsets,
+                                               intrinsic_block_size));
+  } else {
+    PlaceGridItems(grid_items, grid_geometry);
+  }
 
   const LayoutUnit block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
@@ -3295,8 +3335,9 @@ void AlignmentOffsetForOutOfFlow(
 const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
     const GridItemData& grid_item,
     const LogicalSize& containing_grid_area_size,
+    NGCacheSlot cache_slot,
     absl::optional<LayoutUnit> opt_fixed_block_size,
-    NGCacheSlot cache_slot) const {
+    absl::optional<LayoutUnit> opt_fragment_relative_block_offset) const {
   NGConstraintSpaceBuilder builder(
       ConstraintSpace(), grid_item.node.Style().GetWritingDirection(),
       /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
@@ -3313,13 +3354,22 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
   builder.SetPercentageResolutionSize(containing_grid_area_size);
   builder.SetInlineAutoBehavior(grid_item.inline_auto_behavior);
   builder.SetBlockAutoBehavior(grid_item.block_auto_behavior);
+
+  if (opt_fragment_relative_block_offset) {
+    SetupSpaceBuilderForFragmentation(ConstraintSpace(), grid_item.node,
+                                      *opt_fragment_relative_block_offset,
+                                      &builder,
+                                      /* is_new_fc */ true);
+  }
+
   return builder.ToConstraintSpace();
 }
 
 const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForLayout(
     const NGGridGeometry& grid_geometry,
     const GridItemData& grid_item,
-    LogicalRect* containing_grid_area) const {
+    LogicalRect* containing_grid_area,
+    absl::optional<LayoutUnit> opt_fragment_relative_block_offset) const {
   ComputeGridItemOffsetAndSize(grid_item, grid_geometry.column_geometry,
                                kForColumns,
                                &containing_grid_area->offset.inline_offset,
@@ -3328,8 +3378,9 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForLayout(
                                &containing_grid_area->offset.block_offset,
                                &containing_grid_area->size.block_size);
   return CreateConstraintSpace(grid_item, containing_grid_area->size,
+                               NGCacheSlot::kLayout,
                                /* opt_fixed_block_size */ absl::nullopt,
-                               NGCacheSlot::kLayout);
+                               opt_fragment_relative_block_offset);
 }
 
 const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
@@ -3350,7 +3401,7 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
                                  &containing_grid_area_size.inline_size);
   }
   return CreateConstraintSpace(grid_item, containing_grid_area_size,
-                               opt_fixed_block_size, NGCacheSlot::kMeasure);
+                               NGCacheSlot::kMeasure, opt_fixed_block_size);
 }
 
 namespace {
@@ -3505,6 +3556,85 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     container_builder_.SetBaseline(*baseline);
 }
 
+void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
+    const GridItems& grid_items,
+    const NGGridGeometry& grid_geometry,
+    const Vector<GridItemOffsets>& offsets) {
+  // TODO(ikilpatrick): Update SetHasSeenAllChildren and early exit if true.
+  const auto container_writing_direction =
+      ConstraintSpace().GetWritingDirection();
+
+  BaselineAccumulator baseline_accumulator;
+
+  LayoutUnit previous_consumed_block_size =
+      BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
+
+  base::span<const Member<const NGBreakToken>> child_break_tokens;
+  if (BreakToken())
+    child_break_tokens = BreakToken()->ChildBreakTokens();
+  auto child_break_token_it = child_break_tokens.begin();
+  auto* offsets_it = offsets.begin();
+
+  for (const auto& grid_item : grid_items.item_data) {
+    // Grab the offsets and break-token (if present) for this child.
+    const GridItemOffsets item_offsets = *(offsets_it++);
+    const NGBlockBreakToken* break_token = nullptr;
+    if (child_break_token_it != child_break_tokens.end()) {
+      if ((*child_break_token_it)->InputNode() == grid_item.node)
+        break_token = To<NGBlockBreakToken>((child_break_token_it++)->Get());
+    }
+
+    const LayoutUnit fragment_relative_block_offset =
+        break_token
+            ? LayoutUnit()
+            : item_offsets.offset.block_offset - previous_consumed_block_size;
+
+    // Check to see if this child should be placed within this fragmentainer.
+    // It can either be:
+    //  - Above, we've handled it already in a previous fragment.
+    //  - Below, we'll handle it within a subsequent fragment.
+    if (fragment_relative_block_offset < LayoutUnit())
+      continue;
+    if (fragment_relative_block_offset >
+        FragmentainerSpaceAtBfcStart(ConstraintSpace()))
+      continue;
+
+    LogicalRect unused;
+    const NGConstraintSpace space = CreateConstraintSpaceForLayout(
+        grid_geometry, grid_item, &unused, fragment_relative_block_offset);
+
+    // TODO(ikilpatrick): Use |BreakBeforeChildIfNeeded|.
+    //  - what to set for has_container_separation?
+    scoped_refptr<const NGLayoutResult> result =
+        grid_item.node.Layout(space, break_token);
+    container_builder_.AddResult(
+        *result,
+        {item_offsets.offset.inline_offset, fragment_relative_block_offset},
+        item_offsets.relative_offset);
+
+    const NGBoxFragment fragment(
+        container_writing_direction,
+        To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+    baseline_accumulator.Accumulate(grid_item, fragment,
+                                    fragment_relative_block_offset);
+  }
+
+  // TODO(ikilpatrick): There (typically) is a row which has been fragmented.
+  // Items in this row may have grown in block-size or pushed down due to
+  // fragmentation.
+  //
+  // If the row's track has an auto min-size, we need to modify the
+  // |grid_geometry|, |offsets|, and |intrinsic_block_size| by the appropriate
+  // amount (the maximum of items growing or being pushed).
+  //
+  // This will have very similar logic to |PropagateSpaceShortage| except we
+  // need to record the "expansion".
+
+  // Propagate the baseline from the appropriate child.
+  if (auto baseline = baseline_accumulator.Baseline())
+    container_builder_.SetBaseline(*baseline);
+}
+
 void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
     const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
@@ -3514,6 +3644,8 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
   const LogicalSize fragment_size(container_builder_.InlineSize(), block_size);
   const LogicalSize default_containing_block_size =
       ShrinkLogicalSize(fragment_size, BorderScrollbarPadding());
+
+  // TODO(ikilpatrick): Only add candidates within this fragment.
   for (const GridItemData& out_of_flow_item : out_of_flow_items) {
     absl::optional<LogicalRect> containing_block_rect;
     if (out_of_flow_item.is_grid_containing_block) {

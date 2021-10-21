@@ -382,13 +382,17 @@ struct GridItemIndices {
     const NGConstraintSpace CreateConstraintSpace(
         const GridItemData& grid_item,
         const LogicalSize& containing_grid_area_size,
+        NGCacheSlot cache_slot,
         absl::optional<LayoutUnit> opt_fixed_block_size,
-        NGCacheSlot cache_slot) const;
+        absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
+            absl::nullopt) const;
 
     const NGConstraintSpace CreateConstraintSpaceForLayout(
         const NGGridGeometry& grid_geometry,
         const GridItemData& grid_item,
-        LogicalRect* containing_grid_area) const;
+        LogicalRect* containing_grid_area,
+        absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
+            absl::nullopt) const;
 
     const NGConstraintSpace CreateConstraintSpaceForMeasure(
         const NGGridGeometry& grid_geometry,
@@ -406,6 +410,15 @@ struct GridItemIndices {
     void PlaceGridItems(const GridItems& grid_items,
                         const NGGridGeometry& grid_geometry,
                         Vector<GridItemOffsets>* out_offsets = nullptr);
+
+    // Layout the |grid_items| for fragmentation (when there is a known
+    // fragmentainer size).
+    //
+    // This will go through all the grid_items and place fragments which belong
+    // within this fragmentainer.
+    void PlaceGridItemsForFragmentation(const GridItems& grid_items,
+                                        const NGGridGeometry& grid_geometry,
+                                        const Vector<GridItemOffsets>& offsets);
 
     // Computes the static position, grid area and its offset of out of flow
     // elements in the grid.
