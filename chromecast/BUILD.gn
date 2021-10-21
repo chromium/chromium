@@ -35,7 +35,10 @@ group("all") {
     deps += [ ":cast_shell_apk" ]
   }
   if (!is_android) {
-    data_deps += [ ":cast_shell" ]
+    data_deps += [
+      ":cast_browser",
+      ":cast_shell",
+    ]
   }
   if (is_linux || is_chromeos) {
     deps += [
@@ -512,6 +515,18 @@ cast_executable("cast_shell") {
 
   deps = [
     ":cast_shell_lib",
+    ":chromecast_locales_pak",
+    "//chromecast/app",
+    "//content/public/app",
+    "//third_party/widevine/cdm",
+  ]
+}
+
+cast_executable("cast_browser") {
+  sources = [ "app/cast_main.cc" ]
+
+  deps = [
+    ":cast_shell_lib_simple",
     ":chromecast_locales_pak",
     "//chromecast/app",
     "//content/public/app",
