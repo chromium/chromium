@@ -38,7 +38,8 @@ bool CanUseBackgroundPriorityForWorkerThreadImpl() {
   // remaining shutdown blocking tasks).
   //
   // This is ignored on Android, because it doesn't have a clean shutdown phase.
-  if (!PlatformThread::CanIncreaseThreadPriority(ThreadPriority::NORMAL))
+  if (!PlatformThread::CanChangeThreadPriority(ThreadPriority::BACKGROUND,
+                                               ThreadPriority::NORMAL))
     return false;
 #endif  // defined(OS_ANDROID)
 

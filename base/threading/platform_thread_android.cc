@@ -35,11 +35,8 @@ const ThreadPriorityToNiceValuePair kThreadPriorityToNiceValueMap[4] = {
     {ThreadPriority::REALTIME_AUDIO, -16},
 };
 
-absl::optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
-    ThreadPriority priority) {
-  if (priority == ThreadPriority::REALTIME_AUDIO)
-    return absl::make_optional(true);
-  return absl::nullopt;
+bool CanSetThreadPriorityToRealtimeAudio() {
+  return true;
 }
 
 bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority) {
