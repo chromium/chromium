@@ -302,7 +302,8 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
     if (@available(iOS 15, *)) {
       self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
       self.overflowMenuMediator.dispatcher =
-          static_cast<id<ApplicationCommands, BrowserCommands>>(
+          static_cast<id<ApplicationCommands, BrowserCommands,
+                         FindInPageCommands, TextZoomCommands>>(
               self.browser->GetCommandDispatcher());
       self.overflowMenuMediator.webStateList = self.browser->GetWebStateList();
       self.overflowMenuMediator.navigationAgent =

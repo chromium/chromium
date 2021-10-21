@@ -10,6 +10,8 @@
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
 @class OverflowMenuModel;
+@protocol FindInPageCommands;
+@protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
 class WebStateList;
 
@@ -25,7 +27,11 @@ class WebStateList;
 @property(nonatomic, assign) WebStateList* webStateList;
 
 // Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
+@property(nonatomic, weak) id<ApplicationCommands,
+                              BrowserCommands,
+                              FindInPageCommands,
+                              TextZoomCommands>
+    dispatcher;
 
 // Navigation agent for reloading pages.
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;

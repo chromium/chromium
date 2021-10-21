@@ -36,6 +36,7 @@ source_set("overflow_menu") {
     "//components/profile_metrics",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/ui/activity_services",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/web",

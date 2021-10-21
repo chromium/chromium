@@ -7,11 +7,16 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/sys_string_conversions.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
@@ -210,12 +215,12 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
       });
   self.readLaterAction =
       CreateOverflowMenuAction(IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST,
-                               @"overflow_menu_action_read_later",
-                               ^{
+                               @"overflow_menu_action_read_later", ^{
+                                 [weakSelf addToReadingList];
                                });
   self.translateAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_TRANSLATE, @"overflow_menu_action_bookmark",
-      ^{
+      IDS_IOS_TOOLS_MENU_TRANSLATE, @"overflow_menu_action_translate", ^{
+        [weakSelf translatePage];
       });
   self.requestSiteAction =
       CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_REQUEST_DESKTOP_SITE,
@@ -223,12 +228,12 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                ^{
                                });
   self.findInPageAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_FIND_IN_PAGE, @"overflow_menu_action_find_in_page",
-      ^{
+      IDS_IOS_TOOLS_MENU_FIND_IN_PAGE, @"overflow_menu_action_find_in_page", ^{
+        [weakSelf openFindInPage];
       });
   self.textZoomAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_TEXT_ZOOM, @"overflow_menu_action_text_zoom",
-      ^{
+      IDS_IOS_TOOLS_MENU_TEXT_ZOOM, @"overflow_menu_action_text_zoom", ^{
+        [weakSelf openTextZoom];
       });
 
   OverflowMenuActionGroup* pageActionsGroup =
@@ -243,12 +248,12 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                                  ]];
 
   self.reportIssueAction = CreateOverflowMenuAction(
-      IDS_IOS_OPTIONS_REPORT_AN_ISSUE, @"overflow_menu_action_report_issue",
-      ^{
+      IDS_IOS_OPTIONS_REPORT_AN_ISSUE, @"overflow_menu_action_report_issue", ^{
+        [weakSelf reportAnIssue];
       });
   self.helpAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_HELP_MOBILE,
-                                             @"overflow_menu_action_help",
-                                             ^{
+                                             @"overflow_menu_action_help", ^{
+                                               [weakSelf openHelp];
                                              });
 
   OverflowMenuActionGroup* helpActionsGroup =
@@ -361,23 +366,86 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 
 #pragma mark - Action handlers
 
+// Dismisses the menu and reloads the current page.
 - (void)reload {
   RecordAction(UserMetricsAction("MobileMenuReload"));
   [self.dispatcher dismissPopupMenuAnimated:YES];
   self.navigationAgent->Reload();
 }
 
+// Dismisses the menu and stops the current page load.
 - (void)stopLoading {
   RecordAction(UserMetricsAction("MobileMenuStop"));
   [self.dispatcher dismissPopupMenuAnimated:YES];
   self.navigationAgent->StopLoading();
 }
 
+// Dismisses the menu and opens a new incognito tab.
 - (void)openIncognitoTab {
   RecordAction(UserMetricsAction("MobileMenuNewIncognitoTab"));
   [self.dispatcher dismissPopupMenuAnimated:YES];
   [self.dispatcher
       openURLInNewTab:[OpenNewTabCommand commandWithIncognito:YES]];
+}
+
+// Dismisses the menu and adds the current page to the reading list.
+- (void)addToReadingList {
+  RecordAction(UserMetricsAction("MobileMenuReadLater"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+
+  if (!self.webState)
+    return;
+  // The mediator can be destroyed when this callback is executed. So it is not
+  // possible to use a weak self.
+  __weak id<BrowserCommands> weakDispatcher = self.dispatcher;
+  GURL visibleURL = self.webState->GetVisibleURL();
+  NSString* title = base::SysUTF16ToNSString(self.webState->GetTitle());
+  activity_services::RetrieveCanonicalUrl(self.webState, ^(const GURL& URL) {
+    const GURL& pageURL = !URL.is_empty() ? URL : visibleURL;
+    if (!pageURL.is_valid() || !pageURL.SchemeIsHTTPOrHTTPS())
+      return;
+
+    ReadingListAddCommand* command =
+        [[ReadingListAddCommand alloc] initWithURL:pageURL title:title];
+    [weakDispatcher addToReadingList:command];
+  });
+}
+
+// Dismisses the menu and starts translating the current page.
+- (void)translatePage {
+  base::RecordAction(UserMetricsAction("MobileMenuTranslate"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher showTranslate];
+}
+
+// Dismisses the menu and opens Find In Page
+- (void)openFindInPage {
+  RecordAction(UserMetricsAction("MobileMenuFindInPage"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher openFindInPage];
+}
+
+// Dismisses the menu and opens Text Zoom
+- (void)openTextZoom {
+  RecordAction(UserMetricsAction("MobileMenuTextZoom"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher openTextZoom];
+}
+
+// Dismisses the menu and opens the Report an Issue screen.
+- (void)reportAnIssue {
+  RecordAction(UserMetricsAction("MobileMenuReportAnIssue"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher
+      showReportAnIssueFromViewController:self.baseViewController
+                                   sender:UserFeedbackSender::ToolsMenu];
+}
+
+// Dismisses the menu and opens the help screen.
+- (void)openHelp {
+  RecordAction(UserMetricsAction("MobileMenuHelp"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher showHelpPage];
 }
 
 #pragma mark - Destinations Handlers
