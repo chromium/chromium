@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/user_population.h"
+#include "components/safe_browsing/core/browser/user_population.h"
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -13,7 +14,6 @@
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/version_info/version_info.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -33,7 +33,7 @@ std::unique_ptr<PrefService> CreatePrefService() {
 }  // namespace
 
 TEST(GetUserPopulationTest, PopulatesPopulation) {
-  content::BrowserTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
 
   SetSafeBrowsingState(pref_service.get(),
@@ -65,7 +65,7 @@ TEST(GetUserPopulationTest, PopulatesPopulation) {
 }
 
 TEST(GetUserPopulationTest, PopulatesMBB) {
-  content::BrowserTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
 
   pref_service->SetBoolean(
@@ -86,7 +86,7 @@ TEST(GetUserPopulationTest, PopulatesMBB) {
 }
 
 TEST(GetUserPopulationTest, PopulatesIncognito) {
-  content::BrowserTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
 
   ChromeUserPopulation population =
@@ -103,7 +103,7 @@ TEST(GetUserPopulationTest, PopulatesIncognito) {
 }
 
 TEST(GetUserPopulationTest, PopulatesSync) {
-  content::BrowserTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
 
   ChromeUserPopulation population = GetUserPopulation(
@@ -120,7 +120,7 @@ TEST(GetUserPopulationTest, PopulatesSync) {
 }
 
 TEST(GetUserPopulationTest, PopulatesAdvancedProtection) {
-  content::BrowserTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
 
   ChromeUserPopulation population = GetUserPopulation(
@@ -137,7 +137,7 @@ TEST(GetUserPopulationTest, PopulatesAdvancedProtection) {
 }
 
 TEST(GetUserPopulationTest, PopulatesUserAgent) {
-  content::BrowserTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
 
   {
@@ -168,7 +168,7 @@ TEST(GetUserPopulationTest, PopulatesUserAgent) {
 }
 
 TEST(GetUserPopulationTest, PopulatesProfileRelatedFields) {
-  content::BrowserTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
 
   {

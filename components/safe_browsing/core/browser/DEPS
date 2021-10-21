@@ -1,6 +1,7 @@
 include_rules = [
   "+components/history/core/browser",
   "+components/sessions/core/session_id.h",
+  "+components/version_info",
   "+ipc/ipc_message.h",
   "+net/cookies",
   "+net/extras",

@@ -80,8 +80,6 @@ source_set("browser") {
     "threat_details_cache.h",
     "threat_details_history.cc",
     "threat_details_history.h",
-    "user_population.cc",
-    "user_population.h",
     "web_api_handshake_checker.cc",
     "web_api_handshake_checker.h",
   ]
@@ -138,7 +136,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "client_side_phishing_model_unittest.cc",
-    "user_population_unittest.cc",
     "web_api_handshake_checker_unittest.cc",
   ]
 

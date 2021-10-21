@@ -26,7 +26,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
-#include "components/safe_browsing/content/browser/user_population.h"
+#include "components/safe_browsing/core/browser/user_population.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"

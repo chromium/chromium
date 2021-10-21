@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/insecure_credentials_helper.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/user_population.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -36,7 +37,7 @@
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "ios/chrome/browser/safe_browsing/user_population.h"
+#include "ios/chrome/browser/safe_browsing/user_population_helper.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
@@ -380,7 +381,7 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
 
 safe_browsing::ChromeUserPopulation::UserPopulation
 ChromePasswordProtectionService::GetUserPopulationPref() const {
-  return ::GetUserPopulationPref(browser_state_);
+  return safe_browsing::GetUserPopulationPref(browser_state_->GetPrefs());
 }
 
 AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
@@ -679,7 +680,8 @@ void ChromePasswordProtectionService::RemoveWarningRequestsByWebState(
 void ChromePasswordProtectionService::FillUserPopulation(
     const GURL& main_frame_url,
     LoginReputationClientRequest* request_proto) {
-  *request_proto->mutable_population() = GetUserPopulation(browser_state_);
+  *request_proto->mutable_population() =
+      GetUserPopulationForBrowserState(browser_state_);
 
   if (!base::FeatureList::IsEnabled(
           safe_browsing::kSafeBrowsingPageLoadToken)) {

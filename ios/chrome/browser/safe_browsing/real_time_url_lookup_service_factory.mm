@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
-#import "ios/chrome/browser/safe_browsing/user_population.h"
+#import "ios/chrome/browser/safe_browsing/user_population_helper.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -61,7 +61,8 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<safe_browsing::RealTimeUrlLookupService>(
       safe_browsing_service->GetURLLoaderFactory(),
       VerdictCacheManagerFactory::GetForBrowserState(chrome_browser_state),
-      base::BindRepeating(&GetUserPopulation, chrome_browser_state),
+      base::BindRepeating(&GetUserPopulationForBrowserState,
+                          chrome_browser_state),
       chrome_browser_state->GetPrefs(),
       std::make_unique<safe_browsing::SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForBrowserState(chrome_browser_state)),

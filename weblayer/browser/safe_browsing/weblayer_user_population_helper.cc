@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/safe_browsing/weblayer_user_population_helper.h"
 
-#include "components/safe_browsing/content/browser/user_population.h"
+#include "components/safe_browsing/core/browser/user_population.h"
 #include "weblayer/browser/browser_context_impl.h"
 
 namespace weblayer {

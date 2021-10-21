@@ -14,7 +14,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/browser/user_population.h"
+#include "components/safe_browsing/core/browser/user_population.h"
 #include "components/sync/driver/sync_service.h"
 
 namespace safe_browsing {
