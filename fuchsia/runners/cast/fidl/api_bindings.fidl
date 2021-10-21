@@ -13,6 +13,7 @@ using fuchsia.web;
 @discoverable
 protocol ApiBindings {
     /// Gets the list of bindings to early-inject into the page at load time.
+    /// The returned ApiBindings must be evaluated in order.
     GetAll() -> (resource struct {
         bindings vector<ApiBinding>;
     });

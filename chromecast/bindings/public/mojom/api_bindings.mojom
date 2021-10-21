@@ -10,6 +10,7 @@ import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
 // scripts with Cast service backends.
 interface ApiBindings {
   // Gets the list of bindings to early-inject into the page at load time.
+  // The returned ApiBindings must be evaluated in order.
   GetAll() => (array<ApiBinding> bindings);
 
   // Should be invoked when a connecting a named MessagePort to a native

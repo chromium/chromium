@@ -7,6 +7,7 @@
 
 #include <fuchsia/mem/cpp/fidl.h>
 
+#include <list>
 #include <map>
 #include <string>
 
@@ -40,8 +41,9 @@ class BindingsManagerFuchsia : public chromium::cast::ApiBindings,
 
  private:
   // Stores all bindings, keyed on the string-based IDs provided by the
-  // ApiBindings interface.
-  std::map<std::string, fuchsia::mem::Buffer> bindings_;
+  // ApiBindings interface. Bindings are stored in the order they are added
+  // because evaluation order matters when one depends on another.
+  std::list<std::pair<std::string, fuchsia::mem::Buffer>> bindings_;
 };
 
 }  // namespace bindings

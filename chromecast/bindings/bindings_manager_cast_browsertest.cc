@@ -17,9 +17,11 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/bindings/bindings_manager_cast.h"
+#include "chromecast/bindings/public/mojom/api_bindings.mojom.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_web_contents_impl.h"
@@ -269,6 +271,26 @@ IN_PROC_BROWSER_TEST_F(BindingsManagerCastBrowserTest, EndToEnd) {
   bindings_manager_->UnregisterPortHandler("hello");
 }
 
+IN_PROC_BROWSER_TEST_F(BindingsManagerCastBrowserTest, OrderedBindings) {
+  bindings_manager_->AddBinding("foo", "bar");
+  bindings_manager_->AddBinding("hello", "world");
+
+  // A repeated binding should have its order preserved
+  bindings_manager_->AddBinding("foo", "BAR");
+
+  std::vector<std::string> received_bindings;
+  static_cast<chromecast::mojom::ApiBindings*>(bindings_manager_.get())
+      ->GetAll(base::BindLambdaForTesting(
+          [&](std::vector<chromecast::mojom::ApiBindingPtr> bindings) {
+            for (auto& entry : bindings) {
+              received_bindings.push_back(entry->script);
+            }
+          }));
+
+  EXPECT_EQ(2UL, received_bindings.size());
+  EXPECT_EQ("BAR", received_bindings[0]);
+  EXPECT_EQ("world", received_bindings[1]);
+}
 }  // namespace chromecast
 
 #endif  // CHROMECAST_BINDINGS_BINDINGS_MANAGER_CAST_BROWSERTEST_H_
