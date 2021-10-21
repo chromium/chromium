@@ -1209,6 +1209,8 @@ static_library("browser") {
     "policy/messaging_layer/util/get_cloud_policy_client.h",
     "policy/messaging_layer/util/report_queue_manual_test_context.cc",
     "policy/messaging_layer/util/report_queue_manual_test_context.h",
+    "policy/messaging_layer/util/user_dm_token_retriever.cc",
+    "policy/messaging_layer/util/user_dm_token_retriever.h",
     "policy/network_prediction_policy_handler.cc",
     "policy/network_prediction_policy_handler.h",
     "policy/profile_policy_connector.cc",

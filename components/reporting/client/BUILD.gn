@@ -60,6 +60,9 @@ static_library("report_queue") {
 
 static_library("report_queue_provider") {
   sources = [
+    "dm_token_retriever.h",
+    "empty_dm_token_retriever.cc",
+    "empty_dm_token_retriever.h",
     "report_queue_provider.cc",
     "report_queue_provider.h",
   ]
@@ -108,6 +111,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "empty_dm_token_retriever_unittest.cc",
     "report_queue_configuration_unittest.cc",
     "report_queue_factory_unittest.cc",
     "report_queue_impl_unittest.cc",
