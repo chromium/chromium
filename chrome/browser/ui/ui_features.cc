@@ -190,7 +190,7 @@ const base::Feature kTabSearchFuzzySearch{"TabSearchFuzzySearch",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation{
-    &kTabSearchFuzzySearch, "TabSearchSearchIgnoreLocation", true};
+    &kTabSearchFuzzySearch, "TabSearchSearchIgnoreLocation", false};
 
 const base::FeatureParam<int> kTabSearchSearchDistance{
     &kTabSearchFuzzySearch, "TabSearchSearchDistance", 200};
