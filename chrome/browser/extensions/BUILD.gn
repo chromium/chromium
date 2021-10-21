@@ -975,6 +975,8 @@ static_library("extensions") {
       "api/messaging/native_message_built_in_host.h",
       "api/messaging/native_message_echo_host.cc",
       "api/messaging/native_message_echo_host.h",
+      "api/passwords_private/passwords_private_utils_chromeos.cc",
+      "api/passwords_private/passwords_private_utils_chromeos.h",
       "api/platform_keys/platform_keys_api.cc",
       "api/platform_keys/platform_keys_api.h",
       "api/platform_keys/verify_trust_api.cc",

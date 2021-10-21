@@ -43,15 +43,14 @@
 
 #if defined(OS_WIN)
 #include "chrome/browser/password_manager/password_manager_util_win.h"
-#elif defined(OS_MAC)
+#endif
+
+#if defined(OS_MAC)
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/quick_unlock/auth_token.h"
-#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chromeos/login/auth/password_visibility_utils.h"
-#include "components/user_manager/user.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/extensions/api/passwords_private/passwords_private_utils_chromeos.h"
 #endif
 
 namespace {
@@ -61,12 +60,6 @@ namespace {
 const char kExportInProgress[] = "in-progress";
 // The error message returned to the UI when the user fails to reauthenticate.
 const char kReauthenticationFailed[] = "reauth-failed";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr base::TimeDelta kShowPasswordAuthTokenLifetime =
-    password_manager::PasswordAccessAuthenticator::kAuthValidityPeriod;
-constexpr base::TimeDelta kExportPasswordsAuthTokenLifetime = base::Seconds(5);
-#endif
 
 // Map password_manager::ExportProgressStatus to
 // extensions::api::passwords_private::ExportProgressStatus.
@@ -308,28 +301,9 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
   bool result = password_manager_util_mac::AuthenticateUser(purpose);
   std::move(callback).Run(result);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool user_cannot_manually_enter_password =
-      !chromeos::password_visibility::AccountHasUserFacingPassword(
-          chromeos::ProfileHelper::Get()
-              ->GetUserByProfile(profile_)
-              ->GetAccountId());
-  if (user_cannot_manually_enter_password) {
-    std::move(callback).Run(true);
-    return;
-  }
-  ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
-  const ash::quick_unlock::AuthToken* auth_token =
-      quick_unlock_storage->GetAuthToken();
-  if (!auth_token || !auth_token->GetAge()) {
-    std::move(callback).Run(false);
-    return;
-  }
-  const base::TimeDelta auth_token_lifespan =
-      (purpose == password_manager::ReauthPurpose::EXPORT)
-          ? kExportPasswordsAuthTokenLifetime
-          : kShowPasswordAuthTokenLifetime;
-  std::move(callback).Run(auth_token->GetAge() <= auth_token_lifespan);
+  bool result =
+      IsOsReauthAllowedAsh(profile_, GetAuthTokenLifetimeForPurpose(purpose));
+  std::move(callback).Run(result);
 #else
   std::move(callback).Run(true);
 #endif
