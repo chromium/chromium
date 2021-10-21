@@ -228,9 +228,8 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   class AnimationDelegate;
   friend class AnimationDelegate;
 
-  // Cleans up after an animation, runs delayed actions, and sends
-  // notifications.
-  void OnAnimationEnded();
+  // Cleans up after an animation and readies actions to be posted.
+  void EndAnimation();
 
   // Equivalent to calling ResetLayoutToSize(GetAvailableTargetLayoutSize()).
   // Convenience method.
@@ -356,6 +355,10 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   // yet finished.
   std::vector<base::OnceClosure> queued_actions_;
   std::vector<base::OnceClosure> queued_actions_to_run_;
+
+  // Signal that we want to post queued actions at the end of the next layout
+  // cycle.
+  bool hold_queued_actions_for_layout_ = false;
 
   // True when there's a pending PostTask() to RunQueuedActions(). Used to avoid
   // scheduling redundant tasks.
