@@ -249,9 +249,11 @@ class TopIconAnimation : public AppListFolderView::Animation,
  public:
   TopIconAnimation(bool show,
                    AppListFolderView* folder_view,
+                   views::ScrollView* scroll_view,
                    AppListItemView* folder_item_view)
       : show_(show),
         folder_view_(folder_view),
+        scroll_view_(scroll_view),
         folder_item_view_(folder_item_view) {}
 
   TopIconAnimation(const TopIconAnimation&) = delete;
@@ -383,21 +385,26 @@ class TopIconAnimation : public AppListFolderView::Animation,
   std::vector<gfx::Rect> GetFirstPageItemViewsBounds() {
     std::vector<gfx::Rect> items_bounds;
     // Go over items in the folder, and collect bounds of items that fit within
-    // the folder bounds.
+    // the bounds of the first "page" of apps.
     const size_t count = folder_view_->folder_item()->ChildItemCount();
+    views::View* container =
+        features::IsProductivityLauncherEnabled()
+            ? static_cast<views::View*>(scroll_view_)
+            : static_cast<views::View*>(folder_view_->items_grid_view());
+    const gfx::RectF container_bounds(container->GetLocalBounds());
     for (size_t i = 0; i < count; ++i) {
-      const gfx::Rect rect =
-          folder_view_->items_grid_view()->GetItemViewAt(i)->bounds();
-      const gfx::Rect to_container =
-          folder_view_->items_grid_view()->ConvertRectToParent(rect);
-      const gfx::Rect to_folder =
-          folder_view_->contents_container()->ConvertRectToParent(to_container);
-      // Stop if the item bounds are not within the folder view bounds - assumes
-      // that subsequent item bounds would not be within the folder bounds
+      views::View* item = folder_view_->items_grid_view()->GetItemViewAt(i);
+      // Stop if the item bounds are not within the container bounds - assumes
+      // that subsequent item bounds would not be within the container view
       // either.
-      if (!to_folder.Intersects(folder_view_->GetLocalBounds()))
+      gfx::RectF bounds_in_container(item->GetLocalBounds());
+      views::View::ConvertRectToTarget(item, container, &bounds_in_container);
+      if (!container_bounds.Contains(bounds_in_container))
         break;
-      items_bounds.emplace_back(to_folder);
+      // Return the item bounds in AppListFolderView coordinates.
+      gfx::RectF bounds_in_folder(item->GetLocalBounds());
+      views::View::ConvertRectToTarget(item, folder_view_, &bounds_in_folder);
+      items_bounds.emplace_back(gfx::ToNearestRect(bounds_in_folder));
     }
     return items_bounds;
   }
@@ -406,6 +413,10 @@ class TopIconAnimation : public AppListFolderView::Animation,
   const bool show_;
 
   AppListFolderView* const folder_view_;  // Not owned.
+
+  // The scroll view that contains the apps grid. Used with
+  // ProductivityLauncher.
+  views::ScrollView* const scroll_view_;
 
   // The app list item view with which the folder view is associated.
   // NOTE: Users of `TopIconAnimation` should ensure the animation does
@@ -754,8 +765,8 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
 
   // Animate the bounds and opacity of items in the first page of the opened
   // folder.
-  folder_visibility_animations_.push_back(
-      std::make_unique<TopIconAnimation>(show, this, folder_item_view_));
+  folder_visibility_animations_.push_back(std::make_unique<TopIconAnimation>(
+      show, this, scroll_view_, folder_item_view_));
 
   // Animate the bounds and opacity of the contents container.
   folder_visibility_animations_.push_back(
