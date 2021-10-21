@@ -1,0 +1,38 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("network") {
+  public = [
+    "key_network_delegate.h",
+    "key_network_delegate_factory.h",
+  ]
+
+  sources = [ "key_network_delegate_factory.cc" ]
+
+  deps = [ "//base" ]
+
+  if (is_win) {
+    sources += [
+      "win_key_network_delegate.cc",
+      "win_key_network_delegate.h",
+    ]
+    deps += [
+      "//components/winhttp",
+      "//url",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [ "mock_key_network_delegate.h" ]
+
+  sources = [ "mock_key_network_delegate.cc" ]
+
+  public_deps = [
+    ":network",
+    "//testing/gmock",
+    "//url",
+  ]
+}

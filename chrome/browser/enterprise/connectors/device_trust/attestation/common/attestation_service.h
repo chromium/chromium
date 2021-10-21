@@ -13,8 +13,6 @@
 
 namespace enterprise_connectors {
 
-class DeviceTrustReportEvent;
-
 // Interface for classes in charge of building challenge-responses to enable
 // handshake between Chrome, an IdP and Verified Access.
 class AttestationService {
@@ -30,9 +28,6 @@ class AttestationService {
       const std::string& challenge,
       std::unique_ptr<SignalsType> signals,
       AttestationCallback callback) = 0;
-
-  // Applies, if any, updates to a `report` about to be sent.
-  virtual void StampReport(DeviceTrustReportEvent& report);
 
   // Rotate the key used to sign in challenge response.
   virtual bool RotateSigningKey(const std::string& nonce);

@@ -17,7 +17,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/common/proto/device_trust_report_event.pb.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -71,11 +71,13 @@ void ConfigureProxyBlanket(IUnknown* interface_pointer) {
 }  // namespace
 
 DesktopAttestationService::DesktopAttestationService(
-    std::unique_ptr<SigningKeyPair> key_pair,
-    policy::DeviceManagementService* device_management_service)
-    : key_pair_(std::move(key_pair)),
-      device_management_service_(device_management_service) {
-  DCHECK(key_pair_);
+    policy::DeviceManagementService* device_management_service,
+    std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate)
+    : device_management_service_(device_management_service),
+      key_persistence_delegate_(std::move(key_persistence_delegate)) {
+  DCHECK(device_management_service_);
+  DCHECK(key_persistence_delegate_);
+  key_pair_ = SigningKeyPair::Create(key_persistence_delegate_.get());
 }
 
 DesktopAttestationService::~DesktopAttestationService() = default;
@@ -92,9 +94,10 @@ bool DesktopAttestationService::ChallengeComesFromVerifiedAccess(
 }
 
 std::string DesktopAttestationService::ExportPublicKey() {
-  std::vector<uint8_t> public_key_info;
-  if (!key_pair_->ExportPublicKey(&public_key_info))
+  if (!key_pair_ || !key_pair_->key()) {
     return std::string();
+  }
+  auto public_key_info = key_pair_->key()->GetSubjectPublicKeyInfo();
   return std::string(public_key_info.begin(), public_key_info.end());
 }
 
@@ -216,13 +219,6 @@ bool DesktopAttestationService::RotateSigningKey(const std::string& nonce) {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-void DesktopAttestationService::StampReport(DeviceTrustReportEvent& report) {
-  auto* credential = report.mutable_attestation_credential();
-  credential->set_format(
-      DeviceTrustReportEvent::Credential::EC_NID_X9_62_PRIME256V1_PUBLIC_DER);
-  credential->set_credential(ExportPublicKey());
-}
-
 std::string
 DesktopAttestationService::VerifyChallengeAndMaybeCreateChallengeResponse(
     const std::string& serialized_signed_data,
@@ -338,11 +334,23 @@ bool DesktopAttestationService::SignChallengeData(const std::string& data,
                                                   std::string* response) {
   SignedData signed_data;
   signed_data.set_data(data);
-  std::string signature;
-  if (!key_pair_->SignMessage(data, signed_data.mutable_signature())) {
+
+  absl::optional<std::vector<uint8_t>> signature;
+  if (key_pair_ && key_pair_->key()) {
+    signature =
+        key_pair_->key()->SignSlowly(base::as_bytes(base::make_span(data)));
+  } else {
+    LOG(ERROR) << __func__ << ": Failed, no key to sign data.";
+    return false;
+  }
+
+  if (signature.has_value()) {
+    signed_data.set_signature(signature->data(), signature->size());
+  } else {
     LOG(ERROR) << __func__ << ": Failed to sign data.";
     return false;
   }
+
   if (!signed_data.SerializeToString(response)) {
     LOG(ERROR) << __func__ << ": Failed to serialize signed data.";
     return false;

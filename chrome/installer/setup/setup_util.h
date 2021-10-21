@@ -31,7 +31,7 @@ class Version;
 }  // namespace base
 
 namespace enterprise_connectors {
-class SigningKeyPair;
+class KeyRotationManager;
 }  // namespace enterprise_connectors
 
 namespace installer {
@@ -163,10 +163,12 @@ bool StoreDMToken(const std::string& token);
 // Rotates the device trust signing key and saves it to a global location on
 // the machine accessible to all install modes of the browser (i.e., stable and
 // all three side-by-side modes).
-bool RotateDeviceTrustKey(enterprise_connectors::SigningKeyPair& key_pair,
-                          const GURL& dm_server_url,
-                          const std::string& dm_token,
-                          const std::string& nonce);
+bool RotateDeviceTrustKey(
+    std::unique_ptr<enterprise_connectors::KeyRotationManager>
+        key_rotation_manager,
+    const GURL& dm_server_url,
+    const std::string& dm_token,
+    const std::string& nonce);
 
 // Returns the file path to notification_helper.exe (in |version| directory).
 base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,

@@ -14,8 +14,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/scoped_tpm_signing_key_pair.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -99,7 +99,7 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    scoped_tpm_signing_key_pair_.emplace();
+    scoped_persistence_delegate_factory_.emplace();
     enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(true);
 
     auto* browser_policy_manager =
@@ -206,7 +206,8 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
       initial_attestation_request_;
   absl::optional<const net::test_server::HttpRequest>
       challenge_response_request_;
-  absl::optional<test::ScopedTpmSigningKeyPair> scoped_tpm_signing_key_pair_;
+  absl::optional<test::ScopedKeyPersistenceDelegateFactory>
+      scoped_persistence_delegate_factory_;
 };
 
 // Tests that the whole attestation flow occurs when navigating to an allowed

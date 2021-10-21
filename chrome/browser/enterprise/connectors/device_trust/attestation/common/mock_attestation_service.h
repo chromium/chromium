@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_COMMON_MOCK_ATTESTATION_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_COMMON_MOCK_ATTESTATION_SERVICE_H_
 
+#include <string>
+
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,7 +27,7 @@ class MockAttestationService : public AttestationService {
                std::unique_ptr<SignalsType>,
                AttestationCallback),
               (override));
-  MOCK_METHOD1(StampReport, void(DeviceTrustReportEvent&));
+  MOCK_METHOD(bool, RotateSigningKey, (const std::string&), (override));
 };
 
 }  // namespace test
