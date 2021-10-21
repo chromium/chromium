@@ -328,7 +328,6 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileExistingAccount) {
   // Request profile creation with the existing account.
   ProfileWaiter profile_waiter;
   base::ListValue args;
-  base::Value account(kGaiaId);
   args.Append(/*color=*/base::Value());
   args.Append(/*gaiaId=*/kGaiaId);
   web_ui()->HandleReceivedMessage("loadSignInProfileCreationFlow", &args);
