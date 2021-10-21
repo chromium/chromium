@@ -234,12 +234,13 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             PageInfoMainController mainController, ViewGroup rowWrapper) {
         Collection<PageInfoSubpageController> controllers = new ArrayList<>();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE)) {
+            Tab tab = TabUtils.fromWebContents(mWebContents);
             final PageInfoRowView aboutThisSiteRow =
                     new PageInfoRowView(rowWrapper.getContext(), null);
             aboutThisSiteRow.setId(PageInfoAboutThisSiteController.ROW_ID);
             rowWrapper.addView(aboutThisSiteRow);
-            controllers.add(
-                    new PageInfoAboutThisSiteController(mainController, aboutThisSiteRow, this));
+            controllers.add(new PageInfoAboutThisSiteController(
+                    mainController, aboutThisSiteRow, this, tab));
         }
         if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
             final Tab tab = TabUtils.fromWebContents(mWebContents);

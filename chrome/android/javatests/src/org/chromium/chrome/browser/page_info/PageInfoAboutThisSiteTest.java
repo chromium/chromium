@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.page_info;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -34,6 +35,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -161,7 +163,16 @@ public class PageInfoAboutThisSiteTest {
         mockResponse(createDescription());
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID))
-                .check(matches(isDisplayed()))
                 .check(renderView("page_info_about_this_site_row"));
+    }
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStoreInfoSubPageRendering() {
+        mockResponse(createDescription());
+        openPageInfo();
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
+        onView(withId(R.id.page_info_wrapper))
+                .check(renderView("page_info_about_this_site_subpage"));
     }
 }

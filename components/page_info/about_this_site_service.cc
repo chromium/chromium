@@ -36,7 +36,7 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
   if (url == GURL("https://example.com")) {
     auto* description = site_info.mutable_description();
     description->set_description(
-        "A domain used in illustrative examples in documents");
+        "A domain used in illustrative examples in documents.");
     description->mutable_source()->set_url("https://example.com");
     description->mutable_source()->set_label("Example source");
     return site_info;
