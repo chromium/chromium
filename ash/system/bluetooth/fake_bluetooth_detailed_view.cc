@@ -19,7 +19,7 @@ FakeBluetoothDetailedView::FakeBluetoothDetailedView(Delegate* delegate)
 FakeBluetoothDetailedView::~FakeBluetoothDetailedView() = default;
 
 views::View* FakeBluetoothDetailedView::GetAsView() {
-  return nullptr;
+  return this;
 }
 
 void FakeBluetoothDetailedView::UpdateBluetoothEnabledState(bool enabled) {

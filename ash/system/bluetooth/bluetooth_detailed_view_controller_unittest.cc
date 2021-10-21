@@ -112,20 +112,23 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
 
     // We have access to the fakes through our factories so we don't bother
     // caching the view here.
-    static_cast<DetailedViewController*>(
-        bluetooth_detailed_view_controller_.get())
-        ->CreateView();
-
+    detailed_view_ =
+        base::WrapUnique(static_cast<DetailedViewController*>(
+                             bluetooth_detailed_view_controller_.get())
+                             ->CreateView());
     base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
+    detailed_view_.reset();
     BluetoothDeviceListController::Factory::SetFactoryForTesting(nullptr);
     BluetoothDetailedView::Factory::SetFactoryForTesting(nullptr);
     bluetooth_detailed_view_controller_.reset();
 
     AshTestBase::TearDown();
   }
+
+  std::unique_ptr<views::View> detailed_view_;
 
   BluetoothSystemState GetBluetoothAdapterState() {
     return scoped_bluetooth_config_test_helper_.fake_adapter_state_controller()

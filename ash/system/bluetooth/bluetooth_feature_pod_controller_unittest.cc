@@ -60,7 +60,8 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
     tray_view_ = base::WrapUnique(tray_controller_->CreateView());
     bluetooth_pod_controller_ =
         std::make_unique<BluetoothFeaturePodController>(tray_controller_.get());
-    feature_pod_button_ = bluetooth_pod_controller_->CreateButton();
+    feature_pod_button_ =
+        base::WrapUnique(bluetooth_pod_controller_->CreateButton());
 
     base::RunLoop().RunUntilIdle();
   }
@@ -138,7 +139,7 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
   }
 
  protected:
-  FeaturePodButton* feature_pod_button_;
+  std::unique_ptr<FeaturePodButton> feature_pod_button_;
 
  private:
   std::unique_ptr<BluetoothFeaturePodController> bluetooth_pod_controller_;

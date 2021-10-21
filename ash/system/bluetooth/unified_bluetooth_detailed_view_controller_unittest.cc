@@ -115,9 +115,9 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
 };
 
 TEST_F(UnifiedBluetoothDetailedViewControllerTest, UpdateScrollListTest) {
-  tray::BluetoothDetailedViewLegacy* bluetooth_detailed_view =
-      static_cast<tray::BluetoothDetailedViewLegacy*>(
-          bt_detailed_view_controller()->CreateView());
+  std::unique_ptr<tray::BluetoothDetailedViewLegacy> bluetooth_detailed_view =
+      base::WrapUnique(static_cast<tray::BluetoothDetailedViewLegacy*>(
+          bt_detailed_view_controller()->CreateView()));
   AddTestDevice();
   task_environment()->FastForwardBy(kUpdateFrequencyMs);
 
@@ -148,9 +148,9 @@ TEST_F(UnifiedBluetoothDetailedViewControllerTest,
   adapter_client()->SetDiscoverySimulation(false);
   RemoveAllDevices();
 
-  tray::BluetoothDetailedViewLegacy* bluetooth_detailed_view =
-      static_cast<tray::BluetoothDetailedViewLegacy*>(
-          bt_detailed_view_controller()->CreateView());
+  std::unique_ptr<tray::BluetoothDetailedViewLegacy> bluetooth_detailed_view =
+      base::WrapUnique(static_cast<tray::BluetoothDetailedViewLegacy*>(
+          bt_detailed_view_controller()->CreateView()));
   task_environment()->FastForwardBy(kUpdateFrequencyMs);
 
   const views::View* scroll_content = bluetooth_detailed_view->GetViewByID(

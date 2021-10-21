@@ -12,6 +12,7 @@
 #include "ash/system/tray/view_click_listener.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/view.h"
 
 namespace views {
 class View;
@@ -26,7 +27,8 @@ namespace tray {
 
 // Fake BluetoothDetailedView implementation.
 class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView,
-                                             public ViewClickListener {
+                                             public ViewClickListener,
+                                             public views::View {
  public:
   explicit FakeBluetoothDetailedView(Delegate* delegate);
   FakeBluetoothDetailedView(const FakeBluetoothDetailedView&) = delete;
