@@ -393,4 +393,23 @@ ResponseAction PasswordsPrivateGetPasswordCheckStatusFunction::Run() {
           GetDelegate(browser_context())->GetPasswordCheckStatus())));
 }
 
+// PasswordsPrivateGetUrlCollectionFunction:
+ResponseAction PasswordsPrivateGetUrlCollectionFunction::Run() {
+  auto parameters =
+      api::passwords_private::GetUrlCollection::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  const absl::optional<api::passwords_private::UrlCollection> url_collection =
+      GetDelegate(browser_context())->GetUrlCollection(parameters->url);
+  if (!url_collection) {
+    return RespondNow(
+        Error("Provided string doesn't meet password URL requirements. Either "
+              "the format is invalid or the scheme is not unsupported."));
+  }
+
+  return RespondNow(
+      ArgumentList(api::passwords_private::GetUrlCollection::Results::Create(
+          url_collection.value())));
+}
+
 }  // namespace extensions

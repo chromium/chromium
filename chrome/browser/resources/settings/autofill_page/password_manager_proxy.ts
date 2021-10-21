@@ -52,10 +52,10 @@ export interface PasswordManagerProxy {
   /**
    * Requests whether the given |url| meets the requirements to save a password
    * for it (e.g. valid, has proper scheme etc.).
-   * @return A promise that resolves to the corresponding URLCollection if |url|
-   *     is valid and to null otherwise.
+   * @return A promise that resolves to the corresponding URLCollection on
+   *     success and to null otherwise.
    */
-  checkUrlValid(url: string):
+  getUrlCollection(url: string):
       Promise<chrome.passwordsPrivate.UrlCollection|null>;
 
   /**
@@ -353,9 +353,12 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.passwordsPrivate.recordPasswordsPageAccessInSettings();
   }
 
-  checkUrlValid(url: string) {
-    // TODO(crbug.com/1236053): call the proper API.
-    return Promise.resolve({origin: url, shown: url, link: url});
+  getUrlCollection(url: string) {
+    return new Promise<chrome.passwordsPrivate.UrlCollection|null>(resolve => {
+      chrome.passwordsPrivate.getUrlCollection(url, urlCollection => {
+        resolve(chrome.runtime.lastError ? null : urlCollection);
+      });
+    });
   }
 
   changeSavedPassword(

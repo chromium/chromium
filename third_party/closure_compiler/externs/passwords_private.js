@@ -330,6 +330,15 @@ chrome.passwordsPrivate.stopPasswordCheck = function(callback) {};
 chrome.passwordsPrivate.getPasswordCheckStatus = function(callback) {};
 
 /**
+ * Requests whether the given |url| meets the requirements to save a password
+ * for it (e.g. valid, has proper scheme etc.) and returns the corresponding
+ * URLCollection on success. Otherwise it raises an error.
+ * @param {string} url
+ * @param {function(!chrome.passwordsPrivate.UrlCollection): void} callback
+ */
+chrome.passwordsPrivate.getUrlCollection = function(url, callback) {};
+
+/**
  * Fired when the saved passwords list has changed, meaning that an entry has
  * been added or removed.
  * @type {!ChromeEvent}

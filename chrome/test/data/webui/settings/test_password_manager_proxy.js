@@ -59,7 +59,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
       'removeException',
       'removeExceptions',
       'changeSavedPassword',
-      'checkUrlValid',
+      'getUrlCollection',
     ]);
 
     /** @private {!PasswordManagerExpectations} */
@@ -92,7 +92,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
     this.isOptedInForAccountStorage_ = false;
 
     /** @private {?chrome.passwordsPrivate.UrlCollection} */
-    this.checkUrlValidResponse_ = null;
+    this.getUrlCollectionResponse_ = null;
   }
 
   /** @override */
@@ -324,17 +324,17 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
   }
 
   /**
-   * Sets the value to be returned by checkUrlValid.
+   * Sets the value to be returned by getUrlCollection.
    * @param {?chrome.passwordsPrivate.UrlCollection} urlCollection
    */
-  setCheckUrlValidResponse(urlCollection) {
-    this.checkUrlValidResponse_ = urlCollection;
+  setGetUrlCollectionResponse(urlCollection) {
+    this.getUrlCollectionResponse_ = urlCollection;
   }
 
   /** override */
-  checkUrlValid(url) {
-    this.methodCalled('checkUrlValid', url);
-    return Promise.resolve(this.checkUrlValidResponse_);
+  getUrlCollection(url) {
+    this.methodCalled('getUrlCollection', url);
+    return Promise.resolve(this.getUrlCollectionResponse_);
   }
 
   /** override */

@@ -29690,6 +29690,7 @@ Called by update_extension_histograms.py.-->
   <int value="1592" label="FILEMANAGERPRIVATEINTERNAL_STARTIOTASK"/>
   <int value="1593" label="WALLPAPERPRIVATE_ISSWAENABLED"/>
   <int value="1594" label="INPUTMETHODPRIVATE_GETTEXTFIELDBOUNDS"/>
+  <int value="1595" label="PASSWORDSPRIVATE_GETURLCOLLECTION"/>
 </enum>
 
 <enum name="ExtensionIconState">

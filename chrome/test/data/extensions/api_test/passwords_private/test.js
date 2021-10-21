@@ -15,6 +15,24 @@ const ERROR_MESSAGE_FOR_CHANGE_PASSWORD =
     'could be found at least for one of the ids.'
 
 var availableTests = [
+  function getUrlCollectionWhenUrlValidSucceeds() {
+    chrome.passwordsPrivate.getUrlCollection(
+        'https://example.com', urlCollection => {
+          chrome.test.assertNoLastError();
+          chrome.test.assertTrue(!!urlCollection);
+          chrome.test.succeed();
+        });
+  },
+
+  function getUrlCollectionWhenUrlInvalidFails() {
+    chrome.passwordsPrivate.getUrlCollection('', () => {
+      chrome.test.assertLastError(
+          'Provided string doesn\'t meet password URL requirements. ' +
+          'Either the format is invalid or the scheme is not unsupported.');
+      chrome.test.succeed();
+    });
+  },
+
   function changeSavedPasswordSucceeds() {
     chrome.passwordsPrivate.changeSavedPassword(
         [0], 'new_user', 'new_pass', () => {

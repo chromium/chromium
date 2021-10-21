@@ -116,6 +116,18 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
 
 }  // namespace
 
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       GetUrlCollectionWhenUrlValidSucceeds) {
+  EXPECT_TRUE(RunPasswordsSubtest("getUrlCollectionWhenUrlValidSucceeds"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       GetUrlCollectionWhenUrlInvalidFails) {
+  EXPECT_TRUE(RunPasswordsSubtest("getUrlCollectionWhenUrlInvalidFails"))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ChangeSavedPasswordSucceeds) {
   EXPECT_TRUE(RunPasswordsSubtest("changeSavedPasswordSucceeds")) << message_;
 }

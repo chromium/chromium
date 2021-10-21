@@ -1655,6 +1655,7 @@ enum HistogramValue {
   FILEMANAGERPRIVATEINTERNAL_STARTIOTASK = 1592,
   WALLPAPERPRIVATE_ISSWAENABLED = 1593,
   INPUTMETHODPRIVATE_GETTEXTFIELDBOUNDS = 1594,
+  PASSWORDSPRIVATE_GETURLCOLLECTION = 1595,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

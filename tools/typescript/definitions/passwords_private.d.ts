@@ -134,6 +134,8 @@ declare global {
       export function stopPasswordCheck(callback?: () => void): void;
       export function getPasswordCheckStatus(
           callback: (status: PasswordCheckStatus) => void): void;
+      export function getUrlCollection(
+        url: string, callback: (urlCollection: UrlCollection) => void): void;
 
       export const onSavedPasswordsListChanged:
           ChromeEvent<(entries: Array<PasswordUiEntry>) => void>;

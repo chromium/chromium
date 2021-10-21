@@ -411,7 +411,7 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       return;
     }
     PasswordManagerImpl.getInstance()
-        .checkUrlValid(this.$.websiteInput.value)
+        .getUrlCollection(this.$.websiteInput.value)
         .then(urlCollection => {
           if (urlCollection) {
             this.websiteUrls_ = urlCollection;

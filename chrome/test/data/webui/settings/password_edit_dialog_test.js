@@ -90,10 +90,10 @@ function assertAddDialogParts(passwordDialog) {
  */
 async function updateWebsiteInput(
     dialog, passwordManager, newValue, isValid = true) {
-  const shouldCheckUrlValid = !!newValue.length;
-  if (shouldCheckUrlValid) {
-    passwordManager.resetResolver('checkUrlValid');
-    passwordManager.setCheckUrlValidResponse(
+  const shouldGetUrlCollection = !!newValue.length;
+  if (shouldGetUrlCollection) {
+    passwordManager.resetResolver('getUrlCollection');
+    passwordManager.setGetUrlCollectionResponse(
         isValid ? {
           origin: newValue + '-origin',
           shown: newValue + '-shown',
@@ -105,8 +105,8 @@ async function updateWebsiteInput(
   dialog.$.websiteInput.value = newValue;
   dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
 
-  if (shouldCheckUrlValid) {
-    const url = await passwordManager.whenCalled('checkUrlValid');
+  if (shouldGetUrlCollection) {
+    const url = await passwordManager.whenCalled('getUrlCollection');
     assertEquals(newValue, url);
   }
 }
