@@ -125,10 +125,8 @@ void TtsHandler::OnTtsEvent(content::TtsUtterance* utterance,
 
 void TtsHandler::HandlePreviewTtsVoice(const base::ListValue* args) {
   DCHECK_EQ(2U, args->GetList().size());
-  std::string text;
-  std::string voice_id;
-  args->GetString(0, &text);
-  args->GetString(1, &voice_id);
+  const std::string& text = args->GetList()[0].GetString();
+  const std::string& voice_id = args->GetList()[1].GetString();
 
   if (text.empty() || voice_id.empty())
     return;

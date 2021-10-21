@@ -279,9 +279,8 @@ void MultideviceHandler::HandleGetPageContent(const base::ListValue* args) {
   // loaded, so it should be the one to allow JS calls.
   AllowJavascript();
 
-  std::string callback_id;
-  bool result = args->GetString(0, &callback_id);
-  DCHECK(result);
+  const base::Value& callback_id = args->GetList()[0];
+  DCHECK(callback_id.is_string());
 
   std::unique_ptr<base::DictionaryValue> page_content_dictionary =
       GeneratePageContentDataDictionary();
@@ -289,7 +288,7 @@ void MultideviceHandler::HandleGetPageContent(const base::ListValue* args) {
   PA_LOG(INFO) << "Responding to getPageContentData() request with: "
                << *page_content_dictionary << ".";
 
-  ResolveJavascriptCallback(base::Value(callback_id), *page_content_dictionary);
+  ResolveJavascriptCallback(callback_id, *page_content_dictionary);
 }
 
 void MultideviceHandler::HandleSetFeatureEnabledState(
@@ -339,13 +338,12 @@ void MultideviceHandler::HandleSetUpAndroidSms(const base::ListValue* args) {
 
 void MultideviceHandler::HandleGetSmartLockSignInEnabled(
     const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
+  CHECK(callback_id.is_string());
 
   bool signInEnabled = prefs_->GetBoolean(
       proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled);
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(signInEnabled));
+  ResolveJavascriptCallback(callback_id, base::Value(signInEnabled));
 }
 
 void MultideviceHandler::HandleSetSmartLockSignInEnabled(
@@ -354,8 +352,10 @@ void MultideviceHandler::HandleSetSmartLockSignInEnabled(
   if (args->GetList()[0].is_bool())
     enabled = args->GetList()[0].GetBool();
 
-  std::string auth_token;
-  bool auth_token_present = args->GetString(1, &auth_token);
+  const bool auth_token_present =
+      args->GetList().size() >= 2 && args->GetList()[1].is_string();
+  const std::string& auth_token =
+      auth_token_present ? args->GetList()[1].GetString() : "";
 
   // Either the user is disabling sign-in, or they are enabling it and the auth
   // token must be present.
@@ -371,13 +371,12 @@ void MultideviceHandler::HandleSetSmartLockSignInEnabled(
 
 void MultideviceHandler::HandleGetSmartLockSignInAllowed(
     const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
+  CHECK(callback_id.is_string());
 
   bool sign_in_allowed =
       prefs_->GetBoolean(multidevice_setup::kSmartLockSigninAllowedPrefName);
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(sign_in_allowed));
+  ResolveJavascriptCallback(callback_id, base::Value(sign_in_allowed));
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -407,11 +406,9 @@ MultideviceHandler::GenerateAndroidSmsInfo() {
 }
 
 void MultideviceHandler::HandleGetAndroidSmsInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
-  ResolveJavascriptCallback(*callback_id, *GenerateAndroidSmsInfo());
+  ResolveJavascriptCallback(callback_id, *GenerateAndroidSmsInfo());
 }
 
 void MultideviceHandler::HandleAttemptNotificationSetup(

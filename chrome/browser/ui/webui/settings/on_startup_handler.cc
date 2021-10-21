@@ -90,8 +90,7 @@ void OnStartupHandler::HandleGetNtpExtension(const base::ListValue* args) {
 void OnStartupHandler::HandleValidateStartupPage(const base::ListValue* args) {
   CHECK_EQ(args->GetList().size(), 2U);
   const base::Value& callback_id = args->GetList()[0];
-  std::string url_string;
-  CHECK(args->GetString(1, &url_string));
+  const std::string& url_string = args->GetList()[1].GetString();
   AllowJavascript();
 
   bool valid = settings_utils::FixupAndValidateStartupPage(url_string, nullptr);

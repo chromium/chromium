@@ -135,13 +135,9 @@ void ResetSettingsHandler::HandleResetProfileSettings(
   AllowJavascript();
 
   CHECK_EQ(3U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-  bool send_settings = false;
-  CHECK(args->GetList()[1].is_bool());
-  send_settings = args->GetList()[1].GetBool();
-  std::string request_origin_string;
-  CHECK(args->GetString(2, &request_origin_string));
+  const std::string& callback_id = args->GetList()[0].GetString();
+  const bool& send_settings = args->GetList()[1].GetBool();
+  std::string request_origin_string = args->GetList()[2].GetString();
   reset_report::ChromeResetReport::ResetRequestOrigin request_origin =
       ResetRequestOriginFromString(request_origin_string);
 
@@ -182,8 +178,7 @@ void ResetSettingsHandler::HandleGetReportedSettings(
   AllowJavascript();
 
   CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   setting_snapshot_->RequestShortcuts(
       base::BindOnce(&ResetSettingsHandler::OnGetReportedSettingsDone,

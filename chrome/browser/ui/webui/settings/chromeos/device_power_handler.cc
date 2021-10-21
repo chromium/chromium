@@ -217,8 +217,7 @@ void PowerHandler::HandleUpdatePowerStatus(const base::ListValue* args) {
 void PowerHandler::HandleSetPowerSource(const base::ListValue* args) {
   AllowJavascript();
 
-  std::string id;
-  CHECK(args->GetString(0, &id));
+  const std::string& id = args->GetList()[0].GetString();
   chromeos::PowerManagerClient::Get()->SetPowerSource(id);
 }
 

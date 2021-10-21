@@ -174,8 +174,7 @@ void SecureDnsHandler::HandleGetSecureDnsSetting(const base::ListValue* args) {
 void SecureDnsHandler::HandleParseCustomDnsEntry(const base::ListValue* args) {
   AllowJavascript();
   const base::Value& callback_id = args->GetList()[0];
-  std::string custom_entry;
-  CHECK(args->GetString(1, &custom_entry));
+  const std::string& custom_entry = args->GetList()[1].GetString();
 
   // Return all templates in the entry, or none if they are not all valid.
   base::Value templates(base::Value::Type::LIST);
@@ -201,9 +200,8 @@ void SecureDnsHandler::HandleProbeCustomDnsTemplate(
                               base::Value(true));
   }
 
-  std::string server_template;
-  CHECK(args->GetString(0, &probe_callback_id_));
-  CHECK(args->GetString(1, &server_template));
+  probe_callback_id_ = args->GetList()[0].GetString();
+  const std::string& server_template = args->GetList()[1].GetString();
 
   net::DnsConfigOverrides overrides;
   overrides.search = std::vector<std::string>();
@@ -220,10 +218,8 @@ void SecureDnsHandler::HandleProbeCustomDnsTemplate(
 void SecureDnsHandler::HandleRecordUserDropdownInteraction(
     const base::ListValue* args) {
   CHECK_EQ(2U, args->GetList().size());
-  std::string old_provider;
-  std::string new_provider;
-  CHECK(args->GetString(0, &old_provider));
-  CHECK(args->GetString(1, &new_provider));
+  const std::string& old_provider = args->GetList()[0].GetString();
+  const std::string& new_provider = args->GetList()[1].GetString();
 
   secure_dns::UpdateDropdownHistograms(providers_, old_provider, new_provider);
 }

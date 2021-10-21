@@ -49,8 +49,7 @@ void FontHandler::OnJavascriptDisallowed() {}
 
 void FontHandler::HandleFetchFontsData(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   AllowJavascript();
   content::GetFontListAsync(base::BindOnce(&FontHandler::FontListHasLoaded,

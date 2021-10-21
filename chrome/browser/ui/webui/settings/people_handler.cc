@@ -144,12 +144,11 @@ bool GetConfiguration(const std::string& json, SyncConfigInfo* config) {
 void ParseConfigurationArguments(const base::ListValue* args,
                                  SyncConfigInfo* config,
                                  const base::Value** callback_id) {
-  std::string json;
-  if ((*callback_id = &args->GetList()[0]) && args->GetString(1, &json) &&
-      !json.empty())
-    CHECK(GetConfiguration(json, config));
-  else
-    NOTREACHED();
+  *callback_id = &args->GetList()[0];
+  DCHECK(*callback_id);
+  const std::string& json = args->GetList()[1].GetString();
+  DCHECK(!json.empty());
+  CHECK(GetConfiguration(json, config));
 }
 
 std::string GetSyncErrorAction(SyncStatusActionType action_type) {

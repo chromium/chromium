@@ -177,8 +177,7 @@ void FingerprintHandler::OnSessionStateChanged() {
 void FingerprintHandler::HandleGetFingerprintsList(
     const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   AllowJavascript();
   fp_service_->GetRecordsForUser(
@@ -207,8 +206,7 @@ void FingerprintHandler::OnGetFingerprintsList(
 
 void FingerprintHandler::HandleGetNumFingerprints(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   int fingerprints_num =
       profile_->GetPrefs()->GetInteger(prefs::kQuickUnlockFingerprintRecord);
@@ -221,8 +219,7 @@ void FingerprintHandler::HandleGetNumFingerprints(const base::ListValue* args) {
 void FingerprintHandler::HandleStartEnroll(const base::ListValue* args) {
   AllowJavascript();
 
-  std::string auth_token;
-  CHECK(args->GetString(0, &auth_token));
+  const std::string& auth_token = args->GetList()[0].GetString();
 
   // Auth token expiration will trigger password prompt.
   // Silently fail if auth token is incorrect.

@@ -146,10 +146,8 @@ void DownloadsHandler::HandleGetDownloadLocationText(
     const base::ListValue* args) {
   AllowJavascript();
   CHECK_EQ(2U, args->GetList().size());
-  std::string callback_id;
-  std::string path;
-  CHECK(args->GetString(0, &callback_id));
-  CHECK(args->GetString(1, &path));
+  const std::string& callback_id = args->GetList()[0].GetString();
+  const std::string& path = args->GetList()[1].GetString();
 
   ResolveJavascriptCallback(
       base::Value(callback_id),

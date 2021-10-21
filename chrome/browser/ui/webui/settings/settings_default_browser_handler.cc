@@ -64,7 +64,7 @@ void DefaultBrowserHandler::RequestDefaultBrowserState(
   AllowJavascript();
 
   CHECK_EQ(args->GetList().size(), 1U);
-  CHECK(args->GetString(0, &check_default_callback_id_));
+  check_default_callback_id_ = args->GetList()[0].GetString();
 
   default_browser_worker_->StartCheckIsDefault(
       base::BindOnce(&DefaultBrowserHandler::OnDefaultBrowserWorkerFinished,

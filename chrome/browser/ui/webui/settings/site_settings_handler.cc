@@ -660,9 +660,7 @@ void SiteSettingsHandler::OnZoomLevelChanged(
 void SiteSettingsHandler::HandleFetchUsageTotal(const base::ListValue* args) {
   AllowJavascript();
   CHECK_EQ(1U, args->GetList().size());
-  std::string host;
-  CHECK(args->GetString(0, &host));
-  usage_host_ = host;
+  usage_host_ = args->GetList()[0].GetString();
 
   update_site_details_ = true;
   if (cookies_tree_model_ && !send_sites_list_) {
@@ -674,8 +672,7 @@ void SiteSettingsHandler::HandleFetchUsageTotal(const base::ListValue* args) {
 
 void SiteSettingsHandler::HandleClearUsage(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  std::string origin;
-  CHECK(args->GetString(0, &origin));
+  const std::string& origin = args->GetList()[0].GetString();
   GURL url(origin);
   if (!url.is_valid())
     return;
@@ -691,10 +688,8 @@ void SiteSettingsHandler::HandleClearUsage(const base::ListValue* args) {
 void SiteSettingsHandler::HandleSetDefaultValueForContentType(
     const base::ListValue* args) {
   CHECK_EQ(2U, args->GetList().size());
-  std::string content_type;
-  CHECK(args->GetString(0, &content_type));
-  std::string setting;
-  CHECK(args->GetString(1, &setting));
+  const std::string& content_type = args->GetList()[0].GetString();
+  const std::string& setting = args->GetList()[1].GetString();
   ContentSetting default_setting;
   CHECK(content_settings::ContentSettingFromString(setting, &default_setting));
   ContentSettingsType type =
@@ -731,8 +726,7 @@ void SiteSettingsHandler::HandleGetDefaultValueForContentType(
 
   CHECK_EQ(2U, args->GetList().size());
   const base::Value& callback_id = args->GetList()[0];
-  std::string type;
-  CHECK(args->GetString(1, &type));
+  const std::string& type = args->GetList()[1].GetString();
 
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
@@ -950,8 +944,7 @@ void SiteSettingsHandler::HandleGetExceptionList(const base::ListValue* args) {
 
   CHECK_EQ(2U, args->GetList().size());
   const base::Value& callback_id = args->GetList()[0];
-  std::string type;
-  CHECK(args->GetString(1, &type));
+  const std::string& type = args->GetList()[1].GetString();
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
 
@@ -986,8 +979,7 @@ void SiteSettingsHandler::HandleGetChooserExceptionList(
 
   CHECK_EQ(2U, args->GetList().size());
   const base::Value& callback_id = args->GetList()[0];
-  std::string type;
-  CHECK(args->GetString(1, &type));
+  const std::string& type = args->GetList()[1].GetString();
   const site_settings::ChooserTypeNameEntry* chooser_type =
       site_settings::ChooserTypeFromGroupName(type);
   CHECK(chooser_type);
@@ -1121,14 +1113,10 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
 void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
     const base::ListValue* args) {
   CHECK_EQ(4U, args->GetList().size());
-  std::string primary_pattern_string;
-  CHECK(args->GetString(0, &primary_pattern_string));
-  std::string secondary_pattern_string;
-  CHECK(args->GetString(1, &secondary_pattern_string));
-  std::string type;
-  CHECK(args->GetString(2, &type));
-  CHECK(args->GetList()[3].is_bool());
-  bool incognito = args->GetList()[3].GetBool();
+  const std::string& primary_pattern_string = args->GetList()[0].GetString();
+  const std::string& secondary_pattern_string = args->GetList()[1].GetString();
+  const std::string& type = args->GetList()[2].GetString();
+  const bool& incognito = args->GetList()[3].GetBool();
 
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
@@ -1185,16 +1173,11 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
 void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
     const base::ListValue* args) {
   CHECK_EQ(5U, args->GetList().size());
-  std::string primary_pattern_string;
-  CHECK(args->GetString(0, &primary_pattern_string));
-  std::string secondary_pattern_string;
-  CHECK(args->GetString(1, &secondary_pattern_string));
-  std::string type;
-  CHECK(args->GetString(2, &type));
-  std::string value;
-  CHECK(args->GetString(3, &value));
-  CHECK(args->GetList()[4].is_bool());
-  bool incognito = args->GetList()[4].GetBool();
+  const std::string& primary_pattern_string = args->GetList()[0].GetString();
+  const std::string& secondary_pattern_string = args->GetList()[1].GetString();
+  const std::string& type = args->GetList()[2].GetString();
+  const std::string& value = args->GetList()[3].GetString();
+  const bool& incognito = args->GetList()[4].GetBool();
 
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
@@ -1258,19 +1241,16 @@ void SiteSettingsHandler::HandleResetChooserExceptionForSite(
     const base::ListValue* args) {
   CHECK_EQ(4U, args->GetList().size());
 
-  std::string chooser_type_str;
-  CHECK(args->GetString(0, &chooser_type_str));
+  const std::string& chooser_type_str = args->GetList()[0].GetString();
   const site_settings::ChooserTypeNameEntry* chooser_type =
       site_settings::ChooserTypeFromGroupName(chooser_type_str);
   CHECK(chooser_type);
 
-  std::string origin_str;
-  CHECK(args->GetString(1, &origin_str));
+  const std::string& origin_str = args->GetList()[1].GetString();
   GURL requesting_origin(origin_str);
   CHECK(requesting_origin.is_valid());
 
-  std::string embedding_origin_str;
-  CHECK(args->GetString(2, &embedding_origin_str));
+  const std::string& embedding_origin_str = args->GetList()[2].GetString();
   GURL embedding_origin(embedding_origin_str);
   CHECK(embedding_origin.is_valid());
 
@@ -1284,8 +1264,7 @@ void SiteSettingsHandler::HandleIsOriginValid(const base::ListValue* args) {
   AllowJavascript();
   CHECK_EQ(2U, args->GetList().size());
   const base::Value& callback_id = args->GetList()[0];
-  std::string origin_string;
-  CHECK(args->GetString(1, &origin_string));
+  const std::string& origin_string = args->GetList()[1].GetString();
 
   ResolveJavascriptCallback(callback_id,
                             base::Value(GURL(origin_string).is_valid()));
@@ -1296,10 +1275,8 @@ void SiteSettingsHandler::HandleIsPatternValidForType(
   AllowJavascript();
   CHECK_EQ(3U, args->GetList().size());
   const base::Value& callback_id = args->GetList()[0];
-  std::string pattern_string;
-  CHECK(args->GetString(1, &pattern_string));
-  std::string type;
-  CHECK(args->GetString(2, &type));
+  const std::string& pattern_string = args->GetList()[1].GetString();
+  const std::string& type = args->GetList()[2].GetString();
 
   std::string reason;
   bool is_valid =
@@ -1406,8 +1383,7 @@ void SiteSettingsHandler::SendZoomLevels() {
 void SiteSettingsHandler::HandleRemoveZoomLevel(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
 
-  std::string origin;
-  CHECK(args->GetString(0, &origin));
+  std::string origin = args->GetList()[0].GetString();
 
   if (origin ==
       l10n_util::GetStringUTF8(IDS_ZOOMLEVELS_CHROME_ERROR_PAGES_LABEL)) {
@@ -1582,8 +1558,7 @@ void SiteSettingsHandler::GetOriginCookies(
 void SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies(
     const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  std::string etld_plus1_string;
-  CHECK(args->GetString(0, &etld_plus1_string));
+  const std::string& etld_plus1_string = args->GetList()[0].GetString();
 
   AllowJavascript();
   CookieTreeNode* parent = cookies_tree_model_->GetRoot();

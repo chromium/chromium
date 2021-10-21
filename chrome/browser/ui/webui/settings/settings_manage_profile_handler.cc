@@ -226,8 +226,8 @@ void ManageProfileHandler::HandleSetProfileName(const base::ListValue* args) {
   CHECK(args);
   CHECK_EQ(1u, args->GetList().size());
 
-  std::u16string new_profile_name;
-  CHECK(args->GetString(0, &new_profile_name));
+  std::u16string new_profile_name =
+      base::UTF8ToUTF16(args->GetList()[0].GetString());
 
   base::TrimWhitespace(new_profile_name, base::TRIM_ALL, &new_profile_name);
   CHECK(!new_profile_name.empty());
@@ -243,8 +243,7 @@ void ManageProfileHandler::HandleRequestProfileShortcutStatus(
   DCHECK(ProfileShortcutManager::IsFeatureEnabled());
 
   CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   // Don't show the add/remove desktop shortcut button in the single user case.
   ProfileAttributesStorage& storage =

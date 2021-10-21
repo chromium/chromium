@@ -194,9 +194,9 @@ void ChangePictureHandler::HandlePhotoTaken(const base::ListValue* args) {
   AccessibilityManager::Get()->PlayEarcon(
       Sound::kCameraSnap, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 
-  std::string image_url;
-  if (!args || args->GetList().size() != 1 || !args->GetString(0, &image_url))
+  if (!args || args->GetList().size() != 1 || !args->GetList()[0].is_string())
     NOTREACHED();
+  const std::string& image_url = args->GetList()[0].GetString();
   DCHECK(!image_url.empty());
 
   std::string raw_data;
@@ -314,13 +314,13 @@ void ChangePictureHandler::SendOldImage(std::string&& image_url) {
 }
 
 void ChangePictureHandler::HandleSelectImage(const base::ListValue* args) {
-  std::string image_url;
-  std::string image_type;
-  if (!args || args->GetList().size() != 2 || !args->GetString(0, &image_url) ||
-      !args->GetString(1, &image_type)) {
+  if (!args || args->GetList().size() != 2 || !args->GetList()[0].is_string() ||
+      !args->GetList()[1].is_string()) {
     NOTREACHED();
     return;
   }
+  const std::string& image_url = args->GetList()[0].GetString();
+  const std::string& image_type = args->GetList()[1].GetString();
   // |image_url| may be empty unless |image_type| is "default".
   DCHECK(!image_type.empty());
 

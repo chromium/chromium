@@ -110,11 +110,11 @@ void InternetHandler::OnGmsCoreNotificationStateChanged() {
 }
 
 void InternetHandler::AddThirdPartyVpn(const base::ListValue* args) {
-  std::string app_id;
-  if (args->GetList().size() < 1 || !args->GetString(0, &app_id)) {
+  if (args->GetList().size() < 1 || !args->GetList()[0].is_string()) {
     NOTREACHED() << "Invalid args for: " << kAddThirdPartyVpnMessage;
     return;
   }
+  const std::string& app_id = args->GetList()[0].GetString();
   if (app_id.empty()) {
     NET_LOG(ERROR) << "Empty app id for " << kAddThirdPartyVpnMessage;
     return;
@@ -146,11 +146,11 @@ void InternetHandler::AddThirdPartyVpn(const base::ListValue* args) {
 }
 
 void InternetHandler::ConfigureThirdPartyVpn(const base::ListValue* args) {
-  std::string guid;
-  if (args->GetList().size() < 1 || !args->GetString(0, &guid)) {
+  if (args->GetList().size() < 1 || !args->GetList()[0].is_string()) {
     NOTREACHED() << "Invalid args for: " << kConfigureThirdPartyVpnMessage;
     return;
   }
+  const std::string& guid = args->GetList()[0].GetString();
   if (profile_ != GetProfileForPrimaryUser()) {
     NET_LOG(ERROR) << "Only the primary user can configure VPNs";
     return;
@@ -206,20 +206,20 @@ void InternetHandler::RequestGmsCoreNotificationsDisabledDeviceNames(
 }
 
 void InternetHandler::ShowCarrierAccountDetail(const base::ListValue* args) {
-  std::string guid;
-  if (args->GetList().size() < 1 || !args->GetString(0, &guid)) {
+  if (args->GetList().size() < 1 || !args->GetList()[0].is_string()) {
     NOTREACHED() << "Invalid args for: " << kShowCarrierAccountDetail;
     return;
   }
+  const std::string& guid = args->GetList()[0].GetString();
   chromeos::NetworkConnect::Get()->ShowCarrierAccountDetail(guid);
 }
 
 void InternetHandler::ShowCellularSetupUI(const base::ListValue* args) {
-  std::string guid;
-  if (args->GetList().size() < 1 || !args->GetString(0, &guid)) {
+  if (args->GetList().size() < 1 || !args->GetList()[0].is_string()) {
     NOTREACHED() << "Invalid args for: " << kConfigureThirdPartyVpnMessage;
     return;
   }
+  const std::string& guid = args->GetList()[0].GetString();
   chromeos::NetworkConnect::Get()->ShowMobileSetup(guid);
 }
 

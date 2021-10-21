@@ -38,11 +38,10 @@ void DisplayHandler::RegisterMessages() {
 void DisplayHandler::HandleHighlightDisplay(const base::ListValue* args) {
   AllowJavascript();
 
-  std::string display_id_str;
   int64_t display_id;
 
-  if (!args->GetString(0, &display_id_str) ||
-      !base::StringToInt64(display_id_str, &display_id)) {
+  if (args->GetList().empty() || !args->GetList()[0].is_string() ||
+      !base::StringToInt64(args->GetList()[0].GetString(), &display_id)) {
     cros_display_config_->HighlightDisplay(display::kInvalidDisplayId);
     return;
   }

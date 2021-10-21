@@ -443,8 +443,7 @@ void AboutHandler::HandleOpenDiagnostics(const base::ListValue* args) {
 
 void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   chromeos::NetworkStateHandler* network_state_handler =
       chromeos::NetworkHandler::Get()->network_state_handler();
@@ -478,17 +477,14 @@ void AboutHandler::HandleSetChannel(const base::ListValue* args) {
     return;
   }
 
-  std::u16string channel;
-  bool is_powerwash_allowed = false;
-  if (args->GetString(0, &channel) && args->GetList()[1].is_bool()) {
-    is_powerwash_allowed = args->GetList()[1].GetBool();
-  } else {
+  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_bool()) {
     LOG(ERROR) << "Can't parse SetChannel() args";
     return;
   }
+  const std::string& channel = args->GetList()[0].GetString();
+  const bool& is_powerwash_allowed = args->GetList()[1].GetBool();
 
-  version_updater_->SetChannel(base::UTF16ToUTF8(channel),
-                               is_powerwash_allowed);
+  version_updater_->SetChannel(channel, is_powerwash_allowed);
   if (user_manager::UserManager::Get()->IsCurrentUserOwner()) {
     // Check for update after switching release channel.
     version_updater_->CheckForUpdate(
@@ -500,8 +496,7 @@ void AboutHandler::HandleSetChannel(const base::ListValue* args) {
 
 void AboutHandler::HandleGetVersionInfo(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GetVersionInfo),
@@ -517,8 +512,7 @@ void AboutHandler::OnGetVersionInfoReady(
 
 void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -529,8 +523,7 @@ void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
 
 void AboutHandler::HandleGetChannelInfo(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
   version_updater_->GetChannel(
       true /* get current channel */,
       base::BindOnce(&AboutHandler::OnGetCurrentChannel,
@@ -539,8 +532,7 @@ void AboutHandler::HandleGetChannelInfo(const base::ListValue* args) {
 
 void AboutHandler::HandleCanChangeChannel(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(CanChangeChannel(profile_)));
 }
@@ -579,12 +571,9 @@ void AboutHandler::HandleRequestUpdateOverCellular(
     const base::ListValue* args) {
   CHECK_EQ(2U, args->GetList().size());
 
-  std::string update_version;
-  std::string update_size_string;
+  const std::string& update_version = args->GetList()[0].GetString();
+  const std::string& update_size_string = args->GetList()[1].GetString();
   int64_t update_size;
-
-  CHECK(args->GetString(0, &update_version));
-  CHECK(args->GetString(1, &update_size_string));
   CHECK(base::StringToInt64(update_size_string, &update_size));
 
   RequestUpdateOverCellular(update_version, update_size);
@@ -615,8 +604,7 @@ void AboutHandler::RefreshTPMFirmwareUpdateStatus(
 
 void AboutHandler::HandleGetEndOfLifeInfo(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
   version_updater_->GetEolInfo(base::BindOnce(&AboutHandler::OnGetEndOfLifeInfo,
                                               weak_factory_.GetWeakPtr(),
                                               callback_id));
