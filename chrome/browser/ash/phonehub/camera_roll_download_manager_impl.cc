@@ -35,6 +35,17 @@ scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 }
 
+chromeos::secure_channel::mojom::PayloadFilesPtr DoCreatePayloadFiles(
+    const base::FilePath& file_path) {
+  base::File output_file =
+      base::File(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
+                                base::File::Flags::FLAG_WRITE);
+  base::File input_file = base::File(
+      file_path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
+  return chromeos::secure_channel::mojom::PayloadFiles::New(
+      std::move(input_file), std::move(output_file));
+}
+
 }  // namespace
 
 CameraRollDownloadManagerImpl::DownloadItem::DownloadItem(
@@ -78,30 +89,24 @@ void CameraRollDownloadManagerImpl::CreatePayloadFiles(
     return std::move(payload_files_callback).Run(absl::nullopt);
   }
 
-  task_runner_->PostTask(
+  task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&CameraRollDownloadManagerImpl::DoCreatePayloadFiles,
+      base::BindOnce(&base::GetUniquePath,
+                     download_path_.Append(base_name->path())),
+      base::BindOnce(&CameraRollDownloadManagerImpl::OnUniquePathFetched,
                      weak_ptr_factory_.GetWeakPtr(), payload_id,
-                     base_name->path(), std::move(payload_files_callback)));
+                     std::move(payload_files_callback)));
 }
 
-void CameraRollDownloadManagerImpl::DoCreatePayloadFiles(
+void CameraRollDownloadManagerImpl::OnUniquePathFetched(
     int64_t payload_id,
-    const base::FilePath& base_name,
-    CreatePayloadFilesCallback payload_files_callback) {
-  base::FilePath file_path =
-      base::GetUniquePath(download_path_.Append(base_name));
-  pending_downloads_.emplace(payload_id, DownloadItem(payload_id, file_path));
+    CreatePayloadFilesCallback payload_files_callback,
+    const base::FilePath& unique_path) {
+  pending_downloads_.emplace(payload_id, DownloadItem(payload_id, unique_path));
 
-  base::File output_file =
-      base::File(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
-                                base::File::Flags::FLAG_WRITE);
-  base::File input_file = base::File(
-      file_path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
-  std::move(payload_files_callback)
-      .Run(absl::make_optional(
-          chromeos::secure_channel::mojom::PayloadFiles::New(
-              std::move(input_file), std::move(output_file))));
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&DoCreatePayloadFiles, unique_path),
+      std::move(payload_files_callback));
 }
 
 void CameraRollDownloadManagerImpl::UpdateDownloadProgress(

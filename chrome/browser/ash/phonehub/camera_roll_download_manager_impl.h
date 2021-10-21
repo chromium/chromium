@@ -51,9 +51,9 @@ class CameraRollDownloadManagerImpl
     std::string holding_space_item_id;
   };
 
-  void DoCreatePayloadFiles(int64_t payload_id,
-                            const base::FilePath& base_name,
-                            CreatePayloadFilesCallback payload_files_callback);
+  void OnUniquePathFetched(int64_t payload_id,
+                           CreatePayloadFilesCallback payload_files_callback,
+                           const base::FilePath& unique_path);
 
   const base::FilePath download_path_;
   ash::HoldingSpaceKeyedService* holding_space_keyed_service_;
