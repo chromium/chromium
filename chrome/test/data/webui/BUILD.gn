@@ -215,23 +215,6 @@ if (include_js_tests) {
       "$root_gen_dir/ui/webui/resources/js/load_time_data.js",
     ]
 
-    if (enable_print_preview) {
-      deps += [ "print_preview:preprocess" ]
-      data += [
-        "$root_gen_dir/chrome/test/data/webui/print_preview/destination_settings_test.js",
-        "$root_gen_dir/chrome/test/data/webui/print_preview/destination_store_test.js",
-        "$root_gen_dir/chrome/test/data/webui/print_preview/invalid_settings_browsertest.js",
-        "$root_gen_dir/chrome/test/data/webui/print_preview/key_event_test.js",
-        "$root_gen_dir/chrome/test/data/webui/print_preview/policy_test.js",
-        "$root_gen_dir/chrome/test/data/webui/print_preview/preview_generation_test.js",
-        "$root_gen_dir/chrome/test/data/webui/print_preview/print_button_test.js",
-        "$root_gen_dir/chrome/test/data/webui/print_preview/print_preview_app_test.js",
-        "$root_gen_dir/chrome/test/data/webui/print_preview/print_preview_sidebar_test.js",
-        "$root_gen_dir/chrome/test/data/webui/print_preview/restore_state_test.js",
-        "$root_gen_dir/chrome/test/data/webui/print_preview/user_manager_test.js",
-      ]
-    }
-
     if (is_chromeos_ash || is_win) {
       deps += [ "inline_login:preprocess" ]
       data += [ "$root_gen_dir/chrome/test/data/webui/inline_login/inline_login_test_util.js" ]
@@ -657,4 +640,9 @@ generate_grd("build_grd") {
 
   deps = [ ":build_chai_grdp" ]
   grdp_files = [ "$target_gen_dir/chai_resources.grdp" ]
+
+  if (enable_print_preview) {
+    deps += [ "print_preview:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/print_preview/resources.grdp" ]
+  }
 }

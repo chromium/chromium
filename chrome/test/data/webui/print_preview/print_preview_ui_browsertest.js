@@ -39,7 +39,7 @@ const PrintPreviewTest = class extends PolymerTest {
 var PrintPreviewAppTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/print_preview_app_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/print_preview_app_test.js&host=webui-test';
   }
 
   /** @override */
@@ -77,7 +77,7 @@ GEN('#endif');
 var PrintPreviewSidebarTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/print_preview_sidebar_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/print_preview_sidebar_test.js&host=webui-test';
   }
 
   /** @override */
@@ -205,7 +205,7 @@ TEST_F('PrintPreviewPdfZoomToolbarTest', 'ForceFitToPage', function() {
 var PrintPreviewPolicyTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/policy_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/policy_test.js&host=webui-test';
   }
 
   /** @override */
@@ -308,7 +308,7 @@ TEST_F(
 var PrintPreviewRestoreStateTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/restore_state_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/restore_state_test.js&host=webui-test';
   }
 
   /** @override */
@@ -410,7 +410,7 @@ GEN('#endif');
 var PrintPreviewPreviewGenerationTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/preview_generation_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/preview_generation_test.js&host=webui-test';
   }
 
   /** @override */
@@ -554,7 +554,7 @@ GEN('#endif');  // defined(OS_WIN) || defined(OS_MAC)
 var PrintPreviewInvalidSettingsBrowserTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/invalid_settings_browsertest.js';
+    return 'chrome://print/test_loader.html?module=print_preview/invalid_settings_browsertest.js&host=webui-test';
   }
 
   /** @override */
@@ -587,7 +587,7 @@ TEST_F(
 var PrintPreviewDestinationStoreTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/destination_store_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/destination_store_test.js&host=webui-test';
   }
 
   /** @override */
@@ -1186,7 +1186,7 @@ TEST_F(
 var PrintPreviewPrintButtonTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/print_button_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/print_button_test.js&host=webui-test';
   }
 
   /** @override */
@@ -1227,7 +1227,7 @@ GEN('#endif');
 var PrintPreviewKeyEventTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/key_event_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/key_event_test.js&host=webui-test';
   }
 
   /** @override */
@@ -1396,7 +1396,7 @@ GEN('#endif');
 var PrintPreviewDestinationSettingsTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/destination_settings_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/destination_settings_test.js&host=webui-test';
   }
 
   /** @override */
@@ -1667,7 +1667,7 @@ GEN('#endif');
 var PrintPreviewUserManagerTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/user_manager_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/user_manager_test.js&host=webui-test';
   }
 };
 
