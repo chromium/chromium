@@ -798,6 +798,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="6544923685317771506">Merekarbivalge</translation>
 <translation id="6551185905438378412">Elevandiluu</translation>
 <translation id="6561818612645211875">Mine praeguse rea algusesse</translation>
+<translation id="6563126228219321999">Pole ühtegi sobimatut üksust</translation>
 <translation id="6579990219486187401">Heleroosa</translation>
 <translation id="6583174818554398774">Järgmisele tasemele liikumine</translation>
 <translation id="6584162722998608255">Järgmisena õpite, kuidas ekraanikuval ringi liikuda. Saate ühe sõrmega vasakult paremale pühkida, et järgmise üksuse juurde liikuda. Proovige seda kohe, et järgmise toimingu juurde liikuda.</translation>
@@ -828,6 +829,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="6815255864998354418">Sidrunkollane</translation>
 <translation id="6816066673340002913">Helekuldne</translation>
 <translation id="6826226459053491773">Pühkige kahe sõrmega alla</translation>
+<translation id="6826669432862053130">Järgmine sobimatu üksus</translation>
 <translation id="6833103209700200188">Jalus</translation>
 <translation id="6837853484260746864">Valige hääl:</translation>
 <translation id="6858047746862060282">Proloog</translation>
@@ -1018,6 +1020,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="8126386426083591964">Eelmist 5. taseme pealkirja ei ole</translation>
 <translation id="812886159861361726">Allalaadimine katkes: <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Ülal ei ole ühtki lahtrit</translation>
+<translation id="8132248161074464367">Eelmine sobimatu üksus</translation>
 <translation id="8138880386467279117">Puudutage valikut</translation>
 <translation id="8146613869421949343">Järgmisena kirjeldame otsinguklahvi. Otsinguklahvi kasutatakse koos muude klahvidega ChromeVoxi käskude jaoks. Otsinguklahv asub otse vasakpoolse tõstuklahvi kohal. Jätkamiseks vajutage otsinguklahvi.</translation>
 <translation id="8158033275290782295">vali kõik</translation>

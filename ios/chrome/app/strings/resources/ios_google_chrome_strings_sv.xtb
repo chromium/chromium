@@ -3,7 +3,7 @@
 <translationbundle lang="sv">
 <translation id="1096883626080133124">Få mer gjort med Google Chrome, som är enklare, säkrare och snabbare än någonsin</translation>
 <translation id="1282031177488366470">Bidra till att förbättra Chromes funktioner och prestanda</translation>
-<translation id="1354592789402432496">Administratören kräver inloggning med ett organisationskonto. Konton som är begränsade av administratören är dolda.</translation>
+<translation id="1314663809820920746">Bokmärken, lösenord, historik och andra inställningar finns fortfarande kvar på enheten. Om du ändrar något synkroniseras inte detta med Google-kontot.</translation>
 <translation id="1479202195792305274">Chrome kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="1493827051843127077">Ställ in Chrome som standardwebbläsare och synkronisera flikar, lösenord och betalningsuppgifter på alla enheter</translation>
 <translation id="1504372625950710826">Chrome kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
@@ -98,6 +98,7 @@
 <translation id="8357607116237445042">Välj om din data i Chrome ska raderas från den här enheten eller vara kvar</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
 <translation id="840168496893712993">Några tillägg har fått Chrome att krascha. Testa att avinstallera dem.</translation>
+<translation id="8414886616817913619">Organisationen kräver att du loggar in för att använda Chrome. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8459495907675268833">Den data som markerades har tagits bort från Chrome och från synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på history.google.com, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
 <translation id="850555388806794946">Så här använder du Chrome som standard:
   1. Öppna inställningarna

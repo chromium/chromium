@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">Chromium વિશે</translation>
 <translation id="1257458525759135959">છબીઓ સાચવવા માટે, સેટિંગ પર ટૅપ કરો જેથી Chromium તમારા ફોટા ઉમેરી શકે</translation>
 <translation id="1289216811211435351">Chromium પર સ્વિચ કરો</translation>
-<translation id="1354592789402432496">તમારા વ્યવસ્થાપક માટે જરૂરી છે કે તમે સંસ્થાના એકાઉન્ટ વડે સાઇન ઇન કરો. તમારા વ્યવસ્થાપક દ્વારા પ્રતિબંધ મૂકવામાં આવ્યો હોય એવા એકાઉન્ટ છુપાવેલા છે.</translation>
 <translation id="1361748954329991663">Chromium જૂનું થઈ ગયું છે. જો <ph name="BEGIN_LINK" />ઍપ સ્ટોર<ph name="END_LINK" />માં કોઈ અપડેટ ઉપલબ્ધ ન હોય, તો એવું બની શકે છે કે તમારું ડિવાઇસ હવેથી Chromiumના નવા વર્ઝનને સપોર્ટ ન કરતું હોય.</translation>
 <translation id="1370204544543370355">Chromiumનો સૌથી વધુ લાભ લેવા માટે, તમારા Google એકાઉન્ટ વડે Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="1431818719585918472">Chromiumને તમારી છૂપી ટૅબ લૉક કરવા દો.</translation>
@@ -23,6 +22,7 @@
 <translation id="2168108852149185974">કેટલાક એડ-ઓનને કારણે Chromium ક્રૅશ થાય છે. કૃપા કરી આને અનઇન્સ્ટૉલ કરો:</translation>
 <translation id="2178608107313874732">Chromium, અત્યારે તમારા કૅમેરાનો ઉપયોગ કરી શકતું નથી</translation>
 <translation id="2195025571279539885">શું તમે Chromiumને આ સાઇટથી આગલી વખતે <ph name="LANGUAGE_NAME" /> પેજને અનુવાદ કરવાની ઓફર કરવા માગો છો?</translation>
+<translation id="2218146227246548550">તમારી સંસ્થા માટે જરૂરી છે કે Chromiumનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2426113998523353159">તમારી સંસ્થા માટે જરૂરી છે કે Chromiumનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો.</translation>
 <translation id="2450140762465183767">હવે તમે જ્યારે પણ સંદેશા, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromiumનો ઉપયોગ કરી શકશો.</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium <ph name="END_BOLD" />પસંદ કરો</translation>
@@ -40,6 +40,7 @@
 <translation id="3472200483164753384">Chromium Canary પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="3639997914391704523">જ્યારે તમે તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો, ત્યારે Chromium તમારા પાસવર્ડ ચેક કરી શકે છે.</translation>
 <translation id="3805899903892079518">Chromiumને તમારા ફોટા અથવા વીડિયોનો ઍક્સેસ નથી. iOS સેટિંગ &gt; પ્રાઇવસી &gt; ફોટામાં ઍક્સેસને ચાલુ કરો.</translation>
+<translation id="3946918322491238254">તમે હજુ પણ આ ડિવાઇસ પરના તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગને જોઈ શકો છો. જો તમે ફેરફારો કરશો, તો તેમને તમારા એકાઉન્ટ સાથે સિંક કરવામાં આવશે નહીં.</translation>
 <translation id="4099085513035183040">Chromium બીટા પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="4555020257205549924">જ્યારે આ સુવિધા ચાલુ કરી હોય, ત્યારે Chromium, Google અનુવાદનો ઉપયોગ કરીને અન્ય ભાષાઓમાં લખેલા પૃષ્ઠોના અનુવાદની ઓફર કરશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">હવે તમે સંદેશા, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકશો.</translation>

@@ -793,6 +793,7 @@
 <translation id="1805888043020974594">Servidor de impresión</translation>
 <translation id="1805967612549112634">Confirmar PIN</translation>
 <translation id="1806335016774576568">Cambiar a otra aplicación abierta</translation>
+<translation id="1807246157184219062">Claro</translation>
 <translation id="1809483812148634490">Las aplicaciones que hayas descargado de Google Play se eliminarán de este Chromebook.
       <ph name="LINE_BREAKS1" />
       Es posible que también se elimine el contenido que hayas comprado, como películas, series de TV, música, libros u otras compras en la aplicación.
@@ -2742,7 +2743,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="383161972796689579">El propietario de este dispositivo ha desactivado la opción de añadir nuevos usuarios</translation>
 <translation id="3834728400518755610">Es necesario apagar Linux para que se aplique el cambio realizado en el ajuste del micrófono. Apaga Linux para continuar.</translation>
 <translation id="3834775135533257713">No se ha podido añadir la aplicación <ph name="TO_INSTALL_APP_NAME" /> porque existe un conflicto con <ph name="INSTALLED_APP_NAME" />.</translation>
-<translation id="3835522725882634757">¡Vaya! Este servidor está enviando datos que <ph name="PRODUCT_NAME" /> no comprende. <ph name="BEGIN_LINK" />Comunica un error<ph name="END_LINK" /> e incluye la <ph name="BEGIN2_LINK" />lista sin procesar<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Esta página muestra información general sobre este dispositivo y su uso (como el nivel de batería, la actividad de las aplicaciones y del sistema, y los errores). Sirve para mejorar Android, y parte de los datos recogidos también mejoran las aplicaciones y ayudan a los partners de Google, como los desarrolladores de Android, a mejorar sus productos y aplicaciones.</translation>
 <translation id="3838085852053358637">No se ha podido cargar la extensión</translation>
 <translation id="3838486795898716504">Más <ph name="PAGE_TITLE" /></translation>

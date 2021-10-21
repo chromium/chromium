@@ -790,6 +790,7 @@
 <translation id="1805888043020974594">打印服务器</translation>
 <translation id="1805967612549112634">确认 PIN 码</translation>
 <translation id="1806335016774576568">切换到另一个已打开的应用</translation>
+<translation id="1807246157184219062">浅色调</translation>
 <translation id="1809483812148634490">系统会从这台 Chromebook 中删除您从 Google Play 下载的应用。
     <ph name="LINE_BREAKS1" />
     可能还会删除您购买的内容，例如电影、电视节目、音乐、图书或其他应用内购商品。
@@ -2738,7 +2739,6 @@
 <translation id="383161972796689579">此设备的所有者已禁止添加新用户</translation>
 <translation id="3834728400518755610">您必须关闭 Linux 才能更改麦克风设置。请关闭 Linux 以继续操作。</translation>
 <translation id="3834775135533257713">无法添加应用“<ph name="TO_INSTALL_APP_NAME" />”，因为它与“<ph name="INSTALLED_APP_NAME" />”冲突。</translation>
-<translation id="3835522725882634757">糟糕！<ph name="PRODUCT_NAME" />无法解读服务器所发送的数据。请<ph name="BEGIN_LINK" />报告错误<ph name="END_LINK" />，并附上<ph name="BEGIN2_LINK" />原始列表<ph name="END2_LINK" />。</translation>
 <translation id="383669374481694771">这是关于此设备及其使用情况（例如电池电量、系统与应用活动以及错误）的一般信息。我们会使用这些数据来改善 Android，部分汇总信息还会有助于改善 Google 应用，并会协助我们的合作伙伴（例如 Android 开发者）改善其应用和产品。</translation>
 <translation id="3838085852053358637">未能成功加载扩展程序</translation>
 <translation id="3838486795898716504">更多“<ph name="PAGE_TITLE" />”</translation>

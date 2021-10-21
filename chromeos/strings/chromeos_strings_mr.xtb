@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1018219910092211213">DNS चे निराकरण करू शकत नाही</translation>
 <translation id="1018656279737460067">रद्द झाले</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">स्कॅनिंग सुरू करता आले नाही</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फायरवॉल डिटेक्ट केली</translation>
 <translation id="1075811647922107217">पेजचा आकार</translation>
+<translation id="1094693127011229778">आयपी अ‍ॅड्रेस उपलब्ध नाही</translation>
 <translation id="1119447706177454957">अंतर्गत एरर</translation>
 <translation id="1124772482545689468">वापरकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">संशयास्पद कॅप्टिव्ह पोर्टल</translation>
 <translation id="1290331692326790741">खराब सिग्नल</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138"><ph name="NETWORK_NAME" /> नेटवर्क उपलब्ध नाही</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">घरगुती नेटवर्क, रोमिंग नाही</translation>
 <translation id="1327977588028644528">गेटवे</translation>
@@ -67,6 +70,7 @@
 <translation id="1999615961760456652">कॅप्टिव्ह पोर्टल</translation>
 <translation id="2006864819935886708">कनेक्टिव्हिटी</translation>
 <translation id="2008685064673031089">प्राइम शोध</translation>
+<translation id="2016697457005847575">ट्रबलशूटिंगच्या पायऱ्या वापरून पहा</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +103,7 @@
 <translation id="2505327257735685095">सध्याची वॉलपेपर इमेज रिफ्रेश करा</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> चाचणी रन होत आहे...</translation>
+<translation id="2584559707064218956">सेट करण्यासाठी, सेटिंग्ज वर जा</translation>
 <translation id="2585245331261708204">Chrome OS मध्ये नवीन</translation>
 <translation id="2619761439309613843">दैनिक रिफ्रेश</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
@@ -145,8 +150,10 @@
 <translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
 <translation id="3565064564551103223">आयपीना अनुमती दिली</translation>
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
+<translation id="3583278742022654445">सिग्नलची क्षमता कमकुवत आहे. वाय-फाय सिग्नल स्रोताच्या जवळ जाण्याचा प्रयत्न करा.</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
+<translation id="3606583719724308068">HTTPS वेबसाइटवर लेटन्सी जास्त आहे</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
 <translation id="3708186454126126312">यापूर्वी कनेक्ट केलेली</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> परीक्षणे)</translation>
@@ -155,6 +162,7 @@
 <translation id="38114475217616659">सर्व इतिहास साफ करा</translation>
 <translation id="3820172043799983114">चुकीचे पिन.</translation>
 <translation id="3838338534323494292">नवीन पासवर्ड</translation>
+<translation id="385051799172605136">मागील</translation>
 <translation id="3858860766373142691">नाव</translation>
 <translation id="3865414814144988605">रिझोल्युशन</translation>
 <translation id="387301095347517405">तुमची बॅटरी किती वेळा पूर्ण चार्ज झाली त्याची संख्या</translation>
@@ -166,6 +174,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिवसांपेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="4003384961948020559">अयशस्वी झाले - आउटपुट भरले आहे</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
+<translation id="4044093238444069296">गेटवेशी संपर्क साधू शकत नाही</translation>
 <translation id="404928562651467259">चेतावणी:</translation>
 <translation id="409427325554347132">चाचणीचे तपशील सेव्ह करा</translation>
 <translation id="4111761024568264522">USB टचपॅड</translation>
@@ -188,6 +197,7 @@
 <translation id="4378551569595875038">कनेक्ट होतय...</translation>
 <translation id="4382484599443659549">पीडीएफ</translation>
 <translation id="4425149324548788773">माझा ड्राइव्ह</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> बंद आहे</translation>
 <translation id="4429881212383817840">Kerberos तिकीट लवकरच एक्स्पायर होईल</translation>
 <translation id="4431821876790500265">अहवाल पहा</translation>
 <translation id="445059817448385655">जुना पासवर्ड</translation>
@@ -233,6 +243,7 @@
 <translation id="4917385247580444890">मजबूत</translation>
 <translation id="4917889632206600977">थांबले - कागद संपला आहे</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंदांत <ph name="RATE" /> शुल्क आकारले.</translation>
+<translation id="4930320165497208503">कनेक्शन सेट किंवा अपडेट करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="498186245079027698">स्कॅनर तपासा आणि पुन्हा प्रयत्न करा. स्कॅन केलेल्या फाइल सेव्ह करण्यासाठी पुरेशी स्थानिक जागा उपलब्ध असल्याची खात्री करा.</translation>
 <translation id="4985509611418653372">रन</translation>
@@ -334,7 +345,6 @@
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>
 <translation id="6379086450106841622">टचस्क्रीन</translation>
 <translation id="6388847657025262518">स्कॅनरचा दस्तऐवज फीडर अडकला आहे. फीडर तपासा आणि पुन्हा प्रयत्न करा.</translation>
-<translation id="6398765197997659313">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
 <translation id="641081527798843608">जुळणारा विषय</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">कमकुवत (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -375,6 +385,7 @@
 <translation id="7059230779847288458">चार्ज होत आहे, <ph name="TIME_VALUE" /> मध्ये पूर्ण होईल</translation>
 <translation id="708426984172631313">थांबवली</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">अयशस्वी झाले - ऑथोरायझेशन करता आले नाही</translation>
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्व्हर}other{नेम सर्व्हर}}</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
@@ -387,6 +398,7 @@
 <translation id="7271040990581020067">स्कॅनर सध्या वापरात आहे. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">वॉलपेपरचा संग्रह</translation>
+<translation id="7297226631177386107">फायरवॉलद्वारे HTTPS वेबसाइटशी कनेक्ट करू शकत नाही</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -419,6 +431,7 @@
 <translation id="7762130827864645708">तुमचा पासवर्ड यशस्वीरीत्या बदलला होता. कृपया आतापासून नवीन पासवर्ड वापरा.</translation>
 <translation id="7763470514545477072">डोमेन सफिक्स जुळणी</translation>
 <translation id="7769672763586021400">मॉडेल आयडी</translation>
+<translation id="7784116172884276937">कोणतेही DNS सर्व्हर सेट केलेले नाहीत</translation>
 <translation id="7805768142964895445">स्थिती</translation>
 <translation id="7819857487979277519">PSK (WPA किंवा RSN)</translation>
 <translation id="7835501727204647447">CloudReady इंस्टॉल करा</translation>
@@ -433,13 +446,16 @@
 <translation id="7943235353293548836">परसिस्टंट कीपअलाइव्ह इंटर्व्हल</translation>
 <translation id="7955587717700691983">ब्लूटूथ कीबोर्ड</translation>
 <translation id="7960831585769876809">तापमान</translation>
+<translation id="7977800524392185497"><ph name="NETWORK_NAME" /> नेटवर्कमध्ये सामील होण्यासाठी, सेटिंग्ज वर जा</translation>
 <translation id="7978412674231730200">प्रायव्हेट की</translation>
 <translation id="7994702968232966508">EAP पद्धत</translation>
 <translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">अभिप्राय पाठवा</translation>
 <translation id="8075838845814659848">शिल्लक चार्जिंग</translation>
+<translation id="8082366717211101304">Android अ‍ॅप्सवरून DNS चे निराकरण करू शकत नाही</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
+<translation id="8104083085214006426">तुम्ही खुले आणि असुरक्षित नेटवर्क वापरत आहात</translation>
 <translation id="811820734797650957">(Android) गेटवे ला पिंग केले जाऊ शकते</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
 <translation id="8132480444149501833">ट्रॅफिक काउंटरची विनंती करा</translation>
@@ -464,10 +480,12 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">अंतर्गत कीबोर्ड</translation>
 <translation id="843568408673868420">इंटरनेट कनेक्टिव्हिटी</translation>
+<translation id="844521431886043384">DNS सेट केलेली नाही</translation>
 <translation id="8461329675984532579">होम पुरवठादार नाव</translation>
 <translation id="8475690821716466388">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP PSK सह सुरक्षित केले गेले आहे</translation>
 <translation id="8477551185774834963">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा किंचित जास्त आहे</translation>
 <translation id="8483248364096924578">IP पत्ता</translation>
+<translation id="8491311378305535241">Android अ‍ॅप्सवरून HTTPS वेबसाइटशी फायरवॉलद्वारे कनेक्ट करू शकत नाही</translation>
 <translation id="8498220429738806196">ट्रॅफिक काउंटर</translation>
 <translation id="8503813439785031346">वापरकर्ता नाव</translation>
 <translation id="8503836310948963452">फक्त आणखी काही मिनिटे...</translation>
@@ -493,6 +511,7 @@
 <translation id="8818152010000655963">वॉलपेपर</translation>
 <translation id="8834539327799336565">सध्या कनेक्ट केलेली</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>
+<translation id="8855781559874488009">फायरवॉलद्वारे HTTP वेबसाइटशी कनेक्ट करू शकत नाही</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">चाचणी यशस्वी झाली</translation>
 <translation id="8898840733695078011">सिग्नल सामर्थ्य</translation>
@@ -518,12 +537,14 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे</translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>
+<translation id="9122602430962285795">पुन्हा कनेक्ट करण्यासाठी सेटिंग्ज वर जा</translation>
 <translation id="9126720536733509015">एका PDF मध्ये एकाहून अधिक पेज सेव्ह करा</translation>
 <translation id="9137526406337347448">Google सेवा</translation>
 <translation id="9149391708638971077">मेमरी चाचणी रन करा</translation>
 <translation id="9173638680043580060">एका मिनिटापेक्षा कमी वेळ शिल्लक आहे</translation>
 <translation id="917720651393141712">चाचणी करा</translation>
 <translation id="9190063653747922532">L2TP/IPSec + पूर्व-शेअर की</translation>
+<translation id="9204237731135241582">Android अ‍ॅप्सवरून गेटवेशी संपर्क साधू शकत नाही</translation>
 <translation id="9211490828691860325">सर्व डेस्क</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">सक्रिय नाही</translation>

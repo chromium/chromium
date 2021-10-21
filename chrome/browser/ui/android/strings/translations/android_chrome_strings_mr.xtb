@@ -26,6 +26,7 @@
 <translation id="1142732900304639782">या साइटचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="1145536944570833626">विद्यमान डेटा हटवा.</translation>
 <translation id="1146678959555564648">VR एंटर करा</translation>
+<translation id="114825011539563458">सर्वात महत्त्वाची गोपनीयता आणि सुरक्षा नियंत्रणे एकाच ठिकाणी</translation>
 <translation id="1154704303112745282">पेज ऑफलाइन उपलब्ध नाही: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">वापरला</translation>
 <translation id="1171770572613082465">"टॉप साइट" बटणावर टॅप करून लोकप्रिय वेबसाइट पहा</translation>
@@ -318,6 +319,7 @@
 <translation id="2932222164150889403">तुमचा कीबोर्ड बदलणार नाही</translation>
 <translation id="2942036813789421260">पूर्वावलोकन टॅब बंद आहे</translation>
 <translation id="2946420957526726953">इतर डिव्हाइसशी कनेक्ट करण्यासाठी Chrome अपडेट करत आहे</translation>
+<translation id="2951071800649516099">नंतर वाचण्यासाठी तुमच्या वाचन सूचीमध्ये पेज जोडा</translation>
 <translation id="2956410042958133412">हे खाते <ph name="PARENT_NAME_1" /> आणि <ph name="PARENT_NAME_2" /> द्वारे व्यवस्थापित केले आहे.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> न वाचलेले पेज}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> न वाचलेली पेज}}</translation>
 <translation id="2961210776189273067">शीर्षक</translation>
@@ -549,6 +551,7 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टॅब बंद करा</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ला बुकमार्क केले</translation>
 <translation id="4472118726404937099">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
+<translation id="4479839115899251637">वाचन सूचीमधून हटवा</translation>
 <translation id="4479972344484327217">Chrome साठी <ph name="MODULE" /> इंस्टॉल करत आहे…</translation>
 <translation id="4487967297491345095">Chrome चा सर्व ॲप डेटा कायमचा हटवला जाईल. यामध्ये सर्व फाइल, सेटिंग्ज, खाती, डेटाबेस, इ. चा समावेश होतो.</translation>
 <translation id="449126573531210296">तुमचे Google खाते वापरून सिंक केलेले पासवर्ड एंक्रिप्ट करा</translation>
@@ -570,9 +573,11 @@
 <translation id="4558311620361989323">वेबपेज शॉर्टकट</translation>
 <translation id="4561730552726921821">नोंदणी यशस्वीरीत्या पूर्ण केली</translation>
 <translation id="4561979708150884304">कनेक्शन नाही</translation>
+<translation id="4562008740775511591">Chrome वाजवी डीफॉल्ट पुरवते, पण तुमच्या ब्राउझ करण्याच्या सवयीला अनुसरून तुम्ही ते कस्टमाइझ करू शकता</translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
 <translation id="4572422548854449519">व्यवस्थापित केलेल्या खात्यामध्ये साइन इन करा</translation>
 <translation id="4576892426230499203">पडताळणी करण्याचा दुसरा पर्याय वापरून पहा</translation>
+<translation id="4578289292431526768">चला सुरू करू या</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">हे <ph name="CREATION_TIME" /> पासूनचे ऑफलाइन पेज आहे आणि ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
@@ -809,6 +814,7 @@
 <translation id="5956665950594638604">नवीन टॅबमध्ये Chrome मदत केंद्र उघडा</translation>
 <translation id="5957442310066583693">तुमच्या टॉप साइट पाहण्यासाठी, होम बटणावर टॅप करा</translation>
 <translation id="5958275228015807058">तुमच्या फाइल आणि पेज डाउनलोडमध्ये शोधा</translation>
+<translation id="5962272973076519240">गुप्त मोड अनलॉक करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="5962718611393537961">संकुचित करण्‍यासाठी टॅप करा</translation>
 <translation id="5964805880140440652">हे पेज दुसर्‍या डिव्हाइसवर शेअर करण्यासाठी, Chrome सेटिंग्जमध्ये सिंक सुरू करा</translation>
 <translation id="5964869237734432770">इमेजची वर्णने थांबवा</translation>
@@ -933,6 +939,7 @@
 <translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
 <translation id="6618554661997243500">तुमच्यासाठी टॉप साइट आणि स्टोरी पाहण्यासाठी, होम बटणावर टॅप करा</translation>
 <translation id="6627583120233659107">फोल्डर संपादित करा</translation>
+<translation id="6633067410344541938">गुप्त मोड अनलॉक करा</translation>
 <translation id="663674369910034433">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK1" />सिंक<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google सेवा<ph name="END_LINK2" /> पहा</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6643649862576733715">वाचवलेल्या डेटानुसार क्रमाने लावा</translation>
@@ -988,12 +995,14 @@
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="6955535239952325894">व्यवस्थापित केलेल्या ब्राउझरवर हे सेटिंग बंद केलेले आहे</translation>
 <translation id="6963766334940102469">बुकमार्क हटवा</translation>
+<translation id="6964116075545915250">वाचन सूची संपादित करा</translation>
 <translation id="696447261358045621">गुप्त मोडमधून बाहेर पडा</translation>
 <translation id="6979737339423435258">पूर्णवेळ</translation>
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="6987047470128880212">या डिव्हाइसवर गुप्त मोड उपलब्ध नाही</translation>
 <translation id="6995899638241819463">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी द्या</translation>
 <translation id="7001056293070445572">ही फाइल मोठी आहे (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">वाचन सूचीमध्ये जोडा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ब्राउझरमध्ये उघडा</translation>
 <translation id="702463548815491781">TalkBack किंवा स्विच ॲक्सेस सुरू असताना शिफारस केलेले</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> रिस्टोअर केले</translation>
@@ -1213,6 +1222,7 @@
 <translation id="825412236959742607">हे पेज खूप जास्त मेमरी वापरत असल्यामुळे, Chrome ने काही आशय काढून टाकला आहे.</translation>
 <translation id="8260126382462817229">पुन्हा साइन इन करण्याचा प्रयत्न करा</translation>
 <translation id="8261506727792406068">हटवा</translation>
+<translation id="82619448491672958">इतर टॅब पहा</translation>
 <translation id="8266862848225348053">डाउनलोड करण्याचे स्थान</translation>
 <translation id="8274165955039650276">डाउनलोड पहा</translation>
 <translation id="8281886186245836920">वगळा</translation>

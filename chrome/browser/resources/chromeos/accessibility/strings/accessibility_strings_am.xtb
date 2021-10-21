@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">የባሕር ሼል</translation>
 <translation id="6551185905438378412">የዝሆን ጥርስ</translation>
 <translation id="6561818612645211875">ወደ የአሁኑ ረድፍ መጀመሪያ ሂድ</translation>
+<translation id="6563126228219321999">ልክ ያልኾነ ንጥል የለም</translation>
 <translation id="6579990219486187401">ፈዛዛ ሮዝ</translation>
 <translation id="6583174818554398774">በጥራት ደረጃ ላይ ወደ ቀጣዩ ውሰድ</translation>
 <translation id="6584162722998608255">በመቀጠል በማያ ገጹ አካባቢ እንዴት እንደሚያንቀሳቅሱ ይማራሉ። ወደ ቀጣዩ ንጥል ለመሄድ አንድ ጣትን ከግራ ወደ ቀኝ ማንሸራተት ይችላሉ። ወደ ቀጣዩ ደረጃ ለመሄድ አሁን ይሞክሩት።</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">ሎሚ ሺፎን</translation>
 <translation id="6816066673340002913">ግራጫ ወርቃማ በትር</translation>
 <translation id="6826226459053491773">ሁለት ጣቶችን ወደ ታች ያንሸራትቱ</translation>
+<translation id="6826669432862053130">ቀጣይ ልክ ያልኾነ ንጥል</translation>
 <translation id="6833103209700200188">ግርጌ</translation>
 <translation id="6837853484260746864">ድምፅ ይምረጡ፦</translation>
 <translation id="6858047746862060282">ቅድመ-ታሪክ</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">ምንም ቀዳሚ የደረጃ 5 ርዕስ የለም</translation>
 <translation id="812886159861361726">ማውረድ ቆሟል <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">ከላይ ምንም ሕዋስ የለም</translation>
+<translation id="8132248161074464367">ቀዳሚ ልክ ያልሆነ ንጥል</translation>
 <translation id="8138880386467279117">ይንኩ</translation>
 <translation id="8146613869421949343">ቀጥለው ስለSearch ቁልፉ ይማራሉ። የSearch ቁልፉ ከሌሎች የChromeVox ትዕዛዞች ቁልፎች ጋር በጥምረት ስራ ላይ ይውላል። የSearch ቁልፉ ከግራ Shift ቁልፉ በላይ ይገኛል። ለመቀጠል የSearch ቁልፉን ይጫኑት።</translation>
 <translation id="8158033275290782295">ሁሉንም ምረጥ</translation>

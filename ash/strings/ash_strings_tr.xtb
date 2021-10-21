@@ -615,6 +615,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5465662442746197494">Yardıma mı ihtiyacınız var?</translation>
 <translation id="5496819745535887422">Yöneticiniz cihazınızı ilk haline döndürüyor. Cihaz yeniden başlatıldığında tüm veriler silinecektir.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Yöneticiniz tüm eSIM profillerini kaldırdı. Daha fazla bilgi için yöneticinizle iletişime geçin.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> bağlanıyor.</translation>
 <translation id="5532994612895037630">Tam ekran görüntüsü kaydetmek için herhangi bir yere dokunun</translation>
 <translation id="553675580533261935">Oturum kapatılıyor</translation>
@@ -746,6 +747,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6537924328260219877"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, <ph name="BATTERY_STATUS" /> Telefon Pili</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> alıcısına gönderiliyor</translation>
 <translation id="6559976592393364813">Yöneticiye sorun</translation>
+<translation id="6565007273808762236">eSIM bağlantısı kullanılamıyor</translation>
 <translation id="6570902864550063460">USB ile şarj oluyor</translation>
 <translation id="6585808820553845416">Oturumun süresi <ph name="SESSION_TIME_REMAINING" /> içinde bitiyor.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">समुद्री सेल</translation>
 <translation id="6551185905438378412">आइभोरी</translation>
 <translation id="6561818612645211875">हालको पङ्क्तिको सुरुमा जानुहोस्</translation>
+<translation id="6563126228219321999">कुनै पनि अवैध वस्तु छैन</translation>
 <translation id="6579990219486187401">हल्का गुलाबी</translation>
 <translation id="6583174818554398774">ग्र्यानुलारिटीमा अर्कोमा जानुहोस्</translation>
 <translation id="6584162722998608255">त्यसपछि तपाईं स्क्रिनमा एक ठाउँबाट अर्को ठाउँमा जाने तरिका जान्नु हुने छ। तपाईं एउटा वस्तुबाट अर्को वस्तुमा जान एक औँलाले बायाँबाट दायाँतिर स्वाइप गर्न सक्नुहुन्छ। अर्को चरणमा जान अहिले नै यो कार्य गरी हेर्नुहोस्।</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">लेमन सिफन</translation>
 <translation id="6816066673340002913">फिक्का सुनौलो रड</translation>
 <translation id="6826226459053491773">दुई औँलाले तल स्वाइप गर्नुहोस्</translation>
+<translation id="6826669432862053130">अर्को अवैध वस्तु</translation>
 <translation id="6833103209700200188">फुटर</translation>
 <translation id="6837853484260746864">आवाज चयन गर्नुहोस्:</translation>
 <translation id="6858047746862060282">प्रस्तावना</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">अघिल्लो कुनै पनि लेभल ५ शीर्षक छैन</translation>
 <translation id="812886159861361726"><ph name="FILE_NAME" /> डाउनलोड रोकियो</translation>
 <translation id="8129445297241948503">माथि कुनै पनि कक्ष छैन</translation>
+<translation id="8132248161074464367">अघिल्लो अवैध वस्तु</translation>
 <translation id="8138880386467279117">स्पर्श</translation>
 <translation id="8146613869421949343">अब तपाईं Search कीका बारेमा जान्नु हुने छ। ChromeVox लाई कमान्ड दिनका निम्ति Search कीसहित अन्य कीहरू प्रयोग गरिन्छ। Search की बायाँ Shift कीको ठिक माथिपट्टि हुन्छ। जारी राख्न Search की थिच्नुहोस्।</translation>
 <translation id="8158033275290782295">सबै सामग्री चयन गरियोस्</translation>

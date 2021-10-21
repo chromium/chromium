@@ -337,6 +337,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3509391053705095206">Ne možemo pronaći vaš telefon. Provjerite je li na telefonu uključen Bluetooth.</translation>
 <translation id="3510164367642747937">Istakni pokazivač miša</translation>
 <translation id="3513798432020909783">Računom upravlja <ph name="MANAGER_EMAIL" /></translation>
+<translation id="352245152354538528">{0,plural, =1{Ažurirajte uređaj u roku od jedne minute}one{Ažurirajte uređaj u roku od # minute}few{Ažurirajte uređaj u roku od # minute}other{Ažurirajte uređaj u roku od # minuta}}</translation>
 <translation id="353086728817903341">Povezano s ovoliko uređaja: <ph name="NUM_DEVICES" />.</translation>
 <translation id="3552189655002856821">Wi-Fi je isključen</translation>
 <translation id="3560866052109807830">Alati za crtanje oznaka</translation>
@@ -425,6 +426,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4146833061457621061">Pusti glazbu</translation>
 <translation id="4157822100366708405">Postavke Tamne teme</translation>
 <translation id="4173958948577803258">čet</translation>
+<translation id="4177913004758410636">{0,plural, =1{Ažurirajte uređaj u roku od jednog dana}one{Ažurirajte uređaj u roku od # dana}few{Ažurirajte uređaj u roku od # dana}other{Ažurirajte uređaj u roku od # dana}}</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4195877955194704651">Automatski klikovi na gumb</translation>
 <translation id="4197790712631116042">Isključeno</translation>
@@ -478,6 +480,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="445864333228800152">Dobra večer,</translation>
 <translation id="4458688154122353284">Zaustavite snimanje zaslona</translation>
 <translation id="4471354919263203780">Preuzimaju se datoteke za prepoznavanje govora... <ph name="PERCENT" />%</translation>
+<translation id="4471432286288241507">{0,plural, =0{Odmah ažurirajte uređaj}=1{Ažurirajte uređaj u roku od jedne sekunde}one{Ažurirajte uređaj u roku od # sekunde}few{Ažurirajte uređaj u roku od # sekunde}other{Ažurirajte uređaj u roku od # sekundi}}</translation>
 <translation id="4472575034687746823">Početak korištenja</translation>
 <translation id="4477350412780666475">Sljedeća pjesma</translation>
 <translation id="4477892968187500306">Uređaj sadrži aplikacije koje nije potvrdio Google.</translation>
@@ -737,6 +740,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6482559668224714696">Povećalo za cijeli zaslon</translation>
 <translation id="6490471652906364588">USB-C uređaj (desni priključak)</translation>
 <translation id="649452524636452238">PIN za pametnu karticu</translation>
+<translation id="6495400115277918834">Pokrenuta je slika u slici, pritisnite Alt + Shift + V da biste fokusirali</translation>
 <translation id="6500818810472529210">Pogledajte rezultate na Google pretraživanju</translation>
 <translation id="6501401484702599040">Emitiranje zaslona na <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Odaberite prozor za fotografiranje</translation>
@@ -747,6 +751,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6542521951477560771">Emitiranje na uređaj <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pitajte administratora</translation>
 <translation id="6565007273808762236">eSIM veza nije dostupna</translation>
+<translation id="6570831796530454248">{0,plural, =1{Ažurirajte uređaj u roku od sat vremena}one{Ažurirajte uređaj u roku od # sata}few{Ažurirajte uređaj u roku od # sata}other{Ažurirajte uređaj u roku od # sati}}</translation>
 <translation id="6570902864550063460">Punjenje putem USB-a</translation>
 <translation id="6585808820553845416">Sesija će završiti za <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

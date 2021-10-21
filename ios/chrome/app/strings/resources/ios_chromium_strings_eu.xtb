@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">Chromium arakatzaileari buruz</translation>
 <translation id="1257458525759135959">Irudiak gordetzeko, sakatu Ezarpenak eta eman argazkiak gehitzeko baimena Chromium-i</translation>
 <translation id="1289216811211435351">Aldatu Chromium-era</translation>
-<translation id="1354592789402432496">Erakunde-kontu batekin saioa hastea eskatzen du administratzaileak. Hark onartzen ez dituen kontuak ezkutatuta daude.</translation>
 <translation id="1361748954329991663">Chromium zaharkituta dago. Ez badago eguneratzerik <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> dendan, baliteke gailua Chromium-en bertsio berriekin bateragarria ez izatea.</translation>
 <translation id="1370204544543370355">Chromium-i etekinik handiena ateratzeko, hasi saioa Chromium-en Google-ko kontuarekin</translation>
 <translation id="1431818719585918472">Utzi Chromium-i ezkutuko moduko fitxak blokeatzen.</translation>
@@ -40,6 +39,7 @@
 <translation id="3472200483164753384">Ez da bateragarria Chromium Canary-rekin</translation>
 <translation id="3639997914391704523">Saioa Google-ko kontu batekin hasten baduzu, Chromium-ek pasahitzak egiazta ditzake.</translation>
 <translation id="3805899903892079518">Chromium-ek ez du argazki eta bideoetarako sarbiderik. Gaitu sarbidea iOS sistemako Settings &gt; Privacy &gt; Photos atalean.</translation>
+<translation id="3946918322491238254">Gailuan dituzu oraindik laster-marka, historia, pasahitz eta bestelako ezarpen guztiak. Aldaketarik eginez gero, ez dira sinkronizatuko kontuarekin.</translation>
 <translation id="4099085513035183040">Ez da bateragarria Chromium Beta-rekin</translation>
 <translation id="4555020257205549924">Eginbide hau aktibatuta dagoenean, Chromium-ek beste hizkuntzetan idatzita dauden orriak Google Translate bidez itzultzea proposatuko dizu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Orain, mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean, Chromium erabili ahalko duzu.</translation>

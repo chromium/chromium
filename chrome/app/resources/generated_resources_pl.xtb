@@ -795,6 +795,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1805888043020974594">Serwer druku</translation>
 <translation id="1805967612549112634">Potwierdź kod PIN</translation>
 <translation id="1806335016774576568">Przełącz na inną otwartą aplikację</translation>
+<translation id="1807246157184219062">Jasny</translation>
 <translation id="1809483812148634490">Aplikacje pobrane z Google Play zostaną usunięte z tego Chromebooka.<ph name="LINE_BREAKS1" />Kupione treści, np. filmy, seriale, muzyka, książki i inne zakupy w aplikacjach, również mogą zostać usunięte.<ph name="LINE_BREAKS2" />Nie ma to wpływu na aplikacje ani treści na innych urządzeniach.</translation>
 <translation id="1809734401532861917">Dodaj moje zakładki, historię, hasła i inne ustawienia do profilu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1813278315230285598">Usługi</translation>
@@ -2739,7 +2740,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="383161972796689579">Właściciel tego urządzenia wyłączył możliwość dodawania nowych użytkowników</translation>
 <translation id="3834728400518755610">Zmiana ustawienia mikrofonu wymaga wyłączenia Linuksa. Wyłącz Linuksa, by kontynuować.</translation>
 <translation id="3834775135533257713">Nie udało się dodać aplikacji „<ph name="TO_INSTALL_APP_NAME" />”, bo występuje konflikt z aplikacją „<ph name="INSTALLED_APP_NAME" />”.</translation>
-<translation id="3835522725882634757">O nie! Ten serwer wysyła dane, których aplikacja <ph name="PRODUCT_NAME" /> nie rozumie. <ph name="BEGIN_LINK" />Zgłoś błąd<ph name="END_LINK" /> i dołącz <ph name="BEGIN2_LINK" />nieprzetworzony wykaz<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Są to ogólne informacje o tym urządzeniu i o jego używaniu (takie jak poziom naładowania baterii, aktywność w systemie i aplikacjach oraz błędy). Wykorzystamy je do ulepszania Androida. Niektóre informacje zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida, do tworzenia lepszych aplikacji i produktów.</translation>
 <translation id="3838085852053358637">Nie udało się wczytać rozszerzenia</translation>
 <translation id="3838486795898716504">Więcej o <ph name="PAGE_TITLE" /></translation>

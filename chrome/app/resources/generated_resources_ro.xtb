@@ -798,6 +798,7 @@
 <translation id="1805888043020974594">Server de imprimare</translation>
 <translation id="1805967612549112634">Confirmă codul PIN</translation>
 <translation id="1806335016774576568">Comută la altă aplicație deschisă</translation>
+<translation id="1807246157184219062">Luminos</translation>
 <translation id="1809483812148634490">Aplicațiile pe care le-ai descărcat de pe Google Play vor fi șterse de pe acest Chromebook.
     <ph name="LINE_BREAKS1" />
     Este posibil să se șteargă și conținutul achiziționat, cum ar fi filmele, serialele, cântecele, cărțile sau alte achiziții în aplicație.
@@ -2757,7 +2758,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="383161972796689579">Proprietarul acestui dispozitiv a dezactivat adăugarea de utilizatori noi</translation>
 <translation id="3834728400518755610">Modificarea setării pentru microfon necesită repornirea sistemului de operare Linux. Închide Linux pentru a continua.</translation>
 <translation id="3834775135533257713">Aplicația „<ph name="TO_INSTALL_APP_NAME" />” nu a putut fi adăugată, deoarece se află în conflict cu „<ph name="INSTALLED_APP_NAME" />”.</translation>
-<translation id="3835522725882634757">Oh, nu! Acest server trimite date pe care <ph name="PRODUCT_NAME" /> nu le poate înțelege. <ph name="BEGIN_LINK" />Raportează o eroare<ph name="END_LINK" /> și include <ph name="BEGIN2_LINK" />afișarea datelor neprelucrate<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Acestea sunt informații generale despre dispozitiv și despre modul în care îl folosești (de exemplu, nivelul bateriei, activitatea pe sistem și în aplicații și erorile). Datele vor fi folosite pentru îmbunătățirea Android și unele informații cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android, să își îmbunătățească aplicațiile și produsele.</translation>
 <translation id="3838085852053358637">Extensia nu s-a încărcat</translation>
 <translation id="3838486795898716504">Mai multe <ph name="PAGE_TITLE" /></translation>

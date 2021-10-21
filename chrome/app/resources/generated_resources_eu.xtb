@@ -793,6 +793,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1805888043020974594">Inprimatze-zerbitzaria</translation>
 <translation id="1805967612549112634">Berretsi PINa</translation>
 <translation id="1806335016774576568">Aldatu irekita dagoen beste aplikazio batera</translation>
+<translation id="1807246157184219062">Argia</translation>
 <translation id="1809483812148634490">Google Play-tik deskargatu dituzun aplikazioak ezabatu egingo dira Chromebook-etik.
     <ph name="LINE_BREAKS1" />
     Erosi duzun edukia ere ezabatuko da agian; besteak beste, filmak, telesaioak, musika, liburuak eta aplikazioetako beste erosketa batzuk.
@@ -2740,7 +2741,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="383161972796689579">Gailuaren jabeak erabiltzaile berriak gehitzeko aukera desgaitu du</translation>
 <translation id="3834728400518755610">Mikrofonoaren ezarpenean egindako aldaketa aplikatzeko, itxi egin behar da Linux. Aurrera egiteko, itxi Linux.</translation>
 <translation id="3834775135533257713">Ezin izan da gehitu "<ph name="TO_INSTALL_APP_NAME" />" aplikazioa, "<ph name="INSTALLED_APP_NAME" />" aplikazioarekin gatazkan dagoelako.</translation>
-<translation id="3835522725882634757"><ph name="PRODUCT_NAME" />-k ezin ditu ulertu zerbitzariak bidalitako datuak. <ph name="BEGIN_LINK" />Emaguzu akatsaren berri<ph name="END_LINK" /> eta sartu <ph name="BEGIN2_LINK" />direktorio-zerrenda prozesatu gabeko testuan<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Gailu honi eta hura erabiltzeko moduari buruzko informazio orokorra da hau (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, multzokatutako datu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android-en garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.</translation>
 <translation id="3838085852053358637">Ezin izan da kargatu luzapena</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> orriaren jarraipena</translation>

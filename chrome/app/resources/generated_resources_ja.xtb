@@ -793,6 +793,7 @@
 <translation id="1805888043020974594">プリント サーバー</translation>
 <translation id="1805967612549112634">PIN の確認</translation>
 <translation id="1806335016774576568">別の開いているアプリに切り替える</translation>
+<translation id="1807246157184219062">明</translation>
 <translation id="1809483812148634490">Google Play からダウンロードしたアプリは、この Chromebook から削除されます。
     <ph name="LINE_BREAKS1" />
     購入した映画、テレビ番組、音楽、書籍、その他のアプリ内購入のコンテンツも削除される可能性があります。
@@ -2740,7 +2741,6 @@
 <translation id="383161972796689579">このデバイスの所有者は新規ユーザーの追加を無効にしています</translation>
 <translation id="3834728400518755610">マイクの設定を変更するには、Linux をシャットダウンする必要があります。続行するには Linux をシャットダウンしてください。</translation>
 <translation id="3834775135533257713">「<ph name="INSTALLED_APP_NAME" />」と競合するため、アプリケーション「<ph name="TO_INSTALL_APP_NAME" />」を追加できませんでした。</translation>
-<translation id="3835522725882634757">このサーバーから、<ph name="PRODUCT_NAME" /> が認識できないデータが送信されています。<ph name="BEGIN_LINK" />バグを報告<ph name="END_LINK" />してください。報告には<ph name="BEGIN2_LINK" />未加工のリスト<ph name="END2_LINK" />を含めてください。</translation>
 <translation id="383669374481694771">このデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。このデータは、Android の機能向上に使用されます。また、統計情報の一部は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="3838085852053358637">拡張機能を読み込めませんでした</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> をもっと見る</translation>

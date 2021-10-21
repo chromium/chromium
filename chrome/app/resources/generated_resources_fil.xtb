@@ -805,6 +805,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1805888043020974594">Server sa pag-print</translation>
 <translation id="1805967612549112634">Kumpirmahin ang PIN</translation>
 <translation id="1806335016774576568">Lumipat sa isa pang nakabukas na app</translation>
+<translation id="1807246157184219062">Maliwanag</translation>
 <translation id="1809483812148634490">Made-delete sa Chromebook na ito ang mga app na na-download mo mula sa Google Play.
     <ph name="LINE_BREAKS1" />
    Posible ring ma-delete ang content na binili mo gaya ng mga pelikula, palabas sa TV, musika, aklat o iba pang in-app na pagbili.
@@ -2758,7 +2759,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="383161972796689579">Hindi pinagana ng may-ari ng device na ito ang pagdaragdag ng mga bagong user</translation>
 <translation id="3834728400518755610">Kinakailangan sa pagbabago sa setting ng mikropono na i-shut down ang Linux. I-shut down ang Linux para magpatuloy.</translation>
 <translation id="3834775135533257713">Hindi maidagdag ang application na "<ph name="TO_INSTALL_APP_NAME" />" dahil sumasalungat ito sa "<ph name="INSTALLED_APP_NAME" />".</translation>
-<translation id="3835522725882634757">Naku! Nagpapadala ang server na ito ng data <ph name="PRODUCT_NAME" /> na hindi maunawaan. Mangyaring <ph name="BEGIN_LINK" />mag-ulat ng bug<ph name="END_LINK" />, at isama ang <ph name="BEGIN2_LINK" />raw na listahan<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Ito ay pangkalahatang impormasyon tungkol sa device na ito at kung paano ito ginagamit (gaya ng antas ng baterya, aktibidad ng system at app, at mga error). Gagamitin ang data para pahusayin ang Android, at makakatulong din ang ilang pinagsama-samang impormasyon sa mga app at partner ng Google, gaya ng mga developer ng Android, na pahusayin ang kanilang mga app at produkto.</translation>
 <translation id="3838085852053358637">Hindi na-load ang extension</translation>
 <translation id="3838486795898716504">Higit pang <ph name="PAGE_TITLE" /></translation>

@@ -615,6 +615,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5465662442746197494">Þarftu aðstoð?</translation>
 <translation id="5496819745535887422">Kerfisstjórinn þinn er að færa tækið aftur í eldri útgáfu. Öllum gögnum verður eytt við endurræsingu tækisins.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Kerfisstjórinn hefur fjarlægt alla eSIM-prófíla. Hafðu samband við kerfisstjórann til að fá frekari upplýsingar.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> tengist.</translation>
 <translation id="5532994612895037630">Ýttu hvar sem er til að taka upp á öllum skjánum</translation>
 <translation id="553675580533261935">Lokar lotu</translation>
@@ -745,6 +746,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6537924328260219877"><ph name="SIGNAL_STRENGTH" /> sendistyrkur, <ph name="BATTERY_STATUS" /> hleðsla á rafhlöðu símans</translation>
 <translation id="6542521951477560771">Sendir út til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Spyrja kerfisstjóra</translation>
+<translation id="6565007273808762236">eSIM-tenging er ekki tiltæk</translation>
 <translation id="6570902864550063460">Hleður með USB</translation>
 <translation id="6585808820553845416">Lotunni lýkur eftir <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

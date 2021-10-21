@@ -155,6 +155,7 @@
 <translation id="38114475217616659">모든 기록 삭제</translation>
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
 <translation id="3838338534323494292">새 비밀번호</translation>
+<translation id="385051799172605136">뒤로</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3865414814144988605">해상도</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
@@ -334,7 +335,6 @@
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
 <translation id="6379086450106841622">터치스크린</translation>
 <translation id="6388847657025262518">스캐너의 급지대에 용지가 걸렸습니다. 급지대를 확인한 후 다시 시도해 보세요.</translation>
-<translation id="6398765197997659313">전체화면 닫기</translation>
 <translation id="641081527798843608">주제 일치</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">약함(<ph name="SIGNAL_STRENGTH" />)</translation>

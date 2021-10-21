@@ -793,6 +793,7 @@
 <translation id="1805888043020974594">列印伺服器</translation>
 <translation id="1805967612549112634">確認 PIN 碼</translation>
 <translation id="1806335016774576568">切換至其他已開啟的應用程式</translation>
+<translation id="1807246157184219062">淺色</translation>
 <translation id="1809483812148634490">你透過 Google Play 下載的應用程式將會從這部 Chromebook 中刪除。
     <ph name="LINE_BREAKS1" />
     你所購買的內容 (例如電影、電視節目、音樂、書籍或其他應用程式內購項目) 可能也會一併遭到刪除。
@@ -2742,7 +2743,6 @@
 <translation id="383161972796689579">裝置擁有者已停用新增使用者功能</translation>
 <translation id="3834728400518755610">必須先關閉 Linux，麥克風設定的變更才會生效。請關閉 Linux 以繼續操作。</translation>
 <translation id="3834775135533257713">「<ph name="TO_INSTALL_APP_NAME" />」應用程式和「<ph name="INSTALLED_APP_NAME" />」發生衝突，因此無法新增。</translation>
-<translation id="3835522725882634757">糟糕！這個伺服器傳送了「<ph name="PRODUCT_NAME" />」無法判讀的資料。請<ph name="BEGIN_LINK" />回報錯誤<ph name="END_LINK" />，同時提供<ph name="BEGIN2_LINK" />原始清單<ph name="END2_LINK" />。</translation>
 <translation id="383669374481694771">這個頁面會顯示這部裝置和裝置使用情況的一般資訊 (例如電池電量、系統和應用程式活動，以及錯誤資訊)。這些資料將用於改善 Android，且部分匯總資訊還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提高應用程式和產品的服務品質。</translation>
 <translation id="3838085852053358637">無法載入擴充功能</translation>
 <translation id="3838486795898716504">更多<ph name="PAGE_TITLE" /></translation>

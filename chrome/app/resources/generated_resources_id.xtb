@@ -804,6 +804,7 @@
 <translation id="1805888043020974594">Server cetak</translation>
 <translation id="1805967612549112634">Konfirmasi PIN</translation>
 <translation id="1806335016774576568">Alihkan ke aplikasi lain yang terbuka</translation>
+<translation id="1807246157184219062">Terang</translation>
 <translation id="1809483812148634490">Aplikasi yang telah Anda download dari Google Play akan dihapus dari Chromebook ini.
     <ph name="LINE_BREAKS1" />
     Konten yang telah Anda beli seperti film, acara TV, musik, buku, atau pembelian dalam aplikasi lainnya juga dapat dihapus.
@@ -2757,7 +2758,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="383161972796689579">Pemilik perangkat ini telah menonaktifkan pengguna baru agar tidak ditambahkan</translation>
 <translation id="3834728400518755610">Perubahan pada setelan mikrofon mengharuskan Linux dimatikan. Matikan Linux untuk melanjutkan.</translation>
 <translation id="3834775135533257713">Tidak dapat menambahkan aplikasi "<ph name="TO_INSTALL_APP_NAME" />" karena bentrok dengan "<ph name="INSTALLED_APP_NAME" />".</translation>
-<translation id="3835522725882634757">Aduh! Server ini mengirimkan data <ph name="PRODUCT_NAME" /> yang tidak bisa dipahami. <ph name="BEGIN_LINK" />Laporkan bug<ph name="END_LINK" />, dan sertakan <ph name="BEGIN2_LINK" />cantuman mentah<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Ini adalah informasi umum tentang perangkat ini dan cara penggunaannya (seperti tingkat daya baterai, aktivitas sistem dan aplikasi, serta error). Data ini akan digunakan untuk menyempurnakan Android. Beberapa informasi gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android, membuat aplikasi dan produk mereka menjadi lebih baik.</translation>
 <translation id="3838085852053358637">Gagal memuat ekstensi</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> Lainnya</translation>

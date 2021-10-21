@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer une image, appuyez sur "Paramètres" afin que Chromium puisse l'ajouter à vos photos</translation>
 <translation id="1289216811211435351">Passer à Chromium</translation>
-<translation id="1354592789402432496">Votre administrateur exige que vous vous connectiez avec un compte d'organisation. Les comptes auxquels il a appliqué une limite d'accès sont masqués.</translation>
 <translation id="1361748954329991663">Version de Chromium obsolète. Si aucune mise à jour n'est disponible sur l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, votre appareil n'est peut-être plus compatible avec les nouvelles versions de Chromium.</translation>
 <translation id="1370204544543370355">Pour profiter pleinement de Chromium, connectez-vous avec votre compte Google</translation>
 <translation id="1431818719585918472">Chromium peut verrouiller vos onglets de navigation privée.</translation>
@@ -40,6 +39,7 @@
 <translation id="3472200483164753384">Non disponible dans Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="3805899903892079518">Chromium n'a pas accès à vos photos ni à vos vidéos. Activez l'accès dans iOS via Réglages &gt; Confidentialité &gt; Photos.</translation>
+<translation id="3946918322491238254">Vos favoris, votre historique, vos mots de passe et autres paramètres resteront accessibles sur cet appareil, mais les modifications ne seront pas synchronisées avec votre compte.</translation>
 <translation id="4099085513035183040">Non disponible dans la version bêta de Chromium</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée dans Chromium, un message s'affiche pour vous proposer que les pages de ce site rédigées dans d'autres langues soient traduites à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Chaque fois que vous appuierez sur des liens figurant dans des messages, des documents et d'autres applications, vous pourrez désormais voir le contenu correspondant dans Chromium.</translation>

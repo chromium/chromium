@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Snäckskalsvit</translation>
 <translation id="6551185905438378412">Elfenbensvit</translation>
 <translation id="6561818612645211875">Flytta till början av den aktuella raden</translation>
+<translation id="6563126228219321999">Inget giltigt objekt</translation>
 <translation id="6579990219486187401">Ljusrosa</translation>
 <translation id="6583174818554398774">Flytta till nästa på detaljnivå</translation>
 <translation id="6584162722998608255">Nu ska vi gå igenom hur du flyttar dig på skärmen. Du kan fortsätta till nästa objekt genom att svepa från vänster till höger med ett finger. Testa att fortsätta till nästa steg nu.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Gulbrun</translation>
 <translation id="6816066673340002913">Blekt gullrisgul</translation>
 <translation id="6826226459053491773">Svep nedåt med två fingrar</translation>
+<translation id="6826669432862053130">Nästa giltiga objekt</translation>
 <translation id="6833103209700200188">Sidfot</translation>
 <translation id="6837853484260746864">Välj en röst:</translation>
 <translation id="6858047746862060282">Prolog</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Det finns ingen föregående rubrik på nivå 5</translation>
 <translation id="812886159861361726">Nedladdningen stoppades <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Det finns inga celler ovanför den här</translation>
+<translation id="8132248161074464367">Föregående giltiga objekt</translation>
 <translation id="8138880386467279117">Trycka</translation>
 <translation id="8146613869421949343">I nästa steg får du lära dig om Sök-tangenten. Sök-tangenten används tillsammans med andra tangenter för olika ChromeVox-kommandon. Sök-tangenten sitter precis ovanför den vänstra Skift-tangenten. Tryck på Sök-tangenten för att fortsätta.</translation>
 <translation id="8158033275290782295">markera alla</translation>

@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1257458525759135959">若要保存图片，请点按“设置”并允许 Chromium 添加照片</translation>
 <translation id="1289216811211435351">改用 Chromium</translation>
-<translation id="1354592789402432496">您的管理员要求您使用单位帐号登录。管理员不允许使用的帐号会处于隐藏状态。</translation>
 <translation id="1361748954329991663">Chromium 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chromium。</translation>
 <translation id="1370204544543370355">若要充分利用 Chromium，请使用您的 Google 帐号登录 Chromium</translation>
 <translation id="1431818719585918472">让 Chromium 锁定您的无痕式标签页。</translation>
@@ -40,6 +39,7 @@
 <translation id="3472200483164753384">在 Chromium Canary 版中不受支持</translation>
 <translation id="3639997914391704523">您需要先登录 Google 帐号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="3805899903892079518">Chromium 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
+<translation id="3946918322491238254">您仍可在此设备上查看自己的所有书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的帐号。</translation>
 <translation id="4099085513035183040">在 Chromium Beta 版中不受支持</translation>
 <translation id="4555020257205549924">启用此功能后，Chromium 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>

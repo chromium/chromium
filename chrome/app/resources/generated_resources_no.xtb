@@ -799,6 +799,7 @@
 <translation id="1805888043020974594">Utskriftstjener</translation>
 <translation id="1805967612549112634">Bekreft PIN-koden</translation>
 <translation id="1806335016774576568">Bytt til en annen åpen app</translation>
+<translation id="1807246157184219062">Lys</translation>
 <translation id="1809483812148634490">Apper du har lastet ned fra Google Play, blir slettet fra denne Chromebooken.
     <ph name="LINE_BREAKS1" />
     Det kan hende at innhold du har kjøpt (for eksempel filmer, TV-serier, musikk, bøker eller andre kjøp i apper), også slettes.
@@ -2751,7 +2752,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="383161972796689579">Eieren av denne enheten har deaktivert tillegging av nye brukere</translation>
 <translation id="3834728400518755610">Endringen i mikrofoninnstillingen krever at Linux avsluttes. Avslutt Linux for å fortsette.</translation>
 <translation id="3834775135533257713">Kunne ikke legge til appen «<ph name="TO_INSTALL_APP_NAME" />» fordi den er i konflikt med «<ph name="INSTALLED_APP_NAME" />».</translation>
-<translation id="3835522725882634757"><ph name="PRODUCT_NAME" /> forstår ikke dataene som tjeneren sender. <ph name="BEGIN_LINK" />Rapportér feilen<ph name="END_LINK" />, og ta med <ph name="BEGIN2_LINK" />rålisten<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Dette er generell informasjon om denne enheten og hvordan den brukes (for eksempel batterinivå, system- og appaktivitet og feil). Dataene brukes til å gjøre Android bedre, og noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere, med å gjøre apper og produkter bedre.</translation>
 <translation id="3838085852053358637">Kunne ikke laste inn utvidelsen</translation>
 <translation id="3838486795898716504">Mer av <ph name="PAGE_TITLE" /></translation>

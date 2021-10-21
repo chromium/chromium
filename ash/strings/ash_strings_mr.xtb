@@ -615,6 +615,7 @@
 <translation id="5465662442746197494">मदत हवी आहे?</translation>
 <translation id="5496819745535887422">तुमचा व्यवस्थापक तुमचे डिव्हाइस रोल बॅक करत आहे. सर्व डेटा हटवला जाईल आणि डिव्हाइस रीस्टार्ट केले जाईल.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">तुमच्या अ‍ॅडमिनिस्ट्रेटरने सर्व eSIM प्रोफाइल काढून टाकल्या आहेत. अधिक माहितीसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> कनेक्ट करत आहे.</translation>
 <translation id="5532994612895037630">फुल स्क्रीन रेकॉर्ड करण्यासाठी कुठेही टॅप करा</translation>
 <translation id="553675580533261935">सेशनमधून बाहेर पडत आहे</translation>
@@ -745,6 +746,7 @@
 <translation id="6537924328260219877">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, फोन बॅटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> वर कास्ट करत आहे</translation>
 <translation id="6559976592393364813">अ‍ॅडमिनिस्ट्रेटरला विचारा</translation>
+<translation id="6565007273808762236">eSIM कनेक्शन उपलब्ध नाही</translation>
 <translation id="6570902864550063460">USB वापरून चार्ज करत आहे</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> मध्ये सेशन समाप्त होते.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

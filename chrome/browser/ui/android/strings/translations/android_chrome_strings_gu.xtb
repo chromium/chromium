@@ -26,6 +26,7 @@
 <translation id="1142732900304639782">આ સાઇટનો અનુવાદ કરવાની ઑફર કરશો નહીં</translation>
 <translation id="1145536944570833626">અસ્તિત્વમાંના ડેટાને ડિલીટ કરો.</translation>
 <translation id="1146678959555564648">VR માં દાખલ થાઓ</translation>
+<translation id="114825011539563458">એક જ જગ્યાએ પ્રાઇવસી અને સુરક્ષાના સૌથી મહત્ત્વપૂર્ણ નિયંત્રણો</translation>
 <translation id="1154704303112745282">પેજ ઑફલાઇન ઉપલબ્ધ નથી: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">વપરાયેલ</translation>
 <translation id="1171770572613082465">"લોકપ્રિય સાઇટ" બટન પર ટૅપ કરીને લોકપ્રિય વેબસાઇટ જુઓ</translation>
@@ -318,6 +319,7 @@
 <translation id="2932222164150889403">તમારું કીબોર્ડ બદલાશે નહીં</translation>
 <translation id="2942036813789421260">પ્રીવ્યૂની ટૅબ બંધ કરવામાં આવી</translation>
 <translation id="2946420957526726953">અન્ય ડિવાઇસને કનેક્ટ કરવા માટે, Chrome અપડેટ કરી રહ્યાં છીએ</translation>
+<translation id="2951071800649516099">પછીથી વાંચવા માટે, તમારી વાંચન સૂચિમાં પેજ ઉમેરો</translation>
 <translation id="2956410042958133412">આ એકાઉન્ટ <ph name="PARENT_NAME_1" /> અને <ph name="PARENT_NAME_2" /> દ્વારા મેનેજ થાય છે.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> પેજ}one{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}other{વાંચ્યા વગરના <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}}</translation>
 <translation id="2961210776189273067">શીર્ષક</translation>
@@ -550,6 +552,7 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ટૅબ બંધ કરો</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> પર બુકમાર્ક કર્યું</translation>
 <translation id="4472118726404937099">સમગ્ર ઉપકરણો સિંક કરવા અને વ્યક્તિગત કરવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો</translation>
+<translation id="4479839115899251637">વાંચન સૂચિમાંથી ડિલીટ કરો</translation>
 <translation id="4479972344484327217">Chrome માટે <ph name="MODULE" /> ઇન્સ્ટૉલ કરી રહ્યાં છે…</translation>
 <translation id="4487967297491345095">Chromeનો તમામ ઍપ ડેટા કાયમ માટે ડિલીટ કરવામાં આવશે. આમાં તમામ ફાઇલો, સેટિંગ, એકાઉન્ટ, ડેટાબેઝ, વગેરેનો સમાવેશ થાય છે.</translation>
 <translation id="449126573531210296">તમારા Google એકાઉન્ટ સાથે સિંક કરેલા પાસવર્ડ એન્ક્રિપ્ટ કરો</translation>
@@ -571,9 +574,11 @@
 <translation id="4558311620361989323">વેબ પેજના શૉર્ટકટ</translation>
 <translation id="4561730552726921821">નોંધણી કરવામાં સફળ રહ્યાં</translation>
 <translation id="4561979708150884304">કોઈ કનેક્શન નથી</translation>
+<translation id="4562008740775511591">આમ તો Chrome તમને વાજબી ડિફૉલ્ટ સેટિંગ આપે છે, છતાં તમે બ્રાઉઝ કરવાની તમારી આદત મુજબ શ્રેષ્ઠ વપરાશ માટે તેમને કસ્ટમાઇઝ કરી શકો છો</translation>
 <translation id="4565377596337484307">પાસવર્ડ છુપાવો</translation>
 <translation id="4572422548854449519">મેનેજ એકાઉન્ટમાં સાઇન ઇન કરો</translation>
 <translation id="4576892426230499203">ચકાસણી માટે બીજો કોઈ વિકલ્પ અજમાવો</translation>
+<translation id="4578289292431526768">ચાલો, શરૂ કરીએ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# મિનિટ પહેલાં}one{# મિનિટ પહેલાં}other{# મિનિટ પહેલાં}}</translation>
 <translation id="4587589328781138893">સાઇટ</translation>
 <translation id="4594952190837476234">આ ઑફલાઇન પેજ <ph name="CREATION_TIME" /> ના રોજનું છે અને તે ઑનલાઇન વર્ઝનથી અલગ હોઈ શકે છે.</translation>
@@ -810,6 +815,7 @@
 <translation id="5956665950594638604">Chrome સહાયતા કેન્દ્રમાં એક નવું ટૅબ ખોલો</translation>
 <translation id="5957442310066583693">તમારા માટે શ્રેષ્ઠ હોય તેવી સાઇટ જોવા માટે હોમ બટન પર ટૅપ કરો</translation>
 <translation id="5958275228015807058">ડાઉનલોડ કરેલમાંથી તમારી ફાઇલો અને પેજ શોધો</translation>
+<translation id="5962272973076519240">છૂપા મોડના સત્ર અનલૉક કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="5962718611393537961">સંકુચિત કરવા માટે ટૅપ કરો</translation>
 <translation id="5964805880140440652">આ પેજને બીજા ડિવાઇસ પર શેર કરવા માટે, Chrome સેટિંગમાં સિંક ચાલુ કરો</translation>
 <translation id="5964869237734432770">છબીના વર્ણનો મેળવવાનું બંધ કરો</translation>
@@ -934,6 +940,7 @@
 <translation id="661266467055912436">વેબ પર તમારા માટે તેમજ પ્રત્યેક માટે સુરક્ષાને બહેતર બનાવે છે.</translation>
 <translation id="6618554661997243500">તમારા માટે શ્રેષ્ઠ હોય તેવી સાઇટ અને સ્ટોરી જોવા માટે હોમ બટન પર ટૅપ કરો</translation>
 <translation id="6627583120233659107">ફોલ્ડરમાં ફેરફાર કરો</translation>
+<translation id="6633067410344541938">છૂપા મોડના સત્ર અનલૉક કરો</translation>
 <translation id="663674369910034433">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK1" />સિંક<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Googleની સેવાઓ<ph name="END_LINK2" /> જુઓ</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6643649862576733715">બચાવાયેલ ડેટાના પ્રમાણ અનુસાર સૉર્ટ કરો</translation>
@@ -989,12 +996,14 @@
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6955535239952325894">મેનેજ કરાયેલા બ્રાઉઝર પર આ સેટિંગ બંધ કરવામાં આવ્યું છે</translation>
 <translation id="6963766334940102469">બુકમાર્ક્સ ડિલીટ કરો</translation>
+<translation id="6964116075545915250">વાંચન સૂચિમાં ફેરફાર કરો</translation>
 <translation id="696447261358045621">છૂપો મોડ છોડો</translation>
 <translation id="6979737339423435258">હંમેશાં</translation>
 <translation id="6981982820502123353">ઍક્સેસિબિલિટી</translation>
 <translation id="6987047470128880212">છૂપી ટૅબ આ ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
 <translation id="6995899638241819463">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
 <translation id="7001056293070445572">જ્યારે ફાઇલ (<ph name="FILE_SIZE" />)થી મોટી હોય</translation>
+<translation id="7020741890149022655">વાંચન સૂચિમાં ઉમેરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">બ્રાઉઝરમાં ખોલો</translation>
 <translation id="702463548815491781">જ્યારે ટૉકબૅક અથવા સ્વિચ ઍક્સેસ ચાલુ હોય ત્યારે આપેલ સુઝાવ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> રિસ્ટોર કર્યું</translation>
@@ -1214,6 +1223,7 @@
 <translation id="825412236959742607">આ પેજ મેમરીનો બહુ ઉપયોગ કરે છે, તેથી Chromeએ કેટલુંક કન્ટેન્ટ કાઢી નાખ્યું છે.</translation>
 <translation id="8260126382462817229">ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
+<translation id="82619448491672958">અન્ય ટૅબ જુઓ</translation>
 <translation id="8266862848225348053">સ્થાન ડાઉનલોડ કરો</translation>
 <translation id="8274165955039650276">ડાઉનલોડ જુઓ</translation>
 <translation id="8281886186245836920">છોડો</translation>

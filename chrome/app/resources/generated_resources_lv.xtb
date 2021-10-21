@@ -799,6 +799,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1805888043020974594">Drukas serveris</translation>
 <translation id="1805967612549112634">Apstipriniet PIN</translation>
 <translation id="1806335016774576568">Pāriešana uz citu atvērtu lietotni</translation>
+<translation id="1807246157184219062">Gaišs</translation>
 <translation id="1809483812148634490">Pakalpojumā Google Play lejupielādētās lietotnes tiks izdzēstas no šī Chromebook datora.
     <ph name="LINE_BREAKS1" />
     Var tikt izdzēsts arī jūsu iegādātais saturs, piemēram, filmas, TV pārraides, mūzika, grāmatas vai citi lietotnē veiktie pirkumi.
@@ -2758,7 +2759,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="383161972796689579">Šīs ierīces īpašnieks ir atspējojis jauno lietotāju pievienošanu.</translation>
 <translation id="3834728400518755610">Lai mikrofona iestatījuma izmaiņas stātos spēkā, ir jāizslēdz Linux dators. Lai turpinātu, izslēdziet Linux datoru.</translation>
 <translation id="3834775135533257713">Neizdevās pievienot lietojumprogrammu “<ph name="TO_INSTALL_APP_NAME" />”, jo rodas konflikts ar “<ph name="INSTALLED_APP_NAME" />”.</translation>
-<translation id="3835522725882634757">Ak, nē! Šis serveris nosūta datus, ko <ph name="PRODUCT_NAME" /> nesaprot. Lūdzu, <ph name="BEGIN_LINK" />ziņojiet par blusu<ph name="END_LINK" /> un pievienojiet <ph name="BEGIN2_LINK" />neapstrādātu satura sarakstu<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Šī ir vispārīga informācija par šo ierīci un tās lietojumu (piemēram, par akumulatora uzlādes līmeni, sistēmas darbībām, lietotņu izmantojumu un kļūdām). Dati tiks izmantoti, lai uzlabotu Android darbību. Noteiktu apkopotu informāciju izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji, lai uzlabotu lietotnes un produktus.</translation>
 <translation id="3838085852053358637">Neizdevās ielādēt paplašinājumu</translation>
 <translation id="3838486795898716504">Citas lapas ar nosaukumu <ph name="PAGE_TITLE" /></translation>

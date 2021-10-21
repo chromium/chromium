@@ -794,6 +794,7 @@
 <translation id="1805888043020974594">Serveur d'impression</translation>
 <translation id="1805967612549112634">Confirmer le code</translation>
 <translation id="1806335016774576568">Passer à une autre application ouverte</translation>
+<translation id="1807246157184219062">Clair</translation>
 <translation id="1809483812148634490">Les applications que vous avez téléchargées depuis Google Play seront supprimées de ce Chromebook.
     <ph name="LINE_BREAKS1" />
     De même, les contenus que vous avez achetés, tels que les films, les séries TV, les titres musicaux, les livres ou tout autre achat via une application risquent d'être supprimés.
@@ -2743,7 +2744,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="383161972796689579">Le propriétaire de cet appareil a désactivé la fonctionnalité d'ajout de nouveaux utilisateurs</translation>
 <translation id="3834728400518755610">La modification des paramètres du micro nécessite l'arrêt de Linux. Arrêtez Linux pour continuer.</translation>
 <translation id="3834775135533257713">Impossible d'ajouter l'application <ph name="TO_INSTALL_APP_NAME" />, car elle crée un conflit avec <ph name="INSTALLED_APP_NAME" />.</translation>
-<translation id="3835522725882634757">Ce serveur envoie des données que <ph name="PRODUCT_NAME" /> ne comprend pas. Veuillez <ph name="BEGIN_LINK" />signaler un bug<ph name="END_LINK" /> et inclure la <ph name="BEGIN2_LINK" />liste des raw<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Ces informations d'ordre général concernent votre appareil et son utilisation (comme le niveau de la batterie, les erreurs, ainsi que l'activité du système et des applications). Elles serviront à améliorer Android, et certaines données globales aideront également nos développeurs d'applications et nos partenaires tels que les développeurs Android, à perfectionner leurs applications et leurs produits.</translation>
 <translation id="3838085852053358637">Échec du chargement de l'extension</translation>
 <translation id="3838486795898716504">Plus de pages <ph name="PAGE_TITLE" /></translation>

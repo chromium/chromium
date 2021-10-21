@@ -797,6 +797,7 @@
 <translation id="1805888043020974594">Servidor de impressão</translation>
 <translation id="1805967612549112634">Confirmar PIN</translation>
 <translation id="1806335016774576568">Mudar para outra app aberta</translation>
+<translation id="1807246157184219062">Claro</translation>
 <translation id="1809483812148634490">As apps que transferiu do Google Play serão eliminadas deste Chromebook.
       <ph name="LINE_BREAKS1" />
       O conteúdo que comprou, como filmes, programas de TV, música, livros ou outras compras na app, também pode ser eliminado.
@@ -2754,7 +2755,6 @@ Pretende pará-lo?</translation>
 <translation id="383161972796689579">O proprietário deste dispositivo desativou a adição de novos utilizadores</translation>
 <translation id="3834728400518755610">A alteração na definição do microfone requer o encerramento do Linux. Encerre o Linux para continuar.</translation>
 <translation id="3834775135533257713">Não foi possível adicionar a aplicação "<ph name="TO_INSTALL_APP_NAME" />" porque entra em conflito com "<ph name="INSTALLED_APP_NAME" />".</translation>
-<translation id="3835522725882634757">Oh, não! Este servidor está a enviar dados que o <ph name="PRODUCT_NAME" /> não consegue entender. <ph name="BEGIN_LINK" />Comunique um erro<ph name="END_LINK" /> e inclua a <ph name="BEGIN2_LINK" />lista não processada<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Estas são informações gerais acerca deste dispositivo e da forma como o utiliza (como o nível da bateria, a atividade do sistema e de apps e erros). Os dados são utilizados para melhorar o Android e algumas informações agregadas também ajudarão as apps e os parceiros Google, como os programadores Android, a melhorar os respetivos produtos e apps.</translation>
 <translation id="3838085852053358637">Falha ao carregar a extensão</translation>
 <translation id="3838486795898716504">Mais <ph name="PAGE_TITLE" /></translation>

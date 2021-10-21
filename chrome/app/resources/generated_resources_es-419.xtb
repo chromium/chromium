@@ -790,6 +790,7 @@
 <translation id="1805888043020974594">Servidor de impresión</translation>
 <translation id="1805967612549112634">Confirmar PIN</translation>
 <translation id="1806335016774576568">Pasar a otra app abierta</translation>
+<translation id="1807246157184219062">Claro</translation>
 <translation id="1809483812148634490">Las apps que descargaste de Google Play se borrarán de esta Chromebook.
     <ph name="LINE_BREAKS1" />
     Es posible que también se borre el contenido que compraste, como películas, programas de TV, música, libros y otras compras directas desde la aplicación.
@@ -2739,7 +2740,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="383161972796689579">El propietario de este dispositivo ha inhabilitado a nuevos usuarios para evitar que se agreguen.</translation>
 <translation id="3834728400518755610">Es necesario que cierres Linux para aplicar los cambios de la configuración del micrófono. Cierra Linux para continuar.</translation>
 <translation id="3834775135533257713">No se pudo agregar la aplicación "<ph name="TO_INSTALL_APP_NAME" />" debido a un conflicto con "<ph name="INSTALLED_APP_NAME" />".</translation>
-<translation id="3835522725882634757">¡No! Este servidor está enviando datos que <ph name="PRODUCT_NAME" /> no comprende. <ph name="BEGIN_LINK" />Informar un error<ph name="END_LINK" /> e incluir la <ph name="BEGIN2_LINK" />lista sin procesar<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Aquí se muestra información general sobre este dispositivo y cómo se usa (por ejemplo, el nivel de batería, la actividad de las apps y el sistema, y los errores). Los datos se usarán para mejorar Android, y la información agregada también permitirá que las apps y los socios de Google, como los desarrolladores de Android, mejoren sus apps y productos.</translation>
 <translation id="3838085852053358637">Se produjo un error al cargar la extensión</translation>
 <translation id="3838486795898716504">Más <ph name="PAGE_TITLE" /></translation>

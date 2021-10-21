@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1018219910092211213">Не вдається перетворити DNS</translation>
 <translation id="1018656279737460067">Скасовано</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1059913517121127803">Не вдається почати сканування</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">виявлено брандмауер</translation>
 <translation id="1075811647922107217">Розмір сторінки</translation>
+<translation id="1094693127011229778">IP-адреса недоступна</translation>
 <translation id="1119447706177454957">Внутрішня помилка</translation>
 <translation id="1124772482545689468">Користувач</translation>
 <translation id="1128128132059598906">EAP – TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">Вірогідно, є адаптивний портал</translation>
 <translation id="1290331692326790741">слабкий сигнал</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">Немає доступних мереж <ph name="NETWORK_NAME" /></translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Домашня мережа, без роумінгу</translation>
 <translation id="1327977588028644528">Шлюз</translation>
@@ -67,6 +70,7 @@
 <translation id="1999615961760456652">Адаптивний портал</translation>
 <translation id="2006864819935886708">Підключення</translation>
 <translation id="2008685064673031089">Пошук Prime</translation>
+<translation id="2016697457005847575">Виконайте дії для вирішення проблеми</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Більше налаштувань</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +103,7 @@
 <translation id="2505327257735685095">Оновити поточний фоновий малюнок</translation>
 <translation id="2517472476991765520">Сканувати</translation>
 <translation id="2570743873672969996">Тестування (<ph name="TEST_NAME" />)…</translation>
+<translation id="2584559707064218956">Щоб вибрати параметри, перейдіть у налаштування</translation>
 <translation id="2585245331261708204">Нові функції ОС Chrome</translation>
 <translation id="2619761439309613843">Щоденне оновлення</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -145,8 +150,10 @@
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
 <translation id="3565064564551103223">Дозволені IP-адреси</translation>
 <translation id="357889014807611375">Wi-Fi із тарифікацією трафіку</translation>
+<translation id="3583278742022654445">Низький рівень сигналу. Підійдіть ближче до джерела сигналу Wi-Fi.</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
+<translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="3708186454126126312">Підключені раніше</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (відгуків: <ph name="AGGREGATED_COUNT" />)</translation>
@@ -155,6 +162,7 @@
 <translation id="38114475217616659">Очистити всю історію</translation>
 <translation id="3820172043799983114">Недійсний PIN-код.</translation>
 <translation id="3838338534323494292">Новий пароль</translation>
+<translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
 <translation id="387301095347517405">Кількість повних циклів заряджання акумулятора</translation>
@@ -166,6 +174,7 @@
 <translation id="39823212440917567">Завдання друку, старіші за <ph name="NUMBER_OF_DAYS" /> дн., буде вилучено</translation>
 <translation id="4003384961948020559">Не надруковано – вихідний лоток заповнений</translation>
 <translation id="4034824040120875894">Принтер</translation>
+<translation id="4044093238444069296">Не вдається зв’язатися зі шлюзом</translation>
 <translation id="404928562651467259">ЗАСТЕРЕЖЕННЯ</translation>
 <translation id="409427325554347132">Зберегти дані перевірки</translation>
 <translation id="4111761024568264522">Сенсорна панель USB</translation>
@@ -188,6 +197,7 @@
 <translation id="4378551569595875038">Підключення…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мій диск</translation>
+<translation id="4428374560396076622">Мережу <ph name="NETWORK_NAME" /> вимкнено</translation>
 <translation id="4429881212383817840">Термін дії квитка Kerberos незабаром минає</translation>
 <translation id="4431821876790500265">Переглянути звіт</translation>
 <translation id="445059817448385655">Старий пароль</translation>
@@ -233,6 +243,7 @@
 <translation id="4917385247580444890">Потужний</translation>
 <translation id="4917889632206600977">Зупинено – закінчився папір</translation>
 <translation id="4921665434385737356">Акумулятор зарядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
+<translation id="4930320165497208503">Щоб налаштувати або оновити з’єднання, перейдіть у <ph name="BEGIN_LINK" />Налаштування<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="498186245079027698">Перевірте сканер і повторіть спробу. Переконайтеся, що на пристрої достатньо вільного місця для зберігання відсканованих файлів.</translation>
 <translation id="4985509611418653372">Виконати</translation>
@@ -334,7 +345,6 @@
 <translation id="636850387210749493">Реєстрація підприємства</translation>
 <translation id="6379086450106841622">Сенсорний екран</translation>
 <translation id="6388847657025262518">Автоподавач документів заклинило. Перевірте його та повторіть спробу.</translation>
-<translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
 <translation id="641081527798843608">Збіг суб’єкта</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабкий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -375,6 +385,7 @@
 <translation id="7059230779847288458">Заряджається (<ph name="TIME_VALUE" /> до повного зарядження)</translation>
 <translation id="708426984172631313">ЗУПИНЕНО</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Не вдалося – помилка авторизації</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}many{Сервери імен}other{Сервери імен}}</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
@@ -387,6 +398,7 @@
 <translation id="7271040990581020067">Cканер використовується. Повторіть спробу пізніше.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Колекції фонових малюнків</translation>
+<translation id="7297226631177386107">Не вдається підключитися до веб-сайтів HTTPS через брандмауер</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -419,6 +431,7 @@
 <translation id="7762130827864645708">Ваш пароль змінено. Відтепер використовуйте новий.</translation>
 <translation id="7763470514545477072">Збіг із суфіксом домену</translation>
 <translation id="7769672763586021400">Ідентифікатор моделі</translation>
+<translation id="7784116172884276937">DNS-сервери не налаштовано</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7819857487979277519">PSK (WPA або RSN)</translation>
 <translation id="7835501727204647447">Установити CloudReady</translation>
@@ -433,13 +446,16 @@
 <translation id="7943235353293548836">Постійний інтервал повідомлення keepalive</translation>
 <translation id="7955587717700691983">Клавіатура з Bluetooth</translation>
 <translation id="7960831585769876809">Температура</translation>
+<translation id="7977800524392185497">Щоб приєднатися до мережі <ph name="NETWORK_NAME" />, перейдіть у налаштування</translation>
 <translation id="7978412674231730200">Секретний ключ</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
 <translation id="802154636333426148">Не вдалося завантажити</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="8075838845814659848">Рівень заряду</translation>
+<translation id="8082366717211101304">Не вдається перетворити DNS із додатків для Android</translation>
 <translation id="808894953321890993">Змінити пароль</translation>
+<translation id="8104083085214006426">Ви використовуєте відкриту та незахищену мережу</translation>
 <translation id="811820734797650957">Шлюз можна перевірити (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Надіслати запит на лічильники трафіку</translation>
@@ -464,10 +480,12 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Вбудована клавіатура</translation>
 <translation id="843568408673868420">Інтернет-з’єднання</translation>
+<translation id="844521431886043384">DNS не налаштовано</translation>
 <translation id="8461329675984532579">Назва локального постачальника</translation>
 <translation id="8475690821716466388">Мережа Wi-Fi захищена ненадійним протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Затримка DNS трохи довша, ніж дозволено</translation>
 <translation id="8483248364096924578">IP-адреса</translation>
+<translation id="8491311378305535241">Не вдається підключитися з додатків для Android до веб-сайтів HTTP через брандмауер</translation>
 <translation id="8498220429738806196">Лічильники трафіку</translation>
 <translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="8503836310948963452">Залишилося кілька хвилин…</translation>
@@ -493,6 +511,7 @@
 <translation id="8818152010000655963">Фоновий малюнок</translation>
 <translation id="8834539327799336565">Підключено</translation>
 <translation id="8845001906332463065">Отримати довідку</translation>
+<translation id="8855781559874488009">Не вдається підключитися до веб-сайтів HTTP через брандмауер</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Перевірку пройдено</translation>
 <translation id="8898840733695078011">Рівень сигналу</translation>
@@ -518,12 +537,14 @@
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканування сторінки <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>
+<translation id="9122602430962285795">Щоб знову підключитися, перейдіть у налаштування</translation>
 <translation id="9126720536733509015">Зберігати кілька сторінок в один файл PDF</translation>
 <translation id="9137526406337347448">Служби Google</translation>
 <translation id="9149391708638971077">Виконати перевірку пам'яті</translation>
 <translation id="9173638680043580060">Залишилося менше хвилини</translation>
 <translation id="917720651393141712">Перевірити</translation>
 <translation id="9190063653747922532">L2TP/IPSec + Спільний ключ</translation>
+<translation id="9204237731135241582">Не вдається зв’язатися зі шлюзом із додатків для Android</translation>
 <translation id="9211490828691860325">Усі робочі столи</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Не активовано</translation>

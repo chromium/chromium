@@ -26,6 +26,7 @@
 <translation id="1142732900304639782">यी साइटहरू अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>
 <translation id="1145536944570833626">विद्यमान डेटा मेट्नुहोस्।</translation>
 <translation id="1146678959555564648">VR मा प्रवेश गर्नुहोस्</translation>
+<translation id="114825011539563458">गोपनीयता तथा नियन्त्रणसम्बन्धी सबैभन्दा महत्त्वपूर्ण सेटिङ एकै ठाउँमा उपलब्ध छन्</translation>
 <translation id="1154704303112745282">यो पृष्ठ अफलाइन मोडमा उपलब्ध छैन: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">प्रयोग भएको डेटा</translation>
 <translation id="1171770572613082465">"शीर्ष साइटहरू" नामक बटनमा ट्याप गरी लोकप्रिय वेबसाइटहरू हेर्नुहोस्</translation>
@@ -318,6 +319,7 @@
 <translation id="2932222164150889403">तपाईंको किबोर्ड परिवर्तन हुने छैन</translation>
 <translation id="2942036813789421260">पूर्वावलोकन ट्याब बन्द छ</translation>
 <translation id="2946420957526726953">तपाईंको फोन अन्य डिभाइससँग कनेक्ट गर्न Chrome अपडेट गरिँदै छ</translation>
+<translation id="2951071800649516099">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा वेबपेजहरू हाल्नुहोस्</translation>
 <translation id="2956410042958133412">यो खाता <ph name="PARENT_NAME_1" /> र <ph name="PARENT_NAME_2" /> द्वारा व्यवस्थित गरिएको छ।</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> वटा पेज पढ्न बाँकी छ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> वटा पेज पढ्न बाँकी छ}}</translation>
 <translation id="2961210776189273067">सम्बोधन</translation>
@@ -550,6 +552,7 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ट्याब बन्द गर्नुहोस्‌</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> मा पुस्तक चिन्ह लगाइयो</translation>
 <translation id="4472118726404937099">यन्त्रहरूभरि सिंक र वैयक्तीकृत गर्न साइन इन गरी सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
+<translation id="4479839115899251637">पछि पढ्न सेभ गरिएका वेबपेजको सूचीबाट हटाउनु…</translation>
 <translation id="4479972344484327217">Chrome को <ph name="MODULE" /> स्थापना गरिँदै…</translation>
 <translation id="4487967297491345095">Chrome का एप सम्बन्धी सबै डेटा सदाका लागि मेटिने छन्। यस अन्तर्गत सबै फाइल, सेटिङ, खाता, डेटाबेसहरू आदि पर्दछन्।</translation>
 <translation id="449126573531210296">सिंक गरिएका पासवर्डहरू मेरो Google खाता प्रयोग गरी इन्क्रिप्ट गरियोस्</translation>
@@ -570,9 +573,11 @@
 <translation id="4558311620361989323">वेबपृष्ठका सर्टकटहरू</translation>
 <translation id="4561730552726921821">दर्ता गरियो</translation>
 <translation id="4561979708150884304">इन्टरनेट छैन</translation>
+<translation id="4562008740775511591">Chrome मा उचित डिफल्ट सेटिङ उपलब्ध हुन्छन् तर तपाईं आफूले ब्राउज गर्ने तरिकाअनुसार ती सेटिङ मिलाउन सक्नुहुन्छ</translation>
 <translation id="4565377596337484307">पासवर्ड लुकाउनुहोस्</translation>
 <translation id="4572422548854449519">व्यवस्थापन गरिएको खातामा साइन इन गर्नुहोस्</translation>
 <translation id="4576892426230499203">पुष्टि गर्ने अर्को विकल्प प्रयोग गरी हेर्नुहोस्</translation>
+<translation id="4578289292431526768">सुरु गरौँ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनेटअघि}other{# मिनेटअघि}}</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
 <translation id="4594952190837476234">यो पृष्ठ <ph name="CREATION_TIME" /> मा सिर्जना गरिएको हुँदा अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
@@ -809,6 +814,7 @@
 <translation id="5956665950594638604">Chrome को मद्दत केन्द्र एउटा नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="5957442310066583693">तपाईंका लागि सिफारिस गरिएका शीर्ष साइटहरू हेर्न होम बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="5958275228015807058">डाउनलोडरू नामक फोल्डरमा भएका आफ्ना फाइल र पृष्ठहरू भेट्टाउनुहोस्</translation>
+<translation id="5962272973076519240">इन्कोग्निटो अनलक गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="5962718611393537961">संक्षिप्त गर्न ट्याप गर्नुहोस्</translation>
 <translation id="5964805880140440652">यो पृष्ठ अर्को यन्त्रसँग आदान प्रदान गर्न Chrome ब्राउजरको सेटिङमा गई सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="5964869237734432770">फोटो विवरण पाउन छाड्नुहोस्</translation>
@@ -933,6 +939,7 @@
 <translation id="661266467055912436">तपाईं र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई झन् सुरक्षित पार्छ।</translation>
 <translation id="6618554661997243500">तपाईं आफ्ना लागि सिफारिस गरिएका शीर्ष साइट तथा समाचारहरू हेर्न चाहनुहुन्न भने होम बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="6627583120233659107">फोल्डर सम्पादन गर्नुहोस्</translation>
+<translation id="6633067410344541938">इन्कोग्निटो अनलक गर्नुहोस्</translation>
 <translation id="663674369910034433">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK1" />सिंक<ph name="END_LINK1" /> तथा <ph name="BEGIN_LINK2" />Google का सेवाहरू<ph name="END_LINK2" /> नामक खण्ड हेर्नुहोस्</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6643649862576733715">बचत गरिएको डेटाको मात्राद्वारा क्रमबद्ध गर्नुहोस्</translation>
@@ -988,12 +995,14 @@
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6955535239952325894">व्यवस्थापन गरिएका ब्राउजरहरूमा यो सेटिङ असक्षम पारिएको हुन्छ</translation>
 <translation id="6963766334940102469">बुकमार्कहरू मेट्नुहोस्</translation>
+<translation id="6964116075545915250">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा फेरबदल गर्नु…</translation>
 <translation id="696447261358045621">इन्कोग्निटो मोडबाट बाहिरिनुहोस्</translation>
 <translation id="6979737339423435258">सुरूबाट नै</translation>
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="6987047470128880212">यो डिभाइसमा इन्कोग्निटो मोड उपलब्ध छैन</translation>
 <translation id="6995899638241819463">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा तपाईंलाई चेतावनी दिइन्छ</translation>
 <translation id="7001056293070445572">यो फाइल ठुलो (<ph name="FILE_SIZE" />) छ</translation>
+<translation id="7020741890149022655">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्नुहोस् <ph name="BEGIN_NEW" />नयाँ सुविधा<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ब्राउजरमा खाेल्नुहाेस्</translation>
 <translation id="702463548815491781">TalkBack वा पहुँच स्विच गर्नुहोस् नामक सुविधा सक्रिय हुँदा मात्र सिफारिस गरिन्छ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> रिस्टोर गरियो</translation>
@@ -1213,6 +1222,7 @@
 <translation id="825412236959742607">यस पृष्ठले अत्यधिक मेमोरी प्रयोग गर्छ, त्यसैले Chrome ले केही सामग्री हटायो।</translation>
 <translation id="8260126382462817229">फेरि साइन इन गरी हेर्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
+<translation id="82619448491672958">अन्य ट्याबहरू हेर्नुहोस्</translation>
 <translation id="8266862848225348053">स्थान डाउनलोड गर्नुहोस्</translation>
 <translation id="8274165955039650276">डाउनलोडहरू हेर्नुहोस्</translation>
 <translation id="8281886186245836920">त्याग्नुहोस्</translation>

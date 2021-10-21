@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1257458525759135959">‏כדי לשמור תמונות צריך להקיש על 'הגדרות' על מנת לאפשר ל-Chromium להוסיף תמונות לגלריה שלך</translation>
 <translation id="1289216811211435351">‏החלפה ל-Chromium</translation>
-<translation id="1354592789402432496">מנהל המערכת דורש כניסה באמצעות חשבון חברה. חשבונות שהוגבלו על ידי מנהל המערכת מוסתרים.</translation>
 <translation id="1361748954329991663">‏Chromium אינו מעודכן. אם אין עדכון זמין ב-<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ייתכן שהמכשיר שלך אינו תומך עוד בגרסאות החדשות של Chromium.</translation>
 <translation id="1370204544543370355">‏אפשר להיכנס ל-Chromium באמצעות חשבון Google כדי להפיק את המרב מ-Chromium</translation>
 <translation id="1431818719585918472">‏הכרטיסיות במצב אנונימי יינעלו באמצעות Chromium.</translation>
@@ -41,6 +40,7 @@
 <translation id="3472200483164753384">‏אין תמיכה ב-Chromium Canary</translation>
 <translation id="3639997914391704523">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="3805899903892079518">‏ל-Chromium אין גישה לתמונות או לסרטונים שלך. יש להפעיל את הגישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
+<translation id="3946918322491238254">יש לך עדיין אפשרות לראות את הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות במכשיר זה. שינויים שיתבצעו על ידך לא יסונכרנו בחשבון שלך.</translation>
 <translation id="4099085513035183040">‏אין תמיכה ב-Chromium בטא</translation>
 <translation id="4555020257205549924">‏כשהתכונה הזו פועלת, Chromium יציע לתרגם באמצעות Google Translate דפים שנכתבו בשפות אחרות‏. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">‏אפשר עכשיו להשתמש ב-Chromium בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>

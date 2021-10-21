@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1257458525759135959">Lai saglabātu attēlus, pieskarieties vienumam Iestatījumi un atļaujiet Chromium pievienot fotoattēlus.</translation>
 <translation id="1289216811211435351">Pāriešana uz Chromium</translation>
-<translation id="1354592789402432496">Administrators pieprasa pierakstīšanos ar organizācijas kontu. Konti, kuru lietošanu administrators ir aizliedzis, ir paslēpti.</translation>
 <translation id="1361748954329991663">Pārlūka Chromium versija ir novecojusi. Ja veikalā <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nav pieejami atjauninājumi, iespējams, jūsu ierīcē vairs netiek atbalstītas pārlūka Chromium jaunās versijas.</translation>
 <translation id="1370204544543370355">Lai pilnvērtīgi izmantotu pārlūku Chromium, pierakstieties tajā, izmantojot savu Google kontu</translation>
 <translation id="1431818719585918472">Atļaujiet pārlūkā Chromium bloķēt inkognito cilnes.</translation>
@@ -41,6 +40,7 @@
 <translation id="3472200483164753384">Netiek atbalstīta pārlūkā Chromium Canary.</translation>
 <translation id="3639997914391704523">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="3805899903892079518">Chromium nevar piekļūt jūsu fotoattēliem un videoklipiem. Iespējojiet piekļuvi: iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3946918322491238254">Šajā ierīcē joprojām varat skatīt visas savas grāmatzīmes, vēsturi, paroles un citus iestatījumus. Ja veiksiet izmaiņas, tās netiks sinhronizētas ar jūsu kontu.</translation>
 <translation id="4099085513035183040">Netiek atbalstīta pārlūkā Chromium Beta.</translation>
 <translation id="4555020257205549924">Ja šī funkcija ir ieslēgta, Chromium piedāvā tulkot citās valodās rakstītas lapas, izmantojot Google tulkotāju. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4585809515399340748">Tagad varat izmantot Chromium ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>

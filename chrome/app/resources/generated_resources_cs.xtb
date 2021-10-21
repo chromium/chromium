@@ -799,6 +799,7 @@
 <translation id="1805888043020974594">Tiskový server</translation>
 <translation id="1805967612549112634">Potvrdit kód PIN</translation>
 <translation id="1806335016774576568">Přepnout na jinou otevřenou aplikaci</translation>
+<translation id="1807246157184219062">Světlé</translation>
 <translation id="1809483812148634490">Z tohoto Chromebooku budou smazány aplikace, které jste stáhli z Google Play.
     <ph name="LINE_BREAKS1" />
 Může být smazán i váš zakoupený obsah, jako jsou například filmy, televizní pořady, hudba, knihy a další nákupy v aplikacích.
@@ -2754,7 +2755,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="383161972796689579">Vlastník zařízení zakázal přidávat nové uživatele.</translation>
 <translation id="3834728400518755610">Ke změně nastavení přístupu k mikrofonu je Linux potřeba ukončit. Chcete-li pokračovat, ukončete Linux.</translation>
 <translation id="3834775135533257713">Aplikaci <ph name="TO_INSTALL_APP_NAME" /> nelze přidat, protože je v konfliktu s aplikací <ph name="INSTALLED_APP_NAME" />.</translation>
-<translation id="3835522725882634757">Tento server odesílá data, kterým aplikace <ph name="PRODUCT_NAME" /> nerozumí. <ph name="BEGIN_LINK" />Nahlaste chybu<ph name="END_LINK" /> a přiložte <ph name="BEGIN2_LINK" />nezpracovaný výstup<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Toto jsou obecné informace o zařízení a způsobu jeho používání (např. stav baterie, aktivita systému a aplikací nebo chyby). Data budou využívána k vylepšení systému Android. Některé souhrnné informace pomohou s vylepšováním aplikací a služeb také našim partnerům, například vývojářům Androidu.</translation>
 <translation id="3838085852053358637">Rozšíření se nepodařilo načíst</translation>
 <translation id="3838486795898716504">Další stránka <ph name="PAGE_TITLE" /></translation>

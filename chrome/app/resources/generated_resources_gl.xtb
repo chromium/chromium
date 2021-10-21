@@ -796,6 +796,7 @@
 <translation id="1805888043020974594">Servidor de impresión</translation>
 <translation id="1805967612549112634">Confirmar PIN</translation>
 <translation id="1806335016774576568">Cambiar a outra aplicación aberta</translation>
+<translation id="1807246157184219062">Claro</translation>
 <translation id="1809483812148634490">As aplicacións que descargases desde Google Play eliminaranse deste Chromebook.
     <ph name="LINE_BREAKS1" />
     Tamén se pode eliminar o contido que comprases, como as películas, os programas de televisión, a música, os libros ou outras compras integradas nas aplicacións.
@@ -2754,7 +2755,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="383161972796689579">O propietario deste dispositivo desactivou a incorporación de usuarios novos</translation>
 <translation id="3834728400518755610">Para cambiar a configuración do micrófono é necesario pechar Linux. Péchao para continuar.</translation>
 <translation id="3834775135533257713">Non se puido engadir a aplicación <ph name="TO_INSTALL_APP_NAME" /> porque entra en conflito con <ph name="INSTALLED_APP_NAME" />.</translation>
-<translation id="3835522725882634757">Este servidor está enviando datos que <ph name="PRODUCT_NAME" /> non entende. <ph name="BEGIN_LINK" />Informa dun erro<ph name="END_LINK" /> e inclúe a <ph name="BEGIN2_LINK" />lista sen formato<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Trátase de información xeral acerca deste dispositivo e do seu uso, como o nivel de batería, a actividade das aplicacións e do sistema, e os erros. Os datos utilizaranse coa finalidade de mellorar Android, e algunha información agregada tamén axudará ás aplicacións de Google e aos socios, como os programadores de Android, a mellorar as súas aplicacións e produtos.</translation>
 <translation id="3838085852053358637">Produciuse un erro ao cargar a extensión</translation>
 <translation id="3838486795898716504">Máis <ph name="PAGE_TITLE" /></translation>

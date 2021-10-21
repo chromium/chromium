@@ -162,6 +162,7 @@
 <translation id="38114475217616659">Clear all history</translation>
 <translation id="3820172043799983114">Invalid PIN.</translation>
 <translation id="3838338534323494292">New password</translation>
+<translation id="385051799172605136">Back</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="387301095347517405">The number of times that your battery has gone through a full charging cycle</translation>
@@ -344,7 +345,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="636850387210749493">Enterprise enrolment</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6388847657025262518">The scanner’s document feeder is jammed. Check the feeder and try again.</translation>
-<translation id="6398765197997659313">Exit full screen</translation>
 <translation id="641081527798843608">Subject match</translation>
 <translation id="6423239382391657905">Open VPN</translation>
 <translation id="6439505561246192797">Weak (<ph name="SIGNAL_STRENGTH" />)</translation>

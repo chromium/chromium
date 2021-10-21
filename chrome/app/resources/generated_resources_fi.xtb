@@ -803,6 +803,7 @@
 <translation id="1805888043020974594">Tulostuspalvelin</translation>
 <translation id="1805967612549112634">Vahvista PIN-koodi</translation>
 <translation id="1806335016774576568">Vaihda toiseen avoimeen sovellukseen</translation>
+<translation id="1807246157184219062">Vaalea</translation>
 <translation id="1809483812148634490">Google Playsta lataamasi sovellukset poistetaan tältä Chromebookilta.
     <ph name="LINE_BREAKS1" />
     Ostamasi sisältö, kuten elokuvat, TV-ohjelmat, musiikki, kirjat tai sovelluksen sisäiset ostokset, saatetaan poistaa samalla.
@@ -2756,7 +2757,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="383161972796689579">Tämän laitteen omistaja on estänyt uusien käyttäjien lisäämisen</translation>
 <translation id="3834728400518755610">Mikrofoniasetuksen muutos edellyttää Linuxin käynnistämistä uudelleen. Sammuta Linux jatkaaksesi.</translation>
 <translation id="3834775135533257713">Sovellusta <ph name="TO_INSTALL_APP_NAME" /> ei voitu asentaa, koska se on ristiriidassa sovelluksen <ph name="INSTALLED_APP_NAME" /> kanssa.</translation>
-<translation id="3835522725882634757">Voi ei! Tämä palvelin lähettää tietoja, joita <ph name="PRODUCT_NAME" /> ei ymmärrä. <ph name="BEGIN_LINK" />Ilmoita virheestä<ph name="END_LINK" /> ja lisää virheilmoituksen mukaan <ph name="BEGIN2_LINK" />raw-tiedot<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Nämä ovat yleisiä tietoja tästä laitteesta ja sen käytöstä (esim. akun varaustasosta, järjestelmän ja sovellusten toiminnasta sekä virheistä). Datan avulla Androidia parannetaan, ja koottua dataa käytetään Google-sovellusten, Android-kehittäjien tai muiden kumppanien sovellusten ja tuotteiden parantamiseen.</translation>
 <translation id="3838085852053358637">Laajennuksen lataus epäonnistui</translation>
 <translation id="3838486795898716504">Lisää <ph name="PAGE_TITLE" /></translation>

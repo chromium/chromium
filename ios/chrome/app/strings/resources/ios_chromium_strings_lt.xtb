@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">Apie „Chromium“</translation>
 <translation id="1257458525759135959">Jei norite išsaugoti vaizdus, palieskite „Nustatymai“ ir leiskite „Chromium“ pridėti jūsų nuotraukas</translation>
 <translation id="1289216811211435351">Perjungimas į „Chromium“</translation>
-<translation id="1354592789402432496">Administratorius reikalauja prisijungti naudojant organizacijos paskyrą. Paskyros, kurias riboja administratorius, yra paslėptos.</translation>
 <translation id="1361748954329991663">„Chromium“ versija yra pasenusi. Jei <ph name="BEGIN_LINK" />programų parduotuvėje<ph name="END_LINK" /> nėra jokio naujinio, gali būti, kad įrenginys nebepalaiko naujų versijų „Chromium“.</translation>
 <translation id="1370204544543370355">Jei norite išnaudoti visas „Chromium“ galimybes, prisijunkite prie „Chromium“ naudodami „Google“ paskyrą</translation>
 <translation id="1431818719585918472">Leiskite „Chromium“ užrakinti jūsų inkognito skirtukus.</translation>
@@ -41,6 +40,7 @@
 <translation id="3472200483164753384">Nepalaikoma versijoje „Chromium Canary“</translation>
 <translation id="3639997914391704523">„Chromium“ gali tikrinti jūsų slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą.</translation>
 <translation id="3805899903892079518">„Chromium“ nepasiekia nuotraukų ar vaizdo įr. Įgalinkite prieigą apsil. „iOS“ nustatymai“ &gt; „Privatumas“ &gt; „Nuotraukos“.</translation>
+<translation id="3946918322491238254">Vis tiek galėsite peržiūrėti visas žymes, istoriją, slaptažodžius ir kitus nustatymus šiame įrenginyje. Jei atliksite pakeitimų, jie nebus sinchronizuojami su jūsų paskyra.</translation>
 <translation id="4099085513035183040">Nepalaikoma „Chromium“ beta versijoje</translation>
 <translation id="4555020257205549924">Kai ši funkcija bus įjungta, „Chromium“ siūlys versti kitomis kalbomis parašytus puslapius naudojant „Google“ vertėją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Dabar galite naudoti „Chromium“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>

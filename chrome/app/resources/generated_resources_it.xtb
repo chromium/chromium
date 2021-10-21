@@ -793,6 +793,7 @@
 <translation id="1805888043020974594">Server di stampa</translation>
 <translation id="1805967612549112634">Conferma PIN</translation>
 <translation id="1806335016774576568">Passa a un'altra app aperta</translation>
+<translation id="1807246157184219062">Chiaro</translation>
 <translation id="1809483812148634490">Le app che hai scaricato da Google Play verranno eliminate da questo Chromebook.
     <ph name="LINE_BREAKS1" />
     Potrebbero essere eliminati anche i contenuti che hai acquistato, ad esempio film, programmi TV, musica, libri o altri acquisti in-app.
@@ -2742,7 +2743,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="383161972796689579">Il proprietario di questo dispositivo ha disattivato l'aggiunta di nuovi utenti</translation>
 <translation id="3834728400518755610">La modifica dell'impostazione del microfono richiede l'arresto di Linux. Arresta Linux per continuare.</translation>
 <translation id="3834775135533257713">Impossibile aggiungere l'applicazione "<ph name="TO_INSTALL_APP_NAME" />" perché è in conflitto con "<ph name="INSTALLED_APP_NAME" />".</translation>
-<translation id="3835522725882634757">Spiacenti, questo server sta inviando dati che <ph name="PRODUCT_NAME" /> non è in grado di comprendere. <ph name="BEGIN_LINK" />Segnala un bug<ph name="END_LINK" /> e includi l'<ph name="BEGIN2_LINK" />elenco non elaborato<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Si tratta di informazioni generali su questo dispositivo e sulla relativa modalità di utilizzo, ad esempio il livello della batteria, l'attività nelle app e nel sistema e gli errori. I dati saranno utilizzati per migliorare Android e alcune informazioni aggregate saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android, che potranno migliorare i propri prodotti e le proprie app.</translation>
 <translation id="3838085852053358637">Caricamento estensione non riuscito</translation>
 <translation id="3838486795898716504">Altre <ph name="PAGE_TITLE" /></translation>

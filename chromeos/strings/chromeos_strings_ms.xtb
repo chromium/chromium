@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1018219910092211213">Tidak dapat menyelesaikan DNS</translation>
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> urutan, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">Tidak dapat memulakan pengimbasan</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tembok api dikesan</translation>
 <translation id="1075811647922107217">Saiz halaman</translation>
+<translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
 <translation id="1119447706177454957">Ralat dalaman</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">Disyaki portal terbolot</translation>
 <translation id="1290331692326790741">Isyarat lemah</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">Tiada rangkaian <ph name="NETWORK_NAME" /> tersedia</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Rangkaian utama, bukan perayauan</translation>
 <translation id="1327977588028644528">Get Laluan</translation>
@@ -67,6 +70,7 @@
 <translation id="1999615961760456652">Portal Terbolot</translation>
 <translation id="2006864819935886708">Kesambungan</translation>
 <translation id="2008685064673031089">Carian nombor perdana</translation>
+<translation id="2016697457005847575">Cuba langkah penyelesaian masalah</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Lagi tetapan</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +103,7 @@
 <translation id="2505327257735685095">Muatkan semula imej kertas dinding semasa</translation>
 <translation id="2517472476991765520">Imbas</translation>
 <translation id="2570743873672969996">Menjalankan ujian <ph name="TEST_NAME" />...</translation>
+<translation id="2584559707064218956">Untuk membuat persediaan, pergi ke Tetapan</translation>
 <translation id="2585245331261708204">Item Baharu OS Chrome</translation>
 <translation id="2619761439309613843">Muat Semula Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -145,8 +150,10 @@
 <translation id="3532980081107202182">Kira-kira <ph name="MIN_REMAINING" /> minit lagi</translation>
 <translation id="3565064564551103223">IP dibenarkan</translation>
 <translation id="357889014807611375">Wi-Fi bermeter</translation>
+<translation id="3583278742022654445">Kekuatan isyarat lemah. Cuba bergerak lebih rapat ke sumber isyarat Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateri penuh</translation>
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
+<translation id="3606583719724308068">Kependaman tinggi ke laman web HTTPS</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Disambungkan sebelum ini</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
@@ -155,6 +162,7 @@
 <translation id="38114475217616659">Kosongkan semua sejarah</translation>
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
+<translation id="385051799172605136">Kembali</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3865414814144988605">Peleraian</translation>
 <translation id="387301095347517405">Bilangan kali bateri anda telah melalui kitaran pengecasan penuh</translation>
@@ -166,6 +174,7 @@
 <translation id="39823212440917567">Tugas cetak yang melebihi <ph name="NUMBER_OF_DAYS" /> hari akan dialih keluar</translation>
 <translation id="4003384961948020559">Gagal - Output penuh</translation>
 <translation id="4034824040120875894">Pencetak</translation>
+<translation id="4044093238444069296">Tidak dapat menghubungi get laluan</translation>
 <translation id="404928562651467259">AMARAN</translation>
 <translation id="409427325554347132">Simpan butiran ujian</translation>
 <translation id="4111761024568264522">Pad sentuh USB</translation>
@@ -188,6 +197,7 @@
 <translation id="4378551569595875038">Menyambung...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> dimatikan</translation>
 <translation id="4429881212383817840">Tiket Kerberos akan tamat tempoh tidak lama lagi</translation>
 <translation id="4431821876790500265">Lihat laporan</translation>
 <translation id="445059817448385655">Kata laluan lama</translation>
@@ -233,6 +243,7 @@
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4917889632206600977">Dihentikan - Kehabisan kertas</translation>
 <translation id="4921665434385737356">Dicas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
+<translation id="4930320165497208503">Untuk menyediakan atau mengemas kini sambungan, pergi ke <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tarikh</translation>
 <translation id="498186245079027698">Periksa pengimbas dan cuba lagi. Pastikan terdapat ruang setempat yang mencukupi untuk menyimpan fail yang diimbas.</translation>
 <translation id="4985509611418653372">Jalankan</translation>
@@ -334,7 +345,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="6379086450106841622">Skrin sentuh</translation>
 <translation id="6388847657025262518">Penyuap dokumen pengimbas tersekat. Semak penyuap dan cuba lagi.</translation>
-<translation id="6398765197997659313">Keluar daripada skrin penuh</translation>
 <translation id="641081527798843608">Padanan subjek</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -375,6 +385,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7059230779847288458">Mengecas, <ph name="TIME_VALUE" /> sehingga penuh</translation>
 <translation id="708426984172631313">DIHENTIKAN</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Gagal - Pemberian Keizinan Gagal</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pelayan nama}other{Pelayan nama}}</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
@@ -387,6 +398,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Koleksi Kertas Dinding</translation>
+<translation id="7297226631177386107">Tidak dapat menyambung melalui tembok api ke laman web HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -419,6 +431,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7762130827864645708">Penukaran kata laluan anda berjaya. Sila gunakan kata laluan baharu mulai sekarang.</translation>
 <translation id="7763470514545477072">Padanan akhiran domain</translation>
 <translation id="7769672763586021400">ID Model</translation>
+<translation id="7784116172884276937">Tiada pelayan DNS disediakan</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA atau RSN)</translation>
 <translation id="7835501727204647447">Pasang CloudReady</translation>
@@ -433,13 +446,16 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7943235353293548836">Selang pengekal berterusan</translation>
 <translation id="7955587717700691983">Papan kekunci Bluetooth</translation>
 <translation id="7960831585769876809">Suhu</translation>
+<translation id="7977800524392185497">Untuk menyertai rangkaian <ph name="NETWORK_NAME" />, pergi ke Tetapan</translation>
 <translation id="7978412674231730200">Kunci persendirian</translation>
 <translation id="7994702968232966508">Kaedah EAP</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Hantar Maklum Balas</translation>
 <translation id="8075838845814659848">Baki cas</translation>
+<translation id="8082366717211101304">Tidak dapat menyelesaikan DNS daripada apl Android</translation>
 <translation id="808894953321890993">Tukar kata laluan</translation>
+<translation id="8104083085214006426">Anda sedang menggunakan rangkaian terbuka dan tidak selamat</translation>
 <translation id="811820734797650957">Get laluan boleh Diping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>
@@ -464,10 +480,12 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Papan kekunci dalaman</translation>
 <translation id="843568408673868420">Sambungan Internet</translation>
+<translation id="844521431886043384">DNS tidak disediakan</translation>
 <translation id="8461329675984532579">Nama pembekal tempatan</translation>
 <translation id="8475690821716466388">Rangkaian Wi-Fi selamat dengan protokol lemah WEP PSK</translation>
 <translation id="8477551185774834963">Kependaman DNS sedikit melebihi ambang yang dibenarkan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
+<translation id="8491311378305535241">Tidak dapat menyambung melalui tembok api ke laman web HTTP daripada apl Android</translation>
 <translation id="8498220429738806196">Pembilang Trafik</translation>
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8503836310948963452">Hanya beberapa minit lagi…</translation>
@@ -493,6 +511,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8818152010000655963">Kertas dinding</translation>
 <translation id="8834539327799336565">Tersambung pada masa ini</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
+<translation id="8855781559874488009">Tidak dapat menyambung melalui tembok api ke laman web HTTP</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Ujian berjaya</translation>
 <translation id="8898840733695078011">Kekuatan isyarat</translation>
@@ -518,12 +537,14 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="910415269708673980">Muat semula tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Mengimbas halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>
+<translation id="9122602430962285795">Untuk menyambung semula, pergi ke Tetapan</translation>
 <translation id="9126720536733509015">Simpan berbilang halaman menjadi satu PDF</translation>
 <translation id="9137526406337347448">Perkhidmatan Google</translation>
 <translation id="9149391708638971077">Jalankan Ujian memori</translation>
 <translation id="9173638680043580060">Kurang seminit lagi</translation>
 <translation id="917720651393141712">Ujian</translation>
 <translation id="9190063653747922532">L2TP/IPsec + kekunci praperkongsian</translation>
+<translation id="9204237731135241582">Tidak dapat menghubungi get laluan daripada apl Android</translation>
 <translation id="9211490828691860325">Semua meja</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>

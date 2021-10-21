@@ -794,6 +794,7 @@
 <translation id="1805888043020974594">Serveri i printimit</translation>
 <translation id="1805967612549112634">Konfirmo kodin PIN</translation>
 <translation id="1806335016774576568">Kalo te një aplikacion tjetër i hapur</translation>
+<translation id="1807246157184219062">I lehtë</translation>
 <translation id="1809483812148634490">Aplikacionet që ke shkarkuar nga Google Play do të fshihen nga ky Chromebook.
     <ph name="LINE_BREAKS1" />
       Përmbajtja që ke blerë si filmat, shfaqjet televizive, muzika, librat ose blerjet e tjera përmes aplikacionit mund të fshihen po ashtu.
@@ -2750,7 +2751,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="383161972796689579">Zotëruesi i kësaj pajisjeje ka çaktivizuar shtimin e përdoruesve të rinj</translation>
 <translation id="3834728400518755610">Ndryshimi në cilësimin e mikrofonit kërkon që të fiket sistemi Linux. Fike sistemin Linux për të vazhduar.</translation>
 <translation id="3834775135533257713">Aplikacioni "<ph name="TO_INSTALL_APP_NAME" />" nuk mund të shtohej sepse është në konflikt me "<ph name="INSTALLED_APP_NAME" />".</translation>
-<translation id="3835522725882634757">Oh, jo! Ky server po dërgon të dhëna që <ph name="PRODUCT_NAME" /> nuk mund t'i kuptojë. <ph name="BEGIN_LINK" />Raporto gabimin<ph name="END_LINK" /> dhe përfshi <ph name="BEGIN2_LINK" />listimin e papërpunuar<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Këto janë informacione të përgjithshme për këtë pajisje dhe se si përdoret (si p.sh. niveli i baterisë, aktiviteti i sistemit dhe aplikacioneve dhe gabimet). Të dhënat do të përdoren për të përmirësuar Android dhe disa informacione të përmbledhura do t'i ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android, që të përmirësojnë aplikacionet dhe produktet e tyre.</translation>
 <translation id="3838085852053358637">Dështoi në ngarkimin e shtesës</translation>
 <translation id="3838486795898716504">Më shumë <ph name="PAGE_TITLE" /></translation>

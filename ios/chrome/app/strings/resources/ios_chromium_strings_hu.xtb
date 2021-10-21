@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">A Chromium névjegye</translation>
 <translation id="1257458525759135959">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chromium hozzáadhassa őket a fotóihoz.</translation>
 <translation id="1289216811211435351">Váltás Chromiumra</translation>
-<translation id="1354592789402432496">A rendszergazda szervezeti fiókkal való bejelentkezést írt elő. A rendszer elrejti azokat a fiókokat, amelyekhez a rendszergazda korlátozta a hozzáférést.</translation>
 <translation id="1361748954329991663">A Chromium elavult. Ha nem áll rendelkezésre frissítés az <ph name="BEGIN_LINK" />App Store-ban<ph name="END_LINK" />, akkor lehet, hogy az eszköz már nem támogatja a Chromium újabb verzióit.</translation>
 <translation id="1370204544543370355">Annak érdekében, hogy a legtöbbet hozhassa ki Chromiumból, jelentkezzen be Google-fiókjával a böngészőbe</translation>
 <translation id="1431818719585918472">Az inkognitó lapok zárolásának engedélyezése a Chromium számára.</translation>
@@ -41,6 +40,7 @@
 <translation id="3472200483164753384">A Chromium Canary nem támogatja</translation>
 <translation id="3639997914391704523">A Chromium ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="3805899903892079518">A Chromium nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
+<translation id="3946918322491238254">Továbbra is láthatja könyvjelzőit, előzményeit, jelszavait és más beállításait ezen az eszközön. A módosításokat azonban a böngésző nem szinkronizálja az Ön fiókjába.</translation>
 <translation id="4099085513035183040">A Chromium bétaverziója nem támogatja</translation>
 <translation id="4555020257205549924">Ha a funkció be van kapcsolva, a Chromium felajánlja a más nyelveken írt oldalak lefordítását a Google Fordító segítségével. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="4585809515399340748">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>

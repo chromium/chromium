@@ -793,6 +793,7 @@
 <translation id="1805888043020974594">Servidor d'impressió</translation>
 <translation id="1805967612549112634">Confirma el PIN</translation>
 <translation id="1806335016774576568">Canvia a una altra aplicació oberta</translation>
+<translation id="1807246157184219062">Clar</translation>
 <translation id="1809483812148634490">Les aplicacions que hagis baixat de Google Play se suprimiran d'aquest Chromebook.
       <ph name="LINE_BREAKS1" />
       També pot ser que se suprimeixi el contingut que hagis comprat, com ara pel·lícules, sèries de televisió, música, llibres o altres compres fetes des de les aplicacions.
@@ -2741,7 +2742,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="383161972796689579">El propietari d'aquest dispositiu ha desactivat la possibilitat d'afegir-hi usuaris nous</translation>
 <translation id="3834728400518755610">El canvi en la configuració del micròfon requereix apagar Linux. Apaga'l per continuar.</translation>
 <translation id="3834775135533257713">No s'ha pogut afegir l'aplicació <ph name="TO_INSTALL_APP_NAME" /> perquè entra en conflicte amb <ph name="INSTALLED_APP_NAME" />.</translation>
-<translation id="3835522725882634757">Aquest servidor envia dades que <ph name="PRODUCT_NAME" /> no pot entendre. <ph name="BEGIN_LINK" />Informeu d'un error<ph name="END_LINK" /> i incloeu la <ph name="BEGIN2_LINK" />llista sense format<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Es tracta d'informació general sobre aquest dispositiu i sobre com es fa servir, com ara els errors, el nivell de bateria i l'activitat al sistema i en aplicacions. Les dades s'utilitzaran per millorar Android i part de la informació agregada també ajudarà les aplicacions i els partners de Google, com ara els desenvolupadors d'Android, a millorar les seves aplicacions i els seus productes.</translation>
 <translation id="3838085852053358637">No s'ha pogut carregar l'extensió</translation>
 <translation id="3838486795898716504">Més <ph name="PAGE_TITLE" /></translation>

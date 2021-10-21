@@ -804,6 +804,7 @@
 <translation id="1805888043020974594">Máy chủ máy in</translation>
 <translation id="1805967612549112634">Xác nhận mã PIN</translation>
 <translation id="1806335016774576568">Chuyển sang một ứng dụng khác đang mở</translation>
+<translation id="1807246157184219062">Sáng</translation>
 <translation id="1809483812148634490">Ứng dụng bạn đã tải xuống từ Google Play sẽ bị xóa khỏi Chromebook này.
     <ph name="LINE_BREAKS1" />
     Nội dung bạn đã mua như phim, chương trình truyền hình, nhạc, sách hoặc các nội dung khác mua trong ứng dụng cũng có thể bị xóa.
@@ -2079,6 +2080,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="310671807099593501">Trang web đang sử dụng Bluetooth</translation>
 <translation id="3108931485517391283">Không thể nhận</translation>
 <translation id="3109724472072898302">Đã thu gọn</translation>
+<translation id="311214366526552035">Vẫn tải xuống</translation>
 <translation id="311394601889664316">Không cho phép trang web chỉnh sửa tệp hoặc thư mục trên thiết bị của bạn</translation>
 <translation id="3115147772012638511">Đang chờ bộ nhớ đệm…</translation>
 <translation id="3115580024857770654">Thu gọn tất cả</translation>
@@ -2356,6 +2358,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3429160811076349561">Các tính năng dùng thử đang tắt</translation>
 <translation id="3429271624041785769">Ngôn ngữ dùng cho nội dung web</translation>
 <translation id="3429275422858276529">Đánh dấu trang này để dễ dàng tìm kiếm về sau</translation>
+<translation id="343115368966109153">Tải <ph name="FILE_NAME" /> xuống? Bất kỳ ai dùng thiết bị đều có thể xem tệp này.</translation>
 <translation id="3432227430032737297">Xóa tất cả cookie hiển thị</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Rất tiếc!  Hệ thống không thể thiết lập khóa thuộc tính thời gian cài đặt thiết bị.</translation>
@@ -2697,6 +2700,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3777806571986431400">Đã bật tiện ích</translation>
 <translation id="3778152852029592020">Đã hủy tải xuống.</translation>
 <translation id="3778208826288864398">Khóa bảo mật đã bị khóa do bạn nhập sai mã PIN quá nhiều lần. Bạn cần đặt lại khóa bảo mật.</translation>
+<translation id="3778369586810509692">Tệp này sẽ được lưu trữ trên thiết bị và mọi người đều có thể xem được.</translation>
 <translation id="3778740492972734840">Công cụ dành cho &amp;Nhà phát triển</translation>
 <translation id="3778868487658107119">Đặt câu hỏi cho Trợ lý. Yêu cầu Trợ lý làm mọi việc. Đó là Google của riêng bạn, luôn sẵn sàng trợ giúp bạn.</translation>
 <translation id="3781742599892759500">Quyền truy cập vào micrô của Linux</translation>
@@ -2757,7 +2761,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="383161972796689579">Chủ sở hữu của thiết bị này đã vô hiệu hóa thêm người dùng mới</translation>
 <translation id="3834728400518755610">Bạn cần tắt Linux để thay đổi tùy chọn cài đặt micrô. Hãy tắt Linux để tiếp tục.</translation>
 <translation id="3834775135533257713">Không thể thêm ứng dụng "<ph name="TO_INSTALL_APP_NAME" />" vì ứng dụng này xung đột với "<ph name="INSTALLED_APP_NAME" />".</translation>
-<translation id="3835522725882634757">Ồ, không! Máy chủ này đang gửi dữ liệu <ph name="PRODUCT_NAME" /> không thể hiểu được. Vui lòng <ph name="BEGIN_LINK" />báo cáo lỗi<ph name="END_LINK" /> và đưa vào <ph name="BEGIN2_LINK" />danh sách mới<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Đây là thông tin chung về thiết bị này và cách bạn sử dụng thiết bị (như mức pin, hoạt động của ứng dụng và hệ thống cũng như các lỗi). Dữ liệu sẽ dùng để cải thiện Android và một số thông tin tổng hợp cũng sẽ giúp các ứng dụng và đối tác của Google, chẳng hạn như nhà phát triển Android, cải thiện ứng dụng và sản phẩm của họ.</translation>
 <translation id="3838085852053358637">Không tải được tiện ích</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> khác</translation>

@@ -799,6 +799,7 @@
 <translation id="1805888043020974594">Tlačový server</translation>
 <translation id="1805967612549112634">Potvrdenie kódu PIN</translation>
 <translation id="1806335016774576568">Prepnúť na inú otvorenú aplikáciu</translation>
+<translation id="1807246157184219062">Svetlý režim</translation>
 <translation id="1809483812148634490">Z tohto Chromebooku budú odstránené aplikácie, ktoré ste stiahli z Obchodu Google Play.
     <ph name="LINE_BREAKS1" />
     Môže sa tiež odstrániť obsah, ktorý ste si zakúpili, napríklad filmy, televízne relácie, hudba, knihy alebo ďalšie nákupy v aplikáciách.
@@ -2758,7 +2759,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="383161972796689579">Vlastník tohto zariadenia zakázal pridávanie nových používateľov</translation>
 <translation id="3834728400518755610">Zmena nastavenia mikrofónu vyžaduje vypnutie systému Linux. Pokračujte vypnutím systému Linux.</translation>
 <translation id="3834775135533257713">Aplikáciu <ph name="TO_INSTALL_APP_NAME" /> sa nepodarilo pridať, pretože je v konflikte s aplikáciou <ph name="INSTALLED_APP_NAME" />.</translation>
-<translation id="3835522725882634757">Tento server odosiela údaje, ktoré sú pre prehliadač <ph name="PRODUCT_NAME" /> nezrozumiteľné. <ph name="BEGIN_LINK" />Nahláste chybu<ph name="END_LINK" /> a priložte <ph name="BEGIN2_LINK" />nespracovaný záznam<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Toto sú všeobecné informácie o tomto zariadení a jeho používaní (napríklad stav batérie, aktivita v systéme a aplikáciách a chyby). Údaje sa použijú na zlepšenie Androidu a niektoré súhrnné informácie pomôžu tiež aplikáciám Google a partnerom (napríklad vývojárom pre Android) zlepšiť svoje aplikácie a produkty.</translation>
 <translation id="3838085852053358637">Načítanie rozšírenia zlyhalo</translation>
 <translation id="3838486795898716504">Ďalšie <ph name="PAGE_TITLE" /></translation>

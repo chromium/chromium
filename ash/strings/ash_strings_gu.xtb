@@ -615,6 +615,7 @@
 <translation id="5465662442746197494">સહાયની જરૂર છે?</translation>
 <translation id="5496819745535887422">તમારા વ્યવસ્થાપક તમારા ઉપકરણને રોલ બૅક કરી રહ્યા છે. ઉપકરણ ફરી શરૂ કરવામાં આવશે, ત્યારે બધો ડેટા ડિલીટ થઈ જશે.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">તમારા વ્યવસ્થાપકે બધી ઇ-સિમ પ્રોફાઇલ કાઢી નાખી છે. વધુ માહિતી માટે તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> કનેક્ટ થઈ રહ્યું છે.</translation>
 <translation id="5532994612895037630">પૂર્ણ સ્ક્રીન રેકોર્ડ કરવા માટે, સ્ક્રીન પર ગમે ત્યાં ટૅપ કરો</translation>
 <translation id="553675580533261935">સત્રથી બહાર નીકળી રહ્યાં છે</translation>
@@ -745,6 +746,7 @@
 <translation id="6537924328260219877">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, ફોનની બૅટરી <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> પર કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6559976592393364813">વ્યવસ્થાપકને પૂછો</translation>
+<translation id="6565007273808762236">ઇ-સિમ કનેક્શન ઉપલબ્ધ નથી</translation>
 <translation id="6570902864550063460">USB વડે ચાર્જિંગ</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> માં સત્ર સમાપ્ત થાય છે.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

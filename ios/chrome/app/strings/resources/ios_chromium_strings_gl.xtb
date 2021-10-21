@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1257458525759135959">Se queres gardar imaxes, para que Chromium poida engadir as túas fotos, toca Configuración</translation>
 <translation id="1289216811211435351">Pásate a Chromium</translation>
-<translation id="1354592789402432496">O teu administrador require que inicies sesión cunha conta de organización. As contas que este restrinxe están ocultas.</translation>
 <translation id="1361748954329991663">Chromium está desactualizado. Se non hai dispoñible ningunha actualización na <ph name="BEGIN_LINK" />tenda de aplicacións<ph name="END_LINK" />, é posible que o teu dispositivo xa non sexa compatible coas novas versións de Chromium.</translation>
 <translation id="1370204544543370355">Para tirarlle o máximo partido a Chromium, inicia sesión coa túa Conta de Google en Chromium</translation>
 <translation id="1431818719585918472">Permite que Chromium bloquee as pestanas do modo de incógnito.</translation>
@@ -41,6 +40,7 @@
 <translation id="3472200483164753384">Non compatible en Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google.</translation>
 <translation id="3805899903892079518">Chromium non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
+<translation id="3946918322491238254">Podes seguir vendo os marcadores, o historial, os contrasinais e o resto das opcións de configuración que teñas neste dispositivo. Se fas cambios, non se sincronizarán coa túa conta.</translation>
 <translation id="4099085513035183040">Non compatible na versión beta de Chromium</translation>
 <translation id="4555020257205549924">Se esta función está activada, Chromium utilizará o Tradutor de Google para ofrecer a tradución de páxinas escritas noutros idiomas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>

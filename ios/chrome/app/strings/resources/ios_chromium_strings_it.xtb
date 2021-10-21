@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
 <translation id="1257458525759135959">Per salvare le immagini, tocca Impostazioni e consenti a Chromium di aggiungere le tue foto</translation>
 <translation id="1289216811211435351">Passa a Chromium</translation>
-<translation id="1354592789402432496">Il tuo amministratore richiede l'accesso con un account dell'organizzazione. Gli account limitati dal tuo amministratore sono nascosti.</translation>
 <translation id="1361748954329991663">Chromium non è aggiornato. Se non sono disponibili aggiornamenti nell'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, è possibile che il dispositivo non supporti più le nuove versioni di Chromium.</translation>
 <translation id="1370204544543370355">Accedi con il tuo Account Google a Chromium per usare al meglio questo browser</translation>
 <translation id="1431818719585918472">Consenti a Chromium di bloccare le schede di navigazione in incognito.</translation>
@@ -40,6 +39,7 @@
 <translation id="3472200483164753384">Non supportata su Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium può controllare le tue password quando accedi con il tuo Account Google.</translation>
 <translation id="3805899903892079518">Chromium non ha accesso alle tue foto o ai tuoi video. Attiva l'accesso in Impostazioni iOS &gt; Privacy &gt; Foto.</translation>
+<translation id="3946918322491238254">Puoi trovare ancora tutti i tuoi preferiti, la cronologia, le password e altre impostazioni su questo dispositivo. Le eventuali modifiche apportate non verranno sincronizzate con il tuo account.</translation>
 <translation id="4099085513035183040">Non supportata su Chromium beta</translation>
 <translation id="4555020257205549924">Quando questa funzione è attiva, Chromium si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Ora puoi usare Chromium ogni volta che tocchi link in messaggi, documenti e altre app.</translation>

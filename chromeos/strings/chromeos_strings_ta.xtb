@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="1018219910092211213">DNSஸைத் தீர்க்க முடியவில்லை</translation>
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> தொடரிழைகள், <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">ஸ்கேன் செய்ய முடியவில்லை</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ஃபயர்வால் கண்டறியப்பட்டது</translation>
 <translation id="1075811647922107217">பக்க அளவு</translation>
+<translation id="1094693127011229778">IP முகவரி கிடைக்கவில்லை</translation>
 <translation id="1119447706177454957">அகப் பிழை</translation>
 <translation id="1124772482545689468">பயனர்</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">கேப்டிவ் போர்டல் இருப்பது போல் தெரிகிறது</translation>
 <translation id="1290331692326790741">வலுவற்ற சிக்னல்</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138"><ph name="NETWORK_NAME" /> நெட்வொர்க் எதுவுமில்லை</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">உள்ளூர் நெட்வொர்க், ரோமிங் இல்லை</translation>
 <translation id="1327977588028644528">கேட்வே</translation>
@@ -67,6 +70,7 @@
 <translation id="1999615961760456652">கேப்டிவ் போர்டல்</translation>
 <translation id="2006864819935886708">இணைப்பு</translation>
 <translation id="2008685064673031089">முதன்மைத் தேடல்</translation>
+<translation id="2016697457005847575">பிழையறிந்து திருத்தும் படிகளை முயன்று பார்க்கவும்</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">மேலும் அமைப்புகள்</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +103,7 @@
 <translation id="2505327257735685095">தற்போதைய வால்பேப்பர் படத்தை ரெஃப்ரெஷ் செய்யும்</translation>
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
+<translation id="2584559707064218956">அமைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="2585245331261708204">Chrome OSஸில் புதியவை</translation>
 <translation id="2619761439309613843">தினசரிப் புதுப்பிப்பு</translation>
 <translation id="2620436844016719705">அமைப்பு</translation>
@@ -145,8 +150,10 @@
 <translation id="3532980081107202182">சுமார் <ph name="MIN_REMAINING" /> நிமிடங்கள் மீதமுள்ளன</translation>
 <translation id="3565064564551103223">அனுமதிக்கப்படும் IPகள்</translation>
 <translation id="357889014807611375">கட்டண வைஃபை</translation>
+<translation id="3583278742022654445">சிக்னல் மோசமாக உள்ளது. வைஃபை சிக்னலை வழங்கும் சாதனத்திற்கு அருகில் செல்லவும்.</translation>
 <translation id="3595596368722241419">பேட்டரி நிரம்பியது</translation>
 <translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
+<translation id="3606583719724308068">HTTPS இணையதளங்களில் அதிகளவு தாமதம் ஏற்படுகிறது</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> சோதனை</translation>
 <translation id="3708186454126126312">ஏற்கெனவே இணைத்தவை</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> மதிப்புரைகள்)</translation>
@@ -155,6 +162,7 @@
 <translation id="38114475217616659">அனைத்து வரலாற்றையும் அழி</translation>
 <translation id="3820172043799983114">தவறான பின்.</translation>
 <translation id="3838338534323494292">புதிய கடவுச்சொல்</translation>
+<translation id="385051799172605136">திரும்பு</translation>
 <translation id="3858860766373142691">பெயர்</translation>
 <translation id="3865414814144988605">தெளிவு</translation>
 <translation id="387301095347517405">உங்கள் பேட்டரி முழுமையாகச் சார்ஜ் செய்யப்பட்ட எண்ணிக்கை</translation>
@@ -166,6 +174,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> நாட்களுக்கும் மேலாக இருக்கும் பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="4003384961948020559">பிரிண்ட் வெளியே வரும் டிரே நிரம்பி விட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="4034824040120875894">பிரிண்டர்</translation>
+<translation id="4044093238444069296">கேட்வேயைத் தொடர்புகொள்ள முடியவில்லை</translation>
 <translation id="404928562651467259">எச்சரிக்கை</translation>
 <translation id="409427325554347132">பரிசோதனை விவரங்களைச் சேமி</translation>
 <translation id="4111761024568264522">USB டச்பேட்</translation>
@@ -188,6 +197,7 @@
 <translation id="4378551569595875038">இணைக்கிறது...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> முடக்கப்பட்டுள்ளது</translation>
 <translation id="4429881212383817840">Kerberos டிக்கெட் விரைவில் காலாவதியாகும்</translation>
 <translation id="4431821876790500265">அறிக்கையைக் காட்டு</translation>
 <translation id="445059817448385655">தற்போதைய கடவுச்சொல்</translation>
@@ -233,6 +243,7 @@
 <translation id="4917385247580444890">வலிமையானது</translation>
 <translation id="4917889632206600977">காகிதம் தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் செய்யப்பட்டது.</translation>
+<translation id="4930320165497208503">இணைப்பை அமைக்க அல்லது புதுப்பிக்க, <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
 <translation id="4932733599132424254">தேதி</translation>
 <translation id="498186245079027698">ஸ்கேனரைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும். ஸ்கேன் செய்த ஃபைல்களைச் சேமிக்க போதுமான இடம் இருப்பதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
@@ -334,7 +345,6 @@
 <translation id="636850387210749493">நிறுவனப் பதிவு</translation>
 <translation id="6379086450106841622">டச்ஸ்கிரீன்</translation>
 <translation id="6388847657025262518">ஸ்கேனரின் டாக்குமெண்ட் ஃபீடரில் தாள் சிக்கிக் கொண்டது. ஃபீடரைச் சரிசெய்துவிட்டு மீண்டும் முயலவும்.</translation>
-<translation id="6398765197997659313">முழுத்திரையிலிருந்து வெளியேறு</translation>
 <translation id="641081527798843608">சப்ஜெக்ட் மேட்ச்</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">மோசமாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -375,6 +385,7 @@
 <translation id="7059230779847288458">சார்ஜ் ஆகிறது, முழுமையாகச் சார்ஜ் ஏற <ph name="TIME_VALUE" /> ஆகும்</translation>
 <translation id="708426984172631313">நிறுத்தப்பட்டது</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">தோல்வியடைந்தது - அங்கீகரிக்க முடியவில்லை</translation>
 <translation id="7134436342991564651">{0,plural, =1{நேம் சர்வர்}other{நேம் சர்வர்கள்}}</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
 <translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
@@ -387,6 +398,7 @@
 <translation id="7271040990581020067">ஸ்கேனர் தற்போது உபயோகத்தில் உள்ளது. பிறகு முயலவும்.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">வால்பேப்பர் தொகுப்புகள்</translation>
+<translation id="7297226631177386107">HTTPS இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -419,6 +431,7 @@
 <translation id="7762130827864645708">உங்கள் கடவுச்சொல் மாற்றப்பட்டது. இனி புதிய கடவுச்சொல்லைப் பயன்படுத்தவும்.</translation>
 <translation id="7763470514545477072">டொமைனின் பிற்பாதிக்கான பொருத்தம்</translation>
 <translation id="7769672763586021400">மாடல் ஐடி</translation>
+<translation id="7784116172884276937">DNS சேவையகங்கள் எதுவும் அமைக்கப்படவில்லை</translation>
 <translation id="7805768142964895445">நிலை</translation>
 <translation id="7819857487979277519">PSK (WPA அல்லது RSN)</translation>
 <translation id="7835501727204647447">CloudReadyயை நிறுவு</translation>
@@ -433,13 +446,16 @@
 <translation id="7943235353293548836">பெர்சிஸ்டெண்ட் கீப்-அலைவ் இன்டெர்வல்</translation>
 <translation id="7955587717700691983">புளூடூத் கீபோர்டு</translation>
 <translation id="7960831585769876809">வெப்பநிலை</translation>
+<translation id="7977800524392185497"><ph name="NETWORK_NAME" /> நெட்வொர்க்கில் இணைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="7978412674231730200">தனிப்பட்ட விசை</translation>
 <translation id="7994702968232966508">EAP முறை</translation>
 <translation id="802154636333426148">பதிவிறக்க முடியவில்லை</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
 <translation id="8075838845814659848">மீதமுள்ள சார்ஜ்</translation>
+<translation id="8082366717211101304">Android ஆப்ஸில் இருந்து DNS கோரிக்கையைத் தீர்க்க முடியவில்லை</translation>
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>
+<translation id="8104083085214006426">பொதுவான, பாதுகாப்பற்ற நெட்வொர்க்கைப் பயன்படுத்துகிறீர்கள்</translation>
 <translation id="811820734797650957">(Android) கேட்வேயைத் தொடர்புகொள்வது</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">டிராஃபிக் கவுண்ட்டர்களைக் கோரு</translation>
@@ -464,10 +480,12 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">சாதனத்தில் உள்ள கீபோர்டு</translation>
 <translation id="843568408673868420">இணைய இணைப்பு</translation>
+<translation id="844521431886043384">DNS அமைக்கப்படவில்லை</translation>
 <translation id="8461329675984532579">உள்நாட்டு மொபைல் சேவை வழங்குநர் பெயர்</translation>
 <translation id="8475690821716466388">WEP PSK என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="8477551185774834963">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடச் சற்றே அதிகமாக உள்ளது</translation>
 <translation id="8483248364096924578">IP முகவரி</translation>
+<translation id="8491311378305535241">Android ஆப்ஸில் இருந்து HTTPS இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
 <translation id="8498220429738806196">டிராஃபிக் கவுண்ட்டர்கள்</translation>
 <translation id="8503813439785031346">பயனர்பெயர்</translation>
 <translation id="8503836310948963452">இன்னும் சில நிமிடங்கள் காத்திருக்கவும்...</translation>
@@ -493,6 +511,7 @@
 <translation id="8818152010000655963">வால்பேப்பர்</translation>
 <translation id="8834539327799336565">தற்போது இணைக்கப்பட்டுள்ளவை</translation>
 <translation id="8845001906332463065">உதவி பெறுக</translation>
+<translation id="8855781559874488009">HTTP இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">சோதனை நிறைவடைந்தது</translation>
 <translation id="8898840733695078011">சிக்னலின் வலிமை</translation>
@@ -518,12 +537,14 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> வலைதளத்திற்கான டிக்கெட்டை ரெஃப்ரெஷ் செய்யவும்</translation>
 <translation id="9106415115617144481">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">அன்லாக் செய்</translation>
+<translation id="9122602430962285795">மீண்டும் இணைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="9126720536733509015">பல பக்கங்களை ஒரே PDF ஃபைலாகச் சேமி</translation>
 <translation id="9137526406337347448">Google சேவைகள்</translation>
 <translation id="9149391708638971077">நினைவகச் சோதனையை இயக்கு</translation>
 <translation id="9173638680043580060">ஒரு நிமிடத்திற்கும் குறைவான நேரமே மீதமுள்ளது</translation>
 <translation id="917720651393141712">சோதனை செய்</translation>
 <translation id="9190063653747922532">L2TP/IPsec + முன்பே-பகிர்ந்து கொள்ளப்பட்ட விசை</translation>
+<translation id="9204237731135241582">Android ஆப்ஸில் இருந்து கேட்வேயைத் தொடர்புகொள்ள முடியவில்லை</translation>
 <translation id="9211490828691860325">அனைத்து டெஸ்குகளும்</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">செயலாக்கப்படவில்லை</translation>

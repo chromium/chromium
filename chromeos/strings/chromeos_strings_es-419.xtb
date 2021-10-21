@@ -155,6 +155,7 @@
 <translation id="38114475217616659">Borrar todo el historial</translation>
 <translation id="3820172043799983114">PIN no válido</translation>
 <translation id="3838338534323494292">Nueva contraseña</translation>
+<translation id="385051799172605136">Atrás</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="387301095347517405">El número de veces que la batería ha completado un ciclo de carga</translation>
@@ -334,7 +335,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6388847657025262518">Se atascó el alimentador de documentos del escáner. Revisa el alimentador y vuelve a intentarlo.</translation>
-<translation id="6398765197997659313">Salir de pantalla completa</translation>
 <translation id="641081527798843608">Coincidencia de asunto</translation>
 <translation id="6423239382391657905">VPN abierto</translation>
 <translation id="6439505561246192797">Débil (<ph name="SIGNAL_STRENGTH" />)</translation>

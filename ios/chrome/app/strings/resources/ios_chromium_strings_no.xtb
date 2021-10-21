@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">For å lagre bilder, trykk på Innstillinger for å la Chromium legge dem til i bildene dine</translation>
 <translation id="1289216811211435351">Bytt til Chromium</translation>
-<translation id="1354592789402432496">Administratoren din krever at du logger på med en organisasjonskonto. Kontoer som er tilgangsbegrenset av administratoren din, er skjult.</translation>
 <translation id="1361748954329991663">Chromium er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chromium lenger.</translation>
 <translation id="1370204544543370355">For å få mest mulig ut av Chromium, logg på Chromium med Google-kontoen din</translation>
 <translation id="1431818719585918472">La Chromium låse inkognitofanene dine.</translation>
@@ -40,6 +39,7 @@
 <translation id="3472200483164753384">Støttes ikke i Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="3805899903892079518">Chromium har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
+<translation id="3946918322491238254">Du kan fremdeles se bokmerkene dine, loggen din, passordene dine og andre innstillinger på denne enheten. Hvis du gjør endringer, blir de ikke synkronisert med kontoen din.</translation>
 <translation id="4099085513035183040">Støttes ikke i Chromium Beta</translation>
 <translation id="4555020257205549924">Når denne funksjonen er slått på, tilbyr Chromium å oversette sider som er skrevet på andre språk, ved hjelp av Google Oversetter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Nå kan du bruke Chromium hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>

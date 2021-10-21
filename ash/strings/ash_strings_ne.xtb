@@ -615,6 +615,7 @@
 <translation id="5465662442746197494">मद्दत आवश्यक छ?</translation>
 <translation id="5496819745535887422">तपाईंको प्रशासकले तपाईंको यन्त्रलाई पहिलेको स्थितिमा फर्काउँदै हुनुहुन्छ। यन्त्र पुनः सुरु हुँदा सबै डेटा मेटाइने छ।</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">तपाईंका एड्मिनले सबै eSIM प्रोफाइलहरू हटाएका छन्। तपाईं यस सम्बन्धमा थप जानकारी प्राप्त गर्न चाहनुहुन्छ भने आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> कनेक्ट हुँदै छ।</translation>
 <translation id="5532994612895037630">फुल स्क्रिनमा रेकर्ड गर्न कुनै पनि ठाउँमा ट्याप गर्नुहोस्</translation>
 <translation id="553675580533261935">सत्रबाट बाहिर जाँदै</translation>
@@ -745,6 +746,7 @@
 <translation id="6537924328260219877">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, <ph name="BATTERY_STATUS" /> फोनको ब्याट्री</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> मा Cast गर्दै</translation>
 <translation id="6559976592393364813">प्रशासकलाई सोध्नुहोस्</translation>
+<translation id="6565007273808762236">eSIM कनेक्सन उपलब्ध छैन</translation>
 <translation id="6570902864550063460">USB मार्फत चार्ज गरिँदै छ</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> मा समाप्त हुन्छ।</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

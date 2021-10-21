@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">ስለChromium</translation>
 <translation id="1257458525759135959">ምስሎችን ለማስቀመጥ፣ Chromium ወደ የእርስዎ ፎቶዎች ማከል እንዲችል ለማድረግ ቅንብሮች ላይ መታ ያድርጉ</translation>
 <translation id="1289216811211435351">ወደ Chromium ይቀየር?</translation>
-<translation id="1354592789402432496">አስተዳዳሪዎ በድርጅት መለያ አማካኝነት እንዲገቡ ይጠይቃል። በአስተዳዳሪዎ የተገደበ መለያዎች ተደብቀዋል።</translation>
 <translation id="1361748954329991663">Chromium ጊዜው አልፎበታል። በ<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ውስጥ ምንም ዝማኔ ከሌለ የእርስዎ መሣሪያ አዲስ የChromium ስሪቶችን ከእንግዲህ ላይደግፍ ይችላል።</translation>
 <translation id="1370204544543370355">ከChromium የበለጠ ለማግኘት በGoogle መለያዎ ወደ Chromium ይግቡ</translation>
 <translation id="1431818719585918472">Chromium የእርስዎን ማንነት የማያሳውቁ ትሮች እንዲቆልፍ ይፍቀዱለት።</translation>
@@ -22,6 +21,7 @@
 <translation id="2168108852149185974">አንዳንድ ተጨማሪዎች Chromium እንዲበላሽ ያደርጋሉ። እባክዎ የሚከተለውን ያራግፉ፦</translation>
 <translation id="2178608107313874732">Chromium አሁን ካሜራዎን መጠቀም አይችልም</translation>
 <translation id="2195025571279539885">Chromium በሚቀጥለው ጊዜ ከዚህ ጣቢያ የመጡ የ<ph name="LANGUAGE_NAME" /> ገጾችን እንዲተረጎምልዎ ይፈልጋሉ?</translation>
+<translation id="2218146227246548550">Chromiumን ለመጠቀም የእርስዎ ድርጅት እርስዎ በመለያ እንዲገቡ ይጠይቃል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="2426113998523353159">Chromiumን ለመጠቀም የእርስዎ ድርጅት እርስዎ በመለያ እንዲገቡ ይጠይቃል።</translation>
 <translation id="2450140762465183767">አገናኞችን በመልዕክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromiumን አሁን መጠቀም ይችላሉ።</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />ን ይምረጡ</translation>
@@ -39,6 +39,7 @@
 <translation id="3472200483164753384">በChromium Canary ላይ አይደገፍም</translation>
 <translation id="3639997914391704523">Chromium በእርስዎ የGoogle መለያ በሚገቡበት ጊዜ የእርስዎን የይለፍ ቃላትን ሊፈትሽ ይችላል።</translation>
 <translation id="3805899903892079518">Chromium የእርስዎ ፎቶዎች ወይም ቪዲዮዎች መዳረሻ የለውም። በiOS ቅንብሮች &gt; ግላዊነት &gt; ፎቶዎች ውስጥ መዳረሻን ያንቁ።</translation>
+<translation id="3946918322491238254">አሁንም በዚህ መሣሪያ ላይ ሁሉንም የእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮችን ማየት ይችላሉ። ለውጦችን ካደረጉ ከGoogle መለያዎ ጋር አይሰምርም።</translation>
 <translation id="4099085513035183040">በChromium ቅድመ-ይሁንታ ላይ አይደገፍም</translation>
 <translation id="4555020257205549924">ይህ ባህሪ ሲበራ Chromium በሌሎች ቋንቋዎች የተጻፉ ገጾች Google ትርጉምን በመጠቀም እንዲተረጎምልዎ ይጠይቀዎታል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">አገናኞችን በመልእክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromiumን አሁን መጠቀም ይችላሉ።</translation>

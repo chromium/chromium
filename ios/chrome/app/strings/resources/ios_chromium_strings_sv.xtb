@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Om du vill spara bilder trycker du på Inställningar och låter Chromium lägga till dina foton</translation>
 <translation id="1289216811211435351">Byt till Chromium</translation>
-<translation id="1354592789402432496">Administratören kräver inloggning med ett organisationskonto. Konton som är begränsade av administratören är dolda.</translation>
 <translation id="1361748954329991663">Den här versionen av Chromium är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chromium.</translation>
 <translation id="1370204544543370355">Logga in i Chromium med Google-kontot så att du får ut mesta möjliga av programmet</translation>
 <translation id="1431818719585918472">Låt Chromium låsa inkognitoflikarna.</translation>
@@ -23,6 +22,7 @@
 <translation id="2168108852149185974">Några tillägg har fått Chromium att krascha. Avinstallera följande:</translation>
 <translation id="2178608107313874732">Chromium kan inte använda kameran just nu</translation>
 <translation id="2195025571279539885">Vill du att Chromium ska översätta sidor skrivna på <ph name="LANGUAGE_NAME" /> på den här webbplatsen nästa gång?</translation>
+<translation id="2218146227246548550">Organisationen kräver att du loggar in för att använda Chromium. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2426113998523353159">Organisationen kräver att du loggar in för att använda Chromium.</translation>
 <translation id="2450140762465183767">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="2478931088402984578">Välj <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -40,6 +40,7 @@
 <translation id="3472200483164753384">Stöds inte på Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="3805899903892079518">Chromium har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Sekretess &gt; Foton.</translation>
+<translation id="3946918322491238254">Bokmärken, lösenord, historik och andra inställningar finns fortfarande kvar på enheten. Om du ändrar något synkroniseras inte detta med kontot.</translation>
 <translation id="4099085513035183040">Stöds inte på Chromium Beta</translation>
 <translation id="4555020257205549924">När den här funktionen har aktiverats visas alternativet i Chromium att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>

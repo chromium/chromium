@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1018219910092211213">Ei saa DNS-i lahendada</translation>
 <translation id="1018656279737460067">Tühistatud</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> haru, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Skannimist ei saanud alustada</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tuvastati tulemüür</translation>
 <translation id="1075811647922107217">Lehe suurus</translation>
+<translation id="1094693127011229778">IP-aadress pole saadaval</translation>
 <translation id="1119447706177454957">Sisemine viga</translation>
 <translation id="1124772482545689468">Kasutaja</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">Kahtlustatakse hõiveportaali</translation>
 <translation id="1290331692326790741">Nõrk signaal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">Ühtegi <ph name="NETWORK_NAME" />-võrku pole saadaval</translation>
 <translation id="1314565355471455267">Androidi VPN</translation>
 <translation id="131461803491198646">Koduvõrk, mitte rändlus</translation>
 <translation id="1327977588028644528">Lüüs</translation>
@@ -67,6 +70,7 @@
 <translation id="1999615961760456652">Hõiveportaal</translation>
 <translation id="2006864819935886708">Ühenduvus</translation>
 <translation id="2008685064673031089">Algarvude otsing</translation>
+<translation id="2016697457005847575">Proovige neid veaotsingu toiminguid</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Rohkem seadeid</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioon <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +103,7 @@
 <translation id="2505327257735685095">Praeguse taustapildi värskendamine</translation>
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2570743873672969996">Testi <ph name="TEST_NAME" /> käitamine …</translation>
+<translation id="2584559707064218956">Seadistamiseks avage leht Seaded</translation>
 <translation id="2585245331261708204">Mis on Chrome OS-is uut?</translation>
 <translation id="2619761439309613843">Igapäevane värskendamine</translation>
 <translation id="2620436844016719705">Süsteem</translation>
@@ -145,8 +150,10 @@
 <translation id="3532980081107202182">Jäänud on ligikaudu <ph name="MIN_REMAINING" /> minutit</translation>
 <translation id="3565064564551103223">Lubatud IP-d</translation>
 <translation id="357889014807611375">mahupõhine WiFi</translation>
+<translation id="3583278742022654445">Signaal on nõrk. Liikuge WiFi-signaali allikale lähemale.</translation>
 <translation id="3595596368722241419">Aku on täis</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
+<translation id="3606583719724308068">Pikk latentsusaeg HTTPS-veebisaitide puhul</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Varem ühendatud</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvustust)</translation>
@@ -155,6 +162,7 @@
 <translation id="38114475217616659">Kustuta kogu ajalugu</translation>
 <translation id="3820172043799983114">Vale PIN-kood.</translation>
 <translation id="3838338534323494292">Uus parool</translation>
+<translation id="385051799172605136">Tagasi</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3865414814144988605">Eraldusvõime</translation>
 <translation id="387301095347517405">See arv näitab, mitu korda on teie seadme aku läbinud täieliku laadimistsükli</translation>
@@ -166,6 +174,7 @@
 <translation id="39823212440917567">Prinditööd, mis on vanemad kui <ph name="NUMBER_OF_DAYS" /> päeva, eemaldatakse</translation>
 <translation id="4003384961948020559">Ebaõnnestus – väljastusala on täis</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4044093238444069296">Ei saa lüüsiga ühendust</translation>
 <translation id="404928562651467259">HOIATUS</translation>
 <translation id="409427325554347132">Salvesta testi üksikasjad</translation>
 <translation id="4111761024568264522">USB-puuteplaat</translation>
@@ -188,6 +197,7 @@
 <translation id="4378551569595875038">Ühendamine ...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Minu ketas</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> on välja lülitatud</translation>
 <translation id="4429881212383817840">Kerberose pilet aegub peagi</translation>
 <translation id="4431821876790500265">Kuva aruanne</translation>
 <translation id="445059817448385655">Vana parool</translation>
@@ -233,6 +243,7 @@
 <translation id="4917385247580444890">Tugev</translation>
 <translation id="4917889632206600977">Peatatud – paber on otsas</translation>
 <translation id="4921665434385737356">Laeti <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundi jooksul.</translation>
+<translation id="4930320165497208503">Ühenduse seadistamiseks või värskendamiseks avage leht <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Kuupäev</translation>
 <translation id="498186245079027698">Kontrollige skannerit ja proovige uuesti. Veenduge, et skannitud failide salvestamiseks oleks piisavalt kohalikku ruumi.</translation>
 <translation id="4985509611418653372">Käitati</translation>
@@ -334,7 +345,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="636850387210749493">Ettevõtte registreerimine</translation>
 <translation id="6379086450106841622">Puuteekraan</translation>
 <translation id="6388847657025262518">Skanneri dokumendisöötur on ummistunud. Kontrollige sööturit ja proovige uuesti.</translation>
-<translation id="6398765197997659313">Välju täisekraanilt</translation>
 <translation id="641081527798843608">Teema vaste</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Nõrk (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -375,6 +385,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7059230779847288458">Laadimine, täislaadimiseks kulub <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">PEATATUD</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Ebaõnnestus – volitamine ebaõnnestus</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nimeserver}other{Nimeserverid}}</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
 <translation id="7144878232160441200">Proovi uuesti</translation>
@@ -387,6 +398,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7271040990581020067">Skanner on kasutuses. Proovige hiljem uuesti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Taustapiltide kogud</translation>
+<translation id="7297226631177386107">Ei saa HTTPS-veebisaitidega läbi tulemüüri ühendust luua</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -419,6 +431,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7762130827864645708">Parooli muutmine õnnestus. Edaspidi kasutage uut parooli.</translation>
 <translation id="7763470514545477072">Domeenisufiksi vaste</translation>
 <translation id="7769672763586021400">Mudeli ID</translation>
+<translation id="7784116172884276937">Seadistatud pole ühtegi DNS-serverit</translation>
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7819857487979277519">PSK (WPA või RSN)</translation>
 <translation id="7835501727204647447">Installi CloudReady</translation>
@@ -433,13 +446,16 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7943235353293548836">Püsiva säilitamissõnumi intervall</translation>
 <translation id="7955587717700691983">Bluetooth-klaviatuur</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
+<translation id="7977800524392185497"><ph name="NETWORK_NAME" />-võrguga ühendamiseks avage leht Seaded</translation>
 <translation id="7978412674231730200">Privaatvõti</translation>
 <translation id="7994702968232966508">EAP meetod</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Saada tagasiside</translation>
 <translation id="8075838845814659848">Aku laetuse tase</translation>
+<translation id="8082366717211101304">Ei saa Androidi rakendustest DNS-i lahendada</translation>
 <translation id="808894953321890993">Muuda parooli</translation>
+<translation id="8104083085214006426">Kasutate avatud ja ebaturvalist võrku</translation>
 <translation id="811820734797650957">(Android) Lüüsi saab pingida</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Taotle liiklusloendureid</translation>
@@ -464,10 +480,12 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Sisemine klaviatuur</translation>
 <translation id="843568408673868420">Interneti ühenduvus</translation>
+<translation id="844521431886043384">DNS ei ole seadistatud</translation>
 <translation id="8461329675984532579">Koduteenuse pakkuja nimi</translation>
 <translation id="8475690821716466388">WiFi-võrk on kaitstud nõrga protokolliga (WEP PSK)</translation>
 <translation id="8477551185774834963">DNS-i latentsusaeg ületab veidi lubatud piiri</translation>
 <translation id="8483248364096924578">IP-aadress</translation>
+<translation id="8491311378305535241">Ei saa Androidi rakendustest HTTP-veebisaitidega läbi tulemüüri ühendust luua</translation>
 <translation id="8498220429738806196">Liiklusloendurid</translation>
 <translation id="8503813439785031346">Kasutajanimi</translation>
 <translation id="8503836310948963452">Veel mõni minut …</translation>
@@ -493,6 +511,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8818152010000655963">Taustapilt</translation>
 <translation id="8834539327799336565">Praegu ühendatud</translation>
 <translation id="8845001906332463065">Otsige abi</translation>
+<translation id="8855781559874488009">Ei saa HTTP-veebisaitidega läbi tulemüüri ühendust luua</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test õnnestus</translation>
 <translation id="8898840733695078011">Signaali tugevus</translation>
@@ -518,12 +537,14 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="910415269708673980">Kasutaja <ph name="PRINCIPAL_NAME" /> pileti värskendamine</translation>
 <translation id="9106415115617144481">Lehe <ph name="PAGE_NUMBER" /> skannimine</translation>
 <translation id="9111102763498581341">Ava lukk</translation>
+<translation id="9122602430962285795">Uuesti ühendamiseks avage leht Seaded</translation>
 <translation id="9126720536733509015">Mitme lehe ühte PDF-faili salvestamine</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">Käita mälutest</translation>
 <translation id="9173638680043580060">Jäänud on alla minuti</translation>
 <translation id="917720651393141712">Testi</translation>
 <translation id="9190063653747922532">L2TP/IPSec + eeljagatud võti</translation>
+<translation id="9204237731135241582">Ei saa Androidi rakendustest lüüsiga ühendust</translation>
 <translation id="9211490828691860325">Kõik töölauad</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Aktiveerimata</translation>

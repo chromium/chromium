@@ -790,6 +790,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1805888043020974594">Druckserver</translation>
 <translation id="1805967612549112634">PIN bestätigen</translation>
 <translation id="1806335016774576568">Zu einer anderen geöffneten App wechseln</translation>
+<translation id="1807246157184219062">Hell</translation>
 <translation id="1809483812148634490">Die bei Google Play heruntergeladenen Apps werden von diesem Chromebook gelöscht.
     <ph name="LINE_BREAKS1" />
     Von Ihnen gekaufte Inhalte, wie Filme, TV-Sendungen, Musik, Bücher oder andere In-App-Käufe, werden eventuell ebenfalls gelöscht.
@@ -2739,7 +2740,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="383161972796689579">Der Eigentümer dieses Geräts hat die Funktion zum Hinzufügen neuer Nutzer deaktiviert.</translation>
 <translation id="3834728400518755610">Nach der Änderung der Mikrofoneinstellungen muss Linux heruntergefahren werden. Linux herunterfahren, um fortzufahren.</translation>
 <translation id="3834775135533257713">Die App "<ph name="TO_INSTALL_APP_NAME" />" konnte nicht hinzugefügt werden, da sie mit "<ph name="INSTALLED_APP_NAME" />" in Konflikt steht.</translation>
-<translation id="3835522725882634757"><ph name="PRODUCT_NAME" /> versteht die von diesem Server gesendeten Daten nicht. Bitte <ph name="BEGIN_LINK" />melden Sie einen Programmfehler<ph name="END_LINK" /> und geben Sie die <ph name="BEGIN2_LINK" />Rohdaten<ph name="END2_LINK" /> an.</translation>
 <translation id="383669374481694771">Dies sind allgemeine Informationen zu diesem Gerät und dessen Nutzung, zum Beispiel der Akkustand, System- und App-Aktivitäten und Fehler. Die Daten werden dazu verwendet, Android zu verbessern. Einige aggregierte Daten helfen auch Apps und Partnern von Google, beispielsweise Android-Entwicklern, ihre Apps und Produkte weiter zu verbessern.</translation>
 <translation id="3838085852053358637">Fehler beim Laden der Erweiterung</translation>
 <translation id="3838486795898716504">Weitere <ph name="PAGE_TITLE" /></translation>

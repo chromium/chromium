@@ -811,6 +811,7 @@
 <translation id="1805888043020974594">Spausdinimo serveris</translation>
 <translation id="1805967612549112634">Patvirtinkite PIN kodą</translation>
 <translation id="1806335016774576568">Perjungti į kitą atidarytą programą</translation>
+<translation id="1807246157184219062">Šviesi</translation>
 <translation id="1809483812148634490">Programos, kurias atsisiuntėte iš „Google Play“, bus ištrintos iš šio „Chromebook“.
     <ph name="LINE_BREAKS1" />
     Įsigytas turinys, pvz., filmai, TV laidos, muzika, knygos ar kiti pirkiniai programoje, taip pat gali būti ištrintas.
@@ -2774,7 +2775,6 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="383161972796689579">Šio įrenginio savininkas neleido pridėti naujų naudotojų</translation>
 <translation id="3834728400518755610">Norint pritaikyti mikrofono nustatymų pakeitimą, reikia išjungti „Linux“. Išjunkite „Linux“, jei norite tęsti.</translation>
 <translation id="3834775135533257713">Nepavyko pridėti programos „<ph name="TO_INSTALL_APP_NAME" />“, nes ji nesuderinama su „<ph name="INSTALLED_APP_NAME" />“.</translation>
-<translation id="3835522725882634757">O ne! Šis serveris siunčia duomenis, kurių „<ph name="PRODUCT_NAME" />“ nesupranta. <ph name="BEGIN_LINK" />Pateikite ataskaitą apie riktą<ph name="END_LINK" /> ir įtraukite <ph name="BEGIN2_LINK" />neapdorotą sąrašą<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Tai yra bendra informacija apie šį įrenginį ir jo naudojimą (pvz., akumuliatoriaus įkrovos lygį, sistemos ir programų veiklą bei klaidas). Duomenys bus naudojami siekiant patobulinti „Android“, o tam tikra sukaupta informacija taip pat padės „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams, pagerinti savo programas ir produktus.</translation>
 <translation id="3838085852053358637">Nepavyko įkelti plėtinio</translation>
 <translation id="3838486795898716504">Daugiau <ph name="PAGE_TITLE" /></translation>

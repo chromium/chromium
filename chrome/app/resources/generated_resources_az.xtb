@@ -793,6 +793,7 @@
 <translation id="1805888043020974594">Çap serveri</translation>
 <translation id="1805967612549112634">PIN kodu təsdiq edin</translation>
 <translation id="1806335016774576568">Başqa bir açıq tətbiqə dəyişin</translation>
+<translation id="1807246157184219062">Yüngül</translation>
 <translation id="1809483812148634490">Google Play'dən endirdiyiniz tətbiqlər bu Chromebook'dan silinəcək.
     <ph name="LINE_BREAKS1" />
     Satın aldığınız film, TV şou, musiqi, kitab kimi məzmunlar və digər tətbiqdaxili alışlar da silinə bilər.
@@ -2751,7 +2752,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="383161972796689579">Bu cihazın sahibi yeni istifadəçilərin əlavə olunmasını deaktiv edib</translation>
 <translation id="3834728400518755610">Mikrofon ayarına edilən dəyişiklik Linux'un söndürülməsini tələb edir. Başlamaq üçün Linux'u söndürün.</translation>
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" tətbiqi əlavə edilmədi, cünki "<ph name="INSTALLED_APP_NAME" />" tətbiqi ilə zddiyət təşkil edir.</translation>
-<translation id="3835522725882634757">Bu server anlamadığı <ph name="PRODUCT_NAME" /> datasını göndərir. <ph name="BEGIN_LINK" />Baqı xəbər verin<ph name="END_LINK" />, və <ph name="BEGIN2_LINK" />qaralama testinqini<ph name="END2_LINK" /> daxil edin.</translation>
 <translation id="383669374481694771">Bu ümumi məlumat bu cihaz və ondan istifadə haqqındadır (məsələn, batareya səviyyəsi, sistem və tətbiq fəaliyyəti və xətalar). Data Android məhsullarını təkmilləşdirmək məqsədilə istifadə olunacaq. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android developerləri kimi partnyorlara tətbiq və məhsullarını təkmilləşdirməkdə kömək edəcək.</translation>
 <translation id="3838085852053358637">Artırmanı yükləmək alınmadı</translation>
 <translation id="3838486795898716504">Daha çox <ph name="PAGE_TITLE" /></translation>

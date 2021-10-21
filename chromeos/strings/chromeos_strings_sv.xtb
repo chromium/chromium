@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1018219910092211213">Det gick inte att matcha DNS</translation>
 <translation id="1018656279737460067">Avbröts</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> trådar, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Det gick inte att börja söka</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Brandvägg hittades</translation>
 <translation id="1075811647922107217">Sidstorlek</translation>
+<translation id="1094693127011229778">IP-adress är inte tillgänglig</translation>
 <translation id="1119447706177454957">Internt fel</translation>
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">Misstänkt infångstportal</translation>
 <translation id="1290331692326790741">svag signal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">Det finns inget tillgängligt <ph name="NETWORK_NAME" />-nätverk</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Hemnätverk, ingen roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
@@ -67,6 +70,7 @@
 <translation id="1999615961760456652">Infångstportal</translation>
 <translation id="2006864819935886708">Anslutning</translation>
 <translation id="2008685064673031089">Primtalssökning</translation>
+<translation id="2016697457005847575">Testa felsökningsstegen</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Fler inställningar</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +103,7 @@
 <translation id="2505327257735685095">Uppdatera den aktuella bakgrundsbilden</translation>
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2570743873672969996">Kör test av <ph name="TEST_NAME" /> …</translation>
+<translation id="2584559707064218956">Öppna inställningarna för att konfigurera det</translation>
 <translation id="2585245331261708204">Nyheter i Chrome OS</translation>
 <translation id="2619761439309613843">Daglig uppdatering</translation>
 <translation id="2620436844016719705">System</translation>
@@ -145,8 +150,10 @@
 <translation id="3532980081107202182">Ungefär <ph name="MIN_REMAINING" /> minuter kvar</translation>
 <translation id="3565064564551103223">Tillåtna IP-adresser</translation>
 <translation id="357889014807611375">wifi med datapriser</translation>
+<translation id="3583278742022654445">Svag signalstyrka. Testa att gå närmare källan till wifi-signalen.</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
 <translation id="360565022852130722">wifi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
+<translation id="3606583719724308068">Hög fördröjning till HTTPS-webbplatser</translation>
 <translation id="3689839747745352263">Test – <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Tidigare anslutna enheter</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioner)</translation>
@@ -155,6 +162,7 @@
 <translation id="38114475217616659">Rensa all historik</translation>
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
 <translation id="3838338534323494292">Nytt lösenord</translation>
+<translation id="385051799172605136">Föregående</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3865414814144988605">Upplösning</translation>
 <translation id="387301095347517405">Antalet gånger som batteriet har laddats hela sin kapacitet</translation>
@@ -166,6 +174,7 @@
 <translation id="39823212440917567">Utskriftsjobb som är äldre än <ph name="NUMBER_OF_DAYS" /> dagar tas bort</translation>
 <translation id="4003384961948020559">Misslyckades – utmatningsfacket är fullt</translation>
 <translation id="4034824040120875894">Skrivare</translation>
+<translation id="4044093238444069296">Det gick inte att kontakta gateway</translation>
 <translation id="404928562651467259">VARNING</translation>
 <translation id="409427325554347132">Spara testinformation</translation>
 <translation id="4111761024568264522">USB-styrplatta</translation>
@@ -188,6 +197,7 @@
 <translation id="4378551569595875038">Ansluter ...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Min enhet</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> är av</translation>
 <translation id="4429881212383817840">Kerberos-biljetten upphör snart att gälla</translation>
 <translation id="4431821876790500265">Visa rapporten</translation>
 <translation id="445059817448385655">Gammalt lösenord</translation>
@@ -233,6 +243,7 @@
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4917889632206600977">Har stoppats – slut på papper</translation>
 <translation id="4921665434385737356">Har laddat <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
+<translation id="4930320165497208503">Öppna <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /> om du vill konfigurera eller uppdatera en anslutning.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Kontrollera skannern och försök igen. Kontrollera att utrymmet lokalt räcker för att spara de skannade filerna.</translation>
 <translation id="4985509611418653372">Kör</translation>
@@ -334,7 +345,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="636850387210749493">Företagsregistrering</translation>
 <translation id="6379086450106841622">Pekskärm</translation>
 <translation id="6388847657025262518">Skannerns dokumentmatare är blockerad. Kontrollera mataren och försök igen.</translation>
-<translation id="6398765197997659313">Avsluta helskärmsläge</translation>
 <translation id="641081527798843608">Ämnesmatchning</translation>
 <translation id="6423239382391657905">Öppen VPN</translation>
 <translation id="6439505561246192797">Svag (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -375,6 +385,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7059230779847288458">Laddas – fulladdat om <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">HAR STOPPATS</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Misslyckades – auktoriseringen misslyckades</translation>
 <translation id="7134436342991564651">{0,plural, =1{Namnserver}other{Namnservrar}}</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144878232160441200">Försök igen</translation>
@@ -387,6 +398,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7271040990581020067">Skannern används för närvarande. Försök igen senare.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Samlingar med bakgrunder</translation>
+<translation id="7297226631177386107">Det gick inte att ansluta till HTTPS-webbplatser genom brandvägg</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -419,6 +431,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7762130827864645708">Lösenordet har bytts. Använd det nya lösenordet i fortsättningen.</translation>
 <translation id="7763470514545477072">Matchning av domänsuffix</translation>
 <translation id="7769672763586021400">Modell-id</translation>
+<translation id="7784116172884276937">Inga DNS-servrar har konfigurerats</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA eller RSN)</translation>
 <translation id="7835501727204647447">Installera CloudReady</translation>
@@ -433,13 +446,16 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7943235353293548836">Beständigt keepalive-intervall</translation>
 <translation id="7955587717700691983">Bluetooth-tangentbord</translation>
 <translation id="7960831585769876809">Temperatur</translation>
+<translation id="7977800524392185497">Öppna inställningarna om du vill ansluta till ett <ph name="NETWORK_NAME" />-nätverk</translation>
 <translation id="7978412674231730200">Privat nyckel</translation>
 <translation id="7994702968232966508">EAP-metod</translation>
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Skicka feedback</translation>
 <translation id="8075838845814659848">Batteritid som återstår</translation>
+<translation id="8082366717211101304">Det gick inte att matcha DNS från Android-appar</translation>
 <translation id="808894953321890993">Ändra lösenord</translation>
+<translation id="8104083085214006426">Du använder ett öppet och osäkert nätverk</translation>
 <translation id="811820734797650957">(Android) Gateway går att pinga</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Begär trafikräknare</translation>
@@ -464,10 +480,12 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Internt tangentbord</translation>
 <translation id="843568408673868420">Internetanslutning</translation>
+<translation id="844521431886043384">DNS har inte konfigurerats</translation>
 <translation id="8461329675984532579">Hemleverantörens namn</translation>
 <translation id="8475690821716466388">wifi-nätverket använder det svaga säkerhetsprotokollet WEP PSK</translation>
 <translation id="8477551185774834963">DNS-latensen är något högre än det godtagbara tröskelvärdet</translation>
 <translation id="8483248364096924578">IP-adress</translation>
+<translation id="8491311378305535241">Det gick inte att ansluta till HTTPS-webbplatser från Android-appar genom brandvägg</translation>
 <translation id="8498220429738806196">Trafikräknare</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="8503836310948963452">Bara några minuter kvar …</translation>
@@ -493,6 +511,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8818152010000655963">Bakgrund</translation>
 <translation id="8834539327799336565">Anslutna just nu</translation>
 <translation id="8845001906332463065">Få hjälp</translation>
+<translation id="8855781559874488009">Det gick inte att ansluta till HTTP-webbplatser genom brandvägg</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Testet lyckades</translation>
 <translation id="8898840733695078011">Signalstyrka</translation>
@@ -518,12 +537,14 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="910415269708673980">Uppdatera biljetten för <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar sidan <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås upp</translation>
+<translation id="9122602430962285795">Öppna inställningarna för att återansluta</translation>
 <translation id="9126720536733509015">Spara flera sidor till en PDF</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">Kör minnestest</translation>
 <translation id="9173638680043580060">Mindre än en minut kvar</translation>
 <translation id="917720651393141712">Testa</translation>
 <translation id="9190063653747922532">L2TP/IPSec + i förväg delad nyckel</translation>
+<translation id="9204237731135241582">Det gick inte att kontakta gateway från Android-appar</translation>
 <translation id="9211490828691860325">Alla skrivbord</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Inte aktiverat</translation>

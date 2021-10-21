@@ -811,6 +811,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1805888043020974594">Tiskalni strežnik</translation>
 <translation id="1805967612549112634">Potrdite kodo PIN</translation>
 <translation id="1806335016774576568">Preklop na drugo odprto aplikacijo</translation>
+<translation id="1807246157184219062">Svetlo</translation>
 <translation id="1809483812148634490">Aplikacije, ki ste jih prenesli iz Googla Play, bodo izbrisane iz tega Chromebooka.
     <ph name="LINE_BREAKS1" />
     Kupljena vsebina, na primer filmi, TV-oddaje, glasba, knjige ali drugi nakupi v aplikacijah, bo morda tudi izbrisana.
@@ -2774,7 +2775,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="383161972796689579">Lastnik te naprave je onemogočil dodajanje novih uporabnikov</translation>
 <translation id="3834728400518755610">Sprememba nastavitve mikrofona terja zaustavitev Linuxa. Zaustavite Linux, če želite nadaljevati.</translation>
 <translation id="3834775135533257713">Aplikacije »<ph name="TO_INSTALL_APP_NAME" />« ni bilo mogoče dodati, ker je v sporu z aplikacijo »<ph name="INSTALLED_APP_NAME" />«.</translation>
-<translation id="3835522725882634757">Joj! Ta strežnik pošilja podatke, ki jih <ph name="PRODUCT_NAME" /> ne razume. <ph name="BEGIN_LINK" />Prijavite napako<ph name="END_LINK" /> in zraven pošljite <ph name="BEGIN2_LINK" />neobdelan seznam<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Gre za splošne podatke o tej napravi in njeni uporabi, kot so raven napolnjenosti baterije, dejavnost sistema in aplikacije ter napake. Ti podatki bodo uporabljeni za izboljšanje sistema Android. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android, izboljšati aplikacije in izdelke.</translation>
 <translation id="3838085852053358637">Ni bilo mogoče naložiti razširitve</translation>
 <translation id="3838486795898716504">Več <ph name="PAGE_TITLE" /></translation>

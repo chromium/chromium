@@ -26,6 +26,7 @@
 <translation id="1142732900304639782">Не пропонувати перекладати ці сайти</translation>
 <translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1146678959555564648">Увійти у VR-режим</translation>
+<translation id="114825011539563458">Переглядайте найважливіші елементи керування конфіденційністю та безпекою на одній сторінці</translation>
 <translation id="1154704303112745282">Сторінка недоступна в режимі офлайн: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Використано</translation>
 <translation id="1171770572613082465">Натисніть кнопку "Популярні сайти", щоб переглянути їх.</translation>
@@ -318,6 +319,7 @@
 <translation id="2932222164150889403">Розкладка клавіатури не зміниться</translation>
 <translation id="2942036813789421260">Вкладку "Попередній перегляд" закрито</translation>
 <translation id="2946420957526726953">Chrome оновлюється, щоб підключитися до інших пристроїв</translation>
+<translation id="2951071800649516099">Додавайте сторінки в список читання, щоб переглядати їх пізніше</translation>
 <translation id="2956410042958133412">Цим обліковим записом керують <ph name="PARENT_NAME_1" /> і <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитана сторінка}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитана сторінка}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитані сторінки}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитаних сторінок}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитаної сторінки}}</translation>
 <translation id="2961210776189273067">Форма звертання</translation>
@@ -549,6 +551,7 @@
 <translation id="4452411734226507615">Закрити вкладку <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Закладку збережено в папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4472118726404937099">Щоб синхронізувати й персоналізувати дані на пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
+<translation id="4479839115899251637">Видалити зі списку читання</translation>
 <translation id="4479972344484327217">Встановлення модуля <ph name="MODULE" /> для Chrome…</translation>
 <translation id="4487967297491345095">Усі дані Chrome буде видалено назавжди. Це стосується всіх файлів, налаштувань, облікових записів, баз даних тощо.</translation>
 <translation id="449126573531210296">Шифрувати синхронізовані паролі за допомогою облікових даних Google</translation>
@@ -570,9 +573,11 @@
 <translation id="4558311620361989323">Комбінації клавіш для роботи з веб-сторінками</translation>
 <translation id="4561730552726921821">Реєстрацію виконано</translation>
 <translation id="4561979708150884304">Немає з’єднання</translation>
+<translation id="4562008740775511591">У Chrome за умовчанням вибрано доречні налаштування, але ви можете змінити їх відповідно до своїх потреб</translation>
 <translation id="4565377596337484307">Сховати пароль</translation>
 <translation id="4572422548854449519">Увійдіть у керований обліковий запис</translation>
 <translation id="4576892426230499203">Виберіть інший варіант підтвердження</translation>
+<translation id="4578289292431526768">Почати</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# хвилину тому}one{# хвилину тому}few{# хвилини тому}many{# хвилин тому}other{# хвилини тому}}</translation>
 <translation id="4587589328781138893">Сайти</translation>
 <translation id="4594952190837476234">Цю сторінку створено <ph name="CREATION_TIME" />. Вона може відрізнятися від онлайн-версії.</translation>
@@ -809,6 +814,7 @@
 <translation id="5956665950594638604">Відкрити Довідковий центр Chrome у новій вкладці</translation>
 <translation id="5957442310066583693">Щоб переглянути свої улюблені сайти, натисніть кнопку домашньої сторінки</translation>
 <translation id="5958275228015807058">Знаходьте свої файли та сторінки в розділі "Завантаження"</translation>
+<translation id="5962272973076519240">Щоб розблокувати анонімний режим, підтвердьте свою особу</translation>
 <translation id="5962718611393537961">Торкніться, щоб згорнути</translation>
 <translation id="5964805880140440652">Щоб ця сторінка була доступна на іншому пристрої, увімкніть синхронізацію в налаштуваннях Chrome</translation>
 <translation id="5964869237734432770">Не показувати описи</translation>
@@ -933,6 +939,7 @@
 <translation id="661266467055912436">Покращує захист усіх користувачів в Інтернеті.</translation>
 <translation id="6618554661997243500">Щоб переглянути підібрані для вас сайти й новини, натисніть кнопку домашньої сторінки</translation>
 <translation id="6627583120233659107">Редагувати папку</translation>
+<translation id="6633067410344541938">Розблокувати анонімний режим</translation>
 <translation id="663674369910034433">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділах <ph name="BEGIN_LINK1" />Синхронізація<ph name="END_LINK1" /> та <ph name="BEGIN_LINK2" />Сервіси Google<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6643649862576733715">Сортувати за кількістю заощадженого трафіку</translation>
@@ -988,12 +995,14 @@
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="6955535239952325894">Цей параметр вимкнено в керованих веб-переглядачах</translation>
 <translation id="6963766334940102469">Видалити закладки</translation>
+<translation id="6964116075545915250">Редагувати список читання</translation>
 <translation id="696447261358045621">Вимкнути режим анонімного перегляду</translation>
 <translation id="6979737339423435258">Увесь час</translation>
 <translation id="6981982820502123353">Спеціальні можливості</translation>
 <translation id="6987047470128880212">Анонімний режим недоступний на цьому пристрої</translation>
 <translation id="6995899638241819463">Попереджати, якщо паролі розкрито через порушення безпеки даних</translation>
 <translation id="7001056293070445572">Цей файл великий (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">Додати в список читання <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Відкрити у веб-переглядачі</translation>
 <translation id="702463548815491781">Рекомендується, коли ввімкнено TalkBack або кнопковий доступ</translation>
 <translation id="7027549951530753705">Відновлено об'єкт "<ph name="ITEM_TITLE" />"</translation>
@@ -1213,6 +1222,7 @@
 <translation id="825412236959742607">Ця сторінка використовує забагато пам’яті, тому веб-переглядач Chrome вилучив деякий вміст.</translation>
 <translation id="8260126382462817229">Спробуйте ввійти ще раз</translation>
 <translation id="8261506727792406068">Видалити</translation>
+<translation id="82619448491672958">Переглянути інші вкладки</translation>
 <translation id="8266862848225348053">Папка для завантажень</translation>
 <translation id="8274165955039650276">Переглянути завантаження</translation>
 <translation id="8281886186245836920">Пропустити</translation>

@@ -155,6 +155,7 @@
 <translation id="38114475217616659">履歴をすべて消去</translation>
 <translation id="3820172043799983114">無効な PIN です。</translation>
 <translation id="3838338534323494292">新しいパスワード</translation>
+<translation id="385051799172605136">戻る</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
@@ -334,7 +335,6 @@
 <translation id="636850387210749493">企業の登録</translation>
 <translation id="6379086450106841622">タッチスクリーン</translation>
 <translation id="6388847657025262518">スキャナの給紙トレイが詰まっています。トレイを確認してから、もう一度お試しください。</translation>
-<translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="641081527798843608">件名の一致</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">弱い（<ph name="SIGNAL_STRENGTH" />）</translation>

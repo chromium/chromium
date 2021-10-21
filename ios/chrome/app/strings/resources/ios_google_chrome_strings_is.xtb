@@ -3,7 +3,7 @@
 <translationbundle lang="is">
 <translation id="1096883626080133124">Komdu meiru í verk með einfaldari, öruggari og hraðari Google Chrome</translation>
 <translation id="1282031177488366470">Hjálpaðu okkur að bæta eiginleika og afköst Chrome</translation>
-<translation id="1354592789402432496">Stjórnandinn gerir kröfu um að þú skráir þig inn með fyrirtækjareikningnum þínum. Reikningar sem stjórnandinn hefur takmarkað eru faldir.</translation>
+<translation id="1314663809820920746">Þú getur áfram séð öll bókamerki, feril, aðgangsorð og aðrar stillingar í þessu tæki. Breytingar verða ekki samstilltar við Google reikninginn þinn.</translation>
 <translation id="1479202195792305274">Chrome getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google reikningnum þínum.</translation>
 <translation id="1493827051843127077">Notaðu Chrome sem sjálfgefinn kost til að samstilla flipa, aðgangsorð og greiðsluupplýsingar í öllum tækjunum þínum</translation>
 <translation id="1504372625950710826">Chrome gat ekki leitað að uppfærslum. Athugaðu nettenginguna þína.</translation>
@@ -98,6 +98,7 @@
 <translation id="8357607116237445042">Veldu hvort þú vilt hreinsa gögn Chrome úr þessu tæki eða geyma þau</translation>
 <translation id="8370517070665726704">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
 <translation id="840168496893712993">Einhverjar viðbætur valda því að Chrome hrynur. Prófaðu að fjarlægja þær.</translation>
+<translation id="8414886616817913619">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chrome. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8459495907675268833">Völdu gögnin hafa verið fjarlægð af Chrome og samstilltum tækjum. Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, svo sem yfir leit og virkni í annarri þjónustu Google, á history.google.com.</translation>
 <translation id="850555388806794946">Til að gera Chrome að sjálfgefnum vafra:
   1. Opnaðu Stillingar

@@ -26,6 +26,7 @@
 <translation id="1142732900304639782">Erbjud inte att översätta dessa webbplatser</translation>
 <translation id="1145536944570833626">Radera befintlig data.</translation>
 <translation id="1146678959555564648">Kliv in i VR</translation>
+<translation id="114825011539563458">De viktigaste säkerhets- och integritetskontrollerna på ett och samma ställe</translation>
 <translation id="1154704303112745282">Sidan är inte tillgänglig offline: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Använt</translation>
 <translation id="1171770572613082465">Visa populära webbplatser genom att trycka på Populärt</translation>
@@ -318,6 +319,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2932222164150889403">Tangentbordet ändras inte</translation>
 <translation id="2942036813789421260">Fliken Förhandsgranskning har stängts</translation>
 <translation id="2946420957526726953">Uppdatera Chrome för att ansluta till andra enheter</translation>
+<translation id="2951071800649516099">Lägg till sidor som du vill läsa senare i läslistan</translation>
 <translation id="2956410042958133412">Det här kontot hanteras av <ph name="PARENT_NAME_1" /> och <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> oläst sida i listan}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> olästa sidor i listan}}</translation>
 <translation id="2961210776189273067">Titel</translation>
@@ -550,6 +552,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="4452411734226507615">Stäng fliken <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bokmärkt i <ph name="FOLDER_NAME" /></translation>
 <translation id="4472118726404937099">Logga in och aktivera synkronisering om du vill synkronisera och anpassa alla dina enheter</translation>
+<translation id="4479839115899251637">Ta bort från läslistan</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> installeras i Chrome …</translation>
 <translation id="4487967297491345095">All appdata i Chrome raderas permanent. Detta omfattar alla filer, inställningar, konton, databaser osv.</translation>
 <translation id="449126573531210296">Kryptera synkroniserade lösenord med ditt Google-konto</translation>
@@ -571,9 +574,11 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4558311620361989323">Kortkommandon på webbsidor</translation>
 <translation id="4561730552726921821">Registreringen lyckades</translation>
 <translation id="4561979708150884304">Ingen anslutning</translation>
+<translation id="4562008740775511591">Chrome har standardinställningar som passar de flesta, men du kan anpassa dem efter dina surfvanor</translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
 <translation id="4572422548854449519">Logga in på hanterat konto</translation>
 <translation id="4576892426230499203">Försök med ett annat verifieringsalternativ</translation>
+<translation id="4578289292431526768">Kom igång</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{för # minut sedan}other{för # minuter sedan}}</translation>
 <translation id="4587589328781138893">Webbplatser</translation>
 <translation id="4594952190837476234">Den här offlinesidan sparades <ph name="CREATION_TIME" /> och kan skilja sig från onlineversionen.</translation>
@@ -810,6 +815,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5956665950594638604">Öppna hjälpcentret för Chrome på en ny flik</translation>
 <translation id="5957442310066583693">Tryck på hemknappen om du vill se dina mest besökta webbplatser</translation>
 <translation id="5958275228015807058">Du hittar filerna och sidorna i Nedladdningar</translation>
+<translation id="5962272973076519240">Verifiera din identitet för att låsa upp inkognito</translation>
 <translation id="5962718611393537961">Tryck här om du vill komprimera</translation>
 <translation id="5964805880140440652">Aktivera synkronisering i inställningarna för Chrome om du vill dela den här sidan med annan enhet</translation>
 <translation id="5964869237734432770">Stoppa bildbeskrivning</translation>
@@ -934,6 +940,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="661266467055912436">Förbättrar säkerheten för dig och alla andra på webben.</translation>
 <translation id="6618554661997243500">Tryck på hemknappen om du vill se dina mest besökta webbplatser och artiklar för dig</translation>
 <translation id="6627583120233659107">Redigera mapp</translation>
+<translation id="6633067410344541938">Lås upp inkognito</translation>
 <translation id="663674369910034433">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK1" />Synk<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />Googles tjänster<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6643649862576733715">Sortera efter databesparing</translation>
@@ -989,12 +996,14 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6955535239952325894">Inställningen är inaktiverad för hanterade webbläsare</translation>
 <translation id="6963766334940102469">Radera bokmärken</translation>
+<translation id="6964116075545915250">Redigera läslista</translation>
 <translation id="696447261358045621">Inaktivera inkognitoläge</translation>
 <translation id="6979737339423435258">Sedan kontot skapades</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="6987047470128880212">Inkognito är inte tillgängligt på den här enheten</translation>
 <translation id="6995899638241819463">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
 <translation id="7001056293070445572">Filen är stor (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">Lägg till i läslistan <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Öppna i webbläsaren</translation>
 <translation id="702463548815491781">Rekommenderas när TalkBack eller brytarstyrning är aktiverat</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> återställdes</translation>
@@ -1214,6 +1223,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="825412236959742607">Den här sidan använder för mycket minne, så en del innehåll har tagits bort.</translation>
 <translation id="8260126382462817229">Försök att logga in igen</translation>
 <translation id="8261506727792406068">Radera</translation>
+<translation id="82619448491672958">Se andra flikar</translation>
 <translation id="8266862848225348053">Nedladdningsplats</translation>
 <translation id="8274165955039650276">Visa nedladdningar</translation>
 <translation id="8281886186245836920">Hoppa över</translation>

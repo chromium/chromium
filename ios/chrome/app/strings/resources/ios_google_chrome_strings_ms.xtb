@@ -3,7 +3,7 @@
 <translationbundle lang="ms">
 <translation id="1096883626080133124">Selesaikan lebih banyak tugas dengan Google Chrome yang mudah, selamat dan lebih pantas berbanding dahulu</translation>
 <translation id="1282031177488366470">Bantu Tingkatkan Ciri dan Prestasi Chrome</translation>
-<translation id="1354592789402432496">Pentadbir anda menghendaki anda log masuk dengan akaun organisasi. Akaun yang disekat oleh pentadbir anda disembunyikan.</translation>
+<translation id="1314663809820920746">Anda masih boleh melihat semua penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada peranti ini. Jika perubahan dibuat, perubahan itu tidak akan disegerakkan ke Akaun Google anda.</translation>
 <translation id="1479202195792305274">Chrome boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda.</translation>
 <translation id="1493827051843127077">Tetapkan Chrome sebagai penyemak imbas lalai untuk menyegerakkan tab, kata laluan dan maklumat pembayaran anda pada semua peranti anda</translation>
 <translation id="1504372625950710826">Chrome tidak dapat menyemak kemaskinian. Cuba periksa sambungan internet anda.</translation>
@@ -98,6 +98,7 @@
 <translation id="8357607116237445042">Pilih sama ada anda hendak mengosongkan data Chrome anda daripada peranti ini atau mengekalkan data tersebut</translation>
 <translation id="8370517070665726704">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>
 <translation id="840168496893712993">Beberapa tambahan menyebabkan Chrome ranap. Sila cuba menyahpasang tambahan tersebut.</translation>
+<translation id="8414886616817913619">Organisasi anda menghendaki anda log masuk untuk menggunakan Chrome. <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="8459495907675268833">Data yang dipilih telah dialih keluar daripada Chrome dan peranti yang disegerakkan. Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain seperti carian dan aktiviti daripada perkhidmatan Google yang lain di history.google.com.</translation>
 <translation id="850555388806794946">Untuk menjadikan Chrome sebagai penyemak imbas lalai anda:
   1. Buka Tetapan

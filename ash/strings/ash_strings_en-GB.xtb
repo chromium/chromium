@@ -337,6 +337,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3509391053705095206">Can’t find your phone. Make sure that your phone’s Bluetooth is on.</translation>
 <translation id="3510164367642747937">Highlight mouse cursor</translation>
 <translation id="3513798432020909783">Account managed by <ph name="MANAGER_EMAIL" /></translation>
+<translation id="352245152354538528">{0,plural, =1{Update device within 1 minute}other{Update device within # minutes}}</translation>
 <translation id="353086728817903341">Connected to <ph name="NUM_DEVICES" /> devices</translation>
 <translation id="3552189655002856821">Wi-Fi is turned off</translation>
 <translation id="3560866052109807830">Marker drawing tools</translation>
@@ -425,6 +426,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4146833061457621061">Play music</translation>
 <translation id="4157822100366708405">Dark theme settings</translation>
 <translation id="4173958948577803258">T</translation>
+<translation id="4177913004758410636">{0,plural, =1{Update device within a day}other{Update device within # days}}</translation>
 <translation id="4181841719683918333">Languages</translation>
 <translation id="4195877955194704651">Automatic clicks button</translation>
 <translation id="4197790712631116042">Off</translation>
@@ -478,6 +480,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="445864333228800152">Good evening,</translation>
 <translation id="4458688154122353284">Stop screen recording</translation>
 <translation id="4471354919263203780">Downloading speech recognition files <ph name="PERCENT" />%</translation>
+<translation id="4471432286288241507">{0,plural, =0{Update device now}=1{Update device within 1 second}other{Update device within # seconds}}</translation>
 <translation id="4472575034687746823">Get started</translation>
 <translation id="4477350412780666475">Next track</translation>
 <translation id="4477892968187500306">This device may contain apps that haven't been verified by Google.</translation>
@@ -737,6 +740,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
 <translation id="6490471652906364588">USB-C device (right port)</translation>
 <translation id="649452524636452238">Smart card PIN</translation>
+<translation id="6495400115277918834">Picture-in-picture started, Alt+Shift+V to focus</translation>
 <translation id="6500818810472529210">See result in Google Search</translation>
 <translation id="6501401484702599040">Casting screen to <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Select a window to capture</translation>
@@ -747,6 +751,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6542521951477560771">Casting to <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Ask administrator</translation>
 <translation id="6565007273808762236">eSIM connection unavailable</translation>
+<translation id="6570831796530454248">{0,plural, =1{Update device within an hour}other{Update device within # hours}}</translation>
 <translation id="6570902864550063460">Charging via USB</translation>
 <translation id="6585808820553845416">Session ends in <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>

@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">О Chromium-у</translation>
 <translation id="1257458525759135959">Да бисте сачували слике, додирните Подешавања да бисте омогућили Chromium-у да додаје слике</translation>
 <translation id="1289216811211435351">Пређите на Chromium</translation>
-<translation id="1354592789402432496">Администратор захтева да се пријавите помоћу налога организације. Налози које је организатор ограничио су скривени.</translation>
 <translation id="1361748954329991663">Chromium је застарео. Ако ажурирање није доступно у <ph name="BEGIN_LINK" />App Store-у<ph name="END_LINK" />, уређај можда не подржава нове верзије Chromium-а.</translation>
 <translation id="1370204544543370355">Да бисте користили Chromium на најбољи начин, пријавите се на Chromium помоћу Google налога</translation>
 <translation id="1431818719585918472">Дозволите Chromium-у да закључа картице без архивирања.</translation>
@@ -41,6 +40,7 @@
 <translation id="3472200483164753384">Није подржано у верзији Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium може да вам проверава лозинке када се пријавите помоћу Google налога.</translation>
 <translation id="3805899903892079518">Chromium не може да приступа сликама или видео снимцима. Омогућите приступ у iOS Settings (Подешавања iOS-а) &gt; Privacy (Приватност) &gt; Photos (Слике).</translation>
+<translation id="3946918322491238254">И даље можете да видите све обележиваче, историју, лозинке и друга подешавања на овом уређају. Ако унесете промене, оне се неће синхронизовати са налогом.</translation>
 <translation id="4099085513035183040">Није подржано у верзији Chromium бета</translation>
 <translation id="4555020257205549924">Када је ова функција укључена, Chromium ће нудити да преводи странице написане на другим језицима помоћу Google преводиоца. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Сада можете да користите Chromium сваки пут када додирнете линкове у порукама, документима и другим апликацијама.</translation>

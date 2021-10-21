@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer des images, touchez Paramètres et autorisez Chromium à les ajouter à vos photos</translation>
 <translation id="1289216811211435351">Passer à Chromium</translation>
-<translation id="1354592789402432496">Votre administrateur vous demande de vous connecter avec un compte organisationnel. Les comptes dont l'accès est restreint par votre administrateur sont masqués.</translation>
 <translation id="1361748954329991663">Chromium n'est pas à jour. Si aucune mise à jour n'est offerte dans l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, il est possible que votre appareil ne prenne plus en charge les nouvelles versions de Chromium.</translation>
 <translation id="1370204544543370355">Pour profiter au maximum de Chromium, connectez-vous à Chromium avec votre compte Google</translation>
 <translation id="1431818719585918472">Chromium peut verrouiller vos onglets de navigation privée.</translation>
@@ -40,6 +39,7 @@
 <translation id="3472200483164753384">Fonctionnalité non prise en charge par Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="3805899903892079518">Chromium n'a pas accès à vos photos ou vidéos. Activez l'accès dans Réglages iOS &gt; Confidentialité &gt; Photos.</translation>
+<translation id="3946918322491238254">Vous pouvez tout de même voir la totalité de vos favoris, de votre historique, de vos mots de passe et de vos autres paramètres sur cet appareil. Si vous apportez des modifications, elles ne seront pas synchronisées avec votre compte.</translation>
 <translation id="4099085513035183040">Fonctionnalité non prise en charge par Chromium Beta</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée, Chromium vous offre de traduire les pages écrites dans d'autres langues à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Vous pouvez maintenant utiliser Chromium chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>

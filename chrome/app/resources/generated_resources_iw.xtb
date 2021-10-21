@@ -807,6 +807,7 @@
 <translation id="1805888043020974594">שרת הדפסה</translation>
 <translation id="1805967612549112634">אישור קוד אימות</translation>
 <translation id="1806335016774576568">מעבר לאפליקציה פתוחה אחרת</translation>
+<translation id="1807246157184219062">בהיר</translation>
 <translation id="1809483812148634490">‏אפליקציות שהורדת מ-Google Play יימחקו מה-Chromebook הזה.
     <ph name="LINE_BREAKS1" />
     ייתכן גם שיימחק תוכן שרכשת, כמו סרטים, תוכניות טלוויזיה, מוזיקה, ספרים או רכישות אחרות מתוך אפליקציות.
@@ -2768,7 +2769,6 @@
 <translation id="383161972796689579">הבעלים של מכשיר זה השבית את ההוספה של משתמשים חדשים</translation>
 <translation id="3834728400518755610">‏השינוי בהגדרת המיקרופון מחייב את הכיבוי של Linux. יש לכבות את Linux כדי להמשיך.</translation>
 <translation id="3834775135533257713">לא ניתן היה להוסיף את היישום "<ph name="TO_INSTALL_APP_NAME" />" מפני שהוא מתנגש עם "<ph name="INSTALLED_APP_NAME" />".</translation>
-<translation id="3835522725882634757">אוי, לא! שרת זה שולח נתונים ש-<ph name="PRODUCT_NAME" /> לא יכול להבין. <ph name="BEGIN_LINK" />יש לדווח על באג<ph name="END_LINK" /> ולכלול את <ph name="BEGIN2_LINK" />הרישום הגולמי<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">‏זהו מידע כללי על המכשיר הזה ואופן השימוש בו (למשל רמת הסוללה, פעילות המערכת, הפעילות באפליקציות ושגיאות). הנתונים האלה ישמשו כדי לשפר את Android. חלק מהמידע הנצבר יעזור גם לשפר את האפליקציות של Google, וכן יעזור לשותפים של Google (למשל למפתחים של Android) לשפר את האפליקציות והמוצרים שלהם.</translation>
 <translation id="3838085852053358637">טעינת התוסף נכשלה</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> נוספים</translation>

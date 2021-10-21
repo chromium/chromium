@@ -808,6 +808,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1805888043020974594">Nyomtatószerver</translation>
 <translation id="1805967612549112634">PIN-kód megerősítése</translation>
 <translation id="1806335016774576568">Váltás másik megnyitott alkalmazásra</translation>
+<translation id="1807246157184219062">Világos</translation>
 <translation id="1809483812148634490">A Google Playről letöltött alkalmazások törlődnek erről a Chromebookról.
     <ph name="LINE_BREAKS1" />
     A megvásárolt tartalmak, például filmek, sorozatok, zeneszámok, könyvek vagy egyéb, alkalmazáson belüli vásárlások szintén törlődhetnek.
@@ -2769,7 +2770,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="383161972796689579">Az eszköz tulajdonosa letiltotta az új felhasználók hozzáadását</translation>
 <translation id="3834728400518755610">A mikrofonbeállítások módosítása miatt a Linux leállítására van szükség. A folytatáshoz állítsa le a Linuxot.</translation>
 <translation id="3834775135533257713">Nem sikerült hozzáadni a(z) „<ph name="TO_INSTALL_APP_NAME" />” alkalmazást, mert ütközik a következővel: „<ph name="INSTALLED_APP_NAME" />”.</translation>
-<translation id="3835522725882634757">Hoppá! A szerver olyan adatokat küld, amelyeket a <ph name="PRODUCT_NAME" /> nem tud értelmezni. Kérjük, <ph name="BEGIN_LINK" />jelentse a programhibát<ph name="END_LINK" />, és mellékelje a <ph name="BEGIN2_LINK" />nyers listát<ph name="END2_LINK" />.</translation>
 <translation id="383669374481694771">Ez általános információ erről az eszközről és a használati módjáról (például az akkumulátor töltöttségéről, a rendszer- és alkalmazástevékenységekről, valamint a hibákról). Az adatokat arra használjuk fel, hogy továbbfejlesszük az Androidot, bizonyos összesített adatok pedig a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek segítenek alkalmazásaik és termékeik fejlesztésében.</translation>
 <translation id="3838085852053358637">Nem sikerült betölteni a bővítményt</translation>
 <translation id="3838486795898716504">Továbbiak: <ph name="PAGE_TITLE" /></translation>

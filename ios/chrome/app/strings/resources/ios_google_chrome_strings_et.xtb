@@ -3,7 +3,7 @@
 <translationbundle lang="et">
 <translation id="1096883626080133124">Google Chrome on nüüd lihtsam, turvalisem ja kiirem kui kunagi varem ning aitab teil veelgi rohkem toiminguid teha</translation>
 <translation id="1282031177488366470">Aidake täiustada Chrome'i funktsioone ja toimivust</translation>
-<translation id="1354592789402432496">Administraator nõuab, et logiksite sisse organisatsiooni kontoga. Kontod, mille administraator on piiranud, on peidetud.</translation>
+<translation id="1314663809820920746">Näete selles seadmes endiselt kõiki oma järjehoidjaid, ajalugu, paroole ja muid seadeid. Muudatuste tegemisel neid teie Google'i kontoga ei sünkroonita.</translation>
 <translation id="1479202195792305274">Chrome saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="1493827051843127077">Määrake Chrome vaikebrauseriks, et sünkroonida kõikides oma seadetes vahelehti, paroole ja makseteavet</translation>
 <translation id="1504372625950710826">Chrome ei saanud värskendusi otsida. Kontrollige internetiühendust.</translation>
@@ -98,6 +98,7 @@
 <translation id="8357607116237445042">Valige, kas soovite oma Chrome'i andmed sellest seadmest kustutada või need säilitada</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
 <translation id="840168496893712993">Mõned pistikprogrammid põhjustavad Chrome'i kokkujooksmise. Proovige need desinstallida.</translation>
+<translation id="8414886616817913619">Teie organisatsioon nõuab, et logiksite Chrome'i kasutamiseks sisse. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8459495907675268833">Valitud andmed eemaldati Chrome'ist ja sünkroonitud seadmetest. Aadressil history.google.com võib teie Google'i kontol olla muus vormis sirvimisajalugu, nagu otsingud ja tegevused muudes Google'i teenustes.</translation>
 <translation id="850555388806794946">Chrome'i vaikebrauseriks määramiseks tehke järgmist.
   1. Avage menüü Seaded.

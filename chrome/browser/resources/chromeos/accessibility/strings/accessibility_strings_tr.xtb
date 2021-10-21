@@ -798,6 +798,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="6544923685317771506">Deniz Kabuğu</translation>
 <translation id="6551185905438378412">Fildişi</translation>
 <translation id="6561818612645211875">Mevcut satırın başına git</translation>
+<translation id="6563126228219321999">Geçerli öğe yok</translation>
 <translation id="6579990219486187401">Açık Pembe</translation>
 <translation id="6583174818554398774">Ayrıntı düzeyinde sonraki öğeye gidin</translation>
 <translation id="6584162722998608255">Şimdi de ekranda nasıl hareket edeceğinizi öğreneceksiniz. Sonraki öğeye geçmek için bir parmağınızı soldan sağa kaydırabilirsiniz. Sonraki adıma geçmek için şimdi bunu deneyin.</translation>
@@ -828,6 +829,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="6815255864998354418">Limon</translation>
 <translation id="6816066673340002913">Açık Altın Başak</translation>
 <translation id="6826226459053491773">İki parmağınızı aşağı kaydırın</translation>
+<translation id="6826669432862053130">Sonraki geçerli öğe</translation>
 <translation id="6833103209700200188">Alt bilgi</translation>
 <translation id="6837853484260746864">Sesi seçin:</translation>
 <translation id="6858047746862060282">Prolog</translation>
@@ -1017,6 +1019,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8126386426083591964">Önceki 5. düzey başlık yok</translation>
 <translation id="812886159861361726"><ph name="FILE_NAME" /> dosyasını indirme işlemi durduruldu</translation>
 <translation id="8129445297241948503">Yukarıda hücre yok</translation>
+<translation id="8132248161074464367">Önceki geçerli öğe</translation>
 <translation id="8138880386467279117">Dokunma</translation>
 <translation id="8146613869421949343">Şimdi de Arama tuşu hakkında bilgi edineceksiniz. Arama tuşu, ChromeVox komutları için diğer tuşlarla birlikte kullanılır. Arama tuşu, sol Üst Karakter tuşunun hemen üzerindedir. Devam etmek için Arama tuşuna basın.</translation>
 <translation id="8158033275290782295">tümünü seç</translation>

@@ -616,6 +616,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5465662442746197494">Perlu bantuan?</translation>
 <translation id="5496819745535887422">Pentadbir anda sedang membalikkan peranti anda. Semua data akan dipadamkan apabila peranti dimulakan semula.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Pentadbir anda telah mengalih keluar semua profil eSIM. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> sedang menyambung.</translation>
 <translation id="5532994612895037630">Ketik mana-mana bahagian untuk merakam skrin penuh</translation>
 <translation id="553675580533261935">Keluar daripada sesi</translation>
@@ -746,6 +747,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6537924328260219877">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Bateri Telefon <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Menghantar ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Tanya Pentadbir</translation>
+<translation id="6565007273808762236">Sambungan eSIM tidak tersedia</translation>
 <translation id="6570902864550063460">Mengecas melalui USB</translation>
 <translation id="6585808820553845416">Sesi berakhir dalam <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

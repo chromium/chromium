@@ -5,7 +5,6 @@
 <translation id="1185134272377778587">Chromium haqida</translation>
 <translation id="1257458525759135959">Rasmlarni saqlash uchun Sozlamalar ustiga bosib, Chromiumga rasmlarni ochishga ruxsat bering.</translation>
 <translation id="1289216811211435351">Chromiumga almashish</translation>
-<translation id="1354592789402432496">Administrator hisobga tashkilot hisobi bilan kirishni talab qilmoqda. Administrator taqiqlagan hisoblar yashirilgan.</translation>
 <translation id="1361748954329991663">Chromium versiyasi eskirdi. Agar <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> orqali chiqmasa, demak qurilmangizda yangi versiyadagi Chromium nashrlari ishlamasligi mumkin.</translation>
 <translation id="1370204544543370355">Chromium imkoniyatlaridan maksimal foydalanish uchun Chromiumga Google hisobingiz bilan kiring</translation>
 <translation id="1431818719585918472">Chromium bilan Inkognito varaqlarni himoyalang.</translation>
@@ -40,6 +39,7 @@
 <translation id="3472200483164753384">Chromium Canary nashrida ishlamaydi</translation>
 <translation id="3639997914391704523">Google hisobingizga kirsangiz, Chromium parollaringizni tekshira oladi.</translation>
 <translation id="3805899903892079518">Chromium rasm va videolaringizni ko‘ra olmayapti. “Sozlamalar &gt; Maxfiylik &gt; Rasmlar” oynasi orqali ruxsat bering.</translation>
+<translation id="3946918322491238254">Bu qurilmadagi bukmarklar, tarix, parollar va boshqa sozlamalarni koʻrishingiz mumkin. Oʻzgartirish kiritilsa, ular hisobingizga sinxronlanmaydi.</translation>
 <translation id="4099085513035183040">Chromium Beta nashrida ishlamaydi</translation>
 <translation id="4555020257205549924">Agar bu funksiya yoniq bo‘lsa, Chromium sahifalarni Google Tarjimon xizmati yordamida tarjima qilishni taklif qiladi. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
