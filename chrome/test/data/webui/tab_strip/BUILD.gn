@@ -19,6 +19,9 @@ js_type_check("closure_compile") {
                     "js_module_root=" + rebase_path(
                             "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_strip",
                             root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs",
+                            root_build_dir),
                   ]
   deps = [
     ":alert_indicator_test",
@@ -47,6 +50,7 @@ js_library("alert_indicator_test") {
   deps = [
     "..:chai_assert",
     "//chrome/browser/resources/tab_strip:alert_indicator",
+    "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

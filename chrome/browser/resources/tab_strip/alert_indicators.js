@@ -5,7 +5,7 @@
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {AlertIndicatorElement} from './alert_indicator.js';
-import {TabAlertState} from './tab_strip.mojom-webui.js';
+import {TabAlertState} from './tabs.mojom-webui.js';
 
 export class AlertIndicatorsElement extends CustomElement {
   static get template() {

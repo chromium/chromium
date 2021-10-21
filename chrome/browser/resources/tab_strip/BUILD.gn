@@ -13,6 +13,7 @@ preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+preprocess_tabs_manifest = "preprocessed_tabs_manifest.json"
 
 generate_grd("build_grd") {
   grd_prefix = "tab_strip"
@@ -36,11 +37,13 @@ generate_grd("build_grd") {
     ":preprocess",
     ":preprocess_generated",
     ":preprocess_mojo",
+    ":preprocess_tabs",
   ]
   manifest_files = [
     "$target_gen_dir/$preprocess_manifest",
     "$target_gen_dir/$preprocess_mojo_manifest",
     "$target_gen_dir/$preprocess_gen_manifest",
+    "$target_gen_dir/$preprocess_tabs_manifest",
   ]
 }
 
@@ -50,6 +53,14 @@ preprocess_if_expr("preprocess_mojo") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
   in_files = [ "tab_strip.mojom-webui.js" ]
+}
+
+preprocess_if_expr("preprocess_tabs") {
+  deps = [ "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js" ]
+  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs/"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_tabs_manifest"
+  in_files = [ "tabs.mojom-webui.js" ]
 }
 
 preprocess_if_expr("preprocess") {
@@ -101,6 +112,9 @@ js_type_check("closure_compile") {
         "js_module_root=" + rebase_path(
                 "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_strip",
                 root_build_dir),
+        "js_module_root=" + rebase_path(
+                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs",
+                root_build_dir),
       ]
   deps = [
     ":alert_indicator",
@@ -117,6 +131,7 @@ js_type_check("closure_compile") {
 js_library("alert_indicator") {
   deps = [
     ":tabs_api_proxy",
+    "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js",
     "//ui/webui/resources/js:custom_element",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -126,6 +141,7 @@ js_library("alert_indicators") {
   deps = [
     ":alert_indicator",
     ":tabs_api_proxy",
+    "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js",
     "//ui/webui/resources/js:custom_element",
   ]
 }

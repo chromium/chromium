@@ -5,6 +5,7 @@
 module tab_strip.mojom;
 
 import "url/mojom/url.mojom";
+import "chrome/browser/ui/webui/tabs/tabs.mojom";
 
 // Must be kept in sync with TabNetworkState from
 // chrome/browser/ui/tabs/tab_network_state.h
@@ -15,29 +16,13 @@ enum TabNetworkState {
   kError
 };
 
-// Must be kept in sync with TabAlertState from
-// chrome/browser/ui/tabs/tab_utils.h
-enum TabAlertState {
-  kAudioMuting,
-  kAudioPlaying,
-  kBluetoothConnected,
-  kDesktopCapturing,
-  kHidConnected,
-  kMediaRecording,
-  kPipPlaying,
-  kSerialConnected,
-  kTabCapturing,
-  kUsbConnected,
-  kVrPresentingInHeadset
-};
-
 // Information of an open tab.
 struct Tab {
   // Whether the tab is active.
   bool active;
 
   // The alert states of the tab.
-  array<TabAlertState> alert_states;
+  array<tabs.mojom.TabAlertState> alert_states;
 
   // Whether the tab is blocked.
   bool blocked;

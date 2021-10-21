@@ -4,7 +4,7 @@
 
 import {AlertIndicatorElement} from 'chrome://tab-strip.top-chrome/alert_indicator.js';
 import {AlertIndicatorsElement} from 'chrome://tab-strip.top-chrome/alert_indicators.js';
-import {TabAlertState} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
+import {TabAlertState} from 'chrome://tab-strip.top-chrome/tabs.mojom-webui.js';
 
 import {assertEquals} from '../chai_assert.js';
 

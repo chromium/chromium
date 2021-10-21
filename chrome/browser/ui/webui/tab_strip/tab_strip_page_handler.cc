@@ -514,7 +514,6 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
        chrome::GetTabAlertStatesForContents(contents)) {
     tab_data->alert_states.push_back(alert_state);
   }
-
   return tab_data;
 }
 
