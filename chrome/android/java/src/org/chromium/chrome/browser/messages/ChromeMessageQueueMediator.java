@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -49,6 +51,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     private ActivityTabProvider mActivityTabProvider;
     @Nullable
     private ModalDialogManager mModalDialogManager;
+    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final CallbackController mCallbackController = new CallbackController();
     private int mUrlFocusToken = TokenHolder.INVALID_TOKEN;
     private Handler mQueueHandler;
@@ -93,6 +96,26 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                 }
             };
 
+    private PauseResumeWithNativeObserver mPauseResumeWithNativeObserver =
+            new PauseResumeWithNativeObserver() {
+                private int mToken = TokenHolder.INVALID_TOKEN;
+
+                @Override
+                public void onPauseWithNative() {
+                    if (mToken == TokenHolder.INVALID_TOKEN) {
+                        mToken = suspendQueue();
+                    }
+                }
+
+                @Override
+                public void onResumeWithNative() {
+                    if (mToken != TokenHolder.INVALID_TOKEN) {
+                        resumeQueue(mToken);
+                        mToken = TokenHolder.INVALID_TOKEN;
+                    }
+                }
+            };
+
     /**
      * @param browserControlsManager The browser controls manager able to toggle the visibility of
      *                               browser controls.
@@ -100,6 +123,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
      * @param activityTabProvider The {@link ActivityTabProvider} to get current tab of activity.
      * @param layoutStateProviderOneShotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
+     * @param activityLifecycleDispatcher The dispatcher of activity life cycles.
      * @param messageDispatcher The {@link ManagedMessageDispatcher} able to suspend/resume queue.
      */
     public ChromeMessageQueueMediator(BrowserControlsManager browserControlsManager,
@@ -107,6 +131,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
             ActivityTabProvider activityTabProvider,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderOneShotSupplier,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ManagedMessageDispatcher messageDispatcher) {
         mBrowserControlsManager = browserControlsManager;
         mContainerCoordinator = messageContainerCoordinator;
@@ -117,10 +142,14 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         layoutStateProviderOneShotSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
         modalDialogManagerSupplier.addObserver(this::setModalDialogManager);
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        activityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
         mQueueHandler = new Handler();
     }
 
     public void destroy() {
+        mActivityLifecycleDispatcher.unregister(mPauseResumeWithNativeObserver);
+        mActivityLifecycleDispatcher = null;
         mCallbackController.destroy();
         mBrowserControlsManager.removeObserver(mBrowserControlsObserver);
         setLayoutStateProvider(null);
