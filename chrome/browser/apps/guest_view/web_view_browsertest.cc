@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -116,6 +117,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "pdf/pdf_features.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/features.h"
@@ -3871,8 +3873,16 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestFocusWhileFocused) {
   TestHelper("testFocusWhileFocused", "web_view/shim", NO_TEST_SERVER);
 }
 
-// TODO(crbug.com/776539): Disabled due to being flaky.
-IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_NestedGuestContainerBounds) {
+class WebViewTestWithUnseasonedOverride
+    : public base::test::WithFeatureOverride,
+      public WebViewTest {
+ public:
+  WebViewTestWithUnseasonedOverride()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
+};
+
+IN_PROC_BROWSER_TEST_P(WebViewTestWithUnseasonedOverride,
+                       NestedGuestContainerBounds) {
   TestHelper("testPDFInWebview", "web_view/shim", NO_TEST_SERVER);
 
   std::vector<content::WebContents*> guest_web_contents_list;
@@ -3895,7 +3905,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_NestedGuestContainerBounds) {
 
 // Test that context menu Back/Forward items in a MimeHandlerViewGuest affect
 // the embedder WebContents. See crbug.com/587355.
-IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenuNavigationInMimeHandlerView) {
+IN_PROC_BROWSER_TEST_P(WebViewTestWithUnseasonedOverride,
+                       ContextMenuNavigationInMimeHandlerView) {
   TestHelper("testNavigateToPDFInWebview", "web_view/shim", NO_TEST_SERVER);
 
   std::vector<content::WebContents*> guest_web_contents_list;
@@ -3927,9 +3938,12 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenuNavigationInMimeHandlerView) {
             web_view_contents->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestDialogInPdf) {
+IN_PROC_BROWSER_TEST_P(WebViewTestWithUnseasonedOverride,
+                       Shim_TestDialogInPdf) {
   TestHelper("testDialogInPdf", "web_view/shim", NO_TEST_SERVER);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebViewTestWithUnseasonedOverride);
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestMailtoLink) {
   TestHelper("testMailtoLink", "web_view/shim", NEEDS_TEST_SERVER);

@@ -352,6 +352,7 @@ class CONTENT_EXPORT NavigationRequest
   network::mojom::WebSandboxFlags SandboxFlagsToCommit() override;
   bool IsWaitingToCommit() override;
   bool WasEarlyHintsPreloadLinkHeaderReceived() override;
+  bool IsPdf() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
 
