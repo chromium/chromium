@@ -853,7 +853,7 @@ try_.chromium_chromiumos_builder(
     name = "linux-chromeos-rel-compilator",
     branch_selector = branches.CROS_LTS_MILESTONE,
     builderless = not settings.is_main,
-    cores = 16,
+    cores = 32,
     executable = "recipe:chromium/compilator",
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
