@@ -128,11 +128,6 @@ const base::Feature kBackgroundModeAllowRestart{
 const base::Feature kBorealis{"Borealis", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_CHROMEOS)
-const base::Feature kBrowserAppInstanceTracking{
-    "EnableBrowserAppsTracker", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_CHROMEOS)
-
 // Enables change picture video mode.
 const base::Feature kChangePictureVideoMode{"ChangePictureVideoMode",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1181,15 +1176,5 @@ bool IsParentAccessCodeForOnlineLoginEnabled() {
   return base::FeatureList::IsEnabled(kParentAccessCodeForOnlineLogin);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if defined(OS_CHROMEOS)
-bool IsBrowserAppInstanceTrackingEnabled() {
-  // kWebAppsCrosapi forces browser app instance tracking to be on because it's
-  // required in order for the shelf to function correctly when Lacros is
-  // enabled.
-  return base::FeatureList::IsEnabled(kBrowserAppInstanceTracking) ||
-         base::FeatureList::IsEnabled(kWebAppsCrosapi);
-}
-#endif  // defined(OS_CHROMEOS)
 
 }  // namespace features

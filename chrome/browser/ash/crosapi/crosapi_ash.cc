@@ -223,7 +223,7 @@ void CrosapiAsh::BindAppServiceProxy(
 
 void CrosapiAsh::BindBrowserAppInstanceRegistry(
     mojo::PendingReceiver<mojom::BrowserAppInstanceRegistry> receiver) {
-  if (!features::IsBrowserAppInstanceTrackingEnabled()) {
+  if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
     return;
   }
   Profile* profile = ProfileManager::GetPrimaryUserProfile();

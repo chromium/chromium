@@ -748,7 +748,7 @@ void WebAppPublisherHelper::SetPermission(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void WebAppPublisherHelper::StopApp(const std::string& app_id) {
-  if (!features::IsBrowserAppInstanceTrackingEnabled()) {
+  if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
     return;
   }
 

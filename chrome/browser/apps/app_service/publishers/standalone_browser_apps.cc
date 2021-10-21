@@ -131,7 +131,7 @@ void StandaloneBrowserApps::GetMenuModel(const std::string& app_id,
 
 void StandaloneBrowserApps::StopApp(const std::string& app_id) {
   DCHECK_EQ(extension_misc::kLacrosAppId, app_id);
-  if (!features::IsBrowserAppInstanceTrackingEnabled()) {
+  if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
     return;
   }
   DCHECK(browser_app_instance_registry_);

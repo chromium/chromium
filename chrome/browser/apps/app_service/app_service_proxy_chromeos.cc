@@ -50,7 +50,7 @@ bool g_omit_plugin_vm_apps_for_testing_ = false;
 
 AppServiceProxyChromeOs::AppServiceProxyChromeOs(Profile* profile)
     : AppServiceProxyBase(profile) {
-  if (features::IsBrowserAppInstanceTrackingEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
     browser_app_instance_tracker_ =
         std::make_unique<apps::BrowserAppInstanceTracker>(profile_,
                                                           app_registry_cache_);
