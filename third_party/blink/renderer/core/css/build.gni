@@ -13,6 +13,8 @@ blink_core_sources_css = [
   "basic_shape_functions.h",
   "binary_data_font_face_source.cc",
   "binary_data_font_face_source.h",
+  "box_shadow_paint_image_generator.cc",
+  "box_shadow_paint_image_generator.h",
   "cascade_layer.cc",
   "cascade_layer.h",
   "clip_path_paint_image_generator.cc",
