@@ -5,6 +5,7 @@
 #include "base/files/file_path_watcher.h"
 
 #include <errno.h>
+#include <poll.h>
 #include <stddef.h>
 #include <string.h>
 #include <sys/inotify.h>
@@ -13,6 +14,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <array>
 #include <fstream>
 #include <map>
 #include <memory>
@@ -273,20 +275,13 @@ LazyInstance<InotifyReader>::Leaky g_inotify_reader = LAZY_INSTANCE_INITIALIZER;
 void InotifyReaderThreadDelegate::ThreadMain() {
   PlatformThread::SetName("inotify_reader");
 
-  // Make sure the file descriptors are good for use with select().
-  CHECK_LE(0, inotify_fd_);
-  CHECK_GT(FD_SETSIZE, inotify_fd_);
+  std::array<pollfd, 1> fdarray{{{inotify_fd_, POLLIN, 0}}};
 
   while (true) {
-    fd_set rfds;
-    FD_ZERO(&rfds);
-    FD_SET(inotify_fd_, &rfds);
-
     // Wait until some inotify events are available.
-    int select_result =
-        HANDLE_EINTR(select(inotify_fd_ + 1, &rfds, nullptr, nullptr, nullptr));
-    if (select_result < 0) {
-      DPLOG(WARNING) << "select failed";
+    int poll_result = HANDLE_EINTR(poll(fdarray.data(), fdarray.size(), -1));
+    if (poll_result < 0) {
+      DPLOG(WARNING) << "poll failed";
       return;
     }
 
