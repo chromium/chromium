@@ -112,6 +112,14 @@ class CONTENT_EXPORT FindRequestManager {
 
   gfx::Rect GetSelectionRectForTesting() { return selection_rect_; }
 
+  using CreateFindInPageClientFunction = std::unique_ptr<FindInPageClient> (*)(
+      FindRequestManager* find_request_manager,
+      RenderFrameHostImpl* rfh);
+  void SetCreateFindInPageClientFunctionForTesting(
+      CreateFindInPageClientFunction create_func) {
+    create_find_in_page_client_for_testing_ = create_func;
+  }
+
  private:
   // An invalid ID. This value is invalid for any render process ID, render
   // frame ID, find request ID, or find match rects version number.
@@ -196,6 +204,15 @@ class CONTENT_EXPORT FindRequestManager {
   // expected for a previous find request, then the outgoing find reply issued
   // from this function will not be marked final.
   void FinalUpdateReceived(int request_id, RenderFrameHost* rfh);
+
+  std::unique_ptr<FindInPageClient> CreateFindInPageClient(
+      RenderFrameHostImpl* rfh);
+
+  using FrameIterationCallback =
+      base::RepeatingCallback<void(RenderFrameHostImpl*)>;
+  // Traverses all RenderFrameHosts added for find-in-page and invokes the
+  // callback if the each RenderFrameHost is alive and active.
+  void ForEachAddedFindInPageRenderFrameHost(FrameIterationCallback callback);
 
 #if defined(OS_ANDROID)
   // Called when a nearest find result reply is no longer pending for a frame.
@@ -344,6 +361,9 @@ class CONTENT_EXPORT FindRequestManager {
   // find-in-page delay should be.
   base::TimeTicks last_time_typed_;
   std::u16string last_searched_text_;
+
+  CreateFindInPageClientFunction create_find_in_page_client_for_testing_ =
+      nullptr;
 };
 
 }  // namespace content

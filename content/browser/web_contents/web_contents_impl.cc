@@ -1624,7 +1624,7 @@ void WebContentsImpl::NotifyViewportFitChanged(
 }
 
 FindRequestManager* WebContentsImpl::GetFindRequestManagerForTesting() {
-  return GetFindRequestManager();
+  return GetOrCreateFindRequestManager();
 }
 
 void WebContentsImpl::UpdateZoom() {
