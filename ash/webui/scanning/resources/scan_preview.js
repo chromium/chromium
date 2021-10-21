@@ -347,10 +347,13 @@ Polymer({
   },
 
   /**
-   * Calculates the current page in view. Returns the page index of the highest
-   * page in the viewport unless that page is scrolled halfway outside the
-   * viewport, then it'll return the following page number. Assumes each scanned
-   * image is the same height.
+   * Calculates the index of the current page in view based on the scroll
+   * position. This algorithm allows for every scanned image to be focusable
+   * via scrolling. It starts by waiting until the previous image is scrolled
+   * halfway outside the viewport before the page index changes, but then
+   * changes behavior once the end of the scroll area is reached and no more
+   * images can be scrolled up. In that case, the remaining scroll area is
+   * divided evenly between the final images in the viewport.
    * @param {!HTMLCollection} scannedImages
    * @return {number}
    * @private
@@ -358,17 +361,58 @@ Polymer({
   getCurrentPageInView_(scannedImages) {
     assert(this.isMultiPageScan);
 
-    const imageHeight = scannedImages[0].height;
-    const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight * .5);
-
-    // This is a special case for the first page since there is no margin or
-    // previous page above it.
-    if (scrollTop < 0) {
+    if (scannedImages.length === 1) {
       return 0;
     }
 
-    return 1 +
-        Math.floor(scrollTop / (imageHeight + SCANNED_IMG_MARGIN_BOTTOM_PX));
+    // Assumes the scanned images share the same dimensions.
+    const imageHeight = scannedImages[0].getBoundingClientRect().height +
+        SCANNED_IMG_MARGIN_BOTTOM_PX;
+
+    // The first step is to calculate the number of images that will be visible
+    // in the viewport when scrolled to the bottom. That is how to calculate the
+    // "crossover" point where the algorithm needs to change.
+    const numImagesVisibleAtEnd =
+        Math.ceil(this.$$('#previewDiv').offsetHeight / imageHeight);
+    const numImagesBeforeCrossover =
+        scannedImages.length - numImagesVisibleAtEnd;
+
+    // Calculate the point where the last images in the scroll area are visible
+    // and the scrolling algorithm needs to change.
+    const crossoverBreakpoint = numImagesBeforeCrossover == 0 ?
+        Number.MIN_VALUE :
+        scannedImages[numImagesBeforeCrossover].offsetTop - (imageHeight / 2);
+
+    // Before the "crossover", update the page index based on when the previous
+    // image is scrolled halfway outside the viewport.
+    if (this.$$('#previewDiv').scrollTop < crossoverBreakpoint) {
+      // Subtract half the image height so |scrollTop| = 0 when the first page
+      // is scrolled halfway outside the viewport. That way each page index will
+      // be the current scroll divided by the image height.
+      const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight / 2) -
+          /*imageFocusBorder=*/ 2;
+      if (scrollTop < 0) {
+        return 0;
+      }
+
+      return 1 + Math.floor(scrollTop / imageHeight);
+    }
+
+    // After the "crossover", the remaining amount of scroll left in the
+    // scrollbar is divided evenly to the remaining images. This allows every
+    // image to be scrolled to.
+    const maxScrollTop = this.$$('#previewDiv').scrollHeight -
+        this.$$('#previewDiv').offsetHeight;
+    const scrollRemainingAfterCrossover =
+        Math.max(maxScrollTop - crossoverBreakpoint, 0);
+    const imageScrollProportion =
+        scrollRemainingAfterCrossover / numImagesVisibleAtEnd;
+
+    // Calculate the new page index.
+    const scrollTop = this.$$('#previewDiv').scrollTop - crossoverBreakpoint;
+    const index = Math.floor(scrollTop / imageScrollProportion);
+
+    return Math.min(numImagesBeforeCrossover + index, scannedImages.length - 1);
   },
 
   /**
