@@ -241,6 +241,7 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
     chromeos::PinSetupScreenView::kScreenId,
     chromeos::MarketingOptInScreenView::kScreenId,
     chromeos::MultiDeviceSetupScreenView::kScreenId,
+    chromeos::ConsolidatedConsentScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
@@ -2064,6 +2065,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowLacrosDataMigrationScreen();
   } else if (screen_id == GuestTosScreenView::kScreenId) {
     ShowGuestTosScreen();
+  } else if (screen_id == ConsolidatedConsentScreenView::kScreenId) {
+    ShowConsolidatedConsentScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == ActiveDirectoryPasswordChangeView::kScreenId ||

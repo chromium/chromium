@@ -53,16 +53,13 @@ found in the LICENSE file. -->
     </style>
 
     <!-- LOADING DIALOG -->
-    <oobe-loading-dialog id="consolidatedConsentLoadingDialog"
-        for-step="loading" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]"
-        title-key="consolidatedConsentLoading">
+    <oobe-loading-dialog id="progressDialog" for-step="loading"
+        role="dialog" title-key="consolidatedConsentLoading">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
     </oobe-loading-dialog>
 
     <!-- ERROR DIALOG -->
-    <oobe-adaptive-dialog id="consolidatedConsentErrorDialog"
-        for-step="error" role="dialog"
+    <oobe-adaptive-dialog id="errorDialog" for-step="error" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]">
       <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
       <h1 slot="title">
@@ -81,52 +78,54 @@ found in the LICENSE file. -->
       </div>
     </oobe-adaptive-dialog>
 
-    <!-- EULA Dialog -->
-    <oobe-adaptive-dialog id="consolidatedConsentEulaDialog"
-        for-step="eula" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]">
+    <!-- Google EULA Dialog -->
+    <oobe-adaptive-dialog id="googleEulaDialog" for-step="google-eula"
+        role="dialog"
+        aria-label$="[[i18nDynamic(locale,
+            'consolidatedConsentGoogleEulaTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
-        [[i18nDynamic(locale, 'consolidatedConsentEulaTermsTitle')]]
+        [[i18nDynamic(locale, 'consolidatedConsentGoogleEulaTitle')]]
       </h1>
       <div slot="content" class="flex layout vertical">
-        <webview id="crosEulaWebview" role="document"
+        <webview id="googleEulaWebview" role="document"
             class="oobe-tos-webview tos-webview"
-            on-contentload="onEulaContentLoad_">
+            on-contentload="onGoogleEulaContentLoad_">
         </webview>
       </div>
       <div slot="bottom-buttons">
-        <oobe-text-button id="eulaOkButton"
-            class="focus-on-show" inverse on-click="onTosOkClick_"
+        <oobe-text-button id="googleEulaOkButton"
+            class="focus-on-show" inverse on-click="onTermsStepOkClick_"
             text-key="consolidatedConsentOK"></oobe-text-button>
       </div>
     </oobe-adaptive-dialog>
 
-    <!-- Additional Terms Dialog -->
-    <oobe-adaptive-dialog id="consolidatedConsentAdditionalTermsDialog"
-        for-step="additional" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]">
+    <!-- CrOS EULA Dialog -->
+    <oobe-adaptive-dialog id="crosEulaDialog" for-step="cros-eula"
+        role="dialog"
+        aria-label$="[[i18nDynamic(locale,
+            'consolidatedConsentCrosEulaTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
-        [[i18nDynamic(locale, 'consolidatedConsentAdditionalTermsTitle')]]
+        [[i18nDynamic(locale, 'consolidatedConsentCrosEulaTitle')]]
       </h1>
       <div slot="content" class="flex layout vertical">
-        <webview id="additionalTermsWebview" role="document"
+        <webview id="crosEulaWebview" role="document"
             class="oobe-tos-webview tos-webview"
-            on-contentload="onAdditionalTermsContentLoad_">
+            on-contentload="onCrosEulaContentLoad_">
         </webview>
       </div>
       <div slot="bottom-buttons">
-        <oobe-text-button id="addtionalTermsOkButton"
-            class="focus-on-show" inverse on-click="onTosOkClick_"
+        <oobe-text-button id="crosEulaOkButton"
+            class="focus-on-show" inverse on-click="onTermsStepOkClick_"
             text-key="consolidatedConsentOK"></oobe-text-button>
       </div>
     </oobe-adaptive-dialog>
 
     <!-- ARC Terms Dialog -->
-    <oobe-adaptive-dialog id="consolidatedConsentArcTosDialog"
-        for-step="arc" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]">
+    <oobe-adaptive-dialog id="arcTosDialog" for-step="arc" role="dialog"
+        aria-label$="[[i18nDynamic(locale,
+            'consolidatedConsentArcTermsTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'consolidatedConsentArcTermsTitle')]]
@@ -139,18 +138,18 @@ found in the LICENSE file. -->
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="ArcTosOkButton"
-            class="focus-on-show" inverse on-click="onTosOkClick_"
+            class="focus-on-show" inverse on-click="onTermsStepOkClick_"
             text-key="consolidatedConsentOK"></oobe-text-button>
       </div>
     </oobe-adaptive-dialog>
 
     <!-- Privacy Policy Dialog -->
-    <oobe-adaptive-dialog id="consolidatedConsentPrivacyPolicyDialog"
-        for-step="privacy" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]">
+    <oobe-adaptive-dialog id="privacyPolicyDialog" for-step="privacy"
+        role="dialog" aria-label$="[[i18nDynamic(locale,
+                          'consolidatedConsentPrivacyTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
-        [[i18nDynamic(locale, 'consolidatedConsentPrivacyTermsTitle')]]
+        [[i18nDynamic(locale, 'consolidatedConsentPrivacyTitle')]]
       </h1>
       <div slot="content" class="flex layout vertical">
         <webview id="privacyPolicyWebview" role="document"
@@ -160,14 +159,14 @@ found in the LICENSE file. -->
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="privacyOkButton"
-            class="focus-on-show" inverse on-click="onTosOkClick_"
+            class="focus-on-show" inverse on-click="onTermsStepOkClick_"
             text-key="consolidatedConsentOK"></oobe-text-button>
       </div>
     </oobe-adaptive-dialog>
 
     <!-- LOADED DIALOG -->
-    <oobe-adaptive-dialog id="consolidatedConsentLoadedDialog"
-        for-step="loaded" role="dialog">
+    <oobe-adaptive-dialog id="loadedDialog" for-step="loaded" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         <div hidden="[[isChildAccount_]]">
@@ -199,7 +198,7 @@ found in the LICENSE file. -->
             <span class="oobe-optin-title">
               [[i18nDynamic(locale, 'consolidatedConsentUsageOptInTitle')]]
             </span>
-            [[getUsageText_(locale, isChildAccount_)]]
+            [[getUsageText_(locale, isChildAccount_, isArcEnabled_,  isDemo_)]]
             <a id="usageLearnMore" on-click="onUsageLearnMoreClick_"
                 class="oobe-local-link" is="action-link">
               [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
@@ -228,8 +227,8 @@ found in the LICENSE file. -->
                 [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
             </a>
           </div>
-          <cr-toggle id="backupOptIn" class="oobe-toggle-icon"
-              checked="{{backupOptInChecked}}" disabled="[[backupManaged_]]">
+          <cr-toggle id="backupOptIn" class="toggle-icon"
+              checked="{{backupChecked}}" disabled="[[backupManaged_]]">
           </cr-toggle>
         </div>
 
@@ -251,8 +250,8 @@ found in the LICENSE file. -->
                 [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
             </a>
           </div>
-          <cr-toggle id="locationOptIn" class="oobe-toggle-icon"
-              checked="{{locationOptInChecked}}"
+          <cr-toggle id="locationOptIn" class="toggle-icon"
+              checked="{{locationChecked}}"
               disabled="[[locationManaged_]]">
           </cr-toggle>
         </div>
@@ -282,7 +281,7 @@ found in the LICENSE file. -->
       </div>
     </oobe-adaptive-dialog>
 
-    <oobe-modal-dialog id="arcTosOverlayPrivacyPolicy" class="tos-dialog">
+    <oobe-modal-dialog id="arcTosOverlay" class="tos-dialog">
       <div slot="content" id="arcTosOverlayWebviewContainer">
         <webview id="arcTosOverlayWebview" class="oobe-tos-webview tos-webview"
             on-contentload="onArcTosContentLoad_">
@@ -294,7 +293,8 @@ found in the LICENSE file. -->
       <div slot="content">
         <span
             inner-h-t-m-l=
-                "[[getUsageLearnMoreText_(locale, isChildAccount_)]]">
+                "[[getUsageLearnMoreText_(locale, isChildAccount_,
+                    isArcEnabled_, isDemo_)]]">
         </span>
       </div>
     </oobe-modal-dialog>

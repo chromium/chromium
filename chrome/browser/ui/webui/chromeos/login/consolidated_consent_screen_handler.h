@@ -15,9 +15,9 @@ class ConsolidatedConsentScreen;
 
 namespace chromeos {
 namespace {
-const char kEulaDefaultUrl[] =
+const char kGoogleEulaDefaultUrl[] =
     "https://policies.google.com/terms/embedded?hl=en";
-const char kAdditionalTosDefaultUrl[] =
+const char kCrosEulaDefaultUrl[] =
     "https://www.google.com/intl/en/chrome/terms/";
 }  // namespace
 
@@ -42,8 +42,8 @@ class ConsolidatedConsentScreenView {
     // Default URLs with english locales.
     // ScreenConfig created in ConsolidatedConsentScreen::ShowImpl() should
     // include the localized versions.
-    std::string eula_url = kEulaDefaultUrl;
-    std::string additional_tos_url = kEulaDefaultUrl;
+    std::string google_eula_url = kGoogleEulaDefaultUrl;
+    std::string cros_eula_url = kCrosEulaDefaultUrl;
   };
 
   virtual ~ConsolidatedConsentScreenView() = default;

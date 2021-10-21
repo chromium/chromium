@@ -37,11 +37,11 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
   builder->Add("consolidatedConsentSubheader",
                IDS_CONSOLIDATED_CONSENT_SUBHEADER);
   builder->Add("consolidatedConsentTermsDescriptionTitle",
-               IDS_CONSOLIDATED_CONSENT_TOS_TITLE);
+               IDS_CONSOLIDATED_CONSENT_TERMS_TITLE);
   builder->Add("consolidatedConsentTermsDescription",
-               IDS_CONSOLIDATED_CONSENT_TOS);
+               IDS_CONSOLIDATED_CONSENT_TERMS);
   builder->Add("consolidatedConsentTermsDescriptionArcDisabled",
-               IDS_CONSOLIDATED_CONSENT_TOS_ARC_DISABLED);
+               IDS_CONSOLIDATED_CONSENT_TERMS_ARC_DISABLED);
   builder->Add("consolidatedConsentUsageOptInTitle",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_TITLE);
   builder->Add("consolidatedConsentUsageOptIn",
@@ -83,26 +83,26 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
   builder->Add("consolidatedConsentLocationOptInLearnMoreChild",
                IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE_CHILD);
   builder->Add("consolidatedConsentFooterLearnMore",
-               IDS_CONSOLIDATED_FOOTER_LEARN_MORE);
+               IDS_CONSOLIDATED_CONSENT_FOOTER_LEARN_MORE);
   builder->Add("consolidatedConsentLearnMore",
                IDS_CONSOLIDATED_CONSENT_LEARN_MORE);
   builder->Add("consolidatedConsentAcceptAndContinue",
                IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
-  builder->Add("consolidatedConsentLoading", IDS_CONSOLIDATED_LOADING);
+  builder->Add("consolidatedConsentLoading", IDS_CONSOLIDATED_CONSENT_LOADING);
   builder->Add("consolidatedConsentErrorTitle",
                IDS_OOBE_GENERIC_FATAL_ERROR_TITLE);
   builder->Add("consolidatedConsentErrorMessage",
-               IDS_CONSOLIDATED_TERMS_LOAD_ERROR);
-  builder->Add("consolidatedConsentRetry", IDS_CONSOLIDATED_TERMS_RETRY);
-  builder->Add("consolidatedConsentOK", IDS_CONSOLIDATED_OK);
-  builder->Add("consolidatedConsentEulaTermsTitle",
-               IDS_CONSOLIDATED_EULA_TERMS_TITLE);
-  builder->Add("consolidatedConsentAdditionalTermsTitle",
-               IDS_CONSOLIDATED_ADDITIONAL_TERMS_TITLE);
+               IDS_CONSOLIDATED_CONSENT_TERMS_LOAD_ERROR);
+  builder->Add("consolidatedConsentRetry", IDS_CONSOLIDATED_CONSENT_RETRY);
+  builder->Add("consolidatedConsentOK", IDS_CONSOLIDATED_CONSENT_OK);
+  builder->Add("consolidatedConsentGoogleEulaTitle",
+               IDS_CONSOLIDATED_CONSENT_GOOGLE_EULA_TITLE);
+  builder->Add("consolidatedConsentCrosEulaTitle",
+               IDS_CONSOLIDATED_CONSENT_CROS_EULA_TITLE);
   builder->Add("consolidatedConsentArcTermsTitle",
-               IDS_CONSOLIDATED_ARC_TERMS_TITLE);
-  builder->Add("consolidatedConsentPrivacyTermsTitle",
-               IDS_CONSOLIDATED_PRIVACY_POLICY_TERMS_TITLE);
+               IDS_CONSOLIDATED_CONSENT_ARC_TITLE);
+  builder->Add("consolidatedConsentPrivacyTitle",
+               IDS_CONSOLIDATED_CONSENT_PRIVACY_POLICY_TITLE);
 }
 
 void ConsolidatedConsentScreenHandler::Initialize() {}
@@ -113,8 +113,8 @@ void ConsolidatedConsentScreenHandler::Show(const ScreenConfig& config) {
   data.SetBoolean("isDemo", config.is_demo);
   data.SetBoolean("isChildAccount", config.is_child_account);
   data.SetString("countryCode", config.country_code);
-  data.SetString("eulaUrl", config.eula_url);
-  data.SetString("additionalTosUrl", config.additional_tos_url);
+  data.SetString("googleEulaUrl", config.google_eula_url);
+  data.SetString("crosEulaUrl", config.cros_eula_url);
   ShowScreenWithData(kScreenId, &data);
 }
 
@@ -144,6 +144,7 @@ void ConsolidatedConsentScreenHandler::HandleAccept(
                       enable_location_services, tos_content);
   }
 }
+
 void ConsolidatedConsentScreenHandler::SetUsageMode(bool enabled,
                                                     bool managed) {
   CallJS("login.ConsolidatedConsentScreen.SetUsageMode", enabled, managed);

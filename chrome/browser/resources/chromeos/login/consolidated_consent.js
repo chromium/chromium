@@ -14,8 +14,8 @@ const UIState = {
   LOADING: 'loading',
   LOADED: 'loaded',
   ERROR: 'error',
-  EULA: 'eula',
-  ADDITIONAL: 'additional',
+  GOOGLE_EULA: 'google-eula',
+  CROS_EULA: 'cros-eula',
   ARC: 'arc',
   PRIVACY: 'privacy',
 };
@@ -24,7 +24,7 @@ const UIState = {
  * URL to use when online page is not available.
  * @type {string}
  */
-const EULA_TERMS_URL = 'chrome://terms';
+const GOOGLE_EULA_TERMS_URL = 'chrome://terms';
 const ARC_TERMS_URL = 'chrome://terms/arc/terms';
 const PRIVACY_POLICY_URL = 'chrome://terms/arc/privacy_policy';
 
@@ -85,12 +85,12 @@ Polymer({
       value: true,
     },
 
-    eulaLoading_: {
+    googleEulaLoading_: {
       type: Boolean,
       value: true,
     },
 
-    additionalTermsLoading_: {
+    crosEulaLoading_: {
       type: Boolean,
       value: true,
     },
@@ -135,8 +135,8 @@ Polymer({
   /**
    * Online URLs
    */
-  eulaUrl_: '',
-  additionalTosUrl_: '',
+  googleEulaUrl_: '',
+  crosEulaUrl_: '',
   arcTosUrl_: '',
 
   defaultUIStep() {
@@ -159,12 +159,12 @@ Polymer({
     this.isDemo_ = data['isDemo'];
     this.isChildAccount_ = data['isChildAccount'];
 
-    this.eulaLoading_ = true;
-    this.additionalTermsLoading_ = true;
+    this.googleEulaLoading_ = true;
+    this.crosEulaLoading_ = true;
     this.arcTosLoading_ = true;
 
-    this.eulaUrl_ = data['eulaUrl'];
-    this.additionalTosUrl_ = data['additionalTosUrl'];
+    this.googleEulaUrl_ = data['googleEulaUrl'];
+    this.crosEulaUrl_ = data['crosEulaUrl'];
     this.arcTosUrl_ = this.termsOfServiceHostName_ + '/about/play-terms.html';
 
     const countryCode = data['countryCode'];
@@ -234,36 +234,22 @@ Polymer({
   },
 
   loadWebviews_() {
-    this.loadEulaWebview_(this.eulaUrl_);
-    this.loadAdditionalTermsWebview_(this.additionalTosUrl_);
+    this.loadEulaWebview_(
+        this.$.googleEulaWebview, this.googleEulaUrl_,
+        false /* clear_anchors */);
+    this.loadEulaWebview_(
+        this.$.crosEulaWebview, this.crosEulaUrl_, true /* clear_anchors */);
     this.loadArcTosWebview_(this.arcTosUrl_);
   },
 
-  loadEulaWebview_(online_tos_url) {
-    const webview = this.$.crosEulaWebview;
-
-    var loadFailureCallback = () => {
+  loadEulaWebview_(webview, online_tos_url, clear_anchors) {
+    const loadFailureCallback = () => {
       WebViewHelper.loadUrlContentToWebView(
           webview, EULA_TERMS_URL, WebViewHelper.ContentType.HTML);
     };
 
-    var tosLoader = new WebViewLoader(
-        webview, loadFailureCallback, false /* clear_anchors */,
-        true /* inject_css */);
-    tosLoader.setUrl(online_tos_url);
-  },
-
-  loadAdditionalTermsWebview_(online_tos_url) {
-    const webview = this.$.additionalTermsWebview;
-
-    var loadFailureCallback = () => {
-      WebViewHelper.loadUrlContentToWebView(
-          webview, EULA_TERMS_URL, WebViewHelper.ContentType.HTML);
-    };
-
-    var tosLoader = new WebViewLoader(
-        webview, loadFailureCallback, true /* clear_anchors */,
-        true /* inject_css */);
+    const tosLoader = new WebViewLoader(
+        webview, loadFailureCallback, clear_anchors, true /* inject_css */);
     tosLoader.setUrl(online_tos_url);
   },
 
@@ -334,17 +320,17 @@ Polymer({
     tosLoader.setUrl(online_tos_url);
   },
 
-  onEulaContentLoad_() {
-    this.eulaLoading_ = false;
+  onGoogleEulaContentLoad_() {
+    this.googleEulaLoading_ = false;
     this.maybeSetLoadedStep_();
   },
 
-  onAdditionalTermsContentLoad_() {
-    this.additionalTermsLoading_ = false;
+  onCrosEulaContentLoad_() {
+    this.crosEulaLoading_ = false;
   },
 
   maybeSetLoadedStep_() {
-    if (!this.eulaLoading_ && !this.arcTosLoading_ &&
+    if (!this.googleEulaLoading_ && !this.arcTosLoading_ &&
         this.uiStep == UIState.LOADING) {
       this.setUIStep(UIState.LOADED);
       this.$.acceptButton.focus();
@@ -400,14 +386,14 @@ Polymer({
   updateLocalizedContent() {
     this.$$('#privacyPolicyLink')
         .addEventListener('click', () => this.onPrivacyPolicyLinkClick_());
-    this.$$('#eulaLink')
-        .addEventListener('click', () => this.onEulaLinkClick_());
-    this.$$('#eulaLinkArcDisabled')
-        .addEventListener('click', () => this.onEulaLinkClick_());
-    this.$$('#additionalTermsLink')
-        .addEventListener('click', () => this.onAdditionalTermsLinkClick_());
-    this.$$('#additionalTermsLinkArcDisabled')
-        .addEventListener('click', () => this.onAdditionalTermsLinkClick_());
+    this.$$('#googleEulaLink')
+        .addEventListener('click', () => this.onGoogleEulaLinkClick_());
+    this.$$('#googleEulaLinkArcDisabled')
+        .addEventListener('click', () => this.onGoogleEulaLinkClick_());
+    this.$$('#crosEulaLink')
+        .addEventListener('click', () => this.onCrosEulaLinkClick_());
+    this.$$('#crosEulaLinkArcDisabled')
+        .addEventListener('click', () => this.onCrosEulaLinkClick_());
     this.$$('#arcTosLink')
         .addEventListener('click', () => this.onArcTosLinkClick_());
   },
@@ -428,14 +414,13 @@ Polymer({
     description.innerHTML = this.i18nAdvanced(
         'consolidatedConsentTermsDescription', {attrs: ['id']});
 
-    const eulaLink = description.querySelector('#eulaLink');
-    eulaLink.setAttribute('is', 'action-link');
-    eulaLink.classList.add('oobe-local-link');
+    const googleEulaLink = description.querySelector('#googleEulaLink');
+    googleEulaLink.setAttribute('is', 'action-link');
+    googleEulaLink.classList.add('oobe-local-link');
 
-    const additionalTermsLink =
-        description.querySelector('#additionalTermsLink');
-    additionalTermsLink.setAttribute('is', 'action-link');
-    additionalTermsLink.classList.add('oobe-local-link');
+    const crosEulaLink = description.querySelector('#crosEulaLink');
+    crosEulaLink.setAttribute('is', 'action-link');
+    crosEulaLink.classList.add('oobe-local-link');
 
     const arcTosLink = description.querySelector('#arcTosLink');
     arcTosLink.setAttribute('is', 'action-link');
@@ -449,37 +434,36 @@ Polymer({
     description.innerHTML = this.i18nAdvanced(
         'consolidatedConsentTermsDescriptionArcDisabled', {attrs: ['id']});
 
-    const eulaLink = description.querySelector('#eulaLinkArcDisabled');
-    eulaLink.setAttribute('is', 'action-link');
-    eulaLink.classList.add('oobe-local-link');
+    const googleEulaLink =
+        description.querySelector('#googleEulaLinkArcDisabled');
+    googleEulaLink.setAttribute('is', 'action-link');
+    googleEulaLink.classList.add('oobe-local-link');
 
-    const additionalTermsLink =
-        description.querySelector('#additionalTermsLinkArcDisabled');
-    additionalTermsLink.setAttribute('is', 'action-link');
-    additionalTermsLink.classList.add('oobe-local-link');
+    const crosEulaLink = description.querySelector('#crosEulaLinkArcDisabled');
+    crosEulaLink.setAttribute('is', 'action-link');
+    crosEulaLink.classList.add('oobe-local-link');
 
     return description.innerHTML;
   },
 
-  getUsageText_(locale, isChildAccount) {
-    if (this.isArcOptInsHidden_(this.isArcEnabled_, this.isDemo_)) {
-      return this.i18nDynamic(
-          locale, 'consolidatedConsentUsageOptInArcDisabled');
+  getUsageText_(locale, isChildAccount, isArcEnabled, isDemo) {
+    if (this.isArcOptInsHidden_(isArcEnabled, isDemo)) {
+      return this.i18n('consolidatedConsentUsageOptInArcDisabled');
     }
 
     if (isChildAccount)
-      return this.i18nDynamic(locale, 'consolidatedConsentUsageOptInChild');
-    return this.i18nDynamic(locale, 'consolidatedConsentUsageOptIn');
+      return this.i18n('consolidatedConsentUsageOptInChild');
+    return this.i18n('consolidatedConsentUsageOptIn');
   },
 
-  getUsageLearnMoreText_(locale, isChildAccount) {
-    if (this.isArcOptInsHidden_(this.isArcEnabled_, this.isDemo_)) {
+  getUsageLearnMoreText_(locale, isChildAccount, isArcEnabled, isDemo) {
+    if (this.isArcOptInsHidden_(isArcEnabled, isDemo)) {
       if (isChildAccount) {
-        return this.i18nDynamic(
-            locale, 'consolidatedConsentUsageOptInLearnMoreArcDisabledChild');
+        return this.i18nAdvanced(
+            'consolidatedConsentUsageOptInLearnMoreArcDisabledChild');
       }
-      return this.i18nDynamic(
-          locale, 'consolidatedConsentUsageOptInLearnMoreArcDisabled');
+      return this.i18nAdvanced(
+          'consolidatedConsentUsageOptInLearnMoreArcDisabled');
     }
     if (isChildAccount)
       return this.i18nAdvanced('consolidatedConsentUsageOptInLearnMoreChild');
@@ -540,17 +524,17 @@ Polymer({
    */
   showArcTosOverlay(targetUrl) {
     this.$.arcTosOverlayWebview.src = targetUrl;
-    this.$.arcTosOverlayPrivacyPolicy.showDialog();
+    this.$.arcTosOverlay.showDialog();
   },
 
-  onEulaLinkClick_() {
-    this.setUIStep(UIState.EULA);
-    this.$.eulaOkButton.focus();
+  onGoogleEulaLinkClick_() {
+    this.setUIStep(UIState.GOOGLE_EULA);
+    this.$.googleEulaOkButton.focus();
   },
 
-  onAdditionalTermsLinkClick_() {
-    this.setUIStep(UIState.ADDITIONAL);
-    this.$.addtionalTermsOkButton.focus();
+  onCrosEulaLinkClick_() {
+    this.setUIStep(UIState.CROS_EULA);
+    this.$.crosEulaOkButton.focus();
   },
 
   onArcTosLinkClick_() {
@@ -563,7 +547,7 @@ Polymer({
     this.$.privacyOkButton.focus();
   },
 
-  onTosOkClick_() {
+  onTermsStepOkClick_() {
     this.setUIStep(UIState.LOADED);
     this.$.acceptButton.focus();
   },

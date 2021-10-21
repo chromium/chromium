@@ -3913,14 +3913,14 @@
   <message name="IDS_CONSOLIDATED_CONSENT_SUBHEADER" desc="Subtitle of the consolidated consent screen." translateable="false">
     You can control what data is shared with Google. You can change this anytime in Settings. Data will be used according to Google's <ph name="BEGIN_LINK">&lt;a id="privacyPolicyLink"&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_TOS_TITLE" desc="Title of the main terms and conditions to be accepted in the consolidated consent screen" translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_TITLE" desc="Title of the main terms and conditions to be accepted in the consolidated consent screen" translateable="false">
     Terms and conditions
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_TOS" desc="Main terms to be accepted in the consolidated consent screen." translateable="false">
-    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="eulaLink"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph>, <ph name="BEGIN_LINK2">&lt;a id="additionalTermsLink"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>, and <ph name="BEGIN_LINK3">&lt;a id="arcTosLink"&gt;</ph>Play Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>.
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS" desc="Main terms to be accepted in the consolidated consent screen." translateable="false">
+    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLink"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph>, <ph name="BEGIN_LINK2">&lt;a id="crosEulaLink"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>, and <ph name="BEGIN_LINK3">&lt;a id="arcTosLink"&gt;</ph>Play Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_TOS_ARC_DISABLED" desc="Main terms to be accepted in the consolidated consent screen when arc is disabled." translateable="false">
-    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="eulaLinkArcDisabled"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a id="additionalTermsLinkArcDisabled"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_ARC_DISABLED" desc="Main terms to be accepted in the consolidated consent screen when arc is disabled." translateable="false">
+    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLinkArcDisabled"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a id="crosEulaLinkArcDisabled"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for metrics for accounts." translateable="false">
     Send usage and diagnostic data.
@@ -3994,7 +3994,7 @@
   <message name="IDS_CONSOLIDATED_CONSENT_FOOTER_CHILD" desc="Message in the footer of the consolidated consent screen for a child account." translateable="false">
     By continuing, you agree that this device may also automatically download and install updates and apps from Google, your child’s carrier, and this device's manufacturer, possibly using cellular data. Some of these apps may offer in-app purchases.
   </message>
-  <message name="IDS_CONSOLIDATED_FOOTER_LEARN_MORE" desc="Message shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more in the footer." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_FOOTER_LEARN_MORE" desc="Message shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more in the footer." translateable="false">
     To remove apps, go to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_LEARN_MORE" desc="Learn more link text in the consolidated consent screen." translateable="false">
@@ -4003,28 +4003,28 @@
   <message name="IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE" desc="Accept and continue button in the consolidated consent screen." translateable="false">
     Accept and continue
   </message>
-  <message name="IDS_CONSOLIDATED_OK" desc="Button for acknowledging in a dialog for terms of service." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_OK" desc="Button for acknowledging in a dialog for terms of service." translateable="false">
     OK
   </message>
-  <message name="IDS_CONSOLIDATED_LOADING" desc="Message shown while the terms of service are being downloaded." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_LOADING" desc="Message shown while the terms of service are being downloaded." translateable="false">
     Loading...
   </message>
-  <message name="IDS_CONSOLIDATED_TERMS_LOAD_ERROR" desc="Load error message of the consolidated consent dialog." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_LOAD_ERROR" desc="Load error message of the consolidated consent dialog." translateable="false">
     Terms of Service cannot be loaded. Please check your network connection and retry.
   </message>
-  <message name="IDS_CONSOLIDATED_TERMS_RETRY" desc="Retry button of the consolidated consent dialog that reloads terms of service." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_RETRY" desc="Retry button of the consolidated consent dialog that reloads terms of service." translateable="false">
     Retry
   </message>
-  <message name="IDS_CONSOLIDATED_EULA_TERMS_TITLE" desc="Title of Google terms of service screen" translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_GOOGLE_EULA_TITLE" desc="Title of Google terms of service screen" translateable="false">
     Google terms of service
   </message>
-  <message name="IDS_CONSOLIDATED_ADDITIONAL_TERMS_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen" translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_CROS_EULA_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen" translateable="false">
     Google Chrome and Chrome OS Additional Terms
   </message>
-  <message name="IDS_CONSOLIDATED_ARC_TERMS_TITLE" desc="Title of Goolge Privacy Policy in opt-in screen" translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_ARC_TITLE" desc="Title of Goolge Play terms of service in opt-in screen" translateable="false">
     Google Play terms of service
   </message>
-  <message name="IDS_CONSOLIDATED_PRIVACY_POLICY_TERMS_TITLE" desc="Text of the Link to Goolge Privacy Policy in opt-in screen" translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_PRIVACY_POLICY_TITLE" desc="Text of the Link to Goolge Privacy Policy in opt-in screen" translateable="false">
     Google privacy policy
   </message>
 
