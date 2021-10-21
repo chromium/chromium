@@ -674,6 +674,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
         container_builder_->AddChild(result->PhysicalFragment(),
                                      result->OutOfFlowPositionedOffset(),
                                      &candidate.inline_container);
+        container_builder_->SetHasOutOfFlowFragmentChild(true);
         if (container_builder_->IsInitialColumnBalancingPass()) {
           container_builder_->PropagateTallestUnbreakableBlockSize(
               result->TallestUnbreakableBlockSize());

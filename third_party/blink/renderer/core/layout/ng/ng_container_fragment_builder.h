@@ -169,6 +169,14 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       NGMulticolWithPendingOOFs<LogicalOffset> multicol_info =
           NGMulticolWithPendingOOFs<LogicalOffset>());
 
+  bool HasOutOfFlowFragmentChild() const {
+    return has_out_of_flow_fragment_child_;
+  }
+
+  void SetHasOutOfFlowFragmentChild(bool has_out_of_flow_fragment_child) {
+    has_out_of_flow_fragment_child_ = has_out_of_flow_fragment_child;
+  }
+
   void SwapOutOfFlowPositionedCandidates(
       Vector<NGLogicalOutOfFlowPositionedNode>* candidates);
 
@@ -403,6 +411,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   bool is_empty_spanner_parent_ = false;
 
   bool has_oof_candidate_that_needs_block_offset_adjustment_ = false;
+  bool has_out_of_flow_fragment_child_ = false;
 
 #if DCHECK_IS_ON()
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;

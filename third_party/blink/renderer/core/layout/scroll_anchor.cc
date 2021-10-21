@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_table.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -28,6 +30,15 @@
 #include "third_party/blink/renderer/platform/wtf/bloom_filter.h"
 
 namespace blink {
+
+namespace {
+
+bool IsNGBlockFragmentationRoot(const LayoutNGBlockFlow* block_flow) {
+  return block_flow && block_flow->IsFragmentationContextRoot() &&
+         block_flow->IsLayoutNGObject();
+}
+
+}  // anonymous namespace
 
 // With 100 unique strings, a 2^12 slot table has a false positive rate of ~2%.
 using ClassnameFilter = BloomFilter<12>;
@@ -362,7 +373,7 @@ bool ScrollAnchor::FindAnchorInPriorityCandidates() {
     candidate = PriorityCandidateFromNode(focused_element);
     if (candidate) {
       result = ExaminePriorityCandidate(candidate);
-      if (result.viable) {
+      if (IsViable(result.status)) {
         anchor_object_ = candidate;
         corner_ = result.corner;
         return true;
@@ -374,7 +385,7 @@ bool ScrollAnchor::FindAnchorInPriorityCandidates() {
   candidate =
       PriorityCandidateFromNode(document.GetFindInPageActiveMatchNode());
   result = ExaminePriorityCandidate(candidate);
-  if (result.viable) {
+  if (IsViable(result.status)) {
     anchor_object_ = candidate;
     corner_ = result.corner;
     return true;
@@ -412,44 +423,116 @@ ScrollAnchor::ExamineResult ScrollAnchor::ExaminePriorityCandidate(
   return ancestor ? Examine(candidate) : ExamineResult(kSkip);
 }
 
-bool ScrollAnchor::FindAnchorRecursive(LayoutObject* candidate) {
+ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorRecursive(
+    LayoutObject* candidate) {
   ExamineResult result = Examine(candidate);
-  if (result.viable) {
+  WalkStatus status = result.status;
+  if (IsViable(status)) {
     anchor_object_ = candidate;
     corner_ = result.corner;
   }
 
-  if (result.status == kReturn)
-    return true;
+  if (status == kReturn || status == kSkip)
+    return status;
 
-  if (result.status == kSkip)
-    return false;
+  bool is_block_fragmentation_context_root =
+      IsNGBlockFragmentationRoot(DynamicTo<LayoutNGBlockFlow>(candidate));
 
   for (LayoutObject* child = candidate->SlowFirstChild(); child;
        child = child->NextSibling()) {
-    if (FindAnchorRecursive(child))
-      return true;
+    WalkStatus child_status = FindAnchorRecursive(child);
+    if (child_status == kReturn)
+      return child_status;
+    if (child_status == kConstrain) {
+      // We have found an anchor, but it's not fully contained within the
+      // viewport. If this is an NG block fragmentation context root, break now
+      // to search for OOFs inside the fragmentainers, which may provide a
+      // better anchor.
+      if (is_block_fragmentation_context_root) {
+        status = child_status;
+        break;
+      }
+      return child_status;
+    }
   }
 
   // Make a separate pass to catch positioned descendants with a static DOM
   // parent that we skipped over (crbug.com/692701).
-  if (auto* layouy_block = DynamicTo<LayoutBlock>(candidate)) {
+  WalkStatus oof_status = FindAnchorInOOFs(candidate);
+  if (IsViable(oof_status))
+    return oof_status;
+
+  return status;
+}
+
+ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
+    LayoutObject* candidate) {
+  auto* layout_block = DynamicTo<LayoutBlock>(candidate);
+  if (!layout_block)
+    return kSkip;
+
+  if (!layout_block->IsLayoutNGMixin()) {
     if (TrackedLayoutBoxLinkedHashSet* positioned_descendants =
-            layouy_block->PositionedObjects()) {
+            layout_block->PositionedObjects()) {
       for (LayoutBox* descendant : *positioned_descendants) {
         if (descendant->Parent() != candidate) {
-          if (FindAnchorRecursive(descendant))
-            return true;
+          WalkStatus status = FindAnchorRecursive(descendant);
+          if (IsViable(status))
+            return status;
+        }
+      }
+    }
+    return kSkip;
+  }
+
+  // Look for OOF child fragments. If we're at a fragmentation context root,
+  // this means that we need to look for them inside the fragmentainers (which
+  // are children of fragmentation context root fragments), because then an OOF
+  // is normally a direct child of a fragmentainer, not its actual containing
+  // block.
+  //
+  // Be aware that the scroll anchor machinery often operates on a dirty layout
+  // tree, which means that the LayoutObject that once generated the fragment
+  // may have been deleted (but the fragment may still be around). In such cases
+  // the LayoutObject associated with the fragment will be set to nullptr, so we
+  // need to check for that.
+  bool is_block_fragmentation_context_root =
+      IsNGBlockFragmentationRoot(DynamicTo<LayoutNGBlockFlow>(layout_block));
+  for (const NGPhysicalBoxFragment& fragment :
+       layout_block->PhysicalFragments()) {
+    if (!fragment.HasOutOfFlowFragmentChild() &&
+        !is_block_fragmentation_context_root)
+      continue;
+
+    for (const NGLink& child : fragment.Children()) {
+      if (child->IsOutOfFlowPositioned()) {
+        LayoutObject* layout_object = child->GetMutableLayoutObject();
+        if (layout_object && layout_object->Parent() != candidate) {
+          WalkStatus status = FindAnchorRecursive(layout_object);
+          if (IsViable(status))
+            return status;
+        }
+        continue;
+      }
+      if (!is_block_fragmentation_context_root ||
+          !child->IsFragmentainerBox() || !child->HasOutOfFlowFragmentChild())
+        continue;
+
+      // Look for OOFs inside a fragmentainer.
+      for (const NGLink& grandchild : child->Children()) {
+        if (!grandchild->IsOutOfFlowPositioned())
+          continue;
+        LayoutObject* layout_object = grandchild->GetMutableLayoutObject();
+        if (layout_object) {
+          WalkStatus status = FindAnchorRecursive(layout_object);
+          if (IsViable(status))
+            return status;
         }
       }
     }
   }
 
-  if (result.status == kConstrain)
-    return true;
-
-  DCHECK_EQ(result.status, kContinue);
-  return false;
+  return kSkip;
 }
 
 bool ScrollAnchor::ComputeScrollAnchorDisablingStyleChanged() {

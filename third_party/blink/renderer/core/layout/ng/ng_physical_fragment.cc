@@ -355,6 +355,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
       has_fragmented_out_of_flow_data_(
           !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
           !builder->multicols_with_pending_oofs_.IsEmpty()),
+      has_out_of_flow_fragment_child_(builder->HasOutOfFlowFragmentChild()),
       break_token_(std::move(builder->break_token_)),
       oof_data_(builder->oof_positioned_descendants_.IsEmpty() &&
                         !has_fragmented_out_of_flow_data_
@@ -431,6 +432,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
       has_baseline_(other.has_baseline_),
       has_last_baseline_(other.has_last_baseline_),
       has_fragmented_out_of_flow_data_(other.has_fragmented_out_of_flow_data_),
+      has_out_of_flow_fragment_child_(other.has_out_of_flow_fragment_child_),
       base_direction_(other.base_direction_),
       break_token_(other.break_token_),
       oof_data_(other.oof_data_ ? other.CloneOutOfFlowData() : nullptr) {

@@ -28,6 +28,7 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
   container_builder_.SetFragmentBlockSize(
       params.space.FragmentainerBlockSize());
   container_builder_.SetDisableOOFDescendantsPropagation();
+  container_builder_.SetHasOutOfFlowFragmentChild(true);
   if (incoming_break_token_)
     break_token_iterator_ = incoming_break_token_->ChildBreakTokens().begin();
   old_fragment_break_token_ =
