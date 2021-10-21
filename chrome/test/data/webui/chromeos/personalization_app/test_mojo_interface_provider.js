@@ -158,14 +158,14 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   }
 
   /** @override */
-  selectWallpaper(assetId) {
-    this.methodCalled('selectWallpaper', assetId);
+  selectWallpaper(assetId, previewMode) {
+    this.methodCalled('selectWallpaper', assetId, previewMode);
     return Promise.resolve({success: this.selectWallpaperResponse});
   }
 
   /** @override */
-  selectLocalImage(id) {
-    this.methodCalled('selectLocalImage', id);
+  selectLocalImage(id, previewMode) {
+    this.methodCalled('selectLocalImage', id, previewMode);
     return Promise.resolve({success: this.selectLocalImageResponse});
   }
 

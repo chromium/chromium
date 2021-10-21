@@ -6,8 +6,8 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import 'chrome://personalization/trusted/file_path.mojom-lite.js';
 import 'chrome://personalization/trusted/personalization_app.mojom-lite.js';
-import {fetchLocalData} from 'chrome://personalization/trusted/personalization_controller.js';
-import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
+import {fetchLocalData, initializeBackdropData, selectWallpaper} from 'chrome://personalization/trusted/personalization_controller.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 
@@ -321,4 +321,63 @@ suite('Updating local images', () => {
     assertDeepEquals({}, personalizationStore.data.local.data);
     assertDeepEquals({}, personalizationStore.data.loading.local.data);
   });
+});
+
+suite('full screen mode', () => {
+  const fullscreenPreviewFeature = 'fullScreenPreviewEnabled';
+
+  let wallpaperProvider;
+  let personalizationStore;
+
+  setup(() => {
+    wallpaperProvider = new TestWallpaperProvider();
+    personalizationStore = new TestPersonalizationStore({});
+    personalizationStore.setReducersEnabled(true);
+    loadTimeData.data = {[fullscreenPreviewFeature]: true};
+  });
+
+  test(
+      'enters full screen mode when in tablet and preview flag is set',
+      async () => {
+        await initializeBackdropData(wallpaperProvider, personalizationStore);
+
+        assertFalse(personalizationStore.data.fullscreen);
+
+        loadTimeData.overrideValues({[fullscreenPreviewFeature]: false});
+        wallpaperProvider.isInTabletModeResponse = true;
+
+        {
+          const selectWallpaperPromise = selectWallpaper(
+              wallpaperProvider.images[0], wallpaperProvider,
+              personalizationStore);
+          const [assetId, previewMode] =
+              await wallpaperProvider.whenCalled('selectWallpaper');
+          assertFalse(previewMode);
+          assertEquals(wallpaperProvider.images[0].assetId, assetId);
+
+          await selectWallpaperPromise;
+
+          assertFalse(personalizationStore.data.fullscreen);
+        }
+
+        wallpaperProvider.reset();
+
+        {
+          // Now with flag turned on.
+          loadTimeData.overrideValues({[fullscreenPreviewFeature]: true});
+
+          const selectWallpaperPromise = selectWallpaper(
+              wallpaperProvider.images[0], wallpaperProvider,
+              personalizationStore);
+
+          const [assetId, previewMode] =
+              await wallpaperProvider.whenCalled('selectWallpaper');
+          assertTrue(previewMode);
+          assertEquals(wallpaperProvider.images[0].assetId, assetId);
+
+          await selectWallpaperPromise;
+
+          assertTrue(personalizationStore.data.fullscreen);
+        }
+      });
 });

@@ -566,12 +566,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
   getContainerClass_(isLoading, showImage) {
     return this.showPlaceholders_(isLoading, showImage) ? 'loading' : '';
   }
-
-  /** @private */
-  onClickFullscreen_() {
-    assert(!this.getState().fullscreen);
-    this.dispatch(setFullscreenEnabledAction(/*enabled=*/ true));
-  }
 }
 
 customElements.define(WallpaperSelected.is, WallpaperSelected);

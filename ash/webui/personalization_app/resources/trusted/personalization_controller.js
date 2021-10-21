@@ -131,18 +131,20 @@ export async function selectWallpaper(image, provider, store) {
   store.dispatch(action.beginSelectImageAction(image));
   store.dispatch(action.beginLoadSelectedImageAction());
   const {tabletMode} = await provider.isInTabletMode();
-  if (tabletMode) {
+  const shouldPreview =
+      tabletMode && loadTimeData.getBoolean('fullScreenPreviewEnabled');
+  if (shouldPreview) {
     store.dispatch(action.setFullscreenEnabledAction(/*enabled=*/ true))
   }
   store.endBatchUpdate();
   const {success} = await (() => {
-    if (image.assetId) {
+    if (image.hasOwnProperty('assetId')) {
       return provider.selectWallpaper(
-          image.assetId, /*preview_mode=*/ tabletMode);
+          image.assetId, /*preview_mode=*/ shouldPreview);
     } else if (image.path) {
       return provider.selectLocalImage(
           /** @type {!mojoBase.mojom.FilePath} */ (image),
-          /*preview_mode=*/ tabletMode);
+          /*preview_mode=*/ shouldPreview);
     } else {
       console.warn('Image must be a local image or a WallpaperImage');
       return {success: false};

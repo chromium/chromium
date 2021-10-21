@@ -131,23 +131,6 @@
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
   }
-
-  #fullscreen {
-    bottom: 12px;
-    border: none;
-    border-radius: 18px;
-    height: 36px;
-    min-width: 36px;
-    padding: 0;
-    position: absolute;
-    right: 12px;
-    width: 36px;
-  }
-
-  #fullscreen iron-icon {
-    --iron-icon-height: 36px;
-    --iron-icon-width: 36px;
-  }
 </style>
 <header id="container" class$="[[getContainerClass_(isLoading_, showImage_)]]">
   <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
@@ -161,12 +144,6 @@
   <template is="dom-if" if="[[showImage_]]">
     <div id="imageContainer">
       <img src="[[getImageSrc_(image_)]]" aria-hidden="true">
-      <template is="dom-if" if="[[showPreviewButton_]]">
-        <cr-button id="fullscreen" circle-ripple on-click="onClickFullscreen_"
-            aria-label="[[i18n('ariaLabelViewFullScreen')]]">
-          <iron-icon icon="personalization36:fullscreen"></iron-icon>
-        </cr-button>
-      </template>
     </div>
     <h2 id="textContainer" aria-live="polite" aria-label$="[[getAriaLabel_(image_)]]">
       <span id="currentlySet" aria-hidden="true">[[i18n('currentlySet')]]</span>
