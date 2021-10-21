@@ -174,7 +174,6 @@ preprocess_if_expr("preprocess") {
     if (!is_chromeos_lacros) {
       in_files += [
         "default_browser_page/default_browser_browser_proxy.ts",
-        "people_page/import_data_browser_proxy.ts",
         "system_page/system_page_browser_proxy.ts",
       ]
     }
@@ -183,6 +182,7 @@ preprocess_if_expr("preprocess") {
       "languages_page/languages_browser_proxy.ts",
       "languages_page/languages_settings_metrics_proxy.ts",
       "languages_page/languages_types.ts",
+      "people_page/import_data_browser_proxy.ts",
       "people_page/manage_profile_browser_proxy.ts",
     ]
   }
@@ -347,7 +347,6 @@ preprocess_if_expr("preprocess_generated") {
   if (!is_chromeos) {
     in_files += [
       "default_browser_page/default_browser_page.ts",
-      "people_page/import_data_dialog.ts",
       "system_page/system_page.ts",
     ]
   }
@@ -359,6 +358,7 @@ preprocess_if_expr("preprocess_generated") {
       "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",
       "languages_page/languages_subpage.ts",
+      "people_page/import_data_dialog.ts",
       "people_page/manage_profile.ts",
     ]
   }
@@ -731,8 +731,6 @@ ts_library("build_ts") {
       in_files += [
         "default_browser_page/default_browser_browser_proxy.ts",
         "default_browser_page/default_browser_page.ts",
-        "people_page/import_data_browser_proxy.ts",
-        "people_page/import_data_dialog.ts",
         "system_page/system_page_browser_proxy.ts",
         "system_page/system_page.ts",
       ]
@@ -745,6 +743,8 @@ ts_library("build_ts") {
       "languages_page/languages_settings_metrics_proxy.ts",
       "languages_page/languages_subpage.ts",
       "languages_page/languages_types.ts",
+      "people_page/import_data_browser_proxy.ts",
+      "people_page/import_data_dialog.ts",
       "people_page/manage_profile_browser_proxy.ts",
       "people_page/manage_profile.ts",
     ]

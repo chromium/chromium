@@ -3323,7 +3323,7 @@
     Control how your browsing history is used to personalize Search and more
   </message>
 
-  <if expr="not chromeos and not lacros">
+  <if expr="not chromeos">
     <!-- Import Settings Dialog -->
     <message name="IDS_SETTINGS_IMPORT_SETTINGS_TITLE" desc="Dialog title for import dialog.">
       Import bookmarks and settings
