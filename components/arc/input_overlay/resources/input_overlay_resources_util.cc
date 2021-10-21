@@ -8,6 +8,7 @@
 
 #include "components/arc/grit/input_overlay_resources.h"
 #include "components/arc/input_overlay/actions/action_tap_key.h"
+#include "components/arc/input_overlay/actions/dependent_position.h"
 #include "components/arc/input_overlay/actions/position.h"
 
 namespace arc {
@@ -67,6 +68,20 @@ ParseLocation(const base::Value& position) {
       }
     }
   }
+
+  // Parse dependent-position if it exists.
+  pos_list = position.FindListKey(input_overlay::kDependentPosition);
+  if (pos_list) {
+    for (const base::Value& val : pos_list->GetList()) {
+      auto pos = std::make_unique<input_overlay::DependentPosition>();
+      bool succeed = pos->ParseFromJson(val);
+      if (succeed)
+        positions.emplace_back(std::move(pos));
+      else
+        return absl::nullopt;
+    }
+  }
+
   if (positions.empty())
     return absl::nullopt;
   return absl::make_optional(std::move(positions));

@@ -120,6 +120,15 @@ constexpr const char kLocationValidJson[] =
               0.5
             ]
           }
+        ],
+        "dependent_position": [
+          {
+            "anchor_to_target": [
+              0.5,
+              0.5
+            ],
+            "x_on_y": 1.8
+          }
         ]
     })json";
 
@@ -133,7 +142,7 @@ TEST(InputOverlayResourcesUtilTest, TestParseLocation) {
       base::JSONReader::ReadAndReturnValueWithError(kLocationValidJson);
   EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
   auto result = ParseLocation(json_value.value.value());
-  EXPECT_TRUE(result && result->size() == 1);
+  EXPECT_TRUE(result && result->size() == 2);
 
   json_value = base::JSONReader::ReadAndReturnValueWithError(kEmptyJson);
   EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
