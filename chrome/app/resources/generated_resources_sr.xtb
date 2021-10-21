@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">Важи још <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Уклоњено</translation>
 <translation id="1437986450143295708">Детаљно опишите проблем</translation>
+<translation id="1439671507542716852">дугорочна подршка</translation>
 <translation id="144283815522798837">Изабраних ставки: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Подесите активан Kerberos тикет</translation>
 <translation id="1444628761356461360">Овим подешавањем управља власник уређаја, <ph name="OWNER_EMAIL" />.</translation>
@@ -1424,6 +1425,7 @@
 <translation id="2454264884354864965">Камера је искључена</translation>
 <translation id="245650153866130664">Да бисте аутоматски освежили тикет, означите Запамти лозинку. Лозинка ће се чувати само на уређају.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> жели да копира датотеке са <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Тренутно на каналу <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Ажурирајте налог, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Токен за управљање уређајем је неважећи.</translation>
 <translation id="2459703812219683497">Откривен је активациони кôд</translation>
@@ -4990,7 +4992,6 @@
 <translation id="6284632978374966585">Укључите тамну тему</translation>
 <translation id="6285120108426285413">Датотека <ph name="FILE_NAME" /> се обично не преузима и може да буде опасна.</translation>
 <translation id="6285770818046456882">Уређај који дели са вама је отказао пренос</translation>
-<translation id="6286744355355996781">Дугорочна подршка</translation>
 <translation id="6290613030083731160">Нема доступних уређаја који деле у близини. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Верификује се активациони кôд. То може да потраје неколико минута.</translation>
 <translation id="6291741848715722067">Кôд за потврду</translation>

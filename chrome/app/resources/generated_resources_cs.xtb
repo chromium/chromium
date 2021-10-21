@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">Platné ještě <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Odebráno</translation>
 <translation id="1437986450143295708">Podrobně popište problém</translation>
+<translation id="1439671507542716852">dlouhodobá podpora</translation>
 <translation id="144283815522798837">Vybrané položky: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Nastavit aktivní lístek Kerberos</translation>
 <translation id="1444628761356461360">Toto nastavení spravuje vlastník zařízení, <ph name="OWNER_EMAIL" />.</translation>
@@ -1427,6 +1428,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2454264884354864965">Kamera je vypnutá</translation>
 <translation id="245650153866130664">Chcete-li lístek automaticky obnovit, zaškrtněte políčko Zapamatovat heslo. Heslo bude uloženo pouze ve vašem zařízení.</translation>
 <translation id="2457246892030921239">Aplikace <ph name="APP_NAME" /> chce zkopírovat souboru ze svazku <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Aktuální kanál: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Aktualizovat účet, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Token správy zařízení není platný.</translation>
 <translation id="2459703812219683497">Byl zjištěn aktivační kód</translation>
@@ -4987,7 +4989,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6284632978374966585">Zapnout tmavý motiv</translation>
 <translation id="6285120108426285413">Soubor <ph name="FILE_NAME" /> se běžně nestahuje a může být nebezpečný.</translation>
 <translation id="6285770818046456882">Zařízení, které s vámi sdílí obsah, přenos zrušilo</translation>
-<translation id="6286744355355996781">Dlouhodobá podpora</translation>
 <translation id="6290613030083731160">V okolí nejsou dostupná žádná zařízení sdílející obsah. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Ověřování aktivačního kódu. Může to trvat několik minut.</translation>
 <translation id="6291741848715722067">Potvrzovací kód</translation>

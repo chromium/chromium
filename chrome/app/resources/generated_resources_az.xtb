@@ -421,6 +421,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> ərzində etibarlıdır</translation>
 <translation id="1436784010935106834">Silindi</translation>
 <translation id="1437986450143295708">Problemi ətraflı təsvir edin</translation>
+<translation id="1439671507542716852">uzunmüddətli dəstək</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> seçildi</translation>
 <translation id="1442851588227551435">Aktiv Kerberos biletini ayarlayın</translation>
 <translation id="1444628761356461360">Bu ayar cihaz sahibi tərəfindən idarə olunur, <ph name="OWNER_EMAIL" />.</translation>
@@ -1424,6 +1425,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2454264884354864965">Kamera deaktivdir</translation>
 <translation id="245650153866130664">Bileti avtomatik yeniləmək üçün "Parolu yadda saxlayın"ı yoxlayın Parol yalnız Sizin cihazda saxlanılacaq.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> cildindən faylları kopyalamaq istəyir.</translation>
+<translation id="2457842160081795172">Hazırda <ph name="CHANNEL_NAME" /> kanalında</translation>
 <translation id="2458379781610688953">Hesabı yeniləyin, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Cihaz idarəetmə açarı yanlışdır.</translation>
 <translation id="2459703812219683497">Aktivasiya kodu aşkarlanıb</translation>
@@ -4981,7 +4983,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6284632978374966585">Qaranlıq temanı aktiv edin</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> adətən endirilmir və təhlükəli ola bilər.</translation>
 <translation id="6285770818046456882">Sizinlə paylaşım edən cihaz köçürməni ləğv etdi</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Yaxınlıqda paylaşım edən əlçatan cihaz yoxdur. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktivləşdirmə kodu doğrulanır. Bu, bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="6291741848715722067">Təsdiq kodu</translation>

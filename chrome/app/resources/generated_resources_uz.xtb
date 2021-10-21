@@ -423,6 +423,7 @@
 <translation id="1436390408194692385">Muddati: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Olib tashlangan</translation>
 <translation id="1437986450143295708">Muammo haqida batafsil axborot bering</translation>
+<translation id="1439671507542716852">uzoq muddatli dastak</translation>
 <translation id="144283815522798837">Tanlandi: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Faol Kerberos chiptasini belgilash</translation>
 <translation id="1444628761356461360">Bu sozlama qurilma egasi (<ph name="OWNER_EMAIL" />) tomonidan boshqariladi.</translation>
@@ -1427,6 +1428,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2454264884354864965">Kamera yoqilmagan</translation>
 <translation id="245650153866130664">Chiptani avtomatik yangilash uchun “Parol eslab qolinsin” bandini belgilang. Parolingiz faqat qurilmangizga saqlanadi.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" />dan fayl nusxalamoqchi.</translation>
+<translation id="2457842160081795172">Joriy kanal: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Hisobni yangilash, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Qurilmalarni boshqarish tokeni yaroqsiz.</translation>
 <translation id="2459703812219683497">Aktivatsiya kodi aniqlandi</translation>
@@ -4990,7 +4992,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6284632978374966585">Tungi mavzuni yoqish</translation>
 <translation id="6285120108426285413">“<ph name="FILE_NAME" />” faylini yuklab olish tavsiya etilmaydi, chunki bu fayl kompyuteringiz uchun xavfli bo‘lishi mumkin.</translation>
 <translation id="6285770818046456882">Fayl yuborayotgan qurilma uzatmani bekor qildi</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Atrofda hech qanday qurilma topilmadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktivatsiya kodi tekshirilmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="6291741848715722067">Tasdiqlash kodi</translation>

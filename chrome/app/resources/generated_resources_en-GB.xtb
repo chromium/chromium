@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">Valid for <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Removed</translation>
 <translation id="1437986450143295708">Describe the issue in detail</translation>
+<translation id="1439671507542716852">long-term support</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selected</translation>
 <translation id="1442851588227551435">Set active Kerberos ticket</translation>
 <translation id="1444628761356461360">This setting is managed by the device owner, <ph name="OWNER_EMAIL" />.</translation>
@@ -1440,6 +1441,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2454264884354864965">Camera is off</translation>
 <translation id="245650153866130664">To automatically refresh a ticket, tick 'Remember password'. Your password will be stored on your device only.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> wants to copy files from <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Currently on <ph name="CHANNEL_NAME" /> channel</translation>
 <translation id="2458379781610688953">Update account, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Device management token is invalid.</translation>
 <translation id="2459703812219683497">Activation code detected</translation>
@@ -5003,7 +5005,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6284632978374966585">Turn Dark theme on</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> is not commonly downloaded and may be dangerous.</translation>
 <translation id="6285770818046456882">The device sharing with you cancelled the transfer</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">No available devices sharing nearby. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verifying activation code. This may take a few minutes.</translation>
 <translation id="6291741848715722067">Confirmation code</translation>

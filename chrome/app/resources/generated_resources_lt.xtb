@@ -428,6 +428,7 @@
 <translation id="1436390408194692385">Galioja <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Pašalinta</translation>
 <translation id="1437986450143295708">Išsamiai aprašykite problemą</translation>
+<translation id="1439671507542716852">ilgalaikis palaikymas</translation>
 <translation id="144283815522798837">Pasirinkta: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Aktyvaus „Kerberos“ bilieto nustatymas</translation>
 <translation id="1444628761356461360">Šį nustatymą tvarko įrenginio savininkas (<ph name="OWNER_EMAIL" />).</translation>
@@ -1443,6 +1444,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2454264884354864965">Fotoaparatas išjungtas</translation>
 <translation id="245650153866130664">Kad bilietas būtų automatiškai atnaujintas, pažymėkite parinktį „Atsiminti slaptažodį“. Slaptažodis bus išsaugotas tik jūsų įrenginyje.</translation>
 <translation id="2457246892030921239">„<ph name="APP_NAME" />“ nori kopijuoti failus iš „<ph name="VOLUME_NAME" />“.</translation>
+<translation id="2457842160081795172">Šiuo metu kanale „<ph name="CHANNEL_NAME" />“</translation>
 <translation id="2458379781610688953">Atnaujinti paskyrą, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Netinkamas įrenginio tvarkymo prieigos raktas.</translation>
 <translation id="2459703812219683497">Aptiktas aktyvinimo kodas</translation>
@@ -5011,7 +5013,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6284632978374966585">Įjungti tamsiąją temą</translation>
 <translation id="6285120108426285413">„<ph name="FILE_NAME" />“ nėra įprastai atsisiunčiamas ir gali būti pavojingas.</translation>
 <translation id="6285770818046456882">Įrenginys, kuris bendrina su jumis, atšaukė perdavimą</translation>
-<translation id="6286744355355996781">ILP</translation>
 <translation id="6290613030083731160">Nėra jokių pasiekiamų įrenginių, bendrinančių netoliese. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Patvirtinamas aktyvinimo kodas. Tai gali užtrukti kelias minutes.</translation>
 <translation id="6291741848715722067">Patvirtinimo kodas</translation>

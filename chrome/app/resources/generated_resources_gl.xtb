@@ -423,6 +423,7 @@
 <translation id="1436390408194692385">Válido durante <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Eliminados</translation>
 <translation id="1437986450143295708">Describe detalladamente o problema</translation>
+<translation id="1439671507542716852">asistencia a longo prazo</translation>
 <translation id="144283815522798837">Elementos seleccionados: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Definir como activo un tícket de Kerberos</translation>
 <translation id="1444628761356461360">Esta configuración está xestionada polo propietario do dispositivo, <ph name="OWNER_EMAIL" />.</translation>
@@ -1424,6 +1425,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2454264884354864965">A cámara está apagada</translation>
 <translation id="245650153866130664">Para actualizar un tícket automaticamente, marca a opción Lembrar contrasinal. O teu contrasinal almacenarase só no teu dispositivo.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> quere copiar ficheiros de <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Actualmente na canle <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Actualizar conta, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">O token de xestión de dispositivo non é válido.</translation>
 <translation id="2459703812219683497">Detectouse un código de activación</translation>
@@ -4989,7 +4991,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6284632978374966585">Poñer tema escuro</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> non se descarga habitualmente e pode ser perigoso.</translation>
 <translation id="6285770818046456882">O dispositivo que estaba compartindo o ficheiro contigo cancelou a transferencia</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Non hai dispositivos próximos dispoñibles para compartir ficheiros. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verificando código de activación. Esta acción pode tardar uns minutos.</translation>
 <translation id="6291741848715722067">Código de confirmación</translation>

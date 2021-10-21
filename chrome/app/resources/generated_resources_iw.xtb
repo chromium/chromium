@@ -427,6 +427,7 @@
 <translation id="1436390408194692385">תקף למשך <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">הוסר</translation>
 <translation id="1437986450143295708">יש לתאר את הבעיה בפירוט</translation>
+<translation id="1439671507542716852">‏תמיכה לטווח ארוך (LTS)</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> פריטים נבחרו</translation>
 <translation id="1442851588227551435">‏הגדרה של כרטיס Kerberos פעיל</translation>
 <translation id="1444628761356461360">ההגדרה הזו מנוהלת על ידי הבעלים של המכשיר: <ph name="OWNER_EMAIL" />.</translation>
@@ -1439,6 +1440,7 @@
 <translation id="2454264884354864965">המצלמה כבויה</translation>
 <translation id="245650153866130664">כדי לרענן כרטיס באופן אוטומטי, יש לסמן את האפשרות "שמירת סיסמה". הסיסמה תישמר במכשיר שלך בלבד.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> רוצה להעתיק קבצים מ-<ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">בערוץ <ph name="CHANNEL_NAME" /> כרגע</translation>
 <translation id="2458379781610688953">עדכון חשבון, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">אסימון ניהול המכשיר אינו חוקי.</translation>
 <translation id="2459703812219683497">זוהה קוד הפעלה</translation>
@@ -5003,7 +5005,6 @@
 <translation id="6284632978374966585">הפעלת העיצוב הכהה</translation>
 <translation id="6285120108426285413">הורדת הקובץ <ph name="FILE_NAME" /> אינה נפוצה והוא עלול להיות מסוכן.</translation>
 <translation id="6285770818046456882">ההעברה בוטלה במכשיר שמשתף איתך</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">אין מכשירים זמינים שמשתפים בקרבת מקום. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">מתבצע אימות של קוד ההפעלה. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="6291741848715722067">קוד אישור</translation>

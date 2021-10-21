@@ -426,6 +426,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> සඳහා වලංගුයි</translation>
 <translation id="1436784010935106834">ඉවත් කරන ලදි</translation>
 <translation id="1437986450143295708">ගැටලුව විස්තරාත්මකව විස්තර කරන්න</translation>
+<translation id="1439671507542716852">දිගු-කාලීන සහාය</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> තේරිණි</translation>
 <translation id="1442851588227551435">ක්‍රියාකාරී Kerberos ප්‍රවේශපත්‍රය සකසන්න</translation>
 <translation id="1444628761356461360">උපාංග හිමිකරු විසින් සැකසුම් කළමනාකරණය කර ඇත, <ph name="OWNER_EMAIL" />.</translation>
@@ -1429,6 +1430,7 @@
 <translation id="2454264884354864965">කැමරාව ක්‍රියාවිරහිතයි</translation>
 <translation id="245650153866130664">ප්‍රවේශපත්‍රයක් ස්වයංක්‍රීයව නැවුම් කිරීමට, “මුරපදය මතක තබා ගන්න” තෝරන්න. ඔබේ මුරපදය ඔබේ උපාංගයේ පමණක් ගබඩා කෙරේ.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> හට <ph name="VOLUME_NAME" /> වෙතින් ගොනු පිටපත් කිරීමට අවශ්‍යය.</translation>
+<translation id="2457842160081795172">දැනට <ph name="CHANNEL_NAME" /> නාලිකාවේ ඇත</translation>
 <translation id="2458379781610688953"><ph name="EMAIL" /> ගිණුම යාවත්කාලීන කරන්න</translation>
 <translation id="2458591546854598341">උපාංග කළමනාකරණ ටෝකනය අවලංගුයි.</translation>
 <translation id="2459703812219683497">සක්‍රිය කිරීමේ කේතය අනාවරණය කර ගන්නා ලදි</translation>
@@ -4996,7 +4998,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6284632978374966585">අඳුරු තේමාව ක්‍රියාත්මක කරන්න</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> නිතර බාගැනීම සිදු නොවන අතර අනතුරුදායක විය හැකිය.</translation>
 <translation id="6285770818046456882">ඔබ සමඟ බෙදා ගන්නා උපාංගය මාරුව අවලංගු කරන ලදි</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">අවට බෙදා ගන්නා ලබා ගත හැකි උපාංග නැත. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">සක්‍රිය කිරීමේ කේතය සත්‍යාපනය කරමින් මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
 <translation id="6291741848715722067">තහවුරු කිරීමේ කේතය</translation>

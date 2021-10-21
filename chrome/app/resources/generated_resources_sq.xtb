@@ -423,6 +423,7 @@
 <translation id="1436390408194692385">E vlefshme për <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">U hoq</translation>
 <translation id="1437986450143295708">Përshkruaj problemin në detaje</translation>
+<translation id="1439671507542716852">mbështetje afatgjatë</translation>
 <translation id="144283815522798837">U zgjodhën <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Cakto biletë aktive Kerberos</translation>
 <translation id="1444628761356461360">Ky cilësim menaxhohet nga zotëruesi i pajisjes, <ph name="OWNER_EMAIL" /></translation>
@@ -1423,6 +1424,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2454264884354864965">Kamera është joaktive</translation>
 <translation id="245650153866130664">Për të rifreskuar automatikisht një biletë, shëno "Kujto fjalëkalimin". Fjalëkalimi yt do të ruhet vetëm në pajisjen tënde.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> dëshiron të kopjojë skedarë nga <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Aktualisht në kanalin <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Përditëso llogarinë, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Kodi i menaxhimit të pajisjes është i pavlefshëm.</translation>
 <translation id="2459703812219683497">U zbulua kod aktivizimi</translation>
@@ -4984,7 +4986,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6284632978374966585">Aktivizo temën e errët</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm.</translation>
 <translation id="6285770818046456882">Pajisja që po ndan me ty e anuloi transfertën</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Asnjë pajisje e disponueshme nuk po ndan në afërsi. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Po verifikon kodin e aktivizimit. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="6291741848715722067">Kodi i konfirmimit</translation>

@@ -426,6 +426,7 @@
 <translation id="1436390408194692385">Gyldig i <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Fjernet</translation>
 <translation id="1437986450143295708">Giv en detaljeret beskrivelse af problemet</translation>
+<translation id="1439671507542716852">udvidet support</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> er valgt</translation>
 <translation id="1442851588227551435">Angiv aktiv Kerberos-billet</translation>
 <translation id="1444628761356461360">Denne indstilling administreres af enhedsejeren <ph name="OWNER_EMAIL" />.</translation>
@@ -1441,6 +1442,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2454264884354864965">Kameraet er slukket</translation>
 <translation id="245650153866130664">Markér "Husk adgangskoden" for automatisk at opdatere en billet. Adgangskoden gemmes kun på din enhed.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ønsker at kopiere filer fra <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">I øjeblikket på kanalen <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2458379781610688953">Opdater konto, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Tokenet for enhedsadministration er ugyldigt.</translation>
 <translation id="2459703812219683497">Aktiveringskoden blev registreret</translation>
@@ -5004,7 +5006,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6284632978374966585">Aktivér Mørkt tema</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> downloades normalt ikke og kan være skadelig.</translation>
 <translation id="6285770818046456882">Den enhed, der deler med dig, annullerede overførslen</translation>
-<translation id="6286744355355996781">Udvidet support</translation>
 <translation id="6290613030083731160">Der er ingen enheder, som deler i nærheden. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktiveringskoden bekræftes. Dette kan tage et par minutter.</translation>
 <translation id="6291741848715722067">Bekræftelseskode</translation>

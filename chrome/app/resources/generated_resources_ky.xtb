@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">Жарамдуулук мөөнөтү: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Чыгарылып салынган</translation>
 <translation id="1437986450143295708">Маселе тууралуу кененирээк айтып бериңиз</translation>
+<translation id="1439671507542716852">узак мөөнөттө колдоо көрсөтүү</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> тандалды</translation>
 <translation id="1442851588227551435">Активдүү Kerberos билетин жөндөө</translation>
 <translation id="1444628761356461360">Бул жөндөөнү түзмөк ээси башкарууда, <ph name="OWNER_EMAIL" />.</translation>
@@ -1440,6 +1441,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2454264884354864965">Камера өчүк</translation>
 <translation id="245650153866130664">Билетти автоматтык түрдө жаңыртуу үчүн "Сырсөздү эстеп калуу" дегенди белгилеңиз. Сырсөз сиздин түзмөктө гана сакталат.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> колдонмосу <ph name="VOLUME_NAME" /> дегенден файлдарды көчүргүсү келет.</translation>
+<translation id="2457842160081795172">Учурда <ph name="CHANNEL_NAME" /> каналында</translation>
 <translation id="2458379781610688953">Аккаунтту жаңыртуу, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Түзмөктү башкаруу токени жараксыз.</translation>
 <translation id="2459703812219683497">Жандандыруу коду аныкталды</translation>
@@ -5007,7 +5009,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6284632978374966585">Караңгы теманы күйгүзүү</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> негизинен жүктөлүп алынбайт, ошондуктан коркунучтуу болушу мүмкүн.</translation>
 <translation id="6285770818046456882">Жөнөтүүчү файлды өткөрүүнү жокко чыгарды</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Жакын жерде маалымат бөлүшүлө турган түзмөк жок. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Жандандыруу коду текшерилүүдө. Бир нече мүнөткө созулушу мүмкүн.</translation>
 <translation id="6291741848715722067">Ырастоо коду:</translation>

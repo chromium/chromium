@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">Sah selama <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Dibuang</translation>
 <translation id="1437986450143295708">Terangkan isu itu secara terperinci</translation>
+<translation id="1439671507542716852">sokongan jangka panjang</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> dipilih</translation>
 <translation id="1442851588227551435">Tetapkan tiket Kerberos yang aktif</translation>
 <translation id="1444628761356461360">Tetapan ini diuruskan oleh pemilik peranti, <ph name="OWNER_EMAIL" />.</translation>
@@ -1440,6 +1441,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2454264884354864965">Kamera dimatikan</translation>
 <translation id="245650153866130664">Untuk memuat semula tiket secara automatik, tandai "Ingat kata laluan". Kata laluan anda akan disimpan pada peranti anda sahaja.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ingin menyalin fail daripada <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Pada saluran <ph name="CHANNEL_NAME" /> pada masa ini</translation>
 <translation id="2458379781610688953">Kemas kini akaun, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Token pengurusan peranti tidak sah.</translation>
 <translation id="2459703812219683497">Kod pengaktifan dikesan</translation>
@@ -5003,7 +5005,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6284632978374966585">Hidupkan tema gelap</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> tidak biasa dimuat turun dan mungkin berbahaya.</translation>
 <translation id="6285770818046456882">Peranti yang berkongsi dengan anda telah membatalkan pemindahan</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Tiada peranti yang tersedia berkongsi berdekatan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Mengesahkan kod pengaktifan. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="6291741848715722067">Kod pengesahan</translation>

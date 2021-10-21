@@ -428,6 +428,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1436390408194692385">Veljavno: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Odstranjeno</translation>
 <translation id="1437986450143295708">Podrobno opišite težavo</translation>
+<translation id="1439671507542716852">dolgoročna podpora</translation>
 <translation id="144283815522798837">Št. izbranih: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Nastavitev aktivnega kartončka za Kerberos</translation>
 <translation id="1444628761356461360">To nastavitev upravlja lastnik naprave <ph name="OWNER_EMAIL" />.</translation>
@@ -1443,6 +1444,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2454264884354864965">Fotoaparat je izklopljen</translation>
 <translation id="245650153866130664">Če želite samodejno osvežiti kartonček, izberite »Zapomni si geslo«. Geslo bo shranjeno samo v napravi.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> želi kopirati datoteke z nosilca <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Trenutno v kanalu <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Posodobite račun, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Žeton za upravljanje naprave je neveljaven.</translation>
 <translation id="2459703812219683497">Zaznana je bila koda za aktiviranje</translation>
@@ -5012,7 +5014,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6284632978374966585">Vklop temne teme</translation>
 <translation id="6285120108426285413">Datoteka <ph name="FILE_NAME" /> ni pogosto prenesena in je lahko nevarna.</translation>
 <translation id="6285770818046456882">Naprava, ki deli z vami, je preklicala prenos.</translation>
-<translation id="6286744355355996781">Dolgoročna podpora</translation>
 <translation id="6290613030083731160">V bližini ni naprav, na voljo za deljenje. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Preverjanje kode za aktiviranje. To lahko traja nekaj minut.</translation>
 <translation id="6291741848715722067">Potrditvena koda</translation>

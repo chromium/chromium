@@ -421,6 +421,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> का लागि मान्य छ</translation>
 <translation id="1436784010935106834">हटाइयो</translation>
 <translation id="1437986450143295708">यो समस्या विस्तृत रूपमा वर्णन गर्नुहोस्</translation>
+<translation id="1439671507542716852">दीर्घकालीन सहायता</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> चयन गरियो</translation>
 <translation id="1442851588227551435">Kerberos को सक्रिय टिकट सेट गर्नुहोस्</translation>
 <translation id="1444628761356461360">यो सेटिङ यन्त्रको मालिक, <ph name="OWNER_EMAIL" /> द्वारा व्यवस्थत छ।</translation>
@@ -1422,6 +1423,7 @@
 <translation id="2454264884354864965">क्यामेरा अफ छ</translation>
 <translation id="245650153866130664">टिकट स्वत: पुन: ताजा गर्न “पासवर्ड सम्झनुहोस्” भन्ने विकल्प चिन्हमार्फत चयन गर्नुहोस्। तपाईंको पासवर्ड तपाईंको डिभाइसमा मात्र भण्डार हुने छ।</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ले  <ph name="VOLUME_NAME" /> बाट फाइलहरू प्रतिलिपि गर्न चाहन्छ।</translation>
+<translation id="2457842160081795172">अहिले <ph name="CHANNEL_NAME" /> च्यानलमा</translation>
 <translation id="2458379781610688953">खाता अपडेट गर्नुहोस्, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">यन्त्र व्यवस्थापनसम्बन्धी टोकन अमान्य छ।</translation>
 <translation id="2459703812219683497">सक्रिय गर्ने कोड सफलतापूर्वक स्क्यान गरियो</translation>
@@ -4987,7 +4989,6 @@
 <translation id="6284632978374966585">अँध्यारो थिम अन गर्नुहोस्‌</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> लाई सामान्यत: डाउनलोड गरिँदैन र यो खतरनाक हुन सक्छ।</translation>
 <translation id="6285770818046456882">तपाईंको डिभाइसमा फाइल सेयर गरिरहेको यन्त्रले सार्ने काम रद्द गरेको छ</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">वरपर सामग्री सेयर गर्नका निम्ति कुनै पनि यन्त्र उपलब्ध छैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">एक्टिभेसन कोड पुष्टि गरिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="6291741848715722067">पुष्टि कोड</translation>

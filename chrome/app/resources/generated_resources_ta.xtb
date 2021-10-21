@@ -425,6 +425,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> வரை செல்லுபடியாகும்</translation>
 <translation id="1436784010935106834">அகற்றப்பட்டது</translation>
 <translation id="1437986450143295708">சிக்கல் குறித்து விரிவாக விளக்கவும்</translation>
+<translation id="1439671507542716852">நீண்டகால உதவி</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="1442851588227551435">செயலில் உள்ள Kerberos டிக்கெட்டை அமைத்தல்</translation>
 <translation id="1444628761356461360">இந்த அமைப்பானது சாதனத்தின் உரிமையாளரால் <ph name="OWNER_EMAIL" /> நிர்வகிக்கப்படுகிறது.</translation>
@@ -1440,6 +1441,7 @@
 <translation id="2454264884354864965">கேமரா முடக்கப்பட்டுள்ளது</translation>
 <translation id="245650153866130664">டிக்கெட்டைத் தானாக ரெஃப்ரெஷ் செய்ய "கடவுச்சொல்லைச் சேமி" என்பதைச் சரிபார்க்கவும். உங்கள் சாதனத்தில் மட்டுமே கடவுச்சொல் சேமிக்கப்படும்.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" /> இலிருந்து கோப்புகளை நகலெடுக்க விரும்புகிறது.</translation>
+<translation id="2457842160081795172">தற்போது <ph name="CHANNEL_NAME" /> சேனலில் உள்ளது</translation>
 <translation id="2458379781610688953">கணக்கைப் புதுப்பி, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">சாதன நிர்வாக டோக்கன் தவறானது.</translation>
 <translation id="2459703812219683497">செயல்படுத்தல் குறியீடு கண்டறியப்பட்டது</translation>
@@ -5004,7 +5006,6 @@
 <translation id="6284632978374966585">டார்க் தீமினை இயக்குதல்</translation>
 <translation id="6285120108426285413">பொதுவாக <ph name="FILE_NAME" /> பதிவிறக்கப்படாது, அத்துடன் இது ஆபத்துக்குரியதாக இருக்கலாம்.</translation>
 <translation id="6285770818046456882">உங்களுடன் ஃபைலைப் பகிர்ந்து கொண்டிருந்த சாதனம் பரிமாற்றத்தை ரத்துசெய்தது</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">அருகிலுள்ள சாதனங்கள் எதுவும் பகிரவில்லை. <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">செயல்படுத்தல் குறியீட்டைச் சரிபார்க்கிறது. இதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
 <translation id="6291741848715722067">உறுதிப்படுத்தல் குறியீடு</translation>

@@ -425,6 +425,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> အထိ အကျုံးဝင်သည်</translation>
 <translation id="1436784010935106834">ဖယ်ရှားပစ်ခဲ့</translation>
 <translation id="1437986450143295708">ပြဿနာကို အသေးစိတ်ဖော်ပြရန်</translation>
+<translation id="1439671507542716852">ရေရှည် အကူအညီ</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ရွေးချယ်ထားသည်</translation>
 <translation id="1442851588227551435">အသုံးပြုနေသော Kerberos လက်မှတ် သတ်မှတ်ရန်</translation>
 <translation id="1444628761356461360">ဤကြိုတင်ချိန်ညှိချက်များအား စက်ပစ္စည်း၏ ပိုင်ရှင် <ph name="OWNER_EMAIL" /> မှ စီမံသည်။</translation>
@@ -1438,6 +1439,7 @@
 <translation id="2454264884354864965">ကင်မရာကို ပိတ်ထားသည်</translation>
 <translation id="245650153866130664">လက်မှတ်တစ်ခုကို အလိုအလျောက် ပြန်လည်စတင်ရန်အတွက် “စကားဝှက်ကို မှတ်သားရန်" ကို အမှန်ခြစ်ပါ။ သင့်စကားဝှက်ကို သင့်စက်ပေါ်တွင်သာ သိမ်းဆည်းသွားပါမည်။</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> သည် <ph name="VOLUME_NAME" />မှ ဖိုင်များ ကူးယူလို၏။</translation>
+<translation id="2457842160081795172">လောလောဆယ် <ph name="CHANNEL_NAME" /> ချန်နယ်တွင် ရှိသည်</translation>
 <translation id="2458379781610688953">အကောင့် အပ်ဒိတ်လုပ်ရန်၊ <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">စက်ပစ္စည်းစီမံခန့်ခွဲမှု တိုကင်နံပါတ် မမှန်ကန်ပါ။</translation>
 <translation id="2459703812219683497">စသုံးရန်ကုဒ် တွေ့ရှိသည်</translation>
@@ -5000,7 +5002,6 @@
 <translation id="6284632978374966585">မှောင်သည့် အပြင်အဆင် ဖွင့်ရန်</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ကို ဒေါင်းလုဒ်လုပ်လေ့ မရှိကြပါ။ အန္တရာယ် ရှိနိုင်သည်။</translation>
 <translation id="6285770818046456882">သင်နှင့်မျှဝေထားသောစက်က လွှဲပြောင်းမှုကို ပယ်ဖျက်လိုက်သည်</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">အနီးတွင် မျှဝေနေသော စက်များမရှိပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">စသုံးရန်ကုဒ် စိစစ်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="6291741848715722067">မှန်ကြောင်းအတည်ပြုကုဒ်</translation>

@@ -426,6 +426,7 @@
 <translation id="1436390408194692385">Важи уште <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Отстрането</translation>
 <translation id="1437986450143295708">Детално опишете го проблемот</translation>
+<translation id="1439671507542716852">долгорочна поддршка</translation>
 <translation id="144283815522798837">Избрани се <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Поставете активен билет на Kerberos</translation>
 <translation id="1444628761356461360">Со поставката управува сопственикот на уредот, <ph name="OWNER_EMAIL" />.</translation>
@@ -1441,6 +1442,7 @@
 <translation id="2454264884354864965">Камерата е исклучена</translation>
 <translation id="245650153866130664">За автоматско освежување на билетот, изберете „Запомни ја лозинката“. Лозинката ќе се зачува само на вашиот уред.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> сака да копира датотеки од <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Моментално на каналот <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Ажурирајте ја сметката, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Токенот за управување со уредот е неважечки.</translation>
 <translation id="2459703812219683497">Кодот за активација е препознаен</translation>
@@ -5008,7 +5010,6 @@
 <translation id="6284632978374966585">Вклучи темна тема</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> обично не се презема и може да биде опасно.</translation>
 <translation id="6285770818046456882">Уредот што споделуваше со вас го откажа преносот</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Нема достапни уреди што споделуваат во близина. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Се потврдува кодот за активација. Може да потрае неколку минути.</translation>
 <translation id="6291741848715722067">Код за потврда</translation>

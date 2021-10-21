@@ -426,6 +426,7 @@
 <translation id="1436390408194692385">Válido por <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Removido</translation>
 <translation id="1437986450143295708">Descreva o problema detalhadamente</translation>
+<translation id="1439671507542716852">suporte de longo prazo</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selecionado(s)</translation>
 <translation id="1442851588227551435">Definir um tíquete ativo do Kerberos</translation>
 <translation id="1444628761356461360">Esta configuração é gerenciada pelo proprietário do dispositivo, <ph name="OWNER_EMAIL" />.</translation>
@@ -1441,6 +1442,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2454264884354864965">A câmera está desativada</translation>
 <translation id="245650153866130664">Para atualizar automaticamente um tíquete, selecione a opção “Lembrar senha”. Sua senha será armazenada somente no seu dispositivo.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> deseja copiar arquivos de <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">No canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Atualize a conta, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">O token de gerenciamento do dispositivo é inválido.</translation>
 <translation id="2459703812219683497">Código de ativação detectado</translation>
@@ -5006,7 +5008,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6284632978374966585">Ativar o tema escuro</translation>
 <translation id="6285120108426285413">O arquivo <ph name="FILE_NAME" /> não costuma ser transferido por download e pode ser perigoso.</translation>
 <translation id="6285770818046456882">O dispositivo que estava fazendo o compartilhamento cancelou a transferência</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Não há dispositivos disponíveis por perto. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verificando o código de ativação. Isso pode levar alguns minutos.</translation>
 <translation id="6291741848715722067">Código de confirmação</translation>

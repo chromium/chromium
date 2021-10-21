@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">មាន​សុពលភាពរយៈពេល <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">បានដកចេញ</translation>
 <translation id="1437986450143295708">ពណ៌នាអំពីបញ្ហាឱ្យបានលម្អិត</translation>
+<translation id="1439671507542716852">ជំនួយ​រយៈពេលវែង</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ត្រូវបានជ្រើសរើស</translation>
 <translation id="1442851588227551435">កំណត់​សំបុត្រ Kerberos សកម្ម</translation>
 <translation id="1444628761356461360">ការកំណត់នេះត្រូវបានគ្រប់គ្រងដោយម្ចាស់ឧបករណ៍ <ph name="OWNER_EMAIL" />។</translation>
@@ -1440,6 +1441,7 @@
 <translation id="2454264884354864965">កាមេរ៉ា​ត្រូវបានបិទ</translation>
 <translation id="245650153866130664">ដើម្បី​ផ្ទុកសំបុត្រ​ឡើងវិញដោយស្វ័យប្រវត្តិ សូមពិនិត្យមើល “ចងចាំ​ពាក្យ​សម្ងាត់”។ ពាក្យ​សម្ងាត់របស់អ្នក​នឹងត្រូវបានរក្សាទុកនៅលើ​ឧបករណ៍​របស់អ្នកតែប៉ុណ្ណោះ។</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ចង់ចម្លឯកសារពី <ph name="VOLUME_NAME" />។</translation>
+<translation id="2457842160081795172">បច្ចុប្បន្ននៅលើបណ្តាញ <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">ធ្វើបច្ចុប្បន្នភាព​គណនី <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">ធាតុកូដគ្រប់គ្រង​ឧបករណ៍​គ្មានសុពលភាពទេ។</translation>
 <translation id="2459703812219683497">បានរកឃើញលេខ​កូដ​បើក​ដំណើរការ</translation>
@@ -5008,7 +5010,6 @@
 <translation id="6284632978374966585">បើក​រចនាប័ទ្ម​ងងឹត</translation>
 <translation id="6285120108426285413">ជាទូទៅ <ph name="FILE_NAME" /> មិនត្រូវបានទាញយកទេ ហើយវាអាចបង្កគ្រោះថ្នាក់។</translation>
 <translation id="6285770818046456882">ឧបករណ៍​ដែលកំពុងចែករំលែក​ជាមួយអ្នក​បានបោះបង់​ការផ្ទេរ</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">មិនមាន​ការចែករំលែកឧបករណ៍​ដែលនៅជិតទេ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">កំពុងផ្ទៀងផ្ទាត់​លេខកូដ​បើកដំណើរការ។ ដំណើរការនេះ​អាចចំណាយ​ពេលពីរបីនាទី។</translation>
 <translation id="6291741848715722067">លេខ​កូដ​បញ្ជាក់​</translation>

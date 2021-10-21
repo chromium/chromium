@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">Kehtivusaeg: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Eemaldatud</translation>
 <translation id="1437986450143295708">Kirjeldage probleemi üksikasjalikult</translation>
+<translation id="1439671507542716852">pikaajaline tugi</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> on valitud</translation>
 <translation id="1442851588227551435">Kerberose pileti aktiveerimine</translation>
 <translation id="1444628761356461360">Seadet haldab seadme omanik <ph name="OWNER_EMAIL" />.</translation>
@@ -1431,6 +1432,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2454264884354864965">Kaamera on välja lülitatud</translation>
 <translation id="245650153866130664">Pileti automaatseks värskendamiseks märkige ruut „Jäta parool meelde”. Teie parool salvestatakse ainult teie seadmesse.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> soovib kopeerida faile seadmest <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Praegu kanalil <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2458379781610688953">Konto <ph name="EMAIL" /> värskendamine</translation>
 <translation id="2458591546854598341">Seadme halduse luba on kehtetu.</translation>
 <translation id="2459703812219683497">Tuvastati aktiveerimiskood</translation>
@@ -4993,7 +4995,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6284632978374966585">Tumeda teema sisselülitamine</translation>
 <translation id="6285120108426285413">Faili <ph name="FILE_NAME" /> ei laadita sageli alla ja see võib olla ohtlik.</translation>
 <translation id="6285770818046456882">Teiega jagav seade tühistas ülekandmise</translation>
-<translation id="6286744355355996781">Pikaajaline tugi</translation>
 <translation id="6290613030083731160">Mitte ükski saadaolev seade ei jaga läheduses. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktiveerimiskoodi kinnitamine. See võib võtta mõne minuti.</translation>
 <translation id="6291741848715722067">Kinnituskood</translation>

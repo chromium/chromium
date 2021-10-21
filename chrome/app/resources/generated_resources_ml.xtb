@@ -425,6 +425,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> നേരത്തേക്ക് കൂടി സാധുവാണ്</translation>
 <translation id="1436784010935106834">നീക്കംചെയ്‌തു</translation>
 <translation id="1437986450143295708">പ്രശ്‌നം വിശദമായി വിവരിക്കുക</translation>
+<translation id="1439671507542716852">ദീർഘകാല പിന്തുണ</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> തിരഞ്ഞെടുത്തു</translation>
 <translation id="1442851588227551435">സജീവ Kerberos ടിക്കറ്റ് സജ്ജീകരിക്കുക</translation>
 <translation id="1444628761356461360">ഈ ക്രമീകരണം നിയന്ത്രിക്കുന്നത് ഉപകരണത്തിന്റെ ഉടമയായ <ph name="OWNER_EMAIL" /> ആണ്.</translation>
@@ -1424,6 +1425,7 @@
 <translation id="2454264884354864965">ക്യാമറ ഓഫാണ്</translation>
 <translation id="245650153866130664">ഒരു ടിക്കറ്റ് സ്വയമേവ പുതുക്കിയെടുക്കാൻ “പാസ്‌വേഡ് ഓർക്കുക” പരിശോധിക്കുക. നിങ്ങളുടെ പാസ്‌വേഡ് നിങ്ങളുടെ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിക്കുകയുള്ളൂ.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" />-ൽ നിന്ന് ഫയലുകൾ പകർത്താൻ താൽപ്പര്യപ്പെടുന്നു</translation>
+<translation id="2457842160081795172">നിലവിൽ <ph name="CHANNEL_NAME" /> ചാനലിൽ</translation>
 <translation id="2458379781610688953">അക്കൗണ്ട് അപ്‌ഡേറ്റ് ചെയ്യുക, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">ഉപകരണ മാനേജ്‌മെന്റ് ടോക്കൺ അസാധുവാണ്.</translation>
 <translation id="2459703812219683497">സജീവമാക്കൽ കോഡ് കണ്ടെത്തി</translation>
@@ -4987,7 +4989,6 @@
 <translation id="6284632978374966585">ഡാർക്ക് തീം ഓണാക്കുക</translation>
 <translation id="6285120108426285413">സാധാരണ <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാറില്ല, അത് അപകടകരമാകാനും ഇടയുണ്ട്.</translation>
 <translation id="6285770818046456882">നിങ്ങളുമായി പങ്കിടുന്ന ഉപകരണം, കൈമാറ്റം റദ്ദാക്കി</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">പങ്കിടുന്ന ഉപകരണങ്ങളൊന്നും സമീപത്ത് ലഭ്യമല്ല. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">സജീവമാക്കൽ കോഡ് പരിശോധിച്ചുറപ്പിക്കുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="6291741848715722067">സ്ഥിരീകരണ കോഡ്</translation>

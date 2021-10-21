@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">Do konca platnosti zostáva: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Odstránené</translation>
 <translation id="1437986450143295708">Podrobne opíšte problém</translation>
+<translation id="1439671507542716852">dlhodobá podpora</translation>
 <translation id="144283815522798837">Počet vybratých položiek: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Nastaviť aktívny tiket Kerberos</translation>
 <translation id="1444628761356461360">Toto nastavenie spravuje vlastník zariadenia <ph name="OWNER_EMAIL" />.</translation>
@@ -1427,6 +1428,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2454264884354864965">Kamera je vypnutá</translation>
 <translation id="245650153866130664">Ak chcete, aby sa tiket automaticky obnovoval, začiarknite možnosť Zapamätať si heslo. Vaše heslo sa uloží iba do vášho zariadenia.</translation>
 <translation id="2457246892030921239">Aplikácia <ph name="APP_NAME" /> chce kopírovať súbory z média <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Momentálne používate verziu <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2458379781610688953">Aktualizovať účet, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Token správy zariadenia je neplatný.</translation>
 <translation id="2459703812219683497">Aktivačný kód bol rozpoznaný</translation>
@@ -4993,7 +4995,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6284632978374966585">Zapnúť tmavý motív</translation>
 <translation id="6285120108426285413">Súbor <ph name="FILE_NAME" /> sa bežne nesťahuje a môže byť nebezpečný.</translation>
 <translation id="6285770818046456882">Zariadenie, ktoré s vami zdieľa obsah, zrušilo prenos</translation>
-<translation id="6286744355355996781">Dlhodobá podpora</translation>
 <translation id="6290613030083731160">Nablízku nie sú žiadne dostupné zdieľajúce zariadenia. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Overuje sa aktivačný kód. Môže to trvať niekoľko minút.</translation>
 <translation id="6291741848715722067">Potvrdzovací kód</translation>

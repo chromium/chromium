@@ -428,6 +428,7 @@
 <translation id="1436390408194692385">Дійсний упродовж <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Видалено</translation>
 <translation id="1437986450143295708">Детально опишіть проблему</translation>
+<translation id="1439671507542716852">довгострокова підтримка</translation>
 <translation id="144283815522798837">Вибрано <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Налаштувати активний квиток Kerberos</translation>
 <translation id="1444628761356461360">Цим налаштуванням керує власник пристрою (<ph name="OWNER_EMAIL" />).</translation>
@@ -1443,6 +1444,7 @@
 <translation id="2454264884354864965">Камеру вимкнено</translation>
 <translation id="245650153866130664">Щоб автоматично оновлювати квиток, натисніть "Запам'ятати пароль". Його буде збережено лише на пристрої.</translation>
 <translation id="2457246892030921239">Додатку <ph name="APP_NAME" /> потрібен дозвіл копіювати файли з тому <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Ваша версія: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Оновити обліковий запис, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Недійсний маркер керування пристрою.</translation>
 <translation id="2459703812219683497">Виявлено код активації</translation>
@@ -5006,7 +5008,6 @@
 <translation id="6284632978374966585">Увімкнути темну тему</translation>
 <translation id="6285120108426285413">Файл <ph name="FILE_NAME" /> рідко завантажують. Він може бути небезпечним.</translation>
 <translation id="6285770818046456882">Відправник скасував передачу даних</translation>
-<translation id="6286744355355996781">Довгострокова підтримка</translation>
 <translation id="6290613030083731160">Неподалік немає пристроїв, з якими можна обмінюватися даними. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Триває перевірка коду активації. Це може зайняти кілька хвилин.</translation>
 <translation id="6291741848715722067">Код підтвердження</translation>

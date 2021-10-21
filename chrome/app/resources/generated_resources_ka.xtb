@@ -423,6 +423,7 @@
 <translation id="1436390408194692385">ძალაშია <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">წაშლილი</translation>
 <translation id="1437986450143295708">დეტალურად აღწერეთ პრობლემა</translation>
+<translation id="1439671507542716852">გრძელვადიანი მხარდაჭერა</translation>
 <translation id="144283815522798837">არჩეულია <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">აქტიური Kerberos ბილეთის დაყენება</translation>
 <translation id="1444628761356461360">ამ პარამეტრს მართავს აპარატის მფლობელი. <ph name="OWNER_EMAIL" />.</translation>
@@ -1425,6 +1426,7 @@
 <translation id="2454264884354864965">კამერა გამორთულია</translation>
 <translation id="245650153866130664">ბილეთის ავტომატურად გასაახლებლად მონიშნეთ „პაროლის დამახსოვრება“. თქვენი პაროლი მხოლოდ თქვენს მოწყობილობაზე შეინახება.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" />-ს სურს, დააკოპიროს ფაილები <ph name="VOLUME_NAME" />-დან.</translation>
+<translation id="2457842160081795172">ამჟამად <ph name="CHANNEL_NAME" /> არხზე</translation>
 <translation id="2458379781610688953">ანგარიშის განახლება, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">მოწყობილობის მართვის ჟეტონი არასწორია.</translation>
 <translation id="2459703812219683497">აღმოჩენილია აქტივაციის კოდი</translation>
@@ -4991,7 +4993,6 @@
 <translation id="6284632978374966585">მუქი თემის გააქტიურება</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> შეიძლება სახიფათო იყოს, რადგან მისი ჩამოტვირთვა ხშირად არ ხორციელდება ხოლმე.</translation>
 <translation id="6285770818046456882">მონაცემთა გადაცემა გაუქმდა მოწყობილობიდან, რომლიდანაც კონტენტი ზიარდებოდა</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">ახლომახლო არ არის მოწყობილობები, რომლებიდანაც რაიმე ზიარდება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">მიმდინარეობს გააქტიურების კოდის დადასტურება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="6291741848715722067">დადასტურების კოდი</translation>

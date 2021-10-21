@@ -1024,6 +1024,7 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="2204379573346866896">Số phút đã trôi qua trong giờ hiện tại.</translation>
 <translation id="2204753382813641270">Kiểm soát tự động ẩn giá</translation>
 <translation id="2208976000652006649">Tham số cho URL tìm kiếm sử dụng POST</translation>
+<translation id="2212603374276864511">Cho phép người dùng sử dụng các mẫu không gian làm việc định sẵn</translation>
 <translation id="2213059592185933570">Bật tính năng tạo hồ sơ chuyển vùng</translation>
 <translation id="2215238871726750562">Nếu bạn đặt chính sách này thành True, thì cửa sổ trình duyệt sẽ không chạy khi bắt đầu phiên.
 
@@ -1986,6 +1987,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
         * 4, chương trình cơ sở <ph name="TPM_FIRMWARE_UPDATE_TPM" /> sẽ cập nhật sau khi đăng ký và trước khi người dùng đăng nhập.
 
       Nếu bạn không đặt chính sách này thì sẽ không có bản cập nhật chương trình cơ sở <ph name="TPM_FIRMWARE_UPDATE_TPM" />.</translation>
+<translation id="3232563711929146405">Tắt hộp cát dịch vụ mạng</translation>
 <translation id="3232691106293445015">Các đường kết nối HTTP không an toàn không được phép sử dụng phương thức xác thực <ph name="BASIC_AUTH" />; bắt buộc phải dùng HTTPS</translation>
 <translation id="3235085623859932253"> Nếu bạn tắt chính sách này, thì người dùng sẽ không thể kết nối hoàn toàn thiết bị ngoại vi Thunderbolt/USB4 thông qua tính năng tạo đường hầm dựa trên PCIe.
 
@@ -2113,6 +2115,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Nếu bạn không đặt chính sách này, thời gian chờ sẽ là 0 mili giây.
 
       Nếu bạn không đặt chính sách <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />, chính sách này sẽ không có hiệu lực.</translation>
+<translation id="3399859571630358395">Buộc tắt tính năng Ghép nối nhanh (ghép nối Bluetooth nhanh).</translation>
 <translation id="341285788698114069">Chính sách này kiểm soát mức ưu tiên của tiến trình âm thanh trên Windows.
       Nếu bạn bật chính sách này, tiến trình âm thanh sẽ chạy ở cấp độ ưu tiên trên mức bình thường.
       Nếu bạn tắt chính sách này, tiến trình âm thanh sẽ chạy ở mức ưu tiên bình thường.
@@ -2231,6 +2234,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
 
       Để biết thông tin chi tiết về mẫu URL hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Giới hạn thời gian cho mỗi ứng dụng</translation>
+<translation id="354592434146464541">Không cho phép người dùng sử dụng các mẫu không gian làm việc định sẵn</translation>
 <translation id="3547954654003013442">Cài đặt proxy</translation>
 <translation id="3550122827225052130">Lưu ý rằng chúng tôi không dùng chính sách này nữa và sẽ xóa khỏi <ph name="PRODUCT_OS_NAME" /> phiên bản 85. Thay vào đó, vui lòng sử dụng <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -2992,6 +2996,7 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 <translation id="4557134566541205630">URL trang thẻ mới của nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="4558166110367609724">Tự động bỏ qua Điều khoản dịch vụ (ToS) và tải trình duyệt.</translation>
 <translation id="4559846397119102037">Cho phép sử dụng <ph name="LACROS_NAME" /></translation>
+<translation id="4561560385824323005">Cho phép người dùng chọn một bố cục màn hình được thiết lập sẵn để tải</translation>
 <translation id="4562165737444703281">Cho phép người dùng [bật/định cấu hình] dịch vụ chuyển tiếp cổng vào Crostini</translation>
 <translation id="456686782928669977">Chính sách này kiểm soát việc có tải các quy tắc từ chính sách SiteList của <ph name="IE_PRODUCT_NAME" /> hay không.
 
@@ -3338,6 +3343,7 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 <translation id="5017369989680827157">Nếu bạn đặt chính sách này thành True hoặc không đặt chính sách này, thì người dùng sẽ có quyền kiểm soát tính năng Tự động điền cho địa chỉ trong giao diện người dùng.
 
       Nếu bạn đặt chính sách này thành False, thì tính năng Tự động điền sẽ không bao giờ gợi ý hoặc điền thông tin địa chỉ hay lưu thông tin địa chỉ bổ sung mà người dùng gửi trong khi duyệt web.</translation>
+<translation id="5017691827598069017">Bật tính năng Ghép nối nhanh (ghép nối Bluetooth nhanh)</translation>
 <translation id="5021550478471824215">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách các lượt chia sẻ tệp trong mạng đã đặt trước. Mỗi mục là một đối tượng có 2 thuộc tính: <ph name="SHARE_URL_FIELD_NAME" /> và <ph name="MODE_FIELD_NAME" />.
 
       URL chia sẻ sẽ là <ph name="SHARE_URL_FIELD_NAME" />.
@@ -3454,6 +3460,7 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Đối với chính sách này, chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="5177260184597743704">Chính sách cấu hình dành cho Trình kết nối OnSecurityEvent của Chrome Enterprise</translation>
 <translation id="5178479074002209469">Một cờ boolean cho biết liệu các phiên của người dùng không được quản lý có phải nhận thông báo và buộc đăng xuất nếu cần cập nhật theo chính sách này hay không.</translation>
+<translation id="5179853299156742425">Người dùng có thể tải mẫu không gian làm việc xuống qua URL này.</translation>
 <translation id="5182055907976889880">Định cấu hình Google Drive trong <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Đặt giá ở bên phải màn hình</translation>
 <translation id="51859390023061147">Tắt tính năng khôi phục hoàn toàn.</translation>
@@ -3509,6 +3516,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
       Nếu bạn không đặt chính sách này hoặc chính sách này không hợp lệ, thì chế độ hạ cấp sẽ giống như trường hợp "Chờ để kênh đích bắt kịp phiên bản hiện tại trong quá trình hạ cấp kênh".</translation>
 <translation id="5229339291699779956">Bật tính năng tạo đường hầm dựa trên PCIe cho các thiết bị ngoại vi Thunderbolt/USB4, các thiết bị ngoại vi sẽ hoạt động với mức hiệu suất tối đa</translation>
 <translation id="523505283826916779">Hỗ trợ tiếp cận</translation>
+<translation id="5238976843489093540">Buộc bật tính năng Ghép nối nhanh (ghép nối Bluetooth nhanh).</translation>
 <translation id="52393120393725840">Nếu bạn đặt chính sách này thành Bật, người dùng có thể yêu cầu <ph name="PRODUCT_NAME" /> nhớ mật khẩu và cung cấp cho họ ở lần tiếp theo họ đăng nhập vào một trang web.
 
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể lưu các mật khẩu mới. Tuy nhiên, những mật khẩu đã lưu trước đây sẽ vẫn có tác dụng.
@@ -3861,6 +3869,9 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="5625771176514429288">Ứng dụng Chrome sẽ được phép chạy trên các nền tảng này.</translation>
 <translation id="5630352020869108293">Khôi phục phiên trước đó</translation>
 <translation id="5633871703004128675">Bật tính năng hỗ trợ tiếp cận về làm nổi bật dấu chèn</translation>
+<translation id="5639454129004500060">Nếu được đặt, chính sách này sẽ chứa thông tin để tải một tệp mẫu không gian làm việc xuống.  Tệp chứa một mẫu không gian làm việc sẽ được cung cấp cho người dùng hiện tại.
+      Nếu bạn không đặt chính sách này, thì sẽ không có mẫu không gian làm việc được thiết lập sẵn nào được đưa vào danh sách các mẫu không gian làm việc.  Nếu bạn không bật chính sách <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" />,
+     thì chính sách này không có hiệu lực.</translation>
 <translation id="5641279111657132737">Chính sách này không còn dùng nữa, vui lòng sử dụng chính sách "<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />".
 
       Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định máy chủ nào sẽ được phép dùng cho quy trình xác thực tích hợp. Tính năng xác thực tích hợp chỉ bật khi <ph name="PRODUCT_NAME" /> nhận được thử thách xác thực từ một proxy hoặc từ một máy chủ có trong danh sách cho phép này.
@@ -4022,6 +4033,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="5809728392451418079">Đặt tên hiển thị cho tài khoản trong thiết bị</translation>
 <translation id="5814301096961727113">Đặt trạng thái phản hồi bằng giọng nói mặc định trên màn hình đăng nhập</translation>
 <translation id="5815129011704381141">Tự động khởi động lại sau khi cập nhật</translation>
+<translation id="5816106589769772877">Khi bạn bật chính sách này, người dùng sẽ được phép sử dụng các mẫu bố cục màn hình được thiết lập sẵn.  Khi bạn tắt hoặc không đặt chính sách này thì các mẫu đó sẽ không dùng được.</translation>
 <translation id="582857022372205358">Bật chế độ in hai mặt với cạnh ngắn</translation>
 <translation id="5830196507442186669">Cho phép các thiết bị sử dụng <ph name="BOREALIS_NAME" /> trên <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Chính sách không còn dùng nữa</translation>
@@ -4289,6 +4301,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="6174065452773547810">Nếu bạn bật hoặc không đặt chính sách này, thì hệ thống sẽ cho phép thiết bị nhận các biện pháp kiểm soát báo cáo chi tiết.
       Nếu bạn tắt chính sách này thì các thiết bị đã đăng ký sẽ không nhận các biện pháp kiểm soát báo cáo chi tiết.</translation>
 <translation id="6178075938488052838">Chính sách này kiểm soát những ai có thể bắt đầu phiên <ph name="PRODUCT_OS_NAME" />. Chính sách này không ngăn người dùng đăng nhập vào các tài khoản Google bổ sung trong Android. Nếu bạn muốn ngăn việc này, hãy định cấu hình chính sách <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> dành riêng cho Android như là một phần của <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
+<translation id="6181304954168534748">Hàm băm SHA-256 của mẫu không gian làm việc.</translation>
 <translation id="6181618732396778048">Không cho phép trang web nào yêu cầu quyền ghi các tệp và thư mục</translation>
 <translation id="6181783961196084973">Bật/Tắt giá trị của bộ sưu tập hoạt động trong ứng dụng. Nếu bạn đặt thành bật, hoạt động của người dùng trong ứng dụng sẽ được báo cáo cho máy chủ nhằm mục đích hiển thị hoạt động đó trong ứng dụng <ph name="PRODUCT_NAME" /> dành cho con và cha mẹ. Nếu bạn đặt thành tắt, tính năng Giới hạn thời gian cho mỗi ứng dụng sẽ vẫn hoạt động, nhưng sẽ không có dữ liệu nào được báo cáo cho máy chủ và hiển thị trong <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6183327369896253878">Việc đặt chính sách này sẽ cố định mã nhận dạng của ứng dụng mà <ph name="PRODUCT_OS_NAME" /> hiển thị dưới dạng ứng dụng được ghim trong thanh trình chạy và người dùng không thể thay đổi được các mã nhận dạng đó.
@@ -5899,6 +5912,10 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="8101381354936029836">Nhóm chính sách không thể phân chia:</translation>
 <translation id="8102913158860568230">Cài đặt luồng truyền thông mặc định</translation>
 <translation id="8104962233214241919">Tự động chọn chứng chỉ ứng dụng khách cho các trang web này</translation>
+<translation id="8111502498815410897">Nếu bạn đặt chính sách này thì hệ thống sẽ buộc bật hoặc tắt tính năng Ghép nối nhanh.
+      Tính năng Ghép nối nhanh là một luồng ghép nối Bluetooth mới liên kết các thiết bị ngoại vi đã ghép nối với tài khoản GAIA.
+      Điều này cho phép các thiết bị Chrome OS (và Android) khác đã đăng nhập bằng cùng một tài khoản GAIA tự động ghép nối.
+      Nếu bạn không đặt chính sách này, thì tính năng Ghép nối nhanh sẽ tuân theo chế độ cài đặt được bật theo mặc định của Chrome OS.</translation>
 <translation id="8114382167597081590">Không buộc sử dụng Chế độ hạn chế trên YouTube</translation>
 <translation id="8117921351531866504">Giúp bạn thiết lập để cho phép hoặc không cho phép các trang web kiểm tra xem người dùng đã lưu phương thức thanh toán hay chưa.
 
@@ -6010,6 +6027,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Nếu chính sách không được đặt, <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng ID tài khoản email của tài khoản trong thiết bị làm tên hiển thị trên màn hình đăng nhập.
 
       Chính sách này bị bỏ qua đối với các tài khoản người dùng thông thường.</translation>
+<translation id="8257863622304579015">Bật hộp cát dịch vụ mạng</translation>
 <translation id="8259375588339409826">Cả Chromium và Google Chrome đều hỗ trợ nhóm chính sách giống nhau. Xin lưu ý rằng tài liệu này có thể bao gồm các chính sách chưa được ban hành (nghĩa là mục 'Được hỗ trợ trên' của các chính sách này đề cập đến một phiên bản <ph name="PRODUCT_NAME" /> chưa phát hành). Những chính sách này có thể bị thay đổi hoặc xóa bỏ mà không thông báo trước. Chúng tôi không bảo đảm bất kỳ điều gì, kể cả bảo đảm cho các thuộc tính bảo mật và quyền riêng tư.
 
 Những chính sách này chỉ dùng cho mục đích định cấu hình các phiên bản <ph name="PRODUCT_NAME" /> nội bộ trong tổ chức của bạn. Việc sử dụng các chính sách này bên ngoài tổ chức (ví dụ: trong một chương trình được phân phối công khai) sẽ bị coi là phần mềm độc hại và có thể bị Google và các nhà cung cấp phần mềm diệt vi-rút gắn nhãn là phần mềm độc hại.
@@ -6528,6 +6546,11 @@ Bạn nên định cấu hình chính sách trên Windows qua GPO, mặc dù vi�
 
       Nếu bạn không đặt chính sách này, một giá trị mặc định dành riêng cho nền tảng sẽ được đưa vào sử dụng là: <ph name="IE_PRODUCT_NAME" /> đối với <ph name="MS_WIN_NAME" /> hoặc <ph name="SAFARI_PRODUCT_NAME" /> đối với <ph name="MAC_OS_NAME" />. Trên <ph name="LINUX_OS_NAME" />, trình duyệt thay thế sẽ không chạy được.</translation>
 <translation id="8836975838488342340">Thời gian hiệu lực của mã truy cập (tính bằng giây).</translation>
+<translation id="8839799083601163225">Chính sách này kiểm soát việc tiến trình dịch vụ mạng có chạy trong môi trường hộp cát hay không.
+      Nếu bạn bật chính sách này, thì tiến trình dịch vụ mạng sẽ chạy trong môi trường hộp cát.
+      Nếu bạn tắt chính sách này, thì tiến trình dịch vụ mạng sẽ không chạy trong môi trường hộp cát. Điều này sẽ khiến người dùng có nguy cơ gặp phải các rủi ro bảo mật bổ sung liên quan đến việc không chạy tiến trình dịch vụ mạng ở trong môi trường hộp cát.
+      Nếu bạn không đặt chính sách này, thì hệ thống sẽ dùng cấu hình mặc định đối với hộp cát mạng. Điều này có thể thay đổi tuỳ thuộc vào bản phát hành <ph name="PRODUCT_NAME" /> hiện đang chạy các bản thử nghiệm và nền tảng.
+      Chính sách này nhằm cho phép doanh nghiệp có thể tắt hộp cát mạng một cách linh hoạt nếu họ dùng phần mềm bên thứ ba can thiệp vào hộp cát dịch vụ mạng.</translation>
 <translation id="8842208363354615697">Cho phép bật chế độ Chỉ giao thức HTTPS</translation>
 <translation id="885147810817138322">Hiển thị đề xuất nội dung nghe nhìn cho người dùng</translation>
 <translation id="8852579753940989645">Bật tính năng Tính toàn vẹn của mã trình kết xuất</translation>

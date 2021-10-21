@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">Ισχύει για <ph name="TICKET_TIME_LEFT" />.</translation>
 <translation id="1436784010935106834">Καταργήθηκαν</translation>
 <translation id="1437986450143295708">Περιγράψτε το πρόβλημα με λεπτομέρειες</translation>
+<translation id="1439671507542716852">μακροπρόθεσμη υποστήριξη</translation>
 <translation id="144283815522798837">Επιλέχθηκαν <ph name="NUMBER_OF_ITEMS_SELECTED" /> στοιχεία</translation>
 <translation id="1442851588227551435">Ορισμός ενεργού εισιτηρίου Kerberos</translation>
 <translation id="1444628761356461360">Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τον ιδιοκτήτη της συσκευής, <ph name="OWNER_EMAIL" />.</translation>
@@ -1440,6 +1441,7 @@
 <translation id="2454264884354864965">Η κάμερα είναι απενεργοποιημένη</translation>
 <translation id="245650153866130664">Για αυτόματη προσθήκη ενός εισιτηρίου, επιλέξτε Απομνημόνευση κωδικού πρόσβασης. Ο κωδικός πρόσβασής σας θα αποθηκευτεί μόνο στη συσκευή σας.</translation>
 <translation id="2457246892030921239">Η εφαρμογή <ph name="APP_NAME" /> θέλει να αντιγράψει αρχεία από <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Αυτή τη στιγμή στο κανάλι <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Ενημέρωση λογαριασμού, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Το διακριτικό διαχείρισης συσκευής δεν είναι έγκυρο.</translation>
 <translation id="2459703812219683497">Εντοπίστηκε κωδικός ενεργοποίησης</translation>
@@ -5004,7 +5006,6 @@
 <translation id="6284632978374966585">Ενεργοποίηση σκούρου θέματος</translation>
 <translation id="6285120108426285413">Η λήψη του αρχείου <ph name="FILE_NAME" /> δεν είναι συνήθης και μπορεί να είναι επικίνδυνη.</translation>
 <translation id="6285770818046456882">Η συσκευή που μοιράζεται περιεχόμενο μαζί σας ακύρωσε τη μεταφορά.</translation>
-<translation id="6286744355355996781">Μακροπρόθεσμη υποστήριξη (LTS)</translation>
 <translation id="6290613030083731160">Δεν υπάρχουν διαθέσιμες συσκευές για κοινή χρήση περιεχομένου σε κοντινή απόσταση. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Επαλήθευση κωδικού ενεργοποίησης. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="6291741848715722067">Κωδικός επιβεβαίωσης</translation>

@@ -424,6 +424,7 @@
 <translation id="1436390408194692385">Valabil timp de <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Eliminat</translation>
 <translation id="1437986450143295708">Descrie problema detaliat</translation>
+<translation id="1439671507542716852">asistență pe durată extinsă</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selectate</translation>
 <translation id="1442851588227551435">Setează tichetul Kerberos activ</translation>
 <translation id="1444628761356461360">Această setare este gestionată de proprietarul dispozitivului, <ph name="OWNER_EMAIL" />.</translation>
@@ -1426,6 +1427,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2454264884354864965">Camera este dezactivată</translation>
 <translation id="245650153866130664">Pentru a actualiza automat un tichet, bifează „Reține parola”. Parola va fi stocată numai pe dispozitivul tău.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> dorește să copieze fișiere din <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Folosești canalul <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Actualizează contul, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Indicativul de gestionare a dispozitivului nu este valid.</translation>
 <translation id="2459703812219683497">S-a detectat un cod de activare</translation>
@@ -4992,7 +4994,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6284632978374966585">Activează tema întunecată</translation>
 <translation id="6285120108426285413">Fișierul <ph name="FILE_NAME" /> nu este descărcat de obicei și ar putea fi periculos.</translation>
 <translation id="6285770818046456882">Dispozitivul care îți trimitea fișiere a anulat transferul</translation>
-<translation id="6286744355355996781">LTS</translation>
 <translation id="6290613030083731160">Nu sunt disponibile dispozitive care trimit fișiere în apropiere. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Este verificat codul de activare. Poate dura câteva minute.</translation>
 <translation id="6291741848715722067">Cod de confirmare</translation>
