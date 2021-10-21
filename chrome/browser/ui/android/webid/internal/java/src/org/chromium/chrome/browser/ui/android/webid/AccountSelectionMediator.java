@@ -125,7 +125,7 @@ class AccountSelectionMediator {
         }
     }
 
-    void addButton(Account account, GURL idpUrl, IdentityProviderMetadata idpMetadata,
+    void addButton(GURL rpUrl, GURL idpUrl, Account account, IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata, boolean isAutoSignIn) {
         if (isAutoSignIn) {
             assert account.isSignIn();
@@ -143,10 +143,8 @@ class AccountSelectionMediator {
 
         // Only show the user data sharing consent text for sign up.
         if (!account.isSignIn()) {
-            String provider_url = UrlFormatter.formatUrlForSecurityDisplay(
-                    idpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
             mSheetItems.add(new ListItem(ItemType.DATA_SHARING_CONSENT,
-                    createDataSharingConsentItem(provider_url, clientMetadata)));
+                    createDataSharingConsentItem(rpUrl, idpUrl, clientMetadata)));
         }
     }
 
@@ -158,7 +156,7 @@ class AccountSelectionMediator {
         boolean hasSingleAccount = (accounts.size() == 1);
         addAccounts(idpUrl, accounts, /*areAccountsClickable=*/!hasSingleAccount);
         if (hasSingleAccount) {
-            addButton(accounts.get(0), idpUrl, idpMetadata, clientMetadata, isAutoSignIn);
+            addButton(rpUrl, idpUrl, accounts.get(0), idpMetadata, clientMetadata, isAutoSignIn);
         }
 
         showContent();
@@ -263,13 +261,18 @@ class AccountSelectionMediator {
     }
 
     private PropertyModel createDataSharingConsentItem(
-            String provider, ClientIdMetadata clientMetadata) {
+            GURL rpUrl, GURL idpUrl, ClientIdMetadata metadata) {
+        DataSharingConsentProperties.Properties properties =
+                new DataSharingConsentProperties.Properties();
+        properties.mFormattedIdpUrl =
+                UrlFormatter.formatUrlForSecurityDisplay(idpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        properties.mFormattedRpUrl =
+                UrlFormatter.formatUrlForSecurityDisplay(rpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        properties.mTermsOfServiceUrl = metadata.getTermsOfServiceUrl().getValidSpecOrEmpty();
+        properties.mPrivacyPolicyUrl = metadata.getPrivacyPolicyUrl().getValidSpecOrEmpty();
+
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
-                .with(DataSharingConsentProperties.PROVIDER_URL, provider)
-                .with(DataSharingConsentProperties.TERMS_OF_SERVICE_URL,
-                        clientMetadata.getTermsOfServiceUrl().getValidSpecOrEmpty())
-                .with(DataSharingConsentProperties.PRIVACY_POLICY_URL,
-                        clientMetadata.getPrivacyPolicyUrl().getValidSpecOrEmpty())
+                .with(DataSharingConsentProperties.PROPERTIES, properties)
                 .build();
     }
 }

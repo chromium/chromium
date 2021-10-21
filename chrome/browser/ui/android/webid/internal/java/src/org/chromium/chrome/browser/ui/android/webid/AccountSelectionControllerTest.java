@@ -20,9 +20,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ACCOUNT;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.AVATAR;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.FAVICON_OR_FALLBACK;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties.PRIVACY_POLICY_URL;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties.PROVIDER_URL;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties.TERMS_OF_SERVICE_URL;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.FORMATTED_RP_URL;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
@@ -50,6 +47,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.A
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AutoSignInCancelButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -424,13 +422,18 @@ public class AccountSelectionControllerTest {
         assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(1).type);
         assertEquals(
                 "Incorrect consent type", ItemType.DATA_SHARING_CONSENT, mSheetItems.get(3).type);
+
+        DataSharingConsentProperties.Properties dataSharingProperties =
+                mSheetItems.get(3).model.get(DataSharingConsentProperties.PROPERTIES);
         assertEquals("Incorrect privacy policy URL", TEST_URL_PRIVACY_POLICY.getSpec(),
-                mSheetItems.get(3).model.get(PRIVACY_POLICY_URL));
+                dataSharingProperties.mPrivacyPolicyUrl);
         assertEquals("Incorrect terms of service URL", TEST_URL_TERMS_OF_SERVICE.getSpec(),
-                mSheetItems.get(3).model.get(TERMS_OF_SERVICE_URL));
+                dataSharingProperties.mTermsOfServiceUrl);
         assertEquals("Incorrect continue type", ItemType.CONTINUE_BUTTON, mSheetItems.get(2).type);
+        assertEquals("incorrect rp url", formatForSecurityDisplay(TEST_URL),
+                dataSharingProperties.mFormattedRpUrl);
         assertEquals("Incorrect provider url", formatForSecurityDisplay(TEST_URL_2),
-                mSheetItems.get(3).model.get(PROVIDER_URL));
+                dataSharingProperties.mFormattedIdpUrl);
     }
 
     /**

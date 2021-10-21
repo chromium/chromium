@@ -183,17 +183,20 @@ class AccountSelectionViewBinder {
      * @param key The key of the property to be bound.
      */
     static void bindDataSharingConsentView(PropertyModel model, View view, PropertyKey key) {
-        if (key == DataSharingConsentProperties.PROVIDER_URL
-                || key == DataSharingConsentProperties.TERMS_OF_SERVICE_URL
-                || key == DataSharingConsentProperties.PRIVACY_POLICY_URL) {
-            NoUnderlineClickableSpan termsOfServiceLink = createLink(view.getResources(),
-                    model.get(DataSharingConsentProperties.TERMS_OF_SERVICE_URL));
-            NoUnderlineClickableSpan privacyPolicyLink = createLink(view.getResources(),
-                    model.get(DataSharingConsentProperties.PRIVACY_POLICY_URL));
-            String providerUrl = model.get(DataSharingConsentProperties.PROVIDER_URL);
+        if (key == DataSharingConsentProperties.PROPERTIES) {
+            DataSharingConsentProperties.Properties properties =
+                    model.get(DataSharingConsentProperties.PROPERTIES);
+
+            Resources resources = view.getResources();
+            NoUnderlineClickableSpan privacyPolicyLink =
+                    createLink(resources, properties.mPrivacyPolicyUrl);
+            NoUnderlineClickableSpan termsOfServiceLink =
+                    createLink(resources, properties.mTermsOfServiceUrl);
+
             String consentText = String.format(
                     view.getContext().getString(R.string.account_selection_data_sharing_consent),
-                    providerUrl);
+                    properties.mFormattedIdpUrl, properties.mFormattedRpUrl,
+                    properties.mFormattedRpUrl);
             SpannableString span = SpanApplier.applySpans(consentText,
                     new SpanApplier.SpanInfo("<link1>", "</link1>", privacyPolicyLink),
                     new SpanApplier.SpanInfo("<link2>", "</link2>", termsOfServiceLink));

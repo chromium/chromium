@@ -230,19 +230,22 @@ public class AccountSelectionViewTest {
     @Test
     @MediumTest
     public void testDataSharingConsentDisplayed() {
+        final String rpUrl = "www.rp.org";
+        final String idpUrl = "www.idp.org";
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mSheetItems.addAll(
-                    Collections.singletonList(buildDataSharingConsentItem("www.example.org")));
+                    Collections.singletonList(buildDataSharingConsentItem(rpUrl, idpUrl)));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         assertNotNull(getAccounts().getChildAt(0));
         TextView consent = mContentView.findViewById(R.id.user_data_sharing_consent);
-        String sharing_consent_text = mActivity.getString(
-                R.string.account_selection_data_sharing_consent, "www.example.org");
-        sharing_consent_text = sharing_consent_text.replaceAll("<[^>]*>", "");
+        String expectedSharingConsentText =
+                mActivity.getString(R.string.account_selection_data_sharing_consent, "www.idp.org",
+                        "www.rp.org", "www.rp.org");
+        expectedSharingConsentText = expectedSharingConsentText.replaceAll("<[^>]*>", "");
         // We use toString() here because otherwise getText() returns a
         // Spanned, which is not equal to the string we get from the resources.
-        assertEquals("Incorrect data sharing consent text", sharing_consent_text,
+        assertEquals("Incorrect data sharing consent text", expectedSharingConsentText,
                 consent.getText().toString());
         Spanned spannedString = (Spanned) consent.getText();
         ClickableSpan[] spans =
@@ -292,12 +295,17 @@ public class AccountSelectionViewTest {
                         .build());
     }
 
-    private MVCListAdapter.ListItem buildDataSharingConsentItem(String provider) {
+    private MVCListAdapter.ListItem buildDataSharingConsentItem(String rpUrl, String idpUrl) {
+        DataSharingConsentProperties.Properties properties =
+                new DataSharingConsentProperties.Properties();
+        properties.mFormattedRpUrl = rpUrl;
+        properties.mFormattedIdpUrl = idpUrl;
+        properties.mTermsOfServiceUrl = "";
+        properties.mPrivacyPolicyUrl = "";
+
         return new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.DATA_SHARING_CONSENT,
                 new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
-                        .with(DataSharingConsentProperties.PROVIDER_URL, provider)
-                        .with(DataSharingConsentProperties.TERMS_OF_SERVICE_URL, "")
-                        .with(DataSharingConsentProperties.PRIVACY_POLICY_URL, "")
+                        .with(DataSharingConsentProperties.PROPERTIES, properties)
                         .build());
     }
 }
