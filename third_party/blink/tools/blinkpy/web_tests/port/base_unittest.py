@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import mock
+import operator
 import optparse
 import unittest
 
@@ -532,7 +533,7 @@ class PortTest(LoggingTestCase):
         port = self.make_port(port_name='foo')
 
         non_utf8_file = MOCK_WEB_TESTS + 'FlagExpectations/non-utf8-file'
-        invalid_utf8 = '\xC0'
+        invalid_utf8 = b'\xC0'
         port.host.filesystem.write_binary_file(non_utf8_file, invalid_utf8)
 
         with self.assertRaises(UnicodeDecodeError):
@@ -897,9 +898,9 @@ class PortTest(LoggingTestCase):
         self.assertEqual(
             sorted(port.tests(['virtual/virtual_wpt/external/wpt/'])), all_wpt)
         self.assertEqual(
-            port.tests(['virtual/virtual_wpt/external/wpt/console']), [
-                'virtual/virtual_wpt/external/wpt/console/console-is-a-namespace.any.worker.html',
-                'virtual/virtual_wpt/external/wpt/console/console-is-a-namespace.any.html'
+            sorted(port.tests(['virtual/virtual_wpt/external/wpt/console'])), [
+                'virtual/virtual_wpt/external/wpt/console/console-is-a-namespace.any.html',
+                'virtual/virtual_wpt/external/wpt/console/console-is-a-namespace.any.worker.html'
             ])
 
         self.assertEqual(
@@ -1675,29 +1676,27 @@ class NaturalCompareTest(unittest.TestCase):
     def setUp(self):
         self._port = TestPort(MockSystemHost())
 
-    def assert_cmp(self, x, y, result):
-        # pylint: disable=protected-access
-        self.assertEqual(
-            cmp(
-                self._port._natural_sort_key(x),
-                self._port._natural_sort_key(y)), result)
+    def assert_order(self, x, y, predicate):
+        self.assertTrue(
+            predicate(self._port._natural_sort_key(x),
+                      self._port._natural_sort_key(y)))
 
     def test_natural_compare(self):
-        self.assert_cmp('a', 'a', 0)
-        self.assert_cmp('ab', 'a', 1)
-        self.assert_cmp('a', 'ab', -1)
-        self.assert_cmp('', '', 0)
-        self.assert_cmp('', 'ab', -1)
-        self.assert_cmp('1', '2', -1)
-        self.assert_cmp('2', '1', 1)
-        self.assert_cmp('1', '10', -1)
-        self.assert_cmp('2', '10', -1)
-        self.assert_cmp('foo_1.html', 'foo_2.html', -1)
-        self.assert_cmp('foo_1.1.html', 'foo_2.html', -1)
-        self.assert_cmp('foo_1.html', 'foo_10.html', -1)
-        self.assert_cmp('foo_2.html', 'foo_10.html', -1)
-        self.assert_cmp('foo_23.html', 'foo_10.html', 1)
-        self.assert_cmp('foo_23.html', 'foo_100.html', -1)
+        self.assert_order('a', 'a', operator.eq)
+        self.assert_order('ab', 'a', operator.gt)
+        self.assert_order('a', 'ab', operator.lt)
+        self.assert_order('', '', operator.eq)
+        self.assert_order('', 'ab', operator.lt)
+        self.assert_order('1', '2', operator.lt)
+        self.assert_order('2', '1', operator.gt)
+        self.assert_order('1', '10', operator.lt)
+        self.assert_order('2', '10', operator.lt)
+        self.assert_order('foo_1.html', 'foo_2.html', operator.lt)
+        self.assert_order('foo_1.1.html', 'foo_2.html', operator.lt)
+        self.assert_order('foo_1.html', 'foo_10.html', operator.lt)
+        self.assert_order('foo_2.html', 'foo_10.html', operator.lt)
+        self.assert_order('foo_23.html', 'foo_10.html', operator.gt)
+        self.assert_order('foo_23.html', 'foo_100.html', operator.lt)
 
 
 class KeyCompareTest(unittest.TestCase):
@@ -1708,15 +1707,19 @@ class KeyCompareTest(unittest.TestCase):
         self.assertEqual(
             cmp(self._port.test_key(x), self._port.test_key(y)), result)
 
+    def assert_order(self, x, y, predicate):
+        self.assertTrue(
+            predicate(self._port.test_key(x), self._port.test_key(y)))
+
     def test_test_key(self):
-        self.assert_cmp('/a', '/a', 0)
-        self.assert_cmp('/a', '/b', -1)
-        self.assert_cmp('/a2', '/a10', -1)
-        self.assert_cmp('/a2/foo', '/a10/foo', -1)
-        self.assert_cmp('/a/foo11', '/a/foo2', 1)
-        self.assert_cmp('/ab', '/a/a/b', -1)
-        self.assert_cmp('/a/a/b', '/ab', 1)
-        self.assert_cmp('/foo-bar/baz', '/foo/baz', -1)
+        self.assert_order('/a', '/a', operator.eq)
+        self.assert_order('/a', '/b', operator.lt)
+        self.assert_order('/a2', '/a10', operator.lt)
+        self.assert_order('/a2/foo', '/a10/foo', operator.lt)
+        self.assert_order('/a/foo11', '/a/foo2', operator.gt)
+        self.assert_order('/ab', '/a/a/b', operator.lt)
+        self.assert_order('/a/a/b', '/ab', operator.gt)
+        self.assert_order('/foo-bar/baz', '/foo/baz', operator.lt)
 
 
 class VirtualTestSuiteTest(unittest.TestCase):
