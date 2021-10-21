@@ -117,7 +117,7 @@ const base::Feature kRtVcpuDualCore{"ArcRtVcpuDualCore",
 // in tast-tests/src/chromiumos/tast/local/bundles/cros/arc/cpu_set.go to
 // add ArcRtVcpuQuadCore there. Otherwise, the test will start failing.
 const base::Feature kRtVcpuQuadCore{"ArcRtVcpuQuadCore",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, unclaimed USB device will be attached to ARCVM by default.
 const base::Feature kUsbDeviceDefaultAttachToArcVm{
