@@ -850,6 +850,26 @@ try_.chromium_chromiumos_builder(
 )
 
 try_.chromium_chromiumos_builder(
+    name = "linux-chromeos-rel-compilator",
+    branch_selector = branches.CROS_LTS_MILESTONE,
+    builderless = not settings.is_main,
+    cores = 16,
+    executable = "recipe:chromium/compilator",
+    goma_jobs = goma.jobs.J300,
+    main_list_view = "try",
+    use_clang_coverage = True,
+    os = os.LINUX_BIONIC_REMOVE,
+    coverage_test_types = ["unit", "overall"],
+    ssd = True,
+    properties = {
+        "orchestrator": {
+            "builder_name": "linux-chromeos-rel",
+            "builder_group": "tryserver.chromium.chromiumos",
+        },
+    },
+)
+
+try_.chromium_chromiumos_builder(
     name = "linux-chromeos-js-code-coverage",
     use_clang_coverage = True,
     use_javascript_coverage = True,
