@@ -667,79 +667,71 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
         longest_input_timestamp.InMilliseconds());
   }
 
-  if (GetDelegate()
-          .GetNormalizedResponsivenessMetrics()
-          .num_user_interactions) {
-    const page_load_metrics::NormalizedResponsivenessMetrics&
-        normalized_responsiveness_metrics =
-            GetDelegate().GetNormalizedResponsivenessMetrics();
+  const page_load_metrics::NormalizedResponsivenessMetrics&
+      normalized_responsiveness_metrics =
+          GetDelegate().GetNormalizedResponsivenessMetrics();
+  auto& max_event_durations =
+      normalized_responsiveness_metrics.normalized_max_event_durations;
+  auto& total_event_durations =
+      normalized_responsiveness_metrics.normalized_total_event_durations;
+  if (normalized_responsiveness_metrics.num_user_interactions) {
     builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
-        normalized_responsiveness_metrics.normalized_max_event_durations
-            .worst_latency.InMilliseconds());
+        max_event_durations.worst_latency.InMilliseconds());
     builder.SetInteractiveTiming_WorstUserInteractionLatency_TotalEventDuration(
-        normalized_responsiveness_metrics.normalized_total_event_durations
-            .worst_latency.InMilliseconds());
+        total_event_durations.worst_latency.InMilliseconds());
     if (base::FeatureList::IsEnabled(
             blink::features::kSendAllUserInteractionLatencies)) {
       // When the flag is disabled, we don't know the type of user interactions
       // and can't calculate the worst over budget.
       builder
           .SetInteractiveTiming_WorstUserInteractionLatencyOverBudget_MaxEventDuration(
-              normalized_responsiveness_metrics.normalized_max_event_durations
-                  .worst_latency_over_budget.InMilliseconds());
+              max_event_durations.worst_latency_over_budget.InMilliseconds());
       builder
           .SetInteractiveTiming_WorstUserInteractionLatencyOverBudget_TotalEventDuration(
-              normalized_responsiveness_metrics.normalized_total_event_durations
-                  .worst_latency_over_budget.InMilliseconds());
+              total_event_durations.worst_latency_over_budget.InMilliseconds());
       builder
           .SetInteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventDuration(
-              normalized_responsiveness_metrics.normalized_max_event_durations
-                  .sum_of_latency_over_budget.InMilliseconds());
+              max_event_durations.sum_of_latency_over_budget.InMilliseconds());
       builder
           .SetInteractiveTiming_SumOfUserInteractionLatencyOverBudget_TotalEventDuration(
-              normalized_responsiveness_metrics.normalized_total_event_durations
-                  .sum_of_latency_over_budget.InMilliseconds());
+              total_event_durations.sum_of_latency_over_budget
+                  .InMilliseconds());
       builder
           .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDuration(
-              normalized_responsiveness_metrics.normalized_max_event_durations
-                  .sum_of_latency_over_budget.InMilliseconds() /
+              max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
               normalized_responsiveness_metrics.num_user_interactions);
       builder
           .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_TotalEventDuration(
-              normalized_responsiveness_metrics.normalized_total_event_durations
-                  .sum_of_latency_over_budget.InMilliseconds() /
+              total_event_durations.sum_of_latency_over_budget
+                  .InMilliseconds() /
               normalized_responsiveness_metrics.num_user_interactions);
       builder
           .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_MaxEventDuration(
-              normalized_responsiveness_metrics.normalized_max_event_durations
-                  .high_percentile_latency_over_budget.InMilliseconds());
+              max_event_durations.high_percentile_latency_over_budget
+                  .InMilliseconds());
       builder
           .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_TotalEventDuration(
-              normalized_responsiveness_metrics.normalized_total_event_durations
-                  .high_percentile_latency_over_budget.InMilliseconds());
+              total_event_durations.high_percentile_latency_over_budget
+                  .InMilliseconds());
+
       auto worst_ten_max_event_durations =
-          normalized_responsiveness_metrics.normalized_max_event_durations
-              .worst_ten_latencies_over_budget;
+          max_event_durations.worst_ten_latencies_over_budget;
       auto worst_ten_total_event_durations =
-          normalized_responsiveness_metrics.normalized_total_event_durations
-              .worst_ten_latencies_over_budget;
-      int index = std::max(
-          0, static_cast<int>(worst_ten_max_event_durations.size()) - 1 -
-                 static_cast<int>(
-                     GetDelegate()
-                         .GetNormalizedResponsivenessMetrics()
-                         .num_user_interactions /
-                     page_load_metrics::kHighPercentileUpdateFrequency));
-      for (; index > 0; index--) {
-        worst_ten_max_event_durations.pop();
-        worst_ten_total_event_durations.pop();
-      }
+          total_event_durations.worst_ten_latencies_over_budget;
       builder
           .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventDuration(
-              worst_ten_max_event_durations.top().InMilliseconds());
+              page_load_metrics::ResponsivenessMetricsNormalization::
+                  ApproximateHighPercentile(
+                      normalized_responsiveness_metrics.num_user_interactions,
+                      worst_ten_max_event_durations)
+                      .InMilliseconds());
       builder
           .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_TotalEventDuration(
-              worst_ten_total_event_durations.top().InMilliseconds());
+              page_load_metrics::ResponsivenessMetricsNormalization::
+                  ApproximateHighPercentile(
+                      normalized_responsiveness_metrics.num_user_interactions,
+                      worst_ten_total_event_durations)
+                      .InMilliseconds());
     }
   }
   if (timing.interactive_timing->first_scroll_delay &&

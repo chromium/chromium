@@ -790,6 +790,15 @@ void PageLoadTracker::OnSubFrameTimingChanged(
   }
 }
 
+void PageLoadTracker::OnSubFrameInputTimingChanged(
+    content::RenderFrameHost* rfh,
+    const mojom::InputTiming& input_timing_delta) {
+  DCHECK(rfh->GetParent());
+  for (const auto& observer : observers_) {
+    observer->OnInputTimingUpdate(rfh, input_timing_delta);
+  }
+}
+
 void PageLoadTracker::OnSubFrameRenderDataChanged(
     content::RenderFrameHost* rfh,
     const mojom::FrameRenderDataUpdate& render_data) {
@@ -1029,6 +1038,8 @@ void PageLoadTracker::OnEnterBackForwardCache() {
   INVOKE_AND_PRUNE_OBSERVERS(observers_, OnEnterBackForwardCache,
                              metrics_update_dispatcher_.timing());
   metrics_update_dispatcher_.UpdateLayoutShiftNormalizationForBfcache();
+  metrics_update_dispatcher_
+      .UpdateResponsivenessMetricsNormalizationForBfcache();
   if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE) {
     PageHidden();
   }

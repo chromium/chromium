@@ -512,6 +512,8 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
   } else {
     UpdateSubFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateSubFrameTiming(render_frame_host, std::move(new_timing));
+    // This path is just for the AMP metrics.
+    UpdateSubFrameInputTiming(render_frame_host, *input_timing_delta);
     UpdateSubFrameMobileFriendliness(mobile_friendliness);
   }
   UpdatePageInputTiming(*input_timing_delta);
@@ -603,6 +605,12 @@ void PageLoadMetricsUpdateDispatcher::UpdateSubFrameTiming(
   merger.Merge(navigation_start_offset, *new_timing, false /* is_main_frame */);
 
   MaybeDispatchTimingUpdates(merger.should_buffer_timing_update_callback());
+}
+
+void PageLoadMetricsUpdateDispatcher::UpdateSubFrameInputTiming(
+    content::RenderFrameHost* render_frame_host,
+    const mojom::InputTiming& input_timing_delta) {
+  client_->OnSubFrameInputTimingChanged(render_frame_host, input_timing_delta);
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateFrameCpuTiming(

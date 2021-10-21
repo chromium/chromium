@@ -369,6 +369,13 @@ class PageLoadMetricsObserver {
   virtual void OnMobileFriendlinessUpdate(
       const blink::MobileFriendliness& mobile_friendliness) {}
 
+  // OnInputTimingUpdate is triggered when an updated InputTiming is available
+  // at the subframe level. This method may be called multiple times over the
+  // course of the page load.
+  virtual void OnInputTimingUpdate(
+      content::RenderFrameHost* subframe_rfh,
+      const mojom::InputTiming& input_timing_delta) {}
+
   // OnRenderDataUpdate is triggered when an updated PageRenderData is available
   // at the subframe level. This method may be called multiple times over the
   // course of the page load.

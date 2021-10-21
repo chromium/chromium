@@ -21,6 +21,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -183,6 +184,25 @@ void AMPPageLoadMetricsObserver::OnTimingUpdate(
     return;
 
   it->second.timing = timing.Clone();
+}
+
+void AMPPageLoadMetricsObserver::OnInputTimingUpdate(
+    content::RenderFrameHost* subframe_rfh,
+    const page_load_metrics::mojom::InputTiming& input_timing_delta) {
+  if (subframe_rfh == nullptr)
+    return;
+
+  auto it = amp_subframe_info_.find(subframe_rfh);
+  if (it == amp_subframe_info_.end())
+    return;
+
+  if (input_timing_delta.num_interactions) {
+    it->second.responsiveness_metrics_normalization
+        .AddNewUserInteractionLatencies(
+            input_timing_delta.num_interactions,
+            *(input_timing_delta.max_event_durations),
+            *(input_timing_delta.total_event_durations));
+  }
 }
 
 void AMPPageLoadMetricsObserver::OnMobileFriendlinessUpdate(
@@ -521,7 +541,82 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
     }
   }
 
+  RecordNormalizedResponsivenessMetrics(
+      subframe_info.responsiveness_metrics_normalization
+          .GetNormalizedResponsivenessMetrics(),
+      builder);
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
+    const page_load_metrics::NormalizedResponsivenessMetrics&
+        normalized_responsiveness_metrics,
+    ukm::builders::AmpPageLoad& builder) {
+  if (!normalized_responsiveness_metrics.num_user_interactions)
+    return;
+
+  auto& max_event_durations =
+      normalized_responsiveness_metrics.normalized_max_event_durations;
+  auto& total_event_durations =
+      normalized_responsiveness_metrics.normalized_total_event_durations;
+
+  builder
+      .SetSubFrame_InteractiveTiming_WorstUserInteractionLatency_MaxEventduration(
+          max_event_durations.worst_latency.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_WorstUserInteractionLatency_TotalEventduration(
+          total_event_durations.worst_latency.InMilliseconds());
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSendAllUserInteractionLatencies))
+    return;
+
+  builder
+      .SetSubFrame_InteractiveTiming_WorstUserInteractionLatencyOverBudget_MaxEventduration(
+          max_event_durations.worst_latency_over_budget.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_WorstUserInteractionLatencyOverBudget_TotalEventduration(
+          total_event_durations.worst_latency_over_budget.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventduration(
+          max_event_durations.sum_of_latency_over_budget.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_SumOfUserInteractionLatencyOverBudget_TotalEventduration(
+          total_event_durations.sum_of_latency_over_budget.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventduration(
+          max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
+          normalized_responsiveness_metrics.num_user_interactions);
+  builder
+      .SetSubFrame_InteractiveTiming_AverageUserInteractionLatencyOverBudget_TotalEventduration(
+          total_event_durations.sum_of_latency_over_budget.InMilliseconds() /
+          normalized_responsiveness_metrics.num_user_interactions);
+  builder
+      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_MaxEventduration(
+          max_event_durations.high_percentile_latency_over_budget
+              .InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_TotalEventduration(
+          total_event_durations.high_percentile_latency_over_budget
+              .InMilliseconds());
+  auto worst_ten_max_event_durations =
+      max_event_durations.worst_ten_latencies_over_budget;
+  auto worst_ten_total_event_durations =
+      total_event_durations.worst_ten_latencies_over_budget;
+  builder
+      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventduration(
+          page_load_metrics::ResponsivenessMetricsNormalization::
+              ApproximateHighPercentile(
+                  normalized_responsiveness_metrics.num_user_interactions,
+                  worst_ten_max_event_durations)
+                  .InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_TotalEventduration(
+          page_load_metrics::ResponsivenessMetricsNormalization::
+              ApproximateHighPercentile(
+                  normalized_responsiveness_metrics.num_user_interactions,
+                  worst_ten_total_event_durations)
+                  .InMilliseconds());
 }
 
 void AMPPageLoadMetricsObserver::RecordMobileFriendliness(

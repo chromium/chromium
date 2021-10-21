@@ -7,9 +7,11 @@
 
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace internal {
 
@@ -231,6 +233,91 @@ void BackForwardCachePageLoadMetricsObserver::RecordMetricsOnPageVisitEnd(
   MaybeRecordPageEndAfterBackForwardCacheRestore(app_entering_background);
   MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
       app_entering_background);
+  MaybeRecordNormalizedResponsivenessMetrics();
+}
+
+void BackForwardCachePageLoadMetricsObserver::
+    MaybeRecordNormalizedResponsivenessMetrics() {
+  if (!has_ever_entered_back_forward_cache_)
+    return;
+  // Normalized Responsiveness Metrics.
+  const page_load_metrics::NormalizedResponsivenessMetrics&
+      normalized_responsiveness_metrics =
+          GetDelegate().GetNormalizedResponsivenessMetrics();
+
+  if (!normalized_responsiveness_metrics.num_user_interactions)
+    return;
+
+  auto& max_event_durations =
+      normalized_responsiveness_metrics.normalized_max_event_durations;
+  auto& total_event_durations =
+      normalized_responsiveness_metrics.normalized_total_event_durations;
+  // HistoryNavigation is a singular event, and we share the same instance as
+  // long as we use the same source ID.
+  ukm::builders::HistoryNavigation builder(
+      GetLastUkmSourceIdForBackForwardCacheRestore());
+  builder
+      .SetWorstUserInteractionLatencyAfterBackForwardCacheRestore_MaxEventduration(
+          max_event_durations.worst_latency.InMilliseconds());
+  builder
+      .SetWorstUserInteractionLatencyAfterBackForwardCacheRestore_TotalEventduration(
+          total_event_durations.worst_latency.InMilliseconds());
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSendAllUserInteractionLatencies)) {
+    builder.Record(ukm::UkmRecorder::Get());
+    return;
+  }
+
+  builder
+      .SetWorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventduration(
+          max_event_durations.worst_latency_over_budget.InMilliseconds());
+  builder
+      .SetWorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_TotalEventduration(
+          total_event_durations.worst_latency_over_budget.InMilliseconds());
+
+  builder
+      .SetSumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventduration(
+          max_event_durations.sum_of_latency_over_budget.InMilliseconds());
+  builder
+      .SetSumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_TotalEventduration(
+          total_event_durations.sum_of_latency_over_budget.InMilliseconds());
+
+  builder
+      .SetAverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventduration(
+          max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
+          normalized_responsiveness_metrics.num_user_interactions);
+  builder
+      .SetAverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_TotalEventduration(
+          total_event_durations.sum_of_latency_over_budget.InMilliseconds() /
+          normalized_responsiveness_metrics.num_user_interactions);
+
+  builder
+      .SetSlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_HighPercentile_MaxEventduration(
+          max_event_durations.high_percentile_latency_over_budget
+              .InMilliseconds());
+  builder
+      .SetSlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_HighPercentile_TotalEventduration(
+          total_event_durations.high_percentile_latency_over_budget
+              .InMilliseconds());
+  auto worst_ten_max_event_durations =
+      max_event_durations.worst_ten_latencies_over_budget;
+  auto worst_ten_total_event_durations =
+      total_event_durations.worst_ten_latencies_over_budget;
+  builder
+      .SetSlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_HighPercentile2_MaxEventduration(
+          page_load_metrics::ResponsivenessMetricsNormalization::
+              ApproximateHighPercentile(
+                  normalized_responsiveness_metrics.num_user_interactions,
+                  worst_ten_max_event_durations)
+                  .InMilliseconds());
+  builder
+      .SetSlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_HighPercentile2_TotalEventduration(
+          page_load_metrics::ResponsivenessMetricsNormalization::
+              ApproximateHighPercentile(
+                  normalized_responsiveness_metrics.num_user_interactions,
+                  worst_ten_total_event_durations)
+                  .InMilliseconds());
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void BackForwardCachePageLoadMetricsObserver::

@@ -99,6 +99,13 @@ class BackForwardCachePageLoadMetricsObserver
   void MaybeRecordPageEndAfterBackForwardCacheRestore(
       bool app_entering_background);
 
+  // Recorded normalized responsiveness metrics after the page is restored from
+  // the back-forward cache. This is called when the page is navigated away,
+  // i.e., when the page enters to the cache, or the page is closed. In the
+  // first call, as the page has not been in the back-forward cache yet, this
+  // doesn't record the scores.
+  void MaybeRecordNormalizedResponsivenessMetrics();
+
   // Returns the UKM source ID for index-th back-foward restore navigation.
   int64_t GetUkmSourceIdForBackForwardCacheRestore(size_t index) const;
 
