@@ -267,18 +267,18 @@ void DisallowUnresponsiveTasks() {
 
 // static
 void PermanentThreadAllowance::AllowBlocking() {
-  *GetBlockingDisallowedTls().Set(std::make_unique<BooleanWithStack>(false));
+  GetBlockingDisallowedTls().Set(std::make_unique<BooleanWithStack>(false));
 }
 
 // static
 void PermanentThreadAllowance::AllowBaseSyncPrimitives() {
-  *GetBaseSyncPrimitivesDisallowedTls().Set(
+  GetBaseSyncPrimitivesDisallowedTls().Set(
       std::make_unique<BooleanWithStack>(false));
 }
 
 // static
 void PermanentSingletonAllowance::AllowSingleton() {
-  *GetSingletonDisallowedTls().Set(std::make_unique<BooleanWithStack>(false));
+  GetSingletonDisallowedTls().Set(std::make_unique<BooleanWithStack>(false));
 }
 
 }  // namespace base
