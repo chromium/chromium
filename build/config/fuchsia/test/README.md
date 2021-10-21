@@ -22,6 +22,10 @@ number of tests.
 Capabilities required by anything that uses `//base/test`, used as the base
 fragment for all test suites.
 
+`config-data` is included in the features list so that the platform can offer
+ICU timezone data to these tests when they are being run.  A more general
+approach is discussed in https://fxbug.dev/85845.
+
 #### read_debug_data.test-cmx
 Required by tests that need access to its debug directory. Should only be
 required in a small number of tests.

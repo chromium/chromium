@@ -17,7 +17,8 @@
     ],
     "features": [
       "isolated-persistent-storage",
-      "isolated-temp"
+      "isolated-temp",
+      "config-data"
     ],
     "services": [
       "fuchsia.intl.PropertyProvider",
