@@ -66,6 +66,10 @@
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 #endif
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
+#endif
+
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
 #include "chrome/browser/extensions/api/mdns/mdns_api.h"
 #endif
@@ -119,6 +123,9 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ProcessesAPI::GetFactoryInstance();
   extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance();
   extensions::SessionsAPI::GetFactoryInstance();
+#if defined(OS_CHROMEOS)
+  extensions::SessionStateChangedEventDispatcher::GetFactoryInstance();
+#endif
   extensions::SettingsPrivateEventRouterFactory::GetInstance();
   extensions::SettingsOverridesAPI::GetFactoryInstance();
   extensions::SignedInDevicesManager::GetFactoryInstance();

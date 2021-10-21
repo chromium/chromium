@@ -71,6 +71,7 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
@@ -306,6 +307,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::KeystoreService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::KioskSessionService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::LocalPrinter>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::LoginState>(),
     MakeInterfaceVersionEntry<
         chromeos::machine_learning::mojom::MachineLearningService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MessageCenter>(),
@@ -409,7 +411,7 @@ Channel GetStatefulLacrosChannel() {
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 56,
+    crosapi::mojom::Crosapi::Version_ == 57,
     "if you add a new crosapi, please add it to kInterfaceVersionEntries");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");

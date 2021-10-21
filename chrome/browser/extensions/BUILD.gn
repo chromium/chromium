@@ -1001,6 +1001,7 @@ static_library("extensions") {
       deps += [ "//printing/backend" ]
     }
     deps += [
+      "//chrome/browser/chromeos/extensions/login_screen",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//remoting/host/it2me:chrome_os_host",

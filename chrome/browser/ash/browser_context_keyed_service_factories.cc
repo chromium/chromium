@@ -37,7 +37,6 @@
 #include "chrome/browser/chromeos/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/extensions/input_method_api.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
 #include "chrome/browser/chromeos/extensions/media_player_api.h"
 #include "chrome/browser/chromeos/extensions/printing_metrics/print_job_finished_event_dispatcher.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
@@ -81,7 +80,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::PrintingAPIHandler::GetFactoryInstance();
   extensions::PrintJobFinishedEventDispatcher::GetFactoryInstance();
 #endif
-  extensions::SessionStateChangedEventDispatcher::GetFactoryInstance();
   FileChangeServiceFactory::GetInstance();
   file_manager::EventRouterFactory::GetInstance();
   file_manager::VolumeManagerFactory::GetInstance();

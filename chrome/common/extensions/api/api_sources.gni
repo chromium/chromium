@@ -80,6 +80,7 @@ if (is_chromeos) {
     "enterprise_networking_attributes.idl",
     "enterprise_platform_keys.idl",
     "enterprise_platform_keys_internal.idl",
+    "login_state.idl",
     "platform_keys_internal.idl",
     "platform_keys.idl",
   ]
@@ -107,7 +108,6 @@ if (is_chromeos_ash) {
     "login.idl",
     "login_screen_storage.idl",
     "login_screen_ui.idl",
-    "login_state.idl",
     "quick_unlock_private.idl",
     "speech_recognition_private.idl",
     "terminal_private.json",

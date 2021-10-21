@@ -6,12 +6,11 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_STATE_SESSION_STATE_CHANGED_EVENT_DISPATCHER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observation.h"
-#include "chrome/common/extensions/api/login_state.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/core/session_manager_observer.h"
+#include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class BrowserContext;
@@ -21,11 +20,10 @@ namespace extensions {
 
 class EventRouter;
 
-// |SessionStateChangedEventDispatcher| observes changes in the session state
-// and dispatches them to extensions listening on the
-// |loginState.onSessionStateChanged| event.
+// |SessionStateChangedEventDispatcher| dispatches changes in the session state
+// to extensions listening on the |loginState.onSessionStateChanged| event.
 class SessionStateChangedEventDispatcher
-    : public session_manager::SessionManagerObserver,
+    : public crosapi::mojom::SessionStateChangedEventObserver,
       public BrowserContextKeyedAPI {
  public:
   // BrowserContextKeyedAPI implementation.
@@ -43,10 +41,11 @@ class SessionStateChangedEventDispatcher
 
   ~SessionStateChangedEventDispatcher() override;
 
-  // SessionManagerObserver implementation.
-  void OnSessionStateChanged() override;
-
+  bool IsBoundForTesting();
   void SetEventRouterForTesting(EventRouter* event_router);
+
+  // crosapi::mojom::SessionStateChangedEventObserver:
+  void OnSessionStateChanged(crosapi::mojom::SessionState state) override;
 
  private:
   // Needed for BrowserContextKeyedAPI implementation.
@@ -59,12 +58,12 @@ class SessionStateChangedEventDispatcher
   }
   static const bool kServiceIsNULLWhileTesting = true;
 
-  base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_manager_observation_{this};
   content::BrowserContext* browser_context_;
   EventRouter* event_router_;
-  api::login_state::SessionState session_state_;
+
+  // Receives mojo messages from ash.
+  mojo::Receiver<crosapi::mojom::SessionStateChangedEventObserver> receiver_{
+      this};
 };
 
 template <>

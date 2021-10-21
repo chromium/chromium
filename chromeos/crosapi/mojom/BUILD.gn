@@ -37,6 +37,7 @@ mojom("mojom") {
     "keystore_service.mojom",
     "kiosk_session_service.mojom",
     "local_printer.mojom",
+    "login_state.mojom",
     "message_center.mojom",
     "metrics_reporting.mojom",
     "native_theme.mojom",

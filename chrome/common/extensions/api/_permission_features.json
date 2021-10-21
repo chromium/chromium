@@ -507,7 +507,7 @@
   "loginState": [{
     "channel": "stable",
     "extension_types": ["extension"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "stable",
     "component_extensions_auto_granted": false,

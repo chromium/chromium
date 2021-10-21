@@ -4,7 +4,7 @@
 
 // Use the <code>chrome.loginState</code> API to read and monitor the login
 // state.
-[platforms=("chromeos"),
+[platforms=("chromeos", "lacros"),
  implemented_in="chrome/browser/chromeos/extensions/login_screen/login_state/login_state_api.h"]
 namespace loginState {
   enum ProfileType {

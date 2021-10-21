@@ -2711,10 +2711,15 @@ if (!is_android && !is_fuchsia) {
       if (!is_chromeos_lacros) {
         sources += [ "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc" ]
       }
+
       if (is_chromeos) {
         sources +=
             [ "../browser/extensions/clipboard_extension_apitest_chromeos.cc" ]
-        deps += [ "//chromeos/dbus/constants" ]
+
+        deps += [
+          "../browser/chromeos/extensions/login_screen:browser_tests",
+          "//chromeos/dbus/constants",
+        ]
       }
 
       if (is_chromeos_ash) {
@@ -3309,11 +3314,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/chromeos/extensions/info_private_apitest.cc",
         "../browser/chromeos/extensions/input_method_apitest_chromeos.cc",
         "../browser/chromeos/extensions/login_screen/login/login_apitest.cc",
-        "../browser/chromeos/extensions/login_screen/login_screen_i18n_apitest.cc",
         "../browser/chromeos/extensions/login_screen/login_screen_ui/login_screen_ui_apitest.cc",
-        "../browser/chromeos/extensions/login_screen/login_state/login_state_apitest.cc",
-        "../browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher_apitest.cc",
-        "../browser/chromeos/extensions/login_screen/storage_apitest.cc",
         "../browser/chromeos/extensions/speech/speech_recognition_private_apitest.cc",
         "../browser/chromeos/extensions/speech/speech_recognition_private_base_test.cc",
         "../browser/chromeos/extensions/speech/speech_recognition_private_base_test.h",
@@ -3595,6 +3596,7 @@ if (!is_android && !is_fuchsia) {
         "//chrome/browser/chromeos:dlp_policy_event_proto",
         "//chrome/browser/chromeos:key_permissions_proto",
         "//chrome/browser/chromeos:test_support",
+        "//chrome/browser/chromeos/extensions/login_screen",
         "//chrome/browser/image_decoder",
         "//chrome/browser/media/router:test_support",
         "//chrome/browser/metrics/structured",
@@ -4034,6 +4036,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/idle_service_lacros_browsertest.cc",
       "../browser/lacros/keystore_service_lacros_browsertest.cc",
       "../browser/lacros/lacros_extension_apps_controller_lacros_browsertest.cc",
+      "../browser/lacros/login_state_lacros_browsertest.cc",
       "../browser/lacros/machine_learning_service_lacros_browsertest.cc",
       "../browser/lacros/media_session_lacros_browsertest.cc",
       "../browser/lacros/message_center_lacros_browsertest.cc",
@@ -7012,6 +7015,10 @@ test("unit_tests") {
         "../browser/extensions/api/printing/printing_api_handler_unittest.cc",
         "../browser/extensions/api/printing/printing_api_utils_unittest.cc",
       ]
+    }
+
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/chromeos/extensions/login_screen:unit_tests" ]
     }
 
     if (is_chromeos_ash) {
