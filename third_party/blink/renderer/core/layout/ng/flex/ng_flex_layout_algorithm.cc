@@ -432,7 +432,10 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
 
   for (NGBlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
-    if (child.IsOutOfFlowPositioned()) {
+    if (child.IsOutOfFlowPositioned() && !IsResumingLayout(BreakToken())) {
+      // TODO(almaher): OOF elements that are found after an item that fragments
+      // will likely have the wrong static position. Might need to handle OOFs
+      // at a later point in time.
       HandleOutOfFlowPositioned(child);
       continue;
     }
