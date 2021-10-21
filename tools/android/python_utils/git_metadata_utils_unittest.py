@@ -5,10 +5,14 @@
 """Tests for git_metadata_utils."""
 
 import pathlib
+import sys
 import unittest
 from datetime import datetime, timezone
 
-import git_metadata_utils
+_TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[1].resolve()
+if str(_TOOLS_ANDROID_PATH) not in sys.path:
+    sys.path.append(str(_TOOLS_ANDROID_PATH))
+from python_utils import git_metadata_utils
 
 _TEST_FILE_FOLDER = pathlib.Path(__file__).parent.resolve(strict=True)
 
@@ -16,7 +20,9 @@ _TEST_GIT_INTERNAL = _TEST_FILE_FOLDER.joinpath('.git').resolve()
 
 _CHROMIUM_SRC_ROOT = _TEST_FILE_FOLDER.parents[2]
 
-_CLANK_GIT_ROOT = _CHROMIUM_SRC_ROOT.joinpath('clank').resolve(strict=True)
+# Note: git_metadata_utils (and these unit tests) do not depend on V8
+# specifically; any public Git repo would work here.
+_V8_GIT_ROOT = _CHROMIUM_SRC_ROOT.joinpath('v8').resolve(strict=True)
 
 _MISSING_FILE_FOLDER = _TEST_FILE_FOLDER.joinpath('missing',
                                                   'folder').resolve()
@@ -63,7 +69,7 @@ class TestHeadCommitHash(unittest.TestCase):
         chromium_commit_hash = git_metadata_utils.get_head_commit_hash()
 
         commit_hash = git_metadata_utils.get_head_commit_hash(
-            git_repo=str(_CLANK_GIT_ROOT))
+            git_repo=str(_V8_GIT_ROOT))
 
         self.assertRegex(commit_hash, _SHA1_HASH_REGEX,
                          f'"{commit_hash}" is not a SHA1 hash.')
@@ -126,7 +132,7 @@ class TestHeadCommitDatetime(unittest.TestCase):
         chromium_datetime = git_metadata_utils.get_head_commit_datetime()
 
         commit_datetime = git_metadata_utils.get_head_commit_datetime(
-            git_repo=str(_CLANK_GIT_ROOT))
+            git_repo=str(_V8_GIT_ROOT))
 
         self.assertNotEqual(chromium_datetime, commit_datetime)
 

@@ -9,7 +9,7 @@ import functools
 import pathlib
 from typing import Optional
 
-import subprocess_utils
+from . import subprocess_utils
 
 
 @functools.lru_cache(maxsize=1)
