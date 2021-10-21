@@ -28,6 +28,7 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/win_util.h"
 
 namespace updater {
@@ -362,7 +363,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
     return true;
   }
 
-  bool RegisterTask(const wchar_t* task_name,
+  bool RegisterTask(UpdaterScope scope,
+                    const wchar_t* task_name,
                     const wchar_t* task_description,
                     const base::CommandLine& run_command,
                     TriggerType trigger_type,
@@ -381,30 +383,29 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    base::win::ScopedBstr user_name;
-    if (!GetCurrentUser(&user_name))
+    bool is_system = scope == UpdaterScope::kSystem;
+    base::win::ScopedBstr user_name(L"NT AUTHORITY\\SYSTEM");
+    if (!is_system && !GetCurrentUser(&user_name))
       return false;
 
-    if (trigger_type != TRIGGER_TYPE_NOW) {
-      // Allow the task to run elevated on startup.
-      Microsoft::WRL::ComPtr<IPrincipal> principal;
-      hr = task->get_Principal(&principal);
-      if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't get principal. " << std::hex << hr;
-        return false;
-      }
+    Microsoft::WRL::ComPtr<IPrincipal> principal;
+    hr = task->get_Principal(&principal);
+    if (FAILED(hr)) {
+      PLOG(ERROR) << "Can't get principal. " << std::hex << hr;
+      return false;
+    }
 
-      hr = principal->put_UserId(user_name.Get());
-      if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't put user id. " << std::hex << hr;
-        return false;
-      }
+    hr = principal->put_UserId(user_name.Get());
+    if (FAILED(hr)) {
+      PLOG(ERROR) << "Can't put user id. " << std::hex << hr;
+      return false;
+    }
 
-      hr = principal->put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
-      if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't put logon type. " << std::hex << hr;
-        return false;
-      }
+    hr = is_system ? principal->put_RunLevel(TASK_RUNLEVEL_HIGHEST)
+                   : principal->put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
+    if (FAILED(hr)) {
+      PLOG(ERROR) << "Can't put run level or logon type. " << std::hex << hr;
+      return false;
     }
 
     Microsoft::WRL::ComPtr<IRegistrationInfo> registration_info;
@@ -631,7 +632,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
     hr = task_folder_->RegisterTaskDefinition(
         base::win::ScopedBstr(task_name).Get(), task.Get(), TASK_CREATE,
         *user.AsInput(),  // Not really input, but API expect non-const.
-        base::win::ScopedVariant::kEmptyVariant, TASK_LOGON_NONE,
+        base::win::ScopedVariant::kEmptyVariant,
+        scope == UpdaterScope::kSystem ? TASK_LOGON_SERVICE_ACCOUNT
+                                       : TASK_LOGON_INTERACTIVE_TOKEN,
         base::win::ScopedVariant::kEmptyVariant, &registered_task);
     if (FAILED(hr)) {
       LOG(ERROR) << "RegisterTaskDefinition failed. " << std::hex << hr << ": "

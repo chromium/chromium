@@ -63,7 +63,7 @@ bool RegisterWakeTask(const base::CommandLine& run_command,
                       UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance();
   if (!task_scheduler->RegisterTask(
-          GetTaskName(scope).c_str(), GetTaskDisplayName(scope).c_str(),
+          scope, GetTaskName(scope).c_str(), GetTaskDisplayName(scope).c_str(),
           run_command, TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
     LOG(ERROR) << "RegisterWakeTask failed.";
     return false;

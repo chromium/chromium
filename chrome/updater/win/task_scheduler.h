@@ -19,6 +19,8 @@ class Time;
 
 namespace updater {
 
+enum class UpdaterScope;
+
 // This class wraps a scheduled task and expose an API to parametrize a task
 // before calling |Register|, or to verify its existence, or delete it.
 class TaskScheduler {
@@ -121,7 +123,8 @@ class TaskScheduler {
 
   // Register the task to run the specified application and using the given
   // |trigger_type|.
-  virtual bool RegisterTask(const wchar_t* task_name,
+  virtual bool RegisterTask(UpdaterScope scope,
+                            const wchar_t* task_name,
                             const wchar_t* task_description,
                             const base::CommandLine& run_command,
                             TriggerType trigger_type,

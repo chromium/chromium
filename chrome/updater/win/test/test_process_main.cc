@@ -44,7 +44,7 @@ int main(int, char**) {
     base::win::ScopedHandle handle(
         ::OpenEvent(EVENT_ALL_ACCESS, TRUE, event_name.c_str()));
     PLOG_IF(ERROR, !handle.IsValid())
-        << "Cannot create event '" << updater::kTestEventToSignal << "'";
+        << "Cannot open event '" << event_name << "'";
     base::WaitableEvent event(std::move(handle));
     event.Signal();
   }
