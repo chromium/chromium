@@ -15,7 +15,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #include "components/policy/policy_export.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 
 namespace policy {
 

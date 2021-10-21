@@ -17,7 +17,7 @@
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_impl.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage_selector/storage_selector.h"
 #include "components/reporting/util/shared_queue.h"

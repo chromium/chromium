@@ -14,7 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
-#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 

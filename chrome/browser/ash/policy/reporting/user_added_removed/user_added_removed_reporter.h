@@ -12,7 +12,7 @@
 #include "chrome/browser/policy/messaging_layer/proto/synced/user_added_removed_record.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/reporting/client/report_queue_provider.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 
 namespace reporting {
 

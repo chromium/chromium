@@ -15,7 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
-#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/backoff_settings.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status.pb.h"

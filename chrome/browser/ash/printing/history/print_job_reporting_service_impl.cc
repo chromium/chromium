@@ -19,7 +19,7 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/client/report_queue_factory.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status.pb.h"
 #include "components/user_manager/user_manager.h"

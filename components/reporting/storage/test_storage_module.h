@@ -6,8 +6,8 @@
 #define COMPONENTS_REPORTING_STORAGE_TEST_STORAGE_MODULE_H_
 
 #include "base/callback.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

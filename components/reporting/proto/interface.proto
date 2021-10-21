@@ -8,8 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package reporting;
 
-import "components/reporting/proto/record_constants.proto";
-import "components/reporting/proto/record.proto";
+import "components/reporting/proto/synced/record_constants.proto";
+import "components/reporting/proto/synced/record.proto";
 import "components/reporting/util/status.proto";
 
 // ------------ CLIENT/USER REQUEST AND RESPONSES -----------------
@@ -20,7 +20,7 @@ message EnqueueRecordRequest {
   optional Record record = 1;
 
   // Priority from
-  // //chrome/cros/reporting/api/proto/record_constants.proto
+  // //chrome/cros/reporting/api/proto/synced/record_constants.proto
   // indicates what priority queue the record should be included in.
   optional Priority priority = 2;
 }

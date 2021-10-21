@@ -11,7 +11,7 @@
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/task_runner_context.h"
 

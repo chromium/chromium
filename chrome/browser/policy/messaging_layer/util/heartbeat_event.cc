@@ -13,7 +13,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/policy/messaging_layer/util/report_queue_manual_test_context.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/task_runner_context.h"
 

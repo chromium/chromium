@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
-#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "third_party/snappy/src/snappy.h"
 
 namespace reporting {

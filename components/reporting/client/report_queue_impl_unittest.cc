@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/reporting/client/report_queue_configuration.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/test.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"

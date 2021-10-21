@@ -15,7 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
-#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 
 namespace reporting {

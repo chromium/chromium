@@ -28,7 +28,7 @@
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/verification.h"
-#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_queue.h"
 #include "components/reporting/storage/storage_uploader_interface.h"

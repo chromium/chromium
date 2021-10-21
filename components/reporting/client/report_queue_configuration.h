@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 

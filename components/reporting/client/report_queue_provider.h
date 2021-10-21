@@ -15,7 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/shared_queue.h"
 #include "components/reporting/util/status.h"
