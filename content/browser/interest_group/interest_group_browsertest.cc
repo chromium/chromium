@@ -591,9 +591,17 @@ class InterestGroupFencedFrameBrowserTest
       }
     }
 
-    EXPECT_EQ(
-        expected_url,
-        GetFencedFrameRenderFrameHost(execution_target)->GetLastCommittedURL());
+    RenderFrameHost* fenced_frame_host =
+        GetFencedFrameRenderFrameHost(execution_target);
+    // Verify that the URN was resolved to the correct URL.
+    EXPECT_EQ(expected_url, fenced_frame_host->GetLastCommittedURL());
+
+    // Make sure the URL was successfully committed. If the page failed to load
+    // the URL will be `expected_url`, but IsErrorDocument() will be true, and
+    // the last committed origin will be opaque.
+    EXPECT_FALSE(fenced_frame_host->IsErrorDocument());
+    EXPECT_EQ(url::Origin::Create(expected_url),
+              fenced_frame_host->GetLastCommittedOrigin());
   }
 
   // Returns the RenderFrameHost for a fenced frame in `execution_target`, which
@@ -1562,7 +1570,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-  GURL ad_url = https_server_->GetURL("c.test", "/echo");
+  GURL ad_url = https_server_->GetURL(
+      "c.test", "/set-header?Supports-Loading-Mode: fenced-frame");
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
       /*expiry=*/base::Time(),
       /*owner=*/url::Origin::Create(test_url.DeprecatedGetOriginAsURL()),
@@ -1889,7 +1898,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, TopFrameHostname) {
   url::Origin other_origin = url::Origin::Create(other_url);
   ASSERT_TRUE(NavigateToURL(shell(), other_url));
 
-  GURL ad_url = https_server_->GetURL("c.test", "/echo");
+  GURL ad_url = https_server_->GetURL(
+      "c.test", "/set-header?Supports-Loading-Mode: fenced-frame");
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
       /*expiry=*/base::Time(),
       /*owner=*/other_origin,
