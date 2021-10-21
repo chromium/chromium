@@ -8,11 +8,11 @@
 promise_test(async (t) => {
   // 'b1' version
   assert_equals(
-      await getLocationPromise(""),
+      await getLocationPromise("-b1"),
       get_host_info().HTTPS_ORIGIN + '/web-bundle/resources/wbn/location.html');
   // 'b2' version
   assert_equals(
-      await getLocationPromise("-b2"),
+      await getLocationPromise(""),
       get_host_info().HTTPS_ORIGIN + '/web-bundle/resources/wbn/location.html');
 }, 'Location of a page in a Web Bundle');
 

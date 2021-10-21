@@ -18,7 +18,7 @@ promise_test(t => {
 
 promise_test(async () => {
   const element = createWebBundleElement(
-      '../resources/wbn/dynamic1-b2.wbn',
+      '../resources/wbn/dynamic1-b1.wbn',
       [
         'https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource1.js',
         'https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource2.js',
@@ -29,20 +29,20 @@ promise_test(async () => {
   const module = await import('https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource1.js');
   assert_equals(module.result, 'resource1 from dynamic1.wbn');
   document.body.removeChild(element);
-}, 'Subresource loading from a b2 bundle');
+}, 'Subresource loading from a b1 bundle');
 
 promise_test(async () => {
   const classic_script_url = 'https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/classic_script.js';
   const element = createWebBundleElement(
-      '../resources/wbn/dynamic1-b2.wbn',
+      '../resources/wbn/dynamic1-b1.wbn',
       [classic_script_url]);
   document.body.appendChild(element);
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from dynamic1.wbn');
-  changeWebBundleUrl(element, '../resources/wbn/dynamic2-b2.wbn');
+  changeWebBundleUrl(element, '../resources/wbn/dynamic2-b1.wbn');
   // Loading the classic script should not reuse the previously loaded
-  // script. So in this case, the script must be loaded from dynamic2-b2.wbn.
+  // script. So in this case, the script must be loaded from dynamic2-b1.wbn.
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from dynamic2.wbn');
@@ -51,7 +51,7 @@ promise_test(async () => {
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from network');
-}, 'Dynamically loading classic script from a \'b2\' web bundle with resources attribute');
+}, 'Dynamically loading classic script from a \'b1\' web bundle with resources attribute');
 
 promise_test(async () => {
   const element = createWebBundleElement(
@@ -66,7 +66,7 @@ promise_test(async () => {
   const module = await import('https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource1.js');
   assert_equals(module.result, 'resource1 from dynamic1.wbn');
 
-  changeWebBundleUrl(element, '../resources/wbn/dynamic2-b2.wbn');
+  changeWebBundleUrl(element, '../resources/wbn/dynamic2-b1.wbn');
   const module2 = await import('https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource2.js');
   assert_equals(module2.result, 'resource2 from dynamic2.wbn');
 
@@ -94,7 +94,7 @@ promise_test(async () => {
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from dynamic1.wbn');
-  changeWebBundleUrl(element, '../resources/wbn/dynamic2-b2.wbn');
+  changeWebBundleUrl(element, '../resources/wbn/dynamic2-b1.wbn');
   // Loading the classic script should not reuse the previously loaded
   // script. So in this case, the script must be loaded from dynamic2.wbn.
   assert_equals(
@@ -217,12 +217,12 @@ promise_test(async () => {
 promise_test(async () => {
   const module_script_url = 'https://www1.{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource1.js';
   const element = createWebBundleElement(
-      '../resources/wbn/dynamic1-crossorigin-b2.wbn',
+      '../resources/wbn/dynamic1-crossorigin-b1.wbn',
       [module_script_url]);
   document.body.appendChild(element);
   const module = await import(module_script_url);
   assert_equals(module.result, 'resource1 from network');
-}, 'Subresource URL must be same-origin with bundle URL (for \'b2\' bundles too)');
+}, 'Subresource URL must be same-origin with bundle URL (for \'b1\' bundles too)');
 
 promise_test(async () => {
   const url = 'urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720';
@@ -248,23 +248,23 @@ promise_test(async () => {
 promise_test(async () => {
   const url = 'urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720';
   const element = createWebBundleElement(
-      '../resources/wbn/urn-uuid-b2.wbn',
+      '../resources/wbn/urn-uuid-b1.wbn',
       [url]);
   document.body.appendChild(element);
   assert_equals(await loadScriptAndWaitReport(url), 'OK');
   document.body.removeChild(element);
-}, 'Subresource loading with urn:uuid: URL of a \'b2\' bundle with resources attribute');
+}, 'Subresource loading with urn:uuid: URL of a \'b1\' bundle with resources attribute');
 
 promise_test(async () => {
   const url = 'urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720';
   const element = createWebBundleElement(
-      '../resources/wbn/urn-uuid-b2.wbn',
+      '../resources/wbn/urn-uuid-b1.wbn',
       [],
       {scopes: ['urn:uuid:']});
   document.body.appendChild(element);
   assert_equals(await loadScriptAndWaitReport(url), 'OK');
   document.body.removeChild(element);
-}, 'Subresource loading with urn:uuid: URL of a \'b2\' bundle with scopes attribute');
+}, 'Subresource loading with urn:uuid: URL of a \'b1\' bundle with scopes attribute');
 
 promise_test(async () => {
   const url = 'uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720';

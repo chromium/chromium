@@ -38,8 +38,8 @@
         "use-credentials",
       ]) {
         for (const version_suffix of [
-          "", // b1
-          "-b2", // for b2
+          "-b1", // b1
+          "", // for b2
         ]) {
           const link = await addLinkAndWaitForError(
             prefix + "cross-origin" + version_suffix + ".wbn",
