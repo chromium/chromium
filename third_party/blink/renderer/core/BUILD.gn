@@ -77,9 +77,28 @@ visibility = [
 
 rel_blink_core_gen_dir = rebase_path(blink_core_output_dir, root_build_dir)
 
+# arguments for code that builds as part of core.
+declare_args() {
+  # Set to true to enable the clang layout plugin that help you to follow the
+  # layout-related restrictions during compilation.
+  use_layout_plugin = false
+}
+
 # Config for code that builds as part of core.
 config("config") {
+  cflags = []
   defines = [ "BLINK_CORE_IMPLEMENTATION=1" ]
+
+  if (is_clang && clang_use_chrome_plugins) {
+    if (use_layout_plugin) {
+      cflags += [
+        "-Xclang",
+        "-plugin-arg-find-bad-constructs",
+        "-Xclang",
+        "check-layout-object-methods",
+      ]
+    }
+  }
 }
 
 config("core_include_dirs") {

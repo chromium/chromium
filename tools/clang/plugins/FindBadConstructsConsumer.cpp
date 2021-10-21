@@ -123,6 +123,9 @@ FindBadConstructsConsumer::FindBadConstructsConsumer(CompilerInstance& instance,
   if (options.check_ipc) {
     ipc_visitor_.reset(new CheckIPCVisitor(instance));
   }
+  if (options.check_layout_object_methods) {
+    layout_visitor_.reset(new CheckLayoutObjectMethodsVisitor(instance));
+  }
 
   // Messages for virtual methods.
   diag_method_requires_override_ = diagnostic().getCustomDiagID(
@@ -218,6 +221,9 @@ void FindBadConstructsConsumer::Traverse(ASTContext& context) {
   if (ipc_visitor_) {
     ipc_visitor_->set_context(&context);
     ParseFunctionTemplates(context.getTranslationUnitDecl());
+  }
+  if (layout_visitor_) {
+    layout_visitor_->VisitLayoutObjectMethods(context);
   }
   RecursiveASTVisitor::TraverseDecl(context.getTranslationUnitDecl());
   if (ipc_visitor_) ipc_visitor_->set_context(nullptr);

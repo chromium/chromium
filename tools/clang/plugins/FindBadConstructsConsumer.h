@@ -32,6 +32,7 @@
 #include "clang/Basic/SourceLocation.h"
 
 #include "CheckIPCVisitor.h"
+#include "CheckLayoutObjectMethodsVisitor.h"
 #include "ChromeClassTester.h"
 #include "Options.h"
 #include "SuppressibleDiagnosticBuilder.h"
@@ -131,6 +132,7 @@ class FindBadConstructsConsumer
   unsigned diag_note_protected_non_virtual_dtor_;
 
   std::unique_ptr<CheckIPCVisitor> ipc_visitor_;
+  std::unique_ptr<CheckLayoutObjectMethodsVisitor> layout_visitor_;
 };
 
 }  // namespace chrome_checker
