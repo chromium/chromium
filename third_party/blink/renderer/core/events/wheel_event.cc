@@ -151,7 +151,7 @@ void WheelEvent::preventDefault() {
     String message =
         "Unable to preventDefault inside passive event listener due to "
         "target being treated as passive. See "
-        "https://www.chromestatus.com/features/6662647093133312";
+        "https://www.chromestatus.com/feature/6662647093133312";
     auto* local_dom_window = DynamicTo<LocalDOMWindow>(view());
     if (local_dom_window && local_dom_window->GetFrame()) {
       Intervention::GenerateReport(local_dom_window->GetFrame(), id, message);
