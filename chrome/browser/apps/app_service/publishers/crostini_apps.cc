@@ -62,7 +62,7 @@ std::string ShortcutIdFromContainerId(const crostini::ContainerId& id) {
 
 base::flat_map<std::string, std::string> ExtrasFromShortcutId(
     const std::string& shortcut_id) {
-  std::vector<std::string> pieces = base::SplitString(
+  std::vector<std::string> pieces = base::SplitStringUsingSubstr(
       shortcut_id, delimiter, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   auto extras = base::flat_map<std::string, std::string>();
   if (pieces.size() == 2) {
