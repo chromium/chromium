@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
+#include "base/types/id_type.h"
 #include "cc/paint/paint_export.h"
 
 namespace cc {
@@ -44,7 +45,10 @@ class CC_PAINT_EXPORT SkottieResourceMetadataMap {
 
 // For performance reasons, the resource_id can be hashed, and the caller can
 // circulate the resulting integer throughout the system.
-size_t CC_PAINT_EXPORT HashSkottieResourceId(base::StringPiece resource_id);
+using SkottieResourceIdHash =
+    base::IdType<SkottieResourceMetadataMap, size_t, 0>;
+SkottieResourceIdHash CC_PAINT_EXPORT
+HashSkottieResourceId(base::StringPiece resource_id);
 
 }  // namespace cc
 

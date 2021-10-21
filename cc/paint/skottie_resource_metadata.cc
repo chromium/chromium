@@ -51,8 +51,8 @@ bool SkottieResourceMetadataMap::RegisterAsset(base::StringPiece resource_path,
   return inserted;
 }
 
-size_t HashSkottieResourceId(base::StringPiece resource_id) {
-  return base::FastHash(resource_id);
+SkottieResourceIdHash HashSkottieResourceId(base::StringPiece resource_id) {
+  return SkottieResourceIdHash::FromUnsafeValue(base::FastHash(resource_id));
 }
 
 }  // namespace cc
