@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 
 #include <memory>
 #include <utility>
@@ -45,10 +45,10 @@ base::OnceCallback<R(Args...)> TimeCallback(
 }  // namespace
 
 // Incapsulates the token request and payload calculation done in parallel.
-class AuthenticatedLeakCheck::RequestPayloadHelper {
+class LeakDetectionCheckImpl::RequestPayloadHelper {
  public:
   RequestPayloadHelper(
-      AuthenticatedLeakCheck* leak_check,
+      LeakDetectionCheckImpl* leak_check,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~RequestPayloadHelper() = default;
@@ -84,7 +84,7 @@ class AuthenticatedLeakCheck::RequestPayloadHelper {
   // Bitmask of steps done.
   int steps_ = 0;
   // Owns |this|.
-  AuthenticatedLeakCheck* leak_check_;
+  LeakDetectionCheckImpl* leak_check_;
   // Identity manager for the profile.
   signin::IdentityManager* identity_manager_;
   // URL loader factory required for the network request to the identity
@@ -98,8 +98,8 @@ class AuthenticatedLeakCheck::RequestPayloadHelper {
   LookupSingleLeakData payload_;
 };
 
-AuthenticatedLeakCheck::RequestPayloadHelper::RequestPayloadHelper(
-    AuthenticatedLeakCheck* leak_check,
+LeakDetectionCheckImpl::RequestPayloadHelper::RequestPayloadHelper(
+    LeakDetectionCheckImpl* leak_check,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : leak_check_(leak_check),
@@ -109,20 +109,20 @@ AuthenticatedLeakCheck::RequestPayloadHelper::RequestPayloadHelper(
   DCHECK(url_loader_factory_);
 }
 
-void AuthenticatedLeakCheck::RequestPayloadHelper::RequestAccessToken(
+void LeakDetectionCheckImpl::RequestPayloadHelper::RequestAccessToken(
     AccessTokenFetcher::TokenCallback callback) {
   token_fetcher_ = password_manager::RequestAccessToken(identity_manager_,
                                                         std::move(callback));
 }
 
-void AuthenticatedLeakCheck::RequestPayloadHelper::PreparePayload(
+void LeakDetectionCheckImpl::RequestPayloadHelper::PreparePayload(
     const std::string& username,
     const std::string& password,
     SingleLeakRequestDataCallback callback) {
   PrepareSingleLeakRequestData(username, password, std::move(callback));
 }
 
-void AuthenticatedLeakCheck::RequestPayloadHelper::OnGotAccessToken(
+void LeakDetectionCheckImpl::RequestPayloadHelper::OnGotAccessToken(
     std::string access_token) {
   access_token_ = std::move(access_token);
   steps_ |= kAccessToken;
@@ -131,7 +131,7 @@ void AuthenticatedLeakCheck::RequestPayloadHelper::OnGotAccessToken(
   CheckAllStepsDone();
 }
 
-void AuthenticatedLeakCheck::RequestPayloadHelper::OnGotPayload(
+void LeakDetectionCheckImpl::RequestPayloadHelper::OnGotPayload(
     LookupSingleLeakData data) {
   payload_ = std::move(data);
   steps_ |= kPayloadData;
@@ -139,14 +139,14 @@ void AuthenticatedLeakCheck::RequestPayloadHelper::OnGotPayload(
   CheckAllStepsDone();
 }
 
-void AuthenticatedLeakCheck::RequestPayloadHelper::CheckAllStepsDone() {
+void LeakDetectionCheckImpl::RequestPayloadHelper::CheckAllStepsDone() {
   if (steps_ == kAll) {
     leak_check_->DoLeakRequest(std::move(payload_), std::move(access_token_),
                                std::move(url_loader_factory_));
   }
 }
 
-AuthenticatedLeakCheck::AuthenticatedLeakCheck(
+LeakDetectionCheckImpl::LeakDetectionCheckImpl(
     LeakDetectionDelegateInterface* delegate,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -159,10 +159,10 @@ AuthenticatedLeakCheck::AuthenticatedLeakCheck(
   DCHECK(delegate_);
 }
 
-AuthenticatedLeakCheck::~AuthenticatedLeakCheck() = default;
+LeakDetectionCheckImpl::~LeakDetectionCheckImpl() = default;
 
 // static
-bool AuthenticatedLeakCheck::HasAccountForRequest(
+bool LeakDetectionCheckImpl::HasAccountForRequest(
     const signin::IdentityManager* identity_manager) {
   // On desktop HasPrimaryAccount(signin::ConsentLevel::kSignin) will
   // always return something if the user is signed in.
@@ -173,7 +173,7 @@ bool AuthenticatedLeakCheck::HasAccountForRequest(
           !identity_manager->GetAccountsWithRefreshTokens().empty());
 }
 
-void AuthenticatedLeakCheck::Start(const GURL& url,
+void LeakDetectionCheckImpl::Start(const GURL& url,
                                    std::u16string username,
                                    std::u16string password) {
   DCHECK(payload_helper_);
@@ -183,18 +183,18 @@ void AuthenticatedLeakCheck::Start(const GURL& url,
   username_ = std::move(username);
   password_ = std::move(password);
   payload_helper_->RequestAccessToken(TimeCallback(
-      base::BindOnce(&AuthenticatedLeakCheck::OnAccessTokenRequestCompleted,
+      base::BindOnce(&LeakDetectionCheckImpl::OnAccessTokenRequestCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
       "PasswordManager.LeakDetection.ObtainAccessTokenTime"));
   payload_helper_->PreparePayload(
       base::UTF16ToUTF8(username_), base::UTF16ToUTF8(password_),
       TimeCallback(
-          base::BindOnce(&AuthenticatedLeakCheck::OnRequestDataReady,
+          base::BindOnce(&LeakDetectionCheckImpl::OnRequestDataReady,
                          weak_ptr_factory_.GetWeakPtr()),
           "PasswordManager.LeakDetection.PrepareSingleLeakRequestTime"));
 }
 
-void AuthenticatedLeakCheck::OnAccessTokenRequestCompleted(
+void LeakDetectionCheckImpl::OnAccessTokenRequestCompleted(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -209,7 +209,7 @@ void AuthenticatedLeakCheck::OnAccessTokenRequestCompleted(
   payload_helper_->OnGotAccessToken(std::move(access_token_info.token));
 }
 
-void AuthenticatedLeakCheck::OnRequestDataReady(LookupSingleLeakData data) {
+void LeakDetectionCheckImpl::OnRequestDataReady(LookupSingleLeakData data) {
   if (data.encryption_key.empty()) {
     DLOG(ERROR) << "Preparing the payload for leak  detection failed";
     delegate_->OnError(LeakDetectionError::kHashingFailure);
@@ -218,7 +218,7 @@ void AuthenticatedLeakCheck::OnRequestDataReady(LookupSingleLeakData data) {
   payload_helper_->OnGotPayload(std::move(data));
 }
 
-void AuthenticatedLeakCheck::DoLeakRequest(
+void LeakDetectionCheckImpl::DoLeakRequest(
     LookupSingleLeakData data,
     std::string access_token,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
@@ -228,12 +228,12 @@ void AuthenticatedLeakCheck::DoLeakRequest(
   request_->LookupSingleLeak(
       url_loader_factory.get(), access_token, std::move(data.payload),
       TimeCallback(
-          base::BindOnce(&AuthenticatedLeakCheck::OnLookupSingleLeakResponse,
+          base::BindOnce(&LeakDetectionCheckImpl::OnLookupSingleLeakResponse,
                          weak_ptr_factory_.GetWeakPtr()),
           "PasswordManager.LeakDetection.ReceiveSingleLeakResponseTime"));
 }
 
-void AuthenticatedLeakCheck::OnLookupSingleLeakResponse(
+void LeakDetectionCheckImpl::OnLookupSingleLeakResponse(
     std::unique_ptr<SingleLookupResponse> response,
     absl::optional<LeakDetectionError> error) {
   request_.reset();
@@ -247,11 +247,11 @@ void AuthenticatedLeakCheck::OnLookupSingleLeakResponse(
 
   AnalyzeResponse(
       std::move(response), encryption_key_,
-      base::BindOnce(&AuthenticatedLeakCheck::OnAnalyzeSingleLeakResponse,
+      base::BindOnce(&LeakDetectionCheckImpl::OnAnalyzeSingleLeakResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AuthenticatedLeakCheck::OnAnalyzeSingleLeakResponse(
+void LeakDetectionCheckImpl::OnAnalyzeSingleLeakResponse(
     AnalyzeResponseResult result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.LeakDetection.AnalyzeSingleLeakResponseResult", result);

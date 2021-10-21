@@ -6,7 +6,7 @@
 
 #include "chrome/browser/safety_check/android/jni_headers/SafetyCheckBridge_jni.h"
 #include "chrome/browser/signin/identity_manager_provider.h"
-#include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/safety_check/safety_check.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/android/browser_context_handle.h"
@@ -15,7 +15,7 @@
 static jboolean JNI_SafetyCheckBridge_UserSignedIn(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jhandle) {
-  return password_manager::AuthenticatedLeakCheck::HasAccountForRequest(
+  return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(
       signin::GetIdentityManagerForBrowserContext(
           content::BrowserContextFromJavaHandle(jhandle)));
 }

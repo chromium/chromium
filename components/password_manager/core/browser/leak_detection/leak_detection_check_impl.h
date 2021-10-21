@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_AUTHENTICATED_LEAK_CHECK_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_AUTHENTICATED_LEAK_CHECK_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_CHECK_IMPL_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_CHECK_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -34,14 +34,14 @@ class LeakDetectionDelegateInterface;
 struct LookupSingleLeakData;
 struct SingleLookupResponse;
 
-// Performs a leak-check for {username, password} for Chrome signed-in users.
-class AuthenticatedLeakCheck : public LeakDetectionCheck {
+// Performs a leak-check for {username, password} for Chrome users.
+class LeakDetectionCheckImpl : public LeakDetectionCheck {
  public:
-  AuthenticatedLeakCheck(
+  LeakDetectionCheckImpl(
       LeakDetectionDelegateInterface* delegate,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  ~AuthenticatedLeakCheck() override;
+  ~LeakDetectionCheckImpl() override;
 
   // Returns true if there is a Google account to use for the leak detection
   // check. Otherwise, instantiating the class is pointless.
@@ -106,9 +106,9 @@ class AuthenticatedLeakCheck : public LeakDetectionCheck {
   // Encryption key used during the request.
   std::string encryption_key_;
   // Weak pointers for different callbacks.
-  base::WeakPtrFactory<AuthenticatedLeakCheck> weak_ptr_factory_{this};
+  base::WeakPtrFactory<LeakDetectionCheckImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_AUTHENTICATED_LEAK_CHECK_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_CHECK_IMPL_H_

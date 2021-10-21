@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -64,9 +64,9 @@ struct PayloadAndCallback {
   LeakDetectionRequestInterface::LookupSingleLeakCallback callback;
 };
 
-class AuthenticatedLeakCheckTest : public testing::Test {
+class LeakDetectionCheckImplTest : public testing::Test {
  public:
-  AuthenticatedLeakCheckTest()
+  LeakDetectionCheckImplTest()
       : leak_check_(
             &delegate_,
             identity_test_env_.identity_manager(),
@@ -76,7 +76,7 @@ class AuthenticatedLeakCheckTest : public testing::Test {
     request_factory_ = mock_request_factory.get();
     leak_check_.set_network_factory(std::move(mock_request_factory));
   }
-  ~AuthenticatedLeakCheckTest() override = default;
+  ~LeakDetectionCheckImplTest() override = default;
 
   base::test::TaskEnvironment& task_env() { return task_env_; }
   signin::IdentityTestEnvironment& identity_env() { return identity_test_env_; }
@@ -85,7 +85,7 @@ class AuthenticatedLeakCheckTest : public testing::Test {
     return request_factory_;
   }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
-  AuthenticatedLeakCheck& leak_check() { return leak_check_; }
+  LeakDetectionCheckImpl& leak_check() { return leak_check_; }
 
   // Brings |leak_check_| to the state right after the network request.
   // The check is done for |kUsername|/|kPassword| credential on |kExampleCom|.
@@ -99,10 +99,10 @@ class AuthenticatedLeakCheckTest : public testing::Test {
   MockLeakDetectionRequestFactory* request_factory_;
   base::HistogramTester histogram_tester_;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
-  AuthenticatedLeakCheck leak_check_;
+  LeakDetectionCheckImpl leak_check_;
 };
 
-PayloadAndCallback AuthenticatedLeakCheckTest::ImitateNetworkRequest() {
+PayloadAndCallback LeakDetectionCheckImplTest::ImitateNetworkRequest() {
   AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
   identity_env().SetCookieAccounts({{info.email, info.gaia}});
   identity_env().SetRefreshTokenForAccount(info.account_id);
@@ -135,27 +135,27 @@ PayloadAndCallback AuthenticatedLeakCheckTest::ImitateNetworkRequest() {
 
 }  // namespace
 
-TEST_F(AuthenticatedLeakCheckTest, Create) {
+TEST_F(LeakDetectionCheckImplTest, Create) {
   EXPECT_CALL(delegate(), OnLeakDetectionDone).Times(0);
   EXPECT_CALL(delegate(), OnError).Times(0);
   // Destroying |leak_check_| doesn't trigger anything.
 }
 
-TEST_F(AuthenticatedLeakCheckTest, HasAccountForRequest_SignedIn) {
+TEST_F(LeakDetectionCheckImplTest, HasAccountForRequest_SignedIn) {
   AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
   identity_env().SetCookieAccounts({{info.email, info.gaia}});
   identity_env().SetRefreshTokenForAccount(info.account_id);
-  EXPECT_TRUE(AuthenticatedLeakCheck::HasAccountForRequest(
+  EXPECT_TRUE(LeakDetectionCheckImpl::HasAccountForRequest(
       identity_env().identity_manager()));
 }
 
-TEST_F(AuthenticatedLeakCheckTest, HasAccountForRequest_Syncing) {
+TEST_F(LeakDetectionCheckImplTest, HasAccountForRequest_Syncing) {
   identity_env().SetPrimaryAccount(kTestEmail, signin::ConsentLevel::kSync);
-  EXPECT_TRUE(AuthenticatedLeakCheck::HasAccountForRequest(
+  EXPECT_TRUE(LeakDetectionCheckImpl::HasAccountForRequest(
       identity_env().identity_manager()));
 }
 
-TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenBeforeEncryption) {
+TEST_F(LeakDetectionCheckImplTest, GetAccessTokenBeforeEncryption) {
   AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
   identity_env().SetCookieAccounts({{info.email, info.gaia}});
   identity_env().SetRefreshTokenForAccount(info.account_id);
@@ -189,7 +189,7 @@ TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenBeforeEncryption) {
       kMockElapsedTime, 1);
 }
 
-TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenAfterEncryption) {
+TEST_F(LeakDetectionCheckImplTest, GetAccessTokenAfterEncryption) {
   AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
   identity_env().SetCookieAccounts({{info.email, info.gaia}});
   identity_env().SetRefreshTokenForAccount(info.account_id);
@@ -224,7 +224,7 @@ TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenAfterEncryption) {
       1);
 }
 
-TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenFailure) {
+TEST_F(LeakDetectionCheckImplTest, GetAccessTokenFailure) {
   AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
   identity_env().SetCookieAccounts({{info.email, info.gaia}});
   identity_env().SetRefreshTokenForAccount(info.account_id);
@@ -242,7 +242,7 @@ TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenFailure) {
 
 // Perform the whole cycle of a leak check. The server returns data that
 // can't be decrypted.
-TEST_F(AuthenticatedLeakCheckTest, ParseResponse_DecryptionError) {
+TEST_F(LeakDetectionCheckImplTest, ParseResponse_DecryptionError) {
   PayloadAndCallback payload_and_callback = ImitateNetworkRequest();
   ASSERT_TRUE(!payload_and_callback.payload.empty());
 
@@ -274,7 +274,7 @@ TEST_F(AuthenticatedLeakCheckTest, ParseResponse_DecryptionError) {
 }
 // Perform the whole cycle of a leak check. The server returns data signalling
 // that the password wasn't leaked.
-TEST_F(AuthenticatedLeakCheckTest, ParseResponse_NoLeak) {
+TEST_F(LeakDetectionCheckImplTest, ParseResponse_NoLeak) {
   PayloadAndCallback payload_and_callback = ImitateNetworkRequest();
   ASSERT_TRUE(!payload_and_callback.payload.empty());
 
@@ -305,7 +305,7 @@ TEST_F(AuthenticatedLeakCheckTest, ParseResponse_NoLeak) {
 
 // Perform the whole cycle of a leak check. The server returns data signalling
 // that the password was leaked.
-TEST_F(AuthenticatedLeakCheckTest, ParseResponse_Leak) {
+TEST_F(LeakDetectionCheckImplTest, ParseResponse_Leak) {
   PayloadAndCallback payload_and_callback = ImitateNetworkRequest();
   ASSERT_TRUE(!payload_and_callback.payload.empty());
 

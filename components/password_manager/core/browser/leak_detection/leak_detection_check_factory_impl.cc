@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_impl.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -21,12 +21,12 @@ LeakDetectionCheckFactoryImpl::TryCreateLeakCheck(
     LeakDetectionDelegateInterface* delegate,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) const {
-  if (!AuthenticatedLeakCheck::HasAccountForRequest(identity_manager)) {
+  if (!LeakDetectionCheckImpl::HasAccountForRequest(identity_manager)) {
     delegate->OnError(LeakDetectionError::kNotSignIn);
     return nullptr;
   }
 
-  return std::make_unique<AuthenticatedLeakCheck>(
+  return std::make_unique<LeakDetectionCheckImpl>(
       delegate, identity_manager, std::move(url_loader_factory));
 }
 
@@ -35,7 +35,7 @@ LeakDetectionCheckFactoryImpl::TryCreateBulkLeakCheck(
     BulkLeakCheckDelegateInterface* delegate,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) const {
-  if (!AuthenticatedLeakCheck::HasAccountForRequest(identity_manager)) {
+  if (!LeakDetectionCheckImpl::HasAccountForRequest(identity_manager)) {
     delegate->OnError(LeakDetectionError::kNotSignIn);
     return nullptr;
   }
