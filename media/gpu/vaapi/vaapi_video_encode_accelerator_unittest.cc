@@ -238,6 +238,12 @@ class VaapiVideoEncodeAcceleratorTest
     mock_vaapi_wrapper_ = base::MakeRefCounted<MockVaapiWrapper>(
         VaapiWrapper::kEncodeConstantBitrate);
 
+    // In real usage, the VaapiWrapper expects to be constructed, used, and
+    // destroyed on the same sequence. For testing, however, we create it in the
+    // main thread of the test and inject it into the VaapiVideoEncodeAccelerator
+    // where it will be used and destroyed on the encoder thread. Therefore, we
+    // detach the VaapiWrapper from the construction sequence just for testing.
+    mock_vaapi_wrapper_->sequence_checker_.DetachFromSequence();
     ResetEncoder();
   }
 
@@ -311,6 +317,12 @@ class VaapiVideoEncodeAcceleratorTest
     va_vpp_dest_surface_ids_.resize(num_spatial_layers - 1);
     mock_vpp_vaapi_wrapper_ =
         base::MakeRefCounted<MockVaapiWrapper>(VaapiWrapper::kVideoProcess);
+    // In real usage, the VaapiWrapper expects to be constructed, used, and
+    // destroyed on the same sequence. For testing, however, we create it in the
+    // main thread of the test and inject it into the VaapiVideoEncodeAccelerator
+    // where it will be used and destroyed on the encoder thread. Therefore, we
+    // detach the VaapiWrapper from the construction sequence just for testing.
+    mock_vpp_vaapi_wrapper_->sequence_checker_.DetachFromSequence();
     auto* vaapi_encoder =
         reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder_.get());
     vaapi_encoder->vpp_vaapi_wrapper_ = mock_vpp_vaapi_wrapper_;
