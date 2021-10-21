@@ -42,8 +42,7 @@ DesksTemplatesPresenter::DesksTemplatesPresenter(
 
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
-  if (desk_model->IsReady())
-    GetAllEntries();
+  GetAllEntries();
 }
 
 DesksTemplatesPresenter::~DesksTemplatesPresenter() {
@@ -64,16 +63,14 @@ void DesksTemplatesPresenter::GetAllEntries() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DesksTemplatesPresenter::DeskModelLoaded() {
-  GetAllEntries();
-}
-
 void DesksTemplatesPresenter::DeleteEntry(const std::string& template_uuid) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->DeleteEntry(
       template_uuid, base::BindOnce(&DesksTemplatesPresenter::OnDeleteEntry,
                                     weak_ptr_factory_.GetWeakPtr()));
 }
+
+void DesksTemplatesPresenter::DeskModelLoaded() {}
 
 void DesksTemplatesPresenter::OnDeskModelDestroying() {
   desk_model_observation_.Reset();
