@@ -12,7 +12,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -24,9 +23,15 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_ANDROID)
+#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
+#else
+#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -84,11 +89,13 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
     return std::set<std::string>{kActiveProfileName1, kActiveProfileName2};
   }
 
+#if !defined(OS_ANDROID)
   std::set<std::string> CreateActiveProfilesWithContent() {
     CreateActiveProfileWithContent(kActiveProfileName1);
     CreateActiveProfileWithContent(kActiveProfileName2);
     return std::set<std::string>{kActiveProfileName1, kActiveProfileName2};
   }
+#endif  // !defined(OS_ANDROID)
 
   void CreateIdleProfile(std::string profile_name) {
     ProfileAttributesInitParams params;
@@ -112,6 +119,7 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
         std::move(policy_service));
   }
 
+#if !defined(OS_ANDROID)
   void CreateActiveProfileWithContent(std::string profile_name) {
     TestingProfile* active_profile = CreateActiveProfile(profile_name);
 
@@ -125,6 +133,7 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
             .SetID("abcdefghijklmnoabcdefghijklmnoab")
             .Build());
   }
+#endif  // !defined(OS_ANDROID)
 
   std::unique_ptr<ReportRequest> GenerateBasicRequest() {
     auto request = std::make_unique<ReportRequest>();
@@ -216,11 +225,83 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
+#if defined(OS_ANDROID)
+  ReportingDelegateFactoryAndroid reporting_delegate_factory_;
+#else
   ReportingDelegateFactoryDesktop reporting_delegate_factory_;
+#endif
   BrowserReportGenerator browser_report_generator_;
   ReportRequestQueueGenerator report_request_queue_generator_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
+
+TEST_F(ReportRequestQueueGeneratorTest, GenerateSingleReport) {
+  CreateActiveProfile(kActiveProfileName1);
+  auto basic_request = GenerateBasicRequest();
+  auto requests = GenerateRequests(*basic_request);
+  EXPECT_EQ(1u, requests.size());
+
+  VerifyProfiles(requests[0]->browser_report(), /*idle profiles*/ {},
+                 /*active profiles*/ {kActiveProfileName1});
+  histogram_tester()->ExpectBucketCount("Enterprise.CloudReportingRequestSize",
+                                        /*report size floor to KB*/ 0, 1);
+}
+
+TEST_F(ReportRequestQueueGeneratorTest, BasicReportIsTooBig) {
+  // Set a super small limitation.
+  SetAndVerifyMaximumRequestSize(5);
+
+  // Because the limitation is so small, no request can be created.
+  CreateActiveProfiles();
+  auto basic_request = GenerateBasicRequest();
+  auto requests = GenerateRequests(*basic_request);
+  EXPECT_EQ(0u, requests.size());
+
+  histogram_tester()->ExpectTotalCount("Enterprise.CloudReportingRequestSize",
+                                       0);
+}
+
+TEST_F(ReportRequestQueueGeneratorTest, ChromePoliciesCollection) {
+  auto policy_service = std::make_unique<policy::MockPolicyService>();
+  policy::PolicyMap policy_map;
+
+  ON_CALL(*policy_service.get(),
+          GetPolicies(::testing::Eq(policy::PolicyNamespace(
+              policy::POLICY_DOMAIN_CHROME, std::string()))))
+      .WillByDefault(::testing::ReturnRef(policy_map));
+
+  policy_map.Set("kPolicyName1", policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                 base::Value(std::vector<base::Value>()), nullptr);
+  policy_map.Set("kPolicyName2", policy::POLICY_LEVEL_RECOMMENDED,
+                 policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_MERGED,
+                 base::Value(true), nullptr);
+
+  CreateActiveProfileWithPolicies(kActiveProfileName1,
+                                  std::move(policy_service));
+
+  auto basic_request = GenerateBasicRequest();
+  auto requests = GenerateRequests(*basic_request);
+  EXPECT_EQ(1u, requests.size());
+
+  auto browser_report = requests[0]->browser_report();
+  EXPECT_EQ(1, browser_report.chrome_user_profile_infos_size());
+
+  auto profile_info = browser_report.chrome_user_profile_infos(0);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // In Chrome OS, the collection of policies is disabled.
+  EXPECT_EQ(0, profile_info.chrome_policies_size());
+#else
+  // In desktop Chrome, the collection of policies is enabled.
+  EXPECT_EQ(2, profile_info.chrome_policies_size());
+#endif
+}
+
+// Android has only one profile which is always `active` and no extensions. So
+// we only check a subset of desktop tests.
+
+#if !defined(OS_ANDROID)
 
 TEST_F(ReportRequestQueueGeneratorTest, GenerateReport) {
   auto idle_profile_names = CreateIdleProfiles();
@@ -244,20 +325,6 @@ TEST_F(ReportRequestQueueGeneratorTest, GenerateActiveProfiles) {
                  active_profile_names);
   histogram_tester()->ExpectBucketCount("Enterprise.CloudReportingRequestSize",
                                         /*report size floor to KB*/ 0, 1);
-}
-
-TEST_F(ReportRequestQueueGeneratorTest, BasicReportIsTooBig) {
-  // Set a super small limitation.
-  SetAndVerifyMaximumRequestSize(5);
-
-  // Because the limitation is so small, no request can be created.
-  CreateIdleProfiles();
-  auto basic_request = GenerateBasicRequest();
-  auto requests = GenerateRequests(*basic_request);
-  EXPECT_EQ(0u, requests.size());
-
-  histogram_tester()->ExpectTotalCount("Enterprise.CloudReportingRequestSize",
-                                       0);
 }
 
 TEST_F(ReportRequestQueueGeneratorTest, ReportSeparation) {
@@ -320,41 +387,6 @@ TEST_F(ReportRequestQueueGeneratorTest, ProfileReportIsTooBig) {
                                         /*report size floor to KB*/ 0, 2);
 }
 
-TEST_F(ReportRequestQueueGeneratorTest, ChromePoliciesCollection) {
-  auto policy_service = std::make_unique<policy::MockPolicyService>();
-  policy::PolicyMap policy_map;
-
-  ON_CALL(*policy_service.get(),
-          GetPolicies(::testing::Eq(policy::PolicyNamespace(
-              policy::POLICY_DOMAIN_CHROME, std::string()))))
-      .WillByDefault(::testing::ReturnRef(policy_map));
-
-  policy_map.Set("kPolicyName1", policy::POLICY_LEVEL_MANDATORY,
-                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                 base::Value(std::vector<base::Value>()), nullptr);
-  policy_map.Set("kPolicyName2", policy::POLICY_LEVEL_RECOMMENDED,
-                 policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_MERGED,
-                 base::Value(true), nullptr);
-
-  CreateActiveProfileWithPolicies(kActiveProfileName1,
-                                  std::move(policy_service));
-
-  auto basic_request = GenerateBasicRequest();
-  auto requests = GenerateRequests(*basic_request);
-  EXPECT_EQ(1u, requests.size());
-
-  auto browser_report = requests[0]->browser_report();
-  EXPECT_EQ(1, browser_report.chrome_user_profile_infos_size());
-
-  auto profile_info = browser_report.chrome_user_profile_infos(0);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // In Chrome OS, the collection of policies is disabled.
-  EXPECT_EQ(0, profile_info.chrome_policies_size());
-#else
-  // In desktop Chrome, the collection of policies is enabled.
-  EXPECT_EQ(2, profile_info.chrome_policies_size());
-#endif
-}
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace enterprise_reporting

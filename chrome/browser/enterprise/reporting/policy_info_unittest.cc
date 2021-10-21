@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
@@ -19,10 +20,13 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+#if !defined(OS_ANDROID)
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#endif  // !defined(OS_ANDROID)
 
 namespace em = enterprise_management;
 
@@ -129,6 +133,7 @@ TEST_F(PolicyInfoTest, ChromePolicy) {
   EXPECT_NE("", policy2.error());
 }
 
+#if !defined(OS_ANDROID)
 TEST_F(PolicyInfoTest, ExtensionPolicy) {
   EXPECT_CALL(*policy_service(), GetPolicies(_)).Times(3);
   extensions::ExtensionRegistry* extension_registry =
@@ -171,6 +176,7 @@ TEST_F(PolicyInfoTest, ExtensionPolicy) {
   EXPECT_EQ(em::Policy_PolicySource_SOURCE_PLATFORM, policy1.source());
   EXPECT_NE(std::string(), policy1.error());
 }
+#endif  // !defined(OS_ANDROID)
 
 TEST_F(PolicyInfoTest, MachineLevelUserCloudPolicyFetchTimestamp) {
   em::ChromeUserProfileInfo profile_info;
