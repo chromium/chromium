@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
@@ -720,6 +721,7 @@ VideoCaptureControlSupport VideoCaptureDeviceMFWin::GetControlSupport(
   ComPtr<IAMVideoProcAmp> video_control;
   hr = source.As(&video_control);
   DLOG_IF_FAILED_WITH_HRESULT("Failed to retrieve IAMVideoProcAmp", hr);
+  ALLOW_UNUSED_LOCAL(hr);
 
   // On Windows platform, some Image Capture video constraints and settings are
   // get or set using IAMCameraControl interface while the rest are get or set
