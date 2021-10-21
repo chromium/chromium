@@ -530,6 +530,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return *grid_data_.get();
   }
 
+  void SetGridBreakTokenData(
+      std::unique_ptr<const NGGridBreakTokenData> grid_break_token_data) {
+    grid_break_token_data_ = std::move(grid_break_token_data);
+  }
+
   // The |NGFragmentItemsBuilder| for the inline formatting context of this box.
   NGFragmentItemsBuilder* ItemsBuilder() { return items_builder_; }
   void SetItemsBuilder(NGFragmentItemsBuilder* builder) {
@@ -646,6 +651,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Grid specific types.
   std::unique_ptr<NGGridData> grid_data_;
+  std::unique_ptr<const NGGridBreakTokenData> grid_break_token_data_;
 
   LogicalBoxSides sides_to_include_;
 

@@ -16,40 +16,41 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGBlockBreakToken : NGBreakToken {
-  unsigned numbers[4];
+  LayoutUnit block_sizes[2];
+  std::unique_ptr<void> grid_data;
+  unsigned numbers[2];
 };
 
 ASSERT_SIZE(NGBlockBreakToken, SameSizeAsNGBlockBreakToken);
 
 }  // namespace
 
-NGBlockBreakToken* NGBlockBreakToken::Create(
-    const NGBoxFragmentBuilder& builder) {
+NGBlockBreakToken* NGBlockBreakToken::Create(NGBoxFragmentBuilder* builder) {
   // We store the children list inline in the break token as a flexible
   // array. Therefore, we need to make sure to allocate enough space for that
   // array here, which requires a manual allocation + placement new.
   return MakeGarbageCollected<NGBlockBreakToken>(
-      AdditionalBytes(builder.child_break_tokens_.size() *
+      AdditionalBytes(builder->child_break_tokens_.size() *
                       sizeof(Member<NGBreakToken>)),
       PassKey(), builder);
 }
 
-NGBlockBreakToken::NGBlockBreakToken(PassKey key,
-                                     const NGBoxFragmentBuilder& builder)
-    : NGBreakToken(kBlockBreakToken, builder.node_),
-      consumed_block_size_(builder.consumed_block_size_),
+NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGBoxFragmentBuilder* builder)
+    : NGBreakToken(kBlockBreakToken, builder->node_),
+      consumed_block_size_(builder->consumed_block_size_),
       consumed_block_size_legacy_adjustment_(
-          builder.consumed_block_size_legacy_adjustment_),
-      sequence_number_(builder.sequence_number_),
-      const_num_children_(builder.child_break_tokens_.size()) {
-  has_seen_all_children_ = builder.has_seen_all_children_;
-  is_caused_by_column_spanner_ = builder.FoundColumnSpanner();
-  is_at_block_end_ = builder.is_at_block_end_;
+          builder->consumed_block_size_legacy_adjustment_),
+      sequence_number_(builder->sequence_number_),
+      const_num_children_(builder->child_break_tokens_.size()) {
+  has_seen_all_children_ = builder->has_seen_all_children_;
+  is_caused_by_column_spanner_ = builder->FoundColumnSpanner();
+  is_at_block_end_ = builder->is_at_block_end_;
   has_unpositioned_list_marker_ =
-      static_cast<bool>(builder.UnpositionedListMarker());
-  for (wtf_size_t i = 0; i < builder.child_break_tokens_.size(); ++i) {
-    child_break_tokens_[i] = builder.child_break_tokens_[i];
-  }
+      static_cast<bool>(builder->UnpositionedListMarker());
+  if (builder->grid_break_token_data_)
+    grid_data_ = std::move(builder->grid_break_token_data_);
+  for (wtf_size_t i = 0; i < builder->child_break_tokens_.size(); ++i)
+    child_break_tokens_[i] = builder->child_break_tokens_[i];
 }
 
 NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGLayoutInputNode node)

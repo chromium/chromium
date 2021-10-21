@@ -17,6 +17,7 @@
 namespace blink {
 
 class NGGridPlacement;
+struct GridItemOffsets;
 struct NGGridProperties;
 
 using SetOffsetData = NGGridData::SetData;
@@ -39,15 +40,6 @@ enum class GridItemContributionType {
 enum class BaselineType : uint8_t {
   kMajor,
   kMinor,
-};
-
-struct GridItemOffsets {
-  GridItemOffsets(const LogicalOffset offset,
-                  const LogicalOffset relative_offset)
-      : offset(offset), relative_offset(relative_offset) {}
-
-  LogicalOffset offset;
-  LogicalOffset relative_offset;
 };
 
 struct GridItemIndices {

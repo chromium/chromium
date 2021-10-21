@@ -28,7 +28,7 @@ const NGBlockBreakToken* CreateBreakToken(
     for (const NGBreakToken* token : *child_break_tokens)
       builder.AddBreakToken(token);
   }
-  return NGBlockBreakToken::Create(builder);
+  return NGBlockBreakToken::Create(&builder);
 }
 
 using NGBlockChildIteratorTest = NGLayoutTest;

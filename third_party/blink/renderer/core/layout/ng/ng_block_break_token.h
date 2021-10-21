@@ -8,6 +8,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -26,7 +27,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   //
   // The node is NGBlockNode, or any other NGLayoutInputNode that produces
   // anonymous box.
-  static NGBlockBreakToken* Create(const NGBoxFragmentBuilder&);
+  static NGBlockBreakToken* Create(NGBoxFragmentBuilder*);
 
   // Creates a break token for a node that needs to produce its first fragment
   // in the next fragmentainer. In this case we create a break token for a node
@@ -69,6 +70,11 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   unsigned SequenceNumber() const {
     DCHECK(!IsBreakBefore());
     return sequence_number_;
+  }
+
+  const NGGridBreakTokenData& GridData() const {
+    DCHECK(grid_data_);
+    return *grid_data_;
   }
 
   // Return true if this is a break token that was produced without any
@@ -140,7 +146,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
 
   // Must only be called from Create(), because it assumes that enough space
   // has been allocated in the flexible array to store the children.
-  NGBlockBreakToken(PassKey, const NGBoxFragmentBuilder&);
+  NGBlockBreakToken(PassKey, NGBoxFragmentBuilder*);
 
   explicit NGBlockBreakToken(PassKey, NGLayoutInputNode node);
 
@@ -174,6 +180,9 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
  private:
   LayoutUnit consumed_block_size_;
   LayoutUnit consumed_block_size_legacy_adjustment_;
+
+  std::unique_ptr<const NGGridBreakTokenData> grid_data_;
+
   unsigned sequence_number_ = 0;
 
   const wtf_size_t const_num_children_;

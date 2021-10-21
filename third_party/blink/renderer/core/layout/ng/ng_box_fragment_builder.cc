@@ -415,7 +415,7 @@ scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
     if (last_inline_break_token_)
       child_break_tokens_.push_back(std::move(last_inline_break_token_));
     if (DidBreakSelf() || HasChildBreakInside())
-      break_token_ = NGBlockBreakToken::Create(*this);
+      break_token_ = NGBlockBreakToken::Create(this);
   }
 
   if (!has_floating_descendants_for_paint_ && items_builder_) {
