@@ -88,8 +88,9 @@ UnifiedMessageCenterView::UnifiedMessageCenterView(
       focus_search_(std::make_unique<views::FocusSearch>(this, false, false)) {}
 
 UnifiedMessageCenterView::~UnifiedMessageCenterView() {
-  model_->set_notification_target_mode(
-      UnifiedSystemTrayModel::NotificationTargetMode::LAST_NOTIFICATION);
+  if (model_)
+    model_->set_notification_target_mode(
+        UnifiedSystemTrayModel::NotificationTargetMode::LAST_NOTIFICATION);
 
   RemovedFromWidget();
 }
@@ -165,6 +166,11 @@ void UnifiedMessageCenterView::ClearAllNotifications() {
       base::UserMetricsAction("StatusArea_Notifications_StackingBarClearAll"));
 
   message_list_view_->ClearAllWithAnimation();
+}
+
+void UnifiedMessageCenterView::OnShutdown() {
+  model_ = nullptr;
+  message_list_view_->OnShutdown();
 }
 
 void UnifiedMessageCenterView::ExpandMessageCenter() {
@@ -433,6 +439,9 @@ void UnifiedMessageCenterView::ScrollToTarget() {
   // Following logic doesn't work when the view is invisible, because it uses
   // the height of |scroller_|.
   if (!GetVisible())
+    return;
+
+  if (!model_)
     return;
 
   auto target_mode = model_->notification_target_mode();
