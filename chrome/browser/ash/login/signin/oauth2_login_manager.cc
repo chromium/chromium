@@ -139,10 +139,11 @@ CoreAccountId OAuth2LoginManager::GetUnconsentedPrimaryAccountId() {
 }
 
 void OAuth2LoginManager::VerifySessionCookies() {
-  DCHECK(!login_verifier_.get());
-  login_verifier_ = std::make_unique<OAuth2LoginVerifier>(
-      this, GetIdentityManager(), GetUnconsentedPrimaryAccountId(),
-      oauthlogin_access_token_);
+  if (!login_verifier_) {
+    login_verifier_ = std::make_unique<OAuth2LoginVerifier>(
+        this, GetIdentityManager(), GetUnconsentedPrimaryAccountId(),
+        oauthlogin_access_token_);
+  }
 
   login_verifier_->VerifyUserCookies();
 }
