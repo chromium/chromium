@@ -27,21 +27,14 @@ void NavigationConsoleLogger::LogMessageOnCommit(
 NavigationConsoleLogger* NavigationConsoleLogger::CreateIfNeededForNavigation(
     content::NavigationHandle* handle) {
   DCHECK(handle->IsInMainFrame());
-  content::WebContents* contents = handle->GetWebContents();
-  auto* logger = FromWebContents(contents);
-  if (!logger) {
-    auto new_logger = base::WrapUnique(new NavigationConsoleLogger(handle));
-    logger = new_logger.get();
-    contents->SetUserData(UserDataKey(), std::move(new_logger));
-  }
-  return logger;
+  return GetOrCreateForNavigationHandle(*handle);
 }
 
 NavigationConsoleLogger::~NavigationConsoleLogger() = default;
 
 NavigationConsoleLogger::NavigationConsoleLogger(
-    content::NavigationHandle* handle)
-    : content::WebContentsObserver(handle->GetWebContents()), handle_(handle) {}
+    content::NavigationHandle& handle)
+    : content::WebContentsObserver(handle.GetWebContents()), handle_(&handle) {}
 
 void NavigationConsoleLogger::DidFinishNavigation(
     content::NavigationHandle* handle) {
@@ -56,9 +49,9 @@ void NavigationConsoleLogger::DidFinishNavigation(
     }
   }
   // Deletes |this|.
-  web_contents()->RemoveUserData(UserDataKey());
+  DeleteForNavigationHandle(*handle);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationConsoleLogger);
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationConsoleLogger);
 
 }  // namespace subresource_filter

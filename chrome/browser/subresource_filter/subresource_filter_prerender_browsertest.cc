@@ -473,6 +473,55 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   }
 }
 
+// Tests that NavigationConsoleLogger works with a prerendered page by checking
+// if a console message is added in LogMessageOnCommit() from NotifyResult()
+// during navigation.
+IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+                       NavigationConsoleLogger) {
+  Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
+                       subresource_filter::ActivationScope::ACTIVATION_LIST,
+                       subresource_filter::ActivationList::BETTER_ADS);
+  ResetConfiguration(std::move(config));
+
+  {
+    GURL url(GetTestUrl("/empty.html"));
+    ConfigureURLWithWarning(url,
+                            {safe_browsing::SubresourceFilterType::BETTER_ADS});
+    content::WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kActivationWarningConsoleMessage);
+    // Initial page loading adds a console message.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    console_observer.Wait();
+    ASSERT_EQ(1u, console_observer.messages().size());
+    EXPECT_EQ(kActivationWarningConsoleMessage,
+              console_observer.GetMessageAt(0u));
+  }
+  {
+    GURL prerender_url(GetTestUrl("/title1.html"));
+    ConfigureURLWithWarning(prerender_url,
+                            {safe_browsing::SubresourceFilterType::BETTER_ADS});
+    content::WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kActivationWarningConsoleMessage);
+    // Trigger a prerender.
+    const int host_id = prerender_helper_.AddPrerender(prerender_url);
+    console_observer.Wait();
+    RenderFrameHost* prerender_rfh =
+        prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+    // The prerendering adds a console message.
+    ASSERT_EQ(1u, console_observer.messages().size());
+    EXPECT_EQ(kActivationWarningConsoleMessage,
+              console_observer.GetMessageAt(0u));
+    EXPECT_EQ(&console_observer.messages().back().source_frame->GetPage(),
+              &prerender_rfh->GetPage());
+    // Activate the prerendered page.
+    prerender_helper_.NavigatePrimaryPage(prerender_url);
+    // The prerendering activation doesn't add a console message.
+    ASSERT_EQ(1u, console_observer.messages().size());
+    EXPECT_EQ(kActivationWarningConsoleMessage,
+              console_observer.GetMessageAt(0u));
+  }
+}
+
 // TODO - test that prerender activation hides infobars.
 
 }  // namespace subresource_filter
