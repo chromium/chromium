@@ -238,26 +238,26 @@ public class MerchantTrustSignalsCoordinator
             MerchantTrustSignals trustSignals, String messageAssociatedUrl) {
         mMetrics.recordMetricsForMessageTapped();
         launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()),
-                ()
-                        -> onBottomSheetDismissed(
-                                BottomSheetOpenedSource.FROM_MESSAGE, messageAssociatedUrl));
+                BottomSheetOpenedSource.FROM_MESSAGE, messageAssociatedUrl);
     }
 
     // PageInfoStoreInfoController.StoreInfoActionHandler implementation.
     @Override
     public void onStoreInfoClicked(MerchantTrustSignals trustSignals) {
         launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()),
-                () -> onBottomSheetDismissed(BottomSheetOpenedSource.FROM_PAGE_INFO, null));
+                BottomSheetOpenedSource.FROM_PAGE_INFO, null);
         // If user has clicked the "Store info" row, send a signal to disable {@link
         // FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE}.
         final Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         tracker.notifyEvent(EventConstants.PAGE_INFO_STORE_INFO_ROW_CLICKED);
     }
 
-    private void launchDetailsPage(GURL url, Runnable onBottomSheetDismissed) {
-        mDetailsTabCoordinator.requestOpenSheet(url,
+    private void launchDetailsPage(GURL detailsPageUrl, @BottomSheetOpenedSource int openSource,
+            @Nullable String messageAssociatedUrl) {
+        mMetrics.recordMetricsForBottomSheetOpenedSource(openSource);
+        mDetailsTabCoordinator.requestOpenSheet(detailsPageUrl,
                 mContext.getResources().getString(R.string.merchant_viewer_preview_sheet_title),
-                onBottomSheetDismissed);
+                () -> onBottomSheetDismissed(openSource, messageAssociatedUrl));
     }
 
     private void onBottomSheetDismissed(

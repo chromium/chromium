@@ -40,6 +40,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     private final boolean mPageInfoOpenedFromStoreIcon;
     private final PageInfoDiscoverabilityMetrics mDiscoverabilityMetrics =
             new PageInfoDiscoverabilityMetrics();
+    private final MerchantTrustMetrics mMetrics = new MerchantTrustMetrics();
 
     public PageInfoStoreInfoController(PageInfoMainController mainController,
             PageInfoRowView rowView,
@@ -81,6 +82,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
                 mActionHandlerSupplier.get().onStoreInfoClicked(trustSignals);
             };
         }
+        mMetrics.recordMetricsForStoreInfoRowVisible(rowParams.visible);
         mRowView.setParams(rowParams);
     }
 
