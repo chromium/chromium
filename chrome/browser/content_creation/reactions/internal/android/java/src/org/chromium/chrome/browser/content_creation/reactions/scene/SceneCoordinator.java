@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.content_creation.reactions.scene;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.widget.RelativeLayout;
 
-import androidx.appcompat.content.res.AppCompatResources;
-
+import org.chromium.chrome.browser.content_creation.reactions.LightweightReactionsMediator;
+import org.chromium.chrome.browser.content_creation.reactions.ReactionGifDrawable;
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
 import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarReactionsDelegate;
 import org.chromium.components.content_creation.reactions.ReactionMetadata;
@@ -23,11 +24,12 @@ import java.util.Set;
  * Manages the scene UI and the reactions on the scene.
  */
 public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDelegate {
-    private static final int DEFAULT_REACTION_SIZE_DP = 100;
+    private static final int DEFAULT_REACTION_SIZE_DP = 192;
     private static final int REACTION_OFFSET_DP = 45;
     private static final int MAX_REACTION_COUNT = 10;
 
     private final Activity mActivity;
+    private final LightweightReactionsMediator mMediator;
     private final Set<ReactionLayout> mReactionLayouts;
 
     private ReactionLayout mActiveReaction;
@@ -38,8 +40,9 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
      *
      * @param activity The current {@link Activity}.
      */
-    public SceneCoordinator(Activity activity) {
+    public SceneCoordinator(Activity activity, LightweightReactionsMediator mediator) {
         mActivity = activity;
+        mMediator = mediator;
         mReactionLayouts = new HashSet<>();
     }
 
@@ -49,28 +52,30 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                 (view) -> { markActiveStatus(mActiveReaction, false); });
     }
 
-    public void addInitialReaction() {
-        if (mSceneBackground == null) {
-            return;
-        }
-        assert mReactionLayouts.isEmpty();
+    public void addReactionInDefaultLocation(ReactionMetadata reaction) {
+        mMediator.getGifForUrl(reaction.assetUrl, (baseGifImage) -> {
+            if (mSceneBackground == null) {
+                return;
+            }
 
-        ReactionLayout reactionLayout = (ReactionLayout) LayoutInflaterUtils.inflate(
-                mActivity, R.layout.reaction_layout, null);
-        reactionLayout.init(
-                AppCompatResources.getDrawable(mActivity, org.chromium.chrome.R.drawable.qr_code),
-                this);
+            ReactionGifDrawable drawable =
+                    new ReactionGifDrawable(baseGifImage, Bitmap.Config.ARGB_8888);
 
-        int reactionSizePx = ViewUtils.dpToPx(mActivity, DEFAULT_REACTION_SIZE_DP);
-        RelativeLayout.LayoutParams lp =
-                new RelativeLayout.LayoutParams(reactionSizePx, reactionSizePx);
-        Resources res = mActivity.getResources();
-        int leftPx = res.getDisplayMetrics().widthPixels / 2 - reactionSizePx / 2;
-        int topPx = res.getDisplayMetrics().heightPixels / 2 - reactionSizePx / 2
-                - res.getDimensionPixelSize(R.dimen.toolbar_total_height);
-        lp.setMargins(leftPx, topPx, 0, 0);
+            ReactionLayout reactionLayout = (ReactionLayout) LayoutInflaterUtils.inflate(
+                    mActivity, R.layout.reaction_layout, null);
+            reactionLayout.init(drawable, this);
 
-        addReaction(reactionLayout, lp);
+            int reactionSizePx = ViewUtils.dpToPx(mActivity, DEFAULT_REACTION_SIZE_DP);
+            RelativeLayout.LayoutParams lp =
+                    new RelativeLayout.LayoutParams(reactionSizePx, reactionSizePx);
+            Resources res = mActivity.getResources();
+            int leftPx = res.getDisplayMetrics().widthPixels / 2 - reactionSizePx / 2;
+            int topPx = res.getDisplayMetrics().heightPixels / 2 - reactionSizePx / 2
+                    - res.getDimensionPixelSize(R.dimen.toolbar_total_height);
+            lp.setMargins(leftPx, topPx, 0, 0);
+
+            addReaction(reactionLayout, lp);
+        });
     }
 
     private void addReaction(
@@ -127,7 +132,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
     // ToolbarReactionsDelegate implementation.
     @Override
-    public void onToolbarReactionTapped(ReactionMetadata reactionData) {
-        // No-op for now, will either add a new reaction or change the currently selected one.
+    public void onToolbarReactionTapped(ReactionMetadata reaction) {
+        addReactionInDefaultLocation(reaction);
     }
 }

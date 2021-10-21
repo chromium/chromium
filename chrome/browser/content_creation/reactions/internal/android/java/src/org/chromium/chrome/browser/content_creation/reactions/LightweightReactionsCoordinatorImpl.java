@@ -61,14 +61,17 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         mDialogViewCreated = false;
         mAssetsFetched = false;
         mReactionService = reactionService;
-        mDialog = new LightweightReactionsDialog();
-        mSceneCoordinator = new SceneCoordinator(activity);
 
         Profile profile = Profile.fromWebContents(tab.getWebContents());
         ImageFetcher imageFetcher = ImageFetcherFactory.createImageFetcher(
                 ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey());
         mMediator = new LightweightReactionsMediator(imageFetcher);
+
+        mDialog = new LightweightReactionsDialog();
+        mSceneCoordinator = new SceneCoordinator(activity, mMediator);
+
         mReactionService.getReactions((reactions) -> {
+            assert reactions.size() > 0;
             mAvailableReactions = reactions;
             mMediator.fetchAssetsAndGetThumbnails(reactions, this::onAssetsFetched);
         });
@@ -82,6 +85,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
     private void onViewCreated(View view) {
         mDialogViewCreated = true;
         mToolbarCoordinator = new ToolbarCoordinator(view, this, mSceneCoordinator);
+        mSceneCoordinator.addReactionInDefaultLocation(mAvailableReactions.get(0));
         maybeFinishInitialization();
     }
 
