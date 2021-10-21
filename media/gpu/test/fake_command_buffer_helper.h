@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "media/gpu/command_buffer_helper.h"
 
 namespace media {
@@ -43,6 +44,9 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   // CommandBufferHelper implementation.
   gl::GLContext* GetGLContext() override;
   gpu::SharedImageStub* GetSharedImageStub() override;
+#if defined(OS_WIN)
+  gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override;
+#endif
   bool HasStub() override;
   bool MakeContextCurrent() override;
   std::unique_ptr<gpu::SharedImageRepresentationFactoryRef> Register(

@@ -508,6 +508,8 @@ target(link_target_type, "gles2_sources") {
 
   if (is_win) {
     sources += [
+      "dxgi_shared_handle_manager.cc",
+      "dxgi_shared_handle_manager.h",
       "shared_image_backing_d3d.cc",
       "shared_image_backing_d3d.h",
       "shared_image_backing_factory_d3d.cc",

@@ -21,7 +21,9 @@
 #elif defined(OS_MAC)
 #include "ui/gfx/mac/io_surface.h"
 #elif defined(OS_WIN)
+#include "base/types/token_type.h"
 #include "base/win/scoped_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #elif defined(OS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
 #endif
@@ -51,6 +53,10 @@ enum GpuMemoryBufferType {
 
 using GpuMemoryBufferId = GenericSharedMemoryId;
 
+#if defined(OS_WIN)
+using DXGIHandleToken = base::TokenType<class DXGIHandleTokenTypeMarker>;
+#endif
+
 // TODO(crbug.com/863011): Convert this to a proper class to ensure the state is
 // always consistent, particularly that the only one handle is set at the same
 // time and it corresponds to |type|.
@@ -76,6 +82,7 @@ struct GFX_EXPORT GpuMemoryBufferHandle {
   ScopedIOSurface io_surface;
 #elif defined(OS_WIN)
   base::win::ScopedHandle dxgi_handle;
+  absl::optional<DXGIHandleToken> dxgi_token;
 #elif defined(OS_ANDROID)
   base::android::ScopedHardwareBufferHandle android_hardware_buffer;
 #endif

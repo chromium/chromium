@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -30,10 +31,11 @@ GpuMemoryBufferImplDXGI::CreateFromHandle(
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   DCHECK(handle.dxgi_handle.IsValid());
+  DCHECK(handle.dxgi_token.has_value());
   return base::WrapUnique(new GpuMemoryBufferImplDXGI(
       handle.id, size, format, std::move(callback),
-      std::move(handle.dxgi_handle), gpu_memory_buffer_manager, std::move(pool),
-      std::move(handle.region)));
+      std::move(handle.dxgi_handle), std::move(handle.dxgi_token.value()),
+      gpu_memory_buffer_manager, std::move(pool), std::move(handle.region)));
 }
 
 base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
@@ -178,6 +180,7 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplDXGI::CloneHandle() const {
   if (!result)
     DPLOG(ERROR) << "Failed to duplicate DXGI resource handle.";
   handle.dxgi_handle.Set(duplicated_handle);
+  handle.dxgi_token = dxgi_token_;
   if (unowned_region_.IsValid()) {
     handle.region = unowned_region_.Duplicate();
   }
@@ -194,11 +197,13 @@ GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
     gfx::BufferFormat format,
     DestructionCallback callback,
     base::win::ScopedHandle dxgi_handle,
+    gfx::DXGIHandleToken dxgi_token,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool,
     base::UnsafeSharedMemoryRegion region)
     : GpuMemoryBufferImpl(id, size, format, std::move(callback)),
       dxgi_handle_(std::move(dxgi_handle)),
+      dxgi_token_(std::move(dxgi_token)),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       shared_memory_pool_(std::move(pool)),
       unowned_region_(std::move(region)) {}

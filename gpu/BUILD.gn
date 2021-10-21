@@ -441,6 +441,7 @@ test("gl_tests") {
       "//ui/platform_window:platform_impls",
     ]
     sources += [
+      "command_buffer/service/dxgi_shared_handle_manager_unittest.cc",
       "command_buffer/service/shared_image_backing_factory_d3d_unittest.cc",
     ]
   } else if (is_linux || is_chromeos) {

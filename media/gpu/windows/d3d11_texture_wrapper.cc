@@ -12,6 +12,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 #include "media/base/bind_to_current_loop.h"
@@ -211,7 +212,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
       gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY |
       gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-  base::win::ScopedHandle shared_handle;
+  scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state;
   if (texture) {
     D3D11_TEXTURE2D_DESC desc = {};
     texture->GetDesc(&desc);
@@ -227,10 +228,10 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
         return;
       }
 
-      HANDLE handle = nullptr;
+      HANDLE shared_handle = nullptr;
       hr = dxgi_resource->CreateSharedHandle(
           nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
-          nullptr, &handle);
+          nullptr, &shared_handle);
       if (FAILED(hr)) {
         DLOG(ERROR) << "CreateSharedHandle failed with error " << std::hex
                     << hr;
@@ -239,14 +240,17 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
         return;
       }
 
-      shared_handle.Set(handle);
+      dxgi_shared_handle_state =
+          helper_->GetDXGISharedHandleManager()
+              ->CreateAnonymousSharedHandleState(
+                  base::win::ScopedHandle(shared_handle), texture);
     }
   }
 
   auto shared_image_backings =
       gpu::SharedImageBackingD3D::CreateFromVideoTexture(
           mailboxes, dxgi_format, size, usage, texture, array_slice,
-          std::move(shared_handle));
+          std::move(dxgi_shared_handle_state));
   if (shared_image_backings.empty()) {
     std::move(on_error_cb)
         .Run(std::move(D3D11Status::Codes::kCreateSharedImageFailed));

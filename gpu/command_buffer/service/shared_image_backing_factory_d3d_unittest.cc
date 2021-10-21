@@ -10,8 +10,10 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/unguessable_token.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
@@ -146,7 +148,8 @@ class SharedImageBackingFactoryD3DTestBase : public testing::Test {
         std::make_unique<SharedImageRepresentationFactory>(
             &shared_image_manager_, nullptr);
     shared_image_factory_ = std::make_unique<SharedImageBackingFactoryD3D>(
-        gl::QueryD3D11DeviceObjectFromANGLE());
+        gl::QueryD3D11DeviceObjectFromANGLE(),
+        shared_image_manager_.dxgi_shared_handle_manager());
   }
 
  protected:
@@ -972,7 +975,11 @@ void SharedImageBackingFactoryD3DTest::RunCreateSharedImageFromHandleTest(
 
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
   gpu_memory_buffer_handle.dxgi_handle.Set(shared_handle);
+  gpu_memory_buffer_handle.dxgi_token = gfx::DXGIHandleToken();
   gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
+
+  // Clone before moving the handle in CreateSharedImage.
+  auto dup_handle = gpu_memory_buffer_handle.Clone();
 
   auto mailbox = Mailbox::GenerateForSharedImage();
   const auto format = gfx::BufferFormat::RGBA_8888;
@@ -997,7 +1004,63 @@ void SharedImageBackingFactoryD3DTest::RunCreateSharedImageFromHandleTest(
 
   SharedImageBackingD3D* backing_d3d =
       static_cast<SharedImageBackingD3D*>(backing.get());
-  EXPECT_EQ(backing_d3d->GetDXGISharedHandleForTesting(), shared_handle);
+  EXPECT_EQ(
+      backing_d3d->dxgi_shared_handle_state_for_testing()->GetSharedHandle(),
+      shared_handle);
+
+  // Check that a second backing created from the duplicated handle shares the
+  // shared handle state and texture with the first backing.
+  auto dup_mailbox = Mailbox::GenerateForSharedImage();
+  auto dup_backing = shared_image_factory_->CreateSharedImage(
+      dup_mailbox, 0, std::move(dup_handle), format, plane, surface_handle,
+      size, color_space, surface_origin, alpha_type, usage);
+  ASSERT_NE(dup_backing, nullptr);
+
+  EXPECT_EQ(dup_backing->format(), viz::RGBA_8888);
+  EXPECT_EQ(dup_backing->size(), size);
+  EXPECT_EQ(dup_backing->color_space(), color_space);
+  EXPECT_EQ(dup_backing->surface_origin(), surface_origin);
+  EXPECT_EQ(dup_backing->alpha_type(), alpha_type);
+  EXPECT_EQ(dup_backing->mailbox(), dup_mailbox);
+  EXPECT_TRUE(dup_backing->IsCleared());
+
+  SharedImageBackingD3D* dup_backing_d3d =
+      static_cast<SharedImageBackingD3D*>(dup_backing.get());
+  EXPECT_EQ(dup_backing_d3d->dxgi_shared_handle_state_for_testing(),
+            backing_d3d->dxgi_shared_handle_state_for_testing());
+  EXPECT_EQ(dup_backing_d3d->d3d11_texture_for_testing(),
+            backing_d3d->d3d11_texture_for_testing());
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing),
+                                     memory_type_tracker_.get());
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> dup_factory_ref =
+      shared_image_manager_.Register(std::move(dup_backing),
+                                     memory_type_tracker_.get());
+
+  // Check that concurrent read access using the duplicated handle works.
+  auto gl_representation =
+      shared_image_representation_factory_->ProduceGLTexturePassthrough(
+          mailbox);
+  EXPECT_TRUE(gl_representation);
+
+  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough::ScopedAccess>
+      scoped_access = gl_representation->BeginScopedAccess(
+          GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  EXPECT_TRUE(scoped_access);
+
+  auto dup_gl_representation =
+      shared_image_representation_factory_->ProduceGLTexturePassthrough(
+          dup_mailbox);
+  EXPECT_TRUE(dup_gl_representation);
+
+  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough::ScopedAccess>
+      dup_scoped_access = dup_gl_representation->BeginScopedAccess(
+          GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  EXPECT_TRUE(dup_scoped_access);
 }
 
 TEST_F(SharedImageBackingFactoryD3DTest,
@@ -1278,13 +1341,21 @@ SharedImageBackingFactoryD3DTest::CreateVideoImages(const gfx::Size& size,
     gfx::GpuMemoryBufferHandle gmb_handle;
     gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
     gmb_handle.dxgi_handle = std::move(shared_handle);
+    gmb_handle.dxgi_token = gfx::DXGIHandleToken();
     shared_image_backings = shared_image_factory_->CreateSharedImageVideoPlanes(
         mailboxes, std::move(gmb_handle), gfx::BufferFormat::YUV_420_BIPLANAR,
         size, usage);
   } else {
+    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state;
+    if (use_shared_handle) {
+      dxgi_shared_handle_state =
+          shared_image_manager_.dxgi_shared_handle_manager()
+              ->CreateAnonymousSharedHandleState(std::move(shared_handle),
+                                                 d3d11_texture);
+    }
     shared_image_backings = SharedImageBackingD3D::CreateFromVideoTexture(
         mailboxes, DXGI_FORMAT_NV12, size, usage, d3d11_texture,
-        /*array_slice=*/0, std::move(shared_handle));
+        /*array_slice=*/0, std::move(dxgi_shared_handle_state));
   }
   EXPECT_EQ(shared_image_backings.size(), kNumPlanes);
 

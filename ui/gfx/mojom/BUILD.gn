@@ -339,6 +339,10 @@ mojom("native_handle_types") {
   shared_cpp_typemap = {
     types = [
       {
+        mojom = "gfx.mojom.DXGIHandleToken"
+        cpp = "::gfx::DXGIHandleToken"
+      },
+      {
         mojom = "gfx.mojom.NativePixmapHandle"
         cpp = "::gfx::NativePixmapHandle"
         move_only = true

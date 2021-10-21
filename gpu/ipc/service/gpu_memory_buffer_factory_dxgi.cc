@@ -148,6 +148,7 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
     return handle;
 
   handle.dxgi_handle.Set(texture_handle);
+  handle.dxgi_token = gfx::DXGIHandleToken();
   handle.type = gfx::DXGI_SHARED_HANDLE;
   handle.id = id;
 

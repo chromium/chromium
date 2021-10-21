@@ -23,6 +23,10 @@
 #include "media/gpu/gles2_decoder_helper.h"
 #include "ui/gl/gl_context.h"
 
+#if defined(OS_WIN)
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#endif
+
 namespace media {
 
 namespace {
@@ -77,6 +81,18 @@ class CommandBufferHelperImpl
       return nullptr;
     return stub_->channel()->shared_image_stub();
   }
+
+#if defined(OS_WIN)
+  gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override {
+    if (!stub_)
+      return nullptr;
+    return stub_->channel()
+        ->gpu_channel_manager()
+        ->shared_image_manager()
+        ->dxgi_shared_handle_manager()
+        .get();
+  }
+#endif
 
   bool HasStub() override {
     DVLOG(4) << __func__;

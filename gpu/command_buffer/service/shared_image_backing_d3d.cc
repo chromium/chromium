@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation_d3d.h"
 #include "gpu/command_buffer/service/shared_image_representation_skia_gl.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
@@ -192,77 +193,6 @@ void CopyPlane(const uint8_t* source_memory,
 
 }  // namespace
 
-SharedImageBackingD3D::SharedState::SharedState(
-    base::win::ScopedHandle dxgi_shared_handle,
-    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex)
-    : dxgi_shared_handle_(std::move(dxgi_shared_handle)),
-      dxgi_keyed_mutex_(std::move(dxgi_keyed_mutex)) {}
-
-SharedImageBackingD3D::SharedState::~SharedState() {
-  DCHECK(!acquired_for_d3d12_);
-  DCHECK_EQ(acquired_for_d3d11_count_, 0);
-  dxgi_shared_handle_.Close();
-}
-
-bool SharedImageBackingD3D::SharedState::BeginAccessD3D12() {
-  if (!dxgi_keyed_mutex_) {
-    DLOG(ERROR) << "D3D12 access not supported without keyed mutex";
-    return false;
-  }
-  if (acquired_for_d3d12_ || acquired_for_d3d11_count_ > 0) {
-    DLOG(ERROR) << "Recursive BeginAccess not supported";
-    return false;
-  }
-  acquired_for_d3d12_ = true;
-  return true;
-}
-
-void SharedImageBackingD3D::SharedState::EndAccessD3D12() {
-  acquired_for_d3d12_ = false;
-}
-
-bool SharedImageBackingD3D::SharedState::BeginAccessD3D11() {
-  // Nop for shared images that are created without keyed mutex (D3D11 only).
-  if (!dxgi_keyed_mutex_)
-    return true;
-
-  if (acquired_for_d3d12_) {
-    DLOG(ERROR) << "Recursive BeginAccess not supported";
-    return false;
-  }
-  if (acquired_for_d3d11_count_ > 0) {
-    acquired_for_d3d11_count_++;
-    return true;
-  }
-  const HRESULT hr =
-      dxgi_keyed_mutex_->AcquireSync(kDXGIKeyedMutexAcquireKey, INFINITE);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Unable to acquire the keyed mutex " << std::hex << hr;
-    return false;
-  }
-  acquired_for_d3d11_count_++;
-  return true;
-}
-
-void SharedImageBackingD3D::SharedState::EndAccessD3D11() {
-  // Nop for shared images that are created without keyed mutex (D3D11 only).
-  if (!dxgi_keyed_mutex_)
-    return;
-
-  DCHECK_GT(acquired_for_d3d11_count_, 0);
-  acquired_for_d3d11_count_--;
-  if (acquired_for_d3d11_count_ == 0) {
-    const HRESULT hr =
-        dxgi_keyed_mutex_->ReleaseSync(kDXGIKeyedMutexAcquireKey);
-    if (FAILED(hr))
-      DLOG(ERROR) << "Unable to release the keyed mutex " << std::hex << hr;
-  }
-}
-
-HANDLE SharedImageBackingD3D::SharedState::GetDXGISharedHandle() const {
-  return dxgi_shared_handle_.Get();
-}
-
 // static
 std::unique_ptr<SharedImageBackingD3D>
 SharedImageBackingD3D::CreateFromSwapChainBuffer(
@@ -284,13 +214,14 @@ SharedImageBackingD3D::CreateFromSwapChainBuffer(
   }
   return base::WrapUnique(new SharedImageBackingD3D(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(gl_texture), /*shared_state=*/nullptr,
-      /*shared_memory_handle=*/{}, std::move(swap_chain), is_back_buffer));
+      std::move(d3d11_texture), std::move(gl_texture),
+      /*dxgi_shared_handle_state=*/{}, /*shared_memory_handle=*/{},
+      std::move(swap_chain), is_back_buffer));
 }
 
 // static
 std::unique_ptr<SharedImageBackingD3D>
-SharedImageBackingD3D::CreateFromSharedHandle(
+SharedImageBackingD3D::CreateFromDXGISharedHandle(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -299,18 +230,13 @@ SharedImageBackingD3D::CreateFromSharedHandle(
     SkAlphaType alpha_type,
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    base::win::ScopedHandle dxgi_shared_handle) {
-  DCHECK(dxgi_shared_handle.IsValid());
+    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state) {
+  DCHECK(dxgi_shared_handle_state);
 
   const bool has_webgpu_usage = !!(usage & SHARED_IMAGE_USAGE_WEBGPU);
   // Keyed mutexes are required for Dawn interop but are not used for XR
   // composition where fences are used instead.
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex;
-  d3d11_texture.As(&dxgi_keyed_mutex);
-  DCHECK(!has_webgpu_usage || dxgi_keyed_mutex);
-
-  auto shared_state = base::MakeRefCounted<SharedState>(
-      std::move(dxgi_shared_handle), std::move(dxgi_keyed_mutex));
+  DCHECK(!has_webgpu_usage || dxgi_shared_handle_state->has_keyed_mutex());
 
   // Do not cache a GL texture in the backing if it could be owned by WebGPU
   // since there's no GL context to MakeCurrent in the destructor.
@@ -327,7 +253,7 @@ SharedImageBackingD3D::CreateFromSharedHandle(
   auto backing = base::WrapUnique(new SharedImageBackingD3D(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
-      std::move(shared_state)));
+      std::move(dxgi_shared_handle_state)));
   return backing;
 }
 
@@ -356,20 +282,16 @@ SharedImageBackingD3D::CreateFromVideoTexture(
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     unsigned array_slice,
-    base::win::ScopedHandle dxgi_shared_handle) {
+    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state) {
   DCHECK(d3d11_texture);
   DCHECK(SupportsVideoFormat(dxgi_format));
   DCHECK_EQ(mailboxes.size(), NumPlanes(dxgi_format));
 
   // Shared handle and keyed mutex are required for Dawn interop.
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex;
-  d3d11_texture.As(&dxgi_keyed_mutex);
-  DCHECK(!(usage & gpu::SHARED_IMAGE_USAGE_WEBGPU) ||
-         (dxgi_shared_handle.IsValid() && dxgi_keyed_mutex));
-
-  // Share the same keyed mutex state for all the plane backings.
-  auto shared_state = base::MakeRefCounted<SharedState>(
-      std::move(dxgi_shared_handle), std::move(dxgi_keyed_mutex));
+  const bool has_webgpu_usage = usage & gpu::SHARED_IMAGE_USAGE_WEBGPU;
+  const bool has_keyed_mutex =
+      dxgi_shared_handle_state && dxgi_shared_handle_state->has_keyed_mutex();
+  DCHECK(!has_webgpu_usage || has_keyed_mutex);
 
   std::vector<std::unique_ptr<SharedImageBacking>> shared_images(
       NumPlanes(dxgi_format));
@@ -398,7 +320,7 @@ SharedImageBackingD3D::CreateFromVideoTexture(
     shared_images[plane_index] = base::WrapUnique(new SharedImageBackingD3D(
         mailbox, plane_format, plane_size, kInvalidColorSpace,
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, d3d11_texture,
-        std::move(gl_texture), shared_state));
+        std::move(gl_texture), dxgi_shared_handle_state));
     shared_images[plane_index]->SetCleared();
   }
 
@@ -425,8 +347,8 @@ SharedImageBackingD3D::CreateFromSharedMemoryHandle(
   }
   auto backing = base::WrapUnique(new SharedImageBackingD3D(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(gl_texture), /*shared_state=*/nullptr,
-      std::move(shared_memory_handle)));
+      std::move(d3d11_texture), std::move(gl_texture),
+      /*dxgi_shared_handle_state=*/{}, std::move(shared_memory_handle)));
   return backing;
 }
 
@@ -440,7 +362,7 @@ SharedImageBackingD3D::SharedImageBackingD3D(
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<gles2::TexturePassthrough> gl_texture,
-    scoped_refptr<SharedState> shared_state,
+    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     gfx::GpuMemoryBufferHandle shared_memory_handle,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     bool is_back_buffer)
@@ -458,7 +380,7 @@ SharedImageBackingD3D::SharedImageBackingD3D(
           false /* is_thread_safe */),
       d3d11_texture_(std::move(d3d11_texture)),
       gl_texture_(std::move(gl_texture)),
-      shared_state_(std::move(shared_state)),
+      dxgi_shared_handle_state_(std::move(dxgi_shared_handle_state)),
       shared_memory_handle_(std::move(shared_memory_handle)),
       swap_chain_(std::move(swap_chain)),
       is_back_buffer_(is_back_buffer) {
@@ -469,8 +391,8 @@ SharedImageBackingD3D::SharedImageBackingD3D(
 SharedImageBackingD3D::~SharedImageBackingD3D() {
   if (!have_context())
     gl_texture_->MarkContextLost();
-  gl_texture_ = nullptr;
-  shared_state_ = nullptr;
+  gl_texture_.reset();
+  dxgi_shared_handle_state_.reset();
   swap_chain_.Reset();
   d3d11_texture_.Reset();
 
@@ -712,8 +634,8 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
 
   // Persistently open the shared handle by caching it on this backing.
   if (!external_image_) {
-    DCHECK(shared_state_);
-    const HANDLE shared_handle = shared_state_->GetDXGISharedHandle();
+    DCHECK(dxgi_shared_handle_state_);
+    const HANDLE shared_handle = dxgi_shared_handle_state_->GetSharedHandle();
     DCHECK(base::win::HandleTraits::IsHandleValid(shared_handle));
 
     dawn_native::d3d12::ExternalImageDescriptorDXGISharedHandle
@@ -757,33 +679,27 @@ void SharedImageBackingD3D::OnMemoryDump(
 }
 
 bool SharedImageBackingD3D::BeginAccessD3D12() {
-  if (shared_state_)
-    return shared_state_->BeginAccessD3D12();
+  if (dxgi_shared_handle_state_)
+    return dxgi_shared_handle_state_->BeginAccessD3D12();
   // D3D12 access is only allowed with shared handle and keyed mutex.
   return false;
 }
 
 void SharedImageBackingD3D::EndAccessD3D12() {
-  if (shared_state_)
-    shared_state_->EndAccessD3D12();
+  if (dxgi_shared_handle_state_)
+    dxgi_shared_handle_state_->EndAccessD3D12();
 }
 
 bool SharedImageBackingD3D::BeginAccessD3D11() {
-  if (shared_state_)
-    return shared_state_->BeginAccessD3D11();
+  if (dxgi_shared_handle_state_)
+    return dxgi_shared_handle_state_->BeginAccessD3D11();
   // D3D11 access is allowed without shared handle and keyed mutex.
   return true;
 }
 
 void SharedImageBackingD3D::EndAccessD3D11() {
-  if (shared_state_)
-    shared_state_->EndAccessD3D11();
-}
-
-HANDLE SharedImageBackingD3D::GetDXGISharedHandleForTesting() const {
-  if (shared_state_)
-    return shared_state_->GetDXGISharedHandle();
-  return nullptr;
+  if (dxgi_shared_handle_state_)
+    dxgi_shared_handle_state_->EndAccessD3D11();
 }
 
 gl::GLImage* SharedImageBackingD3D::GetGLImage() const {

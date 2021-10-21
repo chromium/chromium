@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
+class DXGISharedHandleManager;
 class SharedImageRepresentationFactoryRef;
 class SharedImageBatchAccessManager;
 class VaapiDependenciesFactory;
@@ -118,6 +119,13 @@ class GPU_GLES2_EXPORT SharedImageManager {
 #endif
   }
 
+#if defined(OS_WIN)
+  const scoped_refptr<DXGISharedHandleManager>& dxgi_shared_handle_manager()
+      const {
+    return dxgi_shared_handle_manager_;
+  }
+#endif
+
   bool BeginBatchReadAccess();
   bool EndBatchReadAccess();
 
@@ -132,6 +140,10 @@ class GPU_GLES2_EXPORT SharedImageManager {
 
 #if defined(OS_ANDROID)
   std::unique_ptr<SharedImageBatchAccessManager> batch_access_manager_;
+#endif
+
+#if defined(OS_WIN)
+  scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;
 #endif
 
   THREAD_CHECKER(thread_checker_);

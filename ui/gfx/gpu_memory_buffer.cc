@@ -59,6 +59,7 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
   handle.io_surface = io_surface;
 #elif defined(OS_WIN)
   handle.dxgi_handle = CloneDXGIHandle(dxgi_handle.Get());
+  handle.dxgi_token = dxgi_token;
 #elif defined(OS_ANDROID)
   NOTIMPLEMENTED();
 #endif

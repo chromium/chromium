@@ -7,8 +7,10 @@
 #include <d3d11_1.h>
 
 #include "base/memory/shared_memory_mapping.h"
+#include "base/win/scoped_handle.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/direct_composition_surface_win.h"
@@ -98,13 +100,18 @@ DXGI_FORMAT GetDXGITypelessFormat(gfx::BufferFormat buffer_format) {
   }
 }
 
-Microsoft::WRL::ComPtr<ID3D11Texture2D> ValidateAndOpenSharedHandle(
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-    const gfx::GpuMemoryBufferHandle& handle,
+scoped_refptr<DXGISharedHandleState> ValidateAndOpenSharedHandle(
+    DXGISharedHandleManager* dxgi_shared_handle_manager,
+    gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat format,
     const gfx::Size& size) {
   if (handle.type != gfx::DXGI_SHARED_HANDLE || !handle.dxgi_handle.IsValid()) {
     DLOG(ERROR) << "Invalid handle with type: " << handle.type;
+    return nullptr;
+  }
+
+  if (!handle.dxgi_token.has_value()) {
+    DLOG(ERROR) << "Missing token for DXGI handle";
     return nullptr;
   }
 
@@ -114,25 +121,16 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> ValidateAndOpenSharedHandle(
     return nullptr;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11Device1> d3d11_device1;
-  HRESULT hr = d3d11_device.As(&d3d11_device1);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to query for ID3D11Device1. Error: "
-                << logging::SystemErrorCodeToString(hr);
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
+      dxgi_shared_handle_manager->GetOrCreateSharedHandleState(
+          std::move(handle.dxgi_token.value()), std::move(handle.dxgi_handle));
+  if (!dxgi_shared_handle_state) {
+    DLOG(ERROR) << "Failed to open DXGI shared handle";
     return nullptr;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-  hr = d3d11_device1->OpenSharedResource1(handle.dxgi_handle.Get(),
-                                          IID_PPV_ARGS(&d3d11_texture));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Unable to open shared resource from DXGI handle. Error: "
-                << logging::SystemErrorCodeToString(hr);
-    return nullptr;
-  }
-
-  D3D11_TEXTURE2D_DESC desc;
-  d3d11_texture->GetDesc(&desc);
+  D3D11_TEXTURE2D_DESC desc = {};
+  dxgi_shared_handle_state->d3d11_texture()->GetDesc(&desc);
 
   // TODO: Add checks for device specific limits.
   if (desc.Width != static_cast<UINT>(size.width()) ||
@@ -147,14 +145,16 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> ValidateAndOpenSharedHandle(
     return nullptr;
   }
 
-  return d3d11_texture;
+  return dxgi_shared_handle_state;
 }
 
 }  // anonymous namespace
 
 SharedImageBackingFactoryD3D::SharedImageBackingFactoryD3D(
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device)
-    : d3d11_device_(std::move(d3d11_device)) {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+    scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager)
+    : d3d11_device_(std::move(d3d11_device)),
+      dxgi_shared_handle_manager_(std::move(dxgi_shared_handle_manager)) {
   DCHECK(d3d11_device_);
 }
 
@@ -362,12 +362,14 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
                 << std::hex << hr;
     return nullptr;
   }
-  // Put the shared handle into an RAII object as quickly as possible to
-  // ensure we do not leak it.
-  base::win::ScopedHandle scoped_shared_handle(shared_handle);
-  return SharedImageBackingD3D::CreateFromSharedHandle(
+
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
+      dxgi_shared_handle_manager_->CreateAnonymousSharedHandleState(
+          base::win::ScopedHandle(shared_handle), d3d11_texture);
+
+  return SharedImageBackingD3D::CreateFromDXGISharedHandle(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(scoped_shared_handle));
+      std::move(d3d11_texture), std::move(dxgi_shared_handle_state));
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -408,15 +410,18 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
       return nullptr;
     }
 
-    auto d3d11_texture =
-        ValidateAndOpenSharedHandle(d3d11_device_, handle, format, size);
-    if (!d3d11_texture)
+    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
+        ValidateAndOpenSharedHandle(dxgi_shared_handle_manager_.get(),
+                                    std::move(handle), format, size);
+    if (!dxgi_shared_handle_state)
       return nullptr;
 
-    auto backing = SharedImageBackingD3D::CreateFromSharedHandle(
+    auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
+
+    auto backing = SharedImageBackingD3D::CreateFromDXGISharedHandle(
         mailbox, viz::GetResourceFormat(format), size, color_space,
         surface_origin, alpha_type, usage, std::move(d3d11_texture),
-        std::move(handle.dxgi_handle));
+        std::move(dxgi_shared_handle_state));
     if (backing)
       backing->SetCleared();
     return backing;
@@ -498,14 +503,17 @@ SharedImageBackingFactoryD3D::CreateSharedImageVideoPlanes(
     return {};
   }
 
-  auto d3d11_texture =
-      ValidateAndOpenSharedHandle(d3d11_device_, handle, format, size);
-  if (!d3d11_texture)
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
+      ValidateAndOpenSharedHandle(dxgi_shared_handle_manager_.get(),
+                                  std::move(handle), format, size);
+  if (!dxgi_shared_handle_state)
     return {};
+
+  auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
 
   return SharedImageBackingD3D::CreateFromVideoTexture(
       mailboxes, GetDXGIFormat(format), size, usage, std::move(d3d11_texture),
-      /*array_slice=*/0, std::move(handle.dxgi_handle));
+      /*array_slice=*/0, std::move(dxgi_shared_handle_state));
 }
 
 bool SharedImageBackingFactoryD3D::UseMapOnDefaultTextures() {

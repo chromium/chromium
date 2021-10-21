@@ -52,6 +52,7 @@
 #endif
 
 #if defined(OS_WIN)
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_d3d.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -232,8 +233,9 @@ SharedImageFactory::SharedImageFactory(
   // TODO(sunnyps): Should we get the device from SharedContextState instead?
   auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
   if (use_passthrough && is_skia_gl && d3d11_device) {
-    auto d3d_factory =
-        std::make_unique<SharedImageBackingFactoryD3D>(std::move(d3d11_device));
+    auto d3d_factory = std::make_unique<SharedImageBackingFactoryD3D>(
+        std::move(d3d11_device),
+        shared_image_manager_->dxgi_shared_handle_manager());
     d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));
   }

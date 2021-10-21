@@ -24,6 +24,11 @@
 #include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
 #endif
 
+#if defined(OS_WIN)
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#include "ui/gl/gl_angle_util_win.h"
+#endif
+
 #if DCHECK_IS_ON()
 #define CALLED_ON_VALID_THREAD()                      \
   do {                                                \
@@ -84,6 +89,13 @@ SharedImageManager::SharedImageManager(bool thread_safe,
     lock_.emplace();
 #if defined(OS_ANDROID)
   batch_access_manager_ = std::make_unique<SharedImageBatchAccessManager>();
+#endif
+#if defined(OS_WIN)
+  auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
+  if (d3d11_device) {
+    dxgi_shared_handle_manager_ =
+        base::MakeRefCounted<DXGISharedHandleManager>(std::move(d3d11_device));
+  }
 #endif
   CALLED_ON_VALID_THREAD();
 }
