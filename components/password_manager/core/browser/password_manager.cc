@@ -361,6 +361,11 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
     }
   }
 
+  // Reset |possible_username_| if the navigation cannot be a result of form
+  // submission.
+  if (!form_may_be_submitted)
+    possible_username_.reset();
+
   for (std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
     if (form_may_be_submitted && manager->is_submitted()) {
       owned_submitted_form_manager_ = std::move(manager);

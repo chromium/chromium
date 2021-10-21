@@ -3630,6 +3630,52 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
   form_manager->Save();
 }
 
+// Checks that possible single username value is not used to build pending
+// credentials if a navigation that cannot be a result of form submission
+// happens between submitting single password and single username forms.
+TEST_P(PasswordManagerTest, UsernameFirstFlowWithNavigationInTheMiddle) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
+  EXPECT_CALL(*store_, GetLogins(_, _))
+      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+
+  // Simulate the user typed a previously not saved username in username form.
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
+  EXPECT_CALL(driver_, GetLastCommittedURL())
+      .WillOnce(ReturnRef(username_form.url));
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      u"username", u"newusername@gmail.com" /* value */);
+
+  // Setup a server prediction for the single username field to
+  // allow using possible username value for pending credentials.
+  FormStructure form_structure(username_form.form_data);
+  FieldPrediction prediction;
+  prediction.set_type(SINGLE_USERNAME);
+  form_structure.field(0)->set_server_predictions({prediction});
+  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+
+  // Simulate navigation to a single password form that cannot be a result of a
+  // form submisison.
+  manager()->DidNavigateMainFrame(/*form_may_be_submitted=*/false);
+  PasswordForm password_form(MakeSimpleFormWithOnlyPasswordField());
+  FormData password_form_data = password_form.form_data;
+  manager()->OnPasswordFormsParsed(&driver_, {password_form_data});
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(password_form.url))
+      .WillRepeatedly(Return(true));
+
+  // Simulate that the user typed previously not saved password.
+  password_form_data.fields[0].value = u"new_password";
+  manager()->OnInformAboutUserInput(&driver_, password_form_data);
+
+  // Check that single username is not used to build pending credentials.
+  PasswordFormManager* submitted_form_manager =
+      manager()->GetSubmittedManagerForTest();
+  ASSERT_TRUE(submitted_form_manager);
+  EXPECT_TRUE(
+      submitted_form_manager->GetPendingCredentials().username_value.empty());
+}
+
 #if !defined(OS_IOS)
 //  Checks that username is filled on username first flow based on server and
 //  local predictions.
