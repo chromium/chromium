@@ -2402,6 +2402,7 @@ bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {
   switch (GetRole()) {
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
+    case ax::mojom::Role::kInputTime:
       return true;
     case ax::mojom::Role::kColorWell:
       return false;
